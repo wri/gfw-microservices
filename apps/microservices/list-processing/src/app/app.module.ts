@@ -1,3 +1,4 @@
+import { LargeListService } from './../services/largelist.service';
 import { Module } from '@nestjs/common';
 
 import { AppController } from './app.controller';
@@ -19,6 +20,6 @@ config.update({
     TypeOrmModule.forRootAsync({ useClass: DatabaseService }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, LargeListService],
 })
 export class AppModule {}

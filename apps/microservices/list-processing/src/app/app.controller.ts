@@ -1,6 +1,9 @@
+import { LargeListService } from './../services/largelist.service';
 import {
+  RequestLargeListProcess,
   RequestPreSignedURLModel,
   RequestSaveLargeListProcessModel,
+  RequestTriggerProcessLargeList,
 } from './../models/index';
 import { Controller, Post, Body, Get } from '@nestjs/common';
 
@@ -8,7 +11,10 @@ import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly largeListService: LargeListService
+  ) {}
 
   /**
    * Create a presigned URL to upload a file to S3
@@ -42,8 +48,16 @@ export class AppController {
     return this.appService.saveListToProcess(request);
   }
 
-  @Get('/process-list')
-  getTest() {
-    return this.appService.getFilenameForUser('test');
+  @Post('/process-list')
+  processLargeList(@Body() request: RequestLargeListProcess) {
+    return this.largeListService.startAnalisysProcessForList(request);
+  }
+
+  @Post('/create-large-list')
+  triggerProcessLargeList(@Body() request: RequestTriggerProcessLargeList) {
+    return this.largeListService.createNewLargeListProcess(
+      request.list_name,
+      request.user_id
+    );
   }
 }

@@ -1,0 +1,23 @@
+FROM amd64/node:16.15.1 as builder
+WORKDIR /build
+COPY package.json .
+COPY yarn.lock .
+
+RUN yarn install
+
+FROM amd64/node:16.15.1 as appbuilder
+WORKDIR /appbuilder
+COPY --from=builder /build/ /appbuilder/
+COPY ./ .
+RUN /appbuilder/node_modules/.bin/nx build microservices-list-processing --configuration=production
+
+
+FROM amd64/node:16.15.1
+WORKDIR /app
+COPY --from=appbuilder /appbuilder/dist/apps/microservices/list-processing/ /app/
+COPY package.json .
+COPY yarn.lock .
+COPY ./apps/microservices/list-processing/.env .
+RUN yarn install
+
+CMD [ "node", "main.js" ]

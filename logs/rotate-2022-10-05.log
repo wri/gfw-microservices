@@ -1,0 +1,267 @@
+2022-10-05T11:06:06.909Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T11:16:06.724Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T11:17:16.792Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T13:25:33.400Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T13:28:57.027Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T13:29:03.338Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T13:29:45.996Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T19:04:26.062Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T20:07:19.237Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T20:08:01.913Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T20:10:39.734Z [TASKS] info: Emails service is running
+2022-10-05T20:10:39.748Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T22:57:34.941Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T22:57:34.945Z [TASKS] info: Emails service is running
+2022-10-05T22:57:34.957Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:09:20.635Z [TASKS] error: [object Object]
+2022-10-05T23:10:08.816Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:10:08.819Z [TASKS] info: Emails service is running
+2022-10-05T23:10:08.832Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:10:09.635Z [TASKS] error: [object Object]
+2022-10-05T23:11:10.950Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:11:10.955Z [TASKS] info: Emails service is running
+2022-10-05T23:11:10.970Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:11:11.632Z [TASKS] error: [object Object]
+2022-10-05T23:11:17.537Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:11:17.542Z [TASKS] info: Emails service is running
+2022-10-05T23:11:17.554Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:11:22.731Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:11:22.734Z [TASKS] info: Emails service is running
+2022-10-05T23:11:22.749Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:11:41.699Z [TASKS] error: [object Object]
+2022-10-05T23:12:27.811Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:12:27.814Z [TASKS] info: Emails service is running
+2022-10-05T23:12:27.827Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:12:29.032Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:12:29.036Z [TASKS] info: Emails service is running
+2022-10-05T23:12:29.048Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:12:29.770Z [TASKS] error: [object Object]
+2022-10-05T23:14:51.150Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:14:51.153Z [TASKS] info: Emails service is running
+2022-10-05T23:14:51.174Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:14:52.063Z [TASKS] error: [object Object]
+2022-10-05T23:15:37.806Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:15:37.811Z [TASKS] info: Emails service is running
+2022-10-05T23:15:37.823Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:17:48.691Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:17:48.695Z [TASKS] info: Emails service is running
+2022-10-05T23:17:48.706Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:18:06.715Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:18:06.719Z [TASKS] info: Emails service is running
+2022-10-05T23:18:06.730Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:18:33.046Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:18:33.049Z [TASKS] info: Emails service is running
+2022-10-05T23:18:33.061Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:18:43.416Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:18:43.419Z [TASKS] info: Emails service is running
+2022-10-05T23:18:43.430Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:18:49.221Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:18:49.224Z [TASKS] info: Emails service is running
+2022-10-05T23:18:49.236Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:19:13.063Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:19:15.210Z [TASKS] error: Error on generating the file: Invalid array length
+2022-10-05T23:19:43.744Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:19:43.748Z [TASKS] info: Emails service is running
+2022-10-05T23:19:43.762Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:20:02.709Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:20:04.477Z [TASKS] error: Error on generating the file: Invalid array length
+2022-10-05T23:21:59.837Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:21:59.841Z [TASKS] info: Emails service is running
+2022-10-05T23:21:59.852Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:22:15.515Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:22:17.377Z [TASKS] info: Number of pages: NaN
+2022-10-05T23:22:17.392Z [TASKS] error: Error on generating the file: Invalid array length
+2022-10-05T23:23:42.056Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:23:42.060Z [TASKS] info: Emails service is running
+2022-10-05T23:23:42.071Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:23:49.315Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:23:49.318Z [TASKS] info: Emails service is running
+2022-10-05T23:23:49.330Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:28:45.887Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:28:48.034Z [TASKS] info: Number of pages: NaN
+2022-10-05T23:28:48.049Z [TASKS] error: Error on generating the file: Invalid array length
+2022-10-05T23:31:05.532Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:31:05.536Z [TASKS] info: Emails service is running
+2022-10-05T23:31:05.547Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:32:47.736Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:32:49.604Z [TASKS] info: Number of pages: 40
+2022-10-05T23:32:52.829Z [TASKS] error: Error on generating the file: (0 , tiny_async_pool_1.default) is not a function
+2022-10-05T23:33:19.357Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:33:19.361Z [TASKS] info: Emails service is running
+2022-10-05T23:33:19.372Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:33:36.592Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:33:36.596Z [TASKS] info: Emails service is running
+2022-10-05T23:33:36.608Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:34:33.665Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:34:33.668Z [TASKS] info: Emails service is running
+2022-10-05T23:34:33.681Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:34:45.390Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:34:47.059Z [TASKS] info: Number of pages: 40
+2022-10-05T23:34:53.529Z [TASKS] info: Get page of number 6 from database
+2022-10-05T23:34:53.965Z [TASKS] info: Get page of number 10 from database
+2022-10-05T23:34:54.802Z [TASKS] info: Get page of number 3 from database
+2022-10-05T23:34:54.815Z [TASKS] info: Get page of number 4 from database
+2022-10-05T23:34:55.323Z [TASKS] info: Get page of number 2 from database
+2022-10-05T23:34:56.593Z [TASKS] info: Get page of number 9 from database
+2022-10-05T23:34:56.658Z [TASKS] info: Get page of number 7 from database
+2022-10-05T23:34:57.162Z [TASKS] info: Get page of number 15 from database
+2022-10-05T23:34:57.958Z [TASKS] info: Get page of number 1 from database
+2022-10-05T23:34:58.346Z [TASKS] info: Get page of number 8 from database
+2022-10-05T23:34:58.851Z [TASKS] info: Get page of number 14 from database
+2022-10-05T23:34:59.261Z [TASKS] info: Get page of number 13 from database
+2022-10-05T23:34:59.466Z [TASKS] info: Get page of number 12 from database
+2022-10-05T23:35:00.089Z [TASKS] info: Get page of number 11 from database
+2022-10-05T23:35:00.378Z [TASKS] info: Get page of number 5 from database
+2022-10-05T23:35:01.979Z [TASKS] info: Get page of number 17 from database
+2022-10-05T23:35:02.325Z [TASKS] info: Get page of number 18 from database
+2022-10-05T23:35:02.917Z [TASKS] info: Get page of number 16 from database
+2022-10-05T23:35:03.483Z [TASKS] info: Get page of number 19 from database
+2022-10-05T23:35:04.072Z [TASKS] info: Get page of number 20 from database
+2022-10-05T23:35:04.576Z [TASKS] info: Get page of number 21 from database
+2022-10-05T23:35:04.683Z [TASKS] info: Get page of number 22 from database
+2022-10-05T23:35:05.423Z [TASKS] info: Get page of number 24 from database
+2022-10-05T23:35:05.848Z [TASKS] info: Get page of number 23 from database
+2022-10-05T23:35:06.540Z [TASKS] info: Get page of number 25 from database
+2022-10-05T23:35:07.201Z [TASKS] info: Get page of number 27 from database
+2022-10-05T23:35:07.375Z [TASKS] info: Get page of number 26 from database
+2022-10-05T23:35:08.493Z [TASKS] info: Get page of number 30 from database
+2022-10-05T23:35:08.548Z [TASKS] info: Get page of number 28 from database
+2022-10-05T23:35:08.891Z [TASKS] info: Get page of number 29 from database
+2022-10-05T23:35:10.492Z [TASKS] info: Get page of number 31 from database
+2022-10-05T23:35:10.989Z [TASKS] info: Get page of number 32 from database
+2022-10-05T23:35:11.254Z [TASKS] info: Get page of number 33 from database
+2022-10-05T23:35:11.824Z [TASKS] info: Get page of number 34 from database
+2022-10-05T23:35:12.627Z [TASKS] info: Get page of number 35 from database
+2022-10-05T23:35:13.032Z [TASKS] info: Get page of number 36 from database
+2022-10-05T23:35:13.105Z [TASKS] info: Get page of number 37 from database
+2022-10-05T23:35:13.860Z [TASKS] info: Get page of number 38 from database
+2022-10-05T23:35:14.940Z [TASKS] info: Get page of number 39 from database
+2022-10-05T23:35:16.281Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-05T23:36:28.953Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:36:30.804Z [TASKS] error: Error on generating the file: Invalid array length
+2022-10-05T23:38:38.596Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:38:38.599Z [TASKS] info: Emails service is running
+2022-10-05T23:38:38.610Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:38:54.579Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:38:54.582Z [TASKS] info: Emails service is running
+2022-10-05T23:38:54.594Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:39:44.580Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:39:44.584Z [TASKS] info: Emails service is running
+2022-10-05T23:39:44.595Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:40:18.127Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:40:19.966Z [TASKS] info: Number of pages: NaN
+2022-10-05T23:40:19.982Z [TASKS] error: Error on generating the file: Invalid array length
+2022-10-05T23:42:39.461Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:42:39.465Z [TASKS] info: Emails service is running
+2022-10-05T23:42:39.476Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:42:45.058Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:42:45.061Z [TASKS] info: Emails service is running
+2022-10-05T23:42:45.072Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:43:14.462Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:43:16.100Z [TASKS] info: Number of pages: 41
+2022-10-05T23:43:16.116Z [TASKS] error: Error on generating the file: (0 , tiny_async_pool_1.default) is not a function
+2022-10-05T23:43:39.714Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:43:39.718Z [TASKS] info: Emails service is running
+2022-10-05T23:43:39.729Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:44:06.588Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:44:08.424Z [TASKS] info: Number of pages: 41
+2022-10-05T23:44:12.582Z [TASKS] error: Error on generating the file: (0 , wellknown_1.default) is not a function
+2022-10-05T23:46:24.414Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:46:26.092Z [TASKS] info: Number of pages: 41
+2022-10-05T23:46:29.929Z [TASKS] error: Error on generating the file: (0 , wellknown_1.default) is not a function
+2022-10-05T23:52:08.085Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:52:08.090Z [TASKS] info: Emails service is running
+2022-10-05T23:52:08.102Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:52:23.094Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:52:24.549Z [TASKS] info: Number of pages: 41
+2022-10-05T23:53:00.150Z [TASKS] error: Error on generating the file: Cannot read properties of undefined (reading 'parse')
+2022-10-05T23:56:13.163Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-05T23:56:13.166Z [TASKS] info: Emails service is running
+2022-10-05T23:56:13.178Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-05T23:56:25.621Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-05T23:56:27.447Z [TASKS] info: Number of pages: 41
+2022-10-05T23:57:05.357Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T01:17:39.812Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T01:17:39.815Z [TASKS] info: Emails service is running
+2022-10-06T01:17:39.826Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:15:18.011Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:15:18.015Z [TASKS] info: Emails service is running
+2022-10-06T02:15:18.029Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:16:15.066Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:16:15.069Z [TASKS] info: Emails service is running
+2022-10-06T02:16:15.079Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:16:44.520Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:16:44.524Z [TASKS] info: Emails service is running
+2022-10-06T02:16:44.534Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:17:44.034Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:17:44.037Z [TASKS] info: Emails service is running
+2022-10-06T02:17:44.049Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:18:10.745Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:18:10.748Z [TASKS] info: Emails service is running
+2022-10-06T02:18:10.761Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:23:05.295Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:23:05.298Z [TASKS] info: Emails service is running
+2022-10-06T02:23:05.308Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:23:19.267Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:23:19.270Z [TASKS] info: Emails service is running
+2022-10-06T02:23:19.282Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:23:38.964Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:23:38.967Z [TASKS] info: Emails service is running
+2022-10-06T02:23:38.979Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:23:57.421Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:23:57.424Z [TASKS] info: Emails service is running
+2022-10-06T02:23:57.436Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:24:25.712Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:24:25.715Z [TASKS] info: Emails service is running
+2022-10-06T02:24:25.726Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:24:29.436Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:24:29.439Z [TASKS] info: Emails service is running
+2022-10-06T02:24:29.450Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:24:40.751Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:24:40.754Z [TASKS] info: Emails service is running
+2022-10-06T02:24:40.765Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:24:46.993Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:24:46.997Z [TASKS] info: Emails service is running
+2022-10-06T02:24:47.008Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:24:50.084Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:24:50.089Z [TASKS] info: Emails service is running
+2022-10-06T02:24:50.103Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:24:58.833Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:24:58.840Z [TASKS] info: Emails service is running
+2022-10-06T02:24:58.860Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:25:06.720Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:25:06.724Z [TASKS] info: Emails service is running
+2022-10-06T02:25:06.736Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:25:21.029Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:25:21.032Z [TASKS] info: Emails service is running
+2022-10-06T02:25:21.048Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:28:13.048Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:28:13.053Z [TASKS] info: Emails service is running
+2022-10-06T02:28:13.069Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:28:50.661Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:28:50.664Z [TASKS] info: Emails service is running
+2022-10-06T02:28:50.674Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:29:32.327Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:29:32.330Z [TASKS] info: Emails service is running
+2022-10-06T02:29:32.343Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:29:37.171Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:29:37.174Z [TASKS] info: Emails service is running
+2022-10-06T02:29:37.186Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:30:04.990Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:30:04.993Z [TASKS] info: Emails service is running
+2022-10-06T02:30:05.003Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:30:09.755Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:30:09.758Z [TASKS] info: Emails service is running
+2022-10-06T02:30:09.770Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:30:12.987Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:30:12.991Z [TASKS] info: Emails service is running
+2022-10-06T02:30:13.004Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:36:18.879Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:36:18.882Z [TASKS] info: Emails service is running
+2022-10-06T02:36:18.893Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:38:26.593Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:38:26.596Z [TASKS] info: Emails service is running
+2022-10-06T02:38:26.608Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T02:39:04.266Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T02:39:04.270Z [TASKS] info: Emails service is running
+2022-10-06T02:39:04.281Z [TASKS] info: Listening at http://localhost:3333/api

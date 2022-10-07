@@ -45,7 +45,8 @@ export class LargeListService {
 
   async createNewLargeListProcess(
     list_name: string,
-    user_id: number
+    user_id: number,
+    clientDatabase: string
   ): Promise<CreateListResult> {
     //const user_id = 1999999;
     //const list_name = `My Template Name ${templateUniq}`;
@@ -60,16 +61,16 @@ export class LargeListService {
     const gfw_list_id = null;
     let createListResult: CreateListResult;
     const sqlConfig = {
-      user: 'GFWProUser',
-      password: 'measure2010!',
-      database: 'clientstore-DevCo',
-      server: '52.45.199.190',
+      user: process.env.MSSQL_USERNAME,
+      password: process.env.MSSQL_PASSWORD,
+      database: clientDatabase,
+      server: process.env.MSSQL_HOSTNAME,
       pool: {
         max: 10,
         min: 0,
         idleTimeoutMillis: 30000,
       },
-      port: 65300,
+      port: parseInt(process.env.MSSQL_PORT),
       options: {
         //encrypt: true, // for azure
         trustServerCertificate: true, // change to true for local dev / self-signed certs

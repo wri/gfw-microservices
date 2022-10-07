@@ -57,7 +57,8 @@ export class AppController {
   triggerProcessLargeList(@Body() request: RequestTriggerProcessLargeList) {
     return this.largeListService.createNewLargeListProcess(
       request.list_name,
-      request.user_id
+      request.user_id,
+      request.client_database
     );
   }
 }

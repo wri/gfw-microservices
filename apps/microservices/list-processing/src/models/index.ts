@@ -42,4 +42,5 @@ export interface ResponseLargeListProcess {
 export interface RequestTriggerProcessLargeList {
   list_name: string;
   user_id: number;
+  client_database: string;
 }

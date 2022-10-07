@@ -6,6 +6,7 @@
     "microservices-b2b": "apps/microservices/b2b",
     "microservices-list-processing": "apps/microservices/list-processing",
     "microservices-tasks": "apps/microservices/tasks",
-    "sql": "libs/sql"
+    "sql": "libs/sql",
+    "util": "libs/util"
   }
 }

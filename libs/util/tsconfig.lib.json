@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "declaration": true,
+    "types": []
+  },
+  "include": ["**/*.ts", "../sql/src/lib/getNumberPagesForAnalysisDataUserList.ts", "../sql/src/lib/getListNameSchema.ts"],
+  "exclude": ["jest.config.ts", "**/*.spec.ts"]
+}

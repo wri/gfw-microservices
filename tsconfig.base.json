@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@wri-monorepos/aws": ["libs/aws/src/index.ts"],
-      "@wri-monorepos/sql": ["libs/sql/src/index.ts"]
+      "@wri-monorepos/sql": ["libs/sql/src/index.ts"],
+      "@wri-monorepos/util": ["libs/util/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

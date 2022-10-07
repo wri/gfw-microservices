@@ -1,0 +1,1537 @@
+2022-10-06T14:42:01.507Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T14:42:01.513Z [TASKS] info: Emails service is running
+2022-10-06T14:42:01.528Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T14:45:18.238Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T14:45:20.177Z [TASKS] info: Number of pages: 41
+2022-10-06T14:45:41.566Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T14:45:44.168Z [TASKS] info: Number of pages: 40
+2022-10-06T14:45:54.182Z [TASKS] info: Get page of number 8 from database
+2022-10-06T14:45:54.771Z [TASKS] info: Get page of number 11 from database
+2022-10-06T14:45:55.585Z [TASKS] info: Get page of number 1 from database
+2022-10-06T14:45:56.577Z [TASKS] info: Get page of number 12 from database
+2022-10-06T14:45:57.069Z [TASKS] info: Get page of number 6 from database
+2022-10-06T14:45:57.517Z [TASKS] info: Get page of number 9 from database
+2022-10-06T14:45:58.069Z [TASKS] info: Get page of number 10 from database
+2022-10-06T14:45:58.568Z [TASKS] info: Get page of number 7 from database
+2022-10-06T14:45:59.373Z [TASKS] info: Get page of number 14 from database
+2022-10-06T14:46:00.268Z [TASKS] info: Get page of number 15 from database
+2022-10-06T14:46:00.868Z [TASKS] info: Get page of number 5 from database
+2022-10-06T14:46:01.684Z [TASKS] info: Get page of number 2 from database
+2022-10-06T14:46:01.976Z [TASKS] info: Get page of number 4 from database
+2022-10-06T14:46:02.280Z [TASKS] info: Get page of number 3 from database
+2022-10-06T14:46:03.381Z [TASKS] info: Get page of number 16 from database
+2022-10-06T14:46:05.076Z [TASKS] info: Get page of number 19 from database
+2022-10-06T14:46:06.679Z [TASKS] info: Get page of number 20 from database
+2022-10-06T14:46:06.973Z [TASKS] info: Get page of number 13 from database
+2022-10-06T14:46:08.371Z [TASKS] info: Get page of number 21 from database
+2022-10-06T14:46:08.380Z [TASKS] info: Get page of number 17 from database
+2022-10-06T14:46:09.876Z [TASKS] info: Get page of number 22 from database
+2022-10-06T14:46:10.183Z [TASKS] info: Get page of number 23 from database
+2022-10-06T14:46:11.884Z [TASKS] info: Get page of number 24 from database
+2022-10-06T14:46:11.975Z [TASKS] info: Get page of number 25 from database
+2022-10-06T14:46:11.978Z [TASKS] info: Get page of number 18 from database
+2022-10-06T14:46:14.368Z [TASKS] info: Get page of number 26 from database
+2022-10-06T14:46:14.388Z [TASKS] info: Get page of number 28 from database
+2022-10-06T14:46:14.573Z [TASKS] info: Get page of number 27 from database
+2022-10-06T14:46:16.478Z [TASKS] info: Get page of number 29 from database
+2022-10-06T14:46:16.488Z [TASKS] info: Get page of number 30 from database
+2022-10-06T14:46:18.468Z [TASKS] info: Get page of number 33 from database
+2022-10-06T14:46:18.479Z [TASKS] info: Get page of number 32 from database
+2022-10-06T14:46:20.681Z [TASKS] info: Get page of number 34 from database
+2022-10-06T14:46:21.086Z [TASKS] info: Get page of number 35 from database
+2022-10-06T14:46:21.586Z [TASKS] info: Get page of number 31 from database
+2022-10-06T14:46:22.473Z [TASKS] info: Get page of number 36 from database
+2022-10-06T14:46:22.876Z [TASKS] info: Get page of number 38 from database
+2022-10-06T14:46:23.478Z [TASKS] info: Get page of number 37 from database
+2022-10-06T14:46:24.372Z [TASKS] info: Get page of number 39 from database
+2022-10-06T14:46:26.873Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T14:46:42.918Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T14:47:52.244Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T14:47:52.247Z [TASKS] info: Emails service is running
+2022-10-06T14:47:52.258Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T14:47:53.579Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T14:47:53.583Z [TASKS] info: Emails service is running
+2022-10-06T14:47:53.595Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T14:48:48.237Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T14:48:50.203Z [TASKS] info: Number of pages: 40
+2022-10-06T14:48:57.553Z [TASKS] info: Get page of number 11 from database
+2022-10-06T14:48:57.773Z [TASKS] info: Get page of number 14 from database
+2022-10-06T14:48:58.039Z [TASKS] info: Get page of number 15 from database
+2022-10-06T14:48:58.812Z [TASKS] info: Get page of number 1 from database
+2022-10-06T14:48:59.452Z [TASKS] info: Get page of number 7 from database
+2022-10-06T14:48:59.933Z [TASKS] info: Get page of number 3 from database
+2022-10-06T14:49:00.818Z [TASKS] info: Get page of number 5 from database
+2022-10-06T14:49:01.379Z [TASKS] info: Get page of number 10 from database
+2022-10-06T14:49:02.180Z [TASKS] info: Get page of number 9 from database
+2022-10-06T14:49:02.662Z [TASKS] info: Get page of number 12 from database
+2022-10-06T14:49:03.018Z [TASKS] info: Get page of number 13 from database
+2022-10-06T14:49:03.481Z [TASKS] info: Get page of number 2 from database
+2022-10-06T14:49:04.195Z [TASKS] info: Get page of number 8 from database
+2022-10-06T14:49:04.675Z [TASKS] info: Get page of number 6 from database
+2022-10-06T14:49:06.007Z [TASKS] info: Get page of number 4 from database
+2022-10-06T14:49:06.224Z [TASKS] info: Get page of number 18 from database
+2022-10-06T14:49:06.366Z [TASKS] info: Get page of number 16 from database
+2022-10-06T14:49:07.001Z [TASKS] info: Get page of number 17 from database
+2022-10-06T14:49:07.484Z [TASKS] info: Get page of number 19 from database
+2022-10-06T14:49:08.082Z [TASKS] info: Get page of number 20 from database
+2022-10-06T14:49:08.468Z [TASKS] info: Get page of number 21 from database
+2022-10-06T14:49:08.665Z [TASKS] info: Get page of number 22 from database
+2022-10-06T14:49:09.240Z [TASKS] info: Get page of number 23 from database
+2022-10-06T14:49:09.896Z [TASKS] info: Get page of number 24 from database
+2022-10-06T14:49:10.484Z [TASKS] info: Get page of number 26 from database
+2022-10-06T14:49:10.649Z [TASKS] info: Get page of number 25 from database
+2022-10-06T14:49:11.999Z [TASKS] info: Get page of number 29 from database
+2022-10-06T14:49:12.034Z [TASKS] info: Get page of number 28 from database
+2022-10-06T14:49:12.198Z [TASKS] info: Get page of number 27 from database
+2022-10-06T14:49:14.275Z [TASKS] info: Get page of number 32 from database
+2022-10-06T14:49:15.059Z [TASKS] info: Get page of number 30 from database
+2022-10-06T14:49:15.901Z [TASKS] info: Get page of number 31 from database
+2022-10-06T14:49:15.918Z [TASKS] info: Get page of number 33 from database
+2022-10-06T14:49:17.198Z [TASKS] info: Get page of number 34 from database
+2022-10-06T14:49:17.539Z [TASKS] info: Get page of number 35 from database
+2022-10-06T14:49:17.684Z [TASKS] info: Get page of number 36 from database
+2022-10-06T14:49:19.273Z [TASKS] info: Get page of number 39 from database
+2022-10-06T14:49:19.372Z [TASKS] info: Get page of number 38 from database
+2022-10-06T14:49:19.649Z [TASKS] info: Get page of number 37 from database
+2022-10-06T14:49:21.028Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T14:53:51.644Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T14:53:51.647Z [TASKS] info: Emails service is running
+2022-10-06T14:53:51.658Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T14:54:05.254Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T14:54:05.258Z [TASKS] info: Emails service is running
+2022-10-06T14:54:05.270Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T14:54:37.909Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T14:54:37.913Z [TASKS] info: Emails service is running
+2022-10-06T14:54:37.927Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:50:10.731Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:50:10.737Z [TASKS] info: Emails service is running
+2022-10-06T15:50:10.755Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:50:25.823Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:50:25.827Z [TASKS] info: Emails service is running
+2022-10-06T15:50:25.843Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:52:33.086Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:52:33.090Z [TASKS] info: Emails service is running
+2022-10-06T15:52:33.103Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:52:37.808Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:52:37.812Z [TASKS] info: Emails service is running
+2022-10-06T15:52:37.826Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:52:39.948Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:52:39.951Z [TASKS] info: Emails service is running
+2022-10-06T15:52:39.964Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:52:43.264Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:52:43.268Z [TASKS] info: Emails service is running
+2022-10-06T15:52:43.280Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:55:13.274Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:55:13.278Z [TASKS] info: Emails service is running
+2022-10-06T15:55:13.290Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:55:14.922Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:55:14.925Z [TASKS] info: Emails service is running
+2022-10-06T15:55:14.939Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:55:22.238Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:55:22.242Z [TASKS] info: Emails service is running
+2022-10-06T15:55:22.256Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:55:28.898Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:55:28.903Z [TASKS] info: Emails service is running
+2022-10-06T15:55:28.916Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:55:33.421Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:55:33.424Z [TASKS] info: Emails service is running
+2022-10-06T15:55:33.436Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:55:43.031Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:55:43.035Z [TASKS] info: Emails service is running
+2022-10-06T15:55:43.046Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:56:04.406Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:56:04.410Z [TASKS] info: Emails service is running
+2022-10-06T15:56:04.424Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:56:07.973Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:56:07.977Z [TASKS] info: Emails service is running
+2022-10-06T15:56:07.990Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:56:16.569Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:56:16.572Z [TASKS] info: Emails service is running
+2022-10-06T15:56:16.585Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:57:07.015Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:57:07.021Z [TASKS] info: Emails service is running
+2022-10-06T15:57:07.035Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:57:39.157Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:57:39.160Z [TASKS] info: Emails service is running
+2022-10-06T15:57:39.175Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:57:50.179Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:57:50.183Z [TASKS] info: Emails service is running
+2022-10-06T15:57:50.196Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:57:53.996Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:57:54.001Z [TASKS] info: Emails service is running
+2022-10-06T15:57:54.017Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:58:04.141Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:58:04.145Z [TASKS] info: Emails service is running
+2022-10-06T15:58:04.158Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:58:16.757Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:58:16.761Z [TASKS] info: Emails service is running
+2022-10-06T15:58:16.775Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:58:28.484Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:58:28.488Z [TASKS] info: Emails service is running
+2022-10-06T15:58:28.501Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:59:03.165Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:59:03.169Z [TASKS] info: Emails service is running
+2022-10-06T15:59:03.181Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:59:11.066Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:59:11.071Z [TASKS] info: Emails service is running
+2022-10-06T15:59:11.085Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:59:14.579Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:59:14.587Z [TASKS] info: Emails service is running
+2022-10-06T15:59:14.602Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T15:59:51.007Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T15:59:51.010Z [TASKS] info: Emails service is running
+2022-10-06T15:59:51.023Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:00:00.170Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:00:00.178Z [TASKS] info: Emails service is running
+2022-10-06T16:00:00.197Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:01:10.161Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:01:10.165Z [TASKS] info: Emails service is running
+2022-10-06T16:01:10.177Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:01:17.010Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:01:17.013Z [TASKS] info: Emails service is running
+2022-10-06T16:01:17.026Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:03:38.128Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:03:38.132Z [TASKS] info: Emails service is running
+2022-10-06T16:03:38.145Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:04:04.985Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T16:04:06.821Z [TASKS] info: Number of pages: 40
+2022-10-06T16:04:13.818Z [TASKS] info: Get page of number 6 from database
+2022-10-06T16:04:13.974Z [TASKS] info: Get page of number 9 from database
+2022-10-06T16:04:14.233Z [TASKS] info: Get page of number 12 from database
+2022-10-06T16:04:15.950Z [TASKS] info: Get page of number 10 from database
+2022-10-06T16:04:16.316Z [TASKS] info: Get page of number 11 from database
+2022-10-06T16:04:16.347Z [TASKS] info: Get page of number 14 from database
+2022-10-06T16:04:17.318Z [TASKS] info: Get page of number 3 from database
+2022-10-06T16:04:17.987Z [TASKS] info: Get page of number 13 from database
+2022-10-06T16:04:18.284Z [TASKS] info: Get page of number 15 from database
+2022-10-06T16:04:18.531Z [TASKS] info: Get page of number 2 from database
+2022-10-06T16:04:19.148Z [TASKS] info: Get page of number 4 from database
+2022-10-06T16:04:19.784Z [TASKS] info: Get page of number 7 from database
+2022-10-06T16:04:19.896Z [TASKS] info: Get page of number 5 from database
+2022-10-06T16:04:20.419Z [TASKS] info: Get page of number 1 from database
+2022-10-06T16:04:21.234Z [TASKS] info: Get page of number 8 from database
+2022-10-06T16:04:21.284Z [TASKS] info: Get page of number 17 from database
+2022-10-06T16:04:22.504Z [TASKS] info: Get page of number 16 from database
+2022-10-06T16:04:22.849Z [TASKS] info: Get page of number 18 from database
+2022-10-06T16:04:23.324Z [TASKS] info: Get page of number 19 from database
+2022-10-06T16:04:24.539Z [TASKS] info: Get page of number 21 from database
+2022-10-06T16:04:24.726Z [TASKS] info: Get page of number 20 from database
+2022-10-06T16:04:25.008Z [TASKS] info: Get page of number 22 from database
+2022-10-06T16:04:25.565Z [TASKS] info: Get page of number 23 from database
+2022-10-06T16:04:26.020Z [TASKS] info: Get page of number 24 from database
+2022-10-06T16:04:26.617Z [TASKS] info: Get page of number 25 from database
+2022-10-06T16:04:26.703Z [TASKS] info: Get page of number 26 from database
+2022-10-06T16:04:27.182Z [TASKS] info: Get page of number 27 from database
+2022-10-06T16:04:28.342Z [TASKS] info: Get page of number 31 from database
+2022-10-06T16:04:28.917Z [TASKS] info: Get page of number 28 from database
+2022-10-06T16:04:29.736Z [TASKS] info: Get page of number 29 from database
+2022-10-06T16:04:29.845Z [TASKS] info: Get page of number 30 from database
+2022-10-06T16:04:30.575Z [TASKS] info: Get page of number 32 from database
+2022-10-06T16:04:31.316Z [TASKS] info: Get page of number 34 from database
+2022-10-06T16:04:31.430Z [TASKS] info: Get page of number 33 from database
+2022-10-06T16:04:32.329Z [TASKS] info: Get page of number 35 from database
+2022-10-06T16:04:33.007Z [TASKS] info: Get page of number 36 from database
+2022-10-06T16:04:33.643Z [TASKS] info: Get page of number 37 from database
+2022-10-06T16:04:34.717Z [TASKS] info: Get page of number 38 from database
+2022-10-06T16:04:40.109Z [TASKS] info: Get page of number 39 from database
+2022-10-06T16:04:41.599Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T16:15:26.945Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:15:26.951Z [TASKS] info: Emails service is running
+2022-10-06T16:15:26.966Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:15:29.517Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:15:29.521Z [TASKS] info: Emails service is running
+2022-10-06T16:15:29.534Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:15:51.721Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:15:51.725Z [TASKS] info: Emails service is running
+2022-10-06T16:15:51.739Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:19:41.396Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:19:41.400Z [TASKS] info: Emails service is running
+2022-10-06T16:19:41.413Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:19:45.561Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:19:45.565Z [TASKS] info: Emails service is running
+2022-10-06T16:19:45.577Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:20:09.383Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T16:20:11.320Z [TASKS] info: Number of pages: 40
+2022-10-06T16:20:18.207Z [TASKS] info: Get page of number 6 from database
+2022-10-06T16:20:19.178Z [TASKS] info: Get page of number 1 from database
+2022-10-06T16:20:19.948Z [TASKS] info: Get page of number 11 from database
+2022-10-06T16:20:20.216Z [TASKS] info: Get page of number 13 from database
+2022-10-06T16:20:20.288Z [TASKS] info: Get page of number 3 from database
+2022-10-06T16:20:21.788Z [TASKS] info: Get page of number 10 from database
+2022-10-06T16:20:22.897Z [TASKS] info: Get page of number 5 from database
+2022-10-06T16:20:23.342Z [TASKS] info: Get page of number 8 from database
+2022-10-06T16:20:24.156Z [TASKS] info: Get page of number 9 from database
+2022-10-06T16:20:24.245Z [TASKS] info: Get page of number 14 from database
+2022-10-06T16:20:24.294Z [TASKS] info: Get page of number 15 from database
+2022-10-06T16:20:24.884Z [TASKS] info: Get page of number 2 from database
+2022-10-06T16:20:25.525Z [TASKS] info: Get page of number 4 from database
+2022-10-06T16:20:26.147Z [TASKS] info: Get page of number 12 from database
+2022-10-06T16:20:27.361Z [TASKS] info: Get page of number 17 from database
+2022-10-06T16:20:28.990Z [TASKS] info: Get page of number 16 from database
+2022-10-06T16:20:29.238Z [TASKS] info: Get page of number 18 from database
+2022-10-06T16:20:30.445Z [TASKS] info: Get page of number 20 from database
+2022-10-06T16:20:30.670Z [TASKS] info: Get page of number 19 from database
+2022-10-06T16:20:31.206Z [TASKS] info: Get page of number 7 from database
+2022-10-06T16:20:32.617Z [TASKS] info: Get page of number 21 from database
+2022-10-06T16:20:32.621Z [TASKS] info: Get page of number 23 from database
+2022-10-06T16:20:32.625Z [TASKS] info: Get page of number 22 from database
+2022-10-06T16:20:34.351Z [TASKS] info: Get page of number 25 from database
+2022-10-06T16:20:34.675Z [TASKS] info: Get page of number 24 from database
+2022-10-06T16:20:34.951Z [TASKS] info: Get page of number 26 from database
+2022-10-06T16:20:35.828Z [TASKS] info: Get page of number 27 from database
+2022-10-06T16:20:36.189Z [TASKS] info: Get page of number 28 from database
+2022-10-06T16:20:36.531Z [TASKS] info: Get page of number 29 from database
+2022-10-06T16:20:37.680Z [TASKS] info: Get page of number 32 from database
+2022-10-06T16:20:38.056Z [TASKS] info: Get page of number 30 from database
+2022-10-06T16:20:38.311Z [TASKS] info: Get page of number 31 from database
+2022-10-06T16:20:39.439Z [TASKS] info: Get page of number 34 from database
+2022-10-06T16:20:39.506Z [TASKS] info: Get page of number 33 from database
+2022-10-06T16:20:41.882Z [TASKS] info: Get page of number 36 from database
+2022-10-06T16:20:42.846Z [TASKS] info: Get page of number 35 from database
+2022-10-06T16:20:43.387Z [TASKS] info: Get page of number 38 from database
+2022-10-06T16:20:44.055Z [TASKS] info: Get page of number 39 from database
+2022-10-06T16:20:44.200Z [TASKS] info: Get page of number 37 from database
+2022-10-06T16:20:45.861Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T16:24:56.144Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:24:56.147Z [TASKS] info: Emails service is running
+2022-10-06T16:24:56.160Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:25:05.480Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:25:05.484Z [TASKS] info: Emails service is running
+2022-10-06T16:25:05.496Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:25:06.607Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:25:06.610Z [TASKS] info: Emails service is running
+2022-10-06T16:25:06.623Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:25:24.786Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:25:24.789Z [TASKS] info: Emails service is running
+2022-10-06T16:25:24.802Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:25:34.748Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:25:34.752Z [TASKS] info: Emails service is running
+2022-10-06T16:25:34.764Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:25:59.256Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:25:59.260Z [TASKS] info: Emails service is running
+2022-10-06T16:25:59.274Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:26:02.195Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:26:02.199Z [TASKS] info: Emails service is running
+2022-10-06T16:26:02.211Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:26:17.430Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:26:17.434Z [TASKS] info: Emails service is running
+2022-10-06T16:26:17.447Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:28:31.261Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T16:28:33.182Z [TASKS] info: Number of pages: 40
+2022-10-06T16:28:40.050Z [TASKS] info: Get page of number 1 from database
+2022-10-06T16:28:40.620Z [TASKS] info: Get page of number 12 from database
+2022-10-06T16:28:40.799Z [TASKS] info: Get page of number 14 from database
+2022-10-06T16:28:41.332Z [TASKS] info: Get page of number 5 from database
+2022-10-06T16:28:42.059Z [TASKS] info: Get page of number 8 from database
+2022-10-06T16:28:42.892Z [TASKS] info: Get page of number 4 from database
+2022-10-06T16:28:43.479Z [TASKS] info: Get page of number 3 from database
+2022-10-06T16:28:44.057Z [TASKS] info: Get page of number 15 from database
+2022-10-06T16:28:44.266Z [TASKS] info: Get page of number 10 from database
+2022-10-06T16:28:44.376Z [TASKS] info: Get page of number 13 from database
+2022-10-06T16:28:44.765Z [TASKS] info: Get page of number 7 from database
+2022-10-06T16:28:45.542Z [TASKS] info: Get page of number 6 from database
+2022-10-06T16:28:45.646Z [TASKS] info: Get page of number 9 from database
+2022-10-06T16:28:45.995Z [TASKS] info: Get page of number 2 from database
+2022-10-06T16:28:47.228Z [TASKS] info: Get page of number 11 from database
+2022-10-06T16:28:47.995Z [TASKS] info: Get page of number 16 from database
+2022-10-06T16:28:49.081Z [TASKS] info: Get page of number 17 from database
+2022-10-06T16:28:49.739Z [TASKS] info: Get page of number 20 from database
+2022-10-06T16:28:49.813Z [TASKS] info: Get page of number 19 from database
+2022-10-06T16:28:51.241Z [TASKS] info: Get page of number 22 from database
+2022-10-06T16:28:51.588Z [TASKS] info: Get page of number 21 from database
+2022-10-06T16:28:52.336Z [TASKS] info: Get page of number 23 from database
+2022-10-06T16:28:52.916Z [TASKS] info: Get page of number 25 from database
+2022-10-06T16:28:53.156Z [TASKS] info: Get page of number 18 from database
+2022-10-06T16:28:53.573Z [TASKS] info: Get page of number 24 from database
+2022-10-06T16:28:54.257Z [TASKS] info: Get page of number 26 from database
+2022-10-06T16:28:55.365Z [TASKS] info: Get page of number 27 from database
+2022-10-06T16:28:55.525Z [TASKS] info: Get page of number 29 from database
+2022-10-06T16:28:56.027Z [TASKS] info: Get page of number 30 from database
+2022-10-06T16:28:57.310Z [TASKS] info: Get page of number 31 from database
+2022-10-06T16:28:58.063Z [TASKS] info: Get page of number 28 from database
+2022-10-06T16:28:58.629Z [TASKS] info: Get page of number 32 from database
+2022-10-06T16:28:58.823Z [TASKS] info: Get page of number 34 from database
+2022-10-06T16:28:58.920Z [TASKS] info: Get page of number 33 from database
+2022-10-06T16:29:00.175Z [TASKS] info: Get page of number 36 from database
+2022-10-06T16:29:01.131Z [TASKS] info: Get page of number 35 from database
+2022-10-06T16:29:01.337Z [TASKS] info: Get page of number 37 from database
+2022-10-06T16:29:02.093Z [TASKS] info: Get page of number 38 from database
+2022-10-06T16:29:03.056Z [TASKS] info: Get page of number 39 from database
+2022-10-06T16:29:04.778Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T16:30:15.599Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:30:15.604Z [TASKS] info: Emails service is running
+2022-10-06T16:30:15.617Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:30:18.066Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:30:18.073Z [TASKS] info: Emails service is running
+2022-10-06T16:30:18.087Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:30:43.779Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T16:30:45.982Z [TASKS] info: Number of pages: 40
+2022-10-06T16:30:53.381Z [TASKS] info: Get page of number 10 from database
+2022-10-06T16:30:53.735Z [TASKS] info: Get page of number 9 from database
+2022-10-06T16:30:53.892Z [TASKS] info: Get page of number 13 from database
+2022-10-06T16:30:55.059Z [TASKS] info: Get page of number 3 from database
+2022-10-06T16:30:55.352Z [TASKS] info: Get page of number 7 from database
+2022-10-06T16:30:56.145Z [TASKS] info: Get page of number 15 from database
+2022-10-06T16:30:56.790Z [TASKS] info: Get page of number 4 from database
+2022-10-06T16:30:57.120Z [TASKS] info: Get page of number 14 from database
+2022-10-06T16:30:57.674Z [TASKS] info: Get page of number 12 from database
+2022-10-06T16:30:57.925Z [TASKS] info: Get page of number 5 from database
+2022-10-06T16:30:58.314Z [TASKS] info: Get page of number 1 from database
+2022-10-06T16:30:58.847Z [TASKS] info: Get page of number 6 from database
+2022-10-06T16:30:59.279Z [TASKS] info: Get page of number 11 from database
+2022-10-06T16:30:59.311Z [TASKS] info: Get page of number 2 from database
+2022-10-06T16:30:59.918Z [TASKS] info: Get page of number 8 from database
+2022-10-06T16:31:00.978Z [TASKS] info: Get page of number 18 from database
+2022-10-06T16:31:01.326Z [TASKS] info: Get page of number 16 from database
+2022-10-06T16:31:01.613Z [TASKS] info: Get page of number 17 from database
+2022-10-06T16:31:01.990Z [TASKS] info: Get page of number 19 from database
+2022-10-06T16:31:03.242Z [TASKS] info: Get page of number 20 from database
+2022-10-06T16:31:03.476Z [TASKS] info: Get page of number 22 from database
+2022-10-06T16:31:04.792Z [TASKS] info: Get page of number 23 from database
+2022-10-06T16:31:05.131Z [TASKS] info: Get page of number 21 from database
+2022-10-06T16:31:05.238Z [TASKS] info: Get page of number 24 from database
+2022-10-06T16:31:06.075Z [TASKS] info: Get page of number 26 from database
+2022-10-06T16:31:06.189Z [TASKS] info: Get page of number 25 from database
+2022-10-06T16:31:07.008Z [TASKS] info: Get page of number 27 from database
+2022-10-06T16:31:08.283Z [TASKS] info: Get page of number 30 from database
+2022-10-06T16:31:09.985Z [TASKS] info: Get page of number 29 from database
+2022-10-06T16:31:10.275Z [TASKS] info: Get page of number 31 from database
+2022-10-06T16:31:11.522Z [TASKS] info: Get page of number 33 from database
+2022-10-06T16:31:11.780Z [TASKS] info: Get page of number 32 from database
+2022-10-06T16:31:12.487Z [TASKS] info: Get page of number 28 from database
+2022-10-06T16:31:12.868Z [TASKS] info: Get page of number 34 from database
+2022-10-06T16:31:13.507Z [TASKS] info: Get page of number 36 from database
+2022-10-06T16:31:14.129Z [TASKS] info: Get page of number 35 from database
+2022-10-06T16:31:14.981Z [TASKS] info: Get page of number 37 from database
+2022-10-06T16:31:15.054Z [TASKS] info: Get page of number 38 from database
+2022-10-06T16:31:15.450Z [TASKS] info: Get page of number 39 from database
+2022-10-06T16:31:16.276Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:31:16.280Z [TASKS] info: Emails service is running
+2022-10-06T16:31:16.297Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:31:19.564Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:31:19.567Z [TASKS] info: Emails service is running
+2022-10-06T16:31:19.580Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:31:23.263Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T16:31:23.268Z [TASKS] info: Emails service is running
+2022-10-06T16:31:23.282Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T16:32:02.812Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T16:32:05.047Z [TASKS] info: Number of pages: 40
+2022-10-06T16:32:12.505Z [TASKS] info: Get page of number 5 from database
+2022-10-06T16:32:12.745Z [TASKS] info: Get page of number 8 from database
+2022-10-06T16:32:12.749Z [TASKS] info: Get page of number 11 from database
+2022-10-06T16:32:14.258Z [TASKS] info: Get page of number 9 from database
+2022-10-06T16:32:14.611Z [TASKS] info: Get page of number 12 from database
+2022-10-06T16:32:15.674Z [TASKS] info: Get page of number 14 from database
+2022-10-06T16:32:16.241Z [TASKS] info: Get page of number 15 from database
+2022-10-06T16:32:16.546Z [TASKS] info: Get page of number 2 from database
+2022-10-06T16:32:17.144Z [TASKS] info: Get page of number 13 from database
+2022-10-06T16:32:17.324Z [TASKS] info: Get page of number 7 from database
+2022-10-06T16:32:17.593Z [TASKS] info: Get page of number 10 from database
+2022-10-06T16:32:18.281Z [TASKS] info: Get page of number 1 from database
+2022-10-06T16:32:18.684Z [TASKS] info: Get page of number 3 from database
+2022-10-06T16:32:18.835Z [TASKS] info: Get page of number 6 from database
+2022-10-06T16:32:19.366Z [TASKS] info: Get page of number 4 from database
+2022-10-06T16:32:19.681Z [TASKS] info: Get page of number 16 from database
+2022-10-06T16:32:20.949Z [TASKS] info: Get page of number 18 from database
+2022-10-06T16:32:21.067Z [TASKS] info: Get page of number 19 from database
+2022-10-06T16:32:22.463Z [TASKS] info: Get page of number 20 from database
+2022-10-06T16:32:22.817Z [TASKS] info: Get page of number 21 from database
+2022-10-06T16:32:24.076Z [TASKS] info: Get page of number 22 from database
+2022-10-06T16:32:24.273Z [TASKS] info: Get page of number 23 from database
+2022-10-06T16:32:25.458Z [TASKS] info: Get page of number 24 from database
+2022-10-06T16:32:25.816Z [TASKS] info: Get page of number 17 from database
+2022-10-06T16:32:26.304Z [TASKS] info: Get page of number 25 from database
+2022-10-06T16:32:26.997Z [TASKS] info: Get page of number 27 from database
+2022-10-06T16:32:27.673Z [TASKS] info: Get page of number 26 from database
+2022-10-06T16:32:27.943Z [TASKS] info: Get page of number 28 from database
+2022-10-06T16:32:28.314Z [TASKS] info: Get page of number 29 from database
+2022-10-06T16:32:29.765Z [TASKS] info: Get page of number 31 from database
+2022-10-06T16:32:29.790Z [TASKS] info: Get page of number 32 from database
+2022-10-06T16:32:30.427Z [TASKS] info: Get page of number 30 from database
+2022-10-06T16:32:31.406Z [TASKS] info: Get page of number 33 from database
+2022-10-06T16:32:31.696Z [TASKS] info: Get page of number 34 from database
+2022-10-06T16:32:31.749Z [TASKS] info: Get page of number 35 from database
+2022-10-06T16:32:32.594Z [TASKS] info: Get page of number 36 from database
+2022-10-06T16:32:33.239Z [TASKS] info: Get page of number 37 from database
+2022-10-06T16:32:33.895Z [TASKS] info: Get page of number 38 from database
+2022-10-06T16:32:34.231Z [TASKS] info: Get page of number 39 from database
+2022-10-06T16:32:36.132Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T17:41:08.985Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T17:41:08.993Z [TASKS] info: Emails service is running
+2022-10-06T17:41:09.013Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T17:43:13.035Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T17:43:13.039Z [TASKS] info: Emails service is running
+2022-10-06T17:43:13.051Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T17:43:15.402Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T17:43:15.405Z [TASKS] info: Emails service is running
+2022-10-06T17:43:15.418Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T17:43:16.976Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T17:43:16.980Z [TASKS] info: Emails service is running
+2022-10-06T17:43:16.992Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T17:43:21.323Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T17:43:21.327Z [TASKS] info: Emails service is running
+2022-10-06T17:43:21.338Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T17:43:22.865Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T17:43:22.869Z [TASKS] info: Emails service is running
+2022-10-06T17:43:22.882Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T19:40:36.535Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T19:40:36.539Z [TASKS] info: Emails service is running
+2022-10-06T19:40:36.551Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:08:54.450Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T21:08:56.319Z [TASKS] info: Number of pages: 40
+2022-10-06T21:09:03.066Z [TASKS] info: Get page of number 4 from database
+2022-10-06T21:09:03.540Z [TASKS] info: Get page of number 11 from database
+2022-10-06T21:09:03.549Z [TASKS] info: Get page of number 12 from database
+2022-10-06T21:09:04.274Z [TASKS] info: Get page of number 2 from database
+2022-10-06T21:09:04.944Z [TASKS] info: Get page of number 5 from database
+2022-10-06T21:09:04.984Z [TASKS] info: Get page of number 9 from database
+2022-10-06T21:09:05.694Z [TASKS] info: Get page of number 14 from database
+2022-10-06T21:09:06.250Z [TASKS] info: Get page of number 6 from database
+2022-10-06T21:09:06.485Z [TASKS] info: Get page of number 13 from database
+2022-10-06T21:09:06.746Z [TASKS] info: Get page of number 1 from database
+2022-10-06T21:09:08.260Z [TASKS] info: Get page of number 15 from database
+2022-10-06T21:09:08.268Z [TASKS] info: Get page of number 8 from database
+2022-10-06T21:09:08.271Z [TASKS] info: Get page of number 7 from database
+2022-10-06T21:09:09.872Z [TASKS] info: Get page of number 3 from database
+2022-10-06T21:09:10.154Z [TASKS] info: Get page of number 10 from database
+2022-10-06T21:09:10.390Z [TASKS] info: Get page of number 16 from database
+2022-10-06T21:09:11.302Z [TASKS] info: Get page of number 17 from database
+2022-10-06T21:09:11.586Z [TASKS] info: Get page of number 18 from database
+2022-10-06T21:09:12.049Z [TASKS] info: Get page of number 19 from database
+2022-10-06T21:09:12.788Z [TASKS] info: Get page of number 21 from database
+2022-10-06T21:09:12.843Z [TASKS] info: Get page of number 20 from database
+2022-10-06T21:09:13.555Z [TASKS] info: Get page of number 22 from database
+2022-10-06T21:09:14.064Z [TASKS] info: Get page of number 23 from database
+2022-10-06T21:09:14.779Z [TASKS] info: Get page of number 25 from database
+2022-10-06T21:09:15.444Z [TASKS] info: Get page of number 24 from database
+2022-10-06T21:09:15.475Z [TASKS] info: Get page of number 27 from database
+2022-10-06T21:09:15.746Z [TASKS] info: Get page of number 28 from database
+2022-10-06T21:09:16.139Z [TASKS] info: Get page of number 26 from database
+2022-10-06T21:09:17.652Z [TASKS] info: Get page of number 31 from database
+2022-10-06T21:09:17.655Z [TASKS] info: Get page of number 30 from database
+2022-10-06T21:09:18.028Z [TASKS] info: Get page of number 29 from database
+2022-10-06T21:09:19.415Z [TASKS] info: Get page of number 33 from database
+2022-10-06T21:09:19.599Z [TASKS] info: Get page of number 32 from database
+2022-10-06T21:09:20.089Z [TASKS] info: Get page of number 34 from database
+2022-10-06T21:09:21.645Z [TASKS] info: Get page of number 36 from database
+2022-10-06T21:09:21.814Z [TASKS] info: Get page of number 37 from database
+2022-10-06T21:09:22.091Z [TASKS] info: Get page of number 35 from database
+2022-10-06T21:09:23.228Z [TASKS] info: Get page of number 39 from database
+2022-10-06T21:09:23.410Z [TASKS] info: Get page of number 38 from database
+2022-10-06T21:09:24.792Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T21:10:53.864Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:10:53.869Z [TASKS] info: Emails service is running
+2022-10-06T21:10:53.881Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:10:55.989Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:10:55.993Z [TASKS] info: Emails service is running
+2022-10-06T21:10:56.003Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:10:58.613Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:10:58.617Z [TASKS] info: Emails service is running
+2022-10-06T21:10:58.628Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:11:01.448Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:11:01.451Z [TASKS] info: Emails service is running
+2022-10-06T21:11:01.462Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:11:10.969Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:11:10.973Z [TASKS] info: Emails service is running
+2022-10-06T21:11:10.985Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:12:31.843Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:12:31.847Z [TASKS] info: Emails service is running
+2022-10-06T21:12:31.858Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:12:44.710Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:12:44.713Z [TASKS] info: Emails service is running
+2022-10-06T21:12:44.725Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:13:46.562Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:13:46.565Z [TASKS] info: Emails service is running
+2022-10-06T21:13:46.576Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:13:50.711Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:13:50.715Z [TASKS] info: Emails service is running
+2022-10-06T21:13:50.726Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:14:11.312Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:14:11.316Z [TASKS] info: Emails service is running
+2022-10-06T21:14:11.328Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:14:41.103Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:14:41.106Z [TASKS] info: Emails service is running
+2022-10-06T21:14:41.118Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:14:53.888Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:14:53.891Z [TASKS] info: Emails service is running
+2022-10-06T21:14:53.906Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:14:58.245Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:14:58.248Z [TASKS] info: Emails service is running
+2022-10-06T21:14:58.260Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:15:06.124Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:15:06.128Z [TASKS] info: Emails service is running
+2022-10-06T21:15:06.140Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:15:09.756Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:15:09.760Z [TASKS] info: Emails service is running
+2022-10-06T21:15:09.771Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:15:11.027Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:15:11.030Z [TASKS] info: Emails service is running
+2022-10-06T21:15:11.041Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:15:13.256Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:15:13.259Z [TASKS] info: Emails service is running
+2022-10-06T21:15:13.270Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:15:17.689Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:15:17.693Z [TASKS] info: Emails service is running
+2022-10-06T21:15:17.706Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:15:51.806Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:15:51.810Z [TASKS] info: Emails service is running
+2022-10-06T21:15:51.821Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:15:57.320Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:15:57.323Z [TASKS] info: Emails service is running
+2022-10-06T21:15:57.334Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:16:03.498Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:16:03.502Z [TASKS] info: Emails service is running
+2022-10-06T21:16:03.514Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:16:10.462Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:16:10.465Z [TASKS] info: Emails service is running
+2022-10-06T21:16:10.477Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:16:40.613Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:16:40.616Z [TASKS] info: Emails service is running
+2022-10-06T21:16:40.629Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:16:49.007Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:16:49.013Z [TASKS] info: Emails service is running
+2022-10-06T21:16:49.032Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:16:50.047Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:16:50.050Z [TASKS] info: Emails service is running
+2022-10-06T21:16:50.061Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:16:52.165Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:16:52.170Z [TASKS] info: Emails service is running
+2022-10-06T21:16:52.182Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:16:56.777Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:16:56.780Z [TASKS] info: Emails service is running
+2022-10-06T21:16:56.791Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:17:06.559Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:17:06.562Z [TASKS] info: Emails service is running
+2022-10-06T21:17:06.573Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:17:14.033Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:17:14.036Z [TASKS] info: Emails service is running
+2022-10-06T21:17:14.047Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:17:33.032Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T21:17:34.932Z [TASKS] info: Number of pages: 40
+2022-10-06T21:17:42.009Z [TASKS] info: Get page of number 8 from database
+2022-10-06T21:17:42.211Z [TASKS] info: Get page of number 3 from database
+2022-10-06T21:17:42.442Z [TASKS] info: Get page of number 5 from database
+2022-10-06T21:17:43.586Z [TASKS] info: Get page of number 4 from database
+2022-10-06T21:17:43.935Z [TASKS] info: Get page of number 7 from database
+2022-10-06T21:17:44.065Z [TASKS] info: Get page of number 11 from database
+2022-10-06T21:17:44.913Z [TASKS] info: Get page of number 6 from database
+2022-10-06T21:17:45.461Z [TASKS] info: Get page of number 10 from database
+2022-10-06T21:17:46.645Z [TASKS] info: Get page of number 15 from database
+2022-10-06T21:17:46.775Z [TASKS] info: Get page of number 14 from database
+2022-10-06T21:17:46.869Z [TASKS] info: Get page of number 9 from database
+2022-10-06T21:17:47.188Z [TASKS] info: Get page of number 1 from database
+2022-10-06T21:17:48.074Z [TASKS] info: Get page of number 2 from database
+2022-10-06T21:17:48.378Z [TASKS] info: Get page of number 12 from database
+2022-10-06T21:17:48.571Z [TASKS] info: Get page of number 13 from database
+2022-10-06T21:17:49.232Z [TASKS] info: Get page of number 16 from database
+2022-10-06T21:17:49.839Z [TASKS] info: Get page of number 18 from database
+2022-10-06T21:17:50.230Z [TASKS] info: Get page of number 17 from database
+2022-10-06T21:17:51.004Z [TASKS] info: Get page of number 19 from database
+2022-10-06T21:17:51.396Z [TASKS] info: Get page of number 20 from database
+2022-10-06T21:17:51.646Z [TASKS] info: Get page of number 21 from database
+2022-10-06T21:17:52.226Z [TASKS] info: Get page of number 22 from database
+2022-10-06T21:17:52.998Z [TASKS] info: Get page of number 23 from database
+2022-10-06T21:17:53.093Z [TASKS] info: Get page of number 24 from database
+2022-10-06T21:17:54.308Z [TASKS] info: Get page of number 26 from database
+2022-10-06T21:17:54.543Z [TASKS] info: Get page of number 25 from database
+2022-10-06T21:17:54.695Z [TASKS] info: Get page of number 27 from database
+2022-10-06T21:17:55.958Z [TASKS] info: Get page of number 28 from database
+2022-10-06T21:17:56.171Z [TASKS] info: Get page of number 29 from database
+2022-10-06T21:17:56.296Z [TASKS] info: Get page of number 30 from database
+2022-10-06T21:17:57.655Z [TASKS] info: Get page of number 31 from database
+2022-10-06T21:17:57.750Z [TASKS] info: Get page of number 32 from database
+2022-10-06T21:17:58.047Z [TASKS] info: Get page of number 33 from database
+2022-10-06T21:18:00.254Z [TASKS] info: Get page of number 35 from database
+2022-10-06T21:18:00.467Z [TASKS] info: Get page of number 36 from database
+2022-10-06T21:18:00.567Z [TASKS] info: Get page of number 34 from database
+2022-10-06T21:18:01.719Z [TASKS] info: Get page of number 37 from database
+2022-10-06T21:18:02.470Z [TASKS] info: Get page of number 38 from database
+2022-10-06T21:18:04.639Z [TASKS] info: Get page of number 39 from database
+2022-10-06T21:18:06.200Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T21:47:48.462Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:47:48.466Z [TASKS] info: Emails service is running
+2022-10-06T21:47:48.478Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:47:51.291Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:47:51.295Z [TASKS] info: Emails service is running
+2022-10-06T21:47:51.306Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:48:32.804Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:48:32.807Z [TASKS] info: Emails service is running
+2022-10-06T21:48:32.821Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:48:42.069Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:48:42.072Z [TASKS] info: Emails service is running
+2022-10-06T21:48:42.083Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:48:47.804Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:48:47.808Z [TASKS] info: Emails service is running
+2022-10-06T21:48:47.821Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:48:58.056Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:48:58.059Z [TASKS] info: Emails service is running
+2022-10-06T21:48:58.071Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:49:02.664Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:49:02.667Z [TASKS] info: Emails service is running
+2022-10-06T21:49:02.678Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:49:04.762Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:49:04.766Z [TASKS] info: Emails service is running
+2022-10-06T21:49:04.777Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:49:14.273Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T21:49:14.277Z [TASKS] info: Emails service is running
+2022-10-06T21:49:14.288Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T21:50:04.448Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T21:50:06.593Z [TASKS] info: Number of pages: 40
+2022-10-06T21:50:13.361Z [TASKS] info: Get page of number 2 from database
+2022-10-06T21:50:13.733Z [TASKS] info: Get page of number 9 from database
+2022-10-06T21:50:14.679Z [TASKS] info: Get page of number 6 from database
+2022-10-06T21:50:14.800Z [TASKS] info: Get page of number 4 from database
+2022-10-06T21:50:16.170Z [TASKS] info: Get page of number 15 from database
+2022-10-06T21:50:16.339Z [TASKS] info: Get page of number 11 from database
+2022-10-06T21:50:17.215Z [TASKS] info: Get page of number 7 from database
+2022-10-06T21:50:18.080Z [TASKS] info: Get page of number 1 from database
+2022-10-06T21:50:18.206Z [TASKS] info: Get page of number 13 from database
+2022-10-06T21:50:18.440Z [TASKS] info: Get page of number 10 from database
+2022-10-06T21:50:19.364Z [TASKS] info: Get page of number 12 from database
+2022-10-06T21:50:19.793Z [TASKS] info: Get page of number 14 from database
+2022-10-06T21:50:20.118Z [TASKS] info: Get page of number 8 from database
+2022-10-06T21:50:20.587Z [TASKS] info: Get page of number 3 from database
+2022-10-06T21:50:21.030Z [TASKS] info: Get page of number 5 from database
+2022-10-06T21:50:21.767Z [TASKS] info: Get page of number 17 from database
+2022-10-06T21:50:22.660Z [TASKS] info: Get page of number 18 from database
+2022-10-06T21:50:23.004Z [TASKS] info: Get page of number 19 from database
+2022-10-06T21:50:24.283Z [TASKS] info: Get page of number 16 from database
+2022-10-06T21:50:24.329Z [TASKS] info: Get page of number 21 from database
+2022-10-06T21:50:24.707Z [TASKS] info: Get page of number 20 from database
+2022-10-06T21:50:26.179Z [TASKS] info: Get page of number 22 from database
+2022-10-06T21:50:26.936Z [TASKS] info: Get page of number 24 from database
+2022-10-06T21:50:27.772Z [TASKS] info: Get page of number 25 from database
+2022-10-06T21:50:28.338Z [TASKS] info: Get page of number 26 from database
+2022-10-06T21:50:28.944Z [TASKS] info: Get page of number 27 from database
+2022-10-06T21:50:29.715Z [TASKS] info: Get page of number 28 from database
+2022-10-06T21:50:30.819Z [TASKS] info: Get page of number 29 from database
+2022-10-06T21:50:31.251Z [TASKS] info: Get page of number 23 from database
+2022-10-06T21:50:31.952Z [TASKS] info: Get page of number 30 from database
+2022-10-06T21:50:32.707Z [TASKS] info: Get page of number 32 from database
+2022-10-06T21:50:32.907Z [TASKS] info: Get page of number 31 from database
+2022-10-06T21:50:33.383Z [TASKS] info: Get page of number 33 from database
+2022-10-06T21:50:34.872Z [TASKS] info: Get page of number 35 from database
+2022-10-06T21:50:34.997Z [TASKS] info: Get page of number 34 from database
+2022-10-06T21:50:35.302Z [TASKS] info: Get page of number 36 from database
+2022-10-06T21:50:36.631Z [TASKS] info: Get page of number 37 from database
+2022-10-06T21:50:36.673Z [TASKS] info: Get page of number 38 from database
+2022-10-06T21:50:36.898Z [TASKS] info: Get page of number 39 from database
+2022-10-06T21:50:38.852Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T22:23:31.078Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:23:31.081Z [TASKS] info: Emails service is running
+2022-10-06T22:23:31.096Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:23:41.589Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:23:41.594Z [TASKS] info: Emails service is running
+2022-10-06T22:23:41.609Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:24:03.729Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:24:03.732Z [TASKS] info: Emails service is running
+2022-10-06T22:24:03.745Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:24:37.126Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:24:37.130Z [TASKS] info: Emails service is running
+2022-10-06T22:24:37.141Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:24:41.726Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:24:41.730Z [TASKS] info: Emails service is running
+2022-10-06T22:24:41.742Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:24:44.069Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:24:44.073Z [TASKS] info: Emails service is running
+2022-10-06T22:24:44.085Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:25:17.598Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:25:17.601Z [TASKS] info: Emails service is running
+2022-10-06T22:25:17.613Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:25:34.305Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:25:34.308Z [TASKS] info: Emails service is running
+2022-10-06T22:25:34.321Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:26:21.484Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T22:26:23.424Z [TASKS] info: Number of pages: 40
+2022-10-06T22:26:29.795Z [TASKS] info: Get page of number 2 from database
+2022-10-06T22:26:29.911Z [TASKS] info: Get page of number 4 from database
+2022-10-06T22:26:30.300Z [TASKS] info: Get page of number 8 from database
+2022-10-06T22:26:31.127Z [TASKS] info: Get page of number 3 from database
+2022-10-06T22:26:31.784Z [TASKS] info: Get page of number 14 from database
+2022-10-06T22:26:31.939Z [TASKS] info: Get page of number 15 from database
+2022-10-06T22:26:32.463Z [TASKS] info: Get page of number 6 from database
+2022-10-06T22:26:33.012Z [TASKS] info: Get page of number 5 from database
+2022-10-06T22:26:33.245Z [TASKS] info: Get page of number 9 from database
+2022-10-06T22:26:33.728Z [TASKS] info: Get page of number 12 from database
+2022-10-06T22:26:34.298Z [TASKS] info: Get page of number 1 from database
+2022-10-06T22:26:35.057Z [TASKS] info: Get page of number 13 from database
+2022-10-06T22:26:35.449Z [TASKS] info: Get page of number 7 from database
+2022-10-06T22:26:35.500Z [TASKS] info: Get page of number 11 from database
+2022-10-06T22:26:36.659Z [TASKS] info: Get page of number 16 from database
+2022-10-06T22:26:36.865Z [TASKS] info: Get page of number 10 from database
+2022-10-06T22:26:38.032Z [TASKS] info: Get page of number 18 from database
+2022-10-06T22:26:38.627Z [TASKS] info: Get page of number 19 from database
+2022-10-06T22:26:39.325Z [TASKS] info: Get page of number 17 from database
+2022-10-06T22:26:40.310Z [TASKS] info: Get page of number 22 from database
+2022-10-06T22:26:40.651Z [TASKS] info: Get page of number 21 from database
+2022-10-06T22:26:41.744Z [TASKS] info: Get page of number 23 from database
+2022-10-06T22:26:41.954Z [TASKS] info: Get page of number 24 from database
+2022-10-06T22:26:42.204Z [TASKS] info: Get page of number 20 from database
+2022-10-06T22:26:43.456Z [TASKS] info: Get page of number 26 from database
+2022-10-06T22:26:43.607Z [TASKS] info: Get page of number 27 from database
+2022-10-06T22:26:44.412Z [TASKS] info: Get page of number 25 from database
+2022-10-06T22:26:44.993Z [TASKS] info: Get page of number 28 from database
+2022-10-06T22:26:45.588Z [TASKS] info: Get page of number 29 from database
+2022-10-06T22:26:45.676Z [TASKS] info: Get page of number 30 from database
+2022-10-06T22:26:46.163Z [TASKS] info: Get page of number 31 from database
+2022-10-06T22:26:47.555Z [TASKS] info: Get page of number 32 from database
+2022-10-06T22:26:47.653Z [TASKS] info: Get page of number 33 from database
+2022-10-06T22:26:49.052Z [TASKS] info: Get page of number 34 from database
+2022-10-06T22:26:49.358Z [TASKS] info: Get page of number 36 from database
+2022-10-06T22:26:50.835Z [TASKS] info: Get page of number 37 from database
+2022-10-06T22:26:50.846Z [TASKS] info: Get page of number 38 from database
+2022-10-06T22:26:51.065Z [TASKS] info: Get page of number 35 from database
+2022-10-06T22:26:52.007Z [TASKS] info: Get page of number 39 from database
+2022-10-06T22:26:53.639Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T22:27:51.719Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:27:51.723Z [TASKS] info: Emails service is running
+2022-10-06T22:27:51.734Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:27:59.975Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:27:59.978Z [TASKS] info: Emails service is running
+2022-10-06T22:27:59.989Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:28:03.155Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:28:03.159Z [TASKS] info: Emails service is running
+2022-10-06T22:28:03.170Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:28:08.298Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:28:08.302Z [TASKS] info: Emails service is running
+2022-10-06T22:28:08.313Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:31:53.577Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:31:53.582Z [TASKS] info: Emails service is running
+2022-10-06T22:31:53.594Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:32:12.553Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:32:12.556Z [TASKS] info: Emails service is running
+2022-10-06T22:32:12.567Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:32:55.228Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T22:32:57.458Z [TASKS] info: Number of pages: 40
+2022-10-06T22:33:03.591Z [TASKS] info: Get page of number 2 from database
+2022-10-06T22:33:03.613Z [TASKS] info: Get page of number 1 from database
+2022-10-06T22:33:04.228Z [TASKS] info: Get page of number 9 from database
+2022-10-06T22:33:04.931Z [TASKS] info: Get page of number 10 from database
+2022-10-06T22:33:05.732Z [TASKS] info: Get page of number 3 from database
+2022-10-06T22:33:06.401Z [TASKS] info: Get page of number 7 from database
+2022-10-06T22:33:06.875Z [TASKS] info: Get page of number 14 from database
+2022-10-06T22:33:07.324Z [TASKS] info: Get page of number 15 from database
+2022-10-06T22:33:07.652Z [TASKS] info: Get page of number 5 from database
+2022-10-06T22:33:08.233Z [TASKS] info: Get page of number 6 from database
+2022-10-06T22:33:08.856Z [TASKS] info: Get page of number 13 from database
+2022-10-06T22:33:09.091Z [TASKS] info: Get page of number 11 from database
+2022-10-06T22:33:09.849Z [TASKS] info: Get page of number 12 from database
+2022-10-06T22:33:10.497Z [TASKS] info: Get page of number 4 from database
+2022-10-06T22:33:11.681Z [TASKS] info: Get page of number 17 from database
+2022-10-06T22:33:12.465Z [TASKS] info: Get page of number 18 from database
+2022-10-06T22:33:12.780Z [TASKS] info: Get page of number 8 from database
+2022-10-06T22:33:13.091Z [TASKS] info: Get page of number 19 from database
+2022-10-06T22:33:13.780Z [TASKS] info: Get page of number 20 from database
+2022-10-06T22:33:14.895Z [TASKS] info: Get page of number 21 from database
+2022-10-06T22:33:15.237Z [TASKS] info: Get page of number 16 from database
+2022-10-06T22:33:15.305Z [TASKS] info: Get page of number 22 from database
+2022-10-06T22:33:16.743Z [TASKS] info: Get page of number 23 from database
+2022-10-06T22:33:17.335Z [TASKS] info: Get page of number 25 from database
+2022-10-06T22:33:17.936Z [TASKS] info: Get page of number 26 from database
+2022-10-06T22:33:19.076Z [TASKS] info: Get page of number 28 from database
+2022-10-06T22:33:19.283Z [TASKS] info: Get page of number 27 from database
+2022-10-06T22:33:21.048Z [TASKS] info: Get page of number 29 from database
+2022-10-06T22:33:21.166Z [TASKS] info: Get page of number 30 from database
+2022-10-06T22:33:21.439Z [TASKS] info: Get page of number 24 from database
+2022-10-06T22:33:22.565Z [TASKS] info: Get page of number 31 from database
+2022-10-06T22:33:22.856Z [TASKS] info: Get page of number 32 from database
+2022-10-06T22:33:23.034Z [TASKS] info: Get page of number 33 from database
+2022-10-06T22:33:24.555Z [TASKS] info: Get page of number 34 from database
+2022-10-06T22:33:25.194Z [TASKS] info: Get page of number 36 from database
+2022-10-06T22:33:25.310Z [TASKS] info: Get page of number 35 from database
+2022-10-06T22:33:25.867Z [TASKS] info: Get page of number 37 from database
+2022-10-06T22:33:26.856Z [TASKS] info: Get page of number 39 from database
+2022-10-06T22:33:28.640Z [TASKS] info: Get page of number 38 from database
+2022-10-06T22:33:30.048Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T22:34:16.138Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:34:16.141Z [TASKS] info: Emails service is running
+2022-10-06T22:34:16.153Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:34:19.240Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:34:19.244Z [TASKS] info: Emails service is running
+2022-10-06T22:34:19.255Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:34:32.985Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:34:32.989Z [TASKS] info: Emails service is running
+2022-10-06T22:34:33.002Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:34:49.154Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:34:49.157Z [TASKS] info: Emails service is running
+2022-10-06T22:34:49.169Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:35:15.619Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:35:15.623Z [TASKS] info: Emails service is running
+2022-10-06T22:35:15.634Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:35:20.239Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:35:20.243Z [TASKS] info: Emails service is running
+2022-10-06T22:35:20.255Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:35:51.829Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T22:35:54.104Z [TASKS] info: Number of pages: 40
+2022-10-06T22:36:00.724Z [TASKS] info: Get page of number 1 from database
+2022-10-06T22:36:00.893Z [TASKS] info: Get page of number 3 from database
+2022-10-06T22:36:01.246Z [TASKS] info: Get page of number 9 from database
+2022-10-06T22:36:02.404Z [TASKS] info: Get page of number 2 from database
+2022-10-06T22:36:03.218Z [TASKS] info: Get page of number 15 from database
+2022-10-06T22:36:03.601Z [TASKS] info: Get page of number 6 from database
+2022-10-06T22:36:04.314Z [TASKS] info: Get page of number 13 from database
+2022-10-06T22:36:04.359Z [TASKS] info: Get page of number 8 from database
+2022-10-06T22:36:04.803Z [TASKS] info: Get page of number 4 from database
+2022-10-06T22:36:05.587Z [TASKS] info: Get page of number 7 from database
+2022-10-06T22:36:06.795Z [TASKS] info: Get page of number 12 from database
+2022-10-06T22:36:06.988Z [TASKS] info: Get page of number 14 from database
+2022-10-06T22:36:08.020Z [TASKS] info: Get page of number 11 from database
+2022-10-06T22:36:08.256Z [TASKS] info: Get page of number 10 from database
+2022-10-06T22:36:08.988Z [TASKS] info: Get page of number 5 from database
+2022-10-06T22:36:09.664Z [TASKS] info: Get page of number 17 from database
+2022-10-06T22:36:09.991Z [TASKS] info: Get page of number 16 from database
+2022-10-06T22:36:11.188Z [TASKS] info: Get page of number 19 from database
+2022-10-06T22:36:11.696Z [TASKS] info: Get page of number 20 from database
+2022-10-06T22:36:12.860Z [TASKS] info: Get page of number 21 from database
+2022-10-06T22:36:13.097Z [TASKS] info: Get page of number 23 from database
+2022-10-06T22:36:13.666Z [TASKS] info: Get page of number 18 from database
+2022-10-06T22:36:14.162Z [TASKS] info: Get page of number 22 from database
+2022-10-06T22:36:14.829Z [TASKS] info: Get page of number 25 from database
+2022-10-06T22:36:14.960Z [TASKS] info: Get page of number 24 from database
+2022-10-06T22:36:15.625Z [TASKS] info: Get page of number 26 from database
+2022-10-06T22:36:17.123Z [TASKS] info: Get page of number 29 from database
+2022-10-06T22:36:17.487Z [TASKS] info: Get page of number 27 from database
+2022-10-06T22:36:17.767Z [TASKS] info: Get page of number 28 from database
+2022-10-06T22:36:18.542Z [TASKS] info: Get page of number 30 from database
+2022-10-06T22:36:18.684Z [TASKS] info: Get page of number 31 from database
+2022-10-06T22:36:19.207Z [TASKS] info: Get page of number 32 from database
+2022-10-06T22:36:19.948Z [TASKS] info: Get page of number 33 from database
+2022-10-06T22:36:20.063Z [TASKS] info: Get page of number 34 from database
+2022-10-06T22:36:20.452Z [TASKS] info: Get page of number 35 from database
+2022-10-06T22:36:22.263Z [TASKS] info: Get page of number 36 from database
+2022-10-06T22:36:22.305Z [TASKS] info: Get page of number 37 from database
+2022-10-06T22:36:23.201Z [TASKS] info: Get page of number 39 from database
+2022-10-06T22:36:24.215Z [TASKS] info: Get page of number 38 from database
+2022-10-06T22:36:25.953Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T22:38:17.611Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:38:17.615Z [TASKS] info: Emails service is running
+2022-10-06T22:38:17.626Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:39:03.420Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:39:03.424Z [TASKS] info: Emails service is running
+2022-10-06T22:39:03.435Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:39:05.106Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:39:05.110Z [TASKS] info: Emails service is running
+2022-10-06T22:39:05.122Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:39:43.965Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:39:43.969Z [TASKS] info: Emails service is running
+2022-10-06T22:39:43.980Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:39:45.164Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T22:39:45.168Z [TASKS] info: Emails service is running
+2022-10-06T22:39:45.180Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T22:40:31.612Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-06T22:40:33.636Z [TASKS] info: Number of pages: 40
+2022-10-06T22:40:40.985Z [TASKS] info: Get page of number 3 from database
+2022-10-06T22:40:41.443Z [TASKS] info: Get page of number 10 from database
+2022-10-06T22:40:42.443Z [TASKS] info: Get page of number 5 from database
+2022-10-06T22:40:42.899Z [TASKS] info: Get page of number 7 from database
+2022-10-06T22:40:43.535Z [TASKS] info: Get page of number 6 from database
+2022-10-06T22:40:44.125Z [TASKS] info: Get page of number 9 from database
+2022-10-06T22:40:45.074Z [TASKS] info: Get page of number 14 from database
+2022-10-06T22:40:45.442Z [TASKS] info: Get page of number 4 from database
+2022-10-06T22:40:46.441Z [TASKS] info: Get page of number 1 from database
+2022-10-06T22:40:46.583Z [TASKS] info: Get page of number 12 from database
+2022-10-06T22:40:46.783Z [TASKS] info: Get page of number 15 from database
+2022-10-06T22:40:46.868Z [TASKS] info: Get page of number 13 from database
+2022-10-06T22:40:47.690Z [TASKS] info: Get page of number 2 from database
+2022-10-06T22:40:48.556Z [TASKS] info: Get page of number 8 from database
+2022-10-06T22:40:48.905Z [TASKS] info: Get page of number 11 from database
+2022-10-06T22:40:48.991Z [TASKS] info: Get page of number 16 from database
+2022-10-06T22:40:49.713Z [TASKS] info: Get page of number 17 from database
+2022-10-06T22:40:50.005Z [TASKS] info: Get page of number 18 from database
+2022-10-06T22:40:51.423Z [TASKS] info: Get page of number 20 from database
+2022-10-06T22:40:52.007Z [TASKS] info: Get page of number 21 from database
+2022-10-06T22:40:52.683Z [TASKS] info: Get page of number 22 from database
+2022-10-06T22:40:53.334Z [TASKS] info: Get page of number 23 from database
+2022-10-06T22:40:54.360Z [TASKS] info: Get page of number 19 from database
+2022-10-06T22:40:54.611Z [TASKS] info: Get page of number 25 from database
+2022-10-06T22:40:54.653Z [TASKS] info: Get page of number 24 from database
+2022-10-06T22:40:56.017Z [TASKS] info: Get page of number 26 from database
+2022-10-06T22:40:56.443Z [TASKS] info: Get page of number 27 from database
+2022-10-06T22:40:57.268Z [TASKS] info: Get page of number 28 from database
+2022-10-06T22:40:57.327Z [TASKS] info: Get page of number 30 from database
+2022-10-06T22:40:57.909Z [TASKS] info: Get page of number 29 from database
+2022-10-06T22:40:58.671Z [TASKS] info: Get page of number 31 from database
+2022-10-06T22:40:59.044Z [TASKS] info: Get page of number 32 from database
+2022-10-06T22:40:59.480Z [TASKS] info: Get page of number 33 from database
+2022-10-06T22:41:00.657Z [TASKS] info: Get page of number 34 from database
+2022-10-06T22:41:00.857Z [TASKS] info: Get page of number 35 from database
+2022-10-06T22:41:01.217Z [TASKS] info: Get page of number 36 from database
+2022-10-06T22:41:02.410Z [TASKS] info: Get page of number 37 from database
+2022-10-06T22:41:02.656Z [TASKS] info: Get page of number 39 from database
+2022-10-06T22:41:04.286Z [TASKS] info: Get page of number 38 from database
+2022-10-06T22:41:05.649Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-06T23:57:12.455Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T23:57:12.459Z [TASKS] info: Emails service is running
+2022-10-06T23:57:12.470Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-06T23:57:17.341Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-06T23:57:17.344Z [TASKS] info: Emails service is running
+2022-10-06T23:57:17.355Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:06:18.947Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:06:18.951Z [TASKS] info: Emails service is running
+2022-10-07T00:06:18.963Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:06:22.147Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:06:22.150Z [TASKS] info: Emails service is running
+2022-10-07T00:06:22.161Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:06:42.699Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:06:42.702Z [TASKS] info: Emails service is running
+2022-10-07T00:06:42.716Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:06:45.565Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:06:45.568Z [TASKS] info: Emails service is running
+2022-10-07T00:06:45.579Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:06:49.507Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:06:49.510Z [TASKS] info: Emails service is running
+2022-10-07T00:06:49.523Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:07:11.428Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T00:07:13.466Z [TASKS] info: Number of pages: 40
+2022-10-07T00:07:20.144Z [TASKS] info: Get page of number 6 from database
+2022-10-07T00:07:20.425Z [TASKS] info: Get page of number 12 from database
+2022-10-07T00:07:20.628Z [TASKS] info: Get page of number 13 from database
+2022-10-07T00:07:21.436Z [TASKS] info: Get page of number 2 from database
+2022-10-07T00:07:21.964Z [TASKS] info: Get page of number 4 from database
+2022-10-07T00:07:23.216Z [TASKS] info: Get page of number 11 from database
+2022-10-07T00:07:23.905Z [TASKS] info: Get page of number 14 from database
+2022-10-07T00:07:24.524Z [TASKS] info: Get page of number 8 from database
+2022-10-07T00:07:24.699Z [TASKS] info: Get page of number 15 from database
+2022-10-07T00:07:25.621Z [TASKS] info: Get page of number 7 from database
+2022-10-07T00:07:26.182Z [TASKS] info: Get page of number 10 from database
+2022-10-07T00:07:26.397Z [TASKS] info: Get page of number 9 from database
+2022-10-07T00:07:27.571Z [TASKS] info: Get page of number 1 from database
+2022-10-07T00:07:28.067Z [TASKS] info: Get page of number 3 from database
+2022-10-07T00:07:28.677Z [TASKS] info: Get page of number 5 from database
+2022-10-07T00:07:28.887Z [TASKS] info: Get page of number 16 from database
+2022-10-07T00:07:29.433Z [TASKS] info: Get page of number 17 from database
+2022-10-07T00:07:29.771Z [TASKS] info: Get page of number 18 from database
+2022-10-07T00:07:31.066Z [TASKS] info: Get page of number 20 from database
+2022-10-07T00:07:32.691Z [TASKS] info: Get page of number 21 from database
+2022-10-07T00:07:33.033Z [TASKS] info: Get page of number 19 from database
+2022-10-07T00:07:33.350Z [TASKS] info: Get page of number 22 from database
+2022-10-07T00:07:34.146Z [TASKS] info: Get page of number 23 from database
+2022-10-07T00:07:34.684Z [TASKS] info: Get page of number 24 from database
+2022-10-07T00:07:34.908Z [TASKS] info: Get page of number 25 from database
+2022-10-07T00:07:35.906Z [TASKS] info: Get page of number 26 from database
+2022-10-07T00:07:36.224Z [TASKS] info: Get page of number 27 from database
+2022-10-07T00:07:37.847Z [TASKS] info: Get page of number 29 from database
+2022-10-07T00:07:40.430Z [TASKS] info: Get page of number 30 from database
+2022-10-07T00:07:40.432Z [TASKS] info: Get page of number 28 from database
+2022-10-07T00:07:41.513Z [TASKS] info: Get page of number 31 from database
+2022-10-07T00:07:41.748Z [TASKS] info: Get page of number 33 from database
+2022-10-07T00:07:43.626Z [TASKS] info: Get page of number 32 from database
+2022-10-07T00:07:43.735Z [TASKS] info: Get page of number 34 from database
+2022-10-07T00:07:44.640Z [TASKS] info: Get page of number 35 from database
+2022-10-07T00:07:44.836Z [TASKS] info: Get page of number 37 from database
+2022-10-07T00:07:46.586Z [TASKS] info: Get page of number 36 from database
+2022-10-07T00:07:46.759Z [TASKS] info: Get page of number 39 from database
+2022-10-07T00:07:47.474Z [TASKS] info: Get page of number 38 from database
+2022-10-07T00:07:49.930Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-07T00:09:14.511Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T00:09:16.692Z [TASKS] info: Number of pages: 40
+2022-10-07T00:09:24.218Z [TASKS] info: Get page of number 6 from database
+2022-10-07T00:09:24.298Z [TASKS] info: Get page of number 8 from database
+2022-10-07T00:09:24.302Z [TASKS] info: Get page of number 5 from database
+2022-10-07T00:09:25.150Z [TASKS] info: Get page of number 1 from database
+2022-10-07T00:09:26.604Z [TASKS] info: Get page of number 15 from database
+2022-10-07T00:09:26.968Z [TASKS] info: Get page of number 14 from database
+2022-10-07T00:09:27.209Z [TASKS] info: Get page of number 12 from database
+2022-10-07T00:09:28.183Z [TASKS] info: Get page of number 4 from database
+2022-10-07T00:09:28.500Z [TASKS] info: Get page of number 7 from database
+2022-10-07T00:09:29.282Z [TASKS] info: Get page of number 3 from database
+2022-10-07T00:09:29.771Z [TASKS] info: Get page of number 10 from database
+2022-10-07T00:09:30.553Z [TASKS] info: Get page of number 13 from database
+2022-10-07T00:09:31.215Z [TASKS] info: Get page of number 9 from database
+2022-10-07T00:09:31.778Z [TASKS] info: Get page of number 2 from database
+2022-10-07T00:09:31.996Z [TASKS] info: Get page of number 11 from database
+2022-10-07T00:09:32.372Z [TASKS] info: Get page of number 16 from database
+2022-10-07T00:09:33.120Z [TASKS] info: Get page of number 18 from database
+2022-10-07T00:09:33.534Z [TASKS] info: Get page of number 19 from database
+2022-10-07T00:09:34.697Z [TASKS] info: Get page of number 21 from database
+2022-10-07T00:09:34.801Z [TASKS] info: Get page of number 20 from database
+2022-10-07T00:09:36.004Z [TASKS] info: Get page of number 22 from database
+2022-10-07T00:09:36.267Z [TASKS] info: Get page of number 17 from database
+2022-10-07T00:09:36.380Z [TASKS] info: Get page of number 23 from database
+2022-10-07T00:09:37.821Z [TASKS] info: Get page of number 25 from database
+2022-10-07T00:09:38.042Z [TASKS] info: Get page of number 26 from database
+2022-10-07T00:09:38.813Z [TASKS] info: Get page of number 24 from database
+2022-10-07T00:09:39.733Z [TASKS] info: Get page of number 27 from database
+2022-10-07T00:09:39.816Z [TASKS] info: Get page of number 29 from database
+2022-10-07T00:09:40.475Z [TASKS] info: Get page of number 30 from database
+2022-10-07T00:09:41.048Z [TASKS] info: Get page of number 31 from database
+2022-10-07T00:09:41.239Z [TASKS] info: Get page of number 28 from database
+2022-10-07T00:09:42.189Z [TASKS] info: Get page of number 32 from database
+2022-10-07T00:09:42.659Z [TASKS] info: Get page of number 33 from database
+2022-10-07T00:09:43.664Z [TASKS] info: Get page of number 35 from database
+2022-10-07T00:09:44.252Z [TASKS] info: Get page of number 34 from database
+2022-10-07T00:09:45.830Z [TASKS] info: Get page of number 36 from database
+2022-10-07T00:09:46.215Z [TASKS] info: Get page of number 37 from database
+2022-10-07T00:09:46.220Z [TASKS] info: Get page of number 38 from database
+2022-10-07T00:09:47.199Z [TASKS] info: Get page of number 39 from database
+2022-10-07T00:09:48.710Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-07T00:10:48.532Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:10:48.536Z [TASKS] info: Emails service is running
+2022-10-07T00:10:48.547Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:10:56.216Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:10:56.219Z [TASKS] info: Emails service is running
+2022-10-07T00:10:56.230Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:11:14.325Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T00:11:16.569Z [TASKS] info: Number of pages: 40
+2022-10-07T00:11:23.876Z [TASKS] info: Get page of number 7 from database
+2022-10-07T00:11:23.991Z [TASKS] info: Get page of number 11 from database
+2022-10-07T00:11:24.358Z [TASKS] info: Get page of number 10 from database
+2022-10-07T00:11:25.241Z [TASKS] info: Get page of number 6 from database
+2022-10-07T00:11:25.760Z [TASKS] info: Get page of number 14 from database
+2022-10-07T00:11:25.807Z [TASKS] info: Get page of number 5 from database
+2022-10-07T00:11:26.360Z [TASKS] info: Get page of number 2 from database
+2022-10-07T00:11:27.236Z [TASKS] info: Get page of number 15 from database
+2022-10-07T00:11:27.576Z [TASKS] info: Get page of number 1 from database
+2022-10-07T00:11:27.698Z [TASKS] info: Get page of number 8 from database
+2022-10-07T00:11:28.370Z [TASKS] info: Get page of number 4 from database
+2022-10-07T00:11:29.101Z [TASKS] info: Get page of number 12 from database
+2022-10-07T00:11:29.118Z [TASKS] info: Get page of number 9 from database
+2022-10-07T00:11:29.647Z [TASKS] info: Get page of number 13 from database
+2022-10-07T00:11:30.454Z [TASKS] info: Get page of number 3 from database
+2022-10-07T00:11:30.943Z [TASKS] info: Get page of number 16 from database
+2022-10-07T00:11:31.698Z [TASKS] info: Get page of number 17 from database
+2022-10-07T00:11:32.110Z [TASKS] info: Get page of number 18 from database
+2022-10-07T00:11:32.462Z [TASKS] info: Get page of number 19 from database
+2022-10-07T00:11:33.578Z [TASKS] info: Get page of number 21 from database
+2022-10-07T00:11:33.961Z [TASKS] info: Get page of number 20 from database
+2022-10-07T00:11:34.226Z [TASKS] info: Get page of number 22 from database
+2022-10-07T00:11:35.540Z [TASKS] info: Get page of number 25 from database
+2022-10-07T00:11:35.800Z [TASKS] info: Get page of number 23 from database
+2022-10-07T00:11:36.243Z [TASKS] info: Get page of number 24 from database
+2022-10-07T00:11:37.090Z [TASKS] info: Get page of number 26 from database
+2022-10-07T00:11:37.799Z [TASKS] info: Get page of number 28 from database
+2022-10-07T00:11:38.499Z [TASKS] info: Get page of number 27 from database
+2022-10-07T00:11:38.544Z [TASKS] info: Get page of number 29 from database
+2022-10-07T00:11:38.777Z [TASKS] info: Get page of number 30 from database
+2022-10-07T00:11:40.155Z [TASKS] info: Get page of number 31 from database
+2022-10-07T00:11:40.862Z [TASKS] info: Get page of number 33 from database
+2022-10-07T00:11:40.970Z [TASKS] info: Get page of number 32 from database
+2022-10-07T00:11:41.878Z [TASKS] info: Get page of number 34 from database
+2022-10-07T00:11:42.325Z [TASKS] info: Get page of number 35 from database
+2022-10-07T00:11:42.799Z [TASKS] info: Get page of number 36 from database
+2022-10-07T00:11:43.326Z [TASKS] info: Get page of number 37 from database
+2022-10-07T00:11:43.983Z [TASKS] info: Get page of number 38 from database
+2022-10-07T00:11:45.094Z [TASKS] info: Get page of number 39 from database
+2022-10-07T00:11:46.574Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-07T00:14:14.288Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:14:14.292Z [TASKS] info: Emails service is running
+2022-10-07T00:14:14.305Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:14:17.360Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:14:17.364Z [TASKS] info: Emails service is running
+2022-10-07T00:14:17.375Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:14:21.780Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:14:21.784Z [TASKS] info: Emails service is running
+2022-10-07T00:14:21.795Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:14:31.126Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:14:31.129Z [TASKS] info: Emails service is running
+2022-10-07T00:14:31.142Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:18:56.433Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:18:56.437Z [TASKS] info: Emails service is running
+2022-10-07T00:18:56.448Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:19:01.420Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:19:01.423Z [TASKS] info: Emails service is running
+2022-10-07T00:19:01.434Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:19:36.388Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T00:19:38.432Z [TASKS] info: Number of pages: 40
+2022-10-07T00:19:45.503Z [TASKS] info: Get page of number 8 from database
+2022-10-07T00:19:45.809Z [TASKS] info: Get page of number 14 from database
+2022-10-07T00:19:45.887Z [TASKS] info: Get page of number 12 from database
+2022-10-07T00:19:46.773Z [TASKS] info: Get page of number 3 from database
+2022-10-07T00:19:47.074Z [TASKS] info: Get page of number 1 from database
+2022-10-07T00:19:47.360Z [TASKS] info: Get page of number 7 from database
+2022-10-07T00:19:48.612Z [TASKS] info: Get page of number 11 from database
+2022-10-07T00:19:48.745Z [TASKS] info: Get page of number 4 from database
+2022-10-07T00:19:48.962Z [TASKS] info: Get page of number 10 from database
+2022-10-07T00:19:50.136Z [TASKS] info: Get page of number 5 from database
+2022-10-07T00:19:50.335Z [TASKS] info: Get page of number 13 from database
+2022-10-07T00:19:50.474Z [TASKS] info: Get page of number 15 from database
+2022-10-07T00:19:51.957Z [TASKS] info: Get page of number 2 from database
+2022-10-07T00:19:52.247Z [TASKS] info: Get page of number 9 from database
+2022-10-07T00:19:52.362Z [TASKS] info: Get page of number 6 from database
+2022-10-07T00:19:53.775Z [TASKS] info: Get page of number 18 from database
+2022-10-07T00:19:54.174Z [TASKS] info: Get page of number 16 from database
+2022-10-07T00:19:55.323Z [TASKS] info: Get page of number 20 from database
+2022-10-07T00:19:55.501Z [TASKS] info: Get page of number 19 from database
+2022-10-07T00:19:56.825Z [TASKS] info: Get page of number 17 from database
+2022-10-07T00:19:56.886Z [TASKS] info: Get page of number 21 from database
+2022-10-07T00:19:57.045Z [TASKS] info: Get page of number 22 from database
+2022-10-07T00:19:58.207Z [TASKS] info: Get page of number 23 from database
+2022-10-07T00:19:58.236Z [TASKS] info: Get page of number 24 from database
+2022-10-07T00:19:58.910Z [TASKS] info: Get page of number 25 from database
+2022-10-07T00:19:59.798Z [TASKS] info: Get page of number 26 from database
+2022-10-07T00:20:01.235Z [TASKS] info: Get page of number 29 from database
+2022-10-07T00:20:01.367Z [TASKS] info: Get page of number 27 from database
+2022-10-07T00:20:03.247Z [TASKS] info: Get page of number 31 from database
+2022-10-07T00:20:04.829Z [TASKS] info: Get page of number 32 from database
+2022-10-07T00:20:06.335Z [TASKS] info: Get page of number 34 from database
+2022-10-07T00:20:07.069Z [TASKS] info: Get page of number 28 from database
+2022-10-07T00:20:08.083Z [TASKS] info: Get page of number 33 from database
+2022-10-07T00:20:08.597Z [TASKS] info: Get page of number 36 from database
+2022-10-07T00:20:09.222Z [TASKS] info: Get page of number 35 from database
+2022-10-07T00:20:09.364Z [TASKS] info: Get page of number 30 from database
+2022-10-07T00:20:10.763Z [TASKS] info: Get page of number 37 from database
+2022-10-07T00:20:11.653Z [TASKS] info: Get page of number 38 from database
+2022-10-07T00:20:11.728Z [TASKS] info: Get page of number 39 from database
+2022-10-07T00:20:13.293Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-07T00:29:43.941Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:29:43.944Z [TASKS] info: Emails service is running
+2022-10-07T00:29:43.955Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:33:35.587Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:33:35.590Z [TASKS] info: Emails service is running
+2022-10-07T00:33:35.601Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:33:43.772Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:33:43.775Z [TASKS] info: Emails service is running
+2022-10-07T00:33:43.787Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:34:25.438Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T00:34:27.792Z [TASKS] info: Number of pages: 40
+2022-10-07T00:34:35.174Z [TASKS] info: Get page of number 4 from database
+2022-10-07T00:34:35.425Z [TASKS] info: Get page of number 6 from database
+2022-10-07T00:34:36.110Z [TASKS] info: Get page of number 15 from database
+2022-10-07T00:34:37.207Z [TASKS] info: Get page of number 7 from database
+2022-10-07T00:34:37.381Z [TASKS] info: Get page of number 10 from database
+2022-10-07T00:34:38.494Z [TASKS] info: Get page of number 1 from database
+2022-10-07T00:34:38.688Z [TASKS] info: Get page of number 5 from database
+2022-10-07T00:34:39.050Z [TASKS] info: Get page of number 13 from database
+2022-10-07T00:34:39.354Z [TASKS] info: Get page of number 14 from database
+2022-10-07T00:34:39.956Z [TASKS] info: Get page of number 2 from database
+2022-10-07T00:34:40.522Z [TASKS] info: Get page of number 12 from database
+2022-10-07T00:34:41.270Z [TASKS] info: Get page of number 8 from database
+2022-10-07T00:34:42.060Z [TASKS] info: Get page of number 11 from database
+2022-10-07T00:34:42.331Z [TASKS] info: Get page of number 3 from database
+2022-10-07T00:34:43.390Z [TASKS] info: Get page of number 9 from database
+2022-10-07T00:34:43.511Z [TASKS] info: Get page of number 16 from database
+2022-10-07T00:34:43.792Z [TASKS] info: Get page of number 17 from database
+2022-10-07T00:34:44.955Z [TASKS] info: Get page of number 18 from database
+2022-10-07T00:34:45.602Z [TASKS] info: Get page of number 20 from database
+2022-10-07T00:34:45.756Z [TASKS] info: Get page of number 19 from database
+2022-10-07T00:34:47.084Z [TASKS] info: Get page of number 21 from database
+2022-10-07T00:34:47.810Z [TASKS] info: Get page of number 22 from database
+2022-10-07T00:34:47.835Z [TASKS] info: Get page of number 24 from database
+2022-10-07T00:34:49.651Z [TASKS] info: Get page of number 25 from database
+2022-10-07T00:34:49.991Z [TASKS] info: Get page of number 26 from database
+2022-10-07T00:34:51.198Z [TASKS] info: Get page of number 23 from database
+2022-10-07T00:34:51.463Z [TASKS] info: Get page of number 27 from database
+2022-10-07T00:34:51.612Z [TASKS] info: Get page of number 28 from database
+2022-10-07T00:34:53.267Z [TASKS] info: Get page of number 30 from database
+2022-10-07T00:34:53.379Z [TASKS] info: Get page of number 29 from database
+2022-10-07T00:34:53.764Z [TASKS] info: Get page of number 31 from database
+2022-10-07T00:34:55.164Z [TASKS] info: Get page of number 32 from database
+2022-10-07T00:34:55.417Z [TASKS] info: Get page of number 34 from database
+2022-10-07T00:34:55.530Z [TASKS] info: Get page of number 33 from database
+2022-10-07T00:34:57.036Z [TASKS] info: Get page of number 35 from database
+2022-10-07T00:34:57.268Z [TASKS] info: Get page of number 36 from database
+2022-10-07T00:34:57.454Z [TASKS] info: Get page of number 37 from database
+2022-10-07T00:34:58.635Z [TASKS] info: Get page of number 38 from database
+2022-10-07T00:34:59.049Z [TASKS] info: Get page of number 39 from database
+2022-10-07T00:35:00.747Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-07T00:36:18.236Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:36:18.239Z [TASKS] info: Emails service is running
+2022-10-07T00:36:18.251Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:36:26.135Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:36:26.138Z [TASKS] info: Emails service is running
+2022-10-07T00:36:26.149Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:36:34.259Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:36:34.264Z [TASKS] info: Emails service is running
+2022-10-07T00:36:34.275Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:36:35.164Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:36:35.168Z [TASKS] info: Emails service is running
+2022-10-07T00:36:35.180Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:36:36.947Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:36:36.951Z [TASKS] info: Emails service is running
+2022-10-07T00:36:36.963Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:36:37.796Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:36:37.799Z [TASKS] info: Emails service is running
+2022-10-07T00:36:37.810Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:37:21.491Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T00:37:23.572Z [TASKS] info: Number of pages: 40
+2022-10-07T00:37:31.873Z [TASKS] info: Get page of number 6 from database
+2022-10-07T00:37:32.363Z [TASKS] info: Get page of number 14 from database
+2022-10-07T00:37:32.961Z [TASKS] info: Get page of number 1 from database
+2022-10-07T00:37:33.069Z [TASKS] info: Get page of number 4 from database
+2022-10-07T00:37:33.257Z [TASKS] info: Get page of number 7 from database
+2022-10-07T00:37:34.193Z [TASKS] info: Get page of number 5 from database
+2022-10-07T00:37:34.424Z [TASKS] info: Get page of number 9 from database
+2022-10-07T00:37:34.612Z [TASKS] info: Get page of number 13 from database
+2022-10-07T00:37:35.706Z [TASKS] info: Get page of number 3 from database
+2022-10-07T00:37:36.274Z [TASKS] info: Get page of number 15 from database
+2022-10-07T00:37:37.167Z [TASKS] info: Get page of number 12 from database
+2022-10-07T00:37:37.671Z [TASKS] info: Get page of number 8 from database
+2022-10-07T00:37:38.288Z [TASKS] info: Get page of number 10 from database
+2022-10-07T00:37:38.747Z [TASKS] info: Get page of number 2 from database
+2022-10-07T00:37:40.293Z [TASKS] info: Get page of number 11 from database
+2022-10-07T00:37:40.565Z [TASKS] info: Get page of number 17 from database
+2022-10-07T00:37:40.870Z [TASKS] info: Get page of number 16 from database
+2022-10-07T00:37:42.596Z [TASKS] info: Get page of number 18 from database
+2022-10-07T00:37:42.612Z [TASKS] info: Get page of number 19 from database
+2022-10-07T00:37:42.736Z [TASKS] info: Get page of number 20 from database
+2022-10-07T00:37:43.405Z [TASKS] info: Get page of number 21 from database
+2022-10-07T00:37:44.207Z [TASKS] info: Get page of number 22 from database
+2022-10-07T00:37:44.787Z [TASKS] info: Get page of number 24 from database
+2022-10-07T00:37:45.207Z [TASKS] info: Get page of number 23 from database
+2022-10-07T00:37:45.954Z [TASKS] info: Get page of number 25 from database
+2022-10-07T00:37:46.213Z [TASKS] info: Get page of number 26 from database
+2022-10-07T00:37:47.570Z [TASKS] info: Get page of number 29 from database
+2022-10-07T00:37:48.050Z [TASKS] info: Get page of number 28 from database
+2022-10-07T00:37:48.413Z [TASKS] info: Get page of number 27 from database
+2022-10-07T00:37:48.891Z [TASKS] info: Get page of number 30 from database
+2022-10-07T00:37:49.438Z [TASKS] info: Get page of number 32 from database
+2022-10-07T00:37:50.008Z [TASKS] info: Get page of number 31 from database
+2022-10-07T00:37:51.393Z [TASKS] info: Get page of number 33 from database
+2022-10-07T00:37:51.464Z [TASKS] info: Get page of number 34 from database
+2022-10-07T00:37:51.479Z [TASKS] info: Get page of number 35 from database
+2022-10-07T00:37:52.967Z [TASKS] info: Get page of number 37 from database
+2022-10-07T00:37:54.617Z [TASKS] info: Get page of number 39 from database
+2022-10-07T00:37:54.959Z [TASKS] info: Get page of number 38 from database
+2022-10-07T00:37:56.552Z [TASKS] info: Get page of number 36 from database
+2022-10-07T00:37:58.029Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-07T00:38:21.787Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T00:38:23.831Z [TASKS] info: Number of pages: 40
+2022-10-07T00:38:30.535Z [TASKS] info: Get page of number 5 from database
+2022-10-07T00:38:30.668Z [TASKS] info: Get page of number 9 from database
+2022-10-07T00:38:30.848Z [TASKS] info: Get page of number 10 from database
+2022-10-07T00:38:31.475Z [TASKS] info: Get page of number 1 from database
+2022-10-07T00:38:32.208Z [TASKS] info: Get page of number 4 from database
+2022-10-07T00:38:32.944Z [TASKS] info: Get page of number 8 from database
+2022-10-07T00:38:33.128Z [TASKS] info: Get page of number 13 from database
+2022-10-07T00:38:33.967Z [TASKS] info: Get page of number 3 from database
+2022-10-07T00:38:34.333Z [TASKS] info: Get page of number 6 from database
+2022-10-07T00:38:35.017Z [TASKS] info: Get page of number 2 from database
+2022-10-07T00:38:36.200Z [TASKS] info: Get page of number 11 from database
+2022-10-07T00:38:36.379Z [TASKS] info: Get page of number 14 from database
+2022-10-07T00:38:36.827Z [TASKS] info: Get page of number 7 from database
+2022-10-07T00:38:37.583Z [TASKS] info: Get page of number 12 from database
+2022-10-07T00:38:37.877Z [TASKS] info: Get page of number 15 from database
+2022-10-07T00:38:38.152Z [TASKS] info: Get page of number 17 from database
+2022-10-07T00:38:39.345Z [TASKS] info: Get page of number 18 from database
+2022-10-07T00:38:39.700Z [TASKS] info: Get page of number 16 from database
+2022-10-07T00:38:40.158Z [TASKS] info: Get page of number 19 from database
+2022-10-07T00:38:41.072Z [TASKS] info: Get page of number 20 from database
+2022-10-07T00:38:41.459Z [TASKS] info: Get page of number 22 from database
+2022-10-07T00:38:42.044Z [TASKS] info: Get page of number 21 from database
+2022-10-07T00:38:43.021Z [TASKS] info: Get page of number 23 from database
+2022-10-07T00:38:43.173Z [TASKS] info: Get page of number 24 from database
+2022-10-07T00:38:43.361Z [TASKS] info: Get page of number 25 from database
+2022-10-07T00:38:44.679Z [TASKS] info: Get page of number 26 from database
+2022-10-07T00:38:44.726Z [TASKS] info: Get page of number 27 from database
+2022-10-07T00:38:45.201Z [TASKS] info: Get page of number 28 from database
+2022-10-07T00:38:47.578Z [TASKS] info: Get page of number 30 from database
+2022-10-07T00:38:47.887Z [TASKS] info: Get page of number 29 from database
+2022-10-07T00:38:48.127Z [TASKS] info: Get page of number 31 from database
+2022-10-07T00:38:48.976Z [TASKS] info: Get page of number 32 from database
+2022-10-07T00:38:49.454Z [TASKS] info: Get page of number 34 from database
+2022-10-07T00:38:50.177Z [TASKS] info: Get page of number 33 from database
+2022-10-07T00:38:50.364Z [TASKS] info: Get page of number 35 from database
+2022-10-07T00:38:51.842Z [TASKS] info: Get page of number 37 from database
+2022-10-07T00:38:51.937Z [TASKS] info: Get page of number 36 from database
+2022-10-07T00:38:52.549Z [TASKS] info: Get page of number 38 from database
+2022-10-07T00:38:54.043Z [TASKS] info: Get page of number 39 from database
+2022-10-07T00:38:55.580Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-07T00:41:11.223Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:41:11.226Z [TASKS] info: Emails service is running
+2022-10-07T00:41:11.237Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:51:51.422Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:51:51.425Z [TASKS] info: Emails service is running
+2022-10-07T00:51:51.437Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:51:57.921Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:51:57.924Z [TASKS] info: Emails service is running
+2022-10-07T00:51:57.936Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:52:00.260Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:52:00.264Z [TASKS] info: Emails service is running
+2022-10-07T00:52:00.278Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:52:02.214Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:52:02.218Z [TASKS] info: Emails service is running
+2022-10-07T00:52:02.229Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:52:09.871Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:52:09.874Z [TASKS] info: Emails service is running
+2022-10-07T00:52:09.886Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:52:14.258Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:52:14.262Z [TASKS] info: Emails service is running
+2022-10-07T00:52:14.273Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:52:16.824Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:52:16.827Z [TASKS] info: Emails service is running
+2022-10-07T00:52:16.839Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:53:10.540Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:53:10.543Z [TASKS] info: Emails service is running
+2022-10-07T00:53:10.555Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:53:54.931Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:53:54.934Z [TASKS] info: Emails service is running
+2022-10-07T00:53:54.947Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:54:04.071Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:54:04.074Z [TASKS] info: Emails service is running
+2022-10-07T00:54:04.085Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:54:15.824Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:54:15.827Z [TASKS] info: Emails service is running
+2022-10-07T00:54:15.838Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:54:27.524Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:54:27.527Z [TASKS] info: Emails service is running
+2022-10-07T00:54:27.538Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:54:30.831Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:54:30.834Z [TASKS] info: Emails service is running
+2022-10-07T00:54:30.845Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:54:51.605Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:54:51.608Z [TASKS] info: Emails service is running
+2022-10-07T00:54:51.619Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:57:23.878Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:57:23.881Z [TASKS] info: Emails service is running
+2022-10-07T00:57:23.894Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:57:45.832Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:57:45.835Z [TASKS] info: Emails service is running
+2022-10-07T00:57:45.847Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:57:58.870Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:57:58.874Z [TASKS] info: Emails service is running
+2022-10-07T00:57:58.885Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:58:17.459Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:58:17.463Z [TASKS] info: Emails service is running
+2022-10-07T00:58:17.475Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:58:40.438Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:58:40.442Z [TASKS] info: Emails service is running
+2022-10-07T00:58:40.455Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:59:08.818Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:59:08.821Z [TASKS] info: Emails service is running
+2022-10-07T00:59:08.833Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:59:22.635Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T00:59:22.640Z [TASKS] info: Emails service is running
+2022-10-07T00:59:22.656Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T00:59:42.224Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T00:59:46.313Z [TASKS] info: Number of pages: 40
+2022-10-07T00:59:53.261Z [TASKS] info: Get page of number 2 from database
+2022-10-07T00:59:54.336Z [TASKS] info: Get page of number 15 from database
+2022-10-07T00:59:54.634Z [TASKS] info: Get page of number 4 from database
+2022-10-07T00:59:55.935Z [TASKS] info: Get page of number 5 from database
+2022-10-07T00:59:56.062Z [TASKS] info: Get page of number 11 from database
+2022-10-07T00:59:56.766Z [TASKS] info: Get page of number 9 from database
+2022-10-07T00:59:58.049Z [TASKS] info: Get page of number 12 from database
+2022-10-07T00:59:58.383Z [TASKS] info: Get page of number 13 from database
+2022-10-07T00:59:59.258Z [TASKS] info: Get page of number 3 from database
+2022-10-07T01:00:00.040Z [TASKS] info: Get page of number 7 from database
+2022-10-07T01:00:00.224Z [TASKS] info: Get page of number 10 from database
+2022-10-07T01:00:00.814Z [TASKS] info: Get page of number 8 from database
+2022-10-07T01:00:01.342Z [TASKS] info: Get page of number 14 from database
+2022-10-07T01:00:01.880Z [TASKS] info: Get page of number 1 from database
+2022-10-07T01:00:02.645Z [TASKS] info: Get page of number 6 from database
+2022-10-07T01:00:03.124Z [TASKS] info: Get page of number 17 from database
+2022-10-07T01:00:03.864Z [TASKS] info: Get page of number 16 from database
+2022-10-07T01:00:04.980Z [TASKS] info: Get page of number 19 from database
+2022-10-07T01:00:05.519Z [TASKS] info: Get page of number 20 from database
+2022-10-07T01:00:05.539Z [TASKS] info: Get page of number 18 from database
+2022-10-07T01:00:05.727Z [TASKS] info: Get page of number 21 from database
+2022-10-07T01:00:06.305Z [TASKS] info: Get page of number 22 from database
+2022-10-07T01:00:07.747Z [TASKS] info: Get page of number 25 from database
+2022-10-07T01:00:08.174Z [TASKS] info: Get page of number 24 from database
+2022-10-07T01:00:09.441Z [TASKS] info: Get page of number 26 from database
+2022-10-07T01:00:09.676Z [TASKS] info: Get page of number 27 from database
+2022-10-07T01:00:09.891Z [TASKS] info: Get page of number 23 from database
+2022-10-07T01:00:11.201Z [TASKS] info: Get page of number 28 from database
+2022-10-07T01:00:11.529Z [TASKS] info: Get page of number 29 from database
+2022-10-07T01:00:12.357Z [TASKS] info: Get page of number 31 from database
+2022-10-07T01:00:12.907Z [TASKS] info: Get page of number 32 from database
+2022-10-07T01:00:13.076Z [TASKS] info: Get page of number 30 from database
+2022-10-07T01:00:13.598Z [TASKS] info: Get page of number 33 from database
+2022-10-07T01:00:14.188Z [TASKS] info: Get page of number 35 from database
+2022-10-07T01:00:14.823Z [TASKS] info: Get page of number 36 from database
+2022-10-07T01:00:15.461Z [TASKS] info: Get page of number 37 from database
+2022-10-07T01:00:17.055Z [TASKS] info: Get page of number 38 from database
+2022-10-07T01:00:17.421Z [TASKS] info: Get page of number 39 from database
+2022-10-07T01:00:18.203Z [TASKS] info: Get page of number 34 from database
+2022-10-07T01:00:19.802Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-07T01:01:20.367Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T01:01:20.371Z [TASKS] info: Emails service is running
+2022-10-07T01:01:20.382Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T01:01:38.317Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T01:01:42.026Z [TASKS] info: Number of pages: 40
+2022-10-07T01:01:48.856Z [TASKS] info: Get page of number 5 from database
+2022-10-07T01:01:48.952Z [TASKS] info: Get page of number 2 from database
+2022-10-07T01:01:49.207Z [TASKS] info: Get page of number 11 from database
+2022-10-07T01:01:49.951Z [TASKS] info: Get page of number 3 from database
+2022-10-07T01:01:50.293Z [TASKS] info: Get page of number 15 from database
+2022-10-07T01:01:50.708Z [TASKS] info: Get page of number 9 from database
+2022-10-07T01:01:51.141Z [TASKS] info: Get page of number 4 from database
+2022-10-07T01:01:51.434Z [TASKS] info: Get page of number 6 from database
+2022-10-07T01:01:52.672Z [TASKS] info: Get page of number 8 from database
+2022-10-07T01:01:53.714Z [TASKS] info: Get page of number 14 from database
+2022-10-07T01:01:54.145Z [TASKS] info: Get page of number 12 from database
+2022-10-07T01:01:54.532Z [TASKS] info: Get page of number 13 from database
+2022-10-07T01:01:54.856Z [TASKS] info: Get page of number 1 from database
+2022-10-07T01:01:55.191Z [TASKS] info: Get page of number 10 from database
+2022-10-07T01:01:55.782Z [TASKS] info: Get page of number 7 from database
+2022-10-07T01:01:55.918Z [TASKS] info: Get page of number 18 from database
+2022-10-07T01:01:56.413Z [TASKS] info: Get page of number 16 from database
+2022-10-07T01:01:57.124Z [TASKS] info: Get page of number 19 from database
+2022-10-07T01:01:57.282Z [TASKS] info: Get page of number 17 from database
+2022-10-07T01:01:57.722Z [TASKS] info: Get page of number 20 from database
+2022-10-07T01:01:58.506Z [TASKS] info: Get page of number 21 from database
+2022-10-07T01:01:58.662Z [TASKS] info: Get page of number 22 from database
+2022-10-07T01:01:58.939Z [TASKS] info: Get page of number 23 from database
+2022-10-07T01:02:00.120Z [TASKS] info: Get page of number 26 from database
+2022-10-07T01:02:00.191Z [TASKS] info: Get page of number 24 from database
+2022-10-07T01:02:00.194Z [TASKS] info: Get page of number 25 from database
+2022-10-07T01:02:01.675Z [TASKS] info: Get page of number 27 from database
+2022-10-07T01:02:01.700Z [TASKS] info: Get page of number 29 from database
+2022-10-07T01:02:01.963Z [TASKS] info: Get page of number 28 from database
+2022-10-07T01:02:03.496Z [TASKS] info: Get page of number 31 from database
+2022-10-07T01:02:03.596Z [TASKS] info: Get page of number 30 from database
+2022-10-07T01:02:03.871Z [TASKS] info: Get page of number 32 from database
+2022-10-07T01:02:05.135Z [TASKS] info: Get page of number 34 from database
+2022-10-07T01:02:05.803Z [TASKS] info: Get page of number 33 from database
+2022-10-07T01:02:06.144Z [TASKS] info: Get page of number 35 from database
+2022-10-07T01:02:06.679Z [TASKS] info: Get page of number 36 from database
+2022-10-07T01:02:07.345Z [TASKS] info: Get page of number 37 from database
+2022-10-07T01:02:07.423Z [TASKS] info: Get page of number 38 from database
+2022-10-07T01:02:07.862Z [TASKS] info: Get page of number 39 from database
+2022-10-07T01:02:09.345Z [TASKS] info: Sending the email informing that the file generation is complete.
+2022-10-07T01:03:08.496Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T01:03:08.499Z [TASKS] info: Emails service is running
+2022-10-07T01:03:08.510Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T01:03:15.076Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T01:03:15.079Z [TASKS] info: Emails service is running
+2022-10-07T01:03:15.091Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T01:03:45.731Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T01:03:47.365Z [TASKS] error: Executing stored procedure 
+2022-10-07T01:03:47.365Z [TASKS] error: Procedure or function 'uspGetAnalysisDataCountForUserList' expects parameter '@listID', which was not supplied.
+2022-10-07T01:03:47.365Z [TASKS] error: [object Object]
+2022-10-07T01:03:47.401Z [TASKS] error: Error on generating the file: undefined
+2022-10-07T01:04:09.138Z [TASKS] info: Start listenning to the queue: https://sqs.us-east-1.amazonaws.com/617001639586/gfwpro-build-tmp-data-dev.fifo
+2022-10-07T01:04:09.141Z [TASKS] info: Emails service is running
+2022-10-07T01:04:09.153Z [TASKS] info: Listening at http://localhost:3333/api
+2022-10-07T01:04:54.845Z [TASKS] info: Sending the email informing that the file generation is started.
+2022-10-07T01:04:58.634Z [TASKS] info: Number of pages: 40
+2022-10-07T01:05:05.177Z [TASKS] info: Get page of number 15 from database
+2022-10-07T01:05:05.249Z [TASKS] info: Get page of number 4 from database
+2022-10-07T01:05:05.443Z [TASKS] info: Get page of number 2 from database
+2022-10-07T01:05:06.135Z [TASKS] info: Get page of number 1 from database
+2022-10-07T01:05:06.649Z [TASKS] info: Get page of number 9 from database
+2022-10-07T01:05:06.907Z [TASKS] info: Get page of number 12 from database
+2022-10-07T01:05:07.720Z [TASKS] info: Get page of number 5 from database
+2022-10-07T01:05:08.928Z [TASKS] info: Get page of number 10 from database
+2022-10-07T01:05:09.925Z [TASKS] info: Get page of number 6 from database
+2022-10-07T01:05:10.397Z [TASKS] info: Get page of number 14 from database
+2022-10-07T01:05:10.632Z [TASKS] info: Get page of number 13 from database
+2022-10-07T01:05:11.067Z [TASKS] info: Get page of number 11 from database
+2022-10-07T01:05:11.253Z [TASKS] info: Get page of number 3 from database
+2022-10-07T01:05:11.707Z [TASKS] info: Get page of number 8 from database
+2022-10-07T01:05:12.325Z [TASKS] info: Get page of number 7 from database
+2022-10-07T01:05:12.520Z [TASKS] info: Get page of number 18 from database
+2022-10-07T01:05:13.395Z [TASKS] info: Get page of number 16 from database
+2022-10-07T01:05:13.648Z [TASKS] info: Get page of number 19 from database
+2022-10-07T01:05:14.535Z [TASKS] info: Get page of number 17 from database
+2022-10-07T01:05:14.917Z [TASKS] info: Get page of number 20 from database
+2022-10-07T01:05:15.085Z [TASKS] info: Get page of number 21 from database
+2022-10-07T01:05:15.405Z [TASKS] info: Get page of number 22 from database
+2022-10-07T01:05:16.206Z [TASKS] info: Get page of number 24 from database
+2022-10-07T01:05:16.442Z [TASKS] info: Get page of number 23 from database
+2022-10-07T01:05:17.768Z [TASKS] info: Get page of number 27 from database
+2022-10-07T01:05:18.008Z [TASKS] info: Get page of number 26 from database
+2022-10-07T01:05:19.007Z [TASKS] info: Get page of number 25 from database
+2022-10-07T01:05:19.228Z [TASKS] info: Get page of number 28 from database
+2022-10-07T01:05:19.819Z [TASKS] info: Get page of number 31 from database
+2022-10-07T01:05:20.492Z [TASKS] info: Get page of number 30 from database
+2022-10-07T01:05:20.804Z [TASKS] info: Get page of number 32 from database
+2022-10-07T01:05:21.128Z [TASKS] info: Get page of number 29 from database
+2022-10-07T01:05:21.992Z [TASKS] info: Get page of number 35 from database
+2022-10-07T01:05:23.150Z [TASKS] info: Get page of number 37 from database
+2022-10-07T01:05:23.934Z [TASKS] info: Get page of number 33 from database
+2022-10-07T01:05:24.319Z [TASKS] info: Get page of number 36 from database
+2022-10-07T01:05:24.935Z [TASKS] info: Get page of number 38 from database
+2022-10-07T01:05:26.331Z [TASKS] info: Get page of number 39 from database
+2022-10-07T01:05:28.121Z [TASKS] info: Get page of number 34 from database
+2022-10-07T01:05:29.566Z [TASKS] info: Sending the email informing that the file generation is complete.

@@ -1,0 +1,60 @@
+{
+  "name": "microservices-b2b",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/microservices/b2b/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/microservices/b2b",
+        "main": "apps/microservices/b2b/src/main.ts",
+        "tsConfig": "apps/microservices/b2b/tsconfig.app.json",
+        "assets": ["apps/microservices/b2b/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/microservices/b2b/src/environments/environment.ts",
+              "with": "apps/microservices/b2b/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/js:node",
+      "options": {
+        "buildTarget": "microservices-b2b:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "microservices-b2b:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/microservices/b2b/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/microservices/b2b"],
+      "options": {
+        "jestConfig": "apps/microservices/b2b/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

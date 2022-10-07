@@ -1,3 +1,4 @@
+import { environment } from './../environments/environment.prod';
 import { SQLUtils } from './../utils/sql.utils';
 import { Injectable, Inject } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../models';
@@ -28,7 +29,12 @@ export class LargeListService {
       'LARGE_LIST_PROCESING_ENDPOINT'
     );
 
-    const requestBody = JSON.stringify(request);
+    const microserviceEnvironment =
+      this.config.get<string>('MICROSERVICES_ENV');
+
+    const payloadBody = { ...request, environment: microserviceEnvironment };
+
+    const requestBody = JSON.stringify(payloadBody);
     const options = {
       method: 'POST',
       headers: {

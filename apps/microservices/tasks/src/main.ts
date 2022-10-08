@@ -4,7 +4,7 @@
  */
 
 import * as express from 'express';
-import { logger } from './app/logger'
+import { logger } from '@wri-monorepos/util'
 import { start } from './app/create';
 
 const app = express();

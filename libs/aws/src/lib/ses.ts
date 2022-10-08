@@ -1,3 +1,6 @@
+import * as AWS from 'aws-sdk';
+import { createErrorMessage } from '@wri-monorepos/util'
+
 const createPage = (bodyContent:string) =>
   `<!DOCTYPE html>
   <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"

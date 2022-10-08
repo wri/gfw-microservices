@@ -4,6 +4,7 @@ import { createErrorMessage, errorCodes } from '@wri-monorepos/util'
 import * as sql from 'mssql';
 
 import { executeOrganizationStoredProcedure } from './sql';
+import { Filters } from './model';
 
 /** @function {getPaginatedAnalysisDataForUserList}
  *   @summary Get function to return json of paginated location metadata with geometry.

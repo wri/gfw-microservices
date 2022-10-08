@@ -2,17 +2,17 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-param-reassign */
 
-import * as wellknown from 'wellknown';
-import * as geojsonStream from 'geojson-stream';
 import { convert } from 'geojson2shp';
-
 import * as asyncPool from "tiny-async-pool";
 import * as fs from 'fs';
+import * as geojsonStream from 'geojson-stream';
+import * as wellknown from 'wellknown';
 
-import { Filters } from './util';
+import { getNumberPagesForAnalysisDataUserList, getPaginatedAnalysisDataForUserList, getListNameSchema, Filters  } from '@wri-monorepos/sql';
+import { logger } from '@wri-monorepos/util';
+
+
 import { resultColumns, columnsListName, columnsTemplateId } from './constants';
-import { getNumberPagesForAnalysisDataUserList, getPaginatedAnalysisDataForUserList } from './sql';
-import { logger } from './logger';
 
 /** @function {getGeoJSONGeometry}
  *   @summary Converts a WKT Geometry to GeoJSON geometry
@@ -139,6 +139,9 @@ const convertGeojsonToSHP = async (key: string) => {
 };
 
 export const build = async (key: string, organizationDatabase: string, filter: Filters) => {
+  const listSchema = await getListNameSchema(organizationDatabase, filter);
+  filter.listName = listSchema.list_name;
+
   const dir = `/tmp/${key}-folder`;
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);

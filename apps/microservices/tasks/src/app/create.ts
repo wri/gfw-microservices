@@ -1,17 +1,12 @@
 import * as  fs from 'fs';
 
-import {
-  connectToSQS,
-  sendCSVtoS3,
-  getFileSignedUrl,
-  sendEmail
-} from './aws';
-
-import { Filters } from './util'; 
+import { connectToSQS, sendCSVtoS3, getFileSignedUrl, sendEmail } from '@wri-monorepos/aws';
+import { Filters } from '@wri-monorepos/sql';
+import { logger } from '@wri-monorepos/util';
 
 import { build as buildCSV}  from './csv';
 import { build as buildShapefile } from './shapefile';
-import { logger } from './logger';
+
 
 const genCSV = async (key: string, organizationDatabase: string, filter: Filters) => {
   await buildCSV(key, organizationDatabase, filter);

@@ -1,4 +1,8 @@
+import { logger } from '@wri-monorepos/util'
+import { Consumer } from 'sqs-consumer';
+import * as AWS from 'aws-sdk';
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const connectToSQS = (func: Function) => {
   const awsConfig = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,

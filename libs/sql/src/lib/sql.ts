@@ -2,6 +2,8 @@ import * as sql from 'mssql';
 
 import { logger } from '@wri-monorepos/util'
 
+import { Param } from './model';
+
 /**
  * @function executeOrganizationStoredProcedure
  * @summary Executes a stored procedure for the particular user's database and returns
@@ -15,15 +17,15 @@ export const executeOrganizationStoredProcedure = (database: string, storedProce
     return new Promise((resolve, reject) => {
         // Create SQL Connection Config based on session database.
         const SQLConfig = {
-        server: process.env.MSSQL_HOSTNAME,
-        database,
-        user: process.env.MSSQL_USERNAME,
-        port: parseInt(process.env.MSSQL_PORT, 10),
-        password: process.env.MSSQL_PASSWORD,
-        requestTimeout: 30000,
-        options: {
-            encrypt: false,
-        },
+            server: process.env.MSSQL_HOSTNAME,
+            database,
+            user: process.env.MSSQL_USERNAME,
+            port: parseInt(process.env.MSSQL_PORT, 10),
+            password: process.env.MSSQL_PASSWORD,
+            requestTimeout: 30000,
+            options: {
+                encrypt: false,
+            },
         };
     
         const pool = new sql.ConnectionPool(SQLConfig, (err) => {

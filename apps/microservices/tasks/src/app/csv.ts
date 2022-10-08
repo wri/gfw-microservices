@@ -4,15 +4,10 @@ import { Parser } from 'json2csv';
 import * as asyncPool from "tiny-async-pool";
 import * as fs from 'fs';
 
-import { Filters } from './util';
-import { resultColumns, columnsListName, columnsTemplateId } from './constants';
-import { 
-  getNumberPagesForAnalysisDataUserList,
-  getPaginatedAnalysisDataForUserList,
-  getListNameSchema 
-} from './sql';
-import { logger } from './logger';
+import { getNumberPagesForAnalysisDataUserList, getPaginatedAnalysisDataForUserList, getListNameSchema, Filters  } from '@wri-monorepos/sql';
+import { logger } from '@wri-monorepos/util';
 
+import { resultColumns, columnsListName, columnsTemplateId } from './constants';
 
 const buildCSVHeader = (fields: any, filters: Filters) => {
   const originalFields = fields.reduce((obj, str) => {
@@ -82,8 +77,8 @@ const getAnalysisData = async (organizationDatabase: string, filters: Filters) =
 export const build = async (key: string, organizationDatabase: string, filter: Filters) => {
 
   const listSchema = await getListNameSchema(organizationDatabase, filter);
-  console.log(listSchema)
   filter.listName = listSchema.list_name;
+
   filter.rowsPerPage = 5000;
   const { numberOfPages } = await getNumberPagesForAnalysisDataUserList(organizationDatabase, filter);
   logger.info(`Number of pages: ${numberOfPages}`);

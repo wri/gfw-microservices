@@ -1,3 +1,7 @@
+
+import * as  AWS from 'aws-sdk';
+import * as fs from 'fs';
+
 export const sendCSVtoS3 = async (key: string, fileExtension: string, contentType: string) => {
   const s3 = new AWS.S3({
     apiVersion: 'v2',
@@ -8,7 +12,7 @@ export const sendCSVtoS3 = async (key: string, fileExtension: string, contentTyp
     region: process.env.AWS_REGION,
   });
 
-  const fileContent = fsp.readFileSync(`/tmp/${key}.${fileExtension}`);
+  const fileContent = fs.readFileSync(`/tmp/${key}.${fileExtension}`);
   const params = {
     Bucket: process.env.AWS_TMP_BUCKET,
     Key: `${process.env.NODE_ENV}/${key}.${fileExtension}`,

@@ -33,7 +33,7 @@ import { executeOrganizationStoredProcedure } from './sql';
 
         executeOrganizationStoredProcedure(databaseName, 'uspGetAnalysisDataCountForUserList', parameters)
         .then((recordsets) => {
-            const numberOfPages = Math.ceil(recordsets[0].TotalRows / rowsPerPage);
+            const numberOfPages = Math.ceil(recordsets[0].TotalRows / (rowsPerPage || 100));
             resolve({ numberOfPages });
         })
         .catch((errorMessage) => {

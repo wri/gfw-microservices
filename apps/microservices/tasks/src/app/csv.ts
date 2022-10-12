@@ -46,8 +46,8 @@ const buildCSVHeader = (fields: any, filters: Filters) => {
 
 const getAnalysisData = async (organizationDatabase: string, filters: Filters) => {
   const { page } = filters;
-  let analysisData = await getPaginatedAnalysisDataForUserList(organizationDatabase, filters);
-  const [firstElem] = analysisData;
+  let analysisData =  await getPaginatedAnalysisDataForUserList(organizationDatabase, filters);
+  const [ firstElem ] = analysisData;
   const fields =
     columnsTemplateId[firstElem.template_id] ?? columnsListName[firstElem.list_name] ?? columnsTemplateId[14];
 

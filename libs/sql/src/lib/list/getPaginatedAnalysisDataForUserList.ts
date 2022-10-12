@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createErrorMessage, errorCodes } from '@wri-monorepos/util'
-
 import * as sql from 'mssql';
 
-import { executeOrganizationStoredProcedure } from './sql';
-import { Filters } from './model';
+import { ErrorException, ErrorCode, logger } from '@wri-monorepos/util';
+
+import { FileGenerationFilter } from './model';
+import { executeStoredProcedure } from '../util';
 
 /** @function {getPaginatedAnalysisDataForUserList}
  *   @summary Get function to return json of paginated location metadata with geometry.
@@ -12,7 +12,7 @@ import { Filters } from './model';
  *   @param  {Integer} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
- export const getPaginatedAnalysisDataForUserList = (databaseName: string, filters: Filters) :  Promise<Array<any>> => {
+ export const getPaginatedAnalysisDataForUserList = (databaseName: string, filters: FileGenerationFilter) => {
     const {
         analysisArea,
         analysisAreaOperator,
@@ -42,17 +42,14 @@ import { Filters } from './model';
         { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
       ];
   
-      executeOrganizationStoredProcedure(databaseName, 'uspGetPaginatedAnalysisDataForUserList', parameters)
-        .then((recordsets: Array<any>) => {
-          resolve(recordsets);
+      executeStoredProcedure(databaseName, 'uspGetPaginatedAnalysisDataForUserList', parameters)
+        .then((recordsets) => {
+          
+          resolve(recordsets.data);
         })
         .catch((errorMessage) => {
-          const errorObject = createErrorMessage(
-            errorCodes.failedToGetList,
-            `Failed to get paginated list location for List ${listID}`,
-            errorMessage
-          );
-          reject(errorObject);
+          logger.error(`getPaginatedAnalysisDataForUserList: ${errorMessage}`);
+          reject(new ErrorException( ErrorCode.InternalServerError, { message: `Failed to get paginated list location for List ${listID}`}));
         });
     });
   };

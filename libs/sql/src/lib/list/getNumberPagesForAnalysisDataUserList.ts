@@ -1,10 +1,9 @@
-import { createErrorMessage, errorCodes } from '@wri-monorepos/util'
-
 import * as sql from 'mssql';
 
-import { Filters, Pages }  from './model';
+import { ErrorException, ErrorCode, logger } from '@wri-monorepos/util';
 
-import { executeOrganizationStoredProcedure } from './sql';
+import { FileGenerationFilter, Pages }  from './model';
+import { executeStoredProcedure } from '../util';
 
 /** @function {getNumberPagesForAnalysisDataUserList}
  *   @summary Get function to return the number of pages for the paginated analysis data for a user list.
@@ -13,7 +12,7 @@ import { executeOrganizationStoredProcedure } from './sql';
  *   @param  {Integer} filters- filters
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
- export const getNumberPagesForAnalysisDataUserList = (databaseName: string, filters: Filters): Promise<Pages> => {
+ export const getNumberPagesForAnalysisDataUserList = (databaseName: string, filters: FileGenerationFilter): Promise<Pages> => {
 
     const {
         country,
@@ -31,18 +30,15 @@ import { executeOrganizationStoredProcedure } from './sql';
             { field: 'SubState', type: sql.NVarChar, value: subState || null },
         ];
 
-        executeOrganizationStoredProcedure(databaseName, 'uspGetAnalysisDataCountForUserList', parameters)
+        executeStoredProcedure(databaseName, 'uspGetAnalysisDataCountForUserList', parameters)
         .then((recordsets) => {
-            const numberOfPages = Math.ceil(recordsets[0].TotalRows / (rowsPerPage || 100));
+            const [value] = recordsets.data;
+            const numberOfPages = Math.ceil(value.TotalRows / (rowsPerPage || 100));
             resolve({ numberOfPages });
         })
         .catch((errorMessage) => {
-            const errorObject = createErrorMessage(
-            errorCodes.failedToGetList,
-            `Failed to get number of pages for List ${listID}`,
-            errorMessage
-            );
-            reject(errorObject);
+            logger.error(`getNumberPagesForAnalysisDataUserList: ${errorMessage}`);
+            reject(new ErrorException( ErrorCode.InternalServerError, { message: `Failed to get number of pages for List ${listID}`}));
         });
     });
 };

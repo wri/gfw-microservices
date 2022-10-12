@@ -1,24 +1,23 @@
 import * as  fs from 'fs';
 
-import { connectToSQS, sendCSVtoS3, getFileSignedUrl, sendEmail } from '@wri-monorepos/aws';
-import { Filters } from '@wri-monorepos/sql';
+import { connectToSQS, sendCSVtoS3, getFileSignedUrl, sendEmailFile } from '@wri-monorepos/aws';
+import { FileGenerationFilter } from '@wri-monorepos/sql';
 import { logger } from '@wri-monorepos/util';
 
 import { build as buildCSV}  from './csv';
 import { build as buildShapefile } from './shapefile';
 
 
-const genCSV = async (key: string, organizationDatabase: string, filter: Filters) => {
+const genCSV = async (key: string, organizationDatabase: string, filter: FileGenerationFilter) => {
   await buildCSV(key, organizationDatabase, filter);
 };
 
-const genShapefile = async (key: string, organizationDatabase: string, filter: Filters) => {
+const genShapefile = async (key: string, organizationDatabase: string, filter: FileGenerationFilter) => {
   await buildShapefile(key, organizationDatabase, filter);
 };
 
 const receiveMessage = async (message) => {
   const filter = JSON.parse(message.Body);
-  console.log(filter);
   const { key, file, organizationDatabase } = filter;
 
   delete filter.key;
@@ -27,7 +26,7 @@ const receiveMessage = async (message) => {
   const { userEmail, listName } = filter;
   // sender, receivers, subject, content
   logger.info(`Sending the email informing that the file generation is started.`)
-  sendEmail(
+  sendEmailFile(
     process.env.SES_SENDER_EMAIL,
     [userEmail],
     `[GFW-PRO] File Generation for list ${listName}`,
@@ -55,7 +54,7 @@ const receiveMessage = async (message) => {
       await sendCSVtoS3(key, fileExtension, contentType);
       const location = await getFileSignedUrl(key, fileExtension);
       logger.info(`Sending the email informing that the file generation is complete.`)
-      sendEmail(process.env.SES_SENDER_EMAIL, [userEmail], `[GFW-PRO] File Generation for list ${listName}`, 'finish', {
+      sendEmailFile(process.env.SES_SENDER_EMAIL, [userEmail], `[GFW-PRO] File Generation for list ${listName}`, 'finish', {
         ...filter,
         location,
       });
@@ -63,7 +62,7 @@ const receiveMessage = async (message) => {
   } catch (error) {
     console.error(error);
     logger.error(`Error on generating the file: ${error.message}`)
-    sendEmail(
+    sendEmailFile(
       process.env.SES_SENDER_EMAIL,
       [userEmail],
       `[GFW-PRO] File Generation for list ${listName}`,

@@ -8,7 +8,12 @@ import * as fs from 'fs';
 import * as geojsonStream from 'geojson-stream';
 import * as wellknown from 'wellknown';
 
-import { getNumberPagesForAnalysisDataUserList, getPaginatedAnalysisDataForUserList, getListNameSchema, Filters  } from '@wri-monorepos/sql';
+import { 
+  getNumberPagesForAnalysisDataUserList,
+  getPaginatedAnalysisDataForUserList,
+  getListNameSchema,
+  FileGenerationFilter,
+} from '@wri-monorepos/sql';
 import { logger } from '@wri-monorepos/util';
 
 
@@ -56,7 +61,7 @@ const createGeoJSON = (recordsets: Array<any>) => {
   return geojson;
 };
 
-const getAnalysisData = async (organizationDatabase: string, filter: Filters) => {
+const getAnalysisData = async (organizationDatabase: string, filter: FileGenerationFilter) => {
   let analysisData = await getPaginatedAnalysisDataForUserList(organizationDatabase, filter);
   const [firstElem] = analysisData;
   const fields =
@@ -81,7 +86,7 @@ const getAnalysisData = async (organizationDatabase: string, filter: Filters) =>
   return createGeoJSON(analysisData);
 };
 
-const createGeoJSONPage = async (key: string, dir: string, organizationDatabase: string, filter: Filters) => {
+const createGeoJSONPage = async (key: string, dir: string, organizationDatabase: string, filter: FileGenerationFilter) => {
   const listOfGeojsonFiles = Array<string>();
   filter.rowsPerPage = 5000;
   
@@ -138,7 +143,7 @@ const convertGeojsonToSHP = async (key: string) => {
   await convert(`/tmp/${key}.geojson`, `/tmp/${key}.zip`, options);
 };
 
-export const build = async (key: string, organizationDatabase: string, filter: Filters) => {
+export const build = async (key: string, organizationDatabase: string, filter: FileGenerationFilter) => {
   const listSchema = await getListNameSchema(organizationDatabase, filter);
   filter.listName = listSchema.list_name;
 

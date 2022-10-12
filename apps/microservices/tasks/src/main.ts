@@ -4,10 +4,13 @@
  */
 
 import * as express from 'express';
-import { logger } from '@wri-monorepos/util'
+import { logger, errorHandler } from '@wri-monorepos/util'
+
 import { start } from './app/create';
 
 const app = express();
+
+app.use(errorHandler);
 
 app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to microservices/tasks!' });

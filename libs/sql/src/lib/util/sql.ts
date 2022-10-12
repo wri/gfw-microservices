@@ -2,10 +2,11 @@ import * as sql from 'mssql';
 
 import { logger } from '@wri-monorepos/util'
 
-import { Param } from './model';
+import { SQLParam, StoredProcedureOutput } from './model';
+
 
 /**
- * @function executeOrganizationStoredProcedure
+ * @function executeStoredProcedure
  * @summary Executes a stored procedure for the particular user's database and returns
  *			any records received.
  * @param {String} database - database to run the stored procedure
@@ -13,7 +14,7 @@ import { Param } from './model';
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
  * @return {Array} An array of record sets.
 */
-export const executeOrganizationStoredProcedure = (database: string, storedProcedureName: string, params: Array<Param>) => {
+export const executeStoredProcedure = (database: string, storedProcedureName: string, paramsInput: Array<SQLParam>, paramsOutput: Array<SQLParam> = []): Promise<StoredProcedureOutput> => {
     return new Promise((resolve, reject) => {
         // Create SQL Connection Config based on session database.
         const SQLConfig = {
@@ -35,17 +36,27 @@ export const executeOrganizationStoredProcedure = (database: string, storedProce
         // Get Request Object. Query
         const request = new sql.Request(pool);
         // Add parameters to the request object.
-        if (params && Array.isArray(params)) {
-            params.forEach((param) => {
-            request.input(param.field, param.type, param.value);
+        if (paramsInput && Array.isArray(paramsInput)) {
+            paramsInput.forEach((param) => {
+               request.input(param.field, param.type, param.value);
             });
         }
+
+        if (paramsOutput && Array.isArray(paramsOutput)) {
+            paramsOutput.forEach((param) => {
+               request.output(param.field, param.type, param.value);
+            });
+        }
+
         // Execute Stored Procedure.
         request
             .execute(storedProcedureName)
             .then((result) => {
-            resolve(result.recordsets[0]);
-            pool.close();
+                resolve({
+                    data: result.recordset,
+                    output: result.output
+                });
+                pool.close();
             })
             .catch((errorMessage) => {
             logger.error('Executing stored procedure ', storedProcedureName);

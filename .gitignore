@@ -42,4 +42,6 @@ Thumbs.db
 .env
 
 
+
 *.log
+logs/**.json

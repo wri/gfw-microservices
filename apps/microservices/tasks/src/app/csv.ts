@@ -4,12 +4,17 @@ import { Parser } from 'json2csv';
 import * as asyncPool from "tiny-async-pool";
 import * as fs from 'fs';
 
-import { getNumberPagesForAnalysisDataUserList, getPaginatedAnalysisDataForUserList, getListNameSchema, Filters  } from '@wri-monorepos/sql';
+import { 
+  getNumberPagesForAnalysisDataUserList,
+  getPaginatedAnalysisDataForUserList,
+  getListNameSchema,
+  FileGenerationFilter
+} from '@wri-monorepos/sql';
 import { logger } from '@wri-monorepos/util';
 
 import { resultColumns, columnsListName, columnsTemplateId } from './constants';
 
-const buildCSVHeader = (fields: any, filters: Filters) => {
+const buildCSVHeader = (fields: any, filters: FileGenerationFilter) => {
   const originalFields = fields.reduce((obj, str) => {
     const newObj = [...obj];
     newObj.push({
@@ -44,12 +49,11 @@ const buildCSVHeader = (fields: any, filters: Filters) => {
   return resultColumnsList.concat(combinedFields).concat(originalFields);
 };
 
-const getAnalysisData = async (organizationDatabase: string, filters: Filters) => {
+const getAnalysisData = async (organizationDatabase: string, filters: FileGenerationFilter) => {
   const { page } = filters;
-  let analysisData =  await getPaginatedAnalysisDataForUserList(organizationDatabase, filters);
-  const [ firstElem ] = analysisData;
+  let analysisData =  await getPaginatedAnalysisDataForUserList(organizationDatabase, filters);;
   const fields =
-    columnsTemplateId[firstElem.template_id] ?? columnsListName[firstElem.list_name] ?? columnsTemplateId[14];
+    columnsTemplateId[analysisData[0].template_id] ?? columnsListName[analysisData[0].list_name] ?? columnsTemplateId[14];
 
   let allFields = [...fields, ...filters.combinedColumns];
 
@@ -57,6 +61,8 @@ const getAnalysisData = async (organizationDatabase: string, filters: Filters) =
     allFields = [...allFields, ...Object.keys(resultColumns)];
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   analysisData = analysisData.map((data) =>
     Object.keys(data)
       .filter((key) => allFields.includes(key))
@@ -74,10 +80,10 @@ const getAnalysisData = async (organizationDatabase: string, filters: Filters) =
   return csv;
 };
 
-export const build = async (key: string, organizationDatabase: string, filter: Filters) => {
+export const build = async (key: string, organizationDatabase: string, filter: FileGenerationFilter) => {
 
   const listSchema = await getListNameSchema(organizationDatabase, filter);
-  filter.listName = listSchema.list_name;
+  filter.listName = listSchema.listName;
 
   filter.rowsPerPage = 5000;
   const { numberOfPages } = await getNumberPagesForAnalysisDataUserList(organizationDatabase, filter);

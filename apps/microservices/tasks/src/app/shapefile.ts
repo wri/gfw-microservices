@@ -33,7 +33,7 @@ const getGeoJSONGeometry = (wktGeometry: string) => {
  *   @param {Array} recordsets - recordsets from stored procedure uspGetListLocations
  *   @return {Object} returns GeoJSON
  */
-const createGeoJSON = (recordsets: Array<any>) => {
+const createGeoJSON = (recordsets: any) => {
   const geojson = {
     type: 'FeatureCollection',
     features: [],
@@ -63,9 +63,8 @@ const createGeoJSON = (recordsets: Array<any>) => {
 
 const getAnalysisData = async (organizationDatabase: string, filter: FileGenerationFilter) => {
   let analysisData = await getPaginatedAnalysisDataForUserList(organizationDatabase, filter);
-  const [firstElem] = analysisData;
   const fields =
-    columnsTemplateId[firstElem.template_id] ?? columnsListName[firstElem.list_name] ?? columnsTemplateId[14];
+    columnsTemplateId[analysisData[0].template_id] ?? columnsListName[analysisData[0].list_name] ?? columnsTemplateId[14];
 
   let allFields = [...fields, ...filter.combinedColumnsSplited];
 
@@ -73,6 +72,8 @@ const getAnalysisData = async (organizationDatabase: string, filter: FileGenerat
     allFields = [...allFields, ...Object.keys(resultColumns)];
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   analysisData = analysisData.map((data) =>
     Object.keys(data)
       .filter((key) => allFields.includes(key))
@@ -144,8 +145,9 @@ const convertGeojsonToSHP = async (key: string) => {
 };
 
 export const build = async (key: string, organizationDatabase: string, filter: FileGenerationFilter) => {
+  console.log(filter);
   const listSchema = await getListNameSchema(organizationDatabase, filter);
-  filter.listName = listSchema.list_name;
+  filter.listName = listSchema.listName;
 
   const dir = `/tmp/${key}-folder`;
   if (!fs.existsSync(dir)) {

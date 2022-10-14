@@ -44,4 +44,4 @@ Thumbs.db
 
 
 *.log
-logs/**.json
+/**/logs/**.json

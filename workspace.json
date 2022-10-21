@@ -2,7 +2,6 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
-    "microservices-list-processing": "apps/microservices/list-processing",
-    "microservices-tasks": "apps/microservices/tasks"
+    "microservices-list-processing": "apps/microservices/list-processing"
   }
 }

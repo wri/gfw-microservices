@@ -6,7 +6,14 @@ import { ErrorException, ErrorCode, logger } from '@wri-monorepos/util';
 import { FileGenerationFilter, ListNameSchema }  from './model';
 import { executeStoredProcedure } from '../util';
 
-export const getListNameSchema = (databaseName: string, filters: FileGenerationFilter): Promise<ListNameSchema> => {
+
+/** @function { uspGetListNameSchema }
+ *   @summary get the name of the list schema
+ *   @param  {String} databaseName - Manadatory first parameter to pass the database which I have to run the query against
+ *   @param  {filters} FileGenerationFilter - filters to run the stored procedure
+ *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+ */
+export const uspGetListNameSchema = (databaseName: string, filters: FileGenerationFilter): Promise<ListNameSchema> => {
     const {
         listID
     } =  filters;
@@ -22,7 +29,7 @@ export const getListNameSchema = (databaseName: string, filters: FileGenerationF
             resolve(mappedValues);
         })
         .catch((errorMessage) => {
-            logger.error(`getListNameSchema: ${errorMessage}`);
+            logger.error(`uspGetListNameSchema: ${errorMessage}`);
             reject(new ErrorException( ErrorCode.InternalServerError, { message: `Failed to get the name of the list ${FileGenerationFilter}`}));
         });
     });

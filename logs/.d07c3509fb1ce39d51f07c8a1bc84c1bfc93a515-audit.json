@@ -14,6 +14,36 @@
             "date": 1665687898411,
             "name": "logs/rotate-2022-10-13.log",
             "hash": "645cf4e8c3311a5159ea83014dc4d152ab9855ed9fcd877d6bedd6efc5c2f633"
+        },
+        {
+            "date": 1665776788478,
+            "name": "logs/rotate-2022-10-14.log",
+            "hash": "6a4a556dd2b7ec16f0bc767ce8369aa6b2c9fb5d652d8ae2dd4e6dec660f671d"
+        },
+        {
+            "date": 1666040055835,
+            "name": "logs/rotate-2022-10-17.log",
+            "hash": "0e0bb8a5a253f854f8b95dd62726781b2e2e759a47694fca520e988fcb5372ee"
+        },
+        {
+            "date": 1666138487649,
+            "name": "logs/rotate-2022-10-18.log",
+            "hash": "e6188c52c9e273ad2bb04cd821c67f1de43526bca4b5c58edef83939cab4a543"
+        },
+        {
+            "date": 1666178147478,
+            "name": "logs/rotate-2022-10-19.log",
+            "hash": "33a612ce64819e361a7c71a07e5a7be2106d05829442590c3c0b4cbec2c98ce8"
+        },
+        {
+            "date": 1666306925892,
+            "name": "logs/rotate-2022-10-20.log",
+            "hash": "c6f3da41a85f2d3430b64cc3e5ad7cd0380d743088fa12793a6b8378ccad173a"
+        },
+        {
+            "date": 1666353349439,
+            "name": "logs/rotate-2022-10-21.log",
+            "hash": "d2ff154619be7a16de3d854725714ac32df76fc5e5bd6be47b4210b33410750d"
         }
     ],
     "hashType": "sha256"

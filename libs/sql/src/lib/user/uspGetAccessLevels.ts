@@ -7,7 +7,7 @@ import { AccessLevel }  from './model';
 
 import { executeStoredProcedure } from '../util';
 
-export const getAccessLevel = (): Promise<Array<AccessLevel>> => {
+export const uspGetAccessLevels = (): Promise<Array<AccessLevel>> => {
 
     return new Promise((resolve, reject) => {
         executeStoredProcedure(process.env.MSSQL_DATABASE, 'uspGetAccessLevels', null)
@@ -16,7 +16,7 @@ export const getAccessLevel = (): Promise<Array<AccessLevel>> => {
             resolve(accessLevels);
         })
         .catch((errorMessage) => {
-            logger.error(`getAccessLevel: ${errorMessage}`);
+            logger.error(`uspGetAccessLevels: ${errorMessage}`);
             reject(new ErrorException( ErrorCode.InternalServerError, { message: `Problem to retrieve all access level`}));
         });
     });

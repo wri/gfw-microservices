@@ -1,4 +1,4 @@
 export * from './model';
-export * from './getAccessLevel';
-export * from './getUserInfo';
-export * from './getUserRoute';
+export * from './uspGetAccessLevels';
+export * from './uspGetUserInfoByEmail';
+export * from './uspGetVerifiedUserRouteInfo';

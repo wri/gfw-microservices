@@ -5,14 +5,13 @@ import { ErrorException, ErrorCode, logger } from '@wri-monorepos/util';
 import { FileGenerationFilter, Pages }  from './model';
 import { executeStoredProcedure } from '../util';
 
-/** @function {getNumberPagesForAnalysisDataUserList}
+/** @function {uspGetAnalysisDataCountForUserList}
  *   @summary Get function to return the number of pages for the paginated analysis data for a user list.
  *   @param  {String} databaseName - Manadatory first parameter to pass the database which I have to run the query against
- *   @param  {Integer} list_id - Unique list id of the list.
- *   @param  {Integer} filters- filters
+ *   @param  {filters} FileGenerationFilter - filters to run the stored procedure
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
- export const getNumberPagesForAnalysisDataUserList = (databaseName: string, filters: FileGenerationFilter): Promise<Pages> => {
+ export const uspGetAnalysisDataCountForUserList = (databaseName: string, filters: FileGenerationFilter): Promise<Pages> => {
 
     const {
         country,
@@ -37,7 +36,7 @@ import { executeStoredProcedure } from '../util';
             resolve({ numberOfPages });
         })
         .catch((errorMessage) => {
-            logger.error(`getNumberPagesForAnalysisDataUserList: ${errorMessage}`);
+            logger.error(`uspGetAnalysisDataCountForUserList: ${errorMessage}`);
             reject(new ErrorException( ErrorCode.InternalServerError, { message: `Failed to get number of pages for List ${listID}`}));
         });
     });

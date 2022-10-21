@@ -13,11 +13,12 @@ import { router as trustedRouter } from './app/trusted';
 
 const app = express();
 
-app.use(errorHandler);
-app.use(json())
+app.use(json());
 
 app.use('/pending', pendingRouter)
 app.use('/trusted', trustedRouter)
+
+app.use(errorHandler);
 
 const port = process.env.port || 3333;
 const server = app.listen(port, () => {

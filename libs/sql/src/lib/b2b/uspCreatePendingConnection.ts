@@ -2,10 +2,10 @@ import * as sql from 'mssql';
 
 import { ErrorException, ErrorCode, logger } from '@wri-monorepos/util';
 
-import { PendingConnection }  from './model';
+import { CreatePendingConnectionRequest }  from './model';
 import { executeStoredProcedure } from '../util';
 
-export const insertPendingConnection = (filters: PendingConnection): Promise<any> => {
+export const uspCreatePendingConnection = (filters: CreatePendingConnectionRequest): Promise<any> => {
 
     const {
         sourceEmail,
@@ -34,7 +34,7 @@ export const insertPendingConnection = (filters: PendingConnection): Promise<any
             resolve(recordsets.output);
         })
         .catch((errorMessage) => {
-            logger.error(`insertPendingConnection: ${errorMessage}`);
+            logger.error(`uspCreatePendingConnection: ${errorMessage}`);
             reject(new ErrorException( ErrorCode.InternalServerError, { message: `Failed to create pending connection ${targetEmail}`}));
         });
     });

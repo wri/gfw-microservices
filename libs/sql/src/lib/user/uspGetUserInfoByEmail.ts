@@ -7,7 +7,7 @@ import { UserInfo }  from './model';
 import { executeStoredProcedure } from '../util/sql';
 
 
-export const getUserInfo = ( database: string,  targetEmail: string ): Promise<UserInfo> => {
+export const uspGetUserInfoByEmail = ( database: string,  targetEmail: string ): Promise<UserInfo> => {
 
     return new Promise((resolve, reject) => {
         const parameters = [
@@ -20,7 +20,7 @@ export const getUserInfo = ( database: string,  targetEmail: string ): Promise<U
             resolve(mappedValues);
         })
         .catch((errorMessage) => {
-            logger.error(`getUserInfo: ${errorMessage}`);
+            logger.error(`uspGetUserInfoByEmail: ${errorMessage}`);
             reject(new ErrorException( ErrorCode.InternalServerError, { message: `Get user information faile: ${targetEmail}`}));
         });
     });

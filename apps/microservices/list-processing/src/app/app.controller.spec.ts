@@ -121,7 +121,6 @@ describe('AppController', () => {
         listName: 'test list name for LLP',
       });
       expect(result).not.toBeUndefined();
-      console.log(result);
     });
   });
 

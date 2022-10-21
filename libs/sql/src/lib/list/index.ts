@@ -1,4 +1,4 @@
-export * from './getListNameSchema';
-export * from './getNumberPagesForAnalysisDataUserList';
-export * from './getPaginatedAnalysisDataForUserList';
+export * from './uspGetListNameSchema';
+export * from './uspGetAnalysisDataCountForUserList';
+export * from './uspGetPaginatedAnalysisDataForUserList';
 export * from './model';

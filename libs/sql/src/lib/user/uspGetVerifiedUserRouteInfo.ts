@@ -6,7 +6,7 @@ import { ErrorException, ErrorCode, logger } from '@wri-monorepos/util';
 import { UserRoute }  from './model';
 import { executeStoredProcedure } from '../util/sql';
 
-export const getUserRoute = ( targetEmail: string): Promise<UserRoute> => {
+export const uspGetVerifiedUserRouteInfo = ( targetEmail: string): Promise<UserRoute> => {
 
     return new Promise((resolve, reject) => {
         const parameters = [
@@ -19,7 +19,7 @@ export const getUserRoute = ( targetEmail: string): Promise<UserRoute> => {
             resolve(mappedValues);
         })
         .catch((errorMessage) => {
-            logger.error(`getUserRoute: ${errorMessage}`);
+            logger.error(`uspGetVerifiedUserRouteInfo: ${errorMessage}`);
             reject(new ErrorException( ErrorCode.InternalServerError, { message: `Get user router failed: ${targetEmail}`}));
         });
     });

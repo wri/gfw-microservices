@@ -6,13 +6,13 @@ import { ErrorException, ErrorCode, logger } from '@wri-monorepos/util';
 import { FileGenerationFilter } from './model';
 import { executeStoredProcedure } from '../util';
 
-/** @function {getPaginatedAnalysisDataForUserList}
+/** @function {uspGetPaginatedAnalysisDataForUserList}
  *   @summary Get function to return json of paginated location metadata with geometry.
  *   @param  {String} databaseName - Manadatory first parameter to pass the database which I have to run the query against
- *   @param  {Integer} list_id - Unique list id of the list.
+ *   @param  {filters} FileGenerationFilter - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
- export const getPaginatedAnalysisDataForUserList = (databaseName: string, filters: FileGenerationFilter) => {
+ export const uspGetPaginatedAnalysisDataForUserList = (databaseName: string, filters: FileGenerationFilter) => {
     const {
         analysisArea,
         analysisAreaOperator,
@@ -48,7 +48,7 @@ import { executeStoredProcedure } from '../util';
           resolve(recordsets.data);
         })
         .catch((errorMessage) => {
-          logger.error(`getPaginatedAnalysisDataForUserList: ${errorMessage}`);
+          logger.error(`uspGetPaginatedAnalysisDataForUserList: ${errorMessage}`);
           reject(new ErrorException( ErrorCode.InternalServerError, { message: `Failed to get paginated list location for List ${listID}`}));
         });
     });

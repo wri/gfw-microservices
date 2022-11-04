@@ -46,6 +46,7 @@ export class LLPMessageHandler {
       const [ message ] = messages;
       const filter = JSON.parse(message.Body);
 
+      // TODO: improve remove message should be automatically
       this.removeMessage(message);
 
       filter.rowsPerPage = 5000;

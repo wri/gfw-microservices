@@ -9,6 +9,13 @@ import { CSVService } from './csv.service';
 import { ShapefileService } from './shapefile.service';
 import { S3Service } from '@wri-monorepos/aws'
 
+const awsConfig = {
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+};
+AWS.config.update(awsConfig);
+
 @Injectable()
 export class LLPMessageHandler {
     private readonly logger = new Logger(LLPMessageHandler.name);
@@ -21,10 +28,25 @@ export class LLPMessageHandler {
       private s3Service: S3Service
     ){}
 
+
+    async removeMessage(message: AWS.SQS.Message){
+      const sqs = new AWS.SQS();
+
+      const deleteParams = {
+        QueueUrl: process.env.AWS_TMP_QUEUE,
+        ReceiptHandle: message.ReceiptHandle
+      };
+
+      const removedMessage = await sqs.deleteMessage(deleteParams).promise();
+      this.logger.log(`Removed message: ${JSON.stringify(removedMessage)}`);
+    }
+
     @SqsMessageHandler('llp-generate-file', true)
     async handleMessage(messages: Array<AWS.SQS.Message>) {
       const [ message ] = messages;
       const filter = JSON.parse(message.Body);
+
+      this.removeMessage(message);
 
       filter.rowsPerPage = 5000;
       const { key, organizationDatabase, file, userEmail } = filter;

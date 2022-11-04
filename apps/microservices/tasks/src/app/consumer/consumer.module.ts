@@ -15,9 +15,13 @@ AWS.config.update({
         SqsModule.register({
             consumers: [
                 {
-                    name: 'llp-generate-file', // name of the queue 
+                    name: 'llp-generate-file', // name of the queue
                     queueUrl: process.env.AWS_TMP_QUEUE, // the url of the queue
                     region: process.env.AWS_REGION,
+                    waitTimeSeconds: 1,
+                    batchSize: 3,
+                    terminateVisibilityTimeout: true,
+                    messageAttributeNames: ['All'],
                 },
             ],
             producers: [],

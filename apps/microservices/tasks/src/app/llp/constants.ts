@@ -318,7 +318,7 @@ export const templateColumns = {
     'Time Horizon',
   ],
 };
-  
+
 export const columnsTemplateId = {
   1: templateColumns.INVESTMENT,
   2: templateColumns.PALM_OIL_MILL,

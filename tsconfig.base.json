@@ -14,7 +14,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@wri-monorepos/aws": ["libs/aws/src/index.ts"],
+      "@wri-monorepos/sql": ["libs/sql/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

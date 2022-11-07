@@ -2,13 +2,14 @@ import { SQLUtils } from '../util/sql.utils';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
-import { GenerationFileRequest, GetAnalysisDataCountForUserListResponse } from './model';
+import {
+  GenerationFileRequest,
+  GetAnalysisDataCountForUserListResponse,
+} from './model';
 
 @Injectable()
 export class UspGetAnalysisDataCountForUserList {
-
   async run(databaseName: string, filters: GenerationFileRequest) {
-
     const sqlConfig = {
       user: process.env.MSSQL_USERNAME,
       password: process.env.MSSQL_PASSWORD,
@@ -25,16 +26,10 @@ export class UspGetAnalysisDataCountForUserList {
       },
     };
 
-    const {
-      country,
-      listID,
-      state,
-      subState,
-      rowsPerPage,
-    } =  filters;
+    const { country, listID, state, subState, rowsPerPage } = filters;
 
     const parameters = [
-      { field: 'listID', type: sql.Int, value: listID},
+      { field: 'listID', type: sql.Int, value: listID },
       { field: 'Country', type: sql.NVarChar, value: country || null },
       { field: 'State', type: sql.NVarChar, value: state || null },
       { field: 'SubState', type: sql.NVarChar, value: subState || null },
@@ -43,11 +38,10 @@ export class UspGetAnalysisDataCountForUserList {
     const connection = new SQLUtils(sqlConfig);
     await connection.connect();
     try {
-      const recordsets = await connection.executeQuery<GetAnalysisDataCountForUserListResponse>(
-        'uspGetAnalysisDataCountForUserList',
-        parameters
-      );
-      const numberOfPages = Math.ceil(recordsets.TotalRows / rowsPerPage);
+      const recordsets = await connection.executeQuery<
+        GetAnalysisDataCountForUserListResponse[]
+      >('uspGetAnalysisDataCountForUserList', parameters);
+      const numberOfPages = Math.ceil(recordsets[0].statistic / rowsPerPage);
       connection.disconnect();
       return numberOfPages;
     } catch (error) {

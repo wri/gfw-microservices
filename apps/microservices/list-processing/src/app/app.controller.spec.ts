@@ -17,6 +17,7 @@ import * as uniqId from 'uniqid';
 
 describe('AppController', () => {
   let app: TestingModule;
+  const targetDatabase = 'DevCo'; // change if the database where you want to perform the test is different
 
   beforeEach((): void => {
     jest.setTimeout(60000);
@@ -118,7 +119,9 @@ describe('AppController', () => {
       const result = await appController.saveListToProcess({
         key: 'test123123-test.csv',
         userId: 13322,
+        list_id: 123,
         listName: 'test list name for LLP',
+        client_database: targetDatabase,
       });
       expect(result).not.toBeUndefined();
       console.log(result);
@@ -150,6 +153,7 @@ describe('AppController', () => {
       const listName = `Implementation For LargeListProccess${uniqId()}`;
       const userId = 22;
       const requestLargeListCreation: RequestTriggerProcessLargeList = {
+        client_database: targetDatabase,
         list_name: listName,
         user_id: userId,
       };
@@ -194,6 +198,7 @@ describe('AppController', () => {
       expect(response.status).toBe(200);
 
       const requestLargeListProcess: RequestTriggerProcessLargeList = {
+        client_database: targetDatabase,
         list_name: listName,
         user_id: userId,
       };

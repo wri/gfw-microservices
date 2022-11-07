@@ -2,13 +2,14 @@ import { SQLUtils } from '../util/sql.utils';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
-import { GenerationFileRequest , ListNameSchema  } from './model';
+import { GenerationFileRequest, ListNameSchema } from './model';
 
 @Injectable()
 export class UspGetListNameSchema {
-
-  async run(databaseName: string, filters: GenerationFileRequest) {
-
+  async run(
+    databaseName: string,
+    filters: GenerationFileRequest
+  ): Promise<ListNameSchema> {
     const sqlConfig = {
       user: process.env.MSSQL_USERNAME,
       password: process.env.MSSQL_PASSWORD,
@@ -25,13 +26,9 @@ export class UspGetListNameSchema {
       },
     };
 
-    const {
-      listID,
-    } =  filters;
+    const { listID } = filters;
 
-    const parameters = [
-      { field: 'list_id', type: sql.Int, value: listID},
-    ];
+    const parameters = [{ field: 'list_id', type: sql.Int, value: listID }];
 
     const connection = new SQLUtils(sqlConfig);
     await connection.connect();
@@ -41,7 +38,7 @@ export class UspGetListNameSchema {
         parameters
       );
       connection.disconnect();
-      return recordsets;
+      return recordsets as ListNameSchema;
     } catch (error) {
       connection.disconnect();
       throw new Error(error);

@@ -8,6 +8,8 @@ import {
   RequestSaveLargeListProcessModel,
   CreateListInsertResultModel,
 } from '../models';
+import { SQLUtils } from './../utils/sql.utils';
+import * as sql from 'mssql';
 
 class MyObject {
   id: number;
@@ -66,21 +68,58 @@ export class AppService {
   async saveListToProcess(
     listDetails: RequestSaveLargeListProcessModel
   ): Promise<CreateListInsertResultModel> {
-    const queryRunner = this.dataSource.createQueryRunner();
     const fileS3Route = `s3://${process.env.LARGE_PROCESING_LIST_BUCKET}/${listDetails.key}`;
+    const sqlConfig = {
+      user: process.env.MSSQL_USERNAME,
+      password: process.env.MSSQL_PASSWORD,
+      database: listDetails.client_database,
+      server: process.env.MSSQL_HOSTNAME,
+      pool: {
+        max: 10,
+        min: 0,
+        idleTimeoutMillis: 30000,
+      },
+      port: parseInt(process.env.MSSQL_PORT),
+      options: {
+        trustServerCertificate: true, // change to true for local dev / self-signed certs
+      },
+    };
+
     try {
-      const result = await queryRunner.query(
-        `INSERT INTO LargeLists(organization_user_id, list_name, s3_filename, s3_location, list_status, creation_date) VALUES(@0,@1,@2,@3,'Created', GETDATE()); SELECT SCOPE_IDENTITY() as id;`,
+      const connection = new SQLUtils(sqlConfig);
+      await connection.connect();
+      await connection.query(
+        `INSERT INTO LargeLists(list_id, organization_user_id, list_name, s3_filename, s3_location, list_status, creation_date) VALUES(@list_id,@organization_user_id,@list_name,@s3_filename,@s3_location,'Created', GETDATE());`,
         [
-          listDetails.userId,
-          listDetails.listName,
-          listDetails.key,
-          fileS3Route,
-        ],
-        true
+          {
+            field: 'list_id',
+            type: sql.Int,
+            value: listDetails.list_id,
+          },
+          {
+            field: 'organization_user_id',
+            type: sql.Int,
+            value: listDetails.userId,
+          },
+          {
+            field: 'list_name',
+            type: sql.NVarChar,
+            value: listDetails.listName,
+          },
+          {
+            field: 's3_filename',
+            type: sql.NVarChar,
+            value: listDetails.key,
+          },
+          {
+            field: 's3_location',
+            type: sql.NVarChar,
+            value: fileS3Route,
+          },
+        ]
       );
       const dataResult: CreateListInsertResultModel = {
-        list_id: result.records[0].id,
+        list_id: listDetails.list_id, //result.records[0].id,
         s3_location: fileS3Route,
       };
       return dataResult;

@@ -7,7 +7,9 @@ export interface RequestPreSignedURLModel {
 export interface RequestSaveLargeListProcessModel {
   key: string;
   userId: number;
+  list_id: number;
   listName: string;
+  client_database: string;
 }
 
 export interface ResponsePreSignedURLModel {

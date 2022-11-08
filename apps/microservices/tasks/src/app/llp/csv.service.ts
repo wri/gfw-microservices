@@ -111,7 +111,7 @@ export class CSVService {
     const composeResults = async (i: number) => {
       newfilters = { ...filter, page: i };
       analysisData = await this.getAnalysisData(organizationDatabase, newfilters);
-      fs.appendFileSync(`/tmp/${key}.csv`, analysisData);
+      fs.appendFileSync(`/tmp/${key}.csv`, `\n${analysisData}`);
       return i;
     };
 

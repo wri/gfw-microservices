@@ -12,5 +12,5 @@ export const SQL_CONFIG = {
   options: {
     trustServerCertificate: true,
   },
-  requestTimeout: 60000,
+  requestTimeout: 600000,
 };

@@ -3,27 +3,12 @@ import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { GenerationFileRequest , ListNameSchema  } from './model';
+import { SQL_CONFIG } from './config';
 
 @Injectable()
 export class UspGetListNameSchema {
 
   async run(databaseName: string, filters: GenerationFileRequest) {
-
-    const sqlConfig = {
-      user: process.env.MSSQL_USERNAME,
-      password: process.env.MSSQL_PASSWORD,
-      database: databaseName,
-      server: process.env.MSSQL_HOSTNAME,
-      pool: {
-        max: 10,
-        min: 0,
-        idleTimeoutMillis: 30000,
-      },
-      port: parseInt(process.env.MSSQL_PORT),
-      options: {
-        trustServerCertificate: true,
-      },
-    };
 
     const {
       listID,
@@ -33,7 +18,7 @@ export class UspGetListNameSchema {
       { field: 'list_id', type: sql.Int, value: listID},
     ];
 
-    const connection = new SQLUtils(sqlConfig);
+    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
       const recordsets = await connection.executeQuery<ListNameSchema>(

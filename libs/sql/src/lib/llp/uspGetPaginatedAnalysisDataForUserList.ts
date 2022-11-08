@@ -3,27 +3,13 @@ import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { GenerationFileRequest } from './model';
+import { SQL_CONFIG } from './config'
 
 @Injectable()
 export class UspGetPaginatedAnalysisDataForUserList {
 
   async run(databaseName: string, filters: GenerationFileRequest) {
 
-    const sqlConfig = {
-      user: process.env.MSSQL_USERNAME,
-      password: process.env.MSSQL_PASSWORD,
-      database: databaseName,
-      server: process.env.MSSQL_HOSTNAME,
-      pool: {
-        max: 10,
-        min: 0,
-        idleTimeoutMillis: 30000,
-      },
-      port: parseInt(process.env.MSSQL_PORT),
-      options: {
-        trustServerCertificate: true,
-      },
-    };
 
     const {
       analysisArea,
@@ -53,7 +39,7 @@ export class UspGetPaginatedAnalysisDataForUserList {
       { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
     ];
 
-    const connection = new SQLUtils(sqlConfig);
+    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
       const createListResult = await connection.executeQueryArray<any>(

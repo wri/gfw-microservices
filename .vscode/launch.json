@@ -1,0 +1,14 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Debug for Tasks MS",
+      "websocketAddress": "ws://localhost:9229/64e737b9-d2fe-4a43-a6b3-595c0841f02c"
+    },
+  ]
+}

@@ -71,7 +71,7 @@ export class LLPMessageHandler {
         filter.combinedColumnsSplited = filter.combinedColumns.split(',');
       }
 
-      try {
+      // try {
         if ( file == 'csv'){
           await this.csvService.generate(filter);
         } else {
@@ -91,7 +91,7 @@ export class LLPMessageHandler {
             location,
           });
         }
-      } catch (error) {
+      /*} catch (error) {
         this.logger.log(`Error on generating the file: ${error.message}`)
         this.emailService.sendEmail(
           process.env.SES_SENDER_EMAIL,
@@ -100,6 +100,6 @@ export class LLPMessageHandler {
           'error',
           filter
         );
-      }
+      }*/
     }
 }

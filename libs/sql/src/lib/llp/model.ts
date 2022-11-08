@@ -1,7 +1,7 @@
 import { stringList } from 'aws-sdk/clients/datapipeline';
 
 export interface GenerationFileRequest {
-  analysisArea?: string;
+  analysisArea?: number;
   analysisAreaOperator?: string;
   combinedColumns?: string;
   combinedColumnsSplited?: Array<string>;
@@ -16,8 +16,8 @@ export interface GenerationFileRequest {
   page?: number;
   pageSize?: number;
   rowsPerPage?: number;
-  selectedAreaMax?: string;
-  selectedAreaMin?: string;
+  analysisAreaMax?: string;
+  analysisAreaMin?: string;
   sortByAttribute?: string;
   state?: string;
   subState?: string;

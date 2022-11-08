@@ -7,7 +7,6 @@ import { SQL_CONFIG } from './config';
 
 @Injectable()
 export class UspGetAnalysisDataCountForUserList {
-
   async run(databaseName: string, filters: GenerationFileRequest) {
 
     const {
@@ -23,7 +22,7 @@ export class UspGetAnalysisDataCountForUserList {
     } =  filters;
 
     const parameters = [
-      { field: 'listID', type: sql.Int, value: listID},
+      { field: 'listID', type: sql.Int, value: listID },
       { field: 'Country', type: sql.NVarChar, value: country || null },
       { field: 'State', type: sql.NVarChar, value: state || null },
       { field: 'SubState', type: sql.NVarChar, value: subState || null },
@@ -42,7 +41,8 @@ export class UspGetAnalysisDataCountForUserList {
         parameters
       );
       console.log(recordsets);
-      const numberOfPages = Math.ceil(recordsets.TotalRows / rowsPerPage);
+
+      const numberOfPages = Math.ceil(recordsets.statistic[0]/ rowsPerPage);
       connection.disconnect();
       return numberOfPages;
     } catch (error) {

@@ -28,7 +28,10 @@ export class SQLUtils {
         .execute(query)
         .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
           if (Number(result.recordsets.length) > 0) {
-            resolve(result.recordsets[0][0]);
+            if (Number(result.recordsets[0].length) > 1) {
+              resolve(result.recordsets[0] as T);
+            }
+            resolve(result.recordsets[0][0] as T);
           }
           resolve(undefined);
         })

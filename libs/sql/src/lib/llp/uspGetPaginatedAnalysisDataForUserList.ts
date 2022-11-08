@@ -7,9 +7,7 @@ import { SQL_CONFIG } from './config'
 
 @Injectable()
 export class UspGetPaginatedAnalysisDataForUserList {
-
   async run(databaseName: string, filters: GenerationFileRequest) {
-
 
     const {
       analysisArea,
@@ -19,7 +17,7 @@ export class UspGetPaginatedAnalysisDataForUserList {
       listID,
       orderType,
       page,
-      pageSize,
+      rowsPerPage,
       sortByAttribute,
       state,
       subState,
@@ -28,14 +26,26 @@ export class UspGetPaginatedAnalysisDataForUserList {
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
       { field: 'PageNumber', type: sql.Int, value: page || 1 },
-      { field: 'RowsOfPage', type: sql.Int, value: pageSize || 100 },
-      { field: 'OrderByColumn', type: sql.NVarChar, value: sortByAttribute || '[Location Name]' },
+      { field: 'RowsOfPage', type: sql.Int, value: rowsPerPage || 100 },
+      {
+        field: 'OrderByColumn',
+        type: sql.NVarChar,
+        value: sortByAttribute || '[Location Name]',
+      },
       { field: 'Order', type: sql.NVarChar, value: orderType || 'asc' },
       { field: 'Country', type: sql.NVarChar, value: country || null },
       { field: 'State', type: sql.NVarChar, value: state || null },
       { field: 'SubState', type: sql.NVarChar, value: subState || null },
-      { field: 'AnalysisAreaFilter', type: sql.Float, value: analysisArea || null },
-      { field: 'AnalysisAreaOperator', type: sql.NVarChar, value: analysisAreaOperator || '>' },
+      {
+        field: 'AnalysisAreaFilter',
+        type: sql.Float,
+        value: analysisArea || null,
+      },
+      {
+        field: 'AnalysisAreaOperator',
+        type: sql.NVarChar,
+        value: analysisAreaOperator || '>',
+      },
       { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
     ];
 
@@ -52,6 +62,5 @@ export class UspGetPaginatedAnalysisDataForUserList {
       connection.disconnect();
       throw new Error(error);
     }
-
   }
 }

@@ -35,14 +35,12 @@ export class UspGetAnalysisDataCountForUserList {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      console.log(parameters);
       const recordsets = await connection.executeQuery<GetAnalysisDataCountForUserListResponse>(
         'uspGetAnalysisDataCountForUserList',
         parameters
       );
-      console.log(recordsets);
 
-      const numberOfPages = Math.ceil(recordsets.statistic[0]/ rowsPerPage);
+      const numberOfPages = Math.ceil(recordsets[0].statistic/ rowsPerPage);
       connection.disconnect();
       return numberOfPages;
     } catch (error) {

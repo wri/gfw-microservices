@@ -74,84 +74,40 @@ export class LLPMessageHandler {
       filter.combinedColumnsSplited = filter.combinedColumns.split(',');
     }
 
+
     try {
-      if (file == 'csv') {
+      if ( file == 'csv'){
         await this.csvService.generate(filter);
       } else {
         await this.shapefileService.generate(filter);
       }
 
-<<<<<<< HEAD
-      // try {
-        if ( file == 'csv'){
-          await this.csvService.generate(filter);
-        } else {
-          await this.shapefileService.generate(filter);
-        }
-
-        const fileExtension = file === 'csv' ? 'csv' : 'zip';
-        this.logger.log(`Existe arquivo ${fs.existsSync(`/tmp/${key}.${fileExtension}`)}`)
-        if (fs.existsSync(`/tmp/${key}.${fileExtension}`)) {
-          const contentType = file === 'csv' ? 'text/csv' : 'application/zip';
-          await this.s3Service.sendFiletoS3(key, fileExtension, contentType, process.env.AWS_TMP_BUCKET);
-          const location = await this.s3Service.getFileSignedUrl(key, fileExtension, process.env.AWS_TMP_BUCKET);
-
-          this.logger.log(`Sending the email informing that the file generation is complete.`)
-          this.emailService.sendEmail(process.env.SES_SENDER_EMAIL, [userEmail], `[GFW-PRO] File Generation for list ${listName}`, 'finish', {
-            ...filter,
-            location,
-          });
-        }
-      /*} catch (error) {
-        this.logger.log(`Error on generating the file: ${error.message}`)
-=======
       const fileExtension = file === 'csv' ? 'csv' : 'zip';
-      this.logger.log(
-        `Existe arquivo ${fs.existsSync(`/tmp/${key}.${fileExtension}`)}`
-      );
+      this.logger.log(`Existe arquivo ${fs.existsSync(`/tmp/${key}.${fileExtension}`)}`)
       if (fs.existsSync(`/tmp/${key}.${fileExtension}`)) {
         const contentType = file === 'csv' ? 'text/csv' : 'application/zip';
-        await this.s3Service.sendFiletoS3(
-          key,
-          fileExtension,
-          contentType,
-          process.env.AWS_TMP_BUCKET
-        );
-        const location = await this.s3Service.getFileSignedUrl(
-          key,
-          fileExtension,
-          process.env.AWS_TMP_BUCKET
-        );
+        await this.s3Service.sendFiletoS3(key, fileExtension, contentType, process.env.AWS_TMP_BUCKET);
+        const location = await this.s3Service.getFileSignedUrl(key, fileExtension, process.env.AWS_TMP_BUCKET);
 
-        this.logger.log(
-          `Sending the email informing that the file generation is complete.`
-        );
->>>>>>> f1488258466311ace8f3da3c1869352146370750
-        this.emailService.sendEmail(
-          process.env.SES_SENDER_EMAIL,
-          [userEmail],
-          `[GFW-PRO] File Generation for list ${listName}`,
-          'finish',
-          {
-            ...filter,
-            location,
-            listName,
-          }
-        );
-<<<<<<< HEAD
-      }*/
-=======
+        this.logger.log(`Sending the email informing that the file generation is complete.`)
+        this.emailService.sendEmail(process.env.SES_SENDER_EMAIL, [userEmail], `[GFW-PRO] File Generation for list ${listName}`, 'finish', {
+          ...filter,
+          location,
+        });
       }
     } catch (error) {
-      this.logger.log(`Error on generating the file: ${error.message}`);
+      this.logger.log(`Error on generating the file: ${error.message}`)
       this.emailService.sendEmail(
         process.env.SES_SENDER_EMAIL,
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,
-        'error',
-        { ...filter, listName }
+        'finish',
+        {
+          ...filter,
+          location,
+          listName,
+        }
       );
->>>>>>> f1488258466311ace8f3da3c1869352146370750
     }
   }
 }

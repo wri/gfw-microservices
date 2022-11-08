@@ -25,11 +25,16 @@ export interface GenerationFileRequest {
   userEmail?: string;
 }
 
-export interface GetAnalysisDataCountForUserListResponse {
+/*export interface GetAnalysisDataCountForUserListResponse {
   TotalRows: number;
+}*/
+
+export interface GetAnalysisDataCountForUserListResponse {
+  statistic_type: string;
+  statistic: number;
 }
 
-export class ListNameSchema{
+export class ListNameSchema {
   id: string;
   userId: string;
   list_name: string;

@@ -39,6 +39,29 @@ export class SQLUtils {
     });
   }
 
+  query<T>(query: string, parameters?: any[]): Promise<T> {
+    const request = this.connection.request();
+
+    if (parameters && Array.isArray(parameters)) {
+      parameters.forEach((param) => {
+        request.input(param.field, param.type, param.value);
+      });
+    }
+    return new Promise((resolve, reject) => {
+      request
+        .query(query)
+        .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
+          if (Number(result.recordsets.length) > 0) {
+            resolve(result.recordsets[0][0]);
+          }
+          resolve(undefined);
+        })
+        .catch((errorMessage) => {
+          reject(errorMessage);
+        });
+    });
+  }
+
   disconnect() {
     return this.connection.close();
   }

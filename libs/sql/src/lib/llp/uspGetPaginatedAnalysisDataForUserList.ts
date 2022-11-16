@@ -10,8 +10,8 @@ export class UspGetPaginatedAnalysisDataForUserList {
   async run(databaseName: string, filters: GenerationFileRequest) {
 
     const {
-      analysisArea,
-      analysisAreaOperator,
+      analysisAreaMax,
+      analysisAreaMin,
       country,
       geometry,
       listID,
@@ -37,14 +37,14 @@ export class UspGetPaginatedAnalysisDataForUserList {
       { field: 'State', type: sql.NVarChar, value: state || null },
       { field: 'SubState', type: sql.NVarChar, value: subState || null },
       {
-        field: 'AnalysisAreaFilter',
-        type: sql.Float,
-        value: analysisArea || null,
+        field: 'AnalysisAreaMin',
+        type: sql.Int,
+        value: analysisAreaMin || null,
       },
       {
-        field: 'AnalysisAreaOperator',
-        type: sql.NVarChar,
-        value: analysisAreaOperator || '>',
+        field: 'AnalysisAreaMax',
+        type: sql.Int,
+        value: analysisAreaMax || null,
       },
       { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
     ];

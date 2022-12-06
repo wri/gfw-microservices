@@ -1,7 +1,5 @@
-import { rejects } from 'assert';
-import { config } from 'aws-sdk';
 import * as sql from 'mssql';
-
+import { get } from '../connectionpool';
 export class SQLUtils {
   config: sql.config;
   connection: sql.ConnectionPool;
@@ -11,7 +9,7 @@ export class SQLUtils {
   }
 
   async connect() {
-    this.connection = await sql.connect(this.config);
+    this.connection = await get(this.config.database, this.config); //sql.connect(this.config);
   }
 
   executeQuery<T>(query: string, parameters?: any[]): Promise<T> {

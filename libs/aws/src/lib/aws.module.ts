@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
 import { SesModule } from '@nextnm/nestjs-ses';
-import { EmailService  } from './email.service'
+import { EmailService } from './email.service';
 import { S3Service } from './s3.service';
 
 @Module({
@@ -13,13 +13,7 @@ import { S3Service } from './s3.service';
     }),
   ],
   controllers: [],
-  providers: [
-    EmailService,
-    S3Service
-  ],
-  exports: [
-    EmailService,
-    S3Service
-  ],
+  providers: [EmailService, S3Service],
+  exports: [EmailService, S3Service],
 })
 export class AwsModule {}

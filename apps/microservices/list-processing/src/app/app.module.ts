@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseService } from '../shared/database/gfw';
 import { LargeListService } from './../services/largelist.service';
+import { GeoService, LocationService } from '@wri-monorepos/geo';
 
 config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -19,12 +20,7 @@ config.update({
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({ useClass: DatabaseService }),
   ],
-  controllers: [
-    AppController
-  ],
-  providers: [
-    AppService,
-    LargeListService,
-  ],
+  controllers: [AppController],
+  providers: [AppService, LargeListService, LocationService, GeoService],
 })
 export class AppModule {}

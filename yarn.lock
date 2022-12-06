@@ -1889,6 +1889,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/wellknown@^0.5.0":
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/@types/wellknown/-/wellknown-0.5.4.tgz#1f12a2ca9cda236673272688b7549a30f0c9e3bb"
+  integrity sha512-zcsf4oHeEcvpvWhDOB1+qNK04oFJtsmv7Otb1Vy8w8GAqQkgRrVkI/C76PdwtpiT216aM1SbhkKgKWzGLhHKng==
+
 "@types/ws@^8.5.1":
   version "8.5.3"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.3.tgz#7d25a1ffbecd3c4f2d35068d0b283c037003274d"

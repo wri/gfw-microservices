@@ -2,13 +2,15 @@ import { SQLUtils } from '../util/sql.utils';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
-import { GenerationFileRequest, GetAnalysisDataCountForUserListResponse } from './model';
-import { SQL_CONFIG } from './config';
+import {
+  GenerationFileRequest,
+  GetAnalysisDataCountForUserListResponse,
+} from './model';
+import { SQL_CONFIG } from '../config/config';
 
 @Injectable()
 export class UspGetAnalysisDataCountForUserList {
   async run(databaseName: string, filters: GenerationFileRequest) {
-
     const {
       country,
       listID,
@@ -18,29 +20,46 @@ export class UspGetAnalysisDataCountForUserList {
       analysisAreaMin,
       analysisAreaMax,
       analysisArea,
-      analysisAreaOperator
-    } =  filters;
+      analysisAreaOperator,
+    } = filters;
 
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
       { field: 'Country', type: sql.NVarChar, value: country || null },
       { field: 'State', type: sql.NVarChar, value: state || null },
       { field: 'SubState', type: sql.NVarChar, value: subState || null },
-      { field: 'AnalysisAreaMin', type: sql.Int, value: analysisAreaMin || null },
-      { field: 'AnalysisAreaMax', type: sql.Int, value: analysisAreaMax || null },
-      { field: 'AnalysisAreaFilter', type: sql.Float, value: analysisArea || null },
-      { field: 'AnalysisAreaOperator', type: sql.NVarChar, value: analysisAreaOperator || '>' },
+      {
+        field: 'AnalysisAreaMin',
+        type: sql.Int,
+        value: analysisAreaMin || null,
+      },
+      {
+        field: 'AnalysisAreaMax',
+        type: sql.Int,
+        value: analysisAreaMax || null,
+      },
+      {
+        field: 'AnalysisAreaFilter',
+        type: sql.Float,
+        value: analysisArea || null,
+      },
+      {
+        field: 'AnalysisAreaOperator',
+        type: sql.NVarChar,
+        value: analysisAreaOperator || '>',
+      },
     ];
 
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      const recordsets = await connection.executeQuery<GetAnalysisDataCountForUserListResponse>(
-        'uspGetAnalysisDataCountForUserList',
-        parameters
-      );
+      const recordsets =
+        await connection.executeQuery<GetAnalysisDataCountForUserListResponse>(
+          'uspGetAnalysisDataCountForUserList',
+          parameters
+        );
 
-      const numberOfPages = Math.ceil(recordsets[0].statistic/ rowsPerPage);
+      const numberOfPages = Math.ceil(recordsets[0].statistic / rowsPerPage);
       connection.disconnect();
       return numberOfPages;
     } catch (error) {

@@ -1,19 +1,21 @@
 import { LargeListService } from './../services/largelist.service';
 import {
+  CopyOrMoveLargeListRequest,
   RequestLargeListProcess,
   RequestPreSignedURLModel,
   RequestSaveLargeListProcessModel,
   RequestTriggerProcessLargeList,
 } from './../models/index';
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 
 import { AppService } from './app.service';
-
+import { LocationService } from '@wri-monorepos/geo';
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private readonly largeListService: LargeListService
+    private readonly largeListService: LargeListService,
+    private readonly locationService: LocationService
   ) {}
 
   /**
@@ -60,5 +62,32 @@ export class AppController {
       request.user_id,
       request.client_database
     );
+  }
+
+  @Post('/CopyOrMoveLargeList')
+  CopyOrMoveLargeList(@Body() request: CopyOrMoveLargeListRequest) {
+    this.locationService.MoveLocations(
+      request.listId,
+      request.selectedListLocationClasification,
+      request.customAttributesNames,
+      request.userListNames,
+      request.action,
+      request.listType,
+      request.listName,
+      request.targetList,
+      request.selectedLocations,
+      request.addType,
+      request.activeTemplate,
+      request.commodityType,
+      request.templateData,
+      request.saveAsDraft,
+      request.userId,
+      request.clientDatabase,
+      request.organizationId,
+      request.gfwListId,
+      request.allLocationsSelected,
+      request.filters
+    );
+    return 'processing';
   }
 }

@@ -46,3 +46,26 @@ export interface RequestTriggerProcessLargeList {
   user_id: number;
   client_database: string;
 }
+
+export interface CopyOrMoveLargeListRequest {
+  listId: number;
+  selectedListLocationClasification: string;
+  customAttributesNames: string[];
+  userListNames: string[];
+  action: string; // move or copy
+  listType: string; // new or existing
+  listName: string;
+  targetList?: number;
+  selectedLocations: number[];
+  addType: string;
+  activeTemplate: string;
+  commodityType?: string;
+  templateData: unknown;
+  saveAsDraft: boolean;
+  userId: number;
+  clientDatabase: number;
+  organizationId: number;
+  gfwListId: number;
+  allLocationsSelected: boolean;
+  filters: any;
+}

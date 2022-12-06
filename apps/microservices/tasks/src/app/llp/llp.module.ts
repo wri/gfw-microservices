@@ -7,23 +7,12 @@ import { CSVService } from './csv.service';
 
 import { SqlModule } from '@wri-monorepos/sql';
 import { AwsModule } from '@wri-monorepos/aws';
+console.log(process.env.AWS_ACCESS_KEY_ID);
 
 @Module({
-  imports:[
-    AwsModule,
-    ConfigModule.forRoot({ isGlobal: true }),
-    SqlModule,
-  ],
-  controllers: [
-
-  ],
-  providers: [
-    CSVService,
-    LLPMessageHandler,
-    ShapefileService,
-  ],
-  exports: [
-    LLPMessageHandler
-  ],
+  imports: [AwsModule, ConfigModule.forRoot({ isGlobal: true }), SqlModule],
+  controllers: [],
+  providers: [CSVService, LLPMessageHandler, ShapefileService],
+  exports: [LLPMessageHandler],
 })
 export class LLPModule {}

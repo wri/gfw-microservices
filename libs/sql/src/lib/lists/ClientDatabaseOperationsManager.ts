@@ -7,7 +7,7 @@ import { UspGetListLocations } from './uspGetListLocations';
 import { UspGetListLockStatus } from './uspGetListLockStatus';
 import { UspCopyLocationAnalysis } from './uspCopyLocationAnalysis';
 import { UspGetListNameSchema } from '../llp/uspGetListNameSchema';
-import { UspSetListUnlocked } from './UspSetListUnlocked';
+import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspResetListStatus } from './uspResetListStatus';
 import { UspDeleteList } from './uspDeleteList';
 

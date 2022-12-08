@@ -20,21 +20,26 @@ export class UspGetPaginatedAnalysisDataForUserList {
       sortByAttribute,
       state,
       subState,
+      locationLogic,
+      locationIds,
+      locationStatement,
+      combinedColumns,
+      searchString
     } = filters;
 
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
-      { field: 'PageNumber', type: sql.Int, value: page || 1 },
-      { field: 'RowsOfPage', type: sql.Int, value: rowsPerPage || 100 },
+      { field: 'PageNumber', type: sql.Int, value: page || 0 },
+      { field: 'RowsOfPage', type: sql.Int, value: rowsPerPage || 0 },
       {
         field: 'OrderByColumn',
         type: sql.NVarChar,
-        value: sortByAttribute || '[Location Name]',
+        value: sortByAttribute || 'Location Name',
       },
-      { field: 'Order', type: sql.NVarChar, value: orderType || 'asc' },
+      { field: 'Order', type: sql.NVarChar, value: orderType || 'ASC' },
+      { field: 'SubState', type: sql.NVarChar, value: subState || null },
       { field: 'Country', type: sql.NVarChar, value: country || null },
       { field: 'State', type: sql.NVarChar, value: state || null },
-      { field: 'SubState', type: sql.NVarChar, value: subState || null },
       {
         field: 'AnalysisAreaMin',
         type: sql.Int,
@@ -45,6 +50,11 @@ export class UspGetPaginatedAnalysisDataForUserList {
         type: sql.Int,
         value: analysisAreaMax || null,
       },
+      { field: 'LocationLogic', type: sql.NVarChar, value: locationLogic || null },
+      { field: 'LocationIds', type: sql.NVarChar, value: locationIds || null },
+      { field: 'LocationStatement', type: sql.NVarChar, value: locationStatement || null },
+      { field: 'ColumnsToReturn', type: sql.NVarChar, value: combinedColumns || null },
+      { field: 'SearchString', type: sql.NVarChar, value: searchString || null },
       { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
     ];
 
@@ -55,10 +65,10 @@ export class UspGetPaginatedAnalysisDataForUserList {
         'uspGetPaginatedAnalysisDataForUserList',
         parameters
       );
-      connection.disconnect();
+      await connection.disconnect();
       return createListResult;
     } catch (error) {
-      connection.disconnect();
+      await connection.disconnect();
       throw new Error(error);
     }
   }

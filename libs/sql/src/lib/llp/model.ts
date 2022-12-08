@@ -23,6 +23,10 @@ export interface GenerationFileRequest {
   subState?: string;
   type?: string;
   userEmail?: string;
+  searchString?: string;
+  locationLogic?: string;
+  locationIds?: string;
+  locationStatement?: string;
 }
 
 /*export interface GetAnalysisDataCountForUserListResponse {

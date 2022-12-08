@@ -85,10 +85,10 @@ export class EmailService {
         <img src="https://dpptfqp76xood.cloudfront.net/images/pending_black_24dp.png"  alt="alt_text" border="0" align="center" class="g-img">
       </div>
       <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 600; font-size: 1.3rem; text-align: center; letter-spacing: 0.4px; color: rgba(0, 0, 0, 0.73);  padding: 35px;">
-        We start to generate the file
+        Now It's up to use
       </div>
       <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.6rem; text-align: center; letter-spacing: 0.25px; color: rgba(0, 0, 0, 0.54);">
-        Pro system starting capturing data from the server and is generating your file with the data of the list ${listName}.
+        We will review your request and you will be notified within 24 hours.
       </div>
       `,
       finish: `
@@ -96,10 +96,10 @@ export class EmailService {
         <img src="https://dpptfqp76xood.cloudfront.net/images/check_circle_black_24dp.png"  alt="alt_text" border="0" align="center" class="g-img">
       </div>
       <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 600; font-size: 1.3rem; text-align: center; letter-spacing: 0.4px; color: rgba(0, 0, 0, 0.73);  padding: 35px;">
-        We finished to generate your file
+        File generation completed successfully
       </div>
       <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.6rem; text-align: center; letter-spacing: 0.25px; color: rgba(0, 0, 0, 0.54);">
-        Pro system starting capturing data from the server and is generating yout file.
+        File are ready to be downloaded in the following link.
       </div>
       <div style="font-family: 'Inter'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.2rem; color: #000000; text-transform: uppercase; padding: 3rem; text-align: center; padding: 20px;">
         DOWNLOAD WITHIN 24 HOURS
@@ -130,16 +130,16 @@ export class EmailService {
         <img src="https://dpptfqp76xood.cloudfront.net/images/warning_black_24dp.png"  alt="alt_text" border="0" align="center" class="g-img">
       </div>
       <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 600; font-size: 1.3rem; text-align: center; letter-spacing: 0.4px; color: rgba(0, 0, 0, 0.73); padding: 35px;">
-        We have a problem to generate your file
+        We have a problem generating your file
       </div>
       <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.6rem; text-align: center; letter-spacing: 0.25px; color: rgba(0, 0, 0, 0.54);">
-        The pro system had some problem to generate you file with the data of the list ${listName}. Please try again.
+        The system had some problem to generate your file. Please try again.
       </div>
       `
     };
 
     return this.createPage(emailMessage[type]);
-  };
+  }
 
   async sendEmail(sender: string, receivers: Array<string>, subject: string, type: string, filter: any){
     const content = this.generateEmailTemplate(type, filter);

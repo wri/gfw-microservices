@@ -21,7 +21,8 @@ export class UspGetAnalysisDataCountForUserList {
       analysisAreaMax,
       analysisArea,
       analysisAreaOperator,
-    } = filters;
+      searchString
+    } =  filters;
 
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
@@ -38,16 +39,7 @@ export class UspGetAnalysisDataCountForUserList {
         type: sql.Int,
         value: analysisAreaMax || null,
       },
-      {
-        field: 'AnalysisAreaFilter',
-        type: sql.Float,
-        value: analysisArea || null,
-      },
-      {
-        field: 'AnalysisAreaOperator',
-        type: sql.NVarChar,
-        value: analysisAreaOperator || '>',
-      },
+      { field: 'SearchString', type: sql.Float, value: searchString || null },
     ];
 
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });

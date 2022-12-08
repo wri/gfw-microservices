@@ -56,7 +56,7 @@ export class CSVService {
     }
 
     return resultColumnsList.concat(combinedFields).concat(originalFields);
-  };
+  }
 
   async getAnalysisData(organizationDatabase: string, filters: GenerationFileRequest) {
     const { page } = filters;
@@ -85,9 +85,8 @@ export class CSVService {
     const header = page === 0;
     const fieldsHeader = this.buildCSVHeader(fields, filters);
     const parser = new Parser({ fields: fieldsHeader, header });
-    const csv = parser.parse(analysisData);
-    return csv;
-  };
+    return parser.parse(analysisData);
+  }
 
 
   async generate(filter: GenerationFileRequest){
@@ -97,14 +96,14 @@ export class CSVService {
     const listSchema = await this.uspGetListNameSchema.run(organizationDatabase, filter);
 
     filter.listName = listSchema.list_name;
-    filter.rowsPerPage = 5000;
 
     const numberOfPages  = await this.uspGetAnalysisDataCountForUserList.run(organizationDatabase, filter);
     this.logger.log(`Number of pages: ${numberOfPages}`);
-    let arrayOfPages = Array.from(Array(numberOfPages - 1).keys());
+    let arrayOfPages = Array.from(Array(numberOfPages).keys());
     arrayOfPages = arrayOfPages.map((value) => value + 1);
+    arrayOfPages.shift();
 
-    let newfilters = { ...filter, page: 0 };
+    let newfilters = { ...filter, page: 1 };
     let analysisData = await this.getAnalysisData(organizationDatabase, newfilters);
     fs.writeFileSync(`/tmp/${key}.csv`, analysisData);
 

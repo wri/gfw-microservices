@@ -46,7 +46,7 @@ export class LLPMessageHandler {
     const filter = JSON.parse(message.Body);
 
     // TODO: improve remove message should be automatically
-    this.removeMessage(message);
+    await this.removeMessage(message);
 
     filter.rowsPerPage = 5000;
     const { key, organizationDatabase, file, userEmail } = filter;
@@ -60,7 +60,7 @@ export class LLPMessageHandler {
       filter
     );
 
-    this.emailService.sendEmail(
+    await this.emailService.sendEmail(
       process.env.SES_SENDER_EMAIL,
       [userEmail],
       `[GFW-PRO] File Generation for list ${listName}`,
@@ -82,6 +82,7 @@ export class LLPMessageHandler {
         await this.shapefileService.generate(filter);
       }
 
+
       const fileExtension = file === 'csv' ? 'csv' : 'zip';
       this.logger.log(`Existe arquivo ${fs.existsSync(`/tmp/${key}.${fileExtension}`)}`)
       if (fs.existsSync(`/tmp/${key}.${fileExtension}`)) {
@@ -90,21 +91,21 @@ export class LLPMessageHandler {
         const location = await this.s3Service.getFileSignedUrl(key, fileExtension, process.env.AWS_TMP_BUCKET);
 
         this.logger.log(`Sending the email informing that the file generation is complete.`)
-        this.emailService.sendEmail(process.env.SES_SENDER_EMAIL, [userEmail], `[GFW-PRO] File Generation for list ${listName}`, 'finish', {
+        await this.emailService.sendEmail(process.env.SES_SENDER_EMAIL, [userEmail], `[GFW-PRO] File Generation for list ${listName}`, 'finish', {
           ...filter,
+          listName,
           location,
         });
       }
     } catch (error) {
       this.logger.log(`Error on generating the file: ${error.message}`)
-      this.emailService.sendEmail(
+      await this.emailService.sendEmail(
         process.env.SES_SENDER_EMAIL,
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,
-        'finish',
+        'error',
         {
           ...filter,
-          location,
           listName,
         }
       );

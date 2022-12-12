@@ -1,5 +1,7 @@
-import * as wellknown from 'wellknown';
-import * as geojsonStream from 'geojson-stream';
+import { parse, GeoJSONGeometryOrNull } from 'wellknown';
+
+import * as JSONStream from 'JSONStream';
+import *  as MultiStream from 'multistream';
 import { convert } from 'geojson2shp';
 
 import * as asyncPool from "tiny-async-pool";
@@ -24,9 +26,9 @@ export class ShapefileService {
     private uspGetAnalysisDataCountForUserList:UspGetAnalysisDataCountForUserList,
   ){}
 
-  getGeoJSONGeometry(wktGeometry: string) {
-    return wellknown(wktGeometry);
-  };
+  getGeoJSONGeometry(wktGeometry: string) : GeoJSONGeometryOrNull {
+    return parse(wktGeometry);
+  }
 
   createGeoJSON(recordsets: Array<any>) {
     const geojson = {
@@ -54,7 +56,7 @@ export class ShapefileService {
     });
 
     return geojson;
-  };
+  }
 
   async getAnalysisData(organizationDatabase: string, filter: GenerationFileRequest) {
     let analysisData = await this.uspGetPaginatedAnalysisDataForUserList.run(organizationDatabase, filter);
@@ -79,11 +81,10 @@ export class ShapefileService {
     );
 
     return this.createGeoJSON(analysisData);
-  };
+  }
 
   async createGeoJSONPage(key: string, dir: string, organizationDatabase: string, filter: GenerationFileRequest) {
     const listOfGeojsonFiles = Array<string>();
-    filter.rowsPerPage = 5000;
 
     const numberOfPages = await this.uspGetAnalysisDataCountForUserList.run(organizationDatabase, filter);
     this.logger.log(`Number of pages: ${numberOfPages}`);
@@ -104,31 +105,40 @@ export class ShapefileService {
       this.logger.log(`Save the file ${fileNameIternal}`);
     }
     return listOfGeojsonFiles;
-  };
+  }
 
   async mergeAllGeoJson(key: string , listOfGeojsonFiles: Array<string>) {
-    const mergeGeojson = async (fileNameIternal: string) => {
-      const mp = new Promise((resolve, reject) => {
-        const out = fs.createWriteStream(`/tmp/${key}.geojson`);
-        fs.createReadStream(fileNameIternal)
-          .pipe(geojsonStream.parse())
-          .pipe(geojsonStream.stringify())
-          .pipe(out)
-          .on('error', (error: any) => {
-            reject(error);
-          })
-          .on('finish', () => {
-            resolve('done');
-          });
-      });
-      await mp;
-      return fileNameIternal;
-    };
+    const open = '{"type":"FeatureCollection","features":[';
+    const close = ']}';
 
-    for await (const mergeFile of asyncPool(1, listOfGeojsonFiles, mergeGeojson)) {
-      this.logger.log(`Join the file ${mergeFile} into ${key}.geojson`);
+    const streams = []
+
+    for ( let i = 0; i < listOfGeojsonFiles.length; i++) {
+      const fileNameIternal = listOfGeojsonFiles[i];
+      this.logger.log(`Add file ${fileNameIternal} to the list`);
+      streams.push(fs.createReadStream(fileNameIternal))
     }
-  };
+
+    const out = fs.createWriteStream(`/tmp/${key}.geojson`, {flags:'r+'});
+
+    const mp = new Promise((resolve, reject) => {
+      new MultiStream(streams)
+      .pipe(JSONStream.parse(['features', true]))
+      .pipe(JSONStream.stringify(open, '\n,\n', close))
+      .pipe(out)
+      .on('error', (error: any) => {
+        reject(error);
+      })
+      .on('finish', () => {
+        out.end();
+        resolve('done');
+      });
+
+    });
+
+
+    await mp;
+  }
 
   async convertGeojsonToSHP(key: string) {
     const options = {
@@ -136,7 +146,7 @@ export class ShapefileService {
       targetCrs: 2154,
     };
     await convert(`/tmp/${key}.geojson`, `/tmp/${key}.zip`, options);
-  };
+  }
 
 
   async generate(filter: GenerationFileRequest){
@@ -161,5 +171,4 @@ export class ShapefileService {
     await this.mergeAllGeoJson(key, listOfGeojsonFiles);
     await this.convertGeojsonToSHP(key);
   }
-
 }

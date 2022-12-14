@@ -1,5 +1,10 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+
+const envModule = ConfigModule.forRoot({
+  isGlobal: true,
+});
+
 import { Module } from '@nestjs/common';
 import { config } from 'aws-sdk';
 
@@ -17,7 +22,7 @@ config.update({
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    envModule,
     TypeOrmModule.forRootAsync({ useClass: DatabaseService }),
   ],
   controllers: [AppController],

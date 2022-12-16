@@ -1,4 +1,4 @@
-import { SQLUtils } from './../utils/sql.utils';
+import { SQLUtils } from '@wri-monorepos/sql';
 import { Injectable, Inject } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../models';
 import fetch from 'node-fetch';

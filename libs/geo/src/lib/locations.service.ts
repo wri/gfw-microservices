@@ -20,7 +20,7 @@ import {
   UspSetListLocked,
   DeleteList,
 } from '@wri-monorepos/sql';
-import { Injectable } from '@nestjs/common';
+import { Logger, Injectable } from '@nestjs/common';
 import { getFinalGeojson } from '@wri-monorepos/shared';
 
 const DEFAULT_LOCATION_ID = 0;
@@ -33,6 +33,7 @@ interface GeoJsonFeature {
 
 @Injectable()
 export class LocationService {
+  private readonly logger = new Logger(LocationService.name);
   constructor(private geoService: GeoService) {}
   assembleGeojson = (
     featProps,
@@ -112,6 +113,8 @@ export class LocationService {
     allLocationsSelected = false,
     filters
   ) => {
+    this.logger.log(`Applied Filters ${JSON.stringify(filters)}`);
+
     let createdListId = 0;
     let resultingBulkGeoJSON;
     let destLocationIds = [];
@@ -154,8 +157,7 @@ export class LocationService {
         analysisAreaMax,
       }
     );
-    console.log(locationData);
-    console.log(filters);
+
     let featProps = [];
     let templateId;
     const customAttributes = [];
@@ -207,7 +209,7 @@ export class LocationService {
       if (selectedNewOrExisting === 'new') {
         return PerformGetLockStatus(clientDatabase, selectedListId)
           .then((result) => {
-            console.log(result);
+            this.logger.log(`Lock status result: ${JSON.stringify(result)}`);
             const { lock_status, lock_user_id } = result;
             if (lock_status === null /*|| lock_status !== null*/) {
               throw 'error';
@@ -245,15 +247,16 @@ export class LocationService {
             return requestAnalysisProcess(postData);
           })
           .then((response) => {
-            console.log(response);
+            this.logger.log('Request analysis process response');
+            this.logger.log(response);
             return response.json();
           })
           .then((json) => {
-            console.log(json);
+            this.logger.log(`JSON: ${JSON.stringify(json)}`);
           });
       } else {
         // existing
-        console.log('Performing move for existing list');
+        this.logger.log('Performing move for existing list');
         return PerformListBulkCopy(
           moveToList.id,
           listName,
@@ -304,12 +307,13 @@ export class LocationService {
             return requestAnalysisProcess(postData);
           })
           .then((response) => {
-            console.log(response);
+            this.logger.log('Bulk upload response');
+            this.logger.log(response);
             return response.json();
           })
           .then((json) => {
-            console.log(json);
-            console.log('remove locations or list if move is selected');
+            this.logger.log(`JSON: ${JSON.stringify(json)}`);
+            this.logger.log('remove locations or list if move is selected');
             return new Promise((resolve, reject) => {
               if (selectedMoveOrCopy === 'move') {
                 return new UspSetListLocked()
@@ -331,7 +335,7 @@ export class LocationService {
             });
           })
           .then((json) => {
-            console.log(json);
+            this.logger.log(`JSON: ${JSON.stringify(json)}`);
           });
       }
     });

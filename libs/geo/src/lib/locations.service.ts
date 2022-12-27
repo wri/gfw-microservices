@@ -158,6 +158,15 @@ export class LocationService {
       }
     );
 
+    if (selectedMoveOrCopy === 'move') {
+      if (allLocationsSelected && !isFiltered) {
+        selectedLocations = [];
+        selectedLocations = locationData.map(
+          (location: { location_id: number }) => location.location_id
+        );
+      }
+    }
+
     let featProps = [];
     let templateId;
     const customAttributes = [];

@@ -8,7 +8,7 @@ import {
   RequestSaveLargeListProcessModel,
   CreateListInsertResultModel,
 } from '../models';
-import { SQLUtils } from './../utils/sql.utils';
+import { SQLUtils } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 
 class MyObject {

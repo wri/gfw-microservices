@@ -43,7 +43,7 @@ export class CSVService {
     }, []);
 
     let resultColumnsList = [];
-    if (filters.type === 'result') {
+    if ('results' === filters.type) {
       resultColumnsList = Object.entries(resultColumns).reduce((obj, array) => {
         const [value, label] = array;
         const newObj = [...obj];
@@ -68,7 +68,7 @@ export class CSVService {
 
     let allFields = [...fields, ...filters.combinedColumnsSplited];
 
-    if (filters.type === 'result') {
+    if ('results' === filters.type) {
       allFields = [...allFields, ...Object.keys(resultColumns)];
     }
 
@@ -82,8 +82,9 @@ export class CSVService {
         }, {})
     );
 
-    const header = page === 0;
+    const header = page === 1;
     const fieldsHeader = this.buildCSVHeader(fields, filters);
+    console.log(fieldsHeader)
     const parser = new Parser({ fields: fieldsHeader, header });
     return parser.parse(analysisData);
   }

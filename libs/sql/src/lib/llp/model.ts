@@ -39,7 +39,7 @@ export interface GetAnalysisDataCountForUserListResponse {
 }
 
 export class ListNameSchema {
-  id: string;
+  id: number;
   userId: string;
   list_name: string;
   list_table_name: string;

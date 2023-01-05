@@ -187,8 +187,7 @@ export class ListBulkCopy {
       'uspAddNewLocationToAnalysisTable',
       sqlAddNewLocationToAnalysisTableParameters
     );
-
-    const resultGeoJson = createGeoJSON(recorsets);
+    const resultGeoJson = createGeoJSON( Array.isArray(recorsets) ? recorsets : [recorsets]);
 
     return resultGeoJson;
   }

@@ -10,6 +10,8 @@ import { UspGetListNameSchema } from '../llp/uspGetListNameSchema';
 import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspResetListStatus } from './uspResetListStatus';
 import { UspDeleteList } from './uspDeleteList';
+import { Logger } from '@nestjs/common';
+const logger = new Logger('ClientDatabaseOperationsManager');
 
 const DEFAULT_ROWS_REQUESTED = 200000;
 const ListStatus = {
@@ -134,6 +136,9 @@ export const DeleteLocations = (
           (lock_status !== null && lock_user_id !== userId)
         ) {
           // Reject object
+          logger.log(
+            `List lock status is ${lock_status} and is locked by: ${lock_user_id} and current user is ${userId}`
+          );
           throw { isLocked: true, lock_user_id };
         } else {
           return new UspGetListNameSchema().run(databaseName, {
@@ -157,6 +162,9 @@ export const DeleteLocations = (
       })
       .then(() => {
         // 3. Update list count of deleted location
+        logger.log(
+          `Updating list count with parameters database: ${databaseName}, list table: ${list.list_table}, list id: ${list.id}`
+        );
         return new UspUpdateListCount().run(
           databaseName,
           list.list_table,
@@ -165,10 +173,16 @@ export const DeleteLocations = (
       })
       .then(() => {
         // 4. Unlock list to allow further interaction
+        logger.log(
+          `Unlock list with parameters database: ${databaseName}, list id: ${listId}`
+        );
         return new UspSetListUnlocked().run(databaseName, listId);
       })
       .then(async () => {
         // 5. Set list status to DRAFT
+        logger.log(
+          `Set list status with parameters database: ${databaseName}, list id: ${listId}`
+        );
         await new UspResetListStatus().run(
           databaseName,
           listId,

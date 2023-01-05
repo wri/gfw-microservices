@@ -183,7 +183,7 @@ export class ListBulkCopy {
       { field: 'start_location_id', type: sql.Int, value: max_id },
     ];
 
-    const recorsets = await connection.executeQuery<Promise<unknown[]>>(
+    const recorsets = await connection.executeQueryArray<Promise<unknown[]>>(
       'uspAddNewLocationToAnalysisTable',
       sqlAddNewLocationToAnalysisTableParameters
     );

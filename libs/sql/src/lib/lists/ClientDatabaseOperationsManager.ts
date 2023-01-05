@@ -1,3 +1,4 @@
+import { ListNameSchema } from './../llp/model';
 import { UspUpdateListCount } from './uspUpdateListCount';
 import { UspDeleteLocation } from './uspDeleteLocation';
 import { UspGetAnalysisColumns } from './uspGetAnalysisColumns';
@@ -123,7 +124,7 @@ export const DeleteLocations = (
   let promiseResolver = Promise.resolve();
   return new Promise((resolve, reject) => {
     // Important variables
-    let list;
+    let list: ListNameSchema;
     new UspGetListLockStatus()
       .run(databaseName, {
         list_id: listId,
@@ -163,11 +164,11 @@ export const DeleteLocations = (
       .then(() => {
         // 3. Update list count of deleted location
         logger.log(
-          `Updating list count with parameters database: ${databaseName}, list table: ${list.list_table}, list id: ${list.id}`
+          `Updating list count with parameters database: ${databaseName}, list table: ${list.list_table_name}, list id: ${list.id}`
         );
         return new UspUpdateListCount().run(
           databaseName,
-          list.list_table,
+          list.list_table_name,
           list.id
         );
       })

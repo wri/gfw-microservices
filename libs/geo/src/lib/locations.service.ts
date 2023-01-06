@@ -22,6 +22,7 @@ import {
 } from '@wri-monorepos/sql';
 import { Logger, Injectable } from '@nestjs/common';
 import { getFinalGeojson } from '@wri-monorepos/shared';
+import { resolve } from 'path';
 
 const DEFAULT_LOCATION_ID = 0;
 const EMPTY_CUSTOM_ATTRIBUTES = [];
@@ -159,7 +160,7 @@ export class LocationService {
     );
 
     if (selectedMoveOrCopy === 'move') {
-      if (allLocationsSelected && !isFiltered) {
+      if (allLocationsSelected) {
         selectedLocations = [];
         selectedLocations = locationData.map(
           (location: { location_id: number }) => location.location_id
@@ -338,6 +339,15 @@ export class LocationService {
                       userId,
                       gfwListId
                     );
+                  })
+                  .then(() => {
+                    const postData = {
+                      list_id: selectedListId,
+                      user_id: userId,
+                      organization_id: organizationId,
+                      reanalyze: false,
+                    };
+                    return requestAnalysisProcess(postData);
                   });
               }
               resolve(json);

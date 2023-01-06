@@ -15,11 +15,10 @@ export class UspUpdateListCount {
       },
       { field: 'list_id', type: sql.Int, value: listId },
     ];
-
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      await connection.executeQuery('uspUpdateListCount', parameters);
+     await connection.executeQuery('uspUpdateListCount', parameters);
       connection.disconnect();
     } catch (error) {
       connection.disconnect();

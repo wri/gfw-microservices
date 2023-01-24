@@ -85,7 +85,7 @@ export class EmailService {
         <img src="https://dpptfqp76xood.cloudfront.net/images/pending_black_24dp.png"  alt="alt_text" border="0" align="center" class="g-img">
       </div>
       <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 600; font-size: 1.3rem; text-align: center; letter-spacing: 0.4px; color: rgba(0, 0, 0, 0.73);  padding: 35px;">
-        Now It's up to use
+        Now It's up to us
       </div>
       <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.6rem; text-align: center; letter-spacing: 0.25px; color: rgba(0, 0, 0, 0.54);">
         We will review your request and you will be notified within 24 hours.

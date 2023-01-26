@@ -41,7 +41,8 @@ export const CreateNewUserList = (
   userId: number,
   customAttributes: string[],
   clientDatabase: string,
-  gfwListId?: number
+  gfwListId?: number,
+  saveAsDraft?: boolean
 ): Promise<CreateListResult> => {
   const listCreation = new SPSListCreation();
   return listCreation.createNewList(
@@ -51,7 +52,8 @@ export const CreateNewUserList = (
     userId,
     customAttributes,
     clientDatabase,
-    gfwListId
+    gfwListId,
+    saveAsDraft
   );
 };
 
@@ -263,4 +265,13 @@ export const DeleteList = (databaseName, listId, userId) => {
         reject(err);
       });
   });
+};
+
+export const SetListDrafStatus = (clientDatabase, listId, gfwListId) => {
+  return new UspResetListStatus().run(
+    clientDatabase,
+    listId,
+    ListStatus.Draft,
+    gfwListId
+  );
 };

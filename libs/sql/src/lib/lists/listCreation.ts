@@ -4,6 +4,7 @@ import * as sql from 'mssql';
 import { CreateListNameSchema } from '@wri-monorepos/shared';
 import process = require('process');
 const PENDING_STATUS_ID = 1;
+const DRAFT_STATUS_ID = 4;
 export interface CreateListResult {
   list_id: number;
 }
@@ -21,12 +22,13 @@ export class SPSListCreation {
     user_id: number,
     custom_attributes: string[],
     clientDatabase: string,
-    gfw_list_id?: number
+    gfw_list_id?: number,
+    saveAsDraft?: boolean
   ): Promise<CreateListResult> {
     const list = CreateListNameSchema(list_name);
     const list_table = list.list_table;
     const analysis_table = list.analysis_table;
-    const list_status_id = PENDING_STATUS_ID; // Pending
+    const list_status_id = saveAsDraft ? DRAFT_STATUS_ID : PENDING_STATUS_ID;
     const custom_attribute_names = '';
     const custom_attribute_types = '';
 

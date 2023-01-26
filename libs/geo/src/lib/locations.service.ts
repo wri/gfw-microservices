@@ -19,11 +19,12 @@ import {
   DeleteLocations,
   UspSetListLocked,
   DeleteList,
+  SetListDrafStatus,
 } from '@wri-monorepos/sql';
 import { Logger, Injectable } from '@nestjs/common';
 import { getFinalGeojson } from '@wri-monorepos/shared';
 import { resolve } from 'path';
-
+import { Response } from 'node-fetch';
 const DEFAULT_LOCATION_ID = 0;
 const EMPTY_CUSTOM_ATTRIBUTES = [];
 
@@ -231,7 +232,8 @@ export class LocationService {
                 userId,
                 EMPTY_CUSTOM_ATTRIBUTES,
                 clientDatabase,
-                null
+                null,
+                isSaveAsDraft
               );
               return createNewUserList;
             }
@@ -247,19 +249,29 @@ export class LocationService {
               clientDatabase
             );
           })
-          .then((bulkUploadResult) => {
-            const postData = {
-              list_id: createdListId,
-              user_id: userId,
-              organization_id: organizationId,
-              reanalyze: false,
-            };
-            return requestAnalysisProcess(postData);
-          })
+          .then(
+            (
+              bulkUploadResult
+            ): Promise<Response> | Response | { success: boolean } => {
+              if (isSaveAsDraft) {
+                return { success: true };
+              }
+              const postData = {
+                list_id: createdListId,
+                user_id: userId,
+                organization_id: organizationId,
+                reanalyze: false,
+              };
+              return requestAnalysisProcess(postData);
+            }
+          )
           .then((response) => {
             this.logger.log('Request analysis process response');
             this.logger.log(response);
-            return response.json();
+            if (response instanceof Response) {
+              return response.json();
+            }
+            return response;
           })
           .then((json) => {
             this.logger.log(`JSON: ${JSON.stringify(json)}`);
@@ -306,20 +318,36 @@ export class LocationService {
 
             return promiseResolver;
           })
-          .then((bulkUploadResult) => {
-            resultingBulkGeoJSON = bulkUploadResult;
-            const postData = {
-              list_id: moveToList.id,
-              user_id: userId,
-              organization_id: organizationId,
-              reanalyze: false,
-            };
-            return requestAnalysisProcess(postData);
-          })
+          .then(
+            ():
+              | Promise<Response>
+              | Promise<void>
+              | Response
+              | { success: boolean }
+              | void => {
+              if (isSaveAsDraft) {
+                return SetListDrafStatus(
+                  clientDatabase,
+                  moveToList.id,
+                  gfwListId
+                );
+              }
+              const postData = {
+                list_id: moveToList.id,
+                user_id: userId,
+                organization_id: organizationId,
+                reanalyze: false,
+              };
+              return requestAnalysisProcess(postData);
+            }
+          )
           .then((response) => {
             this.logger.log('Bulk upload response');
             this.logger.log(response);
-            return response.json();
+            if (response instanceof Response) {
+              return response.json();
+            }
+            return response;
           })
           .then((json) => {
             this.logger.log(`JSON: ${JSON.stringify(json)}`);
@@ -340,15 +368,20 @@ export class LocationService {
                       gfwListId
                     );
                   })
-                  .then(() => {
-                    const postData = {
-                      list_id: selectedListId,
-                      user_id: userId,
-                      organization_id: organizationId,
-                      reanalyze: false,
-                    };
-                    return requestAnalysisProcess(postData);
-                  });
+                  .then(
+                    ():
+                      | Promise<Response>
+                      | Promise<void>
+                      | void
+                      | Response
+                      | { success: boolean } => {
+                      return SetListDrafStatus(
+                        clientDatabase,
+                        selectedListId,
+                        gfwListId
+                      );
+                    }
+                  );
               }
               resolve(json);
             });

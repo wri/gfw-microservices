@@ -42,7 +42,7 @@ export class ShapefileService {
           if (key === 'WKTGeometry') {
             obj.geometry = this.getGeoJSONGeometry(location[key]);
           } else {
-            obj.properties[key] = location[key];
+            obj.properties[key] = location[key] ? location[key].toString() : null;
           }
           return obj;
         },

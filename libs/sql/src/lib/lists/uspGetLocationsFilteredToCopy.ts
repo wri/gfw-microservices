@@ -16,6 +16,7 @@ export class UspGetLocationsFilteredToCopy {
       subState,
       analysisAreaMin,
       analysisAreaMax,
+      searchString,
     }
   ): Promise<unknown[]> {
     const parameters = [
@@ -29,14 +30,19 @@ export class UspGetLocationsFilteredToCopy {
       { field: 'State', type: sql.NVarChar, value: state || null },
       { field: 'SubState', type: sql.NVarChar, value: subState || null },
       {
-        field: 'analysisAreaMin',
+        field: 'AnalysisAreaMin',
         type: sql.Int,
         value: analysisAreaMin || null,
       },
       {
-        field: 'analysisAreaMax',
+        field: 'AnalysisAreaMax',
         type: sql.Int,
         value: analysisAreaMax || null,
+      },
+      {
+        field: 'SearchString',
+        type: sql.NVarChar,
+        value: searchString || null,
       },
     ];
 

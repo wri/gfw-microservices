@@ -12,6 +12,7 @@ import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspResetListStatus } from './uspResetListStatus';
 import { UspDeleteList } from './uspDeleteList';
 import { Logger } from '@nestjs/common';
+import { UspDeleteLocationIdsFilteredDataForUserList } from './uspDeleteLocationIdsFilteredDataForUserList';
 const logger = new Logger('ClientDatabaseOperationsManager');
 
 const DEFAULT_ROWS_REQUESTED = 200000;
@@ -213,11 +214,122 @@ export const DeleteLocations = (
   });
 };
 
-/** @function {DeleteLocations}
+/** @function {BulkDeleteLocations}
  *   @summary Deletes locations from a list
+ *   @param {String} databaseName
+ *   @param {Number} listId
+ *   @param {Number} userId
+ *   @param {Number} gfwListId
+ *   @param {Array} selectedLocations
+ *   @param {String} country
+ *   @param {String} state
+ *   @param {String} subState
+ *   @param {Number} analysisAreaMin
+ *   @param {Number} analysisAreaMax
+ *   @param {String} searchString
+ *   @return {Promise}
+ */
+export const BulkDeleteLocations = (
+  databaseName,
+  listId,
+  userId,
+  gfwListId,
+  selectedLocations,
+  country,
+  state,
+  subState,
+  analysisAreaMin,
+  analysisAreaMax,
+  searchString
+) => {
+  let promiseResolver = Promise.resolve();
+  return new Promise((resolve, reject) => {
+    // Important variables
+    let list: ListNameSchema;
+    new UspGetListLockStatus()
+      .run(databaseName, {
+        list_id: listId,
+      })
+      .then((record) => {
+        const { lock_status, lock_user_id } = record;
+        // 1. List is unlocked
+        if (
+          lock_status === null ||
+          (lock_status !== null && lock_user_id !== userId)
+        ) {
+          // Reject object
+          logger.log(
+            `List lock status is ${lock_status} and is locked by: ${lock_user_id} and current user is ${userId}`
+          );
+          throw { isLocked: true, lock_user_id };
+        } else {
+          return new UspGetListNameSchema().run(databaseName, {
+            listID: listId,
+          });
+        }
+      })
+      .then((record) => {
+        // 2. Deleting list locations
+        list = record;
+        promiseResolver = promiseResolver.then(() => {
+          return new UspDeleteLocationIdsFilteredDataForUserList().run(
+            databaseName,
+            {
+              listID: list.id,
+              selectedLocations,
+              country,
+              state,
+              subState,
+              analysisAreaMin,
+              analysisAreaMax,
+              searchString,
+            }
+          );
+        });
+        return promiseResolver;
+      })
+      .then(() => {
+        // 3. Update list count of deleted location
+        logger.log(
+          `Updating list count with parameters database: ${databaseName}, list table: ${list.list_table_name}, list id: ${list.id}`
+        );
+        return new UspUpdateListCount().run(
+          databaseName,
+          list.list_table_name,
+          list.id
+        );
+      })
+      .then(() => {
+        // 4. Unlock list to allow further interaction
+        logger.log(
+          `Unlock list with parameters database: ${databaseName}, list id: ${listId}`
+        );
+        return new UspSetListUnlocked().run(databaseName, listId);
+      })
+      .then(async () => {
+        // 5. Set list status to DRAFT
+        logger.log(
+          `Set list status with parameters database: ${databaseName}, list id: ${listId}`
+        );
+        await new UspResetListStatus().run(
+          databaseName,
+          listId,
+          ListStatus.Draft,
+          gfwListId
+        );
+        resolve(true);
+      })
+      .catch((err) => {
+        console.log('Error in deleting location', err);
+        reject(err);
+      });
+  });
+};
+
+/** @function {DeleteList}
+ *   @summary Deletes a list
  *   @param {Number} list_id
- *   @param {Array} locationIds
- *   @param  {Number} gfwListId
+ *   @param  {Number} userId
  *   @return {Promise}
  */
 export const DeleteList = (databaseName, listId, userId) => {
@@ -265,6 +377,24 @@ export const DeleteList = (databaseName, listId, userId) => {
         reject(err);
       });
   });
+};
+
+export const UnlockListAndSaveAsDraft = async (
+  clientDatabase,
+  listId,
+  gfwListId
+): Promise<void> => {
+  await new UspSetListUnlocked().run(clientDatabase, listId);
+  await new UspResetListStatus().run(
+    clientDatabase,
+    listId,
+    ListStatus.Draft,
+    gfwListId
+  );
+};
+
+export const UnlockList = (clientDatabase, listId) => {
+  return new UspSetListUnlocked().run(clientDatabase, listId);
 };
 
 export const SetListDrafStatus = (clientDatabase, listId, gfwListId) => {

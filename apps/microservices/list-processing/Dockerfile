@@ -19,5 +19,6 @@ COPY package.json .
 COPY yarn.lock .
 COPY ./apps/microservices/list-processing/.env .
 RUN yarn install
+RUN export NODE_OPTIONS="--max-old-space-size=8192"
 
 CMD [ "node", "main.js" ]

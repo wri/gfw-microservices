@@ -15,7 +15,7 @@ RUN /appbuilder/node_modules/.bin/nx build microservices-list-processing --confi
 FROM amd64/node:16.15.1
 WORKDIR /app
 ENV GENERATE_SOURCEMAP=false
-ENV NODE_OPTIONS=--max-old-space-size=8192
+ENV NODE_OPTIONS=--max-old-space-size=16384
 COPY --from=appbuilder /appbuilder/dist/apps/microservices/list-processing/ /app/
 COPY package.json .
 COPY yarn.lock .

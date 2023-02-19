@@ -4,8 +4,8 @@
   "projects": {
     "aws": "libs/aws",
     "geo": "libs/geo",
+    "microservices-list-downloader": "apps/microservices/list-downloader",
     "microservices-list-processing": "apps/microservices/list-processing",
-    "microservices-tasks": "apps/microservices/tasks",
     "shared": "libs/shared",
     "sql": "libs/sql"
   }

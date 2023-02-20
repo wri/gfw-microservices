@@ -19,8 +19,6 @@ export class UspGetAnalysisDataCountForUserList {
       rowsPerPage,
       analysisAreaMin,
       analysisAreaMax,
-      analysisArea,
-      analysisAreaOperator,
       searchString
     } =  filters;
 

@@ -4,7 +4,7 @@ export interface GenerationFileRequest {
   analysisArea?: number;
   analysisAreaOperator?: string;
   combinedColumns?: string;
-  combinedColumnsSplited?: Array<string>;
+  combinedColumnsSplitted?: Array<string>;
   country?: string;
   file?: stringList;
   geometry?: number;
@@ -14,7 +14,7 @@ export interface GenerationFileRequest {
   orderType?: string;
   organizationDatabase?: string;
   page?: number;
-  pageSize?: number;
+  numberOfPages?: number;
   rowsPerPage?: number;
   analysisAreaMax?: string;
   analysisAreaMin?: string;
@@ -27,6 +27,10 @@ export interface GenerationFileRequest {
   locationLogic?: string;
   locationIds?: string;
   locationStatement?: string;
+  fields?: Array<string>;
+  templateId?: number;
+  selectedLocations?: string,
+  selectedLocationsList?: Array<number>;
 }
 
 /*export interface GetAnalysisDataCountForUserListResponse {

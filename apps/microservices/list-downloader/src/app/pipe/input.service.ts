@@ -3,41 +3,13 @@ import * as fs from 'fs';
 import * as archiver from 'archiver';
 
 import { Logger, Injectable } from '@nestjs/common';
-import { PassThrough, Transform } from 'stream';
+import { PassThrough } from 'stream';
 
 import { IPipeService } from './IPipeService';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { columnsListName, columnsTemplateId } from '../shared/constants'
-
-
-class FilterJson extends Transform {
-  constructor(private allFields: string[]) {
-    super({objectMode: true});
-  }
-
-  _transform(chunk, _, next) {
-    const newChunk = this.allFields.reduce((obj, key) => { return Object.assign(obj, { [key]: chunk[key], }); }, {});
-    next(null,
-      newChunk
-    );
-  }
-}
-
-class FilterSelection extends Transform {
-  constructor(private selectedLocationsList: number[]) {
-    super({objectMode: true});
-  }
-
-  _transform(chunk, _, next) {
-    if (this.selectedLocationsList.length == 0 || this.selectedLocationsList.includes(chunk.location_id)) {
-      return next(null,
-        chunk
-      );
-    }
-    next();
-  }
-}
+import { FilterObject, FilterSelection } from '../shared/list.transform';
 
 @Injectable()
 export class InputService extends IPipeService {
@@ -89,8 +61,6 @@ export class InputService extends IPipeService {
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
     const { key, selectedLocationsList, listID } = filters;
     this.inputStream.removeAllListeners();
-    const filterJson = new FilterJson(allFields);
-    const filterSelection = new FilterSelection(selectedLocationsList);
 
     this.inputStream.on('error', (err) => {
       this.logger.error(`(${listID}) - Error on stream: ${err}`);
@@ -98,8 +68,8 @@ export class InputService extends IPipeService {
     })
 
     this.inputStream
-      .pipe(filterSelection)
-      .pipe(filterJson)
+      .pipe(new FilterSelection(selectedLocationsList))
+      .pipe(new FilterObject(allFields))
       .pipe(csvWriter({
         sendHeaders: false
       }))

@@ -1,7 +1,96 @@
+import * as fs from 'fs';
+import * as JSONStream from 'JSONStream';
+
+import { PassThrough } from 'stream';
+import { convert } from 'geojson2shp';
 import { Logger, Injectable } from '@nestjs/common';
 
+import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { IPipeService } from './IPipeService';
+import { columnsListName, columnsTemplateId } from '../shared/constants'
+import { FilterObject, FilterSelection, ConvertToGeoJSON, ConvertObjectToString } from '../shared/list.transform';
+
 @Injectable()
-export class ShapefileService {
+export class ShapefileService  extends IPipeService{
   private readonly logger = new Logger(ShapefileService.name);
+  private inputStream: PassThrough;
+
+  start(filters: GenerationFileRequest) {
+    const { listID, key, templateId, combinedColumnsSplitted } = filters;
+    this.logger.log(`(${listID}) - Starting shapefile stream to process data`);
+    this.inputStream = new PassThrough({
+      objectMode: true
+    })
+
+    const dir = `/tmp/${key}-folder`;
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+
+    filters.combinedColumnsSplitted.push('WKTGeometry');
+
+    fs.writeFileSync(
+      `/tmp/${key}.geojson`,
+      JSON.stringify({
+        type: 'FeatureCollection',
+        features: [],
+      })
+    );
+
+    const fields =
+    columnsTemplateId[templateId] ?? columnsListName[templateId] ?? columnsTemplateId[14];
+    let allFields = [...fields, ...combinedColumnsSplitted];
+    allFields = [...new Set(allFields)];
+
+    this.organizeStream(filters, allFields)
+    this.startEmail(filters);
+  }
+  process(analysisData: any) {
+    analysisData.forEach(data => this.inputStream.write(data));
+  }
+
+  finish(filters: GenerationFileRequest) {
+    const { listID, key } = filters;
+    this.convertGeojsonToSHP(key).then(() => {
+      this.logger.log(`(${listID}) - Data has been zipped`);
+      this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
+      this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET).then(location => {
+        this.finishedEmail(filters,  location);
+      });
+    });
+  }
+
+
+  private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
+    const open = '{"type":"FeatureCollection","features":[';
+    const close = ']}';
+
+    const { key, selectedLocationsList, listID } = filters;
+    this.inputStream.removeAllListeners();
+
+    this.inputStream.on('error', (err) => {
+      this.logger.error(`(${listID}) - Error on stream: ${err}`);
+      this.errorEmail(filters);
+    })
+
+    this.inputStream
+      .pipe(new FilterSelection(selectedLocationsList))
+      .pipe(new FilterObject(allFields))
+      .pipe(new ConvertToGeoJSON())
+      .pipe(new ConvertObjectToString())
+      .pipe(JSONStream.parse(['features', true]))
+      .pipe(JSONStream.stringify(open, '\n,\n', close))
+      .pipe(fs.createWriteStream(`/tmp/${key}.geojson`, {flags:'r+'}))
+
+    return this.inputStream;
+  }
+
+  private async convertGeojsonToSHP(key: string) {
+    const options = {
+      layer: 'gfw-pro',
+      targetCrs: 2154,
+    };
+    await convert(`/tmp/${key}.geojson`, `/tmp/${key}.zip`, options);
+  }
 
 }

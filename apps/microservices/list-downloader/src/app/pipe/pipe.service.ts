@@ -9,6 +9,7 @@ import {
   UspGetAnalysisDataCountForUserList
 } from '@wri-monorepos/sql';
 import { InputService } from './input.service';
+import { ShapefileService } from './shapefile.service';
 import { IPipeService } from './IPipeService';
 
 
@@ -22,15 +23,16 @@ export class PipeService {
     private uspGetPaginatedAnalysisDataForUserList: UspGetPaginatedAnalysisDataForUserList,
     private uspGetAnalysisDataCountForUserList: UspGetAnalysisDataCountForUserList,
     private uspGetListNameSchema: UspGetListNameSchema,
-    private inputService: InputService
+    private inputService: InputService,
+    private shapefileService: ShapefileService,
   ){}
 
   private readonly logger = new Logger(PipeService.name);
 
   public async makeFile(filters:GenerationFileRequest){
-    const { organizationDatabase, listID, combinedColumns, selectedLocations } = filters;
+    const { organizationDatabase, listID, combinedColumns, selectedLocations, file } = filters;
 
-    this.logger.log(`(${listID}) -  Receive request to build file for list`);
+    this.logger.log(`(${listID}) - Receive request to build file for list`);
 
     filters = {
       ...filters,
@@ -58,6 +60,8 @@ export class PipeService {
       numberOfPages,
       combinedColumnsSplitted,
       selectedLocationsList,
+      // has to add the following parameter to bring the geometry from the database, use only for shapefile
+      geometry: file === 'shapefile' ? 1 : 0,
       ...fields,
     }
 
@@ -81,13 +85,14 @@ export class PipeService {
   }
 
   private defineService(filters:GenerationFileRequest): IPipeService {
-    const { type } = filters;
+    const { type, file } = filters;
 
     const mapFileType2Service = {
-      'input': this.inputService,
+      'input_csv': this.inputService,
+      'input_shapefile': this.shapefileService,
     }
 
-    return mapFileType2Service[type];
+    return mapFileType2Service[`${type}_${file}`];
   }
 
   private async getListOfFields(filters:GenerationFileRequest){

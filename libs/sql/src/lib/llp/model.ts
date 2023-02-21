@@ -1,12 +1,10 @@
-import { stringList } from 'aws-sdk/clients/datapipeline';
-
 export interface GenerationFileRequest {
   analysisArea?: number;
   analysisAreaOperator?: string;
   combinedColumns?: string;
   combinedColumnsSplitted?: Array<string>;
   country?: string;
-  file?: stringList;
+  file?: string;
   geometry?: number;
   key?: string;
   listID: number;

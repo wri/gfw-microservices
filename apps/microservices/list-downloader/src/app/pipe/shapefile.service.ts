@@ -22,11 +22,6 @@ export class ShapefileService  extends IPipeService{
       objectMode: true
     })
 
-    const dir = `/tmp/${key}-folder`;
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir);
-    }
-
     filters.combinedColumnsSplitted.push('WKTGeometry');
 
     fs.writeFileSync(

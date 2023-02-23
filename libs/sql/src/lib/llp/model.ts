@@ -29,6 +29,8 @@ export interface GenerationFileRequest {
   templateId?: number;
   selectedLocations?: string,
   selectedLocationsList?: Array<number>;
+  listView?: string;
+  aggregation?: boolean
 }
 
 /*export interface GetAnalysisDataCountForUserListResponse {

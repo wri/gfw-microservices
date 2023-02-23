@@ -56,32 +56,23 @@ export class ListMessageHandler {
       return value ? JSON.parse(value) : {};
     };
 
+    console.log(message.Body)
     const {
-      listID,
       analysisArea,
-      geoInfo,
-      selectedLocations,
-      listFilterStr,
-      userEmail,
-      organizationDatabase,
-      key,
       file,
-      combinedColumns,
-      type,
+      geoInfo,
+      list,
+      organizationDatabase,
+      userEmail,
     } = JSON.parse(message.Body);
 
     return {
-      listID: getValues(listID),
-      selectedLocations: getValues(selectedLocations),
-      listFilterStr: getValues(listFilterStr),
-      userEmail: getValues(userEmail),
       organizationDatabase: getValues(organizationDatabase),
-      key: getValues(key),
-      file: getValues(file),
-      combinedColumns: getValues(combinedColumns),
-      type: getValues(type),
+      userEmail: getValues(userEmail),
       ...getValuesAndSpread(analysisArea),
-      ...getValuesAndSpread(geoInfo)
+      ...getValuesAndSpread(file),
+      ...getValuesAndSpread(geoInfo),
+      ...getValuesAndSpread(list),
     };
   }
 }

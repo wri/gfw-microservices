@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: 'microservices-tasks',
+  displayName: 'microservices-list-downloader',
   preset: '../../../jest.preset.js',
   globals: {
     'ts-jest': {
@@ -12,5 +12,5 @@ export default {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../../coverage/apps/microservices/tasks',
+  coverageDirectory: '../../../coverage/apps/microservices/list-downloader',
 };

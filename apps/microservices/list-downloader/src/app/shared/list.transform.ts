@@ -77,9 +77,38 @@ class ConvertObjectToString extends Transform {
   }
 }
 
+class GetLastValue extends Transform {
+
+  constructor(private fields: string[]) {
+    super({objectMode: true});
+  }
+
+  _transform(chunk, _, next) {
+    console.log(chunk)
+    console.log(this.fields)
+
+    let result = { ...chunk }
+    this.fields.forEach(field => {
+      const value = JSON.parse(result[field])
+        if(typeof value != 'number'){
+
+          const key = Object.entries(value).filter(([, value]) => value > 0).map(([key]) => parseFloat(key)).reduce((a, b) => Math.max(a, b), -Infinity);
+          result = {
+            ...result,
+            [field]: value[key] ?? ''
+          }
+      }
+    });
+    console.log(result)
+    next(null, result);
+
+  }
+}
+
 export {
   FilterObject,
   FilterSelection,
   ConvertToGeoJSON,
-  ConvertObjectToString
+  ConvertObjectToString,
+  GetLastValue
 }

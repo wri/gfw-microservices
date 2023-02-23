@@ -9,6 +9,7 @@ import {
   UspGetAnalysisDataCountForUserList
 } from '@wri-monorepos/sql';
 import { InputService } from './input.service';
+import { ResultService } from './result.service';
 import { ShapefileService } from './shapefile.service';
 import { IPipeService } from './IPipeService';
 
@@ -25,6 +26,7 @@ export class PipeService {
     private uspGetListNameSchema: UspGetListNameSchema,
     private inputService: InputService,
     private shapefileService: ShapefileService,
+    private resultService: ResultService,
   ){}
 
   private readonly logger = new Logger(PipeService.name);
@@ -90,6 +92,7 @@ export class PipeService {
     const mapFileType2Service = {
       'input_csv': this.inputService,
       'input_shapefile': this.shapefileService,
+      'results_csv': this.resultService,
     }
 
     return mapFileType2Service[`${type}_${file}`];

@@ -6,6 +6,7 @@ import { AwsModule } from '@wri-monorepos/aws';
 import { SqlModule } from '@wri-monorepos/sql';
 import { ShapefileService } from './shapefile.service';
 import { ResultService } from './result.service';
+import { ForestLossService } from './forest.loss.service';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ResultService } from './result.service';
     InputService,
     ShapefileService,
     ResultService,
+    ForestLossService
   ],
   exports: [
     PipeService,

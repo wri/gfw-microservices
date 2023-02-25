@@ -20,9 +20,6 @@ export class ResultService extends IPipeService {
   start(filters: GenerationFileRequest) {
     const { listID, key, listView } = filters;
     this.logger.log(`(${listID}) - Starting result stream to process data`);
-    this.inputStream = new PassThrough({
-      objectMode: true
-    })
 
     this.inputStream = new PassThrough({
       objectMode: true

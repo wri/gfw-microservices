@@ -11,6 +11,7 @@ import {
 import { InputService } from './input.service';
 import { ResultService } from './result.service';
 import { ShapefileService } from './shapefile.service';
+import { DashboardService } from './dashboard.service';
 import { IPipeService } from './IPipeService';
 
 
@@ -26,6 +27,7 @@ export class PipeService {
     private uspGetListNameSchema: UspGetListNameSchema,
     private inputService: InputService,
     private shapefileService: ShapefileService,
+    private dashboardService: DashboardService,
     private resultService: ResultService,
   ){}
 
@@ -95,7 +97,7 @@ export class PipeService {
       'results_csv': this.resultService,
     }
 
-    return mapFileType2Service[`${type}_${file}`];
+    return mapFileType2Service[`${type}_${file}`] ?? this.dashboardService;
   }
 
   private async getListOfFields(filters:GenerationFileRequest){

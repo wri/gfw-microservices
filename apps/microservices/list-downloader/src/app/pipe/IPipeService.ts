@@ -5,7 +5,7 @@ import { GenerationFileRequest } from '@wri-monorepos/sql';
 export abstract class IPipeService {
 
   constructor(
-    @Inject(EmailService) private emailService: EmailService,
+    @Inject(EmailService) public emailService: EmailService,
     @Inject(S3Service) public s3Service: S3Service) {}
 
   abstract start(filters: GenerationFileRequest);

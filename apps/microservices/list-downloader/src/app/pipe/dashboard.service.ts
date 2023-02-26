@@ -12,9 +12,9 @@ export class DashboardService extends IPipeService{
   private filters: GenerationFileRequest;
 
   constructor(
-    private forestLossService:ForestLossService,
     public s3Service: S3Service,
     public emailService: EmailService,
+    private forestLossService:ForestLossService,
   ){
     super(emailService, s3Service)
   }
@@ -22,17 +22,15 @@ export class DashboardService extends IPipeService{
   start(filters: GenerationFileRequest) {
     this.filters = filters;
     const { listView } = this.filters;
-
     if(listView === 'forest_change'){
       this.forestLossService.start(filters);
     }
-
   }
 
   process(data: any) {
-    const { listView } = this.filters;
+    const { listView , type } = this.filters;
 
-    if(listView === 'forest_change'){
+    if(listView === 'forest_change' || type == 'forestLoss' || type == 'everything'){
       this.forestLossService.process(data);
     }
 

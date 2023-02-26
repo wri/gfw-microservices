@@ -9,7 +9,7 @@ import { IPipeService } from './IPipeService';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { columnsListName, columnsTemplateId } from '../shared/constants'
-import { FilterObject, FilterSelection } from '../shared/list.transform';
+import { FilterObject, FilterSelection } from '../shared/filter.transform';
 
 @Injectable()
 export class InputService extends IPipeService {

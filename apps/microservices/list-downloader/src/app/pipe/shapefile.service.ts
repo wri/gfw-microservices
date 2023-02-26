@@ -8,7 +8,8 @@ import { Logger, Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from './IPipeService';
 import { columnsListName, columnsTemplateId } from '../shared/constants'
-import { FilterObject, FilterSelection, ConvertToGeoJSON, ConvertObjectToString } from '../shared/list.transform';
+import { FilterObject, FilterSelection } from '../shared/filter.transform';
+import { ConvertToGeoJSON, ConvertObjectToString } from '../shared/converter.transform';
 
 @Injectable()
 export class ShapefileService  extends IPipeService{

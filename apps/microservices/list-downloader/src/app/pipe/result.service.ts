@@ -8,7 +8,8 @@ import { PassThrough } from 'stream';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from './IPipeService';
 
-import { FilterObject, FilterSelection, GetLastValue } from '../shared/list.transform';
+import { FilterObject, FilterSelection } from '../shared/filter.transform';
+import { GetLastValue } from '../shared/operations.transform';
 import { EXCEL_TEMPLATES } from '../shared/constants';
 
 @Injectable()

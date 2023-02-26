@@ -7,6 +7,7 @@ import { SqlModule } from '@wri-monorepos/sql';
 import { ShapefileService } from './shapefile.service';
 import { ResultService } from './result.service';
 import { ForestLossService } from './forest.loss.service';
+import { DashboardService } from './dashboard.service';
 
 @Module({
   imports: [
@@ -14,11 +15,12 @@ import { ForestLossService } from './forest.loss.service';
     SqlModule,
   ],
   providers: [
-    PipeService,
+    DashboardService,
+    ForestLossService,
     InputService,
-    ShapefileService,
+    PipeService,
     ResultService,
-    ForestLossService
+    ShapefileService,
   ],
   exports: [
     PipeService,

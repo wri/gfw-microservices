@@ -380,7 +380,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -459,7 +459,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -541,7 +541,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -576,7 +576,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -613,7 +613,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -627,7 +627,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -734,7 +734,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -772,7 +772,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -838,7 +838,7 @@ export const EXCEL_TEMPLATES = {
         {
           attribute: 'tree_cover_loss_idn_primary_forest_yearly',
           label: 'Primary Forest',
-        },
+        },2
       ],
     },
   ],
@@ -848,7 +848,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -890,7 +890,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -939,7 +939,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -954,7 +954,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {
@@ -969,7 +969,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'location_name',
+      name: 'Location Name',
       parsed: 'overhead',
     },
     {

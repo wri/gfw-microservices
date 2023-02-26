@@ -1,0 +1,50 @@
+import { Transform } from 'stream';
+
+class FilterObject extends Transform {
+  constructor(private allFields: string[]) {
+    super({objectMode: true});
+  }
+
+  _transform(chunk, _, next) {
+    const newChunk = this.allFields.reduce((obj, key) => { return Object.assign(obj, { [key]: chunk[key], }); }, {});
+    next(null,
+      newChunk
+    );
+  }
+}
+
+class FilterSelection extends Transform {
+  constructor(private selectedLocationsList: number[]) {
+    super({objectMode: true});
+  }
+
+  _transform(chunk, _, next) {
+    if (this.selectedLocationsList.length == 0 || this.selectedLocationsList.includes(chunk.location_id)) {
+      return next(null,
+        chunk
+      );
+    }
+    next();
+  }
+}
+
+class FilterLocationDontHaveStatus extends Transform {
+  constructor(private status: number) {
+    super({objectMode: true});
+  }
+
+  _transform(chunk, _, next) {
+    if (chunk.location_status_id === this.status) {
+      return next(null,
+        chunk
+      );
+    }
+    next();
+  }
+}
+
+export {
+  FilterObject,
+  FilterSelection,
+  FilterLocationDontHaveStatus,
+}

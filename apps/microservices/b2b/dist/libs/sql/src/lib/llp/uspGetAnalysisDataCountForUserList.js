@@ -8,7 +8,7 @@ const sql = require("mssql");
 const config_1 = require("../config/config");
 let UspGetAnalysisDataCountForUserList = class UspGetAnalysisDataCountForUserList {
     async run(databaseName, filters) {
-        const { country, listID, state, subState, rowsPerPage, analysisAreaMin, analysisAreaMax, analysisArea, analysisAreaOperator, searchString } = filters;
+        const { country, listID, state, subState, rowsPerPage, analysisAreaMin, analysisAreaMax, searchString } = filters;
         const parameters = [
             { field: 'listID', type: sql.Int, value: listID },
             { field: 'Country', type: sql.NVarChar, value: country || null },

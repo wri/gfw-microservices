@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SqsModule } from '@ssut/nestjs-sqs';
-import { LLPModule } from '../llp/llp.module';
+import { ListModule } from '../handler/list.module';
 import * as AWS from 'aws-sdk';
 
 
@@ -15,7 +15,7 @@ AWS.config.update({
         SqsModule.register({
             consumers: [
                 {
-                    name: 'llp-generate-file', // name of the queue
+                    name: 'list-generate-file', // name of the queue
                     queueUrl: process.env.AWS_TMP_QUEUE, // the url of the queue
                     region: process.env.AWS_REGION,
                     waitTimeSeconds: 1,
@@ -26,9 +26,10 @@ AWS.config.update({
             ],
             producers: [],
         }),
-        LLPModule,
+        ListModule,
     ],
     controllers: [],
     providers: [],
 })
+
 export class ConsumerModule { }

@@ -1,7 +1,7 @@
-import { ConnectionRepository } from 'src/Connection/domain/connection.repository';
-import { Connection } from 'src/Connection/domain/connection';
+import { ConnectionRepository } from '../domain/connection.repository';
+import { Connection } from '../domain/connection';
 import { RepositoryMysql } from '../../Shared/infraestructure/mysql/repository.mysql';
-import { ConnectionDataMapper } from 'src/Connection/application/connection.mapper';
+import { ConnectionDataMapper } from '../application/connection.mapper';
 
 export class ConnectionRepositoryMysql
   extends RepositoryMysql

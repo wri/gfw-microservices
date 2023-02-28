@@ -1,6 +1,6 @@
-import { InvitationRepository } from 'src/Invitation/domain/invitation.repository';
-import { Invitation } from 'src/Invitation/domain/invitation';
-import { InvitationDataMapper } from 'src/Invitation/application/invitation.mapper';
+import { InvitationRepository } from '../domain/invitation.repository';
+import { Invitation } from '../domain/invitation';
+import { InvitationDataMapper } from '../application/invitation.mapper';
 import { RepositoryMysql } from '../../Shared/infraestructure/mysql/repository.mysql';
 
 export class InvitationRepositoryMysql

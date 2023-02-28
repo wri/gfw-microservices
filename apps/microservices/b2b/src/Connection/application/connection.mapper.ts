@@ -1,8 +1,8 @@
 import { plainToInstance } from 'class-transformer';
 import * as sql from 'mssql';
-import { CreateConnectionDto } from 'src/Connection/application/dtos/connection.dto';
-import { Connection } from 'src/Connection/domain/connection';
-import { ParamStoreProcedure } from 'src/Shared/infraestructure/mysql/store-procedure.params';
+import { CreateConnectionDto } from '../application/dtos/connection.dto';
+import { Connection } from '../domain/connection';
+import { ParamStoreProcedure } from '../../Shared/infraestructure/mysql/store-procedure.params';
 
 export class ConnectionDataMapper {
   static createConnectionDtotoConnection(connectionDto: CreateConnectionDto) {

@@ -8,6 +8,7 @@ import { ForestLossService } from './forest.loss.service';
 import { HistoricPercentService } from './historic.percent.service';
 import { ForestChangeSummaryService } from './forest.change.summary.service';
 import { DashboardListLevelService } from './dashboard.list.level.service';
+import { ForestChangeDiagnosticListSummaryService } from './forest.change.diagnostic.list.summary.service';
 
 @Injectable()
 export class DashboardService extends IPipeService{
@@ -24,20 +25,27 @@ export class DashboardService extends IPipeService{
   @Inject(DashboardListLevelService)
   private readonly dashboardListLevelService: DashboardListLevelService;
 
+  @Inject(ForestChangeDiagnosticListSummaryService)
+  private readonly forestChangeDiagnosticListSummaryService: ForestChangeDiagnosticListSummaryService;
+
+
   start(filters: GenerationFileRequest) {
     this.startEmail(filters);
 
     this.forestLoos.start(filters);
     this.historicPercentService.start(filters);
     this.forestChangeSummaryService.start(filters);
+    this.forestChangeDiagnosticListSummaryService.start(filters);
 
     this.dashboardListLevelService.generateCSV(filters, 'forestLossAggregate','sensitive_areas_loss_of_forests_aggregate');
+    this.dashboardListLevelService.generateCSV(filters, 'historicPercentAggregate','historic_percent_aggregate');
   }
 
   process(data: any, filters: GenerationFileRequest) {
     this.forestLoos.process(data, filters);
     this.historicPercentService.process(data, filters);
     this.forestChangeSummaryService.process(data, filters);
+    this.forestChangeDiagnosticListSummaryService.process(data, filters);
   }
 
   finish(filters: GenerationFileRequest) {
@@ -45,6 +53,7 @@ export class DashboardService extends IPipeService{
     this.forestLoos.finish(filters);
     this.historicPercentService.finish(filters);
     this.forestChangeSummaryService.finish(filters);
+    this.forestChangeDiagnosticListSummaryService.finish(filters);
 
     const output = fs.createWriteStream(`/tmp/${key}.zip`);
 

@@ -18,8 +18,6 @@ export class DashboardHandleDownload extends IPipeService{
   start(filters: GenerationFileRequest, table: string, fileSuffix: string) {
     const { listID, key } = filters;
     this.logger.log(`(${listID}) - Starting Dashboard download for ${table} stream to process data`);
-
-    this.logger.log(`(${listID}) - Finished to process data`);
     this.inputStream = new PassThrough({
       objectMode: true
     })

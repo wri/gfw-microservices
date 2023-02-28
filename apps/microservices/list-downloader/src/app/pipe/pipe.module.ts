@@ -11,6 +11,7 @@ import { ForestLossService } from './forest.loss.service';
 import { HistoricPercentService } from './historic.percent.service';
 import { ForestChangeSummaryService } from './forest.change.summary.service';
 import { DashboardListLevelService } from './dashboard.list.level.service';
+import { ForestChangeDiagnosticListSummaryService } from './forest.change.diagnostic.list.summary.service';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DashboardListLevelService } from './dashboard.list.level.service';
   providers: [
     DashboardListLevelService,
     DashboardService,
+    ForestChangeDiagnosticListSummaryService,
     ForestChangeSummaryService,
     ForestLossService,
     HistoricPercentService,

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Injectable, Logger } from '@nestjs/common';
 
-import  { duplicateRow, formatPct, validatePct, parseListData } from '../shared/functions'
+import  { duplicateRow, formatPct, validatePct, parseListData, parseListTotals } from '../shared/functions'
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
@@ -246,7 +246,32 @@ export class DashboardListLevelService{
           }
         });
       });
+    } else if (table === 'historicPercentAggregate') {
+      csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
+
+      EXCEL_TEMPLATES[table].forEach((key) => {
+        const dataRow = [list_name];
+
+        key.numerators.forEach((field) => {
+          const currentRow = duplicateRow(dataRow);
+          const tclOnAttribute = parseListData(field.tclAttribute, [listLevelAnalysis]);
+          const attributeExtent = parseListTotals(field.extentAttribute, listLevelAnalysis);
+
+          const percent = formatPct(validatePct((tclOnAttribute / attributeExtent) * 100));
+
+          if (field.label) {
+            currentRow.push(field.label);
+          }
+          currentRow.push(percent);
+          currentRow.push(tclOnAttribute);
+          currentRow.push(attributeExtent);
+
+          csvData.push(currentRow);
+        });
+      });
     }
+
+
     return csvData;
   }
 }

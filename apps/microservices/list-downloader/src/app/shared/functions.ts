@@ -65,8 +65,6 @@ const  parseListData = (property, listLevelAnalysis) => {
   return total;
 }
 
-
-
 export {
   duplicateRow,
   formatPct,

@@ -41,18 +41,16 @@ export class ShapefileService  extends IPipeService{
     this.organizeStream(filters, allFields)
     this.startEmail(filters);
   }
+
   process(analysisData: any) {
     analysisData.forEach(data => this.inputStream.write(data));
   }
 
   finish(filters: GenerationFileRequest) {
     const { listID, key } = filters;
-    this.convertGeojsonToSHP(key).then(() => {
+    this.convertGeojsonToSHP(key).then( async() => {
       this.logger.log(`(${listID}) - Data has been zipped`);
-      this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
-      this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET).then(location => {
-        this.finishedEmail(filters,  location);
-      });
+      await this.uploadToS3(filters);
     });
   }
 

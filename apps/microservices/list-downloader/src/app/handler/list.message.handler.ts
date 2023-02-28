@@ -56,7 +56,6 @@ export class ListMessageHandler {
       return value ? JSON.parse(value) : {};
     };
 
-    console.log(message.Body)
     const {
       analysisArea,
       file,

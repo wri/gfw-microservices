@@ -6,8 +6,11 @@ import { AwsModule } from '@wri-monorepos/aws';
 import { SqlModule } from '@wri-monorepos/sql';
 import { ShapefileService } from './shapefile.service';
 import { ResultService } from './result.service';
-import { ForestLossService } from './forest.loss.service';
 import { DashboardService } from './dashboard.service';
+import { ForestLossService } from './forest.loss.service';
+import { HistoricPercentService } from './historic.percent.service';
+import { ForestChangeSummaryService } from './forest.change.summary.service';
+import { DashboardListLevelService } from './dashboard.list.level.service';
 
 @Module({
   imports: [
@@ -15,8 +18,11 @@ import { DashboardService } from './dashboard.service';
     SqlModule,
   ],
   providers: [
+    DashboardListLevelService,
     DashboardService,
+    ForestChangeSummaryService,
     ForestLossService,
+    HistoricPercentService,
     InputService,
     PipeService,
     ResultService,

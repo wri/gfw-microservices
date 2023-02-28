@@ -83,12 +83,9 @@ export class ResultService extends IPipeService {
     archive.pipe(output);
     archive.finalize();
 
-    output.on('close', () => {
+    output.on('close', async () => {
       this.logger.log(`(${listID}) - Data has been zipped`);
-      this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
-      this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET).then(location => {
-        this.finishedEmail(filters,  location);
-      });
+      await this.uploadToS3(filters);
     });
   }
 

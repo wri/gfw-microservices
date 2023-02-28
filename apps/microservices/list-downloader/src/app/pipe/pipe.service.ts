@@ -6,8 +6,10 @@ import {
   GenerationFileRequest,
   UspGetPaginatedAnalysisDataForUserList,
   UspGetListNameSchema,
-  UspGetAnalysisDataCountForUserList
+  UspGetAnalysisDataCountForUserList,
+  UspGetListAnalysis,
 } from '@wri-monorepos/sql';
+
 import { InputService } from './input.service';
 import { ResultService } from './result.service';
 import { ShapefileService } from './shapefile.service';
@@ -29,6 +31,7 @@ export class PipeService {
     private shapefileService: ShapefileService,
     private dashboardService: DashboardService,
     private resultService: ResultService,
+    private uspGetListAnalysis: UspGetListAnalysis,
   ){}
 
   private readonly logger = new Logger(PipeService.name);
@@ -58,12 +61,15 @@ export class PipeService {
     // extra columns  considering that the user filter by location
     const selectedLocationsList = notAllowedValues.includes(selectedLocations) ? [] : selectedLocations.split(',').map( x => parseInt(x, 10))
 
+    const [listLevelAnalysis] = await this.uspGetListAnalysis.run(organizationDatabase, { listId: listID})
+
     filters = {
       ...filters,
       listName: listSchema.list_name,
       numberOfPages,
       combinedColumnsSplitted,
       selectedLocationsList,
+      listLevelAnalysis,
       // has to add the following parameter to bring the geometry from the database, use only for shapefile
       geometry: file === 'shapefile' ? 1 : 0,
       ...fields,
@@ -76,7 +82,7 @@ export class PipeService {
     const composeResults = async (i: number) => {
       const newFilters = { ...filters, page: i };
       const analysisData = await this.uspGetPaginatedAnalysisDataForUserList.run(organizationDatabase, newFilters);
-      service.process(analysisData);
+      service.process(analysisData, newFilters);
       return i;
     };
 

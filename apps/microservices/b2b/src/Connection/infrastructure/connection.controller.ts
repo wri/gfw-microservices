@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Post, Body, Delete } from '@nestjs/common';
-import { CreateConnectionDto } from 'src/Connection/application/dtos/connection.dto';
-import { ConnectionUseCases } from 'src/Connection/application/connection.use-case';
+import { CreateConnectionDto } from '../application/dtos/connection.dto';
+import { ConnectionUseCases } from '../application/connection.use-case';
 
 @Controller('api/connection')
 export class ConnectionController {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DataServices } from 'src/Shared/domain/data-service';
-import { CreateConnectionDto } from 'src/Connection/application/dtos/connection.dto';
+import { DataServices } from '../../Shared/domain/data-service';
+import { CreateConnectionDto } from '../application/dtos/connection.dto';
 import { ConnectionDataMapper } from './connection.mapper';
 
 @Injectable()

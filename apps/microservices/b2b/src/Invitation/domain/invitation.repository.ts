@@ -1,4 +1,4 @@
-import { Invitation } from 'src/Invitation/domain/invitation';
+import { Invitation } from '../domain/invitation';
 
 export interface InvitationRepository {
   resendInvitation(id: string): Promise<void>;

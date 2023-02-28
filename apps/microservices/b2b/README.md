@@ -1,73 +1,53 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Clean Architecture for B2B Microservice
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This document provides an overview of the Clean Architecture implemented for the "b2b" microservice using NestJS and TypeScript. The architecture consists of three layers: application, domain, and infrastructure. Additionally, the code is organized into units of business (Invitation, Connection) and there is a "shared" folder where is contain all the logic that needs to be required from the units of business.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+<img src="clean.png" alt="Texto alternativo de la imagen" width="300" align="middle">
 
-## Description
+## Application Layer
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The application layer is responsible for the use cases and business logic of the microservice. It contains the application services that orchestrate the interaction between the domain and infrastructure layers. The application layer is independent of the framework or infrastructure and can be easily replaced or tested.
 
-## Installation
+### Invitation
 
-```bash
-$ npm install
-```
+-   `invitation.use-case.ts`: Contains the use cases related to Invitations.
+-   `invitation.dto.ts`: Contains the DTOs related to Invitations.
 
-## Running the app
+### Connection
 
-```bash
-# development
-$ npm run start
+-   `connection.use-case.ts`: Contains the use cases related to Connections.
+-   `connection.dto.ts`: Contains the DTOs related to Connections.
 
-# watch mode
-$ npm run start:dev
 
-# production mode
-$ npm run start:prod
-```
+## Domain Layer
 
-## Test
+The domain layer contains the business logic of the microservice. It is where the entities, value objects, and business rules are defined. The domain layer is independent of the infrastructure and application layers.
 
-```bash
-# unit tests
-$ npm run test
+### Invitation
 
-# e2e tests
-$ npm run test:e2e
+-   `invitation.entity.ts`: Contains the Invitation entity definition.
+-   `invitation.repository.ts`: Contains the interface for the Invitation repository.
 
-# test coverage
-$ npm run test:cov
-```
+### Connection
 
-## Support
+-   `connection.entity.ts`: Contains the Connection entity definition.
+-   `connection.repository.ts`: Contains the interface for the Connection repository.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Infrastructure Layer
 
-## Stay in touch
+The infrastructure layer contains the implementation details of the microservice, such as databases, external APIs, and other infrastructure-related concerns. It is responsible for interacting with the outside world and providing concrete implementations for the application and domain layers.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Invitation
 
-## License
+-   `invitation.repository.impl.ts`: Contains the implementation of the Invitation repository using a database.
+- `invitation.controller.ts`: Contains the NestJS controllers related to Invitations.
 
-Nest is [MIT licensed](LICENSE).
+### Connection
+
+-   `connection.repository.impl.ts`: Contains the implementation of the Connection repository using a database.
+-   `connection.controller.ts`: Contains the NestJS controllers related to Connections.
+
+
+## Shared Layer
+
+The shared layer contains general things that are called from the other units of business, such as common utilities, configurations, and constants.

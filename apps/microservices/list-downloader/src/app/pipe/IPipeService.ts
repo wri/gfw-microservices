@@ -4,12 +4,15 @@ import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 export abstract class IPipeService {
 
-  constructor(
-    @Inject(EmailService) public emailService: EmailService,
-    @Inject(S3Service) public s3Service: S3Service) {}
+  @Inject(EmailService)
+  private readonly emailService: EmailService;
 
-  abstract start(filters: GenerationFileRequest);
-  abstract process(data: any);
+  @Inject(S3Service)
+  private readonly s3Service: S3Service;
+
+
+  abstract start(filters: GenerationFileRequest, table?: string,  fileSuffix?: string);
+  abstract process(data: any, filters: GenerationFileRequest);
   abstract finish(filters: GenerationFileRequest);
 
   public async startEmail(filters: GenerationFileRequest){
@@ -44,5 +47,13 @@ export abstract class IPipeService {
         listName,
       }
     );
+  }
+
+  public async uploadToS3(filters: GenerationFileRequest){
+    const { key } = filters;
+    this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
+    this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET      ).then(location => {
+      this.finishedEmail(filters,  location);
+    });
   }
 }

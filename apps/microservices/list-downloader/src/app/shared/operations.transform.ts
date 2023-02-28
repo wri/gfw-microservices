@@ -11,9 +11,6 @@ class GetLastValue extends Transform {
   }
 
   _transform(chunk, _, next) {
-    console.log(chunk)
-    console.log(this.fields)
-
     let result = { ...chunk }
     this.fields.forEach(field => {
       const value = JSON.parse(result[field])
@@ -26,25 +23,24 @@ class GetLastValue extends Transform {
           }
       }
     });
-    console.log(result)
     next(null, result);
 
   }
 }
 
 class ManipulateDataForDashboard extends Transform {
-  constructor(private templateOperations: TemplateOperation,private table: string) {
+  constructor(private templateOperations: TemplateOperation, private table: string, private listLevelAnalysis: any) {
     super({objectMode: true});
   }
 
   _transform(data, _, next) {
-    const rowsToReturn = [];
+    const csvData = [];
     const dataRow = [];
     this.templateOperations.forEach((operation) => {
       if (operation.parsed === 'overhead') {
         if (operation.name === 'list_name') {
           const { list_name } = data;
-          dataRow.push(  list_name ??  '');
+          dataRow.push(list_name ?? '');
         } else if (operation.name === 'Location Name') {
           if (data['Investment Name']) {
             if (data['Investment Name'].indexOf(',') > -1) {
@@ -74,11 +70,11 @@ class ManipulateDataForDashboard extends Transform {
             const overlapPercent = formatPct(validatePct((brazilBiomeLocations[location] / total) * 100));
             currentRow.push(overlapPercent);
 
-            rowsToReturn.push(currentRow);
+            csvData.push(currentRow);
           });
         } else if (operation.name === 'seAsia_overlap') {
           operation.composites.forEach((field) => {
-            const totalStatValue = parseListData(field.attribute, data);
+            const totalStatValue = parseListData(field.attribute, [this.listLevelAnalysis]);
             const currentRow = duplicateRow(dataRow);
 
             if (totalStatValue > 0) {
@@ -98,7 +94,7 @@ class ManipulateDataForDashboard extends Transform {
                   const percent = formatPct(validatePct((yearlyData[locationName] / totalStatV) * 100));
                   nestedRow.push(percent);
                   if (totalStatV > 0) {
-                    rowsToReturn.push(nestedRow);
+                    csvData.push(nestedRow);
                   }
                 });
               } else {
@@ -107,7 +103,7 @@ class ManipulateDataForDashboard extends Transform {
                 currentRowIn.push('Within Forest Moratorium');
                 const percentIn = formatPct(validatePct((yearlyData / data.total_area) * 100));
                 currentRowIn.push(percentIn);
-                rowsToReturn.push(currentRowIn);
+                csvData.push(currentRowIn);
 
                 const hectaresOut = data.total_area - yearlyData;
                 const currentRowOut = duplicateRow(dataRow);
@@ -115,7 +111,7 @@ class ManipulateDataForDashboard extends Transform {
                 currentRowOut.push('Outside Forest Moratorium');
                 const percentOut = formatPct(validatePct((hectaresOut / data.total_area) * 100));
                 currentRowOut.push(percentOut);
-                rowsToReturn.push(currentRowOut);
+                csvData.push(currentRowOut);
               }
             }
           });
@@ -135,7 +131,7 @@ class ManipulateDataForDashboard extends Transform {
           const pre2001Percent = formatPct(validatePct((totalPre2001 / data.total_area) * 100));
           currentRow.push(pre2001Percent);
           currentRow.push(totalPre2001);
-          rowsToReturn.push(currentRow);
+          csvData.push(currentRow);
         } else if (operation.name === 'palmRiskAnalysis') {
           const currentRow = duplicateRow(dataRow);
           operation.fields.forEach((field) => {
@@ -182,7 +178,7 @@ class ManipulateDataForDashboard extends Transform {
             }
           });
 
-          rowsToReturn.push(currentRow);
+          csvData.push(currentRow);
         } else if (
           operation.name === 'forestChangeDiagnosticLocationSummary' ||
           operation.name === 'commodityRiskDiagnosticLocationSummary'
@@ -229,7 +225,7 @@ class ManipulateDataForDashboard extends Transform {
             }
           });
 
-          next(null, currentRow);
+          csvData.push(currentRow);
         } else if (operation.name === 'pie_chart') {
           operation.composites.forEach((field) => {
             const categoryData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
@@ -262,7 +258,7 @@ class ManipulateDataForDashboard extends Transform {
               }
               currentRow.push(layerPercent);
 
-              rowsToReturn.push(currentRow);
+              csvData.push(currentRow);
             });
           });
         }
@@ -381,7 +377,7 @@ class ManipulateDataForDashboard extends Transform {
                   (data.south_america_presence === true || data.south_america_presence === 'true') &&
                   data.Country === 'Brazil'
                 ) {
-                  rowsToReturn.push(currentRow);
+                  csvData.push(currentRow);
                 }
               });
             });
@@ -403,7 +399,7 @@ class ManipulateDataForDashboard extends Transform {
 
               currentRow.push(year);
 
-              rowsToReturn.push(currentRow);
+              csvData.push(currentRow);
             });
           } else {
             Object.keys(yearlyData).forEach((year) => {
@@ -440,15 +436,15 @@ class ManipulateDataForDashboard extends Transform {
                     this.table.indexOf('sAmerica') > -1 &&
                     (data.south_america_presence === true || data.south_america_presence === 'true')
                   ) {
-                    rowsToReturn.push(nestedRow);
+                    csvData.push(nestedRow);
                   } else if (
                     locationHasData &&
                     this.table.indexOf('seAsia') > -1 &&
                     (data.southeast_asia_presence === true || data.southeast_asia_presence === 'true')
                   ) {
-                    rowsToReturn.push(nestedRow);
+                    csvData.push(nestedRow);
                   } else if (locationHasData && this.table.indexOf('sAmerica') === -1 && this.table.indexOf('seAsia') === -1) {
-                    rowsToReturn.push(nestedRow);
+                    csvData.push(nestedRow);
                   }
                 });
               } else {
@@ -479,15 +475,15 @@ class ManipulateDataForDashboard extends Transform {
                     this.table.indexOf('sAmerica') > -1 &&
                     (data.south_america_presence === true || data.south_america_presence === 'true')
                   ) {
-                    rowsToReturn.push(currentRow);
+                    csvData.push(currentRow);
                   } else if (
                     locationHasData &&
                     this.table.indexOf('seAsia') > -1 &&
                     (data.southeast_asia_presence === true || data.southeast_asia_presence === 'true')
                   ) {
-                    rowsToReturn.push(currentRow);
+                    csvData.push(currentRow);
                   } else if (locationHasData && this.table.indexOf('sAmerica') === -1 && this.table.indexOf('seAsia') === -1) {
-                    rowsToReturn.push(currentRow);
+                    csvData.push(currentRow);
                   }
                 }
               }
@@ -525,13 +521,12 @@ class ManipulateDataForDashboard extends Transform {
           currentRow.push(tclOnAttribute);
           currentRow.push(attributeExtent);
 
-          rowsToReturn.push(currentRow);
+          csvData.push(currentRow);
         });
       }
     });
-
     const result =[
-      ...rowsToReturn,
+      ...csvData,
       dataRow
     ]
 
@@ -539,7 +534,8 @@ class ManipulateDataForDashboard extends Transform {
   }
 }
 
+
 export {
   GetLastValue,
-  ManipulateDataForDashboard
+  ManipulateDataForDashboard,
 }

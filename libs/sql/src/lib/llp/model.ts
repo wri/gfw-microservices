@@ -30,7 +30,8 @@ export interface GenerationFileRequest {
   selectedLocations?: string,
   selectedLocationsList?: Array<number>;
   listView?: string;
-  aggregation?: boolean
+  aggregation?: boolean;
+  listLevelAnalysis?: any;
 }
 
 /*export interface GetAnalysisDataCountForUserListResponse {

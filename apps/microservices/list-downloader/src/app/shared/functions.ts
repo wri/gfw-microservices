@@ -65,10 +65,17 @@ const  parseListData = (property, listLevelAnalysis) => {
   return total;
 }
 
+const parseListTotals = (property, listLevelAnalysis) => {
+  const total = listLevelAnalysis[property];
+
+  return Math.round(total * 100) / 100;
+};
+
 export {
   duplicateRow,
   formatPct,
   prettifyNum,
   validatePct,
-  parseListData
+  parseListData,
+  parseListTotals
 }

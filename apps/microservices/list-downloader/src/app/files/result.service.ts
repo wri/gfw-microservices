@@ -6,7 +6,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { PassThrough } from 'stream';
 
 import { GenerationFileRequest } from '@wri-monorepos/sql';
-import { IPipeService } from './IPipeService';
+import { IPipeService } from '../pipe/IPipeService';
 
 import { FilterObject, FilterSelection } from '../shared/filter.transform';
 import { GetLastValue } from '../shared/operations.transform';

@@ -5,7 +5,7 @@ import * as archiver from 'archiver';
 import { Logger, Injectable } from '@nestjs/common';
 import { PassThrough } from 'stream';
 
-import { IPipeService } from './IPipeService';
+import { IPipeService } from '../pipe/IPipeService';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { columnsListName, columnsTemplateId } from '../shared/constants'

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
-import { DashboardHandleDownload } from './dashboard.handle.download';
+import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 
 @Injectable()
-export class ForestChangeSummaryService extends DashboardHandleDownload {
+export class ForestChangeDiagnosticLocationSummaryService extends DashboardHandleDownload {
 
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
@@ -21,6 +21,9 @@ export class ForestChangeSummaryService extends DashboardHandleDownload {
   }
 
   finish(filters: GenerationFileRequest) {
-    super.finish(filters);
+    const { listView, type } = filters;
+    if(listView === 'forest_change' && ( type == 'forestChangeDiagnosticLocationSummary' || type == 'everything')){
+      super.finish(filters);
+    }
   }
 }

@@ -10,9 +10,9 @@ import {
   UspGetListAnalysis,
 } from '@wri-monorepos/sql';
 
-import { InputService } from './input.service';
-import { ResultService } from './result.service';
-import { ShapefileService } from './shapefile.service';
+import { InputService } from '../files/input.service';
+import { ResultService } from '../files/result.service';
+import { ShapefileService } from '../files/shapefile.service';
 import { DashboardService } from './dashboard.service';
 import { IPipeService } from './IPipeService';
 
@@ -82,6 +82,7 @@ export class PipeService {
     const composeResults = async (i: number) => {
       const newFilters = { ...filters, page: i };
       const analysisData = await this.uspGetPaginatedAnalysisDataForUserList.run(organizationDatabase, newFilters);
+      console.log(analysisData)
       service.process(analysisData, newFilters);
       return i;
     };

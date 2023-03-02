@@ -6,7 +6,7 @@ import { convert } from 'geojson2shp';
 import { Logger, Injectable } from '@nestjs/common';
 
 import { GenerationFileRequest } from '@wri-monorepos/sql';
-import { IPipeService } from './IPipeService';
+import { IPipeService } from '../pipe/IPipeService';
 import { columnsListName, columnsTemplateId } from '../shared/constants'
 import { FilterObject, FilterSelection } from '../shared/filter.transform';
 import { ConvertToGeoJSON, ConvertObjectToString } from '../shared/converter.transform';

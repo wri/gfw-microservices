@@ -4,11 +4,19 @@ import { Injectable, Inject } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from './IPipeService';
 
-import { ForestLossService } from './forest.loss.service';
-import { HistoricPercentService } from './historic.percent.service';
-import { ForestChangeSummaryService } from './forest.change.summary.service';
+import { ForestLossService } from '../files/forest.loss.service';
+import { HistoricPercentService } from '../files/historic.percent.service';
+import { ForestChangeDiagnosticLocationSummaryService } from '../files/forest.change.diagnostic.location.summary.service';
+import { ForestChangeDiagnosticListSummaryService } from '../files/forest.change.diagnostic.list.summary.service';
+import { CommodityRiskDiagnosticLocationSummaryService } from '../files/commodity.risk.diagnostic.location.summary.service';
+import { DeforestationTrendsService } from '../files/deforestation.trends.service';
+import { MillPriorityService } from '../files/mill.priority.service';
+import { PalmRiskAnalysisService } from '../files/palm.risk.analysis.service';
 import { DashboardListLevelService } from './dashboard.list.level.service';
-import { ForestChangeDiagnosticListSummaryService } from './forest.change.diagnostic.list.summary.service';
+import { SouthAmericaBiomesService } from '../files/south.america.biomes.service';
+import { SouthAmericaLossService } from '../files/south.america.loss.service';
+import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.service';
+import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 
 @Injectable()
 export class DashboardService extends IPipeService{
@@ -19,41 +27,90 @@ export class DashboardService extends IPipeService{
   @Inject(HistoricPercentService)
   private readonly historicPercentService: HistoricPercentService;
 
-  @Inject(ForestChangeSummaryService)
-  private readonly forestChangeSummaryService: ForestChangeSummaryService;
-
-  @Inject(DashboardListLevelService)
-  private readonly dashboardListLevelService: DashboardListLevelService;
+  @Inject(ForestChangeDiagnosticLocationSummaryService)
+  private readonly forestChangeDiagnosticLocationSummaryService: ForestChangeDiagnosticLocationSummaryService;
 
   @Inject(ForestChangeDiagnosticListSummaryService)
   private readonly forestChangeDiagnosticListSummaryService: ForestChangeDiagnosticListSummaryService;
 
+  @Inject(CommodityRiskDiagnosticLocationSummaryService)
+  private readonly commodityRiskDiagnosticLocationSummaryService: CommodityRiskDiagnosticLocationSummaryService;
+
+  @Inject(DeforestationTrendsService)
+  private readonly deforestationTrendsService: DeforestationTrendsService;
+
+  @Inject(MillPriorityService)
+  private readonly millPriorityService: MillPriorityService;
+
+  @Inject(PalmRiskAnalysisService)
+  private readonly palmRiskAnalysisService: PalmRiskAnalysisService;
+
+  @Inject(DashboardListLevelService)
+  private readonly dashboardListLevelService: DashboardListLevelService;
+
+  @Inject(SouthAmericaBiomesService)
+  private readonly southAmericaBiomesService: SouthAmericaBiomesService;
+
+  @Inject(SouthAmericaLossService)
+  private readonly southAmericaLossService: SouthAmericaLossService;
+
+  @Inject(SouthEastAsiaOverlapService)
+  private readonly southEastAsiaOverlapService: SouthEastAsiaOverlapService;
+
+  @Inject(SouthEastAsiaTCLService)
+  private readonly southEastAsiaTCLService: SouthEastAsiaTCLService;
 
   start(filters: GenerationFileRequest) {
+    const { listView, selectedLocationsList } = filters;
     this.startEmail(filters);
 
     this.forestLoos.start(filters);
     this.historicPercentService.start(filters);
-    this.forestChangeSummaryService.start(filters);
+    this.forestChangeDiagnosticLocationSummaryService.start(filters);
     this.forestChangeDiagnosticListSummaryService.start(filters);
+    this.commodityRiskDiagnosticLocationSummaryService.start(filters);
+    this.deforestationTrendsService.start(filters);
+    this.millPriorityService.start(filters);
+    this.palmRiskAnalysisService.start(filters);
+    this.southAmericaBiomesService.start(filters);
+    this.southAmericaLossService.start(filters);
+    this.southEastAsiaOverlapService.start(filters);
+    this.southEastAsiaTCLService.start(filters);
 
-    this.dashboardListLevelService.generateCSV(filters, 'forestLossAggregate','sensitive_areas_loss_of_forests_aggregate');
-    this.dashboardListLevelService.generateCSV(filters, 'historicPercentAggregate','historic_percent_aggregate');
+    if (listView === 'commodity_risk' && selectedLocationsList.length != 1) {
+      this.dashboardListLevelService.generateCSV(filters, 'forestChangeDiagnosticListSummary','commodity_risk_diagnostic_list_summary');
+    }
   }
 
   process(data: any, filters: GenerationFileRequest) {
     this.forestLoos.process(data, filters);
     this.historicPercentService.process(data, filters);
-    this.forestChangeSummaryService.process(data, filters);
+    this.forestChangeDiagnosticLocationSummaryService.process(data, filters);
     this.forestChangeDiagnosticListSummaryService.process(data, filters);
+    this.commodityRiskDiagnosticLocationSummaryService.process(data, filters);
+    this.deforestationTrendsService.process(data, filters);
+    this.millPriorityService.process(data, filters);
+    this.palmRiskAnalysisService.process(data, filters);
+    this.southAmericaBiomesService.process(data, filters);
+    this.southAmericaLossService.process(data, filters);
+    this.southEastAsiaOverlapService.process(data, filters);
+    this.southEastAsiaTCLService.process(data, filters);
   }
 
   finish(filters: GenerationFileRequest) {
     const { key } = filters;
     this.forestLoos.finish(filters);
     this.historicPercentService.finish(filters);
-    this.forestChangeSummaryService.finish(filters);
+    this.forestChangeDiagnosticLocationSummaryService.finish(filters);
     this.forestChangeDiagnosticListSummaryService.finish(filters);
+    this.commodityRiskDiagnosticLocationSummaryService.finish(filters);
+    this.deforestationTrendsService.finish(filters);
+    this.millPriorityService.finish(filters);
+    this.palmRiskAnalysisService.finish(filters);
+    this.southAmericaBiomesService.finish(filters);
+    this.southAmericaLossService.finish(filters);
+    this.southEastAsiaOverlapService.finish(filters);
+    this.southEastAsiaTCLService.finish(filters);
 
     const output = fs.createWriteStream(`/tmp/${key}.zip`);
 

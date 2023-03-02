@@ -1,16 +1,15 @@
 import * as archiver from 'archiver';
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
-
-import { Logger, Injectable } from '@nestjs/common';
 import { PassThrough } from 'stream';
+import { Logger, Injectable } from '@nestjs/common';
 
-import { GenerationFileRequest } from '@wri-monorepos/sql';
-import { IPipeService } from '../pipe/IPipeService';
-
-import { FilterObject, FilterSelection } from '../shared/filter.transform';
-import { GetLastValue } from '../shared/operations.transform';
 import { EXCEL_TEMPLATES } from '../shared/constants';
+import { FilterObject } from '../transform/filter.object';
+import { FilterSelection } from '../transform/filter.selection';
+import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { GetLatestValue } from '../transform/get.latest.value';
+import { IPipeService } from '../pipe/IPipeService';
 
 @Injectable()
 export class ResultService extends IPipeService {
@@ -59,7 +58,7 @@ export class ResultService extends IPipeService {
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
-      .pipe(new GetLastValue(columnGetLastValue))
+      .pipe(new GetLatestValue(columnGetLastValue))
       .pipe(csvWriter({
         sendHeaders: false
       }))

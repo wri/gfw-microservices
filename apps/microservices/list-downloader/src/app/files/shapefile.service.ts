@@ -7,9 +7,11 @@ import { Logger, Injectable } from '@nestjs/common';
 
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/IPipeService';
-import { columnsListName, columnsTemplateId } from '../shared/constants'
-import { FilterObject, FilterSelection } from '../shared/filter.transform';
-import { ConvertToGeoJSON, ConvertObjectToString } from '../shared/converter.transform';
+import { columnsListName, columnsTemplateId } from '../shared/constants';
+import { FilterObject } from '../transform/filter.object';
+import { FilterSelection } from '../transform/filter.selection';
+import { ConvertObject2Geojson } from '../transform/convert.object.2.geojson';
+import { ConvertObject2String } from '../transform/convert.object.2.string';
 
 @Injectable()
 export class ShapefileService  extends IPipeService{
@@ -70,8 +72,8 @@ export class ShapefileService  extends IPipeService{
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
-      .pipe(new ConvertToGeoJSON())
-      .pipe(new ConvertObjectToString())
+      .pipe(new ConvertObject2Geojson())
+      .pipe(new ConvertObject2String())
       .pipe(JSONStream.parse(['features', true]))
       .pipe(JSONStream.stringify(open, '\n,\n', close))
       .pipe(fs.createWriteStream(`/tmp/${key}.geojson`, {flags:'r+'}))

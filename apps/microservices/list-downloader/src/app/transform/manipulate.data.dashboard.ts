@@ -1,32 +1,9 @@
-import  { duplicateRow, formatPct, validatePct, parseListData } from './functions'
 import { Transform } from 'stream';
 import _sum from 'lodash/sum';
 
-import { TemplateOperation } from './model';
+import  { cloneRow, formatPct, validatePct, parseListData } from '../shared/functions'
+import { TemplateOperation } from '../shared/model';
 
-class GetLastValue extends Transform {
-
-  constructor(private fields: string[]) {
-    super({objectMode: true});
-  }
-
-  _transform(chunk, _, next) {
-    let result = { ...chunk }
-    this.fields.forEach(field => {
-      const value = JSON.parse(result[field])
-        if(typeof value != 'number'){
-
-          const key = Object.entries(value).filter(([, value]) => value > 0).map(([key]) => parseFloat(key)).reduce((a, b) => Math.max(a, b), -Infinity);
-          result = {
-            ...result,
-            [field]: value[key] ?? ''
-          }
-      }
-    });
-    next(null, result);
-
-  }
-}
 
 class ManipulateDataForDashboard extends Transform {
   constructor(private templateOperations: TemplateOperation, private table: string, private listLevelAnalysis: any) {
@@ -64,7 +41,7 @@ class ManipulateDataForDashboard extends Transform {
           });
 
           Object.keys(brazilBiomeLocations).forEach((location) => {
-            const currentRow = duplicateRow(dataRow);
+            const currentRow = cloneRow(dataRow);
             currentRow.push(location);
 
             const overlapPercent = formatPct(validatePct((brazilBiomeLocations[location] / total) * 100));
@@ -75,7 +52,7 @@ class ManipulateDataForDashboard extends Transform {
         } else if (operation.name === 'seAsia_overlap') {
           operation.composites.forEach((field) => {
             const totalStatValue = parseListData(field.attribute, [this.listLevelAnalysis]);
-            const currentRow = duplicateRow(dataRow);
+            const currentRow = cloneRow(dataRow);
 
             if (totalStatValue > 0) {
               const yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
@@ -88,7 +65,7 @@ class ManipulateDataForDashboard extends Transform {
                 });
 
                 Object.keys(yearlyData).forEach((locationName) => {
-                  const nestedRow = duplicateRow(currentRow);
+                  const nestedRow = cloneRow(currentRow);
                   nestedRow.push(field.label);
                   nestedRow.push(locationName);
                   const percent = formatPct(validatePct((yearlyData[locationName] / totalStatV) * 100));
@@ -98,7 +75,7 @@ class ManipulateDataForDashboard extends Transform {
                   }
                 });
               } else {
-                const currentRowIn = duplicateRow(dataRow);
+                const currentRowIn = cloneRow(dataRow);
                 currentRowIn.push(field.label);
                 currentRowIn.push('Within Forest Moratorium');
                 const percentIn = formatPct(validatePct((yearlyData / data.total_area) * 100));
@@ -106,7 +83,7 @@ class ManipulateDataForDashboard extends Transform {
                 csvData.push(currentRowIn);
 
                 const hectaresOut = data.total_area - yearlyData;
-                const currentRowOut = duplicateRow(dataRow);
+                const currentRowOut = cloneRow(dataRow);
                 currentRowOut.push(field.label);
                 currentRowOut.push('Outside Forest Moratorium');
                 const percentOut = formatPct(validatePct((hectaresOut / data.total_area) * 100));
@@ -122,7 +99,7 @@ class ManipulateDataForDashboard extends Transform {
           Object.keys(soyTotalArea).forEach((year) => {
             totalSoy += soyTotalArea[year];
           });
-          const currentRow = duplicateRow(dataRow);
+          const currentRow = cloneRow(dataRow);
           const soyPercent = formatPct(validatePct((totalSoy / data.total_area) * 100));
           currentRow.push(soyPercent);
           currentRow.push(totalSoy);
@@ -133,7 +110,7 @@ class ManipulateDataForDashboard extends Transform {
           currentRow.push(totalPre2001);
           csvData.push(currentRow);
         } else if (operation.name === 'palmRiskAnalysis') {
-          const currentRow = duplicateRow(dataRow);
+          const currentRow = cloneRow(dataRow);
           operation.fields.forEach((field) => {
             if (field.type === 'yearly') {
               const totalProp = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
@@ -183,7 +160,7 @@ class ManipulateDataForDashboard extends Transform {
           operation.name === 'forestChangeDiagnosticLocationSummary' ||
           operation.name === 'commodityRiskDiagnosticLocationSummary'
         ) {
-          const currentRow = duplicateRow(dataRow);
+          const currentRow = cloneRow(dataRow);
           currentRow.push(data.State);
           currentRow.push(data.Country);
           const totalArea = data.total_area;
@@ -240,7 +217,7 @@ class ManipulateDataForDashboard extends Transform {
 
             Object.keys(categoryData).forEach((category) => {
               const categoryValues = categoryData[category];
-              const currentRow = duplicateRow(dataRow);
+              const currentRow = cloneRow(dataRow);
               let categoryCount = 0;
 
               Object.keys(categoryValues).forEach((year) => {
@@ -254,7 +231,7 @@ class ManipulateDataForDashboard extends Transform {
 
               let layerPercent = formatPct(validatePct((categoryCount / rowValue) * 100));
               if (!categoryCount || !rowValue) {
-                layerPercent = 0;
+                layerPercent = "0";
               }
               currentRow.push(layerPercent);
 
@@ -360,7 +337,7 @@ class ManipulateDataForDashboard extends Transform {
                 const total = biomeYears[year];
                 const label = `${field.label} - ${biomes[biomeIndex]}`;
 
-                const currentRow = duplicateRow(dataRow);
+                const currentRow = cloneRow(dataRow);
                 currentRow.push(label);
                 currentRow.push(total);
                 currentRow.push(year);
@@ -383,7 +360,7 @@ class ManipulateDataForDashboard extends Transform {
             });
           } else if (field.attribute === 'commodity_mill_priority_level') {
             Object.keys(yearlyData).forEach((year) => {
-              const currentRow = duplicateRow(dataRow);
+              const currentRow = cloneRow(dataRow);
               rowValue = yearlyData[year];
               if (field.label) {
                 currentRow.push(field.label);
@@ -403,7 +380,7 @@ class ManipulateDataForDashboard extends Transform {
             });
           } else {
             Object.keys(yearlyData).forEach((year) => {
-              const currentRow = duplicateRow(dataRow);
+              const currentRow = cloneRow(dataRow);
 
               if (isNaN(parseInt(year)) === true) {
                 const focusedData = yearlyData[year];
@@ -416,7 +393,7 @@ class ManipulateDataForDashboard extends Transform {
                 });
 
                 Object.keys(focusedData).forEach((focusedYear) => {
-                  const nestedRow = duplicateRow(currentRow);
+                  const nestedRow = cloneRow(currentRow);
                   const val = focusedData[focusedYear];
 
                   nestedRow.push(`${field.label} - ${year}`);
@@ -492,7 +469,7 @@ class ManipulateDataForDashboard extends Transform {
         });
       } else if (operation.parsed === 'percent') {
         operation.numerators.forEach((field) => {
-          const currentRow = duplicateRow(dataRow);
+          const currentRow = cloneRow(dataRow);
 
           let tclOnAttribute = 0;
           if (data[field.tclAttribute]) {
@@ -534,8 +511,6 @@ class ManipulateDataForDashboard extends Transform {
   }
 }
 
-
 export {
-  GetLastValue,
-  ManipulateDataForDashboard,
+  ManipulateDataForDashboard
 }

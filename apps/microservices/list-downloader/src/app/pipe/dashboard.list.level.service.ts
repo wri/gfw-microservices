@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Injectable, Logger } from '@nestjs/common';
 
-import  { duplicateRow, formatPct, validatePct, parseListData, parseListTotals } from '../shared/functions'
+import  { cloneRow, formatPct, validatePct, parseListData, parseListTotals } from '../shared/functions'
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
@@ -56,7 +56,7 @@ export class DashboardListLevelService{
           }
 
           Object.keys(yearlyData).forEach((year) => {
-            const currentRow = duplicateRow(dataRow);
+            const currentRow = cloneRow(dataRow);
             rowValue = yearlyData[year];
 
             currentRow.push(field.label);
@@ -68,7 +68,7 @@ export class DashboardListLevelService{
               });
 
               Object.keys(rowValue).forEach((biomeYear) => {
-                const currentBrazilianRow = duplicateRow(dataRow);
+                const currentBrazilianRow = cloneRow(dataRow);
                 currentBrazilianRow.push(`Brazil Biomes - ${year}`);
                 currentBrazilianRow.push(rowValue[biomeYear]);
                 currentBrazilianRow.push(biomeYear);
@@ -77,7 +77,7 @@ export class DashboardListLevelService{
               });
             } else {
               if (totalSubCategory > 0) {
-                const nestedRow = duplicateRow(dataRow);
+                const nestedRow = cloneRow(dataRow);
                 nestedRow.push(field.label);
                 nestedRow.push(rowValue);
                 nestedRow.push(year);
@@ -103,7 +103,7 @@ export class DashboardListLevelService{
           const yearlyData = JSON.parse(listLevelAnalysis[field.attribute]);
 
           Object.keys(yearlyData).forEach((year) => {
-            const currentRow = duplicateRow(dataRow);
+            const currentRow = cloneRow(dataRow);
             rowValue = yearlyData[year];
 
             currentRow.push(field.label);
@@ -115,7 +115,7 @@ export class DashboardListLevelService{
               });
 
               Object.keys(rowValue).forEach((biomeYear) => {
-                const currentBrazilianRow = duplicateRow(dataRow);
+                const currentBrazilianRow = cloneRow(dataRow);
                 currentBrazilianRow.push(`Brazil Biomes - ${year}`);
                 currentBrazilianRow.push(rowValue[biomeYear]);
                 currentBrazilianRow.push(biomeYear);
@@ -155,7 +155,7 @@ export class DashboardListLevelService{
           const yearlyData = JSON.parse(listLevelAnalysis[attribute]);
 
           Object.keys(yearlyData).forEach((year) => {
-            const currentRow = duplicateRow(dataRow);
+            const currentRow = cloneRow(dataRow);
             rowValue = yearlyData[year];
 
             if (isNaN(rowValue) === true) {
@@ -166,7 +166,7 @@ export class DashboardListLevelService{
 
               if (totalSubCategory > 0) {
                 Object.keys(rowValue).forEach((location) => {
-                  const nestedRow = duplicateRow(dataRow);
+                  const nestedRow = cloneRow(dataRow);
                   nestedRow.push(`${label} - ${year}`);
                   nestedRow.push(rowValue[location]);
                   nestedRow.push(location);
@@ -219,7 +219,7 @@ export class DashboardListLevelService{
 
             if (isNaN(parseInt(yearlyData)) === true) {
               Object.keys(yearlyData).forEach((location) => {
-                const currentRow = duplicateRow(dataRow);
+                const currentRow = cloneRow(dataRow);
                 currentRow.push(field.label);
                 currentRow.push(location);
                 const percent = formatPct(validatePct((yearlyData[location] / totalStatValue) * 100));
@@ -227,7 +227,7 @@ export class DashboardListLevelService{
                 csvData.push(currentRow);
               });
             } else {
-              const currentRowIn = duplicateRow(dataRow);
+              const currentRowIn = cloneRow(dataRow);
               currentRowIn.push(field.label);
               currentRowIn.push('Within Forest Moratorium');
               const percentIn = formatPct(validatePct((yearlyData / listLevelAnalysis.total_area) * 100));
@@ -236,7 +236,7 @@ export class DashboardListLevelService{
 
               const hectaresOut = listLevelAnalysis.total_area - yearlyData;
 
-              const currentRowOut = duplicateRow(dataRow);
+              const currentRowOut = cloneRow(dataRow);
               currentRowOut.push(field.label);
               currentRowOut.push('Outside Forest Moratorium');
               const percentOut = formatPct(validatePct((hectaresOut / listLevelAnalysis.total_area) * 100));
@@ -253,7 +253,7 @@ export class DashboardListLevelService{
         const dataRow = [list_name];
 
         key.numerators.forEach((field) => {
-          const currentRow = duplicateRow(dataRow);
+          const currentRow = cloneRow(dataRow);
           const tclOnAttribute = parseListData(field.tclAttribute, [listLevelAnalysis]);
           const attributeExtent = parseListTotals(field.extentAttribute, listLevelAnalysis);
 

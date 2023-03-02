@@ -1,16 +1,22 @@
-const duplicateRow = (row) => {
-  const currentRow = [];
-  row.forEach((value) => {
-    currentRow.push(value);
-  });
-  return currentRow;
+const cloneRow = (row) => {
+  if (Array.isArray(row) === false) return [];
+  return [...row];
 }
 
 
-const formatPct = (value) => value.toFixed(2);
+const formatPct = (value) => {
+  if (value === undefined) {
+    return undefined;
+  }
+  else if (typeof value === 'string') {
+    return parseFloat(value).toFixed(2);
+  } else if (typeof value === 'number') {
+    return value.toFixed(2);
+  }
+}
 
 // Formats number with commas
-const prettifyNum = (value) => value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+const prettifyNum = (value) => value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 const validatePct = (percentage) => {
   if (percentage > 100) {
@@ -44,7 +50,7 @@ const  parseListData = (property, listLevelAnalysis) => {
           total = total + newValue;
         });
       });
-    } else if (yearlyData.forEach) {
+    } else if (Array.isArray(yearlyData)) {
       yearlyData.forEach((year) => {
         total += year.result;
       });
@@ -72,7 +78,7 @@ const parseListTotals = (property, listLevelAnalysis) => {
 };
 
 export {
-  duplicateRow,
+  cloneRow,
   formatPct,
   prettifyNum,
   validatePct,

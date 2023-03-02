@@ -1,8 +1,8 @@
+
 import { Transform } from 'stream';
 import { parse, GeoJSONGeometryOrNull } from 'wellknown';
 
-
-class ConvertToGeoJSON extends Transform {
+class ConvertObject2Geojson extends Transform {
   constructor() {
     super({objectMode: true});
   }
@@ -38,37 +38,6 @@ class ConvertToGeoJSON extends Transform {
   }
 }
 
-class ConvertObjectToString extends Transform {
-  constructor() {
-    super({objectMode: true});
-  }
-
-  _transform(geojson, _, next) {
-    next(null, JSON.stringify(geojson));
-  }
-}
-
-
-class ConvertToCSV extends Transform {
-
-  constructor(private readonly header: string[]) {
-    super({objectMode: true});
-  }
-
-  _transform(data, _, next) {
-    const [ first] = data;
-    let result = '';
-    if ( Array.isArray(first)){
-      result = data.filter(item => item.length === this.header.length).map(x => x.join(',')).join('\n');
-    } else {
-      result = data.map(x => x ?? '').join(',');
-    }
-    next(null, result ? `${result}\n` : '')
-  }
-}
-
 export {
-  ConvertToGeoJSON,
-  ConvertObjectToString,
-  ConvertToCSV
+  ConvertObject2Geojson
 }

@@ -1,15 +1,15 @@
 import * as fs from 'fs';
-
 import { PassThrough } from 'stream';
 import { Logger } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
 
-import { IPipeService } from './IPipeService';
-import { FilterSelection, FilterLocationDontHaveStatus, FilterObject } from '../shared/filter.transform';
-import { ConvertToCSV } from '../shared/converter.transform';
-import { ManipulateDataForDashboard } from '../shared/operations.transform';
-
+import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
+import { FilterLocationDontHaveStatus } from '../transform/filter.location.dont.have.status';
+import { FilterObject } from '../transform/filter.object';
+import { FilterSelection } from '../transform/filter.selection';
+import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { IPipeService } from './IPipeService';
+import { ManipulateDataForDashboard } from '../transform/manipulate.data.dashboard';
 
 export class DashboardHandleDownload extends IPipeService{
   private readonly logger = new Logger(DashboardHandleDownload.name);
@@ -53,7 +53,7 @@ export class DashboardHandleDownload extends IPipeService{
       .pipe(new FilterLocationDontHaveStatus(2))
       .pipe(new FilterObject(allFields))
       .pipe(new ManipulateDataForDashboard(EXCEL_TEMPLATES[table], table, listLevelAnalysis))
-      .pipe(new ConvertToCSV(EXCEL_TEMPLATE_HEADERS[table]))
+      .pipe(new ConvertObject2CSV(EXCEL_TEMPLATE_HEADERS[table]))
       .pipe(fs.createWriteStream(`/tmp/${key}_${fileSuffix}.csv`, {flags: 'a'}))
 
     return this.inputStream;

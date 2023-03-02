@@ -4,7 +4,7 @@ import { EventEmitter, PassThrough, Transform } from 'stream';
 
 import  { formatPct, validatePct } from '../shared/functions'
 import { GenerationFileRequest } from '@wri-monorepos/sql';
-import { FilterSelection } from '../shared/filter.transform';
+import { FilterSelection } from '../transform/filter.selection';
 import { IPipeService } from '../pipe/IPipeService';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 

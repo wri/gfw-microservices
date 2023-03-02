@@ -52,7 +52,7 @@ export abstract class IPipeService {
   public async uploadToS3(filters: GenerationFileRequest){
     const { key } = filters;
     this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
-    this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET      ).then(location => {
+    this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET ).then(location => {
       this.finishedEmail(filters,  location);
     });
   }

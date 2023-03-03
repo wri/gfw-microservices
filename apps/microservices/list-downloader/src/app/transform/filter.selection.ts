@@ -6,9 +6,13 @@ class FilterSelection extends Transform {
   }
 
   _transform(chunk, _, next) {
+    if(!chunk) {
+      return next(null, undefined);
+    }
+
     if (
-      this.selectedLocationsList.length == 0 ||
-      this.selectedLocationsList.includes(chunk.location_id)
+      this.selectedLocationsList?.length == 0 ||
+      this.selectedLocationsList?.includes(chunk.location_id)
     ) {
       return next(null, chunk);
     }

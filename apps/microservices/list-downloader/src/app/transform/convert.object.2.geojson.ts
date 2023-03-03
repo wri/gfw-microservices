@@ -16,6 +16,11 @@ class ConvertObject2Geojson extends Transform {
       features: [],
     };
 
+    if (!location) {
+      next(null, geojson);
+      return;
+    }
+
     const feature = Object.keys(location).reduce(
       (obj, key) => {
         if (key === 'WKTGeometry') {

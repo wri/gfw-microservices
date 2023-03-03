@@ -21,12 +21,16 @@ jobs:
       matrix:
         node-version: [16.15.1]
 
+    steps:
+      - name: Project Checkout
+        uses: actions/checkout@v2
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
-     - name: Cache node modules
+      - name: Cache node modules
         uses: actions/cache@v1
         with:
           path: node_modules
@@ -37,9 +41,16 @@ jobs:
             ${{ runner.OS }}-
 
       - name: Install dependencies
-        run: npm install --legacy-peer-deps
+        run: npx nx format:check
+
+      - name: Run Format Check
+        run: npm run test:coverage
+
+      - name: Run Lint
+        run: npx nx affected --target=lint --parallel=3
 
       - name: Run Test
-        - run: npx nx format:check
-        - run: npx nx affected --target=lint --parallel=3
-        - run: npx nx test microservices-list-downloader
+        run: npx nx affected --target=test --parallel=3 --configuration=ci
+
+      - name: Run Build
+        run: npx nx affected --target=build --parallel=3

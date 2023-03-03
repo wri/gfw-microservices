@@ -13,16 +13,24 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
 
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'sAmericaLoss' || type == 'everything')){
+    if (
+      listView === 'forest_change' &&
+      (type == 'sAmericaLoss' || type == 'everything')
+    ) {
       super.start(filters, 'sAmericaLoss', 'south_america_loss_of_forests');
     }
   }
 
   process(data: any, filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'sAmericaLoss' || type == 'everything')){
-      const locations = data.filter((location) => location.south_america_presence === 'true');
-      if(locations && locations.length > 0){
+    if (
+      listView === 'forest_change' &&
+      (type == 'sAmericaLoss' || type == 'everything')
+    ) {
+      const locations = data.filter(
+        (location) => location.south_america_presence === 'true'
+      );
+      if (locations && locations.length > 0) {
         this.existSouthLocation = true;
         super.process(locations, filters);
       }
@@ -31,11 +39,22 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
 
   finish(filters: GenerationFileRequest) {
     const { listView, selectedLocationsList, type } = filters;
-    if (listView === 'forest_change' && selectedLocationsList.length != 1 && this.existSouthLocation) {
-      this.dashboardListLevelService.generateCSV(filters, 'sAmericaLossAggregate','south_america_loss_of_forests_aggregate');
+    if (
+      listView === 'forest_change' &&
+      selectedLocationsList.length != 1 &&
+      this.existSouthLocation
+    ) {
+      this.dashboardListLevelService.generateCSV(
+        filters,
+        'sAmericaLossAggregate',
+        'south_america_loss_of_forests_aggregate'
+      );
     }
 
-    if(listView === 'forest_change' && ( type == 'sAmericaLoss' || type == 'everything')){
+    if (
+      listView === 'forest_change' &&
+      (type == 'sAmericaLoss' || type == 'everything')
+    ) {
       super.finish(filters);
     }
     this.existSouthLocation = false;

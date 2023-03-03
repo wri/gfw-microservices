@@ -2,7 +2,7 @@ import { Transform } from 'stream';
 
 class ConvertObject2String extends Transform {
   constructor() {
-    super({objectMode: true});
+    super({ objectMode: true });
   }
 
   _transform(geojson, _, next) {
@@ -10,6 +10,4 @@ class ConvertObject2String extends Transform {
   }
 }
 
-export {
-  ConvertObject2String
-}
+export { ConvertObject2String };

@@ -5,24 +5,36 @@ import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 
 @Injectable()
 export class ForestChangeDiagnosticLocationSummaryService extends DashboardHandleDownload {
-
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'forestChangeDiagnosticLocationSummary' || type == 'everything')){
-      super.start(filters, 'forestChangeDiagnosticLocationSummary', 'forest_change_diagnostic_location_summary');
+    if (
+      listView === 'forest_change' &&
+      (type == 'forestChangeDiagnosticLocationSummary' || type == 'everything')
+    ) {
+      super.start(
+        filters,
+        'forestChangeDiagnosticLocationSummary',
+        'forest_change_diagnostic_location_summary'
+      );
     }
   }
 
   process(data: any, filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'forestChangeDiagnosticLocationSummary' || type == 'everything')){
+    if (
+      listView === 'forest_change' &&
+      (type == 'forestChangeDiagnosticLocationSummary' || type == 'everything')
+    ) {
       super.process(data, filters);
     }
   }
 
   finish(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'forestChangeDiagnosticLocationSummary' || type == 'everything')){
+    if (
+      listView === 'forest_change' &&
+      (type == 'forestChangeDiagnosticLocationSummary' || type == 'everything')
+    ) {
       super.finish(filters);
     }
   }

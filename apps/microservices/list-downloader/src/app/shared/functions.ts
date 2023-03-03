@@ -1,34 +1,37 @@
 const cloneRow = (row) => {
   if (Array.isArray(row) === false) return [];
   return [...row];
-}
-
+};
 
 const formatPct = (value) => {
   if (value === undefined) {
     return undefined;
-  }
-  else if (typeof value === 'string') {
+  } else if (typeof value === 'string') {
     return parseFloat(value).toFixed(2);
   } else if (typeof value === 'number') {
     return value.toFixed(2);
   }
-}
+};
 
 // Formats number with commas
-const prettifyNum = (value) => value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+const prettifyNum = (value) =>
+  value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 const validatePct = (percentage) => {
   if (percentage > 100) {
     return 100;
-  } else if (isNaN(percentage) || !isFinite(percentage) || Math.sign(percentage) === -1) {
+  } else if (
+    isNaN(percentage) ||
+    !isFinite(percentage) ||
+    Math.sign(percentage) === -1
+  ) {
     return 0;
   } else {
     return percentage;
   }
 };
 
-const  parseListData = (property, listLevelAnalysis) => {
+const parseListData = (property, listLevelAnalysis) => {
   let total = 0;
 
   const listAnalysisData = listLevelAnalysis[0];
@@ -46,7 +49,7 @@ const  parseListData = (property, listLevelAnalysis) => {
       biomes.forEach((biome) => {
         Object.entries(yearlyData[biome]).forEach((entry) => {
           const [, value] = entry;
-          const newValue = Number (value || 0);
+          const newValue = Number(value || 0);
           total = total + newValue;
         });
       });
@@ -69,7 +72,7 @@ const  parseListData = (property, listLevelAnalysis) => {
   total = Math.round(total * 100) / 100;
 
   return total;
-}
+};
 
 const parseListTotals = (property, listLevelAnalysis) => {
   const total = listLevelAnalysis[property];
@@ -83,5 +86,5 @@ export {
   prettifyNum,
   validatePct,
   parseListData,
-  parseListTotals
-}
+  parseListTotals,
+};

@@ -1,13 +1,21 @@
 import { Transform } from 'stream';
 import _sum from 'lodash/sum';
 
-import  { cloneRow, formatPct, validatePct, parseListData } from '../shared/functions'
+import {
+  cloneRow,
+  formatPct,
+  validatePct,
+  parseListData,
+} from '../shared/functions';
 import { TemplateOperation } from '../shared/model';
 
-
 class ManipulateDataForDashboard extends Transform {
-  constructor(private templateOperations: TemplateOperation, private table: string, private listLevelAnalysis: any) {
-    super({objectMode: true});
+  constructor(
+    private templateOperations: TemplateOperation,
+    private table: string,
+    private listLevelAnalysis: any
+  ) {
+    super({ objectMode: true });
   }
 
   _transform(data, _, next) {
@@ -44,18 +52,24 @@ class ManipulateDataForDashboard extends Transform {
             const currentRow = cloneRow(dataRow);
             currentRow.push(location);
 
-            const overlapPercent = formatPct(validatePct((brazilBiomeLocations[location] / total) * 100));
+            const overlapPercent = formatPct(
+              validatePct((brazilBiomeLocations[location] / total) * 100)
+            );
             currentRow.push(overlapPercent);
 
             csvData.push(currentRow);
           });
         } else if (operation.name === 'seAsia_overlap') {
           operation.composites.forEach((field) => {
-            const totalStatValue = parseListData(field.attribute, [this.listLevelAnalysis]);
+            const totalStatValue = parseListData(field.attribute, [
+              this.listLevelAnalysis,
+            ]);
             const currentRow = cloneRow(dataRow);
 
             if (totalStatValue > 0) {
-              const yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
+              const yearlyData = data[field.attribute]
+                ? JSON.parse(data[field.attribute])
+                : {};
 
               if (isNaN(parseInt(yearlyData)) === true) {
                 let totalStatV = 0;
@@ -68,7 +82,9 @@ class ManipulateDataForDashboard extends Transform {
                   const nestedRow = cloneRow(currentRow);
                   nestedRow.push(field.label);
                   nestedRow.push(locationName);
-                  const percent = formatPct(validatePct((yearlyData[locationName] / totalStatV) * 100));
+                  const percent = formatPct(
+                    validatePct((yearlyData[locationName] / totalStatV) * 100)
+                  );
                   nestedRow.push(percent);
                   if (totalStatV > 0) {
                     csvData.push(nestedRow);
@@ -78,7 +94,9 @@ class ManipulateDataForDashboard extends Transform {
                 const currentRowIn = cloneRow(dataRow);
                 currentRowIn.push(field.label);
                 currentRowIn.push('Within Forest Moratorium');
-                const percentIn = formatPct(validatePct((yearlyData / data.total_area) * 100));
+                const percentIn = formatPct(
+                  validatePct((yearlyData / data.total_area) * 100)
+                );
                 currentRowIn.push(percentIn);
                 csvData.push(currentRowIn);
 
@@ -86,7 +104,9 @@ class ManipulateDataForDashboard extends Transform {
                 const currentRowOut = cloneRow(dataRow);
                 currentRowOut.push(field.label);
                 currentRowOut.push('Outside Forest Moratorium');
-                const percentOut = formatPct(validatePct((hectaresOut / data.total_area) * 100));
+                const percentOut = formatPct(
+                  validatePct((hectaresOut / data.total_area) * 100)
+                );
                 currentRowOut.push(percentOut);
                 csvData.push(currentRowOut);
               }
@@ -100,12 +120,16 @@ class ManipulateDataForDashboard extends Transform {
             totalSoy += soyTotalArea[year];
           });
           const currentRow = cloneRow(dataRow);
-          const soyPercent = formatPct(validatePct((totalSoy / data.total_area) * 100));
+          const soyPercent = formatPct(
+            validatePct((totalSoy / data.total_area) * 100)
+          );
           currentRow.push(soyPercent);
           currentRow.push(totalSoy);
 
           const totalPre2001 = data.soy_pre2001_nonforest_area;
-          const pre2001Percent = formatPct(validatePct((totalPre2001 / data.total_area) * 100));
+          const pre2001Percent = formatPct(
+            validatePct((totalPre2001 / data.total_area) * 100)
+          );
           currentRow.push(pre2001Percent);
           currentRow.push(totalPre2001);
           csvData.push(currentRow);
@@ -113,7 +137,9 @@ class ManipulateDataForDashboard extends Transform {
           const currentRow = cloneRow(dataRow);
           operation.fields.forEach((field) => {
             if (field.type === 'yearly') {
-              const totalProp = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
+              const totalProp = data[field.attribute]
+                ? JSON.parse(data[field.attribute])
+                : {};
 
               let val = 0;
               Object.keys(totalProp).forEach((year, j) => {
@@ -121,7 +147,10 @@ class ManipulateDataForDashboard extends Transform {
               });
 
               if (field.parsed === 'category') {
-                const lastYear = totalProp[Object.keys(totalProp)[Object.keys(totalProp).length - 1]];
+                const lastYear =
+                  totalProp[
+                    Object.keys(totalProp)[Object.keys(totalProp).length - 1]
+                  ];
                 let label;
                 if (lastYear === 0) {
                   label = 'Low';
@@ -150,7 +179,8 @@ class ManipulateDataForDashboard extends Transform {
               const years = Object.keys(rowObj);
               const value = rowObj[years[years.length - 1]];
 
-              const priority = value === 0 ? 'Low' : value === 1 ? 'Medium' : 'High';
+              const priority =
+                value === 0 ? 'Low' : value === 1 ? 'Medium' : 'High';
               currentRow.push(priority);
             }
           });
@@ -166,10 +196,14 @@ class ManipulateDataForDashboard extends Transform {
           const totalArea = data.total_area;
 
           operation.fields.forEach((field) => {
-            const fieldValue = data[field.attribute] ? JSON.parse(data[field.attribute]) : 0;
+            const fieldValue = data[field.attribute]
+              ? JSON.parse(data[field.attribute])
+              : 0;
 
             if (field.parsed === 'percent') {
-              const percent = formatPct(validatePct((fieldValue / totalArea) * 100));
+              const percent = formatPct(
+                validatePct((fieldValue / totalArea) * 100)
+              );
               currentRow.push(percent);
             } else if (field.parsed === 'aggregate') {
               currentRow.push(fieldValue.toFixed(2));
@@ -186,9 +220,13 @@ class ManipulateDataForDashboard extends Transform {
                 break;
               case 'object':
                 // eslint-disable-next-line no-case-declarations
-                const fieldValue = data[field.attribute] ? JSON.parse(data[field.attribute]) : 0;
+                const fieldValue = data[field.attribute]
+                  ? JSON.parse(data[field.attribute])
+                  : 0;
                 if (fieldValue && field.parsed === 'percent') {
-                  const percent = formatPct(validatePct((fieldValue / totalArea) * 100));
+                  const percent = formatPct(
+                    validatePct((fieldValue / totalArea) * 100)
+                  );
                   currentRow.push(percent);
                 } else if (fieldValue && field.parsed === 'aggregate') {
                   currentRow.push(fieldValue.toFixed(2));
@@ -205,7 +243,9 @@ class ManipulateDataForDashboard extends Transform {
           csvData.push(currentRow);
         } else if (operation.name === 'pie_chart') {
           operation.composites.forEach((field) => {
-            const categoryData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
+            const categoryData = data[field.attribute]
+              ? JSON.parse(data[field.attribute])
+              : {};
 
             let rowValue = 0;
             Object.keys(categoryData).forEach((category) => {
@@ -229,9 +269,11 @@ class ManipulateDataForDashboard extends Transform {
               }
               currentRow.push(category);
 
-              let layerPercent = formatPct(validatePct((categoryCount / rowValue) * 100));
+              let layerPercent = formatPct(
+                validatePct((categoryCount / rowValue) * 100)
+              );
               if (!categoryCount || !rowValue) {
-                layerPercent = "0";
+                layerPercent = '0';
               }
               currentRow.push(layerPercent);
 
@@ -263,7 +305,9 @@ class ManipulateDataForDashboard extends Transform {
         operation.composites.forEach((field, index) => {
           let locationHasData = true;
 
-          const yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
+          const yearlyData = data[field.attribute]
+            ? JSON.parse(data[field.attribute])
+            : {};
 
           let totalListLevelCount = 0;
 
@@ -310,9 +354,11 @@ class ManipulateDataForDashboard extends Transform {
                   } else if (typeof yearData === 'object') {
                     Object.keys(totalAttr).forEach((innerAttr) => {
                       if (typeof totalAttr[innerAttr] === 'object') {
-                        Object.keys(totalAttr[innerAttr]).forEach((biomeYear) => {
-                          totalStatValue += totalAttr[innerAttr][biomeYear];
-                        });
+                        Object.keys(totalAttr[innerAttr]).forEach(
+                          (biomeYear) => {
+                            totalStatValue += totalAttr[innerAttr][biomeYear];
+                          }
+                        );
                       }
                     });
                   }
@@ -328,7 +374,9 @@ class ManipulateDataForDashboard extends Transform {
 
             const biomes = Object.keys(yearlyData);
             biomes.forEach((biome) => {
-              totalSubCategoryValues[biome] = _sum(Object.values(yearlyData[biome]));
+              totalSubCategoryValues[biome] = _sum(
+                Object.values(yearlyData[biome])
+              );
             });
 
             biomes.forEach((biomeName, biomeIndex) => {
@@ -345,13 +393,16 @@ class ManipulateDataForDashboard extends Transform {
                 const totalSubCategory = totalSubCategoryValues[biomeName];
                 if (totalStat) {
                   currentRow.push(totalSubCategory);
-                  const percent = formatPct(validatePct((total / totalSubCategory) * 100));
+                  const percent = formatPct(
+                    validatePct((total / totalSubCategory) * 100)
+                  );
                   currentRow.push(percent);
                 }
 
                 if (
                   totalSubCategory > 0 &&
-                  (data.south_america_presence === true || data.south_america_presence === 'true') &&
+                  (data.south_america_presence === true ||
+                    data.south_america_presence === 'true') &&
                   data.Country === 'Brazil'
                 ) {
                   csvData.push(currentRow);
@@ -402,7 +453,9 @@ class ManipulateDataForDashboard extends Transform {
 
                   if (totalStat) {
                     nestedRow.push(totalListLevelCount);
-                    const percent = formatPct(validatePct((val / totalStatValue) * 100));
+                    const percent = formatPct(
+                      validatePct((val / totalStatValue) * 100)
+                    );
                     nestedRow.push(percent);
                   }
 
@@ -411,16 +464,22 @@ class ManipulateDataForDashboard extends Transform {
                   if (
                     locationHasData &&
                     this.table.indexOf('sAmerica') > -1 &&
-                    (data.south_america_presence === true || data.south_america_presence === 'true')
+                    (data.south_america_presence === true ||
+                      data.south_america_presence === 'true')
                   ) {
                     csvData.push(nestedRow);
                   } else if (
                     locationHasData &&
                     this.table.indexOf('seAsia') > -1 &&
-                    (data.southeast_asia_presence === true || data.southeast_asia_presence === 'true')
+                    (data.southeast_asia_presence === true ||
+                      data.southeast_asia_presence === 'true')
                   ) {
                     csvData.push(nestedRow);
-                  } else if (locationHasData && this.table.indexOf('sAmerica') === -1 && this.table.indexOf('seAsia') === -1) {
+                  } else if (
+                    locationHasData &&
+                    this.table.indexOf('sAmerica') === -1 &&
+                    this.table.indexOf('seAsia') === -1
+                  ) {
                     csvData.push(nestedRow);
                   }
                 });
@@ -443,23 +502,31 @@ class ManipulateDataForDashboard extends Transform {
                   if (totalStat) {
                     currentRow.push(totalStatValue);
 
-                    const percent = formatPct(validatePct((rowValue / totalStatValue) * 100));
+                    const percent = formatPct(
+                      validatePct((rowValue / totalStatValue) * 100)
+                    );
                     currentRow.push(percent);
                   }
 
                   if (
                     locationHasData &&
                     this.table.indexOf('sAmerica') > -1 &&
-                    (data.south_america_presence === true || data.south_america_presence === 'true')
+                    (data.south_america_presence === true ||
+                      data.south_america_presence === 'true')
                   ) {
                     csvData.push(currentRow);
                   } else if (
                     locationHasData &&
                     this.table.indexOf('seAsia') > -1 &&
-                    (data.southeast_asia_presence === true || data.southeast_asia_presence === 'true')
+                    (data.southeast_asia_presence === true ||
+                      data.southeast_asia_presence === 'true')
                   ) {
                     csvData.push(currentRow);
-                  } else if (locationHasData && this.table.indexOf('sAmerica') === -1 && this.table.indexOf('seAsia') === -1) {
+                  } else if (
+                    locationHasData &&
+                    this.table.indexOf('sAmerica') === -1 &&
+                    this.table.indexOf('seAsia') === -1
+                  ) {
                     csvData.push(currentRow);
                   }
                 }
@@ -489,7 +556,9 @@ class ManipulateDataForDashboard extends Transform {
           }
           const attributeExtent = data[field.extentAttribute];
 
-          const percent = formatPct(validatePct((tclOnAttribute / attributeExtent) * 100));
+          const percent = formatPct(
+            validatePct((tclOnAttribute / attributeExtent) * 100)
+          );
 
           if (field.label) {
             currentRow.push(field.label);
@@ -502,15 +571,10 @@ class ManipulateDataForDashboard extends Transform {
         });
       }
     });
-    const result =[
-      ...csvData,
-      dataRow
-    ]
+    const result = [...csvData, dataRow];
 
     next(null, result);
   }
 }
 
-export {
-  ManipulateDataForDashboard
-}
+export { ManipulateDataForDashboard };

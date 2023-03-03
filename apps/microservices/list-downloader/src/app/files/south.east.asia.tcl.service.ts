@@ -13,16 +13,24 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
 
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'seAsiaTCL' || type == 'everything')){
+    if (
+      listView === 'forest_change' &&
+      (type == 'seAsiaTCL' || type == 'everything')
+    ) {
       super.start(filters, 'seAsiaTCL', 'south_east_asia_tcl');
     }
   }
 
   process(data: any, filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'seAsiaTCL' || type == 'everything')){
-      const locations = data.filter((location) => location.southeast_asia_presence === 'true');
-      if(locations && locations.length > 0){
+    if (
+      listView === 'forest_change' &&
+      (type == 'seAsiaTCL' || type == 'everything')
+    ) {
+      const locations = data.filter(
+        (location) => location.southeast_asia_presence === 'true'
+      );
+      if (locations && locations.length > 0) {
         this.existSouthEastLocation = true;
         super.process(locations, filters);
       }
@@ -31,11 +39,22 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
 
   finish(filters: GenerationFileRequest) {
     const { listView, selectedLocationsList, type } = filters;
-    if (listView === 'forest_change' && selectedLocationsList.length != 1 && this.existSouthEastLocation) {
-      this.dashboardListLevelService.generateCSV(filters, 'seAsiaTCLAggregate','south_east_asia_tcl_aggregate');
+    if (
+      listView === 'forest_change' &&
+      selectedLocationsList.length != 1 &&
+      this.existSouthEastLocation
+    ) {
+      this.dashboardListLevelService.generateCSV(
+        filters,
+        'seAsiaTCLAggregate',
+        'south_east_asia_tcl_aggregate'
+      );
     }
 
-    if(listView === 'forest_change' && ( type == 'seAsiaTCL' || type == 'everything')){
+    if (
+      listView === 'forest_change' &&
+      (type == 'seAsiaTCL' || type == 'everything')
+    ) {
       super.finish(filters);
     }
     this.existSouthEastLocation = false;

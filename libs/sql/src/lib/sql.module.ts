@@ -19,14 +19,14 @@ import {
     UspGetPaginatedAnalysisDataForUserList,
     UspGetListNameSchema,
     UspGetListLocations,
-    UspGetListAnalysis
+    UspGetListAnalysis,
   ],
   exports: [
     UspGetAnalysisDataCountForUserList,
     UspGetPaginatedAnalysisDataForUserList,
     UspGetListNameSchema,
     UspGetListLocations,
-    UspGetListAnalysis
+    UspGetListAnalysis,
   ],
 })
 export class SqlModule {}

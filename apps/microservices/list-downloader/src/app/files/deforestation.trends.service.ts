@@ -6,20 +6,25 @@ import { DashboardListLevelService } from '../pipe/dashboard.list.level.service'
 
 @Injectable()
 export class DeforestationTrendsService extends DashboardHandleDownload {
-
   @Inject(DashboardListLevelService)
   private readonly dashboardListLevelService: DashboardListLevelService;
 
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'commodity_risk' && ( type == 'deforestationTrends' || type == 'everything')){
+    if (
+      listView === 'commodity_risk' &&
+      (type == 'deforestationTrends' || type == 'everything')
+    ) {
       super.start(filters, 'deforestationTrends', 'trends_in_deforestation');
     }
   }
 
   process(data: any, filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'commodity_risk' && ( type == 'deforestationTrends' || type == 'everything')){
+    if (
+      listView === 'commodity_risk' &&
+      (type == 'deforestationTrends' || type == 'everything')
+    ) {
       super.process(data, filters);
     }
   }
@@ -27,9 +32,16 @@ export class DeforestationTrendsService extends DashboardHandleDownload {
   finish(filters: GenerationFileRequest) {
     const { listView, selectedLocationsList, type } = filters;
     if (listView === 'commodity_risk' && selectedLocationsList.length != 1) {
-      this.dashboardListLevelService.generateCSV(filters, 'deforestationTrendsAggregate','trends_in_deforestation_aggregate');
+      this.dashboardListLevelService.generateCSV(
+        filters,
+        'deforestationTrendsAggregate',
+        'trends_in_deforestation_aggregate'
+      );
     }
-    if(listView === 'forest' && ( type == 'deforestationTrends' || type == 'everything')){
+    if (
+      listView === 'forest' &&
+      (type == 'deforestationTrends' || type == 'everything')
+    ) {
       super.finish(filters);
     }
   }

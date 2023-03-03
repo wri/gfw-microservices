@@ -6,7 +6,11 @@ class FilterLocationDontHaveStatus extends Transform {
   }
 
   _transform(chunk, _, next) {
-    if (chunk.location_status_id === this.status) {
+    if (chunk === undefined) {
+      return next();
+    }
+
+    if (Object.prototype.hasOwnProperty.call(chunk, 'location_status_id') && chunk.location_status_id !== this.status) {
       return next(null, chunk);
     }
     next();

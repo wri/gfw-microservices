@@ -6,6 +6,7 @@ class ConvertObject2CSV extends Transform {
   }
 
   _transform(data, _, next) {
+    if(!data) return next(null, '');
     const [first] = data;
     let result = '';
     if (Array.isArray(first)) {

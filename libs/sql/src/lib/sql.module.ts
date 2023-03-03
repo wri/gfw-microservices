@@ -1,6 +1,7 @@
 import { UspGetListLocations } from './lists/uspGetListLocations';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UspGetListAnalysis } from './lists';
 
 import { DatabaseService } from './util/database.service';
 
@@ -18,12 +19,14 @@ import {
     UspGetPaginatedAnalysisDataForUserList,
     UspGetListNameSchema,
     UspGetListLocations,
+    UspGetListAnalysis,
   ],
   exports: [
     UspGetAnalysisDataCountForUserList,
     UspGetPaginatedAnalysisDataForUserList,
     UspGetListNameSchema,
     UspGetListLocations,
+    UspGetListAnalysis,
   ],
 })
 export class SqlModule {}

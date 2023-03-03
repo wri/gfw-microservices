@@ -6,12 +6,15 @@ import { convert } from 'geojson2shp';
 import { Logger, Injectable } from '@nestjs/common';
 
 import { GenerationFileRequest } from '@wri-monorepos/sql';
-import { IPipeService } from './IPipeService';
-import { columnsListName, columnsTemplateId } from '../shared/constants'
-import { FilterObject, FilterSelection, ConvertToGeoJSON, ConvertObjectToString } from '../shared/list.transform';
+import { IPipeService } from '../pipe/IPipeService';
+import { columnsListName, columnsTemplateId } from '../shared/constants';
+import { FilterObject } from '../transform/filter.object';
+import { FilterSelection } from '../transform/filter.selection';
+import { ConvertObject2Geojson } from '../transform/convert.object.2.geojson';
+import { ConvertObject2String } from '../transform/convert.object.2.string';
 
 @Injectable()
-export class ShapefileService  extends IPipeService{
+export class ShapefileService extends IPipeService {
   private readonly logger = new Logger(ShapefileService.name);
   private inputStream: PassThrough;
 
@@ -19,8 +22,8 @@ export class ShapefileService  extends IPipeService{
     const { listID, key, templateId, combinedColumnsSplitted } = filters;
     this.logger.log(`(${listID}) - Starting shapefile stream to process data`);
     this.inputStream = new PassThrough({
-      objectMode: true
-    })
+      objectMode: true,
+    });
 
     filters.combinedColumnsSplitted.push('WKTGeometry');
 
@@ -33,28 +36,27 @@ export class ShapefileService  extends IPipeService{
     );
 
     const fields =
-    columnsTemplateId[templateId] ?? columnsListName[templateId] ?? columnsTemplateId[14];
+      columnsTemplateId[templateId] ??
+      columnsListName[templateId] ??
+      columnsTemplateId[14];
     let allFields = [...fields, ...combinedColumnsSplitted];
     allFields = [...new Set(allFields)];
 
-    this.organizeStream(filters, allFields)
+    this.organizeStream(filters, allFields);
     this.startEmail(filters);
   }
+
   process(analysisData: any) {
-    analysisData.forEach(data => this.inputStream.write(data));
+    analysisData.forEach((data) => this.inputStream.write(data));
   }
 
   finish(filters: GenerationFileRequest) {
     const { listID, key } = filters;
-    this.convertGeojsonToSHP(key).then(() => {
+    this.convertGeojsonToSHP(key).then(async () => {
       this.logger.log(`(${listID}) - Data has been zipped`);
-      this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
-      this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET).then(location => {
-        this.finishedEmail(filters,  location);
-      });
+      await this.uploadToS3(filters);
     });
   }
-
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
     const open = '{"type":"FeatureCollection","features":[';
@@ -66,16 +68,16 @@ export class ShapefileService  extends IPipeService{
     this.inputStream.on('error', (err) => {
       this.logger.error(`(${listID}) - Error on stream: ${err}`);
       this.errorEmail(filters);
-    })
+    });
 
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
-      .pipe(new ConvertToGeoJSON())
-      .pipe(new ConvertObjectToString())
+      .pipe(new ConvertObject2Geojson())
+      .pipe(new ConvertObject2String())
       .pipe(JSONStream.parse(['features', true]))
       .pipe(JSONStream.stringify(open, '\n,\n', close))
-      .pipe(fs.createWriteStream(`/tmp/${key}.geojson`, {flags:'r+'}))
+      .pipe(fs.createWriteStream(`/tmp/${key}.geojson`, { flags: 'r+' }));
 
     return this.inputStream;
   }
@@ -87,5 +89,4 @@ export class ShapefileService  extends IPipeService{
     };
     await convert(`/tmp/${key}.geojson`, `/tmp/${key}.zip`, options);
   }
-
 }

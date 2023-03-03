@@ -838,7 +838,8 @@ export const EXCEL_TEMPLATES = {
         {
           attribute: 'tree_cover_loss_idn_primary_forest_yearly',
           label: 'Primary Forest',
-        },2
+        },
+        2,
       ],
     },
   ],
@@ -1208,7 +1209,7 @@ export const EXCEL_TEMPLATES = {
     { name: 'Designation Type', key: 'Designation Type' },
     { name: 'Designation', key: 'Designation' },
   ],
-}
+};
 
 export const EXCEL_TEMPLATE_HEADERS = {
   aggregate: [
@@ -1269,9 +1270,24 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Loss (all years) (ha)',
     '% of TCL',
   ],
-  sAmericaLossAggregate: ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
-  sAmericaBiomes: ['List Name', 'Location Name', 'Brazil Biome', 'Overlap with Brazil Biome (%)'],
-  sAmericaBiomesAggregate: ['List Name', 'Brazil Biome', 'Overlap with Brazil Biome (%)'],
+  sAmericaLossAggregate: [
+    'List Name',
+    'Data Layer Name',
+    'Forest Loss (ha)',
+    'Year',
+    'Total Loss (ha)',
+  ],
+  sAmericaBiomes: [
+    'List Name',
+    'Location Name',
+    'Brazil Biome',
+    'Overlap with Brazil Biome (%)',
+  ],
+  sAmericaBiomesAggregate: [
+    'List Name',
+    'Brazil Biome',
+    'Overlap with Brazil Biome (%)',
+  ],
   seAsiaAll: [
     'List Name',
     'Location Name',
@@ -1290,10 +1306,33 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Loss (all years) (ha)',
     '% of TCL',
   ],
-  seAsiaTCLAggregate: ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
-  seAsiaPie: ['List Name', 'Location Name', 'Data Layer Name', 'Sub-layer name', 'Overlap with sub-layer (%)'],
-  seAsiaOverlap: ['List Name', 'Location Name', 'Data Layer Name', 'Sub-layer name', 'Overlap with sub-layer (%)'],
-  seAsiaOverlapAggregate: ['List Name', 'Data Layer Name', 'Sub-layer name', 'Overlap with sub-layer (%)'],
+  seAsiaTCLAggregate: [
+    'List Name',
+    'Data Layer Name',
+    'Forest Loss (ha)',
+    'Year',
+    'Total Loss (ha)',
+  ],
+  seAsiaPie: [
+    'List Name',
+    'Location Name',
+    'Data Layer Name',
+    'Sub-layer name',
+    'Overlap with sub-layer (%)',
+  ],
+  seAsiaOverlap: [
+    'List Name',
+    'Location Name',
+    'Data Layer Name',
+    'Sub-layer name',
+    'Overlap with sub-layer (%)',
+  ],
+  seAsiaOverlapAggregate: [
+    'List Name',
+    'Data Layer Name',
+    'Sub-layer name',
+    'Overlap with sub-layer (%)',
+  ],
   deforestationTrends: ['List Name', 'Location Name', 'Loss', 'Year'],
   millPriority: ['List Name', 'Location Name', 'Threat + Value', 'Year'],
   palmRiskAnalysis: [
@@ -1383,4 +1422,4 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Certification',
     'Total Hectares',
   ],
-}
+};

@@ -2,14 +2,13 @@ import * as fs from 'fs';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter, PassThrough, Transform } from 'stream';
 
-import  { formatPct, validatePct } from '../shared/functions'
+import { formatPct, validatePct } from '../shared/functions';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { FilterSelection } from '../transform/filter.selection';
 import { IPipeService } from '../pipe/IPipeService';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 
-class CountryAggregator extends EventEmitter{
-
+class CountryAggregator extends EventEmitter {
   private countries = new Set();
 
   constructor() {
@@ -29,7 +28,6 @@ class CountryAggregator extends EventEmitter{
   getCountries() {
     return this.countries;
   }
-
 }
 
 class EventEmitterTransform extends Transform {
@@ -46,32 +44,44 @@ class EventEmitterTransform extends Transform {
 
 @Injectable()
 export class ForestChangeDiagnosticListSummaryService extends IPipeService {
-  private readonly logger = new Logger(ForestChangeDiagnosticListSummaryService.name);
+  private readonly logger = new Logger(
+    ForestChangeDiagnosticListSummaryService.name
+  );
   private inputStream: PassThrough;
   private countryAggregator: CountryAggregator;
-  private readonly FILE_SUFFIX = 'forest_change_diagnostic_list_summary'
+  private readonly FILE_SUFFIX = 'forest_change_diagnostic_list_summary';
 
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'forestChangeDiagnosticListSummary' || type == 'everything')){
+    if (
+      listView === 'forest_change' &&
+      (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
+    ) {
       const { listID } = filters;
-      this.logger.log(`(${listID}) - Starting Dashboard download for ForestChangeDiagnosticListSummary stream to process data`);
+      this.logger.log(
+        `(${listID}) - Starting Dashboard download for ForestChangeDiagnosticListSummary stream to process data`
+      );
 
       this.countryAggregator = new CountryAggregator();
       this.inputStream = new PassThrough({
-        objectMode: true
-      })
+        objectMode: true,
+      });
 
-      this.organizeStream(filters)
+      this.organizeStream(filters);
       this.countryAggregator.emit('cleanCountry');
     }
   }
 
   process(analysisData: any, filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'forestChangeDiagnosticListSummary' || type == 'everything')){
+    if (
+      listView === 'forest_change' &&
+      (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
+    ) {
       const { listName } = filters;
-      analysisData.forEach((data) => this.inputStream.write({ list_name: listName ,...data}));
+      analysisData.forEach((data) =>
+        this.inputStream.write({ list_name: listName, ...data })
+      );
     }
   }
 
@@ -82,7 +92,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
     this.inputStream.on('error', (err) => {
       this.logger.error(`(${listID}) - Error on stream: ${err}`);
       this.errorEmail(filters);
-    })
+    });
 
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
@@ -93,10 +103,13 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
 
   finish(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'forestChangeDiagnosticListSummary' || type == 'everything')){
+    if (
+      listView === 'forest_change' &&
+      (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
+    ) {
       this.inputStream.removeAllListeners();
       const { key, listName, listLevelAnalysis } = filters;
-      const csvData = []
+      const csvData = [];
       csvData.push(EXCEL_TEMPLATE_HEADERS['forestChangeDiagnosticListSummary']);
       const dataRow = [listName];
       const totalArea = listLevelAnalysis.total_area;
@@ -104,16 +117,18 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
 
       EXCEL_TEMPLATES['forestChangeDiagnosticListSummary'].forEach((key) => {
         dataRow.push(countryStr.replace(/,/g, ';'));
-            key.fields.forEach((field) => {
-              const fieldValue = JSON.parse(listLevelAnalysis[field.attribute]);
-              if (field.parsed === 'percent') {
-                const percent = formatPct(validatePct((fieldValue / totalArea) * 100));
-                dataRow.push(percent);
-              } else if (field.parsed === 'aggregate') {
-                dataRow.push(fieldValue.toFixed(2));
-              }
-            });
-            csvData.push(dataRow);
+        key.fields.forEach((field) => {
+          const fieldValue = JSON.parse(listLevelAnalysis[field.attribute]);
+          if (field.parsed === 'percent') {
+            const percent = formatPct(
+              validatePct((fieldValue / totalArea) * 100)
+            );
+            dataRow.push(percent);
+          } else if (field.parsed === 'aggregate') {
+            dataRow.push(fieldValue.toFixed(2));
+          }
+        });
+        csvData.push(dataRow);
       });
       const csvString = csvData.map((row) => row.join(',')).join('\n');
       fs.writeFileSync(`/tmp/${key}_${this.FILE_SUFFIX}.csv`, `${csvString}\n`);

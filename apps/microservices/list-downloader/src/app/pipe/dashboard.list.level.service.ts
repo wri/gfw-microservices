@@ -1,32 +1,45 @@
 import * as fs from 'fs';
 import { Injectable, Logger } from '@nestjs/common';
 
-import  { cloneRow, formatPct, validatePct, parseListData, parseListTotals } from '../shared/functions'
+import {
+  cloneRow,
+  formatPct,
+  validatePct,
+  parseListData,
+  parseListTotals,
+} from '../shared/functions';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
-
 @Injectable()
-export class DashboardListLevelService{
+export class DashboardListLevelService {
   private readonly logger = new Logger(DashboardListLevelService.name);
 
-  public generateCSV(filters: GenerationFileRequest, table:string, fileSuffix: string) {
-    if(filters.selectedLocationsList.length != 1){
-      this.logger.log('Generate aggregate data for the following table: ', table)
+  public generateCSV(
+    filters: GenerationFileRequest,
+    table: string,
+    fileSuffix: string
+  ) {
+    if (filters.selectedLocationsList.length != 1) {
+      this.logger.log(
+        'Generate aggregate data for the following table: ',
+        table
+      );
       const { key, listName, listLevelAnalysis } = filters;
-      const csvData = this.mountCsv(table, listName, listLevelAnalysis )
+      const csvData = this.mountCsv(table, listName, listLevelAnalysis);
       const csvString = csvData.map((row) => row.join(',')).join('\n');
       fs.writeFileSync(`/tmp/${key}_${fileSuffix}.csv`, `${csvString}\n`);
     }
   }
 
-  private mountCsv(table: string, list_name: string, listLevelAnalysis: any){
+  private mountCsv(table: string, list_name: string, listLevelAnalysis: any) {
     const csvData = [];
 
     if (table === 'deforestationTrendsAggregate') {
-
       csvData.push(['List Name', 'Loss (thousand ha)', 'Year']);
-      const deforestation = JSON.parse(listLevelAnalysis.commodity_threat_deforestation);
+      const deforestation = JSON.parse(
+        listLevelAnalysis.commodity_threat_deforestation
+      );
       Object.keys(deforestation).forEach((year) => {
         const dataRow = [list_name];
         const value = deforestation[year];
@@ -93,7 +106,9 @@ export class DashboardListLevelService{
 
       EXCEL_TEMPLATES[table].forEach((key) => {
         key.composites.forEach((field) => {
-          const totalStatValue = parseListData(field.attribute, [listLevelAnalysis]);
+          const totalStatValue = parseListData(field.attribute, [
+            listLevelAnalysis,
+          ]);
           const dataRow = [list_name];
 
           let rowValue = 0;
@@ -120,7 +135,9 @@ export class DashboardListLevelService{
                 currentBrazilianRow.push(rowValue[biomeYear]);
                 currentBrazilianRow.push(biomeYear);
                 currentBrazilianRow.push(totalBiomeValue.toFixed(2));
-                const percent = formatPct(validatePct((rowValue[biomeYear] / totalBiomeValue) * 100));
+                const percent = formatPct(
+                  validatePct((rowValue[biomeYear] / totalBiomeValue) * 100)
+                );
                 currentRow.push(percent);
                 csvData.push(currentBrazilianRow);
               });
@@ -129,7 +146,9 @@ export class DashboardListLevelService{
               currentRow.push(year);
               currentRow.push(totalStatValue);
 
-              const percent = formatPct(validatePct((rowValue / totalStatValue) * 100));
+              const percent = formatPct(
+                validatePct((rowValue / totalStatValue) * 100)
+              );
               currentRow.push(percent);
 
               if (totalStatValue > 0) {
@@ -144,7 +163,10 @@ export class DashboardListLevelService{
 
       EXCEL_TEMPLATES[table].forEach((key) => {
         key.composites.forEach((field) => {
-          const { label, attribute } = (field  as {label: string, attribute: string});
+          const { label, attribute } = field as {
+            label: string;
+            attribute: string;
+          };
           const totalStatValue = parseListData(attribute, [listLevelAnalysis]);
           const dataRow = [list_name];
 
@@ -197,7 +219,9 @@ export class DashboardListLevelService{
 
         Object.keys(biomesObj).forEach((biome) => {
           const dataRow = [list_name, biome];
-          const overlapPercent = formatPct(validatePct((biomesObj[biome] / total) * 100));
+          const overlapPercent = formatPct(
+            validatePct((biomesObj[biome] / total) * 100)
+          );
           dataRow.push(overlapPercent);
           csvData.push(dataRow);
         });
@@ -207,7 +231,9 @@ export class DashboardListLevelService{
 
       EXCEL_TEMPLATES[table].forEach((key) => {
         key.composites.forEach((field) => {
-          const totalStatValue = parseListData(field.attribute, [listLevelAnalysis]);
+          const totalStatValue = parseListData(field.attribute, [
+            listLevelAnalysis,
+          ]);
           const dataRow = [list_name];
 
           if (totalStatValue > 0) {
@@ -222,7 +248,9 @@ export class DashboardListLevelService{
                 const currentRow = cloneRow(dataRow);
                 currentRow.push(field.label);
                 currentRow.push(location);
-                const percent = formatPct(validatePct((yearlyData[location] / totalStatValue) * 100));
+                const percent = formatPct(
+                  validatePct((yearlyData[location] / totalStatValue) * 100)
+                );
                 currentRow.push(percent);
                 csvData.push(currentRow);
               });
@@ -230,7 +258,9 @@ export class DashboardListLevelService{
               const currentRowIn = cloneRow(dataRow);
               currentRowIn.push(field.label);
               currentRowIn.push('Within Forest Moratorium');
-              const percentIn = formatPct(validatePct((yearlyData / listLevelAnalysis.total_area) * 100));
+              const percentIn = formatPct(
+                validatePct((yearlyData / listLevelAnalysis.total_area) * 100)
+              );
               currentRowIn.push(percentIn);
               csvData.push(currentRowIn);
 
@@ -239,7 +269,9 @@ export class DashboardListLevelService{
               const currentRowOut = cloneRow(dataRow);
               currentRowOut.push(field.label);
               currentRowOut.push('Outside Forest Moratorium');
-              const percentOut = formatPct(validatePct((hectaresOut / listLevelAnalysis.total_area) * 100));
+              const percentOut = formatPct(
+                validatePct((hectaresOut / listLevelAnalysis.total_area) * 100)
+              );
               currentRowOut.push(percentOut);
               csvData.push(currentRowOut);
             }
@@ -254,10 +286,17 @@ export class DashboardListLevelService{
 
         key.numerators.forEach((field) => {
           const currentRow = cloneRow(dataRow);
-          const tclOnAttribute = parseListData(field.tclAttribute, [listLevelAnalysis]);
-          const attributeExtent = parseListTotals(field.extentAttribute, listLevelAnalysis);
+          const tclOnAttribute = parseListData(field.tclAttribute, [
+            listLevelAnalysis,
+          ]);
+          const attributeExtent = parseListTotals(
+            field.extentAttribute,
+            listLevelAnalysis
+          );
 
-          const percent = formatPct(validatePct((tclOnAttribute / attributeExtent) * 100));
+          const percent = formatPct(
+            validatePct((tclOnAttribute / attributeExtent) * 100)
+          );
 
           if (field.label) {
             currentRow.push(field.label);
@@ -270,7 +309,6 @@ export class DashboardListLevelService{
         });
       });
     }
-
 
     return csvData;
   }

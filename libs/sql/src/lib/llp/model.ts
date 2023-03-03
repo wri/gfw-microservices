@@ -27,7 +27,7 @@ export interface GenerationFileRequest {
   locationStatement?: string;
   fields?: Array<string>;
   templateId?: number;
-  selectedLocations?: string,
+  selectedLocations?: string;
   selectedLocationsList?: Array<number>;
   listView?: string;
   aggregation?: boolean;

@@ -22,10 +22,7 @@ import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.se
 import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 
 @Module({
-  imports: [
-    AwsModule,
-    SqlModule,
-  ],
+  imports: [AwsModule, SqlModule],
   providers: [
     CommodityRiskDiagnosticLocationSummaryService,
     DashboardListLevelService,
@@ -46,8 +43,6 @@ import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
     SouthEastAsiaOverlapService,
     SouthEastAsiaTCLService,
   ],
-  exports: [
-    PipeService,
-  ],
+  exports: [PipeService],
 })
 export class PipeModule {}

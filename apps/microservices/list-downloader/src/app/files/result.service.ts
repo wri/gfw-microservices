@@ -22,16 +22,18 @@ export class ResultService extends IPipeService {
     this.logger.log(`(${listID}) - Starting result stream to process data`);
 
     this.inputStream = new PassThrough({
-      objectMode: true
-    })
+      objectMode: true,
+    });
 
     this.filters = filters;
     const allFields = EXCEL_TEMPLATES[listView];
-    const headerPrint = allFields.map(x => x.name)
-    const headerFilter = allFields.map(x => x.key)
-    const columnGetLastValue = allFields.filter(x => x.analysis).map(x => x.key)
+    const headerPrint = allFields.map((x) => x.name);
+    const headerFilter = allFields.map((x) => x.key);
+    const columnGetLastValue = allFields
+      .filter((x) => x.analysis)
+      .map((x) => x.key);
 
-    this.organizeStream(filters, headerFilter, columnGetLastValue)
+    this.organizeStream(filters, headerFilter, columnGetLastValue);
     fs.writeFileSync(`/tmp/${key}.csv`, `${headerPrint.join(',')}\n`);
     this.startEmail(filters);
   }
@@ -41,32 +43,37 @@ export class ResultService extends IPipeService {
     analysisData.forEach((data: any) => {
       this.inputStream.write({
         ...data,
-        'List Name': listName || ''
-      })
-    })
+        'List Name': listName || '',
+      });
+    });
   }
 
-  private organizeStream(filters: GenerationFileRequest, allFields: string[], columnGetLastValue: string[] = []) {
+  private organizeStream(
+    filters: GenerationFileRequest,
+    allFields: string[],
+    columnGetLastValue: string[] = []
+  ) {
     const { listID, selectedLocationsList, key } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', (err) => {
       this.logger.error(`(${listID}) - Error on stream: ${err}`);
       this.errorEmail(filters);
-    })
+    });
 
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
       .pipe(new GetLatestValue(columnGetLastValue))
-      .pipe(csvWriter({
-        sendHeaders: false
-      }))
-      .pipe(fs.createWriteStream(`/tmp/${key}.csv`, {flags: 'a'}))
+      .pipe(
+        csvWriter({
+          sendHeaders: false,
+        })
+      )
+      .pipe(fs.createWriteStream(`/tmp/${key}.csv`, { flags: 'a' }));
 
     return this.inputStream;
   }
-
 
   finish(filters: GenerationFileRequest) {
     const { listID, key } = filters;
@@ -76,9 +83,11 @@ export class ResultService extends IPipeService {
 
     const output = fs.createWriteStream(`/tmp/${key}.zip`);
     const archive = archiver('zip', {
-      zlib: { level: 9 } // Sets the compression level.
+      zlib: { level: 9 }, // Sets the compression level.
     });
-    archive.append(fs.createReadStream(`/tmp/${key}.csv`), { name: `${key}.csv` });
+    archive.append(fs.createReadStream(`/tmp/${key}.csv`), {
+      name: `${key}.csv`,
+    });
     archive.pipe(output);
     archive.finalize();
 
@@ -87,5 +96,4 @@ export class ResultService extends IPipeService {
       await this.uploadToS3(filters);
     });
   }
-
 }

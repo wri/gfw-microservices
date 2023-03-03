@@ -1,13 +1,12 @@
-
 import { Transform } from 'stream';
 import { parse, GeoJSONGeometryOrNull } from 'wellknown';
 
 class ConvertObject2Geojson extends Transform {
   constructor() {
-    super({objectMode: true});
+    super({ objectMode: true });
   }
 
-  getGeoJSONGeometry(wktGeometry: string) : GeoJSONGeometryOrNull {
+  getGeoJSONGeometry(wktGeometry: string): GeoJSONGeometryOrNull {
     return parse(wktGeometry);
   }
 
@@ -38,6 +37,4 @@ class ConvertObject2Geojson extends Transform {
   }
 }
 
-export {
-  ConvertObject2Geojson
-}
+export { ConvertObject2Geojson };

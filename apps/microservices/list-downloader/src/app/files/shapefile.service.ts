@@ -14,7 +14,7 @@ import { ConvertObject2Geojson } from '../transform/convert.object.2.geojson';
 import { ConvertObject2String } from '../transform/convert.object.2.string';
 
 @Injectable()
-export class ShapefileService  extends IPipeService{
+export class ShapefileService extends IPipeService {
   private readonly logger = new Logger(ShapefileService.name);
   private inputStream: PassThrough;
 
@@ -22,8 +22,8 @@ export class ShapefileService  extends IPipeService{
     const { listID, key, templateId, combinedColumnsSplitted } = filters;
     this.logger.log(`(${listID}) - Starting shapefile stream to process data`);
     this.inputStream = new PassThrough({
-      objectMode: true
-    })
+      objectMode: true,
+    });
 
     filters.combinedColumnsSplitted.push('WKTGeometry');
 
@@ -36,26 +36,27 @@ export class ShapefileService  extends IPipeService{
     );
 
     const fields =
-    columnsTemplateId[templateId] ?? columnsListName[templateId] ?? columnsTemplateId[14];
+      columnsTemplateId[templateId] ??
+      columnsListName[templateId] ??
+      columnsTemplateId[14];
     let allFields = [...fields, ...combinedColumnsSplitted];
     allFields = [...new Set(allFields)];
 
-    this.organizeStream(filters, allFields)
+    this.organizeStream(filters, allFields);
     this.startEmail(filters);
   }
 
   process(analysisData: any) {
-    analysisData.forEach(data => this.inputStream.write(data));
+    analysisData.forEach((data) => this.inputStream.write(data));
   }
 
   finish(filters: GenerationFileRequest) {
     const { listID, key } = filters;
-    this.convertGeojsonToSHP(key).then( async() => {
+    this.convertGeojsonToSHP(key).then(async () => {
       this.logger.log(`(${listID}) - Data has been zipped`);
       await this.uploadToS3(filters);
     });
   }
-
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
     const open = '{"type":"FeatureCollection","features":[';
@@ -67,7 +68,7 @@ export class ShapefileService  extends IPipeService{
     this.inputStream.on('error', (err) => {
       this.logger.error(`(${listID}) - Error on stream: ${err}`);
       this.errorEmail(filters);
-    })
+    });
 
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
@@ -76,7 +77,7 @@ export class ShapefileService  extends IPipeService{
       .pipe(new ConvertObject2String())
       .pipe(JSONStream.parse(['features', true]))
       .pipe(JSONStream.stringify(open, '\n,\n', close))
-      .pipe(fs.createWriteStream(`/tmp/${key}.geojson`, {flags:'r+'}))
+      .pipe(fs.createWriteStream(`/tmp/${key}.geojson`, { flags: 'r+' }));
 
     return this.inputStream;
   }
@@ -88,5 +89,4 @@ export class ShapefileService  extends IPipeService{
     };
     await convert(`/tmp/${key}.geojson`, `/tmp/${key}.zip`, options);
   }
-
 }

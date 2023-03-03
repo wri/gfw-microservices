@@ -19,8 +19,7 @@ import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.se
 import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 
 @Injectable()
-export class DashboardService extends IPipeService{
-
+export class DashboardService extends IPipeService {
   @Inject(ForestLossService)
   private readonly forestLoos: ForestLossService;
 
@@ -78,7 +77,11 @@ export class DashboardService extends IPipeService{
     this.southEastAsiaTCLService.start(filters);
 
     if (listView === 'commodity_risk' && selectedLocationsList.length != 1) {
-      this.dashboardListLevelService.generateCSV(filters, 'forestChangeDiagnosticListSummary','commodity_risk_diagnostic_list_summary');
+      this.dashboardListLevelService.generateCSV(
+        filters,
+        'forestChangeDiagnosticListSummary',
+        'commodity_risk_diagnostic_list_summary'
+      );
     }
   }
 
@@ -118,21 +121,21 @@ export class DashboardService extends IPipeService{
       await this.uploadToS3(filters);
     });
 
-
     fs.readdir('/tmp', (err, filenames) => {
-      const files = filenames.filter(name => name.includes(`${key}`))
-
+      const files = filenames.filter((name) => name.includes(`${key}`));
 
       const archive = archiver('zip', {
-        zlib: { level: 9 } // Sets the compression level.
+        zlib: { level: 9 }, // Sets the compression level.
       });
 
-      files.forEach(file => {
-        archive.append(fs.createReadStream(`/tmp/${file}`), { name: `${file}` });
+      files.forEach((file) => {
+        archive.append(fs.createReadStream(`/tmp/${file}`), {
+          name: `${file}`,
+        });
       });
 
       archive.pipe(output);
       archive.finalize();
-    })
+    });
   }
 }

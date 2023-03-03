@@ -14,25 +14,21 @@ AWS.config.update(awsConfig);
 
 @Injectable()
 export class ListMessageHandler {
-
   private readonly logger = new Logger(ListMessageHandler.name);
 
-  constructor(
-    private pipeService: PipeService
-  ){}
+  constructor(private pipeService: PipeService) {}
 
   @SqsMessageHandler('list-generate-file', true)
   async handleMessage(messages: Array<AWS.SQS.Message>) {
-    const [ message ] = messages;
-    const filters =  this.reorganizeFilers(message);
+    const [message] = messages;
+    const filters = this.reorganizeFilers(message);
 
     const { listID } = filters;
     // TODO: improve remove message should be automatically
-    this.logger.log(`Removing message for the list ${listID}...`)
+    this.logger.log(`Removing message for the list ${listID}...`);
     await this.removeMessage(message);
     await this.pipeService.makeFile(filters);
   }
-
 
   async removeMessage(message: AWS.SQS.Message) {
     const sqs = new AWS.SQS();
@@ -52,7 +48,7 @@ export class ListMessageHandler {
     const getValues = (obj) => obj?.StringValue;
 
     const getValuesAndSpread = (obj) => {
-      const value = obj?.StringValue
+      const value = obj?.StringValue;
       return value ? JSON.parse(value) : {};
     };
 

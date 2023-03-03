@@ -13,16 +13,24 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
 
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'sAmericaBiomes' || type == 'everything')){
+    if (
+      listView === 'forest_change' &&
+      (type == 'sAmericaBiomes' || type == 'everything')
+    ) {
       super.start(filters, 'sAmericaBiomes', 'south_america_brazil_biomes');
     }
   }
 
   process(data: any, filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    if(listView === 'forest_change' && ( type == 'sAmericaBiomes' || type == 'everything')){
-      const locations = data.filter((location) => location.south_america_presence === 'true');
-      if(locations && locations.length > 0){
+    if (
+      listView === 'forest_change' &&
+      (type == 'sAmericaBiomes' || type == 'everything')
+    ) {
+      const locations = data.filter(
+        (location) => location.south_america_presence === 'true'
+      );
+      if (locations && locations.length > 0) {
         this.existSouthLocation = true;
         super.process(locations, filters);
       }
@@ -31,12 +39,23 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
 
   finish(filters: GenerationFileRequest) {
     const { listView, selectedLocationsList, type } = filters;
-    if (listView === 'forest_change' && selectedLocationsList.length != 1 && this.existSouthLocation) {
-      this.dashboardListLevelService.generateCSV(filters, 'sAmericaBiomesAggregate','south_america_brazil_biomes_aggregate');
+    if (
+      listView === 'forest_change' &&
+      selectedLocationsList.length != 1 &&
+      this.existSouthLocation
+    ) {
+      this.dashboardListLevelService.generateCSV(
+        filters,
+        'sAmericaBiomesAggregate',
+        'south_america_brazil_biomes_aggregate'
+      );
     }
 
-    if(listView === 'forest_change' && ( type == 'sAmericaBiomes' || type == 'everything')){
-    super.finish(filters);
+    if (
+      listView === 'forest_change' &&
+      (type == 'sAmericaBiomes' || type == 'everything')
+    ) {
+      super.finish(filters);
     }
     this.existSouthLocation = false;
   }

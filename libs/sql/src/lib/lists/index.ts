@@ -7,3 +7,4 @@ export * from './ClientDatabaseOperationsManager';
 export * from './uspGetLocationsFilteredToCopy';
 export * from './uspSetListLocked';
 export * from './uspDeleteLocationIdsFilteredDataForUserList';
+export * from './uspGetListAnalysis';

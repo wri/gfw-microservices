@@ -27,10 +27,11 @@ export interface GenerationFileRequest {
   locationStatement?: string;
   fields?: Array<string>;
   templateId?: number;
-  selectedLocations?: string,
+  selectedLocations?: string;
   selectedLocationsList?: Array<number>;
   listView?: string;
-  aggregation?: boolean
+  aggregation?: boolean;
+  listLevelAnalysis?: any;
 }
 
 /*export interface GetAnalysisDataCountForUserListResponse {

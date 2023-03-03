@@ -1,4 +1,9 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
+const envModule = ConfigModule.forRoot({
+  isGlobal: true,
+});
 
 import { PipeService } from './pipe.service';
 import { InputService } from '../files/input.service';
@@ -22,7 +27,7 @@ import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.se
 import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 
 @Module({
-  imports: [AwsModule, SqlModule],
+  imports: [envModule, AwsModule, SqlModule],
   providers: [
     CommodityRiskDiagnosticLocationSummaryService,
     DashboardListLevelService,

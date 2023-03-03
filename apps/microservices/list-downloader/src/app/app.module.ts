@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
-import { ConsumerModule } from './consumer/consumer.module';;
-
+import { ConsumerModule } from './consumer/consumer.module';
+const envModule = ConfigModule.forRoot({
+  isGlobal: true,
+});
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    ConsumerModule,
-  ],
+  imports: [envModule, ConsumerModule],
   controllers: [],
   providers: [],
 })

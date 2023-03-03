@@ -180,8 +180,10 @@ export class LocationService {
       Logger.log(
         `Changing source list (${selectedListId}) status to draft because is going to move locations`
       );
+      // Lock source and target list and set source list to draft
       await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
       await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
+      await new UspSetListLocked().run(clientDatabase, moveToList.id, userId);
       if (allLocationsSelected) {
         selectedLocations = [];
         selectedLocations = locationData.map(

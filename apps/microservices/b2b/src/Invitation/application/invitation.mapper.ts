@@ -1,8 +1,8 @@
 import { plainToInstance } from 'class-transformer';
 import * as sql from 'mssql';
-import { CreateInvitationDto } from 'src/Invitation/application/dtos/invitation.dto';
-import { Invitation } from 'src/Invitation/domain/invitation';
-import { ParamStoreProcedure } from 'src/Shared/infraestructure/mysql/store-procedure.params';
+import { CreateInvitationDto } from './dtos/invitation.dto';
+import { Invitation } from '../domain/invitation';
+import { ParamStoreProcedure } from '../../Shared/infraestructure/mysql/store-procedure.params';
 
 export class InvitationDataMapper {
   static createInvitationDtotoInvitation(invitationDto: CreateInvitationDto) {

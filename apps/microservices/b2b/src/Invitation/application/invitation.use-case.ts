@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { DataServices } from 'src/Shared/domain/data-service';
-import { InvitationRepository } from 'src/Invitation/domain/invitation.repository';
-import { CreateInvitationDto } from 'src/Invitation/application/dtos/invitation.dto';
+import { DataServices } from '../../Shared/domain/data-service';
+import { InvitationRepository } from '../domain/invitation.repository';
+import { CreateInvitationDto } from '../application/dtos/invitation.dto';
 import { InvitationDataMapper } from './invitation.mapper';
 
 @Injectable()

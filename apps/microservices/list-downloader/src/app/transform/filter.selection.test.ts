@@ -13,7 +13,7 @@ describe('FilterObject', () => {
     });
   });
 
-  test('Should return undefined when receive a undefined list to filter', () => {
+  test('Should return the locations with specific id', () => {
     const filterSelection = new FilterSelection([1, 2]);
     filterSelection._transform({
       name: 'test',
@@ -28,7 +28,7 @@ describe('FilterObject', () => {
     });
   });
 
-  test("Should return empty when the field name didn't exist into the object", () => {
+  test("Should return undefined if the id is not in the list", () => {
     const filterSelection = new FilterSelection([1, 2]);
     filterSelection._transform({
       name1: 'test',
@@ -39,7 +39,7 @@ describe('FilterObject', () => {
     });
   });
 
-  test("Should return empty when the field name didn't exist into the object", () => {
+  test("Should return undefined when receive undefined as input data", () => {
     const filterSelection = new FilterSelection([1, 2]);
     filterSelection._transform(undefined, '', (err, data) => {expect(data).toEqual(undefined);});
   });

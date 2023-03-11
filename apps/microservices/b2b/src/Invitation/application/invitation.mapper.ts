@@ -1,9 +1,11 @@
+import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import * as sql from 'mssql';
-import { CreateInvitationDto } from 'src/Invitation/application/dtos/invitation.dto';
-import { Invitation } from 'src/Invitation/domain/invitation';
-import { ParamStoreProcedure } from 'src/Shared/infraestructure/mysql/store-procedure.params';
+import { CreateInvitationDto } from '../../Invitation/application/dtos/invitation.dto';
+import { Invitation } from '../../Invitation/domain/invitation';
+import { ParamStoreProcedure } from '../../Shared/infraestructure/mysql/store-procedure.params';
 
+@Injectable()
 export class InvitationDataMapper {
   static createInvitationDtotoInvitation(invitationDto: CreateInvitationDto) {
     return plainToInstance(Invitation, invitationDto);

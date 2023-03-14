@@ -1,6 +1,6 @@
 import { Transform } from 'stream';
 
-class FilterLocationDontHaveStatus extends Transform {
+class FilterLocationHaveStatus extends Transform {
   constructor(private status: number) {
     super({ objectMode: true });
   }
@@ -10,11 +10,11 @@ class FilterLocationDontHaveStatus extends Transform {
       return next();
     }
 
-    if (Object.prototype.hasOwnProperty.call(chunk, 'location_status_id') && chunk.location_status_id !== this.status) {
+    if (Object.prototype.hasOwnProperty.call(chunk, 'location_status_id') && chunk.location_status_id === this.status) {
       return next(null, chunk);
     }
     next();
   }
 }
 
-export { FilterLocationDontHaveStatus };
+export { FilterLocationHaveStatus };

@@ -7,23 +7,42 @@ import { ParamStoreProcedure } from '../../Shared/infraestructure/mysql/store-pr
 
 @Injectable()
 export class InvitationDataMapper {
-  static createInvitationDtotoInvitation(invitationDto: CreateInvitationDto) {
+  createInvitationDtotoInvitation(invitationDto: CreateInvitationDto) {
     return plainToInstance(Invitation, invitationDto);
   }
 
-  static toProcedureParam(invitation: Invitation): ParamStoreProcedure[] {
+  toProcedureParam(invitation: Invitation): ParamStoreProcedure[] {
     const params: ParamStoreProcedure[] = [
       {
-        field: 'Addressees',
-        type: sql.NVarChar(50),
-        value: invitation.addressees,
+        field: 'source_email',
+        type: sql.NVarChar(250),
+        value: invitation.sourceEmail,
+      },
+      {
+        field: 'target_email',
+        type: sql.NVarChar(250),
+        value: invitation.targetEmail,
+      },
+      {
+        field: 'source_organization',
+        type: sql.Int(),
+        value: invitation.sourceOrganization,
+      },
+      {
+        field: 'target_organization',
+        type: sql.Int(),
+        value: invitation.targetOrganization,
+      },
+      {
+        field: 'id_connection',
+        type: sql.Int()
       },
     ];
 
     return params;
   }
 
-  static toIdParam(id: string): ParamStoreProcedure[] {
+  toIdParam(id: string): ParamStoreProcedure[] {
     return [
       {
         field: 'Id',

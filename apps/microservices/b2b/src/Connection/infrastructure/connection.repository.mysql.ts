@@ -34,15 +34,3 @@ export class ConnectionRepositoryMysql
     await acceptConnection.execute();
   }
 }
-//uspGetConnectionRequest
-
-
-/* 
-DECLARE @id INT;
-EXEC uspCreateConnectionRequest @source_email = "gustavo.figueiredo.5@wriconsultant.org", @target_email = "icollins@wri.org", @source_organization = 1, @target_organization = 4, @id_connection = @id OUTPUT;
-SELECT @id;
-
-DECLARE @id INT;
-EXEC uspCreateConnectionRequest @source_email = "isma.martinez.5@wriconsultant.org", @target_email = "abilwani@blueraster.com", @source_organization = 1, @target_organization = 2, @status="accepted", @id_connection = @id OUTPUT;
-SELECT @id;
-*/

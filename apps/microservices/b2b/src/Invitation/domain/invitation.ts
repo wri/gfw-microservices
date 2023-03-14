@@ -1,3 +1,6 @@
 export class Invitation {
-  addressees: string[];
+  sourceEmail: string;
+  targetEmail: string;
+  sourceOrganization: number;
+  targetOrganization: number;
 }

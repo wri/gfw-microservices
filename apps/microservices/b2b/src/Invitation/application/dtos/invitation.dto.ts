@@ -1,14 +1,29 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsArray, IsNotEmpty, MinLength, ValidateNested } from 'class-validator';
-import { IsEmailArray } from '../../../Shared/application/validations/is-email-array.validation';
+import { IsEmail, IsNotEmpty, IsNumber, MinLength } from 'class-validator';
 
 export class CreateInvitationDto {
-  @IsArray()
+  /*@IsArray()
   @IsNotEmpty()
   @MinLength(1)
   @ValidateNested({ each: true })
   @IsEmailArray()
-  addressees: string[];
+  addressees: string[];*/
+
+  @IsEmail()
+  @IsNotEmpty()
+  sourceEmail: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  targetEmail: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  targetOrganization: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  sourceOrganization: number;
 }
 
 export class UpdateInvitationDto extends PartialType(CreateInvitationDto) {}

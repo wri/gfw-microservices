@@ -563,6 +563,7 @@ class ManipulateDataForDashboard extends Transform {
           if (field.label) {
             currentRow.push(field.label);
           }
+
           currentRow.push(percent);
           currentRow.push(tclOnAttribute);
           currentRow.push(attributeExtent);
@@ -571,7 +572,11 @@ class ManipulateDataForDashboard extends Transform {
         });
       }
     });
-    const result = [...csvData, dataRow];
+    const result = [...csvData];
+
+    if( dataRow.length > 0 ) {
+      result.push(dataRow);
+    }
 
     next(null, result);
   }

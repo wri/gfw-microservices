@@ -9,11 +9,20 @@ export class StoredProcedureCommand implements Command {
     private readonly parameters: ParamStoreProcedure[],
   ) {}
 
-  async execute(): Promise<any> {
-    const result = this.connection.executeQuery(
-      this.procedureName,
-      this.parameters,
-    );
-    return result;
+  async execute<T>(): Promise<T> {
+    try {
+      await this.connection.connect();
+      console.log(this.procedureName, this.parameters);
+      const result = await this.connection.executeQuery<T>(
+        this.procedureName,
+        this.parameters,
+      );
+      console.log('Arrived');
+      await this.connection.disconnect();
+      return result;
+    } catch (error) {
+      console.log(error);
+      throw new Error('Error while executing stored procedure');
+    }
   }
 }

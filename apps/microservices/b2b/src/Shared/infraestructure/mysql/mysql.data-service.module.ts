@@ -6,7 +6,7 @@ import { DataServicesService } from '../../application/data-service/data-service
 import { DataServices } from '../../domain/data-service';
 
 @Module({
-  imports: [ConnectionRepositoryMysql, InvitationRepositoryMysql],
+  imports: [],
   providers: [
     {
       provide: DataServices,

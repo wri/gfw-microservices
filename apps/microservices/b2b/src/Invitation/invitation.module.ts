@@ -1,0 +1,17 @@
+import { Module } from '@nestjs/common';
+import { DataServicesModule } from '../Shared/application/data-service/data-service.module';
+import { InvitationRepository } from './domain/invitation.repository';
+import { InvitationRepositoryMysql } from './infrastructure/invitation.repository.mysql';
+import { InvitationDataMapper } from './application/invitation.mapper';
+import { InvitationUseCases } from './application/invitation.use-case';
+
+@Module({
+  imports: [],
+  providers: [
+    InvitationDataMapper,
+    InvitationUseCases,
+    { provide: InvitationRepository, useClass: InvitationRepositoryMysql },
+  ],
+  exports: [InvitationDataMapper, InvitationUseCases],
+})
+export class InvitationUseCasesModule {}

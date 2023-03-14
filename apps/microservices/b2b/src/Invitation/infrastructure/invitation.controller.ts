@@ -8,8 +8,12 @@ export class InvitationController {
 
   @Post()
   createInvitation(@Body() invitationDto: CreateInvitationDto) {
-    console.log(this.invitationUseCases)
-    return this.invitationUseCases.createInvitation(invitationDto);
+    const result = this.invitationUseCases.createInvitation(invitationDto);
+    if (result) {
+      return { msg: 'success' };
+    }
+
+    return { msg: 'fail' };
   }
 
   @Post(':id')

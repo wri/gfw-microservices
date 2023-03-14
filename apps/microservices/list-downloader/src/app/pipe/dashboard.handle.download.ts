@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
-import { FilterLocationDontHaveStatus } from '../transform/filter.location.dont.have.status';
+import { FilterLocationHaveStatus } from '../transform/filter.location.have.status';
 import { FilterObject } from '../transform/filter.object';
 import { FilterSelection } from '../transform/filter.selection';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
@@ -67,7 +67,7 @@ export class DashboardHandleDownload extends IPipeService {
 
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
-      .pipe(new FilterLocationDontHaveStatus(2))
+      .pipe(new FilterLocationHaveStatus(2))
       .pipe(new FilterObject(allFields))
       .pipe(
         new ManipulateDataForDashboard(

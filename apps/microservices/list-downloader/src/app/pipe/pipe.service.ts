@@ -103,7 +103,6 @@ export class PipeService {
           organizationDatabase,
           newFilters
         );
-      console.log(analysisData);
       service.process(analysisData, newFilters);
       return i;
     };

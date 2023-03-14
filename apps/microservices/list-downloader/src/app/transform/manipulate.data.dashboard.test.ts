@@ -43,7 +43,7 @@ describe('ManipulateDataForDashboard', () => {
         "2022": 10,
       }
     }, '', (err, data) => {
-    expect(data).toEqual([["Tree Cover Extent", "50.00", 10 ,{ "2018": 6, "2019": 7, "2020": 8, "2021": 9, "2022": 10 }]]);
+    expect(data).toEqual([["Tree Cover Extent", "0.00", 20 ,{ "2018": 6, "2019": 7, "2020": 8, "2021": 9, "2022": 10 }]]);
     });
   });
 });

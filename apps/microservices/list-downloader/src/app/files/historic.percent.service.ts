@@ -38,7 +38,7 @@ export class HistoricPercentService extends DashboardHandleDownload {
     if (listView === 'forest_change' && selectedLocationsList.length != 1) {
       this.dashboardListLevelService.generateCSV(
         filters,
-        'forestLossAggregate',
+        'historicPercentAggregate',
         'sensitive_areas_loss_of_forests_aggregate'
       );
     }

@@ -1,5 +1,5 @@
 import { Transform } from 'stream';
-import _sum from 'lodash/sum';
+import { sum } from 'lodash';
 
 import {
   cloneRow,
@@ -374,7 +374,7 @@ class ManipulateDataForDashboard extends Transform {
 
             const biomes = Object.keys(yearlyData);
             biomes.forEach((biome) => {
-              totalSubCategoryValues[biome] = _sum(
+              totalSubCategoryValues[biome] = sum(
                 Object.values(yearlyData[biome])
               );
             });

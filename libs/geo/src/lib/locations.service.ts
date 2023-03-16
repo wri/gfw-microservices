@@ -115,7 +115,8 @@ export class LocationService {
     organizationId,
     gfwListId,
     allLocationsSelected = false,
-    filters
+    filters,
+    srcListAnalysisTable
   ) => {
     this.logger.log(`Applied Filters ${JSON.stringify(filters)}`);
 
@@ -133,11 +134,11 @@ export class LocationService {
 
     const isFiltered =
       country ||
-      state ||
-      subState ||
-      analysisAreaMin ||
-      analysisAreaMax ||
-      searchString
+        state ||
+        subState ||
+        analysisAreaMin ||
+        analysisAreaMax ||
+        searchString
         ? true
         : false;
 
@@ -182,8 +183,6 @@ export class LocationService {
       );
       // Lock source and target list and set source list to draft
       await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
-      await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
-      await new UspSetListLocked().run(clientDatabase, moveToList.id, userId);
       if (allLocationsSelected) {
         selectedLocations = [];
         selectedLocations = locationData.map(
@@ -191,6 +190,12 @@ export class LocationService {
         );
       }
     }
+
+    await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
+    if (moveToList) {
+      await new UspSetListLocked().run(clientDatabase, moveToList.id, userId);
+    }
+
 
     let featProps = [];
     let templateId;
@@ -304,6 +309,16 @@ export class LocationService {
           })
           .then((json) => {
             this.logger.log(`JSON: ${JSON.stringify(json)}`);
+            const listsToUnlock = [];
+            listsToUnlock.push(UnlockList(clientDatabase, selectedListId));
+            if (moveToList) {
+              listsToUnlock.push(
+                UnlockList(clientDatabase, moveToList.id)
+              );
+            }
+            return Promise.all(listsToUnlock);
+          }).then((json) => {
+            this.logger.log(`JSON: ${JSON.stringify(json)}`);
           });
       } else {
         // copy or move to existing list
@@ -330,7 +345,7 @@ export class LocationService {
             const statement = columns
               .map(
                 (column) =>
-                  `[${column}] = [${moveToList.list_analysis_table_name}].[${column}]`
+                  `[${column}] = [${srcListAnalysisTable}].[${column}]`
               )
               .join(',');
             selectedLocations.forEach((src_location_id, idx) => {
@@ -405,7 +420,14 @@ export class LocationService {
                     );
                   });
               }
-              return UnlockList(clientDatabase, selectedListId);
+              const listsToUnlock = [];
+              listsToUnlock.push(UnlockList(clientDatabase, selectedListId));
+              if (moveToList) {
+                listsToUnlock.push(
+                  UnlockList(clientDatabase, moveToList.id)
+                );
+              }
+              return Promise.all(listsToUnlock);
             });
           })
           .then((json) => {

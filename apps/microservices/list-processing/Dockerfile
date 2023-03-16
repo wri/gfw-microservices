@@ -9,6 +9,7 @@ FROM amd64/node:16.15.1 as appbuilder
 WORKDIR /appbuilder
 COPY --from=builder /build/ /appbuilder/
 COPY ./ .
+RUN /appbuilder/node_modules/.bin/nx g @nrwl/workspace:fix-configuration
 RUN /appbuilder/node_modules/.bin/nx build microservices-list-processing --configuration=production
 
 

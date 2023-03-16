@@ -68,4 +68,5 @@ export interface CopyOrMoveLargeListRequest {
   gfwListId: number;
   allLocationsSelected: boolean;
   filters: any;
+  srcListAnalysisTable: string;
 }

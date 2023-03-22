@@ -3,6 +3,8 @@ import { DataServices } from '../../Shared/domain/data-service';
 import { InvitationRepository } from '../../Invitation/domain/invitation.repository';
 import { CreateInvitationDto } from '../../Invitation/application/dtos/invitation.dto';
 import { InvitationDataMapper } from './invitation.mapper';
+import ResultPromise from '../../Shared/domain/result/result.promise';
+import Result from '../../Shared/domain/result';
 
 @Injectable()
 export class InvitationUseCases {
@@ -11,15 +13,18 @@ export class InvitationUseCases {
     private mapper: InvitationDataMapper,
   ) {}
 
-  async createInvitation(invitationDto: CreateInvitationDto): Promise<boolean> {
+  async sendInvitation(
+    invitationDto: CreateInvitationDto,
+  ): ResultPromise<boolean> {
     const invitation =
       this.mapper.createInvitationDtotoInvitation(invitationDto);
-    const resultRepo = await this.invitationRepo.createInvitation(invitation);
-    const result = resultRepo && resultRepo !== -1 ? true : false;
-    return result;
+    const result = await this.invitationRepo.createInvitation(invitation);
+    
+    if (result.isSuccess) return Result.ok(true);
+    return Result.fail(result.getError());
   }
 
-  resendInvitation(id: any): Promise<void> {
+  resendInvitation(id: any) {
     return this.invitationRepo.resendInvitation(id);
   }
 }

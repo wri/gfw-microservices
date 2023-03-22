@@ -5,7 +5,6 @@ import { CreateInvitationDto } from '../../Invitation/application/dtos/invitatio
 import { Invitation } from '../../Invitation/domain/invitation';
 import { ParamStoreProcedure } from '../../Shared/infraestructure/mysql/store-procedure.params';
 
-@Injectable()
 export class InvitationDataMapper {
   createInvitationDtotoInvitation(invitationDto: CreateInvitationDto) {
     return plainToInstance(Invitation, invitationDto);
@@ -32,10 +31,6 @@ export class InvitationDataMapper {
         field: 'target_organization',
         type: sql.Int(),
         value: invitation.targetOrganization,
-      },
-      {
-        field: 'id_connection',
-        type: sql.Int()
       },
     ];
 

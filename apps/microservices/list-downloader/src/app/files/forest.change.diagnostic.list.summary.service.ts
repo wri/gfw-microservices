@@ -49,12 +49,11 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   );
   private inputStream: PassThrough;
   private countryAggregator: CountryAggregator;
-  private readonly FILE_SUFFIX = 'forest_change_diagnostic_list_summary';
 
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
+    const { type, selectedLocationsList } = filters;
     if (
-      listView === 'forest_change' &&
+      selectedLocationsList.length != 1 &&
       (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
     ) {
       const { listID } = filters;
@@ -73,9 +72,9 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   }
 
   process(analysisData: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
+    const {  type, selectedLocationsList } = filters;
     if (
-      listView === 'forest_change' &&
+      selectedLocationsList.length != 1 &&
       (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
     ) {
       const { listName } = filters;
@@ -102,9 +101,17 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   }
 
   finish(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
+    const { listView, type, selectedLocationsList } = filters;
+    let FILE_SUFFIX = '';
+    if (listView === 'commodity_risk' && selectedLocationsList.length != 1) {
+      FILE_SUFFIX = 'commodity_risk_diagnostic_list_summary'
+    } else {
+      FILE_SUFFIX = 'forest_change_diagnostic_list_summary';
+    }
+
+
     if (
-      listView === 'forest_change' &&
+      selectedLocationsList.length != 1 &&
       (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
     ) {
       this.inputStream.removeAllListeners();
@@ -131,7 +138,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
         csvData.push(dataRow);
       });
       const csvString = csvData.map((row) => row.join(',')).join('\n');
-      fs.writeFileSync(`/tmp/${key}_${this.FILE_SUFFIX}.csv`, `${csvString}\n`);
+      fs.writeFileSync(`/tmp/${key}_${FILE_SUFFIX}.csv`, `${csvString}\n`);
     }
   }
 }

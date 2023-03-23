@@ -15,7 +15,7 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'seAsiaTCL' || type == 'everything')
+      (type == 'SouthEastAsia' || type == 'everything')
     ) {
       super.start(filters, 'seAsiaTCL', 'south_east_asia_tcl');
     }
@@ -25,7 +25,7 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'seAsiaTCL' || type == 'everything')
+      (type == 'SouthEastAsia' || type == 'everything')
     ) {
       const locations = data.filter(
         (location) => location.southeast_asia_presence === 'true'
@@ -53,7 +53,7 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
 
     if (
       listView === 'forest_change' &&
-      (type == 'seAsiaTCL' || type == 'everything')
+      (type == 'SouthEastAsia' || type == 'everything')
     ) {
       super.finish(filters);
     }

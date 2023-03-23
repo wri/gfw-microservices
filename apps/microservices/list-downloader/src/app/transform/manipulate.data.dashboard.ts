@@ -460,28 +460,7 @@ class ManipulateDataForDashboard extends Transform {
                   }
 
                   locationHasData = totalListLevelCount > 0;
-
-                  if (
-                    locationHasData &&
-                    this.table.indexOf('sAmerica') > -1 &&
-                    (data.south_america_presence === true ||
-                      data.south_america_presence === 'true')
-                  ) {
-                    csvData.push(nestedRow);
-                  } else if (
-                    locationHasData &&
-                    this.table.indexOf('seAsia') > -1 &&
-                    (data.southeast_asia_presence === true ||
-                      data.southeast_asia_presence === 'true')
-                  ) {
-                    csvData.push(nestedRow);
-                  } else if (
-                    locationHasData &&
-                    this.table.indexOf('sAmerica') === -1 &&
-                    this.table.indexOf('seAsia') === -1
-                  ) {
-                    csvData.push(nestedRow);
-                  }
+                  csvData.push(nestedRow);
                 });
               } else {
                 let totalSubCategory = 0;
@@ -508,27 +487,7 @@ class ManipulateDataForDashboard extends Transform {
                     currentRow.push(percent);
                   }
 
-                  if (
-                    locationHasData &&
-                    this.table.indexOf('sAmerica') > -1 &&
-                    (data.south_america_presence === true ||
-                      data.south_america_presence === 'true')
-                  ) {
-                    csvData.push(currentRow);
-                  } else if (
-                    locationHasData &&
-                    this.table.indexOf('seAsia') > -1 &&
-                    (data.southeast_asia_presence === true ||
-                      data.southeast_asia_presence === 'true')
-                  ) {
-                    csvData.push(currentRow);
-                  } else if (
-                    locationHasData &&
-                    this.table.indexOf('sAmerica') === -1 &&
-                    this.table.indexOf('seAsia') === -1
-                  ) {
-                    csvData.push(currentRow);
-                  }
+                  csvData.push(currentRow);
                 }
               }
             });

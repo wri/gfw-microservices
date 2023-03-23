@@ -35,11 +35,13 @@ export class HistoricPercentService extends DashboardHandleDownload {
 
   finish(filters: GenerationFileRequest) {
     const { listView, selectedLocationsList, type } = filters;
-    if (listView === 'forest_change' && selectedLocationsList.length != 1) {
+    if (listView === 'forest_change'
+        && selectedLocationsList.length != 1 &&
+        (type == 'historicPercent' || type == 'everything')) {
       this.dashboardListLevelService.generateCSV(
         filters,
         'historicPercentAggregate',
-        'sensitive_areas_loss_of_forests_aggregate'
+        'sensitive_areas_percentage_historic_area_lost_aggregate'
       );
     }
     if (

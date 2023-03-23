@@ -15,7 +15,7 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'sAmericaLoss' || type == 'everything')
+      (type == 'SouthAmerica' || type == 'everything')
     ) {
       super.start(filters, 'sAmericaLoss', 'south_america_loss_of_forests');
     }
@@ -25,7 +25,7 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'sAmericaLoss' || type == 'everything')
+      (type == 'SouthAmerica' || type == 'everything')
     ) {
       const locations = data.filter(
         (location) => location.south_america_presence === 'true'
@@ -53,7 +53,7 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
 
     if (
       listView === 'forest_change' &&
-      (type == 'sAmericaLoss' || type == 'everything')
+      (type == 'SouthAmerica' || type == 'everything')
     ) {
       super.finish(filters);
     }

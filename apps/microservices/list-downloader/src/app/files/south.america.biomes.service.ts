@@ -15,9 +15,9 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'sAmericaBiomes' || type == 'everything')
+      (type == 'SouthAmerica' || type == 'everything')
     ) {
-      super.start(filters, 'sAmericaBiomes', 'south_america_brazil_biomes');
+      super.start(filters, 'sAmericaLoss', 'south_america_brazil_biomes');
     }
   }
 
@@ -25,7 +25,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'sAmericaBiomes' || type == 'everything')
+      (type == 'SouthAmerica' || type == 'everything')
     ) {
       const locations = data.filter(
         (location) => location.south_america_presence === 'true'
@@ -53,7 +53,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
 
     if (
       listView === 'forest_change' &&
-      (type == 'sAmericaBiomes' || type == 'everything')
+      (type == 'SouthAmerica' || type == 'everything')
     ) {
       super.finish(filters);
     }

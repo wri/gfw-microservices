@@ -31,17 +31,14 @@ export class DeforestationTrendsService extends DashboardHandleDownload {
 
   finish(filters: GenerationFileRequest) {
     const { listView, selectedLocationsList, type } = filters;
-    if (listView === 'commodity_risk' && selectedLocationsList.length != 1) {
+    if (listView === 'commodity_risk' &&
+    selectedLocationsList.length != 1 &&
+    (type == 'deforestationTrends' || type == 'everything')){
       this.dashboardListLevelService.generateCSV(
         filters,
         'deforestationTrendsAggregate',
         'trends_in_deforestation_aggregate'
       );
-    }
-    if (
-      listView === 'forest' &&
-      (type == 'deforestationTrends' || type == 'everything')
-    ) {
       super.finish(filters);
     }
   }

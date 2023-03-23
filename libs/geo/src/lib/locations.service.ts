@@ -38,7 +38,7 @@ interface GeoJsonFeature {
 @Injectable()
 export class LocationService {
   private readonly logger = new Logger(LocationService.name);
-  constructor(private geoService: GeoService) {}
+  constructor (private geoService: GeoService) { }
   assembleGeojson = (
     featProps,
     uploadingData,
@@ -118,7 +118,7 @@ export class LocationService {
     filters,
     srcListAnalysisTable
   ) => {
-    this.logger.log(`Applied Filters ${JSON.stringify(filters)}`);
+    Logger.log(`Applied Filters ${JSON.stringify(filters)}`);
 
     let createdListId = 0;
     let resultingBulkGeoJSON;
@@ -232,7 +232,7 @@ export class LocationService {
       templateId = templateData ? templateData[0].template_id : -1;
       featProps = createFeaturePropsForNonCommodity(locationData);
     }
-
+    Logger.log("Assemble GEO JSON")
     return this.assembleGeojson(
       featProps,
       locationData,
@@ -248,10 +248,10 @@ export class LocationService {
       Logger.log('Creating final GEO JSON for database insertion');
       const finalGeojson = getFinalGeojson(gfw_list_id, geojson);
       if (selectedNewOrExisting === 'new') {
-        this.logger.log('Performing copy for new list');
+        Logger.log('Performing copy for new list');
         return PerformGetLockStatus(clientDatabase, selectedListId)
           .then((result) => {
-            this.logger.log(`Lock status result: ${JSON.stringify(result)}`);
+            Logger.log(`Lock status result: ${JSON.stringify(result)}`);
             const { lock_status, lock_user_id } = result;
             if (lock_status === null /*|| lock_status !== null*/) {
               throw 'error';
@@ -283,6 +283,38 @@ export class LocationService {
               clientDatabase
             );
           })
+          .then((bulkUploadResult) => {
+            resultingBulkGeoJSON = bulkUploadResult;
+            destLocationIds = resultingBulkGeoJSON.features.map(
+              (feature) => feature.properties.location_id
+            );
+            return GetTableAnalysisColumnsById(clientDatabase, selectedListId);
+          })
+          .then((recordsets) => {
+            Logger.log(`Copy location analysis for existing list`);
+            let promiseResolver = Promise.resolve();
+            const columns = recordsets.map((record: any) => record.COLUMN_NAME);
+            const statement = columns
+              .map(
+                (column) =>
+                  `[${column}] = [${srcListAnalysisTable}].[${column}]`
+              )
+              .join(',');
+            selectedLocations.forEach((src_location_id, idx) => {
+              promiseResolver = promiseResolver.then(() => {
+                return CopySingleLocationAnalysis(
+                  selectedListId,
+                  createdListId,
+                  src_location_id,
+                  destLocationIds[idx],
+                  statement,
+                  clientDatabase
+                );
+              });
+            });
+
+            return promiseResolver;
+          })
           .then(
             (
               bulkUploadResult
@@ -300,15 +332,15 @@ export class LocationService {
             }
           )
           .then((response) => {
-            this.logger.log('Request analysis process response');
-            this.logger.log(response);
+            Logger.log('Request analysis process response');
+            Logger.log(response);
             if (response instanceof Response) {
               return response.json();
             }
             return response;
           })
           .then((json) => {
-            this.logger.log(`JSON: ${JSON.stringify(json)}`);
+            Logger.log(`JSON: ${JSON.stringify(json)}`);
             const listsToUnlock = [];
             listsToUnlock.push(UnlockList(clientDatabase, selectedListId));
             if (moveToList) {
@@ -318,11 +350,11 @@ export class LocationService {
             }
             return Promise.all(listsToUnlock);
           }).then((json) => {
-            this.logger.log(`JSON: ${JSON.stringify(json)}`);
+            Logger.log(`JSON: ${JSON.stringify(json)}`);
           });
       } else {
         // copy or move to existing list
-        this.logger.log(`Performing ${selectedMoveOrCopy} for existing list`);
+        Logger.log(`Performing ${selectedMoveOrCopy} for existing list`);
         return PerformListBulkCopy(
           moveToList.id,
           listName,
@@ -339,7 +371,7 @@ export class LocationService {
             return GetTableAnalysisColumnsById(clientDatabase, selectedListId);
           })
           .then((recordsets) => {
-            this.logger.log(`Copy location analysis for existing list`);
+            Logger.log(`Copy location analysis for existing list`);
             let promiseResolver = Promise.resolve();
             const columns = recordsets.map((record: any) => record.COLUMN_NAME);
             const statement = columns
@@ -380,16 +412,16 @@ export class LocationService {
             return requestAnalysisProcess(postData);
           })
           .then((response) => {
-            this.logger.log('Bulk upload response');
-            this.logger.log(response);
+            Logger.log('Bulk upload response');
+            Logger.log(response);
             if (response instanceof Response) {
               return response.json();
             }
             return response;
           })
           .then((json) => {
-            this.logger.log(`JSON: ${JSON.stringify(json)}`);
-            this.logger.log('remove locations or list if move is selected');
+            Logger.log(`JSON: ${JSON.stringify(json)}`);
+            Logger.log('remove locations or list if move is selected');
             return new Promise(() => {
               if (selectedMoveOrCopy === 'move') {
                 return new UspSetListLocked()
@@ -431,7 +463,7 @@ export class LocationService {
             });
           })
           .then((json) => {
-            this.logger.log(`JSON: ${JSON.stringify(json)}`);
+            Logger.log(`JSON: ${JSON.stringify(json)}`);
           });
       }
     });

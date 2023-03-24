@@ -86,7 +86,8 @@ export class AppController {
       request.organizationId,
       request.gfwListId,
       request.allLocationsSelected,
-      request.filters
+      request.filters,
+      request.srcListAnalysisTable
     );
     return 'processing';
   }

@@ -1,14 +1,18 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
+import {
+  cloneRow,
+  formatPct,
+  validatePct,
+  parseListData,
+} from '../shared/functions';
+import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
-import { DashboardListLevelService } from '../pipe/dashboard.list.level.service';
+import { generateCSV } from '../shared/generate.csv';
 
 @Injectable()
 export class ForestLossService extends DashboardHandleDownload {
-  @Inject(DashboardListLevelService)
-  private readonly dashboardListLevelService: DashboardListLevelService;
-
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
     if (
@@ -29,6 +33,67 @@ export class ForestLossService extends DashboardHandleDownload {
     }
   }
 
+  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+    const csvData = [];
+    csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
+
+    EXCEL_TEMPLATES[table].forEach((key) => {
+      key.composites.forEach((field) => {
+        const totalStatValue = parseListData(field.attribute, [
+          listLevelAnalysis,
+        ]);
+        const dataRow = [list_name];
+
+        let rowValue = 0;
+        if (!listLevelAnalysis[field.attribute]) {
+          return;
+        }
+        const yearlyData = JSON.parse(listLevelAnalysis[field.attribute]);
+
+        Object.keys(yearlyData).forEach((year) => {
+          const currentRow = cloneRow(dataRow);
+          rowValue = yearlyData[year];
+
+          currentRow.push(field.label);
+
+          if (field.label === 'Brazil Biomes') {
+            let totalBiomeValue = 0;
+            Object.keys(rowValue).forEach((biomeYearFirst) => {
+              totalBiomeValue += rowValue[biomeYearFirst];
+            });
+
+            Object.keys(rowValue).forEach((biomeYear) => {
+              const currentBrazilianRow = cloneRow(dataRow);
+              currentBrazilianRow.push(`Brazil Biomes - ${year}`);
+              currentBrazilianRow.push(rowValue[biomeYear]);
+              currentBrazilianRow.push(biomeYear);
+              currentBrazilianRow.push(totalBiomeValue.toFixed(2));
+              const percent = formatPct(
+                validatePct((rowValue[biomeYear] / totalBiomeValue) * 100)
+              );
+              currentRow.push(percent);
+              csvData.push(currentBrazilianRow);
+            });
+          } else {
+            currentRow.push(rowValue);
+            currentRow.push(year);
+            currentRow.push(totalStatValue);
+
+            const percent = formatPct(
+              validatePct((rowValue / totalStatValue) * 100)
+            );
+            currentRow.push(percent);
+
+            if (totalStatValue > 0) {
+              csvData.push(currentRow);
+            }
+          }
+        });
+      });
+    });
+    return csvData;
+  }
+
   finish(filters: GenerationFileRequest) {
     const { listView, selectedLocationsList, type } = filters;
     if (
@@ -36,10 +101,11 @@ export class ForestLossService extends DashboardHandleDownload {
       selectedLocationsList.length != 1 &&
       (type == 'forestLoss' || type == 'everything')
     ) {
-      this.dashboardListLevelService.generateCSV(
+      generateCSV(
         filters,
         'forestLossAggregate',
-        'sensitive_areas_loss_of_forests_aggregate'
+        'sensitive_areas_loss_of_forests_aggregate',
+        this.generateAggregate
       );
     }
     if (

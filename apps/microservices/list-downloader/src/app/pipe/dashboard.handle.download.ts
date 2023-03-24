@@ -39,14 +39,16 @@ export class DashboardHandleDownload extends IPipeService {
         .flatMap((x) => x.fields)
         .map((x) => x.attribute),
       ...templateOperation
-        .filter((x) => Object.prototype.hasOwnProperty.call(x, 'additionalFields'))
+        .filter((x) =>
+          Object.prototype.hasOwnProperty.call(x, 'additionalFields')
+        )
         .flatMap((x) => x.additionalFields)
         .map((x) => x.attribute),
-        'tree_cover_loss_brazil_biomes_yearly',
-        'tree_cover_loss_sea_landcover_yearly',
-        'tree_cover_loss_idn_landcover_yearly',
-        'south_america_presence',
-        'southeast_asia_presence'
+      'tree_cover_loss_brazil_biomes_yearly',
+      'tree_cover_loss_sea_landcover_yearly',
+      'tree_cover_loss_idn_landcover_yearly',
+      'south_america_presence',
+      'southeast_asia_presence',
     ]);
 
     this.organizeStream(filters, Array.from(allFields), table, fileSuffix);
@@ -85,7 +87,6 @@ export class DashboardHandleDownload extends IPipeService {
       .pipe(
         new ManipulateDataForDashboard(
           EXCEL_TEMPLATES[table],
-          table,
           listLevelAnalysis
         )
       )
@@ -104,4 +105,3 @@ export class DashboardHandleDownload extends IPipeService {
     this.inputStream.destroy();
   }
 }
-

@@ -13,7 +13,6 @@ import { CommodityRiskDiagnosticLocationSummaryService } from '../files/commodit
 import { DeforestationTrendsService } from '../files/deforestation.trends.service';
 import { MillPriorityService } from '../files/mill.priority.service';
 import { PalmRiskAnalysisService } from '../files/palm.risk.analysis.service';
-import { DashboardListLevelService } from './dashboard.list.level.service';
 import { SouthAmericaBiomesService } from '../files/south.america.biomes.service';
 import { SouthAmericaLossService } from '../files/south.america.loss.service';
 import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.service';
@@ -44,9 +43,6 @@ export class DashboardService extends IPipeService {
 
   @Inject(PalmRiskAnalysisService)
   private readonly palmRiskAnalysisService: PalmRiskAnalysisService;
-
-  @Inject(DashboardListLevelService)
-  private readonly dashboardListLevelService: DashboardListLevelService;
 
   @Inject(SouthAmericaBiomesService)
   private readonly southAmericaBiomesService: SouthAmericaBiomesService;
@@ -153,38 +149,44 @@ export class DashboardService extends IPipeService {
   getSpecificLine(path, row, callback) {
     let i = 0;
     let content = '';
-    const rs = fs.createReadStream(path, {
-      encoding: 'utf8',
-      autoClose: false
-    }).on('error', function(err) {
-      rs.destroy();
-      callback(err, content)
-    });
+    const rs = fs
+      .createReadStream(path, {
+        encoding: 'utf8',
+        autoClose: false,
+      })
+      .on('error', function (err) {
+        rs.destroy();
+        callback(err, content);
+      });
     path = null;
     try {
-      readline.createInterface({
-        input: rs,
-        terminal: false
-      }).on('line', function(line) {
-        ++i;
-        if (row == i) {
-          try {
-            content = line;
-          } catch (e) {
-            console.error(e);
+      readline
+        .createInterface({
+          input: rs,
+          terminal: false,
+        })
+        .on('line', function (line) {
+          ++i;
+          if (row == i) {
+            try {
+              content = line;
+            } catch (e) {
+              console.error(e);
+            }
+            this.close();
           }
-          this.close();
-        }
-      }).on('close', function() {
-        rs.destroy();
-        callback(null, content)
-      }).on('error', function(err) {
-        rs.destroy();
-        callback(err, content)
-      });
+        })
+        .on('close', function () {
+          rs.destroy();
+          callback(null, content);
+        })
+        .on('error', function (err) {
+          rs.destroy();
+          callback(err, content);
+        });
     } catch (err) {
       console.error(err);
-      callback(err, content)
+      callback(err, content);
     }
   }
 }

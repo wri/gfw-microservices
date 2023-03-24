@@ -72,7 +72,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   }
 
   process(analysisData: any, filters: GenerationFileRequest) {
-    const {  type, selectedLocationsList } = filters;
+    const { type, selectedLocationsList } = filters;
     if (
       selectedLocationsList.length != 1 &&
       (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
@@ -104,11 +104,10 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
     const { listView, type, selectedLocationsList } = filters;
     let FILE_SUFFIX = '';
     if (listView === 'commodity_risk' && selectedLocationsList.length != 1) {
-      FILE_SUFFIX = 'commodity_risk_diagnostic_list_summary'
+      FILE_SUFFIX = 'commodity_risk_diagnostic_list_summary';
     } else {
       FILE_SUFFIX = 'forest_change_diagnostic_list_summary';
     }
-
 
     if (
       selectedLocationsList.length != 1 &&

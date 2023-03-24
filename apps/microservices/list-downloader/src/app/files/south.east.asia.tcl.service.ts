@@ -1,15 +1,14 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
+import { cloneRow, parseListData } from '../shared/functions';
+import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
-import { DashboardListLevelService } from '../pipe/dashboard.list.level.service';
+import { generateCSV } from '../shared/generate.csv';
 
 @Injectable()
 export class SouthEastAsiaTCLService extends DashboardHandleDownload {
   private existSouthEastLocation = false;
-
-  @Inject(DashboardListLevelService)
-  private readonly dashboardListLevelService: DashboardListLevelService;
 
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
@@ -37,6 +36,58 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
     }
   }
 
+  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+    const csvData = [];
+    csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
+
+    EXCEL_TEMPLATES[table].forEach((key) => {
+      key.composites.forEach((field) => {
+        const { label, attribute } = field as {
+          label: string;
+          attribute: string;
+        };
+        const totalStatValue = parseListData(attribute, [listLevelAnalysis]);
+        const dataRow = [list_name];
+
+        let rowValue = 0;
+        if (!listLevelAnalysis[attribute]) {
+          return;
+        }
+        const yearlyData = JSON.parse(listLevelAnalysis[attribute]);
+
+        Object.keys(yearlyData).forEach((year) => {
+          const currentRow = cloneRow(dataRow);
+          rowValue = yearlyData[year];
+
+          if (isNaN(rowValue) === true) {
+            let totalSubCategory = 0;
+            Object.keys(rowValue).forEach((yr) => {
+              totalSubCategory += rowValue[yr];
+            });
+
+            if (totalSubCategory > 0) {
+              Object.keys(rowValue).forEach((location) => {
+                const nestedRow = cloneRow(dataRow);
+                nestedRow.push(`${label} - ${year}`);
+                nestedRow.push(rowValue[location]);
+                nestedRow.push(location);
+                nestedRow.push(totalSubCategory);
+                csvData.push(nestedRow);
+              });
+            }
+          } else {
+            currentRow.push(label);
+            currentRow.push(rowValue);
+            currentRow.push(year);
+            currentRow.push(totalStatValue);
+            csvData.push(currentRow);
+          }
+        });
+      });
+    });
+    return csvData;
+  }
+
   finish(filters: GenerationFileRequest) {
     const { listView, selectedLocationsList, type } = filters;
     if (
@@ -44,10 +95,11 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
       selectedLocationsList.length != 1 &&
       this.existSouthEastLocation
     ) {
-      this.dashboardListLevelService.generateCSV(
+      generateCSV(
         filters,
         'seAsiaTCLAggregate',
-        'south_east_asia_tcl_aggregate'
+        'south_east_asia_tcl_aggregate',
+        this.generateAggregate
       );
     }
 

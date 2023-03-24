@@ -1,15 +1,19 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
+import {
+  cloneRow,
+  formatPct,
+  validatePct,
+  parseListData,
+} from '../shared/functions';
+import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
-import { DashboardListLevelService } from '../pipe/dashboard.list.level.service';
+import { generateCSV } from '../shared/generate.csv';
 
 @Injectable()
 export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
   private existSouthEastLocation = false;
-
-  @Inject(DashboardListLevelService)
-  private readonly dashboardListLevelService: DashboardListLevelService;
 
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
@@ -37,6 +41,62 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
     }
   }
 
+  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+    const csvData = [];
+    csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
+
+    EXCEL_TEMPLATES[table].forEach((key) => {
+      key.composites.forEach((field) => {
+        const totalStatValue = parseListData(field.attribute, [
+          listLevelAnalysis,
+        ]);
+        const dataRow = [list_name];
+
+        if (totalStatValue > 0) {
+          if (!listLevelAnalysis[field.attribute]) {
+            return;
+          }
+
+          const yearlyData = JSON.parse(listLevelAnalysis[field.attribute]);
+
+          if (isNaN(parseInt(yearlyData)) === true) {
+            Object.keys(yearlyData).forEach((location) => {
+              const currentRow = cloneRow(dataRow);
+              currentRow.push(field.label);
+              currentRow.push(location);
+              const percent = formatPct(
+                validatePct((yearlyData[location] / totalStatValue) * 100)
+              );
+              currentRow.push(percent);
+              csvData.push(currentRow);
+            });
+          } else {
+            const currentRowIn = cloneRow(dataRow);
+            currentRowIn.push(field.label);
+            currentRowIn.push('Within Forest Moratorium');
+            const percentIn = formatPct(
+              validatePct((yearlyData / listLevelAnalysis.total_area) * 100)
+            );
+            currentRowIn.push(percentIn);
+            csvData.push(currentRowIn);
+
+            const hectaresOut = listLevelAnalysis.total_area - yearlyData;
+
+            const currentRowOut = cloneRow(dataRow);
+            currentRowOut.push(field.label);
+            currentRowOut.push('Outside Forest Moratorium');
+            const percentOut = formatPct(
+              validatePct((hectaresOut / listLevelAnalysis.total_area) * 100)
+            );
+            currentRowOut.push(percentOut);
+            csvData.push(currentRowOut);
+          }
+        }
+      });
+    });
+    return csvData;
+  }
+
   finish(filters: GenerationFileRequest) {
     const { listView, selectedLocationsList, type } = filters;
     if (
@@ -44,10 +104,11 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
       selectedLocationsList.length != 1 &&
       this.existSouthEastLocation
     ) {
-      this.dashboardListLevelService.generateCSV(
+      generateCSV(
         filters,
         'seAsiaOverlapAggregate',
-        'south_east_asia_overlap_aggregate'
+        'south_east_asia_overlap_aggregate',
+        this.generateAggregate
       );
     }
 

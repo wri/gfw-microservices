@@ -109,17 +109,21 @@ export class EmailService {
         icon: 'https://dpptfqp76xood.cloudfront.net/images/check_circle_black_24dp.png',
         title: 'File generation completed successfully',
         body: [
-          'File are ready to be downloaded in the following link.',
-          'DOWNLOAD WITHIN 24 HOURS',
+          `File for <span style="color: rgba(0,0,0,0.73);">${listName}</span> is ready to be downloaded.`,
         ],
-        extra: `<div style="width: 80%;margin: auto;border-radius: 8px;background-color: rgba(240,240,240,0.8);padding: 1rem;">
-              <div style="width: 20%; display: inline-block; height:inherit; text-align: center;">
-                <img src="https://dpptfqp76xood.cloudfront.net/images/folder_zip_black_24dp.png"  alt="alt_text" border="0" align="center" class="g-img">
-              </div>
-              <div style="width: 80%; display: inline-block; height:inherit; text-align: center;">
-                <a style="text-decoration: none; color: black;margin:0;font-family:'Fira Sans',Arial,sans-serif;" href="${location}"> Data for ${listName} </a>
-              </div>
-            <div>`,
+        extra: `<p style="margin:0;font-family:'Fira Sans',Arial,sans-serif;padding: 5px 0 0 0;">
+                <!--[if mso]>
+                <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${location}" style="height:36px;v-text-anchor:middle;width:151px;" arcsize="278%" stroke="f" fillcolor="#97BD3D">
+                  <w:anchorlock/>
+                  <center>
+                  <![endif]-->
+                    <a href="${location}" style="background-color:#97BD3D;border-radius:100px;color:#ffffff;display:inline-block;font-family:'Fira Sans',Arial,sans-serif;font-size:13px;font-weight:bold;line-height:36px;text-align:center;text-decoration:none;width:151px;-webkit-text-size-adjust:none;">DOWNLOAD FILE</a>
+                  <!--[if mso]>
+                  </center>
+                </v:roundrect>
+                <![endif]-->
+                </p>
+                <p style="padding: 50px 0 0 0;font-size:10px;font-weight:400;margin:0;font-family:'Fira Sans',Arial,sans-serif;line-height:12px;color:rgba(0,0,0,0.54);">DOWNLOAD WITHIN 24 HOURS</p>`,
       },
       error: {
         icon: 'https://dpptfqp76xood.cloudfront.net/images/warning_black_24dp.png',

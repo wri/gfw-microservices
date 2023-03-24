@@ -95,6 +95,7 @@ export class ForestLossService extends DashboardHandleDownload {
   }
 
   finish(filters: GenerationFileRequest) {
+    this.logger.log('Forest Loss Finish');
     const { listView, selectedLocationsList, type } = filters;
     if (
       listView === 'forest_change' &&
@@ -107,12 +108,6 @@ export class ForestLossService extends DashboardHandleDownload {
         'sensitive_areas_loss_of_forests_aggregate',
         this.generateAggregate
       );
-    }
-    if (
-      listView === 'forest_change' &&
-      (type == 'forestLoss' || type == 'everything')
-    ) {
-      super.finish(filters);
     }
   }
 }

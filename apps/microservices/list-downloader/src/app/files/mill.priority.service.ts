@@ -30,14 +30,6 @@ export class MillPriorityService extends DashboardHandleDownload {
   }
 
   finish(filters: GenerationFileRequest) {
-    const { type, listView } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      (type == 'palmRiskAnalysis' ||
-        type == 'millPriority' ||
-        type == 'everything')
-    ) {
-      super.finish(filters);
-    }
+    this.logger.log('Mill Priority Finish');
   }
 }

@@ -61,6 +61,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
   }
 
   finish(filters: GenerationFileRequest) {
+    this.logger.log('South America Biomes Finish');
     const { listView, selectedLocationsList, type } = filters;
     if (
       listView === 'forest_change' &&
@@ -73,13 +74,6 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
         'south_america_brazil_biomes_aggregate',
         this.generateAggregate
       );
-    }
-
-    if (
-      listView === 'forest_change' &&
-      (type == 'SouthAmerica' || type == 'everything')
-    ) {
-      super.finish(filters);
     }
     this.existSouthLocation = false;
   }

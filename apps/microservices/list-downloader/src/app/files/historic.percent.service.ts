@@ -73,6 +73,7 @@ export class HistoricPercentService extends DashboardHandleDownload {
   }
 
   finish(filters: GenerationFileRequest) {
+    this.logger.log('Historic Percent Finish');
     const { listView, selectedLocationsList, type } = filters;
     if (
       listView === 'forest_change' &&
@@ -85,12 +86,6 @@ export class HistoricPercentService extends DashboardHandleDownload {
         'sensitive_areas_percentage_historic_area_lost_aggregate',
         this.generateAggregate
       );
-    }
-    if (
-      listView === 'forest_change' &&
-      (type == 'historicPercent' || type == 'everything')
-    ) {
-      super.finish(filters);
     }
   }
 }

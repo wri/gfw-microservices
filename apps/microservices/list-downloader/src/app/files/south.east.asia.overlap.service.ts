@@ -98,6 +98,7 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
   }
 
   finish(filters: GenerationFileRequest) {
+    this.logger.log('South East Asia Overlap Finish');
     const { listView, selectedLocationsList, type } = filters;
     if (
       listView === 'forest_change' &&
@@ -110,13 +111,6 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
         'south_east_asia_overlap_aggregate',
         this.generateAggregate
       );
-    }
-
-    if (
-      listView === 'forest_change' &&
-      (type == 'SouthEastAsia' || type == 'everything')
-    ) {
-      super.finish(filters);
     }
     this.existSouthEastLocation = false;
   }

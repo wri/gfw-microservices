@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow, parseListData } from '../shared/functions';
@@ -89,7 +89,8 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
   }
 
   finish(filters: GenerationFileRequest) {
-    const { listView, selectedLocationsList, type } = filters;
+    this.logger.log('Finish South East Asia TCL');
+    const { listView, selectedLocationsList } = filters;
     if (
       listView === 'forest_change' &&
       selectedLocationsList.length != 1 &&
@@ -101,13 +102,6 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
         'south_east_asia_tcl_aggregate',
         this.generateAggregate
       );
-    }
-
-    if (
-      listView === 'forest_change' &&
-      (type == 'SouthEastAsia' || type == 'everything')
-    ) {
-      super.finish(filters);
     }
     this.existSouthEastLocation = false;
   }

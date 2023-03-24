@@ -32,13 +32,6 @@ export class ForestChangeDiagnosticLocationSummaryService extends DashboardHandl
   }
 
   finish(filters: GenerationFileRequest) {
-    const { listView, type, selectedLocationsList } = filters;
-    if (
-      listView === 'forest_change' &&
-      selectedLocationsList.length != 1 &&
-      (type == 'forestChangeDiagnosticLocationSummary' || type == 'everything')
-    ) {
-      super.finish(filters);
-    }
+    this.logger.log('Forest Change Diagnostic Location Summary Finish');
   }
 }

@@ -32,13 +32,6 @@ export class CommodityRiskDiagnosticLocationSummaryService extends DashboardHand
   }
 
   finish(filters: GenerationFileRequest) {
-    const { listView, type, selectedLocationsList } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      selectedLocationsList.length != 1 &&
-      (type == 'commodityRiskDiagnosticLocationSummary' || type == 'everything')
-    ) {
-      super.finish(filters);
-    }
+    this.logger.log('Commodity Risk Diagnostic Location Summary Finish');
   }
 }

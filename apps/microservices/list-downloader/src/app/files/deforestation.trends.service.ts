@@ -45,6 +45,7 @@ export class DeforestationTrendsService extends DashboardHandleDownload {
   }
 
   finish(filters: GenerationFileRequest) {
+    this.logger.log('Deforestation Trends Service finish');
     const { listView, selectedLocationsList, type } = filters;
     if (
       listView === 'commodity_risk' &&
@@ -57,7 +58,6 @@ export class DeforestationTrendsService extends DashboardHandleDownload {
         'trends_in_deforestation_aggregate',
         this.generateAggregate
       );
-      super.finish(filters);
     }
   }
 }

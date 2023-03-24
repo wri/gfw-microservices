@@ -12,7 +12,7 @@ import { IPipeService } from './IPipeService';
 import { ManipulateDataForDashboard } from '../transform/manipulate.data.dashboard';
 
 export class DashboardHandleDownload extends IPipeService {
-  private readonly logger = new Logger(DashboardHandleDownload.name);
+  public readonly logger = new Logger(DashboardHandleDownload.name);
   private inputStream: PassThrough;
 
   start(filters: GenerationFileRequest, table: string, fileSuffix: string) {
@@ -72,7 +72,9 @@ export class DashboardHandleDownload extends IPipeService {
         fs.createWriteStream(`/tmp/${key}_${fileSuffix}.csv`, { flags: 'a' })
       );
 
-    return this.inputStream;
+    this.inputStream.on('end', () => {
+      this.finish(filters);
+    });
   }
 
   finish(filters: GenerationFileRequest) {

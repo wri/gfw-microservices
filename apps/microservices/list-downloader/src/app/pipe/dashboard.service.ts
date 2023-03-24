@@ -90,6 +90,7 @@ export class DashboardService extends IPipeService {
 
   finish(filters: GenerationFileRequest) {
     const { key } = filters;
+
     this.forestLoos.finish(filters);
     this.historicPercentService.finish(filters);
     this.forestChangeDiagnosticLocationSummaryService.finish(filters);

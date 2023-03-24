@@ -93,6 +93,7 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
   }
 
   finish(filters: GenerationFileRequest) {
+    this.logger.log('Finish South America Loss');
     const { listView, selectedLocationsList, type } = filters;
     if (
       listView === 'forest_change' &&
@@ -105,13 +106,6 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
         'south_america_loss_of_forests_aggregate',
         this.generateAggregate
       );
-    }
-
-    if (
-      listView === 'forest_change' &&
-      (type == 'SouthAmerica' || type == 'everything')
-    ) {
-      super.finish(filters);
     }
     this.existSouthLocation = false;
   }

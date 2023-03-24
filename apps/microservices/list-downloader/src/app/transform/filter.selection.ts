@@ -6,7 +6,7 @@ class FilterSelection extends Transform {
   }
 
   _transform(chunk, _, next) {
-    if(!chunk) {
+    if (!chunk) {
       return next(null, undefined);
     }
 

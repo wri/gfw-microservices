@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { formatPct, validatePct } from '../shared/functions';
@@ -16,7 +16,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
       listView === 'forest_change' &&
       (type == 'SouthAmerica' || type == 'everything')
     ) {
-      super.start(filters, 'sAmericaLoss', 'south_america_brazil_biomes');
+      super.start(filters, 'sAmericaBiomes', 'south_america_brazil_biomes');
     }
   }
 

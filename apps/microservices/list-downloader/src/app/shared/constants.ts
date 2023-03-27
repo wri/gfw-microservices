@@ -545,6 +545,14 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
+      name: 'State',
+      parsed: 'overhead',
+    },
+    {
+      name: 'Country',
+      parsed: 'overhead',
+    },
+    {
       name: 'forestChangeDiagnosticLocationSummary',
       parsed: 'overhead',
       fields: [
@@ -577,6 +585,14 @@ export const EXCEL_TEMPLATES = {
     },
     {
       name: 'Location Name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'State',
+      parsed: 'overhead',
+    },
+    {
+      name: 'Country',
       parsed: 'overhead',
     },
     {

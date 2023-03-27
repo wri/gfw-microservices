@@ -26,12 +26,6 @@ export class PalmRiskAnalysisService extends DashboardHandleDownload {
   }
 
   finish(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      (type == 'palmRiskAnalysis' || type == 'everything')
-    ) {
-      super.finish(filters);
-    }
+    this.logger.log('Finish Palm Risk Analysis');
   }
 }

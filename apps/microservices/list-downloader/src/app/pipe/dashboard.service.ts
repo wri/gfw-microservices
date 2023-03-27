@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as readline from 'readline';
 import * as archiver from 'archiver';
 import { Injectable, Inject } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
@@ -12,7 +13,6 @@ import { CommodityRiskDiagnosticLocationSummaryService } from '../files/commodit
 import { DeforestationTrendsService } from '../files/deforestation.trends.service';
 import { MillPriorityService } from '../files/mill.priority.service';
 import { PalmRiskAnalysisService } from '../files/palm.risk.analysis.service';
-import { DashboardListLevelService } from './dashboard.list.level.service';
 import { SouthAmericaBiomesService } from '../files/south.america.biomes.service';
 import { SouthAmericaLossService } from '../files/south.america.loss.service';
 import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.service';
@@ -44,9 +44,6 @@ export class DashboardService extends IPipeService {
   @Inject(PalmRiskAnalysisService)
   private readonly palmRiskAnalysisService: PalmRiskAnalysisService;
 
-  @Inject(DashboardListLevelService)
-  private readonly dashboardListLevelService: DashboardListLevelService;
-
   @Inject(SouthAmericaBiomesService)
   private readonly southAmericaBiomesService: SouthAmericaBiomesService;
 
@@ -60,7 +57,6 @@ export class DashboardService extends IPipeService {
   private readonly southEastAsiaTCLService: SouthEastAsiaTCLService;
 
   start(filters: GenerationFileRequest) {
-    const { listView, selectedLocationsList } = filters;
     this.startEmail(filters);
 
     this.forestLoos.start(filters);
@@ -75,14 +71,6 @@ export class DashboardService extends IPipeService {
     this.southAmericaLossService.start(filters);
     this.southEastAsiaOverlapService.start(filters);
     this.southEastAsiaTCLService.start(filters);
-
-    if (listView === 'commodity_risk' && selectedLocationsList.length != 1) {
-      this.dashboardListLevelService.generateCSV(
-        filters,
-        'forestChangeDiagnosticListSummary',
-        'commodity_risk_diagnostic_list_summary'
-      );
-    }
   }
 
   process(data: any, filters: GenerationFileRequest) {
@@ -102,6 +90,7 @@ export class DashboardService extends IPipeService {
 
   finish(filters: GenerationFileRequest) {
     const { key } = filters;
+
     this.forestLoos.finish(filters);
     this.historicPercentService.finish(filters);
     this.forestChangeDiagnosticLocationSummaryService.finish(filters);
@@ -121,21 +110,84 @@ export class DashboardService extends IPipeService {
       await this.uploadToS3(filters);
     });
 
-    fs.readdir('/tmp', (err, filenames) => {
+    fs.readdir('/tmp', async (err, filenames) => {
       const files = filenames.filter((name) => name.includes(`${key}`));
 
-      const archive = archiver('zip', {
-        zlib: { level: 9 }, // Sets the compression level.
-      });
+      new Promise((resolve, reject) => {
+        const array = [];
+        let count = 1;
+        files.forEach((file) => {
+          this.getSpecificLine(`/tmp/${file}`, 2, (err, line) => {
+            if (err) {
+              reject(err);
+            }
 
-      files.forEach((file) => {
-        archive.append(fs.createReadStream(`/tmp/${file}`), {
-          name: `${file}`,
+            if (line.trim() !== '') {
+              array.push(file);
+            }
+
+            if (files.length === count) {
+              resolve(array);
+            }
+            count += 1;
+          });
         });
+      }).then((filesToAppend: string[]) => {
+        const archive = archiver('zip', {
+          zlib: { level: 9 }, // Sets the compression level.
+        });
+        filesToAppend.forEach((file) => {
+          archive.append(fs.createReadStream(`/tmp/${file}`), {
+            name: `${file}`,
+          });
+        });
+        archive.pipe(output);
+        archive.finalize();
       });
-
-      archive.pipe(output);
-      archive.finalize();
     });
+  }
+
+  getSpecificLine(path, row, callback) {
+    let i = 0;
+    let content = '';
+    const rs = fs
+      .createReadStream(path, {
+        encoding: 'utf8',
+        autoClose: false,
+      })
+      .on('error', function (err) {
+        rs.destroy();
+        callback(err, content);
+      });
+    path = null;
+    try {
+      readline
+        .createInterface({
+          input: rs,
+          terminal: false,
+        })
+        .on('line', function (line) {
+          ++i;
+          if (row == i) {
+            try {
+              content = line;
+            } catch (e) {
+              console.error(e);
+            }
+            this.close();
+          }
+        })
+        .on('close', function () {
+          rs.destroy();
+          callback(null, content);
+        })
+        .on('error', function (err) {
+          rs.destroy();
+          callback(err, content);
+        });
+    } catch (err) {
+      console.error(err);
+      callback(err, content);
+    }
   }
 }

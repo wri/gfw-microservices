@@ -15,7 +15,6 @@ import { DashboardService } from './dashboard.service';
 import { ForestLossService } from '../files/forest.loss.service';
 import { HistoricPercentService } from '../files/historic.percent.service';
 import { ForestChangeDiagnosticLocationSummaryService } from '../files/forest.change.diagnostic.location.summary.service';
-import { DashboardListLevelService } from './dashboard.list.level.service';
 import { ForestChangeDiagnosticListSummaryService } from '../files/forest.change.diagnostic.list.summary.service';
 import { CommodityRiskDiagnosticLocationSummaryService } from '../files/commodity.risk.diagnostic.location.summary.service';
 import { DeforestationTrendsService } from '../files/deforestation.trends.service';
@@ -30,7 +29,6 @@ import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
   imports: [envModule, AwsModule, SqlModule],
   providers: [
     CommodityRiskDiagnosticLocationSummaryService,
-    DashboardListLevelService,
     DashboardService,
     DeforestationTrendsService,
     ForestChangeDiagnosticListSummaryService,

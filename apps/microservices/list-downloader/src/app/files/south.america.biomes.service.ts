@@ -1,21 +1,20 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
+import { formatPct, validatePct } from '../shared/functions';
+import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
-import { DashboardListLevelService } from '../pipe/dashboard.list.level.service';
+import { generateCSV } from '../shared/generate.csv';
 
 @Injectable()
 export class SouthAmericaBiomesService extends DashboardHandleDownload {
   private existSouthLocation = false;
 
-  @Inject(DashboardListLevelService)
-  private readonly dashboardListLevelService: DashboardListLevelService;
-
   start(filters: GenerationFileRequest) {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'sAmericaBiomes' || type == 'everything')
+      (type == 'SouthAmerica' || type == 'everything')
     ) {
       super.start(filters, 'sAmericaBiomes', 'south_america_brazil_biomes');
     }
@@ -25,7 +24,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'sAmericaBiomes' || type == 'everything')
+      (type == 'SouthAmerica' || type == 'everything')
     ) {
       const locations = data.filter(
         (location) => location.south_america_presence === 'true'
@@ -37,25 +36,44 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     }
   }
 
+  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+    const csvData = [];
+    csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
+
+    EXCEL_TEMPLATES[table].forEach((key) => {
+      const biomesObj = JSON.parse(listLevelAnalysis[key.name]);
+
+      let total = 0;
+      Object.keys(biomesObj).forEach((biome) => {
+        total += biomesObj[biome];
+      });
+
+      Object.keys(biomesObj).forEach((biome) => {
+        const dataRow = [list_name, biome];
+        const overlapPercent = formatPct(
+          validatePct((biomesObj[biome] / total) * 100)
+        );
+        dataRow.push(overlapPercent);
+        csvData.push(dataRow);
+      });
+    });
+    return csvData;
+  }
+
   finish(filters: GenerationFileRequest) {
+    this.logger.log('South America Biomes Finish');
     const { listView, selectedLocationsList, type } = filters;
     if (
       listView === 'forest_change' &&
       selectedLocationsList.length != 1 &&
       this.existSouthLocation
     ) {
-      this.dashboardListLevelService.generateCSV(
+      generateCSV(
         filters,
         'sAmericaBiomesAggregate',
-        'south_america_brazil_biomes_aggregate'
+        'south_america_brazil_biomes_aggregate',
+        this.generateAggregate
       );
-    }
-
-    if (
-      listView === 'forest_change' &&
-      (type == 'sAmericaBiomes' || type == 'everything')
-    ) {
-      super.finish(filters);
     }
     this.existSouthLocation = false;
   }

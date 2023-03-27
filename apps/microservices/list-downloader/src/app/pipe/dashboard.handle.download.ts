@@ -12,7 +12,7 @@ import { IPipeService } from './IPipeService';
 import { ManipulateDataForDashboard } from '../transform/manipulate.data.dashboard';
 
 export class DashboardHandleDownload extends IPipeService {
-  private readonly logger = new Logger(DashboardHandleDownload.name);
+  public readonly logger = new Logger(DashboardHandleDownload.name);
   private inputStream: PassThrough;
 
   start(filters: GenerationFileRequest, table: string, fileSuffix: string) {
@@ -26,15 +26,7 @@ export class DashboardHandleDownload extends IPipeService {
 
     const templateOperation = EXCEL_TEMPLATES[table];
 
-    const allFields = [
-      ...templateOperation
-        .filter((x) => Object.prototype.hasOwnProperty.call(x, 'name'))
-        .map((x) => x.name),
-      ...templateOperation
-        .filter((x) => Object.prototype.hasOwnProperty.call(x, 'composites'))
-        .flatMap((x) => x.composites)
-        .map((x) => x.attribute),
-    ];
+    const allFields = this.mountArrayWithAllFields(templateOperation);
 
     this.organizeStream(filters, allFields, table, fileSuffix);
 
@@ -72,7 +64,6 @@ export class DashboardHandleDownload extends IPipeService {
       .pipe(
         new ManipulateDataForDashboard(
           EXCEL_TEMPLATES[table],
-          table,
           listLevelAnalysis
         )
       )
@@ -81,7 +72,9 @@ export class DashboardHandleDownload extends IPipeService {
         fs.createWriteStream(`/tmp/${key}_${fileSuffix}.csv`, { flags: 'a' })
       );
 
-    return this.inputStream;
+    this.inputStream.on('end', () => {
+      this.finish(filters);
+    });
   }
 
   finish(filters: GenerationFileRequest) {
@@ -89,5 +82,45 @@ export class DashboardHandleDownload extends IPipeService {
     this.logger.log(`(${listID}) - Finished to process data`);
     this.inputStream.removeAllListeners();
     this.inputStream.destroy();
+  }
+
+  mountArrayWithAllFields(templateOperation) {
+    const allFields = new Set([
+      ...templateOperation
+        .filter((x) => Object.prototype.hasOwnProperty.call(x, 'name'))
+        .map((x) => x.name),
+      ...templateOperation
+        .filter((x) => Object.prototype.hasOwnProperty.call(x, 'composites'))
+        .flatMap((x) => x.composites)
+        .map((x) => x.attribute),
+      ...templateOperation
+        .filter((x) => Object.prototype.hasOwnProperty.call(x, 'fields'))
+        .flatMap((x) => x.fields)
+        .map((x) => x.attribute),
+      ...templateOperation
+        .filter((x) =>
+          Object.prototype.hasOwnProperty.call(x, 'additionalFields')
+        )
+        .flatMap((x) => x.additionalFields)
+        .map((x) => x.attribute),
+      ...templateOperation
+        .filter((x) => Object.prototype.hasOwnProperty.call(x, 'numerators'))
+        .flatMap((x) => x.numerators)
+        .map((x) => x.extentAttribute),
+      ...templateOperation
+        .filter((x) => Object.prototype.hasOwnProperty.call(x, 'numerators'))
+        .flatMap((x) => x.numerators)
+        .map((x) => x.tclAttribute),
+      ...templateOperation
+        .filter((x) => Object.prototype.hasOwnProperty.call(x, 'following'))
+        .flatMap((x) => x.following)
+        .map((x) => x.attribute),
+      'tree_cover_loss_brazil_biomes_yearly',
+      'tree_cover_loss_sea_landcover_yearly',
+      'tree_cover_loss_idn_landcover_yearly',
+      'south_america_presence',
+      'southeast_asia_presence',
+    ]);
+    return Array.from(allFields);
   }
 }

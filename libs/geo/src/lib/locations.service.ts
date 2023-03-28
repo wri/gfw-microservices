@@ -1,3 +1,4 @@
+import { rejects } from 'assert';
 import { GeoService } from './geo.service';
 import {
   ContainsPunctuation,
@@ -422,7 +423,7 @@ export class LocationService {
           .then((json) => {
             Logger.log(`JSON: ${JSON.stringify(json)}`);
             Logger.log('remove locations or list if move is selected');
-            return new Promise(() => {
+            return new Promise((resolve) => {
               if (selectedMoveOrCopy === 'move') {
                 return new UspSetListLocked()
                   .run(clientDatabase, selectedListId, userId)
@@ -452,17 +453,20 @@ export class LocationService {
                     );
                   });
               }
-              const listsToUnlock = [];
-              listsToUnlock.push(UnlockList(clientDatabase, selectedListId));
-              if (moveToList) {
-                listsToUnlock.push(
-                  UnlockList(clientDatabase, moveToList.id)
-                );
-              }
-              return Promise.all(listsToUnlock);
+              resolve(json);
             });
           })
           .then((json) => {
+            const listsToUnlock = [];
+            listsToUnlock.push(UnlockList(clientDatabase, selectedListId));
+            if (moveToList) {
+              listsToUnlock.push(
+                UnlockList(clientDatabase, moveToList.id)
+              );
+            }
+            Logger.log(`JSON: ${JSON.stringify(json)}`);
+            return Promise.all(listsToUnlock);
+          }).then((json) => {
             Logger.log(`JSON: ${JSON.stringify(json)}`);
           });
       }

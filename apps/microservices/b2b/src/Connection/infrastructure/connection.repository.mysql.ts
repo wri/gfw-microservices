@@ -8,6 +8,10 @@ import { ConnectionDbDto } from '../application/dtos/connection-db.dto';
 import Result from '../../Shared/domain/result';
 import { ConnectionChangeDto } from '../application/dtos/connection-status.dto';
 import { Injectable } from '@nestjs/common';
+import {
+  ConnectionAdminOrganizationDbDto,
+  ConnectionAdminOrganizationDto,
+} from '../application/dtos/connection-admin-organizations.dto';
 
 @Injectable()
 export class ConnectionRepositoryMysql
@@ -16,6 +20,40 @@ export class ConnectionRepositoryMysql
 {
   constructor(private mapper: ConnectionDataMapper) {
     super();
+  }
+
+  async getUserAdminOrganization(
+    email: string,
+  ): ResultPromise<ConnectionAdminOrganizationDto[]> {
+    const params = this.mapper.createStoreProcedureStringParam([
+      ['email', email],
+    ]);
+    console.log(params)
+    const getUserAdminOrganizations = this.storeProcedureFactory.create(
+      'uspGetUserAdminOrganizations',
+      params,
+    );
+    console.log(getUserAdminOrganizations)
+    let result = await getUserAdminOrganizations.execute<
+      ConnectionAdminOrganizationDbDto[]
+    >();
+    if (result.isSuccess) {
+      const organizationsDbDto = result.getValue();
+      let organizations = [];
+      if (Array.isArray(organizationsDbDto)) {
+        organizations = organizationsDbDto.map((organizationDbDto) =>
+          this.mapper.toAdminOrganizationDto(organizationDbDto),
+        );
+      } else {
+        organizationsDbDto &&
+          organizations.push(
+            this.mapper.toAdminOrganizationDto(organizationsDbDto),
+          );
+      }
+
+      return Result.ok(organizations);
+    }
+    return Result.fail(result.getError());
   }
 
   async getConnections(
@@ -45,17 +83,6 @@ export class ConnectionRepositoryMysql
     return Result.fail(result.getError());
   }
 
-  async persistConnection(connection: Connection): Promise<void> {
-    /*
-    const params = this.mapper.toGetProcedureParam(connection);
-    const saveConnection = this.storeProcedureFactory.create(
-      'uspCreateConnectionRequest',
-      params,
-    );
-    await saveConnection.execute();
-    */
-  }
-
   async acceptConnection(
     changeStatusDto: ConnectionChangeDto,
   ): ResultPromise<Number> {
@@ -65,9 +92,5 @@ export class ConnectionRepositoryMysql
       params,
     );
     return await acceptConnection.execute<number>();
-  }
-
-  async deleteConnection(id: string): Promise<void> {
-    throw new Error('');
   }
 }

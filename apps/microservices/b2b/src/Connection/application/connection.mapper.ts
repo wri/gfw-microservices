@@ -8,9 +8,14 @@ import { ConnectionDbDto } from './dtos/connection-db.dto';
 import { ConnectionGetDto } from './dtos/connection-get.dto';
 import { ConnectionChangeDto } from './dtos/connection-status.dto';
 import { Injectable } from '@nestjs/common';
+import { GenericMapper } from '../../Shared/domain/mapper';
+import {
+  ConnectionAdminOrganizationDbDto,
+  ConnectionAdminOrganizationDto,
+} from './dtos/connection-admin-organizations.dto';
 
 @Injectable()
-export class ConnectionDataMapper {
+export class ConnectionDataMapper extends GenericMapper {
   static createConnectionDtotoConnection(connectionDto: CreateConnectionDto) {
     return plainToInstance(Connection, connectionDto);
   }
@@ -70,7 +75,14 @@ export class ConnectionDataMapper {
     return plainToInstance(ConnectionGetDto, getDto);
   }
 
-  toChangeStatusConnectionDto;
+  toAdminOrganizationDto(
+    dbDto: ConnectionAdminOrganizationDbDto,
+  ): ConnectionAdminOrganizationDto {
+    return {
+      organizationId: dbDto.id,
+      organizationName: dbDto.organization_name,
+    };
+  }
 
   toChangeStatusConnectionParam(
     connectionChangeDto: ConnectionChangeDto,

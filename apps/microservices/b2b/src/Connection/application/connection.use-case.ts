@@ -15,6 +15,8 @@ import {
 import { ConnectionDbDto } from './dtos/connection-db.dto';
 import { ConnectionFiltersDto } from './dtos/connection-filters.dto';
 import { ConnectionGetDto } from './dtos/connection-get.dto';
+import { PromiseResult } from 'aws-sdk/lib/request';
+import { ConnectionAdminOrganizationDto } from './dtos/connection-admin-organizations.dto';
 
 @Injectable()
 export class ConnectionUseCases {
@@ -22,12 +24,6 @@ export class ConnectionUseCases {
     private connectionRepo: ConnectionRepository,
     private mapper: ConnectionDataMapper,
   ) {}
-
-  async createConnection(connectionDto: CreateConnectionDto): Promise<void> {
-    /*const connection =
-      ConnectionDataMapper.createConnectionDtotoConnection(connectionDto);
-    return this.mapper.persistConnection(connection);*/
-  }
 
   async getConnections(
     filtersDto: ConnectionFiltersDto,
@@ -57,7 +53,11 @@ export class ConnectionUseCases {
     return Result.fail(result.getError());
   }
 
-  async deleteConnection(id: any): Promise<void> {
-    //return this.mapper.deleteConnection(id);
+  async getOrganizationsByUser(
+    email: string,
+  ): ResultPromise<ConnectionAdminOrganizationDto[]> {
+    const result = await this.connectionRepo.getUserAdminOrganization(email);
+    if (result.isSuccess) return Result.ok(result.getValue());
+    return Result.fail(result.getError());
   }
 }

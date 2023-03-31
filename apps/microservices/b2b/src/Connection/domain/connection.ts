@@ -1,6 +1,18 @@
-import { Member } from './member';
-
+export enum ConnectionStatus {
+  pending = 'pending',
+  accepted = 'accepted',
+  rejected = 'rejected',
+  cancelled = 'cancelled',
+  expired = 'expired',
+}
 export class Connection {
-  connectionName: string;
-  connectionList: Member;
+  id: string;
+  createDate: Date;
+  sourceOrganization: string;
+  targetOrganization: string;
+  sourceEmail: string;
+  editorEmail: string;
+  editedDate: Date;
+  status: ConnectionStatus;
+  description: string;
 }

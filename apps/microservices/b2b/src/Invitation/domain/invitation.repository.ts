@@ -1,6 +1,7 @@
+import ResultPromise from '../../Shared/domain/result/result.promise';
 import { Invitation } from '../domain/invitation';
 
-export interface InvitationRepository {
-  resendInvitation(id: string): Promise<void>;
-  createInvitation(invitation: Invitation): Promise<void>;
+export abstract class InvitationRepository {
+  abstract resendInvitation(id: string): ResultPromise<void>;
+  abstract createInvitation(invitation: Invitation): ResultPromise<Number>;
 }

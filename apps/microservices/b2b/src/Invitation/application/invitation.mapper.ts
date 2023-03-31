@@ -1,27 +1,43 @@
+import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import * as sql from 'mssql';
-import { CreateInvitationDto } from 'src/Invitation/application/dtos/invitation.dto';
-import { Invitation } from 'src/Invitation/domain/invitation';
-import { ParamStoreProcedure } from 'src/Shared/infraestructure/mysql/store-procedure.params';
+import { CreateInvitationDto } from '../../Invitation/application/dtos/invitation.dto';
+import { Invitation } from '../../Invitation/domain/invitation';
+import { ParamStoreProcedure } from '../../Shared/infraestructure/mysql/store-procedure.params';
 
 export class InvitationDataMapper {
-  static createInvitationDtotoInvitation(invitationDto: CreateInvitationDto) {
+  createInvitationDtotoInvitation(invitationDto: CreateInvitationDto) {
     return plainToInstance(Invitation, invitationDto);
   }
 
-  static toProcedureParam(invitation: Invitation): ParamStoreProcedure[] {
+  toProcedureParam(invitation: Invitation): ParamStoreProcedure[] {
     const params: ParamStoreProcedure[] = [
       {
-        field: 'Addressees',
-        type: sql.NVarChar(50),
-        value: invitation.addressees,
+        field: 'source_email',
+        type: sql.NVarChar(250),
+        value: invitation.sourceEmail,
+      },
+      {
+        field: 'target_email',
+        type: sql.NVarChar(250),
+        value: invitation.targetEmail,
+      },
+      {
+        field: 'source_organization',
+        type: sql.Int(),
+        value: invitation.sourceOrganization,
+      },
+      {
+        field: 'target_organization',
+        type: sql.Int(),
+        value: invitation.targetOrganization,
       },
     ];
 
     return params;
   }
 
-  static toIdParam(id: string): ParamStoreProcedure[] {
+  toIdParam(id: string): ParamStoreProcedure[] {
     return [
       {
         field: 'Id',

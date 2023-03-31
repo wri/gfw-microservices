@@ -1,7 +1,7 @@
 export const SqlConfig = {
   user: process.env.MSSQL_USERNAME,
   password: process.env.MSSQL_PASSWORD,
-  //database: clientDatabase,
+  database: process.env.MSSQL_DATABASE,
   server: process.env.MSSQL_HOSTNAME,
   pool: {
     max: 10,

@@ -1,11 +1,22 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsArray, IsNotEmpty, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumber, MinLength } from 'class-validator';
 
 export class CreateInvitationDto {
-  @IsArray()
+  @IsEmail()
   @IsNotEmpty()
-  @MinLength(1)
-  addressees: string[];
+  sourceEmail: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  targetEmail: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  targetOrganization: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  sourceOrganization: number;
 }
 
 export class UpdateInvitationDto extends PartialType(CreateInvitationDto) {}

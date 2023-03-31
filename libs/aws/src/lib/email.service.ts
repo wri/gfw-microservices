@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { SesService } from '@nextnm/nestjs-ses';
-import { SesEmailOptions } from '@nextnm/nestjs-ses'
-
+import { SesEmailOptions } from '@nextnm/nestjs-ses';
 
 @Injectable()
 export class EmailService {
-
   constructor(private sesService: SesService) {}
 
-
-  createPage(bodyContent:string){
-    return   `<!DOCTYPE html>
+  createPage(bodyContent: string) {
+    return `<!DOCTYPE html>
     <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
       xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -77,7 +74,7 @@ export class EmailService {
   }
 
   generateEmailTemplate(type: string, filter: any): string {
-    const { listName, location } = filter;
+    const { listName, location, sourceEmail } = filter;
 
     const emailMessage = {
       start: `
@@ -135,13 +132,22 @@ export class EmailService {
       <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.6rem; text-align: center; letter-spacing: 0.25px; color: rgba(0, 0, 0, 0.54);">
         The system had some problem to generate your file. Please try again.
       </div>
-      `
+      `,
+      connectInvite: `<div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.6rem; text-align: center; letter-spacing: 0.25px; color: rgba(0, 0, 0, 0.54);">
+      ${sourceEmail} has been invited you to create an new connection.
+      </div>`,
     };
 
     return this.createPage(emailMessage[type]);
   }
 
-  async sendEmail(sender: string, receivers: Array<string>, subject: string, type: string, filter: any){
+  async sendEmail(
+    sender: string,
+    receivers: Array<string>,
+    subject: string,
+    type: string,
+    filter: any
+  ) {
     const content = this.generateEmailTemplate(type, filter);
 
     const options: SesEmailOptions = {
@@ -149,10 +155,9 @@ export class EmailService {
       to: receivers.join(','),
       subject: subject,
       html: content,
-      replyTo:'',
+      replyTo: '',
     };
 
     await this.sesService.sendEmail(options);
-
   }
 }

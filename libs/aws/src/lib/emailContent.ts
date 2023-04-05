@@ -1,21 +1,17 @@
-type PrimaryContent = {
+type Content = {
   icon: string;
   title: string;
   body: Array<string>;
+  cta?: {
+    href: string;
+    body: string;
+  };
+  extra?: string;
 };
 
-type StartContent = PrimaryContent;
-
-type FinishContent = PrimaryContent & {
-  extra: string;
-};
-
-type ErrorContent = PrimaryContent;
-
-type Content = StartContent | FinishContent | ErrorContent;
-
-export function createEmailContent(type: string, filter: any, context: { sender: string }): Content {
+export function createEmailContent(type: string, filter: {listName: string, location: string}, context: { sender: string }): Content {
   const { listName, location } = filter;
+  const { sender } = context;
 
   const emailMessage = {
     start: {
@@ -39,16 +35,16 @@ export function createEmailContent(type: string, filter: any, context: { sender:
     },
     error: {
       icon: 'https://dpptfqp76xood.cloudfront.net/images/warning_black_24dp.png',
-      title: 'We have a problem generating your file',
+      title: 'We had a problem generating your file',
       body: [
-        'The system had some problem to generate your file. Please try again.',
+        'The system had problems generating your file. Please try again.',
       ],
     },
     connectInvite: {
       icon: 'https://dpptfqp76xood.cloudfront.net/images/pending_black_24dp.png',
       title: 'B2B connection invitation',
       body: [
-        `${context.sender} has invited you to create an new connection.`,
+        `${sender} has invited you to create an new connection.`,
       ]
     },
   };

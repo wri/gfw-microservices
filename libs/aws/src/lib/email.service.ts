@@ -15,7 +15,7 @@ export class EmailService {
     type: string,
     filter: any
   ) {
-    const content = createPage(createEmailContent(type, filter));
+    const content = createPage(createEmailContent(type, filter, { sender }));
     const options: SesEmailOptions = {
       from: sender,
       to: receivers.join(','),

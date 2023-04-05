@@ -13,7 +13,7 @@ export class EmailService {
     receivers: Array<string>,
     subject: string,
     type: string,
-    filter: any
+    filter: { listName: string; location: string }
   ) {
     const content = createPage(createEmailContent(type, filter, { sender }));
     const options: SesEmailOptions = {

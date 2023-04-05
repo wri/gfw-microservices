@@ -1,5 +1,5 @@
 import { SQLUtils } from '../util/sql.utils';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { SQL_CONFIG } from '../config/config';
@@ -28,7 +28,7 @@ export class UspGetListLockStatus {
         Promise<UspGetListLockStatusRecorset>
       >('uspGetListLockStatus', parameters);
       connection.disconnect();
-      console.log(recordsets);
+      Logger.log(recordsets);
       return recordsets;
     } catch (error) {
       connection.disconnect();

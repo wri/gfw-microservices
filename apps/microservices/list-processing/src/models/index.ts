@@ -63,7 +63,7 @@ export interface CopyOrMoveLargeListRequest {
   templateData: unknown;
   saveAsDraft: boolean;
   userId: number;
-  clientDatabase: number;
+  clientDatabase: string;
   organizationId: number;
   gfwListId: number;
   allLocationsSelected: boolean;

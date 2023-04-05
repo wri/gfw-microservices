@@ -8,7 +8,7 @@ import {
 import * as sql from 'mssql';
 import { SQLUtils } from '../util/sql.utils';
 import { SQL_CONFIG } from '../config/config';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 interface MaxId {
   max_id?: number;
@@ -36,6 +36,7 @@ export class ListBulkCopy {
       ...SQL_CONFIG,
       database: databaseName,
     };
+    Logger.log(`Upload bulk locations with configuration: ${JSON.stringify(clientConnectionConfiguration)}`, 'ListBulkCopy');
 
     const connection = new SQLUtils(clientConnectionConfiguration);
     await connection.connect();
@@ -134,7 +135,8 @@ export class ListBulkCopy {
       }
     }
 
-    const bulkRequest = await new Promise<void>((resolve, reject) => {
+    // Execute Bulk Insert
+    await new Promise<void>((resolve, reject) => {
       // Create a SQL Connection.
       const pool = new sql.ConnectionPool(
         clientConnectionConfiguration,
@@ -151,11 +153,13 @@ export class ListBulkCopy {
             .then(() => {
               resolve();
               //sql.close();
+              pool.close();
             })
             .catch((errorMessage) => {
               //logger.error('Executing Bulk Insert for Table ', list_table_name);
               //logger.error(errorMessage);
               //sql.close();
+              pool.close();
               reject(errorMessage);
             });
         }
@@ -183,11 +187,13 @@ export class ListBulkCopy {
       { field: 'start_location_id', type: sql.Int, value: max_id },
     ];
 
+    Logger.log(`Add Location to Analysis table with configuration: ${JSON.stringify(clientConnectionConfiguration)}`, 'ListBulkCopy');
+
     const recorsets = await connection.executeQueryArray<Promise<unknown[]>>(
       'uspAddNewLocationToAnalysisTable',
       sqlAddNewLocationToAnalysisTableParameters
     );
-    const resultGeoJson = createGeoJSON( Array.isArray(recorsets) ? recorsets : [recorsets]);
+    const resultGeoJson = createGeoJSON(Array.isArray(recorsets) ? recorsets : [recorsets]);
 
     return resultGeoJson;
   }

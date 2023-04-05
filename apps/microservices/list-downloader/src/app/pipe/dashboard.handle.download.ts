@@ -3,7 +3,11 @@ import { PassThrough } from 'stream';
 import { Logger } from '@nestjs/common';
 
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
-import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
+import {
+  EXCEL_TEMPLATES,
+  EXCEL_TEMPLATE_HEADERS,
+  FIELDS_NEEDED_CALCULATION,
+} from '../shared/constants';
 import { FilterLocationHaveStatus } from '../transform/filter.location.have.status';
 import { FilterObject } from '../transform/filter.object';
 import { FilterSelection } from '../transform/filter.selection';
@@ -115,11 +119,7 @@ export class DashboardHandleDownload extends IPipeService {
         .filter((x) => Object.prototype.hasOwnProperty.call(x, 'following'))
         .flatMap((x) => x.following)
         .map((x) => x.attribute),
-      'tree_cover_loss_brazil_biomes_yearly',
-      'tree_cover_loss_sea_landcover_yearly',
-      'tree_cover_loss_idn_landcover_yearly',
-      'south_america_presence',
-      'southeast_asia_presence',
+      ...FIELDS_NEEDED_CALCULATION,
     ]);
     return Array.from(allFields);
   }

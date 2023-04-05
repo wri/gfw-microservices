@@ -698,14 +698,6 @@ export const EXCEL_TEMPLATES = {
           },
         },
         {
-          attribute: 'tree_cover_loss_peat_yearly',
-          label: 'Peat',
-          following: {
-            attribute: 'tree_cover_loss_peat_yearly',
-            parsed: 'total',
-          },
-        },
-        {
           attribute: 'tree_cover_loss_intact_forest_yearly',
           label: 'Intact Forest Landscapes',
           following: {
@@ -1439,3 +1431,15 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Total Hectares',
   ],
 };
+
+export const FIELDS_NEEDED_CALCULATION = [
+  'tree_cover_loss_brazil_biomes_yearly',
+  'tree_cover_loss_sea_landcover_yearly',
+  'tree_cover_loss_idn_landcover_yearly',
+  'south_america_presence',
+  'southeast_asia_presence',
+  'brazil_biomes',
+  'total_area',
+  'soy_total_area',
+  'soy_pre2001_nonforest_area',
+];

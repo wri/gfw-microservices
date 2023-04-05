@@ -2,7 +2,7 @@ export function createPage(bodyContent: {
   icon: string;
   title: string;
   body: string[];
-  cta?: { href: string, body: string };
+  cta?: { href: string; body: string };
   extra?: string;
 }) {
   return `<!DOCTYPE html>
@@ -45,22 +45,33 @@ export function createPage(bodyContent: {
                     <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>
                       <tr>
                         <td align='center' style='padding:0;'>
-                          <img src='${bodyContent.icon}' alt='' style='width:105px;height:auto;display:block;'>
+                          <img src='${
+                            bodyContent.icon
+                          }' alt='' style='width:105px;height:auto;display:block;'>
                         </td>
                       </tr>
                       <tr>
                         <td align='center' style='padding:0;'>
-                          <p style="font-style:normal;font-weight:500;font-size:18px;line-height:15px;mso-line-height-rule:exactly;letter-spacing:0.4px;font-family:'Fira Sans',Arial,sans-serif;color:rgb(69,69,69);margin:25px;">${bodyContent.title}</p>
+                          <p style="font-style:normal;font-weight:500;font-size:18px;line-height:15px;mso-line-height-rule:exactly;letter-spacing:0.4px;font-family:'Fira Sans',Arial,sans-serif;color:rgb(69,69,69);margin:25px;">${
+                            bodyContent.title
+                          }</p>
                         </td>
                       </tr>
                       <tr>
                         <td align='center' style='padding:0;'>
-                        ${bodyContent.body.reduce((acc, paragraph) =>
-    acc.concat('',`<p style="font-style:normal;font-weight:400;font-size:12px;line-height:20px;mso-line-height-rule:exactly;letter-spacing:0.25px;font-family:'Fira Sans',Arial,sans-serif;color:rgb(117,117,117);margin:0;">${paragraph}</p>`), '')
-}
+                        ${bodyContent.body.reduce(
+                          (acc, paragraph) =>
+                            acc.concat(
+                              '',
+                              `<p style="font-style:normal;font-weight:400;font-size:12px;line-height:20px;mso-line-height-rule:exactly;letter-spacing:0.25px;font-family:'Fira Sans',Arial,sans-serif;color:rgb(117,117,117);margin:0;">${paragraph}</p>`
+                            ),
+                          ''
+                        )}
                         </td>
                       </tr>
-                      ${bodyContent.cta ? `
+                      ${
+                        bodyContent.cta
+                          ? `
                       <tr>
                         <td align='center' style='padding:20px 0 0 0;'>
                           <!--[if mso]>
@@ -74,11 +85,15 @@ export function createPage(bodyContent: {
                           </v:roundrect>
                           <![endif]-->
                         </td>
-                      </tr>` : ''}
+                      </tr>`
+                          : ''
+                      }
                     </table>
                   </td>
                 </tr>
-                ${bodyContent.extra ? `
+                ${
+                  bodyContent.extra
+                    ? `
                 <tr>
                   <td align='center' style="padding:0 71px; background:#ffffff">
                     <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>
@@ -91,7 +106,9 @@ export function createPage(bodyContent: {
                       </tr>
                     </table>
                   </td>
-                </tr>` : ''}
+                </tr>`
+                    : ''
+                }
                 <tr>
                   <td style='padding:30px 30px 10px 30px;background:#ffffff'>
                     <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>

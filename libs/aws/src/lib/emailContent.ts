@@ -9,7 +9,11 @@ type Content = {
   extra?: string;
 };
 
-export function createEmailContent(type: string, filter: {listName: string, location: string}, context: { sender: string }): Content {
+export function createEmailContent(
+  type: string,
+  filter: { listName: string; location: string },
+  context: { sender: string }
+): Content {
   const { listName, location } = filter;
   const { sender } = context;
 
@@ -36,16 +40,12 @@ export function createEmailContent(type: string, filter: {listName: string, loca
     error: {
       icon: 'https://dpptfqp76xood.cloudfront.net/images/warning_black_24dp.png',
       title: 'We had a problem generating your file',
-      body: [
-        'The system had problems generating your file. Please try again.',
-      ],
+      body: ['The system had problems generating your file. Please try again.'],
     },
     connectInvite: {
       icon: 'https://dpptfqp76xood.cloudfront.net/images/pending_black_24dp.png',
       title: 'B2B connection invitation',
-      body: [
-        `${sender} has invited you to create an new connection.`,
-      ]
+      body: [`${sender} has invited you to create an new connection.`],
     },
   };
 

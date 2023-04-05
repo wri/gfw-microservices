@@ -14,7 +14,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'SouthAmerica' || type == 'everything')
+      (type == 'southAmericaOverlap' || type == 'everything')
     ) {
       super.start(filters, 'sAmericaBiomes', 'south_america_brazil_biomes');
     }
@@ -24,7 +24,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'SouthAmerica' || type == 'everything')
+      (type == 'southAmericaOverlap' || type == 'everything')
     ) {
       const locations = data.filter(
         (location) => location.south_america_presence === 'true'
@@ -66,7 +66,8 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     if (
       listView === 'forest_change' &&
       selectedLocationsList.length != 1 &&
-      this.existSouthLocation
+      this.existSouthLocation &&
+      (type == 'southAmericaOverlap' || type == 'everything')
     ) {
       generateCSV(
         filters,

@@ -19,7 +19,7 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'SouthEastAsia' || type == 'everything')
+      (type == 'southEastAsiaOverlap' || type == 'everything')
     ) {
       super.start(filters, 'seAsiaOverlap', 'south_east_asia_overlap');
     }
@@ -29,7 +29,7 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
     const { listView, type } = filters;
     if (
       listView === 'forest_change' &&
-      (type == 'SouthEastAsia' || type == 'everything')
+      (type == 'southEastAsiaOverlap' || type == 'everything')
     ) {
       const locations = data.filter(
         (location) => location.southeast_asia_presence === 'true'
@@ -103,7 +103,8 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
     if (
       listView === 'forest_change' &&
       selectedLocationsList.length != 1 &&
-      this.existSouthEastLocation
+      this.existSouthEastLocation &&
+      (type == 'southEastAsiaOverlap' || type == 'everything')
     ) {
       generateCSV(
         filters,

@@ -101,23 +101,26 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
       });
     } else if (field.attribute === 'commodity_mill_priority_level') {
       Object.keys(yearlyData).forEach((year) => {
-        const currentRow = cloneRow(dataRow);
-        rowValue = yearlyData[year];
-        if (field.label) {
-          currentRow.push(field.label);
+        //TODO remove this if statement once we have data for 2021
+        if (parseInt(year, 10) < 2021) {
+          const currentRow = cloneRow(dataRow);
+          rowValue = yearlyData[year];
+          if (field.label) {
+            currentRow.push(field.label);
+          }
+
+          if (rowValue === 0) {
+            currentRow.push('Low');
+          } else if (rowValue === 1) {
+            currentRow.push('Medium');
+          } else {
+            currentRow.push('High');
+          }
+
+          currentRow.push(year);
+
+          csvData.push(currentRow);
         }
-
-        if (rowValue === 0) {
-          currentRow.push('Low');
-        } else if (rowValue === 1) {
-          currentRow.push('Medium');
-        } else {
-          currentRow.push('High');
-        }
-
-        currentRow.push(year);
-
-        csvData.push(currentRow);
       });
     } else {
       Object.keys(yearlyData).forEach((year) => {
@@ -176,6 +179,10 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
               currentRow.push(percent);
             }
 
+            csvData.push(currentRow);
+          } else {
+            currentRow.push(year);
+            currentRow.push(0);
             csvData.push(currentRow);
           }
         }

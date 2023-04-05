@@ -184,12 +184,13 @@ export class LocationService {
       );
       // Lock source and target list and set source list to draft
       await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
-      if (allLocationsSelected) {
-        selectedLocations = [];
-        selectedLocations = locationData.map(
-          (location: { location_id: number }) => location.location_id
-        );
-      }
+    }
+
+    if (allLocationsSelected) {
+      selectedLocations = [];
+      selectedLocations = locationData.map(
+        (location: { location_id: number }) => location.location_id
+      );
     }
 
     await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
@@ -301,6 +302,9 @@ export class LocationService {
                   `[${column}] = [${srcListAnalysisTable}].[${column}]`
               )
               .join(',');
+
+            Logger.log(`Selected Locations ${JSON.stringify(selectedLocations)} to Destination Locations: ${JSON.stringify(destLocationIds)}`, "LocationsService");
+            Logger.log(`Copy params: ${selectedListId}, ${createdListId}, ${clientDatabase}`, "LocationsService")
             selectedLocations.forEach((src_location_id, idx) => {
               promiseResolver = promiseResolver.then(() => {
                 return CopySingleLocationAnalysis(

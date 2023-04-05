@@ -14,7 +14,7 @@ type ErrorContent = PrimaryContent;
 
 type Content = StartContent | FinishContent | ErrorContent;
 
-export function createEmailContent(type: string, filter: any): Content {
+export function createEmailContent(type: string, filter: any, context: { sender: string }): Content {
   const { listName, location } = filter;
 
   const emailMessage = {
@@ -51,6 +51,13 @@ export function createEmailContent(type: string, filter: any): Content {
       body: [
         'The system had some problem to generate your file. Please try again.',
       ],
+    },
+    connectInvite: {
+      icon: 'https://dpptfqp76xood.cloudfront.net/images/pending_black_24dp.png',
+      title: 'B2B connection invitation',
+      body: [
+        `${context.sender} has invited you to create an new connection.`,
+      ]
     },
   };
 

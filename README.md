@@ -1,94 +1,108 @@
+## GFW-PRO Microservices
+
+This is a monorepo project that store all `GFW-PRO` microservices.
+
+### Install 
+
+First we have to install and use node with the version `16.15.1`
+
+Second you have to install the `nx` as global:
+
+```sh
+npm install -g nx
+```
+
+Install all dependencies needed for the project.
+
+```sh
+npm install
+``` 
+
+### Run
+
+Before running the microservices you have to create `.env` file inside the root of project, inside each project has an `example.env` file, where you can find ENVIRONMENT VARIABLE need for the project.
+
+#### List-Downloader
+
+The following command run the downloader microservices, this microservices has the logic to create CSV or Shapefile using the data stored inside the database. 
+
+```sh
+nx serve microservices-list-downloader
+``` 
+
+> Check the environment variable `AWS_TMP_QUEUE=` inside pro-temp **.secret** and microservices **.env** are pointing to the same queue.
+
+#### B2B
+
+The following command run the b2b, allow organizations share list between then. 
+
+```sh
+nx serve microservices-b2b
+``` 
+
+#### List-Processing
+
+The following command run the command to list-processing, grant the system to upload large list and realize copy or move of locations.
+
+```sh
+nx serve microservices-list-processing
+```
+
+> Check the environment variable `LISTS_MICROSERVICE_URL=` , inside **.secret** file in pro-temp project, is point to the right ip address
+
+```sh
+LISTS_MICROSERVICE_URL=http://192.168.5.147:3333/api
+```
+
+### Test
+
+If you want to run `test` can use the following command, just have to specify the name of the microservice.
+
+```sh
+nx test microservices-list-downloader
+```
+
+### Format 
+
+If you want to run `prettier` to format the code, can use the following command, just have to specify the name of the microservice.
+
+```sh
+nx format microservices-list-downloader
+```
 
 
-# WriMonorepos
+### Lint
 
-This project was generated using [Nx](https://nx.dev).
+If you want to run `lint` can use the following command, just have to specify the name of the microservice.
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
-
-🔎 **Smart, Fast and Extensible Build System**
-
-## Adding capabilities to your workspace
-
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
-
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
-
-Below are our core plugins:
-
-- [React](https://reactjs.org)
-  - `npm install --save-dev @nrwl/react`
-- Web (no framework frontends)
-  - `npm install --save-dev @nrwl/web`
-- [Angular](https://angular.io)
-  - `npm install --save-dev @nrwl/angular`
-- [Nest](https://nestjs.com)
-  - `npm install --save-dev @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `npm install --save-dev @nrwl/express`
-- [Node](https://nodejs.org)
-  - `npm install --save-dev @nrwl/node`
-
-There are also many [community plugins](https://nx.dev/community) you could add.
-
-## Generate an application
-
-Run `nx g @nrwl/react:app my-app` to generate an application.
-
-> You can use any of the plugins above to generate applications as well.
-
-When using Nx, you can create multiple applications and libraries in the same workspace.
-
-## Generate a library
-
-Run `nx g @nrwl/react:lib my-lib` to generate a library.
-
-> You can also use any of the plugins above to generate libraries as well.
-
-Libraries are shareable across libraries and applications. They can be imported from `@wri-monorepos/mylib`.
-
-## Development server
-
-Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `nx test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `nx e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev) to learn more.
+```sh
+nx lint microservices-list-downloader
+```
 
 
+### Project Structure
 
-## ☁ Nx Cloud
-
-### Distributed Computation Caching & Distributed Task Execution
-
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
-
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
+```sh
+.
+├── apps/              # contains the application projects.    
+│   └── microservices/
+│       ├── b2b/       # store all b2b logic 
+│       ├── list-downloader/ # store all list downloader logic
+│       └── list-processing/ # store all large list processing logic
+├── libs/       #contains the library projects
+│   ├── aws/    # shared library that know how to connect to AWS 
+│   ├── geo/    # shared library that store geo processing functions
+│   ├── shared/ # shared library for code that don't have a logic group.
+│   └── sql/    # shared library used to connect to the database and run the Stored Procedure. 
+├── test_files/
+├── tools/         # contains scripts that act on your code base. 
+├── .editorconfig  # file to standardize our IDE 
+├── .eslintrc.json # lint configuration file
+├── jest.config.ts # jest configuration file
+├── jest.preset.js # used to set stuff before running tests
+├── nx.json   # configures the Nx CLI itself
+├── package.json # store the libraries needed for the project
+├── README.md
+├── tsconfig.base.json # sets up the global TypeScript settings and creates aliases for each library to aid
+└── workspace.json # has the path of all shared libraries and project
+```

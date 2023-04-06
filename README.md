@@ -106,3 +106,15 @@ nx lint microservices-list-downloader
 ├── tsconfig.base.json # sets up the global TypeScript settings and creates aliases for each library to aid
 └── workspace.json # has the path of all shared libraries and project
 ```
+
+
+### Commit Lint
+
+Our project forces you to use the following pattern to commit on our project:
+
+> type(scope): subject
+
+- **scope** are our nx modules like `geo, microservices-list-downloader, microservices-list-processing, shared, sql`
+- **type** according with build commitlint conventional, we have the following types `chore, ci, docs, feat, fix, perf, refactor, revert, style, test`
+- **subject** the message that you want to pass thought your commit. 
+    

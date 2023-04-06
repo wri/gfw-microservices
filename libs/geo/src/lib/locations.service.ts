@@ -52,47 +52,33 @@ export class LocationService {
         features: [],
       };
 
-      const query = GetListLocations(
-        clientDatabase,
-        listId,
-        DEFAULT_LOCATION_ID
+      const selectedListData = this.geoService.createGeoJSON(uploadingData);
+
+      const selectedLocationsIDs = uploadingData.map(
+        (location) => location.location_id
       );
 
-      query
-        .then((result) => {
-          if (result == undefined) {
-            reject('listNotAccessible');
-          }
-
-          const selectedListData = this.geoService.createGeoJSON(result);
-
-          const selectedLocationsIDs = uploadingData.map(
-            (location) => location.location_id
+      if (!selectedListData) {
+        reject('GEO JSON creation not success');
+      } else {
+        const feats = selectedListData.features;
+        const filteredLocations = feats.filter((location) => {
+          return (
+            selectedLocationsIDs.indexOf(location.properties.location_id) >
+            -1
           );
+        });
 
-          if (!selectedListData) {
-            reject('GEO JSON creation not success');
-          } else {
-            const feats = selectedListData.features;
-            const filteredLocations = feats.filter((location) => {
-              return (
-                selectedLocationsIDs.indexOf(location.properties.location_id) >
-                -1
-              );
-            });
+        filteredLocations.forEach((location, j) => {
+          geojson.features.push({
+            type: 'Feature',
+            properties: featProps[j],
+            geometry: location.geometry,
+          });
+        });
 
-            filteredLocations.forEach((location, j) => {
-              geojson.features.push({
-                type: 'Feature',
-                properties: featProps[j],
-                geometry: location.geometry,
-              });
-            });
-
-            resolve(geojson);
-          }
-        })
-        .catch((error) => reject(error));
+        resolve(geojson);
+      }
     });
   };
 

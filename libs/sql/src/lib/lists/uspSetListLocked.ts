@@ -1,5 +1,5 @@
 import { SQLUtils } from '../util/sql.utils';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { SQL_CONFIG } from '../config/config';
@@ -7,7 +7,7 @@ import { SQL_CONFIG } from '../config/config';
 @Injectable()
 export class UspSetListLocked {
   async run(databaseName: string, listId: number, userId) {
-    console.log('userid', userId);
+    Logger.log('userid', userId);
     const parameters = [
       { field: 'list_id', type: sql.Int, value: listId },
       {

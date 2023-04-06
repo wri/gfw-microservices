@@ -52,47 +52,33 @@ export class LocationService {
         features: [],
       };
 
-      const query = GetListLocations(
-        clientDatabase,
-        listId,
-        DEFAULT_LOCATION_ID
+      const selectedListData = this.geoService.createGeoJSON(uploadingData);
+
+      const selectedLocationsIDs = uploadingData.map(
+        (location) => location.location_id
       );
 
-      query
-        .then((result) => {
-          if (result == undefined) {
-            reject('listNotAccessible');
-          }
-
-          const selectedListData = this.geoService.createGeoJSON(result);
-
-          const selectedLocationsIDs = uploadingData.map(
-            (location) => location.location_id
+      if (!selectedListData) {
+        reject('GEO JSON creation not success');
+      } else {
+        const feats = selectedListData.features;
+        const filteredLocations = feats.filter((location) => {
+          return (
+            selectedLocationsIDs.indexOf(location.properties.location_id) >
+            -1
           );
+        });
 
-          if (!selectedListData) {
-            reject('GEO JSON creation not success');
-          } else {
-            const feats = selectedListData.features;
-            const filteredLocations = feats.filter((location) => {
-              return (
-                selectedLocationsIDs.indexOf(location.properties.location_id) >
-                -1
-              );
-            });
+        filteredLocations.forEach((location, j) => {
+          geojson.features.push({
+            type: 'Feature',
+            properties: featProps[j],
+            geometry: location.geometry,
+          });
+        });
 
-            filteredLocations.forEach((location, j) => {
-              geojson.features.push({
-                type: 'Feature',
-                properties: featProps[j],
-                geometry: location.geometry,
-              });
-            });
-
-            resolve(geojson);
-          }
-        })
-        .catch((error) => reject(error));
+        resolve(geojson);
+      }
     });
   };
 
@@ -184,12 +170,13 @@ export class LocationService {
       );
       // Lock source and target list and set source list to draft
       await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
-      if (allLocationsSelected) {
-        selectedLocations = [];
-        selectedLocations = locationData.map(
-          (location: { location_id: number }) => location.location_id
-        );
-      }
+    }
+
+    if (allLocationsSelected) {
+      selectedLocations = [];
+      selectedLocations = locationData.map(
+        (location: { location_id: number }) => location.location_id
+      );
     }
 
     await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
@@ -301,6 +288,9 @@ export class LocationService {
                   `[${column}] = [${srcListAnalysisTable}].[${column}]`
               )
               .join(',');
+
+            Logger.log(`Selected Locations ${JSON.stringify(selectedLocations)} to Destination Locations: ${JSON.stringify(destLocationIds)}`, "LocationsService");
+            Logger.log(`Copy params: ${selectedListId}, ${createdListId}, ${clientDatabase}`, "LocationsService")
             selectedLocations.forEach((src_location_id, idx) => {
               promiseResolver = promiseResolver.then(() => {
                 return CopySingleLocationAnalysis(

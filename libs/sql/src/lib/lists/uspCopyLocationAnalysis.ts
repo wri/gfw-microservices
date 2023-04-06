@@ -1,5 +1,5 @@
 import { SQLUtils } from '../util/sql.utils';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { CopyLocationRequest } from './model';
@@ -28,7 +28,7 @@ export class UspCopyLocationAnalysis {
         value: statement,
       },
     ];
-
+    Logger.log(`${desListId} ${destLocationId} ${srcListId} ${srcLocationId} ${statement}`);
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {

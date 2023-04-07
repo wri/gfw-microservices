@@ -9,9 +9,7 @@ export class MillPriorityService extends DashboardHandleDownload {
     const { type, listView } = filters;
     if (
       listView === 'commodity_risk' &&
-      (type == 'palmRiskAnalysis' ||
-        type == 'millPriority' ||
-        type == 'everything')
+      ( type == 'millPriority' || type == 'everything')
     ) {
       super.start(filters, 'millPriority', 'mill_priority_history');
     }
@@ -21,9 +19,7 @@ export class MillPriorityService extends DashboardHandleDownload {
     const { type, listView } = filters;
     if (
       listView === 'commodity_risk' &&
-      (type == 'palmRiskAnalysis' ||
-        type == 'millPriority' ||
-        type == 'everything')
+      (type == 'millPriority' || type == 'everything')
     ) {
       super.process(data, filters);
     }

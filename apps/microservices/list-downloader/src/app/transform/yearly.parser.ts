@@ -61,7 +61,7 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
 
     let rowValue = 0;
 
-    if (field.attribute === 'tree_cover_loss_brazil_biomes_yearly') {
+    if (field.attribute === 'tree_cover_loss_brazil_biomes_yearly' && data.Country === 'Brazil') {
       const totalSubCategoryValues = {};
 
       const biomes = Object.keys(yearlyData);
@@ -89,12 +89,7 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
             currentRow.push(percent);
           }
 
-          if (
-            totalSubCategory > 0 &&
-            (data.south_america_presence === true ||
-              data.south_america_presence === 'true') &&
-            data.Country === 'Brazil'
-          ) {
+          if (totalSubCategory > 0) {
             csvData.push(currentRow);
           }
         });
@@ -102,7 +97,6 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
     } else if (field.attribute === 'commodity_mill_priority_level') {
       Object.keys(yearlyData).forEach((year) => {
         //TODO remove this if statement once we have data for 2021
-        if (parseInt(year, 10) < 2021) {
           const currentRow = cloneRow(dataRow);
           rowValue = yearlyData[year];
           if (field.label) {
@@ -120,7 +114,6 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
           currentRow.push(year);
 
           csvData.push(currentRow);
-        }
       });
     } else {
       Object.keys(yearlyData).forEach((year) => {

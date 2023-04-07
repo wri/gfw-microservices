@@ -5,6 +5,14 @@ import {
   parseListData,
 } from '../shared/functions';
 
+const filterBelow2021 = (ax) =>
+Object.entries(ax).reduce((acc, [key, value]) => {
+  if( parseInt(key, 10) < 2021 ){
+    acc[key] =  value
+  }
+  return acc
+}, {})
+
 const overheadParser = (
   operation,
   dataRow,
@@ -126,9 +134,11 @@ const overheadParser = (
     const currentRow = cloneRow(dataRow);
     operation.fields.forEach((field) => {
       if (field.type === 'yearly') {
-        const totalProp = data[field.attribute]
+        let totalProp = data[field.attribute]
           ? JSON.parse(data[field.attribute])
           : {};
+
+        totalProp = filterBelow2021(totalProp)
 
         let val = 0;
         Object.keys(totalProp).forEach((year, j) => {
@@ -162,8 +172,8 @@ const overheadParser = (
         }
       } else if (field.type === 'lastYear') {
         const rowValue = data[field.attribute];
-        const rowObj = JSON.parse(rowValue);
-        // const value = rowValue ? getLastValue(rowValue) : 0;
+        let rowObj = JSON.parse(rowValue);
+        rowObj = filterBelow2021(rowObj)
 
         const years = Object.keys(rowObj);
         const value = rowObj[years[years.length - 1]];

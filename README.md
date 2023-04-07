@@ -1,10 +1,10 @@
 ## GFW-PRO Microservices
 
-This is a monorepo project that store all `GFW-PRO` microservices.
+This is a monorepo project that contains all `GFW-PRO` microservices.
 
 ### Install 
 
-First we have to install and use node with the version `16.15.1`
+First, we have to install and use node version `16.15.1`
 
 Second you have to install the `nx` as global:
 
@@ -12,19 +12,31 @@ Second you have to install the `nx` as global:
 npm install -g nx
 ```
 
-Install all dependencies needed for the project.
+Install all dependencies needed for the project:
 
 ```sh
-npm install
+npm install --legacy-peer-deps
 ``` 
 
 ### Run
 
-Before running the microservices you have to create `.env` file inside the root of project, inside each project has an `example.env` file, where you can find ENVIRONMENT VARIABLE need for the project.
+Before running the microservices, you have to create a `.env` file inside the root of the project. 
+
+Inside each microservice app there is an `example.env` file where you can find `ENVIRONMENT VARIABLE`s needed for that app.
+
+If you consider having one .env is more convenient, here is a simple command to gather all the example.env files and create the .env file at the root of the repo:
+
+```sh
+cat apps/microservices/**/*.env | sort | uniq > .env
+```
+
+Here is the loading order of environment files: https://nx.dev/recipes/environment-variables/define-environment-variables
+
+
 
 #### List-Downloader
 
-The following command run the downloader microservices, this microservices has the logic to create CSV or Shapefile using the data stored inside the database. 
+The following command runs the downloader microservice; this microservice has the logic to create CSVs or Shapefiles using the data stored inside the database.
 
 ```sh
 nx serve microservices-list-downloader
@@ -34,7 +46,7 @@ nx serve microservices-list-downloader
 
 #### B2B
 
-The following command run the b2b, allow organizations share list between then. 
+The following command runs the b2b microservice; it allows organizations to share lists between them.
 
 ```sh
 nx serve microservices-b2b
@@ -42,21 +54,28 @@ nx serve microservices-b2b
 
 #### List-Processing
 
-The following command run the command to list-processing, grant the system to upload large list and realize copy or move of locations.
+The following command runs the list-processing microservice; it allows users to upload large lists and execute copy/move operations.
 
 ```sh
 nx serve microservices-list-processing
 ```
 
-> Check the environment variable `LISTS_MICROSERVICE_URL=` , inside **.secret** file in pro-temp project, is point to the right ip address
+> Check the environment variable `LISTS_MICROSERVICE_URL=` inside the **.secret** file in the `pro-temp` project. Make sure it is pointing to the right IP address.
 
 ```sh
 LISTS_MICROSERVICE_URL=http://192.168.5.147:3333/api
 ```
 
+or
+
+```sh
+LISTS_MICROSERVICE_URL=http://host.docker.internal:3333/api
+```
+> recommend that you connect to the special DNS name `host.docker.internal` which resolves to the internal IP address used by the host 
+
 ### Test
 
-If you want to run `test` can use the following command, just have to specify the name of the microservice.
+To run tests for a microservice, just specify the name of the microservice:
 
 ```sh
 nx test microservices-list-downloader
@@ -64,7 +83,7 @@ nx test microservices-list-downloader
 
 ### Format 
 
-If you want to run `prettier` to format the code, can use the following command, just have to specify the name of the microservice.
+If you want to run `prettier` to format the code, you can use the following command to specify the name of the microservice.
 
 ```sh
 nx format microservices-list-downloader
@@ -73,7 +92,7 @@ nx format microservices-list-downloader
 
 ### Lint
 
-If you want to run `lint` can use the following command, just have to specify the name of the microservice.
+If you want to run `lint`, you can use the following command;
 
 ```sh
 nx lint microservices-list-downloader
@@ -114,7 +133,22 @@ Our project forces you to use the following pattern to commit on our project:
 
 > type(scope): subject
 
-- **scope** are our nx modules like `geo, microservices-list-downloader, microservices-list-processing, shared, sql`
-- **type** according with build commitlint conventional, we have the following types `chore, ci, docs, feat, fix, perf, refactor, revert, style, test`
-- **subject** the message that you want to pass thought your commit. 
+- **type** according to build commitlint conventions, we have the following types:
+  - `chore`
+  - `ci`
+  - `docs`
+  - `feat` 
+  - `fix`
+  - `perf` 
+  - `refactor` 
+  - `revert`
+  - `style`
+  -  `test`
+- **scope** is our nx modules like: `
+  - `geo`
+  - `microservices-list-downloader`
+  - `microservices-list-processing`
+  - `shared`
+  - `sql`
+- **subject** the message that you want to pass with your commit. 
     

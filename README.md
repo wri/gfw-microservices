@@ -2,7 +2,7 @@
 
 This is a monorepo project that contains all `GFW-PRO` microservices.
 
-### Install 
+### Install
 
 First, we have to install and use node version `16.15.1`
 
@@ -16,11 +16,11 @@ Install all dependencies needed for the project:
 
 ```sh
 npm install --legacy-peer-deps
-``` 
+```
 
 ### Run
 
-Before running the microservices, you have to create a `.env` file inside the root of the project. 
+Before running the microservices, you have to create a `.env` file inside the root of the project.
 
 Inside each microservice app there is an `example.env` file where you can find `ENVIRONMENT VARIABLE`s needed for that app.
 
@@ -32,15 +32,13 @@ cat apps/microservices/**/*.env | sort | uniq > .env
 
 Here is the loading order of environment files: https://nx.dev/recipes/environment-variables/define-environment-variables
 
-
-
 #### List-Downloader
 
 The following command runs the downloader microservice; this microservice has the logic to create CSVs or Shapefiles using the data stored inside the database.
 
 ```sh
 nx serve microservices-list-downloader
-``` 
+```
 
 > Check the environment variable `AWS_TMP_QUEUE=` inside pro-temp **.secret** and microservices **.env** are pointing to the same queue.
 
@@ -50,7 +48,7 @@ The following command runs the b2b microservice; it allows organizations to shar
 
 ```sh
 nx serve microservices-b2b
-``` 
+```
 
 #### List-Processing
 
@@ -71,7 +69,8 @@ or
 ```sh
 LISTS_MICROSERVICE_URL=http://host.docker.internal:3333/api
 ```
-> recommend that you connect to the special DNS name `host.docker.internal` which resolves to the internal IP address used by the host 
+
+> recommend that you connect to the special DNS name `host.docker.internal` which resolves to the internal IP address used by the host
 
 ### Test
 
@@ -81,14 +80,13 @@ To run tests for a microservice, just specify the name of the microservice:
 nx test microservices-list-downloader
 ```
 
-### Format 
+### Format
 
 If you want to run `prettier` to format the code, you can use the following command to specify the name of the microservice.
 
 ```sh
 nx format microservices-list-downloader
 ```
-
 
 ### Lint
 
@@ -98,24 +96,23 @@ If you want to run `lint`, you can use the following command;
 nx lint microservices-list-downloader
 ```
 
-
 ### Project Structure
 
 ```sh
 .
-├── apps/              # contains the application projects.    
+├── apps/              # contains the application projects.
 │   └── microservices/
-│       ├── b2b/       # store all b2b logic 
+│       ├── b2b/       # store all b2b logic
 │       ├── list-downloader/ # store all list downloader logic
 │       └── list-processing/ # store all large list processing logic
 ├── libs/       #contains the library projects
-│   ├── aws/    # shared library that know how to connect to AWS 
+│   ├── aws/    # shared library that know how to connect to AWS
 │   ├── geo/    # shared library that store geo processing functions
 │   ├── shared/ # shared library for code that don't have a logic group.
-│   └── sql/    # shared library used to connect to the database and run the Stored Procedure. 
+│   └── sql/    # shared library used to connect to the database and run the Stored Procedure.
 ├── test_files/
-├── tools/         # contains scripts that act on your code base. 
-├── .editorconfig  # file to standardize our IDE 
+├── tools/         # contains scripts that act on your code base.
+├── .editorconfig  # file to standardize our IDE
 ├── .eslintrc.json # lint configuration file
 ├── jest.config.ts # jest configuration file
 ├── jest.preset.js # used to set stuff before running tests
@@ -125,7 +122,6 @@ nx lint microservices-list-downloader
 ├── tsconfig.base.json # sets up the global TypeScript settings and creates aliases for each library to aid
 └── workspace.json # has the path of all shared libraries and project
 ```
-
 
 ### Commit Lint
 
@@ -137,29 +133,31 @@ Our project forces you to use the following pattern to commit on our project:
   - `chore`
   - `ci`
   - `docs`
-  - `feat` 
+  - `feat`
   - `fix`
-  - `perf` 
-  - `refactor` 
+  - `perf`
+  - `refactor`
   - `revert`
   - `style`
-  -  `test`
+  - `test`
 - **scope** is our nx modules like: `
   - `geo`
   - `microservices-list-downloader`
   - `microservices-list-processing`
   - `shared`
   - `sql`
-- **subject** the message that you want to pass with your commit. 
-    
+- **subject** the message that you want to pass with your commit.
+
 ### NX Basic Commands
 
 #### Generate an application
+
 Run nx g @nrwl/nest:app my-app to generate an application.
 
 > When using Nx, you can create multiple applications and libraries in the same workspace.
 
 #### Generate a library
+
 Run nx g @nrwl/nest:lib my-lib to generate a library.
 
 > Libraries are shareable across libraries and applications. They can be imported from @wri-monorepos/mylib.

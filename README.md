@@ -152,3 +152,18 @@ Our project forces you to use the following pattern to commit on our project:
   - `sql`
 - **subject** the message that you want to pass with your commit. 
     
+### NX Basic Commands
+
+#### Generate an application
+Run nx g @nrwl/nest:app my-app to generate an application.
+
+> When using Nx, you can create multiple applications and libraries in the same workspace.
+
+#### Generate a library
+Run nx g @nrwl/nest:lib my-lib to generate a library.
+
+> Libraries are shareable across libraries and applications. They can be imported from @wri-monorepos/mylib.
+
+#### Development server
+
+Run `nx serve my-app` for a dev server. Navigate to http://localhost:3333/. The app will automatically reload if you change any of the source files.

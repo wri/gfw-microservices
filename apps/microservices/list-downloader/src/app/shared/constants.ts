@@ -1442,4 +1442,5 @@ export const FIELDS_NEEDED_CALCULATION = [
   'total_area',
   'soy_total_area',
   'soy_pre2001_nonforest_area',
+  'Investment Name',
 ];

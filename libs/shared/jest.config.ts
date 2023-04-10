@@ -13,4 +13,14 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/libs/shared',
+  collectCoverageFrom: [
+    "./src/**/*.{js,jsx,ts,tsx}"
+  ],
+  coverageReporters: [
+    "json",
+    "text",
+    "lcov",
+    "clover",
+    "cobertura"
+  ],
 };

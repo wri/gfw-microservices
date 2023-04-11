@@ -9,7 +9,7 @@ const generateCSV = (
   mountCsv: (
     table: string,
     list_name: string,
-    listLevelAnalysis: any
+    listLevelAnalysis
   ) => Array<Array<string>>
 ) => {
   if (filters.selectedLocationsList.length != 1) {

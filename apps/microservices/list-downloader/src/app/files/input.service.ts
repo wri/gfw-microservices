@@ -34,7 +34,7 @@ export class InputService extends IPipeService {
     this.startEmail(filters);
   }
 
-  process(analysisData: any) {
+  process(analysisData) {
     analysisData.forEach((data) => this.inputStream.write(data));
   }
 

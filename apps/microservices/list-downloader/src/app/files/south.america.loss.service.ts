@@ -11,21 +11,13 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
   private existSouthLocation = false;
 
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southAmericaTCL' || type == 'everything')
-    ) {
+    if (this.isSouthAmericaLossFile(filters)) {
       super.start(filters, 'sAmericaLoss', 'south_america_loss_of_forests');
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southAmericaTCL' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isSouthAmericaLossFile(filters)) {
       const locations = data.filter(
         (location) => location.south_america_presence === 'true'
       );
@@ -36,7 +28,7 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
     }
   }
 
-  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+  generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
@@ -94,12 +86,11 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
 
   finish(filters: GenerationFileRequest) {
     this.logger.log('Finish South America Loss');
-    const { listView, selectedLocationsList, type } = filters;
+    const { selectedLocationsList } = filters;
     if (
-      listView === 'forest_change' &&
+      this.isSouthAmericaLossFile(filters) &&
       selectedLocationsList.length != 1 &&
-      this.existSouthLocation &&
-      (type == 'southAmericaTCL' || type == 'everything')
+      this.existSouthLocation
     ) {
       generateCSV(
         filters,
@@ -109,5 +100,13 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
       );
     }
     this.existSouthLocation = false;
+  }
+
+  isSouthAmericaLossFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'forest_change' &&
+      (type == 'southAmericaTCL' || type == 'everything')
+    );
   }
 }

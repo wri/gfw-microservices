@@ -35,7 +35,7 @@ class EventEmitterTransform extends Transform {
     super({ objectMode: true });
   }
 
-  _transform(chunk: any, _, next) {
+  _transform(chunk, _, next) {
     const { Country } = chunk;
     this.eventEmitter.emit('storeCountry', Country);
     next();
@@ -51,11 +51,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   private countryAggregator: CountryAggregator;
 
   start(filters: GenerationFileRequest) {
-    const { type, selectedLocationsList } = filters;
-    if (
-      selectedLocationsList.length != 1 &&
-      (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
-    ) {
+    if (this.isForestChangeDiagnosticListSummaryFile(filters)) {
       const { listID } = filters;
       this.logger.log(
         `(${listID}) - Starting Dashboard download for ForestChangeDiagnosticListSummary stream to process data`
@@ -71,12 +67,8 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
     }
   }
 
-  process(analysisData: any, filters: GenerationFileRequest) {
-    const { type, selectedLocationsList } = filters;
-    if (
-      selectedLocationsList.length != 1 &&
-      (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
-    ) {
+  process(analysisData, filters: GenerationFileRequest) {
+    if (this.isForestChangeDiagnosticListSummaryFile(filters)) {
       const { listName } = filters;
       analysisData.forEach((data) =>
         this.inputStream.write({ list_name: listName, ...data })
@@ -101,7 +93,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   }
 
   finish(filters: GenerationFileRequest) {
-    const { listView, type, selectedLocationsList } = filters;
+    const { listView, selectedLocationsList } = filters;
     let FILE_SUFFIX = '';
     if (listView === 'commodity_risk' && selectedLocationsList.length != 1) {
       FILE_SUFFIX = 'commodity_risk_diagnostic_list_summary';
@@ -109,10 +101,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
       FILE_SUFFIX = 'forest_change_diagnostic_list_summary';
     }
 
-    if (
-      selectedLocationsList.length != 1 &&
-      (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
-    ) {
+    if (this.isForestChangeDiagnosticListSummaryFile(filters)) {
       this.inputStream.removeAllListeners();
       const { key, listName, listLevelAnalysis } = filters;
       const csvData = [];
@@ -139,5 +128,13 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
       const csvString = csvData.map((row) => row.join(',')).join('\n');
       fs.writeFileSync(`/tmp/${key}_${FILE_SUFFIX}.csv`, `${csvString}\n`);
     }
+  }
+
+  isForestChangeDiagnosticListSummaryFile(filters: GenerationFileRequest) {
+    const { selectedLocationsList, type } = filters;
+    return (
+      selectedLocationsList.length != 1 &&
+      (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
+    );
   }
 }

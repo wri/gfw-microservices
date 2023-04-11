@@ -23,7 +23,6 @@ const brazilBiomesParser = ({ data, csvData, dataRow }) => {
 };
 
 const brazilBiomesYearlyTCLParser = ({
-  data,
   csvData,
   field,
   yearlyData,
@@ -57,12 +56,7 @@ const brazilBiomesYearlyTCLParser = ({
         currentRow.push(percent);
       }
 
-      if (
-        totalSubCategory > 0 &&
-        (data.south_america_presence === true ||
-          data.south_america_presence === 'true') &&
-        data.Country === 'Brazil'
-      ) {
+      if (totalSubCategory > 0) {
         csvData.push(currentRow);
       }
     });

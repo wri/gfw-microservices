@@ -1,33 +1,27 @@
-import { sum } from 'lodash';
+import { NESTED_JSON_ATTRIBUTES } from '../shared/constants';
 import { cloneRow, formatPct, validatePct } from '../shared/functions';
+import { commodityMillPriorityLevelYearly } from './mill.priority.parser';
+import { brazilBiomesYearlyTCLParser } from './south.america.parser';
 
 const yearlyParser = (operation, dataRow, data, csvData) => {
-  operation.composites.forEach((field, index) => {
+  operation.composites.forEach((field) => {
     const yearlyData = data[field.attribute]
       ? JSON.parse(data[field.attribute])
       : {};
 
     let totalListLevelCount = 0;
 
-    const nestedJSONAttributes = [
-      'tree_cover_loss_brazil_biomes_yearly',
-      'tree_cover_loss_sea_landcover_yearly',
-      'tree_cover_loss_idn_landcover_yearly',
-    ]; //'commodity_mill_priority_level'
-
-    if (nestedJSONAttributes.indexOf(field.attribute) === -1) {
-      if (!yearlyData.forEach) {
+    if (NESTED_JSON_ATTRIBUTES.indexOf(field.attribute) === -1) {
+      if (typeof yearlyData === 'object') {
         Object.keys(yearlyData).forEach((year) => {
           totalListLevelCount += yearlyData[year];
         });
       }
     }
 
-    const totalStat = field.following
-      ? field.following
-      : operation.following.find((stat) => {
-          return stat.parsed === 'total';
-        });
+    const totalStat =
+      field.following ??
+      operation.following.find((stat) => stat.parsed === 'total');
 
     let totalStatValue = 0;
     if (totalStat && totalStat.attribute) {
@@ -35,11 +29,11 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
 
       if (totalAttr && typeof totalAttr === 'string') {
         totalAttr = JSON.parse(totalAttr);
-        if (totalAttr.forEach) {
-          totalStatValue = 0;
-          totalAttr.forEach((attr) => {
-            totalStatValue += attr;
-          });
+        if (Array.isArray(totalAttr)) {
+          totalStatValue = totalAttr.reduce(
+            (accumulator, currentValue) => accumulator + currentValue,
+            0
+          );
         } else {
           Object.keys(totalAttr).forEach((attr) => {
             const yearData = totalAttr[attr];
@@ -60,67 +54,22 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
     }
 
     let rowValue = 0;
-
     if (field.attribute === 'tree_cover_loss_brazil_biomes_yearly') {
-      const totalSubCategoryValues = {};
-
-      const biomes = Object.keys(yearlyData);
-      biomes.forEach((biome) => {
-        totalSubCategoryValues[biome] = sum(Object.values(yearlyData[biome]));
-      });
-
-      biomes.forEach((biomeName, biomeIndex) => {
-        const biomeYears = yearlyData[biomeName];
-        Object.keys(biomeYears).forEach((year) => {
-          const total = biomeYears[year];
-          const label = `${field.label} - ${biomes[biomeIndex]}`;
-
-          const currentRow = cloneRow(dataRow);
-          currentRow.push(label);
-          currentRow.push(total);
-          currentRow.push(year);
-
-          const totalSubCategory = totalSubCategoryValues[biomeName];
-          if (totalStat) {
-            currentRow.push(totalSubCategory);
-            const percent = formatPct(
-              validatePct((total / totalSubCategory) * 100)
-            );
-            currentRow.push(percent);
-          }
-
-          if (
-            totalSubCategory > 0 &&
-            (data.south_america_presence === true ||
-              data.south_america_presence === 'true') &&
-            data.Country === 'Brazil'
-          ) {
-            csvData.push(currentRow);
-          }
-        });
+      brazilBiomesYearlyTCLParser({
+        data,
+        csvData,
+        field,
+        yearlyData,
+        dataRow,
+        totalStat,
       });
     } else if (field.attribute === 'commodity_mill_priority_level') {
-      Object.keys(yearlyData).forEach((year) => {
-        //TODO remove this if statement once we have data for 2021
-        if (parseInt(year, 10) < 2021) {
-          const currentRow = cloneRow(dataRow);
-          rowValue = yearlyData[year];
-          if (field.label) {
-            currentRow.push(field.label);
-          }
-
-          if (rowValue === 0) {
-            currentRow.push('Low');
-          } else if (rowValue === 1) {
-            currentRow.push('Medium');
-          } else {
-            currentRow.push('High');
-          }
-
-          currentRow.push(year);
-
-          csvData.push(currentRow);
-        }
+      commodityMillPriorityLevelYearly({
+        yearlyData,
+        dataRow,
+        rowValue,
+        field,
+        csvData,
       });
     } else {
       Object.keys(yearlyData).forEach((year) => {

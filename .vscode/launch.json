@@ -8,7 +8,7 @@
       "type": "node",
       "request": "attach",
       "name": "Debug for Tasks MS",
-      "websocketAddress": "ws://localhost:9229/719daa45-67cc-48c3-9521-965222901b3a"
+      "websocketAddress": "ws://localhost:9229/82d65b30-a918-4f0b-b850-f3b1413c1fd7"
     },
   ]
 }

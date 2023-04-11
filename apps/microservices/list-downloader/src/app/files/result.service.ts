@@ -38,9 +38,9 @@ export class ResultService extends IPipeService {
     this.startEmail(filters);
   }
 
-  process(analysisData: any) {
+  process(analysisData) {
     const { listName } = this.filters;
-    analysisData.forEach((data: any) => {
+    analysisData.forEach((data) => {
       this.inputStream.write({
         ...data,
         'List Name': listName || '',

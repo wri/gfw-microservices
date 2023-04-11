@@ -1,25 +1,11 @@
 import { cloneRow, formatPct, validatePct } from '../shared/functions';
+import { accumulateYearlyParser } from './shared.parser';
 
 const percentParser = (operation, dataRow, data, csvData) => {
   operation.numerators.forEach((field) => {
     const currentRow = cloneRow(dataRow);
 
-    let tclOnAttribute = 0;
-    if (data[field.tclAttribute]) {
-      const yearlyData = JSON.parse(data[field.tclAttribute]);
-
-      if (yearlyData.forEach) {
-        yearlyData.forEach((year) => {
-          tclOnAttribute += year.result;
-        });
-      } else if (typeof yearlyData === 'number') {
-        tclOnAttribute += yearlyData;
-      } else {
-        Object.keys(yearlyData).forEach((year) => {
-          tclOnAttribute += yearlyData[year];
-        });
-      }
-    }
+    const tclOnAttribute = accumulateYearlyParser(data, field.tclAttribute);
     const attributeExtent = data[field.extentAttribute];
 
     const percent = formatPct(

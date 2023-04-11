@@ -2,15 +2,15 @@ import { Transform } from 'stream';
 
 import { TemplateOperation } from '../shared/model';
 
-import { overheadParser } from './overhead.parser';
-import { percentParser } from './percent.parser';
-import { totalParser } from './total.parser';
-import { yearlyParser } from './yearly.parser';
+import { overheadParser } from '../parser/overhead.parser';
+import { percentParser } from '../parser/percent.parser';
+import { totalParser } from '../parser/total.parser';
+import { yearlyParser } from '../parser/yearly.parser';
 
 class ManipulateDataForDashboard extends Transform {
   constructor(
     private templateOperations: TemplateOperation,
-    private listLevelAnalysis: any
+    private listLevelAnalysis
   ) {
     super({ objectMode: true });
   }

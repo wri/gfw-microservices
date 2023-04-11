@@ -1,5 +1,13 @@
 import { cloneRow } from '../shared/functions';
 
+const filterBelow2021 = (ax) =>
+  Object.entries(ax).reduce((acc, [key, value]) => {
+    if (parseInt(key, 10) < 2021) {
+      acc[key] = value;
+    }
+    return acc;
+  }, {});
+
 const priorityLabel = {
   0: 'Low',
   1: 'Medium',
@@ -27,9 +35,11 @@ const palmRiskAnalysisParser = ({ operation, dataRow, data, csvData }) => {
   const currentRow = cloneRow(dataRow);
   operation.fields.forEach((field) => {
     if (field.type === 'yearly') {
-      const totalProp = data[field.attribute]
+      let totalProp = data[field.attribute]
         ? JSON.parse(data[field.attribute])
         : {};
+
+      totalProp = filterBelow2021(totalProp);
 
       const val = Object.entries(totalProp).reduce((acc, [, value]) => {
         if (typeof value === 'number') {
@@ -47,7 +57,8 @@ const palmRiskAnalysisParser = ({ operation, dataRow, data, csvData }) => {
       }
     } else if (field.type === 'lastYear') {
       const rowValue = data[field.attribute];
-      const rowObj = JSON.parse(rowValue);
+      let rowObj = JSON.parse(rowValue);
+      rowObj = filterBelow2021(rowObj);
 
       const years = Object.keys(rowObj);
       const value = rowObj[years[years.length - 1]];

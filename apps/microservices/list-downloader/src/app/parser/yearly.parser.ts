@@ -54,9 +54,11 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
     }
 
     let rowValue = 0;
-    if (field.attribute === 'tree_cover_loss_brazil_biomes_yearly') {
+    if (
+      field.attribute === 'tree_cover_loss_brazil_biomes_yearly' &&
+      data.Country === 'Brazil'
+    ) {
       brazilBiomesYearlyTCLParser({
-        data,
         csvData,
         field,
         yearlyData,

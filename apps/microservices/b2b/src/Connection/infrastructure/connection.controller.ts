@@ -12,7 +12,7 @@ import { CreateConnectionDto } from '../application/dtos/connection.dto';
 import { ConnectionUseCases } from '../application/connection.use-case';
 import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto';
 import { IdNumericDto } from '../../Shared/application/dtos/id-numeric.dto';
-import { ConnectionAcceptHttpDto } from '../application/dtos/connection-status.dto';
+import { ConnectionAcceptHttpDto, ConnectionRejectHttpDto } from '../application/dtos/connection-status.dto';
 import { IdStringDto } from '../../Shared/application/dtos/id-string.dto';
 
 @Controller('api/connection')
@@ -29,6 +29,20 @@ export class ConnectionController {
       connectionAcceptDto,
     );
     if (result.isSuccess) return { msg: 'Connection accepted' };
+    const error = result.getError();
+    throw new HttpException(error.message, error.code);
+  }
+
+  @Post('reject/:id')
+  async rejectConnection(
+    @Param() { id }: IdNumericDto,
+    @Body() connectionrejectDto: ConnectionRejectHttpDto,
+  ) {
+    const result = await this.connectionUseCases.rejectConnection(
+      id,
+      connectionrejectDto,
+    );
+    if (result.isSuccess) return { msg: 'Connection rejected' };
     const error = result.getError();
     throw new HttpException(error.message, error.code);
   }

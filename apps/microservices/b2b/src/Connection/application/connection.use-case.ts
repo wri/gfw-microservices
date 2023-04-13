@@ -11,6 +11,7 @@ import { ConnectionDataMapper } from './connection.mapper';
 import {
   ConnectionAcceptHttpDto,
   ConnectionChangeDto,
+  ConnectionRejectHttpDto
 } from './dtos/connection-status.dto';
 import { ConnectionDbDto } from './dtos/connection-db.dto';
 import { ConnectionFiltersDto } from './dtos/connection-filters.dto';
@@ -49,6 +50,20 @@ export class ConnectionUseCases {
       status: ConnectionStatus.accepted,
     };
     const result = await this.connectionRepo.acceptConnection(changeStatusDto);
+    if (result.isSuccess) return Result.ok(true);
+    return Result.fail(result.getError());
+  }
+
+  async rejectConnection(
+    id: number,
+    rejectConnectionHttpDto: ConnectionRejectHttpDto,
+  ): ResultPromise<boolean> {
+    const changeStatusDto: ConnectionChangeDto = {
+      editEmail: rejectConnectionHttpDto.editEmail,
+      id,
+      status: ConnectionStatus.rejected,
+    };
+    const result = await this.connectionRepo.rejectConnection(changeStatusDto);
     if (result.isSuccess) return Result.ok(true);
     return Result.fail(result.getError());
   }

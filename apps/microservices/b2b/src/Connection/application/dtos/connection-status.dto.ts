@@ -16,3 +16,8 @@ export class ConnectionAcceptHttpDto {
   @IsEmail()
   editEmail: string;
 }
+
+export class ConnectionRejectHttpDto {
+  @IsEmail()
+  editEmail: string;
+}

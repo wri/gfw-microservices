@@ -18,4 +18,7 @@ export abstract class ConnectionRepository {
   abstract getConnections(
     filtersDto: ConnectionFiltersDto,
   ): ResultPromise<Connection[]>;
+  abstract rejectConnection(
+    changeStatusDto: ConnectionChangeDto,
+  ): ResultPromise<Number>;
 }

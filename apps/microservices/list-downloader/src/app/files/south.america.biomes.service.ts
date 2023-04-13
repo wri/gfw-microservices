@@ -16,7 +16,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
       listView === 'forest_change' &&
       (type == 'southAmericaOverlap' || type == 'everything')
     ) {
-      super.start(filters, 'sAmericaBiomes', 'south_america_brazil_biomes');
+      super.start(filters, 'sAmericaBiomes', 'south_america_overlap');
     }
   }
 
@@ -39,6 +39,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
   generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
+    console.log(EXCEL_TEMPLATES[table])
 
     EXCEL_TEMPLATES[table].forEach((key) => {
       const biomesObj = JSON.parse(listLevelAnalysis[key.name]);
@@ -72,7 +73,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
       generateCSV(
         filters,
         'sAmericaBiomesAggregate',
-        'south_america_brazil_biomes_aggregate',
+        'south_america_overlap_aggregate',
         this.generateAggregate
       );
     }

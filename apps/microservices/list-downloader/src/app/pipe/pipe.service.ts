@@ -54,6 +54,8 @@ export class PipeService {
       organizationDatabase,
       filters
     );
+
+    console.log(listSchema)
     const numberOfPages = await this.uspGetAnalysisDataCountForUserList.run(
       organizationDatabase,
       filters

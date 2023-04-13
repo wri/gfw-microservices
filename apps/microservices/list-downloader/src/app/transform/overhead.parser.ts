@@ -12,6 +12,7 @@ const overheadParser = (
   csvData,
   listLevelAnalysis
 ) => {
+  //console.log(dataRow)
   if (operation.name === 'list_name') {
     const { list_name } = data;
     dataRow.push(list_name ?? '');
@@ -29,7 +30,49 @@ const overheadParser = (
         dataRow.push(data['Location Name']);
       }
     }
+  } else if (operation.name === 'data_layer') {
+    const argentinaOTBN = JSON.parse(data.arg_otbn_area);
+    const brazilBiomes = JSON.parse(data.brazil_biomes);
+    console.log(data, brazilBiomes)
+
+    if (Object.entries(argentinaOTBN).length > 0) {
+      let total = 0;
+      Object.keys(argentinaOTBN).forEach((layer) => {
+        total += argentinaOTBN[layer];
+      });
+
+      Object.keys(argentinaOTBN).forEach((category) => {
+        const currentRow = cloneRow(dataRow);
+        currentRow.push('Argentina OTBN');
+        currentRow.push(category);
+        const overlapPercent = formatPct(
+          validatePct((argentinaOTBN[category] / total) * 100)
+        );
+        currentRow.push(overlapPercent);
+
+        csvData.push(currentRow);
+      });
+    } else if (Object.entries(brazilBiomes).length > 0) {
+      let total = 0;
+      Object.keys(brazilBiomes).forEach((layer) => {
+        total += brazilBiomes[layer];
+      });
+
+      Object.keys(brazilBiomes).forEach((category) => {
+        const currentRow = cloneRow(dataRow);
+        currentRow.push('Brazil Biomes');
+        currentRow.push(category);
+        const overlapPercent = formatPct(
+          validatePct((brazilBiomes[category] / total) * 100)
+        );
+        currentRow.push(overlapPercent);
+
+        csvData.push(currentRow);
+      });
+    }
+    console.log(csvData);
   } else if (operation.name === 'brazil_biomes') {
+    //console.log(data);
     const brazilBiomeLocations = JSON.parse(data.brazil_biomes);
 
     let total = 0;
@@ -48,6 +91,7 @@ const overheadParser = (
 
       csvData.push(currentRow);
     });
+    console.log(csvData);
   } else if (operation.name === 'seAsia_overlap') {
     operation.composites.forEach((field) => {
       const totalStatValue = parseListData(field.attribute, [

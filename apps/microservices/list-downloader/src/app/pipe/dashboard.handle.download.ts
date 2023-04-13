@@ -32,8 +32,9 @@ export class DashboardHandleDownload extends IPipeService {
 
     const allFields = this.mountArrayWithAllFields(templateOperation);
 
+    //console.log(filters)
     this.organizeStream(filters, allFields, table, fileSuffix);
-
+    console.log(allFields)
     fs.writeFileSync(
       `/tmp/${key}_${fileSuffix}.csv`,
       `${EXCEL_TEMPLATE_HEADERS[table].join(',')}\n`
@@ -42,6 +43,7 @@ export class DashboardHandleDownload extends IPipeService {
 
   process(analysisData: any, filters: GenerationFileRequest) {
     const { listName } = filters;
+    
     analysisData.forEach((data) =>
       this.inputStream.write({ list_name: listName, ...data })
     );

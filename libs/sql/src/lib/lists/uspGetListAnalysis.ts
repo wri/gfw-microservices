@@ -11,6 +11,7 @@ export class UspGetListAnalysis {
     databaseName: string,
     { listId: listID }: ListColumnsByIDRequest
   ): Promise<unknown[]> {
+    console.log(listID, databaseName)
     const parameters = [{ field: 'list_id', type: sql.Int, value: listID }];
 
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });

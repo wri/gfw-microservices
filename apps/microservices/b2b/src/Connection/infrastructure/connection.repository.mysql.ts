@@ -93,4 +93,26 @@ export class ConnectionRepositoryMysql
     );
     return await acceptConnection.execute<number>();
   }
+
+  async rejectConnection(
+    changeStatusDto: ConnectionChangeDto,
+  ): ResultPromise<Number> {
+    const params = this.mapper.toChangeStatusConnectionParam(changeStatusDto);
+    const rejectConnection = this.storeProcedureFactory.create(
+      'uspChangeConnectionRequestStatus',
+      params,
+    );
+    return await rejectConnection.execute<number>();
+  }
+
+  async cancelConnection(
+    changeStatusDto: ConnectionChangeDto,
+  ): ResultPromise<Number> {
+    const params = this.mapper.toChangeStatusConnectionParam(changeStatusDto);
+    const cancelConnection = this.storeProcedureFactory.create(
+      'uspChangeConnectionRequestStatus',
+      params,
+    );
+    return await cancelConnection.execute<number>();
+  }
 }

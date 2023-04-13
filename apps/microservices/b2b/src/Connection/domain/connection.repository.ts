@@ -21,4 +21,7 @@ export abstract class ConnectionRepository {
   abstract rejectConnection(
     changeStatusDto: ConnectionChangeDto,
   ): ResultPromise<Number>;
+  abstract cancelConnection(
+    changeStatusDto: ConnectionChangeDto,
+  ): ResultPromise<Number>;
 }

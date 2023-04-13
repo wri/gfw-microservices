@@ -21,3 +21,8 @@ export class ConnectionRejectHttpDto {
   @IsEmail()
   editEmail: string;
 }
+
+export class ConnectionCancelHttpDto {
+  @IsEmail()
+  editEmail: string;
+}

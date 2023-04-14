@@ -9,7 +9,7 @@ import { ConnectionChangeDto } from '../application/dtos/connection-status.dto';
 import { Connection } from './connection';
 
 export abstract class ConnectionRepository {
-  abstract acceptConnection(
+  abstract updateStatusConnection(
     changeStatusDto: ConnectionChangeDto,
   ): ResultPromise<Number>;
   abstract getUserAdminOrganization(
@@ -18,10 +18,4 @@ export abstract class ConnectionRepository {
   abstract getConnections(
     filtersDto: ConnectionFiltersDto,
   ): ResultPromise<Connection[]>;
-  abstract rejectConnection(
-    changeStatusDto: ConnectionChangeDto,
-  ): ResultPromise<Number>;
-  abstract cancelConnection(
-    changeStatusDto: ConnectionChangeDto,
-  ): ResultPromise<Number>;
 }

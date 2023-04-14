@@ -12,10 +12,7 @@ import { CreateConnectionDto } from '../application/dtos/connection.dto';
 import { ConnectionUseCases } from '../application/connection.use-case';
 import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto';
 import { IdNumericDto } from '../../Shared/application/dtos/id-numeric.dto';
-import { 
-  ConnectionAcceptHttpDto,
-  ConnectionRejectHttpDto,
-  ConnectionCancelHttpDto } from '../application/dtos/connection-status.dto';
+import { ConnectionUpdateStatusHttpDto  } from '../application/dtos/connection-status.dto';
 import { IdStringDto } from '../../Shared/application/dtos/id-string.dto';
 
 @Controller('api/connection')
@@ -25,7 +22,7 @@ export class ConnectionController {
   @Post('accept/:id')
   async acceptConnection(
     @Param() { id }: IdNumericDto,
-    @Body() connectionAcceptDto: ConnectionAcceptHttpDto,
+    @Body() connectionAcceptDto: ConnectionUpdateStatusHttpDto,
   ) {
     const result = await this.connectionUseCases.acceptConnection(
       id,
@@ -39,7 +36,7 @@ export class ConnectionController {
   @Post('reject/:id')
   async rejectConnection(
     @Param() { id }: IdNumericDto,
-    @Body() connectionRejectDto: ConnectionRejectHttpDto,
+    @Body() connectionRejectDto: ConnectionUpdateStatusHttpDto,
   ) {
     const result = await this.connectionUseCases.rejectConnection(
       id,
@@ -53,7 +50,7 @@ export class ConnectionController {
   @Post('cancel/:id')
   async cancelConnection(
     @Param() { id }: IdNumericDto,
-    @Body() connectionCancelDto: ConnectionCancelHttpDto,
+    @Body() connectionCancelDto: ConnectionUpdateStatusHttpDto,
   ) {
     const result = await this.connectionUseCases.cancelConnection(
       id,

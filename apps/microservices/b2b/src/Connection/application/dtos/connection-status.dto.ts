@@ -12,17 +12,7 @@ export class ConnectionChangeDto {
   id: number;
 }
 
-export class ConnectionAcceptHttpDto {
-  @IsEmail()
-  editEmail: string;
-}
-
-export class ConnectionRejectHttpDto {
-  @IsEmail()
-  editEmail: string;
-}
-
-export class ConnectionCancelHttpDto {
+export class ConnectionUpdateStatusHttpDto {
   @IsEmail()
   editEmail: string;
 }

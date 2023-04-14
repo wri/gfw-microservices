@@ -21,9 +21,7 @@ export class ListMessageHandler {
   @SqsMessageHandler('list-generate-file', true)
   async handleMessage(messages: Array<AWS.SQS.Message>) {
     const [message] = messages;
-    console.log(message)
     const filters = this.reorganizeFilers(message);
-    console.log(filters)
 
     const { listID } = filters;
     // TODO: improve remove message should be automatically

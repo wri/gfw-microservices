@@ -35,7 +35,6 @@ class ManipulateDataForDashboard extends Transform {
         percentParser(operation, dataRow, data, csvData);
       }
     });
-    //console.log(dataRow)
     const result = [...csvData];
 
     if (dataRow.length > 0) {

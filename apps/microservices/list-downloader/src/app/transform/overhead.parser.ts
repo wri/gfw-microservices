@@ -12,7 +12,6 @@ const overheadParser = (
   csvData,
   listLevelAnalysis
 ) => {
-  //console.log(dataRow)
   if (operation.name === 'list_name') {
     const { list_name } = data;
     dataRow.push(list_name ?? '');
@@ -33,7 +32,6 @@ const overheadParser = (
   } else if (operation.name === 'data_layer') {
     const argentinaOTBN = JSON.parse(data.arg_otbn_area);
     const brazilBiomes = JSON.parse(data.brazil_biomes);
-    console.log(data, brazilBiomes)
 
     if (Object.entries(argentinaOTBN).length > 0) {
       let total = 0;
@@ -70,9 +68,7 @@ const overheadParser = (
         csvData.push(currentRow);
       });
     }
-    console.log(csvData);
   } else if (operation.name === 'brazil_biomes') {
-    //console.log(data);
     const brazilBiomeLocations = JSON.parse(data.brazil_biomes);
 
     let total = 0;
@@ -91,7 +87,6 @@ const overheadParser = (
 
       csvData.push(currentRow);
     });
-    console.log(csvData);
   } else if (operation.name === 'seAsia_overlap') {
     operation.composites.forEach((field) => {
       const totalStatValue = parseListData(field.attribute, [

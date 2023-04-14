@@ -752,6 +752,10 @@ export const EXCEL_TEMPLATES = {
   ],
   sAmericaBiomesAggregate: [
     {
+      name: 'arg_otbn_area',
+      parsed: 'overhead',
+    },
+    {
       name: 'brazil_biomes',
       parsed: 'overhead',
     },

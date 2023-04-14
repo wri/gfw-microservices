@@ -39,7 +39,6 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
   generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
-    console.log(EXCEL_TEMPLATES[table])
 
     EXCEL_TEMPLATES[table].forEach((key) => {
       const biomesObj = JSON.parse(listLevelAnalysis[key.name]);

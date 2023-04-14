@@ -32,9 +32,7 @@ export class DashboardHandleDownload extends IPipeService {
 
     const allFields = this.mountArrayWithAllFields(templateOperation);
 
-    //console.log(filters)
     this.organizeStream(filters, allFields, table, fileSuffix);
-    console.log(allFields)
     fs.writeFileSync(
       `/tmp/${key}_${fileSuffix}.csv`,
       `${EXCEL_TEMPLATE_HEADERS[table].join(',')}\n`

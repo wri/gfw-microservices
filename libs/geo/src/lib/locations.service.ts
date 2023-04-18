@@ -172,12 +172,12 @@ export class LocationService {
       await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
     }
 
-    if (allLocationsSelected) {
-      selectedLocations = [];
-      selectedLocations = locationData.map(
-        (location: { location_id: number }) => location.location_id
-      );
-    }
+    // Map the location ids to an array in the order they were returned
+    selectedLocations = [];
+    selectedLocations = locationData.map(
+      (location: { location_id: number }) => location.location_id
+    );
+
 
     await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
     if (moveToList) {

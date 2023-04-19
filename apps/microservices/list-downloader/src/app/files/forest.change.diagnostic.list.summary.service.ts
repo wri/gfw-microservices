@@ -134,7 +134,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
     const { selectedLocationsList, type } = filters;
     return (
       selectedLocationsList.length != 1 &&
-      (type == 'forestChangeDiagnosticListSummary' || type == 'everything')
+      (type === 'forestChangeDiagnosticListSummary' || type === 'everything')
     );
   }
 }

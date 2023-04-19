@@ -74,7 +74,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     const { listView, type } = filters;
     return (
       listView === 'forest_change' &&
-      (type == 'southAmericaOverlap' || type == 'everything')
+      (type === 'southAmericaOverlap' || type === 'everything')
     );
   }
 }

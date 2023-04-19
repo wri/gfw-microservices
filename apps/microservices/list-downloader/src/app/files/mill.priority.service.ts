@@ -17,7 +17,7 @@ export class MillPriorityService extends DashboardHandleDownload {
     }
   }
 
-  finish(filters: GenerationFileRequest) {
+  finish() {
     this.logger.log('Mill Priority Finish');
   }
 
@@ -25,7 +25,7 @@ export class MillPriorityService extends DashboardHandleDownload {
     const { listView, type } = filters;
     return (
       listView === 'commodity_risk' &&
-      (type == 'millPriority' || type == 'everything')
+      (type === 'millPriority' || type === 'everything')
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow, parseListData } from '../shared/functions';
@@ -102,7 +102,7 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
     const { listView, type } = filters;
     return (
       listView === 'forest_change' &&
-      (type == 'southEastAsiaTCL' || type == 'everything')
+      (type === 'southEastAsiaTCL' || type === 'everything')
     );
   }
 }

@@ -56,7 +56,7 @@ export class DeforestationTrendsService extends DashboardHandleDownload {
     const { listView, type } = filters;
     return (
       listView === 'commodity_risk' &&
-      (type == 'deforestationTrends' || type == 'everything')
+      (type === 'deforestationTrends' || type === 'everything')
     );
   }
 }

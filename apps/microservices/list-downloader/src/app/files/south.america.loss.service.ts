@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow } from '../shared/functions';
@@ -106,7 +106,7 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
     const { listView, type } = filters;
     return (
       listView === 'forest_change' &&
-      (type == 'southAmericaTCL' || type == 'everything')
+      (type === 'southAmericaTCL' || type === 'everything')
     );
   }
 }

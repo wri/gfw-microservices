@@ -847,7 +847,6 @@ export const EXCEL_TEMPLATES = {
           attribute: 'tree_cover_loss_idn_primary_forest_yearly',
           label: 'Primary Forest',
         },
-        2,
       ],
     },
   ],

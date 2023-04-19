@@ -7,10 +7,10 @@ import {
 
 const southEastAsiaOverlapParser = ({
   operation,
-  dataRow,
-  data,
-  csvData,
   listLevelAnalysis,
+  data,
+  dataRow,
+  csvData,
 }) => {
   operation.composites.forEach((field) => {
     const totalStatValue = parseListData(field.attribute, [listLevelAnalysis]);

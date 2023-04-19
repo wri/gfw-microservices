@@ -19,7 +19,9 @@ const categoryParser = ({ totalProp, currentRow }) => {
     totalProp[Object.keys(totalProp)[Object.keys(totalProp).length - 1]];
 
   const label = priorityLabel[lastYear];
-  currentRow.push(label);
+  if (label) {
+    currentRow.push(label);
+  }
 };
 
 const lastYearParser = ({ totalProp, currentRow }) => {
@@ -31,7 +33,7 @@ const lastYearParser = ({ totalProp, currentRow }) => {
   }
 };
 
-const palmRiskAnalysisParser = ({ operation, dataRow, data, csvData }) => {
+const palmRiskAnalysisParser = ({ operation, data, dataRow, csvData }) => {
   const currentRow = cloneRow(dataRow);
   operation.fields.forEach((field) => {
     if (field.type === 'yearly') {
@@ -50,7 +52,7 @@ const palmRiskAnalysisParser = ({ operation, dataRow, data, csvData }) => {
 
       if (field.parsed === 'category') {
         categoryParser({ totalProp, currentRow });
-      } else if (field.parsed === 'aggregate') {
+      } else if (field.parsed === 'aggregate' && val) {
         currentRow.push(val);
       } else if (field.parsed === 'last') {
         lastYearParser({ totalProp, currentRow });
@@ -64,11 +66,15 @@ const palmRiskAnalysisParser = ({ operation, dataRow, data, csvData }) => {
       const value = rowObj[years[years.length - 1]];
       const priority = priorityLabel[value];
 
-      currentRow.push(priority);
+      if (priority) {
+        currentRow.push(priority);
+      }
     }
   });
 
-  csvData.push(currentRow);
+  if (currentRow.length > 0) {
+    csvData.push(currentRow);
+  }
 };
 
 export { palmRiskAnalysisParser };

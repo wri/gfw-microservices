@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import {
@@ -103,7 +103,7 @@ export class ForestLossService extends DashboardHandleDownload {
     const { listView, type } = filters;
     return (
       listView === 'forest_change' &&
-      (type == 'forestLoss' || type == 'everything')
+      (type === 'forestLoss' || type === 'everything')
     );
   }
 }

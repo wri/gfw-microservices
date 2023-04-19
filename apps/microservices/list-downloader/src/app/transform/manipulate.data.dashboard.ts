@@ -20,19 +20,19 @@ class ManipulateDataForDashboard extends Transform {
     const dataRow = [];
     this.templateOperations.forEach((operation) => {
       if (operation.parsed === 'overhead') {
-        overheadParser(
+        overheadParser({
           operation,
-          dataRow,
+          listLevelAnalysis: this.listLevelAnalysis,
           data,
+          dataRow,
           csvData,
-          this.listLevelAnalysis
-        );
+        });
       } else if (operation.parsed === 'total') {
-        totalParser(operation, dataRow, data);
+        totalParser({ operation, data, dataRow });
       } else if (operation.parsed === 'yearly') {
-        yearlyParser(operation, dataRow, data, csvData);
+        yearlyParser({ operation, data, dataRow, csvData });
       } else if (operation.parsed === 'percent') {
-        percentParser(operation, dataRow, data, csvData);
+        percentParser({ operation, data, dataRow, csvData });
       }
     });
     const result = [...csvData];

@@ -1,7 +1,8 @@
 import { accumulateYearlyParser } from './shared.parser';
 
-const totalParser = (operation, dataRow, data) => {
-  const total = accumulateYearlyParser(data, operation.name);
+const totalParser = ({ operation, data, dataRow }) => {
+  const { name } = operation;
+  const total = accumulateYearlyParser(data, name);
   dataRow.push(total);
 };
 

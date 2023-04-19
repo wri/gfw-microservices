@@ -1,8 +1,9 @@
 import { sum } from 'lodash';
 import { cloneRow, formatPct, validatePct } from '../shared/functions';
 
-const brazilBiomesParser = ({ data, csvData, dataRow }) => {
-  const brazilBiomeLocations = JSON.parse(data.brazil_biomes);
+const brazilBiomesParser = ({ data, dataRow, csvData }) => {
+  const { brazil_biomes } = data;
+  const brazilBiomeLocations = JSON.parse(brazil_biomes ?? '{}');
 
   let total = 0;
   Object.keys(brazilBiomeLocations).forEach((biome) => {
@@ -23,11 +24,11 @@ const brazilBiomesParser = ({ data, csvData, dataRow }) => {
 };
 
 const brazilBiomesYearlyTCLParser = ({
-  csvData,
   field,
   yearlyData,
-  dataRow,
   totalStat,
+  dataRow,
+  csvData,
 }) => {
   const totalSubCategoryValues = {};
 
@@ -40,7 +41,7 @@ const brazilBiomesYearlyTCLParser = ({
     const biomeYears = yearlyData[biomeName];
     Object.keys(biomeYears).forEach((year) => {
       const total = biomeYears[year];
-      const label = `${field.label} - ${biomes[biomeIndex]}`;
+      const label = `${field.label ?? ''} - ${biomes[biomeIndex]}`;
 
       const currentRow = cloneRow(dataRow);
       currentRow.push(label);

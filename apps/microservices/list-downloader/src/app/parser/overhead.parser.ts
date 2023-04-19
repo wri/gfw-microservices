@@ -9,13 +9,13 @@ import { soyParser } from './soy.parser';
 import { palmRiskAnalysisParser } from './palm.risk.analysis.parser';
 import { diagnosticLocationSummaryParser } from './diagnostic.location.summary.parser';
 
-const overheadParser = (
+const overheadParser = ({
   operation,
-  dataRow,
+  listLevelAnalysis,
   data,
+  dataRow,
   csvData,
-  listLevelAnalysis
-) => {
+}) => {
   const parserFunctions = {
     list_name: listNameParser,
     pie_chart: pieChartParser,

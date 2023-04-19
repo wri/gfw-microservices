@@ -40,10 +40,12 @@ const parseListData = (property, listLevelAnalysis) => {
     const yearlyData = JSON.parse(listAnalysisData[property]);
 
     if (
-      property === 'tree_cover_loss_brazil_biomes_yearly' ||
-      property === 'tree_cover_loss_sea_landcover_yearly' ||
-      property === 'tree_cover_loss_idn_landcover_yearly' ||
-      property === 'tree_cover_loss_idn_legal_yearly'
+      [
+        'tree_cover_loss_brazil_biomes_yearly',
+        'tree_cover_loss_sea_landcover_yearly',
+        'tree_cover_loss_idn_landcover_yearly',
+        'tree_cover_loss_idn_legal_yearly',
+      ].includes(property)
     ) {
       const biomes = Object.keys(yearlyData);
       biomes.forEach((biome) => {

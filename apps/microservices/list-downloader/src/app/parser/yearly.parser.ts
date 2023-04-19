@@ -3,8 +3,9 @@ import { cloneRow, formatPct, validatePct } from '../shared/functions';
 import { commodityMillPriorityLevelYearly } from './mill.priority.parser';
 import { brazilBiomesYearlyTCLParser } from './south.america.parser';
 
-const yearlyParser = (operation, dataRow, data, csvData) => {
-  operation.composites.forEach((field) => {
+const yearlyParser = ({ operation, data, dataRow, csvData }) => {
+  const { composites, following } = operation;
+  composites?.forEach((field) => {
     const yearlyData = data[field.attribute]
       ? JSON.parse(data[field.attribute])
       : {};
@@ -20,8 +21,7 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
     }
 
     const totalStat =
-      field.following ??
-      operation.following.find((stat) => stat.parsed === 'total');
+      field.following ?? following?.find((stat) => stat.parsed === 'total');
 
     let totalStatValue = 0;
     if (totalStat && totalStat.attribute) {
@@ -54,23 +54,19 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
     }
 
     let rowValue = 0;
-    if (
-      field.attribute === 'tree_cover_loss_brazil_biomes_yearly' &&
-      data.Country === 'Brazil'
-    ) {
+    if (field.attribute === ' ' && data.Country === 'Brazil') {
       brazilBiomesYearlyTCLParser({
-        csvData,
         field,
         yearlyData,
-        dataRow,
         totalStat,
+        dataRow,
+        csvData,
       });
     } else if (field.attribute === 'commodity_mill_priority_level') {
       commodityMillPriorityLevelYearly({
         yearlyData,
-        dataRow,
-        rowValue,
         field,
+        dataRow,
         csvData,
       });
     } else {

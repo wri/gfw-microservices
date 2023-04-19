@@ -1,15 +1,14 @@
 import { cloneRow } from '../shared/functions';
 
 const commodityMillPriorityLevelYearly = ({
+  field,
   yearlyData,
   dataRow,
-  rowValue,
-  field,
   csvData,
 }) => {
   Object.keys(yearlyData).forEach((year) => {
     const currentRow = cloneRow(dataRow);
-    rowValue = yearlyData[year];
+    const rowValue = yearlyData[year];
     if (field.label) {
       currentRow.push(field.label);
     }

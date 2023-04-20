@@ -11,7 +11,7 @@ type Content = {
 
 export function createEmailContent(
   type: string,
-  filter: { listName: string; location: string },
+  filter: { listName: string; location?: string },
   context: { sender: string }
 ): Content {
   const { listName, location } = filter;

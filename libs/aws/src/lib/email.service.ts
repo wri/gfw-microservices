@@ -6,14 +6,14 @@ import { createPage } from './htmlTemplate';
 
 @Injectable()
 export class EmailService {
-  constructor(private sesService: SesService) {}
+  constructor (private sesService: SesService) { }
 
   async sendEmail(
     sender: string,
     receivers: Array<string>,
     subject: string,
     type: string,
-    filter: { listName: string; location: string }
+    filter: { listName: string; location?: string }
   ) {
     const content = createPage(createEmailContent(type, filter, { sender }));
     const options: SesEmailOptions = {

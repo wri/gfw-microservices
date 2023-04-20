@@ -41,22 +41,24 @@ export class InputService extends IPipeService {
   finish(filters: GenerationFileRequest) {
     const { listID, key } = filters;
     this.logger.log(`(${listID}) - Finished to process data`);
-    this.inputStream.removeAllListeners();
-    this.inputStream.destroy();
+    this.inputStream.on('end', () => {
+      const output = fs.createWriteStream(`/tmp/${key}.zip`);
+      const archive = archiver('zip', {
+        zlib: { level: 9 }, // Sets the compression level.
+      });
+      archive.append(fs.createReadStream(`/tmp/${key}.csv`), {
+        name: `${key}.csv`,
+      });
+      archive.pipe(output);
+      archive.finalize();
 
-    const output = fs.createWriteStream(`/tmp/${key}.zip`);
-    const archive = archiver('zip', {
-      zlib: { level: 9 }, // Sets the compression level.
-    });
-    archive.append(fs.createReadStream(`/tmp/${key}.csv`), {
-      name: `${key}.csv`,
-    });
-    archive.pipe(output);
-    archive.finalize();
+      output.on('close', async () => {
+        this.logger.log(`(${listID}) - Data has been zipped`);
+        await this.uploadToS3(filters);
+      });
 
-    output.on('close', async () => {
-      this.logger.log(`(${listID}) - Data has been zipped`);
-      await this.uploadToS3(filters);
+      this.inputStream.removeAllListeners();
+      this.inputStream.destroy();
     });
   }
 

@@ -52,9 +52,15 @@ export class ShapefileService extends IPipeService {
 
   finish(filters: GenerationFileRequest) {
     const { listID, key } = filters;
-    this.convertGeojsonToSHP(key).then(async () => {
-      this.logger.log(`(${listID}) - Data has been zipped`);
-      await this.uploadToS3(filters);
+    this.logger.log(`(${listID}) - Finished to process data`);
+    this.inputStream.on('end', () => {
+      this.convertGeojsonToSHP(key).then(async () => {
+        this.logger.log(`(${listID}) - Data has been zipped`);
+        await this.uploadToS3(filters);
+      });
+
+      this.inputStream.removeAllListeners();
+      this.inputStream.destroy();
     });
   }
 

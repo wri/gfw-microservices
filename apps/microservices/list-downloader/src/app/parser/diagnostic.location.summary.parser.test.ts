@@ -1,7 +1,7 @@
 import { diagnosticLocationSummaryParser } from './diagnostic.location.summary.parser';
 
 describe('Diagnostic Location Summary Parser', () => {
-  test('Receive empty and get an empty array', () => {
+  test('Receive empty and get ["0.00", "0.00", ""]', () => {
     const dataRow = [];
     const csvData = [];
     diagnosticLocationSummaryParser({
@@ -16,8 +16,8 @@ describe('Diagnostic Location Summary Parser', () => {
       dataRow,
       csvData,
     });
-    expect(csvData.length).toEqual(0);
-    expect(csvData).toEqual([]);
+    expect(csvData.length).toEqual(1);
+    expect(csvData[0]).toEqual(["0.00", "0.00", ""]);
   });
 
   test('Need field value and total area as you chosen to be parsed as percent', () => {

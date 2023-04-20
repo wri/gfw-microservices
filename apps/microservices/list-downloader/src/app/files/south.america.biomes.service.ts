@@ -11,21 +11,13 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
   private existSouthLocation = false;
 
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southAmericaOverlap' || type == 'everything')
-    ) {
+    if (this.isSouthAmericaBiomesFile(filters)) {
       super.start(filters, 'sAmericaBiomes', 'south_america_brazil_biomes');
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southAmericaOverlap' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isSouthAmericaBiomesFile(filters)) {
       const locations = data.filter(
         (location) => location.south_america_presence === 'true'
       );
@@ -36,7 +28,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     }
   }
 
-  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+  generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
@@ -62,12 +54,11 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
 
   finish(filters: GenerationFileRequest) {
     this.logger.log('South America Biomes Finish');
-    const { listView, selectedLocationsList, type } = filters;
+    const { selectedLocationsList } = filters;
     if (
-      listView === 'forest_change' &&
+      this.isSouthAmericaBiomesFile(filters) &&
       selectedLocationsList.length != 1 &&
-      this.existSouthLocation &&
-      (type == 'southAmericaOverlap' || type == 'everything')
+      this.existSouthLocation
     ) {
       generateCSV(
         filters,
@@ -77,5 +68,13 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
       );
     }
     this.existSouthLocation = false;
+  }
+
+  isSouthAmericaBiomesFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'forest_change' &&
+      (type === 'southAmericaOverlap' || type === 'everything')
+    );
   }
 }

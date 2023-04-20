@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import {
@@ -15,11 +15,7 @@ import { generateCSV } from '../shared/generate.csv';
 @Injectable()
 export class HistoricPercentService extends DashboardHandleDownload {
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'historicPercent' || type == 'everything')
-    ) {
+    if (this.isHistoricPercentFile(filters)) {
       super.start(
         filters,
         'historicPercent',
@@ -28,17 +24,13 @@ export class HistoricPercentService extends DashboardHandleDownload {
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'historicPercent' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isHistoricPercentFile(filters)) {
       super.process(data, filters);
     }
   }
 
-  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+  generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
@@ -74,11 +66,10 @@ export class HistoricPercentService extends DashboardHandleDownload {
 
   finish(filters: GenerationFileRequest) {
     this.logger.log('Historic Percent Finish');
-    const { listView, selectedLocationsList, type } = filters;
+    const { selectedLocationsList } = filters;
     if (
-      listView === 'forest_change' &&
-      selectedLocationsList.length != 1 &&
-      (type == 'historicPercent' || type == 'everything')
+      this.isHistoricPercentFile(filters) &&
+      selectedLocationsList.length != 1
     ) {
       generateCSV(
         filters,
@@ -87,5 +78,13 @@ export class HistoricPercentService extends DashboardHandleDownload {
         this.generateAggregate
       );
     }
+  }
+
+  isHistoricPercentFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'forest_change' &&
+      (type === 'historicPercent' || type === 'everything')
+    );
   }
 }

@@ -73,7 +73,7 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaTCLService.start(filters);
   }
 
-  process(data: any, filters: GenerationFileRequest) {
+  process(data, filters: GenerationFileRequest) {
     this.forestLoos.process(data, filters);
     this.historicPercentService.process(data, filters);
     this.forestChangeDiagnosticLocationSummaryService.process(data, filters);
@@ -93,12 +93,12 @@ export class DashboardService extends IPipeService {
 
     this.forestLoos.finish(filters);
     this.historicPercentService.finish(filters);
-    this.forestChangeDiagnosticLocationSummaryService.finish(filters);
+    this.forestChangeDiagnosticLocationSummaryService.finish();
     this.forestChangeDiagnosticListSummaryService.finish(filters);
-    this.commodityRiskDiagnosticLocationSummaryService.finish(filters);
+    this.commodityRiskDiagnosticLocationSummaryService.finish();
     this.deforestationTrendsService.finish(filters);
     this.millPriorityService.finish(filters);
-    this.palmRiskAnalysisService.finish(filters);
+    this.palmRiskAnalysisService.finish();
     this.southAmericaBiomesService.finish(filters);
     this.southAmericaLossService.finish(filters);
     this.southEastAsiaOverlapService.finish(filters);

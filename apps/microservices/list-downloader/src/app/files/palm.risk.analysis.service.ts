@@ -6,26 +6,26 @@ import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 @Injectable()
 export class PalmRiskAnalysisService extends DashboardHandleDownload {
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      (type == 'palmRiskAnalysis' || type == 'everything')
-    ) {
+    if (this.isPalmRiskAnalysisFile(filters)) {
       super.start(filters, 'palmRiskAnalysis', 'palm_risk_analysis');
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      (type == 'palmRiskAnalysis' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isPalmRiskAnalysisFile(filters)) {
       super.process(data, filters);
     }
   }
 
-  finish(filters: GenerationFileRequest) {
+  finish() {
     this.logger.log('Finish Palm Risk Analysis');
+  }
+
+  isPalmRiskAnalysisFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'commodity_risk' &&
+      (type === 'palmRiskAnalysis' || type === 'everything')
+    );
   }
 }

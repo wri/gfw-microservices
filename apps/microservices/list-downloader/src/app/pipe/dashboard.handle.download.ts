@@ -40,7 +40,7 @@ export class DashboardHandleDownload extends IPipeService {
     );
   }
 
-  process(analysisData: any, filters: GenerationFileRequest) {
+  process(analysisData, filters: GenerationFileRequest) {
     const { listName } = filters;
     analysisData.forEach((data) =>
       this.inputStream.write({ list_name: listName, ...data })

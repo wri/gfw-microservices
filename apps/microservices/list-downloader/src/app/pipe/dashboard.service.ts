@@ -97,7 +97,7 @@ export class DashboardService extends IPipeService {
     this.forestChangeDiagnosticListSummaryService.finish(filters);
     this.commodityRiskDiagnosticLocationSummaryService.finish();
     this.deforestationTrendsService.finish(filters);
-    this.millPriorityService.finish(filters);
+    this.millPriorityService.finish();
     this.palmRiskAnalysisService.finish();
     this.southAmericaBiomesService.finish(filters);
     this.southAmericaLossService.finish(filters);

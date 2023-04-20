@@ -24,7 +24,7 @@ export abstract class IPipeService {
       [userEmail],
       `[GFW-PRO] File Generation for list ${listName}`,
       'start',
-      { ...filters, listName }
+      { listName }
     );
   }
 
@@ -36,7 +36,6 @@ export abstract class IPipeService {
       `[GFW-PRO] File Generation for list ${listName}`,
       'finish',
       {
-        ...filters,
         listName,
         location,
       }
@@ -51,7 +50,6 @@ export abstract class IPipeService {
       `[GFW-PRO] File Generation for list ${listName}`,
       'error',
       {
-        ...filters,
         listName,
       }
     );

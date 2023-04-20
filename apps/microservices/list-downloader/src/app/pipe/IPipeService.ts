@@ -14,7 +14,7 @@ export abstract class IPipeService {
     table?: string,
     fileSuffix?: string
   );
-  abstract process(data: any, filters: GenerationFileRequest);
+  abstract process(data, filters: GenerationFileRequest);
   abstract finish(filters: GenerationFileRequest);
 
   public async startEmail(filters: GenerationFileRequest) {

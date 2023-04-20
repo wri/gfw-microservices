@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow, parseListData } from '../shared/functions';
@@ -11,21 +11,13 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
   private existSouthEastLocation = false;
 
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southEastAsiaTCL' || type == 'everything')
-    ) {
+    if (this.isSouthEastAsiaTCL(filters)) {
       super.start(filters, 'seAsiaTCL', 'south_east_asia_tcl');
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southEastAsiaTCL' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isSouthEastAsiaTCL(filters)) {
       const locations = data.filter(
         (location) => location.southeast_asia_presence === 'true'
       );
@@ -36,7 +28,7 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
     }
   }
 
-  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+  generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
@@ -90,12 +82,11 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
 
   finish(filters: GenerationFileRequest) {
     this.logger.log('Finish South East Asia TCL');
-    const { listView, selectedLocationsList, type } = filters;
+    const { selectedLocationsList } = filters;
     if (
-      listView === 'forest_change' &&
+      this.isSouthEastAsiaTCL(filters) &&
       selectedLocationsList.length != 1 &&
-      this.existSouthEastLocation &&
-      (type == 'southEastAsiaTCL' || type == 'everything')
+      this.existSouthEastLocation
     ) {
       generateCSV(
         filters,
@@ -105,5 +96,13 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
       );
     }
     this.existSouthEastLocation = false;
+  }
+
+  isSouthEastAsiaTCL(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'forest_change' &&
+      (type === 'southEastAsiaTCL' || type === 'everything')
+    );
   }
 }

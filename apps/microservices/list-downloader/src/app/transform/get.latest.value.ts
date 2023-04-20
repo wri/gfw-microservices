@@ -6,21 +6,25 @@ class GetLatestValue extends Transform {
   }
 
   _transform(chunk, _, next) {
-
-    if(!this.fields) return next(null, undefined);
-    if(!chunk) return next(null, undefined);
+    if (!this.fields) return next(null, undefined);
+    if (!chunk) return next(null, undefined);
 
     let result = { ...chunk };
     this.fields.forEach((field) => {
-      const value = JSON.parse(result[field]);
-      if (typeof value != 'number') {
-        const key = Object.entries(value)
-          .filter(([, value]) => value > 0)
+      const values = JSON.parse(result[field]);
+      if (typeof values != 'number') {
+        const key = Object.entries(values)
+          .filter(([, value]) => {
+            if (typeof value === 'number') {
+              return value > 0;
+            }
+            return false;
+          })
           .map(([key]) => parseFloat(key))
           .reduce((a, b) => Math.max(a, b), -Infinity);
         result = {
           ...result,
-          [field]: value[key] ?? '',
+          [field]: values[key] ?? '',
         };
       }
     });

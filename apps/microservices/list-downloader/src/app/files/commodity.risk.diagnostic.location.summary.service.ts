@@ -6,11 +6,7 @@ import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 @Injectable()
 export class CommodityRiskDiagnosticLocationSummaryService extends DashboardHandleDownload {
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      (type == 'commodityRiskDiagnosticLocationSummary' || type == 'everything')
-    ) {
+    if (this.isCommodityRiskDiagnosticLocationSummaryFile(filters)) {
       super.start(
         filters,
         'commodityRiskDiagnosticLocationSummary',
@@ -19,17 +15,22 @@ export class CommodityRiskDiagnosticLocationSummaryService extends DashboardHand
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      (type == 'commodityRiskDiagnosticLocationSummary' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isCommodityRiskDiagnosticLocationSummaryFile(filters)) {
       super.process(data, filters);
     }
   }
 
-  finish(filters: GenerationFileRequest) {
+  finish() {
     this.logger.log('Commodity Risk Diagnostic Location Summary Finish');
+  }
+
+  isCommodityRiskDiagnosticLocationSummaryFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'commodity_risk' &&
+      (type === 'commodityRiskDiagnosticLocationSummary' ||
+        type === 'everything')
+    );
   }
 }

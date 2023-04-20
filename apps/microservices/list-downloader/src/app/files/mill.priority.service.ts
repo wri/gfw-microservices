@@ -6,30 +6,26 @@ import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 @Injectable()
 export class MillPriorityService extends DashboardHandleDownload {
   start(filters: GenerationFileRequest) {
-    const { type, listView } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      (type == 'palmRiskAnalysis' ||
-        type == 'millPriority' ||
-        type == 'everything')
-    ) {
+    if (this.isMillPriorityFile(filters)) {
       super.start(filters, 'millPriority', 'mill_priority_history');
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { type, listView } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      (type == 'palmRiskAnalysis' ||
-        type == 'millPriority' ||
-        type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isMillPriorityFile(filters)) {
       super.process(data, filters);
     }
   }
 
-  finish(filters: GenerationFileRequest) {
+  finish() {
     this.logger.log('Mill Priority Finish');
+  }
+
+  isMillPriorityFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'commodity_risk' &&
+      (type === 'millPriority' || type === 'everything')
+    );
   }
 }

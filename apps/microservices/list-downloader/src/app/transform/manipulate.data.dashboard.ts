@@ -2,15 +2,15 @@ import { Transform } from 'stream';
 
 import { TemplateOperation } from '../shared/model';
 
-import { overheadParser } from './overhead.parser';
-import { percentParser } from './percent.parser';
-import { totalParser } from './total.parser';
-import { yearlyParser } from './yearly.parser';
+import { overheadParser } from '../parser/overhead.parser';
+import { percentParser } from '../parser/percent.parser';
+import { totalParser } from '../parser/total.parser';
+import { yearlyParser } from '../parser/yearly.parser';
 
 class ManipulateDataForDashboard extends Transform {
   constructor(
     private templateOperations: TemplateOperation,
-    private listLevelAnalysis: any
+    private listLevelAnalysis
   ) {
     super({ objectMode: true });
   }
@@ -20,19 +20,19 @@ class ManipulateDataForDashboard extends Transform {
     const dataRow = [];
     this.templateOperations.forEach((operation) => {
       if (operation.parsed === 'overhead') {
-        overheadParser(
+        overheadParser({
           operation,
-          dataRow,
+          listLevelAnalysis: this.listLevelAnalysis,
           data,
+          dataRow,
           csvData,
-          this.listLevelAnalysis
-        );
+        });
       } else if (operation.parsed === 'total') {
-        totalParser(operation, dataRow, data);
+        totalParser({ operation, data, dataRow });
       } else if (operation.parsed === 'yearly') {
-        yearlyParser(operation, dataRow, data, csvData);
+        yearlyParser({ operation, data, dataRow, csvData });
       } else if (operation.parsed === 'percent') {
-        percentParser(operation, dataRow, data, csvData);
+        percentParser({ operation, data, dataRow, csvData });
       }
     });
     const result = [...csvData];

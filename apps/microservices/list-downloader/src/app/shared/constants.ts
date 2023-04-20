@@ -847,7 +847,6 @@ export const EXCEL_TEMPLATES = {
           attribute: 'tree_cover_loss_idn_primary_forest_yearly',
           label: 'Primary Forest',
         },
-        2,
       ],
     },
   ],
@@ -1442,4 +1441,12 @@ export const FIELDS_NEEDED_CALCULATION = [
   'total_area',
   'soy_total_area',
   'soy_pre2001_nonforest_area',
+  'Country',
+  'Investment Name',
+];
+
+export const NESTED_JSON_ATTRIBUTES = [
+  'tree_cover_loss_brazil_biomes_yearly',
+  'tree_cover_loss_sea_landcover_yearly',
+  'tree_cover_loss_idn_landcover_yearly',
 ];

@@ -18,9 +18,7 @@ const percentParser = ({ operation, data, dataRow, csvData }) => {
 
     currentRow.push(percent, tclOnAttribute);
 
-    if (attributeExtent) {
-      currentRow.push(attributeExtent);
-    }
+    currentRow.push(attributeExtent);
 
     csvData.push(currentRow);
   });

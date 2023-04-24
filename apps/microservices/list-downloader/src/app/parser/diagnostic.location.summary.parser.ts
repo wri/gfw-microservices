@@ -21,12 +21,12 @@ const diagnosticLocationSummaryParser = ({
   const { Country, State, total_area: totalArea } = data;
   const { fields, additionalFields } = operation;
 
-  if (Country) {
-    currentRow.push(Country);
-  }
-
   if (State) {
     currentRow.push(State);
+  }
+
+  if (Country) {
+    currentRow.push(Country);
   }
 
   fields?.forEach((field) => {

@@ -25,7 +25,9 @@ export class MillPriorityService extends DashboardHandleDownload {
     const { listView, type } = filters;
     return (
       listView === 'commodity_risk' &&
-      (type === 'millPriority' || type === 'everything')
+      (type === 'palmRiskAnalysis' ||
+        type === 'millPriority' ||
+        type === 'everything')
     );
   }
 }

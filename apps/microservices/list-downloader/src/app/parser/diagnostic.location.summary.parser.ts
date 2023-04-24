@@ -21,12 +21,12 @@ const diagnosticLocationSummaryParser = ({
   const { Country, State, total_area: totalArea } = data;
   const { fields, additionalFields } = operation;
 
-  if (Country) {
-    currentRow.push(Country);
-  }
-
   if (State) {
     currentRow.push(State);
+  }
+
+  if (Country) {
+    currentRow.push(Country);
   }
 
   fields?.forEach((field) => {
@@ -34,11 +34,11 @@ const diagnosticLocationSummaryParser = ({
       ? JSON.parse(data[field.attribute])
       : 0;
 
-      if (field.parsed === 'percent') {
-        percentParser({ currentRow,  fieldValue, totalArea });
-      } else if (field.parsed === 'aggregate') {
-        aggregateParser({ currentRow, fieldValue });
-      }
+    if (field.parsed === 'percent') {
+      percentParser({ currentRow, fieldValue, totalArea });
+    } else if (field.parsed === 'aggregate') {
+      aggregateParser({ currentRow, fieldValue });
+    }
   });
 
   additionalFields?.forEach((field) => {
@@ -60,7 +60,6 @@ const diagnosticLocationSummaryParser = ({
         break;
       default:
         currentRow.push('');
-
     }
   });
 

@@ -545,11 +545,11 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'State',
+      name: 'Country',
       parsed: 'overhead',
     },
     {
-      name: 'Country',
+      name: 'State',
       parsed: 'overhead',
     },
     {
@@ -588,11 +588,11 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'State',
+      name: 'Country',
       parsed: 'overhead',
     },
     {
-      name: 'Country',
+      name: 'State',
       parsed: 'overhead',
     },
     {

@@ -17,7 +17,7 @@ describe('Diagnostic Location Summary Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0]).toEqual(["0.00", "0.00", ""]);
+    expect(csvData[0]).toEqual(['0.00', '0.00', '']);
   });
 
   test('Need field value and total area as you chosen to be parsed as percent', () => {
@@ -37,7 +37,7 @@ describe('Diagnostic Location Summary Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0]).toEqual(['Brazil', 'Rio de Janeiro', '50.00']);
+    expect(csvData[0]).toEqual(['Rio de Janeiro', 'Brazil', '50.00']);
   });
 
   test('Need just the field value as you chosen to be parsed as aggregate', () => {
@@ -56,7 +56,7 @@ describe('Diagnostic Location Summary Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0]).toEqual(['Brazil', 'Rio de Janeiro', '100.22']);
+    expect(csvData[0]).toEqual(['Rio de Janeiro', 'Brazil', '100.22']);
   });
 
   test('Receive Additional fields as string and just return it ', () => {

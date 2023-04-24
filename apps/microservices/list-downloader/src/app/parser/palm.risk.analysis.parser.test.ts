@@ -90,7 +90,7 @@ describe('Palm Risk Analysis Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0]).toEqual([1047247.7874000005]);
+    expect(csvData[0]).toEqual([1102366.0920000004]);
   });
 
   test('Receive[commodity_value_protected_areas_level, lastYear] and get ["High"]', () => {

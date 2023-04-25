@@ -22,9 +22,10 @@ export class MillPriorityService extends DashboardHandleDownload {
   }
 
   isMillPriorityFile(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
+    const { listView, type, selectedLocationsList } = filters;
     return (
       listView === 'commodity_risk' &&
+      selectedLocationsList.length != 1 &&
       (type === 'palmRiskAnalysis' ||
         type === 'millPriority' ||
         type === 'everything')

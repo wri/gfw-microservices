@@ -1,3 +1,6 @@
+import { selectedList } from './../mock/listGeoMockData';
+import { GetTableAnalysisColumnsById, UnlockList } from "@wri-monorepos/sql";
+
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
   LIST_STATUS_ACTIVE: 2,
@@ -57,6 +60,9 @@ export const discernPropValue = (feature, prop) => {
   return propValue;
 };
 
+/**
+ * Not deprecated but not used anywhere
+ */
 export function getActiveTye(commodityType: string, currentActiveTye: string) {
   if (commodityType === 'palmOil') {
     return 'palmGeneric';
@@ -84,7 +90,7 @@ export function getCustomAttributeNamesAndGenericFields(
     if (
       template.template_datum_field_name_updated &&
       template.template_datum_field_name_updated !==
-        template.template_datum_field_name
+      template.template_datum_field_name
     ) {
       customAttributeNames.push(template.template_datum_field_name_updated);
     } else {
@@ -201,4 +207,129 @@ export function deleteGeoJSONFeatureProperties(geojson): void {
     delete feature.properties.flag_terrai;
     delete feature.properties.flag_viirs;
   });
+}
+
+export const ComposeAnalysisCopyQuery = (sourceListId: number, destinationListId: number, sourceLocationIds: number[], destinationLocationIds: number[], statement: string) => {
+  return `declare @SourceTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,sourceId int);
+          declare @DestinationTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,destinationId int);
+
+          declare @sourceIDs varchar(1000);
+          declare @destinationIDs varchar(1000);
+          declare @sourceID INT;
+          declare @destinationID INT;
+          declare @sourceListID INT;
+          declare @destinationListID INT;
+          declare @statement NVARCHAR(MAX)
+
+          SET @sourceListID = ${sourceListId};
+          SET @destinationListID = ${destinationListId};
+          SET @statement = '${statement}';
+          
+          SET @sourceIDs = '${sourceLocationIds.join(",")}';
+          SET @destinationIDs = '${destinationLocationIds.join(",")}';
+
+          insert into @SourceTableIds(sourceId) SELECT value from STRING_SPLIT(@sourceIDs, ',')
+
+          insert into @DestinationTableIds(destinationId) SELECT value from STRING_SPLIT(@destinationIDs, ',')
+
+          DECLARE copy_analysis_cursor CURSOR FOR 
+          SELECT sourceId, destinationId FROM @SourceTableIds A INNER JOIN @DestinationTableIds B ON A.Id = B.Id
+
+          OPEN copy_analysis_cursor  
+          FETCH NEXT FROM copy_analysis_cursor INTO @sourceID, @destinationID
+
+          WHILE @@FETCH_STATUS = 0  
+          BEGIN  
+                EXEC uspCopyLocationAnalysis @destinationListID, @destinationID, @sourceListID, @sourceID, @statement
+                FETCH NEXT FROM copy_analysis_cursor INTO @sourceID, @destinationID 
+          END 
+
+          CLOSE copy_analysis_cursor  
+          DEALLOCATE copy_analysis_cursor
+  `;
+}
+
+export const ComposeCopyQueryStatement = async (clientDatabase: string, selectedListId: number, srcListAnalysisTable: string) => {
+  const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId);
+  const columns = tableColumns.map((record: any) => record.COLUMN_NAME);
+  const statement = columns
+    .map(
+      (column) =>
+        `[${column}] = [${srcListAnalysisTable}].[${column}]`
+    )
+    .join(',');
+
+  return statement;
+}
+
+export type ListFilters = {
+  country: string;
+  state: string;
+  subState: string;
+  analysisAreaMin: number;
+  analysisAreaMax: number;
+  searchString: string;
+}
+
+export const ListHasFiltersApplies = (filters: ListFilters) => {
+  return filters.country || filters.state || filters.subState || filters.analysisAreaMin || filters.analysisAreaMax || filters.searchString;
+}
+
+export type ListValidationErrors = "MISSING_LIST_NAME" | "LIST_NAME_ALREADY_EXISTS" | "INVALID_LIST_NAME";
+
+export const ListNameHasErrors = (selectedNewOrExisting: string, listName: string, userListNames: string[]): [boolean, ListValidationErrors] => {
+  const lowerListName = listName ? listName.toLowerCase() : listName;
+  const checkListExists = userListNames.find(name => name === lowerListName);
+  const checkForPunctuation = lowerListName ? ContainsPunctuation(lowerListName) : false;
+
+  if (!listName) {
+    return [true, 'MISSING_LIST_NAME'];
+  } else if (checkListExists && selectedNewOrExisting === 'new') {
+    return [true, 'LIST_NAME_ALREADY_EXISTS'];
+  } else if (checkForPunctuation && selectedNewOrExisting === 'new') {
+    return [true, 'INVALID_LIST_NAME'];
+  }
+
+  return [false, null];
+}
+
+export const createFeatureProps = (locationData, addType: string, templateData, customAttributesNames: string) => {
+  const customAttributes = [];
+  if (addType === 'commodity') {
+    const [customAttributeNames, genericFields] =
+      getCustomAttributeNamesAndGenericFields(
+        customAttributesNames,
+        templateData
+      );
+
+    customAttributeNames.forEach((customAtt) => {
+      customAttributes.push({
+        column_name: customAtt,
+        column_type: 'Text',
+      });
+    });
+
+    // templateId = templateData ? templateData[0].template_id : -1;
+
+    return createfeaturePropsForCommodity(
+      locationData,
+      customAttributeNames,
+      genericFields
+    );
+  } else {
+    // templateId = templateData ? templateData[0].template_id : -1;
+    return createFeaturePropsForNonCommodity(locationData);
+  }
+}
+
+export const GetTemplateId = (templateData) => {
+  return templateData ? templateData[0].template_id : -1;
+}
+
+export const UnlockLists = (clientDatabase: string, listsIds: number[]) => {
+  const listsToUnlock = [];
+  for (const listsId of listsIds) {
+    listsToUnlock.push(UnlockList(clientDatabase, listsId));
+  }
+  return Promise.all(listsToUnlock);
 }

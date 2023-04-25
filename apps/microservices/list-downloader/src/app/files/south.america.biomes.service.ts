@@ -42,6 +42,17 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
 
     EXCEL_TEMPLATES[table].forEach((key) => {
       const biomesObj = JSON.parse(listLevelAnalysis[key.name]);
+      let dataLayer: string;
+
+      switch (key.name) {
+        case 'arg_otbn_area':
+          dataLayer = 'Argentina OTBN';
+          break;
+
+        case 'brazil_biomes':
+          dataLayer = 'Brazil Biomes';
+          break;
+      }
 
       let total = 0;
       Object.keys(biomesObj).forEach((biome) => {
@@ -49,7 +60,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
       });
 
       Object.keys(biomesObj).forEach((biome) => {
-        const dataRow = [list_name, biome];
+        const dataRow = [list_name, dataLayer, biome];
         const overlapPercent = formatPct(
           validatePct((biomesObj[biome] / total) * 100)
         );

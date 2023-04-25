@@ -1298,6 +1298,7 @@ export const EXCEL_TEMPLATE_HEADERS = {
   ],
   sAmericaBiomesAggregate: [
     'List Name',
+    'Data Layer',
     'Sub-Layer',
     'Overlap with Sub-Layer (%)',
   ],

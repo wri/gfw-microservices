@@ -5,10 +5,11 @@ import {
   ComposeCopyQueryStatement,
   ListFilters,
   ListHasFiltersApplies,
-  ListNameHasErrors,
+  CheckListNameIsValid,
   GetTemplateId,
   createFeatureProps,
   UnlockLists,
+  PerformCopyAnalysis,
 } from '../utils/list.utils';
 import {
   CreateNewUserList,
@@ -105,12 +106,9 @@ export class LocationService {
     const listsToUnlock = [];
 
     const isFiltered = ListHasFiltersApplies(filters);
-    const listName =
-      selectedNewOrExisting === 'new' ? newListName : moveToList.list_name;
-    const listError = ListNameHasErrors(selectedNewOrExisting, listName, userListNames);
-    if (listError[0]) {
-      throw listError[1];
-    }
+    const listName = selectedNewOrExisting === 'new' ? newListName : moveToList.list_name;
+
+    CheckListNameIsValid(selectedNewOrExisting, listName, userListNames);
 
     Logger.log('Gathering information for locations');
     const locationData = await new UspGetLocationsFilteredToCopy().run(
@@ -170,7 +168,7 @@ export class LocationService {
       Logger.log(`Lock status result: ${JSON.stringify(lockResult)}`);
       const { lock_status, lock_user_id } = lockResult;
       if (lock_status === null /*|| lock_status !== null*/) {
-        throw 'LIST_NOT_LOCKED';
+        throw new Error('LIST_NOT_LOCKED');
       }
       const createdUserList = await CreateNewUserList(
         newListName,
@@ -184,7 +182,7 @@ export class LocationService {
       );
 
       createdListId = createdUserList.list_id;
-      await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
+      await new UspSetListLocked().run(clientDatabase, createdListId, userId);
 
       Logger.log(`Performing bulk copy for List ID: ${createdUserList.list_id} to ${newListName}`);
 
@@ -202,18 +200,9 @@ export class LocationService {
         (feature) => feature.properties.location_id
       );
 
-      Logger.log(`Copy location analysis for existing list`);
+      Logger.log(`Copy location analysis for new list`);
 
-      const statement = await ComposeCopyQueryStatement(clientDatabase, selectedListId, srcListAnalysisTable);
-
-      Logger.log(`Selected Locations ${JSON.stringify(selectedLocations)} to Destination Locations: ${JSON.stringify(destLocationIds)}`, "LocationsService");
-      Logger.log(`Copy params: ${selectedListId}, ${createdListId}, ${clientDatabase}`, "LocationsService");
-      Logger.log(`Copy statement: ${statement}`, "LocationsService");
-
-      const SQLRunner = new RawSQLRunner();
-      const copyAnalysisRawQuery = ComposeAnalysisCopyQuery(selectedListId, createdListId, selectedLocations, destLocationIds, statement);
-
-      await SQLRunner.run(clientDatabase, copyAnalysisRawQuery);
+      await PerformCopyAnalysis(clientDatabase, srcListAnalysisTable, selectedListId, createdListId, selectedLocations, destLocationIds);
 
       Logger.log(`Copy analysis complete`, "LocationsService");
 
@@ -247,22 +236,14 @@ export class LocationService {
         (feature) => feature.properties.location_id
       );
 
-      const statement = await ComposeCopyQueryStatement(clientDatabase, selectedListId, srcListAnalysisTable);
+      Logger.log(`Copy location analysis for existing list`);
 
-      const SQLRunner = new RawSQLRunner();
-
-      const copyAnalysisRawQuery = ComposeAnalysisCopyQuery(selectedListId, moveToList.id, selectedLocations, destLocationIds, statement);
-
-      await SQLRunner.run(clientDatabase, copyAnalysisRawQuery);
+      await PerformCopyAnalysis(clientDatabase, srcListAnalysisTable, selectedListId, moveToList.id, selectedLocations, destLocationIds);
 
       Logger.log(`Copy analysis complete`, "LocationsService");
 
       if (isSaveAsDraft) {
-        await UnlockListAndSaveAsDraft(
-          clientDatabase,
-          moveToList.id,
-          gfwListId
-        );
+        await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
       } else {
         const postData = {
           list_id: moveToList.id,
@@ -297,11 +278,7 @@ export class LocationService {
           );
         }
 
-        await SetListDrafStatus(
-          clientDatabase,
-          selectedListId,
-          gfwListId
-        );
+        await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
       }
 
       listsToUnlock.push(selectedListId);

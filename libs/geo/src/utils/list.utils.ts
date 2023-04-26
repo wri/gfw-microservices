@@ -1,5 +1,6 @@
+import { Logger } from '@nestjs/common';
 import { selectedList } from './../mock/listGeoMockData';
-import { GetTableAnalysisColumnsById, UnlockList } from "@wri-monorepos/sql";
+import { GetTableAnalysisColumnsById, RawSQLRunner, UnlockList } from "@wri-monorepos/sql";
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -208,7 +209,15 @@ export function deleteGeoJSONFeatureProperties(geojson): void {
     delete feature.properties.flag_viirs;
   });
 }
-
+/**
+ * Return a Raw SQL query to copy analysis from one list to another
+ * @param sourceListId - List id from which analysis will be copied
+ * @param destinationListId - List id to which analysis will be copied
+ * @param sourceLocationIds - Location ids from which analysis will be copied, string IDs separated by comma, ex: 1,2,3
+ * @param destinationLocationIds - Location ids to which analysis will be copied, string IDs separated by comma, ex: 1,2,3
+ * @param statement - Partial SQL statement to be executed composed by ComposeCopyQueryStatement function, ex: [columnA] = [srcListAnalysisTable].[columnA], [columnB] = [srcListAnalysisTable].[columnB]
+ * @returns 
+ */
 export const ComposeAnalysisCopyQuery = (sourceListId: number, destinationListId: number, sourceLocationIds: number[], destinationLocationIds: number[], statement: string) => {
   return `declare @SourceTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,sourceId int);
           declare @DestinationTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,destinationId int);
@@ -277,20 +286,18 @@ export const ListHasFiltersApplies = (filters: ListFilters) => {
 
 export type ListValidationErrors = "MISSING_LIST_NAME" | "LIST_NAME_ALREADY_EXISTS" | "INVALID_LIST_NAME";
 
-export const ListNameHasErrors = (selectedNewOrExisting: string, listName: string, userListNames: string[]): [boolean, ListValidationErrors] => {
+export const CheckListNameIsValid = (selectedNewOrExisting: string, listName: string, userListNames: string[]) => {
   const lowerListName = listName ? listName.toLowerCase() : listName;
   const checkListExists = userListNames.find(name => name === lowerListName);
   const checkForPunctuation = lowerListName ? ContainsPunctuation(lowerListName) : false;
 
   if (!listName) {
-    return [true, 'MISSING_LIST_NAME'];
+    throw new Error('MISSING_LIST_NAME');
   } else if (checkListExists && selectedNewOrExisting === 'new') {
-    return [true, 'LIST_NAME_ALREADY_EXISTS'];
+    throw new Error('LIST_NAME_ALREADY_EXISTS');
   } else if (checkForPunctuation && selectedNewOrExisting === 'new') {
-    return [true, 'INVALID_LIST_NAME'];
+    throw new Error('INVALID_LIST_NAME');
   }
-
-  return [false, null];
 }
 
 export const createFeatureProps = (locationData, addType: string, templateData, customAttributesNames: string) => {
@@ -332,4 +339,21 @@ export const UnlockLists = (clientDatabase: string, listsIds: number[]) => {
     listsToUnlock.push(UnlockList(clientDatabase, listsId));
   }
   return Promise.all(listsToUnlock);
+}
+
+export const PerformCopyAnalysis = async (
+  clientDatabase: string, srcListAnalysisTable: string, sourceListId: number,
+  destinationListId: number, sourceLocationIds: number[], destinationLocationIds: number[]
+) => {
+
+  const statement = await ComposeCopyQueryStatement(clientDatabase, sourceListId, srcListAnalysisTable);
+
+  Logger.log(`Selected Locations ${JSON.stringify(sourceLocationIds)} to Destination Locations: ${JSON.stringify(destinationLocationIds)}`, "LocationsService");
+  Logger.log(`Copy params: ${sourceListId}, ${destinationListId}, ${clientDatabase}`, "LocationsService");
+  Logger.log(`Copy statement: ${statement}`, "LocationsService");
+
+  const SQLRunner = new RawSQLRunner();
+  const copyAnalysisRawQuery = ComposeAnalysisCopyQuery(sourceListId, destinationListId, sourceLocationIds, destinationLocationIds, statement);
+
+  await SQLRunner.run(clientDatabase, copyAnalysisRawQuery);
 }

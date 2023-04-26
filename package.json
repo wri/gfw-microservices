@@ -13,6 +13,7 @@
     "@nestjs/common": "^9.1.6",
     "@nestjs/config": "^2.2.0",
     "@nestjs/core": "^9.1.6",
+    "@nestjs/mapped-types": "^1.2.2",
     "@nestjs/platform-express": "^9.1.6",
     "@nestjs/typeorm": "^9.0.1",
     "@nextnm/nestjs-ses": "^0.0.4",

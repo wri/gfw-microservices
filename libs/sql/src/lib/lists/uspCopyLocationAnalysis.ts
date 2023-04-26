@@ -28,7 +28,7 @@ export class UspCopyLocationAnalysis {
         value: statement,
       },
     ];
-    Logger.log(`${desListId} ${destLocationId} ${srcListId} ${srcLocationId} ${statement}`);
+
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {

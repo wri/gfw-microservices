@@ -1,34 +1,32 @@
-import { rejects } from 'assert';
 import { GeoService } from './geo.service';
 import {
-  ContainsPunctuation,
-  getActiveTye,
-  getCustomAttributeNamesAndGenericFields,
-  createfeaturePropsForCommodity,
-  createFeaturePropsForNonCommodity,
   deleteGeoJSONFeatureProperties,
+  ComposeAnalysisCopyQuery,
+  ComposeCopyQueryStatement,
+  ListFilters,
+  ListHasFiltersApplies,
+  CheckListNameIsValid,
+  GetTemplateId,
+  createFeatureProps,
+  UnlockLists,
+  PerformCopyAnalysis,
 } from '../utils/list.utils';
 import {
-  GetListLocations,
   CreateNewUserList,
   requestAnalysisProcess,
   PerformListBulkCopy,
   PerformGetLockStatus,
   UspGetLocationsFilteredToCopy,
-  GetTableAnalysisColumnsById,
-  CopySingleLocationAnalysis,
   BulkDeleteLocations,
   UspSetListLocked,
   DeleteList,
   SetListDrafStatus,
   UnlockListAndSaveAsDraft,
   UnlockList,
+  RawSQLRunner,
 } from '@wri-monorepos/sql';
 import { Logger, Injectable } from '@nestjs/common';
 import { getFinalGeojson } from '@wri-monorepos/shared';
-import { resolve } from 'path';
-import { Response } from 'node-fetch';
-const DEFAULT_LOCATION_ID = 0;
 const EMPTY_CUSTOM_ATTRIBUTES = [];
 
 interface GeoJsonFeature {
@@ -42,9 +40,7 @@ export class LocationService {
   constructor (private geoService: GeoService) { }
   assembleGeojson = (
     featProps,
-    uploadingData,
-    listId,
-    clientDatabase
+    uploadingData
   ): Promise<GeoJsonFeature> => {
     return new Promise<GeoJsonFeature>((resolve, reject) => {
       const geojson: GeoJsonFeature = {
@@ -63,10 +59,7 @@ export class LocationService {
       } else {
         const feats = selectedListData.features;
         const filteredLocations = feats.filter((location) => {
-          return (
-            selectedLocationsIDs.indexOf(location.properties.location_id) >
-            -1
-          );
+          return (selectedLocationsIDs.indexOf(location.properties.location_id) > -1);
         });
 
         filteredLocations.forEach((location, j) => {
@@ -102,7 +95,7 @@ export class LocationService {
     organizationId,
     gfwListId,
     allLocationsSelected = false,
-    filters,
+    filters: ListFilters,
     srcListAnalysisTable
   ) => {
     Logger.log(`Applied Filters ${JSON.stringify(filters)}`);
@@ -110,42 +103,12 @@ export class LocationService {
     let createdListId = 0;
     let resultingBulkGeoJSON;
     let destLocationIds = [];
-    const {
-      country,
-      state,
-      subState,
-      analysisAreaMin,
-      analysisAreaMax,
-      searchString,
-    } = filters;
+    const listsToUnlock = [];
 
-    const isFiltered =
-      country ||
-        state ||
-        subState ||
-        analysisAreaMin ||
-        analysisAreaMax ||
-        searchString
-        ? true
-        : false;
+    const isFiltered = ListHasFiltersApplies(filters);
+    const listName = selectedNewOrExisting === 'new' ? newListName : moveToList.list_name;
 
-    const listName =
-      selectedNewOrExisting === 'new' ? newListName : moveToList.list_name;
-    const lowerListName = listName ? listName.toLowerCase() : listName;
-    const checkListExists = userListNames.find(
-      (name) => name === lowerListName
-    );
-    const checkForPunctuation = lowerListName
-      ? ContainsPunctuation(lowerListName)
-      : false;
-
-    if (!listName) {
-      throw 'missingListName';
-    } else if (checkListExists && selectedNewOrExisting === 'new') {
-      throw 'listNameAlreadyExists';
-    } else if (checkForPunctuation && selectedNewOrExisting === 'new') {
-      throw 'invalidListName';
-    }
+    CheckListNameIsValid(selectedNewOrExisting, listName, userListNames);
 
     Logger.log('Gathering information for locations');
     const locationData = await new UspGetLocationsFilteredToCopy().run(
@@ -155,19 +118,17 @@ export class LocationService {
         selectedLocations: allLocationsSelected
           ? null
           : selectedLocations.join(),
-        country,
-        state,
-        subState,
-        analysisAreaMin,
-        analysisAreaMax,
-        searchString,
+        country: filters.country,
+        state: filters.state,
+        subState: filters.subState,
+        analysisAreaMin: filters.analysisAreaMin,
+        analysisAreaMax: filters.analysisAreaMax,
+        searchString: filters.searchString,
       }
     );
 
     if (selectedMoveOrCopy === 'move') {
-      Logger.log(
-        `Changing source list (${selectedListId}) status to draft because is going to move locations`
-      );
+      Logger.log(`Changing source list (${selectedListId}) status to draft because is going to move locations`);
       // Lock source and target list and set source list to draft
       await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
     }
@@ -184,287 +145,145 @@ export class LocationService {
       await new UspSetListLocked().run(clientDatabase, moveToList.id, userId);
     }
 
-
+    Logger.log('Creating Feature Props object');
     let featProps = [];
-    let templateId;
-    const customAttributes = [];
+    const templateId = GetTemplateId(templateData);
+    featProps = createFeatureProps(locationData, addType, templateData, customAttributesNames);
 
-    Logger.log('Creating GEO JSON object');
-    if (addType === 'commodity') {
-      let active = activeTemplate;
-      if (active === 'investment') {
-        active = getActiveTye(commodityType, active);
-      }
-
-      const [customAttributeNames, genericFields] =
-        getCustomAttributeNamesAndGenericFields(
-          customAttributesNames,
-          templateData
-        );
-
-      customAttributeNames.forEach((customAtt) => {
-        customAttributes.push({
-          column_name: customAtt,
-          column_type: 'Text',
-        });
-      });
-
-      templateId = templateData ? templateData[0].template_id : -1;
-
-      featProps = createfeaturePropsForCommodity(
-        locationData,
-        customAttributeNames,
-        genericFields
-      );
-    } else {
-      templateId = templateData ? templateData[0].template_id : -1;
-      featProps = createFeaturePropsForNonCommodity(locationData);
-    }
     Logger.log("Assemble GEO JSON")
-    return this.assembleGeojson(
-      featProps,
-      locationData,
-      selectedListId,
-      clientDatabase
-    ).then((geojson) => {
-      deleteGeoJSONFeatureProperties(geojson);
+    const geojson = await this.assembleGeojson(featProps, locationData)
 
-      const location_classification = selectedListLocationClasification;
-      const gfw_list_id = 0;
-      const template_id = templateId;
+    deleteGeoJSONFeatureProperties(geojson);
 
-      Logger.log('Creating final GEO JSON for database insertion');
-      const finalGeojson = getFinalGeojson(gfw_list_id, geojson);
-      if (selectedNewOrExisting === 'new') {
-        Logger.log('Performing copy for new list');
-        return PerformGetLockStatus(clientDatabase, selectedListId)
-          .then((result) => {
-            Logger.log(`Lock status result: ${JSON.stringify(result)}`);
-            const { lock_status, lock_user_id } = result;
-            if (lock_status === null /*|| lock_status !== null*/) {
-              throw 'error';
-            } else {
-              const createNewUserList = CreateNewUserList(
-                newListName,
-                template_id,
-                location_classification,
-                userId,
-                EMPTY_CUSTOM_ATTRIBUTES,
-                clientDatabase,
-                null,
-                isSaveAsDraft
-              );
-              return createNewUserList;
-            }
-          })
-          .then((createListResult) => {
-            createdListId = createListResult.list_id;
-            Logger.log(
-              `Performing bulk copy for List ID: ${createListResult.list_id} to ${newListName}`
-            );
-            return PerformListBulkCopy(
-              createListResult.list_id,
-              newListName,
-              true,
-              finalGeojson,
-              commodityType,
-              clientDatabase
-            );
-          })
-          .then((bulkUploadResult) => {
-            resultingBulkGeoJSON = bulkUploadResult;
-            destLocationIds = resultingBulkGeoJSON.features.map(
-              (feature) => feature.properties.location_id
-            );
-            return GetTableAnalysisColumnsById(clientDatabase, selectedListId);
-          })
-          .then((recordsets) => {
-            Logger.log(`Copy location analysis for existing list`);
-            let promiseResolver = Promise.resolve();
-            const columns = recordsets.map((record: any) => record.COLUMN_NAME);
-            const statement = columns
-              .map(
-                (column) =>
-                  `[${column}] = [${srcListAnalysisTable}].[${column}]`
-              )
-              .join(',');
+    const location_classification = selectedListLocationClasification;
+    const gfw_list_id = 0;
+    const template_id = templateId;
 
-            Logger.log(`Selected Locations ${JSON.stringify(selectedLocations)} to Destination Locations: ${JSON.stringify(destLocationIds)}`, "LocationsService");
-            Logger.log(`Copy params: ${selectedListId}, ${createdListId}, ${clientDatabase}`, "LocationsService")
-            selectedLocations.forEach((src_location_id, idx) => {
-              promiseResolver = promiseResolver.then(() => {
-                return CopySingleLocationAnalysis(
-                  selectedListId,
-                  createdListId,
-                  src_location_id,
-                  destLocationIds[idx],
-                  statement,
-                  clientDatabase
-                );
-              });
-            });
+    Logger.log('Creating final GEO JSON for database insertion');
+    const finalGeojson = getFinalGeojson(gfw_list_id, geojson);
+    if (selectedNewOrExisting === 'new') {
+      Logger.log('Performing copy for new list');
+      const lockResult = await PerformGetLockStatus(clientDatabase, selectedListId);
 
-            return promiseResolver;
-          })
-          .then(
-            (
-              bulkUploadResult
-            ): Promise<Response> | Response | { success: boolean } => {
-              if (isSaveAsDraft) {
-                return { success: true };
-              }
-              const postData = {
-                list_id: createdListId,
-                user_id: userId,
-                organization_id: organizationId,
-                reanalyze: false,
-              };
-              return requestAnalysisProcess(postData);
-            }
-          )
-          .then((response) => {
-            Logger.log('Request analysis process response');
-            Logger.log(response);
-            if (response instanceof Response) {
-              return response.json();
-            }
-            return response;
-          })
-          .then((json) => {
-            Logger.log(`JSON: ${JSON.stringify(json)}`);
-            const listsToUnlock = [];
-            listsToUnlock.push(UnlockList(clientDatabase, selectedListId));
-            if (moveToList) {
-              listsToUnlock.push(
-                UnlockList(clientDatabase, moveToList.id)
-              );
-            }
-            return Promise.all(listsToUnlock);
-          }).then((json) => {
-            Logger.log(`JSON: ${JSON.stringify(json)}`);
-          });
-      } else {
-        // copy or move to existing list
-        Logger.log(`Performing ${selectedMoveOrCopy} for existing list`);
-        return PerformListBulkCopy(
-          moveToList.id,
-          listName,
-          false,
-          finalGeojson,
-          commodityType,
-          clientDatabase
-        )
-          .then((bulkUploadResult) => {
-            resultingBulkGeoJSON = bulkUploadResult;
-            destLocationIds = resultingBulkGeoJSON.features.map(
-              (feature) => feature.properties.location_id
-            );
-            return GetTableAnalysisColumnsById(clientDatabase, selectedListId);
-          })
-          .then((recordsets) => {
-            Logger.log(`Copy location analysis for existing list`);
-            let promiseResolver = Promise.resolve();
-            const columns = recordsets.map((record: any) => record.COLUMN_NAME);
-            const statement = columns
-              .map(
-                (column) =>
-                  `[${column}] = [${srcListAnalysisTable}].[${column}]`
-              )
-              .join(',');
-            selectedLocations.forEach((src_location_id, idx) => {
-              promiseResolver = promiseResolver.then(() => {
-                return CopySingleLocationAnalysis(
-                  selectedListId,
-                  moveToList.id,
-                  src_location_id,
-                  destLocationIds[idx],
-                  statement,
-                  clientDatabase
-                );
-              });
-            });
-
-            return promiseResolver;
-          })
-          .then((): Promise<Response | void> => {
-            if (isSaveAsDraft) {
-              return UnlockListAndSaveAsDraft(
-                clientDatabase,
-                moveToList.id,
-                gfwListId
-              );
-            }
-            const postData = {
-              list_id: moveToList.id,
-              user_id: userId,
-              organization_id: organizationId,
-              reanalyze: false,
-            };
-            return requestAnalysisProcess(postData);
-          })
-          .then((response) => {
-            Logger.log('Bulk upload response');
-            Logger.log(response);
-            if (response instanceof Response) {
-              return response.json();
-            }
-            return response;
-          })
-          .then((json) => {
-            Logger.log(`JSON: ${JSON.stringify(json)}`);
-            Logger.log('remove locations or list if move is selected');
-            return new Promise((resolve) => {
-              if (selectedMoveOrCopy === 'move') {
-                return new UspSetListLocked()
-                  .run(clientDatabase, selectedListId, userId)
-                  .then(() => {
-                    if (allLocationsSelected && !isFiltered) {
-                      return DeleteList(clientDatabase, selectedListId, userId);
-                    }
-                    return BulkDeleteLocations(
-                      clientDatabase,
-                      selectedListId,
-                      userId,
-                      gfwListId,
-                      allLocationsSelected ? null : selectedLocations.join(),
-                      country,
-                      state,
-                      subState,
-                      analysisAreaMin,
-                      analysisAreaMax,
-                      searchString
-                    );
-                  })
-                  .then((): Promise<Response | void> => {
-                    return SetListDrafStatus(
-                      clientDatabase,
-                      selectedListId,
-                      gfwListId
-                    );
-                  });
-              }
-              resolve(json);
-            });
-          })
-          .then((json) => {
-            const listsToUnlock = [];
-            listsToUnlock.push(UnlockList(clientDatabase, selectedListId));
-            if (moveToList) {
-              listsToUnlock.push(
-                UnlockList(clientDatabase, moveToList.id)
-              );
-            }
-            Logger.log(`JSON: ${JSON.stringify(json)}`);
-            return Promise.all(listsToUnlock);
-          }).then((json) => {
-            Logger.log(`JSON: ${JSON.stringify(json)}`);
-          });
+      Logger.log(`Lock status result: ${JSON.stringify(lockResult)}`);
+      const { lock_status, lock_user_id } = lockResult;
+      if (lock_status === null /*|| lock_status !== null*/) {
+        throw new Error('LIST_NOT_LOCKED');
       }
-    });
-  };
+      const createdUserList = await CreateNewUserList(
+        newListName,
+        template_id,
+        location_classification,
+        userId,
+        EMPTY_CUSTOM_ATTRIBUTES,
+        clientDatabase,
+        null,
+        isSaveAsDraft
+      );
 
-  createListNameSchema = (list_name) => ({
-    list_table: `list-${list_name.replace(/\s/g, '').toLowerCase()}`,
-    analysis_table: `analysis-${list_name.replace(/\s/g, '').toLowerCase()}`,
-  });
+      createdListId = createdUserList.list_id;
+      await new UspSetListLocked().run(clientDatabase, createdListId, userId);
+
+      Logger.log(`Performing bulk copy for List ID: ${createdUserList.list_id} to ${newListName}`);
+
+      const bulkUploadResult = await PerformListBulkCopy(
+        createdUserList.list_id,
+        newListName,
+        true,
+        finalGeojson,
+        commodityType,
+        clientDatabase
+      );
+
+      resultingBulkGeoJSON = bulkUploadResult;
+      destLocationIds = resultingBulkGeoJSON.features.map(
+        (feature) => feature.properties.location_id
+      );
+
+      Logger.log(`Copy location analysis for new list`);
+
+      await PerformCopyAnalysis(clientDatabase, srcListAnalysisTable, selectedListId, createdListId, selectedLocations, destLocationIds);
+
+      Logger.log(`Copy analysis complete`, "LocationsService");
+
+      if (!isSaveAsDraft) {
+        const postData = {
+          list_id: createdListId,
+          user_id: userId,
+          organization_id: organizationId,
+          reanalyze: false,
+        };
+        const analysisRequestResponse = await requestAnalysisProcess(postData);
+        const jsonResponse = await analysisRequestResponse.json();
+        Logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
+      }
+
+      Logger.log(`Unlocking lists`, "LocationsService");
+
+      listsToUnlock.push(UnlockList(clientDatabase, selectedListId));
+      listsToUnlock.push(UnlockList(clientDatabase, createdListId));
+      UnlockLists(clientDatabase, listsToUnlock);
+
+      Logger.log(`Lists unlocked ${selectedListId}, ${createdListId}`, "LocationsService");
+
+    } else {
+      // copy or move to existing list
+      Logger.log(`Performing ${selectedMoveOrCopy} for existing list`);
+
+      const resultingBulkGeoJSON = await PerformListBulkCopy(moveToList.id, listName, false, finalGeojson, commodityType, clientDatabase);
+
+      destLocationIds = resultingBulkGeoJSON.features.map(
+        (feature) => feature.properties.location_id
+      );
+
+      Logger.log(`Copy location analysis for existing list`);
+
+      await PerformCopyAnalysis(clientDatabase, srcListAnalysisTable, selectedListId, moveToList.id, selectedLocations, destLocationIds);
+
+      Logger.log(`Copy analysis complete`, "LocationsService");
+
+      if (isSaveAsDraft) {
+        await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
+      } else {
+        const postData = {
+          list_id: moveToList.id,
+          user_id: userId,
+          organization_id: organizationId,
+          reanalyze: false,
+        };
+        const analysisRequestResponse = await requestAnalysisProcess(postData);
+        const jsonResponse = await analysisRequestResponse.json();
+        Logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
+      }
+
+      Logger.log('remove locations or list if move is selected');
+      if (selectedMoveOrCopy === 'move') {
+        await new UspSetListLocked().run(clientDatabase, selectedListId, userId)
+
+        if (allLocationsSelected && !isFiltered) {
+          await DeleteList(clientDatabase, selectedListId, userId);
+        } else {
+          await BulkDeleteLocations(
+            clientDatabase,
+            selectedListId,
+            userId,
+            gfwListId,
+            allLocationsSelected ? null : selectedLocations.join(),
+            filters.country,
+            filters.state,
+            filters.subState,
+            filters.analysisAreaMin,
+            filters.analysisAreaMax,
+            filters.searchString
+          );
+        }
+
+        await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
+      }
+
+      listsToUnlock.push(selectedListId);
+      listsToUnlock.push(moveToList.id);
+      UnlockLists(clientDatabase, listsToUnlock);
+    }
+  };
 }

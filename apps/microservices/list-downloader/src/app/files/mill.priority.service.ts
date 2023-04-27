@@ -28,10 +28,12 @@ export class MillPriorityService extends DashboardHandleDownload {
     const { listView, type, selectedLocationsList } = filters;
     return (
       listView === 'commodity_risk' &&
-      selectedLocationsList.length != 1 &&
-      (type === 'palmRiskAnalysis' ||
-        type === 'millPriority' ||
-        type === 'everything')
+      ((selectedLocationsList.length === 1 &&
+        (type === 'millPriority' || type === 'everything')) ||
+        (selectedLocationsList.length !== 1 &&
+          (type === 'palmRiskAnalysis' ||
+            type === 'millPriority' ||
+            type === 'everything')))
     );
   }
 }

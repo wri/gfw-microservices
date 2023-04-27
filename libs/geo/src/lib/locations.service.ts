@@ -219,7 +219,7 @@ export class LocationService {
 
       listsToUnlock.push(selectedListId);
       listsToUnlock.push(createdListId);
-      UnlockLists(clientDatabase, listsToUnlock);
+      await UnlockLists(clientDatabase, listsToUnlock);
 
       Logger.log(`Lists unlocked ${selectedListId}, ${createdListId}`, "LocationsService");
 
@@ -258,8 +258,10 @@ export class LocationService {
         await new UspSetListLocked().run(clientDatabase, selectedListId, userId)
 
         if (allLocationsSelected && !isFiltered) {
+          Logger.log('Delete list because all locations were moved');
           await DeleteList(clientDatabase, selectedListId, userId);
         } else {
+          Logger.log('Delete selected locations')
           await BulkDeleteLocations(
             clientDatabase,
             selectedListId,
@@ -280,7 +282,8 @@ export class LocationService {
 
       listsToUnlock.push(selectedListId);
       listsToUnlock.push(moveToList.id);
-      UnlockLists(clientDatabase, listsToUnlock);
+      await UnlockLists(clientDatabase, listsToUnlock);
+      Logger.log(`Lists unlocked ${selectedListId}, ${moveToList.id}`, "LocationsService");
     }
   };
 }

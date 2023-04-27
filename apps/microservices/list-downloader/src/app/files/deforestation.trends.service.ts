@@ -36,19 +36,19 @@ export class DeforestationTrendsService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('Deforestation Trends Service finish');
+  async finish(filters: GenerationFileRequest) {
     const { selectedLocationsList } = filters;
-    if (
-      this.isDeforestationTrendsFile(filters) &&
-      selectedLocationsList.length != 1
-    ) {
-      generateCSV(
-        filters,
-        'deforestationTrendsAggregate',
-        'trends_in_deforestation_aggregate',
-        this.generateAggregate
-      );
+    if (this.isDeforestationTrendsFile(filters)) {
+      this.logger.log('Deforestation Trends Service finish');
+      if (selectedLocationsList.length != 1) {
+        generateCSV(
+          filters,
+          'deforestationTrendsAggregate',
+          'trends_in_deforestation_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
   }
 

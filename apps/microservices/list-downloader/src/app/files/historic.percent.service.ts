@@ -64,19 +64,19 @@ export class HistoricPercentService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('Historic Percent Finish');
+  async finish(filters: GenerationFileRequest) {
     const { selectedLocationsList } = filters;
-    if (
-      this.isHistoricPercentFile(filters) &&
-      selectedLocationsList.length != 1
-    ) {
-      generateCSV(
-        filters,
-        'historicPercentAggregate',
-        'sensitive_areas_percentage_historic_area_lost_aggregate',
-        this.generateAggregate
-      );
+    if (this.isHistoricPercentFile(filters)) {
+      this.logger.log('Historic Percent Finish');
+      if (selectedLocationsList.length != 1) {
+        generateCSV(
+          filters,
+          'historicPercentAggregate',
+          'sensitive_areas_percentage_historic_area_lost_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
   }
 

@@ -52,20 +52,19 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('South America Biomes Finish');
+  async finish(filters: GenerationFileRequest) {
     const { selectedLocationsList } = filters;
-    if (
-      this.isSouthAmericaBiomesFile(filters) &&
-      selectedLocationsList.length != 1 &&
-      this.existSouthLocation
-    ) {
-      generateCSV(
-        filters,
-        'sAmericaBiomesAggregate',
-        'south_america_brazil_biomes_aggregate',
-        this.generateAggregate
-      );
+    if (this.isSouthAmericaBiomesFile(filters)) {
+      this.logger.log('South America Biomes Finish');
+      if (selectedLocationsList.length != 1 && this.existSouthLocation) {
+        generateCSV(
+          filters,
+          'sAmericaBiomesAggregate',
+          'south_america_brazil_biomes_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
     this.existSouthLocation = false;
   }

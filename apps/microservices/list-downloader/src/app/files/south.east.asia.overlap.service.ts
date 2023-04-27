@@ -89,20 +89,19 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('South East Asia Overlap Finish');
+  async finish(filters: GenerationFileRequest) {
     const { selectedLocationsList } = filters;
-    if (
-      this.isSouthEastAsiaOverlapFile(filters) &&
-      selectedLocationsList.length != 1 &&
-      this.existSouthEastLocation
-    ) {
-      generateCSV(
-        filters,
-        'seAsiaOverlapAggregate',
-        'south_east_asia_overlap_aggregate',
-        this.generateAggregate
-      );
+    if (this.isSouthEastAsiaOverlapFile(filters)) {
+      this.logger.log('South East Asia Overlap Finish');
+      if (selectedLocationsList.length != 1 && this.existSouthEastLocation) {
+        generateCSV(
+          filters,
+          'seAsiaOverlapAggregate',
+          'south_east_asia_overlap_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
     this.existSouthEastLocation = false;
   }

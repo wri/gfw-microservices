@@ -17,8 +17,11 @@ export class MillPriorityService extends DashboardHandleDownload {
     }
   }
 
-  finish() {
-    this.logger.log('Mill Priority Finish');
+  async finish(filters: GenerationFileRequest) {
+    if (this.isMillPriorityFile(filters)) {
+      this.logger.log('Mill Priority Finish');
+      super.finish(filters);
+    }
   }
 
   isMillPriorityFile(filters: GenerationFileRequest) {

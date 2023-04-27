@@ -17,8 +17,11 @@ export class PalmRiskAnalysisService extends DashboardHandleDownload {
     }
   }
 
-  finish() {
-    this.logger.log('Finish Palm Risk Analysis');
+  async finish(filters: GenerationFileRequest) {
+    if (this.isPalmRiskAnalysisFile(filters)) {
+      this.logger.log('Finish Palm Risk Analysis');
+      super.finish(filters);
+    }
   }
 
   isPalmRiskAnalysisFile(filters: GenerationFileRequest) {

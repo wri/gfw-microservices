@@ -80,20 +80,19 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('Finish South East Asia TCL');
+  async finish(filters: GenerationFileRequest) {
     const { selectedLocationsList } = filters;
-    if (
-      this.isSouthEastAsiaTCL(filters) &&
-      selectedLocationsList.length != 1 &&
-      this.existSouthEastLocation
-    ) {
-      generateCSV(
-        filters,
-        'seAsiaTCLAggregate',
-        'south_east_asia_tcl_aggregate',
-        this.generateAggregate
-      );
+    if (this.isSouthEastAsiaTCL(filters)) {
+      this.logger.log('Finish South East Asia TCL');
+      if (selectedLocationsList.length != 1 && this.existSouthEastLocation) {
+        generateCSV(
+          filters,
+          'seAsiaTCLAggregate',
+          'south_east_asia_tcl_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
     this.existSouthEastLocation = false;
   }

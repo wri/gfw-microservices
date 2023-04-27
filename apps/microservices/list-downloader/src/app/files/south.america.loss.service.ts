@@ -84,20 +84,19 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('Finish South America Loss');
+  async finish(filters: GenerationFileRequest) {
     const { selectedLocationsList } = filters;
-    if (
-      this.isSouthAmericaLossFile(filters) &&
-      selectedLocationsList.length != 1 &&
-      this.existSouthLocation
-    ) {
-      generateCSV(
-        filters,
-        'sAmericaLossAggregate',
-        'south_america_loss_of_forests_aggregate',
-        this.generateAggregate
-      );
+    if (this.isSouthAmericaLossFile(filters)) {
+      this.logger.log('Finish South America Loss');
+      if (selectedLocationsList.length != 1 && this.existSouthLocation) {
+        generateCSV(
+          filters,
+          'sAmericaLossAggregate',
+          'south_america_loss_of_forests_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
     this.existSouthLocation = false;
   }

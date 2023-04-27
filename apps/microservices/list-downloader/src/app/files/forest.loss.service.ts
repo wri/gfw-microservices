@@ -86,16 +86,19 @@ export class ForestLossService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('Forest Loss Finish');
+  async finish(filters: GenerationFileRequest) {
     const { selectedLocationsList } = filters;
-    if (this.isForestLossFile(filters) && selectedLocationsList.length != 1) {
-      generateCSV(
-        filters,
-        'forestLossAggregate',
-        'sensitive_areas_loss_of_forests_aggregate',
-        this.generateAggregate
-      );
+    if (this.isForestLossFile(filters)) {
+      this.logger.log('Forest Loss Finish');
+      if (selectedLocationsList.length != 1) {
+        generateCSV(
+          filters,
+          'forestLossAggregate',
+          'sensitive_areas_loss_of_forests_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
   }
 

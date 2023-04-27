@@ -19,7 +19,7 @@ import { IPipeService } from './IPipeService';
 @Injectable()
 export class PipeService {
   private MAX_NUMBER_OF_ROWS_PER_PAGE = 5000;
-  private POOL_SIZE = 1;
+  private POOL_SIZE = 5;
 
   constructor(
     private uspGetPaginatedAnalysisDataForUserList: UspGetPaginatedAnalysisDataForUserList,

@@ -1,8 +1,6 @@
 import { GeoService } from './geo.service';
 import {
   deleteGeoJSONFeatureProperties,
-  ComposeAnalysisCopyQuery,
-  ComposeCopyQueryStatement,
   ListFilters,
   ListHasFiltersApplies,
   CheckListNameIsValid,
@@ -23,7 +21,6 @@ import {
   SetListDrafStatus,
   UnlockListAndSaveAsDraft,
   UnlockList,
-  RawSQLRunner,
 } from '@wri-monorepos/sql';
 import { Logger, Injectable } from '@nestjs/common';
 import { getFinalGeojson } from '@wri-monorepos/shared';
@@ -103,7 +100,7 @@ export class LocationService {
     let createdListId = 0;
     let resultingBulkGeoJSON;
     let destLocationIds = [];
-    const listsToUnlock = [];
+    const listsToUnlock = Array<number>();
 
     const isFiltered = ListHasFiltersApplies(filters);
     const listName = selectedNewOrExisting === 'new' ? newListName : moveToList.list_name;
@@ -220,8 +217,8 @@ export class LocationService {
 
       Logger.log(`Unlocking lists`, "LocationsService");
 
-      listsToUnlock.push(UnlockList(clientDatabase, selectedListId));
-      listsToUnlock.push(UnlockList(clientDatabase, createdListId));
+      listsToUnlock.push(selectedListId);
+      listsToUnlock.push(createdListId);
       UnlockLists(clientDatabase, listsToUnlock);
 
       Logger.log(`Lists unlocked ${selectedListId}, ${createdListId}`, "LocationsService");

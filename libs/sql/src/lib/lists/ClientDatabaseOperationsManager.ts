@@ -370,6 +370,7 @@ export const DeleteList = (databaseName, listId, userId) => {
           record.list_table_name,
           record.list_analysis_table_name
         );
+        resolve(true);
       })
       .catch((err) => {
         console.log('Error in deleting location', err);

@@ -28,7 +28,6 @@ export class UspGetListLockStatus {
         Promise<UspGetListLockStatusRecorset>
       >('uspGetListLockStatus', parameters);
       connection.disconnect();
-      Logger.log(recordsets);
       return recordsets;
     } catch (error) {
       connection.disconnect();

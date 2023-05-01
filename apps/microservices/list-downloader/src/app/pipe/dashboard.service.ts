@@ -59,6 +59,8 @@ export class DashboardService extends IPipeService {
   private readonly southEastAsiaTCLService: SouthEastAsiaTCLService;
 
   start(filters: GenerationFileRequest) {
+    this.startEmail(filters);
+
     this.forestLoos.start(filters);
     this.historicPercentService.start(filters);
     this.forestChangeDiagnosticLocationSummaryService.start(filters);
@@ -108,8 +110,9 @@ export class DashboardService extends IPipeService {
     this.logger.log(`(${key}) - Zipping files`);
     const output = fs.createWriteStream(`/tmp/${key}.zip`);
 
-    output.on('close', async () => {
+    output.on('finish', async () => {
       await this.uploadToS3(filters);
+      output.destroy();
     });
 
     fs.readdir('/tmp', async (err, filenames) => {

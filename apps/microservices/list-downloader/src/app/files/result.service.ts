@@ -2,6 +2,7 @@ import * as archiver from 'archiver';
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
 import { PassThrough } from 'stream';
+import { finished } from 'stream/promises';
 import { Logger, Injectable } from '@nestjs/common';
 
 import { EXCEL_TEMPLATES } from '../shared/constants';
@@ -72,12 +73,6 @@ export class ResultService extends IPipeService {
       )
       .pipe(fs.createWriteStream(`/tmp/${key}.csv`, { flags: 'a' }));
 
-    return this.inputStream;
-  }
-
-  finish(filters: GenerationFileRequest) {
-    const { listID, key } = filters;
-    this.logger.log(`(${listID}) - Finished to process data`);
     this.inputStream.on('end', () => {
       const output = fs.createWriteStream(`/tmp/${key}.zip`);
       const archive = archiver('zip', {
@@ -93,9 +88,17 @@ export class ResultService extends IPipeService {
         this.logger.log(`(${listID}) - Data has been zipped`);
         await this.uploadToS3(filters);
       });
-
-      this.inputStream.removeAllListeners();
-      this.inputStream.destroy();
     });
+
+    return this.inputStream;
+  }
+
+  async finish(filters: GenerationFileRequest) {
+    const { listID } = filters;
+    this.logger.log(`(${listID}) - Finished to process data`);
+    this.inputStream.end();
+    await finished(this.inputStream);
+    this.inputStream.removeAllListeners();
+    this.inputStream.destroy();
   }
 }

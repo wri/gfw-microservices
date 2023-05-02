@@ -4,6 +4,7 @@ import * as archiver from 'archiver';
 
 import { Logger, Injectable } from '@nestjs/common';
 import { PassThrough } from 'stream';
+import { finished } from 'stream/promises';
 
 import { IPipeService } from '../pipe/IPipeService';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
@@ -38,28 +39,13 @@ export class InputService extends IPipeService {
     analysisData.forEach((data) => this.inputStream.write(data));
   }
 
-  finish(filters: GenerationFileRequest) {
-    const { listID, key } = filters;
+  async finish(filters: GenerationFileRequest) {
+    const { listID } = filters;
     this.logger.log(`(${listID}) - Finished to process data`);
-    this.inputStream.on('end', () => {
-      const output = fs.createWriteStream(`/tmp/${key}.zip`);
-      const archive = archiver('zip', {
-        zlib: { level: 9 }, // Sets the compression level.
-      });
-      archive.append(fs.createReadStream(`/tmp/${key}.csv`), {
-        name: `${key}.csv`,
-      });
-      archive.pipe(output);
-      archive.finalize();
-
-      output.on('close', async () => {
-        this.logger.log(`(${listID}) - Data has been zipped`);
-        await this.uploadToS3(filters);
-      });
-
-      this.inputStream.removeAllListeners();
-      this.inputStream.destroy();
-    });
+    this.inputStream.end();
+    await finished(this.inputStream);
+    this.inputStream.removeAllListeners();
+    this.inputStream.destroy();
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
@@ -80,6 +66,23 @@ export class InputService extends IPipeService {
         })
       )
       .pipe(fs.createWriteStream(`/tmp/${key}.csv`, { flags: 'a' }));
+
+    this.inputStream.on('end', () => {
+      const output = fs.createWriteStream(`/tmp/${key}.zip`);
+      const archive = archiver('zip', {
+        zlib: { level: 9 }, // Sets the compression level.
+      });
+      archive.append(fs.createReadStream(`/tmp/${key}.csv`), {
+        name: `${key}.csv`,
+      });
+      archive.pipe(output);
+      archive.finalize();
+
+      output.on('close', async () => {
+        this.logger.log(`(${listID}) - Data has been zipped`);
+        await this.uploadToS3(filters);
+      });
+    });
 
     return this.inputStream;
   }

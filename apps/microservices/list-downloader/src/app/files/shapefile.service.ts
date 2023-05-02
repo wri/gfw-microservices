@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as JSONStream from 'JSONStream';
 
 import { PassThrough } from 'stream';
+import { finished } from 'stream/promises';
 import { convert } from 'geojson2shp';
 import { Logger, Injectable } from '@nestjs/common';
 
@@ -50,18 +51,13 @@ export class ShapefileService extends IPipeService {
     analysisData.forEach((data) => this.inputStream.write(data));
   }
 
-  finish(filters: GenerationFileRequest) {
-    const { listID, key } = filters;
+  async finish(filters: GenerationFileRequest) {
+    const { listID } = filters;
     this.logger.log(`(${listID}) - Finished to process data`);
-    this.inputStream.on('end', () => {
-      this.convertGeojsonToSHP(key).then(async () => {
-        this.logger.log(`(${listID}) - Data has been zipped`);
-        await this.uploadToS3(filters);
-      });
-
-      this.inputStream.removeAllListeners();
-      this.inputStream.destroy();
-    });
+    this.inputStream.end();
+    await finished(this.inputStream);
+    this.inputStream.removeAllListeners();
+    this.inputStream.destroy();
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
@@ -84,6 +80,13 @@ export class ShapefileService extends IPipeService {
       .pipe(JSONStream.parse(['features', true]))
       .pipe(JSONStream.stringify(open, '\n,\n', close))
       .pipe(fs.createWriteStream(`/tmp/${key}.geojson`, { flags: 'r+' }));
+
+    this.inputStream.on('end', () => {
+      this.convertGeojsonToSHP(key).then(async () => {
+        this.logger.log(`(${listID}) - Data has been zipped`);
+        await this.uploadToS3(filters);
+      });
+    });
 
     return this.inputStream;
   }

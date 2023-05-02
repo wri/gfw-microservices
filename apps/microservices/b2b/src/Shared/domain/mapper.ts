@@ -13,4 +13,16 @@ export abstract class GenericMapper {
       }),
     );
   }
+
+  protected arrayWrapper<T, D>(mapCallback) {
+    return (data: T[]) => {
+      let response: D[] = [];
+      if (Array.isArray(data)) {
+        response = data.map((item) => mapCallback(item));
+      } else {
+        data && response.push(mapCallback(data));
+      }
+      return response;
+    };
+  }
 }

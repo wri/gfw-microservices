@@ -8,8 +8,9 @@ export class SQLUtils {
     this.config = config;
   }
 
-  async connect() {
-    this.connection = await get(this.config.database, this.config); //sql.connect(this.config);
+  async connect(database: string = this.config.database): Promise<void> {
+    const config = {...this.config, database};
+    this.connection = await get(database, config); //sql.connect(this.config);
   }
 
   query<T>(query: string, parameters?: any[]): Promise<T> {
@@ -38,6 +39,7 @@ export class SQLUtils {
 
   executeQuery<T>(query: string, parameters?: any[]): Promise<T> {
     const request = this.connection.request();
+    console.log(request);
 
     if (parameters && Array.isArray(parameters)) {
       parameters.forEach((param) => {

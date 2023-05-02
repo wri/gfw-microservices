@@ -6,11 +6,16 @@ import { InvitationDataMapper } from './invitation.mapper';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import Result from '../../Shared/domain/result';
 import { EmailService } from '@wri-monorepos/aws';
+import { LogsUseCases } from '../../Logs/application/log.use-case';
+import { ActivityType } from '../../Logs/application/dtos/log.dto';
 
 @Injectable()
 export class InvitationUseCases {
   @Inject(EmailService)
   private readonly emailService: EmailService;
+
+  @Inject(LogsUseCases)
+  private readonly logsUseCases: LogsUseCases;
 
   constructor(
     private invitationRepo: InvitationRepository,
@@ -25,6 +30,22 @@ export class InvitationUseCases {
     const result = await this.invitationRepo.createInvitation(invitation);
 
     if (result.isSuccess) {
+      console.log(invitationDto);
+
+      this.logsUseCases.saveActivityLog({
+        activityType: ActivityType.ConnectionRequested,
+        userEmail: invitationDto.sourceEmail,
+        organizationTarget: invitationDto.sourceOrganization,
+        description: `${invitationDto.sourceEmail} Has requested to make a trusted connection to ${invitationDto.targetOrganization}`,
+      });
+
+      this.logsUseCases.saveActivityLog({
+        activityType: ActivityType.ConnectionRequested,
+        userEmail: invitationDto.targetEmail,
+        organizationTarget: invitationDto.targetOrganization,
+        description: `${invitationDto.sourceEmail} from ${invitationDto.sourceOrganization} Has requested to make a trusted conect`,
+      });
+
       this.emailService.sendEmail(
         process.env.SES_SENDER_EMAIL,
         [invitation.targetEmail],

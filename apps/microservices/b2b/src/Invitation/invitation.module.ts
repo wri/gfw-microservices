@@ -5,9 +5,10 @@ import { InvitationRepositoryMysql } from './infrastructure/invitation.repositor
 import { InvitationDataMapper } from './application/invitation.mapper';
 import { InvitationUseCases } from './application/invitation.use-case';
 import { AwsModule } from '@wri-monorepos/aws';
+import { LogsModule } from '../Logs/log.module';
 
 @Module({
-  imports: [AwsModule],
+  imports: [AwsModule, LogsModule],
   providers: [
     InvitationDataMapper,
     InvitationUseCases,

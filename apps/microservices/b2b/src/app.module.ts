@@ -6,11 +6,16 @@ import { ConnectionController } from './Connection/infrastructure/connection.con
 import { InvitationController } from './Invitation/infrastructure/invitation.controller';
 import { InvitationUseCasesModule } from './Invitation/invitation.module';
 import { ConnectionUseCasesModule } from './Connection/connection.module';
+import { LogsModule } from './Logs/log.module';
+import { UserModule } from './User/user.module';
 
 @Module({
   imports: [
+    UserModule,
     InvitationUseCasesModule,
     ConnectionUseCasesModule,
+    LogsModule,
+    
   ],
   controllers: [AppController, ConnectionController, InvitationController],
   providers: [AppService],

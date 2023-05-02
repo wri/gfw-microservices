@@ -12,9 +12,10 @@ export class StoredProcedureCommand implements Command {
     private readonly parameters: ParamStoreProcedure[],
   ) {}
 
-  async execute<T>(): ResultPromise<T> {
+  async execute<T>(database: string | null = null): ResultPromise<T> {
     try {
-      await this.connection.connect();
+      if (database) await this.connection.connect(database);
+      else await this.connection.connect();
       console.log(this.procedureName, this.parameters);
       const result = await this.connection.executeQuery<T>(
         this.procedureName,

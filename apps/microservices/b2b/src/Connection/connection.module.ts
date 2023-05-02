@@ -4,9 +4,10 @@ import { ConnectionRepository } from './domain/connection.repository';
 import { ConnectionRepositoryMysql } from './infrastructure/connection.repository.mysql';
 import { ConnectionDataMapper } from './application/connection.mapper';
 import { ConnectionUseCases } from './application/connection.use-case';
+import { LogsModule } from '../Logs/log.module';
 
 @Module({
-  imports: [DataServicesModule],
+  imports: [DataServicesModule, LogsModule],
   providers: [
     ConnectionDataMapper,
     ConnectionUseCases,

@@ -14,7 +14,7 @@ export abstract class IPipeService {
     table?: string,
     fileSuffix?: string
   );
-  abstract process(data: any, filters: GenerationFileRequest);
+  abstract process(data, filters: GenerationFileRequest);
   abstract finish(filters: GenerationFileRequest);
 
   public async startEmail(filters: GenerationFileRequest) {
@@ -24,7 +24,7 @@ export abstract class IPipeService {
       [userEmail],
       `[GFW-PRO] File Generation for list ${listName}`,
       'start',
-      { ...filters, listName }
+      { listName }
     );
   }
 
@@ -36,7 +36,6 @@ export abstract class IPipeService {
       `[GFW-PRO] File Generation for list ${listName}`,
       'finish',
       {
-        ...filters,
         listName,
         location,
       }
@@ -51,7 +50,6 @@ export abstract class IPipeService {
       `[GFW-PRO] File Generation for list ${listName}`,
       'error',
       {
-        ...filters,
         listName,
       }
     );

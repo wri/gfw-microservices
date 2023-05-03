@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import {
@@ -14,26 +14,18 @@ import { generateCSV } from '../shared/generate.csv';
 @Injectable()
 export class ForestLossService extends DashboardHandleDownload {
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'forestLoss' || type == 'everything')
-    ) {
+    if (this.isForestLossFile(filters)) {
       super.start(filters, 'forestLoss', 'sensitive_areas_loss_forests');
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'forestLoss' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isForestLossFile(filters)) {
       super.process(data, filters);
     }
   }
 
-  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+  generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
@@ -94,20 +86,27 @@ export class ForestLossService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('Forest Loss Finish');
-    const { listView, selectedLocationsList, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      selectedLocationsList.length != 1 &&
-      (type == 'forestLoss' || type == 'everything')
-    ) {
-      generateCSV(
-        filters,
-        'forestLossAggregate',
-        'sensitive_areas_loss_of_forests_aggregate',
-        this.generateAggregate
-      );
+  async finish(filters: GenerationFileRequest) {
+    const { selectedLocationsList } = filters;
+    if (this.isForestLossFile(filters)) {
+      this.logger.log('Forest Loss Finish');
+      if (selectedLocationsList.length != 1) {
+        generateCSV(
+          filters,
+          'forestLossAggregate',
+          'sensitive_areas_loss_of_forests_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
+  }
+
+  isForestLossFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'forest_change' &&
+      (type === 'forestLoss' || type === 'everything')
+    );
   }
 }

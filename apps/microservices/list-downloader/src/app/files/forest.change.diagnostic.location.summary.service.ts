@@ -6,11 +6,7 @@ import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 @Injectable()
 export class ForestChangeDiagnosticLocationSummaryService extends DashboardHandleDownload {
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'forestChangeDiagnosticLocationSummary' || type == 'everything')
-    ) {
+    if (this.isForestChangeDiagnosticLocationSummaryFile(filters)) {
       super.start(
         filters,
         'forestChangeDiagnosticLocationSummary',
@@ -19,17 +15,25 @@ export class ForestChangeDiagnosticLocationSummaryService extends DashboardHandl
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'forestChangeDiagnosticLocationSummary' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isForestChangeDiagnosticLocationSummaryFile(filters)) {
       super.process(data, filters);
     }
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('Forest Change Diagnostic Location Summary Finish');
+  async finish(filters: GenerationFileRequest) {
+    if (this.isForestChangeDiagnosticLocationSummaryFile(filters)) {
+      this.logger.log('Forest Change Diagnostic Location Summary Finish');
+      super.finish(filters);
+    }
+  }
+
+  isForestChangeDiagnosticLocationSummaryFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'forest_change' &&
+      (type === 'forestChangeDiagnosticLocationSummary' ||
+        type === 'everything')
+    );
   }
 }

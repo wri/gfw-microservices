@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
@@ -7,26 +7,18 @@ import { generateCSV } from '../shared/generate.csv';
 @Injectable()
 export class DeforestationTrendsService extends DashboardHandleDownload {
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      (type == 'deforestationTrends' || type == 'everything')
-    ) {
+    if (this.isDeforestationTrendsFile(filters)) {
       super.start(filters, 'deforestationTrends', 'trends_in_deforestation');
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      (type == 'deforestationTrends' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isDeforestationTrendsFile(filters)) {
       super.process(data, filters);
     }
   }
 
-  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+  generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(['List Name', 'Loss (thousand ha)', 'Year']);
     const deforestation = JSON.parse(
@@ -44,20 +36,27 @@ export class DeforestationTrendsService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('Deforestation Trends Service finish');
-    const { listView, selectedLocationsList, type } = filters;
-    if (
-      listView === 'commodity_risk' &&
-      selectedLocationsList.length != 1 &&
-      (type == 'deforestationTrends' || type == 'everything')
-    ) {
-      generateCSV(
-        filters,
-        'deforestationTrendsAggregate',
-        'trends_in_deforestation_aggregate',
-        this.generateAggregate
-      );
+  async finish(filters: GenerationFileRequest) {
+    const { selectedLocationsList } = filters;
+    if (this.isDeforestationTrendsFile(filters)) {
+      this.logger.log('Deforestation Trends Service finish');
+      if (selectedLocationsList.length != 1) {
+        generateCSV(
+          filters,
+          'deforestationTrendsAggregate',
+          'trends_in_deforestation_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
+  }
+
+  isDeforestationTrendsFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'commodity_risk' &&
+      (type === 'deforestationTrends' || type === 'everything')
+    );
   }
 }

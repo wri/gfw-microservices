@@ -25,6 +25,9 @@ const ListStatus = {
   AnalyzingDashboard: 6,
 };
 
+/**
+ * Not deprecated but not used anywhere
+ */
 export const GetListLocations = (clientDatabase, listId, locationId) => {
   const uspListLocations = new UspGetListLocations();
   const details = {
@@ -92,6 +95,9 @@ export const GetTableAnalysisColumnsById = (clientDatabase, listId) => {
   });
 };
 
+/**
+ * Not deprecated yet but not used for now
+ */
 export const CopySingleLocationAnalysis = (
   srcListId,
   desListId,
@@ -364,6 +370,7 @@ export const DeleteList = (databaseName, listId, userId) => {
           record.list_table_name,
           record.list_analysis_table_name
         );
+        resolve(true);
       })
       .catch((err) => {
         console.log('Error in deleting location', err);

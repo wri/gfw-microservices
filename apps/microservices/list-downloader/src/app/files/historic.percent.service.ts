@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import {
@@ -15,11 +15,7 @@ import { generateCSV } from '../shared/generate.csv';
 @Injectable()
 export class HistoricPercentService extends DashboardHandleDownload {
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'historicPercent' || type == 'everything')
-    ) {
+    if (this.isHistoricPercentFile(filters)) {
       super.start(
         filters,
         'historicPercent',
@@ -28,17 +24,13 @@ export class HistoricPercentService extends DashboardHandleDownload {
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'historicPercent' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isHistoricPercentFile(filters)) {
       super.process(data, filters);
     }
   }
 
-  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+  generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
@@ -72,20 +64,27 @@ export class HistoricPercentService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('Historic Percent Finish');
-    const { listView, selectedLocationsList, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      selectedLocationsList.length != 1 &&
-      (type == 'historicPercent' || type == 'everything')
-    ) {
-      generateCSV(
-        filters,
-        'historicPercentAggregate',
-        'sensitive_areas_percentage_historic_area_lost_aggregate',
-        this.generateAggregate
-      );
+  async finish(filters: GenerationFileRequest) {
+    const { selectedLocationsList } = filters;
+    if (this.isHistoricPercentFile(filters)) {
+      this.logger.log('Historic Percent Finish');
+      if (selectedLocationsList.length != 1) {
+        generateCSV(
+          filters,
+          'historicPercentAggregate',
+          'sensitive_areas_percentage_historic_area_lost_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
+  }
+
+  isHistoricPercentFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'forest_change' &&
+      (type === 'historicPercent' || type === 'everything')
+    );
   }
 }

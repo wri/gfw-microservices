@@ -7,7 +7,7 @@ import { SQL_CONFIG } from '../config/config';
 @Injectable()
 export class UspSetListLocked {
   async run(databaseName: string, listId: number, userId) {
-    Logger.log('userid', userId);
+    Logger.log(`userid ${userId}`);
     const parameters = [
       { field: 'list_id', type: sql.Int, value: listId },
       {

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as readline from 'readline';
 import * as archiver from 'archiver';
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from './IPipeService';
 
@@ -20,6 +20,8 @@ import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 
 @Injectable()
 export class DashboardService extends IPipeService {
+  private readonly logger = new Logger(DashboardService.name);
+
   @Inject(ForestLossService)
   private readonly forestLoos: ForestLossService;
 
@@ -73,7 +75,7 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaTCLService.start(filters);
   }
 
-  process(data: any, filters: GenerationFileRequest) {
+  process(data, filters: GenerationFileRequest) {
     this.forestLoos.process(data, filters);
     this.historicPercentService.process(data, filters);
     this.forestChangeDiagnosticLocationSummaryService.process(data, filters);
@@ -88,26 +90,29 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaTCLService.process(data, filters);
   }
 
-  finish(filters: GenerationFileRequest) {
+  async finish(filters: GenerationFileRequest) {
     const { key } = filters;
 
-    this.forestLoos.finish(filters);
-    this.historicPercentService.finish(filters);
-    this.forestChangeDiagnosticLocationSummaryService.finish(filters);
-    this.forestChangeDiagnosticListSummaryService.finish(filters);
-    this.commodityRiskDiagnosticLocationSummaryService.finish(filters);
-    this.deforestationTrendsService.finish(filters);
-    this.millPriorityService.finish(filters);
-    this.palmRiskAnalysisService.finish(filters);
-    this.southAmericaBiomesService.finish(filters);
-    this.southAmericaLossService.finish(filters);
-    this.southEastAsiaOverlapService.finish(filters);
-    this.southEastAsiaTCLService.finish(filters);
+    this.logger.log(`(${key}) - Waiting all stream to finish`);
+    await this.forestLoos.finish(filters);
+    await this.historicPercentService.finish(filters);
+    await this.forestChangeDiagnosticLocationSummaryService.finish(filters);
+    await this.forestChangeDiagnosticListSummaryService.finish(filters);
+    await this.commodityRiskDiagnosticLocationSummaryService.finish(filters);
+    await this.deforestationTrendsService.finish(filters);
+    await this.millPriorityService.finish(filters);
+    await this.palmRiskAnalysisService.finish(filters);
+    await this.southAmericaBiomesService.finish(filters);
+    await this.southAmericaLossService.finish(filters);
+    await this.southEastAsiaOverlapService.finish(filters);
+    await this.southEastAsiaTCLService.finish(filters);
 
+    this.logger.log(`(${key}) - Zipping files`);
     const output = fs.createWriteStream(`/tmp/${key}.zip`);
 
-    output.on('close', async () => {
+    output.on('finish', async () => {
       await this.uploadToS3(filters);
+      output.destroy();
     });
 
     fs.readdir('/tmp', async (err, filenames) => {

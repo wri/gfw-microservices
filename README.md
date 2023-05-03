@@ -1,94 +1,167 @@
+## GFW-PRO Microservices
 
+This is a monorepo project that contains all `GFW-PRO` microservices.
 
-# WriMonorepos
+### Install
 
-This project was generated using [Nx](https://nx.dev).
+First, we have to install and use node version `16.15.1`
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+Second you have to install the `nx` as global:
 
-🔎 **Smart, Fast and Extensible Build System**
+```sh
+npm install -g nx
+```
 
-## Adding capabilities to your workspace
+Install all dependencies needed for the project:
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+```sh
+npm install --legacy-peer-deps
+```
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+### Run
 
-Below are our core plugins:
+Before running the microservices, you have to create a `.env` file inside the root of the project.
 
-- [React](https://reactjs.org)
-  - `npm install --save-dev @nrwl/react`
-- Web (no framework frontends)
-  - `npm install --save-dev @nrwl/web`
-- [Angular](https://angular.io)
-  - `npm install --save-dev @nrwl/angular`
-- [Nest](https://nestjs.com)
-  - `npm install --save-dev @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `npm install --save-dev @nrwl/express`
-- [Node](https://nodejs.org)
-  - `npm install --save-dev @nrwl/node`
+Inside each microservice app there is an `example.env` file where you can find `ENVIRONMENT VARIABLE`s needed for that app.
 
-There are also many [community plugins](https://nx.dev/community) you could add.
+If you consider having one .env is more convenient, here is a simple command to gather all the example.env files and create the .env file at the root of the repo:
 
-## Generate an application
+```sh
+cat apps/microservices/**/*.env | sort | uniq > .env
+```
 
-Run `nx g @nrwl/react:app my-app` to generate an application.
+Here is the loading order of environment files: https://nx.dev/recipes/environment-variables/define-environment-variables
 
-> You can use any of the plugins above to generate applications as well.
+#### List-Downloader
 
-When using Nx, you can create multiple applications and libraries in the same workspace.
+The following command runs the downloader microservice; this microservice has the logic to create CSVs or Shapefiles using the data stored inside the database.
 
-## Generate a library
+```sh
+nx serve microservices-list-downloader
+```
 
-Run `nx g @nrwl/react:lib my-lib` to generate a library.
+> Check the environment variable `AWS_TMP_QUEUE=` inside pro-temp **.secret** and microservices **.env** are pointing to the same queue.
 
-> You can also use any of the plugins above to generate libraries as well.
+#### B2B
 
-Libraries are shareable across libraries and applications. They can be imported from `@wri-monorepos/mylib`.
+The following command runs the b2b microservice; it allows organizations to share lists between them.
 
-## Development server
+```sh
+nx serve microservices-b2b
+```
 
-Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
+#### List-Processing
 
-## Code scaffolding
+The following command runs the list-processing microservice; it allows users to upload large lists and execute copy/move operations.
 
-Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new component.
+```sh
+nx serve microservices-list-processing
+```
 
-## Build
+> Check the environment variable `LISTS_MICROSERVICE_URL=` inside the **.secret** file in the `pro-temp` project. Make sure it is pointing to the right IP address.
 
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+```sh
+LISTS_MICROSERVICE_URL=http://192.168.5.147:3333/api
+```
 
-## Running unit tests
+or
 
-Run `nx test my-app` to execute the unit tests via [Jest](https://jestjs.io).
+```sh
+LISTS_MICROSERVICE_URL=http://host.docker.internal:3333/api
+```
 
-Run `nx affected:test` to execute the unit tests affected by a change.
+> recommend that you connect to the special DNS name `host.docker.internal` which resolves to the internal IP address used by the host
 
-## Running end-to-end tests
+### Test
 
-Run `nx e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
+To run tests for a microservice, just specify the name of the microservice:
 
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
+```sh
+nx test microservices-list-downloader
+```
 
-## Understand your workspace
+### Format
 
-Run `nx graph` to see a diagram of the dependencies of your projects.
+If you want to run `prettier` to format the code, you can use the following command to specify the name of the microservice.
 
-## Further help
+```sh
+nx format microservices-list-downloader
+```
 
-Visit the [Nx Documentation](https://nx.dev) to learn more.
+### Lint
 
+If you want to run `lint`, you can use the following command;
 
+```sh
+nx lint microservices-list-downloader
+```
 
-## ☁ Nx Cloud
+### Project Structure
 
-### Distributed Computation Caching & Distributed Task Execution
+```sh
+.
+├── apps/              # contains the application projects.
+│   └── microservices/
+│       ├── b2b/       # store all b2b logic
+│       ├── list-downloader/ # store all list downloader logic
+│       └── list-processing/ # store all large list processing logic
+├── libs/       #contains the library projects
+│   ├── aws/    # shared library that know how to connect to AWS
+│   ├── geo/    # shared library that store geo processing functions
+│   ├── shared/ # shared library for code that don't have a logic group.
+│   └── sql/    # shared library used to connect to the database and run the Stored Procedure.
+├── test_files/
+├── tools/         # contains scripts that act on your code base.
+├── .editorconfig  # file to standardize our IDE
+├── .eslintrc.json # lint configuration file
+├── jest.config.ts # jest configuration file
+├── jest.preset.js # used to set stuff before running tests
+├── nx.json   # configures the Nx CLI itself
+├── package.json # store the libraries needed for the project
+├── README.md
+├── tsconfig.base.json # sets up the global TypeScript settings and creates aliases for each library to aid
+└── workspace.json # has the path of all shared libraries and project
+```
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
+### Commit Lint
 
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
+Our project forces you to use the following pattern to commit on our project:
 
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
+> type(scope): subject
 
-Visit [Nx Cloud](https://nx.app/) to learn more.
+- **type** according to build commitlint conventions, we have the following types:
+  - `chore`
+  - `ci`
+  - `docs`
+  - `feat`
+  - `fix`
+  - `perf`
+  - `refactor`
+  - `revert`
+  - `style`
+  - `test`
+- **scope** is our nx modules like: `
+  - `geo`
+  - `microservices-list-downloader`
+  - `microservices-list-processing`
+  - `shared`
+  - `sql`
+- **subject** the message that you want to pass with your commit.
+
+### NX Basic Commands
+
+#### Generate an application
+
+Run nx g @nrwl/nest:app my-app to generate an application.
+
+> When using Nx, you can create multiple applications and libraries in the same workspace.
+
+#### Generate a library
+
+Run nx g @nrwl/nest:lib my-lib to generate a library.
+
+> Libraries are shareable across libraries and applications. They can be imported from @wri-monorepos/mylib.
+
+#### Development server
+
+Run `nx serve my-app` for a dev server. Navigate to http://localhost:3333/. The app will automatically reload if you change any of the source files.

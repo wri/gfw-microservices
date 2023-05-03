@@ -15,4 +15,14 @@ export default {
   coverageDirectory: '../../coverage/libs/geo',
   setupFiles: ['dotenv/config'],
   setupFilesAfterEnv: ['./jest.setup.ts'],
+  collectCoverageFrom: [
+    "./src/**/*.{js,jsx,ts,tsx}"
+  ],
+  coverageReporters: [
+    "json",
+    "text",
+    "lcov",
+    "clover",
+    "cobertura"
+  ],
 };

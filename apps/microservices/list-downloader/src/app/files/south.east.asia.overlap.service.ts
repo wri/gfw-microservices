@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import {
@@ -16,21 +16,13 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
   private existSouthEastLocation = false;
 
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southEastAsiaOverlap' || type == 'everything')
-    ) {
+    if (this.isSouthEastAsiaOverlapFile(filters)) {
       super.start(filters, 'seAsiaOverlap', 'south_east_asia_overlap');
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southEastAsiaOverlap' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isSouthEastAsiaOverlapFile(filters)) {
       const locations = data.filter(
         (location) => location.southeast_asia_presence === 'true'
       );
@@ -41,7 +33,7 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
     }
   }
 
-  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+  generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
@@ -97,22 +89,28 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('South East Asia Overlap Finish');
-    const { listView, selectedLocationsList, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      selectedLocationsList.length != 1 &&
-      this.existSouthEastLocation &&
-      (type == 'southEastAsiaOverlap' || type == 'everything')
-    ) {
-      generateCSV(
-        filters,
-        'seAsiaOverlapAggregate',
-        'south_east_asia_overlap_aggregate',
-        this.generateAggregate
-      );
+  async finish(filters: GenerationFileRequest) {
+    const { selectedLocationsList } = filters;
+    if (this.isSouthEastAsiaOverlapFile(filters)) {
+      this.logger.log('South East Asia Overlap Finish');
+      if (selectedLocationsList.length != 1 && this.existSouthEastLocation) {
+        generateCSV(
+          filters,
+          'seAsiaOverlapAggregate',
+          'south_east_asia_overlap_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
     this.existSouthEastLocation = false;
+  }
+
+  isSouthEastAsiaOverlapFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'forest_change' &&
+      (type === 'southEastAsiaOverlap' || type === 'everything')
+    );
   }
 }

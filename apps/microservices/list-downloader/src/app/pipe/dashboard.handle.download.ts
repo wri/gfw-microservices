@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { PassThrough } from 'stream';
+import { finished } from 'stream/promises';
 import { Logger } from '@nestjs/common';
 
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
@@ -17,14 +18,14 @@ import { ManipulateDataForDashboard } from '../transform/manipulate.data.dashboa
 
 export class DashboardHandleDownload extends IPipeService {
   public readonly logger = new Logger(DashboardHandleDownload.name);
-  private inputStream: PassThrough;
+  private writeStream: PassThrough;
 
   start(filters: GenerationFileRequest, table: string, fileSuffix: string) {
     const { listID, key } = filters;
     this.logger.log(
       `(${listID}) - Starting Dashboard download for ${table} stream to process data`
     );
-    this.inputStream = new PassThrough({
+    this.writeStream = new PassThrough({
       objectMode: true,
     });
 
@@ -32,18 +33,18 @@ export class DashboardHandleDownload extends IPipeService {
 
     const allFields = this.mountArrayWithAllFields(templateOperation);
 
-    this.organizeStream(filters, allFields, table, fileSuffix);
     fs.writeFileSync(
       `/tmp/${key}_${fileSuffix}.csv`,
       `${EXCEL_TEMPLATE_HEADERS[table].join(',')}\n`
     );
+    this.organizeStream(filters, allFields, table, fileSuffix);
   }
 
-  process(analysisData: any, filters: GenerationFileRequest) {
+  process(analysisData, filters: GenerationFileRequest) {
     const { listName } = filters;
     
     analysisData.forEach((data) =>
-      this.inputStream.write({ list_name: listName, ...data })
+      this.writeStream.write({ list_name: listName, ...data })
     );
   }
 
@@ -54,14 +55,14 @@ export class DashboardHandleDownload extends IPipeService {
     fileSuffix: string
   ) {
     const { key, listID, selectedLocationsList, listLevelAnalysis } = filters;
-    this.inputStream.removeAllListeners();
+    this.writeStream.removeAllListeners();
 
-    this.inputStream.on('error', (err) => {
+    this.writeStream.on('error', (err) => {
       this.logger.error(`(${listID}) - Error on stream: ${err}`);
       this.errorEmail(filters);
     });
 
-    this.inputStream
+    this.writeStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterLocationHaveStatus(2))
       .pipe(new FilterObject(allFields))
@@ -75,17 +76,14 @@ export class DashboardHandleDownload extends IPipeService {
       .pipe(
         fs.createWriteStream(`/tmp/${key}_${fileSuffix}.csv`, { flags: 'a' })
       );
-
-    this.inputStream.on('end', () => {
-      this.finish(filters);
-    });
   }
 
-  finish(filters: GenerationFileRequest) {
-    const { listID } = filters;
-    this.logger.log(`(${listID}) - Finished to process data`);
-    this.inputStream.removeAllListeners();
-    this.inputStream.destroy();
+  async finish(filters: GenerationFileRequest) {
+    this.logger.log(`(${filters.key}) - Sending end event to stream`);
+    this.writeStream.end();
+    await finished(this.writeStream);
+    this.writeStream.removeAllListeners();
+    this.writeStream.destroy();
   }
 
   mountArrayWithAllFields(templateOperation) {

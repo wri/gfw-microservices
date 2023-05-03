@@ -83,14 +83,14 @@ export class ConnectionRepositoryMysql
     return Result.fail(result.getError());
   }
 
-  async acceptConnection(
+  async updateStatusConnection(
     changeStatusDto: ConnectionChangeDto,
   ): ResultPromise<Number> {
     const params = this.mapper.toChangeStatusConnectionParam(changeStatusDto);
-    const acceptConnection = this.storeProcedureFactory.create(
+    const updateStatusConnection = this.storeProcedureFactory.create(
       'uspChangeConnectionRequestStatus',
       params,
     );
-    return await acceptConnection.execute<number>();
+    return await updateStatusConnection.execute<number>();
   }
 }

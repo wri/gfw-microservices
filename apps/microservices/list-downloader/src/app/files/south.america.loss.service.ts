@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow } from '../shared/functions';
@@ -11,21 +11,13 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
   private existSouthLocation = false;
 
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southAmericaTCL' || type == 'everything')
-    ) {
+    if (this.isSouthAmericaLossFile(filters)) {
       super.start(filters, 'sAmericaLoss', 'south_america_loss_of_forests');
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southAmericaTCL' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isSouthAmericaLossFile(filters)) {
       const locations = data.filter(
         (location) => location.south_america_presence === 'true'
       );
@@ -36,7 +28,7 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
     }
   }
 
-  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+  generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
@@ -92,22 +84,28 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('Finish South America Loss');
-    const { listView, selectedLocationsList, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      selectedLocationsList.length != 1 &&
-      this.existSouthLocation &&
-      (type == 'southAmericaTCL' || type == 'everything')
-    ) {
-      generateCSV(
-        filters,
-        'sAmericaLossAggregate',
-        'south_america_loss_of_forests_aggregate',
-        this.generateAggregate
-      );
+  async finish(filters: GenerationFileRequest) {
+    const { selectedLocationsList } = filters;
+    if (this.isSouthAmericaLossFile(filters)) {
+      this.logger.log('Finish South America Loss');
+      if (selectedLocationsList.length != 1 && this.existSouthLocation) {
+        generateCSV(
+          filters,
+          'sAmericaLossAggregate',
+          'south_america_loss_of_forests_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
     this.existSouthLocation = false;
+  }
+
+  isSouthAmericaLossFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'forest_change' &&
+      (type === 'southAmericaTCL' || type === 'everything')
+    );
   }
 }

@@ -11,21 +11,13 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
   private existSouthLocation = false;
 
   start(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southAmericaOverlap' || type == 'everything')
-    ) {
-      super.start(filters, 'sAmericaBiomes', 'south_america_overlap');
+    if (this.isSouthAmericaBiomesFile(filters)) {
+      super.start(filters, 'sAmericaBiomes', 'south_america_brazil_biomes');
     }
   }
 
-  process(data: any, filters: GenerationFileRequest) {
-    const { listView, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      (type == 'southAmericaOverlap' || type == 'everything')
-    ) {
+  process(data, filters: GenerationFileRequest) {
+    if (this.isSouthAmericaBiomesFile(filters)) {
       const locations = data.filter(
         (location) => location.south_america_presence === 'true'
       );
@@ -36,7 +28,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     }
   }
 
-  generateAggregate(table: string, list_name: string, listLevelAnalysis: any) {
+  generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
@@ -71,22 +63,28 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('South America Biomes Finish');
-    const { listView, selectedLocationsList, type } = filters;
-    if (
-      listView === 'forest_change' &&
-      selectedLocationsList.length != 1 &&
-      this.existSouthLocation &&
-      (type == 'southAmericaOverlap' || type == 'everything')
-    ) {
-      generateCSV(
-        filters,
-        'sAmericaBiomesAggregate',
-        'south_america_overlap_aggregate',
-        this.generateAggregate
-      );
+  async finish(filters: GenerationFileRequest) {
+    const { selectedLocationsList } = filters;
+    if (this.isSouthAmericaBiomesFile(filters)) {
+      this.logger.log('South America Biomes Finish');
+      if (selectedLocationsList.length != 1 && this.existSouthLocation) {
+        generateCSV(
+          filters,
+          'sAmericaBiomesAggregate',
+          'south_america_brazil_biomes_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
     this.existSouthLocation = false;
+  }
+
+  isSouthAmericaBiomesFile(filters: GenerationFileRequest) {
+    const { listView, type } = filters;
+    return (
+      listView === 'forest_change' &&
+      (type === 'southAmericaOverlap' || type === 'everything')
+    );
   }
 }

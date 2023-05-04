@@ -124,7 +124,7 @@ export class AppService {
       };
       return dataResult;
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
     }
   }
 

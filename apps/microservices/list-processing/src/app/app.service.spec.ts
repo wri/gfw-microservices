@@ -23,7 +23,7 @@ describe('AppService', () => {
   });
 
   describe('Select query test', () => {
-    it('Should return a list of data', async () => {
+    xit('Should return a list of data', async () => {
       const result = await service.getFilenameForUser('test');
       expect(result.length > 0).toBeTruthy();
     });

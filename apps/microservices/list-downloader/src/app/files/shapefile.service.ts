@@ -50,18 +50,12 @@ export class ShapefileService extends IPipeService {
     analysisData.forEach((data) => this.inputStream.write(data));
   }
 
-  finish(filters: GenerationFileRequest) {
-    const { listID, key } = filters;
-    this.logger.log(`(${listID}) - Finished to process data`);
-    this.inputStream.on('end', () => {
-      this.convertGeojsonToSHP(key).then(async () => {
-        this.logger.log(`(${listID}) - Data has been zipped`);
-        await this.uploadToS3(filters);
-      });
-
-      this.inputStream.removeAllListeners();
-      this.inputStream.destroy();
-    });
+  async finish(filters: GenerationFileRequest) {
+    const { listID } = filters;
+    this.logger.log(
+      `(${listID}) - Finished to process data and generate shapefile`
+    );
+    this.waitFinishedProcess(this.inputStream);
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
@@ -84,6 +78,12 @@ export class ShapefileService extends IPipeService {
       .pipe(JSONStream.parse(['features', true]))
       .pipe(JSONStream.stringify(open, '\n,\n', close))
       .pipe(fs.createWriteStream(`/tmp/${key}.geojson`, { flags: 'r+' }));
+
+    this.inputStream.on('end', async () => {
+      await this.convertGeojsonToSHP(key);
+      this.logger.log(`(${listID}) - Data has been zipped`);
+      await this.uploadToS3(filters);
+    });
 
     return this.inputStream;
   }

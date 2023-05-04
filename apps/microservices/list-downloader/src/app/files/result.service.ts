@@ -2,7 +2,6 @@ import * as archiver from 'archiver';
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
 import { PassThrough } from 'stream';
-import { finished } from 'stream/promises';
 import { Logger, Injectable } from '@nestjs/common';
 
 import { EXCEL_TEMPLATES } from '../shared/constants';
@@ -95,10 +94,7 @@ export class ResultService extends IPipeService {
 
   async finish(filters: GenerationFileRequest) {
     const { listID } = filters;
-    this.logger.log(`(${listID}) - Finished to process data`);
-    this.inputStream.end();
-    await finished(this.inputStream);
-    this.inputStream.removeAllListeners();
-    this.inputStream.destroy();
+    this.logger.log(`(${listID}) - Finished to process result data`);
+    this.waitFinishedProcess(this.inputStream);
   }
 }

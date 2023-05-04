@@ -4,7 +4,6 @@ import * as archiver from 'archiver';
 
 import { Logger, Injectable } from '@nestjs/common';
 import { PassThrough } from 'stream';
-import { finished } from 'stream/promises';
 
 import { IPipeService } from '../pipe/IPipeService';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
@@ -41,11 +40,8 @@ export class InputService extends IPipeService {
 
   async finish(filters: GenerationFileRequest) {
     const { listID } = filters;
-    this.logger.log(`(${listID}) - Finished to process data`);
-    this.inputStream.end();
-    await finished(this.inputStream);
-    this.inputStream.removeAllListeners();
-    this.inputStream.destroy();
+    this.logger.log(`(${listID}) - Finished to process input data`);
+    this.waitFinishedProcess(this.inputStream);
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {

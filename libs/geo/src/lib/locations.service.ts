@@ -8,6 +8,7 @@ import {
   createFeatureProps,
   UnlockLists,
   PerformCopyAnalysis,
+  PerformLocationsBulkCopy,
 } from '../utils/list.utils';
 import {
   CreateNewUserList,
@@ -183,19 +184,7 @@ export class LocationService {
 
       Logger.log(`Performing bulk copy for List ID: ${createdUserList.list_id} to ${newListName}`);
 
-      const bulkUploadResult = await PerformListBulkCopy(
-        createdUserList.list_id,
-        newListName,
-        true,
-        finalGeojson,
-        commodityType,
-        clientDatabase
-      );
-
-      resultingBulkGeoJSON = bulkUploadResult;
-      destLocationIds = resultingBulkGeoJSON.features.map(
-        (feature) => feature.properties.location_id
-      );
+      destLocationIds = await PerformLocationsBulkCopy(createdUserList.list_id, newListName, true, finalGeojson, commodityType, clientDatabase);
 
       Logger.log(`Copy location analysis for new list`);
 
@@ -227,11 +216,7 @@ export class LocationService {
       // copy or move to existing list
       Logger.log(`Performing ${selectedMoveOrCopy} for existing list`);
 
-      const resultingBulkGeoJSON = await PerformListBulkCopy(moveToList.id, listName, false, finalGeojson, commodityType, clientDatabase);
-
-      destLocationIds = resultingBulkGeoJSON.features.map(
-        (feature) => feature.properties.location_id
-      );
+      destLocationIds = await PerformLocationsBulkCopy(moveToList.id, listName, false, finalGeojson, commodityType, clientDatabase);
 
       Logger.log(`Copy location analysis for existing list`);
 

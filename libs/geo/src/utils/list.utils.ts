@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { selectedList } from './../mock/listGeoMockData';
-import { GetTableAnalysisColumnsById, RawSQLRunner, UnlockList } from "@wri-monorepos/sql";
+import { GetTableAnalysisColumnsById, PerformListBulkCopy, RawSQLRunner, UnlockList } from "@wri-monorepos/sql";
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,
@@ -356,4 +356,16 @@ export const PerformCopyAnalysis = async (
   const copyAnalysisRawQuery = ComposeAnalysisCopyQuery(sourceListId, destinationListId, sourceLocationIds, destinationLocationIds, statement);
 
   await SQLRunner.run(clientDatabase, copyAnalysisRawQuery);
+}
+
+export async function PerformLocationsBulkCopy(listId, listName, createTable: boolean, geoJson, commodityType, clientDatabase) {
+  const resultingBulkGeoJSON = await PerformListBulkCopy(listId, listName, createTable, geoJson, commodityType, clientDatabase);
+
+  const destLocationIds = resultingBulkGeoJSON.features.map(
+    (feature) => feature.properties.location_id
+  );
+
+  destLocationIds.sort((a, b) => a - b);
+
+  return destLocationIds;
 }

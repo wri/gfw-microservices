@@ -58,7 +58,6 @@ export class ConnectionUseCases {
       changeStatusDto,
     );
     if (result.isSuccess) {
-      
       return Result.ok(true);
     }
     return Result.fail(result.getError());

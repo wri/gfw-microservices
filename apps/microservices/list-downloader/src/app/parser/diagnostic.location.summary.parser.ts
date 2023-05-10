@@ -49,11 +49,15 @@ const diagnosticLocationSummaryParser = ({
         break;
       case 'object':
         // eslint-disable-next-line no-case-declarations
-        const [fieldValue] = Object.values(data[field.attribute]) ?? [0];
-        if (fieldValue && field.parsed === 'percent') {
-          percentParser({ currentRow, fieldValue, totalArea });
-        } else if (fieldValue && field.parsed === 'aggregate') {
-          aggregateParser({ currentRow, fieldValue });
+        if (data[field.attribute] !== null) {
+          const [fieldValue] = Object.values(data[field.attribute]) ?? [0];
+          if (fieldValue && field.parsed === 'percent') {
+            percentParser({ currentRow, fieldValue, totalArea });
+          } else if (fieldValue && field.parsed === 'aggregate') {
+            aggregateParser({ currentRow, fieldValue });
+          } else {
+            currentRow.push('');
+          }
         } else {
           currentRow.push('');
         }

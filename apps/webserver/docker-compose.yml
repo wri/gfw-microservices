@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  web:
+    image: gfwpro-dev
+    container_name: gfwpro-dev
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    env_file:
+      - secrets/dev.secrets
+    environment:
+      - NODE_ENV=development
+      - PM2_CONFIG=config/pm2/pm2dev.config.json
+    ports:
+      - '8443:8443'
+      - '9229:9229'
+    volumes:
+      - ./src/client:/srv/src/client
+      - ./src/server:/srv/src/server
+      - ./src/config:/srv/src/config
+      - ./src/vectorTiles:/srv/src/vectorTiles
+      - ./src/server.js:/srv/src/server.js
+  redis:
+    image: redis:5.0.7-alpine
+    container_name: redis
+    ports:
+      - '6379:6379'

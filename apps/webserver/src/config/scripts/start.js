@@ -3,7 +3,7 @@ const path = require('path');
 const logger = require(path.resolve('./config/lib/winston'));
 
 nodemon({
-  ignore: ['node_modules'],
+  ignore: ['node_modules', '**/tests/**', '**/*.spec.js', '**/*.test.js'],
   script: 'server.js',
   ext: 'js json pug',
   verbose: true,

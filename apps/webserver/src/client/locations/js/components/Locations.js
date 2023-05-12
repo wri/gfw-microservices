@@ -54,16 +54,17 @@ class Locations extends Component {
   }
 
   componentDidMount() {
+    const { location, goToEditList, userLists, gfwLists, canopyModalVisible } = this.props;
     resetScroll();
     this.unsubscribe = store.subscribe(this.storeDidUpdate);
-    this.getGeomFromMap(this.props.goToEditList);
+    this.getGeomFromMap(goToEditList);
     const { history, locationName, fromMap, userSharedLists } = this.props;
 
     let listToRedirect;
     const redirectedFromMap = fromMap && locationName;
-    const locationIdSearch = parseInt(new URLSearchParams(this.props.location.search).get('id'));
-    const isGfwList = JSON.parse(new URLSearchParams(this.props.location.search).get('gfw'));
-    const isSharedList = JSON.parse(new URLSearchParams(this.props.location.search).get('shared'));
+    const locationIdSearch = parseInt(new URLSearchParams(location.search).get('id'));
+    const isGfwList = JSON.parse(new URLSearchParams(location.search).get('gfw'));
+    const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
 
     if (locationIdSearch) {
       const listToSearch = isGfwList ? gfwLists : isSharedList ? userSharedLists : userLists;
@@ -74,7 +75,7 @@ class Locations extends Component {
     }
 
     if (listToRedirect) {
-      onListFromViewToList(listToRedirect, this.props.canopyModalVisible, history);
+      onListFromViewToList(listToRedirect, canopyModalVisible, history);
     }
 
     this.unloadHistory = history.listen((location, action) => {
@@ -106,15 +107,16 @@ class Locations extends Component {
   };
 
   getGeomFromMap = (goToEditList) => {
+    const { gfwData, mapData, locationName, userLists, drawData, gfwLists } = this.props;
     let listName = '';
-    if (this.props.mapData) {
+    if (mapData) {
       // TODO: What exactly is mapData?
       const userListInfoFromMap = {
-        gfwData: this.props.gfwData,
-        locationName: this.props.locationName,
+        gfwData,
+        locationName,
         listAlias: listName,
-        listID: this.props.mapData.listID,
-        locationID: this.props.mapData.locationID,
+        listID: mapData.listID,
+        locationID: mapData.locationID,
       };
 
       this.setState({
@@ -124,14 +126,14 @@ class Locations extends Component {
 
       // Load the list to be edited
       if (goToEditList) {
-        const list = this.props.userLists.find((ul) => ul.id === this.props.mapData.listID);
+        const list = userLists.find((ul) => ul.id === mapData.listID);
         if (list) {
           // use selected location geography as a custom shape
-          if (this.props.drawData) {
+          if (drawData) {
             this.setState({
               drawnGeom: {
-                geometry: JSON.parse(this.props.drawData),
-                locationName: this.props.locationName,
+                geometry: JSON.parse(drawData),
+                locationName,
               },
               isLoading: false,
             });
@@ -148,19 +150,19 @@ class Locations extends Component {
           this.setState({ isLoading: false });
         }
       }
-    } else if (this.props.gfwData && this.props.gfwData.listName) {
+    } else if (gfwData && gfwData.listName) {
       // GFW Lists: listName, globalIds >> rspo/protected and so on goes here
-      listName = GFW_LIST_NAME[this.props.gfwData.listName]
+      listName = GFW_LIST_NAME[gfwData.listName];
 
       const gfwInfoFromMap = {
-        gfwData: this.props.gfwData,
-        locationName: this.props.locationName,
+        gfwData,
+        locationName,
         listAlias: listName,
       };
 
       if (goToEditList) {
         this.setState({ isLoading: true });
-        const gfwList = this.props.gfwLists.find((gfw) => {
+        const gfwList = gfwLists.find((gfw) => {
           return gfw.list_name === listName;
         });
 
@@ -202,12 +204,12 @@ class Locations extends Component {
                 .then((response) => {
                   // convert GeoJSON admin bounds to ESRI JSON format for map
                   const esriGeom = geojsonUtil.geojsonToArcGIS(JSON.parse(response));
-                  const geometries = { geometry: esriGeom[0].geometry, locationName: this.props.locationName };
+                  const geometries = { geometry: esriGeom[0].geometry, locationName };
                   this.setState({
                     isLoading: false,
                     drawnGeom: geometries,
                     gfwInfoFromMap,
-                    listAlias: this.props.locationName,
+                    listAlias: locationName,
                     adminArea: admin,
                     gfwListID: gfwList ? gfwList.id : null,
                   });
@@ -239,13 +241,13 @@ class Locations extends Component {
           gfwInfoFromMap,
         });
       }
-    } else if (this.props.drawData) {
+    } else if (drawData) {
       // Drawn/Uploaded poly: geoString
-      const drawnGeom = JSON.parse(this.props.drawData);
+      const drawnGeom = JSON.parse(drawData);
 
       const mapData = {
         geometry: drawnGeom,
-        locationName: this.props.locationName,
+        locationName,
       };
 
       this.setState({ drawnGeom: mapData });
@@ -308,10 +310,10 @@ class Locations extends Component {
       shareView,
       adminArea,
       B2BsharedListEnabled,
+      geomFromMap,
     } = this.state;
 
     const {
-      commodityType,
       history,
       templateData,
       templateDropdowns,
@@ -323,7 +325,6 @@ class Locations extends Component {
       gfwLists,
       usersList,
       userSharedLists,
-      gfwData,
     } = this.props;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
@@ -438,64 +439,60 @@ class Locations extends Component {
             />
           </Route>
           <Route path="/folders">
-            <>
-              <FolderDetail
-                lists={allLists}
-                folders={userFolders}
-                selectedFolder={selectedFolder}
-                history={history}
-                currentUser={userInfo}
-                showShareList={this.showShareList}
-              />
-            </>
+            <FolderDetail
+              lists={allLists}
+              folders={userFolders}
+              selectedFolder={selectedFolder}
+              history={history}
+              currentUser={userInfo}
+              showShareList={this.showShareList}
+            />
           </Route>
           <Route path="/lists">
-            <>
-              <Lists
-                activeTemplate={activeTemplate}
-                addType={addType}
-                gfwInfoFromMap={gfwInfoFromMap}
-                history={history}
-                userListInfoFromMap={userListInfoFromMap}
-                organizationId={organizationId}
-                currentUser={userInfo}
-                selectedLists={selectedLists}
-                folders={userFolders}
-                userLists={userLists} // Contains all lists that users have created
-                view={view}
-                listView={listView}
-                locationCount={locationCount}
-                gfwLists={gfwLists}
-                canopyModalVisible={canopyModalVisible}
-                listLevelAnalysis={listLevelAnalysis}
-                filters={filters}
-                filterCount={filterCount}
-                getCurrentLists={this.getCurrentLists}
-                listData={listData}
-                filteredData={filteredData}
-                filteredLocationData={filteredLocationData}
-                selectedLocations={selectedLocations}
-                selectedAndVisibleLocations={selectedAndVisibleLocations}
-                templateData={templateData}
-                displayPopover={displayPopover}
-                bubbleData={bubbleData}
-                popoverLoading={popoverLoading}
-                anchorEl={anchorEl}
-                infoBubbleCache={infoBubbleCache}
-                stopLoading={this.stopLoading}
-                usersList={usersList} // Contains all users
-                userSharedLists={userSharedLists}
-                shareView={shareView}
-                showShareList={this.showShareList}
-                isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(...selectedLists)}
-              />
-            </>
+            <Lists
+              activeTemplate={activeTemplate}
+              addType={addType}
+              gfwInfoFromMap={gfwInfoFromMap}
+              history={history}
+              userListInfoFromMap={userListInfoFromMap}
+              organizationId={organizationId}
+              currentUser={userInfo}
+              selectedLists={selectedLists}
+              folders={userFolders}
+              userLists={userLists} // Contains all lists that users have created
+              view={view}
+              listView={listView}
+              locationCount={locationCount}
+              gfwLists={gfwLists}
+              canopyModalVisible={canopyModalVisible}
+              listLevelAnalysis={listLevelAnalysis}
+              filters={filters}
+              filterCount={filterCount}
+              getCurrentLists={this.getCurrentLists}
+              listData={listData}
+              filteredData={filteredData}
+              filteredLocationData={filteredLocationData}
+              selectedLocations={selectedLocations}
+              selectedAndVisibleLocations={selectedAndVisibleLocations}
+              templateData={templateData}
+              displayPopover={displayPopover}
+              bubbleData={bubbleData}
+              popoverLoading={popoverLoading}
+              anchorEl={anchorEl}
+              infoBubbleCache={infoBubbleCache}
+              stopLoading={this.stopLoading}
+              usersList={usersList} // Contains all users
+              userSharedLists={userSharedLists}
+              shareView={shareView}
+              showShareList={this.showShareList}
+              isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(...selectedLists)}
+            />
           </Route>
           <Route path="/gfw">
             <AddGFW
               currentUser={userInfo}
               organizationId={organizationId}
-              geomFromMap={this.state.geomFromMap}
+              geomFromMap={geomFromMap}
               templateData={templateData}
               templateDropdowns={templateDropdowns}
               userLists={userLists}

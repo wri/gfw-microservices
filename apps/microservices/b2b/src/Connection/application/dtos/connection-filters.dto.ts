@@ -15,10 +15,5 @@ export class ConnectionFiltersDto {
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  targetId: Number;
-
-  @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => Number(value))
   sourceId: Number;
 }

@@ -1,0 +1,12 @@
+.profile {
+    &__container {
+        display: flex;
+    }
+    &__side-bar {
+        padding-right: 25px;
+        width: 25%;
+    }
+    &__content {
+        width: 75%;
+    }
+}

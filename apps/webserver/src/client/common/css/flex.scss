@@ -1,0 +1,61 @@
+// General Flex Grid Variables
+%flex-grid {
+  display: flex;
+}
+
+%flex-grid-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+%flex-grid-spread {
+  display: flex;
+  justify-content: space-between;
+}
+
+%flex-grid-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// Column Variables
+%col {
+  flex: 1;
+}
+
+%flex-grid-thirds-col {
+  width: 32%;
+}
+
+%flex-grid-fourths-col {
+  width: 24%;
+}
+
+// Additional Flex Styling
+%space-between {
+  justify-content: space-between;
+}
+
+%justify-center {
+  justify-content: center;
+}
+
+%justify-end {
+  justify-content: flex-end;
+}
+
+%column {
+  flex-direction: column;
+}
+
+%align-center {
+  align-items: center;
+}
+
+%align-end {
+  align-items: flex-end;
+}
+
+%border-top {
+  border-top: 1px solid $gfw-black;
+}

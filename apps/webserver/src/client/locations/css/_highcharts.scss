@@ -1,0 +1,57 @@
+.highcharts-plot-band-label {
+    font-weight: 600;
+    font-family: 'Fira Sans', sans-serif !important;
+}
+
+.highcharts-yaxis {
+    .highcharts-axis-title {
+        font-weight: 600;
+    }
+}
+
+.highcharts-xaxis {
+    .highcharts-axis-title {
+        font-weight: 600;
+    }
+}
+
+.highcharts-axis-labels {
+    font-family: 'Fira Sans', sans-serif !important;
+    &.highcharts-axis-labels {
+        font-weight: 500;
+        color: black !important;
+        fill: black !important;
+        text {
+            color: black !important;
+            fill: black !important;
+        }
+    }
+}
+
+.highcharts-yaxis-labels {
+    font-weight: 600;
+}
+
+.highcharts-label {
+    &.highcharts-data-label {
+        text {
+            font-size: 12px !important;
+            color: #666666 !important;
+            fill: #666666 !important;
+        }
+    }
+}
+
+.highcharts-tooltip,
+.highcharts-legend,
+.highcharts-data-labels,
+.highcharts-axis {
+    font-family: 'Fira Sans', sans-serif !important;
+}
+
+.highcharts-tooltip {
+    & span {
+       font-family: 'Fira Sans', sans-serif !important;
+       font-weight: 500;
+    }
+}

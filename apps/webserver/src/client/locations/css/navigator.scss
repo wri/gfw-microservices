@@ -1,0 +1,102 @@
+@import '../../common/css/baseGFW';
+// ==================================
+//  NAVIGATOR, Wizard steps
+// ==================================
+.navigator {
+  border: 1px solid $gfw-light-gray;
+  border-radius: $border-radius;
+  padding: $space-comfortable;
+
+  &__list {
+    padding-left: 0;
+    list-style-type: none;
+    position: relative;
+
+    &::after {
+      content: '';
+      display: block;
+      width: 1px;
+      background: $gfw-light-gray-2;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 1.25rem;
+      z-index: 0;
+    }
+  }
+
+  &__list-item {
+    margin: 0 0 $space-comfortable;
+    z-index: 1;
+    position: relative;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__link {
+    background: transparent;
+    border: none;
+    color: black;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    color: $gfw-gray-2;
+    font-weight: $font-weight-medium;
+    font-family: $gfw-font-family;
+
+    &:not([disabled]) {
+      color: $gfw-black;
+      cursor: pointer;
+
+      .navigator__label {
+        text-decoration: underline;
+      }
+    }
+
+    &:focus {
+      @include focus-outline();
+    }
+  }
+
+  &__number {
+    @include text(300, $weight: $font-weight-semibold);
+    background: $gfw-light-gray;
+    border-radius: 100%;
+    padding: 5px;
+    text-align: center;
+    min-width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: $space-normal;
+  }
+
+  .upload-sidebar-step-selected {
+    color: white;
+    background-color: black;
+  }
+
+  .upload-sidebar-step-text {
+    padding-top: 25px;
+    text-decoration: underline;
+    white-space: nowrap;
+  }
+
+  &__list-item--selected {
+    .navigator__link {
+      color: $gfw-black;
+    }
+
+    .navigator__number {
+      color: white;
+      min-width: 35px;
+      height: 35px;
+      margin-left: -3px;
+      background: $gfw-green;
+      box-shadow: 0px 0px 0px 3px white, 0px 0px 0px 4px $gfw-green;
+    }
+  }
+}

@@ -1,0 +1,20 @@
+### Get ESRI Vector Tile Metadata
+GET https://localhost:8443/arcgis/rest/services/services/VectorTileServer/
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+### Get ESRI Vector Tile Root
+GET https://localhost:8443/arcgis/rest/services/services/VectorTileServer/resources/styles/root.json
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+### Get ESRI Vector Tile List MBTile
+GET https://localhost:8443/arcgis/rest/services/202209130343_64_1385_906c86b5_751b_46be_9bb1_8c6dcac55b77/VectorTileServer/10/824/509.pbf
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+// List ID (1385) - 64 - Does This Process 2
+// List ID (1643) - 8 - Recent Cocoa Generic 56 SaveAsDraft 10 L

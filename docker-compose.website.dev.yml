@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  web:
+    image: gfwpro-website-dev
+    container_name: gfwpro-website-dev
+    build:
+      context: .
+      dockerfile: ./apps/webserver/dev.Dockerfile
+    env_file:
+      - ./apps/webserver/secrets/dev.secrets
+    environment:
+      - NODE_ENV=development
+    ports:
+      - '8443:8443'
+      - '9229:9229'
+    volumes:
+      - ./apps/webserver/src/client:/srv/src/client
+      - ./apps/webserver/src/server:/srv/src/server
+      - ./apps/webserver/src/config:/srv/src/config
+      - ./apps/webserver/src/vectorTiles:/srv/src/vectorTiles
+      - ./apps/webserver/src/server.js:/srv/src/server.js
+  redis:
+    image: redis:5.0.7-alpine
+    container_name: gfwpro-website-redis
+    ports:
+      - '6379:6379'

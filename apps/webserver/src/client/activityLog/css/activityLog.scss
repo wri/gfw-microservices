@@ -1,0 +1,44 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/subHeader';
+@import '../../common/css/profile';
+
+.activity-log {
+  margin: 0 auto;
+  padding: $space-spacious $space-normal;
+
+  @media (min-width: 1400px) {
+    padding: $space-spacious 0;
+    max-width: $full-max-width;
+    width: $full-width;
+  }
+
+  @media (min-width: 850px) and (max-width: 1399px) {
+    max-width: $mobile-max-width;
+    width: $mobile-width;
+  }
+
+  &__filter-bar {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: $space-normal;
+  }
+
+  &__action-button {
+    margin-left: auto;
+  }
+
+  .input-field__inline-container {
+    margin-right: $space-comfortable;
+  }
+
+  &__no-results {
+    text-align: center;
+    padding: $space-medium;
+    background: $gfw-x-light-gray;
+  }
+
+  &__no-results-prompt {
+    @include text(200);
+    font-style: italic;
+  }
+}

@@ -1,0 +1,192 @@
+@import 'colorsGFW.scss';
+@import 'typographyGFW.scss';
+@import 'flex.scss';
+@import '_variables.scss';
+@import 'mixins';
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+// Mobile variables
+$mobileBreak: 950px;
+$full-max-width: 1200px;
+$full-width: 75%;
+$mobile-max-width: 1024px;
+$mobile-width: 95%;
+$width-third: calc(100% / 3);
+
+// Defaults
+html {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: 'Fira Sans', sans-serif !important;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+}
+
+*,
+*:after,
+*:before {
+  -webkit-tap-highlight-color: $transparent-background;
+  box-sizing: border-box;
+}
+
+.hidden {
+  display: none !important;
+}
+
+a {
+  color: #fff;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.required-param:after {
+  content: ' *';
+}
+
+.dropdown-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  position: relative;
+}
+
+// --------------
+// ReactComponentTooltip
+// --------------
+.__react_component_tooltip {
+  max-width: 30rem;
+}
+
+// --------------
+// MenuItem
+// --------------
+.MenuItem--danger {
+  color: $theme-danger-red-2 !important;
+
+  &:hover {
+    background: $theme-danger-x-light-red !important;
+  }
+}
+
+// --------------
+// Media query's
+// --------------
+@media (min-width: 1400px) {
+  .header_,
+  .locations-title__label,
+  .page-main-title__label,
+  .profile-landing,
+  .map__headers-list,
+  .map-subnav,
+  .page-main__content {
+    max-width: 1200px;
+    width: 75%;
+  }
+}
+
+@media (min-width: 850px) and (max-width: 1399px) {
+  .locations-title__label,
+  .page-main-title__label,
+  .profile-landing,
+  .map__headers-list,
+  .map-subnav,
+  .page-main__content {
+    max-width: $mobile-max-width;
+    width: $mobile-width;
+  }
+}
+
+// Hide feedback link
+#feedbackLink {
+  display: none !important;
+}
+
+// --------------
+// Badges
+// --------------
+.badge {
+  display: flex;
+  align-items: center;
+  padding: $space-compact;
+  border-radius: $border-radius;
+
+  &__text {
+    @include text(100, $weight: $font-weight-medium);
+    color: $gfw-white;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+
+  &__icon-l,
+  &__icon-r {
+    color: $gfw-white;
+  }
+
+  &__icon-l {
+    margin-right: $space-small;
+  }
+
+  &__icon-r {
+    margin-left: $space-small;
+  }
+
+  &--positive {
+    background-color: $gfw-green;
+  }
+
+  &--danger {
+    background-color: $theme-danger-red-2;
+  }
+}
+
+.tag {
+  padding: 5px 10px;
+  background: #0000001F;
+  border-radius: 12px;
+  border: 0;
+  font-size: 12px;
+  line-height: 14px;
+  margin: 0 10px;
+  cursor: pointer;
+
+  &--small {
+    font-size: 10px;
+    line-height: 10px;
+  }
+
+  &--gray{
+    background: #00000061;
+    color: #FFFFFFDE;
+  }
+
+  &--green{
+    background: #4CAF50;
+    color: #FFFFFFDE;
+  }
+
+  &--blue{
+    background: #2196F3;
+    color: #FFFFFFDE;
+  }
+
+  &.active{
+    background: #4CAF50;
+    color: #FFFFFFDE;
+  }
+}
+
+@import '_grid';
+@import 'page';
+@import 'button.scss';
+@import 'inputs.scss';
+@import 'table.scss';
+@import 'dropdown.scss';

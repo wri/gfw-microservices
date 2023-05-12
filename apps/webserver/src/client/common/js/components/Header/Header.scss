@@ -1,0 +1,96 @@
+.header {
+    height: 60px;
+    line-height: 100%;
+    background-color: #000;
+    z-index: 1500;
+    position: relative;
+    a, a:hover, a:visited, a:active {
+        text-decoration: none;
+    }
+    &__nav-link {
+        display: block;
+        padding: 0 12px;
+        color: #fff;
+        font-weight: 400;
+        text-transform: uppercase;
+        height: 60px;
+        line-height: 60px;
+        border-bottom: 4px solid transparent;
+
+        &:hover {
+          text-decoration: none;
+          background-color: rgba(255, 255, 255, 0.15);
+        }
+    
+        &.active {
+          color: #97bd3d;
+          border-color: #97bd3d;
+        }
+    }
+
+    &__request-account-button {
+        background-color: white;
+        color: black;
+        border-radius: 20px;
+        height: 32px;
+        line-height: 32px;
+        font-size: 13px;
+        margin: 10px;
+        white-space: nowrap;
+        &:hover {
+            text-decoration: none;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+    }
+    &__container {
+        display: flex;
+        align-items: center;
+        height: 60px;
+        margin: auto;
+
+        @media (min-width: 1400px) {
+            max-width: 1200px;
+            width: 75%;
+        }
+        
+        @media (min-width: 850px) and (max-width: 1399px) {
+            max-width: 1024px;
+            width: 95%;
+        }
+
+    }
+    &__mobile-menu-list {
+        position: fixed;
+        z-index: 99999;
+        background: white;
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        padding: 0px 20px;
+        .header__nav-link {
+            padding: 0px;
+            color: black;
+            height: 30px;
+            line-height: 30px;
+        }
+        .header__request-account-button {
+            background-color: black;
+            color: white;
+            width: 80%;
+            text-align: center;
+        }
+    }
+}
+
+/* the header is only responsive when the user is logged out */
+@media screen and (max-width: 780px) {
+    .header--responsive {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 780px) {
+    .header--mobile {
+        display: none;
+    }
+}

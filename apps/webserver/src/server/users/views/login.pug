@@ -1,0 +1,11 @@
+extends ../../core/views/layout.pug
+block head
+  script(src=common)
+  link(href=logincss, rel='stylesheet')
+  style.
+    #{critical}
+block content
+  div#mount
+    != markup
+  include ./svg.pug
+  script(src=loginjs, async)

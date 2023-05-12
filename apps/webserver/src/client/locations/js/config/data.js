@@ -1,0 +1,56 @@
+export const data = [
+  {
+    site_id: 10,
+    size: 10000,
+    commodity: 'Soy',
+    state: 'Piaui',
+    tree_cover_extent: 5283,
+    total: 69034,
+    protected_areas: 0,
+    primary_forest: 39,
+    flag: 'true'
+  },
+  {
+    site_id: 5,
+    size: 2000,
+    commodity: 'Soy',
+    state: 'Piaui',
+    tree_cover_extent: 5283,
+    total: 69034,
+    protected_areas: 0,
+    primary_forest: 39,
+    flag: 'true'
+  },
+  {
+    site_id: 10,
+    size: 10000,
+    commodity: 'Soy',
+    state: 'Piaui',
+    tree_cover_extent: 5283,
+    total: 69034,
+    primary_forest: 39,
+    flag: 'true'
+  },
+  {
+    site_id: 10,
+    size: 10000,
+    commodity: 'Soy',
+    state: 'Piaui',
+    tree_cover_extent: 5283,
+    total: 69034,
+    protected_areas: 0,
+    primary_forest: 39,
+    flag: 'true'
+  },
+  {
+    site_id: 10,
+    size: 10000,
+    commodity: 'Soy',
+    state: 'Piaui',
+    tree_cover_extent: 5283,
+    total: 69034,
+    protected_areas: 0,
+    primary_forest: 39,
+    flag: 'true'
+  }
+];

@@ -8,7 +8,10 @@ import { CreateConnectionDto } from '../application/dtos/connection.dto';
 import { Connection, ConnectionStatus } from '../domain/connection';
 import { ConnectionRepository } from '../domain/connection.repository';
 import { ConnectionDataMapper } from './connection.mapper';
-import { ConnectionChangeDto, ConnectionUpdateStatusHttpDto } from './dtos/connection-status.dto';
+import {
+  ConnectionAcceptHttpDto,
+  ConnectionChangeDto,
+} from './dtos/connection-status.dto';
 import { ConnectionDbDto } from './dtos/connection-db.dto';
 import { ConnectionFiltersDto } from './dtos/connection-filters.dto';
 import { ConnectionGetDto } from './dtos/connection-get.dto';
@@ -38,42 +41,14 @@ export class ConnectionUseCases {
 
   async acceptConnection(
     id: number,
-    acceptConnectionHttpDto: ConnectionUpdateStatusHttpDto,
+    acceptConnectionHttpDto: ConnectionAcceptHttpDto,
   ): ResultPromise<boolean> {
     const changeStatusDto: ConnectionChangeDto = {
       editEmail: acceptConnectionHttpDto.editEmail,
       id,
       status: ConnectionStatus.accepted,
     };
-    const result = await this.connectionRepo.updateStatusConnection(changeStatusDto);
-    if (result.isSuccess) return Result.ok(true);
-    return Result.fail(result.getError());
-  }
-
-  async rejectConnection(
-    id: number,
-    rejectConnectionHttpDto: ConnectionUpdateStatusHttpDto,
-  ): ResultPromise<boolean> {
-    const changeStatusDto: ConnectionChangeDto = {
-      editEmail: rejectConnectionHttpDto.editEmail,
-      id,
-      status: ConnectionStatus.rejected,
-    };
-    const result = await this.connectionRepo.updateStatusConnection(changeStatusDto);
-    if (result.isSuccess) return Result.ok(true);
-    return Result.fail(result.getError());
-  }
-
-  async cancelConnection(
-    id: number,
-    cancelConnectionHttpDto: ConnectionUpdateStatusHttpDto,
-  ): ResultPromise<boolean> {
-    const changeStatusDto: ConnectionChangeDto = {
-      editEmail: cancelConnectionHttpDto.editEmail,
-      id,
-      status: ConnectionStatus.cancelled,
-    };
-    const result = await this.connectionRepo.updateStatusConnection(changeStatusDto);
+    const result = await this.connectionRepo.acceptConnection(changeStatusDto);
     if (result.isSuccess) return Result.ok(true);
     return Result.fail(result.getError());
   }

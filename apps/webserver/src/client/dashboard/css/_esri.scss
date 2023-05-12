@@ -1,0 +1,36 @@
+@import '../../common/css/_variables';
+
+.esri-popup {
+  .esri-popup__content, .esri-popup--feature-updated .esri-popup__header-title {animation: none !important;}
+  .esri-popup__header, .esri-popup__feature-buttons {display: none !important;}
+  .esri-popup__pointer-direction, .esri-popup__pointer {display: none !important;}
+  .esri-popup__content {
+    overflow: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .esri-popup__main-container {
+    width: $popup__width !important;
+    .popup__content {
+      table {
+        table-layout: fixed;
+        width: 100%;
+        tr {
+          background-color: #fff;
+          border-bottom: none;
+          td {
+            font-family: 'Fira Sans', sans-serif !important;
+            font-size: 14px;
+            width: calc(#{$popup__width} / 2);
+            white-space: normal;
+            word-wrap: break-word;
+          }
+          td:first-child {
+            text-transform: uppercase;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+}

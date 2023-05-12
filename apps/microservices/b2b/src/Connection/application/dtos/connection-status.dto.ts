@@ -12,7 +12,7 @@ export class ConnectionChangeDto {
   id: number;
 }
 
-export class ConnectionUpdateStatusHttpDto {
+export class ConnectionAcceptHttpDto {
   @IsEmail()
   editEmail: string;
 }

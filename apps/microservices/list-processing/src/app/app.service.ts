@@ -136,4 +136,11 @@ export class AppService {
     const result = await queryRunner.connection.getRepository(MyObject).find();
     return result;
   }
+
+  /**
+  * Healthcheck for fargate
+  */
+  getHealthCheck(): string {
+    return 'Healthy';
+  }
 }

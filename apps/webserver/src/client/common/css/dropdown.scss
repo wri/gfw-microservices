@@ -1,0 +1,104 @@
+@import '_variables.scss';
+
+// ----------------
+// Dropdown select
+// ----------------
+.Dropdown-root {
+  width: $dropdown__standard-width;
+  margin: 0.25em;
+  display: inline-block;
+  position: relative;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+  overflow: hidden;
+}
+
+.Dropdown-menu {
+  position: absolute;
+  top: $button-height;
+  border-radius: $border-radius__med;
+  border: $input__border;
+  width: $dropdown__standard-width;
+  background-color: #fff;
+  z-index: 1000;
+  max-height: 289px;
+  overflow-y: auto;
+}
+
+.Dropdown-control,
+.Dropdown-option {
+  // @include text(300);
+}
+
+.Dropdown-control {
+  padding: 0 2.5em 0 10px;
+  height: $input__height;
+  border-radius: $border-radius__med;
+  border: $input__border;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  background: url($dropdown__arrow-icon) no-repeat center right 1em;
+}
+
+.Dropdown-placeholder {
+  overflow: hidden;
+}
+
+.Dropdown-option {
+  padding: 8px 10px;
+  line-height: 1.25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: $dropdown__standard-width - 2;
+
+  &:hover {
+    background-color: #f2f6e6;
+    border-right: 1px solid #000;
+  }
+}
+
+.Dropdown-option:not(:last-child) {
+  border-bottom: 1px solid #000;
+}
+
+.Dropdown-option:last-child {
+  border-bottom-left-radius: calc(#{$button-height} / 2);
+  border-bottom-right-radius: calc(#{$button-height} / 2);
+}
+
+.Dropdown-noresults {
+  height: $button-height;
+  line-height: $button-height;
+  padding: 0 2.5em 0 10px;
+}
+
+.selected-item,
+.Dropdown-menu .is-selected {
+  background-color: #f2f6e6;
+}
+
+.Dropdown-root.is-open {
+  overflow: visible;
+
+  .Dropdown-placeholder.is-selected {
+    color: #fff;
+    &:before {
+      content: 'Select...';
+      color: #000;
+    }
+  }
+}
+
+.Dropdown-disabled {
+  color: $input--disabled-color;
+  background: $input--disabled-background;
+  border-color: $input--disabled-border-color;
+  cursor: not-allowed;
+}
+
+.Dropdown-control.Dropdown-disabled {
+  color: $input--disabled-color;
+  background: $input--disabled-background;
+  border-color: $input--disabled-border-color;
+  cursor: not-allowed;
+}

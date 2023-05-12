@@ -1,0 +1,74 @@
+h1 {
+  font-size: $font-size-xx-large;
+  font-weight: 300;
+}
+
+h2 {
+  font-size: $font-size-3;
+  font-weight: 300;
+}
+
+h3 {
+  font-size: $font-size-2;
+  font-weight: 300;
+}
+
+// ----------------
+// Font size 28px
+// ----------------
+.text__regular-28 {
+  font-size: $font-size-3;
+  font-weight: 400;
+}
+
+// ----------------
+// Font size 21px
+// ----------------
+.text__light-21 {
+  font-size: $font-size-2;
+  font-weight: 300;
+}
+
+.text__light-all-caps-21 {
+  font-size: $font-size-2;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+.text__regular-21 {
+  font-size: $font-size-2;
+  font-weight: 400;
+}
+
+.text__bold-21 {
+  font-size: $font-size-2;
+  font-weight: 500;
+}
+
+// ----------------
+// Font size 14px
+// ----------------
+.text__light-14 {
+  font-size: $font-size-1;
+  font-weight: 300;
+}
+
+.text__regular-14 {
+  font-size: $font-size-1;
+  font-weight: 400;
+}
+
+.text__bold-14 {
+  font-size: $font-size-1;
+  font-weight: 500;
+}
+
+.text__bold-12 {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.text__semi-bold-12 {
+  font-size: 12px;
+  font-weight: 500;
+}

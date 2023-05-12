@@ -1,0 +1,875 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/profile';
+@import '../../common/css/_variables';
+@import '../../common/css/colorsGFW';
+
+// ======================
+//  UploadLocations Dialog
+// ======================
+.locations-uploading {
+  list-style: none;
+  padding-left: 0;
+
+  &__icon {
+    margin-right: $space-small;
+  }
+
+  &__list-item--valid .locations-uploading__icon {
+    color: $gfw-green;
+  }
+
+  &__list-item--invalid .locations-uploading__icon {
+    color: $theme-danger-red;
+  }
+
+  &__label {
+    @include text(300);
+  }
+}
+
+.upload-radio-group {
+  margin: 1rem 0.5rem;
+}
+
+.locations-add-dropdown {
+  width: $list-name__input-field--width;
+  margin-left: 0.5rem;
+}
+
+.locations-describe-table {
+  flex: 0 1 auto;
+}
+
+.locations-subpage-header-ver2 {
+  width: 300px;
+}
+
+.locations-subpage-header__label {
+  padding-top: 0.5em;
+  margin: 0.75em 0.5em;
+}
+
+.update-investment-currency__dropdown {
+  margin: 0 1rem;
+}
+
+// .locations-timeframe-start > div,
+// .locations-timeframe-end > div {
+//   width: 150px !important;
+// }
+
+.gfw-button {
+  margin: 0 1em;
+}
+
+// Address
+h3.title-light.locations-subpage-address-sub-area-title {
+  margin-top: 0 !important;
+}
+
+.locations-subpage-address-container {
+  position: absolute;
+  left: -1000px;
+  width: 300px;
+  display: block;
+  height: 100px;
+
+  .esri-view-root {
+    height: 0px !important;
+    width: 0px !important;
+  }
+}
+
+.locations-subpage-address-search {
+  border: 1px solid gray;
+}
+
+.toggle-button {
+  display: inline-block;
+  margin-left: $space-normal;
+}
+
+// Coord
+.locations-subpage-coord {
+  width: 120px;
+}
+
+// SelectMill
+.locations-subpage-section-right,
+.locations-subpage-section-left {
+  display: inline-block;
+  width: 50%;
+}
+
+.locations-upload {
+  height: 35px;
+}
+
+// StepOneGFW.js
+.locations-select-type-label,
+.commodity-option-label {
+  display: block;
+}
+
+// StepTwoGFW.js
+.step-three-count {
+  margin-right: 1em;
+}
+
+.download-step-container {
+  display: flex;
+  align-items: center;
+}
+
+// GfwAccuracy.js
+.locations-instructions {
+  padding: 1em 0;
+  line-height: 1.3em;
+}
+
+.locations-subpage-header__label {
+  color: black;
+  margin: 0 0.5rem;
+  &.investment-label {
+    width: 600px;
+  }
+  &.optional {
+    color: $gfw-dark-gray;
+    font-size: $font-size-medium;
+  }
+}
+
+.locations-instructions-option {
+  display: inline-block;
+  //width: 180px;
+  padding: 10px 20px;
+  height: $button-height;
+  border-radius: calc(#{$button-height} / 2);
+  // border: 1px solid $gfw-green;
+  margin: 5px 10px;
+  text-align: center;
+  cursor: pointer;
+  background: $theme-disabled;
+  color: white;
+  text-transform: uppercase;
+  font-weight: 500;
+
+  &:hover {
+    color: white;
+    background: $theme-disabled;
+  }
+
+  &.selected,
+  &.selected:hover {
+    color: white;
+    background: $gfw-green;
+  }
+}
+
+// StepThreeGFW.js
+.list-import-options__item {
+  display: flex;
+  margin-top: 2rem;
+  align-items: top;
+}
+
+.locations-adding-name {
+  margin: 0;
+}
+
+.step2 {
+  margin-left: 0.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid black;
+}
+
+#locationsTypeOptions,
+#commodityTypeOptions {
+  margin-left: 0.5rem;
+}
+
+.locations-upload-list-label {
+  margin: 0 0.5rem;
+  display: inline-block;
+  width: 200px;
+  &.bold-list {
+    font-weight: bold;
+  }
+  &.subtext {
+    margin: 0 0.5rem;
+  }
+}
+
+.locations-subpage-subheader {
+  padding: 0;
+}
+
+.locations-subpage-header__steps {
+  margin-left: 0.5rem;
+}
+
+.add-divider-top {
+  border-top: 1px solid #000;
+  padding-top: 1rem;
+}
+
+.add-divider-bottom-step-one-edit {
+  padding-bottom: 0.5rem;
+}
+
+.step-two-edit {
+  padding-bottom: 1rem;
+}
+
+.add-divider-top-step-two-edit {
+  border-top: 1px solid #000;
+  padding-top: 1rem;
+  margin: 0 0.5rem;
+}
+
+.location-edit-step-one,
+.location-edit-step-two {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  height: 35px;
+  line-height: 35px;
+}
+
+.validate-locations__table {
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #fff;
+  }
+}
+
+.investment-currency-container {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-flow: row;
+  align-items: center;
+}
+
+.investment-size-input {
+  flex: 0 1 200px;
+}
+
+table tbody tr {
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.dropdown-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  position: relative;
+}
+
+.custom-area-input {
+  padding: 0.5rem !important;
+  width: 100% !important;
+}
+
+.location-type-selection_detail {
+  display: block;
+  padding: 5px;
+  margin-left: 10px;
+}
+
+/////////////////////////////
+// Add Single Location styles
+/////////////////////////////
+.add-single-location {
+  &__header {
+    border-bottom: 1px solid $gfw-light-gray;
+    margin-bottom: $space-normal;
+  }
+
+  &__title {
+    @include heading(600);
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    padding: $space-comfortable 0;
+    margin-top: $space-comfortable;
+    border-top: 1px solid $gfw-light-gray;
+  }
+
+  &__action-buttons {
+    .button {
+      width: 12rem;
+      margin-right: $space-small;
+    }
+  }
+
+  .locations-adding {
+    margin-top: $space-comfortable;
+  }
+
+  .locations-describe-table--required-fields {
+    border-top: 1px solid $gfw-light-gray-2;
+    margin-top: 1rem;
+    padding-top: 1rem;
+  }
+
+  .locations-adding-name {
+    width: 15rem;
+  }
+}
+
+/////////////////////////////
+// Add Location Method, Tabs
+/////////////////////////////
+.add-location-method {
+  border-bottom: 2px solid $gfw-light-gray;
+
+  &__tab {
+    display: inline-block;
+    position: relative;
+    padding: $space-normal 0;
+  }
+
+  .selected-method {
+    &:after {
+      content: '';
+      display: block;
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 2px;
+      background-color: $gfw-green;
+    }
+  }
+}
+
+/////////////////////////////
+// List selection
+/////////////////////////////
+.locations-adding {
+  &__title {
+    @include heading(100, $color: $gfw-dark-gray, $weight: $font-weight-semibold);
+  }
+
+  &__prompt {
+    @include text(200);
+    max-width: 35rem;
+  }
+
+  &__new-list-name {
+    max-width: 15rem;
+  }
+}
+
+// ==================================
+//  DRAG AND DROP
+// ==================================
+.uploading-files__container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.locations-upload-multiple {
+  width: 200px;
+  height: 250px;
+  background: #f2f6e6;
+  border: 1px solid #e8f1d0;
+  text-align: center;
+  margin: 10px;
+  display: flex;
+  align-items: center;
+
+  &.drag input {
+    display: none;
+  }
+
+  input[type='file'] {
+    color: transparent;
+  }
+
+  .file-upload__button {
+    width: 150px;
+    background: $gfw-green;
+    margin: auto;
+    line-height: 35px;
+    height: 35px;
+    border-radius: 20px;
+    color: #fff;
+    font-weight: 500;
+    &:hover {
+      cursor: pointer;
+      background-color: #789631;
+    }
+  }
+}
+
+.analysis-instructions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  width: 100%;
+  height: 100%;
+
+  &.active {
+    font-weight: bold;
+  }
+}
+
+.locations-upload-multiple-divider {
+  display: inline-block;
+  margin: 10px;
+}
+
+/////////////////////////////
+// Date select containers
+/////////////////////////////
+.location-date-input {
+  &__container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: fit-content;
+    background: $gfw-x-light-gray;
+    border-radius: $border-radius;
+    padding: $space-normal;
+    margin: $space-small 0 0 1.75rem;
+  }
+
+  &__start-container,
+  &__end-container {
+    padding: 0 0.75em;
+  }
+
+  select {
+    margin: 1em 0;
+  }
+}
+
+/////////////////////////////
+// Location Coordinates
+/////////////////////////////
+.coordinates-form {
+  &__inner {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &__input-container {
+    margin-right: 2%;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  &__coord-text {
+    @include text(100);
+    margin-top: $space-compact;
+    flex: 0 0 100%;
+  }
+
+  &__coord-info {
+    font-weight: $font-weight-semibold;
+
+    &::before {
+      content: '\00a0';
+    }
+  }
+}
+
+/////////////////////////////
+// Location Custom Area
+/////////////////////////////
+.locations-set-area {
+  margin-top: $space-spacious;
+
+  &__input-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    .block-label {
+      flex: 0 0 100%;
+    }
+  }
+
+  &__input {
+    flex: 0 0 15rem;
+  }
+
+  &__calculation-text {
+    @include text(100);
+    margin-top: $space-compact;
+    flex: 0 0 100%;
+  }
+
+  &__calculation-num {
+    font-weight: $font-weight-semibold;
+
+    &::before {
+      content: '\00a0';
+    }
+  }
+
+  &__note {
+    margin-top: $space-normal;
+    max-width: 35rem;
+  }
+}
+
+/////////////////////////////
+// Draw Shape Map
+/////////////////////////////
+.add-location-map {
+  padding-top: $space-comfortable;
+  position: relative;
+
+  &__message {
+    @include text(100);
+    position: absolute;
+    top: 0;
+
+    &--error {
+      color: $theme-danger-red-2;
+    }
+  }
+
+  &__map-container {
+    position: relative;
+  }
+
+  &__draw-button {
+    position: absolute;
+    top: $space-normal;
+    right: $space-normal;
+    z-index: 999;
+  }
+}
+
+.upload-form {
+  &__location-text {
+    @include text(100);
+    margin-top: $space-compact;
+  }
+
+  &__location-info {
+    font-weight: $font-weight-semibold;
+
+    &::before {
+      content: '\00a0';
+    }
+  }
+}
+
+/////////////////////////////
+// Additional metadata - Investment
+/////////////////////////////
+.locations-describe-table {
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  table th,
+  table td {
+    padding: 0;
+    white-space: normal !important;
+  }
+
+  tr {
+    display: block;
+    border: none;
+    padding: $space-medium 0 $space-comfortable 0;
+  }
+
+  table td {
+    min-width: 220px;
+  }
+
+  label input,
+  label .dropdown-group,
+  label select[multiple] {
+    display: block;
+    margin-top: 8px;
+    width: 450px;
+  }
+}
+
+/////////////////////////////
+// Set Area
+/////////////////////////////
+.locations-set-area {
+  &__title {
+    @include heading(100, $color: $gfw-dark-gray, $weight: $font-weight-semibold);
+  }
+
+  &__custom-container {
+    border-radius: $border-radius;
+    background-color: $gfw-x-light-gray;
+    padding: $space-spacious;
+    margin: $space-small 0 0 1.75rem;
+  }
+
+  .area-radius-hint {
+    @include text(100);
+    margin-left: 1.75rem;
+  }
+}
+
+// ==================================
+//  MULTIPLE LOCATIONS UPLOAD
+// ==================================
+.locations-multiupload {
+  flex-wrap: wrap;
+
+  .commodity-other {
+    margin-left: 30px;
+  }
+
+  .side-panel {
+    flex: 1 0 25%;
+  }
+
+  .main-panel {
+    flex: 1 0 75%;
+    margin-bottom: 90px;
+
+    @media screen and (max-width: 1023px) {
+      max-width: 75%;
+    }
+  }
+
+  &__title {
+    @include heading(500);
+    flex: 1 0 100%;
+    margin-top: 0;
+  }
+}
+
+.locations-multiupload-footer__wrapper {
+  position: fixed;
+  width: 100%;
+  max-width: 1024px;
+  z-index: 1;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: $space-normal 0;
+  background-color: $gfw-white;
+  align-items: center;
+}
+
+.locations-multiupload-footer {
+  padding: $space-normal 0;
+  border-top: 1px solid $gfw-light-gray;
+
+  @media (min-width: 1400px) {
+    width: 75%;
+    max-width: 1200px;
+  }
+
+  @media (min-width: 850px) and (max-width: 1399px) {
+    width: 95%;
+  }
+
+  &__button-container {
+    .button:first-child {
+      margin-right: $space-small;
+    }
+
+    .button {
+      width: 150px;
+    }
+  }
+}
+
+// =============
+//  StepThree: Upload Step
+// =============
+.locations-upload-step {
+  &__step-title {
+    @include heading(400);
+  }
+
+  &__option-description {
+    margin-left: 27px;
+    max-width: 450px;
+    margin-top: $space-small;
+  }
+
+  &__suboptions {
+    background: $gfw-x-light-gray;
+    padding: 1.25rem;
+    margin: 0 0 $space-normal 27px;
+  }
+
+  &__suboptions-description {
+    @include text(200);
+    margin-bottom: $space-medium;
+  }
+
+  &__suboptions-container {
+    column-count: 3;
+    column-gap: $space-small;
+  }
+
+  .banner {
+    width: 100%;
+    box-shadow: none;
+    margin-bottom: $space-normal;
+  }
+
+  .locations-describe {
+    &__empty-container {
+      padding: $space-comfortable;
+      background: $gfw-x-light-gray;
+      border-radius: $border-radius;
+    }
+
+    &__description {
+      @include text(300, $color: $gfw-gray-2);
+      font-style: italic;
+      text-align: center;
+    }
+  }
+
+  .commodity-option__container {
+    margin-bottom: $space-compact;
+  }
+
+  .instructions-container {
+    margin: 10px;
+    color: map-get($font-colors, dark);
+
+    p {
+      margin-top: 0;
+      margin-bottom: $space-small;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0 0 0 $space-normal;
+
+      & > li {
+        margin-bottom: $space-small;
+      }
+    }
+  }
+
+  .error-instructions {
+    background-color: $gfw-light-gray;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+
+    & > svg {
+      margin: 0.5rem;
+    }
+  }
+
+  .locations-toggle {
+    & .locations-toggle__title {
+      margin: 0.5rem;
+    }
+  }
+
+  .upload-controls-right {
+    span {
+      margin: 0;
+
+      &.separator {
+        margin: 0.5rem;
+      }
+
+      svg {
+        margin-right: 0.25rem;
+      }
+    }
+  }
+}
+
+.validate-locations__table-container {
+  overflow: auto;
+  max-height: 500px;
+  // the overflow is cutting the borders of the rows a bit,
+  // so I will give 1px padding on the left
+  padding-left: 1px;
+
+  table th,
+  table td {
+    white-space: normal !important;
+  }
+
+  table th {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  input {
+    padding: 0.25em 0.5em;
+  }
+}
+
+.locations-table-td {
+  input {
+    height: 100% !important;
+    display: block !important;
+  }
+}
+
+.locations-table-tr {
+  &:hover {
+    background-color: #e6e6e6;
+  }
+}
+
+.validation-error {
+  color: red;
+}
+
+.location-input-field {
+  width: 100%;
+  margin-right: 0.5rem;
+}
+
+.read-only-input {
+  border: none !important;
+}
+
+.option-initial-case {
+  text-transform: initial;
+}
+
+.edit-and-save-table {
+  width: 75px;
+  text-align: center;
+}
+
+// ======================
+//  addToNewOrExistingList
+// ======================
+.locations-upload-save {
+  padding: 0;
+  border: none;
+  margin-top: $space-normal;
+
+  &__option-container {
+    margin-top: $space-normal;
+  }
+
+  &__optl-input {
+    display: block;
+    margin: 8px 0 $space-normal 1.75rem;
+  }
+}

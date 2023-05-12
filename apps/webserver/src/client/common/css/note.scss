@@ -1,0 +1,75 @@
+@import 'baseGFW.scss';
+
+.note {
+  border-radius: $border-radius;
+  padding: $space-small $space-medium;
+  background: $theme-non-x-light-blue;
+
+  a {
+    color: $gfw-black;
+    font-weight: $font-weight-semibold;
+    text-decoration: underline;
+  }
+
+  &__prompt {
+    line-height: 1.5;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: $space-compact;
+  }
+
+  &__icon {
+    width: 12px;
+    height: 16px;
+    margin-right: $space-small;
+    color: $theme-non-blue;
+    flex: 0 0 auto;
+  }
+
+  &__title {
+    @include heading(200, $color: $gfw-black, $weight: $font-weight-semibold);
+    line-height: normal;
+    margin-right: auto;
+  }
+
+  &__inner--closed {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  &__inner--closed & {
+    &__icon {
+      margin-top: 2px;
+    }
+  }
+
+  &--alert {
+    background: $theme-alert-x-light-yellow;
+  }
+
+  &--alert & {
+    &__icon {
+      color: $theme-alert-yellow-2;
+    }
+  }
+}
+
+.note-content {
+  background: $gfw-white;
+  border: 1px solid $gfw-light-gray;
+  border-radius: $border-radius;
+  padding: $space-normal;
+
+  &__title {
+    @include heading(200);
+    margin-top: 0;
+  }
+
+  &__prompt {
+    @include text(200);
+  }
+}

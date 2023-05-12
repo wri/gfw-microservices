@@ -1,0 +1,8 @@
+GET https://localhost:8443/listError
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org=s%3A79dfc480-f64f-11ec-979b-4baafd9b0055.pDzkSDEhuz1Zn7%2FOXopg0hn5YEgofMUtDAS2N1xGtZc
+
+### Country
+GET https://localhost:8443/listError/2082
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org=s%3A79dfc480-f64f-11ec-979b-4baafd9b0055.pDzkSDEhuz1Zn7%2FOXopg0hn5YEgofMUtDAS2N1xGtZc

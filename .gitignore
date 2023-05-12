@@ -1,42 +1,26 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
-
-# compiled output
-/dist
-/tmp
-/out-tsc
-
-# dependencies
-node_modules
-
-# IDEs and editors
-/.idea
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# IDE - VSCode
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
-
-# System Files
+# Ignore any system files
 .DS_Store
-Thumbs.db
+.project
+.idea
+.vscode
 
-# Env Files
-.env
+# Ignore test logs
+*.log
+
+# Ignore dependencies
+src/node_modules
+node_modules/
+
+# Ignore any possible zipped lambda scripts
+lambda/**/*.zip
+
+# Ignore env files
+secrets/*.secrets
+*.env
+
+src/cert.pem
+src/key.pem
+src/client/dashboard/test/*
+coverage/
+
+*.mbtiles

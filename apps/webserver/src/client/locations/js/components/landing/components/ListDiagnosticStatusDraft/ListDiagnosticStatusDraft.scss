@@ -1,0 +1,31 @@
+@import '../../../../../../common/css/baseGFW';
+
+.DiagnosticStatusDraft {
+  display: flex;
+}
+
+.DiagnosticStatusDraft__label {
+  display: inline-flex;
+  align-items: center;
+  color: $gfw-green;
+  padding: 0 1rem;
+  font-weight: 400;
+}
+
+.DiagnosticStatusDraft__label_table {
+  display: inline-flex;
+  align-items: center;
+  color: $gfw-green;
+  padding: 0;
+  font-weight: 400;
+  svg {
+    margin: 0px;
+  }
+}
+
+.ListDiagnosticStatusDraft__dialog-actions {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  padding: 0.5rem;
+}

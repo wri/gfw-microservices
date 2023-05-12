@@ -1,0 +1,1468 @@
+// Import base css
+@import '../../common/css/_base'; // _base SCSS is loading global _variables.scss
+@import '../../common/css/listSection';
+@import './modals';
+@import './_navigation';
+@import './esri';
+
+$forest-change: #ff6699;
+$land-cover: #b2d26e;
+$land-use: #c98e6c;
+$conservation: #3182bd;
+$people: #707d92;
+$regionCountry: #cf7fec;
+
+$lightGray: rgba(158, 158, 158, 0.3);
+
+#map-mount {
+  width: 100%;
+  height: 100%;
+}
+
+.app__body {
+  width: 100%;
+  height: calc(100% - 145px);
+}
+
+.map-container {
+  width: 100%;
+  height: 600px;
+}
+
+.map__header {
+  display: flex;
+  height: 46px;
+  width: 100%;
+  text-align: center;
+  padding: 0 !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: bold;
+  position: absolute !important;
+  z-index: 1000 !important;
+}
+
+.map-subnav-container {
+  width: 100%;
+  color: rgb(192, 197, 197);
+  background: rgb(56, 55, 58);
+  .map-subnav {
+    margin: 0 auto;
+  }
+}
+
+.map-navigation__container {
+  width: 100%;
+}
+
+.map__headers-list {
+  margin: auto;
+  text-align: right;
+}
+
+.map__nav__item {
+  height: 100% !important;
+  display: flex;
+  width: 120px;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  &.forest-change-list-header {
+    border-bottom: 4px solid $forest-change !important;
+  }
+  &.land-cover-list-header {
+    border-bottom: 4px solid $land-cover !important;
+  }
+  &.land-use-list-header {
+    border-bottom: 4px solid $land-use !important;
+  }
+  &.conservation-list-header {
+    border-bottom: 4px solid $conservation !important;
+  }
+  &.people-list-header {
+    border-bottom: 4px solid $people !important;
+  }
+  &.region-list-header {
+    border-bottom: 4px solid $regionCountry !important;
+    width: 200px;
+  }
+}
+
+.analysis-tools {
+  z-index: 250;
+  background-color: white;
+  position: absolute;
+  right: 40px;
+  top: 230px;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+  width: 340px;
+}
+
+.link {
+  color: #97bd3d;
+}
+
+.analysis__headers-list {
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  // button:hover {
+  //   background-color: #fbfbfb !important;
+  // }
+  &.footer-list {
+    padding: 0;
+    margin: 10px 0;
+  }
+}
+
+.analysis__nav__item:hover {
+  background-color: #fbfbfb !important;
+}
+
+.analysis__nav__item-share:hover {
+  background-color: #eeeeee !important;
+}
+
+.analysis__nav__item {
+  height: 100% !important;
+  display: inline-block;
+  width: 50%;
+  background-color: #eeeeee !important;
+  &.selected-analysis {
+    background-color: white !important;
+  }
+  &.disabled-analysis {
+    cursor: no-drop !important;
+    opacity: 0.5;
+  }
+}
+
+.analysis__nav__item-share {
+  display: inline-block;
+  width: 33.3%;
+  background-color: #eeeeee !important;
+}
+
+.analysis__body__subtitle {
+  display: inline-block;
+  position: relative;
+  width: calc(100% / 2);
+  padding: 14px 3px;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 12px;
+  line-height: 12px;
+  color: #7f7f7f;
+  cursor: pointer;
+  &:after {
+    background: transparent;
+    width: 50%;
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    height: 4px;
+    -webkit-transform: translate(-50%, 0%);
+    transform: translate(-50%, 0%);
+    -webkit-transition: all 0.125s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+    transition: all 0.125s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  }
+  &:hover:after {
+    background: #555555;
+  }
+  &.active-analysis {
+    &:after {
+      background: #97bd3d;
+    }
+  }
+  &.disabled-analysis {
+    cursor: no-drop;
+    opacity: 0.5;
+  }
+}
+
+.analysis__body__instructions {
+  text-align: center;
+  font-size: 21px;
+  line-height: 21px;
+  font-weight: 300;
+  padding: 0 0 15px;
+  color: #555555;
+}
+
+.analysis__body__list {
+  padding-left: 0;
+  margin: 0;
+}
+
+.analysis__body__item {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+
+  .analysis-basemaps {
+    position: relative;
+    top: 122px;
+    width: 100%;
+  }
+}
+
+.analysis__body__subitem {
+  padding: 15px;
+  width: 270px;
+
+  .analysis__body__instructions__item {
+    padding: 5px 0 0;
+    color: #555;
+    font-size: 13px;
+    line-height: 13px;
+  }
+
+  .select-administrative-region-actions {
+    display: flex;
+    justify-content: space-around;
+
+    & > div {
+      width: 100%;
+      padding: 1em 0.5em;
+      box-sizing: border-box;
+    }
+  }
+
+  .locations-add-subpage__content {
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+  }
+
+  $dropdown-width: 200px;
+  .Dropdown-root,
+  .Dropdown-menu,
+  .Dropdown-placeholder,
+  .region-countries-search-container {
+    width: $dropdown-width;
+  }
+  .Dropdown-option {
+    width: $dropdown-width - 2px;
+  }
+}
+
+.analysis__body__draw__button {
+  text-align: center;
+  padding: 0 5px;
+  .locations-upload-multiple .file-upload__button {
+    height: 46px;
+    padding: 10px;
+    line-height: 14px;
+  }
+}
+
+.analysis__body__cancel__button {
+  $cancel-button__distance: 15px;
+  text-align: center;
+  margin: 0 0 15px 0;
+  width: calc(100% - 30px);
+  z-index: 6000;
+  order: 1;
+}
+
+.analysis__body__sep {
+  text-align: center;
+  font-size: 16px;
+  padding: 10px 0;
+  color: #555;
+}
+
+.analysis__body__results {
+  max-height: 26.1vh;
+  padding: 15px;
+  position: relative;
+  bottom: auto;
+  left: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 270px;
+}
+
+.analysis__body__results__label {
+  text-transform: uppercase;
+  font-size: 12px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.analysis__body__results__value {
+  font-size: 15px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  &.loss-value {
+    color: #f69;
+  }
+  &.warning-message {
+    font-size: 11px;
+    background: #e5e5df;
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    line-height: 1.25;
+    a {
+      color: #97bd3d;
+    }
+  }
+}
+
+.basemap__item {
+  max-height: 350px;
+  overflow: auto;
+}
+
+.analysis__body__results__button {
+  width: 100%;
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+
+  button {
+    background-color: $gfw-green;
+  }
+  div {
+    width: calc(100% - 20px);
+    button {
+      margin-left: 10px !important;
+      margin-right: 10px !important;
+      text-align: -webkit-center !important;
+    }
+  }
+}
+
+.notifications-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  // height: 66px;
+  z-index: 2000;
+  -webkit-transition: all 0.25s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  transition: all 0.25s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  -webkit-transform: translate(0, -100%);
+  transform: translate(0, -100%);
+  padding: 20px;
+  text-align: center;
+  background: rgba(255, 240, 14, 0.95);
+  &.active-warning {
+    -webkit-transform: translate(0, 0%);
+    transform: translate(0, 0%);
+  }
+  .close-icon {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 0px;
+    width: 40px;
+    height: 40px;
+    z-index: 20;
+    transform: translate(0, -50%);
+  }
+}
+
+.notifications-content {
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -ms-grid-row-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  svg {
+    width: 26px;
+    height: 26px;
+    fill: #555555;
+    margin: 0 15px 0 0;
+    transition: all 0.15s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  }
+  p {
+    color: #555555;
+    width: auto;
+    font-size: 16px;
+    line-height: 0.1;
+  }
+}
+
+// -------------------
+// COUNTRY OR REGION
+// -------------------
+.select-administrative-region-actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.analysis-footer-click {
+  padding-top: 5px;
+}
+
+.analysis-panel-button-wrap {
+  display: flex;
+  height: 36px;
+}
+
+.analysis-footer-click-share {
+  padding-top: 8px !important;
+  height: 100% !important;
+}
+
+.analysis-footer-label {
+  text-transform: uppercase;
+  font-size: 9px;
+  position: absolute;
+  top: 10px;
+  &.download-data-label {
+    left: 15px;
+  }
+  &.share-label {
+    left: 40px;
+  }
+  &.discard-label {
+    left: 10px;
+  }
+}
+
+.locations-upload-multiple {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  border: 1px dashed $gfw_brand-green;
+  border-radius: 25px;
+
+  &.drag input {
+    display: none;
+  }
+  input[type='file'] {
+    color: transparent;
+    visibility: hidden;
+  }
+  .file-upload__button {
+    width: 220px;
+    line-height: 1em;
+    margin: auto;
+    height: 35px;
+    border-radius: 20px;
+    display: block;
+    padding-top: 1px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #555555;
+    font-weight: normal;
+  }
+}
+
+.basemap-selector {
+  position: relative;
+  border-bottom: 1px solid #eeeeee;
+  box-sizing: border-box;
+  text-align: left;
+  cursor: pointer;
+  padding: 0.25rem 2.25rem 0.25rem 0.5rem;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: start;
+  align-items: center;
+
+  &.basemap-selected {
+    background-color: #f7f7f7;
+  }
+}
+
+.basemap-selected {
+  .basemap-image {
+    border: 2px solid #97bd3d;
+  }
+}
+
+.basemap-image {
+  height: 46px;
+  width: 46px;
+  min-width: 46px;
+  max-width: 46px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 2px solid #e5e5df;
+  margin: 0 0.5rem 0 0;
+
+  &:hover {
+    border: 2px solid #97bd3d;
+  }
+  &.basemap-selected {
+    background-color: #f7f7f7;
+  }
+  &.custom-default {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 -704px;
+  }
+  &.custom-terrain {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 -528px;
+  }
+  &.satellite {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 -352px;
+  }
+  &.osm {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 0;
+  }
+  &.dark-matter {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 -176px;
+  }
+  &.positron {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 -88px;
+  }
+  &.hybrid {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 -264px;
+  }
+  &.tree-height {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 -616px;
+  }
+  &.landsat {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 -440px;
+  }
+  &.terrain {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 -528px;
+  }
+  &.planet-basemap {
+    background: url('../images/basemaps.png') no-repeat center;
+    background-position: 0 -792px;
+  }
+}
+
+.basemap-label {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: #808080;
+  display: flex;
+  align-items: center;
+  vertical-align: top;
+  flex-wrap: wrap;
+  width: 150px;
+}
+
+.module-tabs.header-tabs {
+  // padding: 1px;
+  // height: 30px;
+  svg {
+    display: block;
+    fill: #555555;
+    width: 24px;
+    height: 24px;
+    margin: 0 auto;
+  }
+}
+
+.module-tabs.footer-tabs {
+  svg {
+    fill: #555555;
+    width: 18px;
+    height: 18px;
+    margin: 0 auto 3px;
+  }
+}
+
+.map__headers-list-scroll {
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.region-countries-search-container {
+  width: 200px;
+  margin: 0.25em auto;
+  display: flex;
+  border: 1px solid rgb(224, 224, 217);
+
+  .region-countries-search {
+    width: 100%;
+    border: 0 !important;
+  }
+
+  svg {
+    margin-left: 5px;
+    fill: rgb(66, 66, 66);
+  }
+}
+
+.map__layer-list-dropdown {
+  font-size: 13px;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  width: 225px;
+  background: white;
+  border: 1px $lightGray;
+  position: absolute;
+  opacity: 1;
+}
+
+.layer-list-item {
+  cursor: pointer;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.layer-checkbox-header {
+  text-align: left;
+  padding: 5px 5px 5px 10px;
+}
+
+.layer-checkbox {
+  padding: 5px 5px 5px 10px;
+  margin-top: 3px;
+  text-align: left;
+  &.active {
+    .toggle-switch {
+      background: #f0ab00;
+      span {
+        left: 9px;
+      }
+    }
+  }
+}
+
+.layer-checkbox-label {
+  display: inline-block;
+  vertical-align: top;
+  padding-left: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  max-width: 80%;
+}
+
+.layer-checkbox-sublabel {
+  padding: 0 25px 0 35px;
+  color: $lightGray;
+  line-height: 12px;
+  font-size: 11px;
+}
+
+.layer-sub-info {
+  font-size: 11px;
+  padding: 5px 8px 0 23px;
+  display: block;
+  font-weight: 500;
+  color: #aaa;
+  word-wrap: break-word;
+  margin-top: 0;
+}
+
+.toggle-switch {
+  transition: all 0.3s ease;
+  background: $lightGray;
+  display: inline-block;
+  border-radius: 5px;
+  position: relative;
+  height: 10px;
+  width: 17px;
+}
+
+.toggle-switch span {
+  transition: all 0.3s ease;
+  border-radius: 50%;
+  position: absolute;
+  background: white;
+  height: 6px;
+  width: 6px;
+  left: 2px;
+  top: 2px;
+}
+
+.map__legend {
+  z-index: 10;
+  position: absolute;
+  left: 20px;
+  top: 230px;
+  width: 300px;
+  background-color: white;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+  max-height: calc(100% - 400px);
+  overflow: auto;
+}
+
+.map__legend__list {
+  padding: 0;
+  margin: 0;
+}
+
+.info-icon {
+  background-color: white;
+  display: inline-block;
+  position: absolute;
+  border-radius: 50%;
+  height: 14px;
+  width: 14px;
+  right: 8px;
+  border: 1px solid $lightGray;
+  svg {
+    fill: gray;
+  }
+  &.icon-eye {
+    left: 10px;
+    display: block;
+    height: 15px;
+    width: 15px;
+    border: none;
+    svg {
+      height: 15px;
+      width: 15px;
+    }
+    &.grayed {
+      svg {
+        fill: #ccc;
+      }
+    }
+  }
+  &.gfw-filter {
+    right: 43px;
+    background-color: $gfw_brand-green;
+    border: none;
+    svg {
+      fill: white;
+    }
+  }
+  &.metadata {
+    right: 1rem;
+    background-color: $gfw_brand-green;
+    border: none;
+    &.analysis-panel-metadata {
+      // margin-top: 15px;
+      top: 50%;
+      transform: translate(0, -50%);
+    }
+    svg {
+      fill: white;
+    }
+    &.instructions {
+      position: relative;
+      margin-left: 10px;
+    }
+    &.iconLoading {
+      font-size: 18px;
+      svg {
+        -webkit-animation-name: loader2;
+        -webkit-animation-duration: 1s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+        -webkit-animation-direction: normal;
+        -webkit-animation-fill-mode: none;
+        -webkit-animation-delay: 0s;
+        -webkit-animation-play-state: running;
+        animation-name: loader2;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+        animation-direction: normal;
+        animation-fill-mode: none;
+        animation-delay: 0s;
+        animation-play-state: running;
+        z-index: 11;
+      }
+    }
+  }
+  &.metadata-layer-panel {
+    right: 10px;
+    background-color: $gfw_brand-green;
+    border: none;
+    &.analysis-panel-metadata {
+      // margin-top: 15px;
+      top: 50%;
+      transform: translate(0, -50%);
+    }
+    svg {
+      fill: white;
+    }
+    &.instructions {
+      position: relative;
+      margin-left: 10px;
+    }
+    &.iconLoading {
+      font-size: 18px;
+      svg {
+        -webkit-animation-name: loader2;
+        -webkit-animation-duration: 1s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+        -webkit-animation-direction: normal;
+        -webkit-animation-fill-mode: none;
+        -webkit-animation-delay: 0s;
+        -webkit-animation-play-state: running;
+        animation-name: loader2;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+        animation-direction: normal;
+        animation-fill-mode: none;
+        animation-delay: 0s;
+        animation-play-state: running;
+        z-index: 11;
+      }
+    }
+  }
+  &.metadata-legend {
+    right: 25px;
+    background-color: $gfw_brand-green;
+    border: none;
+    &.analysis-panel-metadata {
+      // margin-top: 15px;
+      top: 50%;
+      transform: translate(0, -50%);
+    }
+    svg {
+      fill: white;
+    }
+    &.instructions {
+      position: relative;
+      margin-left: 10px;
+    }
+    &.iconLoading {
+      font-size: 18px;
+      svg {
+        -webkit-animation-name: loader2;
+        -webkit-animation-duration: 1s;
+        -webkit-animation-iteration-count: infinite;
+        -webkit-animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+        -webkit-animation-direction: normal;
+        -webkit-animation-fill-mode: none;
+        -webkit-animation-delay: 0s;
+        -webkit-animation-play-state: running;
+        animation-name: loader2;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+        animation-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+        animation-direction: normal;
+        animation-fill-mode: none;
+        animation-delay: 0s;
+        animation-play-state: running;
+        z-index: 11;
+      }
+    }
+  }
+}
+
+.map-upload__info-link {
+  width: 14px;
+  height: 14px;
+  background-size: cover;
+  margin-right: 1em;
+}
+
+.carbon-stocks {
+  margin-top: 5px;
+  .carbon-labels {
+    display: block;
+    width: 100%;
+    height: 12px;
+    font-size: 10px;
+    padding: 0;
+    li {
+      display: inline-block;
+    }
+    li:first-child {
+      float: left;
+    }
+    li:last-child {
+      float: right;
+    }
+    sup {
+      vertical-align: top;
+      font-size: 0.8em;
+    }
+  }
+}
+
+.quartile-biomass-loss {
+  clear: both;
+  height: 12px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #ffffd4;
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    color-stop(10%, #895122),
+    color-stop(35%, #957f4f),
+    color-stop(75%, #9db38a),
+    color-stop(100%, #39a401)
+  );
+  background: -webkit-linear-gradient(left, #895122 10%, #957f4f 35%, #9db38a 75%, #39a401 100%);
+  background: linear-gradient(to right, #895122 10%, #957f4f 35%, #9db38a 75%, #39a401 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#895122', endColorstr='#39A401', GradientType=1);
+  background-image: -ms-linear-gradient(left, #895122 10%, #957f4f 35%, #9db38a 75%, #39a401 100%);
+}
+
+.canopy-range {
+  width: auto;
+  color: #555555;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 14px;
+  text-transform: uppercase;
+}
+
+.canopy-range-wrapper {
+  display: block;
+  margin: 5px 0 15px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.canopy-range-button {
+  float: none;
+  top: initial;
+  right: initial;
+  background: #fff;
+  color: #555555;
+  min-width: 48px;
+  text-align: center;
+  font-size: 10px;
+  display: inline-block;
+  padding: 1px 5px 0;
+  margin: 0 4px;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+
+  input {
+    width: 55px;
+    height: 20px;
+    border: none;
+    border-radius: 10px;
+    text-align: right;
+    color: #555555;
+    padding: 2px 0 3px 0;
+    font-weight: 500;
+    font-size: 10px;
+  }
+}
+
+.quartile-tree-biomass-loss {
+  clear: both;
+  height: 12px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: #ff1f26;
+  background: -webkit-linear-gradient(left, #ff1f26 0%, #d21f26 27%, #d21f26 52%, #f19813 77%, #ffd00b 100%);
+  background: linear-gradient(to right, #ff1f26 0%, #d21f26 27%, #d21f26 52%, #f19813 77%, #ffd00b 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff1f26', endColorstr='#ffd00b',GradientType=1 );
+}
+
+.layer-details .canopy {
+  font-size: 12px;
+  line-height: 14px;
+  padding: 0;
+  margin: 0;
+  a {
+    color: #97bd3d;
+  }
+}
+
+.image__icon-info {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiI+PHBhdGggZmlsbD0iIzhCQUUzQiIgZD0iTTE2IDMyYzguOCAwIDE2LTcuMiAxNi0xNlMyNC44IDAgMTYgMCAwIDcuMiAwIDE2czcuMiAxNiAxNiAxNnoiLz48cGF0aCBmaWxsPSIjRkZGIiBkPSJNMTguMyAxNC42di0xLjJoLTd2Mi4zaDIuNHY2LjdoLTIuM3YyLjJoOS4ydi0yLjJoLTIuM3YtNy44em0tNC42LThoNC42djQuNmgtNC42VjYuN3oiLz48L3N2Zz4=');
+}
+
+.info-icon svg {
+  position: absolute;
+  margin: auto;
+  height: 8px;
+  width: 8px;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  top: 0;
+}
+
+.layer-legend {
+  padding-left: 10px;
+}
+
+.layer-legend-symbol {
+  width: 10px;
+  display: inline-block;
+  height: 10px;
+  border-radius: 5px;
+  margin-right: 5px;
+}
+
+.legend-header {
+  text-transform: uppercase;
+  border-top: 1px solid $lightGray;
+  font-size: 14px;
+  padding: 10px 10px 10px 20px;
+  &.forest-change-header {
+    color: $forest-change;
+    border-bottom: 2px solid $forest-change;
+  }
+  &.land-cover-header {
+    color: $land-cover;
+    border-bottom: 2px solid $land-cover;
+  }
+  &.land-use-header {
+    color: $land-use;
+    border-bottom: 2px solid $land-use;
+  }
+  &.conservation-header {
+    color: $conservation;
+    border-bottom: 2px solid $conservation;
+  }
+  &.people-header {
+    color: $people;
+    border-bottom: 2px solid $people;
+  }
+  &.region-header {
+    color: $regionCountry;
+    border-bottom: 2px solid $regionCountry;
+  }
+}
+
+.legend-list-item {
+  border-bottom: 1px solid $lightGray;
+  padding: 10px 10px 10px 20px;
+  font-size: 13px;
+  color: black;
+  &:last-child {
+    border-bottom: none;
+  }
+  &.grayed {
+    color: #ccc !important;
+  }
+}
+
+.layer-legend-message {
+  text-transform: none;
+  font-size: 12px;
+  line-height: 14px;
+  max-width: calc(100% - 20px);
+  margin: 7px 0 0;
+}
+
+.layer-legend-message-country {
+  text-transform: none;
+  font-size: 12px;
+  line-height: 14px;
+  max-width: calc(100% - 20px);
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+.layer-legend-loss-display {
+  background: transparent;
+  color: #9e9e9e;
+  display: inline-block;
+  padding: 1px 5px 0;
+  margin: 0 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid #9e9e9e;
+}
+
+.layer-legend-warning-source {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  background: #aaa;
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  text-align: center;
+  color: white;
+  border-radius: 50%;
+  font-weight: 500;
+}
+
+.layer-info-source {
+  font-size: 11px;
+  padding: 3px 7px 4px 10px;
+  display: block;
+  color: #aaa;
+  word-wrap: break-word;
+}
+
+.soy-year-picker {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  .layer-legend-message {
+    margin-top: 0;
+  }
+
+}
+
+.timeline-container {
+  position: absolute;
+  display: block;
+  z-index: 200;
+  background: white;
+  left: calc(50% - 350px);
+  bottom: 30px;
+  padding: 0px 20px;
+  width: 700px;
+}
+
+.glad-adhoc-container {
+  position: absolute;
+  display: flex;
+  z-index: 200;
+  background: white;
+  left: calc(50% - 350px);
+  bottom: 30px;
+  padding: 5px 10px;
+  width: 900px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.adhoc-analysis {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  z-index: 200;
+  background-color: white;
+  left: calc(50% - 200px);
+  bottom: 30px;
+  width: auto;
+  padding: 0px 15px;
+  justify-content: space-evenly;
+  align-items: center;
+
+  .adhoc-analysis__date-picker-container {
+    input {
+      text-align: center !important;
+    }
+    hr {
+      display: none !important;
+    }
+  }
+}
+.fires-controls {
+  width: 500px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 0;
+  left: calc(50% - 250px);
+}
+
+.fires-controls-option {
+  display: inline-block;
+  background: #eeeeee;
+  color: #555555;
+  border-radius: 25px;
+  padding: 5px;
+  width: 110px;
+  height: 25px;
+  line-height: 16px;
+  text-align: center;
+  margin-left: 10px;
+  font-size: 11px;
+  cursor: pointer;
+  &.active-fires {
+    background: #a1ba42;
+    color: white;
+  }
+}
+
+.loss-slider-controls {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  font-size: 18px;
+  .loss-play-button {
+    cursor: pointer;
+  }
+}
+
+.slider-tooltip {
+  position: absolute;
+  display: none;
+  z-index: 2000;
+  background: white;
+  color: #555;
+  text-align: center;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 2px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
+  min-width: 40px;
+  margin-left: 6px;
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    background-color: white;
+    width: 8px;
+    height: 8px;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    box-shadow: 1px 1px 1px 0 rgba(85, 85, 85, 0.5);
+    right: 0;
+    left: 0;
+    margin: auto;
+    bottom: -4px;
+  }
+}
+
+.esri-popup__main-container,
+.esri-popup__position-container,
+.esri-popup {
+  z-index: 1200 !important;
+}
+
+.esri-popup--aligned-bottom-center .esri-popup__content {
+  top: 40px !important;
+}
+
+.esri-popup__button--dock {
+  display: none !important;
+}
+
+.esri-popup__header-title {
+  font-weight: normal !important;
+  font-size: 21px !important;
+  line-height: 1.25;
+}
+
+.esri-popup__pointer-direction {
+  transform: rotate(45deg) !important;
+}
+
+.popup-text-container {
+  display: flex;
+}
+
+.esri-popup__footer {
+  flex-direction: column !important;
+
+  .esri-popup__inline-actions-container {
+    width: 100% !important;
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between !important;
+
+    .esri-popup__action {
+      max-width: none !important;
+      background: #8bae3b;
+      line-height: 1.5em;
+      margin: 6px 0;
+    }
+  }
+}
+
+.esri-popup__action-text {
+  display: none !important;
+}
+
+.esri-popup__action {
+  &:before {
+    content: '';
+    font-weight: 700;
+  }
+}
+
+.popup-text-key {
+  font-weight: 700;
+}
+
+.popup-text-key,
+.popup-text-value {
+  width: 50%;
+}
+
+.esri-search__suggestions-menu {
+  z-index: 3000 !important;
+}
+
+.esri-search {
+  width: 100% !important;
+}
+
+.map-popup-subscribe,
+.map-popup-analyze {
+  display: none !important;
+}
+
+// .map-popup-subscribe {
+//   background-image: url('../images/subscribe.svg');
+// }
+// .map-popup-analyze {
+//   background-image: url('../images/sync.svg');
+// }
+
+.visible-layer {
+  color: green;
+}
+
+.hidden-layer {
+  color: red;
+}
+
+.layer-legend-link {
+  display: flex;
+  align-items: center;
+
+  svg {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-left: 5px;
+  }
+}
+
+.link-viirs {
+  color: rgb(234, 61, 5);
+
+  svg {
+    fill: rgb(234, 61, 5);
+    transform: rotate(90deg);
+  }
+}
+
+.link-forest-atlas {
+  color: rgb(169, 204, 99);
+
+  svg {
+    fill: rgb(169, 204, 99);
+    transform: rotate(90deg);
+  }
+}
+
+.layer-checkbox-title {
+  padding: 10px 5px 5px 10px;
+  text-align: left;
+  font-size: 14px;
+  text-transform: uppercase;
+  border-top: 1px solid rgb(224, 224, 224);
+}
+.layer-checkbox-title-first {
+  border-top: none;
+}
+.layer-checkbox-region {
+  padding: 5px 5px 5px 10px;
+  margin-top: 10px;
+  text-align: left;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+.region-other {
+  border-top: 2px solid #cf7fed;
+}
+.layer-checkbox-country {
+  padding: 7px 5px 5px 10px;
+  margin-top: 3px;
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  border-top: 2px solid #cf7fed;
+}
+.legend-checkbox-country {
+  text-transform: uppercase;
+  font-weight: 400;
+  padding: 10px 15px;
+  background: rgb(237, 222, 249);
+}
+
+.legend-checkbox-global {
+  text-transform: uppercase;
+  font-weight: 400;
+  padding: 10px 15px;
+  background: rgb(238, 238, 238);
+}
+
+.legend-show-panel {
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+
+  svg {
+    width: 15px;
+    height: 15px;
+    transform: rotate(90deg);
+  }
+
+  .close {
+    transform: rotate(-90deg);
+  }
+}
+
+.location-popup-title {
+  text-transform: capitalize;
+}
+
+.map-monthpicker__select-container {
+  padding: 0px 5px;
+}
+
+.landsat-dropdown-control {
+  height: 25px !important;
+  line-height: 25px !important;
+}
+
+.landsat-dropdown-root {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+
+  select {
+    font-weight: 400;
+    padding: 0 1.8em 0 0.7em !important;
+    font-size: 12px;
+    border: 1px solid #cfcfcf;
+    height: 30px !important;
+  }
+
+  .Dropdown-root {
+    width: 100px;
+    margin: 0;
+  }
+
+  .Dropdown-menu {
+    overflow: hidden;
+  }
+}
+
+.landsat-dropdown-menu {
+  top: 25px !important;
+  .Dropdown-option {
+    width: 99px !important;
+    padding: 2px 10px !important;
+  }
+}
+
+.landsat-dropdown-root,
+.landsat-dropdown-menu {
+  width: 100px !important;
+  overflow-y: visible;
+}
+
+[data-modal-type='basemap-modal'] {
+  #modal-content-id {
+    overflow: hidden;
+    margin: 40px;
+    padding: 0;
+  }
+
+  .basemap-modal-content {
+    padding: 0;
+
+    p {
+      margin-bottom: 0;
+    }
+  }
+}

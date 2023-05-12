@@ -1,0 +1,76 @@
+.new-b2b-connection-modal {
+    text-align: center;
+    display: grid;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    position: absolute;
+    padding: 10px 20px;
+    width: 580px;
+    transform: translate(-50%, -50%);
+    line-height: 35px;
+
+    &__header {
+      font-size: 19px;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    &__icons {
+      display: flex;
+      margin: auto;
+      height: 100%;
+      width: fit-content;
+      align-items: center;
+      div {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        margin: 0px 5px;
+      }
+      svg {
+        opacity: 0.3;
+        margin: 0 auto;
+        display: block;
+      }
+    }
+    &__response-title {
+      font-size: 19px;
+      font-weight: 500;
+      &--warning{
+        color: #FF8A00;
+      }
+      &--error{
+        color: #F24E1E;
+      }
+    }
+
+    a,
+    a:hover, 
+    a:active,
+    a:visited,
+    &__green-text {
+      color: #97bd3d;
+      text-decoration: none;
+    }
+
+    &__action-button {
+      all: unset;
+      cursor: pointer;
+      color: #97bd3d;
+      text-transform: uppercase;
+    }
+    &__action-button:disabled{
+      color: lightgray;
+    }
+
+    &__action-text {
+      all: unset;
+      cursor: pointer;
+      color: #97bd3d;
+      display: flex;
+      align-items: center;
+      margin: auto;
+    }
+}

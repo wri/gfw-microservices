@@ -1,0 +1,56 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/subHeader';
+
+.profile-body a {
+  color: $gfw-green;
+}
+
+table th,
+table td {
+  white-space: normal !important;
+}
+
+table th {
+  position: relative;
+  padding: 0.5em 1em 0;
+  vertical-align: bottom;
+  margin-right: 5px;
+}
+
+.pro-manager-table-link {
+  text-decoration: underline;
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.sortable-table-header {
+  cursor: pointer;
+}
+
+.sortable-carrot {
+  height: 20px;
+  width: 20px;
+  background-image: url('../images/sort.svg');
+  display: inline-block;
+  background-size: contain;
+  background-repeat: no-repeat;
+  // vertical-align: bottom;
+  position: absolute;
+  right: -5px;
+}
+
+.active-asc {
+  background-image: url('../images/sort-up.svg');
+  height: 8px;
+  width: 8px;
+  margin-left: 3px;
+  vertical-align: middle;
+}
+
+.active-des {
+  background-image: url('../images/sort-down.svg');
+  height: 8px;
+  width: 8px;
+  margin-left: 3px;
+  vertical-align: middle;
+}

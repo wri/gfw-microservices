@@ -1,0 +1,148 @@
+
+
+### get the filters of a specific list
+GET https://localhost:8443/locations/filters/2048
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+### get the filters of a specific list
+GET https://localhost:8443/locations/filters/2085
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+### generate csv for specific list with id 2085
+GET https://localhost:8443/locations/csv/2085
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### generate csv for specific list with id 2085 where country is Brazil
+GET https://localhost:8443/locations/csv/2085?country=Brazil
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### generate csv for specific list with id 2085 where country is Brazil and state is Pará and csv contains result values
+GET https://localhost:8443/locations/csv/2085?country=Brazil&state=Pará&type=result
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### generate csv for specific list with id 2085 where country is Brazil and state is Pará and csv contains result values also add gadmid field and list_location_id
+GET https://localhost:8443/locations/csv/2085?country=Brazil&state=Pará&type=result&combinedColumns=gadmid,list_location_id
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+### Get list location Geojson
+POST https://localhost:8443/locations/getListLocationGeometry
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "listTableName": "list-doesthisprocess2",
+  "locationID": 16
+}
+
+### Get GFW Pro list location data - Geom
+POST https://localhost:8443/locations/getGFWListLocationGeom
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "list_id":  5,
+  "location_ids": [71]
+}
+
+
+### Get GFW Pro list location data - NoGeom
+POST https://localhost:8443/locations/getGFWListLocationNoGeom
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "list_id":  5,
+  "location_ids": [71]
+}
+
+
+### Download List locations CSV based on filters provided
+POST https://localhost:8443/locations/downloadingSelectedLocations
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+# =======================================
+# List name - ebpack v5 test
+# List ID - 2038
+# LocationIds and LocationLogic = nullify => state, subState, subState
+# =======================================
+
+{
+  "listID": 2038,
+  "orderType": "desc",
+  "sortByAttribute": "location_id",
+  "country": "Brazil",
+  "state": "Bahia",
+  "subState": "Barreiras",
+  "analysisAreaMin":0,
+  "analysisAreaMax":null,
+  "columnsToReturn": "Location Name,Commodity,State,Certification",
+  "LocationIds": "1,3,64",
+  "LocationLogic": "NOT IN"
+}
+
+### Edit List Locations
+POST https://localhost:8443/locations/editLocations
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+# =======================================
+# List name - webpack v5 test
+# List ID - 2038
+# Excluded columns - ['Location Name', 'Investment Name', 'Latitude', 'Longitude', 'Analysis Area', 'Analysis Radius', 'Commodity', 'Location Classification']
+# =======================================
+
+{
+  "list_id": 2038,
+  "location_ids": [30, 34, 42],
+  "attributes": [
+    {"list_id": 2038, "location_id": 30, "Type of Investment": "old investment", "Investment Name": "30"},
+    {"list_id": 2038, "location_id": 34, "Type of Investment": "old investment"},
+    {"list_id": 2038, "location_id": 42, "Type of Investment": "old investment"}
+  ]
+}
+
+### Edit List Locations - no Location IDs
+POST https://localhost:8443/locations/editLocations
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+# =======================================
+# List name - webpack v5 test
+# List ID - 2038
+# Excluded columns - ['Location Name', 'Investment Name', 'Latitude', 'Longitude', 'Analysis Area', 'Analysis Radius', 'Commodity', 'Location Classification']
+# =======================================
+
+{
+  "list_id": 2038,
+  "attributes": [
+    {"list_id": 2038, "location_id": 30, "Type of Investment": "old investment", "Investment Name": "30"},
+    {"list_id": 2038, "location_id": 34, "Type of Investment": "renewal"},
+    {"list_id": 2038, "location_id": 42, "Type of Investment": "new investment"}
+  ]
+}
+
+### Edit List Locations - no Location IDs and wrong list_id
+POST https://localhost:8443/locations/editLocations
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+# =======================================
+# List name - webpack v5 test
+# List ID - 2038
+# Excluded columns - ['Location Name', 'Investment Name', 'Latitude', 'Longitude', 'Analysis Area', 'Analysis Radius', 'Commodity', 'Location Classification']
+# =======================================
+
+{
+  "list_id": 2038,
+  "attributes": [
+    {"list_id": 100, "location_id": 30, "Type of Investment": "old investment", "Investment Name": "30"},
+    {"list_id": 100, "location_id": 34, "Type of Investment": "renewal"},
+    {"list_id": 100, "location_id": 42, "Type of Investment": "new investment"}
+  ]
+}

@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:300,400,400i,500,600,700');
+@import 'colorsGFW.scss';
+
+$gfw_brand-green: #8bae3b;
+$home_top_brand-color: #8bae3b;
+$page-title__bacground: #f2f2f2;
+$gfw-brand-red: #ed1846;
+$gfw-font-family: 'Fira Sans', sans-serif;
+
+// Mobile variables
+$mobileBreak: 950px;
+
+// Theme variables
+$theme-background: #eceff1;
+$theme-highlight: #ff0000;
+$theme-disabled: #bdbdbd;
+$theme-header: #00bcd4;
+
+$sidebar-box-background: #9b9c9b;
+
+// Common color shades
+$light-gray: #b0bec5;
+$light-gray-1: #c0c0c0;
+$very-light-gray-1: #e6e6e6;
+$very-light-gray: #f2f2f2;
+$dark-gray: #546e7a;
+
+// ----- Gray -------
+$gray-light: #b0bec5;
+$gray-medium: #b0bec5;
+$gray-dark: #546e7a;
+
+// Other variables
+$transparent-background: rgba(0, 0, 0, 0);
+
+// Font size increment
+$font-size-1: 14px;
+$font-size-2: 21px;
+$font-size-3: 28px;
+$font-size-4: 35px;
+$font-size-5: 42px;
+$font-size-6: 59px;
+
+// ---------- Spaces ----------
+$space-tiny: 2px;
+$space-compact: 0.25rem;
+$space-small: 0.45rem;
+$space-medium: 0.65rem;
+$space-normal: 1rem; /* 1 */
+$space-comfortable: 1.4rem;
+$space-spacious: 2rem;
+$space-large: 3rem;
+
+// ---------- Boxshadows ----------
+$box-shadow__flat: 0 0px 6px 0 rgba(#000000, 0.2);
+$box-shadow__small: 0 2px 4px 0 rgba(#000000, 0.1);
+$box-shadow__med: 0 2px 4px 0 rgba(#000000, 0.4);
+
+// ---------- Border radius ----------
+$border-radius: 2px;
+$border-radius__med: 4px;
+$border-radius__button: 18px;
+
+// ---------- Breakpoints ----------
+$breakpoint-small: 24em;
+$breakpoint-small-2: 29.75em;
+$breakpoint-small-3: 39.8em;
+$breakpoint-med: 46.8em;
+$breakpoint-med-2: 48em;
+$breakpoint-large: 50em;
+$breakpoint-large-2: 56em;
+$breakpoint-xl: 62em;
+
+// ----- Button -----
+$button-height: 35px;
+
+// --------- Input ---------
+$input__label-height: 28px;
+$input__height: 40px;
+$input__border: 1px solid $gfw-light-gray;
+$input__border--error: 1px solid $theme-danger-light-red-2;
+$input__label-color--error: $theme-danger-dark-red;
+$input--disabled-color: rgba($gfw-x-dark-gray, 50%);
+$input--disabled-background: $gfw-x-light-gray;
+$input--disabled-border-color: $gfw-light-gray;
+$list-name__input-field--width: 300px;
+
+// ---------- Border ----------
+$border__main-section: #404041;
+$section-border: #000;
+
+// ---------- Table ----------
+$table-border-color: $gfw-light-gray;
+$table-border__header: #939393;
+$table-border__body: $gfw-light-gray-2;
+$table-col-border-color: $gfw-light-gray;
+
+$table-cell-pad: $space-medium;
+$table-cell-pad-sortable: $space-medium $space-comfortable $space-medium $space-medium;
+
+$table-header-color: $gfw-x-dark-gray;
+$table-header-units-color: $gfw-dark-gray;
+$table-header-bg: $gfw-x-light-gray;
+
+$table-parent-header-color: $gfw-white;
+$table-parent-header-units-color: $gfw-light-gray-2;
+$table-parent-header-bg: $gfw-x-dark-gray;
+
+$table-row-height: 40px;
+$table-row-e-bg: $gfw-x-light-gray;
+
+// ---------- Dropdown ----------
+$dropdown__standard-width: 175px;
+$dropdown__font-color: #404041;
+$dropdown__border-color: #7b7b7b;
+$dropdown__arrow-icon--disabled: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4IiB2aWV3Qm94PSIwIDAgMTYgMTYiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+SW5wdXQgaWNvbi9Ecm9wZG93biBhcnJvd3M8L3RpdGxlPgogICAgPGcgaWQ9IklucHV0LWljb24vRHJvcGRvd24tYXJyb3dzIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBvcGFjaXR5PSIwLjUiPgogICAgICAgIDxwb2x5Z29uIGlkPSJhcnJvdyIgZmlsbD0iIzMzMzMzMyIgZmlsbC1ydWxlPSJub256ZXJvIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg4LjAwMDAwMCwgNy4wMDAwMDApIHJvdGF0ZSg0NS4wMDAwMDApIHRyYW5zbGF0ZSgtOC4wMDAwMDAsIC03LjAwMDAwMCkgIiBwb2ludHM9IjkuNzE0Mjg1NzEgOC43MTQyODU3MSA5LjcxNDI4NTcxIDMgMTIgMyAxMiAxMSA0IDExIDQgOC43MTQyODU3MSI+PC9wb2x5Z29uPgogICAgPC9nPgo8L3N2Zz4=';
+$dropdown__arrow-icon: 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4IiB2aWV3Qm94PSIwIDAgMTYgMTYiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8dGl0bGU+SW5wdXQgaWNvbi9Ecm9wZG93biBhcnJvd3M8L3RpdGxlPgogICAgPGcgaWQ9IklucHV0LWljb24vRHJvcGRvd24tYXJyb3dzIiBzdHJva2U9Im5vbmUiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIj4KICAgICAgICA8cG9seWdvbiBpZD0iYXJyb3ciIGZpbGw9IiMzMzMzMzMiIGZpbGwtcnVsZT0ibm9uemVybyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoOC4wMDAwMDAsIDcuMDAwMDAwKSByb3RhdGUoNDUuMDAwMDAwKSB0cmFuc2xhdGUoLTguMDAwMDAwLCAtNy4wMDAwMDApICIgcG9pbnRzPSI5LjcxNDI4NTcxIDguNzE0Mjg1NzEgOS43MTQyODU3MSAzIDEyIDMgMTIgMTEgNCAxMSA0IDguNzE0Mjg1NzEiPjwvcG9seWdvbj4KICAgIDwvZz4KPC9zdmc+';
+
+// ---------- Card ----------
+$card-border: 1px solid $gfw-light-gray;
+$card-box-shadow: $box-shadow__small;
+$card-padding: $space-spacious;
+
+// ---------- Map ----------
+$popup__width: 360px;

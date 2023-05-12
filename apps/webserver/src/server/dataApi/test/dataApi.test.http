@@ -1,0 +1,155 @@
+############################################################################################################
+### Get Info Bubble Data - Original
+# Are this routes spouse to be protected ?
+GET https://production-api.globalforestwatch.org/pro-config/loss_all_years
+
+### Get Info Bubble Data - Backend
+POST https://localhost:8443/dataApi/getInfoBubbleData/loss_all_years
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Get Metadata Task Data - Original
+GET https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_cover_gain
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### Get Metadata Task Data - Backend
+POST https://localhost:8443/dataApi/getMetadataTaskData/tree_cover_gain
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Analysis GLAD - Original Query String
+GET https://data-api.globalforestwatch.org/analysis/zonal/fa38e15088d49962a41f6b6b3074f358?geostore_origin=rw&sum=alert__count&group_by=umd_glad_alerts__isoweek&start_date=2015-01-01&end_date=2022-02-10
+
+### Analysis GLAD - SQl
+GET https://data-api.globalforestwatch.org/dataset/umd_glad_landsat_alerts/latest/query?geostore_origin=rw&geostore_id=fa38e15088d49962a41f6b6b3074f358&sql=SELECT COUNT(*) FROM data WHERE umd_glad_landsat_alerts__date >= '2015-01-01' AND umd_glad_landsat_alerts__date <= '2022-02-10' GROUP BY isoweek(umd_glad_landsat_alerts__date)
+
+### Analysis GLAD - Backend
+# :geostoreID
+# ?geostore_origin
+# ?group_by
+# ?start_date
+# ?end_date
+POST https://localhost:8443/dataApi/analysisGLAD/?geostore_origin=rw&geostoreID=fa38e15088d49962a41f6b6b3074f358&group_by=umd_glad_landsat_alerts__date&start_date=2015-01-01&end_date=2022-02-10
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Analysis VIIRS - Original
+GET https://data-api.globalforestwatch.org/dataset/nasa_viirs_fire_alerts/latest/query/json?geostore_id=6b3d98f0e66f3368df891d4ab4ee72f0&geostore_origin=rw&sql=SELECT alert__date, sum(alert__count) AS alert__count FROM data WHERE alert__date >= '2022-01-24' GROUP BY alert__date
+
+### Analysis VIIRS - Backend
+# ?geostoreID
+# ?fireDayStart
+POST https://localhost:8443/dataApi/analysisVIIRS/?geostoreID=6b3d98f0e66f3368df891d4ab4ee72f0&fireDayStart=2022-01-24
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Analysis PRODES - Original
+GET https://data-api.globalforestwatch.org/dataset/inpe_prodes/latest/query?geostore_origin=rw&geostore_id=1738cfabc869cd83eebf7d4b91d4d5db&sql=SELECT year, sum(gfw_area__ha) AS alert__count FROM data WHERE year >= 2001 AND year <= 2020 GROUP BY year
+
+### Analysis PRODES - Backend
+# ?geostoreID
+# ?startYear
+# ?endYear
+POST https://localhost:8443/dataApi/analysisPRODES/?geostore_origin=rw&geostoreID=1738cfabc869cd83eebf7d4b91d4d5db&startYear=2001&endYear=2020
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Analysis TREE COVER Loss - Original Query String
+GET https://data-api.globalforestwatch.org/analysis/zonal/c1d38a77304621cb887b9b0041522b54?geostore_origin=rw&group_by=umd_tree_cover_loss__year&sum=area__ha&start_date=2001&end_date=2020&filters=umd_tree_cover_density_2000__30
+
+### Analysis TREE COVER Loss - SQL
+GET https://data-api.globalforestwatch.org/dataset/umd_tree_cover_loss/latest/query?geostore_origin=rw&geostore_id=c1d38a77304621cb887b9b0041522b54&sql=SELECT umd_tree_cover_loss__year, sum(area__ha) FROM data WHERE umd_tree_cover_loss__year >= 2001 AND umd_tree_cover_loss__year <= 2003 AND umd_tree_cover_density_2000__threshold >= 30 GROUP BY umd_tree_cover_loss__year
+
+### Analysis TREE COVER Loss - Backend
+# ?geostore_origin
+# ?geostoreID
+# ?sum
+# ?startYear
+# ?endYear
+# ?filter
+# ?filter_value
+POST https://localhost:8443/dataApi/analysisTreeCoverLoss/?geostore_origin=rw&geostoreID=c1d38a77304621cb887b9b0041522b54&sum=area__ha&startYear=2001&endYear=2003&filter=umd_tree_cover_density_2000__threshold&filter_value=30
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Analysis TREE COVER Gain - Original
+GET https://data-api.globalforestwatch.org/analysis/zonal/c1d38a77304621cb887b9b0041522b54?geostore_origin=rw&filters=is__umd_tree_cover_gain&sum=area__ha
+
+### Analysis TREE COVER Gain - SQL
+GET https://data-api.globalforestwatch.org/dataset/umd_tree_cover_gain/latest/query?geostore_origin=rw&geostore_id=c1d38a77304621cb887b9b0041522b54&sql=SELECT sum(area__ha) FROM data
+
+### Analysis TREE COVER Gain - Backend
+# ?geostore_origin
+# ?geostoreID
+# ?sum
+POST https://localhost:8443/dataApi/analysisTreeCoverGain/?geostore_origin=rw&geostoreID=c1d38a77304621cb887b9b0041522b54&sum=area__ha
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Analysis TREE BIOMASS Loss - Original Query String
+GET https://data-api.globalforestwatch.org/analysis/zonal/c1d38a77304621cb887b9b0041522b54?geostore_origin=rw&group_by=umd_tree_cover_loss__year&sum=whrc_aboveground_co2_emissions__Mg&start_date=2001&end_date=2016&filters=umd_tree_cover_density_2000__30
+
+### Analysis TREE BIOMASS Loss - SQL
+GET https://data-api.globalforestwatch.org/dataset/umd_tree_cover_loss/latest/query?geostore_origin=rw&geostore_id=c1d38a77304621cb887b9b0041522b54&sql=SELECT sum(gfw_forest_carbon_gross_emissions__Mg_CO2e) FROM data WHERE umd_tree_cover_loss__year >= 2001 AND umd_tree_cover_loss__year <= 2003 AND umd_tree_cover_density_2000__threshold >= 30 GROUP BY umd_tree_cover_loss__year
+
+### Analysis TREE BIOMASS Loss - Backend
+# ?geostore_origin
+# ?geostoreID
+# ?sum
+# ?startYear
+# ?endYear
+# ?filter
+# ?filter_value
+POST https://localhost:8443/dataApi/analysisTreeBiomassLoss/?geostore_origin=rw&geostoreID=c1d38a77304621cb887b9b0041522b54&sum=gfw_forest_carbon_gross_emissions__Mg_CO2e&startYear=2001&endYear=2003&filter=umd_tree_cover_density_2000__threshold&filter_value=30
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Analysis TREE BIOMASS Total - Original Query String
+GET https://data-api.globalforestwatch.org/analysis/zonal/c1d38a77304621cb887b9b0041522b54?geostore_origin=rw&sum=whrc_aboveground_biomass_stock_2000__Mg_ha-1
+
+### Analysis TREE BIOMASS Total - SQL
+GET https://data-api.globalforestwatch.org/dataset/whrc_aboveground_biomass_stock_2000/latest/query?geostore_origin=rw&geostore_id=c1d38a77304621cb887b9b0041522b54&sql=SELECT sum(whrc_aboveground_biomass_stock_2000__Mg) FROM data
+
+### Analysis TREE BIOMASS Total - SQL - Update from Justin Terry - Jira https://gfw.atlassian.net/browse/GP-421?focusedCommentId=11742
+GET https://data-api.globalforestwatch.org/dataset/whrc_aboveground_biomass_stock_2000/latest/query/json?geostore_id=c1d38a77304621cb887b9b0041522b54&geostore_origin=rw&sql=SELECT sum(whrc_aboveground_biomass_stock_2000__Mg) FROM data
+
+### Analysis TREE BIOMASS Total - Backend
+# ?geostore_origin
+# ?geostoreID
+# ?sum
+POST https://localhost:8443/dataApi/analysisTreeBiomassTotal/?geostore_origin=rw&geostoreID=c1d38a77304621cb887b9b0041522b54&sum=whrc_aboveground_biomass_stock_2000__Mg
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Analysis Admin/Region
+GET https://production-api.globalforestwatch.org/v2/geostore/admin/AFG/1?thresh=0.05
+
+### Get Lat/Long for specific PalmOilMill ID
+POST https://localhost:8443/dataApi/analysisAdminRegion/AFG/1?thresh=0.05
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Get Lat/Long for specific PalmOilMill ID
+POST https://localhost:8443/dataApi/getPalmOilMillLatLong/?PalmOilMillID=PO1000011171
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+############################################################################################################
+### Get Geostore IDs
+GET https://data-api.globalforestwatch.org/dataset/wdpa_protected_areas/v202106/query/json?sql=select gfw_geostore_id, gfw_bbox from data where gfw_geostore_id in ('a736baec-e3fd-d926-ec0e-393dbe64d372','78b0a6cc-27f4-5c21-4893-13b0f2d1d3b9')
+
+### Get Lat/Long for specific PalmOilMill ID
+POST https://localhost:8443/dataApi/getBBoxAndGeostoreIDs/?GFW_LIST=wdpa_protected_areas&QUERY_FIELD=gfw_geostore_id&IDs=a736baec-e3fd-d926-ec0e-393dbe64d372,78b0a6cc-27f4-5c21-4893-13b0f2d1d3b9&date=v202106
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

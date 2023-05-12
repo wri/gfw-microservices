@@ -1,0 +1,78 @@
+// PRIMARY COLORS
+$gfw-green: #97bd3d;
+$gfw-white: #ffffff;
+$gfw-black: #000000;
+$gfw-x-dark-gray: #404041;
+$gfw-x-dark-gray__30: #4040414D;
+$gfw-dark-gray: #555555;
+$gfw-gray-2: #707070;
+$gfw-gray: #a5a5a5;
+$gfw-light-gray-2: #cccccc;
+$gfw-light-gray: #e5e5df;
+$gfw-x-light-gray: #f7f7f7;
+
+// SECONDARY COLORS
+$gfw-red: #ed1846;
+$gfw-orange: #e98300;
+$gfw-purple: #6d6de5;
+$gfw-pink: #ff6699;
+
+// Theme variables
+$theme-background: #eceff1;
+$theme-highlight: #ff0000;
+$theme-disabled: #bdbdbd;
+$theme-header: #00bcd4;
+
+$theme-danger-dark-red: #930118;
+$theme-danger-red-2: #d20022;
+$theme-danger-red: #ff0000;
+$theme-danger-light-red-2: #ff4e6b;
+$theme-danger-x-light-red: #ffebee;
+
+$theme-alert-yellow-2: #ffcc33;
+$theme-alert-x-light-yellow: #fff8e4;
+
+$theme-new-purple: #5f6bdb;
+$theme-new-x-light-purple: #e6e9ff;
+
+$theme-non-blue: #58a9cd;
+$theme-non-x-light-blue: #e0eff6;
+
+// Header Colors
+$header-background: $gfw-x-light-gray;
+$header-border: $gfw-light-gray;
+
+// Typography style colors
+$font-colors: (
+  light: $gfw-gray,
+  normal: $gfw-x-dark-gray,
+  dark: $gfw-black,
+);
+
+//Palm Risk Colors
+$palm-risk-high: #ff2000;
+$palm-risk-low: #ffc32b;
+$palm-risk-med: #ff9300;
+$palm-risk-none: #888888;
+
+// Non-semantic colors
+$blue-light: #e0eff6;
+$blue: #58a9cd;
+
+// Interface colors
+$gfw-light-green: #b7dd5f;
+$gfw-x-light-green: #edf7d6;
+$gfw-xx-light-green: #f4fae7;
+
+// Other variables
+$transparent-background: rgba(0, 0, 0, 0);
+
+.gfw-green {
+  color: $gfw-green;
+}
+.gfw-dark-gray {
+  color: $gfw-dark-gray;
+}
+.gfw-gray {
+  color: $gfw-gray;
+}

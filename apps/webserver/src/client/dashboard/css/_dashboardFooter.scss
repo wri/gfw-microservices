@@ -1,0 +1,66 @@
+@import '../../common/css/typographyGFW';
+
+.dashboard-footer__table-container,
+.dashboard-footer__chart-container {
+    height: 250px;
+}
+
+.dashboard-footer__table-container {
+    width: 65%;
+
+    table {
+        tbody {
+            tr {
+                border-bottom: none;
+
+                &:first-child {
+                    td {
+                        font-size: $font-size-large;
+                        font-weight: $font-weight-bold;
+                    }
+                }
+
+                &:nth-child(2) {
+                    td {
+                        font-size: $font-size-medium;
+                        font-weight: $font-weight-light;
+                    }
+                }
+
+                &:last-child {
+                    td {
+                        font-size: $font-size-medium-large;
+                        font-weight: $font-weight-regular;
+                    }
+                }
+
+                td {
+                    text-align: center;
+                    &:nth-child(even) {
+                        border-right: 1px solid #e6e6e6;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.dashboard-footer__chart-container {
+    width: 35%;
+}
+
+@media print {
+  .dashboard-map-details__container {
+    flex-direction: column;
+  }
+  .dashboard-footer__table-container,
+  .dashboard-footer__chart-container {
+    height: auto;
+  }
+  .dashboard-footer__table-container {
+    width: 100%;
+  }
+  .dashboard-footer__chart-container {
+    width: auto;
+  }
+}

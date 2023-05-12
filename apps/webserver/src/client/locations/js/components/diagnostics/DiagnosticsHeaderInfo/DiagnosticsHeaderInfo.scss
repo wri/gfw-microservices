@@ -1,0 +1,11 @@
+.diagnostics-header-info {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    border-bottom: 1px solid black;
+
+    &__location-count {
+        text-transform: uppercase;
+        margin-top: 0.25em;
+    }
+}

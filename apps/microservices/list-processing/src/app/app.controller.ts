@@ -6,7 +6,7 @@ import {
   RequestSaveLargeListProcessModel,
   RequestTriggerProcessLargeList,
 } from './../models/index';
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { LocationService } from '@wri-monorepos/geo';
@@ -90,5 +90,13 @@ export class AppController {
       request.srcListAnalysisTable
     );
     return 'processing';
+  }
+
+  /**
+  * Healthcheck for fargate
+  */
+  @Get('/HealthCheck')
+  getHealthCheck(): string {
+    return this.appService.getHealthCheck();
   }
 }

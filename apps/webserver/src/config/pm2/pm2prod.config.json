@@ -1,0 +1,16 @@
+{
+  "apps": [
+    {
+      "name": "GFWPRO-PROD",
+      "script": "server.js",
+      "watch": false,
+      "autorestart": true,
+      "max_restarts": 10,
+      "out_file": "out.log",
+      "error_file": "err.log",
+      "log_date_format" : "YYYY-MM-DD HH:mm Z",
+      "exec_mode": "cluster",
+      "instances": 2
+    }
+  ]
+}

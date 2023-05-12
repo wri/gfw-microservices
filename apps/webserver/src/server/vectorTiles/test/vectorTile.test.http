@@ -1,0 +1,28 @@
+### Generate MBTile for given user list
+POST https://localhost:8443/vectorTile/generateTiles
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+#  "listID": 1394 // 1 locations - Esri415
+#  "listID": 1385 // 64 locations - Does This Process 2
+#  "listID": 2084 // 199436 locations - LLP Cocoa Generic Indonesia 200k
+#  "listID": 2085 // 200064 locations - LLP Cocoa Generic Brasil 200k
+
+{
+  "listID": 1385
+}
+
+
+### Get generated tiles from s3 or start the process
+GET https://localhost:8443/vectorTile/1385
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+### Get List MBTile file Name
+POST https://localhost:8443/vectorTile/getListMbtileInfo
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "listID": 1385
+}

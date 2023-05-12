@@ -1,0 +1,22 @@
+.diagnostics-countries-label {
+  position: relative;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+
+  &--show-all {
+    position: absolute;
+    right: 0;
+    z-index: 100;
+    padding: 5px;
+    margin-top: 5px;
+    max-width: 300px;
+    color: #000;
+    font-size: 14px;
+    background-color: #fff;
+    border: 1px solid #096121;
+  }
+}
+
+

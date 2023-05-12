@@ -1,0 +1,59 @@
+### Get and filter list data based on query params - Country
+
+GET https://localhost:8443/listData?list_id=1969
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### Country
+GET https://localhost:8443/listData?list_id=1969&country=Brazil
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+### subState
+GET https://localhost:8443/listData?list_id=1969&subState=Abaí
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### Country, page, pageSize
+GET https://localhost:8443/listData?list_id=1969&country=Brazil&page=0&pageSize=5
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### Country, sortByAttribute, order
+GET https://localhost:8443/listData?list_id=1969&country=Brazil&sortByAttribute=State&order=desc
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+#"country": "Brazil"
+#"state": "Bahia"
+#"subState": "Barreiras"
+#"page": 1
+#"pageSize": 10
+#"analysisArea": 500000
+#"sortByAttribute": "State"
+#"order": 'desc'
+
+### Country, sortByAttribute, order
+POST https://localhost:8443/listDataCustom
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+# =======================================
+# DEV environment list - 365 locations
+# List name - White screen 2405
+# List ID - 2016
+# =======================================
+
+{
+  "list_ids": [2016],
+  "columnsToReturn": "Latitude,Longitude,location_id",
+  "filters": {
+    "orderType": "asc",
+    "sortByAttribute": "location_id",
+    "selectedCountry": "Costa Rica",
+    "selectedState": "Alajuela",
+    "selectedSubState": "Grecia",
+    "selectedAreaMin": 0,
+    "selectedAreaMax": null
+  }
+}

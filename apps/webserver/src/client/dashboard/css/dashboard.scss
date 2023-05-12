@@ -1,0 +1,117 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/subHeader';
+@import '../../proManagerList/css/profile.scss';
+@import '../../common/css/listSection';
+@import './_listSelector';
+
+// Make sure Material UI tooltip sits above all other elements
+.MuiTooltip-popper {
+    z-index: 2500 !important;
+}
+
+.underline {
+  border-bottom: 1px solid;
+}
+
+.dangerous-dialog {
+  a {
+    font-size: 16px;
+    color: #97bd3d;
+    text-decoration: underline;
+  }
+}
+
+.dashboard-subnav-actions__container {
+  width: 300px;
+}
+
+.dashboard-svg__container {
+  height: 55px;
+  width: 75px;
+  :hover {
+    cursor: pointer;
+  }
+  svg {
+    height: 100%;
+    width: 100%;
+    fill: #a5a5a5;
+  }
+}
+
+.dashboard-section__padding {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.dashboard-header {
+  background-color: #262626;
+  border-bottom: none;
+
+  .dashboard-header__text {
+    color: #fff;
+  }
+}
+
+.dashboard-subnav {
+  background-color: rgb(56, 55, 58);
+  height: 50px;
+
+  .dashboard-body {
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+  }
+
+  .dashboard-subnav__controls {
+    display: flex;
+    justify-content: space-between;
+
+    div {
+      display: flex;
+      align-items: center;
+      padding-left: 15px;
+      cursor: pointer;
+
+      span {
+        color: #b9b9bb;
+      }
+    }
+  }
+}
+
+.subnav {
+  margin: 0 auto;
+  padding: 10px 0;
+}
+
+.dashboard-setting__title {
+  padding-right: 15px;
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+}
+
+@media (min-width: 1400px) {
+  .dashboard-body {
+    max-width: $full-max-width;
+    width: $full-width;
+  }
+}
+
+@media (min-width: 850px) and (max-width: 1399px) {
+  .dashboard-body {
+    max-width: $mobile-max-width;
+    width: $mobile-width;
+  }
+}
+
+#AlertsShown {
+  .Dropdown-root,
+  .Dropdown-menu {
+    width: 200px;
+  }
+
+  .Dropdown-option {
+    width: 100%;
+  }
+}

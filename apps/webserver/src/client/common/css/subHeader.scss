@@ -1,0 +1,71 @@
+.page-header {
+  background-color: $header-background;
+  border-bottom: 1px solid $header-border;
+
+  .page-logo-background {
+    height: 60px;
+    background-color: #000;
+
+    .gfw-logo-container {
+      position: relative;
+      margin: auto;
+    }
+  }
+
+  .page-title-container {
+    margin: 0 auto;
+    padding: 10px 0;
+
+    .page-title-text,
+    .page-subtitle-text {
+      margin: .5rem 0;
+    }
+  }
+
+}
+
+.gfw-logo {
+  position: absolute;
+  right: 0;
+  display: block;
+  z-index: 1000;
+}
+
+.locations-subpage-header__instructions {
+  padding-top: 1.5rem;
+  margin: 1rem 0;
+  border-top: 1px solid #000;
+  font-size: 14px;
+  font-weight: 400;
+  &.step-four-count {
+    margin: 1rem 0.5rem;
+  }
+}
+
+.locations-subpage-header__description {
+  padding-top: 1.5rem;
+  margin: 0.75rem 0 0.5rem 0.5rem;
+  border-top: 1px solid #000;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.locations-subpage-map-message__error {
+  color: $theme-danger-red;
+}
+
+@media (min-width: 1400px) {
+  .gfw-logo-container,
+  .page-title-container {
+    max-width: $full-max-width;
+    width: $full-width;
+  }
+}
+
+@media (min-width: 850px) and (max-width: 1399px) {
+  .gfw-logo-container,
+  .page-title-container {
+    max-width: $mobile-max-width;
+    width: $mobile-width;
+  }
+}

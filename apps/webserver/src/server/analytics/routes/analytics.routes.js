@@ -1,0 +1,34 @@
+const path = require('path');
+const controller = require('../controllers/analytics.controller');
+
+const middlewares = require(path.resolve('./config/publicutils/middlewares'));
+const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
+
+/**
+* @name exports
+* @static
+* @summary Analytics page routes
+*/
+module.exports = (app, limiter) => {
+  /**
+  * @name /analytics
+  * @see analytics.controller
+  * @memberof Router
+  */
+
+  // All methods must under /analytics must pass through middleware
+  const routeMiddlewares = [
+    middlewares.checkOrganization,
+    middlewares.checkAuthentication,
+    middlewares.checkActive,
+    middlewares.checkInactivity
+  ];
+
+  if (rateLimiterUtil.useRateLimiter()) {
+    routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));
+  }
+
+  app.use('/analytics', routeMiddlewares);
+
+  app.get('/analytics', controller.analytics);
+};

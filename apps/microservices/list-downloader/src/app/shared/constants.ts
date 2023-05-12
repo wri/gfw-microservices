@@ -666,6 +666,14 @@ export const EXCEL_TEMPLATES = {
           },
         },
         {
+          attribute: 'tree_cover_loss_arg_otbn_yearly',
+          label: 'Argentina OTBN',
+          following: {
+            attribute: 'tree_cover_loss_arg_otbn_yearly',
+            parsed: 'total',
+          },
+        },
+        {
           attribute: 'tree_cover_loss_prodes_yearly',
           label: 'PRODES',
           following: {
@@ -723,6 +731,10 @@ export const EXCEL_TEMPLATES = {
         {
           attribute: 'tree_cover_loss_brazil_biomes_yearly',
           label: 'Brazil Biomes',
+        },
+        {
+          attribute: 'tree_cover_loss_arg_otbn_yearly',
+          label: 'Argentina OTBN',
         },
         { attribute: 'tree_cover_loss_prodes_yearly', label: 'PRODES' },
         {

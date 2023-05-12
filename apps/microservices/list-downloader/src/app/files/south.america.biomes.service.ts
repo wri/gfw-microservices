@@ -12,7 +12,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
 
   start(filters: GenerationFileRequest) {
     if (this.isSouthAmericaBiomesFile(filters)) {
-      super.start(filters, 'sAmericaBiomes', 'south_america_brazil_biomes');
+      super.start(filters, 'sAmericaBiomes', 'south_america_overlap');
     }
   }
 
@@ -71,7 +71,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
         generateCSV(
           filters,
           'sAmericaBiomesAggregate',
-          'south_america_brazil_biomes_aggregate',
+          'south_america_overlap_aggregate',
           this.generateAggregate
         );
       }

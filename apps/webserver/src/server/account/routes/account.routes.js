@@ -41,7 +41,7 @@ module.exports = (app) => {
         }
       })
       .catch((err) => {
-        res.send(err.userMessage);
+        res.send(err.userMessage || err.message);
         console.log('Reject', err);
       });
   });

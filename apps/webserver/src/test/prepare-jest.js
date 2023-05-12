@@ -26,6 +26,7 @@ try {
   // Update it based on our aliases, and mocks
   jestConfig.moduleNameMapper = {
     '^axios$': replacePathWithRootDir(require.resolve('axios')),
+    '^mapshaper$': replacePathWithRootDir(require.resolve('mapshaper')),
     '\\.(css|scss)$': '<rootDir>/test/__mocks__/object.js',
     '\\.(jpe?g|png|gif|svg)$': '<rootDir>/test/__mocks__/object.js',
     // 'material-ui/Popover': '<rootDir>/__mocks__/constructor.js',

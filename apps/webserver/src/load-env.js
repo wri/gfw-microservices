@@ -16,27 +16,26 @@ const ENV_BUCKET = 'gfwpro-env';
 
 /** @function {loadEnvironmentVars}
  *   @summary Loads the enviroment variables from an S3 location.
- *   @param {Object} node_environment - String specifying the NODE_ENV parameter.
+ *   @param {Object} nodeEnvironment - String specifying the NODE_ENV parameter.
  *   @return {Object} returns a promise that resolves successfully if
  *                    environment variables get loaded.
  */
-const loadEnvironmentVars = (node_environment) => {
+const loadEnvironmentVars = (nodeEnvironment) => {
   const promise = new Promise((resolve, reject) => {
     try {
       //If environment is development, environment variables
       //are already loaded from local docker-compose file.
-      console.log('ENV:', node_environment);
-      if (!node_environment || node_environment === 'development') {
+      console.log('ENV:', nodeEnvironment);
+      if (!nodeEnvironment || nodeEnvironment === 'development' || nodeEnvironment === 'test') {
         resolve(true);
       } else {
         // QA, Staging and Production/ProdV2 environments load config info from S3.
-        getDataFromS3(node_environment)
+        getDataFromS3(nodeEnvironment)
           .then((envInfo) => {
             const config = dotenv.parse(envInfo); // will return an object
             for (let k in config) {
               process.env[k] = config[k];
             }
-
             resolve(true);
           })
           .catch((err) => {

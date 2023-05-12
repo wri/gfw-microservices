@@ -1,0 +1,18 @@
+// {{gfwpro_token}}
+
+### send an invitation to create a connection between two organizations
+POST https://localhost:8443/b2b/invitation
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "email": "icollins@wri.org",
+  "organization": 3
+}
+
+### resend an invitation to create a connection between two organizations
+POST https://localhost:8443/b2b/invitation/75
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+

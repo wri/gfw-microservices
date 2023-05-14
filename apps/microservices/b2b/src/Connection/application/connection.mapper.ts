@@ -26,7 +26,6 @@ export class ConnectionDataMapper extends GenericMapper {
     const storeProcedureParams = {
       id: filtersDto.id,
       source_organization: filtersDto.sourceId,
-      target_organization: filtersDto.targetId,
       status: filtersDto.status,
     };
 

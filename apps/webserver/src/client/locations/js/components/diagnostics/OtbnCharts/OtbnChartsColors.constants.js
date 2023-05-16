@@ -1,5 +1,7 @@
 export const otbnChartsColors = {
-  'Category I': 'rgba(151,189,61,255)',
-  'Category II': 'rgba(255,204,51,255)',
-  'Category III': 'rgba(238,37,33,255)',
+  'Category I': 'rgb(238,37,33)',
+  'Category II': 'rgb(255,204,51)',
+  'Category III': 'rgb(151,189,61)',
 };
+
+export const otbnCategories = ['Category I', 'Category II', 'Category III'];

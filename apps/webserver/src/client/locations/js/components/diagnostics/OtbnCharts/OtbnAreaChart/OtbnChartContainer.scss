@@ -4,7 +4,7 @@
     flex-direction: row;
     justify-content: space-around;
     align-items: flex-start;
-    div:first-of-type {
+    .otbn-pie-chart {
         width: calc(100% - 450px);
     }
     > div {

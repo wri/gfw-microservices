@@ -4,7 +4,7 @@ import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Page from '../common/js/components/Page';
-import B2bConnectionsList from './js/components/B2bSharingPanel/B2bConnectionsList';
+import B2bSharingPanel from './js/components/B2bSharingPanel';
 import './css/b2b.scss';
 
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
@@ -19,7 +19,7 @@ function App() {
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
       <Page links={pageOptions.links} active="b2b">
-        <B2bConnectionsList />
+        <B2bSharingPanel />
       </Page>
     </MuiThemeProvider>
   );

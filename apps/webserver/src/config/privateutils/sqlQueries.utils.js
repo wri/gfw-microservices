@@ -200,19 +200,20 @@ const uspSetActivityLogQuery = (connectConfig) => {
 
 const uspGetUserInfoQuery = (connectConfig) => {
   verifyOrgDB(connectConfig);
-  return `DECLARE @arrCommodities NVARCHAR(100)
-    SELECT @arrCommodities = COALESCE(@arrCommodities + ',', '') + CONVERT(varchar(3), commodity_id)
-    FROM UserCommodities WHERE user_id = @userID
-
-    -- Obtain User Geographies Info.
-    DECLARE @arrGeographies NVARCHAR(100)
-    SELECT @arrGeographies = COALESCE(@arrGeographies + ',', '') + CONVERT(varchar(3), geography_id)
-    FROM UserGeographies WHERE user_id = @userID
-
-    SELECT id, first_name, middle_initial, last_name, email, phone, title_id, other_title, access_level_id, status_id, email_subscription,
-    @arrCommodities AS user_commodity_ids, @arrGeographies AS user_geography_ids,
+  return `
+    SELECT Users.id, first_name, middle_initial, last_name, email, phone, title_id, other_title, access_level_id, status_id, email_subscription,
+    user_commodity_ids, user_geography_ids,
     viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency
-    FROM Users WHERE id = @userID`;
+    FROM Users
+    LEFT JOIN (SELECT user_id, STRING_AGG(CONVERT(VARCHAR(3),commodity_id), ',') AS user_commodity_ids
+               FROM UserCommodities
+               WHERE user_id = @userID
+               GROUP BY user_id) as UserComm on Users.id = UserComm.user_id
+    LEFT JOIN (SELECT user_id, STRING_AGG(CONVERT(VARCHAR(3),geography_id), ',') AS user_geography_ids
+               FROM UserGeographies
+               WHERE user_id = @userID
+               GROUP BY user_id) as UserGeos on Users.id = UserGeos.user_id
+    WHERE Users.id = @userID`;
 };
 
 const uspGetUserStatusQuery = (connectConfig) => {
@@ -388,12 +389,10 @@ const convertedStoredProcedures = {
   uspGetAllFolderItems: uspGetAllFolderItemsQuery,
 };
 
-const getQueryStr = async (connectConfig, storedProcedureName, params) => {
+const getQueryStr = (connectConfig, storedProcedureName) => {
   const queryFn = convertedStoredProcedures[storedProcedureName];
   if (queryFn) {
-    const baseQuery = queryFn(connectConfig, params);
-    // add defaults for MSSQL -- TODO: parameterize for other DBMSs later
-    return `SET ANSI_NULLS ON; SET QUOTED_IDENTIFIER ON; ${baseQuery}`;
+    return queryFn(connectConfig);
   }
   return null;
 };

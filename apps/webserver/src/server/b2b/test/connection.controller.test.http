@@ -1,0 +1,25 @@
+### get organization that user is admin
+GET https://localhost:8443/b2b/orgs/gustavo.figueiredo.5@wriconsultant.org
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+### get all connections
+GET https://localhost:8443/b2b/connection?
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### accpect connection
+PUT https://localhost:8443/b2b/connection/accept/75
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### accpect connection
+PUT https://localhost:8443/b2b/connection/reject/75
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### accpect connection
+PUT https://localhost:8443/b2b/connection/cancel/75
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

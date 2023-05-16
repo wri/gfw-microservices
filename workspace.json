@@ -4,6 +4,7 @@
   "projects": {
     "aws": "libs/aws",
     "geo": "libs/geo",
+    "gfwpro-e2e": "apps/gfwpro-e2e",
     "microservices-list-downloader": "apps/microservices/list-downloader",
     "microservices-list-processing": "apps/microservices/list-processing",
     "shared": "libs/shared",

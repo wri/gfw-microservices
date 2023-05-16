@@ -1171,7 +1171,7 @@ export default class SouthAmericaRegions extends Component {
     }
 
     const { getFilteredLocations } = this.props;
-    return Object.entries(JSON.parse(getFilteredLocations()[0]?.arg_otbn_area)).length !== 0;
+    return Object.entries(JSON.parse(getFilteredLocations()[0]?.arg_otbn_area || '{}')).length !== 0;
   };
 
   render() {

@@ -732,6 +732,8 @@ export const locationsPage = {
     },
   ],
   lists: {
+    confirmListUpdate: 'Confirm List Update',
+    confirmListSubmission: 'Confirm Submission',
     addColumns: 'Add Columns',
     all: 'All',
     clearFilters: 'Clear filters',

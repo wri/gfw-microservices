@@ -74,6 +74,7 @@ import {
   getTemplateData,
   findArrIndex,
   isFailedList,
+  isAnalyzingStatus,
 } from '../../utils/lists.utils';
 
 import {
@@ -1026,6 +1027,13 @@ export default class Lists extends Component {
       return;
     }
 
+    if (isAnalyzingStatus(selectedLists[0]?.list_status_id)) {
+      this.setState({
+        isLoading: false
+      });
+      return;
+    }
+
     if (location_analyses) {
       // TODO - Talk to Lucas/Patrick, we should not be deleting data that is needed for Edit Lists workflow
       // If you need to hide the column, use a different method then deleting key/value
@@ -1882,6 +1890,8 @@ export default class Lists extends Component {
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
     const isFailed = isFailedList(selectedList);
+    const isBeingAnalized = isAnalyzingStatus(selectedList.list_status_id);
+
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
     const customAttributeNames =
@@ -2195,7 +2205,7 @@ export default class Lists extends Component {
                       showShareList={showShareList}
                       toggleCountriesPopover={this.toggleCountriesPopover} />
                   </div>
-                  {!isFailed && (
+                  {!(isFailed || isBeingAnalized) && (
                     <div className="section-container">
                       <ShareList
                         key={selectedList.id}
@@ -2345,7 +2355,7 @@ export default class Lists extends Component {
                           } } />
                       </div>
                   </div>
-                  {!isFailed && (
+                  {!(isFailed || isBeingAnalized) && (
                   <>
                     <div className="list-detail-filters">
                       <div className="list-detail-filters__view">
@@ -2502,7 +2512,10 @@ export default class Lists extends Component {
                   )}
                 </>
               )}
-              {isFailed && <h4 style={{ color: '#ed1846' }}>{locationsPage.lists.tooltips.failed}</h4>}
+              <h4 style={{ color: '#ed1846' }}>
+                {isFailed && locationsPage.lists.tooltips.failed}
+                {isBeingAnalized && locationsPage.lists.tooltips.analyzing}
+              </h4>
             </section>
           </div>
         </section>

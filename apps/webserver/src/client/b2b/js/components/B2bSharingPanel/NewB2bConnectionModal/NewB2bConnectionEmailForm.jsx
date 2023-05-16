@@ -3,9 +3,25 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@mui/material/CardActions';
 import { validEmail } from '../../../../../locations/js/utils/validations';
 import { profilePage } from '../../../../../common/js/config';
+import { sendInvitation } from '../fetchB2b';
 
 function NewB2bConnectionEmailForm({ setApiResponse }) {
   const [email, setEmail] = useState('');
+
+  const handleSubmit = () => {
+    sendInvitation(email)
+      .then(() => {
+        setApiResponse('success');
+      })
+      .catch((err) => {
+        if (err === 401) {
+          return setApiResponse('emailNotFound');
+        }
+
+        setApiResponse('connectionAlreadyExists');
+      });
+  };
+
   return (
     <>
       <CardContent>
@@ -26,17 +42,7 @@ function NewB2bConnectionEmailForm({ setApiResponse }) {
           type="button"
           disabled={!email || !validEmail(email)}
           className="new-b2b-connection-modal__action-button"
-          onClick={() => {
-            const apiResponses = [
-              // mock api responses
-              'success',
-              'connectionAlreadyExists',
-              'emailNotFound',
-              'notAnAdministrator',
-              'multipleAccounts',
-            ];
-            setApiResponse(apiResponses[Math.floor(Math.random() * apiResponses.length)]);
-          }}
+          onClick={handleSubmit}
         >
           {profilePage.profileManager.b2bSection.sendInvitation}
         </button>

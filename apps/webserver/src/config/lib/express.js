@@ -17,15 +17,25 @@ const rateLimiterUtil = require('./limiter-util');
 const config = require(path.resolve('./config/config'));
 const { PRODUCTION_ENVIRONMENTS } = require('../config/environments.config');
 
+// skip certain things not useful for jest unit testing
+const unitTestMode = process.env.NODE_ENV === 'test';
+
 // Updating redis and connect-redis requires syntax change for creating client
 // redisClient is provided to new RedisStore({client:redisClient})
 // redis v2.8.0 -> v3.1.2
 // connect-redis v3.4.2 -> v6.0.0
-const redisClient = redis.createClient({
-  host: process.env.REDIS_HOST || 'redis',
-  port: process.env.REDIS_PORT || 6379,
-});
-redisClient.on('error', console.log);
+let redisClient;
+if (unitTestMode) {
+  redisClient = null;
+} else {
+  redisClient = redis.createClient({
+    host: process.env.REDIS_HOST || 'redis',
+    port: process.env.REDIS_PORT || 6379,
+  });
+  redisClient.on('error', (info) => {
+    console.log('Express redis error', info);
+  });
+}
 
 /**
  * @function configureMiddleware
@@ -47,12 +57,14 @@ const configureMiddleware = (app) => {
   // Setup methodOverride so I can use put and delete
   app.use(methodOverride());
 
-  // If we're in development mode, add some hot middleware
-  if (process.env.NODE_ENV === 'development') {
-    // We need to initialize the middleware to compile our webpack resources
-    const middleware = webpackUtils.middleware();
-    app.use(middleware.dev);
-    app.use(middleware.hot);
+  if (!unitTestMode) {
+    // If we're in development mode, add some hot middleware
+    if (process.env.NODE_ENV === 'development') {
+      // We need to initalize the middleware to compile our webpack resources
+      const middleware = webpackUtils.middleware();
+      app.use(middleware.dev);
+      app.use(middleware.hot);
+    }
   }
 };
 
@@ -85,22 +97,25 @@ const configureViewEngine = (app) => {
  * @param {Express.app} app
  */
 const configureSession = (app) => {
-  app.use(
-    session({
-      name: 'gfwpro.globalforestwatch.org',
-      saveUninitialized: false,
-      secret: config.sessionVars.secret,
-      cookie: PRODUCTION_ENVIRONMENTS.includes(process.env.NODE_ENV) ? { secure: false } : { secure: true },
-      unset: 'destroy',
-      resave: false,
-      genid: function (req) {
-        return uuidv1();
-      },
-      store: new RedisStore({
-        client: redisClient,
-      }),
-    })
-  );
+  const sessionParams = {
+    name: 'gfwpro.globalforestwatch.org',
+    saveUninitialized: false,
+    secret: config.sessionVars.secret,
+    cookie:
+      PRODUCTION_ENVIRONMENTS.includes(process.env.NODE_ENV) || process.env.NODE_ENV === 'test'
+        ? { secure: false }
+        : { secure: true },
+    unset: 'destroy',
+    resave: false,
+    genid: function (req) {
+      return uuidv1();
+    },
+  };
+  if (!unitTestMode) {
+    sessionParams.store = new RedisStore({ client: redisClient });
+  }
+
+  app.use(session(sessionParams));
 };
 
 /**
@@ -173,15 +188,13 @@ const configureErrorRoutes = (app) => {
  * @name initialize
  * @static
  * @summary Initialize express
- * @param {Object} connection - Mongoose connection
+ * @param {Express.app} app
  * @return {Promise}
  */
-module.exports.initialize = (connection) =>
+module.exports.initialize = (app) =>
   new Promise((resolve, reject) => {
     logger.info('Initializing express');
     try {
-      const app = express();
-
       // configure rate limiter - pass to subroutes
       let limiter;
       if (rateLimiterUtil.useRateLimiter()) {

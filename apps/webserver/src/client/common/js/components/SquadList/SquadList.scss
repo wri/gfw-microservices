@@ -1,0 +1,43 @@
+.b2b-connection-item {
+  $parent: &;
+  margin: 10px 0px;
+  cursor: pointer;
+  &:hover{
+    background-color: #F0F0F0;
+  }
+
+  &__content {
+    line-height: 17px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  &__content--selected {
+    background: #97BD3D;
+    color: white;
+    #{$parent}__country-name {
+      color: white;
+    }
+  }
+
+  &__country-name {
+    color: gray;
+    text-align: left;
+  }
+  &__expiration-date {
+    color: gray;
+  }
+  &__pending-action {
+    background-color: #2196F3;
+    padding: 10px;
+    border-radius: 20px;
+    color: white;
+  }
+  &--pending {
+    cursor: default;
+    opacity: 0.5;
+    &:hover{
+      background-color: white;
+    }
+  }
+}

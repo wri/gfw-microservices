@@ -5,10 +5,9 @@
 * @return {Boolean} True if you can, false otherwise.
 */
 const useRateLimiter = () => {
-  if ((process.env.NODE_ENV !== 'development') && (process.env.NODE_ENV !== 'qa')) {
+  if ((process.env.NODE_ENV !== 'development') && (process.env.NODE_ENV !== 'qa') && (process.env.NODE_ENV !== 'test')) {
     return true;
-  }
-  else {
+  } else {
     return false;
   }
 }

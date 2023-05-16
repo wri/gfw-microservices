@@ -24,3 +24,6 @@ src/client/dashboard/test/*
 coverage/
 
 *.mbtiles
+
+dist/*
+dev.secrets

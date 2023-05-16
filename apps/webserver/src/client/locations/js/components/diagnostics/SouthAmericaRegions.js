@@ -5,6 +5,7 @@ import { v1 as uuidv1 } from 'uuid';
 import ProdesLegend from './SouthAmericaRegions/ProdesLegend';
 import IconButtonWrapper from '../IconButtonWrapper';
 import OtbnAreaChart from './OtbnCharts/OtbnAreaChart';
+import { otbnChartsColors } from './OtbnCharts/OtbnChartsColors.constants';
 import getTreeCoverLossArgOtbnYearlyData from './OtbnCharts/TreeCoverLossArgentinaOtbnYearly/getTreeCoverLossArgOtbnYearlyData';
 import { formatNum, formatPct, prettifyNum, validatePct } from '../../utils/diagnostics.utils';
 import { latestTreeCoverLossYearFC, locationsPage } from '../../../../common/js/config';
@@ -920,7 +921,7 @@ export default class SouthAmericaRegions extends Component {
                       className="otbn-checkbox"
                       style={{
                         opacity: otbnArgentinaShowCategoryIChecked ? 1 : 0.2,
-                        background: 'rgba(151,189,61,255)',
+                        background: otbnChartsColors['Category I'],
                       }}
                     />
                     Category I
@@ -948,7 +949,7 @@ export default class SouthAmericaRegions extends Component {
                       className="otbn-checkbox"
                       style={{
                         opacity: otbnArgentinaShowCategoryIIChecked ? 1 : 0.2,
-                        background: 'rgba(255,204,51,255)',
+                        background: otbnChartsColors['Category II'],
                       }}
                     />
                     Category II
@@ -976,7 +977,7 @@ export default class SouthAmericaRegions extends Component {
                       className="otbn-checkbox"
                       style={{
                         opacity: otbnArgentinaShowCategoryIIIChecked ? 1 : 0.2,
-                        background: 'rgba(238,37,33,255)',
+                        background: otbnChartsColors['Category III'],
                       }}
                     />
                     Category III
@@ -1186,12 +1187,16 @@ export default class SouthAmericaRegions extends Component {
 
     const regionObject = this.getRegionCountLabel();
 
-    let title = 'SOY ON TREE COVER LOSS';
+    let title;
 
-    if (saTCLChecked || biomesChecked || otbnArgentinaChecked) {
+    if (saTCLChecked || biomesChecked) {
       title = 'TREE COVER LOSS';
     } else if (prodesChecked || paChecked || pfChecked) {
       title = PRODES_AMAZON;
+    } else if (otbnArgentinaChecked) {
+      title = 'TREE COVER LOSS ON ARGENTINA OTBN';
+    } else {
+      title = 'SOY ON TREE COVER LOSS';
     }
 
     const displayBrazilBiomeSection = this.checkBrazilBiome();

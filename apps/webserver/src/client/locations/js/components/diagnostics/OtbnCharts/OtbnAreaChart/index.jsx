@@ -6,7 +6,10 @@ import './OtbnChartContainer.scss';
 function OtbnAreaChart({ data }) {
   return (
     <div className="otbn-chart-container">
-      <Chart data={data} />
+      <div className="otbn-pie-chart">
+        <div className="subsection-subtitle">ARGENTINA OTBN OVERLAP</div>
+        <Chart data={data} />
+      </div>
       <Table data={data} />
     </div>
   );

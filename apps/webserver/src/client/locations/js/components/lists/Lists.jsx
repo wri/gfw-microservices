@@ -2278,7 +2278,7 @@ export default class Lists extends Component {
                               icon={<IconRerun height="14px" />}
                               label="Update" />
                             <Dialog
-                              title="Confirm List Update"
+                              title={locationsPage.lists.confirmListUpdate}
                               actions={<div className="RerunList__dialog-buttons">
                                 <Button
                                   variant="primary"
@@ -2335,7 +2335,7 @@ export default class Lists extends Component {
                           closeAction={() => {
                             this.setState({ draftSubmitDialogOpen: false });
                           } }
-                          dialogTitle="Confirm Submission"
+                          dialogTitle={locationsPage.lists.confirmListSubmission}
                           dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
                           dialogActionConfirm={() => {
                             requestGeoTrellisAnalyzeList(selectedList)

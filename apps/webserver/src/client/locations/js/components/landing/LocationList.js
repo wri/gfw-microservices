@@ -49,7 +49,7 @@ import LandingDownload from '../lists/download/LandingDownload';
 import ManageListFolderDialog from './ManageListFolderDialog';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import store from '../../store';
-import { classNameForListStatus, isDownloadDisabledForThisList, isAnalyzingStatus } from '../../utils/lists.utils';
+import { classNameForListStatus, isDownloadDisabledForThisList, isAnalyzingStatus, isFailedList } from '../../utils/lists.utils';
 import DeleteListDialog from './DeleteListDialog';
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
 import ListDiagnosticStatusDraft from './components/ListDiagnosticStatusDraft/ListDiagnosticStatusDraft';
@@ -306,7 +306,7 @@ export default class LocationList extends Component {
       locationsPage.listStatus.AnalyzingDiagnostic,
       locationsPage.listStatus.AnalyzingDashboard,
     ].includes(list.list_status_id);
-    const isFailed = list.list_status_id === locationsPage.listStatus.Inactive;
+    const isFailed = isFailedList(list);
     const isSavedLocation = SAVED_LOCATIONS.indexOf(list.list_name) !== -1;
     const isShared = list.is_shared;
     const isInFolder = !!list.folder;

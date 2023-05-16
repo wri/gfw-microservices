@@ -964,6 +964,12 @@ export const locationsPage = {
     selectedStates: 'States',
     selectedSubStates: 'Sub States',
   },
+  diagnosticsTitles: {
+    TREE_COVER_LOSS: 'TREE COVER LOSS',
+    TREE_COVER_LOSS_ON_ARGENTINA_OTBN: 'TREE COVER LOSS ON ARGENTINA OTBN',
+    SOY_ON_TREE_COVER_LOSS: 'SOY ON TREE COVER LOSS',
+    PRODES_AMAZON: 'PRODES (Amazon, Cerrado, Brazil)',
+  },
   largeListEditing: {
     downloadProcessTitle: 'Upload process',
     downloadFileInstructions:

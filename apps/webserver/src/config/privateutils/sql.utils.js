@@ -55,9 +55,6 @@ const removePool = (connectConfig) => {
  * @returns {Promise<Object>} Promise for a cached pool
  */
 const getPool = async (connectConfig) => {
-  if (!connectConfig.database) {
-    throw new Error('Error: SQL getPool no database specified');
-  }
   try {
     // 'test' envs use sqlite
     if (process.env.NODE_ENV === 'test') {
@@ -72,6 +69,9 @@ const getPool = async (connectConfig) => {
       return cachedPools.sqliteDB;
     }
     // not 'test' env -- use mssql
+    if (!connectConfig.database) {
+      throw new Error('Error: SQL getPool no database specified');
+    }
     if (!cachedPools[connectConfig.database]) {
       // Create a SQL Connection and add to the cached pools
       const poolPreConnect = new sql.ConnectionPool(connectConfig);
@@ -222,7 +222,7 @@ const mssqlExecuteWithRetries = async (triesLeft, connectConfig, queryStrParam, 
     }
     return rawResults.recordsets;
   } catch (err) {
-    logger.error('mssqlExecute failed ', triesLeft, storedProcedureName, queryStrParam.slice(0, 100));
+    logger.error('mssqlExecute failed ', triesLeft, storedProcedureName, queryStrParam && queryStrParam.slice(0, 100));
     logger.error(err);
     removePool(connectConfig);
     if (triesLeft > 0) {

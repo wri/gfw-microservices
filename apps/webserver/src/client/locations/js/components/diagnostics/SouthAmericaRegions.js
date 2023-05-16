@@ -21,7 +21,6 @@ const START_YEAR = 2001;
 const END_YEAR = latestTreeCoverLossYearFC;
 const HARVEST_YEAR = END_YEAR - 1;
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
-const PRODES_AMAZON = 'PRODES (Amazon, Cerrado, Brazil)';
 const isProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
 let isMounted = false;
 
@@ -471,7 +470,7 @@ export default class SouthAmericaRegions extends Component {
 
     if (prodesChecked) {
       const highchartProdesData = {
-        name: PRODES_AMAZON,
+        name: locationsPage.diagnosticsTitles.PRODES_AMAZON,
         data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear)),
         color: '#ef669a',
         groupPadding: 0,
@@ -1187,16 +1186,17 @@ export default class SouthAmericaRegions extends Component {
 
     const regionObject = this.getRegionCountLabel();
 
+    const { TREE_COVER_LOSS, PRODES_AMAZON, TREE_COVER_LOSS_ON_ARGENTINA_OTBN, SOY_ON_TREE_COVER_LOSS } = locationsPage.diagnosticsTitles;
     let title;
 
     if (saTCLChecked || biomesChecked) {
-      title = 'TREE COVER LOSS';
+      title = TREE_COVER_LOSS;
     } else if (prodesChecked || paChecked || pfChecked) {
       title = PRODES_AMAZON;
     } else if (otbnArgentinaChecked) {
-      title = 'TREE COVER LOSS ON ARGENTINA OTBN';
+      title = TREE_COVER_LOSS_ON_ARGENTINA_OTBN;
     } else {
-      title = 'SOY ON TREE COVER LOSS';
+      title = SOY_ON_TREE_COVER_LOSS;
     }
 
     const displayBrazilBiomeSection = this.checkBrazilBiome();

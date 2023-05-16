@@ -12,11 +12,14 @@
       }
     }
   },
-  "defaultProject": "microservices-list-processing",
+  "defaultProject": "gfwpro",
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
+    },
+    "e2e": {
+      "inputs": ["default", "^production"]
     }
   },
   "namedInputs": {

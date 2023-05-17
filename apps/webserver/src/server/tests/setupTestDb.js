@@ -2,6 +2,38 @@ const sqlUtils = require('../../config/privateutils/sql.utils');
 
 // SQL commands to create the tables in systemDB (copied from gfw-microservices/database/gfwpro/schema/...)
 const systemTableCreates = [
+  `CREATE TABLE [dbo].[list-administrativeAreas](
+    [Location Name] [nvarchar](150) NULL,
+    [Country] [nvarchar](150) NULL,
+    [State] [nvarchar](150) NULL,
+    [Sub State] [nvarchar](150) NULL,
+    [gadmid] [nvarchar](50) NULL,
+    [Latitude] [float] NULL,
+    [Longitude] [float] NULL,
+    [Location Classification] [nvarchar](150) NULL,
+    [Size] [decimal](18, 6) NULL,
+    [Geometry] [geometry] NULL,
+    [location_id] [int] NULL,
+    [id] [int] NOT NULL
+  )`,
+  `CREATE TABLE [dbo].[list-protectedAreas](
+    [Location Name] [nvarchar](2000) NULL,
+    [Latitude] [float] NULL,
+    [Longitude] [float] NULL,
+    [Country] [nvarchar](150) NULL,
+    [State] [nvarchar](150) NULL,
+    [Sub State] [nvarchar](150) NULL,
+    [Size] [decimal](18, 6) NULL,
+    [IUCN CAT] [nvarchar](150) NULL,
+    [Designation Type] [nvarchar](150) NULL,
+    [Designation] [nvarchar](150) NULL,
+    [Location Classification] [nvarchar](150) NULL,
+    [gadmid] [nvarchar](50) NULL,
+    [globalid] [nvarchar](150) NULL,
+    [Geometry] [geometry] NULL,
+    [location_id] [int] NULL,
+    [id] [int] NOT NULL
+  )`,
   `CREATE TABLE [dbo].[UserRoutes](
     [id] [int] IDENTITY(1,1) NOT NULL,
     [user_email] [nvarchar](50) NOT NULL,

@@ -15,6 +15,7 @@ const s3Utils = require(path.resolve('./config/privateutils/s3.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
+const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const ListManager = require('./listManager.utils');
 const ShareManager = require('./shareManager.utils');
 
@@ -322,32 +323,6 @@ const getFinalGeojson = (gfw_list_id, geojson) => {
   return geojson;
 };
 
-/**
- * Get List Statuses
- *
- * @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @return {Promise} Returns promise object. If successful, resolves to array of list statuses, error object otherwise
- */
-const getListStatuses = (req) => {
-  return new Promise((resolve, reject) => {
-    // Get list of template metadata
-    sqlUtils
-      .executeSystemStoredProcedure(req, 'uspGetStatuses')
-      .then((listStatuses) => {
-        resolve(listStatuses);
-      })
-      .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.errorCodes.failedToGetData,
-          'Failed to get List Statuses',
-          errorMessage
-        );
-        reject(errorObject);
-      });
-  });
-};
-
 module.exports = {
   getAllTemplateData,
   getAllTemplateDropdowns,
@@ -357,5 +332,4 @@ module.exports = {
   getLocationAttributesList,
   getFinalGeojson,
   getLocationsAttributesSalted,
-  getListStatuses,
 };

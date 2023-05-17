@@ -6,10 +6,28 @@
 
 /**
  * TODO: Cleanups
- * 1) Delete tables gfwpro.ActivityType and gfwpro.ActivityTypeCategory
- *    a) Also update stored procedures: gfwpro.uspActivatePendingAccount,
- *       clientstore.uspActivatePendingAccount
- * 2) Remove stored procedures for everything in this file
+ * 1) Delete tables gfwpro.ActivityType and gfwpro.ActivityTypeCategory (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedures: uspGetActivityTypesQuery
+ *    b) Update stored procedures: gfwpro.uspActivatePendingAccount,
+ *       clientstore.uspActivatePendingAccount to remove creation of stored procedure
+ * 2) Delete table gfwpro.[Classifications] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetClassifications
+ * 3) Delete table gfwpro.[AccessLevels] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetAccessLevels
+ *    b) Update stored procedures uspGetAllUsersList to remove unused @access_level
+ *    c) Update AlterGFWProDB.sql to remove unused @access_level
+ * 4) Delete table gfwpro.[Commodities] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetCommodities
+ * 5) Delete table gfwpro.[Titles] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetTitles
+ * 6) Delete table gfwpro.[Geographiesles] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetGeographies
+ * 7) Delete table gfwpro.[Statuses] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetStatuses
+ *    b) Update stored procedures uspGetAllUsersList to remove unused @status_level
+ *    c) Update AlterGFWProDB.sql to remove unused @status_level
+ *
+ * N) Remove stored procedures for everything in this file (DB and CreateGFWProDB.sql)
  */
 
 const config = require('../config');
@@ -32,40 +50,10 @@ const verifyOrgDB = (connectConfig) => {
  * System (gfwpro) DB queries below this line just to keep them separate and easier to find
  * ----------------------------------------------------------------------------------------
  */
-const uspGetClassificationsQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from Classifications ORDER BY classification_name';
-};
-
-const uspGetAccessLevelsQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from AccessLevels ORDER BY accesslevel_name';
-};
-
-const uspGetCommoditiesQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from Commodities ORDER BY commmodity_name';
-};
-
-const uspGetTitlesQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from Titles ORDER BY title';
-};
-
 const uspGetAdministrativeAreasInfoQuery = (connectConfig) => {
   verifySystemDB(connectConfig);
   return `SELECT DISTINCT Country, State, [Sub State]
 	  FROM [list-administrativeAreas]`;
-};
-
-const uspGetStatusesQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from Statuses ORDER BY status_name';
-};
-
-const uspGetGeographiesQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from Geographies ORDER BY geography_name';
 };
 
 const uspGetProtectedAreasInfoQuery = (connectConfig) => {
@@ -367,13 +355,7 @@ const uspGetActivityLogQuery = (connectConfig) => {
 
 const convertedStoredProcedures = {
   // systemDB
-  uspGetClassifications: uspGetClassificationsQuery,
-  uspGetAccessLevels: uspGetAccessLevelsQuery,
-  uspGetCommodities: uspGetCommoditiesQuery,
-  uspGetTitles: uspGetTitlesQuery,
   uspGetAdministrativeAreasInfo: uspGetAdministrativeAreasInfoQuery,
-  uspGetStatuses: uspGetStatusesQuery,
-  uspGetGeographies: uspGetGeographiesQuery,
   uspGetProtectedAreasInfo: uspGetProtectedAreasInfoQuery,
   uspGetInitialUserRouteInfo: uspGetInitialUserRouteInfoQuery,
   uspGetGFWProRootUserInfo: uspGetGFWProRootUserInfoQuery,

@@ -6,7 +6,6 @@ const UserManager = require(path.resolve('./config/publicutils/userManager.utils
 const ShareManager = require('../../../config/publicutils/shareManager.utils');
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 const { findSharedListsInsideOrganization } = require('../../../config/publicutils/shareManager.utils');
-const LocationManager = require(path.resolve('./config/publicutils/locationManager.utils'));
 
 /**
  * @function dashboard
@@ -27,13 +26,13 @@ exports.dashboard = (req, res, data) => {
     GFWlistManager.getGFWLists(req),
     ListManager.getAllLists(req),
     ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
-    LocationManager.getListStatuses(req),
     AuthManager.getUserInfo(req),
   ];
 
   Promise.all(promises)
     .then((results) => {
-      const [userLists, locationCount, gfwLists, orgLists, sharedListsRecords, listStatuses, userInfo] = results;
+      const [userLists, locationCount, gfwLists, orgLists, sharedListsRecords, userInfo] = results;
+      const listStatuses = UserManager.getStatuses();
       // Filter out Protected Areas and Administrative Areas
       const filteredGFWLists = gfwLists.filter(
         (list) => list.list_name !== 'Administrative Areas' && list.list_name !== 'Protected Areas'

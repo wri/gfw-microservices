@@ -4,22 +4,22 @@
 // The above overrides 'testEnvironment' setting in jest.config.json to allow nodeJS server environment
 
 const supertest = require('supertest');
-const app = require('../../server');
+let app;
 const setupTestDb = require('./setupTestDb');
 
 describe('Basic smoke with REST APIs', () => {
   let cookies;
   const username = 'dt_user0@jestco.co';
   // setupDB and wait for app to be ready
-  beforeAll(() => {
-    return Promise.all([
-      setupTestDb.initDb(),
-      new Promise((resolve) => {
-        app.on('appReady', () => {
-          resolve();
-        });
-      }),
-    ]);
+  beforeAll(async () => {
+    // first setup DB, then start app because app depends on initial DB contents
+    await setupTestDb.initDb();
+    app = require('../../server');
+    return new Promise((resolve) => {
+      app.on('appReady', () => {
+        resolve();
+      });
+    });
   });
 
   it('login', async () => {

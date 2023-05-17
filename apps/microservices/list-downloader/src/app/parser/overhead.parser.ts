@@ -29,7 +29,6 @@ const overheadParser = ({
   };
 
   const { name } = operation;
-  console.log(name)
   if (
     name &&
     typeof name === 'string' &&

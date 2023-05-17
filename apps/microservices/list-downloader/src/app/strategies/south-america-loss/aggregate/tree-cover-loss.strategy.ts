@@ -18,7 +18,6 @@ export class TreeCoverLossAggregateStrategy
     Object.keys(rowValue).forEach((biomeYearFirst) => {
       totalBiomeValue += rowValue[biomeYearFirst];
     });
-    console.log(this.params.dataLayer, rowValue)
     Object.keys(rowValue).forEach((biomeYear) => {
       const currentBrazilianRow = cloneRow(dataRow);
       currentBrazilianRow.push(`${this.params.dataLayer} - ${year}`);

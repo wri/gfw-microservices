@@ -3,8 +3,8 @@ import { DATA_LAYER } from '../../../shared/constants';
 import { TreeCoverLossAggregateStrategy } from './tree-cover-loss.strategy';
 
 export class ArgentinaOTBNStrategy
-  implements SouthAmericaLossAggregateStrategy
-{
+  implements SouthAmericaLossAggregateStrategy {
+  // TODO: Remove any and validate types
   processLabel(
     field: any,
     rowValue: any,

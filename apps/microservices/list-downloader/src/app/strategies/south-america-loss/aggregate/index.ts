@@ -3,6 +3,7 @@ import { BrazilBiomesStrategy } from './brazil-biomes.strategy';
 import DefaultStrategy from './default.strategy';
 
 export interface SouthAmericaLossAggregateStrategy {
+  // TODO: Remove any and validate types
   processLabel(
     field: any,
     rowValue: any,
@@ -20,8 +21,8 @@ const labelStrategies = {
 };
 
 export default class SouthAmericaLossAggregateHandler {
-  constructor(private label: string) {}
-
+  constructor (private label: string) { }
+  // TODO: Remove any and validate types
   processLabel(
     field: any,
     rowValue: any,

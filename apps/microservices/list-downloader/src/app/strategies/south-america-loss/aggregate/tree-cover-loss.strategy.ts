@@ -2,10 +2,9 @@ import { SouthAmericaLossAggregateStrategy } from '.';
 import { cloneRow } from '../../../shared/functions';
 
 export class TreeCoverLossAggregateStrategy
-  implements SouthAmericaLossAggregateStrategy
-{
-  constructor(private params: any) {}
-
+  implements SouthAmericaLossAggregateStrategy {
+  constructor (private params: any) { }
+  // TODO: Remove any and validate types
   processLabel(
     field: any,
     rowValue: any,

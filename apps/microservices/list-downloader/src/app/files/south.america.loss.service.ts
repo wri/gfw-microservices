@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow } from '../shared/functions';
-import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
+import { DATA_LAYER, EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
+import SouthAmericaLossAggregateHandler from '../strategies/south-america-loss/aggregate';
 
 @Injectable()
 export class SouthAmericaLossService extends DashboardHandleDownload {
@@ -42,42 +43,20 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
         }
         const yearlyData = JSON.parse(listLevelAnalysis[field.attribute]);
         let totalSubCategory = 0;
-        if (field.label !== 'Brazil Biomes') {
+        if (!Object.values(DATA_LAYER).some(dataLayer => field.label == dataLayer)) {
           Object.keys(yearlyData).forEach((yr) => {
             totalSubCategory += yearlyData[yr];
           });
         }
 
+        const handler = new SouthAmericaLossAggregateHandler(field.label);
+
         Object.keys(yearlyData).forEach((year) => {
           const currentRow = cloneRow(dataRow);
-          rowValue = yearlyData[year];
+          rowValue = yearlyData[year]; 
 
           currentRow.push(field.label);
-
-          if (field.label === 'Brazil Biomes') {
-            let totalBiomeValue = 0;
-            Object.keys(rowValue).forEach((biomeYearFirst) => {
-              totalBiomeValue += rowValue[biomeYearFirst];
-            });
-
-            Object.keys(rowValue).forEach((biomeYear) => {
-              const currentBrazilianRow = cloneRow(dataRow);
-              currentBrazilianRow.push(`Brazil Biomes - ${year}`);
-              currentBrazilianRow.push(rowValue[biomeYear]);
-              currentBrazilianRow.push(biomeYear);
-              currentBrazilianRow.push(totalBiomeValue.toFixed(2));
-              csvData.push(currentBrazilianRow);
-            });
-          } else {
-            if (totalSubCategory > 0) {
-              const nestedRow = cloneRow(dataRow);
-              nestedRow.push(field.label);
-              nestedRow.push(rowValue);
-              nestedRow.push(year);
-              nestedRow.push(totalSubCategory.toFixed(2));
-              csvData.push(nestedRow);
-            }
-          }
+          handler.processLabel(field, rowValue, year, dataRow, csvData, totalSubCategory);
         });
       });
     });

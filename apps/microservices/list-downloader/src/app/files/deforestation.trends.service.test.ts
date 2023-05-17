@@ -7,6 +7,8 @@ describe('Deforestation Trends Aggregate data', () => {
     deforestationTrendsService = new DeforestationTrendsService();
   });
 
+
+
   test('Receive an empty input data, just return the header', () => {
     const returnData = deforestationTrendsService.generateAggregate(
       'table',

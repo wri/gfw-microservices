@@ -1470,3 +1470,8 @@ export const NESTED_JSON_ATTRIBUTES = [
   'tree_cover_loss_sea_landcover_yearly',
   'tree_cover_loss_idn_landcover_yearly',
 ];
+
+export const DATA_LAYER = {
+  'arg_otbn_area': 'Argentina OTBN',
+  'brazil_biomes': 'Brazil Biomes',
+}

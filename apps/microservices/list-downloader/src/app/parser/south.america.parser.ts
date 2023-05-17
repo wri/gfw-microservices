@@ -1,15 +1,16 @@
 import { sum } from 'lodash';
+import { DATA_LAYER } from '../shared/constants';
 import { cloneRow, formatPct, validatePct } from '../shared/functions';
 
 const dataLayerParser = ({ data, dataRow, csvData }) => {
   const brazilData = {
-    dataLayerName: 'Brazil Biomes',
+    dataLayerName: DATA_LAYER.brazil_biomes,
     data: JSON.parse(data.brazil_biomes),
     available: Object.entries(JSON.parse(data.brazil_biomes)).length > 0,
   };
 
   const argentinaData = {
-    dataLayerName: 'Argentina OTBN',
+    dataLayerName: DATA_LAYER.arg_otbn_area,
     data: JSON.parse(data.arg_otbn_area),
     available: Object.entries(JSON.parse(data.arg_otbn_area)).length > 0,
   };

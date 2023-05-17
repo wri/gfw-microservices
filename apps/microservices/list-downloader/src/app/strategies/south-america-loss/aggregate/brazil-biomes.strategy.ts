@@ -1,4 +1,5 @@
 import { SouthAmericaLossAggregateStrategy } from '.';
+import { DATA_LAYER } from '../../../shared/constants';
 import { TreeCoverLossAggregateStrategy } from './tree-cover-loss.strategy';
 
 export class BrazilBiomesStrategy implements SouthAmericaLossAggregateStrategy {
@@ -11,7 +12,7 @@ export class BrazilBiomesStrategy implements SouthAmericaLossAggregateStrategy {
     totalSubCategory: any = 0
   ): void {
     const treeCoverLossAggregateStrategy = new TreeCoverLossAggregateStrategy({
-      dataLayer: 'Brazil Biomes',
+      dataLayer: DATA_LAYER.brazil_biomes,
     });
     treeCoverLossAggregateStrategy.processLabel(
       field,

@@ -1,4 +1,5 @@
 import { SouthAmericaLossAggregateStrategy } from '.';
+import { DATA_LAYER } from '../../../shared/constants';
 import { TreeCoverLossAggregateStrategy } from './tree-cover-loss.strategy';
 
 export class ArgentinaOTBNStrategy
@@ -13,7 +14,7 @@ export class ArgentinaOTBNStrategy
     totalSubCategory: any = 0
   ): void {
     const treeCoverLossAggregateStrategy = new TreeCoverLossAggregateStrategy({
-      dataLayer: 'Argentina OTBN',
+      dataLayer: DATA_LAYER.arg_otbn_area,
     });
     treeCoverLossAggregateStrategy.processLabel(
       field,

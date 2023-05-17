@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { formatPct, validatePct } from '../shared/functions';
-import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
+import {
+  DATA_LAYER,
+  EXCEL_TEMPLATES,
+  EXCEL_TEMPLATE_HEADERS,
+} from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
 
@@ -33,28 +37,18 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
     EXCEL_TEMPLATES[table].forEach((key) => {
-      const biomesObj = JSON.parse(listLevelAnalysis[key.name]);
-      let dataLayer: string;
-
-      switch (key.name) {
-        case 'arg_otbn_area':
-          dataLayer = 'Argentina OTBN';
-          break;
-
-        case 'brazil_biomes':
-          dataLayer = 'Brazil Biomes';
-          break;
-      }
+      const analysisData = JSON.parse(listLevelAnalysis[key.name]);
+      const dataLayer = DATA_LAYER[key.name];
 
       let total = 0;
-      Object.keys(biomesObj).forEach((biome) => {
-        total += biomesObj[biome];
+      Object.keys(analysisData).forEach((biome) => {
+        total += analysisData[biome];
       });
 
-      Object.keys(biomesObj).forEach((biome) => {
+      Object.keys(analysisData).forEach((biome) => {
         const dataRow = [list_name, dataLayer, biome];
         const overlapPercent = formatPct(
-          validatePct((biomesObj[biome] / total) * 100)
+          validatePct((analysisData[biome] / total) * 100)
         );
         dataRow.push(overlapPercent);
         csvData.push(dataRow);

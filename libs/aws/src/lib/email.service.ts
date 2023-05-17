@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { SesService } from '@nextnm/nestjs-ses';
 import { SesEmailOptions } from '@nextnm/nestjs-ses';
+import { AnyARecord } from 'dns';
+import { AnyError } from 'typeorm';
 import { createEmailContent } from './emailContent';
 import { createPage } from './htmlTemplate';
 
 @Injectable()
 export class EmailService {
-  constructor (private sesService: SesService) { }
+  constructor(private sesService: SesService) {}
 
   async sendEmail(
     sender: string,

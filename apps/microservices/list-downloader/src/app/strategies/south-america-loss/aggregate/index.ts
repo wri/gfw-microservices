@@ -16,7 +16,7 @@ export interface SouthAmericaLossAggregateStrategy {
 const labelStrategies = {
   'Brazil Biomes': new BrazilBiomesStrategy(),
   'Argentina OTBN': new ArgentinaOTBNStrategy(),
-  default: new DefaultStrategy(),
+  default: new DefaultStrategy(),//handle the cases where the analysis is not comming from argentina nor brazil
 };
 
 export default class SouthAmericaLossAggregateHandler {

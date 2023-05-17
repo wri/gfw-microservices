@@ -631,6 +631,7 @@ export const locationsPage = {
     threats: 'threats',
     values: 'values',
     threatsAndValues: 'threats_and_values',
+    treeCoverLossArgOtbnYearly: 'tree_cover_loss_arg_otbn_yearly',
   },
   defaultFilterValues: {
     selectedCountry: '',
@@ -971,6 +972,7 @@ export const locationsPage = {
     TREE_COVER_LOSS_ON_ARGENTINA_OTBN: 'TREE COVER LOSS ON ARGENTINA OTBN',
     SOY_ON_TREE_COVER_LOSS: 'SOY ON TREE COVER LOSS',
     PRODES_AMAZON: 'PRODES (Amazon, Cerrado, Brazil)',
+    ARGENTINA_OTBN_OVERLAP: 'ARGENTINA OTBN OVERLAP',
   },
   largeListEditing: {
     downloadProcessTitle: 'Upload process',

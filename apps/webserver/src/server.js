@@ -35,7 +35,6 @@ loadenv
       require(path.resolve('./config/publicutils/accountManager.utils')).initialize(),
       require(path.resolve('./config/publicutils/gfwListManager.utils')).initialize(),
       require(path.resolve('./config/publicutils/userManager.utils')).initialize(),
-      require(path.resolve('./config/privateutils/logger.utils')).initialize(),
       require(path.resolve('./config/privateutils/cognito.utils')).initialize(),
       require(path.resolve('./config/privateutils/ses.utils')).initialize(),
       require(path.resolve('./server/vectorTiles/utils/vectorTileSQS.utils')).initialize(),

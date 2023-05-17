@@ -117,6 +117,8 @@ const mssql2sqliteQuery = (mssqlQuery) => {
   let updatedQuery = mssqlQuery;
   updatedQuery = regexReplaceCmd(updatedQuery, /CONVERT\(VARCHAR\(\d+\),\s*(\w+)\)/g);
   updatedQuery = regexReplaceCmd(updatedQuery, /STRING_AGG\((\w+), ','\)/g, 'group_concat');
+  // 'TOP (n)' should be replaced with LIMIT n, but large results unlikely in test, so ignoring for now
+  updatedQuery = updatedQuery.replaceAll(/TOP\s*\(\d+\)/g, '');
   return updatedQuery;
 };
 
@@ -134,6 +136,10 @@ const sqliteApplyParams = (databaseName, baseQuery, params = []) => {
     const paramValue = paramInfo.value;
     if (typeof paramValue === 'string') {
       queryStr = queryStr.replaceAll(`@${paramInfo.field}`, `'${paramValue}'`);
+    } else if (paramValue instanceof Date) {
+      queryStr = queryStr.replaceAll(`@${paramInfo.field}`, `'${paramValue.toISOString()}'`);
+    } else if (typeof paramValue === 'object') {
+      queryStr = queryStr.replaceAll(`@${paramInfo.field}`, `'${paramValue.toString()}'`);
     } else {
       queryStr = queryStr.replaceAll(`@${paramInfo.field}`, paramValue);
     }
@@ -160,7 +166,13 @@ const sqliteQuery = async (sqliteDB, connectConfig, mssqlQuery, namedQuery, para
     queryStr = sqliteApplyParams(connectConfig.database, baseQuery, params);
     // temporary debug log
     console.log('sqlite query string', queryStr);
-    const supportedQueries = ['uspGetInitialUserRouteInfo', 'uspGetVerifiedUserRouteInfo', 'uspGetUserInfo'];
+    const supportedQueries = [
+      'uspGetInitialUserRouteInfo',
+      'uspGetVerifiedUserRouteInfo',
+      'uspGetUserInfo',
+      'uspSetActivityLog',
+      'uspGetActivityLog',
+    ];
 
     // only supported named queries or unnamed SQL queries are allowed
     if (supportedQueries.includes(namedQuery) || !namedQuery) {

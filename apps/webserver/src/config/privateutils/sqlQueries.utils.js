@@ -4,6 +4,14 @@
  *   @description : Returns SQL query strings using identifiers that used to be stored procedures
  */
 
+/**
+ * TODO: Cleanups
+ * 1) Delete tables gfwpro.ActivityType and gfwpro.ActivityTypeCategory
+ *    a) Also update stored procedures: gfwpro.uspActivatePendingAccount,
+ *       clientstore.uspActivatePendingAccount
+ * 2) Remove stored procedures for everything in this file
+ */
+
 const config = require('../config');
 
 // Verify given connection is for system (gfwpro) DB
@@ -42,14 +50,6 @@ const uspGetCommoditiesQuery = (connectConfig) => {
 const uspGetTitlesQuery = (connectConfig) => {
   verifySystemDB(connectConfig);
   return 'SELECT * from Titles ORDER BY title';
-};
-
-const uspGetActivityTypesQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return `SELECT AT.id AS [ActivityTypeID], AT.activity_type_category_id AS [ActivityCategoryID],
-    AC.activity_type_category_name AS [ActivityCategoryName], AT.activity_type_name AS [ActivityTypeName]
-    FROM ActivityType AT
-    JOIN ActivityTypeCategory AC ON AT.activity_type_category_id = AC.id`;
 };
 
 const uspGetAdministrativeAreasInfoQuery = (connectConfig) => {
@@ -356,13 +356,21 @@ const uspGetAllFolderItemsQuery = (connectConfig) => {
     END`;
 };
 
+const uspGetActivityLogQuery = (connectConfig) => {
+  verifyOrgDB(connectConfig);
+  // limit to most recent 10K elements because the UI is not responsive beyond that
+  return `SELECT TOP (10000) U.email, AL.activity_description, AL.activity_time, AL.activity_type_id
+  FROM ActivityLog AL
+  LEFT JOIN Users U ON AL.user_id = U.id
+  ORDER BY AL.activity_time DESC`;
+};
+
 const convertedStoredProcedures = {
   // systemDB
   uspGetClassifications: uspGetClassificationsQuery,
   uspGetAccessLevels: uspGetAccessLevelsQuery,
   uspGetCommodities: uspGetCommoditiesQuery,
   uspGetTitles: uspGetTitlesQuery,
-  uspGetActivityTypes: uspGetActivityTypesQuery,
   uspGetAdministrativeAreasInfo: uspGetAdministrativeAreasInfoQuery,
   uspGetStatuses: uspGetStatusesQuery,
   uspGetGeographies: uspGetGeographiesQuery,
@@ -387,6 +395,7 @@ const convertedStoredProcedures = {
   uspGetUserInternalShareLists: uspGetUserInternalShareListsQuery,
   uspGetFolders: uspGetFoldersQuery,
   uspGetAllFolderItems: uspGetAllFolderItemsQuery,
+  uspGetActivityLog: uspGetActivityLogQuery,
 };
 
 const getQueryStr = (connectConfig, storedProcedureName) => {

@@ -8,23 +8,24 @@ const app = require('../../server');
 const setupTestDb = require('./setupTestDb');
 
 describe('Basic smoke with REST APIs', () => {
-  // wait for app to be ready
+  let cookies;
+  const username = 'dt_user0@jestco.co';
+  // setupDB and wait for app to be ready
   beforeAll(() => {
-    return new Promise((resolve /* , reject */) => {
-      app.on('appReady', async () => {
-        await setupTestDb.initDb();
-        resolve();
-      });
-    });
+    return Promise.all([
+      setupTestDb.initDb(),
+      new Promise((resolve) => {
+        app.on('appReady', () => {
+          resolve();
+        });
+      }),
+    ]);
   });
 
   it('login', async () => {
     const request = supertest(app);
-    const resLogin = await request
-      .post('/auth/signinpost')
-      .send({ username: 'dt_user0@jestco.co', password: 'unsafe' })
-      .expect(200);
-    const cookies = resLogin.headers['set-cookie'];
+    const resLogin = await request.post('/auth/signinpost').send({ username, password: 'unsafe' }).expect(200);
+    cookies = resLogin.headers['set-cookie'];
     expect(resLogin.text).toBe('Authenticated');
     expect(cookies).not.toBeUndefined();
 
@@ -33,9 +34,16 @@ describe('Basic smoke with REST APIs', () => {
       .set('Cookie', cookies)
       .send({ tokenID: 'unsafe' })
       .expect(200);
-    // this currently fails because sqlite support doesn't have all the tables
-    // authenticationManager.utils.js:292 fails reading logger.listActivityTypes.User.UserLogin
-    // and ActivityTypes* should just be code and not SQL tables, but deferring that for later
-    expect(resVerify.text).toBe('{}');
+    expect(resVerify.text).toBe('User');
+  });
+
+  it('activity log should show login', async () => {
+    const request = supertest(app);
+    const resActLog = await request.post('/activityLog').set('Cookie', cookies).send().expect(200);
+    const actLogJson = JSON.parse(resActLog.text);
+    expect(actLogJson).not.toBeUndefined();
+    expect(actLogJson.activityLog).not.toBeUndefined();
+    expect(actLogJson.activityLog[0]).not.toBeUndefined();
+    expect(actLogJson.activityLog[0].email).toBe(username);
   });
 });

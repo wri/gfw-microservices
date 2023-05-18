@@ -1,4 +1,12 @@
-// Function to sort string alphanumerically
+export const listStatus = {
+  pending: 1,
+  active: 2,
+  inactive: 3,
+  draft: 4,
+  analyzingDiagnostic: 5,
+  analyzingDashboard: 6,
+}
+
 export const sortAlphaNum = (a, b) => {
   const reA = /[^a-zA-Z]/g;
   const reN = /[^0-9]/g;
@@ -11,18 +19,16 @@ export const sortAlphaNum = (a, b) => {
   }
   return aA > bA ? 1 : -1;
 };
-// Function to sort string by none
+
+const isStringValid = (string) => {
+  return string === null || string === 'None';
+}
+
 export const sortByNone = (a, b) => {
-  if (a === null) {
+  if (isStringValid(a) && a !== b) {
     return 1;
   }
-  if (b === null) {
-    return -1;
-  }
-  if (a === 'None' && a !== b) {
-    return 1;
-  }
-  if (b === 'None' && a !== b) {
+  if (isStringValid(b) && a !== b) {
     return -1;
   }
   if (a < b) {
@@ -31,6 +37,40 @@ export const sortByNone = (a, b) => {
   if (a > b) {
     return 1;
   }
+  return 0;
+};
+
+export const locatiopnIsActive = (location) => {
+  return location.location_status_id === listStatus['active'];
+}
+
+const isOnlyLastLocationsIsActive = (a, b) => {
+  return !locatiopnIsActive(a) && locatiopnIsActive(b);
+}
+
+const isOnlyFirstLocationsIsActive = (a, b) => {
+  return locatiopnIsActive(a) && !locatiopnIsActive(b);
+}
+
+const isBothLocationsAreActive = (a, b) => {
+  return locatiopnIsActive(a) && locatiopnIsActive(b);
+}
+
+const isNeitherLocationsAreActive = (a, b) => {
+  return !locatiopnIsActive(a) && !locatiopnIsActive(b);;
+}
+
+export const sortByStatus = (a, b) => {
+  if (isOnlyLastLocationsIsActive(a, b)) {
+    return -1;
+  } else if (isNeitherLocationsAreActive(a, b)) {
+    return 0;
+  } else if (isOnlyFirstLocationsIsActive(a, b)) {
+    return 1;
+  } else if (isBothLocationsAreActive(a, b)) {
+    return 'active';
+  }
+
   return 0;
 };
 
@@ -91,7 +131,11 @@ export const getLastYear = (data) => {
   return parseInt(lastValue);
 };
 
-const sortObjectNumbers = (a, b) => {
+export const normalizeColunmData = (data) => {
+  return Object.values(JSON.parse(data)).reduce((aa, bb) => aa + bb, 0)
+} 
+
+export const sortObjectNumbers = (a, b) => {
   const x = a === '{}' || !a ? 0 : parseFloat(getValue(a).replace(',', ''));
   const y = b === '{}' || !b ? 0 : parseFloat(getValue(b).replace(',', ''));
 

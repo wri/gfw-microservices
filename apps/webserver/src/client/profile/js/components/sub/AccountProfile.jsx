@@ -522,6 +522,7 @@ export default class AccountProfile extends Component {
                   <Button
                     variant="danger"
                     onClick={this.deletePolicies}
+                    labelStyle={{ padding: '0px' }}
                     label={profilePage.profileManager.policyDelete}
                   />
                   <Button onClick={this.downloadPolicies} label={profilePage.profileManager.policyDownload} />

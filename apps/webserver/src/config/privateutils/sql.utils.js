@@ -222,7 +222,7 @@ const mssqlExecuteWithRetries = async (triesLeft, connectConfig, queryStrParam, 
     }
     return rawResults.recordsets;
   } catch (err) {
-    logger.error('mssqlExecute failed ', triesLeft, storedProcedureName, queryStrParam && queryStrParam.slice(0, 100));
+    logger.error('mssqlExecute failed ', triesLeft, connectConfig && connectConfig.database, storedProcedureName, queryStrParam && queryStrParam.slice(0, 100));
     logger.error(err);
     removePool(connectConfig);
     if (triesLeft > 0) {

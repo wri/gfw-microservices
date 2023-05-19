@@ -20,15 +20,15 @@ export const sortAlphaNum = (a, b) => {
   return aA > bA ? 1 : -1;
 };
 
-const isStringValid = (string) => {
+const isStringNone = (string) => {
   return string === null || string === 'None';
 }
 
 export const sortByNone = (a, b) => {
-  if (isStringValid(a) && a !== b) {
+  if (isStringNone(a) && a !== b) {
     return 1;
   }
-  if (isStringValid(b) && a !== b) {
+  if (isStringNone(b) && a !== b) {
     return -1;
   }
   if (a < b) {

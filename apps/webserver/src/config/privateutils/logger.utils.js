@@ -157,7 +157,7 @@ const logActivity = (req, activityTypeId, activityDescription) => {
         resolve(true);
       })
       .catch((err) => {
-        console.log('Activity log error', err);
+        console.log('Activity log error', activityTypeId, err);
         reject(err);
       });
   });

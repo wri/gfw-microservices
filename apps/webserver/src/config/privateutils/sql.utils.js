@@ -166,21 +166,9 @@ const sqliteQuery = async (sqliteDB, connectConfig, mssqlQuery, namedQuery, para
     queryStr = sqliteApplyParams(connectConfig.database, baseQuery, params);
     // temporary debug log
     console.log('sqlite query string', queryStr);
-    const supportedQueries = [
-      'uspGetInitialUserRouteInfo',
-      'uspGetVerifiedUserRouteInfo',
-      'uspGetUserInfo',
-      'uspSetActivityLog',
-      'uspGetActivityLog',
-    ];
 
-    // only supported named queries or unnamed SQL queries are allowed
-    if (supportedQueries.includes(namedQuery) || !namedQuery) {
-      const result = await sqliteDB.all(queryStr);
-      return [result];
-    }
-    // for now return empty array for all other SQL queries
-    return [[]];
+    const result = await sqliteDB.all(queryStr);
+    return [result];
   } catch (err) {
     logger.error('sqliteQuery failed ', namedQuery, queryStr || mssqlQuery, err);
     throw err;

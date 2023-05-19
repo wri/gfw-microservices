@@ -5,6 +5,10 @@ import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
 const transifex = Transifex.live.translateText;
 
+const renderCell = (row) => {
+  return checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--';
+}
+
 const policy_locations = [
   {
     Header: () => <ColumnsHeader label={columnHeaders.locationName} />,
@@ -12,7 +16,7 @@ const policy_locations = [
     show: true,
     width: 130,
     maxWidth: 130,
-    Cell: (row) => (checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--'),
+    Cell: (row) => renderCell(row.value),
     sortMethod: sortAlphaNum,
   },
   {
@@ -35,7 +39,7 @@ const policy_locations = [
     show: true,
     width: 100,
     maxWidth: 100,
-    Cell: (row) => (checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--'),
+    Cell: (row) => renderCell(row.value),
   },
   {
     Header: () => <ColumnsHeader label={columnHeaders.certified} />,

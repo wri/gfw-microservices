@@ -4,8 +4,6 @@ import CustomTooltip from '../../../../common/js/components/CustomTooltip/Custom
 import FailedTooltip from '../../../../common/js/components/CustomTooltip/FailedTooltip';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
-const transifex = Transifex.live.translateText;
-
 const react_table__location_name = [
   {
     Header: () => <ColumnsHeader label={columnHeaders.locationName} />,

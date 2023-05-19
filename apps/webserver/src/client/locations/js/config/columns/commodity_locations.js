@@ -3,7 +3,9 @@ import { columnHeaders } from '../../../../common/js/config';
 import { checkValid } from '../../utils/locationsTableUtils';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
-const transifex = Transifex.live.translateText;
+const renderCell = (label) => {
+  return checkValid(label) ? <span title={label}>{label}</span> : '--'
+}
 
 const commodity_locations = [
   {
@@ -27,19 +29,19 @@ const commodity_locations = [
     Header: () => <ColumnsHeader label={columnHeaders.parentCompany} />,
     accessor: 'Parent Company',
     show: true,
-    Cell: (row) => (checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--'),
+    Cell: (row) => renderCell(row.value),
   },
   {
     Header: () => <ColumnsHeader label={columnHeaders.supplier} />,
     accessor: 'Supplier Name',
     show: true,
-    Cell: (row) => (checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--'),
+    Cell: (row) => renderCell(row.value),
   },
   {
     Header: () => <ColumnsHeader label={columnHeaders.supplierTwo} />,
     accessor: 'Second Supplier Name',
     show: true,
-    Cell: (row) => (checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--'),
+    Cell: (row) => renderCell(row.value),
   },
 ];
 

@@ -2,6 +2,39 @@ const sqlUtils = require('../../config/privateutils/sql.utils');
 
 // SQL commands to create the tables in systemDB (copied from gfw-microservices/database/gfwpro/schema/...)
 const systemTableCreates = [
+  `CREATE TABLE [dbo].[list-administrativeAreas](
+    [Location Name] [nvarchar](150) NULL,
+    [Country] [nvarchar](150) NULL,
+    [State] [nvarchar](150) NULL,
+    [Sub State] [nvarchar](150) NULL,
+    [gadmid] [nvarchar](50) NULL,
+    [Latitude] [float] NULL,
+    [Longitude] [float] NULL,
+    [Location Classification] [nvarchar](150) NULL,
+    [Size] [decimal](18, 6) NULL,
+    [Geometry] [geometry] NULL,
+    [location_id] [int] NULL,
+    [id] [int] NOT NULL
+  )`,
+  `CREATE TABLE [dbo].[list-protectedAreas](
+    [Location Name] [nvarchar](2000) NULL,
+    [Latitude] [float] NULL,
+    [Longitude] [float] NULL,
+    [Country] [nvarchar](150) NULL,
+    [State] [nvarchar](150) NULL,
+    [Sub State] [nvarchar](150) NULL,
+    [Size] [decimal](18, 6) NULL,
+    [IUCN CAT] [nvarchar](150) NULL,
+    [Designation Type] [nvarchar](150) NULL,
+    [Designation] [nvarchar](150) NULL,
+    [Location Classification] [nvarchar](150) NULL,
+    [gadmid] [nvarchar](50) NULL,
+    [globalid] [nvarchar](150) NULL,
+    [Geometry] [geometry] NULL,
+    [location_id] [int] NULL,
+    [id] [int] NOT NULL
+  )`,
+
   `CREATE TABLE [dbo].[UserRoutes](
     [id] [int] IDENTITY(1,1) NOT NULL,
     [user_email] [nvarchar](50) NOT NULL,
@@ -81,17 +114,38 @@ const orgTableCreates = [
     [email] ASC
   )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
   )`,
+  `CREATE TABLE [dbo].[ActivityLog](
+    [id] [int] IDENTITY(1,1) NOT NULL,
+    [user_id] [int] NOT NULL,
+    [activity_type_id] [int] NOT NULL,
+    [activity_description] [nvarchar](max) NOT NULL,
+    [activity_time] [datetime] NOT NULL,
+   CONSTRAINT [PK_ActivityLog] PRIMARY KEY CLUSTERED
+  (
+    [id] ASC
+  ))`,
 ];
 
 // convert above table creation commands above from mssql to sqlite
+// some or all of this code may need to be moved to sql.utils.js:mssql2sqliteQuery() in the future
 const mssql2sqliteForCreate = (mssqlQuery) => {
-  return mssqlQuery
+  const hasIdentity = mssqlQuery.includes('IDENTITY(1,1');
+  let newQuery = mssqlQuery
     .replace('[dbo].', '')
-    .replace('CLUSTERED', '')
-    .replace('NONCLUSTERED', '')
+    .replaceAll('[int]', 'INTEGER')
+    .replaceAll('IDENTITY(1,1)', 'PRIMARY KEY AUTOINCREMENT')
+    .replaceAll('[nvarchar](max)', '[nvarchar]')
+    .replaceAll('NONCLUSTERED', '')
+    .replaceAll('CLUSTERED', '')
     .replaceAll(/WITH \([^)]+\)/g, '')
     .replaceAll('ON [PRIMARY]', '')
     .replaceAll('\n', '');
+  if (hasIdentity) {
+    // identity column is primary key, so no more primary keys allowed
+    newQuery = newQuery.replaceAll(/,\s*CONSTRAINT.+\s+PRIMARY\s+KEY.*\([^)]+\)/g, '');
+  }
+  return newQuery;
+
 };
 
 // SQL commands to insert minimal test data in the tables

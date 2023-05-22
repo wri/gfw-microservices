@@ -7,7 +7,6 @@ const { createElement } = require('react');
 const { renderToString } = require('react-dom/server');
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const ShareManager = require('../../../config/publicutils/shareManager.utils');
-const LocationManager = require(path.resolve('./config/publicutils/locationManager.utils'));
 const { findSharedListsInsideOrganization } = require('../../../config/publicutils/shareManager.utils');
 
 /**
@@ -34,12 +33,12 @@ exports.map = (req, res) => {
     AuthManager.getUserInfo(req),
     ListManager.getAllLists(req),
     ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
-    LocationManager.getListStatuses(req),
   ];
 
   Promise.all(promises)
     .then((results) => {
-      const [userLists, locationCount, gfwLists, userInfo, orgLists, sharedListsRecords, listStatuses] = results;
+      const [userLists, locationCount, gfwLists, userInfo, orgLists, sharedListsRecords] = results;
+      const listStatuses = UserManager.getStatuses();
 
       const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);
       res.render('map', {

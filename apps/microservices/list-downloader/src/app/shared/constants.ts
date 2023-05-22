@@ -666,6 +666,14 @@ export const EXCEL_TEMPLATES = {
           },
         },
         {
+          attribute: 'tree_cover_loss_arg_otbn_yearly',
+          label: 'Argentina OTBN',
+          following: {
+            attribute: 'tree_cover_loss_arg_otbn_yearly',
+            parsed: 'total',
+          },
+        },
+        {
           attribute: 'tree_cover_loss_prodes_yearly',
           label: 'PRODES',
           following: {
@@ -724,6 +732,10 @@ export const EXCEL_TEMPLATES = {
           attribute: 'tree_cover_loss_brazil_biomes_yearly',
           label: 'Brazil Biomes',
         },
+        {
+          attribute: 'tree_cover_loss_arg_otbn_yearly',
+          label: 'Argentina OTBN',
+        },
         { attribute: 'tree_cover_loss_prodes_yearly', label: 'PRODES' },
         {
           attribute: 'tree_cover_loss_prodes_primary_forest_yearly',
@@ -746,11 +758,15 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'brazil_biomes',
+      name: 'data_layer',
       parsed: 'overhead',
     },
   ],
   sAmericaBiomesAggregate: [
+    {
+      name: 'arg_otbn_area',
+      parsed: 'overhead',
+    },
     {
       name: 'brazil_biomes',
       parsed: 'overhead',
@@ -1287,13 +1303,15 @@ export const EXCEL_TEMPLATE_HEADERS = {
   sAmericaBiomes: [
     'List Name',
     'Location Name',
-    'Brazil Biome',
-    'Overlap with Brazil Biome (%)',
+    'Data Layer',
+    'Sub-Layer',
+    'Overlap with Sub-Layer (%)',
   ],
   sAmericaBiomesAggregate: [
     'List Name',
-    'Brazil Biome',
-    'Overlap with Brazil Biome (%)',
+    'Data Layer',
+    'Sub-Layer',
+    'Overlap with Sub-Layer (%)',
   ],
   seAsiaAll: [
     'List Name',
@@ -1435,9 +1453,11 @@ export const FIELDS_NEEDED_CALCULATION = [
   'tree_cover_loss_brazil_biomes_yearly',
   'tree_cover_loss_sea_landcover_yearly',
   'tree_cover_loss_idn_landcover_yearly',
+  'tree_cover_loss_arg_otbn_yearly',
   'south_america_presence',
   'southeast_asia_presence',
   'brazil_biomes',
+  'arg_otbn_area',
   'total_area',
   'soy_total_area',
   'soy_pre2001_nonforest_area',
@@ -1450,3 +1470,8 @@ export const NESTED_JSON_ATTRIBUTES = [
   'tree_cover_loss_sea_landcover_yearly',
   'tree_cover_loss_idn_landcover_yearly',
 ];
+
+export const DATA_LAYER = {
+  'arg_otbn_area': 'Argentina OTBN',
+  'brazil_biomes': 'Brazil Biomes',
+}

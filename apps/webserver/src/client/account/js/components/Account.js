@@ -1,14 +1,18 @@
-import Page from '../../../common/js/components/Page';
 import React, { Component } from 'react';
+import Page from '../../../common/js/components/Page';
 import Select from 'react-select';
 import Dialog from 'material-ui/Dialog';
-import { termsAndConditions, privacyPolicy, profilePage } from '../../../common/js/config';
-import '../../css/account.scss';
-import { fieldValidations } from '../../../profile/js/utils/validations';
 import SubHeader from '../../../common/js/components/SubHeader';
 import Button from '../../../common/js/components/Button';
 import LinkButton from '../../../common/js/components/LinkButton';
 import GfwSelect from '../../../common/js/components/GfwSelect';
+import { fieldValidations } from '../../../profile/js/utils/validations';
+import {
+  termsAndConditions,
+  privacyPolicy,
+  profilePage,
+} from '../../../common/js/config';
+import '../../css/account.scss';
 
 export default class Account extends Component {
   constructor(props) {
@@ -41,7 +45,13 @@ export default class Account extends Component {
   }
 
   removeExtraSpaces = () => {
-    const { org_name, parent_org_name, org_address, user_first_name, user_last_name } = this.state;
+    const {
+      org_name,
+      parent_org_name,
+      org_address,
+      user_first_name,
+      user_last_name,
+    } = this.state;
     this.setState({
       org_name: org_name.trim(),
       parent_org_name: parent_org_name.trim(),
@@ -67,22 +77,37 @@ export default class Account extends Component {
         errors.push(fieldValidations.organization_name.text);
       }
     });
-    fieldValidations.organization_name.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.org_name.trim()) === false) {
-        missing.push(fieldValidations.organization_name.text);
+    fieldValidations.organization_name.mandatoryChecks.forEach(
+      (mandatoryCheck) => {
+        if (mandatoryCheck(this.state.org_name.trim()) === false) {
+          missing.push(fieldValidations.organization_name.text);
+        }
       }
-    });
+    );
 
     if (this.state.org_name.trim().length > 150) {
       errors.push('You organization name must have less than 150 characters.');
     }
-    if (this.state.is_subsidiary && this.state.parent_org_name.trim().length === 0) {
-      errors.push('You must provide a parent organization if your organization is a subsidy.');
+    if (
+      this.state.is_subsidiary &&
+      this.state.parent_org_name.trim().length === 0
+    ) {
+      errors.push(
+        'You must provide a parent organization if your organization is a subsidy.'
+      );
     }
-    if (!this.state.is_subsidiary && this.state.parent_org_name.trim().length !== 0) {
-      errors.push('You must check the subsidiary box if a parent organization is supplied.');
+    if (
+      !this.state.is_subsidiary &&
+      this.state.parent_org_name.trim().length !== 0
+    ) {
+      errors.push(
+        'You must check the subsidiary box if a parent organization is supplied.'
+      );
     }
-    if (parseInt(this.state.user_title_id) === 10 && this.state.otherTitle.trim().length === 0) {
+    if (
+      parseInt(this.state.user_title_id) === 10 &&
+      this.state.otherTitle.trim().length === 0
+    ) {
       errors.push('You must provide an alternative title.');
     }
     if (this.state.arr_org_classification_ids.length === 0) {
@@ -94,22 +119,26 @@ export default class Account extends Component {
         errors.push(fieldValidations.organization_address.text);
       }
     });
-    fieldValidations.organization_address.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.org_address.trim()) === false) {
-        missing.push(fieldValidations.organization_address.text);
+    fieldValidations.organization_address.mandatoryChecks.forEach(
+      (mandatoryCheck) => {
+        if (mandatoryCheck(this.state.org_address.trim()) === false) {
+          missing.push(fieldValidations.organization_address.text);
+        }
       }
-    });
+    );
 
     fieldValidations.organization_website.validations.forEach((validation) => {
       if (validation(this.state.org_website.trim()) === false) {
         errors.push(fieldValidations.organization_website.text);
       }
     });
-    fieldValidations.organization_website.mandatoryChecks.forEach((mandatoryCheck) => {
-      if (mandatoryCheck(this.state.org_website.trim()) === false) {
-        missing.push(fieldValidations.organization_website.text);
+    fieldValidations.organization_website.mandatoryChecks.forEach(
+      (mandatoryCheck) => {
+        if (mandatoryCheck(this.state.org_website.trim()) === false) {
+          missing.push(fieldValidations.organization_website.text);
+        }
       }
-    });
+    );
 
     fieldValidations.first_name.validations.forEach((validation) => {
       if (validation(this.state.user_first_name.trim()) === false) {
@@ -194,7 +223,8 @@ export default class Account extends Component {
           this.setState({
             dialogOpen: true,
             dialogTitle: 'Account Not Created',
-            dialogMessage: 'This account request has failed. Please try again at another time.',
+            dialogMessage:
+              'This account request has failed. Please try again at another time.',
             creatingAccount: false,
           });
         }
@@ -208,9 +238,14 @@ export default class Account extends Component {
       request.open('POST', '/createnewaccount', true);
       request.setRequestHeader('Content-Type', 'application/json');
       const obj = Object.assign({}, this.state);
-      obj.arr_org_classification_ids = this.state.arr_org_classification_ids.map((c) => c.value);
-      obj.arr_user_geography_ids = this.state.arr_user_geography_ids.map((g) => g.value);
-      obj.arr_user_commodity_ids = this.state.arr_user_commodity_ids.map((c) => c.value);
+      obj.arr_org_classification_ids =
+        this.state.arr_org_classification_ids.map((c) => c.value);
+      obj.arr_user_geography_ids = this.state.arr_user_geography_ids.map(
+        (g) => g.value
+      );
+      obj.arr_user_commodity_ids = this.state.arr_user_commodity_ids.map(
+        (c) => c.value
+      );
       request.send(JSON.stringify(obj));
     } else {
       if (errors.length > 0 && missing.length > 0) {
@@ -241,10 +276,6 @@ export default class Account extends Component {
         });
       }
     }
-  };
-
-  cancel = () => {
-    window.location.href = '/';
   };
 
   updateOrganization = (evt) => {
@@ -285,7 +316,11 @@ export default class Account extends Component {
       const reader = new FileReader();
       reader.readAsDataURL(evt.target.files[key]);
       reader.onload = function () {
-        policyList.push(reader.result.match(/base64,(.*)/)[1] ? reader.result.match(/base64,(.*)/)[1] : '');
+        policyList.push(
+          reader.result.match(/base64,(.*)/)[1]
+            ? reader.result.match(/base64,(.*)/)[1]
+            : ''
+        );
       };
       reader.onerror = function (error) {
         console.log('Error: ', error);
@@ -329,10 +364,6 @@ export default class Account extends Component {
     return { label: option.geography_name, value: option.id };
   };
 
-  /*createTitleOptions = (option, i) => {
-    return <option selected={this.state.user_title_id === option.id} value={option.id} id={option.id} key={i} >{option.title}</option>;
-  }*/
-
   createCommOptions = (option, i) => {
     return { label: option.commmodity_name, value: option.id };
   };
@@ -352,7 +383,7 @@ export default class Account extends Component {
   titleChange = (evt) => {
     this.setState({
       user_title: evt.label,
-      user_title_id: evt.value,
+      user_title_id: parseInt(evt.value),
     });
   };
 
@@ -362,10 +393,6 @@ export default class Account extends Component {
 
   updateChecked = () => {
     this.setState({ checked: !this.state.checked });
-  };
-
-  goHome = () => {
-    window.location.href = '/';
   };
 
   shouldCloseDialog = () => {
@@ -381,14 +408,32 @@ export default class Account extends Component {
   };
 
   render() {
-    const { dialogOpen, dialogTitle, dialogMessage, accountSubmitted, creatingAccount } = this.state;
-    const dialogContent = typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
+    const {
+      dialogOpen,
+      dialogTitle,
+      dialogMessage,
+      accountSubmitted,
+      creatingAccount,
+    } = this.state;
+    const dialogContent =
+      typeof dialogMessage === 'string'
+        ? dialogMessage
+        : dialogMessage.map(this.generateMessages);
 
-    const action = accountSubmitted ? this.shouldRedirect : this.shouldCloseDialog;
+    const action = accountSubmitted
+      ? this.shouldRedirect
+      : this.shouldCloseDialog;
 
     const defaultAction = creatingAccount
       ? []
-      : [<Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />];
+      : [
+          <Button
+            variant="primary"
+            label="OK"
+            keyboardFocused={true}
+            onClick={action}
+          />,
+        ];
 
     const options = this.props.classificationsData.map(this.createClassOptions);
     const commOptions = this.props.commoditiesData.map(this.createCommOptions);
@@ -402,7 +447,7 @@ export default class Account extends Component {
     });
 
     return (
-      <Page active="account">
+      <Page>
         <Dialog
           paperClassName="dialog-paper"
           open={dialogOpen}
@@ -412,301 +457,316 @@ export default class Account extends Component {
         >
           {dialogContent}
         </Dialog>
-        <div className="page-header">
-          <div className="page-logo-background">
-            <div className="gfw-logo-container">
-              <span onClick={this.goHome} className="app__logo gfw-logo"></span>
-            </div>
-          </div>
-          <SubHeader
-            header="Request New Account"
-            subHeader="Please complete all mandatory fields * below and submit."
-          />
-        </div>
-
-        <div className="profile-body">
+        <SubHeader
+          header="Request New Account"
+          subHeader="Please complete all mandatory fields * below and submit."
+        />
+        <div className="account">
           <section>
             <h2 className="section-title-large">Account Information</h2>
-            <div className="flex-grid-thirds">
-              <div className="col">
-                <div className="flex-grid-column">
-                  <div className="col flex-grid-column input-field__block-container">
-                    <label htmlFor="org_name" className="block-label profile-label required-param">
-                      Organization Name
-                    </label>
-                    <input
-                      required
-                      id="org_name"
-                      name="org_name"
-                      value={this.state.org_name}
-                      onChange={this.updateOrganization}
-                      onBlur={this.removeExtraSpaces}
-                    />
-                  </div>
-                </div>
-                <div className="flex-grid-column">
-                  <div className="col flex-grid-column input-field__block-container">
-                    <label htmlFor="org_address" className="block-label profile-label required-param">
-                      Organization Address
-                    </label>
-                    <input
-                      required
-                      name="org_address"
-                      id="org_address"
-                      value={this.state.org_address}
-                      onChange={this.updateAddress}
-                      onBlur={this.removeExtraSpaces}
-                    />
-                  </div>
-                </div>
-                <div className="flex-grid-column">
-                  <div className="col flex-grid-column input-field__block-container">
-                    <label htmlFor="arr_org_classification_ids" className="block-label profile-label required-param">
-                      Organization Classifications
-                    </label>
-                    <Select
-                      placeholder={profilePage.profileManager.multiselectPrompt}
-                      isMulti={true}
-                      isSearchable={true}
-                      maxMenuHeight={150}
-                      options={options}
-                      name="arr_org_classification_ids"
-                      id="arr_org_classification_ids"
-                      onChange={this.orgChange}
-                      value={this.state.arr_org_classification_ids}
-                    />
-                  </div>
-                </div>
+            <div>
+              <div className="input-field__block-container">
+                <label
+                  htmlFor="org_name"
+                  className="block-label profile-label required-param"
+                >
+                  Organization Name
+                </label>
+                <input
+                  required
+                  id="org_name"
+                  name="org_name"
+                  value={this.state.org_name}
+                  onChange={this.updateOrganization}
+                  onBlur={this.removeExtraSpaces}
+                />
               </div>
-              <div className="col">
-                <div className="flex-grid-column input-field__block-container">
-                  <div className="col flex-grid-column">
-                    <span className="profile-label"></span>
-                    <input
-                      id="isSubsidiary"
-                      name="is_subsidiary"
-                      value={this.state.is_subsidiary}
-                      type="checkbox"
-                      className="hidden"
-                      onChange={this.updateSubsidary}
-                    />
-                    <label htmlFor="isSubsidiary" className="profile-label">
-                      Subsidiary?
-                    </label>
-                  </div>
-                </div>
-                <div className="flex-grid-column">
-                  <div className="col flex-grid-column input-field__block-container">
-                    <label htmlFor="org_website" className="block-label profile-label required-param">
-                      Organization Website
-                    </label>
-                    <input
-                      required
-                      name="org_website"
-                      id="org_website"
-                      value={this.state.org_website}
-                      onChange={this.updateWebsite}
-                    />
-                  </div>
-                </div>
+
+              <div className="input-field__block-container">
+                <span className="profile-label"></span>
+                <input
+                  id="isSubsidiary"
+                  name="is_subsidiary"
+                  value={this.state.is_subsidiary}
+                  type="checkbox"
+                  className="hidden"
+                  onChange={this.updateSubsidary}
+                />
+                <label htmlFor="isSubsidiary" className="profile-label">
+                  Subsidiary?
+                </label>
               </div>
-              <div className="col">
-                <div className="flex-grid-column">
-                  <div className="col flex-grid-column input-field__block-container">
+
+              <div className="input-field__block-container">
+                <label
+                  htmlFor="org_address"
+                  className="block-label profile-label required-param"
+                >
+                  Organization Address
+                </label>
+                <input
+                  required
+                  name="org_address"
+                  id="org_address"
+                  value={this.state.org_address}
+                  onChange={this.updateAddress}
+                  onBlur={this.removeExtraSpaces}
+                />
+              </div>
+              <div className="input-field__block-container">
+                <label
+                  htmlFor="arr_org_classification_ids"
+                  className="block-label profile-label required-param"
+                >
+                  Organization Classifications
+                </label>
+                <Select
+                  placeholder={profilePage.profileManager.multiselectPrompt}
+                  isMulti={true}
+                  isSearchable={true}
+                  maxMenuHeight={150}
+                  options={options}
+                  name="arr_org_classification_ids"
+                  id="arr_org_classification_ids"
+                  onChange={this.orgChange}
+                  value={this.state.arr_org_classification_ids}
+                />
+              </div>
+              <div className="input-field__block-container">
+                <label
+                  htmlFor="org_website"
+                  className="block-label profile-label required-param"
+                >
+                  Organization Website
+                </label>
+                <input
+                  required
+                  name="org_website"
+                  id="org_website"
+                  value={this.state.org_website}
+                  onChange={this.updateWebsite}
+                />
+              </div>
+              <div className="input-field__block-container">
+                <label
+                  htmlFor="parent_org_name"
+                  className={`block-label profile-label ${
+                    this.state.is_subsidiary === true ? 'required-param' : ''
+                  }`}
+                >
+                  Parent Organization
+                </label>
+                <input
+                  id="parent_org_name"
+                  required={this.state.is_subsidiary === true}
+                  name="parent_org_name"
+                  value={this.state.parent_org_name}
+                  onChange={this.updateParentOrg}
+                  className="account-info-input required-param"
+                  onBlur={this.removeExtraSpaces}
+                />
+              </div>
+              <div className="input-field__block-container">
+                <label className="block-label profile-label">
+                  Organization Policy
+                </label>
+                <span className="hint-text">
+                  Upload policy document to reference within the system (.doc,
+                  .pdf)
+                </span>
+                <div className="upload-policy-container">
+                  <form
+                    className="policies-form"
+                    method="post"
+                    encType="multipart/form-data"
+                  >
                     <label
-                      htmlFor="parent_org_name"
-                      className={`block-label profile-label ${
-                        this.state.is_subsidiary === true ? 'required-param' : ''
-                      }`}
+                      htmlFor="uploadPolicy"
+                      className="gfw-button btn-green"
                     >
-                      Parent Organization
+                      {'Upload policy'}{' '}
+                      <span>{`${
+                        this.state.policyName.length === 0
+                          ? ''
+                          : this.state.policyName.length === 1
+                          ? ': 1 document'
+                          : `: ${this.state.policyName.length} documents`
+                      }`}</span>
+                      <input
+                        id="uploadPolicy"
+                        name="org_policy"
+                        type="file"
+                        onChange={this.updatePolicy}
+                        className="hidden"
+                        multiple
+                      />
                     </label>
-                    <input
-                      id="parent_org_name"
-                      required={this.state.is_subsidiary === true}
-                      name="parent_org_name"
-                      value={this.state.parent_org_name}
-                      onChange={this.updateParentOrg}
-                      className="account-info-input required-param"
-                      onBlur={this.removeExtraSpaces}
-                    />
-                  </div>
-                </div>
-                <div className="flex-grid-column">
-                  <div className="col flex-grid-column input-field__block-container">
-                    <label className="block-label profile-label">Organization Policy</label>
-                    <span className="hint-text">
-                      Upload policy document to reference within the system (.doc, .pdf)
-                    </span>
-                    <div className="upload-policy-container">
-                      <form className="policies-form" method="post" encType="multipart/form-data">
-                        <label htmlFor="uploadPolicy" className="gfw-button btn-green">
-                          {'Upload policy'}{' '}
-                          <span>{`${
-                            this.state.policyName.length === 0
-                              ? ''
-                              : this.state.policyName.length === 1
-                              ? ': 1 document'
-                              : `: ${this.state.policyName.length} documents`
-                          }`}</span>
-                          <input
-                            id="uploadPolicy"
-                            name="org_policy"
-                            type="file"
-                            onChange={this.updatePolicy}
-                            className="hidden"
-                            multiple
-                          />
-                        </label>
-                      </form>
-                    </div>
-                  </div>
+                  </form>
                 </div>
               </div>
             </div>
           </section>
-          <section className="section-container">
-            <h2 className="section-title-large">Account Manager Contact Information</h2>
-            <div className="flex-grid-fourths">
-              <div className="col">
-                <div className="flex-grid-column">
-                  <label htmlFor="user_first_name" className="block-label profile-label required-param">
-                    First Name
-                  </label>
-                  <input
-                    id="user_first_name"
-                    required
-                    name="user_first_name"
-                    value={this.state.user_first_name}
-                    onChange={this.updateName}
-                    maxLength="35"
-                    onBlur={this.removeExtraSpaces}
-                  />
-                </div>
-              </div>
-              <div className="col">
-                <div className="flex-grid-column">
-                  <label htmlFor="user_last_name" className="block-label profile-label required-param">
-                    Last Name
-                  </label>
-                  <input
-                    id="user_last_name"
-                    required
-                    name="user_last_name"
-                    value={this.state.user_last_name}
-                    onChange={this.updateLastName}
-                    maxLength="35"
-                    onBlur={this.removeExtraSpaces}
-                  />
-                </div>
-              </div>
-              <div className="col">
-                <div className="flex-grid-column">
-                  <label htmlFor="user_email" className="block-label profile-label required-param">
-                    E-mail
-                  </label>
-                  <input
-                    id="user_email"
-                    required
-                    name="user_email"
-                    value={this.state.user_email}
-                    onChange={this.updateEmail}
-                    maxLength="50"
-                  />
-                </div>
-              </div>
-              <div className="col">
-                <div className="flex-grid-column">
-                  <label htmlFor="user_phone" className="block-label profile-label required-param">
-                    Phone
-                  </label>
-                  <input
-                    id="user_phone"
-                    required
-                    name="user_phone"
-                    value={this.state.user_phone}
-                    onChange={this.updatePhone}
-                    maxLength="50"
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="section-container">
-              <div className="flex-grid-halves">
-                <div className="col">
-                  <div className="flex-grid-column">
-                    <label htmlFor="title-select" className="block-label profile-label required-param">
-                      Title
-                    </label>
-                    <GfwSelect
-                      if="title-select"
-                      options={titleOptions}
-                      value={user_title}
-                      onChange={(evt) => this.titleChange(evt)}
-                    />
-                  </div>
-                </div>
-                <div className={`col ${this.state.user_title_id === 10 ? '' : 'hidden'}`}>
-                  <div className="flex-grid-column">
-                    <label htmlFor="alternative_title" className="block-label profile-label required-param">
-                      Alternative Title
-                    </label>
-                    <input
-                      id="alternative_title"
-                      required
-                      name="alternative_title"
-                      value={this.state.otherTitle}
-                      onChange={this.updateOther}
-                    />
-                  </div>
-                </div>
-              </div>
+          <section>
+            <h2 className="section-title-large">
+              Account Manager Contact Information
+            </h2>
+
+            <div className="input-field__block-container">
+              <label
+                htmlFor="user_first_name"
+                className="block-label profile-label required-param"
+              >
+                First Name
+              </label>
+              <input
+                id="user_first_name"
+                required
+                name="user_first_name"
+                value={this.state.user_first_name}
+                onChange={this.updateName}
+                onBlur={this.removeExtraSpaces}
+              />
             </div>
 
-            <div className="section-container">
-              <div className="flex-grid-halves">
-                <div className="col">
-                  <div className="flex-grid-column">
-                    <label htmlFor="arr_user_commodity_ids" className="block-label profile-label-select">
-                      Geographies of Interest
-                    </label>
-                    <Select
-                      placeholder={profilePage.profileManager.multiselectPrompt}
-                      isMulti={true}
-                      isSearchable={true}
-                      maxMenuHeight={150}
-                      options={geogOptions}
-                      id="arr_user_commodity_ids"
-                      name="arr_user_commodity_ids"
-                      onChange={this.geogChange}
-                      value={this.state.arr_user_geography_ids}
-                    />
-                  </div>
-                </div>
-                <div className="col">
-                  <div className="flex-grid-column">
-                    <label htmlFor="arr_user_geography_ids" className="block-label profile-label-select">
-                      Commodities of Interest
-                    </label>
-                    <Select
-                      placeholder={profilePage.profileManager.multiselectPrompt}
-                      isMulti={true}
-                      isSearchable={true}
-                      maxMenuHeight={150}
-                      options={commOptions}
-                      onChange={this.commChange}
-                      value={this.state.arr_user_commodity_ids}
-                    />
-                  </div>
-                </div>
-              </div>
+            <div className="input-field__block-container">
+              <label
+                htmlFor="user_last_name"
+                className="block-label profile-label required-param"
+              >
+                Last Name
+              </label>
+              <input
+                id="user_last_name"
+                required
+                name="user_last_name"
+                value={this.state.user_last_name}
+                onChange={this.updateLastName}
+                maxLength="35"
+                onBlur={this.removeExtraSpaces}
+              />
             </div>
 
-            <div className="section-container">
-              <input id="checkBox" checked={this.state.checked} onChange={this.updateChecked} type="checkbox" />
+            <div className="input-field__block-container">
+              <label
+                htmlFor="user_email"
+                className="block-label profile-label required-param"
+              >
+                E-mail
+              </label>
+              <input
+                id="user_email"
+                required
+                name="user_email"
+                value={this.state.user_email}
+                onChange={this.updateEmail}
+                maxLength="50"
+              />
+            </div>
+
+            <div className="input-field__block-container">
+              <label
+                htmlFor="user_phone"
+                className="block-label profile-label required-param"
+              >
+                Phone
+              </label>
+              <input
+                id="user_phone"
+                required
+                name="user_phone"
+                value={this.state.user_phone}
+                onChange={this.updatePhone}
+                maxLength="50"
+              />
+            </div>
+
+            <div className="input-field__block-container">
+              <label
+                htmlFor="title-select"
+                className="block-label profile-label required-param"
+              >
+                Title
+              </label>
+              <GfwSelect
+                if="title-select"
+                options={titleOptions}
+                value={user_title}
+                onChange={(evt) => this.titleChange(evt)}
+              />
+            </div>
+
+            <div
+              className={`input-field__block-container${
+                this.state.user_title_id === 10 ? '' : ' hidden'
+              }`}
+            >
+              <label
+                htmlFor="alternative_title"
+                className="block-label profile-label required-param"
+              >
+                Alternative Title
+              </label>
+              <input
+                id="alternative_title"
+                required
+                name="alternative_title"
+                value={this.state.otherTitle}
+                onChange={this.updateOther}
+              />
+            </div>
+
+            <div className="input-field__block-container">
+              <label
+                htmlFor="arr_user_commodity_ids"
+                className="block-label profile-label-select"
+              >
+                Geographies of Interest
+              </label>
+              <Select
+                placeholder={profilePage.profileManager.multiselectPrompt}
+                isMulti={true}
+                isSearchable={true}
+                maxMenuHeight={150}
+                options={geogOptions}
+                id="arr_user_commodity_ids"
+                name="arr_user_commodity_ids"
+                onChange={this.geogChange}
+                value={this.state.arr_user_geography_ids}
+              />
+            </div>
+
+            <div className="input-field__block-container">
+              <label
+                htmlFor="arr_user_geography_ids"
+                className="block-label profile-label-select"
+              >
+                Commodities of Interest
+              </label>
+              <Select
+                placeholder={profilePage.profileManager.multiselectPrompt}
+                isMulti={true}
+                isSearchable={true}
+                maxMenuHeight={150}
+                options={commOptions}
+                onChange={this.commChange}
+                value={this.state.arr_user_commodity_ids}
+              />
+            </div>
+
+            <div className="input-field__block-container">
+              <input
+                id="checkBox"
+                checked={this.state.checked}
+                onChange={this.updateChecked}
+                type="checkbox"
+              />
               <label htmlFor="checkBox">
                 I have read and accept the{' '}
-                <a href={termsAndConditions} className="gfw-green" target="_blank">
+                <a
+                  href={termsAndConditions}
+                  className="gfw-green"
+                  target="_blank"
+                >
                   GFW Pro Terms & Conditions
                 </a>{' '}
                 and{' '}
@@ -717,10 +777,20 @@ export default class Account extends Component {
               </label>
             </div>
           </section>
-          <section className="section-container">
-            <div className="profile-button-container">
-              <Button variant="primary" onClick={this.submitOrg} label="Submit" />
-              <LinkButton onClick={this.cancel} label="Cancel" />
+          <section>
+            <div>
+              <Button
+                variant="primary"
+                style={{ maringRight: '15px' }}
+                onClick={this.submitOrg}
+                label="Submit"
+              />
+              <LinkButton
+                onClick={() => {
+                  window.location.href = '/';
+                }}
+                label="Cancel"
+              />
             </div>
           </section>
         </div>

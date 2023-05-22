@@ -166,7 +166,6 @@ const sqliteQuery = async (sqliteDB, connectConfig, mssqlQuery, namedQuery, para
     queryStr = sqliteApplyParams(connectConfig.database, baseQuery, params);
     // temporary debug log
     console.log('sqlite query string', queryStr);
-
     const result = await sqliteDB.all(queryStr);
     return [result];
   } catch (err) {
@@ -222,6 +221,7 @@ const mssqlExecuteWithRetries = async (triesLeft, connectConfig, queryStrParam, 
     }
     return rawResults.recordsets;
   } catch (err) {
+
     logger.error('mssqlExecute failed ', triesLeft, connectConfig && connectConfig.database, storedProcedureName, queryStrParam && queryStrParam.slice(0, 100));
     logger.error(err);
     removePool(connectConfig);

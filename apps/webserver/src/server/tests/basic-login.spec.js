@@ -26,6 +26,7 @@ describe('Basic smoke with REST APIs', () => {
     const request = supertest(app);
     const resLogin = await request.post('/auth/signinpost').send({ username, password: 'unsafe' }).expect(200);
     cookies = resLogin.headers['set-cookie'];
+
     expect(resLogin.text).toBe('Authenticated');
     expect(cookies).not.toBeUndefined();
 
@@ -34,6 +35,7 @@ describe('Basic smoke with REST APIs', () => {
       .set('Cookie', cookies)
       .send({ tokenID: 'unsafe' })
       .expect(200);
+
     expect(resVerify.text).toBe('User');
   });
 

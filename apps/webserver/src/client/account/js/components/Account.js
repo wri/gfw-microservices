@@ -692,7 +692,7 @@ export default class Account extends Component {
                 options={titleOptions}
                 value={user_title}
                 onChange={(evt) => this.titleChange(evt)}
-                style={{ width: '400px' }}
+                style={{ width: '100%', maxWidth: '400px' }}
               />
             </div>
 

@@ -1171,7 +1171,7 @@ export default class SouthAmericaRegions extends Component {
     }
 
     const { getFilteredLocations } = this.props;
-    return Object.entries(JSON.parse(getFilteredLocations()[0]?.arg_otbn_area)).length !== 0;
+    return Object.entries(JSON.parse(getFilteredLocations()[0]?.arg_otbn_area || '{}')).length !== 0;
   };
 
   render() {
@@ -1202,6 +1202,17 @@ export default class SouthAmericaRegions extends Component {
     const displayBrazilBiomeSection = this.checkBrazilBiome();
     const argentinaOtnbArea = this.isArgentinaOtnbArea();
 
+    let informationBubbleId;
+    if (prodesChecked || paChecked || pfChecked) {
+      informationBubbleId = locationsPage.infoBubbleConfig.regionsProdesAnnual;
+    } else if(saTCLChecked || biomesChecked) {
+      informationBubbleId = locationsPage.infoBubbleConfig.regionsSaAnnual;
+    } else if(otbnArgentinaChecked) {
+      informationBubbleId = locationsPage.infoBubbleConfig.treeCoverLossArgOtbnYearly;
+    } else {
+      informationBubbleId = locationsPage.infoBubbleConfig.regionsSoyAnnual;
+    }
+
     return (
       <div
         className={`locations-diagnostics-section ${
@@ -1215,13 +1226,7 @@ export default class SouthAmericaRegions extends Component {
             <div className="locations-diagnostics__subsection-container">
               <div className="locations-diagnostics__flex-center subsection-subtitle__container">
                 <span className="subsection-subtitle">{title}</span>
-                {prodesChecked || paChecked || pfChecked ? (
-                  <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsProdesAnnual} />
-                ) : saTCLChecked || biomesChecked ? (
-                  <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsSaAnnual} />
-                ) : (
-                  <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsSoyAnnual} />
-                )}
+                <IconButtonWrapper id={informationBubbleId} />
                 <span
                   onClick={() => this.props.fireDownload('southAmericaTCL')}
                   className="locations-diagnostics-icon-holder"

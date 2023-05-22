@@ -40,11 +40,85 @@ const AWSCognito = require(path.resolve('./config/privateutils/cognito.utils'));
 const SpeakEasy = require(path.resolve('./config/privateutils/speakeasy.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 
-let lstTitles = [];
-let lstGeographies = [];
-let lstCommodities = [];
-let lstAccessLevels = [];
-let lstStatuses = [];
+const lstTitles = [
+  { id: 1, title: 'Analyst' },
+  { id: 2, title: 'Chief Risk Officer' },
+  { id: 3, title: 'Risk Officer' },
+  { id: 4, title: 'Regional Sustainability Officer' },
+  { id: 5, title: 'Sustainability Director' },
+  { id: 6, title: 'Procurement' },
+  { id: 7, title: 'Supply Chain Manager' },
+  { id: 8, title: 'Operations' },
+  { id: 9, title: 'Corporate Affairs Officer' },
+  { id: 10, title: 'Other (please specify)' },
+];
+const lstGeographies = [
+  { id: 1, geography_name: 'Asia' },
+  { id: 2, geography_name: 'Africa' },
+  { id: 3, geography_name: 'North America' },
+  { id: 4, geography_name: 'South America' },
+  { id: 5, geography_name: 'Europe' },
+  { id: 6, geography_name: 'Australia' },
+];
+const lstCommodities = [
+  { id: 1, commmodity_name: 'cattle' },
+  { id: 2, commmodity_name: 'cocoa' },
+  { id: 3, commmodity_name: 'coffee' },
+  { id: 4, commmodity_name: 'palm oil' },
+  { id: 5, commmodity_name: 'pulp and paper' },
+  { id: 6, commmodity_name: 'rubber' },
+  { id: 7, commmodity_name: 'soy' },
+  { id: 8, commmodity_name: 'sugar cane' },
+];
+const lstAccessLevels = [
+  {
+    id: 1,
+    accesslevel_name: 'Administrator',
+    accesslevel_description: 'Allows administration of the account.',
+  },
+  {
+    id: 2,
+    accesslevel_name: 'Editor',
+    accesslevel_description: 'An editor can add/update/delete new/existing location data',
+  },
+  {
+    id: 3,
+    accesslevel_name: 'Viewer',
+    accesslevel_description: 'A user allowed to run and view analysis on existing data',
+  },
+];
+const lstStatuses = [
+  {
+    id: 1,
+    status_name: 'Pending',
+    status_description: 'Entity has been created but not activated.'
+  },
+  {
+    id: 2,
+    status_name: 'Active',
+    status_description: 'Entity that is active'
+  },
+  {
+    id: 3,
+    status_name: 'Inactive',
+    status_description: 'Entity that is de-activated'
+  },
+  {
+    id: 4,
+    status_name: 'Draft',
+    status_description: 'Entity that has been edited and is ready for analysis.'
+  },
+  {
+    id: 5,
+    status_name: 'Analyzing Diagnostic',
+    status_description: 'Entity that has been triggered for diagnostic analysis; dashboard is ready.'
+  },
+  {
+    id: 6,
+    status_name: 'Analyzing Dashboard',
+    status_description: 'Entity that has been triggered for dashboard analysis; diagnostic is ready.'
+  },
+];
 
 /**
  * @function getTitles
@@ -592,31 +666,9 @@ const getUserSecret = (req, email) => {
 /**
  * @function initialize
  * @summary Initializes the Account Manager module.
- *           Loads all the lists needed for the application.
  */
 const initialize = () => {
-  return new Promise((resolve, reject) => {
-    Promise.all([
-      sqlUtils.executeSystemStoredProcedure(null, 'uspGetTitles'), // Get Titles
-      sqlUtils.executeSystemStoredProcedure(null, 'uspGetCommodities'), // Get Commodities
-      sqlUtils.executeSystemStoredProcedure(null, 'uspGetGeographies'), // Get Geographies
-      sqlUtils.executeSystemStoredProcedure(null, 'uspGetStatuses'), // Get Statuses
-      sqlUtils.executeSystemStoredProcedure(null, 'uspGetAccessLevels'), // Get Access Levels
-      AWSCognito.initialize(),
-    ])
-      .then((results) => {
-        const [titles, commodities, geographies, statuses, accessLevels] = results;
-        lstTitles = titles;
-        lstCommodities = commodities;
-        lstGeographies = geographies;
-        lstStatuses = statuses;
-        lstAccessLevels = accessLevels;
-        resolve(true);
-      })
-      .catch((errMsg) => {
-        reject(errMsg);
-      });
-  });
+  return AWSCognito.initialize();
 };
 
 // exporting the functions.

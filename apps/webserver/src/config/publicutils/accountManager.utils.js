@@ -31,7 +31,18 @@ const PolicyManager = require(path.resolve('./config/publicutils/policyManager.u
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const snsUtils = require(path.resolve('./config/privateutils/sns.utils.js'));
 // Local Variables.
-let lstClassifications = [];
+const lstClassifications = [
+  { id: 1, classification_name: 'Commercial Bank' },
+  { id: 2, classification_name: 'Consumer Goods Manufacturer' },
+  { id: 3, classification_name: 'Development Finance Institution' },
+  { id: 4, classification_name: 'Governmental Organization' },
+  { id: 5, classification_name: 'Investment Fund' },
+  { id: 6, classification_name: 'NGO' },
+  { id: 7, classification_name: 'Producer' },
+  { id: 8, classification_name: 'Retailer' },
+  { id: 9, classification_name: 'Processor/Trader' },
+  { id: 10, classification_name: 'Service Provider' },
+];
 
 /** @function {requestNewAccount}
  *   @summary Creates a request for a new account in the database.
@@ -480,18 +491,6 @@ const initialize = () => {
   };
   // Setup the AWS Config with the proper credentials.
   AWS.config.update(objTemp);
-  return new Promise((resolve, reject) => {
-    // Get Classifications
-    sqlUtils
-      .executeSystemStoredProcedure(null, 'uspGetClassifications')
-      .then((recordsets) => {
-        lstClassifications = recordsets;
-        resolve(true);
-      })
-      .catch((errorMessage) => {
-        reject(errorMessage);
-      });
-  });
 };
 
 // Exporting the functions.

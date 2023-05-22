@@ -488,22 +488,24 @@ const completeNewPasswordChallenge = (req, old_password, new_password) => {
         onSuccess: () => {
           const userMessage = langResources.getResourceString('criticalError');
           const sysMessage = langResources.getResourceString('invaidInitialPasswordChange');
-          throw new errorUtils.createErrorMessage(
+          const errObj = new errorUtils.createErrorMessage(
             req,
             errorUtils.errorCodes.userAlreadyConfirmed,
             userMessage,
             sysMessage
           );
+          reject(errObj);
         },
         onFailure: (err) => {
           const userMessage = langResources.getResourceString('loginFailed');
           const sysMessage = err;
-          throw new errorUtils.createErrorMessage(
+          const errObj = new errorUtils.createErrorMessage(
             req,
             errorUtils.errorCodes.userNotAuthenticated,
             userMessage,
             sysMessage
           );
+          reject(errObj);
         },
         newPasswordRequired: (userAttributes, requiredAttributes) => {
           cognitoUser.completeNewPasswordChallenge(

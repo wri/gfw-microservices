@@ -96,11 +96,11 @@ const logActivity = (req, activityTypeId, activityDescription) => {
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspSetActivityLog', parameters)
       .then(() => {
-        console.log(`Activity logged: ${activityDescription}`);
+        logger.info(`Activity logged: ${activityDescription}`);
         resolve(true);
       })
       .catch((err) => {
-        console.log('Activity log error', err);
+        logger.error('Activity log error', activityTypeId, err);
         reject(err);
       });
   });

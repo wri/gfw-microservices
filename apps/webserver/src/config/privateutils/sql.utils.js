@@ -109,7 +109,7 @@ const mssqlExecute = async (connectConfig, queryStrParam, storedProcedureName, p
     }
     return rawResults.recordsets;
   } catch (err) {
-    logger.error('mssqlExecute failed ', queryStrParam, storedProcedureName);
+    logger.error('mssqlExecute failed ', connectConfig && connectConfig.database, storedProcedureName, queryStrParam && queryStrParam.slice(0, 100));
     logger.error(err);
     removePool(connectConfig);
     throw err;

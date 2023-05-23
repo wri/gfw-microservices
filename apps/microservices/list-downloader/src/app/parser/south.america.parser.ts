@@ -3,16 +3,18 @@ import { DATA_LAYER } from '../shared/constants';
 import { cloneRow, formatPct, validatePct } from '../shared/functions';
 
 const dataLayerParser = ({ data, dataRow, csvData }) => {
+  const { brazil_biomes: brazilBiomes, arg_otbn_area: argentinaOTBN } = data;
+
   const brazilData = {
     dataLayerName: DATA_LAYER.brazil_biomes,
-    data: JSON.parse(data.brazil_biomes),
-    available: Object.entries(JSON.parse(data.brazil_biomes)).length > 0,
+    data: JSON.parse(brazilBiomes ?? '{}'),
+    available: Object.entries(JSON.parse(brazilBiomes ?? '{}')).length > 0,
   };
 
   const argentinaData = {
     dataLayerName: DATA_LAYER.arg_otbn_area,
-    data: JSON.parse(data.arg_otbn_area),
-    available: Object.entries(JSON.parse(data.arg_otbn_area)).length > 0,
+    data: JSON.parse(argentinaOTBN ?? '{}'),
+    available: Object.entries(JSON.parse(argentinaOTBN ?? '{}')).length > 0,
   };
 
   const objToProcess = brazilData.available

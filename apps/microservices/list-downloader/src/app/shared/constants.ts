@@ -1472,6 +1472,6 @@ export const NESTED_JSON_ATTRIBUTES = [
 ];
 
 export const DATA_LAYER = {
-  'arg_otbn_area': 'Argentina OTBN',
-  'brazil_biomes': 'Brazil Biomes',
-}
+  arg_otbn_area: 'Argentina OTBN',
+  brazil_biomes: 'Brazil Biomes',
+};

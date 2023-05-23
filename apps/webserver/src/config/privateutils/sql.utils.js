@@ -81,7 +81,7 @@ const getPool = async (connectConfig) => {
         // recreate connection on errors
         removePool(connectConfig);
         // ignore any new errors while creating new connection
-        getPool(connectConfig).finally(() => {});
+        getPool(connectConfig).catch(() => {});
       });
       // check if someone else beat us to creating new pool for this DB
       if (!cachedPools[connectConfig.database]) {

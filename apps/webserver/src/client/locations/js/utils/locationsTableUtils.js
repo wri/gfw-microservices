@@ -7,6 +7,12 @@ export const listStatus = {
   analyzingDashboard: 6,
 }
 
+export const getColorByLevelClasse = {
+  0: 'yellow',
+  1: 'orange',
+  2: 'red',
+}
+
 export const sortAlphaNum = (a, b) => {
   const reA = /[^a-zA-Z]/g;
   const reN = /[^0-9]/g;
@@ -40,34 +46,34 @@ export const sortByNone = (a, b) => {
   return 0;
 };
 
-export const locatiopnIsActive = (location) => {
+export const locationIsActive = (location) => {
   return location.location_status_id === listStatus['active'];
 }
 
-const isOnlyLastLocationsIsActive = (a, b) => {
-  return !locatiopnIsActive(a) && locatiopnIsActive(b);
+const isOnlyLastLocationsIsActive = (rowA, rowB) => {
+  return !locationIsActive(rowA) && locationIsActive(rowB);
 }
 
-const isOnlyFirstLocationsIsActive = (a, b) => {
-  return locatiopnIsActive(a) && !locatiopnIsActive(b);
+const isOnlyFirstLocationsIsActive = (rowA, rowB) => {
+  return locationIsActive(rowA) && !locationIsActive(rowB);
 }
 
-const isBothLocationsAreActive = (a, b) => {
-  return locatiopnIsActive(a) && locatiopnIsActive(b);
+const isBothLocationsAreActive = (rowA, rowB) => {
+  return locationIsActive(rowA) && locationIsActive(rowB);
 }
 
-const isNeitherLocationsAreActive = (a, b) => {
-  return !locatiopnIsActive(a) && !locatiopnIsActive(b);;
+const isNeitherLocationsAreActive = (rowA, rowB) => {
+  return !locationIsActive(rowA) && !locationIsActive(rowB);;
 }
 
-export const sortByStatus = (a, b) => {
-  if (isOnlyLastLocationsIsActive(a, b)) {
+export const sortByStatus = (rowA, rowB) => {
+  if (isOnlyLastLocationsIsActive(rowA, rowB)) {
     return -1;
-  } else if (isNeitherLocationsAreActive(a, b)) {
+  } else if (isNeitherLocationsAreActive(rowA, rowB)) {
     return 0;
-  } else if (isOnlyFirstLocationsIsActive(a, b)) {
+  } else if (isOnlyFirstLocationsIsActive(rowA, rowB)) {
     return 1;
-  } else if (isBothLocationsAreActive(a, b)) {
+  } else if (isBothLocationsAreActive(rowA, rowB)) {
     return 'active';
   }
 

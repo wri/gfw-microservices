@@ -9,7 +9,7 @@ import {
   getValidatedValue,
   sortByStatus,
   normalizeColunmData,
-  locatiopnIsActive,
+  locationIsActive,
 } from '../../utils/locationsTableUtils';
 
 const transifex = Transifex.live.translateText;
@@ -32,7 +32,7 @@ const forest_change_analysis = [
     width: 100,
     maxWidth: 115,
     Cell: (row) => {
-      return !locatiopnIsActive(row.value) ? (
+      return !locationIsActive(row.value) ? (
         '--'
       ) : checkValid(row.value.tree_cover_extent_total) ? (
         <span title={formatDigit(row.value.tree_cover_extent_total)}>
@@ -70,7 +70,7 @@ const forest_change_analysis = [
         className: 'default-cell td-num',
         show: true,
         Cell: (row) => {
-          return locatiopnIsActive(row.value) ? (
+          return locationIsActive(row.value) ? (
             checkValid(row.value.tree_cover_loss_total_yearly) ? (
               <span title={getValue(row.value.tree_cover_loss_total_yearly)}>
                 {getValue(row.value.tree_cover_loss_total_yearly)}
@@ -100,7 +100,7 @@ const forest_change_analysis = [
         className: 'default-cell td-num',
         show: true,
         Cell: (row) => {
-          return locatiopnIsActive(row.value) ? (
+          return locationIsActive(row.value) ? (
             checkValid(row.value.tree_cover_loss_protected_areas_yearly) ? (
               <span
                 title={getValidatedValue(
@@ -135,7 +135,7 @@ const forest_change_analysis = [
         className: 'default-cell td-num',
         show: true,
         Cell: (row) => {
-          return locatiopnIsActive(row.value) ? (
+          return locationIsActive(row.value) ? (
             checkValid(row.value.tree_cover_loss_primary_forest_yearly) ? (
               <span
                 title={getValidatedValue(

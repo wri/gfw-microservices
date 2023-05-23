@@ -2,7 +2,7 @@ import { listStatus,
   sortAlphaNum,
   sortByStatus,
   sortByNone,
-  locatiopnIsActive,
+  locationIsActive,
   checkValid,
   numberWithCommas
 } from '../../js/utils/locationsTableUtils';
@@ -125,13 +125,13 @@ describe('sortByStatus', ()=>{
   });
 });
 
-describe('locatiopnIsActive', () => {
+describe('locationIsActive', () => {
   it('should return true when location status is active', () => {
-    expect(locatiopnIsActive(ActiveLocationOne)).toBe(true);
+    expect(locationIsActive(ActiveLocationOne)).toBe(true);
   });
 
   it('should return false when location status is not active', () => {
-    expect(locatiopnIsActive(PedingLocation)).toBe(false);
+    expect(locationIsActive(PedingLocation)).toBe(false);
   });
 })
 

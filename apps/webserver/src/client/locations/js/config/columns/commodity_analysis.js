@@ -6,16 +6,11 @@ import {
   getLastValue,
   sortByStatus,
   normalizeColunmData,
-  locatiopnIsActive,
+  locationIsActive,
+  getColorByLevelClasse,
 } from '../../utils/locationsTableUtils';
 
 const transifex = Transifex.live.translateText;
-
-const getColorByLevelClasse = {
-  0: 'yellow',
-  1: 'orange',
-  2: 'red',
-}
 
 const getListIconClasse = (level) => {
   return `list-icons-container list-icons-container--${getColorByLevelClasse[getLastValue(level) || 'red']}`;
@@ -64,7 +59,7 @@ const commodity_analysis = [
         maxWidth: 90,
 
         Cell: (row) => 
-          !locatiopnIsActive(row.value) ? (
+          !locationIsActive(row.value) ? (
             '--'
           ) : checkValid(row.value.commodity_mill_priority_level) ? (
             <div className={getAnalysisTextClasse(row.value.commodity_mill_priority_level)}>
@@ -104,7 +99,7 @@ const commodity_analysis = [
         width: 75,
         maxWidth: 75,
         Cell: (row) =>
-          !locatiopnIsActive(row.value) ? (
+          !locationIsActive(row.value) ? (
             '--'
           ) : renderAnalysisIcon(row.value.commodity_threat_deforestation_level),
         sortMethod: (a, b) => {
@@ -128,7 +123,7 @@ const commodity_analysis = [
         width: 75,
         maxWidth: 75,
         Cell: (row) =>
-          !locatiopnIsActive(row.value) ? (
+          !locationIsActive(row.value) ? (
             '--'
           ) : renderAnalysisIcon(row.value.commodity_threat_peat_level),
         sortMethod: (a, b) => {
@@ -151,7 +146,7 @@ const commodity_analysis = [
         width: 75,
         maxWidth: 75,
         Cell: (row) =>
-          !locatiopnIsActive(row.value) ? (
+          !locationIsActive(row.value) ? (
             '--'
           ) : renderAnalysisIcon(row.value.commodity_threat_protected_areas_level),
         sortMethod: (a, b) => {
@@ -174,7 +169,7 @@ const commodity_analysis = [
         width: 60,
         maxWidth: 60,
         Cell: (row) =>
-          !locatiopnIsActive(row.value) ? (
+          !locationIsActive(row.value) ? (
             '--'
           ) : renderAnalysisIcon(row.value.commodity_threat_fires_level),
         sortMethod: (a, b) => {
@@ -197,7 +192,7 @@ const commodity_analysis = [
         width: 75,
         maxWidth: 75,
         Cell: (row) =>
-          !locatiopnIsActive(row.value) ? (
+          !locationIsActive(row.value) ? (
             '--'
           ) : checkValid(row.value.commodity_threat_overall_level) ? (
             <div className={getAnalysisTextClasse(row.value.commodity_threat_overall_level)}>
@@ -237,7 +232,7 @@ const commodity_analysis = [
         width: 75,
         maxWidth: 75,
         Cell: (row) =>
-          !locatiopnIsActive(row.value) ? (
+          !locationIsActive(row.value) ? (
             '--'
           ) : renderAnalysisIcon(row.value.commodity_value_forest_extent_level),
         sortMethod: (a, b) => {
@@ -260,7 +255,7 @@ const commodity_analysis = [
         width: 75,
         maxWidth: 75,
         Cell: (row) =>
-          !locatiopnIsActive(row.value) ? (
+          !locationIsActive(row.value) ? (
             '--'
           ) : renderAnalysisIcon(row.value.commodity_value_peat_level),
         sortMethod: (a, b) => {
@@ -283,7 +278,7 @@ const commodity_analysis = [
         width: 75,
         maxWidth: 75,
         Cell: (row) =>
-          !locatiopnIsActive(row.value) ? (
+          !locationIsActive(row.value) ? (
             '--'
           ) : renderAnalysisIcon(row.value.commodity_value_protected_areas_level),
         sortMethod: (a, b) => {
@@ -306,7 +301,7 @@ const commodity_analysis = [
         width: 75,
         maxWidth: 75,
         Cell: (row) =>
-          !locatiopnIsActive(row.value) ? (
+          !locationIsActive(row.value) ? (
             '--'
           ) : checkValid(row.value.commodity_value_overall_level) ? (
             <div className={getAnalysisTextClasse(row.value.commodity_value_overall_level)}>

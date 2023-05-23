@@ -1,10 +1,10 @@
 import React from 'react';
 import { columnHeaders } from '../../../../common/js/config';
-import { checkValid, locatiopnIsActive } from '../../utils/locationsTableUtils';
+import { checkValid, locationIsActive } from '../../utils/locationsTableUtils';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
 const renderCell = (row) => {
-  !locatiopnIsActive(row.original) ? (
+  !locationIsActive(row.original) ? (
     '--'
   ) : checkValid(row.value) ? (
     <div className={`list-icons-container ${row.value !== 0 ? 'orange' : 'green'}`}>

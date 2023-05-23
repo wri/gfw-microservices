@@ -88,6 +88,8 @@ const checkInactivity = (request, response, next) => {
                 } else {
                     response.redirect('/');
                 }
+            }).catch(() => {
+                logger.error('Ignoring logActivity error during logout to avoid app crash');
             });
         }
     } else if (isInactiveSession) {

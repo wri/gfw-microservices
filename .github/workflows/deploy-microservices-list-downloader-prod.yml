@@ -1,0 +1,76 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deploy LD-PROD
+
+on: 
+  push:
+    tags:        
+    - 'LD-PROD-V*' 
+
+permissions:
+    id-token: write
+    contents: read
+
+env:
+  AWS_REGION: us-east-1                                                                 # set this to your preferred AWS region, e.g. us-west-1
+  AWS_ROLE_TO_ASSUME: arn:aws:iam::617001639586:role/github_ecr_access                  # set the role ARN for AWS authentication
+  AWS_ROLE_SESSION_NAME: fargate_CICD                                                   # set the role session name used for AWS logging
+  ECR_REPOSITORY: microservices-list-downloader-prod                                    # set this to your Amazon ECR repository name
+  ECR_REGISTRY: 617001639586.dkr.ecr.us-east-1.amazonaws.com                            # set this to your Amazon ECR registry name
+  ECS_SERVICE: microservices-list-downloader-prod                                       # set this to your Amazon ECS service name
+  ECS_CLUSTER: gfwpro-microservices                                                     # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION: .aws/task-definition-microservices-list-downloader-prod.json     # set this to the path to your Amazon ECS task definition
+                                                                                        # file, e.g. .aws/task-definition.json
+  CONTAINER_NAME: microservices-list-downloader-prod                                    # set this to the name of the container in the
+                                                                                        # containerDefinitions section of your task definition
+  IMAGE_TAG: ${{ github.sha }}                                                          # set the tag name for the docker image
+  NODE_ENV: ProdV2                                                                      # set the environment passed to the docker build argument (staging, qa, prodv2)
+
+jobs:
+  
+  build:
+    
+    name: Build Image
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+
+    - name: Check out code
+      uses: actions/checkout@v3.4.0
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2.0.0
+      with:
+        role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+        role-session-name: ${{ env.AWS_ROLE_SESSION_NAME }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: AWS
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      run: |
+        echo "${{secrets.MICROSERVICES_LIST_DOWNLOADER_PROD_ENV}}" > ./apps/microservices/list-downloader/.env
+        docker build -f apps/microservices/list-downloader/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1.1.3
+      with:
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${{ steps.build-image.outputs.image }}
+
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.11
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: true

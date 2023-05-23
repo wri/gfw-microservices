@@ -34,6 +34,7 @@ const systemTableCreates = [
     [location_id] [int] NULL,
     [id] [int] NOT NULL
   )`,
+
   `CREATE TABLE [dbo].[UserRoutes](
     [id] [int] IDENTITY(1,1) NOT NULL,
     [user_email] [nvarchar](50) NOT NULL,
@@ -144,6 +145,7 @@ const mssql2sqliteForCreate = (mssqlQuery) => {
     newQuery = newQuery.replaceAll(/,\s*CONSTRAINT.+\s+PRIMARY\s+KEY.*\([^)]+\)/g, '');
   }
   return newQuery;
+
 };
 
 // SQL commands to insert minimal test data in the tables

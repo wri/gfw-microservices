@@ -2,7 +2,7 @@ import { sum } from 'lodash';
 import { cloneRow, formatPct, validatePct } from '../shared/functions';
 
 const yearlyParser = (operation, dataRow, data, csvData) => {
-  operation.composites.forEach((field, index) => {
+  operation.composites.forEach((field) => {
     const yearlyData = data[field.attribute]
       ? JSON.parse(data[field.attribute])
       : {};

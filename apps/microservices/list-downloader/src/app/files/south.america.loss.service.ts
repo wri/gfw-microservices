@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow } from '../shared/functions';
-import { DATA_LAYER, EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
+import {
+  DATA_LAYER,
+  EXCEL_TEMPLATES,
+  EXCEL_TEMPLATE_HEADERS,
+} from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
 import SouthAmericaLossAggregateHandler from '../strategies/south-america-loss/aggregate';
@@ -43,7 +47,11 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
         }
         const yearlyData = JSON.parse(listLevelAnalysis[field.attribute]);
         let totalSubCategory = 0;
-        if (!Object.values(DATA_LAYER).some(dataLayer => field.label == dataLayer)) {
+        if (
+          !Object.values(DATA_LAYER).some(
+            (dataLayer) => field.label == dataLayer
+          )
+        ) {
           Object.keys(yearlyData).forEach((yr) => {
             totalSubCategory += yearlyData[yr];
           });
@@ -53,10 +61,17 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
 
         Object.keys(yearlyData).forEach((year) => {
           const currentRow = cloneRow(dataRow);
-          rowValue = yearlyData[year]; 
+          rowValue = yearlyData[year];
 
           currentRow.push(field.label);
-          handler.processLabel(field, rowValue, year, dataRow, csvData, totalSubCategory);
+          handler.processLabel(
+            field,
+            rowValue,
+            year,
+            dataRow,
+            csvData,
+            totalSubCategory
+          );
         });
       });
     });

@@ -45,6 +45,10 @@ module.exports = (app, limiter) => {
       res.set('Cache-control', results.headers['cache-control']);
       res.contentType(results.headers['content-type']);
       res.send(results.data);
+    })
+    .catch((error) => {
+      console.log('getPlanetTilesInfo Error:', error);
+      res.send({message: '/map/getPlanetTilesInfo failed'});
     });
   });
 
@@ -60,6 +64,10 @@ module.exports = (app, limiter) => {
       res.set('Cache-control', results.headers['cache-control']);
       res.contentType(results.headers['content-type']);
       res.send(results.data);
+    })
+    .catch((error) => {
+      console.log('getPlanetTile Error:', error);
+      res.send({message: '/map/getPlanetTile failed'});
     });
   });
 

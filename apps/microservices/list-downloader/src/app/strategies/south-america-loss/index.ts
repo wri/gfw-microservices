@@ -1,5 +1,5 @@
-import SouthAmericaLossAggregateHandler from "./aggregate";
+import SouthAmericaLossAggregateHandler from './aggregate';
 
 export default {
-  SouthAmericaLossAggregateHandler
-}
+  SouthAmericaLossAggregateHandler,
+};

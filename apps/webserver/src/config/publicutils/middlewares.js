@@ -91,7 +91,9 @@ const checkInactivity = (request, response, next) => {
                 } else {
                     response.redirect('/');
                 }
-            }).catch(() => {}); // ignore errors without crashing app
+            }).catch(() => {
+                logger.error('Ignoring logActivity error during logout to avoid app crash');
+            });
         }
     } else if (isInactiveSession) {
         // If the session has expired and the user has multiple tabs open, last_activity_time is undefined

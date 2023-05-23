@@ -37,6 +37,10 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
     EXCEL_TEMPLATES[table].forEach((key) => {
+
+      if(Object.prototype.hasOwnProperty.call(listLevelAnalysis, key.name) === false){
+        return;
+      }
       const analysisData = JSON.parse(listLevelAnalysis[key.name]);
       const dataLayer = DATA_LAYER[key.name];
 

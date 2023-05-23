@@ -1,16 +1,22 @@
 import { SouthAmericaLossAggregateStrategy } from '.';
 import { cloneRow } from '../../../shared/functions';
 
+type Field = {
+  label: string;
+};
+
+
 export default class DefaultStrategy
-  implements SouthAmericaLossAggregateStrategy {
+  implements SouthAmericaLossAggregateStrategy
+{
   // TODO: Remove any and validate types
   processLabel(
-    field: any,
-    rowValue: any,
-    year: any,
-    dataRow: any,
-    csvData: any,
-    totalSubCategory: any = 0
+    field: Field,
+    rowValue: number,
+    year: string,
+    dataRow: string[],
+    csvData: Array<Array<unknown>>,
+    totalSubCategory = 0
   ): void {
     if (totalSubCategory > 0) {
       const nestedRow = cloneRow(dataRow);

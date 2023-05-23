@@ -28,12 +28,12 @@ export class ConnectionRepositoryMysql
     const params = this.mapper.createStoreProcedureStringParam([
       ['email', email],
     ]);
-    console.log(params)
+    console.log(params);
     const getUserAdminOrganizations = this.storeProcedureFactory.create(
       'uspGetUserAdminOrganizations',
       params,
     );
-    console.log(getUserAdminOrganizations)
+    console.log(getUserAdminOrganizations);
     let result = await getUserAdminOrganizations.execute<
       ConnectionAdminOrganizationDbDto[]
     >();

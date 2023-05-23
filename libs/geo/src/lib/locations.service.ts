@@ -13,7 +13,6 @@ import {
 import {
   CreateNewUserList,
   requestAnalysisProcess,
-  PerformListBulkCopy,
   PerformGetLockStatus,
   UspGetLocationsFilteredToCopy,
   BulkDeleteLocations,
@@ -21,7 +20,6 @@ import {
   DeleteList,
   SetListDrafStatus,
   UnlockListAndSaveAsDraft,
-  UnlockList,
 } from '@wri-monorepos/sql';
 import { Logger, Injectable } from '@nestjs/common';
 import { getFinalGeojson } from '@wri-monorepos/shared';
@@ -29,6 +27,7 @@ const EMPTY_CUSTOM_ATTRIBUTES = [];
 
 interface GeoJsonFeature {
   type: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   features: any[];
 }
 
@@ -99,7 +98,6 @@ export class LocationService {
     Logger.log(`Applied Filters ${JSON.stringify(filters)}`);
 
     let createdListId = 0;
-    let resultingBulkGeoJSON;
     let destLocationIds = [];
     const listsToUnlock = Array<number>();
 
@@ -164,7 +162,7 @@ export class LocationService {
       const lockResult = await PerformGetLockStatus(clientDatabase, selectedListId);
 
       Logger.log(`Lock status result: ${JSON.stringify(lockResult)}`);
-      const { lock_status, lock_user_id } = lockResult;
+      const { lock_status } = lockResult;
       if (lock_status === null /*|| lock_status !== null*/) {
         throw new Error('LIST_NOT_LOCKED');
       }

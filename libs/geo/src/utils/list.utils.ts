@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import { selectedList } from './../mock/listGeoMockData';
 import { GetTableAnalysisColumnsById, PerformListBulkCopy, RawSQLRunner, UnlockList } from "@wri-monorepos/sql";
 
 const LIST_STATUS = {
@@ -216,7 +215,7 @@ export function deleteGeoJSONFeatureProperties(geojson): void {
  * @param sourceLocationIds - Location ids from which analysis will be copied, string IDs separated by comma, ex: 1,2,3
  * @param destinationLocationIds - Location ids to which analysis will be copied, string IDs separated by comma, ex: 1,2,3
  * @param statement - Partial SQL statement to be executed composed by ComposeCopyQueryStatement function, ex: [columnA] = [srcListAnalysisTable].[columnA], [columnB] = [srcListAnalysisTable].[columnB]
- * @returns 
+ * @returns
  */
 export const ComposeAnalysisCopyQuery = (sourceListId: number, destinationListId: number, sourceLocationIds: number[], destinationLocationIds: number[], statement: string) => {
   return `declare @SourceTableIds table ( Id int IDENTITY(1,1) PRIMARY KEY,sourceId int);
@@ -233,7 +232,7 @@ export const ComposeAnalysisCopyQuery = (sourceListId: number, destinationListId
           SET @sourceListID = ${sourceListId};
           SET @destinationListID = ${destinationListId};
           SET @statement = '${statement}';
-          
+
           SET @sourceIDs = '${sourceLocationIds.join(",")}';
           SET @destinationIDs = '${destinationLocationIds.join(",")}';
 
@@ -241,25 +240,26 @@ export const ComposeAnalysisCopyQuery = (sourceListId: number, destinationListId
 
           insert into @DestinationTableIds(destinationId) SELECT value from STRING_SPLIT(@destinationIDs, ',')
 
-          DECLARE copy_analysis_cursor CURSOR FOR 
+          DECLARE copy_analysis_cursor CURSOR FOR
           SELECT sourceId, destinationId FROM @SourceTableIds A INNER JOIN @DestinationTableIds B ON A.Id = B.Id
 
-          OPEN copy_analysis_cursor  
+          OPEN copy_analysis_cursor
           FETCH NEXT FROM copy_analysis_cursor INTO @sourceID, @destinationID
 
-          WHILE @@FETCH_STATUS = 0  
-          BEGIN  
+          WHILE @@FETCH_STATUS = 0
+          BEGIN
                 EXEC uspCopyLocationAnalysis @destinationListID, @destinationID, @sourceListID, @sourceID, @statement
-                FETCH NEXT FROM copy_analysis_cursor INTO @sourceID, @destinationID 
-          END 
+                FETCH NEXT FROM copy_analysis_cursor INTO @sourceID, @destinationID
+          END
 
-          CLOSE copy_analysis_cursor  
+          CLOSE copy_analysis_cursor
           DEALLOCATE copy_analysis_cursor
   `;
 }
 
 export const ComposeCopyQueryStatement = async (clientDatabase: string, selectedListId: number, srcListAnalysisTable: string) => {
   const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const columns = tableColumns.map((record: any) => record.COLUMN_NAME);
   const statement = columns
     .map(
@@ -272,12 +272,12 @@ export const ComposeCopyQueryStatement = async (clientDatabase: string, selected
 }
 
 export type ListFilters = {
-  country: string;
-  state: string;
-  subState: string;
+  country?: string;
+  state?: string;
+  subState?: string;
   analysisAreaMin: number;
-  analysisAreaMax: number;
-  searchString: string;
+  analysisAreaMax?: number;
+  searchString?: string;
 }
 
 export const ListHasFiltersApplies = (filters: ListFilters) => {

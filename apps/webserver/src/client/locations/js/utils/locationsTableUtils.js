@@ -30,17 +30,17 @@ const isStringNone = (string) => {
   return string === null || string === 'None';
 }
 
-export const sortByNone = (a, b) => {
-  if (isStringNone(a) && a !== b) {
+export const sortByNone = (rowA, rowB) => {
+  if (isStringNone(rowA) && rowA !== rowB) {
     return 1;
   }
-  if (isStringNone(b) && a !== b) {
+  if (isStringNone(rowB) && rowA !== rowB) {
     return -1;
   }
-  if (a < b) {
+  if (rowA < rowB) {
     return -1;
   }
-  if (a > b) {
+  if (rowA > rowB) {
     return 1;
   }
   return 0;
@@ -115,7 +115,7 @@ export const getDigit = (value, lat) => {
 };
 
 export const getValue = (data) => {
-  return formatDigit(Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0));
+  return formatDigit(Object.values(JSON.parse(data)).reduce((rowA, rowB) => rowA + rowB, 0));
 };
 
 export const getValidatedValue = (data, auditData) => {
@@ -138,12 +138,12 @@ export const getLastYear = (data) => {
 };
 
 export const normalizeColunmData = (data) => {
-  return Object.values(JSON.parse(data)).reduce((aa, bb) => aa + bb, 0)
+  return Object.values(JSON.parse(data)).reduce((columnA, columnB) => columnA + columnB, 0)
 } 
 
-export const sortObjectNumbers = (a, b) => {
-  const x = a === '{}' || !a ? 0 : parseFloat(getValue(a).replace(',', ''));
-  const y = b === '{}' || !b ? 0 : parseFloat(getValue(b).replace(',', ''));
+export const sortObjectNumbers = (rowA, rowB) => {
+  const x = rowA === '{}' || !rowA ? 0 : parseFloat(getValue(rowA).replace(',', ''));
+  const y = rowB === '{}' || !rowB ? 0 : parseFloat(getValue(rowB).replace(',', ''));
 
   return x - y;
 };

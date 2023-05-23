@@ -1,16 +1,17 @@
 import { SouthAmericaLossAggregateStrategy } from '.';
 import { DATA_LAYER } from '../../../shared/constants';
 import { TreeCoverLossAggregateStrategy } from './tree-cover-loss.strategy';
+import { StrategyFieldType } from './type';
 
 export class BrazilBiomesStrategy implements SouthAmericaLossAggregateStrategy {
   // TODO: Remove any and validate types
   processLabel(
-    field: any,
-    rowValue: any,
-    year: any,
-    dataRow: any,
-    csvData: any,
-    totalSubCategory: any = 0
+    field: StrategyFieldType,
+    rowValue: number,
+    year: string,
+    dataRow: string[],
+    csvData: Array<Array<unknown>>,
+    totalSubCategory = 0
   ): void {
     const treeCoverLossAggregateStrategy = new TreeCoverLossAggregateStrategy({
       dataLayer: DATA_LAYER.brazil_biomes,

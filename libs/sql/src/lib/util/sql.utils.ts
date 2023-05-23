@@ -4,7 +4,7 @@ import { get } from '../connectionpool';
 interface ParameterType {
   field: string;
   type: sql.ISqlType;
-  value: unknown;
+  value?: unknown;
 }
 
 export class SQLUtils {

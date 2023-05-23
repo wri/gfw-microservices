@@ -34,7 +34,7 @@ export class ConnectionRepositoryMysql
       params,
     );
     console.log(getUserAdminOrganizations);
-    let result = await getUserAdminOrganizations.execute<
+    const result = await getUserAdminOrganizations.execute<
       ConnectionAdminOrganizationDbDto[]
     >();
     if (result.isSuccess) {
@@ -64,7 +64,7 @@ export class ConnectionRepositoryMysql
       'uspGetConnectionRequest',
       params,
     );
-    let result = await createInvitation.execute<ConnectionDbDto[]>();
+    const result = await createInvitation.execute<ConnectionDbDto[]>();
     if (result.isSuccess) {
       const connectionsDbDto = result.getValue();
       console.log(connectionsDbDto);
@@ -85,7 +85,7 @@ export class ConnectionRepositoryMysql
 
   async acceptConnection(
     changeStatusDto: ConnectionChangeDto,
-  ): ResultPromise<Number> {
+  ): ResultPromise<number> {
     const params = this.mapper.toChangeStatusConnectionParam(changeStatusDto);
     const acceptConnection = this.storeProcedureFactory.create(
       'uspChangeConnectionRequestStatus',

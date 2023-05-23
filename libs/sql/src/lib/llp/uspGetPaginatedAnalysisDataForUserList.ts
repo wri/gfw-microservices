@@ -61,7 +61,7 @@ export class UspGetPaginatedAnalysisDataForUserList {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      const createListResult = await connection.executeQueryArray<any>(
+      const createListResult = await connection.executeQueryArray<unknown>(
         'uspGetPaginatedAnalysisDataForUserList',
         parameters
       );

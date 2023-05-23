@@ -14,6 +14,11 @@ interface MaxId {
   max_id?: number;
 }
 
+interface ColumnType {
+  COLUMN_NAME: string;
+  DATA_TYPE: string;
+}
+
 @Injectable()
 export class ListBulkCopy {
   /** @function {uploadBulkLocations}
@@ -72,7 +77,7 @@ export class ListBulkCopy {
     const dataArray = [];
 
     // Push column name types into respective arrays
-    tableColumnsResult.forEach((column: any) => {
+    tableColumnsResult.forEach((column: ColumnType) => {
       if (
         column.COLUMN_NAME === 'location_id' ||
         column.COLUMN_NAME.includes('flag_')

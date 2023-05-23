@@ -1,17 +1,22 @@
 import { SouthAmericaLossAggregateStrategy } from '.';
 import { cloneRow } from '../../../shared/functions';
+import { StrategyFieldType } from './type';
 
 export class TreeCoverLossAggregateStrategy
-  implements SouthAmericaLossAggregateStrategy {
-  constructor (private params: any) { }
+  implements SouthAmericaLossAggregateStrategy
+{
   // TODO: Remove any and validate types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  constructor(private params: any) {}
+
   processLabel(
-    field: any,
-    rowValue: any,
-    year: any,
-    dataRow: any,
-    csvData: any,
-    totalSubCategory: any = 0
+    field: StrategyFieldType,
+    rowValue: number,
+    year: string,
+    dataRow: string[],
+    csvData: Array<Array<unknown>>,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    totalSubCategory = 0
   ): void {
     let totalBiomeValue = 0;
     Object.keys(rowValue).forEach((biomeYearFirst) => {

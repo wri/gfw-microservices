@@ -5,7 +5,7 @@ import {
   checkValid,
   formatDigit,
   sortByStatus,
-  locatiopnIsActive,
+  locationIsActive,
 } from '../../utils/locationsTableUtils';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
@@ -23,7 +23,7 @@ const forest_change_locations = [
       return d;
     },
     Cell: (row) => {
-      const isValidStatus = locatiopnIsActive(row.value);
+      const isValidStatus = locationIsActive(row.value);
       const isValidArea = checkValid(row.value.total_area);
 
       const formattedArea = isValidArea ? formatDigit(row.value.total_area) : 0;
@@ -31,7 +31,7 @@ const forest_change_locations = [
     },
     sortMethod: (a, b) => {
       const sortStatus = sortByStatus(a, b);
-      if(sortStatus == 'active') {
+      if(sortStatus == 2) {
           return  a.total_area - b.total_area;
       }
 

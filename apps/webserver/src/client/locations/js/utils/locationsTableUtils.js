@@ -74,7 +74,7 @@ export const sortByStatus = (rowA, rowB) => {
   } else if (isOnlyFirstLocationsIsActive(rowA, rowB)) {
     return 1;
   } else if (isBothLocationsAreActive(rowA, rowB)) {
-    return 'active';
+    return 2;
   }
 
   return 0;

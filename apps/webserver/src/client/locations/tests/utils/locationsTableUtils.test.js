@@ -86,7 +86,7 @@ describe('sortByStatus', ()=>{
       location_status_id: 2,
     }
     const response = sortByStatus(a, b);
-    expect(response).toBe('active');
+    expect(response).toBe(2);
   });
 
   it('should return 0 when both status locations are not active', () => {

@@ -70,7 +70,7 @@ const commodity_analysis = [
           ),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return getLastValue(a.commodity_mill_priority_level) - getLastValue(b.commodity_mill_priority_level);
           }
 
@@ -104,7 +104,7 @@ const commodity_analysis = [
           ) : renderAnalysisIcon(row.value.commodity_threat_deforestation_level),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return getLastValue(a.commodity_threat_deforestation_level) -
             getLastValue(b.commodity_threat_deforestation_level);
           }
@@ -128,7 +128,7 @@ const commodity_analysis = [
           ) : renderAnalysisIcon(row.value.commodity_threat_peat_level),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return getLastValue(a.commodity_threat_peat_level) - getLastValue(b.commodity_threat_peat_level);
           }
 
@@ -151,7 +151,7 @@ const commodity_analysis = [
           ) : renderAnalysisIcon(row.value.commodity_threat_protected_areas_level),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return getLastValue(a.commodity_threat_protected_areas_level) -
             getLastValue(b.commodity_threat_protected_areas_level);
           }
@@ -174,7 +174,7 @@ const commodity_analysis = [
           ) : renderAnalysisIcon(row.value.commodity_threat_fires_level),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return getLastValue(a.commodity_threat_fires_level) - getLastValue(b.commodity_threat_fires_level);
           }
 
@@ -203,7 +203,7 @@ const commodity_analysis = [
           ),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return normalizeColunmData(a.commodity_threat_overall_level) - normalizeColunmData(b.commodity_threat_overall_level);
           }
 
@@ -237,7 +237,7 @@ const commodity_analysis = [
           ) : renderAnalysisIcon(row.value.commodity_value_forest_extent_level),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return normalizeColunmData(a.commodity_value_forest_extent_level) - normalizeColunmData(b.commodity_value_forest_extent_level);
           }
 
@@ -260,7 +260,7 @@ const commodity_analysis = [
           ) : renderAnalysisIcon(row.value.commodity_value_peat_level),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return normalizeColunmData(a.commodity_value_peat_level) - normalizeColunmData(b.commodity_value_peat_level);
           }
 
@@ -283,7 +283,7 @@ const commodity_analysis = [
           ) : renderAnalysisIcon(row.value.commodity_value_protected_areas_level),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return normalizeColunmData(a.commodity_value_protected_areas_level) - normalizeColunmData(b.commodity_value_protected_areas_level);
           }
 
@@ -312,7 +312,7 @@ const commodity_analysis = [
           ),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return normalizeColunmData(a.commodity_value_overall_level) - normalizeColunmData(b.commodity_value_overall_level);
           }
         },

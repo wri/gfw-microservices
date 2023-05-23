@@ -44,7 +44,7 @@ const forest_change_analysis = [
     },
     sortMethod: (a, b) => {
       const sortStatus = sortByStatus(a, b);
-      if(sortStatus == 'active') {
+      if(sortStatus == 2) {
         return a.tree_cover_extent_total - b.tree_cover_extent_total;
       }
           
@@ -84,7 +84,7 @@ const forest_change_analysis = [
         },
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return normalizeColunmData(a.tree_cover_loss_total_yearly) - normalizeColunmData(b.tree_cover_loss_total_yearly);
           }
             
@@ -119,7 +119,7 @@ const forest_change_analysis = [
         },
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return normalizeColunmData(a.tree_cover_loss_protected_areas_yearly) - normalizeColunmData(b.tree_cover_loss_protected_areas_yearly);
           }
             
@@ -157,7 +157,7 @@ const forest_change_analysis = [
         },
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
-          if(sortStatus == 'active') {
+          if(sortStatus == 2) {
             return  normalizeColunmData(a.tree_cover_loss_primary_forest_yearly) - normalizeColunmData(b.tree_cover_loss_primary_forest_yearly);
           }
 

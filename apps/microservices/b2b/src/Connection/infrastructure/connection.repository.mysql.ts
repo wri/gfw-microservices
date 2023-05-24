@@ -7,7 +7,7 @@ import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto
 import { ConnectionDbDto } from '../application/dtos/connection-db.dto';
 import Result from '../../Shared/domain/result';
 import { ConnectionChangeDto } from '../application/dtos/connection-status.dto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   ConnectionAdminOrganizationDbDto,
   ConnectionAdminOrganizationDto,
@@ -18,6 +18,8 @@ export class ConnectionRepositoryMysql
   extends RepositoryMysql
   implements ConnectionRepository
 {
+  public readonly logger = new Logger(ConnectionRepositoryMysql.name);
+
   constructor(private mapper: ConnectionDataMapper) {
     super();
   }
@@ -28,13 +30,13 @@ export class ConnectionRepositoryMysql
     const params = this.mapper.createStoreProcedureStringParam([
       ['email', email],
     ]);
-    console.log(params)
+    this.logger.debug(params);
     const getUserAdminOrganizations = this.storeProcedureFactory.create(
       'uspGetUserAdminOrganizations',
       params,
     );
-    console.log(getUserAdminOrganizations)
-    let result = await getUserAdminOrganizations.execute<
+    this.logger.debug(getUserAdminOrganizations);
+    const result = await getUserAdminOrganizations.execute<
       ConnectionAdminOrganizationDbDto[]
     >();
     if (result.isSuccess) {
@@ -64,10 +66,10 @@ export class ConnectionRepositoryMysql
       'uspGetConnectionRequest',
       params,
     );
-    let result = await createInvitation.execute<ConnectionDbDto[]>();
+    const result = await createInvitation.execute<ConnectionDbDto[]>();
     if (result.isSuccess) {
       const connectionsDbDto = result.getValue();
-      console.log(connectionsDbDto);
+      this.logger.debug(connectionsDbDto);
       let connections = [];
       if (Array.isArray(connectionsDbDto)) {
         connections = connectionsDbDto.map((connectionDbDto) =>
@@ -85,7 +87,7 @@ export class ConnectionRepositoryMysql
 
   async acceptConnection(
     changeStatusDto: ConnectionChangeDto,
-  ): ResultPromise<Number> {
+  ): ResultPromise<number> {
     const params = this.mapper.toChangeStatusConnectionParam(changeStatusDto);
     const acceptConnection = this.storeProcedureFactory.create(
       'uspChangeConnectionRequestStatus',

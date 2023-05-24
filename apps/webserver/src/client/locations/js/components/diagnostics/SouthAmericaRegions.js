@@ -21,7 +21,6 @@ const START_YEAR = 2001;
 const END_YEAR = latestTreeCoverLossYearFC;
 const HARVEST_YEAR = END_YEAR - 1;
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
-const isProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
 let isMounted = false;
 
 function getFormatedTooltip() {
@@ -871,7 +870,6 @@ export default class SouthAmericaRegions extends Component {
       return (
         <React.Fragment key={uuidv1()}>
           <tr
-            style={category === 'otbnArgentina' && isProduction ? { display: 'none' } : {}}
             key={`south-america__${category}`}
             className={`locations-diagnostics-table__row ${child ? 'child' : 'parent'}`}
           >
@@ -1166,10 +1164,6 @@ export default class SouthAmericaRegions extends Component {
   };
 
   isArgentinaOtnbArea = () => {
-    if (isProduction) {
-      return false;
-    }
-
     const { getFilteredLocations } = this.props;
     return Object.entries(JSON.parse(getFilteredLocations()[0]?.arg_otbn_area || '{}')).length !== 0;
   };

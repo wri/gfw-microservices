@@ -110,4 +110,55 @@ describe('Diagnostic Location Summary Parser', () => {
     expect(csvData.length).toEqual(1);
     expect(csvData[0]).toEqual(['10.02']);
   });
+
+  test('Receive Additional fields as null and return empty', () => {
+    const dataRow = [];
+    const csvData = [];
+    diagnosticLocationSummaryParser({
+      operation: {
+        additionalFields: [{ attribute: 'Volume', parsed: 'percent' }],
+      },
+      data: {
+        Volume: null,
+      },
+      dataRow,
+      csvData,
+    });
+    expect(csvData.length).toEqual(1);
+    expect(csvData[0]).toEqual(['']);
+  });
+
+  test('Receive Additional fields receive zero parse it as aggregate ', () => {
+    const dataRow = [];
+    const csvData = [];
+    diagnosticLocationSummaryParser({
+      operation: {
+        additionalFields: [{ attribute: 'Volume', parsed: 'aggregate' }],
+      },
+      data: {
+        Volume: '0',
+      },
+      dataRow,
+      csvData,
+    });
+    expect(csvData.length).toEqual(1);
+    expect(csvData[0]).toEqual(['0']);
+  });
+
+  test('Receive Additional fields receive zero parse it as percent', () => {
+    const dataRow = [];
+    const csvData = [];
+    diagnosticLocationSummaryParser({
+      operation: {
+        additionalFields: [{ attribute: 'Volume', parsed: 'percent' }],
+      },
+      data: {
+        Volume: '0',
+      },
+      dataRow,
+      csvData,
+    });
+    expect(csvData.length).toEqual(1);
+    expect(csvData[0]).toEqual(['0']);
+  });
 });

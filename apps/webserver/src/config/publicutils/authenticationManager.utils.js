@@ -711,7 +711,7 @@ const logout = (req) => {
         logger.listActivityTypes.User.UserLogout,
         `User ${req.session.user_first_name} ${req.session.user_last_name} has logged out.`
       )
-      .then(() => {
+      .finally(() => {
         // Delete session variables
         req.session.destroy();
       });

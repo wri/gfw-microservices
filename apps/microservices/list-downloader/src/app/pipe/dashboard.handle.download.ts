@@ -42,6 +42,7 @@ export class DashboardHandleDownload extends IPipeService {
 
   process(analysisData, filters: GenerationFileRequest) {
     const { listName } = filters;
+
     analysisData.forEach((data) =>
       this.writeStream.write({ list_name: listName, ...data })
     );

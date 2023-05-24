@@ -356,6 +356,8 @@ const isAnalyzingStatus = (status) => {
   return [LIST_STATUS_PENDING, LIST_STATUS_AANALYZING_DIAGNOSTIC, LIST_STATUS_ANALYZING_DASHBOARD].includes(status);
 };
 
+const isFailedList = (list) => list?.list_status_id === locationsPage.listStatus.Inactive;
+
 module.exports = {
   checkValidView,
   checkValidViewCommodity,
@@ -380,4 +382,5 @@ module.exports = {
   getFilterCounter,
   findArrIndex,
   isAnalyzingStatus,
+  isFailedList,
 };

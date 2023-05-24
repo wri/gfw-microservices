@@ -14,6 +14,8 @@
  */
 // Imports required for this module.
 const sql = require('mssql');
+const sqlite3 = require('sqlite3');
+const sqlite = require('sqlite');
 const logger = require('winston');
 const config = require('../config');
 const sqlQueries = require('./sqlQueries.utils');
@@ -33,6 +35,7 @@ const SQLSYSTEMCONFIG = {
 
 // cache of DB pools to improve performance
 // This object is a map from database name to connected pool object
+// For test environments, it also contains the sqliteDB
 const cachedPools = {};
 
 /**
@@ -53,13 +56,34 @@ const removePool = (connectConfig) => {
  */
 const getPool = async (connectConfig) => {
   try {
+    // 'test' envs use sqlite
+    if (process.env.NODE_ENV === 'test') {
+      if (!cachedPools.sqliteDB) {
+        const filename = ':memory:';
+        const newSqlite = await sqlite.open({ filename, driver: sqlite3.Database });
+        // recheck in case someone else beat us to creating sqlite DB
+        if (!cachedPools.sqliteDB) {
+          cachedPools.sqliteDB = newSqlite;
+        }
+      }
+      return cachedPools.sqliteDB;
+    }
+    // not 'test' env -- use mssql
+    if (!connectConfig.database) {
+      throw new Error('Error: SQL getPool no database specified');
+    }
     if (!cachedPools[connectConfig.database]) {
       // Create a SQL Connection and add to the cached pools
       const poolPreConnect = new sql.ConnectionPool(connectConfig);
       const poolConnected = await poolPreConnect.connect();
       poolConnected.on('error', (err) => {
-        logger.error('SQL Pool Error:', err);
+        logger.error('SQL Pool Error:', connectConfig.database, err);
+        // recreate connection on errors
         removePool(connectConfig);
+        // ignore any new errors while creating new connection
+        getPool(connectConfig).catch(() => {
+          logger.error('Ignoring secondary getPool error during error handling');
+        });
       });
       // check if someone else beat us to creating new pool for this DB
       if (!cachedPools[connectConfig.database]) {
@@ -76,19 +100,110 @@ const getPool = async (connectConfig) => {
 };
 
 /**
+ * Replace the given regex (with a capture pattern) in given inputStr and optionally
+ * replace the matched string with `newCmd(capture)`
+ */
+const regexReplaceCmd = (inputStr, regex, newCmd) => {
+  let updatedStr = inputStr;
+  let matchInfo;
+  // eslint-disable-next-line no-cond-assign
+  while ((matchInfo = regex.exec(updatedStr)) !== null) {
+    const replacementStr = newCmd ? `${newCmd}(${matchInfo[1]})` : matchInfo[1];
+    updatedStr = updatedStr.replace(matchInfo[0], replacementStr);
+  }
+  return updatedStr;
+};
+
+// convert SQL statements from MS SQL server syntax to SQLite syntax
+const mssql2sqliteQuery = (mssqlQuery) => {
+  let updatedQuery = mssqlQuery;
+  updatedQuery = regexReplaceCmd(updatedQuery, /CONVERT\(VARCHAR\(\d+\),\s*(\w+)\)/g);
+  updatedQuery = regexReplaceCmd(updatedQuery, /STRING_AGG\((\w+), ','\)/g, 'group_concat');
+  // 'TOP (n)' should be replaced with LIMIT n, but large results unlikely in test, so ignoring for now
+  updatedQuery = updatedQuery.replaceAll(/TOP\s*\(\d+\)/g, '');
+  return updatedQuery;
+};
+
+// Replace MS SQL server syntax style query with '@variable' with values from params
+const sqliteApplyParams = (databaseName, baseQuery, params = []) => {
+  if (baseQuery.includes('Analyses-Dashboard')) {
+    // let queryStr = baseQuery.replace('Analyses-Dashboard', `${databaseName}Analyses-Dashboard`);
+    // Add databasename prefix (clientstore-xxx) to Analyses-Dashboard because the same name
+    // is used in both gfwpro and clientstore DBs.  TODO:  Needs further special handling
+    // in uspActivatePendingAccount to reach the right table.
+    throw new Error('sql.utils: Not implemented: Analyses-Dashboard');
+  }
+  let queryStr = baseQuery;
+  params.forEach((paramInfo) => {
+    const paramValue = paramInfo.value;
+    if (typeof paramValue === 'string') {
+      queryStr = queryStr.replaceAll(`@${paramInfo.field}`, `'${paramValue}'`);
+    } else if (paramValue instanceof Date) {
+      queryStr = queryStr.replaceAll(`@${paramInfo.field}`, `'${paramValue.toISOString()}'`);
+    } else if (typeof paramValue === 'object') {
+      queryStr = queryStr.replaceAll(`@${paramInfo.field}`, `'${paramValue.toString()}'`);
+    } else {
+      queryStr = queryStr.replaceAll(`@${paramInfo.field}`, paramValue);
+    }
+  });
+  return queryStr;
+};
+
+/**
+ * Query SQLite DB with given MS SQL server style syntax query and params
+ * 1) converts the query string from MS SQL server to sqlite syntax
+ * 2) applies SQL server style query params to the update sqlite query string
+ * 3) If the given query is supported, send it to SQLite, otherwise return empty results
+ * @param {Object} sqliteDB - SQLite DB instance
+ * @param {Object} connectConfig - configuration for sql connection
+ * @param {String} mssqlQuery - MS SQL server syntax query string
+ * @param {String} namedQuery - name of query
+ * @param {Array} params - MS SQL server style parameter list
+ * @returns Promise with data returned by SQLite
+ */
+const sqliteQuery = async (sqliteDB, connectConfig, mssqlQuery, namedQuery, params) => {
+  let queryStr;
+  try {
+    const baseQuery = mssql2sqliteQuery(mssqlQuery);
+    queryStr = sqliteApplyParams(connectConfig.database, baseQuery, params);
+    // temporary debug log
+    console.log('sqlite query string', queryStr);
+    const result = await sqliteDB.all(queryStr);
+    return [result];
+  } catch (err) {
+    logger.error('sqliteQuery failed ', namedQuery, queryStr || mssqlQuery, err);
+    throw err;
+  }
+};
+
+/**
  * Execute given query or stored procedure with given DB config
+ * @param {number} triesLeft - number of attemps left (case of errors)
  * @param {Object} connectConfig - configuration for sql connection
  * @param {String} queryStrParam - SQL query string or null
  * @param {String} storedProcedureName - name of the stored procedure to execute or null
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
  * @returns Promise with data returned by given stored proedure
  */
-const mssqlExecute = async (connectConfig, queryStrParam, storedProcedureName, params) => {
+const mssqlExecuteWithRetries = async (triesLeft, connectConfig, queryStrParam, storedProcedureName, params) => {
   try {
     if (queryStrParam && storedProcedureName) {
       throw new Error('Both query and stored procedure specified');
     }
+
+    let baseQuery;
+    // Some stored procedures have been converted to queries using storedProcedureName as the query identifier
+    // Check for those before issue query instead of the stored procedure for those.
+    if (queryStrParam) {
+      baseQuery = queryStrParam;
+    } else {
+      baseQuery = sqlQueries.getQueryStr(connectConfig, storedProcedureName);
+    }
+
     const pool = await getPool(connectConfig);
+    if (cachedPools.sqliteDB) {
+      return sqliteQuery(pool, connectConfig, baseQuery, storedProcedureName, params);
+    }
     // Get Request Object. Query
     const request = new sql.Request(pool);
     // Add parameters to the request object.
@@ -98,22 +213,29 @@ const mssqlExecute = async (connectConfig, queryStrParam, storedProcedureName, p
       });
     }
 
-    // Some stored procedures have been converted to queries using storedProcedureName as the query identifier
-    // Check for those before issue query instead of the stored procedure for those.
-    const queryStr = queryStrParam || (await sqlQueries.getQueryStr(connectConfig, storedProcedureName, params));
     let rawResults;
-    if (queryStr) {
+    if (baseQuery) {
+      // add defaults for MSSQL
+      const queryStr = `SET ANSI_NULLS ON; SET QUOTED_IDENTIFIER ON; ${baseQuery}`;
       rawResults = await request.query(queryStr);
     } else {
       rawResults = await request.execute(storedProcedureName);
     }
     return rawResults.recordsets;
   } catch (err) {
-    logger.error('mssqlExecute failed ', connectConfig && connectConfig.database, storedProcedureName, queryStrParam && queryStrParam.slice(0, 100));
+    logger.error('mssqlExecute failed ', triesLeft, connectConfig && connectConfig.database, storedProcedureName, queryStrParam && queryStrParam.slice(0, 100));
     logger.error(err);
     removePool(connectConfig);
+    if (triesLeft > 0) {
+      return mssqlExecuteWithRetries(triesLeft - 1, connectConfig, queryStrParam, storedProcedureName, params);
+    }
     throw err;
   }
+};
+
+// simple wrapper that sets initial retry count to retry once after initial error
+const mssqlExecute = async (connectConfig, queryStrParam, storedProcedureName, params) => {
+  return mssqlExecuteWithRetries(1, connectConfig, queryStrParam, storedProcedureName, params);
 };
 
 /**

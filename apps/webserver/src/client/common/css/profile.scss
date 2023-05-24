@@ -59,12 +59,9 @@
   }
 
   .policies-delete-download {
-    display: flex;
     margin-top: $space-small;
 
     .button {
-      flex: 1 0 50%;
-
       &:first-child {
         margin-right: $space-small;
       }

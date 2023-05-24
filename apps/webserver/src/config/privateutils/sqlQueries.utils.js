@@ -4,6 +4,32 @@
  *   @description : Returns SQL query strings using identifiers that used to be stored procedures
  */
 
+/**
+ * TODO: Cleanups
+ * 1) Delete tables gfwpro.ActivityType and gfwpro.ActivityTypeCategory (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedures: uspGetActivityTypesQuery
+ *    b) Update stored procedures: gfwpro.uspActivatePendingAccount,
+ *       clientstore.uspActivatePendingAccount to remove creation of stored procedure
+ * 2) Delete table gfwpro.[Classifications] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetClassifications
+ * 3) Delete table gfwpro.[AccessLevels] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetAccessLevels
+ *    b) Update stored procedures uspGetAllUsersList to remove unused @access_level
+ *    c) Update AlterGFWProDB.sql to remove unused @access_level
+ * 4) Delete table gfwpro.[Commodities] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetCommodities
+ * 5) Delete table gfwpro.[Titles] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetTitles
+ * 6) Delete table gfwpro.[Geographiesles] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetGeographies
+ * 7) Delete table gfwpro.[Statuses] (DB and CreateGFWProDB.sql)
+ *    a) Delete stored procedure uspGetStatuses
+ *    b) Update stored procedures uspGetAllUsersList to remove unused @status_level
+ *    c) Update AlterGFWProDB.sql to remove unused @status_level
+ *
+ * N) Remove stored procedures for everything in this file (DB and CreateGFWProDB.sql)
+ */
+
 const config = require('../config');
 
 // Verify given connection is for system (gfwpro) DB
@@ -24,48 +50,10 @@ const verifyOrgDB = (connectConfig) => {
  * System (gfwpro) DB queries below this line just to keep them separate and easier to find
  * ----------------------------------------------------------------------------------------
  */
-const uspGetClassificationsQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from Classifications ORDER BY classification_name';
-};
-
-const uspGetAccessLevelsQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from AccessLevels ORDER BY accesslevel_name';
-};
-
-const uspGetCommoditiesQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from Commodities ORDER BY commmodity_name';
-};
-
-const uspGetTitlesQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from Titles ORDER BY title';
-};
-
-const uspGetActivityTypesQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return `SELECT AT.id AS [ActivityTypeID], AT.activity_type_category_id AS [ActivityCategoryID],
-    AC.activity_type_category_name AS [ActivityCategoryName], AT.activity_type_name AS [ActivityTypeName]
-    FROM ActivityType AT
-    JOIN ActivityTypeCategory AC ON AT.activity_type_category_id = AC.id`;
-};
-
 const uspGetAdministrativeAreasInfoQuery = (connectConfig) => {
   verifySystemDB(connectConfig);
   return `SELECT DISTINCT Country, State, [Sub State]
 	  FROM [list-administrativeAreas]`;
-};
-
-const uspGetStatusesQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from Statuses ORDER BY status_name';
-};
-
-const uspGetGeographiesQuery = (connectConfig) => {
-  verifySystemDB(connectConfig);
-  return 'SELECT * from Geographies ORDER BY geography_name';
 };
 
 const uspGetProtectedAreasInfoQuery = (connectConfig) => {
@@ -200,19 +188,20 @@ const uspSetActivityLogQuery = (connectConfig) => {
 
 const uspGetUserInfoQuery = (connectConfig) => {
   verifyOrgDB(connectConfig);
-  return `DECLARE @arrCommodities NVARCHAR(100)
-    SELECT @arrCommodities = COALESCE(@arrCommodities + ',', '') + CONVERT(varchar(3), commodity_id)
-    FROM UserCommodities WHERE user_id = @userID
-
-    -- Obtain User Geographies Info.
-    DECLARE @arrGeographies NVARCHAR(100)
-    SELECT @arrGeographies = COALESCE(@arrGeographies + ',', '') + CONVERT(varchar(3), geography_id)
-    FROM UserGeographies WHERE user_id = @userID
-
-    SELECT id, first_name, middle_initial, last_name, email, phone, title_id, other_title, access_level_id, status_id, email_subscription,
-    @arrCommodities AS user_commodity_ids, @arrGeographies AS user_geography_ids,
+  return `
+    SELECT Users.id, first_name, middle_initial, last_name, email, phone, title_id, other_title, access_level_id, status_id, email_subscription,
+    user_commodity_ids, user_geography_ids,
     viirs_email_frequency, glad_email_frequency, forma_email_frequency, terrai_email_frequency, gran_chaco_email_frequency
-    FROM Users WHERE id = @userID`;
+    FROM Users
+    LEFT JOIN (SELECT user_id, STRING_AGG(CONVERT(VARCHAR(3),commodity_id), ',') AS user_commodity_ids
+               FROM UserCommodities
+               WHERE user_id = @userID
+               GROUP BY user_id) as UserComm on Users.id = UserComm.user_id
+    LEFT JOIN (SELECT user_id, STRING_AGG(CONVERT(VARCHAR(3),geography_id), ',') AS user_geography_ids
+               FROM UserGeographies
+               WHERE user_id = @userID
+               GROUP BY user_id) as UserGeos on Users.id = UserGeos.user_id
+    WHERE Users.id = @userID`;
 };
 
 const uspGetUserStatusQuery = (connectConfig) => {
@@ -355,16 +344,18 @@ const uspGetAllFolderItemsQuery = (connectConfig) => {
     END`;
 };
 
+const uspGetActivityLogQuery = (connectConfig) => {
+  verifyOrgDB(connectConfig);
+  // limit to most recent 10K elements because the UI is not responsive beyond that
+  return `SELECT TOP (10000) U.email, AL.activity_description, AL.activity_time, AL.activity_type_id
+  FROM ActivityLog AL
+  LEFT JOIN Users U ON AL.user_id = U.id
+  ORDER BY AL.activity_time DESC`;
+};
+
 const convertedStoredProcedures = {
   // systemDB
-  uspGetClassifications: uspGetClassificationsQuery,
-  uspGetAccessLevels: uspGetAccessLevelsQuery,
-  uspGetCommodities: uspGetCommoditiesQuery,
-  uspGetTitles: uspGetTitlesQuery,
-  uspGetActivityTypes: uspGetActivityTypesQuery,
   uspGetAdministrativeAreasInfo: uspGetAdministrativeAreasInfoQuery,
-  uspGetStatuses: uspGetStatusesQuery,
-  uspGetGeographies: uspGetGeographiesQuery,
   uspGetProtectedAreasInfo: uspGetProtectedAreasInfoQuery,
   uspGetInitialUserRouteInfo: uspGetInitialUserRouteInfoQuery,
   uspGetGFWProRootUserInfo: uspGetGFWProRootUserInfoQuery,
@@ -386,14 +377,13 @@ const convertedStoredProcedures = {
   uspGetUserInternalShareLists: uspGetUserInternalShareListsQuery,
   uspGetFolders: uspGetFoldersQuery,
   uspGetAllFolderItems: uspGetAllFolderItemsQuery,
+  uspGetActivityLog: uspGetActivityLogQuery,
 };
 
-const getQueryStr = async (connectConfig, storedProcedureName, params) => {
+const getQueryStr = (connectConfig, storedProcedureName) => {
   const queryFn = convertedStoredProcedures[storedProcedureName];
   if (queryFn) {
-    const baseQuery = queryFn(connectConfig, params);
-    // add defaults for MSSQL -- TODO: parameterize for other DBMSs later
-    return `SET ANSI_NULLS ON; SET QUOTED_IDENTIFIER ON; ${baseQuery}`;
+    return queryFn(connectConfig);
   }
   return null;
 };

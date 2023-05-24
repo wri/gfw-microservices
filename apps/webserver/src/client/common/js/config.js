@@ -631,6 +631,7 @@ export const locationsPage = {
     threats: 'threats',
     values: 'values',
     threatsAndValues: 'threats_and_values',
+    treeCoverLossArgOtbnYearly: 'tree_cover_loss_arg_otbn_yearly',
   },
   defaultFilterValues: {
     selectedCountry: '',
@@ -732,6 +733,8 @@ export const locationsPage = {
     },
   ],
   lists: {
+    confirmListUpdate: 'Confirm List Update',
+    confirmListSubmission: 'Confirm Submission',
     addColumns: 'Add Columns',
     all: 'All',
     clearFilters: 'Clear filters',
@@ -963,6 +966,13 @@ export const locationsPage = {
     selectedMillPriority: 'Mill Priority',
     selectedStates: 'States',
     selectedSubStates: 'Sub States',
+  },
+  diagnosticsTitles: {
+    TREE_COVER_LOSS: 'TREE COVER LOSS',
+    TREE_COVER_LOSS_ON_ARGENTINA_OTBN: 'TREE COVER LOSS ON ARGENTINA OTBN',
+    SOY_ON_TREE_COVER_LOSS: 'SOY ON TREE COVER LOSS',
+    PRODES_AMAZON: 'PRODES (Amazon, Cerrado, Brazil)',
+    ARGENTINA_OTBN_OVERLAP: 'ARGENTINA OTBN OVERLAP',
   },
   largeListEditing: {
     downloadProcessTitle: 'Upload process',
@@ -2857,6 +2867,9 @@ export const profilePage = {
       createANewConnection: 'Create a new connection',
       invitationSentDescription: 'You will be notified when the company accepts your B2B connection request.',
       email: 'E-mail',
+      name: 'name',
+      accountManagerInformation: 'Account Manager Information',
+      status: 'status',
       sendInvitation: 'Send',
       ok: 'Ok',
       cancel: 'Cancel',
@@ -2866,6 +2879,7 @@ export const profilePage = {
       removeAll: 'Remove All',
       pending: 'Pending',
       resend: 'Resend',
+      reject: 'Reject',
       removeConnection: 'Remove connection',
       requestExpired: 'Request Expired',
       termsOfUseWarning: 'By using this feature, you agree with the <a href="/terms-of-use">Terms of Use </a>.',

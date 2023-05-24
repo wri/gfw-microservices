@@ -105,6 +105,8 @@ exports.getListMbtileInfo = async (req, res) => {
             success: false,
             message: 'Check if file exists',
           });
+
+          return; // don't send more data to client
         }
 
         res.status(200).json({

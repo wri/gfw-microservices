@@ -1,4 +1,5 @@
-import { SQLUtils } from '../../../../../../../libs/sql/src';
+import { Logger } from '@nestjs/common';
+import { SQLUtils } from '@wri-monorepos/sql';
 import { Command } from '../../domain/command';
 import Result from '../../domain/result';
 import ResultError from '../../domain/result/result.error';
@@ -15,16 +16,16 @@ export class StoredProcedureCommand implements Command {
   async execute<T>(): ResultPromise<T> {
     try {
       await this.connection.connect();
-      console.log(this.procedureName, this.parameters);
+      Logger.log(this.procedureName, this.parameters);
       const result = await this.connection.executeQuery<T>(
         this.procedureName,
         this.parameters,
       );
-      console.log(result);
+      Logger.log(result);
       await this.connection.disconnect();
       return Result.ok(result);
     } catch (error) {
-      console.log('Error Executing The Stored Proccedure', error);
+      Logger.log('Error Executing The Stored Proccedure', error);
       return Result.fail(
         new ResultError('Error when executing stored procedure', 500),
       );

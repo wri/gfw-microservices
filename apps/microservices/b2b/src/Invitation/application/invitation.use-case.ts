@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DataServices } from '../../Shared/domain/data-service';
 import { InvitationRepository } from '../../Invitation/domain/invitation.repository';
 import { CreateInvitationDto } from '../../Invitation/application/dtos/invitation.dto';
 import { InvitationDataMapper } from './invitation.mapper';
@@ -42,7 +41,7 @@ export class InvitationUseCases {
     return Result.fail(result.getError());
   }
 
-  resendInvitation(id: any) {
+  resendInvitation(id: string) {
     return this.invitationRepo.resendInvitation(id);
   }
 }

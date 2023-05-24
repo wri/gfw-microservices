@@ -1,4 +1,4 @@
-import { SQLUtils } from '../../../../../../../libs/sql/src';
+import { SQLUtils } from '@wri-monorepos/sql';
 import { Command } from '../../domain/command';
 import Result from '../../domain/result';
 import ResultError from '../../domain/result/result.error';

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { DataServicesModule } from '../Shared/application/data-service/data-service.module';
 import { InvitationRepository } from './domain/invitation.repository';
 import { InvitationRepositoryMysql } from './infrastructure/invitation.repository.mysql';
 import { InvitationDataMapper } from './application/invitation.mapper';

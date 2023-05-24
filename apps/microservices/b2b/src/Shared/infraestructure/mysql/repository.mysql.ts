@@ -1,4 +1,4 @@
-import { SQLUtils } from '../../../../../../../libs/sql/src';
+import { SQLUtils } from '@wri-monorepos/sql';
 import { SqlConfig } from './config';
 import { StoredProcedureCommandFactory } from './store-procedure.comand.factory';
 

@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  HttpException,
-  HttpStatus,
-  Param,
-  Post,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, HttpException, Param, Post } from '@nestjs/common';
 import { CreateInvitationDto } from '../application/dtos/invitation.dto';
 import { InvitationUseCases } from '../application/invitation.use-case';
 
@@ -16,9 +8,7 @@ export class InvitationController {
 
   @Post()
   async createInvitation(@Body() invitationDto: CreateInvitationDto) {
-    const result = await this.invitationUseCases.sendInvitation(
-      invitationDto,
-    );
+    const result = await this.invitationUseCases.sendInvitation(invitationDto);
 
     if (result.isSuccess) return { msg: 'Invitation sent' };
     const error = result.getError();

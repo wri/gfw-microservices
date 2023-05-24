@@ -3,7 +3,7 @@ import * as sql from 'mssql';
 
 export abstract class GenericMapper {
   createStoreProcedureStringParam(
-    params: Array<[string, any]>,
+    params: Array<[string, unknown]>,
   ): ParamStoreProcedure[] {
     return params.map(
       ([field, value]): ParamStoreProcedure => ({

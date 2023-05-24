@@ -1,21 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
-import { error } from 'console';
-import { DataServices } from '../../Shared/domain/data-service';
 import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';
-import { CreateConnectionDto } from '../application/dtos/connection.dto';
-import { Connection, ConnectionStatus } from '../domain/connection';
+import { ConnectionStatus } from '../domain/connection';
 import { ConnectionRepository } from '../domain/connection.repository';
 import { ConnectionDataMapper } from './connection.mapper';
 import {
   ConnectionAcceptHttpDto,
   ConnectionChangeDto,
 } from './dtos/connection-status.dto';
-import { ConnectionDbDto } from './dtos/connection-db.dto';
 import { ConnectionFiltersDto } from './dtos/connection-filters.dto';
 import { ConnectionGetDto } from './dtos/connection-get.dto';
-import { PromiseResult } from 'aws-sdk/lib/request';
 import { ConnectionAdminOrganizationDto } from './dtos/connection-admin-organizations.dto';
 
 @Injectable()

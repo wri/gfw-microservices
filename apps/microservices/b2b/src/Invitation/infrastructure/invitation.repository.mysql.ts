@@ -2,10 +2,7 @@ import { InvitationRepository } from '../domain/invitation.repository';
 import { Invitation } from '../domain/invitation';
 import { InvitationDataMapper } from '../application/invitation.mapper';
 import { RepositoryMysql } from '../../Shared/infraestructure/mysql/repository.mysql';
-import { Injectable } from '@nestjs/common';
 import ResultPromise from '../../Shared/domain/result/result.promise';
-import Result from '../../Shared/domain/result';
-import ResultError from '../../Shared/domain/result/result.error';
 
 export class InvitationRepositoryMysql
   extends RepositoryMysql
@@ -13,7 +10,7 @@ export class InvitationRepositoryMysql
 {
   private mapper: InvitationDataMapper;
 
-  constructor(private mapper2: InvitationDataMapper) {
+  constructor() {
     super();
     this.mapper = new InvitationDataMapper();
   }
@@ -27,13 +24,13 @@ export class InvitationRepositoryMysql
     return await resendInvitation.execute();
   }
 
-  async createInvitation(invitation: Invitation): ResultPromise<Number> {
+  async createInvitation(invitation: Invitation): ResultPromise<number> {
     const params = this.mapper.toProcedureParam(invitation);
     const createInvitation = this.storeProcedureFactory.create(
       'uspCreateConnectionRequest',
       params,
     );
-    let result = await createInvitation.execute<Number>();
+    const result = await createInvitation.execute<number>();
     return result;
   }
 }

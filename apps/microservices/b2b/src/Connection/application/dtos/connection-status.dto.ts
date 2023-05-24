@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNumber, IsOptional } from 'class-validator';
+import { IsEmail, IsEnum, IsNumber } from 'class-validator';
 import { ConnectionStatus } from '../../domain/connection';
 
 export class ConnectionChangeDto {

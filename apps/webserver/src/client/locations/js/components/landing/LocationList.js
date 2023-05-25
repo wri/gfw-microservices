@@ -13,6 +13,7 @@ import Popover from 'material-ui/Popover';
 
 import GroupsIcon from '@mui/icons-material/Groups';
 import PublicIcon from '@mui/icons-material/Public';
+
 import { getIsDiagnosticStatusDraft } from '../../utils/draft.utils';
 import IconUsers from '../../../../common/js/components/icon/IconUsers';
 import CustomTooltip from '../../../../common/js/components/CustomTooltip/CustomTooltip';
@@ -48,7 +49,7 @@ import LandingDownload from '../lists/download/LandingDownload';
 import ManageListFolderDialog from './ManageListFolderDialog';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import store from '../../store';
-import { classNameForListStatus, isDownloadDisabledForThisList, isAnalyzingStatus } from '../../utils/lists.utils';
+import { classNameForListStatus, isDownloadDisabledForThisList, isAnalyzingStatus, isFailedList } from '../../utils/lists.utils';
 import DeleteListDialog from './DeleteListDialog';
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
 import ListDiagnosticStatusDraft from './components/ListDiagnosticStatusDraft/ListDiagnosticStatusDraft';
@@ -186,10 +187,8 @@ export default class LocationList extends Component {
       },
     }).then((response) => {
       if (response.errorCode === 604) {
-        // TODO: handle in UI
         console.error('list not accessible');
       } else {
-        // update the selected locations with all the location IDs
         const features = response.features ? response.features : response[0].features;
         const locationIds = features.map((feat) => {
           return feat.properties.location_id;
@@ -200,7 +199,7 @@ export default class LocationList extends Component {
 
         store.dispatch(addList(list));
         store.dispatch(updateSpatialData(features));
-        // fetch the analysis info for the list needed by the diagnostics page
+
         fetch({
           url: '/locations/getLists',
           method: 'POST',
@@ -211,15 +210,6 @@ export default class LocationList extends Component {
         })
           .then((listData) => {
             const { list_analysis, location_analyses } = listData;
-            // The diagnostic view expects the list data to consist of the merged properties
-            // of the two arrays of location data in `location_analyses`.
-            /* const joinedLocAnalyses =
-              location_analyses.length > 1
-                ? location_analyses[0].map((loc, idx) => {
-                  return { ...loc, ...location_analyses[1][idx] };
-                })
-                : location_analyses[0]; */
-
             const locationData = location_analyses[0];
             const analysisData = location_analyses[1];
 
@@ -316,7 +306,7 @@ export default class LocationList extends Component {
       locationsPage.listStatus.AnalyzingDiagnostic,
       locationsPage.listStatus.AnalyzingDashboard,
     ].includes(list.list_status_id);
-    const isFailed = list.list_status_id === locationsPage.listStatus.Inactive;
+    const isFailed = isFailedList(list);
     const isSavedLocation = SAVED_LOCATIONS.indexOf(list.list_name) !== -1;
     const isShared = list.is_shared;
     const isInFolder = !!list.folder;
@@ -422,14 +412,13 @@ export default class LocationList extends Component {
               <FailedTooltip
                 placement="top"
                 label={strings.failed}
-                tooltipMessage={`This list has failed analysis. To receive results, resubmit this list for analysis. ${
-                  isLargeList ? 'Click to download the file and fix errors.' : ''
+                tooltipMessage={`This list has failed analysis. To receive results, resubmit this list for analysis. ${isLargeList ? 'Click to download the file and fix errors.' : ''
                 }`}
                 onClickAction={
                   isLargeList
                     ? () => {
                         this.setState({ downloadLargeListFileDialogState: true });
-                      }
+                    }
                     : undefined
                 }
               />

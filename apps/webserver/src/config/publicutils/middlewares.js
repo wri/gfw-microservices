@@ -27,6 +27,9 @@ const checkActive = (request, response, next) => {
             }
         }
     }).catch(err => {
+        // NOTE: Better to use logger here in case this line is needed for debugging
+        // Otherwise we can remove this line
+        console.log('Error checkActive', err);
         if (method === 'POST') {
             response.status(401).json({
                 redirect: '/'
@@ -79,7 +82,7 @@ const checkInactivity = (request, response, next) => {
             }
         } else {
             const message = `User ${user_first_name} ${user_last_name} has logged out due to inactivity.`;
-            logger.logActivity(request, logger.listActivityTypes.User.UserLogout, message).then(() => {
+            logger.logActivity(request, logger.listActivityTypes.User.UserLogout, message).finally(() => {
                 request.session.destroy();
                 if (method === 'POST') {
                     response.status(401).json({

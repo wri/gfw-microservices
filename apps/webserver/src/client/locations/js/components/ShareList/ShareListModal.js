@@ -3,20 +3,17 @@ import Dialog from 'material-ui/Dialog';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import BusinessIcon from '@mui/icons-material/Business';
+import GroupsIcon from '@mui/icons-material/Groups';
 import { addUserToSharedListService } from './ShareListServices';
 import { getFormattedDateTime } from '../../../../common/js/utils/dateTime';
-import { isAdmin,
-  normalizeUserData,
-  normalizeComapnyData
-} from '../../utils/shareList.utils';
+import { isAdmin, normalizeUserData, normalizeComapnyData } from '../../utils/shareList.utils';
 import { B2BconnectionsList } from '../../utils/sharedListMock';
 import ShareListSuccess from './ShareListModal/ShareListSuccess';
 import ShareListActions from './ShareListModal/ShareListActions';
 import ShareListType from './ShareListModal/ShareListType';
 import ShareListOption from './ShareListModal/ShareListOption';
 import { IconClose } from '../../../../common/js/components/icon/IconClose';
-import BusinessIcon from '@mui/icons-material/Business';
-import GroupsIcon from '@mui/icons-material/Groups';
 
 const ShareListModal = (props) => {
   const [selectedUser, setSelectedUser] = useState(false);
@@ -24,33 +21,35 @@ const ShareListModal = (props) => {
   const [showShareType, setShowShareType] = useState('internal');
   const [shareListModalTab, setShareListModalTab] = useState('list');
   const [showActions, setShowActions] = useState(false);
-  const { isOpen, onClose, selectedList } = props;
-  const {notAdminsOwner, setNotAdminsOwner} = useState({});
+  const { isOpen, onClose, selectedList, usersList, currentUser, SharedListUsers } = props;
+  const [notAdminsOwner, setNotAdminsOwner] = useState({});
 
   const AdminsOwner = [];
-  const getNotAdminsOwner = props.usersList.filter((user) => {
+  const getNotAdminsOwner = usersList.filter((user) => {
     if (user.activated_time === null) {
       return;
     }
 
-    user = normalizeUserData(user)
+    user = normalizeUserData(user);
 
     if (selectedList.user_id === user.user_id) {
-      user['accessLevelTitle'] = `${user.accessLevelTitle} (List Owner)`;
+      user.accessLevelTitle = `${user.accessLevelTitle} (List Owner)`;
     }
 
     if (!isAdmin(user)) {
       return user;
-    } else {
-      AdminsOwner.push(user);
-      return false;
     }
+
+    AdminsOwner.push(user);
+    return false;
   });
 
-  setNotAdminsOwner(getNotAdminsOwner)
+  console.log('here');
+
+  setNotAdminsOwner(getNotAdminsOwner);
 
   const companyList = B2BconnectionsList.map((company) => {
-    return normalizeComapnyData(company)
+    return normalizeComapnyData(company);
   });
 
   const updateShowActionsState = (value) => {
@@ -58,55 +57,50 @@ const ShareListModal = (props) => {
   };
 
   const filterCompanyList = () => {
-    return companyList.filter(
-      company => company.name.includes(filterUsersLabel.toLowerCase())
-    );
+    return companyList.filter((company) => company.name.includes(filterUsersLabel.toLowerCase()));
   };
 
   const handleCompanySelect = (company) => {
     setSelectedUser(company);
     setShareListModalTab('shareType');
-  }
+  };
 
   const handleUserSelect = (user) => {
     setSelectedUser(user);
     updateShowActionsState(user);
-  }
+  };
 
-  const intenalListIsSelect = showShareType === "internal";
+  const intenalListIsSelect = showShareType === 'internal';
 
   const filterUserList = () => {
-    return notAdminsOwner.filter(
-      user => user.label.includes(filterUsersLabel.toLowerCase())
-    );
-  }
+    return notAdminsOwner.filter((user) => user.label.includes(filterUsersLabel.toLowerCase()));
+  };
 
   const setUserStates = (data) => {
-    setNotAdminsOwner(data.NotAdminsOwner)
-  }
+    setNotAdminsOwner(data.NotAdminsOwner);
+  };
 
-  const addUserToSharedList = () => {     
-    selectedUser['timestamp'] = getFormattedDateTime();
+  const addUserToSharedList = () => {
+    selectedUser.timestamp = getFormattedDateTime();
     const updatedNotAdminsOwner = notAdminsOwner.map((user) => {
       if (user.user_id === selectedUser.user_id) {
-        user['disabled'] = true;
+        user.disabled = true;
       }
       return user;
     });
 
     const userdata = {
       state: {
-        currentUser: props.currentUser,
+        currentUser,
         selectedList,
-        SharedListUsers: props.SharedListUsers,
+        SharedListUsers,
       },
-      setState: setUserStates
-    }
-    
+      setState: setUserStates,
+    };
+
     addUserToSharedListService(selectedUser, updatedNotAdminsOwner, userdata);
     setShareListModalTab('success');
     updateShowActionsState(false);
-
 
     ga(
       'send',
@@ -119,7 +113,7 @@ const ShareListModal = (props) => {
 
   const handleTypeChange = (event) => {
     setShowShareType(event.target.value);
-  }
+  };
 
   return(
     <Dialog
@@ -128,10 +122,11 @@ const ShareListModal = (props) => {
       bodyClassName="share-dialog__body"
       contentClassName="dialog__content"
       onRequestClose={onClose}>
+      <h2 className="sharelist__title">{selectedList.list_name}</h2>
 
-      <h2 className="sharelist__title">{ selectedList.list_name }</h2>
-
-      <button className="sharelist__close" onClick={onClose}><IconClose/></button>
+      <button className="sharelist__close" onClick={onClose}>
+        <IconClose />
+      </button>
 
       { shareListModalTab === 'list' &&
         <div>

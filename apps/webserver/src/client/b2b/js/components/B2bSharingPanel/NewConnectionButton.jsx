@@ -3,10 +3,13 @@ import NewB2bConnectionModal from './NewB2bConnectionModal';
 import Button from '../../../../common/js/components/Button';
 import IconPlus from '../../../../common/js/components/icon/IconPlus';
 import { profilePage } from '../../../../common/js/config';
+import B2BComingSoon from './B2BConnectionList/B2BComingSoon';
 
 function NewConnectionButton() {
   const [displayModal, setDisplayModal] = useState(false);
-  return (
+
+  const B2bConnectionsEnabled = true;
+  return B2bConnectionsEnabled ? (
     <>
       <Button
         variant="primary"
@@ -19,6 +22,8 @@ function NewConnectionButton() {
       />
       {displayModal && <NewB2bConnectionModal onCloseModal={() => setDisplayModal(false)} />}
     </>
+  ) : (
+    <B2BComingSoon />
   );
 }
 

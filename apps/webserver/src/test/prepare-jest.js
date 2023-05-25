@@ -12,7 +12,7 @@ const jestConfigPath = path.resolve('./jest.config.json');
 const aliases = {};
 
 // Replace fixed paths with <rootDir> relative paths
-const replacePathWithRootDir = (fixedPath) => fixedPath.replace(/.*pro-temp\/src/, '<rootDir>');
+const replacePathWithRootDir = (fixedPath) => fixedPath.replace(/.*gfw-microservices\/apps\/webserver\/src/, '<rootDir>');
 
 try {
   // Read in our base jest config
@@ -26,6 +26,7 @@ try {
   // Update it based on our aliases, and mocks
   jestConfig.moduleNameMapper = {
     '^axios$': replacePathWithRootDir(require.resolve('axios')),
+    '^mapshaper$': replacePathWithRootDir(require.resolve('mapshaper')),
     '\\.(css|scss)$': '<rootDir>/test/__mocks__/object.js',
     '\\.(jpe?g|png|gif|svg)$': '<rootDir>/test/__mocks__/object.js',
     // 'material-ui/Popover': '<rootDir>/__mocks__/constructor.js',

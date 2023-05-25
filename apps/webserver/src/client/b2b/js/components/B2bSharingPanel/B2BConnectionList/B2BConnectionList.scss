@@ -1,0 +1,22 @@
+.button--small {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.25px;
+  text-align: center;
+  padding: 6px 12px;
+  border-radius: 18px;
+  text-transform: uppercase;
+  border: 0;
+  margin-left: 10px;
+  cursor: pointer;
+
+  &.red {
+    background: #F24E1E;
+    color: #fff;
+  }
+
+  &.white {
+    background-color: #fff;
+    color: #000000BA;
+  }
+}

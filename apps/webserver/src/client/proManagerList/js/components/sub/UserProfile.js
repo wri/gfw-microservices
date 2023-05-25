@@ -624,8 +624,7 @@ export default class UserProfile extends Component {
                       isSearchable={true}
                       maxMenuHeight={150}
                       options={geogOptions}
-                      id="arr_user_commodity_ids"
-                      name="arr_user_commodity_ids"
+                      id="arr_user_geography_ids"
                       onChange={this.geogChange}
                       value={this.state.geographies}
                       disabled={this.props.disable}

@@ -4,6 +4,7 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const express = require('express');
 const { exit } = require('process');
 const logger = require('./config/lib/winston');
 const loadenv = require('./load-env');
@@ -20,6 +21,7 @@ process.on('SIGINT', () => {
   exit(0);
 });
 
+const app = express();
 // Load all the neccesary environment variables.
 loadenv
   .loadEnvironmentVars(process.env.NODE_ENV)
@@ -29,11 +31,10 @@ loadenv
     // Initialize all neccesary modules.
     return Promise.all([
       require('./config/config'),
-      require('./config/lib/express').initialize(),
+      require('./config/lib/express').initialize(app),
       require(path.resolve('./config/publicutils/accountManager.utils')).initialize(),
       require(path.resolve('./config/publicutils/gfwListManager.utils')).initialize(),
       require(path.resolve('./config/publicutils/userManager.utils')).initialize(),
-      require(path.resolve('./config/privateutils/logger.utils')).initialize(),
       require(path.resolve('./config/privateutils/cognito.utils')).initialize(),
       require(path.resolve('./config/privateutils/ses.utils')).initialize(),
       require(path.resolve('./server/vectorTiles/utils/vectorTileSQS.utils')).initialize(),
@@ -41,10 +42,11 @@ loadenv
   })
   .then((initializations) => {
     // Obtaining config and app from initializations.
-    const [config, app] = initializations;
+    const [config] = initializations;
     // Setup Express to listen on https port for everything but production.
     // NOTE: Production SSL is handled via the Load Balancer.
-    if (!PRODUCTION_ENVIRONMENTS.includes(process.env.NODE_ENV)) {
+    // NOTE: test does not use SSL
+    if (!PRODUCTION_ENVIRONMENTS.includes(process.env.NODE_ENV) && process.env.NODE_ENV !== 'test') {
       const sslOptions = {
         key: fs.readFileSync(`/srv/src/config/ssl/${process.env.NODE_ENV}/gfwpro.key`),
         cert: fs.readFileSync(`/srv/src/config/ssl/${process.env.NODE_ENV}/gfwpro.crt`),
@@ -55,6 +57,7 @@ loadenv
       http.createServer(app).listen(config.port);
       logger.info(`App listening on port: ${config.port}`);
     }
+    app.emit('appReady', null);
   })
   .catch((error) => {
     logger.error('Error initializing application', error);
@@ -95,3 +98,5 @@ setInterval(() => {
     });
   });
 }, 60000); // every 5 hours
+
+module.exports = app;

@@ -1,4 +1,10 @@
 module.exports = {
+  app: {
+    author: 'World Resource Institute',
+    title: 'Global Forest Watch Pro',
+    keywords: 'Express, React, Redux, Node, Docker',
+    description: 'Global Forest Watch Pro Application',
+  },
   // DB Connection
   SQLConnection: {
     host: process.env.MSSQL_HOSTNAME,

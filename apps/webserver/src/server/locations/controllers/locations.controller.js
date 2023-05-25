@@ -54,7 +54,6 @@ exports.locations = (req, res, data) => {
     GFWlistManager.getGFWLists(req),
     AccountManager.getUsersList(req),
     ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
-    LocationManager.getListStatuses(req),
   ];
 
   Promise.all(promises)
@@ -69,8 +68,8 @@ exports.locations = (req, res, data) => {
         gfwLists,
         usersList,
         sharedListsRecords,
-        listStatuses,
       ] = results;
+      const listStatuses = UserManager.getStatuses();
 
       const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);
       res.render('locations', {

@@ -5,6 +5,7 @@ import { v1 as uuidv1 } from 'uuid';
 import ProdesLegend from './SouthAmericaRegions/ProdesLegend';
 import IconButtonWrapper from '../IconButtonWrapper';
 import OtbnAreaChart from './OtbnCharts/OtbnAreaChart';
+import { otbnChartsColors } from './OtbnCharts/OtbnChartsColors.constants';
 import getTreeCoverLossArgOtbnYearlyData from './OtbnCharts/TreeCoverLossArgentinaOtbnYearly/getTreeCoverLossArgOtbnYearlyData';
 import { formatNum, formatPct, prettifyNum, validatePct } from '../../utils/diagnostics.utils';
 import { latestTreeCoverLossYearFC, locationsPage } from '../../../../common/js/config';
@@ -20,8 +21,6 @@ const START_YEAR = 2001;
 const END_YEAR = latestTreeCoverLossYearFC;
 const HARVEST_YEAR = END_YEAR - 1;
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
-const PRODES_AMAZON = 'PRODES (Amazon, Cerrado, Brazil)';
-const isProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
 let isMounted = false;
 
 function getFormatedTooltip() {
@@ -470,7 +469,7 @@ export default class SouthAmericaRegions extends Component {
 
     if (prodesChecked) {
       const highchartProdesData = {
-        name: PRODES_AMAZON,
+        name: locationsPage.diagnosticsTitles.PRODES_AMAZON,
         data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear)),
         color: '#ef669a',
         groupPadding: 0,
@@ -871,7 +870,6 @@ export default class SouthAmericaRegions extends Component {
       return (
         <React.Fragment key={uuidv1()}>
           <tr
-            style={category === 'otbnArgentina' && isProduction ? { display: 'none' } : {}}
             key={`south-america__${category}`}
             className={`locations-diagnostics-table__row ${child ? 'child' : 'parent'}`}
           >
@@ -920,7 +918,7 @@ export default class SouthAmericaRegions extends Component {
                       className="otbn-checkbox"
                       style={{
                         opacity: otbnArgentinaShowCategoryIChecked ? 1 : 0.2,
-                        background: 'rgba(151,189,61,255)',
+                        background: otbnChartsColors['Category I'],
                       }}
                     />
                     Category I
@@ -948,7 +946,7 @@ export default class SouthAmericaRegions extends Component {
                       className="otbn-checkbox"
                       style={{
                         opacity: otbnArgentinaShowCategoryIIChecked ? 1 : 0.2,
-                        background: 'rgba(255,204,51,255)',
+                        background: otbnChartsColors['Category II'],
                       }}
                     />
                     Category II
@@ -976,7 +974,7 @@ export default class SouthAmericaRegions extends Component {
                       className="otbn-checkbox"
                       style={{
                         opacity: otbnArgentinaShowCategoryIIIChecked ? 1 : 0.2,
-                        background: 'rgba(238,37,33,255)',
+                        background: otbnChartsColors['Category III'],
                       }}
                     />
                     Category III
@@ -1166,12 +1164,8 @@ export default class SouthAmericaRegions extends Component {
   };
 
   isArgentinaOtnbArea = () => {
-    if (isProduction) {
-      return false;
-    }
-
     const { getFilteredLocations } = this.props;
-    return Object.entries(JSON.parse(getFilteredLocations()[0]?.arg_otbn_area)).length !== 0;
+    return Object.entries(JSON.parse(getFilteredLocations()[0]?.arg_otbn_area || '{}')).length !== 0;
   };
 
   render() {
@@ -1186,16 +1180,32 @@ export default class SouthAmericaRegions extends Component {
 
     const regionObject = this.getRegionCountLabel();
 
-    let title = 'SOY ON TREE COVER LOSS';
+    const { TREE_COVER_LOSS, PRODES_AMAZON, TREE_COVER_LOSS_ON_ARGENTINA_OTBN, SOY_ON_TREE_COVER_LOSS } = locationsPage.diagnosticsTitles;
+    let title;
 
-    if (saTCLChecked || biomesChecked || otbnArgentinaChecked) {
-      title = 'TREE COVER LOSS';
+    if (saTCLChecked || biomesChecked) {
+      title = TREE_COVER_LOSS;
     } else if (prodesChecked || paChecked || pfChecked) {
       title = PRODES_AMAZON;
+    } else if (otbnArgentinaChecked) {
+      title = TREE_COVER_LOSS_ON_ARGENTINA_OTBN;
+    } else {
+      title = SOY_ON_TREE_COVER_LOSS;
     }
 
     const displayBrazilBiomeSection = this.checkBrazilBiome();
     const argentinaOtnbArea = this.isArgentinaOtnbArea();
+
+    let informationBubbleId;
+    if (prodesChecked || paChecked || pfChecked) {
+      informationBubbleId = locationsPage.infoBubbleConfig.regionsProdesAnnual;
+    } else if(saTCLChecked || biomesChecked) {
+      informationBubbleId = locationsPage.infoBubbleConfig.regionsSaAnnual;
+    } else if(otbnArgentinaChecked) {
+      informationBubbleId = locationsPage.infoBubbleConfig.treeCoverLossArgOtbnYearly;
+    } else {
+      informationBubbleId = locationsPage.infoBubbleConfig.regionsSoyAnnual;
+    }
 
     return (
       <div
@@ -1210,13 +1220,7 @@ export default class SouthAmericaRegions extends Component {
             <div className="locations-diagnostics__subsection-container">
               <div className="locations-diagnostics__flex-center subsection-subtitle__container">
                 <span className="subsection-subtitle">{title}</span>
-                {prodesChecked || paChecked || pfChecked ? (
-                  <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsProdesAnnual} />
-                ) : saTCLChecked || biomesChecked ? (
-                  <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsSaAnnual} />
-                ) : (
-                  <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsSoyAnnual} />
-                )}
+                <IconButtonWrapper id={informationBubbleId} />
                 <span
                   onClick={() => this.props.fireDownload('southAmericaTCL')}
                   className="locations-diagnostics-icon-holder"

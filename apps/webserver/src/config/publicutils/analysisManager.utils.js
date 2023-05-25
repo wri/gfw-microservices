@@ -18,13 +18,17 @@ const sql = require('mssql');
 let getAsync, setAsync;
 // Redis is only available on qa, staging, and production
 const redis = require('redis');
-const client = redis.createClient({
-  host: process.env.REDIS_HOST || 'redis',
-  port: process.env.REDIS_PORT || 6379,
-});
-const { promisify } = require('util');
-getAsync = promisify(client.get).bind(client);
-setAsync = promisify(client.set).bind(client);
+
+// redis not present or useful for jest unit testing
+if (process.env.NODE_ENV !== 'test') {
+  const client = redis.createClient({
+    host: process.env.REDIS_HOST || 'redis',
+    port: process.env.REDIS_PORT || 6379,
+  });
+  const { promisify } = require('util');
+  getAsync = promisify(client.get).bind(client);
+  setAsync = promisify(client.set).bind(client);
+}
 
 const s3Utils = require(path.resolve('./config/privateutils/s3.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));

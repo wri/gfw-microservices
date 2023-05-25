@@ -6,14 +6,9 @@ import { locationsPage } from '../../../../common/js/config';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';
 import IconButton from '../../../../common/js/components/IconButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import CircularProgressWithLabel from './CircularProgressWithLabel';
 
 function DownloadLarleListFile({ onCancel }) {
   const chooser = locationsPage.landing.addLocationChooser;
-
-  const shouldCloseDialog = () => {
-    setDialogOpen(false);
-  };
 
   return (
     <div className="dialog add-location-chooser">
@@ -25,9 +20,8 @@ function DownloadLarleListFile({ onCancel }) {
       <div className="add-location-chooser__filedrop_process_end">
         <div className="add-location-chooser__filedrop_text">
           <WarningTwoToneIcon
-            style={{ opacity: '0.3' }}
             size={256}
-            style={{ color: '#F24E1E', width: '4em', height: '4em' }}
+            style={{ color: '#F24E1E', width: '4em', height: '4em', opacity: '0.3' }}
           />
           <h2 className="gfw-lists__title">We found some errors in your file</h2>
           <p>

@@ -131,7 +131,7 @@ const overheadParser = (
           : {};
 
         let val = 0;
-        Object.keys(totalProp).forEach((year, j) => {
+        Object.keys(totalProp).forEach((year) => {
           val += totalProp[year];
         });
 

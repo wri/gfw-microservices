@@ -18,7 +18,64 @@ require('winston-mssql');
 // eslint-disable-next-line import/no-dynamic-require
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 // Important variables
-const listActivityTypes = {};
+const listActivityTypes = {
+  Account: {
+    AccountRequested: 1,
+    AccountActivated: 2,
+    AccountDeactivated: 3,
+    AccountUpdated: 4,
+  },
+  User: {
+    UserCreated: 5,
+    UserUpdated: 6,
+    UserLogin: 7,
+    UserLogout: 8,
+    UserActivated: 9,
+    UserForgotPassword: 10,
+    UserResetPassword: 11,
+    UserDeactivated: 12,
+  },
+  List: {
+    LocationUploadedToList: 13,
+    LocationDeletedFromList: 14,
+    LocationCopiedToList: 15,
+    LocationUpdatedInList: 16,
+    LocationMovedFromList: 17,
+    ListCreated: 18,
+    ListUpdate: 19,
+    ListUpdateNew: 20,
+    ListDeleted: 21,
+    ListAnalyzing: 22,
+    // see backward compat comment and code below (listActivityByID[23-25])
+    ListShared: 35,
+    ListUnShared: 36,
+    ListUnSharedWithAll: 37,
+  },
+  b2b: {
+    ConnectionRequested: 28,
+    ConnectionAccepted: 29,
+    ConnectionRejected: 30,
+    ConnectionResent: 31,
+    ConnectionCancelled: 32,
+  },
+  // new entries should start with value 38
+};
+
+// map from numeric ID to category and activtyType (reverse of listActivityTypes above)
+const listActivityByID = [];
+Object.keys(listActivityTypes).forEach((category) => {
+  Object.keys(listActivityTypes[category]).forEach((activityType) => {
+    listActivityByID[listActivityTypes[category][activityType]] = { category, activityType };
+  });
+});
+
+// listActivityTypes used to be in the database under two tables named ActivityType and ActivityTypeCategory
+// For unknown reason, the databases for different environments (dev/prod) had different values for three rows
+// Now that this information is in code vs. DB, we insert backward compatibility values in listActivityByID
+// so all environments continue working as before
+listActivityByID[23] = { category: 'List', activityType: 'ListShared' };
+listActivityByID[24] = { category: 'List', activityType: 'ListUnShared' };
+listActivityByID[25] = { category: 'List', activityType: 'ListUnSharedWithAll' };
 
 // Set time format
 const tsFormat = () =>
@@ -87,7 +144,7 @@ const log = (req, level, message) => {
  */
 const logActivity = (req, activityTypeId, activityDescription) => {
   //Temporary debug
-  console.log('logActivity DEBUG', req, activityTypeId, activityDescription);
+  console.log('logActivity DEBUG2', req.originalUrl, req.session, activityTypeId, activityDescription);
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'userID', type: sql.Int, value: req.session.organization_user_id },
@@ -119,42 +176,19 @@ const getActivityLog = (req) => {
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetActivityLog')
       .then((recordset) => {
-        recordset.map((data) => {
-          // eslint-disable-next-line no-param-reassign
-          data.activity_time = data.activity_time.toUTCString().replace(',', '');
-          return data;
+        const newRes = recordset.map((data) => {
+          const actInfo = listActivityByID[data.activity_type_id];
+          const datetime = data.activity_time instanceof Date ? data.activity_time : new Date(data.activity_time);
+          const newData = {
+            email: data.email,
+            activity_type_category_name: actInfo.category,
+            activity_type_name: actInfo.activityType,
+            activity_description: data.activity_description,
+            activity_time: datetime.toUTCString().replace(',', ''),
+          };
+          return newData;
         });
-        resolve(recordset.reverse());
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
-};
-
-/**
- * @function initialize
- * @summary Initializes the Account Manager module.
- *           Loads all the lists needed for the application.
- */
-const initialize = () => {
-  return new Promise((resolve, reject) => {
-    // Get Activity Types
-    sqlUtils
-      .executeSystemStoredProcedure(null, 'uspGetActivityTypes')
-      .then((recordsets) => {
-        recordsets.forEach((activityType) => {
-          const activityCategoryName = activityType.ActivityCategoryName;
-          const activityTypeName = activityType.ActivityTypeName;
-          const activityTypeID = activityType.ActivityTypeID;
-          if (Object.prototype.hasOwnProperty.call(listActivityTypes, activityCategoryName)) {
-            listActivityTypes[activityCategoryName][activityTypeName] = activityTypeID;
-          } else {
-            listActivityTypes[activityCategoryName] = {};
-            listActivityTypes[activityCategoryName][activityTypeName] = activityTypeID;
-          }
-        });
-        resolve(true);
+        resolve(newRes);
       })
       .catch((err) => {
         reject(err);
@@ -167,5 +201,4 @@ module.exports = {
   log,
   logActivity,
   getActivityLog,
-  initialize,
 };

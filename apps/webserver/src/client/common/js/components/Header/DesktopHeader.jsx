@@ -34,7 +34,6 @@ function DesktopHeader({ isLoggedIn, active }) {
             <HeaderNavLink active={active} link="/about" label="About" />
             <HeaderNavLink active={active} link="https://www.globalforestwatch.org/blog/tag/gfw-pro" label="Blog" />
             <HeaderNavLink
-              active={active}
               link="/account"
               label={nav.requestAccount}
               className="header__request-account-button"

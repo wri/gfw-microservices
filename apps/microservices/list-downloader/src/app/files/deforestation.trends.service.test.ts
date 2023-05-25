@@ -40,4 +40,22 @@ describe('Deforestation Trends Aggregate data', () => {
       ['list_name', '5.4321', '2011'],
     ]);
   });
+
+  test('Receive an empty object', () => {
+    const returnData = deforestationTrendsService.generateAggregate(
+      'table',
+      'list_name',
+      {}
+    );
+    expect(returnData).toEqual([['List Name', 'Loss (thousand ha)', 'Year']]);
+  });
+
+  test('Receive an undefined data', () => {
+    const returnData = deforestationTrendsService.generateAggregate(
+      'table',
+      'list_name',
+      undefined
+    );
+    expect(returnData).toEqual([['List Name', 'Loss (thousand ha)', 'Year']]);
+  });
 });

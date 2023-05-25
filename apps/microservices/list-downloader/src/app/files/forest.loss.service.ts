@@ -37,7 +37,12 @@ export class ForestLossService extends DashboardHandleDownload {
         const dataRow = [list_name];
 
         let rowValue = 0;
-        if (!listLevelAnalysis[field.attribute]) {
+        if (
+          !Object.prototype.hasOwnProperty.call(
+            listLevelAnalysis ?? {},
+            field.attribute
+          )
+        ) {
           return;
         }
         const yearlyData = JSON.parse(listLevelAnalysis[field.attribute]);

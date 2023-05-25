@@ -103,4 +103,40 @@ describe('Forest Loss Service', () => {
       ],
     ]);
   });
+
+  test('Receive an empty analysis data', () => {
+    const returnData = forestLossService.generateAggregate(
+      'forestLossAggregate',
+      'sensitive_areas_loss_of_forests_aggregate',
+      {}
+    );
+    expect(returnData).toEqual([
+      [
+        'List Name',
+        'Data Layer Name',
+        'Forest Loss (ha)',
+        'Year',
+        'Loss (all years) (ha)',
+        '% of TCL',
+      ],
+    ]);
+  });
+
+  test('Receive an undefined analysis data', () => {
+    const returnData = forestLossService.generateAggregate(
+      'forestLossAggregate',
+      'sensitive_areas_loss_of_forests_aggregate',
+      undefined
+    );
+    expect(returnData).toEqual([
+      [
+        'List Name',
+        'Data Layer Name',
+        'Forest Loss (ha)',
+        'Year',
+        'Loss (all years) (ha)',
+        '% of TCL',
+      ],
+    ]);
+  });
 });

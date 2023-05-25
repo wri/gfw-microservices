@@ -45,7 +45,13 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
         const dataRow = [list_name];
 
         if (totalStatValue > 0) {
-          if (!listLevelAnalysis[field.attribute]) {
+          const { attribute } = field;
+          if (
+            !Object.prototype.hasOwnProperty.call(
+              listLevelAnalysis ?? {},
+              attribute
+            )
+          ) {
             return;
           }
 

@@ -132,4 +132,108 @@ describe('Historic Percent Service', () => {
       ],
     ]);
   });
+
+  test('Receive an empty analysis data', () => {
+    const returnData = historicPercentService.generateAggregate(
+      'historicPercentAggregate',
+      'sensitive_areas_percentage_historic_area_lost_aggregate',
+      {}
+    );
+    expect(returnData).toEqual([
+      [
+        'List Name',
+        'Data Layer Name',
+        '% of Historic Area Lost',
+        'Loss (all years) (ha)',
+        'Tree Cover Extent (2000) (ha)',
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Tree Cover Extent',
+        '0.00',
+        0,
+        0,
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Primary Forest',
+        '0.00',
+        0,
+        0,
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Protected Areas',
+        '0.00',
+        0,
+        0,
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Peat',
+        '0.00',
+        0,
+        0,
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Intact Forest Landscapes',
+        '0.00',
+        0,
+        0,
+      ],
+    ]);
+  });
+
+  test('Receive an empty analysis data', () => {
+    const returnData = historicPercentService.generateAggregate(
+      'historicPercentAggregate',
+      'sensitive_areas_percentage_historic_area_lost_aggregate',
+      undefined
+    );
+    expect(returnData).toEqual([
+      [
+        'List Name',
+        'Data Layer Name',
+        '% of Historic Area Lost',
+        'Loss (all years) (ha)',
+        'Tree Cover Extent (2000) (ha)',
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Tree Cover Extent',
+        '0.00',
+        0,
+        0,
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Primary Forest',
+        '0.00',
+        0,
+        0,
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Protected Areas',
+        '0.00',
+        0,
+        0,
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Peat',
+        '0.00',
+        0,
+        0,
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Intact Forest Landscapes',
+        '0.00',
+        0,
+        0,
+      ],
+    ]);
+  });
 });

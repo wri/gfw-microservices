@@ -144,7 +144,7 @@ const log = (req, level, message) => {
  */
 const logActivity = (req, activityTypeId, activityDescription) => {
   //Temporary debug
-  console.log('logActivity DEBUG', req, activityTypeId, activityDescription);
+  console.log('logActivity DEBUG2', req.originalUrl, req.session, activityTypeId, activityDescription);
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'userID', type: sql.Int, value: req.session.organization_user_id },

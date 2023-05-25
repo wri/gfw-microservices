@@ -105,16 +105,25 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   private generateAggregate(filters: GenerationFileRequest) {
     const fileSuffix = this.getSuffix(filters);
     const { key, listName, listLevelAnalysis } = filters;
+    const { total_area } = listLevelAnalysis ?? {};
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS['forestChangeDiagnosticListSummary']);
     const dataRow = [listName];
-    const totalArea = listLevelAnalysis.total_area;
+    const totalArea = total_area ?? 0;
     const countryStr = [...this.countryAggregator.getCountries()].join(',');
 
     EXCEL_TEMPLATES['forestChangeDiagnosticListSummary'].forEach((key) => {
+      const { fields } = key;
       dataRow.push(countryStr.replace(/,/g, ';'));
-      key.fields.forEach((field) => {
-        const fieldValue = JSON.parse(listLevelAnalysis[field.attribute]);
+      fields.forEach((field) => {
+        const { attribute } = field;
+        const input = Object.prototype.hasOwnProperty.call(
+          listLevelAnalysis ?? {},
+          attribute
+        )
+          ? listLevelAnalysis[attribute]
+          : '0';
+        const fieldValue = JSON.parse(input);
         if (field.parsed === 'percent') {
           const percent = formatPct(
             validatePct((fieldValue / totalArea) * 100)

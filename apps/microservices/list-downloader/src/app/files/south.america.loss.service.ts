@@ -38,13 +38,22 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
     EXCEL_TEMPLATES[table].forEach((key) => {
-      key.composites.forEach((field) => {
+      const { composites } = key;
+      composites.forEach((field) => {
         const dataRow = [list_name];
+        const { attribute } = field;
 
         let rowValue = 0;
-        if (!listLevelAnalysis[field.attribute]) {
+
+        if (
+          !Object.prototype.hasOwnProperty.call(
+            listLevelAnalysis ?? {},
+            attribute
+          )
+        ) {
           return;
         }
+
         const yearlyData = JSON.parse(listLevelAnalysis[field.attribute]);
         let totalSubCategory = 0;
         if (

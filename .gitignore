@@ -27,3 +27,4 @@ coverage/
 
 dist/*
 dev.secrets
+qa.secrets

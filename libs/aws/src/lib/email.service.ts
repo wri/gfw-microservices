@@ -6,7 +6,7 @@ import { createPage } from './htmlTemplate';
 
 @Injectable()
 export class EmailService {
-  constructor (private sesService: SesService) { }
+  constructor(private sesService: SesService) {}
 
   async sendEmail(
     sender: string,

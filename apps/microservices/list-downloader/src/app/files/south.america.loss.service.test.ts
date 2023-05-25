@@ -184,4 +184,38 @@ describe('South America Loss Service', () => {
       ],
     ]);
   });
+
+  test('Receive an input empty object', () => {
+    const returnData = southAmericaLossService.generateAggregate(
+      'sAmericaLossAggregate',
+      'south_america_loss_of_forests_aggregate',
+      {}
+    );
+    expect(returnData).toEqual([
+      [
+        'List Name',
+        'Data Layer Name',
+        'Forest Loss (ha)',
+        'Year',
+        'Total Loss (ha)',
+      ],
+    ]);
+  });
+
+  test('Receive an undefined input', () => {
+    const returnData = southAmericaLossService.generateAggregate(
+      'sAmericaLossAggregate',
+      'south_america_loss_of_forests_aggregate',
+      undefined
+    );
+    expect(returnData).toEqual([
+      [
+        'List Name',
+        'Data Layer Name',
+        'Forest Loss (ha)',
+        'Year',
+        'Total Loss (ha)',
+      ],
+    ]);
+  });
 });

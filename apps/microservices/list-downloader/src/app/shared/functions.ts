@@ -36,7 +36,7 @@ const parseListData = (property, listLevelAnalysis) => {
 
   const listAnalysisData = listLevelAnalysis[0];
 
-  if (listAnalysisData[property]) {
+  if (Object.prototype.hasOwnProperty.call(listAnalysisData ?? {}, property)) {
     const yearlyData = JSON.parse(listAnalysisData[property]);
 
     if (
@@ -47,7 +47,7 @@ const parseListData = (property, listLevelAnalysis) => {
         'tree_cover_loss_idn_legal_yearly',
       ].includes(property)
     ) {
-      const biomes = Object.keys(yearlyData);
+      const biomes = Object.keys(yearlyData ?? {});
       biomes.forEach((biome) => {
         Object.entries(yearlyData[biome]).forEach((entry) => {
           const [, value] = entry;
@@ -77,8 +77,13 @@ const parseListData = (property, listLevelAnalysis) => {
 };
 
 const parseListTotals = (property, listLevelAnalysis) => {
-  const total = listLevelAnalysis[property];
-
+  let total = Object.prototype.hasOwnProperty.call(
+    listLevelAnalysis ?? {},
+    property
+  )
+    ? listLevelAnalysis[property]
+    : 0;
+  total = total ?? 0;
   return Math.round(total * 100) / 100;
 };
 

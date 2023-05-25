@@ -38,8 +38,10 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
 
     EXCEL_TEMPLATES[table].forEach((key) => {
       if (
-        Object.prototype.hasOwnProperty.call(listLevelAnalysis, key.name) ===
-        false
+        Object.prototype.hasOwnProperty.call(
+          listLevelAnalysis ?? {},
+          key.name
+        ) === false
       ) {
         return;
       }

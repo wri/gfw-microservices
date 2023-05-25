@@ -42,7 +42,12 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
         const dataRow = [list_name];
 
         let rowValue = 0;
-        if (!listLevelAnalysis[attribute]) {
+        if (
+          !Object.prototype.hasOwnProperty.call(
+            listLevelAnalysis ?? {},
+            attribute
+          )
+        ) {
           return;
         }
         const yearlyData = JSON.parse(listLevelAnalysis[attribute]);

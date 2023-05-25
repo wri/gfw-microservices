@@ -169,4 +169,38 @@ describe('South East Asia Overlap Service', () => {
       ['south_east_asia_tcl_aggregate', 'Primary Forest', 30, '2019', '70.00'],
     ]);
   });
+
+  test('Receive an empty object ', () => {
+    const returnData = southAmericaLossService.generateAggregate(
+      'seAsiaTCLAggregate',
+      'south_east_asia_tcl_aggregate',
+      {}
+    );
+    expect(returnData).toEqual([
+      [
+        'List Name',
+        'Data Layer Name',
+        'Forest Loss (ha)',
+        'Year',
+        'Total Loss (ha)',
+      ],
+    ]);
+  });
+
+  test('Receive an undefined data', () => {
+    const returnData = southAmericaLossService.generateAggregate(
+      'seAsiaTCLAggregate',
+      'south_east_asia_tcl_aggregate',
+      undefined
+    );
+    expect(returnData).toEqual([
+      [
+        'List Name',
+        'Data Layer Name',
+        'Forest Loss (ha)',
+        'Year',
+        'Total Loss (ha)',
+      ],
+    ]);
+  });
 });

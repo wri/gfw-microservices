@@ -1,3 +1,5 @@
+import { ListFilters } from '@wri-monorepos/geo';
+
 export interface RequestPreSignedURLModel {
   key: string;
   contentType: string;
@@ -67,6 +69,6 @@ export interface CopyOrMoveLargeListRequest {
   organizationId: number;
   gfwListId: number;
   allLocationsSelected: boolean;
-  filters: any;
+  filters: ListFilters;
   srcListAnalysisTable: string;
 }

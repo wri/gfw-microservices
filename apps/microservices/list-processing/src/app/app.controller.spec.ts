@@ -1,7 +1,6 @@
 import { LocationService, GeoService } from '@wri-monorepos/geo';
 import {
   CopyOrMoveLargeListRequest,
-  RequestLargeListProcess,
   RequestTriggerProcessLargeList,
 } from './../models/index';
 import { LargeListService } from './../services/largelist.service';
@@ -14,7 +13,6 @@ import { AppModule } from './app.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseService } from '../shared/database/gfw';
-import sql = require('mssql');
 import * as uniqId from 'uniqid';
 
 describe('AppController', () => {
@@ -722,7 +720,7 @@ describe('AppController', () => {
         ],
       };
 
-      const locationCopyResponse = await locationService.MoveLocations(
+      await locationService.MoveLocations(
         request.listId,
         request.selectedListLocationClasification,
         request.customAttributesNames,

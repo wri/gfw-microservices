@@ -93,8 +93,8 @@ export class AppController {
   }
 
   /**
-  * Healthcheck for fargate
-  */
+   * Healthcheck for fargate
+   */
   @Get('/HealthCheck')
   getHealthCheck(): string {
     return this.appService.getHealthCheck();

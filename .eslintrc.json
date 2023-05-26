@@ -38,7 +38,7 @@
       {
         "code": 100,
         "tabWidth": 2,
-        "ignoreComments": true, //"comments": 80
+        "ignoreComments": true,
         "ignoreUrls": true,
         "ignoreStrings": true,
         "ignoreTemplateLiterals": true

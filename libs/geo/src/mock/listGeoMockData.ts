@@ -38192,8 +38192,7 @@ export const templateData = [
     id: 360,
     template_id: 13,
     template_datum_field_name: 'Location Name',
-    template_datum_field_description:
-      'Name of the location, name of the Mill, name of the farm',
+    template_datum_field_description: 'Name of the location, name of the Mill, name of the farm',
     template_datum_type_id: 7,
     template_datum_mandatory: true,
     template_datum_system: true,
@@ -38285,8 +38284,7 @@ export const templateData = [
     id: 367,
     template_id: 13,
     template_datum_field_name: 'Company ID',
-    template_datum_field_description:
-      'Unique ID assigned by your company to the point or polygon',
+    template_datum_field_description: 'Unique ID assigned by your company to the point or polygon',
     template_datum_type_id: 7,
     template_datum_mandatory: false,
     template_datum_system: true,
@@ -38313,8 +38311,7 @@ export const templateData = [
     id: 369,
     template_id: 13,
     template_datum_field_name: 'Owner Name',
-    template_datum_field_description:
-      'Name of the owner of the point or polygon',
+    template_datum_field_description: 'Name of the owner of the point or polygon',
     template_datum_type_id: 7,
     template_datum_mandatory: false,
     template_datum_system: true,
@@ -38327,8 +38324,7 @@ export const templateData = [
     id: 370,
     template_id: 13,
     template_datum_field_name: 'Owner ID',
-    template_datum_field_description:
-      'Unique ID of the owner of the point or polygon',
+    template_datum_field_description: 'Unique ID of the owner of the point or polygon',
     template_datum_type_id: 7,
     template_datum_mandatory: false,
     template_datum_system: true,
@@ -38341,8 +38337,7 @@ export const templateData = [
     id: 371,
     template_id: 13,
     template_datum_field_name: 'Company Name',
-    template_datum_field_description:
-      'Company name associated with the point or polygon',
+    template_datum_field_description: 'Company name associated with the point or polygon',
     template_datum_type_id: 7,
     template_datum_mandatory: false,
     template_datum_system: true,

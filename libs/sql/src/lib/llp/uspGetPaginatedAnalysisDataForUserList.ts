@@ -24,7 +24,7 @@ export class UspGetPaginatedAnalysisDataForUserList {
       locationIds,
       locationStatement,
       combinedColumns,
-      searchString
+      searchString,
     } = filters;
 
     const parameters = [
@@ -50,17 +50,34 @@ export class UspGetPaginatedAnalysisDataForUserList {
         type: sql.Int,
         value: analysisAreaMax || null,
       },
-      { field: 'LocationLogic', type: sql.NVarChar, value: locationLogic || null },
+      {
+        field: 'LocationLogic',
+        type: sql.NVarChar,
+        value: locationLogic || null,
+      },
       { field: 'LocationIds', type: sql.NVarChar, value: locationIds || null },
-      { field: 'LocationStatement', type: sql.NVarChar, value: locationStatement || null },
-      { field: 'ColumnsToReturn', type: sql.NVarChar, value: combinedColumns || null },
-      { field: 'SearchString', type: sql.NVarChar, value: searchString || null },
+      {
+        field: 'LocationStatement',
+        type: sql.NVarChar,
+        value: locationStatement || null,
+      },
+      {
+        field: 'ColumnsToReturn',
+        type: sql.NVarChar,
+        value: combinedColumns || null,
+      },
+      {
+        field: 'SearchString',
+        type: sql.NVarChar,
+        value: searchString || null,
+      },
       { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
     ];
 
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const createListResult = await connection.executeQueryArray<any>(
         'uspGetPaginatedAnalysisDataForUserList',
         parameters

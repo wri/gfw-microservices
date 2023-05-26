@@ -44,7 +44,9 @@ function LanguageDropdownMenuMobile({ languageChange }) {
       }
     }
   };
-  const notSelectedLanguages = allLanguages?.filter((language) => selectedLanguage?.name !== language.name);
+  const notSelectedLanguages = allLanguages?.filter(
+    (language) => selectedLanguage?.name !== language.name
+  );
   return (
     <Accordion
       sx={{
@@ -62,7 +64,11 @@ function LanguageDropdownMenuMobile({ languageChange }) {
       <AccordionDetails sx={{ p: 0 }}>
         {notSelectedLanguages &&
           notSelectedLanguages.map((language) => (
-            <MenuItem key={language.code} onClick={() => changeLanguage(language)} sx={{ textTransform: 'uppercase' }}>
+            <MenuItem
+              key={language.code}
+              onClick={() => changeLanguage(language)}
+              sx={{ textTransform: 'uppercase' }}
+            >
               {language.name}
             </MenuItem>
           ))}

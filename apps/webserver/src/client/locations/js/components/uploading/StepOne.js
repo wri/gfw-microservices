@@ -92,7 +92,10 @@ export default class StepOne extends Component {
               <div className="locations-upload-step__suboptions-description">
                 {locationsPage.upload.investmentAddType}
               </div>
-              <div id="locationsAddTypeOptions" className="locations-upload-step__suboptions-container">
+              <div
+                id="locationsAddTypeOptions"
+                className="locations-upload-step__suboptions-container"
+              >
                 {locationsPage.upload.commodityTypeOptions.map((option) => {
                   return this.createRadio(option.name, option.id, option.id);
                 })}
@@ -118,7 +121,10 @@ export default class StepOne extends Component {
               <div className="locations-upload-step__suboptions-description">
                 {locationsPage.upload.commodityAddType}
               </div>
-              <div id="commodityAddTypeOptions" className="locations-upload-step__suboptions-container">
+              <div
+                id="commodityAddTypeOptions"
+                className="locations-upload-step__suboptions-container"
+              >
                 {Object.keys(commodityOptions).map((key) => {
                   const option = commodityOptions[key];
                   return this.createRadio(option.label, option.id, key);

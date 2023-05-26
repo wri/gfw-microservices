@@ -12,7 +12,7 @@ const config = require('../config');
 
 const sqs = new AWS.SQS({
   apiVersion: '2012-11-05',
-  region: 'us-east-1'
+  region: 'us-east-1',
 });
 
 function partition(array, groupSize) {
@@ -31,7 +31,7 @@ const uniqueIdGenerator = () => {
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
   //Step 1: Determine the current time in milliseconds (Epoch Time).
-  const milliseconds = (new Date()).getTime();
+  const milliseconds = new Date().getTime();
 
   //Step 2: Get a random integer to add to file name to make sure it is unique.
   const randomSeed = Math.floor(Math.random() * 1000000);
@@ -72,7 +72,7 @@ const sendMessage = (
   isEdit = false,
   appendLocations = false,
   location_id = 0, // No Location
-  queue_url = config.AWSVars.sqs.list_queue_url,
+  queue_url = config.AWSVars.sqs.list_queue_url
 ) => {
   const json = {
     AnalysisTable: analysis_table,
@@ -95,7 +95,7 @@ const sendMessage = (
     QueueUrl: queue_url,
     MessageBody: JSON.stringify(json),
     MessageGroupId: uniqueIdGenerator(),
-    MessageAttributes: {}
+    MessageAttributes: {},
   };
   return sqs.sendMessage(parameters).promise();
 };
@@ -103,23 +103,25 @@ const sendMessage = (
 const sendMessageBatch = (entries, queue_url) => {
   // Partition array into groups of ten
   const groups = partition(entries, 10);
-  return Promise.all(groups.map(group => {
-    const parameters = {
-      Entries: group.map(entry => {
-        return {
-          Id: `${Math.random().toString(36).substring(7)}`,
-          MessageBody: JSON.stringify(entry),
-          MessageAttributes: {},
-          MessageGroupId: uniqueIdGenerator()
-        };
-      }),
-      QueueUrl: queue_url
-    };
-    return sqs.sendMessageBatch(parameters).promise();
-  }));
+  return Promise.all(
+    groups.map((group) => {
+      const parameters = {
+        Entries: group.map((entry) => {
+          return {
+            Id: `${Math.random().toString(36).substring(7)}`,
+            MessageBody: JSON.stringify(entry),
+            MessageAttributes: {},
+            MessageGroupId: uniqueIdGenerator(),
+          };
+        }),
+        QueueUrl: queue_url,
+      };
+      return sqs.sendMessageBatch(parameters).promise();
+    })
+  );
 };
 
 module.exports = {
   sendMessage,
-  sendMessageBatch
+  sendMessageBatch,
 };

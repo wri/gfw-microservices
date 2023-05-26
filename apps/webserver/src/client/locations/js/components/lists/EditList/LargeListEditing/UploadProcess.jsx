@@ -30,10 +30,14 @@ function UploadProcess({ listID, fileInfo, uploadCompletedHandler }) {
 
   const { name, lastModifiedDate, size } = fileInfo;
   const fileName = name;
-  const fileData = `${moment(lastModifiedDate).format('ddd D MMM YYYY h:mm:ss A')} • ${formatBytes(size)}`;
+  const fileData = `${moment(lastModifiedDate).format('ddd D MMM YYYY h:mm:ss A')} • ${formatBytes(
+    size
+  )}`;
   return (
     <div className="upload-process">
-      <div className="upload-process__subtitle">{locationsPage.largeListEditing.downloadProcessTitle}</div>
+      <div className="upload-process__subtitle">
+        {locationsPage.largeListEditing.downloadProcessTitle}
+      </div>
       <div className="upload-process__file-list">
         <div className="upload-process__file-detail">
           <FolderZipIcon style={{ color: '#1ABCFE', fontSize: '40px', marginRight: '15px' }} />

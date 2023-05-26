@@ -1,6 +1,6 @@
 import React from 'react';
 
-const GfwButton = props => {
+const GfwButton = (props) => {
   return (
     <button
       className={`gfw-button ${props.classNames} ${props.disabled ? 'button-disabled' : ''}`}

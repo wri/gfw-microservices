@@ -54,16 +54,20 @@ export default class SearchModal extends Component {
 
   createSearch = () => {
     const { mapLayers } = this.props;
-    const universalMillListURL = mapLayers.filter((layer) => layer.id === proLayers.universalMillList)[0].layerConfig
-      .body.url;
-    const oilPalmConcessionsURL = mapLayers.filter((layer) => layer.id === proLayers.oilPalmConcessions)[0].layerConfig
-      .body.url;
-    const rspoConcessionsURL = mapLayers.filter((layer) => layer.id === proLayers.rspoConcessions)[0].layerConfig.body
-      .url;
+    const universalMillListURL = mapLayers.filter(
+      (layer) => layer.id === proLayers.universalMillList
+    )[0].layerConfig.body.url;
+    const oilPalmConcessionsURL = mapLayers.filter(
+      (layer) => layer.id === proLayers.oilPalmConcessions
+    )[0].layerConfig.body.url;
+    const rspoConcessionsURL = mapLayers.filter(
+      (layer) => layer.id === proLayers.rspoConcessions
+    )[0].layerConfig.body.url;
     // const rspoPalmOilMillsURL = mapLayers.filter(layer => layer.id === rspoPalmOilMills)[0].layerConfig.body.url;
-    const protectedAreasURL = mapLayers.filter((layer) => layer.id === proLayers.protectedAreas)[0].layerConfig.body
-      .url;
-    const landRightsURL = mapLayers.filter((layer) => layer.id === proLayers.landRights)[0].layerConfig.body.url;
+    const protectedAreasURL = mapLayers.filter((layer) => layer.id === proLayers.protectedAreas)[0]
+      .layerConfig.body.url;
+    const landRightsURL = mapLayers.filter((layer) => layer.id === proLayers.landRights)[0]
+      .layerConfig.body.url;
     // const AZESitesURL = mapLayers.filter(layer => layer.id === AZESites)[0].layerConfig.body.url;
 
     this.searchWidget = new Search({
@@ -72,7 +76,9 @@ export default class SearchModal extends Component {
       minSuggestCharacters: 3,
       sources: [
         {
-          locator: new Locator({ url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer' }),
+          locator: new Locator({
+            url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer',
+          }),
           singleLineFieldName: 'SingleLine',
           outFields: ['Addr_type'],
           maxSuggestions: 3,
@@ -163,7 +169,8 @@ export default class SearchModal extends Component {
             id: `${proLayers.universalMillList}_feat`,
           }),
           searchFields: ['Mill_Name', 'Prnt_Comp', 'ID'],
-          suggestionTemplate: 'Mill Name: {Mill_Name}, Parent Company: {Prnt_Comp}, Universal Mill Id: {ID}',
+          suggestionTemplate:
+            'Mill Name: {Mill_Name}, Parent Company: {Prnt_Comp}, Universal Mill Id: {ID}',
           outFields: ['Mill_Name', 'Prnt_Comp', 'ID', 'globalid'],
           name: 'Universal Mill List',
           placeholder: 'Search Universal Mill Lists',
@@ -174,7 +181,8 @@ export default class SearchModal extends Component {
             id: `${proLayers.oilPalmConcessions}_feat`,
           }),
           searchFields: ['name', 'company', 'group_comp', 'subgroup'],
-          suggestionTemplate: 'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
+          suggestionTemplate:
+            'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
           outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
           name: 'Oil Palm Concessions',
           placeholder: 'Search Oil Palm Concessions',
@@ -185,7 +193,8 @@ export default class SearchModal extends Component {
             id: `${proLayers.rspoConcessions}_feat`,
           }),
           searchFields: ['name', 'group_arch', 'group_comp', 'subgroup'],
-          suggestionTemplate: 'Mill Name: {name}, Company: {group_arch}, Group: {group_comp}, Subgroup: {subgroup}',
+          suggestionTemplate:
+            'Mill Name: {name}, Company: {group_arch}, Group: {group_comp}, Subgroup: {subgroup}',
           outFields: ['name', 'group_arch', 'group_comp', 'subgroup', 'globalid'],
           name: 'RSPO Concessions',
           placeholder: 'Search RSPO Concessions',
@@ -252,7 +261,9 @@ export default class SearchModal extends Component {
   };
 
   decimalDegreeSearch = () => {
-    const values = [this.refs.decimalDegreeLat.value, this.refs.decimalDegreeLng.value].map(parseFloat);
+    const values = [this.refs.decimalDegreeLat.value, this.refs.decimalDegreeLng.value].map(
+      parseFloat
+    );
     const [lat, lng] = values;
     if (values.map(isNaN).indexOf(true) > -1) {
       throw Error('Invalid input(s)');
@@ -268,7 +279,9 @@ export default class SearchModal extends Component {
   };
 
   utmSearch = () => {
-    const values = [this.refs.eastDeg.value, this.refs.northDeg.value, this.refs.zoneDeg.value].map(parseFloat);
+    const values = [this.refs.eastDeg.value, this.refs.northDeg.value, this.refs.zoneDeg.value].map(
+      parseFloat
+    );
     const directionC = this.refs.directionC.value;
     console.log(values);
     console.log(directionC);
@@ -309,7 +322,11 @@ export default class SearchModal extends Component {
 
     return (
       <ModalWrapper onClose={this.close} theme={theme}>
-        <div className={`search-tools map-component ${this.state.visibleTab === 1 ? 'search-tools-coords' : ''}`}>
+        <div
+          className={`search-tools map-component ${
+            this.state.visibleTab === 1 ? 'search-tools-coords' : ''
+          }`}
+        >
           <div className="search-tab-container">
             {tabs.map((t, i) => (
               <button
@@ -324,7 +341,9 @@ export default class SearchModal extends Component {
           <div className={`search-input-container ${this.state.visibleTab === 0 ? '' : 'hidden'}`}>
             <div id="search-widget"></div>
           </div>
-          <div className={this.state.visibleTab === 1 ? 'coordinate-search-tab-container' : 'hidden'}>
+          <div
+            className={this.state.visibleTab === 1 ? 'coordinate-search-tab-container' : 'hidden'}
+          >
             <div ref="coordinatesA" className="search-coordinates back-white">
               <div>
                 <input className="search-input" type="number" min="0" step="1" placeholder="00" />
@@ -362,7 +381,10 @@ export default class SearchModal extends Component {
               </select>
             </div>
             <div id="coordinateSearch">
-              <button className="search-submit-button gfw-btn green" onClick={this.coordinateSearch}>
+              <button
+                className="search-submit-button gfw-btn green"
+                onClick={this.coordinateSearch}
+              >
                 Search
               </button>
             </div>
@@ -370,13 +392,28 @@ export default class SearchModal extends Component {
           <div className={`search-box degrees ${this.state.visibleTab === 2 ? '' : 'hidden'}`}>
             <div className="deg-box">
               <span>Lat:</span>
-              <input ref="decimalDegreeLat" type="number" className="deg-input" id="deg-lat" name="deg-lat" />
+              <input
+                ref="decimalDegreeLat"
+                type="number"
+                className="deg-input"
+                id="deg-lat"
+                name="deg-lat"
+              />
             </div>
             <div className="deg-box">
               <span>Lon:</span>
-              <input ref="decimalDegreeLng" type="number" className="deg-input" id="deg-lng" name="deg-lng" />
+              <input
+                ref="decimalDegreeLng"
+                type="number"
+                className="deg-input"
+                id="deg-lng"
+                name="deg-lng"
+              />
             </div>
-            <button className="search-submit-button gfw-btn green" onClick={this.decimalDegreeSearch}>
+            <button
+              className="search-submit-button gfw-btn green"
+              onClick={this.decimalDegreeSearch}
+            >
               Search
             </button>
           </div>

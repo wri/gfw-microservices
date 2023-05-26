@@ -13,7 +13,12 @@ import esriConfig from 'esri/config';
 
 import TreeCoverLossLayer from '../../../../map/js/layers/TreeCoverLossLayer';
 import store from '../../store';
-import { changeListView, changeView, selectFolder, updateInfoBubbleCache } from '../../actions/locationActions';
+import {
+  changeListView,
+  changeView,
+  selectFolder,
+  updateInfoBubbleCache,
+} from '../../actions/locationActions';
 import SensitiveAreas from './SensitiveAreas';
 import SouthAmericaRegions from './SouthAmericaRegions';
 import SoutheastAsiaRegions from './SoutheastAsiaRegions';
@@ -41,10 +46,18 @@ import httpRequest from '../../../../common/js/utils/httpRequest';
 import redirectToPage from '../../../../common/js/utils/redirect';
 import { closePopover } from '../../utils/togglePopover';
 import { formatNum, formatPct, prettifyNum, validatePct } from '../../utils/diagnostics.utils';
-import { checkValidViewCommodity, getGFWListLocationIDs, getGfwListName } from '../../utils/lists.utils';
+import {
+  checkValidViewCommodity,
+  getGFWListLocationIDs,
+  getGfwListName,
+} from '../../utils/lists.utils';
 import { handleUserListLocationsVectorTileLayer } from '../../../../common/js/userListLocations/utils/userListLocations.util';
 import { generateCentroidGraphic } from '../../../../common/js/utils/esri.utils';
-import { handleGfwProListVectorTileLayer, isGfwList, discernGfwID } from '../../../../common/js/utils/gfw.utils';
+import {
+  handleGfwProListVectorTileLayer,
+  isGfwList,
+  discernGfwID,
+} from '../../../../common/js/utils/gfw.utils';
 
 // Configs
 import {
@@ -244,7 +257,10 @@ export default class Diagnostics extends Component {
         const { coordinates } = location.geometry;
 
         if (coordinates) {
-          const listLocationCentroidGraphic = generateCentroidGraphic(coordinates[0], coordinates[1]);
+          const listLocationCentroidGraphic = generateCentroidGraphic(
+            coordinates[0],
+            coordinates[1]
+          );
 
           polys.push(listLocationCentroidGraphic);
         }
@@ -346,7 +362,8 @@ export default class Diagnostics extends Component {
       z: this.mapView.zoom,
       path: 'diagnostic',
       showFullListMap: locationIds.length > 1,
-      totalNumberOfLocationsInList: selectedList?.list_locations_count || selectedLists[0]?.list_locations_count,
+      totalNumberOfLocationsInList:
+        selectedList?.list_locations_count || selectedLists[0]?.list_locations_count,
     };
 
     redirectToPage('/map', sendData);
@@ -362,7 +379,9 @@ export default class Diagnostics extends Component {
   getFilteredLocations = () => {
     const { selectedLocations, filteredData, listData, listLevelAnalysis } = this.props;
     const { isSingleLocation } = this.state;
-    const filteredLocationData = listData.filter((listD) => filteredData.indexOf(listD.location_id) > -1);
+    const filteredLocationData = listData.filter(
+      (listD) => filteredData.indexOf(listD.location_id) > -1
+    );
     if (isSingleLocation) {
       const filteredLocations = filteredLocationData.filter((loc) => {
         return selectedLocations.indexOf(loc.location_id) > -1;
@@ -386,9 +405,11 @@ export default class Diagnostics extends Component {
 
     const volume = filteredLocations.length > 0 ? filteredLocations[0].Volume : '';
     const companyID = filteredLocations.length > 0 ? filteredLocations[0]['Company ID'] : '';
-    const parentCompany = filteredLocations.length > 0 ? filteredLocations[0]['Parent Company'] : '';
+    const parentCompany =
+      filteredLocations.length > 0 ? filteredLocations[0]['Parent Company'] : '';
     const suppliers = filteredLocations.length > 0 ? filteredLocations[0]['Supplier Name'] : '';
-    const associatedRefineries = filteredLocations.length > 0 ? filteredLocations[0]['Refinery Name'] : '';
+    const associatedRefineries =
+      filteredLocations.length > 0 ? filteredLocations[0]['Refinery Name'] : '';
 
     const treeCoverPct = validatePct((treeCoverExtent / totalHectares) * 100);
     const primaryForestPct = validatePct((primaryForest / totalHectares) * 100);
@@ -418,7 +439,9 @@ export default class Diagnostics extends Component {
 
   checkInfoBubbleCache = (id) => {
     const { infoBubbleCache } = this.props;
-    return Object.prototype.hasOwnProperty.call(infoBubbleCache, id) && infoBubbleCache[id] !== null;
+    return (
+      Object.prototype.hasOwnProperty.call(infoBubbleCache, id) && infoBubbleCache[id] !== null
+    );
   };
 
   togglePopover = (evt) => {
@@ -558,7 +581,13 @@ export default class Diagnostics extends Component {
         'user printed commodity risk diagnostics report'
       );
     } else {
-      ga('send', 'event', 'Diagnostics Print', 'Report button clicked', 'user printed diagnostics report');
+      ga(
+        'send',
+        'event',
+        'Diagnostics Print',
+        'Report button clicked',
+        'user printed diagnostics report'
+      );
     }
   };
 
@@ -781,15 +810,21 @@ export default class Diagnostics extends Component {
       openDownloadDialog,
     } = this.state;
 
-    const filteredLocationData = listData.filter((listD) => filteredData.indexOf(listD.location_id) > -1);
+    const filteredLocationData = listData.filter(
+      (listD) => filteredData.indexOf(listD.location_id) > -1
+    );
 
     const forestChangeDisabled = filteredLocationData.length === 0;
     const commodityRiskDisabled = !checkValidViewCommodity(selectedLists, listData);
 
     const filteredLocations = this.getFilteredLocations();
 
-    const asiaPresence = filteredLocations.some((location) => location.southeast_asia_presence === 'true');
-    const sAmericaPresence = filteredLocations.some((location) => location.south_america_presence === 'true');
+    const asiaPresence = filteredLocations.some(
+      (location) => location.southeast_asia_presence === 'true'
+    );
+    const sAmericaPresence = filteredLocations.some(
+      (location) => location.south_america_presence === 'true'
+    );
 
     const listViewOptions = [];
 
@@ -802,7 +837,11 @@ export default class Diagnostics extends Component {
     }
 
     return (
-      <div className={`${view === 'diagnostics' ? 'landing-diagnostics' : 'hidden background__overlay'}`}>
+      <div
+        className={`${
+          view === 'diagnostics' ? 'landing-diagnostics' : 'hidden background__overlay'
+        }`}
+      >
         <Popover
           open={displayPopover}
           anchorEl={anchorEl}
@@ -819,7 +858,10 @@ export default class Diagnostics extends Component {
               <div className="header-container">
                 {selectedLists.length > 0 ? (
                   <Breadcrumbs>
-                    <LinkButton label={locationsPage.lists.locations} onClick={this.changeToLocationView} />
+                    <LinkButton
+                      label={locationsPage.lists.locations}
+                      onClick={this.changeToLocationView}
+                    />
                     {selectedLists[0].folder && (
                       <LinkButton
                         label={selectedLists[0].folder.name}
@@ -846,8 +888,12 @@ export default class Diagnostics extends Component {
                     <tr>
                       <th colSpan={3}>
                         <div className="locations-diagnostics-statistics__title historic locations-diagnostics__flex-center">
-                          <span className="locations-historic-characteristics">Historic Site Characteristics</span>
-                          <IconButtonWrapper id={locationsPage.infoBubbleConfig.bannerHistoricSite} />
+                          <span className="locations-historic-characteristics">
+                            Historic Site Characteristics
+                          </span>
+                          <IconButtonWrapper
+                            id={locationsPage.infoBubbleConfig.bannerHistoricSite}
+                          />
                         </div>
                       </th>
                     </tr>
@@ -863,7 +909,9 @@ export default class Diagnostics extends Component {
                             hoverProp === 'totalTreeCover' ? '' : 'hidden'
                           }`}
                         >
-                          {`${prettifyNum(formatNum(totalTreeCover))} ha tree cover 2000 / ${prettifyNum(
+                          {`${prettifyNum(
+                            formatNum(totalTreeCover)
+                          )} ha tree cover 2000 / ${prettifyNum(
                             formatNum(totalHectares)
                           )} total ha area`}
                         </span>
@@ -891,18 +939,24 @@ export default class Diagnostics extends Component {
                             hoverProp === 'totalPrimaryForest' ? '' : 'hidden'
                           }`}
                         >
-                          {`${prettifyNum(formatNum(totalPrimaryForest))} ha primary forest 2000 / ${prettifyNum(
+                          {`${prettifyNum(
+                            formatNum(totalPrimaryForest)
+                          )} ha primary forest 2000 / ${prettifyNum(
                             formatNum(totalHectares)
                           )} total ha area`}
                         </span>
                         <span className="statistics-label">Primary Forest</span>
                       </td>
-                      <td className="statistics-value">{primaryForest > 0 ? `${formatPct(primaryForest)}%` : '--'}</td>
+                      <td className="statistics-value">
+                        {primaryForest > 0 ? `${formatPct(primaryForest)}%` : '--'}
+                      </td>
                       <td>
                         <div className="statistics-bar__container">
                           <div
                             className="statistics-bar__data"
-                            style={primaryForest > 0 ? { width: `${primaryForest}%` } : { width: '0%' }}
+                            style={
+                              primaryForest > 0 ? { width: `${primaryForest}%` } : { width: '0%' }
+                            }
                           />
                         </div>
                       </td>
@@ -917,18 +971,24 @@ export default class Diagnostics extends Component {
                             hoverProp === 'totalProtectedArea' ? '' : 'hidden'
                           }`}
                         >
-                          {`${prettifyNum(formatNum(totalProtectedArea))} ha protected areas (varies) / ${prettifyNum(
+                          {`${prettifyNum(
+                            formatNum(totalProtectedArea)
+                          )} ha protected areas (varies) / ${prettifyNum(
                             formatNum(totalHectares)
                           )} total ha area`}
                         </span>
                         <span className="statistics-label">Protected Area</span>
                       </td>
-                      <td className="statistics-value">{protectedArea > 0 ? `${formatPct(protectedArea)}%` : '--'}</td>
+                      <td className="statistics-value">
+                        {protectedArea > 0 ? `${formatPct(protectedArea)}%` : '--'}
+                      </td>
                       <td>
                         <div className="statistics-bar__container">
                           <div
                             className="statistics-bar__data"
-                            style={protectedArea > 0 ? { width: `${protectedArea}%` } : { width: '0%' }}
+                            style={
+                              protectedArea > 0 ? { width: `${protectedArea}%` } : { width: '0%' }
+                            }
                           />
                         </div>
                       </td>
@@ -949,7 +1009,9 @@ export default class Diagnostics extends Component {
                         </span>
                         <span className="statistics-label">Peat</span>
                       </td>
-                      <td className="statistics-value">{peat > 0 ? `${formatPct(peat)}%` : '--'}</td>
+                      <td className="statistics-value">
+                        {peat > 0 ? `${formatPct(peat)}%` : '--'}
+                      </td>
                       <td>
                         <div className="statistics-bar__container">
                           <div
@@ -969,7 +1031,9 @@ export default class Diagnostics extends Component {
                             hoverProp === 'totalIFL' ? '' : 'hidden'
                           }`}
                         >
-                          {`${prettifyNum(formatNum(totalIFL))} ha intact forest lands 2013 / ${prettifyNum(
+                          {`${prettifyNum(
+                            formatNum(totalIFL)
+                          )} ha intact forest lands 2013 / ${prettifyNum(
                             formatNum(totalHectares)
                           )} total ha area`}
                         </span>
@@ -997,7 +1061,9 @@ export default class Diagnostics extends Component {
                           <span className="locations-diagnostics-statistics__title locations-historic-characteristics">
                             List Attributes
                           </span>
-                          <IconButtonWrapper id={locationsPage.infoBubbleConfig.bannerListAttributes} />
+                          <IconButtonWrapper
+                            id={locationsPage.infoBubbleConfig.bannerListAttributes}
+                          />
                         </div>
                       </th>
                     </tr>
@@ -1022,7 +1088,9 @@ export default class Diagnostics extends Component {
                           <td
                             className="statistics-value"
                             data-cell-type="parent-company"
-                            title={parentCompany && parentCompany.length > 15 ? parentCompany : null}
+                            title={
+                              parentCompany && parentCompany.length > 15 ? parentCompany : null
+                            }
                           >
                             {parentCompany}
                           </td>
@@ -1082,7 +1150,12 @@ export default class Diagnostics extends Component {
               />
             </div>
             <div className="locations-diagnostics__actions-group">
-              <Button variant="secondary" label="Report" onClick={this.fireReport} icon={<IconReport height="18" />} />
+              <Button
+                variant="secondary"
+                label="Report"
+                onClick={this.fireReport}
+                icon={<IconReport height="18" />}
+              />
               <Button
                 variant="secondary"
                 label="Download"

@@ -5,23 +5,23 @@ const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
 /**
-* @name exports
-* @static
-* @summary Analytics page routes
-*/
+ * @name exports
+ * @static
+ * @summary Analytics page routes
+ */
 module.exports = (app, limiter) => {
   /**
-  * @name /changeExist
-  * @see changeExist.controller
-  * @memberof Router
-  */
+   * @name /changeExist
+   * @see changeExist.controller
+   * @memberof Router
+   */
 
   // All methods must under /changeExist must pass through middleware
   const routeMiddlewares = [
     middlewares.checkOrganization,
     middlewares.checkAuthentication,
     middlewares.checkActive,
-    middlewares.checkInactivity
+    middlewares.checkInactivity,
   ];
 
   if (rateLimiterUtil.useRateLimiter()) {
@@ -35,7 +35,7 @@ module.exports = (app, limiter) => {
   app.post('/auth/updateExistingPass', middlewares.checkAuthentication, (req, res) => {
     const { currentPass, newPass } = req.body;
     AuthManager.changePassword(req, currentPass, newPass)
-      .then(result => res.send('PasswordChanged'))
-      .catch(err => res.send(err));
+      .then((result) => res.send('PasswordChanged'))
+      .catch((err) => res.send(err));
   });
 };

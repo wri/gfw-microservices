@@ -39,7 +39,10 @@ export default class DashboardFooter extends Component {
       * The fires type changes between GLAD and VIIRS
     ***********************************************************************************************/
 
-    const newTimeframeSelected = !isEqual(prevState.selectedTimeframe, this.props.selectedTimeframe);
+    const newTimeframeSelected = !isEqual(
+      prevState.selectedTimeframe,
+      this.props.selectedTimeframe
+    );
     const newListSelected = !isEqual(prevState.selectedList, this.props.selectedList);
     const newData = !isEqual(prevProps.rawData, this.props.rawData);
     const switchBetweenGladAndViirs = !isEqual(prevProps.selectedAlert, this.props.selectedAlert);
@@ -73,14 +76,16 @@ export default class DashboardFooter extends Component {
 
   updateFooter = () => {
     const { selectedAlert } = this.props;
-    const { geoJSON, failedGeoJSON, filteredLocationGeoJSON, filteredDissolvedGeoJSON } = this.state;
-    const { withAlerts, withinAlerts, percentageAlerts, totalAlerts, totalLocations } = calculateAlerts(
-      geoJSON,
-      failedGeoJSON,
-      selectedAlert,
-      filteredLocationGeoJSON,
-      filteredDissolvedGeoJSON
-    );
+    const { geoJSON, failedGeoJSON, filteredLocationGeoJSON, filteredDissolvedGeoJSON } =
+      this.state;
+    const { withAlerts, withinAlerts, percentageAlerts, totalAlerts, totalLocations } =
+      calculateAlerts(
+        geoJSON,
+        failedGeoJSON,
+        selectedAlert,
+        filteredLocationGeoJSON,
+        filteredDissolvedGeoJSON
+      );
 
     this.setState({
       withAlerts,

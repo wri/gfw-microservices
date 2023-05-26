@@ -68,7 +68,8 @@ export default class DashboardSettings extends Component {
     }
 
     // const {   } = this.state;
-    const layers = selectedAlert === 'GLAD' ? [proLayers.gladAlertsID] : [proLayers.viirsActiveFiresID];
+    const layers =
+      selectedAlert === 'GLAD' ? [proLayers.gladAlertsID] : [proLayers.viirsActiveFiresID];
     let numLocations,
       filteredIDs,
       filterCount = 0;
@@ -137,7 +138,11 @@ export default class DashboardSettings extends Component {
       dashboard_map_extent: mapExtent,
       showFullListMap: true,
       totalNumberOfLocationsInList: selectedList.list_locations_count,
-      ...(gfwLists.includes(selectedList) && { lat: viewCenter.latitude, lng: viewCenter.longitude, z: zScale }),
+      ...(gfwLists.includes(selectedList) && {
+        lat: viewCenter.latitude,
+        lng: viewCenter.longitude,
+        z: zScale,
+      }),
     };
 
     redirectToPage('/map', sendData);
@@ -152,7 +157,9 @@ export default class DashboardSettings extends Component {
 
   createTimeframeOptions = () => {
     const { selectedAlert, selectedTimeframe } = this.props;
-    const filteredOptions = timeframeOptions.filter((option) => option.category.includes(selectedAlert));
+    const filteredOptions = timeframeOptions.filter((option) =>
+      option.category.includes(selectedAlert)
+    );
     return filteredOptions.map((option, idx) => {
       return (
         <div key={idx}>

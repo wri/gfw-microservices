@@ -2,8 +2,8 @@
   $parent: &;
   margin: 10px 0px;
   cursor: pointer;
-  &:hover{
-    background-color: #F0F0F0;
+  &:hover {
+    background-color: #f0f0f0;
   }
 
   &__content {
@@ -13,7 +13,7 @@
     align-items: center;
   }
   &__content--selected {
-    background: #97BD3D;
+    background: #97bd3d;
     color: white;
     #{$parent}__country-name {
       color: white;
@@ -28,7 +28,7 @@
     color: gray;
   }
   &__pending-action {
-    background-color: #2196F3;
+    background-color: #2196f3;
     padding: 10px;
     border-radius: 20px;
     color: white;
@@ -36,7 +36,7 @@
   &--pending {
     cursor: default;
     opacity: 0.5;
-    &:hover{
+    &:hover {
       background-color: white;
     }
   }

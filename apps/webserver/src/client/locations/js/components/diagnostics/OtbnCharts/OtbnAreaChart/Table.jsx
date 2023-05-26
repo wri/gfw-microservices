@@ -22,7 +22,7 @@ function Table({ data }) {
         <td>{formatPct(categoryPercentage)}</td>
         <td>{prettifyNum(formatNum(categoryArea))}</td>
       </tr>
-  )
+    );
   });
 
   return (
@@ -35,9 +35,7 @@ function Table({ data }) {
             <th>TOTAL AREA (HA)</th>
           </tr>
         </thead>
-        <tbody>
-          {categoryRows}
-        </tbody>
+        <tbody>{categoryRows}</tbody>
       </table>
     </div>
   );

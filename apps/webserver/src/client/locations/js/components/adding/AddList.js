@@ -27,7 +27,8 @@ export default class AddList extends Component {
         this.props.selectedLocationClassification &&
         template &&
         template.location_classification &&
-        this.props.selectedLocationClassification.toLowerCase() !== template.location_classification.toLowerCase()
+        this.props.selectedLocationClassification.toLowerCase() !==
+          template.location_classification.toLowerCase()
       ) {
         sameClassification = false;
       }
@@ -72,8 +73,12 @@ export default class AddList extends Component {
       });
     }
 
-    const dropdownOptionsInvestmentCommodity = buildDropdownOptions(validLists, 'list_name').dropdownOptions;
-    const addToExistingList = this.props.selectedList !== 'Create New List' && validLists.length > 0;
+    const dropdownOptionsInvestmentCommodity = buildDropdownOptions(
+      validLists,
+      'list_name'
+    ).dropdownOptions;
+    const addToExistingList =
+      this.props.selectedList !== 'Create New List' && validLists.length > 0;
 
     return (
       <div className="locations-adding">
@@ -83,7 +88,9 @@ export default class AddList extends Component {
         </div>
 
         <div>
-          <div className={`input-field__block-container ${!validLists.length ? 'disabled-radio' : ''}`}>
+          <div
+            className={`input-field__block-container ${!validLists.length ? 'disabled-radio' : ''}`}
+          >
             <input
               type="radio"
               name="addToNewOrExistingList"

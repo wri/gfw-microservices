@@ -184,7 +184,10 @@ export default class AddGFW extends Component {
   getGFWListLocationGeom = (list_id, location_ids) => {
     const deferred = new Deferred();
     httpRequest
-      .fetchForm('/locations/getGFWListLocationGeom', `list_id=${list_id}&location_ids=${location_ids}`)
+      .fetchForm(
+        '/locations/getGFWListLocationGeom',
+        `list_id=${list_id}&location_ids=${location_ids}`
+      )
       .then((response) => {
         const geometries = JSON.parse(response);
         deferred.resolve(geometries);
@@ -194,7 +197,8 @@ export default class AddGFW extends Component {
         this.setState({
           dialogOpen: true,
           dialogTitle: 'Error in Geometry Retrieval',
-          dialogMessage: 'This account request has failed on the server. Please try again at another time.',
+          dialogMessage:
+            'This account request has failed on the server. Please try again at another time.',
           isSaving: false,
           refreshPage: true,
         });
@@ -207,7 +211,10 @@ export default class AddGFW extends Component {
   saveLocations = () => {
     this.setState({ isSaving: true });
 
-    const listName = this.state.selectedList === 'Create New List' ? this.state.customList : this.state.selectedList;
+    const listName =
+      this.state.selectedList === 'Create New List'
+        ? this.state.customList
+        : this.state.selectedList;
     // Check if customList is the same name as an existing list
     const checkListExists = this.props.userLists.find(
       (list) => list.list_name.toLowerCase() === listName.toLowerCase()
@@ -227,7 +234,8 @@ export default class AddGFW extends Component {
       this.setState({
         dialogOpen: true,
         dialogTitle: 'List not created',
-        dialogMessage: 'A list already exists with this name. Enter a new list name and click save.',
+        dialogMessage:
+          'A list already exists with this name. Enter a new list name and click save.',
         isSaving: false,
         refreshPage: false,
       });
@@ -272,17 +280,20 @@ export default class AddGFW extends Component {
         if (template.template_name === template_name) {
           if (template.template_datum_field_name === 'Attribute1') {
             if (this.state.customAttributeHeaders[0].custom !== 'Attribute1') {
-              template.template_datum_field_name_updated = this.state.customAttributeHeaders[0].custom;
+              template.template_datum_field_name_updated =
+                this.state.customAttributeHeaders[0].custom;
               customAttributeNames.push(template.template_datum_field_name_updated);
             }
           } else if (template.template_datum_field_name === 'Attribute2') {
             if (this.state.customAttributeHeaders[1].custom !== 'Attribute2') {
-              template.template_datum_field_name_updated = this.state.customAttributeHeaders[1].custom;
+              template.template_datum_field_name_updated =
+                this.state.customAttributeHeaders[1].custom;
               customAttributeNames.push(template.template_datum_field_name_updated);
             }
           } else if (template.template_datum_field_name === 'Attribute3') {
             if (this.state.customAttributeHeaders[2].custom !== 'Attribute3') {
-              template.template_datum_field_name_updated = this.state.customAttributeHeaders[2].custom;
+              template.template_datum_field_name_updated =
+                this.state.customAttributeHeaders[2].custom;
               customAttributeNames.push(template.template_datum_field_name_updated);
             }
           } else {
@@ -437,7 +448,8 @@ export default class AddGFW extends Component {
             this.setState({
               dialogOpen: true,
               dialogTitle: 'Error in Locations',
-              dialogMessage: 'This account request has failed on the server. Please try again at another time.',
+              dialogMessage:
+                'This account request has failed on the server. Please try again at another time.',
               isSaving: false,
               refreshPage: true,
             });
@@ -489,7 +501,10 @@ export default class AddGFW extends Component {
               location_classification,
               gfw_list_id: gfwListId,
             };
-          } else if (this.state.customList === '' && this.state.selectedList !== 'Create New List') {
+          } else if (
+            this.state.customList === '' &&
+            this.state.selectedList !== 'Create New List'
+          ) {
             request.open('POST', '/locations/updateExistingList', true);
             const activeList = this.props.userLists.filter((list) => {
               return list.list_name === listName;
@@ -523,7 +538,13 @@ export default class AddGFW extends Component {
         this.setState({ isSaving: false });
         console.log('err', err);
       });
-    ga('send', 'event', 'Add GFW Click', 'Next button clicked', 'user completed step 3 of add from gfw list workflow');
+    ga(
+      'send',
+      'event',
+      'Add GFW Click',
+      'Next button clicked',
+      'user completed step 3 of add from gfw list workflow'
+    );
   };
 
   updateOtherCommodityType = (evt) => {
@@ -568,7 +589,10 @@ export default class AddGFW extends Component {
           validated = false;
           this.state.uploadingData[i].invalidFields.forEach((field) => {
             if (field.toLowerCase() === 'certification') {
-              if (validArray.indexOf(fieldValidations[field].certObj[this.props.activeTemplate]) === -1) {
+              if (
+                validArray.indexOf(fieldValidations[field].certObj[this.props.activeTemplate]) ===
+                -1
+              ) {
                 validArray.push(fieldValidations[field].certObj[this.props.activeTemplate]);
               }
             } else {
@@ -612,7 +636,11 @@ export default class AddGFW extends Component {
         'Next button clicked',
         'user completed step 2 of add from gfw list workflow'
       );
-    } else if (this.state.step === 2 && !!this.state.uploadingData && this.state.uploadingData.length === 0) {
+    } else if (
+      this.state.step === 2 &&
+      !!this.state.uploadingData &&
+      this.state.uploadingData.length === 0
+    ) {
       this.setState({
         dialogOpen: true,
         dialogTitle: 'No Locations Selected',
@@ -635,7 +663,9 @@ export default class AddGFW extends Component {
 
   addAdditonalValues = () => {
     const { filteredData, selectedLocations, listData } = this.props;
-    const filteredLocationData = listData.filter((listD) => filteredData.indexOf(listD.location_id) > -1);
+    const filteredLocationData = listData.filter(
+      (listD) => filteredData.indexOf(listD.location_id) > -1
+    );
     const features =
       filteredLocationData.length > 0
         ? filteredLocationData.filter((feat) => selectedLocations.indexOf(feat.location_id) > -1)
@@ -699,9 +729,19 @@ export default class AddGFW extends Component {
   };
 
   render() {
-    const { selectedList, customList, dialogOpen, dialogTitle, dialogMessage, refreshPage, isSaving } = this.state;
+    const {
+      selectedList,
+      customList,
+      dialogOpen,
+      dialogTitle,
+      dialogMessage,
+      refreshPage,
+      isSaving,
+    } = this.state;
     const { filteredData, selectedLocations, listData, currentUser } = this.props;
-    const filteredLocationData = listData.filter((listD) => filteredData.indexOf(listD.location_id) > -1);
+    const filteredLocationData = listData.filter(
+      (listD) => filteredData.indexOf(listD.location_id) > -1
+    );
     const features =
       filteredLocationData.length > 0
         ? filteredLocationData.filter((feat) => selectedLocations.indexOf(feat.location_id) > -1)
@@ -717,18 +757,37 @@ export default class AddGFW extends Component {
         editFields = this.props.templateData.filter((t) => {
           const fieldName = t.template_datum_field_name;
 
-          return fieldName !== 'Analysis Area' && fieldName !== 'Analysis Radius' && fieldName !== 'gadmid';
+          return (
+            fieldName !== 'Analysis Area' &&
+            fieldName !== 'Analysis Radius' &&
+            fieldName !== 'gadmid'
+          );
         });
         break;
       default:
         break;
     }
 
-    const dialogContent = typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
+    const dialogContent =
+      typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
 
     const defaultAction = refreshPage
-      ? [<Button variant="primary" label="OK" keyboardFocused={true} onClick={this.shouldRefresh} />]
-      : [<Button variant="primary" label="OK" keyboardFocused={true} onClick={this.shouldCloseDialog} />];
+      ? [
+          <Button
+            variant="primary"
+            label="OK"
+            keyboardFocused={true}
+            onClick={this.shouldRefresh}
+          />,
+        ]
+      : [
+          <Button
+            variant="primary"
+            label="OK"
+            keyboardFocused={true}
+            onClick={this.shouldCloseDialog}
+          />,
+        ];
 
     return (
       <div className={`locations-body ${this.props.view === 'gfw' ? '' : 'hidden'}`}>
@@ -793,7 +852,9 @@ export default class AddGFW extends Component {
         <section className="buttons-container flex-grid space-between">
           <Button variant="primary" onClick={this.cancelAdd} label={locationsPage.add.cancel} />
           {this.state.showError ? (
-            <div className="validation-error">Please make sure you have only selected valid data</div>
+            <div className="validation-error">
+              Please make sure you have only selected valid data
+            </div>
           ) : null}
           <div>
             <Button

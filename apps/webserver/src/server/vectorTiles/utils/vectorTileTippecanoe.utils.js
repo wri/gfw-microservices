@@ -18,7 +18,12 @@ const { MBTILE_EXTENSION } = require('../config/vectorTiles.config');
  * @param {string} uuidString - UUID String (e.g. '6073ee57_7ce4_45a3_84e7_b7403b958b5c')
  * @return {Promise<unknown>} - Promise resolved with { mbtileOutputFilePath }/rejected with error message
  */
-exports.createTippecanoeMBTiles = async ({ listID, numberOfLocations, tempFilesPath, uuidString }) => {
+exports.createTippecanoeMBTiles = async ({
+  listID,
+  numberOfLocations,
+  tempFilesPath,
+  uuidString,
+}) => {
   return new Promise((resolve, reject) => {
     const geojsonFiles = fs.readdirSync(tempFilesPath);
     const geojsonFilesWithPath = geojsonFiles

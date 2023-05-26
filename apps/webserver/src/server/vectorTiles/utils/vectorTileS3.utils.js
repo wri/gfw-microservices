@@ -85,7 +85,9 @@ exports.getMBTileFromS3Bucket = async (listVectorTileS3Path) => {
 
     s3.getObject(params, (err, data) => {
       if (err) {
-        const errorMessage = `Getting MBTile Vector Tiles from S3 bucket failed !!! ${JSON.stringify(err)}`;
+        const errorMessage = `Getting MBTile Vector Tiles from S3 bucket failed !!! ${JSON.stringify(
+          err
+        )}`;
         logger.error(errorMessage);
         reject(new Error(errorMessage));
       } else {
@@ -99,7 +101,9 @@ exports.getMBTileFromS3Bucket = async (listVectorTileS3Path) => {
             mbtileFilePath,
           });
         } catch (errorSaveFile) {
-          const errorMessage = `Getting MBTile Vector Tiles from S3 bucket failed !!! ${JSON.stringify(errorSaveFile)}`;
+          const errorMessage = `Getting MBTile Vector Tiles from S3 bucket failed !!! ${JSON.stringify(
+            errorSaveFile
+          )}`;
           logger.error(errorMessage);
           reject(new Error(errorMessage));
         }

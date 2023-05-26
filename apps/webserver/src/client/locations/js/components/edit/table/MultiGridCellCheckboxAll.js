@@ -12,7 +12,10 @@ export function MultiGridCellCheckboxAll(props) {
         onChange={props.onChange}
         className="column-checkbox"
       />
-      <label htmlFor="editListSelectAll" className="column-checkbox column-checkbox-single edit-list-select-all-label">
+      <label
+        htmlFor="editListSelectAll"
+        className="column-checkbox column-checkbox-single edit-list-select-all-label"
+      >
         <span className="edit-list-select-all-span">All</span>
       </label>
     </div>

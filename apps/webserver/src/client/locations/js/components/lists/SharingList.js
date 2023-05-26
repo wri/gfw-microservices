@@ -17,7 +17,9 @@ class SharingList extends Component {
 
     return (
       <div className="saved-locations-summary">
-        <h3 className="saved-locations-summary__title">{locationsPage.lists.savedLocationsSummary}</h3>
+        <h3 className="saved-locations-summary__title">
+          {locationsPage.lists.savedLocationsSummary}
+        </h3>
         <table className="saved-locations-summary__inner">
           <tbody>
             <tr className="saved-locations-summary__row">
@@ -33,7 +35,9 @@ class SharingList extends Component {
                 {locationsPage.lists.investment}
               </th>
               <td className="saved-locations-summary__value">
-                {numberWithCommas(locationCount.InvestmentCount ? locationCount.InvestmentCount : 0)}
+                {numberWithCommas(
+                  locationCount.InvestmentCount ? locationCount.InvestmentCount : 0
+                )}
               </td>
             </tr>
             <tr className="saved-locations-summary__row">

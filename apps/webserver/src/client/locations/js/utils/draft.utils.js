@@ -5,7 +5,9 @@
  */
 export function getIsDiagnosticStatusDraft(list) {
   if (list) {
-    const isDiagnosticStatusDraft = window.listStatuses.find((status) => status.id === list.list_status_id);
+    const isDiagnosticStatusDraft = window.listStatuses.find(
+      (status) => status.id === list.list_status_id
+    );
     return isDiagnosticStatusDraft && isDiagnosticStatusDraft.status_name === 'Draft';
   }
 
@@ -19,7 +21,9 @@ export function getIsDiagnosticStatusDraft(list) {
  */
 export function getIsDashboardStatusDraft(list) {
   if (list) {
-    const isDiagnosticStatusDraft = window.listStatuses.find((status) => status.id === list.list_status_id_dashboard);
+    const isDiagnosticStatusDraft = window.listStatuses.find(
+      (status) => status.id === list.list_status_id_dashboard
+    );
     return isDiagnosticStatusDraft && isDiagnosticStatusDraft.status_name === 'Draft';
   }
 
@@ -34,6 +38,8 @@ export function getIsDashboardStatusDraft(list) {
  */
 export function getListStatusIdByStatusName(statusName) {
   return window.listStatuses
-    ? window.listStatuses.find((status) => status.status_name.toLowerCase() === statusName.toLowerCase()).id
+    ? window.listStatuses.find(
+        (status) => status.status_name.toLowerCase() === statusName.toLowerCase()
+      ).id
     : undefined;
 }

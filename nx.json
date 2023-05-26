@@ -12,7 +12,7 @@
       }
     }
   },
-  "defaultProject": "gfwpro",
+  "defaultProject": "microservices-list-processing",
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],

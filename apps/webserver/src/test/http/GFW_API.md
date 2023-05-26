@@ -1,17 +1,22 @@
 ### Mapbox Styling
+
 - https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/#fill
 - https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/#circle
 
 ### GFW Datasets
+
 - https://data-api.globalforestwatch.org/datasets/
 
-### GFW VectorTileServer 
+### GFW VectorTileServer
+
 - https://tiles.globalforestwatch.org/wdpa_protected_areas/v202102/default/VectorTileServer
 
 ### GFW VectorTileServer - Style
+
 - https://tiles.globalforestwatch.org/wdpa_protected_areas/v202010/default/root.json
 
 ### RSPO Palm Mils
+
 ```
 const GFW_LIST = 'rspo_oil_palm';
 const queryField = 'gfw_geostore_id';
@@ -21,6 +26,7 @@ const date = 'latest';
 ```
 
 ### Oil Palm Concessions
+
 ```
 const GFW_LIST = 'gfw_oil_palm';
 const queryField = 'gfw_geostore_id';
@@ -30,6 +36,7 @@ const date = 'latest';
 ```
 
 ### RSPO Palm Concessions
+
 ```
 const GFW_LIST = 'rspo_oil_palm';
 const queryField = 'gfw_geostore_id';
@@ -39,6 +46,7 @@ const date = 'latest';
 ```
 
 ### Protected Areas
+
 ```
 const GFW_LIST = 'wdpa_protected_areas';
 const queryField = 'gfw_geostore_id';
@@ -48,6 +56,7 @@ const date = 'v202010';
 ```
 
 ### Palm oil Mills
+
 ```
 const GFW_LIST = 'gfw_universal_mill_list';
 const queryField = 'uml_id';

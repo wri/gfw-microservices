@@ -35,7 +35,9 @@ const createMultiGridHeaders = (
 
   templateData.forEach((data) => {
     if (data.template_name === headerKey) {
-      if (['gadmid', ...STEP_ONE_EDIT_EXCLUDED_ATTRIBUTES].includes(data.template_datum_field_name)) {
+      if (
+        ['gadmid', ...STEP_ONE_EDIT_EXCLUDED_ATTRIBUTES].includes(data.template_datum_field_name)
+      ) {
         return;
       }
       if (data.template_datum_field_name === 'Attribute1') {

@@ -34,7 +34,8 @@ module.exports = () => {
 
   if (process.env.NODE_ENV === 'development') {
     // Set up hot reloading in develop
-    const webpackHotMiddleware = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
+    const webpackHotMiddleware =
+      'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000&reload=true';
     for (const key in entries) {
       entries[key] = [entries[key], webpackHotMiddleware];
     }

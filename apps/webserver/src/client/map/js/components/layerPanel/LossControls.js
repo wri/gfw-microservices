@@ -47,9 +47,13 @@ export default class LossControls extends Component {
     const years = mapPage.treeCoverLossYearsFC;
     years.forEach((year) => {
       if (year > to_value || year < from_value) {
-        $(`.loss-slider-container .irs-grid-text:contains("${year}")`).addClass('irs-inactive-year');
+        $(`.loss-slider-container .irs-grid-text:contains("${year}")`).addClass(
+          'irs-inactive-year'
+        );
       } else {
-        $(`.loss-slider-container .irs-grid-text:contains("${year}")`).removeClass('irs-inactive-year');
+        $(`.loss-slider-container .irs-grid-text:contains("${year}")`).removeClass(
+          'irs-inactive-year'
+        );
       }
     });
   };
@@ -61,7 +65,11 @@ export default class LossControls extends Component {
 
   render() {
     return (
-      <div className={`timeline-container loss loss-slider-container${this.props.visible ? '' : ' hidden'}`}>
+      <div
+        className={`timeline-container loss loss-slider-container${
+          this.props.visible ? '' : ' hidden'
+        }`}
+      >
         <input id="loss-slider" />
       </div>
     );

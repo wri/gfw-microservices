@@ -92,17 +92,21 @@ function ListPanel({
     }
     const onClickHandler = () => {
       togglePanel();
-      if (list.list_status_id === 2 || (getIsDiagnosticStatusDraft(list) && listContext === 'map')) {
+      if (
+        list.list_status_id === 2 ||
+        (getIsDiagnosticStatusDraft(list) && listContext === 'map')
+      ) {
         handleSelectedList(list);
       }
     };
 
     return (
       <div
-        className={`locations-list-name ${className} ${selectedList && selectedList.id === list.id && selectedList.list_name === list.list_name
+        className={`locations-list-name ${className} ${
+          selectedList && selectedList.id === list.id && selectedList.list_name === list.list_name
             ? 'locations-selected-list'
             : ''
-          }`}
+        }`}
         onClick={IS_LOCK_STATUS ? undefined : onClickHandler}
         aria-hidden="true"
         id={list.list_name}
@@ -113,7 +117,12 @@ function ListPanel({
         </div>
         <div style={{ display: 'flex', justifyItems: 'right' }}>
           {getIsDiagnosticStatusDraft(list) && (
-            <CustomTooltip placement="top" tooltipMessage={tooltipMessage} iconWidth={14} iconHeight={14} />
+            <CustomTooltip
+              placement="top"
+              tooltipMessage={tooltipMessage}
+              iconWidth={14}
+              iconHeight={14}
+            />
           )}
           {list.list_status_id === 3 && (
             <span className="my-lists-summary__icon-container" style={{ color: '#EB0026' }}>
@@ -136,18 +145,27 @@ function ListPanel({
   };
 
   const userListsRendered =
-    userLists.length > 0 ? userLists.filter((list) => list.list_locations_count).map(createListsRenderer) : null;
+    userLists.length > 0
+      ? userLists.filter((list) => list.list_locations_count).map(createListsRenderer)
+      : null;
 
   const gfwListsRendered =
     gfwLists.length > 0
-      ? gfwLists.filter((list) => list.list_name !== 'Administrative Areas').map(createListsRenderer)
+      ? gfwLists
+          .filter((list) => list.list_name !== 'Administrative Areas')
+          .map(createListsRenderer)
       : null;
 
-  const userSharedListsRendered = userSharedLists.length > 0 ? userSharedLists.map(createListsRenderer) : null;
+  const userSharedListsRendered =
+    userSharedLists.length > 0 ? userSharedLists.map(createListsRenderer) : null;
 
   return (
     <div className={`button-list-panel-container ${showListPanel ? 'panel-open' : ''}`}>
-      <button type="button" onClick={togglePanel} className="gfw-button list-section-button show-lists">
+      <button
+        type="button"
+        onClick={togglePanel}
+        className="gfw-button list-section-button show-lists"
+      >
         Show Lists
       </button>
 
@@ -165,7 +183,9 @@ function ListPanel({
             <div className="locations-list-name saved-location">
               {locationsPage.lists.investment}
               <span className="locations-list-count">
-                {locationCount.InvestmentCount ? numberWithCommas(locationCount.InvestmentCount) : 0}
+                {locationCount.InvestmentCount
+                  ? numberWithCommas(locationCount.InvestmentCount)
+                  : 0}
               </span>
             </div>
             <div className="locations-list-name saved-location">

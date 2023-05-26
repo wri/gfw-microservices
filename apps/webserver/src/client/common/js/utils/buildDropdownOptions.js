@@ -26,20 +26,28 @@ export const buildDropdownOptions = (dropdownOptions, dropdownOptionsKey = 'id',
 
 export const buildDropdownOptions = function (dropdownOptions, dropdownOptionsKey, selectedValue) {
   //void 0 means undefined
-  if (dropdownOptionsKey === void 0) { dropdownOptionsKey = 'id'; }
+  if (dropdownOptionsKey === void 0) {
+    dropdownOptionsKey = 'id';
+  }
   const dropdownObject = {};
-  dropdownObject.dropdownOptions = dropdownOptions.map(function (item) {
-    const option = {};
-    if (item[dropdownOptionsKey] === selectedValue) {
-      dropdownObject.value = item.label;
-      option.className = 'selected-item';
-    }
-    option.value = item[dropdownOptionsKey];
-    option.label = item.label ? item.label : item[dropdownOptionsKey] ? item[dropdownOptionsKey] : '';
-    return option;
-  }).sort(function(a, b) {
-    return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
-  });
+  dropdownObject.dropdownOptions = dropdownOptions
+    .map(function (item) {
+      const option = {};
+      if (item[dropdownOptionsKey] === selectedValue) {
+        dropdownObject.value = item.label;
+        option.className = 'selected-item';
+      }
+      option.value = item[dropdownOptionsKey];
+      option.label = item.label
+        ? item.label
+        : item[dropdownOptionsKey]
+        ? item[dropdownOptionsKey]
+        : '';
+      return option;
+    })
+    .sort(function (a, b) {
+      return a.label.toLowerCase().localeCompare(b.label.toLowerCase());
+    });
 
-  return dropdownObject; 
+  return dropdownObject;
 };

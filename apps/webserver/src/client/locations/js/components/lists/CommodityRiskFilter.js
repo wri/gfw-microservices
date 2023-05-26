@@ -19,9 +19,17 @@ export default class CommodityRiskFilter extends Component {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.filterCount !== 0 && nextProps.filterCount === 0 && nextProps.listView === 'commodity_risk') {
+    if (
+      this.props.filterCount !== 0 &&
+      nextProps.filterCount === 0 &&
+      nextProps.listView === 'commodity_risk'
+    ) {
       this.setState(cloneDeep(this.initialState));
-    } else if (this.props.filterCount === 0 && nextProps.filterCount === 0 && nextProps.listView === 'commodity_risk') {
+    } else if (
+      this.props.filterCount === 0 &&
+      nextProps.filterCount === 0 &&
+      nextProps.listView === 'commodity_risk'
+    ) {
       this.setState(cloneDeep(locationsPage.defaultFilterValues));
     }
   }
@@ -120,35 +128,65 @@ export default class CommodityRiskFilter extends Component {
   render() {
     const { listData } = this.props;
 
-    const countryOptions = [...new Set(listData.map((list) => list.Country))].map(this.createOptions);
+    const countryOptions = [...new Set(listData.map((list) => list.Country))].map(
+      this.createOptions
+    );
     const stateOptions = [
       ...new Set(
-        listData.filter((location) => location.Country === this.state.selectedCountry).map((list) => list.State)
+        listData
+          .filter((location) => location.Country === this.state.selectedCountry)
+          .map((list) => list.State)
       ),
     ].map(this.createOptions);
     const subStateOptions = [
       ...new Set(
         listData
           .filter(
-            (location) => location.Country === this.state.selectedCountry && location.State === this.state.selectedState
+            (location) =>
+              location.Country === this.state.selectedCountry &&
+              location.State === this.state.selectedState
           )
           .map((list) => list['Sub State'])
       ),
     ].map(this.createOptions);
     const supplierOptions = [
-      ...new Set(listData.filter((list) => list['Supplier Name']).map((list) => list['Supplier Name'])),
+      ...new Set(
+        listData.filter((list) => list['Supplier Name']).map((list) => list['Supplier Name'])
+      ),
     ].map(this.createOptions);
     const secondSupplierOptions = [
-      ...new Set(listData.filter((list) => list['Second Supplier Name']).map((list) => list['Second Supplier Name'])),
+      ...new Set(
+        listData
+          .filter((list) => list['Second Supplier Name'])
+          .map((list) => list['Second Supplier Name'])
+      ),
     ].map(this.createOptions);
     const parentCompanyOptions = [
-      ...new Set(listData.filter((list) => list['Parent Company']).map((list) => list['Parent Company'])),
+      ...new Set(
+        listData.filter((list) => list['Parent Company']).map((list) => list['Parent Company'])
+      ),
     ].map(this.createOptions);
 
-    const dropdownOptionsMethodsCountry = buildDropdownOptions(countryOptions, 'id', this.state.selectedCountry);
-    const dropdownOptionsMethodsState = buildDropdownOptions(stateOptions, 'id', this.state.selectedState);
-    const dropdownOptionsMethodsSubstate = buildDropdownOptions(subStateOptions, 'id', this.state.selectedSubState);
-    const dropdownOptionsMethodsSupplier = buildDropdownOptions(supplierOptions, 'id', this.state.selectedSupplier);
+    const dropdownOptionsMethodsCountry = buildDropdownOptions(
+      countryOptions,
+      'id',
+      this.state.selectedCountry
+    );
+    const dropdownOptionsMethodsState = buildDropdownOptions(
+      stateOptions,
+      'id',
+      this.state.selectedState
+    );
+    const dropdownOptionsMethodsSubstate = buildDropdownOptions(
+      subStateOptions,
+      'id',
+      this.state.selectedSubState
+    );
+    const dropdownOptionsMethodsSupplier = buildDropdownOptions(
+      supplierOptions,
+      'id',
+      this.state.selectedSupplier
+    );
     const dropdownOptionsMethodsSecondSupplier = buildDropdownOptions(
       secondSupplierOptions,
       'id',
@@ -389,7 +427,11 @@ export default class CommodityRiskFilter extends Component {
             </div>
 
             <div className="dialog__footer">
-              <Button variant="primary" onClick={this.updateValues} label={locationsPage.lists.applyFilters} />
+              <Button
+                variant="primary"
+                onClick={this.updateValues}
+                label={locationsPage.lists.applyFilters}
+              />
             </div>
           </div>
         </ModalWrapper>

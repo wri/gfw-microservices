@@ -40,18 +40,14 @@ export class LocationService {
 
       const selectedListData = this.geoService.createGeoJSON(uploadingData);
 
-      const selectedLocationsIDs = uploadingData.map(
-        (location) => location.location_id
-      );
+      const selectedLocationsIDs = uploadingData.map((location) => location.location_id);
 
       if (!selectedListData) {
         reject('GEO JSON creation not success');
       } else {
         const feats = selectedListData.features;
         const filteredLocations = feats.filter((location) => {
-          return (
-            selectedLocationsIDs.indexOf(location.properties.location_id) > -1
-          );
+          return selectedLocationsIDs.indexOf(location.properties.location_id) > -1;
         });
 
         filteredLocations.forEach((location, j) => {
@@ -97,27 +93,21 @@ export class LocationService {
     const listsToUnlock = Array<number>();
 
     const isFiltered = ListHasFiltersApplies(filters);
-    const listName =
-      selectedNewOrExisting === 'new' ? newListName : moveToList.list_name;
+    const listName = selectedNewOrExisting === 'new' ? newListName : moveToList.list_name;
 
     CheckListNameIsValid(selectedNewOrExisting, listName, userListNames);
 
     Logger.log('Gathering information for locations');
-    const locationData = await new UspGetLocationsFilteredToCopy().run(
-      clientDatabase,
-      {
-        listID: selectedListId,
-        selectedLocations: allLocationsSelected
-          ? null
-          : selectedLocations.join(),
-        country: filters.country,
-        state: filters.state,
-        subState: filters.subState,
-        analysisAreaMin: filters.analysisAreaMin,
-        analysisAreaMax: filters.analysisAreaMax,
-        searchString: filters.searchString,
-      }
-    );
+    const locationData = await new UspGetLocationsFilteredToCopy().run(clientDatabase, {
+      listID: selectedListId,
+      selectedLocations: allLocationsSelected ? null : selectedLocations.join(),
+      country: filters.country,
+      state: filters.state,
+      subState: filters.subState,
+      analysisAreaMin: filters.analysisAreaMin,
+      analysisAreaMax: filters.analysisAreaMax,
+      searchString: filters.searchString,
+    });
 
     if (selectedMoveOrCopy === 'move') {
       Logger.log(
@@ -141,12 +131,7 @@ export class LocationService {
     Logger.log('Creating Feature Props object');
     let featProps = [];
     const templateId = GetTemplateId(templateData);
-    featProps = createFeatureProps(
-      locationData,
-      addType,
-      templateData,
-      customAttributesNames
-    );
+    featProps = createFeatureProps(locationData, addType, templateData, customAttributesNames);
 
     Logger.log('Assemble GEO JSON');
     const geojson = await this.assembleGeojson(featProps, locationData);
@@ -161,10 +146,7 @@ export class LocationService {
     const finalGeojson = getFinalGeojson(gfw_list_id, geojson);
     if (selectedNewOrExisting === 'new') {
       Logger.log('Performing copy for new list');
-      const lockResult = await PerformGetLockStatus(
-        clientDatabase,
-        selectedListId
-      );
+      const lockResult = await PerformGetLockStatus(clientDatabase, selectedListId);
 
       Logger.log(`Lock status result: ${JSON.stringify(lockResult)}`);
       const { lock_status } = lockResult;
@@ -185,9 +167,7 @@ export class LocationService {
       createdListId = createdUserList.list_id;
       await new UspSetListLocked().run(clientDatabase, createdListId, userId);
 
-      Logger.log(
-        `Performing bulk copy for List ID: ${createdUserList.list_id} to ${newListName}`
-      );
+      Logger.log(`Performing bulk copy for List ID: ${createdUserList.list_id} to ${newListName}`);
 
       destLocationIds = await PerformLocationsBulkCopy(
         createdUserList.list_id,
@@ -220,9 +200,7 @@ export class LocationService {
         };
         const analysisRequestResponse = await requestAnalysisProcess(postData);
         const jsonResponse = await analysisRequestResponse.json();
-        Logger.log(
-          `Analysis request response: ${JSON.stringify(jsonResponse)}`
-        );
+        Logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
       }
 
       Logger.log(`Unlocking lists`, 'LocationsService');
@@ -231,10 +209,7 @@ export class LocationService {
       listsToUnlock.push(createdListId);
       await UnlockLists(clientDatabase, listsToUnlock);
 
-      Logger.log(
-        `Lists unlocked ${selectedListId}, ${createdListId}`,
-        'LocationsService'
-      );
+      Logger.log(`Lists unlocked ${selectedListId}, ${createdListId}`, 'LocationsService');
     } else {
       // copy or move to existing list
       Logger.log(`Performing ${selectedMoveOrCopy} for existing list`);
@@ -262,11 +237,7 @@ export class LocationService {
       Logger.log(`Copy analysis complete`, 'LocationsService');
 
       if (isSaveAsDraft) {
-        await UnlockListAndSaveAsDraft(
-          clientDatabase,
-          moveToList.id,
-          gfwListId
-        );
+        await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
       } else {
         const postData = {
           list_id: moveToList.id,
@@ -276,18 +247,12 @@ export class LocationService {
         };
         const analysisRequestResponse = await requestAnalysisProcess(postData);
         const jsonResponse = await analysisRequestResponse.json();
-        Logger.log(
-          `Analysis request response: ${JSON.stringify(jsonResponse)}`
-        );
+        Logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
       }
 
       Logger.log('remove locations or list if move is selected');
       if (selectedMoveOrCopy === 'move') {
-        await new UspSetListLocked().run(
-          clientDatabase,
-          selectedListId,
-          userId
-        );
+        await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
 
         if (allLocationsSelected && !isFiltered) {
           Logger.log('Delete list because all locations were moved');
@@ -315,10 +280,7 @@ export class LocationService {
       listsToUnlock.push(selectedListId);
       listsToUnlock.push(moveToList.id);
       await UnlockLists(clientDatabase, listsToUnlock);
-      Logger.log(
-        `Lists unlocked ${selectedListId}, ${moveToList.id}`,
-        'LocationsService'
-      );
+      Logger.log(`Lists unlocked ${selectedListId}, ${moveToList.id}`, 'LocationsService');
     }
   };
 }

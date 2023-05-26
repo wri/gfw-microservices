@@ -4,7 +4,11 @@ import GFWAdminForestChangeFilter from '../GFWAdminForestChangeFilter';
 import GFWProtectedForestChangeFilter from '../GFWProtectedForestChangeFilter';
 import ForestChangeFilter from '../ForestChangeFilter';
 
-const FOREST_CHANGE_FILTER_LIST = ['Oil Palm Concessions', 'RSPO Palm Concessions', 'Palm Oil Mills'];
+const FOREST_CHANGE_FILTER_LIST = [
+  'Oil Palm Concessions',
+  'RSPO Palm Concessions',
+  'Palm Oil Mills',
+];
 
 interface ForestChangeFilterProps {
   listName: string;
@@ -31,7 +35,12 @@ export const ForestChangeFilterDrawer = ({
 }: ForestChangeFilterProps) => {
   if (FOREST_CHANGE_FILTER_LIST.includes(listName)) {
     return (
-      <GFWForestChangeFilter listData={listData} filterCount={filterCount} listView={listView} list_name={listName} />
+      <GFWForestChangeFilter
+        listData={listData}
+        filterCount={filterCount}
+        listView={listView}
+        list_name={listName}
+      />
     );
   }
 

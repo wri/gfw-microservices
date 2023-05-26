@@ -1,4 +1,5 @@
 # Changelog
+
 ### QA-V709
 
 - [CHANGED] show otbn diagnostics in qa
@@ -22,7 +23,6 @@
 ### QA-V703
 
 - [CHANGED] enable soy on tree cover loss when there is data
-
 
 ### QA-V702
 
@@ -585,4 +585,3 @@
 ### STG-000
 
 - [ADDED] Changelog for Git Action release
-

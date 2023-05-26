@@ -37,7 +37,9 @@ export default class CanopyModal extends Component {
     return (
       <ModalWrapper onClose={this.close} theme="no-download">
         <div className="basemap-modal-content">
-          <div className="canopy-modal-title">Adjust the minimum canopy density for tree cover and tree cover loss</div>
+          <div className="canopy-modal-title">
+            Adjust the minimum canopy density for tree cover and tree cover loss
+          </div>
           <div className="trees">
             <div className="tree-icon" />
             <div className="forest-icon" />

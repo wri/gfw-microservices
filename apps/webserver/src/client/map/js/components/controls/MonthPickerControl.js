@@ -43,10 +43,20 @@ export default class MonthPickerControl extends Component {
       <div style={flexStyle}>
         <span style={{ whiteSpace: 'nowrap' }}>{fromLabel}</span>
         <div className="map-monthpicker__select-container">
-          <select value={fromMonth} name="from-month" ref="fromMonth" onChange={this.handleFromMonthChange}>
+          <select
+            value={fromMonth}
+            name="from-month"
+            ref="fromMonth"
+            onChange={this.handleFromMonthChange}
+          >
             {this.createMonthFromOptions()}
           </select>
-          <select value={fromYear} name="from-year" ref="fromYear" onChange={this.handleFromYearChange}>
+          <select
+            value={fromYear}
+            name="from-year"
+            ref="fromYear"
+            onChange={this.handleFromYearChange}
+          >
             {this.createYearFromOptions()}
           </select>
         </div>
@@ -142,7 +152,8 @@ export default class MonthPickerControl extends Component {
           value={i + 1}
           key={i}
           disabled={
-            momentEnd.isSameOrAfter(momentStart, 'month') && momentEnd.isSameOrBefore(momentCurrent, 'month')
+            momentEnd.isSameOrAfter(momentStart, 'month') &&
+            momentEnd.isSameOrBefore(momentCurrent, 'month')
               ? false
               : true
           }

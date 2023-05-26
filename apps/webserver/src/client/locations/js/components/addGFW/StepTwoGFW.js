@@ -55,7 +55,13 @@ unTouchables['Administrative Areas'] = {
 };
 unTouchables['Oil Palm Concessions'] = {
   investment: ['Investment Name', 'Parent Company or Group', 'Certification'],
-  commodity: ['Location Name', 'Company Name', 'Parent Company', 'Location Classification', 'Certification'],
+  commodity: [
+    'Location Name',
+    'Company Name',
+    'Parent Company',
+    'Location Classification',
+    'Certification',
+  ],
 };
 unTouchables['Palm Oil Mills'] = {
   investment: [],
@@ -86,14 +92,19 @@ export default class StepTwoGFW extends Component {
     if (this.props.features.length > 0 && this.props.view === 'gfw') {
       const columnsToAdd = [];
       const template_name =
-        this.props.activeTemplate === 'investment' ? 'Investment' : deduceActiveName(this.props.activeTemplate);
+        this.props.activeTemplate === 'investment'
+          ? 'Investment'
+          : deduceActiveName(this.props.activeTemplate);
       filteredFeatures = this.props.features;
       const feature = filteredFeatures[0];
       const list_name = this.props.selectedLists[0].list_name;
 
       this.props.editFields.forEach((data) => {
         // if (data.template_datum_field_name === 'gadmid') { return; }
-        if (data.template_name === template_name && feature[data.template_datum_field_name] === undefined) {
+        if (
+          data.template_name === template_name &&
+          feature[data.template_datum_field_name] === undefined
+        ) {
           columnsToAdd.push(data.template_datum_field_name);
         }
       });
@@ -146,7 +157,9 @@ export default class StepTwoGFW extends Component {
         }
 
         if (this.props.addType === 'commodity') {
-          filteredFeatures[i]['Location Classification'] = filteredFeatures[i]['Location Classification']
+          filteredFeatures[i]['Location Classification'] = filteredFeatures[i][
+            'Location Classification'
+          ]
             ? filteredFeatures[i]['Location Classification']
             : classificationObj[this.props.activeTemplate]
             ? classificationObj[this.props.activeTemplate].value
@@ -154,7 +167,9 @@ export default class StepTwoGFW extends Component {
           if (list_name === 'RSPO Palm Concessions') {
             filteredFeatures[i].Certification = 'yes';
           } else if (list_name === 'Palm Oil Mills') {
-            filteredFeatures[i].ID = filteredFeatures[i]['Mill ID'] ? filteredFeatures[i]['Mill ID'].toString() : '';
+            filteredFeatures[i].ID = filteredFeatures[i]['Mill ID']
+              ? filteredFeatures[i]['Mill ID'].toString()
+              : '';
             delete filteredFeatures[i]['Mill ID'];
             filteredFeatures[i]['Company ID'] = 'n/a';
             filteredFeatures[i]['Alternative Mill Name'] = filteredFeatures[i]['Alternative Name']
@@ -463,7 +478,9 @@ export default class StepTwoGFW extends Component {
             key={j}
             className={`locations-table-td ${valid === false ? 'invalid-td' : ''}`}
           >
-            <span className={`step-three-cell-span ${valid ? 'valid-td' : 'invalid-td'}`}>{feature[key]}</span>
+            <span className={`step-three-cell-span ${valid ? 'valid-td' : 'invalid-td'}`}>
+              {feature[key]}
+            </span>
           </td>
         );
       } else {
@@ -510,7 +527,9 @@ export default class StepTwoGFW extends Component {
             (key === 'Analysis Radius' &&
               feature.invalidFields &&
               feature.invalidFields.indexOf('Analysis Radius') > -1) ||
-            (key === 'Analysis Area' && feature.invalidFields && feature.invalidFields.indexOf('Analysis Area') > -1)
+            (key === 'Analysis Area' &&
+              feature.invalidFields &&
+              feature.invalidFields.indexOf('Analysis Area') > -1)
           ) {
             valid = false;
           }
@@ -518,7 +537,9 @@ export default class StepTwoGFW extends Component {
           let hoverTitle = '';
           if (!valid) {
             if (key.toLowerCase() === 'certification') {
-              hoverTitle = fieldValidations[key] ? fieldValidations[key].certObj[this.props.activeTemplate] : '';
+              hoverTitle = fieldValidations[key]
+                ? fieldValidations[key].certObj[this.props.activeTemplate]
+                : '';
             } else {
               hoverTitle = fieldValidations[key] ? fieldValidations[key].text : '';
             }
@@ -531,7 +552,10 @@ export default class StepTwoGFW extends Component {
               key={j}
               className={`locations-table-td ${valid ? 'valid-td' : 'invalid-td'}`}
             >
-              <input onChange={(evt) => this.editTableCell(evt, feature, key, i)} placeholder={feature[key]} />
+              <input
+                onChange={(evt) => this.editTableCell(evt, feature, key, i)}
+                placeholder={feature[key]}
+              />
             </td>
           );
         }
@@ -539,7 +563,8 @@ export default class StepTwoGFW extends Component {
       return returnedEl;
     };
 
-    const checked = this.props.featureResults.length > 0 ? this.props.featureResults[i].checked : false;
+    const checked =
+      this.props.featureResults.length > 0 ? this.props.featureResults[i].checked : false;
     const tdArray = [
       <td key={`${i} + '-validator'`}>
         <div className="column-checkbox-location">
@@ -576,7 +601,10 @@ export default class StepTwoGFW extends Component {
         } else if (this.props.activeTemplate !== 'palmMill') {
           tdArray.push(createTd(column, j));
         }
-      } else if (this.props.addType === 'investment' && column.template_datum_field_name !== 'gadmid') {
+      } else if (
+        this.props.addType === 'investment' &&
+        column.template_datum_field_name !== 'gadmid'
+      ) {
         tdArray.push(createTd(column, j));
       }
     });
@@ -817,14 +845,20 @@ export default class StepTwoGFW extends Component {
     const isListExcluded = isDownloadDisabledForThisList(selectedLists[0]);
     const csvData = [[]];
     const template_name =
-      this.props.activeTemplate === 'investment' ? 'Investment' : deduceActiveName(this.props.activeTemplate);
+      this.props.activeTemplate === 'investment'
+        ? 'Investment'
+        : deduceActiveName(this.props.activeTemplate);
 
     this.props.editFields.forEach((data) => {
       if (data.template_name === template_name) {
         const fieldName = data.template_datum_field_name;
         if (fieldName !== 'gadmid' && !(isListExcluded && EXCLUDED_COLUMNS.includes(fieldName))) {
           if (this.props.addType === 'commodity') {
-            if (fieldName !== 'Wind Barrier' && fieldName !== 'Riparian Buffers' && fieldName !== 'Buffer Zones') {
+            if (
+              fieldName !== 'Wind Barrier' &&
+              fieldName !== 'Riparian Buffers' &&
+              fieldName !== 'Buffer Zones'
+            ) {
               csvData[0].push(fieldName);
             }
           } else {
@@ -841,7 +875,11 @@ export default class StepTwoGFW extends Component {
           const fieldName = data.template_datum_field_name;
           if (fieldName !== 'gadmid' && !(isListExcluded && EXCLUDED_COLUMNS.includes(fieldName))) {
             if (this.props.addType === 'commodity') {
-              if (fieldName !== 'Wind Barrier' && fieldName !== 'Riparian Buffers' && fieldName !== 'Buffer Zones') {
+              if (
+                fieldName !== 'Wind Barrier' &&
+                fieldName !== 'Riparian Buffers' &&
+                fieldName !== 'Buffer Zones'
+              ) {
                 dataRow.push(
                   feat[fieldName] && feat[fieldName].includes && feat[fieldName].includes(',')
                     ? `"${feat[fieldName]}"`

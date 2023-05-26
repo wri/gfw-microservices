@@ -49,7 +49,12 @@ import LandingDownload from '../lists/download/LandingDownload';
 import ManageListFolderDialog from './ManageListFolderDialog';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import store from '../../store';
-import { classNameForListStatus, isDownloadDisabledForThisList, isAnalyzingStatus, isFailedList } from '../../utils/lists.utils';
+import {
+  classNameForListStatus,
+  isDownloadDisabledForThisList,
+  isAnalyzingStatus,
+  isFailedList,
+} from '../../utils/lists.utils';
 import DeleteListDialog from './DeleteListDialog';
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
 import ListDiagnosticStatusDraft from './components/ListDiagnosticStatusDraft/ListDiagnosticStatusDraft';
@@ -146,7 +151,13 @@ export default class LocationList extends Component {
     const { folder } = listProps;
     if (folder) {
       // if the user clicked on the map option from a folder
-      ga('send', 'event', 'Landing Page Click', 'Folder Click', 'User shares list from folder view');
+      ga(
+        'send',
+        'event',
+        'Landing Page Click',
+        'Folder Click',
+        'User shares list from folder view'
+      );
     } else {
       ga('send', 'event', 'Landing', 'User opens more menu for list from locations page', 'Share');
     }
@@ -170,9 +181,21 @@ export default class LocationList extends Component {
 
     if (folder) {
       // if the user clicked on the map option from a folder
-      ga('send', 'event', 'Landing Page Click', 'Folder Click', 'User goes to diagnostic for list from folder view');
+      ga(
+        'send',
+        'event',
+        'Landing Page Click',
+        'Folder Click',
+        'User goes to diagnostic for list from folder view'
+      );
     } else {
-      ga('send', 'event', 'Landing', 'User opens more menu for list from locations page', 'Diagnostic');
+      ga(
+        'send',
+        'event',
+        'Landing',
+        'User opens more menu for list from locations page',
+        'Diagnostic'
+      );
     }
     this.setState({ isLoadingDiagnostic: true });
     fetch({
@@ -255,9 +278,21 @@ export default class LocationList extends Component {
 
     if (folder) {
       // if the user clicked on the map option from a folder
-      ga('send', 'event', 'Landing Page Click', 'Folder Click', 'User goes to map for list from folder view');
+      ga(
+        'send',
+        'event',
+        'Landing Page Click',
+        'Folder Click',
+        'User goes to map for list from folder view'
+      );
     } else {
-      ga('send', 'event', 'Landing', 'List item map click', `user clicked to go to the map for list ${list.list_name}`);
+      ga(
+        'send',
+        'event',
+        'Landing',
+        'List item map click',
+        `user clicked to go to the map for list ${list.list_name}`
+      );
     }
 
     const sendData = {
@@ -291,7 +326,15 @@ export default class LocationList extends Component {
       downloadLargeListFileDialogState,
       confirmDialogState,
     } = this.state;
-    const { folders, locations, list, currentUser, isDiagnosticStatusDraft, onFolderChange, showIcon } = this.props;
+    const {
+      folders,
+      locations,
+      list,
+      currentUser,
+      isDiagnosticStatusDraft,
+      onFolderChange,
+      showIcon,
+    } = this.props;
     const strings = locationsPage.lists;
 
     let listStatusClassName = classNameForListStatus(list.list_status_id);
@@ -314,8 +357,10 @@ export default class LocationList extends Component {
     const isLargeList = !!list.large_list_id;
     const hasErrorFile = !!list.error_file_storage_path;
 
-    const showDelete = (userIsAdmin || (!userIsViewer && userIsOwner)) && !isPending && !isSavedLocation;
-    const showRerun = (userIsAdmin || (!userIsViewer && userIsOwner)) && !isPending && !isSavedLocation;
+    const showDelete =
+      (userIsAdmin || (!userIsViewer && userIsOwner)) && !isPending && !isSavedLocation;
+    const showRerun =
+      (userIsAdmin || (!userIsViewer && userIsOwner)) && !isPending && !isSavedLocation;
     // List context menu flags
     const showDiagnosticOpt = !isPending && !isFailed && !isShared && !isInDraft && locations > 0;
     const showMapOpt = !isPending && !isFailed && !isShared && locations > 0;
@@ -363,7 +408,9 @@ export default class LocationList extends Component {
         return list.sharedWith;
       }
 
-      return list.sharedList.length > 1 ? `${list.sharedList[0]}, ${list.sharedList.length - 1}+` : list.sharedList[0];
+      return list.sharedList.length > 1
+        ? `${list.sharedList[0]}, ${list.sharedList.length - 1}+`
+        : list.sharedList[0];
     };
     return (
       <li
@@ -384,7 +431,9 @@ export default class LocationList extends Component {
         )}
 
         <div className="locations-list__controls">
-          {isDiagnosticStatusDraft && showRerunOpt && !IS_LOCK_STATUS && <ListDiagnosticStatusDraft list={list} />}
+          {isDiagnosticStatusDraft && showRerunOpt && !IS_LOCK_STATUS && (
+            <ListDiagnosticStatusDraft list={list} />
+          )}
           {showNonOwnerDraft && !IS_LOCK_STATUS && (
             <span className="DiagnosticStatusDraft__label">
               <CustomTooltip
@@ -412,13 +461,14 @@ export default class LocationList extends Component {
               <FailedTooltip
                 placement="top"
                 label={strings.failed}
-                tooltipMessage={`This list has failed analysis. To receive results, resubmit this list for analysis. ${isLargeList ? 'Click to download the file and fix errors.' : ''
+                tooltipMessage={`This list has failed analysis. To receive results, resubmit this list for analysis. ${
+                  isLargeList ? 'Click to download the file and fix errors.' : ''
                 }`}
                 onClickAction={
                   isLargeList
                     ? () => {
                         this.setState({ downloadLargeListFileDialogState: true });
-                    }
+                      }
                     : undefined
                 }
               />
@@ -478,7 +528,9 @@ export default class LocationList extends Component {
                   }}
                 />
               )}
-              {showMapOpt && <MenuItem primaryText={strings.map} onClick={() => this.viewMap(list)} />}
+              {showMapOpt && (
+                <MenuItem primaryText={strings.map} onClick={() => this.viewMap(list)} />
+              )}
               {showDownloadOpt && (
                 <LandingDownload
                   locations={locations || 0}
@@ -491,7 +543,9 @@ export default class LocationList extends Component {
                   error_file_storage_path={list.error_file_storage_path}
                 />
               )}
-              {showShareOpt && <MenuItem primaryText={strings.share} onClick={(e) => this.shareList(e, list)} />}
+              {showShareOpt && (
+                <MenuItem primaryText={strings.share} onClick={(e) => this.shareList(e, list)} />
+              )}
               {showRerunOpt && !isInDraft && (
                 <MenuItem
                   primaryText={strings.update}
@@ -510,7 +564,11 @@ export default class LocationList extends Component {
                   }}
                 />
               )}
-              {(showDiagnosticOpt || showMapOpt || showDownloadOpt || showShareOpt || showRerunOpt) && <Divider />}
+              {(showDiagnosticOpt ||
+                showMapOpt ||
+                showDownloadOpt ||
+                showShareOpt ||
+                showRerunOpt) && <Divider />}
               <MenuItem
                 primaryText={isInFolder ? strings.manage : strings.addToFolder}
                 onClick={() => {
@@ -544,8 +602,20 @@ export default class LocationList extends Component {
               dialogActionConfirm={() => {
                 requestGeoTrellisAnalyzeList(list)
                   .then((response) => {
-                    ga('send', 'event', 'Submit', 'Submit List', 'User submits a list for analysis');
-                    ga('send', 'event', 'Submit', 'Submit List', 'User submits a list from landing page');
+                    ga(
+                      'send',
+                      'event',
+                      'Submit',
+                      'Submit List',
+                      'User submits a list for analysis'
+                    );
+                    ga(
+                      'send',
+                      'event',
+                      'Submit',
+                      'Submit List',
+                      'User submits a list from landing page'
+                    );
                     // TODO: Get details what to do after list is submitted
                     console.log(response.data);
                     window.location.reload();
@@ -567,7 +637,13 @@ export default class LocationList extends Component {
             list={list}
             onCancel={() => this.setState({ isManageListFolderOpen: false })}
             onComplete={(msg) => {
-              ga('send', 'event', 'Landing', 'User opens more menu for list from locations page', 'Add to folder');
+              ga(
+                'send',
+                'event',
+                'Landing',
+                'User opens more menu for list from locations page',
+                'Add to folder'
+              );
               this.setState({ isManageListFolderOpen: false });
               onFolderChange(msg);
             }}
@@ -579,7 +655,13 @@ export default class LocationList extends Component {
               list={list}
               onCancel={() => this.setState({ isDeleteDialogOpen: false })}
               onComplete={() => {
-                ga('send', 'event', 'Landing', 'User opens more menu for list from locations page', 'Delete');
+                ga(
+                  'send',
+                  'event',
+                  'Landing',
+                  'User opens more menu for list from locations page',
+                  'Delete'
+                );
                 this.setState({ isDeleteDialogOpen: false });
               }}
             />
@@ -605,7 +687,11 @@ export default class LocationList extends Component {
             >
               <div className="dialog__header">
                 <h1 className="dialog__title">{strings.rerunListDialog.title}</h1>
-                <IconButton icon={<IconTimes />} onClick={this.handleRerunDialogState} size="large" />
+                <IconButton
+                  icon={<IconTimes />}
+                  onClick={this.handleRerunDialogState}
+                  size="large"
+                />
               </div>
               <div className="dialog__prompt">{strings.rerunListDialog.text}</div>
             </Dialog>
@@ -618,7 +704,9 @@ export default class LocationList extends Component {
             autoScrollBodyContent={false}
             contentStyle={{ width: '80%', maxWidth: 'none' }}
             children={
-              <DownloadLargeListFile onCancel={() => this.setState({ downloadLargeListFileDialogState: false })} />
+              <DownloadLargeListFile
+                onCancel={() => this.setState({ downloadLargeListFileDialogState: false })}
+              />
             }
           />
           <ConfirmDialog

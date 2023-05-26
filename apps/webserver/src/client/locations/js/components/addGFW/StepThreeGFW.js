@@ -16,7 +16,9 @@ export default class StepThreeGFW extends Component {
           let num = 0;
           if (result !== null) {
             num = parseInt(result[0]);
-            locationClassification = `${locationClassification.substring(0, result.index)}${num + 1}`;
+            locationClassification = `${locationClassification.substring(0, result.index)}${
+              num + 1
+            }`;
           } else {
             locationClassification = `${locationClassification} ${count}`;
           }
@@ -26,7 +28,8 @@ export default class StepThreeGFW extends Component {
       this.props.updateCustomList(locationClassification);
     } else if (nextProps.addType === 'commodity' && nextProps.step === 3 && this.props.step !== 3) {
       let newListName;
-      const type = nextProps.activeTemplate === 'generic' ? nextProps.commodityType : nextProps.activeTemplate;
+      const type =
+        nextProps.activeTemplate === 'generic' ? nextProps.commodityType : nextProps.activeTemplate;
       if (nextProps.commodityType !== 'other') {
         newListName = deduceActiveName(type);
       } else {
@@ -40,7 +43,9 @@ export default class StepThreeGFW extends Component {
           let num = 0;
           if (result !== null) {
             num = parseInt(result[0]);
-            locationClassification = `${locationClassification.substring(0, result.index)}${num + 1}`;
+            locationClassification = `${locationClassification.substring(0, result.index)}${
+              num + 1
+            }`;
           } else {
             locationClassification = `${locationClassification} ${count}`;
           }
@@ -75,9 +80,9 @@ export default class StepThreeGFW extends Component {
         <p className="locations-subpage-header__steps">Step 3 of 3</p>
         <div className="locations-subpage-header subtitle">Import Lists</div>
         <p>
-          Choose where to save selected Global Forest Watch location(s). Please note that only compatible locations can
-          belong to the same list, i.e. same location classification, same location or commodity type and/or location
-          template.
+          Choose where to save selected Global Forest Watch location(s). Please note that only
+          compatible locations can belong to the same list, i.e. same location classification, same
+          location or commodity type and/or location template.
         </p>
         <section className="list-import-options__item">
           <div className="locations-upload-list-label bold-list">Create New List:</div>
@@ -89,7 +94,9 @@ export default class StepThreeGFW extends Component {
             />
           </span>
         </section>
-        <div className="locations-upload-list-label">Add selected location(s) to create a new list.</div>
+        <div className="locations-upload-list-label">
+          Add selected location(s) to create a new list.
+        </div>
 
         <section className="list-import-options__item">
           <div className="locations-upload-list-label bold-list">Add to Existing List:</div>
@@ -102,7 +109,9 @@ export default class StepThreeGFW extends Component {
             />
           </div>
         </section>
-        <div className="locations-upload-list-label">Add selected location(s) to an existing list.</div>
+        <div className="locations-upload-list-label">
+          Add selected location(s) to an existing list.
+        </div>
       </div>
     );
   }

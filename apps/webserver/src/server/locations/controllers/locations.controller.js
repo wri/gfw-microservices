@@ -14,7 +14,9 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const ShareManager = require('../../../config/publicutils/shareManager.utils');
-const { findSharedListsInsideOrganization } = require('../../../config/publicutils/shareManager.utils');
+const {
+  findSharedListsInsideOrganization,
+} = require('../../../config/publicutils/shareManager.utils');
 const { getListDataFilterValues, sendMessageToQueue } = require('../utils/locations.utils');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 
@@ -124,7 +126,9 @@ exports.getUserLists = (req, res) => {
   const { templateId } = req.query;
   ListManager.getUserLists(req)
     .then((result) => {
-      const userLists = templateId ? result.filter((list) => list.template_id === parseInt(templateId, 10)) : result;
+      const userLists = templateId
+        ? result.filter((list) => list.template_id === parseInt(templateId, 10))
+        : result;
       res.status(200).json({ userLists });
     })
     .catch((err) => {
@@ -226,10 +230,15 @@ exports.downloadingSelectedLocations = async (request, response) => {
     LocationLogic,
   };
   try {
-    const selectedLocations = await ListManager.getPaginatedAnalysisDataForUserList(request, listID, filters);
+    const selectedLocations = await ListManager.getPaginatedAnalysisDataForUserList(
+      request,
+      listID,
+      filters
+    );
 
     // some templates use 'Investment Name' and others 'Location Name'
-    const locationNameKey = 'Investment Name' in selectedLocations[0] ? 'Investment Name' : 'Location Name';
+    const locationNameKey =
+      'Investment Name' in selectedLocations[0] ? 'Investment Name' : 'Location Name';
 
     const csv = Papa.unparse(selectedLocations, {
       columns: ['list_id', 'location_id', locationNameKey, ...columnsToReturn.split(',')],
@@ -284,7 +293,11 @@ exports.downloadingSelectedLocationsJson = async (request, response) => {
   };
 
   try {
-    const selectedLocations = await ListManager.getPaginatedAnalysisDataForUserList(request, listID, filters);
+    const selectedLocations = await ListManager.getPaginatedAnalysisDataForUserList(
+      request,
+      listID,
+      filters
+    );
     response.status(200).send(selectedLocations);
   } catch (err) {
     winstonLogger.error(`Downloading Selected Locations Failed ${JSON.stringify(err)}`);

@@ -16,15 +16,38 @@ const { getListDataFiltered } = require('../utils/listData.utils');
  */
 exports.listData = async (req, res) => {
   logger.info(`/listData - Request => Query PARAMS: ${JSON.stringify(req.query)}`);
-  const { list_id: listID, country, state, subState, analysisArea, sortByAttribute, order, page, pageSize } = req.query;
-  const filters = { country, state, subState, analysisArea, sortByAttribute, order, page, pageSize };
+  const {
+    list_id: listID,
+    country,
+    state,
+    subState,
+    analysisArea,
+    sortByAttribute,
+    order,
+    page,
+    pageSize,
+  } = req.query;
+  const filters = {
+    country,
+    state,
+    subState,
+    analysisArea,
+    sortByAttribute,
+    order,
+    page,
+    pageSize,
+  };
   const filtersClean = _.pickBy(filters, _.identity);
 
   try {
     if (listID) {
       const analysesList = await AnalysisManager.getListAnalyses(req, listID);
       const locationsNoGeomList = await ListManager.getListLocationsNoGeom(req, listID);
-      const locationAttributeList = await LocationManager.getLocationAttributesList(req, locationsNoGeomList, false);
+      const locationAttributeList = await LocationManager.getLocationAttributesList(
+        req,
+        locationsNoGeomList,
+        false
+      );
       const analysisDataForUserList = await AnalysisManager.getAnalysisDataForUserList(req, listID);
 
       const listData = {
@@ -78,7 +101,11 @@ exports.listDataCustom = async (req, res) => {
   };
 
   try {
-    const listLocationsNoGeomCustom = await ListManager.getPaginatedAnalysisDataForUserList(req, listID, queryFilters);
+    const listLocationsNoGeomCustom = await ListManager.getPaginatedAnalysisDataForUserList(
+      req,
+      listID,
+      queryFilters
+    );
     const listLocationsNoGeomCustomFiltered = listLocationsNoGeomCustom.map((location) => {
       return _.pick(location, ['list_id', ...columnsToReturn.split(',')]);
     });

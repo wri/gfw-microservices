@@ -193,7 +193,9 @@ export default class LegendCheckbox extends Component {
     const grayed = this.state.layerHidden ? 'grayed' : '';
     const symbolsLength = layer.legendConfig.items ? layer.legendConfig.items.length : 0;
     const categoriesLength =
-      symbolsLength === 1 && layer.legendConfig.items[0].categories ? layer.legendConfig.items[0].categories.length : 0;
+      symbolsLength === 1 && layer.legendConfig.items[0].categories
+        ? layer.legendConfig.items[0].categories.length
+        : 0;
     const layerWarning = utils.getObject(mapPage.layerWarnings, 'id', layer.id);
 
     const symbolStyle = {
@@ -214,10 +216,15 @@ export default class LegendCheckbox extends Component {
       hidden = visibleLayers.indexOf(layer.id) === -1 ? 'hidden' : '';
     }
     return (
-      <div className={`legend-list-item ${layer.group} ${grayed} ${hidden}`} id={layer.id + '-layer-checkbox'}>
+      <div
+        className={`legend-list-item ${layer.group} ${grayed} ${hidden}`}
+        id={layer.id + '-layer-checkbox'}
+      >
         <span
           onClick={this.toggleLayerVisibility}
-          className={`info-icon icon-eye pointer ${grayed} ${iconLoading === layer.id ? 'iconLoading' : ''}`}
+          className={`info-icon icon-eye pointer ${grayed} ${
+            iconLoading === layer.id ? 'iconLoading' : ''
+          }`}
         >
           {grayed === 'grayed' ? (
             <svg>
@@ -231,7 +238,9 @@ export default class LegendCheckbox extends Component {
         </span>
 
         <span className="layer-checkbox-label">{label}</span>
-        {gfwListDef && Object.keys(gfwListDef).length > 0 && Object.keys(gfwListDef)[0] === layer.id ? (
+        {gfwListDef &&
+        Object.keys(gfwListDef).length > 0 &&
+        Object.keys(gfwListDef)[0] === layer.id ? (
           <span className="info-icon gfw-filter pointer" onClick={this.clearGFWFilter}>
             <svg>
               <use xlinkHref="#shape-close" />
@@ -239,7 +248,9 @@ export default class LegendCheckbox extends Component {
           </span>
         ) : null}
         <span
-          className={`info-icon metadata-legend pointer ${iconLoading === layer.id ? 'iconLoading' : ''}`}
+          className={`info-icon metadata-legend pointer ${
+            iconLoading === layer.id ? 'iconLoading' : ''
+          }`}
           onClick={this.showInfo}
         >
           <svg>
@@ -277,12 +288,21 @@ export default class LegendCheckbox extends Component {
           <ClarkLabsLayerLeyend
             disabled={grayed}
             landCoverLayer={layer}
-            landChangeLayer={this.props.mapLayers.find((layer) => layer.id === clarkLabsAquacultureLandChange)}
+            landChangeLayer={this.props.mapLayers.find(
+              (layer) => layer.id === clarkLabsAquacultureLandChange
+            )}
           />
         ) : null}
 
-        {symbolsLength === 1 && categoriesLength > 0 && layer.id === gladAlertsID && layer.id !== soyPlantedArea ? (
-          <GladLayerLegend disabled={grayed} layer={layer} gladConfirmed={this.props.gladConfirmed} />
+        {symbolsLength === 1 &&
+        categoriesLength > 0 &&
+        layer.id === gladAlertsID &&
+        layer.id !== soyPlantedArea ? (
+          <GladLayerLegend
+            disabled={grayed}
+            layer={layer}
+            gladConfirmed={this.props.gladConfirmed}
+          />
         ) : null}
 
         {symbolsLength === 1 &&
@@ -291,7 +311,9 @@ export default class LegendCheckbox extends Component {
         layer.id !== raddAlertsID &&
         layer.id !== clarkLabsAquacultureLandCover &&
         layer.id !== soyPlantedArea ? (
-          <ul className="layer-legend">{layer.legendConfig.items[0].categories.map(this.layerLegendMap)}</ul>
+          <ul className="layer-legend">
+            {layer.legendConfig.items[0].categories.map(this.layerLegendMap)}
+          </ul>
         ) : null}
 
         {layer.id === aboveGroundBiomassId ? (
@@ -330,11 +352,21 @@ export default class LegendCheckbox extends Component {
             <p className="canopy-range">Show values between</p>
             <span className="canopy-range-wrapper">
               <span className="canopy-range-button">
-                <input type="number" step="1" onChange={this.updateBiomassMin} value={this.props.biomassRange.min} />
+                <input
+                  type="number"
+                  step="1"
+                  onChange={this.updateBiomassMin}
+                  value={this.props.biomassRange.min}
+                />
               </span>
               to
               <span className="canopy-range-button">
-                <input type="number" step="1" onChange={this.updateBiomassMax} value={this.props.biomassRange.max} />
+                <input
+                  type="number"
+                  step="1"
+                  onChange={this.updateBiomassMax}
+                  value={this.props.biomassRange.max}
+                />
               </span>
             </span>
           </div>
@@ -371,7 +403,11 @@ export default class LegendCheckbox extends Component {
         {layer.id === viirsActiveFiresID ? (
           <p className="layer-legend-message">
             For more infromation about this layer{' '}
-            <a href="http://fires.globalforestwatch.org/home/" target="_blank" className="layer-legend-link link-viirs">
+            <a
+              href="http://fires.globalforestwatch.org/home/"
+              target="_blank"
+              className="layer-legend-link link-viirs"
+            >
               Check out GFW Fires
               <svg>
                 <use xlinkHref="#icon-navigate" />

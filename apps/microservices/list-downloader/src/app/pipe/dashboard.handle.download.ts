@@ -43,9 +43,7 @@ export class DashboardHandleDownload extends IPipeService {
   process(analysisData, filters: GenerationFileRequest) {
     const { listName } = filters;
 
-    analysisData.forEach((data) =>
-      this.writeStream.write({ list_name: listName, ...data })
-    );
+    analysisData.forEach((data) => this.writeStream.write({ list_name: listName, ...data }));
   }
 
   private organizeStream(
@@ -66,16 +64,9 @@ export class DashboardHandleDownload extends IPipeService {
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterLocationHaveStatus(2))
       .pipe(new FilterObject(allFields))
-      .pipe(
-        new ManipulateDataForDashboard(
-          EXCEL_TEMPLATES[table],
-          listLevelAnalysis
-        )
-      )
+      .pipe(new ManipulateDataForDashboard(EXCEL_TEMPLATES[table], listLevelAnalysis))
       .pipe(new ConvertObject2CSV(EXCEL_TEMPLATE_HEADERS[table]))
-      .pipe(
-        fs.createWriteStream(`/tmp/${key}_${fileSuffix}.csv`, { flags: 'a' })
-      );
+      .pipe(fs.createWriteStream(`/tmp/${key}_${fileSuffix}.csv`, { flags: 'a' }));
   }
 
   async finish(filters: GenerationFileRequest) {
@@ -100,9 +91,7 @@ export class DashboardHandleDownload extends IPipeService {
         .flatMap((x) => x.fields)
         .map((x) => x.attribute),
       ...templateOperation
-        .filter((x) =>
-          Object.prototype.hasOwnProperty.call(x, 'additionalFields')
-        )
+        .filter((x) => Object.prototype.hasOwnProperty.call(x, 'additionalFields'))
         .flatMap((x) => x.additionalFields)
         .map((x) => x.attribute),
       ...templateOperation

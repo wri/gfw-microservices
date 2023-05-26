@@ -75,7 +75,11 @@ const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
     const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
 
     if (Array.isArray(location_ids) && location_ids.length) {
-      parameters.push({ field: 'location_ids', type: sql.NVarChar(sql.MAX), value: location_ids.toString() });
+      parameters.push({
+        field: 'location_ids',
+        type: sql.NVarChar(sql.MAX),
+        value: location_ids.toString(),
+      });
     }
 
     sqlUtils
@@ -110,10 +114,22 @@ const getAnalysisDataForProtectedAreas = (req, list_id, filters) => {
       { field: 'country', type: sql.NVarChar(150), value: filters.selectedCountry },
       { field: 'state', type: sql.NVarChar(150), value: filters.selectedState },
       { field: 'sub_state', type: sql.NVarChar(150), value: filters.selectedSubState },
-      { field: 'selected_designation', type: sql.NVarChar(150), value: filters.selectedDesignation },
-      { field: 'selected_designation_type', type: sql.NVarChar(150), value: filters.selectedDesignationType },
+      {
+        field: 'selected_designation',
+        type: sql.NVarChar(150),
+        value: filters.selectedDesignation,
+      },
+      {
+        field: 'selected_designation_type',
+        type: sql.NVarChar(150),
+        value: filters.selectedDesignationType,
+      },
       { field: 'selected_iucn', type: sql.NVarChar(150), value: filters.selectedIUCN },
-      { field: 'selected_names', type: sql.NVarChar(sql.MAX), value: filters.selectedNames.toString() },
+      {
+        field: 'selected_names',
+        type: sql.NVarChar(sql.MAX),
+        value: filters.selectedNames.toString(),
+      },
     ];
 
     sqlUtils
@@ -236,11 +252,20 @@ const requestAnalysis = async (req, list_name, geojson = {}, isEdit = false) => 
   if (typeof geojson === 'object' && Object.keys(geojson).length === 0) {
     // Perform a list analysis
     analysisUtils.analyzeList(req, organization_database, list, isEdit);
-  } else if (typeof geojson === 'object' && geojson.hasOwnProperty('type') && geojson.type === 'FeatureCollection') {
+  } else if (
+    typeof geojson === 'object' &&
+    geojson.hasOwnProperty('type') &&
+    geojson.type === 'FeatureCollection'
+  ) {
     // Perform a location analysis
     analysisUtils.analyzeLocation(req, organization_database, list, geojson);
   } else {
-    errorUtils.createErrorMessage(req, errorUtils.errorCodes.failedToGetList, 'Requesting unexpected analysis', '');
+    errorUtils.createErrorMessage(
+      req,
+      errorUtils.errorCodes.failedToGetList,
+      'Requesting unexpected analysis',
+      ''
+    );
   }
 };
 
@@ -315,15 +340,24 @@ const requestDashboardAnalysis = async (request, list, isGFWList) => {
     const secondBatch = await Promise.all([
       lambdaUtils.invoke('dashboard-analysis', { location_s3_info: s3Info, analysisType: 'GLAD' }),
       lambdaUtils.invoke('dashboard-analysis', { location_s3_info: s3Info, analysisType: 'FIRE' }),
-      lambdaUtils.invoke('dashboard-analysis', { location_s3_info: s3Info, analysisType: 'EXTENT' }),
-      lambdaUtils.invoke('dashboard-analysis', { location_s3_info: s3Info, analysisType: 'GLAD_VALIDATE' }),
+      lambdaUtils.invoke('dashboard-analysis', {
+        location_s3_info: s3Info,
+        analysisType: 'EXTENT',
+      }),
+      lambdaUtils.invoke('dashboard-analysis', {
+        location_s3_info: s3Info,
+        analysisType: 'GLAD_VALIDATE',
+      }),
     ]);
     const listS3Data = secondBatch.map((analysis) => JSON.parse(analysis.Payload));
 
     // retrieve the dashboard analysis data stored in s3
     const dissolvedDataPromise = dissolvedS3Data.map((obj) => s3Utils.get(obj.bucket, obj.key));
     const listDataPromise = listS3Data.map((obj) => s3Utils.get(obj.bucket, obj.key));
-    const data = await Promise.all([Promise.all(dissolvedDataPromise), Promise.all(listDataPromise)]);
+    const data = await Promise.all([
+      Promise.all(dissolvedDataPromise),
+      Promise.all(listDataPromise),
+    ]);
     const [dissolvedData, listData] = data;
     // formulate the final dashboard analysis
     const dashboardAnalysis = await locationUtils.dashboardMerger(

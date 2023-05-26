@@ -167,12 +167,15 @@ export default class LayerPanel extends Component {
       (layer) => layer.group === 'forest-change' && layer.id !== proLayers.raddCoverageID
     );
     const landCoverLayers = this.props.mapLayers.filter(
-      (layer) => layer.group === 'land-cover' && layer.id !== proLayers.clarkLabsAquacultureLandChange
+      (layer) =>
+        layer.group === 'land-cover' && layer.id !== proLayers.clarkLabsAquacultureLandChange
     );
     const landUseLayers = this.props.mapLayers.filter(
       (layer) => layer.group === 'land-use' && layer.id !== proLayers.soyOnTreeCoverLoss
     );
-    const conservationLayers = this.props.mapLayers.filter((layer) => layer.group === 'conservation');
+    const conservationLayers = this.props.mapLayers.filter(
+      (layer) => layer.group === 'conservation'
+    );
     const peopleLayers = this.props.mapLayers.filter((layer) => layer.group === 'people');
     const regionLayers = this.props.mapLayers.filter((layer) => layer.group === 'region');
     const filteredRegionLayers = regionLayers.filter(
@@ -206,7 +209,11 @@ export default class LayerPanel extends Component {
               </div>
             </div>
             <div className="nav-item__container land-cover-nav__container">
-              <div onMouseEnter={this.showGroup} id="landCoverHeader" className="map__nav__item land-cover-list-header">
+              <div
+                onMouseEnter={this.showGroup}
+                id="landCoverHeader"
+                className="map__nav__item land-cover-list-header"
+              >
                 Land Cover
               </div>
               <div
@@ -219,11 +226,17 @@ export default class LayerPanel extends Component {
                   <div className="drop-down__title-icon" />
                   <div className="drop-down__title-label">Land Cover</div>
                 </div>
-                <div className="map__headers-list-scroll">{landCoverLayers.map(this.createLayerElement)}</div>
+                <div className="map__headers-list-scroll">
+                  {landCoverLayers.map(this.createLayerElement)}
+                </div>
               </div>
             </div>
             <div className="nav-item__container land-use-nav__container">
-              <div onMouseEnter={this.showGroup} id="landUseHeader" className="map__nav__item land-use-list-header">
+              <div
+                onMouseEnter={this.showGroup}
+                id="landUseHeader"
+                className="map__nav__item land-use-list-header"
+              >
                 Land Use
               </div>
               <div
@@ -236,7 +249,9 @@ export default class LayerPanel extends Component {
                   <div className="drop-down__title-icon" />
                   <div className="drop-down__title-label">Land Use</div>
                 </div>
-                <div className="map__headers-list-scroll">{landUseLayers.map(this.createCategoryLayerElement)}</div>
+                <div className="map__headers-list-scroll">
+                  {landUseLayers.map(this.createCategoryLayerElement)}
+                </div>
               </div>
             </div>
             <div className="nav-item__container conservation-nav__container">
@@ -257,11 +272,17 @@ export default class LayerPanel extends Component {
                   <div className="drop-down__title-icon" />
                   <div className="drop-down__title-label">Conservation</div>
                 </div>
-                <div className="map__headers-list-scroll">{conservationLayers.map(this.createLayerElement)}</div>
+                <div className="map__headers-list-scroll">
+                  {conservationLayers.map(this.createLayerElement)}
+                </div>
               </div>
             </div>
             <div className="nav-item__container people-nav__container">
-              <div onMouseEnter={this.showGroup} id="peopleHeader" className="map__nav__item people-list-header">
+              <div
+                onMouseEnter={this.showGroup}
+                id="peopleHeader"
+                className="map__nav__item people-list-header"
+              >
                 People
               </div>
               <div
@@ -274,11 +295,17 @@ export default class LayerPanel extends Component {
                   <div className="drop-down__title-icon" />
                   <div className="drop-down__title-label">People</div>
                 </div>
-                <div className="map__headers-list-scroll">{peopleLayers.map(this.createLayerElement)}</div>
+                <div className="map__headers-list-scroll">
+                  {peopleLayers.map(this.createLayerElement)}
+                </div>
               </div>
             </div>
             <div className="nav-item__container country-data-nav__container">
-              <div onMouseEnter={this.showGroup} id="regionHeader" className="map__nav__item region-list-header">
+              <div
+                onMouseEnter={this.showGroup}
+                id="regionHeader"
+                className="map__nav__item region-list-header"
+              >
                 Region and Country Data
               </div>
               <div

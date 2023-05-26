@@ -29,7 +29,12 @@ import {
   UPDATE_PLANET_TILE_COLOR,
   UPDATE_SOY_YEAR,
 } from '../constants/actionTypes';
-import { mapPage, PLANET_TILE_LAYER_INITIAL, proLayers, soyPlantedYearsRange } from '../../../common/js/config';
+import {
+  mapPage,
+  PLANET_TILE_LAYER_INITIAL,
+  proLayers,
+  soyPlantedYearsRange,
+} from '../../../common/js/config';
 
 const initialLocationState = {
   mapLayers: [],
@@ -142,7 +147,10 @@ export function toggleCanopyModal(state = initialLocationState.canopyModalVisibl
   return action.type !== TOGGLE_CANOPY_MODAL ? state : !state;
 }
 
-export function toggleDrawShapeNoteDetailsModal(state = initialLocationState.drawShapeNoteDetailsModalVisible, action) {
+export function toggleDrawShapeNoteDetailsModal(
+  state = initialLocationState.drawShapeNoteDetailsModalVisible,
+  action
+) {
   return action.type !== TOGGLE_DRAW_SHAPE_NOTE_DETAILS_MODAL ? state : !state;
 }
 

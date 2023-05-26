@@ -197,7 +197,8 @@ select:not([multiple]) {
     color: $input--disabled-color;
     border-color: $input--disabled-border-color;
     cursor: not-allowed;
-    background: $input--disabled-background url($dropdown__arrow-icon--disabled) no-repeat center right 0.75em;
+    background: $input--disabled-background url($dropdown__arrow-icon--disabled) no-repeat center
+      right 0.75em;
   }
 }
 

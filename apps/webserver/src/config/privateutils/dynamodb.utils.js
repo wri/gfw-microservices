@@ -11,18 +11,18 @@
 const AWS = require('aws-sdk');
 
 AWS.config.update({
-	region: 'us-east-1',
-	sslEnabled: true
+  region: 'us-east-1',
+  sslEnabled: true,
 });
 
 // Important variables for dynamoDB
-const dynamodb = new AWS.DynamoDB({apiVersion: '2012-10-08'});
+const dynamodb = new AWS.DynamoDB({ apiVersion: '2012-10-08' });
 
 /**
  * @function  getDynamoDBTableStatus
  * @summary   Checks if the table has been successfully created in DynamoDB
  * @param {String} TableName    The DynamoDB table name
- * @param {Integer} max_retries Recursive counter 
+ * @param {Integer} max_retries Recursive counter
  */
 const getDynamoDBTableStatus = (TableName, max_retries) => {
   return new Promise((resolve, reject) => {
@@ -30,8 +30,7 @@ const getDynamoDBTableStatus = (TableName, max_retries) => {
       if (err) {
         reject(err);
         console.log(err, err.stack);
-      }
-      else {
+      } else {
         if (data.Table.TableStatus === 'CREATING' && max_retries <= 15) {
           setTimeout(() => {
             resolve(getDynamoDBTableStatus(TableName, max_retries + 1));
@@ -46,8 +45,8 @@ const getDynamoDBTableStatus = (TableName, max_retries) => {
 
 /**
  * Creates a DynamoDB table to store analysis results. Gets deleted when done processing.
- * @param {Object} req 
- * @param {String} listName 
+ * @param {Object} req
+ * @param {String} listName
  */
 const createNewDynamoDBTable = (req, listName) => {
   return new Promise((resolve, reject) => {
@@ -56,23 +55,23 @@ const createNewDynamoDBTable = (req, listName) => {
       AttributeDefinitions: [
         {
           AttributeName: 'location_id',
-          AttributeType: 'N'
-        }
+          AttributeType: 'N',
+        },
       ],
       KeySchema: [
         {
           AttributeName: 'location_id',
-          KeyType: 'HASH'
-        }
+          KeyType: 'HASH',
+        },
       ],
       BillingMode: 'PAY_PER_REQUEST',
       StreamSpecification: {
         StreamEnabled: false,
-      }
+      },
     };
-    
+
     // Call DynamoDB to create the table
-    dynamodb.createTable(params, err => {
+    dynamodb.createTable(params, (err) => {
       if (err) {
         console.log('Error trying to create the DynamoDB table: ', err);
         reject(err);
@@ -84,17 +83,17 @@ const createNewDynamoDBTable = (req, listName) => {
 
 /**
  * Deletes a DynamoDB table.
- * @param {Object} req 
- * @param {String} listName 
+ * @param {Object} req
+ * @param {String} listName
  */
 const deleteDynamoDBTable = (req, listName) => {
   return new Promise((resolve, reject) => {
     const params = {
       TableName: listName,
     };
-    
+
     // Call DynamoDB to create the table
-    dynamodb.deleteTable(params, err => {
+    dynamodb.deleteTable(params, (err) => {
       if (err) {
         console.log('Error trying to delete the DynamoDB table: ', err);
         reject(err);

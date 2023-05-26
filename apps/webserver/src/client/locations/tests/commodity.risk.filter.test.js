@@ -54,7 +54,11 @@ describe('Test List Section Component', () => {
     const { getByText } = render(
       <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
         <StateMock state={myState}>
-          <CommodityRiskFilter listView="commodity_risk" filterCount={0} listData={LIST_DATA_BRAZIL} />
+          <CommodityRiskFilter
+            listView="commodity_risk"
+            filterCount={0}
+            listData={LIST_DATA_BRAZIL}
+          />
         </StateMock>
       </MuiThemeProvider>
     );
@@ -79,7 +83,11 @@ describe('Test List Section Component', () => {
     const { getByLabelText } = render(
       <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
         <StateMock state={myState}>
-          <CommodityRiskFilter listView="commodity_risk" filterCount={0} listData={LIST_DATA_BRAZIL} />
+          <CommodityRiskFilter
+            listView="commodity_risk"
+            filterCount={0}
+            listData={LIST_DATA_BRAZIL}
+          />
         </StateMock>
       </MuiThemeProvider>
     );

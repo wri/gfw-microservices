@@ -11,7 +11,8 @@ function SelectedListDescription({
   const { filterCount, name, numLocations } = transitionListData;
 
   const listId = selectedLists?.id;
-  const isListSelected = Object.keys(selectedLists).length || Object.keys(transitionListData).length;
+  const isListSelected =
+    Object.keys(selectedLists).length || Object.keys(transitionListData).length;
 
   // if a list is selected and we are in the map view, make it a link
   const isLinkToList = isListSelected && currentView === 'map';
@@ -30,7 +31,9 @@ function SelectedListDescription({
     // dashboard or list views, it might have filters
     numberOfLocations = numberWithCommas(numLocations);
     listName = name;
-    numberOfFiltersApplied = filterCount ? `| ${filterCount} filter${filterCount === 1 ? '' : 's'}` : '';
+    numberOfFiltersApplied = filterCount
+      ? `| ${filterCount} filter${filterCount === 1 ? '' : 's'}`
+      : '';
   } else {
     // full list was selected but it does not contain filters or specific locations selected
     numberOfLocations = numberWithCommas(selectedLists.list_locations_count);
@@ -61,7 +64,13 @@ function SelectedListDescription({
       return;
     }
     const { dashboard_map_extent } = transitionListData || {};
-    ga('send', 'event', 'Map Click', 'Map GO TO MAP link clicked', 'User click on a GO TO MAP link');
+    ga(
+      'send',
+      'event',
+      'Map Click',
+      'Map GO TO MAP link clicked',
+      'User click on a GO TO MAP link'
+    );
     if (dashboard_map_extent) {
       goToDashboard();
     } else {

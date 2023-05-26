@@ -58,7 +58,9 @@ function DragDropFile({ handleFiles }) {
   return (
     <form className="drag-drop-file" onDragEnter={handleDrag} onSubmit={(e) => e.preventDefault()}>
       <label
-        className={`drag-drop-file__label ${dragActive ? 'drag-drop-file__label--drag-active' : ''}`}
+        className={`drag-drop-file__label ${
+          dragActive ? 'drag-drop-file__label--drag-active' : ''
+        }`}
         htmlFor="input-file-upload"
       >
         <input
@@ -71,8 +73,12 @@ function DragDropFile({ handleFiles }) {
         />
         <div>
           <DriveFolderUploadIcon style={{ color: 'rgba(255,138,0,0.25)', fontSize: '100px' }} />
-          <div className="large-list-editing__subtitle">{locationsPage.largeListEditing.dragAndDropTitle}</div>
-          <p className="large-list-editing__description">{locationsPage.largeListEditing.dragAndDropInstructions}</p>
+          <div className="large-list-editing__subtitle">
+            {locationsPage.largeListEditing.dragAndDropTitle}
+          </div>
+          <p className="large-list-editing__description">
+            {locationsPage.largeListEditing.dragAndDropInstructions}
+          </p>
           {isWrongFormat && (
             <p className="large-list-editing__description large-list-editing__description--error">
               {locationsPage.largeListEditing.wrongFormatMessage}

@@ -17,7 +17,7 @@ function LandingDownload({
   isLargeList,
   listID,
   locations,
-  setConfirmDialog
+  setConfirmDialog,
 }) {
   const [isLoading, setIsloading] = useState(false);
   const [menuItems, setMenuItems] = useState([]);
@@ -39,9 +39,21 @@ function LandingDownload({
 
     if (downloadRequestedFromFolder) {
       // if the user clicked on the map option from a folder
-      ga('send', 'event', 'Landing Page Click', 'Folder Click', 'User downloads list from folder view');
+      ga(
+        'send',
+        'event',
+        'Landing Page Click',
+        'Folder Click',
+        'User downloads list from folder view'
+      );
     } else {
-      ga('send', 'event', 'Landing', 'User opens more menu for list from locations page', 'Download');
+      ga(
+        'send',
+        'event',
+        'Landing',
+        'User opens more menu for list from locations page',
+        'Download'
+      );
     }
   };
 

@@ -22,18 +22,24 @@ function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
             <IconButton icon={<IconTimes />} onClick={onCloseModal} size="large" />
           </div>
           <CardContent>
-            <div className="b2b-connection-details-modal__label">{profilePage.profileManager.b2bSection.status}</div>
+            <div className="b2b-connection-details-modal__label">
+              {profilePage.profileManager.b2bSection.status}
+            </div>
             <div className="b2b-connection-details-modal__status">{status}</div>
             <div className="b2b-connection-details-modal__title">
               {profilePage.profileManager.b2bSection.accountManagerInformation}
             </div>
             <div className="b2b-connection-details-modal__manager-info">
               <div>
-                <div className="b2b-connection-details-modal__label">{profilePage.profileManager.b2bSection.email}</div>
+                <div className="b2b-connection-details-modal__label">
+                  {profilePage.profileManager.b2bSection.email}
+                </div>
                 <div>{name}</div>
               </div>
               <div>
-                <div className="b2b-connection-details-modal__label">{profilePage.profileManager.b2bSection.email}</div>
+                <div className="b2b-connection-details-modal__label">
+                  {profilePage.profileManager.b2bSection.email}
+                </div>
                 <div>
                   <a href={`mailto:${email}`}>{email}</a>
                 </div>

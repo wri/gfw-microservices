@@ -30,7 +30,11 @@ module.exports = (app, limiter) => {
 
   app.use('/pro-manager', routeMiddlewares);
 
-  app.get('/pro-manager-list', middlewares.checkProManagerAuthentication, controller.proManagerList);
+  app.get(
+    '/pro-manager-list',
+    middlewares.checkProManagerAuthentication,
+    controller.proManagerList
+  );
 
   app.post('/pro-manager/activateProAccount', (req, res) => {
     console.log('POST /pro-manager/activateProAccount');
@@ -122,8 +126,18 @@ module.exports = (app, limiter) => {
 
   app.post('/pro-manager/updateProAccountUser', (req, res) => {
     console.log('POST /pro-manager/updateProAccountUser');
-    const { id, first_name, middle_initial, last_name, email, phone, title, other_title, geographies, commodities } =
-      req.body;
+    const {
+      id,
+      first_name,
+      middle_initial,
+      last_name,
+      email,
+      phone,
+      title,
+      other_title,
+      geographies,
+      commodities,
+    } = req.body;
 
     ProManager.updatePendingAccountUser(
       req,

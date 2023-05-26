@@ -1,4 +1,4 @@
-$lightGrayHighlight: #EEE;
+$lightGrayHighlight: #eee;
 
 .control-panel {
   background: white;
@@ -49,25 +49,25 @@ $lightGrayHighlight: #EEE;
 }
 
 .search-tools {
-	min-width: 500px;
-	z-index: 6;
-	left: 0px;
-	right: 0px;
-	margin: 0 auto;
-	// filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.25));
+  min-width: 500px;
+  z-index: 6;
+  left: 0px;
+  right: 0px;
+  margin: 0 auto;
+  // filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.25));
 }
 
 .search-tools .search-tab {
-	color: #fff;
-	background-color: #c9c9c9;
-	border: none;
-	font-size: 0.75em;
-	margin-left: 3px;
-	height: 26px;
-	padding: 5px 15px 2px 15px;
-	display: inline-block;
-	transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-	outline: none;
+  color: #fff;
+  background-color: #c9c9c9;
+  border: none;
+  font-size: 0.75em;
+  margin-left: 3px;
+  height: 26px;
+  padding: 5px 15px 2px 15px;
+  display: inline-block;
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  outline: none;
   padding: 5px 10px;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
@@ -75,24 +75,24 @@ $lightGrayHighlight: #EEE;
 
 .search-tools .search-tab.active,
 .search-tools .search-tab:active {
-	color: #c9c9c9;
-	background-color: #fff;
+  color: #c9c9c9;
+  background-color: #fff;
 }
 
 .search-tools .search-tab:nth-child(1) {
-	margin-left: 0;
+  margin-left: 0;
 }
 
 .search-tools .search-tab:nth-child(3) {
-	margin-right: 0;
+  margin-right: 0;
 }
 
 .search-tools .search-tab button {
-	width: 100%;
-	text-align: left;
-	background: none;
-	border: none;
-	border-bottom: 1px solid #ccc;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #ccc;
 }
 //
 // .search-input-container {
@@ -100,20 +100,20 @@ $lightGrayHighlight: #EEE;
 // }
 
 .search-tools .search-coordinates {
-	display: inline-block;
-	width: 50%;
-	justify-content: space-between;
-	align-items: center;
+  display: inline-block;
+  width: 50%;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .search-tools .search-coordinates div {
-	display: inline-block;
-	// width: 25%;
+  display: inline-block;
+  // width: 25%;
 }
 
 .search-tools .search-coordinates input {
-	width: 3em;
-	padding-right: 0;
+  width: 3em;
+  padding-right: 0;
 }
 
 .search-coordinates input {
@@ -131,33 +131,33 @@ $lightGrayHighlight: #EEE;
 }
 
 .search-tools .search-coordinates select {
-	// margin-right: 10px;
-	background: #555;
-	color: #fff;
-	width: 40px;
-	height: 30px;
+  // margin-right: 10px;
+  background: #555;
+  color: #fff;
+  width: 40px;
+  height: 30px;
 }
 
 .search-tools .search-button {
-	float: right;
-	position: absolute;
-	right: -80px;
-	width: 80px;
-	top: 25px;
+  float: right;
+  position: absolute;
+  right: -80px;
+  width: 80px;
+  top: 25px;
 }
 
 .search-box.degrees {
-	background: #fff;
-	display: flex;
-	display: -webkit-flex;
-	-webkit-box-pack: justify;
-	-moz-box-pack: justify;
-	-ms-flex-pack: justify;
-	-webkit-justify-content: space-between;
-	justify-content: space-between;
-	align-items: center;
-	-webkit-align-items: center;
-	padding: 0 10px;
+  background: #fff;
+  display: flex;
+  display: -webkit-flex;
+  -webkit-box-pack: justify;
+  -moz-box-pack: justify;
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-align-items: center;
+  padding: 0 10px;
 
   select:not([multiple]) {
     padding: 0 0em 0 13px;
@@ -166,67 +166,67 @@ $lightGrayHighlight: #EEE;
 }
 
 .deg-box {
-	display: flex;
-	display: -webkit-flex;
-	-webkit-box-pack: justify;
-	-moz-box-pack: justify;
-	-ms-flex-pack: justify;
-	-webkit-justify-content: space-between;
-	justify-content: space-between;
-	align-items: center;
-	-webkit-align-items: center;
+  display: flex;
+  display: -webkit-flex;
+  -webkit-box-pack: justify;
+  -moz-box-pack: justify;
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  align-items: center;
+  -webkit-align-items: center;
 }
 
 .deg-box span {
-	width: auto;
+  width: auto;
 }
 
 .deg-box input.deg-input {
-	max-width: 120px;
-	text-align: left;
-	margin: 13px 0 9px 5px;
-	padding: 0;
-	text-align: left;
-	outline: 0;
-	border: none;
-	border-bottom: 1px solid #555;
-	font-size: 18px;
-	border-radius: 0;
-	font-family: inherit;
+  max-width: 120px;
+  text-align: left;
+  margin: 13px 0 9px 5px;
+  padding: 0;
+  text-align: left;
+  outline: 0;
+  border: none;
+  border-bottom: 1px solid #555;
+  font-size: 18px;
+  border-radius: 0;
+  font-family: inherit;
 }
 
 .deg-box input.zone-input {
-	max-width: 90px;
-	text-align: left;
-	margin: 13px 0 9px 5px;
-	padding: 0;
-	text-align: left;
-	outline: 0;
-	border: none;
-	border-bottom: 1px solid #555;
-	font-size: 18px;
-	border-radius: 0;
-	font-family: inherit;
+  max-width: 90px;
+  text-align: left;
+  margin: 13px 0 9px 5px;
+  padding: 0;
+  text-align: left;
+  outline: 0;
+  border: none;
+  border-bottom: 1px solid #555;
+  font-size: 18px;
+  border-radius: 0;
+  font-family: inherit;
 }
 
 .deg-box .gfw-btn {
-	background: #e5e5df;
-	position: relative;
-	display: inline-block;
-	z-index: 1;
-	padding: 0px 12px;
-	border-radius: 40px;
-	font-size: 14px;
-	text-decoration: none;
-	height: 36px;
-	line-height: 36px;
-	text-align: center;
-	font-weight: 500;
-	white-space: nowrap;
-	-webkit-transition: background 0.15s linear;
-	-moz-transition: background 0.15s linear;
-	-o-transition: background 0.15s linear;
-	transition: background 0.15s linear;
+  background: #e5e5df;
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+  padding: 0px 12px;
+  border-radius: 40px;
+  font-size: 14px;
+  text-decoration: none;
+  height: 36px;
+  line-height: 36px;
+  text-align: center;
+  font-weight: 500;
+  white-space: nowrap;
+  -webkit-transition: background 0.15s linear;
+  -moz-transition: background 0.15s linear;
+  -o-transition: background 0.15s linear;
+  transition: background 0.15s linear;
 }
 
 .search-tool-wrapper {
@@ -250,7 +250,7 @@ $lightGrayHighlight: #EEE;
     padding: 0 0em 0 13px;
     border-radius: 0;
   }
-  input:not([type="file"]) {
+  input:not([type='file']) {
     border: none !important;
     border-bottom: 1px solid #8bae3b !important;
   }

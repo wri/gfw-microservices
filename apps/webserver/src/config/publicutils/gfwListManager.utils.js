@@ -95,7 +95,11 @@ const getDashboardGFWListLocations = (req, list_id) => {
     const parameters = [{ field: 'listId', type: sql.Int, value: list_id }];
     Promise.all([
       sqlUtils.executeSystemStoredProcedure(req, 'uspGetGFWDashboardListLocations', parameters),
-      sqlUtils.executeSystemStoredProcedure(req, 'uspGetGFWDashboardDissolvedS3Location', parameters),
+      sqlUtils.executeSystemStoredProcedure(
+        req,
+        'uspGetGFWDashboardDissolvedS3Location',
+        parameters
+      ),
     ])
       .then((results) => {
         const [locationRecordsets, s3Recordsets] = results;
@@ -135,19 +139,39 @@ const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
     let promise;
     switch (parseInt(list_id, 10)) {
       case 1:
-        promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetAdministrativeAreaAttributes', parameters);
+        promise = sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetAdministrativeAreaAttributes',
+          parameters
+        );
         break;
       case 2:
-        promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetOilPalmConcessionsAttributes', parameters);
+        promise = sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetOilPalmConcessionsAttributes',
+          parameters
+        );
         break;
       case 3:
-        promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetPalmOilMillAttributes', parameters);
+        promise = sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetPalmOilMillAttributes',
+          parameters
+        );
         break;
       case 4:
-        promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetProtectedAreaAttributes', parameters);
+        promise = sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetProtectedAreaAttributes',
+          parameters
+        );
         break;
       case 5:
-        promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetRSPOOilPalmConcessionsAttributes', parameters);
+        promise = sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetRSPOOilPalmConcessionsAttributes',
+          parameters
+        );
         break;
     }
     promise
@@ -174,19 +198,35 @@ const getGFWListLocationsGeom = (req, list_id, location_ids = []) => {
     let promise;
     switch (parseInt(list_id, 10)) {
       case 1:
-        promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetAdministrativeAreasGeom', parameters);
+        promise = sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetAdministrativeAreasGeom',
+          parameters
+        );
         break;
       case 2:
-        promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetOilPalmConcessionsGeom', parameters);
+        promise = sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetOilPalmConcessionsGeom',
+          parameters
+        );
         break;
       case 3:
         promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetPalmOilMillsGeom', parameters);
         break;
       case 4:
-        promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetProtectedAreasGeom', parameters);
+        promise = sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetProtectedAreasGeom',
+          parameters
+        );
         break;
       case 5:
-        promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetRSPOOilPalmConcessionsGeom', parameters);
+        promise = sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetRSPOOilPalmConcessionsGeom',
+          parameters
+        );
         break;
     }
 
@@ -237,7 +277,11 @@ const getAdministrativeAreasData = (req, filters) => {
     const parameters = [
       { field: 'country', type: sql.NVarChar(150), value: filters.selectedCountry },
       { field: 'states', type: sql.NVarChar(sql.MAX), value: filters.selectedStates.toString() },
-      { field: 'sub_states', type: sql.NVarChar(sql.MAX), value: filters.selectedSubStates.toString() },
+      {
+        field: 'sub_states',
+        type: sql.NVarChar(sql.MAX),
+        value: filters.selectedSubStates.toString(),
+      },
     ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetAdministrativeAreasData', parameters)
@@ -269,10 +313,22 @@ const getProtectedAreasData = (req, filters) => {
       { field: 'country', type: sql.NVarChar(150), value: filters.selectedCountry },
       { field: 'state', type: sql.NVarChar(150), value: filters.selectedState },
       { field: 'sub_state', type: sql.NVarChar(150), value: filters.selectedSubState },
-      { field: 'selected_designation', type: sql.NVarChar(150), value: filters.selectedDesignation },
-      { field: 'selected_designation_type', type: sql.NVarChar(150), value: filters.selectedDesignationType },
+      {
+        field: 'selected_designation',
+        type: sql.NVarChar(150),
+        value: filters.selectedDesignation,
+      },
+      {
+        field: 'selected_designation_type',
+        type: sql.NVarChar(150),
+        value: filters.selectedDesignationType,
+      },
       { field: 'selected_iucn', type: sql.NVarChar(150), value: filters.selectedIUCN },
-      { field: 'selected_names', type: sql.NVarChar(sql.MAX), value: filters.selectedNames.toString() },
+      {
+        field: 'selected_names',
+        type: sql.NVarChar(sql.MAX),
+        value: filters.selectedNames.toString(),
+      },
     ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetProtectedAreasData', parameters)
@@ -349,7 +405,10 @@ const getGFWListLocationsGlobalId = (req, list_id, global_ids = []) => {
           {
             field: 'global_ids',
             type: sql.VarChar(200),
-            value: list_id === '1' ? global_ids.toString() : global_ids.map((id) => `'${id}'`).toString(),
+            value:
+              list_id === '1'
+                ? global_ids.toString()
+                : global_ids.map((id) => `'${id}'`).toString(),
           },
         ]
       : '';
@@ -357,19 +416,39 @@ const getGFWListLocationsGlobalId = (req, list_id, global_ids = []) => {
     let promise;
     switch (parseInt(list_id, 10)) {
       case 1:
-        promise = sqlUtils.executeSystemStoredProcedureAllRecords(req, 'uspGetAdministrativeAreasGlobalId', parameters);
+        promise = sqlUtils.executeSystemStoredProcedureAllRecords(
+          req,
+          'uspGetAdministrativeAreasGlobalId',
+          parameters
+        );
         break;
       case 2:
-        promise = sqlUtils.executeSystemStoredProcedureAllRecords(req, 'uspGetOilPalmConcessionsGlobalId', parameters);
+        promise = sqlUtils.executeSystemStoredProcedureAllRecords(
+          req,
+          'uspGetOilPalmConcessionsGlobalId',
+          parameters
+        );
         break;
       case 3:
-        promise = sqlUtils.executeSystemStoredProcedureAllRecords(req, 'uspGetPalmOilMillsFromMillId', parameters);
+        promise = sqlUtils.executeSystemStoredProcedureAllRecords(
+          req,
+          'uspGetPalmOilMillsFromMillId',
+          parameters
+        );
         break;
       case 4:
-        promise = sqlUtils.executeSystemStoredProcedureAllRecords(req, 'uspGetProtectedAreasGlobalId', parameters);
+        promise = sqlUtils.executeSystemStoredProcedureAllRecords(
+          req,
+          'uspGetProtectedAreasGlobalId',
+          parameters
+        );
         break;
       case 5:
-        promise = sqlUtils.executeSystemStoredProcedureAllRecords(req, 'uspRSPOOilPalmConcessionsGlobalId', parameters);
+        promise = sqlUtils.executeSystemStoredProcedureAllRecords(
+          req,
+          'uspRSPOOilPalmConcessionsGlobalId',
+          parameters
+        );
         break;
     }
     promise
@@ -428,7 +507,11 @@ async function getGFWAnalysisTableColumns(req, gfw_list_id) {
  * @param {Number} dest_location_id - location_id of destination location
  * @return {string} - SQL Statement
  */
-function getGFWAnalysisTableColumnsStatement(src_list, gfw_analysis_table_columns, dest_location_id) {
+function getGFWAnalysisTableColumnsStatement(
+  src_list,
+  gfw_analysis_table_columns,
+  dest_location_id
+) {
   return gfw_analysis_table_columns
     .map((record) => record.COLUMN_NAME)
     .map((column) => {
@@ -459,7 +542,11 @@ const copyGFWSingleLocation = (
   dest_location_id,
   gfw_analysis_table_columns
 ) => {
-  const statement = getGFWAnalysisTableColumnsStatement(src_list, gfw_analysis_table_columns, dest_location_id);
+  const statement = getGFWAnalysisTableColumnsStatement(
+    src_list,
+    gfw_analysis_table_columns,
+    dest_location_id
+  );
 
   return new Promise((resolve, reject) => {
     const parameters = [
@@ -491,7 +578,13 @@ const copyGFWSingleLocation = (
  * @param {number[]} dest_location_ids - Destination list IDs
  * @return {Promise<void>}
  */
-const copyGFWLocationsToList = async (req, src_list, dest_list, src_location_ids, dest_location_ids) => {
+const copyGFWLocationsToList = async (
+  req,
+  src_list,
+  dest_list,
+  src_location_ids,
+  dest_location_ids
+) => {
   const gfw_analysis_table_columns = await getGFWAnalysisTableColumns(req, src_list.id);
 
   for (const [idx, src_location_id] of src_location_ids.entries()) {

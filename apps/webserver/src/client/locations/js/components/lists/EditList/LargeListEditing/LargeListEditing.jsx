@@ -55,7 +55,9 @@ function LargeListEditing({
       isListExcluded
     );
 
-    const editableFields = multiGridHeaders.filter((field) => !notEditableFields.includes(field)).toString();
+    const editableFields = multiGridHeaders
+      .filter((field) => !notEditableFields.includes(field))
+      .toString();
 
     downloadingSelectedLocations(listID, listName, {
       orderType: tableSortedDesc ? 'desc' : 'asc',
@@ -124,7 +126,9 @@ function LargeListEditing({
         {showDownload && (
           <>
             <div className="large-list-editing__download-section">
-              <div className="large-list-editing__subtitle">{locationsPage.largeListEditing.downloadFileTitle}</div>
+              <div className="large-list-editing__subtitle">
+                {locationsPage.largeListEditing.downloadFileTitle}
+              </div>
               <div className="large-list-editing__description">
                 {locationsPage.largeListEditing.downloadFileInstructions}
               </div>
@@ -136,27 +140,41 @@ function LargeListEditing({
         {showSuccessMessage && (
           <div className="large-list-editing__confirmation-message">
             <CheckCircleOutlineIcon style={{ color: 'rgba(151,189,61,0.25)', fontSize: '100px' }} />
-            <div className="large-list-editing__subtitle">{locationsPage.largeListEditing.successTitle}</div>
-            <div className="large-list-editing__description">{locationsPage.largeListEditing.successDescription}</div>
+            <div className="large-list-editing__subtitle">
+              {locationsPage.largeListEditing.successTitle}
+            </div>
+            <div className="large-list-editing__description">
+              {locationsPage.largeListEditing.successDescription}
+            </div>
           </div>
         )}
         {showFailedMessage && (
           <div className="large-list-editing__confirmation-message">
             <ErrorOutlineIcon style={{ color: 'rgba(237,24,70,0.25)', fontSize: '100px' }} />
-            <div className="large-list-editing__subtitle">{locationsPage.largeListEditing.errorTitle}</div>
+            <div className="large-list-editing__subtitle">
+              {locationsPage.largeListEditing.errorTitle}
+            </div>
             <div className="large-list-editing__description">
               {errorMessage || locationsPage.largeListEditing.errorDescription}
             </div>
           </div>
         )}
         {showUploadProcess && (
-          <UploadProcess listID={listID} fileInfo={fileInfo} uploadCompletedHandler={uploadCompletedHandler} />
+          <UploadProcess
+            listID={listID}
+            fileInfo={fileInfo}
+            uploadCompletedHandler={uploadCompletedHandler}
+          />
         )}
 
         <div className="large-list-editing__actions-container">
           <Button
             onClick={onCloseHandler}
-            label={processCompleted ? locationsPage.largeListEditing.close : locationsPage.largeListEditing.cancel}
+            label={
+              processCompleted
+                ? locationsPage.largeListEditing.close
+                : locationsPage.largeListEditing.cancel
+            }
           />
           {showUploadProcess && (
             <Button

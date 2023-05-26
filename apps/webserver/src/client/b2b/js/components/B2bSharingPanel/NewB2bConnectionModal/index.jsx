@@ -58,7 +58,9 @@ function NewB2bConnectionModal({ onCloseModal }) {
 
   switch (apiResponse) {
     case 'success':
-      content = <InvitationSentSuccessfullyMessage onCloseModal={onCloseModal} resetForm={resetForm} />;
+      content = (
+        <InvitationSentSuccessfullyMessage onCloseModal={onCloseModal} resetForm={resetForm} />
+      );
       break;
     case 'connectionAlreadyExists':
       content = <ConnectionAlreadyExistsMessage onCloseModal={onCloseModal} />;
@@ -70,7 +72,12 @@ function NewB2bConnectionModal({ onCloseModal }) {
       content = <NotAnAdministratorMessage onCloseModal={onCloseModal} resetForm={resetForm} />;
       break;
     case 'multipleAccounts':
-      content = <B2bMultipleAccountsList accountsList={multipleConnectionsMock} onCloseModal={onCloseModal} />;
+      content = (
+        <B2bMultipleAccountsList
+          accountsList={multipleConnectionsMock}
+          onCloseModal={onCloseModal}
+        />
+      );
       break;
     default:
       content = <NewB2bConnectionEmailForm setApiResponse={setApiResponse} />;

@@ -29,7 +29,10 @@ export const calculateAlerts = (
   if (selectedAlert === 'GLAD') {
     filteredLocationGeoJSON.forEach((feature) => {
       locationsWithinAlerts += feature.properties[selectedAlertsProperty] ? 1 : 0;
-      if (feature.properties[selectedAlertsProperty] && feature.properties.gladTimeframe.length > 0) {
+      if (
+        feature.properties[selectedAlertsProperty] &&
+        feature.properties.gladTimeframe.length > 0
+      ) {
         locationsWithAlerts += 1;
         locationIdsWithAlerts.push(feature.properties.location_id);
       } else {

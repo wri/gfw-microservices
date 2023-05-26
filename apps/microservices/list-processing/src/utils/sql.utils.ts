@@ -1,10 +1,6 @@
 import * as sql from 'mssql';
 
-export interface ParametersType {
-  field: string;
-  type: unknown;
-  value: unknown;
-}
+import { ParameterType } from '@wri-monorepos/sql';
 
 export class SQLUtils {
   config: sql.config;
@@ -18,7 +14,7 @@ export class SQLUtils {
     this.connection = await sql.connect(this.config);
   }
 
-  executeQuery<T>(query: string, parameters?: ParametersType[]): Promise<T> {
+  executeQuery<T>(query: string, parameters?: ParameterType[]): Promise<T> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {

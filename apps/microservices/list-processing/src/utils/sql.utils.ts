@@ -2,7 +2,7 @@ import * as sql from 'mssql';
 
 export interface ParametersType {
   field: string;
-  type: sql.ISqlType;
+  type: unknown;
   value: unknown;
 }
 

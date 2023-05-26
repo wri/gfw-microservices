@@ -1,4 +1,3 @@
-
 .drag-drop-file {
   width: 28rem;
   margin: auto;
@@ -16,11 +15,11 @@
     border-width: 3px;
     border-radius: 8px;
     border-style: dashed;
-    border-color: #E5E5DE;
+    border-color: #e5e5de;
     text-transform: none;
   }
   &__label--drag-active {
-    background-color: #E5E5DE;
+    background-color: #e5e5de;
   }
   &__drag-file-element {
     position: absolute;
@@ -32,4 +31,3 @@
     left: 0px;
   }
 }
-

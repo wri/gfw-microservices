@@ -23,7 +23,9 @@ function LocationsTableColumnSelector({ listColumns, setListColumns, disabled })
   };
 
   const setArrayOfVisibleColumns = (newListColumnsState) => {
-    const visibleColumns = newListColumnsState.filter((col) => col.show).map((column) => column.accessor);
+    const visibleColumns = newListColumnsState
+      .filter((col) => col.show)
+      .map((column) => column.accessor);
     setListColumns(visibleColumns);
   };
 
@@ -61,7 +63,11 @@ function LocationsTableColumnSelector({ listColumns, setListColumns, disabled })
 
   return (
     <>
-      <Button onClick={toggleColumnMenu} disabled={disabled} label={transifex(locationsPage.lists.addColumns)} />
+      <Button
+        onClick={toggleColumnMenu}
+        disabled={disabled}
+        label={transifex(locationsPage.lists.addColumns)}
+      />
       <Popover
         open={displayColumnSelectionMenu}
         anchorEl={anchorElColumnMenu}

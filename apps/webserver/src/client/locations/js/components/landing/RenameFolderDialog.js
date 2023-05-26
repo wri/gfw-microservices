@@ -58,7 +58,10 @@ export default class RenameFolderDialog extends Component {
         <div className="dialog__prompt">{strings.renameFolderPrompt}</div>
         <div className="RenameFolder__dialog-options">
           <div className="RenameFolder__dialog-options__option">
-            <input value={folderName} onChange={(evt) => this.setState({ folderName: evt.target.value })} />
+            <input
+              value={folderName}
+              onChange={(evt) => this.setState({ folderName: evt.target.value })}
+            />
           </div>
         </div>
         <div className="RenameFolder__dialog-error">{error}</div>

@@ -19,12 +19,15 @@ exports.getConnections = async (req, res, next) => {
   const [org] = await AuthManager.getOrganizations(req);
   const { organization_id: organizationId } = org;
 
-  const queryObject = Object.entries({ id, status, sourceId: organizationId }).reduce((accumulator, [key, value]) => {
-    if (value) {
-      accumulator[key] = value;
-    }
-    return accumulator;
-  }, {});
+  const queryObject = Object.entries({ id, status, sourceId: organizationId }).reduce(
+    (accumulator, [key, value]) => {
+      if (value) {
+        accumulator[key] = value;
+      }
+      return accumulator;
+    },
+    {}
+  );
   const queryParams = querystring.stringify(queryObject);
 
   next({

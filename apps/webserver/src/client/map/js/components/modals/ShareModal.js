@@ -74,7 +74,13 @@ export default class ShareModal extends Component {
           <h3 className="modal-instructions-header">Share this view</h3>
           <div className="share-instructions">{mapPage.share.linkInstructions}</div>
           <div className="share-input">
-            <input ref="shareInput" type="text" readOnly value={this.state.bitlyUrl} onClick={this.handleFocus} />
+            <input
+              ref="shareInput"
+              type="text"
+              readOnly
+              value={this.state.bitlyUrl}
+              onClick={this.handleFocus}
+            />
             <button className="gfw-btn white pointer" onClick={this.copyShare.bind(this)}>
               {this.state.copyText}
             </button>
@@ -89,12 +95,20 @@ export default class ShareModal extends Component {
                 <use xlinkHref="#icon-googleplus" />
               </svg>
             </div>
-            <div title="Twitter" className="share-card twitter-modal pointer" onClick={this.shareTwitter.bind(this)}>
+            <div
+              title="Twitter"
+              className="share-card twitter-modal pointer"
+              onClick={this.shareTwitter.bind(this)}
+            >
               <svg>
                 <use xlinkHref="#icon-twitter" />
               </svg>
             </div>
-            <div title="Facebook" className="share-card facebook-modal pointer" onClick={this.shareFacebook.bind(this)}>
+            <div
+              title="Facebook"
+              className="share-card facebook-modal pointer"
+              onClick={this.shareFacebook.bind(this)}
+            >
               <svg>
                 <use xlinkHref="#icon-facebook" />
               </svg>

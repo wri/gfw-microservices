@@ -45,7 +45,12 @@ const getAllAccountsList = (req) => {
     if (!UserManager.isProManager(req)) {
       const userMessage = langResources.getResourceString('loginFailed');
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-      const eo = errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotProManager, userMessage, sysMessage);
+      const eo = errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.userNotProManager,
+        userMessage,
+        sysMessage
+      );
       reject(eo);
     }
     // Get List of pending accounts.
@@ -78,7 +83,12 @@ const getAllUsersList = (req) => {
     if (!UserManager.isProManager(req)) {
       const userMessage = langResources.getResourceString('loginFailed');
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-      const eo = errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotProManager, userMessage, sysMessage);
+      const eo = errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.userNotProManager,
+        userMessage,
+        sysMessage
+      );
       reject(eo);
     }
     sqlUtils
@@ -136,7 +146,9 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
         // check if pending org name matches any active org names
         if (
           nonPendingOrganizations.some(
-            (org) => org.organization_name.toLowerCase() === pendingOrganization.organization_name.toLowerCase()
+            (org) =>
+              org.organization_name.toLowerCase() ===
+              pendingOrganization.organization_name.toLowerCase()
           )
         ) {
           throw new errorUtils.createErrorMessage(
@@ -147,8 +159,14 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
           );
         }
         // if not, grab the pending account info
-        const parameters = [{ field: 'pendingaccount_id', type: sql.Int, value: pendingaccount_id }];
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspGetPendingAccountInformation', parameters);
+        const parameters = [
+          { field: 'pendingaccount_id', type: sql.Int, value: pendingaccount_id },
+        ];
+        return sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetPendingAccountInformation',
+          parameters
+        );
       })
       .then((recordsets) => {
         const [record] = recordsets;
@@ -175,16 +193,31 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
           arr_user_commodity_ids: [],
         };
         const userParameters = [{ field: 'pending_user_id', type: sql.Int, value: userID }];
-        const orgParameters = [{ field: 'pending_organization_id', type: sql.Int, value: pendingaccount_id }];
+        const orgParameters = [
+          { field: 'pending_organization_id', type: sql.Int, value: pendingaccount_id },
+        ];
         return Promise.all([
-          sqlUtils.executeSystemStoredProcedure(req, 'uspGetPendingUserCommodities', userParameters),
-          sqlUtils.executeSystemStoredProcedure(req, 'uspGetPendingUserGeographies', userParameters),
+          sqlUtils.executeSystemStoredProcedure(
+            req,
+            'uspGetPendingUserCommodities',
+            userParameters
+          ),
+          sqlUtils.executeSystemStoredProcedure(
+            req,
+            'uspGetPendingUserGeographies',
+            userParameters
+          ),
           sqlUtils.executeSystemStoredProcedure(req, 'uspGetPendingAccountPolicies', orgParameters),
-          sqlUtils.executeSystemStoredProcedure(req, 'uspGetPendingAccountClassification', orgParameters),
+          sqlUtils.executeSystemStoredProcedure(
+            req,
+            'uspGetPendingAccountClassification',
+            orgParameters
+          ),
         ]);
       })
       .then((recordsets) => {
-        const [commodityRecords, geographyRecords, policyRecords, classificationRecords] = recordsets;
+        const [commodityRecords, geographyRecords, policyRecords, classificationRecords] =
+          recordsets;
         const policyArray = policyRecords.map((policy) => policy.document_name);
         const classificationArray = classificationRecords
           .map((classification) => classification.classification_id)
@@ -237,8 +270,14 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
         return userExists === 0 ? AWSCognito.createUser(req, userEmail, false, unit_test) : null;
       })
       .then(() => {
-        const parameters = [{ field: 'pendingaccount_id', type: sql.Int, value: pendingaccount_id }];
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspRemovePendingOrganization', parameters);
+        const parameters = [
+          { field: 'pendingaccount_id', type: sql.Int, value: pendingaccount_id },
+        ];
+        return sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspRemovePendingOrganization',
+          parameters
+        );
       })
       .then(() => {
         const subject = 'GFW Pro Account Activated';
@@ -303,7 +342,11 @@ const updatePendingAccount = (
       { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
       { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },
       { field: 'orgParent', type: sql.NVarChar(200), value: parent_org_name },
-      { field: 'classification_ids', type: sql.NVarChar(200), value: arr_org_classification_ids.toString() },
+      {
+        field: 'classification_ids',
+        type: sql.NVarChar(200),
+        value: arr_org_classification_ids.toString(),
+      },
     ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspUpdatePendingAccount', params)
@@ -402,7 +445,12 @@ const deletePendingAccountRequest = (req, pendingaccount_id) => {
     if (!UserManager.isProManager(req)) {
       const userMessage = langResources.getResourceString('loginFailed');
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-      const eo = errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotProManager, userMessage, sysMessage);
+      const eo = errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.userNotProManager,
+        userMessage,
+        sysMessage
+      );
       reject(eo);
     }
     // Activate Pending Account.
@@ -437,7 +485,12 @@ const deleteOrganization = (req, orgName) => {
     if (!UserManager.isProManager(req)) {
       const userMessage = langResources.getResourceString('loginFailed');
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-      const eo = errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotProManager, userMessage, sysMessage);
+      const eo = errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.userNotProManager,
+        userMessage,
+        sysMessage
+      );
       reject(eo);
     }
     const params = [{ field: 'orgName', type: sql.NVarChar(200), value: orgName }];
@@ -472,7 +525,12 @@ const deleteUser = (req, email) => {
     if (!UserManager.isProManager(req)) {
       const userMessage = langResources.getResourceString('loginFailed');
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
-      const eo = errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotProManager, userMessage, sysMessage);
+      const eo = errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.userNotProManager,
+        userMessage,
+        sysMessage
+      );
       reject(eo);
     }
     const params = [{ field: 'email', type: sql.NVarChar(200), value: email }];
@@ -551,7 +609,11 @@ const deactivateAccount = (request, organization_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'organization_id', type: sql.Int, value: organization_id },
-      { field: 'organization_status_id', type: sql.Int, value: config.platformVars.status.Inactive },
+      {
+        field: 'organization_status_id',
+        type: sql.Int,
+        value: config.platformVars.status.Inactive,
+      },
     ];
     // Promise.all([
     //   sqlUtils.executeSystemStoredProcedure(req, 'uspSetOrganizationStatus', parameters),

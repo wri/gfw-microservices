@@ -109,19 +109,27 @@ define(['esri/request', 'esri/layers/BaseTileLayer', 'common/js/config'], functi
         if (values.year >= this.minYear - 2000 && values.year <= this.maxYear - 2000) {
           if (intensityBank[z] && intensityBank[z][values.intensity]) {
             data[i] =
-              intensityBank[z] && intensityBank[z][values.intensity] && intensityBank[z][values.intensity][2]
+              intensityBank[z] &&
+              intensityBank[z][values.intensity] &&
+              intensityBank[z][values.intensity][2]
                 ? intensityBank[z][values.intensity][2]
                 : 0;
             data[i + 1] =
-              intensityBank[z] && intensityBank[z][values.intensity] && intensityBank[z][values.intensity][3]
+              intensityBank[z] &&
+              intensityBank[z][values.intensity] &&
+              intensityBank[z][values.intensity][3]
                 ? intensityBank[z][values.intensity][3]
                 : 0;
             data[i + 2] =
-              intensityBank[z] && intensityBank[z][values.intensity] && intensityBank[z][values.intensity][0]
+              intensityBank[z] &&
+              intensityBank[z][values.intensity] &&
+              intensityBank[z][values.intensity][0]
                 ? intensityBank[z][values.intensity][0]
                 : 0;
             data[i + 3] =
-              intensityBank[z] && intensityBank[z][values.intensity] && intensityBank[z][values.intensity][1]
+              intensityBank[z] &&
+              intensityBank[z][values.intensity] &&
+              intensityBank[z][values.intensity][1]
                 ? intensityBank[z][values.intensity][1]
                 : 0;
           }

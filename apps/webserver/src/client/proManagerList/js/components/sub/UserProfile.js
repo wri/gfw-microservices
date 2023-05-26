@@ -16,35 +16,51 @@ export default class UserProfile extends Component {
       const data = this.props.geographiesData.find((d) => d.id == geogId);
       return data ? { label: data.geography_name, value: geogId } : { label: '', value: geogId };
     });
-    const commoditiesArray = this.props.currentUser.user_commodity_ids.split(',').map((commodity) => {
-      const commId = parseInt(commodity);
-      const data = this.props.commoditiesData.find((d) => d.id == commId);
-      return data ? { label: data.commmodity_name, value: commId } : { label: '', value: commId };
-    });
+    const commoditiesArray = this.props.currentUser.user_commodity_ids
+      .split(',')
+      .map((commodity) => {
+        const commId = parseInt(commodity);
+        const data = this.props.commoditiesData.find((d) => d.id == commId);
+        return data ? { label: data.commmodity_name, value: commId } : { label: '', value: commId };
+      });
     this.state = {
       user_id: this.props.currentUser.user_id ? this.props.currentUser.user_id : '',
       first_name: this.props.currentUser.first_name ? this.props.currentUser.first_name : '',
-      middle_initial: this.props.currentUser.middle_initial ? this.props.currentUser.middle_initial : '',
+      middle_initial: this.props.currentUser.middle_initial
+        ? this.props.currentUser.middle_initial
+        : '',
       last_name: this.props.currentUser.last_name ? this.props.currentUser.last_name : '',
       email: this.props.currentUser.email ? this.props.currentUser.email : '',
       accounts: [],
       phone: this.props.currentUser.phone ? this.props.currentUser.phone : '',
       org_class: '',
       org_name: '',
-      access_level_id: this.props.currentUser.access_level_id ? this.props.currentUser.access_level_id : 3,
+      access_level_id: this.props.currentUser.access_level_id
+        ? this.props.currentUser.access_level_id
+        : 3,
       status_id: this.props.currentUser.user_status_id ? this.props.currentUser.user_status_id : 1,
       title: this.props.currentUser.title_id ? this.props.currentUser.title_id : 1,
       other_title: this.props.currentUser.other_title ? this.props.currentUser.other_title : '',
       geographies: geographyArray,
       commodities: commoditiesArray,
-      viirsAlerts: this.props.currentUser.viirs_email_frequency ? this.props.currentUser.viirs_email_frequency : 0,
-      gladAlerts: this.props.currentUser.glad_email_frequency ? this.props.currentUser.glad_email_frequency : 0,
-      formaAlerts: this.props.currentUser.forma_email_frequency ? this.props.currentUser.forma_email_frequency : 0,
+      viirsAlerts: this.props.currentUser.viirs_email_frequency
+        ? this.props.currentUser.viirs_email_frequency
+        : 0,
+      gladAlerts: this.props.currentUser.glad_email_frequency
+        ? this.props.currentUser.glad_email_frequency
+        : 0,
+      formaAlerts: this.props.currentUser.forma_email_frequency
+        ? this.props.currentUser.forma_email_frequency
+        : 0,
       granChacoAlerts: this.props.currentUser.gran_chaco_email_frequency
         ? this.props.currentUser.gran_chaco_email_frequency
         : 0,
-      auth_preference_id: this.props.currentUser.auth_preference_id ? this.props.currentUser.auth_preference_id : 0,
-      enableAlerts: this.props.currentUser.email_subscription ? this.props.currentUser.email_subscription : false,
+      auth_preference_id: this.props.currentUser.auth_preference_id
+        ? this.props.currentUser.auth_preference_id
+        : 0,
+      enableAlerts: this.props.currentUser.email_subscription
+        ? this.props.currentUser.email_subscription
+        : false,
       secondAuth: 'email',
       secret_url: '',
       secret: '',
@@ -435,7 +451,8 @@ export default class UserProfile extends Component {
 
   render() {
     const { dialogOpen, dialogTitle, dialogMessage, updating } = this.state;
-    const dialogContent = typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
+    const dialogContent =
+      typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
     let action = this.shouldCloseDialog;
 
     if (dialogTitle === 'Account Successfully Requested') {
@@ -451,14 +468,18 @@ export default class UserProfile extends Component {
     const viirsOptions = profilePage.userProfile.viirsEmailFrequencies.map(this.createViirsOption);
     const gladOptions = profilePage.userProfile.gladEmailFrequencies.map(this.createGladOption);
     const formaOptions = profilePage.userProfile.formaEmailFrequencies.map(this.createFormaOption);
-    const granChacoOptions = profilePage.userProfile.granChacoEmailFrequencies.map(this.createGranChacoOption);
+    const granChacoOptions = profilePage.userProfile.granChacoEmailFrequencies.map(
+      this.createGranChacoOption
+    );
 
     // const options = this.props.classificationsData.map(this.createClassOptions);
     const commOptions = this.props.commoditiesData.map(this.createCommOptions);
     const geogOptions = this.props.geographiesData.map(this.createGeogOptions);
     const titleOptions = this.props.titlesData.map(this.createTitleOptions);
     const hiddenAccess =
-      this.props.currentUser.org_status === 1 && this.props.currentUser.user_status_id === 1 ? 'hidden' : '';
+      this.props.currentUser.org_status === 1 && this.props.currentUser.user_status_id === 1
+        ? 'hidden'
+        : '';
     return (
       <div className="profile-body">
         <Dialog
@@ -600,7 +621,9 @@ export default class UserProfile extends Component {
                 </div>
 
                 <div
-                  className={`flex-grid-column ${this.state.title === 10 || this.state.title === '10' ? '' : 'hidden'}`}
+                  className={`flex-grid-column ${
+                    this.state.title === 10 || this.state.title === '10' ? '' : 'hidden'
+                  }`}
                 >
                   <div className="col flex-grid-column">
                     <span className="profile-label">Alternative Title</span>
@@ -696,7 +719,9 @@ export default class UserProfile extends Component {
 
         <section className="section-container">
           <h3 className="section-title-normal">Second Level Authentication Preferences</h3>
-          <span className="profile-label">Select your preferred method for account verification</span>
+          <span className="profile-label">
+            Select your preferred method for account verification
+          </span>
           <div className="flex-grid space-element">
             <input
               id="secondLevelAuthenticationEmail"
@@ -732,7 +757,9 @@ export default class UserProfile extends Component {
           <div className={this.state.auth_preference_id === 1 ? 'flex-grid' : 'hidden'}>
             <div className="col">
               <div className="flex-grid-column">
-                <div className="profile-label">Open your Google Authenticator App and scan the image!</div>
+                <div className="profile-label">
+                  Open your Google Authenticator App and scan the image!
+                </div>
                 <img width="196" height="196" src={this.state.secret_url} />
               </div>
             </div>
@@ -746,7 +773,9 @@ export default class UserProfile extends Component {
         </section>
 
         <div className="profile-button-container justify-end">
-          {this.props.userOnly ? null : <GfwButton classNames="btn-green" onClick={this.back} value="Cancel" />}
+          {this.props.userOnly ? null : (
+            <GfwButton classNames="btn-green" onClick={this.back} value="Cancel" />
+          )}
           {this.props.userOnly ? null : (
             <GfwButton
               classNames={`btn-green ${this.state.status_id === 2 ? 'button-disabled' : ''}`}

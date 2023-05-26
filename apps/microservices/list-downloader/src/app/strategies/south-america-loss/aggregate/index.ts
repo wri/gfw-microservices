@@ -32,15 +32,7 @@ export default class SouthAmericaLossAggregateHandler {
     csvData: Array<Array<unknown>>,
     totalSubCategory: number
   ): void {
-    const labelStrategy =
-      labelStrategies[this.label] || labelStrategies['default'];
-    labelStrategy.processLabel(
-      field,
-      rowValue,
-      year,
-      dataRow,
-      csvData,
-      totalSubCategory
-    );
+    const labelStrategy = labelStrategies[this.label] || labelStrategies['default'];
+    labelStrategy.processLabel(field, rowValue, year, dataRow, csvData, totalSubCategory);
   }
 }

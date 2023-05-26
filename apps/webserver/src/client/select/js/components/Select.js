@@ -25,7 +25,10 @@ export default class Select extends Component {
   }
 
   createAccountsList = (account) => {
-    const inactive = account.organization_status_id === 3 || account.organization_user_status_id === 3 ? true : false;
+    const inactive =
+      account.organization_status_id === 3 || account.organization_user_status_id === 3
+        ? true
+        : false;
 
     if (inactive) {
       return (
@@ -38,7 +41,11 @@ export default class Select extends Component {
     } else {
       return (
         <tr key={account.organization_id}>
-          <td className={this.isActive(account.organization_id)} key={account.organization_id} onClick={this.selectOrg}>
+          <td
+            className={this.isActive(account.organization_id)}
+            key={account.organization_id}
+            onClick={this.selectOrg}
+          >
             {account.organization_name}
           </td>
         </tr>

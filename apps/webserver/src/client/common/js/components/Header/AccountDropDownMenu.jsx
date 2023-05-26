@@ -16,7 +16,10 @@ function AccountDropDownMenu() {
       }}
     >
       <div className={`drop-down-nav  ${displayOptions ? 'drop-down-nav--selected' : ''}`}>
-        <IconButton className="drop-down-nav__button" onClick={() => setDisplayOptions(!displayOptions)}>
+        <IconButton
+          className="drop-down-nav__button"
+          onClick={() => setDisplayOptions(!displayOptions)}
+        >
           <Icon>account_circle</Icon>
         </IconButton>
 

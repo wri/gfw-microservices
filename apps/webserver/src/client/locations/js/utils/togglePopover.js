@@ -53,7 +53,13 @@ export const togglePopover = (evt, infoBubbleCache) => {
   request.open('POST', `${DATA_API_URL}/dataApi/getInfoBubbleData/${infoBubbleId}`);
   request.send();
 
-  ga('send', 'event', 'Diagnostics Click', 'info button click', `user clicked on the info button for ${infoBubbleId}`);
+  ga(
+    'send',
+    'event',
+    'Diagnostics Click',
+    'info button click',
+    `user clicked on the info button for ${infoBubbleId}`
+  );
 };
 
 export const closePopover = () => {

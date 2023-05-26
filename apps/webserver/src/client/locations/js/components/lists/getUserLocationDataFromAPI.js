@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-const getUserLocationDataFromAPI = (filters, selectedLists, searchString, tableSortedBy, tableSortedDesc, page = 0) => {
+const getUserLocationDataFromAPI = (
+  filters,
+  selectedLists,
+  searchString,
+  tableSortedBy,
+  tableSortedDesc,
+  page = 0
+) => {
   const data = {
     pageSize: 50,
     page: page + 1,
@@ -16,12 +23,22 @@ const getUserLocationDataFromAPI = (filters, selectedLists, searchString, tableS
 
     // commodity risk filters:
     ...(filters.selectedSupplier ? { selectedSupplier: filters.selectedSupplier } : {}),
-    ...(filters.selectedSecondSupplier ? { selectedSecondSupplier: filters.selectedSecondSupplier } : {}),
-    ...(filters.selectedParentCompany ? { selectedParentCompany: filters.selectedParentCompany } : {}),
+    ...(filters.selectedSecondSupplier
+      ? { selectedSecondSupplier: filters.selectedSecondSupplier }
+      : {}),
+    ...(filters.selectedParentCompany
+      ? { selectedParentCompany: filters.selectedParentCompany }
+      : {}),
     ...(filters.showRSPOCertified ? { showRSPOCertified: filters.showRSPOCertified } : {}),
-    ...(filters.selectedOverallThreats?.length ? { selectedOverallThreats: filters.selectedOverallThreats } : {}),
-    ...(filters.selectedOverallValues?.length ? { selectedOverallValues: filters.selectedOverallValues } : {}),
-    ...(filters.selectedMillPriority?.length ? { selectedMillPriority: filters.selectedMillPriority } : {}),
+    ...(filters.selectedOverallThreats?.length
+      ? { selectedOverallThreats: filters.selectedOverallThreats }
+      : {}),
+    ...(filters.selectedOverallValues?.length
+      ? { selectedOverallValues: filters.selectedOverallValues }
+      : {}),
+    ...(filters.selectedMillPriority?.length
+      ? { selectedMillPriority: filters.selectedMillPriority }
+      : {}),
   };
 
   return axios({

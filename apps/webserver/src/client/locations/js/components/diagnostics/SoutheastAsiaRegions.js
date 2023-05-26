@@ -146,7 +146,8 @@ export default class SoutheastAsiaRegions extends Component {
   render() {
     const { listView } = this.props;
 
-    const { activeSlider, seaChecked, idnChecked, idnLegalChecked, idnMoratoriumChecked } = this.state;
+    const { activeSlider, seaChecked, idnChecked, idnLegalChecked, idnMoratoriumChecked } =
+      this.state;
 
     let pieLabel = '';
     if (seaChecked) {
@@ -193,10 +194,14 @@ export default class SoutheastAsiaRegions extends Component {
                   </svg>
                 </span>
               </div>
-              <div className="locations-diagnostics-chart__locations-text">{regionObject.label}</div>
+              <div className="locations-diagnostics-chart__locations-text">
+                {regionObject.label}
+              </div>
             </div>
 
-            <p className="locations-instructional__text">Select one main category and/or sub-category.</p>
+            <p className="locations-instructional__text">
+              Select one main category and/or sub-category.
+            </p>
             <div className="chart-container">
               <div ref="southeastAsiaChart" />
             </div>
@@ -223,10 +228,18 @@ export default class SoutheastAsiaRegions extends Component {
           <div className="subsection-chart">
             <div className="locations-diagnostics__flex-center subsection-subtitle__container">
               <h3 className="subsection-subtitle">{pieLabel}</h3>
-              {seaChecked && <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsSeaLcCalc} />}
-              {idnChecked && <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsIdnLcCalc} />}
-              {idnLegalChecked && <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsIdnLegal} />}
-              {idnMoratoriumChecked && <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsIdnForestM} />}
+              {seaChecked && (
+                <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsSeaLcCalc} />
+              )}
+              {idnChecked && (
+                <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsIdnLcCalc} />
+              )}
+              {idnLegalChecked && (
+                <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsIdnLegal} />
+              )}
+              {idnMoratoriumChecked && (
+                <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsIdnForestM} />
+              )}
               <span
                 onClick={() => this.props.fireDownload('southEastAsiaOverlap')}
                 className="locations-diagnostics-icon-holder"
@@ -257,7 +270,11 @@ export default class SoutheastAsiaRegions extends Component {
 
         {/* YEAR SLIDER */}
         <div className="locations-diagnostics-subsection">
-          <div className={`southeast-asia-slider__container slider__container ${activeSlider ? 'slider-active' : ''}`}>
+          <div
+            className={`southeast-asia-slider__container slider__container ${
+              activeSlider ? 'slider-active' : ''
+            }`}
+          >
             <input id="southeast-asia-slider" />
           </div>
         </div>
@@ -286,20 +303,30 @@ export default class SoutheastAsiaRegions extends Component {
     ];
 
     if (seaChecked) {
-      filterPropertyLocations = filteredLocations.map((location) => JSON.parse(location.sea_landcover_area));
+      filterPropertyLocations = filteredLocations.map((location) =>
+        JSON.parse(location.sea_landcover_area)
+      );
     }
     if (idnChecked) {
-      filterPropertyLocations = filteredLocations.map((location) => JSON.parse(location.idn_landcover_area));
+      filterPropertyLocations = filteredLocations.map((location) =>
+        JSON.parse(location.idn_landcover_area)
+      );
     }
     if (idnLegalChecked) {
-      filterPropertyLocations = filteredLocations.map((location) => JSON.parse(location.idn_legal_area));
+      filterPropertyLocations = filteredLocations.map((location) =>
+        JSON.parse(location.idn_legal_area)
+      );
     }
     if (idnMoratoriumChecked) {
-      filterPropertyLocations = filteredLocations.map((location) => JSON.parse(location.idn_forest_moratorium_area));
+      filterPropertyLocations = filteredLocations.map((location) =>
+        JSON.parse(location.idn_forest_moratorium_area)
+      );
     }
 
     if (filterPropertyLocations.length > 0) {
-      overlapCategoryNames = Object.entries(filterPropertyLocations[0]).map((category) => category[0]);
+      overlapCategoryNames = Object.entries(filterPropertyLocations[0]).map(
+        (category) => category[0]
+      );
     }
 
     this.renderBarChart(this.refs.southeastAsiaChart, overlapCategoryNames);
@@ -309,7 +336,9 @@ export default class SoutheastAsiaRegions extends Component {
 
     if (idnMoratoriumChecked) {
       const totalInArea = filterPropertyLocations.reduce((a, c) => a + c, 0);
-      const totalArea = filteredLocations.map((l) => JSON.parse(l.total_area)).reduce((a, c) => a + c, 0);
+      const totalArea = filteredLocations
+        .map((l) => JSON.parse(l.total_area))
+        .reduce((a, c) => a + c, 0);
       result['Within Forest Moratorium'] = (totalInArea / totalArea) * 100;
       result['Outside Forest Moratorium'] = ((totalArea - totalInArea) / totalArea) * 100;
       serie = Object.entries(result).map((category) => {
@@ -417,22 +446,36 @@ export default class SoutheastAsiaRegions extends Component {
     if (tclChecked) {
       series.push({
         name: 'Tree Cover Loss Total',
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_total_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_total_yearly', startYear, endYear)
+        ),
         color: '#ef669a',
         groupPadding: 0,
         showInLegend: false,
       });
     }
     if (seaChecked) {
-      const seaSeries = getCategoricalHighchartSeries('tree_cover_loss_sea_landcover_yearly', startYear, endYear);
+      const seaSeries = getCategoricalHighchartSeries(
+        'tree_cover_loss_sea_landcover_yearly',
+        startYear,
+        endYear
+      );
       series.push(...seaSeries);
     }
     if (idnChecked) {
-      const idnSeries = getCategoricalHighchartSeries('tree_cover_loss_idn_landcover_yearly', startYear, endYear);
+      const idnSeries = getCategoricalHighchartSeries(
+        'tree_cover_loss_idn_landcover_yearly',
+        startYear,
+        endYear
+      );
       series.push(...idnSeries);
     }
     if (idnLegalChecked) {
-      const idnLegalSeries = getCategoricalHighchartSeries('tree_cover_loss_idn_legal_yearly', startYear, endYear);
+      const idnLegalSeries = getCategoricalHighchartSeries(
+        'tree_cover_loss_idn_legal_yearly',
+        startYear,
+        endYear
+      );
       series.push(...idnLegalSeries);
     }
     if (idnMoratoriumChecked) {
@@ -451,7 +494,9 @@ export default class SoutheastAsiaRegions extends Component {
       series.push({
         name: 'Primary Forest',
         stack: 'Indonesia Primary Forest',
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_idn_primary_forest_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_idn_primary_forest_yearly', startYear, endYear)
+        ),
         color: '#686868',
         groupPadding: 0,
         showInLegend: false,
@@ -464,7 +509,9 @@ export default class SoutheastAsiaRegions extends Component {
       if (tclChecked) {
         filteredSeries.push({
           name: 'Tree Cover Loss Total',
-          data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_total_yearly', startYear, endYear)),
+          data: getYearlyHighchartSeries(
+            getYearlyData('tree_cover_loss_total_yearly', startYear, endYear)
+          ),
           color: '#ef669a',
           groupPadding: 0,
           showInLegend: false,
@@ -565,25 +612,37 @@ export default class SoutheastAsiaRegions extends Component {
     let filterPropertyLocations = [];
 
     if (seaChecked) {
-      filterPropertyLocations = filteredLocations.map((location) => JSON.parse(location.sea_landcover_area));
+      filterPropertyLocations = filteredLocations.map((location) =>
+        JSON.parse(location.sea_landcover_area)
+      );
     }
     if (idnChecked) {
-      filterPropertyLocations = filteredLocations.map((location) => JSON.parse(location.idn_landcover_area));
+      filterPropertyLocations = filteredLocations.map((location) =>
+        JSON.parse(location.idn_landcover_area)
+      );
     }
     if (idnLegalChecked) {
-      filterPropertyLocations = filteredLocations.map((location) => JSON.parse(location.idn_legal_area));
+      filterPropertyLocations = filteredLocations.map((location) =>
+        JSON.parse(location.idn_legal_area)
+      );
     }
     if (idnMoratoriumChecked) {
-      filterPropertyLocations = filteredLocations.map((location) => JSON.parse(location.idn_forest_moratorium_area));
+      filterPropertyLocations = filteredLocations.map((location) =>
+        JSON.parse(location.idn_forest_moratorium_area)
+      );
     }
 
     const result = {};
 
     if (idnMoratoriumChecked) {
       const totalInArea = filterPropertyLocations.reduce((a, c) => a + c, 0);
-      const totalArea = filteredLocations.map((l) => JSON.parse(l.total_area)).reduce((a, c) => a + c, 0);
+      const totalArea = filteredLocations
+        .map((l) => JSON.parse(l.total_area))
+        .reduce((a, c) => a + c, 0);
       result['Within Forest Moratorium'] = formatPct(validatePct((totalInArea / totalArea) * 100));
-      result['Outside Forest Moratorium'] = formatPct(validatePct((totalArea - totalInArea) / totalArea) * 100);
+      result['Outside Forest Moratorium'] = formatPct(
+        validatePct((totalArea - totalInArea) / totalArea) * 100
+      );
       return Object.entries(result).map((category) => {
         const [categoryName, value] = category;
         const color = categoryName === 'Within Forest Moratorium' ? '#555555' : '#E5E5DF';
@@ -640,8 +699,14 @@ export default class SoutheastAsiaRegions extends Component {
 
   renderTotalsTable = (yearlyTotals) => {
     const { getFilteredLocations } = this.props;
-    const { tclChecked, seaChecked, idnChecked, idnLegalChecked, idnMoratoriumChecked, idnPrimaryForestChecked } =
-      this.state;
+    const {
+      tclChecked,
+      seaChecked,
+      idnChecked,
+      idnLegalChecked,
+      idnMoratoriumChecked,
+      idnPrimaryForestChecked,
+    } = this.state;
 
     let checked;
     let onChange;
@@ -651,8 +716,12 @@ export default class SoutheastAsiaRegions extends Component {
     let disabled = false;
 
     const filteredLocations = getFilteredLocations();
-    const indonesiaPresence = filteredLocations.some((location) => location.indonesia_presence === 'true');
-    const seaPresence = filteredLocations.some((location) => location.southeast_asia_presence === 'true');
+    const indonesiaPresence = filteredLocations.some(
+      (location) => location.indonesia_presence === 'true'
+    );
+    const seaPresence = filteredLocations.some(
+      (location) => location.southeast_asia_presence === 'true'
+    );
 
     const yearlyTotalsTable = Object.entries(yearlyTotals).map((entry) => {
       const [key, value] = entry;
@@ -808,7 +877,10 @@ export default class SoutheastAsiaRegions extends Component {
               onChange={onChange}
               disabled={disabled}
             />
-            <label htmlFor={`asia-${key}-check`} className={`legend-square-label ${disabled ? 'peat-disabled' : ''}`}>
+            <label
+              htmlFor={`asia-${key}-check`}
+              className={`legend-square-label ${disabled ? 'peat-disabled' : ''}`}
+            >
               {label}
             </label>
           </th>
@@ -832,9 +904,13 @@ export default class SoutheastAsiaRegions extends Component {
     const years = mapPage.treeCoverLossYearsFC;
     years.forEach((year) => {
       if (year > to_value || year < from_value) {
-        $(`.southeast-asia-slider__container .irs-grid-text:contains("${year}")`).addClass('irs-inactive-year');
+        $(`.southeast-asia-slider__container .irs-grid-text:contains("${year}")`).addClass(
+          'irs-inactive-year'
+        );
       } else {
-        $(`.southeast-asia-slider__container .irs-grid-text:contains("${year}")`).removeClass('irs-inactive-year');
+        $(`.southeast-asia-slider__container .irs-grid-text:contains("${year}")`).removeClass(
+          'irs-inactive-year'
+        );
       }
     });
   };
@@ -847,7 +923,13 @@ export default class SoutheastAsiaRegions extends Component {
         endYear: data.to_value,
         sliderActive: false,
       });
-      ga('send', 'event', 'Diagnostics Click', 'timeslider update', 'user updated the southeast asia timeslider');
+      ga(
+        'send',
+        'event',
+        'Diagnostics Click',
+        'timeslider update',
+        'user updated the southeast asia timeslider'
+      );
     }
   };
 
@@ -859,8 +941,16 @@ export default class SoutheastAsiaRegions extends Component {
       sea: parseYearlyData('tree_cover_loss_sea_landcover_yearly', startYear, endYear),
       idnTCL: parseYearlyData('tree_cover_loss_idn_landcover_yearly', startYear, endYear),
       idnLegalTCL: parseYearlyData('tree_cover_loss_idn_legal_yearly', startYear, endYear),
-      idnMoratoriumTCL: parseYearlyData('tree_cover_loss_idn_forest_moratorium_yearly', startYear, endYear),
-      idnPrimaryForestTCL: parseYearlyData('tree_cover_loss_idn_primary_forest_yearly', startYear, endYear),
+      idnMoratoriumTCL: parseYearlyData(
+        'tree_cover_loss_idn_forest_moratorium_yearly',
+        startYear,
+        endYear
+      ),
+      idnPrimaryForestTCL: parseYearlyData(
+        'tree_cover_loss_idn_primary_forest_yearly',
+        startYear,
+        endYear
+      ),
     };
   };
 }

@@ -19,7 +19,9 @@ import { gfwListNames } from '../../../../common/js/constants/lists.constants';
  * @return {string} - GFW Pro request data list route
  */
 function getGfwProListDataRequestRoute(isSingleLocation = false) {
-  const route = isSingleLocation ? '/locations/getGFWListLocationGeom' : '/locations/getGFWListLocationNoGeom';
+  const route = isSingleLocation
+    ? '/locations/getGFWListLocationGeom'
+    : '/locations/getGFWListLocationNoGeom';
 
   return route;
 }
@@ -129,7 +131,9 @@ export const viewDiagnostic = async (
       'event',
       'List View Click',
       'View Diagnostic click',
-      `user viewed ${listView} diagnostics for ${isSingleLocation ? 'a single location' : 'an entire list'}`
+      `user viewed ${listView} diagnostics for ${
+        isSingleLocation ? 'a single location' : 'an entire list'
+      }`
     );
   }
 

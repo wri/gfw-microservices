@@ -51,7 +51,10 @@ class ShareList extends React.Component {
       })
       .filter((user) => {
         if (user.activated_time !== null) {
-          if (user.access_level_id !== ADMIN_ACCESS_LEVEL && selectedList.user_id !== user.user_id) {
+          if (
+            user.access_level_id !== ADMIN_ACCESS_LEVEL &&
+            selectedList.user_id !== user.user_id
+          ) {
             return user;
           } else if (selectedList.user_id === user.user_id) {
             user['accessLevelTitle'] = `${getAccessLevelTitle(user)} (List Owner)`;
@@ -116,7 +119,8 @@ class ShareList extends React.Component {
                 <div className="SharedListDialog">
                   <p>
                     You are about to share <strong>{selectedList.list_name}</strong> with
-                    <strong> {selectedUser && selectedUser.name}</strong>. Please confirm by pressing on the OK button.
+                    <strong> {selectedUser && selectedUser.name}</strong>. Please confirm by
+                    pressing on the OK button.
                   </p>
                 </div>
               }
@@ -130,8 +134,10 @@ class ShareList extends React.Component {
               body={
                 <div className="SharedListDialog">
                   <p>
-                    You are about to discontinue sharing of <strong>{selectedList.list_name}</strong> with
-                    <strong> {userToRemove && userToRemove.name}</strong>. Please confirm by pressing on the OK button.
+                    You are about to discontinue sharing of{' '}
+                    <strong>{selectedList.list_name}</strong> with
+                    <strong> {userToRemove && userToRemove.name}</strong>. Please confirm by
+                    pressing on the OK button.
                   </p>
                 </div>
               }
@@ -145,10 +151,14 @@ class ShareList extends React.Component {
               body={
                 <div className="SharedListDialog">
                   <p>
-                    You are about to discontinue sharing of <strong>{selectedList.list_name}</strong> with{' '}
+                    You are about to discontinue sharing of{' '}
+                    <strong>{selectedList.list_name}</strong> with{' '}
                     {SharedListUsers && SharedListUsers.length > 1 ? 'users' : 'user'}
                   </p>
-                  <ul>{SharedListUsers && SharedListUsers.map((user, key) => <li key={key}>{user.name}</li>)}</ul>
+                  <ul>
+                    {SharedListUsers &&
+                      SharedListUsers.map((user, key) => <li key={key}>{user.name}</li>)}
+                  </ul>
                   <p>Please confirm by pressing on the OK button.</p>
                 </div>
               }
@@ -216,10 +226,15 @@ class ShareList extends React.Component {
                   {combinedUsersList.map((user) => {
                     const userRemovable = this._isUserAdminOrOwner(user);
                     return (
-                      <tr key={user.email} className={!userRemovable ? 'user-not-removable' : 'user-removable'}>
+                      <tr
+                        key={user.email}
+                        className={!userRemovable ? 'user-not-removable' : 'user-removable'}
+                      >
                         <td className="ShareUsers__name">{user.name}</td>
                         <td className="ShareUsers__email">{user.email}</td>
-                        <td className="ShareUsers__timestamp">{user.timestamp ? user.timestamp : listTimestamp}</td>
+                        <td className="ShareUsers__timestamp">
+                          {user.timestamp ? user.timestamp : listTimestamp}
+                        </td>
                         <td className="ShareUsers__access-level">{user.accessLevelTitle}</td>
                         <td className="ShareUsers__remove-user">
                           {userRemovable && (
@@ -342,7 +357,12 @@ class ShareList extends React.Component {
       return user;
     });
 
-    removeUserFromSharedListService(userToRemove, updateSharedListUsers, updatedNotAdminsOwner, this);
+    removeUserFromSharedListService(
+      userToRemove,
+      updateSharedListUsers,
+      updatedNotAdminsOwner,
+      this
+    );
     ga(
       'send',
       'event',

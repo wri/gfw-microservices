@@ -1,60 +1,60 @@
 // Overrall IRS style
 .irs {
-    height: 50px;
+  height: 50px;
 }
 
 // Bar
 .irs-bar {
-    top: 20px;
-    height: 5px;
-    background-color: #8cb436;
+  top: 20px;
+  height: 5px;
+  background-color: #8cb436;
 }
 
 // Handles
 .irs-slider.from,
 .irs-slider.to,
 .irs-slider.single {
-    top: 17px;
-    width: 10px;
-    height: 10px;
-    background-image: url('../images/ionSlider.svg');
-    background-repeat: no-repeat;
-    background-size: contain;
+  top: 17px;
+  width: 10px;
+  height: 10px;
+  background-image: url('../images/ionSlider.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 // Grid
 .irs-grid-text {
-    font-size: 11px;
-    color: #8cb436;
+  font-size: 11px;
+  color: #8cb436;
 }
 
 .irs-active-year {
-    color: #8cb436;
+  color: #8cb436;
 }
 
 .irs-inactive-year {
-    color: #555555;
+  color: #555555;
 }
 
 .irs-grid-pol {
-    width: 2.5px;
-    height: 2.5px;
-    border-radius: 50%;
-    background: black;
+  width: 2.5px;
+  height: 2.5px;
+  border-radius: 50%;
+  background: black;
 }
 
 .irs-grid-pol {
-    display: block;
-    &.small {
-        display: none;
-    }
+  display: block;
+  &.small {
+    display: none;
+  }
 }
 
 // STYLES FOR <PlayerControl /> IRS
 .player-control__irs {
-    .irs-line {
-        height: 5px;
-        top: 20px;
-        background-color: #a8a8a8;
-    }
+  .irs-line {
+    height: 5px;
+    top: 20px;
+    background-color: #a8a8a8;
+  }
 }

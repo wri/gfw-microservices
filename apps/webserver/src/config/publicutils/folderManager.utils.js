@@ -31,7 +31,12 @@ const getAllFolders = async (req) => {
   } catch (error) {
     const errMessage = langResources.getResourceString('failedToGetAllFolders');
     console.log(`${errMessage} ${error}`);
-    throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.failedToGetAllFolders, errMessage, error);
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.errorCodes.failedToGetAllFolders,
+      errMessage,
+      error
+    );
   }
 };
 
@@ -62,11 +67,21 @@ const getFolderDetails = async (req, folder_id) => {
     if (error.number === 50005) {
       const errMessage = langResources.getResourceString('folderDoesNotExist');
       console.log(errMessage);
-      throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.folderDoesNotExist, errMessage, error);
+      throw new errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.folderDoesNotExist,
+        errMessage,
+        error
+      );
     } else {
       const errMessage = langResources.getResourceString('failedToGetFolderDetails');
       console.log(`Error fetching folder details: ${error}`);
-      throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.failedToGetFolderDetails, errMessage, error);
+      throw new errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.failedToGetFolderDetails,
+        errMessage,
+        error
+      );
     }
   }
 };
@@ -82,7 +97,11 @@ const createNewFolder = async (req, folder_name) => {
     { field: 'user_id', type: sql.Int, value: req.session.organization_user_id },
   ];
   try {
-    const newFolderResponse = await sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateNewFolder', parameters);
+    const newFolderResponse = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspCreateNewFolder',
+      parameters
+    );
     const { id: folder_id } = newFolderResponse[0];
 
     if (folder_id) {
@@ -91,14 +110,24 @@ const createNewFolder = async (req, folder_name) => {
       return [];
     }
   } catch (error) {
-    if (error.message.indexOf('UQ_USERID_FOLDER_NAME') >= 0) {     
+    if (error.message.indexOf('UQ_USERID_FOLDER_NAME') >= 0) {
       const errMessage = langResources.getResourceString('failedToCreateNewFolderExisting');
       console.log(`${errMessage}: ${error}`);
-      throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.failedToCreateNewFolder, errMessage, error);
+      throw new errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.failedToCreateNewFolder,
+        errMessage,
+        error
+      );
     } else {
       console.log(`Error creating a new folder: ${error}`);
       const errMessage = langResources.getResourceString('failedToCreateNewFolder');
-      throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.failedToCreateNewFolder, errMessage, error);
+      throw new errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.failedToCreateNewFolder,
+        errMessage,
+        error
+      );
     }
   }
 };
@@ -114,7 +143,11 @@ const deleteFolder = async (req, folder_id) => {
     { field: 'user_id', type: sql.Int, value: req.session.organization_user_id },
   ];
   try {
-    const response = await sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteFolder', parameters);
+    const response = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspDeleteFolder',
+      parameters
+    );
     // Checking if at least one row was modified
     if (response[0].affected_rows) {
       return await getAllFolders(req, folder_id);
@@ -129,7 +162,12 @@ const deleteFolder = async (req, folder_id) => {
       errMessage = langResources.getResourceString('failedToDeleteFolder');
     }
     console.log(`errMessage: ${error}`);
-    throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.failedToDeleteFolder, errMessage, error);
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.errorCodes.failedToDeleteFolder,
+      errMessage,
+      error
+    );
   }
 };
 
@@ -146,7 +184,11 @@ const addListToFolder = async (req, folder_id, list_ids) => {
     { field: 'user_id', type: sql.Int, value: req.session.organization_user_id },
   ];
   try {
-    const response = await sqlUtils.executeOrganizationStoredProcedure(req, 'uspAddListToFolder', parameters);
+    const response = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspAddListToFolder',
+      parameters
+    );
     // Checking if at least one row was modified
     if (response[0].affected_rows) {
       return await getAllFolders(req, folder_id);
@@ -168,8 +210,17 @@ const addListToFolder = async (req, folder_id, list_ids) => {
     } else {
       errMessage = 'Error while adding lists to the folder.';
     }
-    console.log(`Error while adding lists IDs ${list_ids.join(', ')} to the folder(id: ${folder_id}): ${error}`);
-    throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.failedToAddListsToFolder, errMessage, error);
+    console.log(
+      `Error while adding lists IDs ${list_ids.join(
+        ', '
+      )} to the folder(id: ${folder_id}): ${error}`
+    );
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.errorCodes.failedToAddListsToFolder,
+      errMessage,
+      error
+    );
   }
 };
 
@@ -186,7 +237,11 @@ const removeListFromFolder = async (req, folder_id, list_ids) => {
     { field: 'user_id', type: sql.Int, value: req.session.organization_user_id },
   ];
   try {
-    return await sqlUtils.executeOrganizationStoredProcedure(req, 'uspRemoveListsFromFolder', parameters);
+    return await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspRemoveListsFromFolder',
+      parameters
+    );
   } catch (error) {
     let errMessage;
     if (error.number === 50005) {
@@ -195,7 +250,12 @@ const removeListFromFolder = async (req, folder_id, list_ids) => {
       console.log(`Error trying to remove list(s) from a folder: ${error}`);
     }
     console.log(errMessage);
-    throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.folderDoesNotExist, errMessage, error);
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.errorCodes.folderDoesNotExist,
+      errMessage,
+      error
+    );
   }
 };
 
@@ -221,7 +281,12 @@ const updateFolderName = async (req, folder_id, folder_name) => {
       console.log(`Error trying to remove list(s) from a folder: ${error}`);
     }
     console.log(errMessage);
-    throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.folderDoesNotExist, errMessage, error);
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.errorCodes.folderDoesNotExist,
+      errMessage,
+      error
+    );
   }
 };
 
@@ -241,7 +306,11 @@ const moveListToFolder = async (req, from_folder_id, to_folder_id, list_ids) => 
   ];
 
   try {
-    const response = await sqlUtils.executeOrganizationStoredProcedure(req, 'uspMoveListToFolder', parameters);
+    const response = await sqlUtils.executeOrganizationStoredProcedure(
+      req,
+      'uspMoveListToFolder',
+      parameters
+    );
     // Checking if at least one row was modified
     if (response[0].affected_rows) {
       return await getAllFolders(req);
@@ -258,7 +327,12 @@ const moveListToFolder = async (req, from_folder_id, to_folder_id, list_ids) => 
       );
       errMessage = langResources.getResourceString('failedToAddListsToFolder');
     }
-    throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.failedToAddListsToFolder, errMessage, error);
+    throw new errorUtils.createErrorMessage(
+      req,
+      errorUtils.errorCodes.failedToAddListsToFolder,
+      errMessage,
+      error
+    );
   }
 };
 

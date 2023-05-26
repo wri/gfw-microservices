@@ -39,9 +39,7 @@ export class AppController {
    * @returns
    */
   @Post('/get-object-presigned-url')
-  getObjectPresignedURL(
-    @Body() request: Omit<RequestPreSignedURLModel, 'contentType'>
-  ) {
+  getObjectPresignedURL(@Body() request: Omit<RequestPreSignedURLModel, 'contentType'>) {
     return this.appService.getObjectPreSignedUrl(request.key);
   }
 

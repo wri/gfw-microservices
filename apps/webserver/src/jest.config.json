@@ -1,17 +1,9 @@
 {
   "clearMocks": true,
-  "collectCoverageFrom": [
-    "<rootDir>/{client,config,server}/**/*.{js,jsx,ts,tsx}"
-  ],
+  "collectCoverageFrom": ["<rootDir>/{client,config,server}/**/*.{js,jsx,ts,tsx}"],
   "testTimeout": 2000,
   "coverageDirectory": "../../../coverage/apps/webserver",
-  "coverageReporters": [
-    "json",
-    "text",
-    "lcov",
-    "clover",
-    "cobertura"
-  ],
+  "coverageReporters": ["json", "text", "lcov", "clover", "cobertura"],
   "coverageThreshold": {
     "global": {
       "branches": 1,
@@ -20,34 +12,17 @@
       "statements": 1
     }
   },
-  "moduleFileExtensions": [
-    "js",
-    "json",
-    "jsx"
-  ],
-  "modulePathIgnorePatterns": [
-    "<rootDir>/node_modules/",
-    "<rootDir>/dist/*"
-  ],
-  "setupFiles": [
-    "@testing-library/react/dont-cleanup-after-each"
-  ],
-  "setupFilesAfterEnv": [
-    "./test/jest.setup.js",
-    "@testing-library/jest-dom/extend-expect"
-  ],
+  "moduleFileExtensions": ["js", "json", "jsx"],
+  "modulePathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/dist/*"],
+  "setupFiles": ["@testing-library/react/dont-cleanup-after-each"],
+  "setupFilesAfterEnv": ["./test/jest.setup.js", "@testing-library/jest-dom/extend-expect"],
   "testEnvironment": "jest-environment-jsdom",
-  "testMatch": [
-    "<rootDir>/client/**/*.test.js",
-    "<rootDir>/server/**/*.spec.js"
-  ],
+  "testMatch": ["<rootDir>/client/**/*.test.js", "<rootDir>/server/**/*.spec.js"],
   "transform": {
     ".+\\.(css|css!|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
     "^.+\\.(js|jsx)?$": "babel-jest"
   },
-  "transformIgnorePatterns": [
-    "/node_modules/"
-  ],
+  "transformIgnorePatterns": ["/node_modules/"],
   "verbose": false,
   "moduleNameMapper": {
     "^axios$": "<rootDir>/node_modules/axios/dist/node/axios.cjs",

@@ -6,7 +6,8 @@ const { raddAlertsID, raddCoverageID } = proLayers;
 
 const RaddLayerLegend = ({ disabled, layer }) => {
   const recentAlertsColor =
-    layer?.legendConfig?.items[0]?.categories?.find((symbol) => symbol.name === 'Recent alerts')?.color || '#e4c600';
+    layer?.legendConfig?.items[0]?.categories?.find((symbol) => symbol.name === 'Recent alerts')
+      ?.color || '#e4c600';
 
   const toggleRaddCoverageLayer = () => {
     if (!disabled) {
@@ -35,7 +36,9 @@ const RaddLayerLegend = ({ disabled, layer }) => {
       </li>
       <li
         key={1}
-        className={`layer-checkbox ${store.getState().visibleLayers.includes(raddCoverageID) ? 'active' : ''}`}
+        className={`layer-checkbox ${
+          store.getState().visibleLayers.includes(raddCoverageID) ? 'active' : ''
+        }`}
       >
         <div>
           <span onClick={toggleRaddCoverageLayer} className="toggle-switch pointer">
@@ -46,7 +49,12 @@ const RaddLayerLegend = ({ disabled, layer }) => {
           </span>
         </div>
       </li>
-      <li key={2} className={`layer-checkbox ${store.getState().visibleLayers.includes(raddAlertsID) ? 'active' : ''}`}>
+      <li
+        key={2}
+        className={`layer-checkbox ${
+          store.getState().visibleLayers.includes(raddAlertsID) ? 'active' : ''
+        }`}
+      >
         <div>
           <span onClick={toggleRaddConfirmedLayer} className="toggle-switch pointer">
             <span />

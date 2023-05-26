@@ -37,22 +37,14 @@ const dataLayerProcessor = ({ data, dataLayerName }, dataRow, csvData) => {
     currentRow.push(dataLayerName);
     currentRow.push(location);
 
-    const overlapPercent = formatPct(
-      validatePct((data[location] / total) * 100)
-    );
+    const overlapPercent = formatPct(validatePct((data[location] / total) * 100));
     currentRow.push(overlapPercent);
 
     csvData.push(currentRow);
   });
 };
 
-const brazilBiomesYearlyTCLParser = ({
-  field,
-  yearlyData,
-  totalStat,
-  dataRow,
-  csvData,
-}) => {
+const brazilBiomesYearlyTCLParser = ({ field, yearlyData, totalStat, dataRow, csvData }) => {
   const totalSubCategoryValues = {};
 
   const biomes = Object.keys(yearlyData);
@@ -74,9 +66,7 @@ const brazilBiomesYearlyTCLParser = ({
       const totalSubCategory = totalSubCategoryValues[biomeName];
       if (totalStat) {
         currentRow.push(totalSubCategory);
-        const percent = formatPct(
-          validatePct((total / totalSubCategory) * 100)
-        );
+        const percent = formatPct(validatePct((total / totalSubCategory) * 100));
         currentRow.push(percent);
       }
 

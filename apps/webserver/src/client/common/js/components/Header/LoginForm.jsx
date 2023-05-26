@@ -51,7 +51,12 @@ function LoginForm() {
           paperClassName="dialog-paper"
           title={dialogTitle}
           actions={[
-            <Button variant="primary" label="OK" className="login-ok-button" onClick={() => setDialogOpen(false)} />,
+            <Button
+              variant="primary"
+              label="OK"
+              className="login-ok-button"
+              onClick={() => setDialogOpen(false)}
+            />,
           ]}
           modal={false}
           open={dialogOpen}

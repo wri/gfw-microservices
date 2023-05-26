@@ -48,7 +48,8 @@ import '../../../css/addLocation.scss';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
 
-const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } = proLayers;
+const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } =
+  proLayers;
 
 const primaryColor = '#8bae3b';
 
@@ -145,11 +146,17 @@ const retrieveDefaultValue = (templateData, templateDropdowns, adminData) => {
         t.template_datum_field_name.includes(admin.destination)
     );
     if (matchingTemplate) {
-      let adminVal = adminData.hasOwnProperty(matchingTemplate.origin) ? adminData[matchingTemplate.origin] : '';
+      let adminVal = adminData.hasOwnProperty(matchingTemplate.origin)
+        ? adminData[matchingTemplate.origin]
+        : '';
       if (t.ui_type === 'multi-dropdown') {
         const multiDropDownVal = [];
-        const templateDropdownsMatch = templateDropdowns.filter((d) => d.template_metadata_id === t.id);
-        const templateDropdownsMatchIndex = templateDropdowns.findIndex((d) => d.template_metadata_id === t.id);
+        const templateDropdownsMatch = templateDropdowns.filter(
+          (d) => d.template_metadata_id === t.id
+        );
+        const templateDropdownsMatchIndex = templateDropdowns.findIndex(
+          (d) => d.template_metadata_id === t.id
+        );
         // which one do we want to push, we try and match based on the incoming value
         const incomingTemplateDropdownVal = templateDropdownsMatch.find(
           (td) => td.dropdown_value.toLowerCase() === adminVal.toLowerCase()
@@ -194,9 +201,13 @@ export default class AddLocation extends Component {
     super(props);
 
     // Determine location name based on props that came from the map
-    const locationName = props.geomFromMap && props.geomFromMap.locationName ? props.geomFromMap.locationName : '';
+    const locationName =
+      props.geomFromMap && props.geomFromMap.locationName ? props.geomFromMap.locationName : '';
 
-    const chosenType = props.gfwInfoFromMap && props.gfwInfoFromMap.gfwData ? generateType(props.gfwInfoFromMap) : null;
+    const chosenType =
+      props.gfwInfoFromMap && props.gfwInfoFromMap.gfwData
+        ? generateType(props.gfwInfoFromMap)
+        : null;
 
     this.state = {
       locationName,
@@ -270,7 +281,9 @@ export default class AddLocation extends Component {
           let num = 0;
           if (result !== null) {
             num = parseInt(result[0]);
-            locationClassification = `${locationClassification.substring(0, result.index)}${num + 1}`;
+            locationClassification = `${locationClassification.substring(0, result.index)}${
+              num + 1
+            }`;
           } else {
             locationClassification = `${locationClassification} ${count}`;
           }
@@ -360,7 +373,9 @@ export default class AddLocation extends Component {
           let num = 0;
           if (result !== null) {
             num = parseInt(result[0]);
-            locationClassification = `${locationClassification.substring(0, result.index)}${num + 1}`;
+            locationClassification = `${locationClassification.substring(0, result.index)}${
+              num + 1
+            }`;
           } else {
             locationClassification = `${locationClassification} ${count}`;
           }
@@ -395,7 +410,10 @@ export default class AddLocation extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.activeTemplate !== this.props.activeTemplate && nextProps.addType !== 'investment') {
+    if (
+      nextProps.activeTemplate !== this.props.activeTemplate &&
+      nextProps.addType !== 'investment'
+    ) {
       let locationClassification = `Recent ${deduceActiveName(nextProps.activeTemplate)}`;
 
       if (this.checkExistingList(locationClassification)) {
@@ -405,7 +423,9 @@ export default class AddLocation extends Component {
           let num = 0;
           if (result !== null) {
             num = parseInt(result[0]);
-            locationClassification = `${locationClassification.substring(0, result.index)}${num + 1}`;
+            locationClassification = `${locationClassification.substring(0, result.index)}${
+              num + 1
+            }`;
           } else {
             locationClassification = `${locationClassification} ${count}`;
           }
@@ -424,7 +444,9 @@ export default class AddLocation extends Component {
           let num = 0;
           if (result !== null) {
             num = parseInt(result[0]);
-            locationClassification = `${locationClassification.substring(0, result.index)}${num + 1}`;
+            locationClassification = `${locationClassification.substring(0, result.index)}${
+              num + 1
+            }`;
           } else {
             locationClassification = `${locationClassification} ${count}`;
           }
@@ -541,7 +563,9 @@ export default class AddLocation extends Component {
       this.setState({
         commodityTemplates: newTemplates,
         saved: false,
-        selectedLocationClassification: template.template_datum_field_value ? template.template_datum_field_value : '',
+        selectedLocationClassification: template.template_datum_field_value
+          ? template.template_datum_field_value
+          : '',
       });
     } else {
       this.setState({
@@ -673,9 +697,17 @@ export default class AddLocation extends Component {
         if (this.state.measurementUnit === 'hectares' && setRadius === '') {
           const hectares_to_kilosSquared = distance / 100;
           const radius_in_KM = Math.sqrt(hectares_to_kilosSquared / Math.PI);
-          buffer = GeometryEngine.geodesicBuffer(this.state.originalGeometry, radius_in_KM.toFixed(2), 'kilometers');
+          buffer = GeometryEngine.geodesicBuffer(
+            this.state.originalGeometry,
+            radius_in_KM.toFixed(2),
+            'kilometers'
+          );
         } else {
-          buffer = GeometryEngine.geodesicBuffer(this.state.originalGeometry, distance.toFixed(2), 'kilometers');
+          buffer = GeometryEngine.geodesicBuffer(
+            this.state.originalGeometry,
+            distance.toFixed(2),
+            'kilometers'
+          );
         }
 
         let area = 0;
@@ -816,7 +848,10 @@ export default class AddLocation extends Component {
     const errorTitle = 'Mandatory fields missing';
     const errorMessages = [];
 
-    const listName = this.state.selectedList === 'Create New List' ? this.state.customList : this.state.selectedList;
+    const listName =
+      this.state.selectedList === 'Create New List'
+        ? this.state.customList
+        : this.state.selectedList;
     // Check if customList is the same name as an existing list
     const checkListExists = this.props.userLists.find(
       (list) => list.list_name.toLowerCase() === listName.toLowerCase()
@@ -835,7 +870,8 @@ export default class AddLocation extends Component {
       this.setState({
         dialogOpen: true,
         dialogTitle: 'List not created',
-        dialogMessage: 'A list already exists with this name. Enter a new list name and click save.',
+        dialogMessage:
+          'A list already exists with this name. Enter a new list name and click save.',
       });
       return;
     }
@@ -898,15 +934,24 @@ export default class AddLocation extends Component {
             !field.template_datum_field_name_updated &&
             customAttributeNames.indexOf(field.template_datum_field_name) === -1
           ) {
-            if (locationsPage.upload.ignoredCommodityFields.indexOf(field.template_datum_field_name) === -1) {
+            if (
+              locationsPage.upload.ignoredCommodityFields.indexOf(
+                field.template_datum_field_name
+              ) === -1
+            ) {
               let validField = true;
-              let fieldValue = field.template_datum_field_value ? field.template_datum_field_value : '';
+              let fieldValue = field.template_datum_field_value
+                ? field.template_datum_field_value
+                : '';
               if (fieldValue === 'Select...') {
                 fieldValue = '';
               }
 
               // Certification value from the form comes in as array of all selected values that have labels in properties
-              if (field.template_datum_field_name === 'Certification' && field.template_datum_field_value) {
+              if (
+                field.template_datum_field_name === 'Certification' &&
+                field.template_datum_field_value
+              ) {
                 fieldValue = field.template_datum_field_value.length
                   ? field.template_datum_field_value.map((vals) => vals.label).join(', ')
                   : field.template_datum_field_value;
@@ -916,33 +961,51 @@ export default class AddLocation extends Component {
                 fieldValidations[field.template_datum_field_name] &&
                 field.template_datum_field_name.toLowerCase() !== 'company id'
               ) {
-                fieldValidations[field.template_datum_field_name].validations.forEach((validation) => {
-                  if (validation(fieldValue) === false) {
-                    validField = false;
-                    const hasThisMessage = errorMessages.filter(
-                      (message) => message[1] === fieldValidations[field.template_datum_field_name].text
-                    )[0];
-                    if (hasThisMessage) {
-                      return;
+                fieldValidations[field.template_datum_field_name].validations.forEach(
+                  (validation) => {
+                    if (validation(fieldValue) === false) {
+                      validField = false;
+                      const hasThisMessage = errorMessages.filter(
+                        (message) =>
+                          message[1] === fieldValidations[field.template_datum_field_name].text
+                      )[0];
+                      if (hasThisMessage) {
+                        return;
+                      }
+                      errorMessages.push([
+                        20,
+                        fieldValidations[field.template_datum_field_name].text,
+                      ]);
                     }
-                    errorMessages.push([20, fieldValidations[field.template_datum_field_name].text]);
                   }
-                });
+                );
               } else if (
                 fieldValidations[field.template_datum_field_name] &&
                 field.template_datum_field_name.toLowerCase() === 'company id'
               ) {
-                fieldValidations[field.template_datum_field_name].validations.forEach((validation) => {
-                  if (validation(fieldValue, this.props.activeTemplate) === false) {
-                    validField = false;
-                    errorMessages.push([20, fieldValidations[field.template_datum_field_name].text]);
+                fieldValidations[field.template_datum_field_name].validations.forEach(
+                  (validation) => {
+                    if (validation(fieldValue, this.props.activeTemplate) === false) {
+                      validField = false;
+                      errorMessages.push([
+                        20,
+                        fieldValidations[field.template_datum_field_name].text,
+                      ]);
+                    }
                   }
-                });
+                );
               }
 
               if (validField) {
-                if (!field.template_datum_field_description && field.template_datum_mandatory === true && !fieldValue) {
-                  errorMessages.push([20, `${field.template_datum_field_name} is a mandatory field.`]);
+                if (
+                  !field.template_datum_field_description &&
+                  field.template_datum_mandatory === true &&
+                  !fieldValue
+                ) {
+                  errorMessages.push([
+                    20,
+                    `${field.template_datum_field_name} is a mandatory field.`,
+                  ]);
                 }
                 properties[field.template_datum_field_name] = fieldValue;
               }
@@ -990,7 +1053,8 @@ export default class AddLocation extends Component {
                   });
                   break;
                 case 'Time Horizon':
-                  valueFromState = this.state.timeframe === 'Time Horizon' ? '' : this.state.timeframe;
+                  valueFromState =
+                    this.state.timeframe === 'Time Horizon' ? '' : this.state.timeframe;
                   break;
                 case 'Analysis Area':
                   valueFromState = parseFloat(this.state.calculatedArea);
@@ -1097,9 +1161,15 @@ export default class AddLocation extends Component {
         templateId = activeTemplates[0].template_id;
       } else if (this.props.addType === 'investment') {
         this.state.investmentTemplates.forEach((templateField) => {
-          if (locationsPage.upload.ignoredInvestmentFields.indexOf(templateField.template_datum_field_name) === -1) {
+          if (
+            locationsPage.upload.ignoredInvestmentFields.indexOf(
+              templateField.template_datum_field_name
+            ) === -1
+          ) {
             let validField = true;
-            let fieldValue = templateField.template_datum_field_value ? templateField.template_datum_field_value : '';
+            let fieldValue = templateField.template_datum_field_value
+              ? templateField.template_datum_field_value
+              : '';
 
             if (
               templateField.template_datum_field_name === 'Certification' &&
@@ -1126,22 +1196,32 @@ export default class AddLocation extends Component {
               fieldValidations[templateField.template_datum_field_name] &&
               templateField.template_datum_field_name.toLowerCase() !== 'company id'
             ) {
-              fieldValidations[templateField.template_datum_field_name].validations.forEach((validation) => {
-                if (validation(fieldValue) === false) {
-                  validField = false;
-                  errorMessages.push([20, fieldValidations[templateField.template_datum_field_name].text]);
+              fieldValidations[templateField.template_datum_field_name].validations.forEach(
+                (validation) => {
+                  if (validation(fieldValue) === false) {
+                    validField = false;
+                    errorMessages.push([
+                      20,
+                      fieldValidations[templateField.template_datum_field_name].text,
+                    ]);
+                  }
                 }
-              });
+              );
             } else if (
               fieldValidations[templateField.template_datum_field_name] &&
               templateField.template_datum_field_name.toLowerCase() === 'company id'
             ) {
-              fieldValidations[templateField.template_datum_field_name].validations.forEach((validation) => {
-                if (validation(fieldValue, this.props.activeTemplate) === false) {
-                  validField = false;
-                  errorMessages.push([20, fieldValidations[templateField.template_datum_field_name].text]);
+              fieldValidations[templateField.template_datum_field_name].validations.forEach(
+                (validation) => {
+                  if (validation(fieldValue, this.props.activeTemplate) === false) {
+                    validField = false;
+                    errorMessages.push([
+                      20,
+                      fieldValidations[templateField.template_datum_field_name].text,
+                    ]);
+                  }
                 }
-              });
+              );
             }
 
             if (validField) {
@@ -1150,7 +1230,10 @@ export default class AddLocation extends Component {
                 templateField.template_datum_mandatory === true &&
                 !fieldValue
               ) {
-                errorMessages.push([20, `${templateField.template_datum_field_name} is a mandatory field.`]);
+                errorMessages.push([
+                  20,
+                  `${templateField.template_datum_field_name} is a mandatory field.`,
+                ]);
               }
               properties[templateField.template_datum_field_name] = fieldValue;
             }
@@ -1207,7 +1290,8 @@ export default class AddLocation extends Component {
                 });
                 break;
               case 'Time Horizon':
-                valueFromState = this.state.timeframe === 'Time Horizon' ? '' : this.state.timeframe;
+                valueFromState =
+                  this.state.timeframe === 'Time Horizon' ? '' : this.state.timeframe;
                 break;
               case 'Analysis Area':
                 valueFromState = parseFloat(this.state.calculatedArea);
@@ -1327,7 +1411,8 @@ export default class AddLocation extends Component {
               request.responseText === saveListConfig.success ||
               request.responseText === saveAsDraftListConfig.success ||
               request.responseText === appendListConfig.success ||
-              request.responseText === locationsPage.lists.copyMoveMessages.LocationsCopied.responseText
+              request.responseText ===
+                locationsPage.lists.copyMoveMessages.LocationsCopied.responseText
             ) {
               this.props.templateData.forEach((template) => {
                 if (template.template_datum_field_value) {
@@ -1335,7 +1420,9 @@ export default class AddLocation extends Component {
                 }
               });
 
-              store.dispatch(changeAddType(this.props.addType === 'commodity' ? 'investment' : 'commodity'));
+              store.dispatch(
+                changeAddType(this.props.addType === 'commodity' ? 'investment' : 'commodity')
+              );
               const newState = { ...originalState };
               newState.isLoading = false;
               newState.dialogOpen = true;
@@ -1349,7 +1436,11 @@ export default class AddLocation extends Component {
                 request.responseText === copyListConfig.success
               ) {
                 newState.dialogTitle = getDialogTitle(request.responseText);
-                newState.dialogMessage = getDialogContent(request.responseText, listName, isSaveAsDraft);
+                newState.dialogMessage = getDialogContent(
+                  request.responseText,
+                  listName,
+                  isSaveAsDraft
+                );
               }
 
               this.setState(newState);
@@ -1391,19 +1482,37 @@ export default class AddLocation extends Component {
               list_status_id: getListStatusId(isSaveAsDraft),
             };
 
-            request.open('POST', isSaveAsDraft ? saveAsDraftListConfig.route : '/locations/addToNewList', true);
+            request.open(
+              'POST',
+              isSaveAsDraft ? saveAsDraftListConfig.route : '/locations/addToNewList',
+              true
+            );
 
             if (isSaveAsDraft) {
-              ga('send', 'event', 'Submit', 'Upload List', 'User uploads a list with single location as a draft');
+              ga(
+                'send',
+                'event',
+                'Submit',
+                'Upload List',
+                'User uploads a list with single location as a draft'
+              );
             } else {
-              ga('send', 'event', 'Submit', 'Upload List', 'User uploads a list with single location and submits');
+              ga(
+                'send',
+                'event',
+                'Submit',
+                'Upload List',
+                'User uploads a list with single location and submits'
+              );
             }
 
             ga(
               'send',
               'event',
               'Locations Click',
-              isSaveAsDraft ? 'add locations save button clicked' : 'add locations save as draft button clicked',
+              isSaveAsDraft
+                ? 'add locations save button clicked'
+                : 'add locations save as draft button clicked',
               isSaveAsDraft
                 ? `user created a list with a newly added ${this.props.addType} location with a commodity type of ${this.props.activeTemplate}`
                 : `user created as draft a list with a newly added ${this.props.addType} location with a commodity type of ${this.props.activeTemplate}`
@@ -1424,7 +1533,9 @@ export default class AddLocation extends Component {
               return;
             }
             if (window.mapData) {
-              await httpRequest.fetchJSON('/locations/lockList', { list_id: window.mapData.listID });
+              await httpRequest.fetchJSON('/locations/lockList', {
+                list_id: window.mapData.listID,
+              });
 
               bigObj = {
                 src_list_id: window.mapData.listID,
@@ -1446,9 +1557,21 @@ export default class AddLocation extends Component {
               };
               request.open('POST', '/locations/updateExistingList', true);
               if (isSaveAsDraft) {
-                ga('send', 'event', 'Submit', 'Upload List', 'User uploads a list with single location as a draft');
+                ga(
+                  'send',
+                  'event',
+                  'Submit',
+                  'Upload List',
+                  'User uploads a list with single location as a draft'
+                );
               } else {
-                ga('send', 'event', 'Submit', 'Upload List', 'User uploads a list with single location and submits');
+                ga(
+                  'send',
+                  'event',
+                  'Submit',
+                  'Upload List',
+                  'User uploads a list with single location and submits'
+                );
               }
 
               ga(
@@ -1492,14 +1615,20 @@ export default class AddLocation extends Component {
   };
 
   populateMethodOptions = (options) => {
-    const filteredOptions = options.filter((option) => option.type === this.props.addType || option.type === 'both');
+    const filteredOptions = options.filter(
+      (option) => option.type === this.props.addType || option.type === 'both'
+    );
     const actionItems = filteredOptions
-      .sort((a, b) => (a.investmentOrder > b.investmentOrder ? 1 : b.investmentOrder > a.investmentOrder ? -1 : 0))
+      .sort((a, b) =>
+        a.investmentOrder > b.investmentOrder ? 1 : b.investmentOrder > a.investmentOrder ? -1 : 0
+      )
       .map((option, k) => {
         return (
           <div
             key={k}
-            className={`add-location-method__tab ${this.props.addMethod === option.id ? 'selected-method' : ''}`}
+            className={`add-location-method__tab ${
+              this.props.addMethod === option.id ? 'selected-method' : ''
+            }`}
           >
             <input
               type="radio"
@@ -1705,7 +1834,14 @@ export default class AddLocation extends Component {
               onClick={this.state.overrideOnClose ? this.discardItem : this.saveSuccess}
             />,
           ]
-        : [<Button variant="primary" label="OK" keyboardFocused onClick={this.shouldCloseDialog} />];
+        : [
+            <Button
+              variant="primary"
+              label="OK"
+              keyboardFocused
+              onClick={this.shouldCloseDialog}
+            />,
+          ];
     const saveActions = [
       <div className="dialog__footer">
         <Button
@@ -1714,11 +1850,17 @@ export default class AddLocation extends Component {
           label={locationsPage.lists.ok}
           onClick={this.saveItem}
         />
-        <LinkButton className="add-location-dialog-action" label="Cancel" onClick={this.shouldCloseDialog} />
+        <LinkButton
+          className="add-location-dialog-action"
+          label="Cancel"
+          onClick={this.shouldCloseDialog}
+        />
       </div>,
     ];
 
-    const commodityTemplate = this.props.templateData.filter((template) => template.location_type_name === 'Commodity');
+    const commodityTemplate = this.props.templateData.filter(
+      (template) => template.location_type_name === 'Commodity'
+    );
     const methods = this.populateMethodOptions(locationsPage.landing.selectMethodOptions);
     const {
       substate,
@@ -1747,7 +1889,8 @@ export default class AddLocation extends Component {
       selectedLocationClassification,
       isLoading,
     } = this.state;
-    const { view, addMethod, addType, locationType, activeTemplate, userLists, templateDropdowns } = this.props;
+    const { view, addMethod, addType, locationType, activeTemplate, userLists, templateDropdowns } =
+      this.props;
     let listPlaceholderValue =
       activeTemplate === 'investment' && customList === 'investment' && addType === 'commodity'
         ? 'Recent Other'
@@ -1757,9 +1900,13 @@ export default class AddLocation extends Component {
       listPlaceholderValue = 'Recent Other';
     }
 
-    const dropdownOptionsInvestmentCommodity = buildDropdownOptions(locationsPage.add.dropdownOptions);
+    const dropdownOptionsInvestmentCommodity = buildDropdownOptions(
+      locationsPage.add.dropdownOptions
+    );
     const dialogContent =
-      typeof dialogMessage === 'string' ? [dialogMessage] : dialogMessage.map(this.generateMessages);
+      typeof dialogMessage === 'string'
+        ? [dialogMessage]
+        : dialogMessage.map(this.generateMessages);
     const investmentTemplateTypes = this.state.investmentTemplates.filter((t) => t.id == 6)[0];
     const hasGeometry = geometry && geometry.type;
 
@@ -1799,7 +1946,10 @@ export default class AddLocation extends Component {
                   this.setState({ customList: 'investment' });
                 }}
               />
-              <label htmlFor="location-type-selection_investment" className="locations-select-type-label">
+              <label
+                htmlFor="location-type-selection_investment"
+                className="locations-select-type-label"
+              >
                 {locationsPage.landing.investment}
               </label>
               <p className="locations-upload-step__option-description">
@@ -1827,7 +1977,10 @@ export default class AddLocation extends Component {
                     .map((t) => t.trim())
                     .map((commodityType) => {
                       return (
-                        <div key={`${commodityType}_investment-option`} className="commodity-option__container">
+                        <div
+                          key={`${commodityType}_investment-option`}
+                          className="commodity-option__container"
+                        >
                           <input
                             type="radio"
                             id={`investment-type-selection-${commodityType}`}
@@ -1835,11 +1988,16 @@ export default class AddLocation extends Component {
                             value={commodityType}
                             checked={this.state.chosenInvestment === commodityType}
                             onChange={() => {
-                              this.editInvestmentTemplates({ value: commodityType }, investmentTemplateTypes);
+                              this.editInvestmentTemplates(
+                                { value: commodityType },
+                                investmentTemplateTypes
+                              );
                               this.setState({ chosenInvestment: commodityType });
                             }}
                           />
-                          <label htmlFor={`investment-type-selection-${commodityType}`}>{commodityType}</label>
+                          <label htmlFor={`investment-type-selection-${commodityType}`}>
+                            {commodityType}
+                          </label>
                         </div>
                       );
                     })}
@@ -1886,7 +2044,10 @@ export default class AddLocation extends Component {
               <div className="locations-upload-step__suboptions-container">
                 {Object.values(locationsPage.upload.templateOptions).map((template) => {
                   return (
-                    <div key={`${template.id}_commodity-option`} className="commodity-option__container">
+                    <div
+                      key={`${template.id}_commodity-option`}
+                      className="commodity-option__container"
+                    >
                       <input
                         type="radio"
                         id={`commodity-type-selection-${template.id}`}
@@ -1902,7 +2063,9 @@ export default class AddLocation extends Component {
                           this.updateTemplateRadioSelection(template);
                         }}
                       />
-                      <label htmlFor={`commodity-type-selection-${template.id}`}>{template.label}</label>
+                      <label htmlFor={`commodity-type-selection-${template.id}`}>
+                        {template.label}
+                      </label>
                     </div>
                   );
                 })}
@@ -1916,7 +2079,9 @@ export default class AddLocation extends Component {
         <AddLocationCard>
           <h2 className="add-location-card__title">General Information</h2>
           <label htmlFor="location-name" className="block-label">
-            {addType === 'investment' ? locationsPage.add.investmentName : locationsPage.add.commodityName}
+            {addType === 'investment'
+              ? locationsPage.add.investmentName
+              : locationsPage.add.commodityName}
           </label>
           <input
             id="location-name"
@@ -2023,7 +2188,9 @@ export default class AddLocation extends Component {
         <AddLocationCard>
           <h2 className="add-location-card__title">
             {locationsPage.add.timeframe}
-            <span className="add-location-card__optional-indicator">{locationsPage.add.optional}</span>
+            <span className="add-location-card__optional-indicator">
+              {locationsPage.add.optional}
+            </span>
           </h2>
           <p className="add-location-card__prompt">{locationsPage.add.timeframeDesc}</p>
           <div className="add-location-card__radio-group">
@@ -2066,7 +2233,9 @@ export default class AddLocation extends Component {
           <AddLocationCard>
             <h2 className="add-location-card__title">
               {locationsPage.add.additionalMetadata}
-              <span className="add-location-card__optional-indicator">{locationsPage.add.optional}</span>
+              <span className="add-location-card__optional-indicator">
+                {locationsPage.add.optional}
+              </span>
             </h2>
             <DescribeLocation
               activeTemplate={activeTemplate}
@@ -2090,7 +2259,9 @@ export default class AddLocation extends Component {
           <AddLocationCard>
             <h2 className="add-location-card__title">
               {locationsPage.add.additionalMetadata}
-              <span className="add-location-card__optional-indicator">{locationsPage.add.optional}</span>
+              <span className="add-location-card__optional-indicator">
+                {locationsPage.add.optional}
+              </span>
             </h2>
             <DescribeInvestment
               addType={addType}
@@ -2118,8 +2289,14 @@ export default class AddLocation extends Component {
 
         <section className="add-single-location__footer">
           <div className="add-single-location__action-buttons">
-            <SaveAsDraftButtonWithDialog saveLocations={() => this.saveItem({ isSaveAsDraft: true })} />
-            <Button onClick={this.saveAndAddAnother} label={locationsPage.add.submit} variant="primary" />
+            <SaveAsDraftButtonWithDialog
+              saveLocations={() => this.saveItem({ isSaveAsDraft: true })}
+            />
+            <Button
+              onClick={this.saveAndAddAnother}
+              label={locationsPage.add.submit}
+              variant="primary"
+            />
           </div>
           <LinkButton onClick={this.cancelAdd} label={locationsPage.add.cancel} />
         </section>

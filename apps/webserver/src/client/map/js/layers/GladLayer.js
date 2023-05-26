@@ -1,4 +1,8 @@
-define(['esri/request', 'esri/layers/BaseTileLayer', 'moment'], function (esriRequest, BaseTileLayer, moment) {
+define(['esri/request', 'esri/layers/BaseTileLayer', 'moment'], function (
+  esriRequest,
+  BaseTileLayer,
+  moment
+) {
   // Modify the JS Date object
   Date.prototype.getJulian = function () {
     // Convert date into moment Object

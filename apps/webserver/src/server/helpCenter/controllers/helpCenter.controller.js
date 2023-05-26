@@ -1,5 +1,9 @@
 const path = require('path');
-const { AuthenticationDetails, CognitoUser, CognitoUserPool } = require('amazon-cognito-identity-js');
+const {
+  AuthenticationDetails,
+  CognitoUser,
+  CognitoUserPool,
+} = require('amazon-cognito-identity-js');
 const config = require('../../../config/env/common');
 const logger = require(path.resolve('./config/lib/winston'));
 

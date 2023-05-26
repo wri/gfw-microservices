@@ -27,8 +27,14 @@ export const parseKMZAndKMLFile = (file) => {
         });
         feature.geometry.coordinates = [filteredFeatures];
         if (feature.geometry.type === 'Point') {
-          geom = new Point({ latitude: feature.geometry.coordinates[1], longitude: feature.geometry.coordinates[0] });
-        } else if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+          geom = new Point({
+            latitude: feature.geometry.coordinates[1],
+            longitude: feature.geometry.coordinates[0],
+          });
+        } else if (
+          feature.geometry.type === 'Polygon' ||
+          feature.geometry.type === 'MultiPolygon'
+        ) {
           feature.geometry.coordinates[0].forEach((coord, j) => {
             feature.geometry.coordinates[0][j] = [coord[0], coord[1]];
           });

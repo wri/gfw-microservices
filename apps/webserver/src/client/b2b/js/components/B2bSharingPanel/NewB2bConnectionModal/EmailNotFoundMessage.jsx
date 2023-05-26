@@ -17,7 +17,11 @@ function EmailNotFoundMessage({ onCloseModal, resetForm }) {
         </button>
       </CardContent>
       <CardActions style={{ justifyContent: 'right' }}>
-        <button type="button" className="new-b2b-connection-modal__action-button" onClick={onCloseModal}>
+        <button
+          type="button"
+          className="new-b2b-connection-modal__action-button"
+          onClick={onCloseModal}
+        >
           {profilePage.profileManager.b2bSection.cancel}
         </button>
       </CardActions>

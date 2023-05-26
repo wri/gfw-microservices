@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import ModalWrapper from '../modals/ModalWrapper';
 import store from '../../store';
-import { toggleCanopyModal, updateFilters, setFilterCount, removeList } from '../../actions/locationActions';
+import {
+  toggleCanopyModal,
+  updateFilters,
+  setFilterCount,
+  removeList,
+} from '../../actions/locationActions';
 import { locationsPage } from '../../../../common/js/config';
 import Button from '../../../../common/js/components/Button';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
@@ -18,7 +23,11 @@ export default class GFWProtectedForestChangeFilter extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.filterCount !== 0 && nextProps.filterCount === 0 && nextProps.listView === 'forest_change') {
+    if (
+      this.props.filterCount !== 0 &&
+      nextProps.filterCount === 0 &&
+      nextProps.listView === 'forest_change'
+    ) {
       this.setState(this.initialState);
     }
   }
@@ -130,7 +139,9 @@ export default class GFWProtectedForestChangeFilter extends Component {
     } = this.state;
 
     const countryOptions = [
-      ...new Set(protectedAreas.filter((location) => location.Country !== '').map((list) => list.Country)),
+      ...new Set(
+        protectedAreas.filter((location) => location.Country !== '').map((list) => list.Country)
+      ),
     ].map(this.createOptions);
     const stateOptions = [
       ...new Set(
@@ -187,8 +198,12 @@ export default class GFWProtectedForestChangeFilter extends Component {
               location['Location Name'] &&
               location['Location Name'] !== '' &&
               location.Country === selectedCountry &&
-              (selectedState === null || selectedState === '' || location.State === selectedState) &&
-              (selectedSubState === null || selectedSubState === '' || location['Sub State'] === selectedSubState) &&
+              (selectedState === null ||
+                selectedState === '' ||
+                location.State === selectedState) &&
+              (selectedSubState === null ||
+                selectedSubState === '' ||
+                location['Sub State'] === selectedSubState) &&
               (selectedDesignationType === null ||
                 selectedDesignationType === '' ||
                 location.DesignationType === selectedDesignationType) &&
@@ -202,15 +217,27 @@ export default class GFWProtectedForestChangeFilter extends Component {
       return { label: v, value: v };
     });
 
-    const dropdownOptionsMethodsCountry = buildDropdownOptions(countryOptions, 'id', selectedCountry);
+    const dropdownOptionsMethodsCountry = buildDropdownOptions(
+      countryOptions,
+      'id',
+      selectedCountry
+    );
     const dropdownOptionsMethodsState = buildDropdownOptions(stateOptions, 'id', selectedState);
-    const dropdownOptionsMethodsSubstate = buildDropdownOptions(subStateOptions, 'id', selectedSubState);
+    const dropdownOptionsMethodsSubstate = buildDropdownOptions(
+      subStateOptions,
+      'id',
+      selectedSubState
+    );
     const dropdownOptionsMethodsDesignationType = buildDropdownOptions(
       designationTypeOptions,
       'id',
       selectedDesignationType
     );
-    const dropdownOptionsMethodsDesignation = buildDropdownOptions(designationOptions, 'id', selectedDesignation);
+    const dropdownOptionsMethodsDesignation = buildDropdownOptions(
+      designationOptions,
+      'id',
+      selectedDesignation
+    );
     return (
       <div>
         <ModalWrapper
@@ -275,9 +302,15 @@ export default class GFWProtectedForestChangeFilter extends Component {
           <div className="dialog__footer">
             <Button
               variant="primary"
-              disabled={selectedCountry !== '' || selectedState !== '' || selectedSubState !== '' ? false : true}
+              disabled={
+                selectedCountry !== '' || selectedState !== '' || selectedSubState !== ''
+                  ? false
+                  : true
+              }
               onClick={() => {
-                selectedCountry !== '' || selectedState !== '' || selectedSubState !== '' ? this.updateValues() : null;
+                selectedCountry !== '' || selectedState !== '' || selectedSubState !== ''
+                  ? this.updateValues()
+                  : null;
               }}
               label={locationsPage.lists.applyFilters}
             />

@@ -97,7 +97,8 @@ export default function CopyMoveModal(props) {
           <strong>
             {locationsCount} selected location{locationsCount !== 1 ? 's' : ''}
           </strong>{' '}
-          from {listName} and add to a different list. If all locations are removed, the list will be deleted.
+          from {listName} and add to a different list. If all locations are removed, the list will
+          be deleted.
         </p>
       )}
 
@@ -130,7 +131,9 @@ export default function CopyMoveModal(props) {
 
             {selectedNewOrExisting === 'existing' && (
               <div className="move-or-copy__suboption">
-                <span className="move-or-copy__hint">{locationsPage.lists.moveExistingDescription}</span>
+                <span className="move-or-copy__hint">
+                  {locationsPage.lists.moveExistingDescription}
+                </span>
                 <div className="move-to-list-select">
                   <GfwSelect
                     options={dropdownOptions}

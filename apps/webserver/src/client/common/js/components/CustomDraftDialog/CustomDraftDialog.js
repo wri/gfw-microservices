@@ -3,7 +3,13 @@ import Dialog from 'material-ui/Dialog';
 
 import Button from '../Button';
 
-export default function CustomDraftDialog({ open, closeAction, dialogTitle, dialogMessage, dialogActionConfirm }) {
+export default function CustomDraftDialog({
+  open,
+  closeAction,
+  dialogTitle,
+  dialogMessage,
+  dialogActionConfirm,
+}) {
   return (
     <Dialog
       paperClassName="ListDiagnosticStatusDraft__dialog dialog-paper"
@@ -11,7 +17,12 @@ export default function CustomDraftDialog({ open, closeAction, dialogTitle, dial
       title={dialogTitle}
       actions={[
         <div className="ListDiagnosticStatusDraft__dialog-actions">
-          <Button className="dialog__primary-action" variant="primary" label={'OK'} onClick={dialogActionConfirm} />
+          <Button
+            className="dialog__primary-action"
+            variant="primary"
+            label={'OK'}
+            onClick={dialogActionConfirm}
+          />
           <Button
             className="dialog__primary-cancel"
             variant="clear"

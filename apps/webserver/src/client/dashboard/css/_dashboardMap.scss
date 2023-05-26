@@ -7,11 +7,11 @@ $bubble-hover__print-width: 240px + 10px;
 @keyframes loader2 {
   from {
     -webkit-transform: rotate(0deg);
-    transform: rotate(0deg)
+    transform: rotate(0deg);
   }
   to {
     -webkit-transform: rotate(360deg);
-    transform: rotate(360deg)
+    transform: rotate(360deg);
   }
 }
 
@@ -131,7 +131,7 @@ $bubble-hover__print-width: 240px + 10px;
   background-color: $gfw-black;
   color: $gfw-white;
   padding: 10px;
-  opacity: .85;
+  opacity: 0.85;
   z-index: 1000;
   p {
     margin-top: 0;
@@ -142,7 +142,7 @@ $bubble-hover__print-width: 240px + 10px;
 }
 
 .pad-left {
-  padding-left: .75em;
+  padding-left: 0.75em;
 }
 
 @media print and (color) {
@@ -166,7 +166,8 @@ $bubble-hover__print-width: 240px + 10px;
   .profile-body {
     padding: 0;
   }
-  body, html {
+  body,
+  html {
     overflow-x: initial !important;
   }
   .app .app__header {
@@ -213,4 +214,3 @@ $bubble-hover__print-width: 240px + 10px;
     transform-origin: top left;
   }
 }
-

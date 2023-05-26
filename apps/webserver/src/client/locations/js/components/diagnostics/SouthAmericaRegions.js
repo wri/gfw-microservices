@@ -27,7 +27,9 @@ function getFormatedTooltip() {
   const { color: optionsColor, label, type } = this.options;
   const { color: seriesColor, name } = this.series;
   return `<tr>
-<td style="color:${optionsColor || seriesColor};padding:0">${type === 'PRODES' ? `${type} (${label})` : name}: </td>
+<td style="color:${optionsColor || seriesColor};padding:0">${
+    type === 'PRODES' ? `${type} (${label})` : name
+  }: </td>
 <td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(formatNum(this.y || 0))} ha</b></td>
 </tr>`;
 }
@@ -79,8 +81,12 @@ export default class SouthAmericaRegions extends Component {
     let shouldSet = false;
     const newState = {};
     const filteredLocations = this.props.getFilteredLocations();
-    const inLegalAmazon = filteredLocations.map((l) => JSON.parse(l.legal_amazon_presence)).some((l) => l === true);
-    const inCerradoBiome = filteredLocations.map((l) => JSON.parse(l.cerrado_biome_presence)).some((l) => l === true);
+    const inLegalAmazon = filteredLocations
+      .map((l) => JSON.parse(l.legal_amazon_presence))
+      .some((l) => l === true);
+    const inCerradoBiome = filteredLocations
+      .map((l) => JSON.parse(l.cerrado_biome_presence))
+      .some((l) => l === true);
     const inBrazilianBiomes = filteredLocations
       .map((l) => JSON.parse(l.brazil_biomes_presence))
       .some((l) => l === true);
@@ -150,8 +156,12 @@ export default class SouthAmericaRegions extends Component {
       let shouldSet = false;
       const newState = {};
       const filteredLocations = this.props.getFilteredLocations();
-      const inLegalAmazon = filteredLocations.map((l) => JSON.parse(l.legal_amazon_presence)).some((l) => l === true);
-      const inCerradoBiome = filteredLocations.map((l) => JSON.parse(l.cerrado_biome_presence)).some((l) => l === true);
+      const inLegalAmazon = filteredLocations
+        .map((l) => JSON.parse(l.legal_amazon_presence))
+        .some((l) => l === true);
+      const inCerradoBiome = filteredLocations
+        .map((l) => JSON.parse(l.cerrado_biome_presence))
+        .some((l) => l === true);
       const inBrazilianBiomes = filteredLocations
         .map((l) => JSON.parse(l.brazil_biomes_presence))
         .some((l) => l === true);
@@ -287,9 +297,13 @@ export default class SouthAmericaRegions extends Component {
     const { from_value, to_value } = data;
     YEARS_RANGE.forEach((year) => {
       if (year > to_value || year < from_value) {
-        $(`.south-america-slider__container .irs-grid-text:contains("${year}")`).addClass('irs-inactive-year');
+        $(`.south-america-slider__container .irs-grid-text:contains("${year}")`).addClass(
+          'irs-inactive-year'
+        );
       } else {
-        $(`.south-america-slider__container .irs-grid-text:contains("${year}")`).removeClass('irs-inactive-year');
+        $(`.south-america-slider__container .irs-grid-text:contains("${year}")`).removeClass(
+          'irs-inactive-year'
+        );
       }
     });
   };
@@ -302,7 +316,13 @@ export default class SouthAmericaRegions extends Component {
         endYear: data.to_value,
         sliderActive: false,
       });
-      ga('send', 'event', 'Diagnostics Click', 'timeslider update', 'user updated the south america timeslider');
+      ga(
+        'send',
+        'event',
+        'Diagnostics Click',
+        'timeslider update',
+        'user updated the south america timeslider'
+      );
     }
   };
 
@@ -320,7 +340,9 @@ export default class SouthAmericaRegions extends Component {
     const filteredLocations = getFilteredLocations();
 
     if (biomesChecked) {
-      const brazilBiomeLocations = filteredLocations.map((location) => JSON.parse(location.brazil_biomes));
+      const brazilBiomeLocations = filteredLocations.map((location) =>
+        JSON.parse(location.brazil_biomes)
+      );
       const result = {};
       brazilBiomeLocations.forEach((location) => {
         Object.entries(location).forEach((pair) => {
@@ -343,7 +365,9 @@ export default class SouthAmericaRegions extends Component {
 
       let overlapCategoryNames;
       if (brazilBiomeLocations.length > 0) {
-        overlapCategoryNames = Object.entries(brazilBiomeLocations[0]).map((category) => category[0]);
+        overlapCategoryNames = Object.entries(brazilBiomeLocations[0]).map(
+          (category) => category[0]
+        );
       }
 
       this.renderChart(this.refs.soyChart, overlapCategoryNames);
@@ -380,7 +404,9 @@ export default class SouthAmericaRegions extends Component {
             return (
               '<tr>' +
               `<td style="color:${this.color};padding:0">${this.name}:</td>` +
-              `<td style="padding:0"><b style="padding-left:0.25rem">${formatPct(this.y)}%</b></td>` +
+              `<td style="padding:0"><b style="padding-left:0.25rem">${formatPct(
+                this.y
+              )}%</b></td>` +
               '</tr>'
             );
           },
@@ -419,7 +445,12 @@ export default class SouthAmericaRegions extends Component {
   };
 
   renderChart = (el, overlapCategoryNames) => {
-    const { getYearlyData, getYearlyHighchartSeries, getCategoricalHighchartSeries, getFilteredLocations } = this.props;
+    const {
+      getYearlyData,
+      getYearlyHighchartSeries,
+      getCategoricalHighchartSeries,
+      getFilteredLocations,
+    } = this.props;
     const {
       startYear,
       endYear,
@@ -442,7 +473,9 @@ export default class SouthAmericaRegions extends Component {
     if (soyChecked) {
       series.push({
         name: 'Soy on Tree Cover Loss',
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_soy_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_soy_yearly', startYear, endYear)
+        ),
         color: '#ef669a',
         stack: 'soy',
         groupPadding: 0,
@@ -470,14 +503,18 @@ export default class SouthAmericaRegions extends Component {
     if (prodesChecked) {
       const highchartProdesData = {
         name: locationsPage.diagnosticsTitles.PRODES_AMAZON,
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear)
+        ),
         color: '#ef669a',
         groupPadding: 0,
         stack: 'prodes',
         showInLegend: false,
       };
       highchartProdesData.data.map((bar) => {
-        const [filteredConfig] = PRODES_HIGHCHARTS_BAR_CONFIGS.filter((barconfig) => barconfig.years.includes(bar.x));
+        const [filteredConfig] = PRODES_HIGHCHARTS_BAR_CONFIGS.filter((barconfig) =>
+          barconfig.years.includes(bar.x)
+        );
         bar.color = filteredConfig.color;
         bar.label = filteredConfig.label;
         bar.type = filteredConfig.type;
@@ -489,7 +526,9 @@ export default class SouthAmericaRegions extends Component {
     if (paChecked) {
       series.push({
         name: 'Protected Areas',
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_prodes_wdpa_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_prodes_wdpa_yearly', startYear, endYear)
+        ),
         color: PROTECTED_AREAS_COLOR,
         groupPadding: 0,
         stack: 'pa',
@@ -513,7 +552,9 @@ export default class SouthAmericaRegions extends Component {
     if (saTCLChecked) {
       series.push({
         name: 'Tree Cover Loss',
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_total_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_total_yearly', startYear, endYear)
+        ),
         color: '#ef669a',
         groupPadding: 0,
         stack: 'tcl',
@@ -534,7 +575,11 @@ export default class SouthAmericaRegions extends Component {
     }
 
     if (biomesChecked) {
-      const brazilSeries = getCategoricalHighchartSeries('tree_cover_loss_brazil_biomes_yearly', startYear, endYear);
+      const brazilSeries = getCategoricalHighchartSeries(
+        'tree_cover_loss_brazil_biomes_yearly',
+        startYear,
+        endYear
+      );
       series.push(...brazilSeries);
     }
 
@@ -545,7 +590,9 @@ export default class SouthAmericaRegions extends Component {
       if (paChecked) {
         filteredSeries.push({
           name: 'Protected Areas',
-          data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_prodes_wdpa_yearly', startYear, endYear)),
+          data: getYearlyHighchartSeries(
+            getYearlyData('tree_cover_loss_prodes_wdpa_yearly', startYear, endYear)
+          ),
           color: PROTECTED_AREAS_COLOR,
           groupPadding: 0,
           stack: 'pa',
@@ -568,7 +615,9 @@ export default class SouthAmericaRegions extends Component {
       if (saTCLChecked) {
         filteredSeries.push({
           name: 'Tree Cover Loss',
-          data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_total_yearly', startYear, endYear)),
+          data: getYearlyHighchartSeries(
+            getYearlyData('tree_cover_loss_total_yearly', startYear, endYear)
+          ),
           color: '#ef669a',
           groupPadding: 0,
           stack: 'tcl',
@@ -905,13 +954,17 @@ export default class SouthAmericaRegions extends Component {
                     type="checkbox"
                     checked={otbnArgentinaShowCategoryIChecked}
                     onChange={() =>
-                      this.setState({ otbnArgentinaShowCategoryIChecked: !otbnArgentinaShowCategoryIChecked })
+                      this.setState({
+                        otbnArgentinaShowCategoryIChecked: !otbnArgentinaShowCategoryIChecked,
+                      })
                     }
                     disabled={!otbnArgentinaChecked}
                   />
                   <label
                     htmlFor="otbnArgentinaCategoryI-checkbox"
-                    className={`legend-square-label ${!otbnArgentinaChecked ? 'peat-disabled' : ''}`}
+                    className={`legend-square-label ${
+                      !otbnArgentinaChecked ? 'peat-disabled' : ''
+                    }`}
                     style={{ background: 'none' }}
                   >
                     <span
@@ -924,7 +977,9 @@ export default class SouthAmericaRegions extends Component {
                     Category I
                   </label>
                 </td>
-                <td className="right">{prettifyNum(formatNum(value?.totalLossByCategory['Category I'])) || ''}</td>
+                <td className="right">
+                  {prettifyNum(formatNum(value?.totalLossByCategory['Category I'])) || ''}
+                </td>
               </tr>
               <tr className="locations-diagnostics-table__row child">
                 <td className="locations-diagnostics-table__column indent legend-square-label">
@@ -933,13 +988,17 @@ export default class SouthAmericaRegions extends Component {
                     type="checkbox"
                     checked={otbnArgentinaShowCategoryIIChecked}
                     onChange={() =>
-                      this.setState({ otbnArgentinaShowCategoryIIChecked: !otbnArgentinaShowCategoryIIChecked })
+                      this.setState({
+                        otbnArgentinaShowCategoryIIChecked: !otbnArgentinaShowCategoryIIChecked,
+                      })
                     }
                     disabled={!otbnArgentinaChecked}
                   />
                   <label
                     htmlFor="otbnArgentinaShowCategoryII-checkbox"
-                    className={`legend-square-label ${!otbnArgentinaChecked ? 'peat-disabled' : ''}`}
+                    className={`legend-square-label ${
+                      !otbnArgentinaChecked ? 'peat-disabled' : ''
+                    }`}
                     style={{ background: 'none' }}
                   >
                     <span
@@ -952,7 +1011,9 @@ export default class SouthAmericaRegions extends Component {
                     Category II
                   </label>
                 </td>
-                <td className="right">{prettifyNum(formatNum(value?.totalLossByCategory['Category II'])) || ''}</td>
+                <td className="right">
+                  {prettifyNum(formatNum(value?.totalLossByCategory['Category II'])) || ''}
+                </td>
               </tr>
               <tr className="locations-diagnostics-table__row child">
                 <td className="locations-diagnostics-table__column indent legend-square-label">
@@ -961,13 +1022,17 @@ export default class SouthAmericaRegions extends Component {
                     type="checkbox"
                     checked={otbnArgentinaShowCategoryIIIChecked}
                     onChange={() =>
-                      this.setState({ otbnArgentinaShowCategoryIIIChecked: !otbnArgentinaShowCategoryIIIChecked })
+                      this.setState({
+                        otbnArgentinaShowCategoryIIIChecked: !otbnArgentinaShowCategoryIIIChecked,
+                      })
                     }
                     disabled={!otbnArgentinaChecked}
                   />
                   <label
                     htmlFor="otbnArgentinaShowCategoryIII-checkbox"
-                    className={`legend-square-label ${!otbnArgentinaChecked ? 'peat-disabled' : ''}`}
+                    className={`legend-square-label ${
+                      !otbnArgentinaChecked ? 'peat-disabled' : ''
+                    }`}
                     style={{ background: 'none' }}
                   >
                     <span
@@ -980,12 +1045,16 @@ export default class SouthAmericaRegions extends Component {
                     Category III
                   </label>
                 </td>
-                <td className="right">{prettifyNum(formatNum(value?.totalLossByCategory['Category III'])) || ''}</td>
+                <td className="right">
+                  {prettifyNum(formatNum(value?.totalLossByCategory['Category III'])) || ''}
+                </td>
               </tr>
             </>
           )}
           {prodesChecked && label === 'PRODES' && (
-            <ProdesLegend data={this.props.getYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear)} />
+            <ProdesLegend
+              data={this.props.getYearlyData('tree_cover_loss_prodes_yearly', startYear, endYear)}
+            />
           )}
         </React.Fragment>
       );
@@ -999,7 +1068,9 @@ export default class SouthAmericaRegions extends Component {
 
     if (biomesChecked) {
       const filteredLocations = this.props.getFilteredLocations();
-      const brazilBiomeLocations = filteredLocations.map((obj) => JSON.parse(obj.tree_cover_loss_brazil_biomes_yearly));
+      const brazilBiomeLocations = filteredLocations.map((obj) =>
+        JSON.parse(obj.tree_cover_loss_brazil_biomes_yearly)
+      );
 
       brazilBiomeLocations.forEach((location) => {
         Object.entries(location).forEach((biome) => {
@@ -1055,7 +1126,9 @@ export default class SouthAmericaRegions extends Component {
     if (biomesChecked) {
       const filteredLocations = getFilteredLocations();
 
-      const brazilBiomeLocations = filteredLocations.map((location) => JSON.parse(location.brazil_biomes));
+      const brazilBiomeLocations = filteredLocations.map((location) =>
+        JSON.parse(location.brazil_biomes)
+      );
 
       const result = {};
       brazilBiomeLocations.forEach((location) => {
@@ -1158,20 +1231,31 @@ export default class SouthAmericaRegions extends Component {
     const { biomesChecked } = this.state;
     const filteredLocations = getFilteredLocations();
     if (biomesChecked) {
-      return filteredLocations.map((l) => JSON.parse(l.brazil_biomes)).some((l) => Object.keys(l).length > 0);
+      return filteredLocations
+        .map((l) => JSON.parse(l.brazil_biomes))
+        .some((l) => Object.keys(l).length > 0);
     }
     return false;
   };
 
   isArgentinaOtnbArea = () => {
     const { getFilteredLocations } = this.props;
-    return Object.entries(JSON.parse(getFilteredLocations()[0]?.arg_otbn_area || '{}')).length !== 0;
+    return (
+      Object.entries(JSON.parse(getFilteredLocations()[0]?.arg_otbn_area || '{}')).length !== 0
+    );
   };
 
   render() {
     const { getFilteredLocations } = this.props;
-    const { prodesChecked, paChecked, pfChecked, saTCLChecked, otbnArgentinaChecked, biomesChecked, sliderActive } =
-      this.state;
+    const {
+      prodesChecked,
+      paChecked,
+      pfChecked,
+      saTCLChecked,
+      otbnArgentinaChecked,
+      biomesChecked,
+      sliderActive,
+    } = this.state;
 
     const totals = this.processTotals();
     const totalsTable = this.renderSouthAmericaTable(totals);
@@ -1180,7 +1264,12 @@ export default class SouthAmericaRegions extends Component {
 
     const regionObject = this.getRegionCountLabel();
 
-    const { TREE_COVER_LOSS, PRODES_AMAZON, TREE_COVER_LOSS_ON_ARGENTINA_OTBN, SOY_ON_TREE_COVER_LOSS } = locationsPage.diagnosticsTitles;
+    const {
+      TREE_COVER_LOSS,
+      PRODES_AMAZON,
+      TREE_COVER_LOSS_ON_ARGENTINA_OTBN,
+      SOY_ON_TREE_COVER_LOSS,
+    } = locationsPage.diagnosticsTitles;
     let title;
 
     if (saTCLChecked || biomesChecked) {
@@ -1199,9 +1288,9 @@ export default class SouthAmericaRegions extends Component {
     let informationBubbleId;
     if (prodesChecked || paChecked || pfChecked) {
       informationBubbleId = locationsPage.infoBubbleConfig.regionsProdesAnnual;
-    } else if(saTCLChecked || biomesChecked) {
+    } else if (saTCLChecked || biomesChecked) {
       informationBubbleId = locationsPage.infoBubbleConfig.regionsSaAnnual;
-    } else if(otbnArgentinaChecked) {
+    } else if (otbnArgentinaChecked) {
       informationBubbleId = locationsPage.infoBubbleConfig.treeCoverLossArgOtbnYearly;
     } else {
       informationBubbleId = locationsPage.infoBubbleConfig.regionsSoyAnnual;
@@ -1230,10 +1319,14 @@ export default class SouthAmericaRegions extends Component {
                   </svg>
                 </span>
               </div>
-              <div className="locations-diagnostics-chart__locations-text">{regionObject.label}</div>
+              <div className="locations-diagnostics-chart__locations-text">
+                {regionObject.label}
+              </div>
             </div>
 
-            <p className="locations-instructional__text">Select one main category and/or sub-category.</p>
+            <p className="locations-instructional__text">
+              Select one main category and/or sub-category.
+            </p>
             <div className="chart-container">
               <div ref="soyChart" />
             </div>
@@ -1256,7 +1349,9 @@ export default class SouthAmericaRegions extends Component {
         </div>
 
         <div
-          className={`print-no-break locations-diagnostics__subsection ${displayBrazilBiomeSection ? '' : 'hidden'}`}
+          className={`print-no-break locations-diagnostics__subsection ${
+            displayBrazilBiomeSection ? '' : 'hidden'
+          }`}
         >
           <div className="subsection-chart">
             <div className="locations-diagnostics__flex-center subsection-subtitle__container">
@@ -1287,10 +1382,16 @@ export default class SouthAmericaRegions extends Component {
             </table>
           </div>
         </div>
-        {argentinaOtnbArea && otbnArgentinaChecked && <OtbnAreaChart data={getFilteredLocations()[0]} />}
+        {argentinaOtnbArea && otbnArgentinaChecked && (
+          <OtbnAreaChart data={getFilteredLocations()[0]} />
+        )}
 
         <div className="locations-diagnostics-subsection">
-          <div className={`south-america-slider__container slider__container ${sliderActive ? 'slider-active' : ''}`}>
+          <div
+            className={`south-america-slider__container slider__container ${
+              sliderActive ? 'slider-active' : ''
+            }`}
+          >
             <input id="south-american-slider" />
           </div>
         </div>

@@ -2,7 +2,7 @@ import React from 'react';
 
 import './PopupTooltipError.scss';
 
-export const PopupTooltipError = props => {
+export const PopupTooltipError = (props) => {
   const { errorMessage, showErrorMessage } = props;
 
   return (

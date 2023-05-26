@@ -6,7 +6,8 @@ import { toggleGladConfirmed } from '../../actions/analysisActions';
 
 function GladLayerLegend({ disabled, layer, gladConfirmed }) {
   const recentAlertsColor =
-    layer?.legendConfig?.items[0]?.categories?.find((symbol) => symbol.name === 'Recent alerts')?.color || '#e4c600';
+    layer?.legendConfig?.items[0]?.categories?.find((symbol) => symbol.name === 'Recent alerts')
+      ?.color || '#e4c600';
 
   const toggleHighConfidenceAlertsGladLayer = (event, eventType) => {
     if (!disabled) {

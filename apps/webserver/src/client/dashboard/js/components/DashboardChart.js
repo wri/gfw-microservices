@@ -23,7 +23,10 @@ export default class DashboardChart extends Component {
 
   componentDidUpdate(prevProps) {
     // We only update the chart if certain options are changed.
-    const newTimeframeSelected = !isEqual(prevProps.selectedTimeframe, this.props.selectedTimeframe);
+    const newTimeframeSelected = !isEqual(
+      prevProps.selectedTimeframe,
+      this.props.selectedTimeframe
+    );
     const newAlertTypeSelected = !isEqual(prevProps.selectedAlert, this.props.selectedAlert);
     const newData = !isEqual(prevProps.filteredLocationGeoJSON, this.props.filteredLocationGeoJSON);
     if (newTimeframeSelected || newAlertTypeSelected || newData) {
@@ -163,7 +166,9 @@ export default class DashboardChart extends Component {
             .map((l) => l.properties.glad_alerts_monthly)
             .flat()
             .filter((f) => {
-              return selectedTimeframe === 'QUARTER' ? isInMonthsOfQuarter(idx, f.day) : isInMonthsOfYear(idx, f.day);
+              return selectedTimeframe === 'QUARTER'
+                ? isInMonthsOfQuarter(idx, f.day)
+                : isInMonthsOfYear(idx, f.day);
             });
           total = alertsWithinTime.reduce((acc, curr) => acc + curr.count, 0);
         }

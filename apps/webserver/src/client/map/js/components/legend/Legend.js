@@ -63,12 +63,16 @@ export default class Legend extends Component {
     const { clarkLabsAquacultureLandChange } = proLayers;
     const { showPanel } = this.state;
 
-    const forestChangeLayers = this.props.mapLayers.filter((layer) => layer.group === 'forest-change');
+    const forestChangeLayers = this.props.mapLayers.filter(
+      (layer) => layer.group === 'forest-change'
+    );
     const landCoverLayers = this.props.mapLayers.filter(
       (layer) => layer.group === 'land-cover' && layer.id !== clarkLabsAquacultureLandChange
     );
     const landUseLayers = this.props.mapLayers.filter((layer) => layer.group === 'land-use');
-    const conservationLayers = this.props.mapLayers.filter((layer) => layer.group === 'conservation');
+    const conservationLayers = this.props.mapLayers.filter(
+      (layer) => layer.group === 'conservation'
+    );
     const peopleLayers = this.props.mapLayers.filter((layer) => layer.group === 'people');
     const regionLayers = this.props.mapLayers.filter((layer) => layer.group === 'region');
 
@@ -87,7 +91,11 @@ export default class Legend extends Component {
       visibleRegion;
 
     return (
-      <div className={`map__legend ${!visibleGlobalData || this.props.panelsVisible === false ? 'hidden' : ''}`}>
+      <div
+        className={`map__legend ${
+          !visibleGlobalData || this.props.panelsVisible === false ? 'hidden' : ''
+        }`}
+      >
         <ul className="map__legend__list">
           <li className="map__layer-list__item">
             <RegionLegend
@@ -99,7 +107,9 @@ export default class Legend extends Component {
               toggleLayerVisibility={this.props.toggleLayerVisibility}
             />
             <div
-              className={`legend-checkbox-global legend-show-panel ${visibleGlobalData ? '' : 'hidden'}`}
+              className={`legend-checkbox-global legend-show-panel ${
+                visibleGlobalData ? '' : 'hidden'
+              }`}
               onClick={this.togglePanel}
             >
               global data

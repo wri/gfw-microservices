@@ -1,7 +1,6 @@
-
 // Must be between 10 and 128 Characters
 const isPasswordLengthValid = (password) => {
-  return (password.length >= 10 && password.length <= 128) ? true : false;
+  return password.length >= 10 && password.length <= 128 ? true : false;
 };
 
 // Has numeric character
@@ -33,11 +32,14 @@ const threeOfFour = (arry) => {
   if (arry.length === 4) {
     let validCounter = 0;
     for (let i = 0; i < arry.length; i++) {
-      if (arry[i]) { validCounter += 1; }
+      if (arry[i]) {
+        validCounter += 1;
+      }
     }
     return validCounter >= 3 ? true : false;
+  } else {
+    return false;
   }
-  else { return false; }
 };
 
 // Has consecutive characters
@@ -53,7 +55,12 @@ const isMatchingUsername = (username, password) => {
 
 export const isPasswordValid = (username, password) => {
   const length = isPasswordLengthValid(password);
-  const characterValidation = threeOfFour([hasNumeric(password), hasUppercase(password), hasLowercase(password), hasSpecialCharacter(password)]);
+  const characterValidation = threeOfFour([
+    hasNumeric(password),
+    hasUppercase(password),
+    hasLowercase(password),
+    hasSpecialCharacter(password),
+  ]);
   const consecutive = hasConsecutiveCharacters(password);
   const usernameMatch = isMatchingUsername(username, password);
 

@@ -23,14 +23,34 @@ const LightTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
-export default function FailedTooltip({ tooltipMessage, placement, label, onClickAction = undefined }) {
+export default function FailedTooltip({
+  tooltipMessage,
+  placement,
+  label,
+  onClickAction = undefined,
+}) {
   return (
-    <LightTooltip style={{ color: 'red' }} title={tooltipMessage} placement={placement} arrow onClick={() => {
-      if (onClickAction) {
-        onClickAction()
-      }
-    }}>
-      <span style={{ height: 14, color: 'red', display: 'flex', alignContent: 'center', alignItems: 'center', gap: 5 }}>
+    <LightTooltip
+      style={{ color: 'red' }}
+      title={tooltipMessage}
+      placement={placement}
+      arrow
+      onClick={() => {
+        if (onClickAction) {
+          onClickAction();
+        }
+      }}
+    >
+      <span
+        style={{
+          height: 14,
+          color: 'red',
+          display: 'flex',
+          alignContent: 'center',
+          alignItems: 'center',
+          gap: 5,
+        }}
+      >
         <IconBan />
         {label && label}
       </span>

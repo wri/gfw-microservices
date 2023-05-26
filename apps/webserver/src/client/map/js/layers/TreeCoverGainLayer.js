@@ -1,21 +1,13 @@
-define([
-  'esri/request',
-  'esri/layers/BaseTileLayer'
-], function(
-  esriRequest,
-  BaseTileLayer
-) {
-
+define(['esri/request', 'esri/layers/BaseTileLayer'], function (esriRequest, BaseTileLayer) {
   const TreeCoverGainLayer = BaseTileLayer.createSubclass({
-
-    getTileUrl: function(level, row, column) {
+    getTileUrl: function (level, row, column) {
       return this.urlTemplate
         .replace('{z}', level)
         .replace('{x}', column)
         .replace('{y}', row)
         .replace('{thresh}', this.threshold);
     },
-    fetchTile: function(level, row, column) {
+    fetchTile: function (level, row, column) {
       // call getTileUrl() method to construct the URL to tiles
       // for a given level, row and col provided by the LayerView
       const url = this.getTileUrl(level, row, column);
@@ -24,11 +16,11 @@ define([
       // cross-domain access to create WebGL textures for 3D.
       return esriRequest(url, {
         responseType: 'image',
-        allowImageDataAccess: true
+        allowImageDataAccess: true,
       }).then(
-        function(response) {
+        function (response) {
           // We use a promise because we can't return an empty canvas before the image data has loaded, been filtered, and properly colored
-          const promise = new Promise(resolve => {
+          const promise = new Promise((resolve) => {
             // when esri request resolves successfully
             // get the image from the response
             const image = response.data;
@@ -56,10 +48,10 @@ define([
             imageObject.src = image.src;
           });
           return promise;
-        }.bind(this));
+        }.bind(this)
+      );
     },
   });
 
   return TreeCoverGainLayer;
-
 });

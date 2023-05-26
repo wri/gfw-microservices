@@ -55,7 +55,8 @@ export default class SelectProtected extends Component {
   };
 
   queryProtected = () => {
-    const url = 'https://gis-gfw.wri.org/arcgis/rest/services/cached/wdpa_protected_areas/MapServer/0';
+    const url =
+      'https://gis-gfw.wri.org/arcgis/rest/services/cached/wdpa_protected_areas/MapServer/0';
     const loggingQT = new QueryTask(url);
 
     const query = new Query();
@@ -90,9 +91,17 @@ export default class SelectProtected extends Component {
 
   render() {
     return (
-      <div className={`locations-add-subpage ${this.props.addMethod === 'byProtected' ? '' : 'hidden'}`}>
+      <div
+        className={`locations-add-subpage ${
+          this.props.addMethod === 'byProtected' ? '' : 'hidden'
+        }`}
+      >
         <div className="locations-add-subpage__content">
-          <select onChange={this.selectProtected} className="locations-select" value={this.state.protected}>
+          <select
+            onChange={this.selectProtected}
+            className="locations-select"
+            value={this.state.protected}
+          >
             <option>Select Protected Area</option>
             {this.state.protectedOptions.map(this.createProtected)}
           </select>

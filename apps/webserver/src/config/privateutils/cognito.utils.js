@@ -296,7 +296,9 @@ const handleLoginFailure = async (req, email) => {
     console.log('Error: ', error);
     throw error;
   }
-  const userFailCount = userInfo.UserAttributes.find((userAttribute) => userAttribute.Name === 'custom:fail_count');
+  const userFailCount = userInfo.UserAttributes.find(
+    (userAttribute) => userAttribute.Name === 'custom:fail_count'
+  );
   let failureCount = userFailCount ? userFailCount.Value : 0;
   failureCount++;
   if (failureCount >= config.platformVars.maxUserLoginRetries) {
@@ -396,7 +398,10 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
         } else {
           handleLoginFailure(req, email);
           const userMessage = langResources.getResourceString('failedToAuthenticate');
-          const sysMessage = ['Error User Authentication: ' + err, 'Username: ' + authenticationData.Username];
+          const sysMessage = [
+            'Error User Authentication: ' + err,
+            'Username: ' + authenticationData.Username,
+          ];
           const errObj = errorUtils.createErrorMessage(
             req,
             errorUtils.errorCodes.failedToAuthenticate,
@@ -407,7 +412,8 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
         }
       },
       newPasswordRequired: () => {
-        authResult.authenticationStatus = config.platformVars.authenticationStatus.RequireNewPassword;
+        authResult.authenticationStatus =
+          config.platformVars.authenticationStatus.RequireNewPassword;
         resolve(authResult);
       },
     });
@@ -738,7 +744,9 @@ const resendConfirmationCode = (req, username) => {
       ClientId: config.AWSVars.cognito.clientId,
       Username: username,
     };
-    const resendPromise = cognitoidentityserviceprovider.resendConfirmationCode(parameters).promise();
+    const resendPromise = cognitoidentityserviceprovider
+      .resendConfirmationCode(parameters)
+      .promise();
     resendPromise
       .then((data) => {
         resolve(true);

@@ -55,8 +55,14 @@ const middleware = () => {
         logger.info('############################################################');
       }
 
-      config.compiledAssets.js = Object.assign(config.compiledAssets.js, generateAssetMap(stats, 1));
-      config.compiledAssets.css = Object.assign(config.compiledAssets.css, generateAssetMap(stats, 0));
+      config.compiledAssets.js = Object.assign(
+        config.compiledAssets.js,
+        generateAssetMap(stats, 1)
+      );
+      config.compiledAssets.css = Object.assign(
+        config.compiledAssets.css,
+        generateAssetMap(stats, 0)
+      );
       logger.info('############################################################');
       logger.info('config.compiledAssets', config.compiledAssets);
       logger.info('############################################################');

@@ -132,7 +132,12 @@ const _handlingCertification = (column, properties) => {
  * @param {String} list_name - List name
  * @returns {Object} - Filtered Geojson object based on included Columns
  */
-const getFilterListLocationsGeojson = (listGeojson, locationIDsArray, includedColumns, list_name) => {
+const getFilterListLocationsGeojson = (
+  listGeojson,
+  locationIDsArray,
+  includedColumns,
+  list_name
+) => {
   const featuresClone = _.cloneDeep(listGeojson);
 
   const gfw_list_names = ['Palm Oil Mills', 'Oil Palm Concessions'];
@@ -195,14 +200,18 @@ const generateZipShapefile = (
     );
     const cmd = `-i ${outputFileName}.geojson -o format=${outputFileFormat}`;
 
-    mapshaper.applyCommands(cmd, { [`${outputFileName}.geojson`]: filterListLocationsGeojson }, (err, output) => {
-      const keys = Object.keys(output);
-      keys.forEach((key) => {
-        archive.append(output[key], { name: key });
-      });
+    mapshaper.applyCommands(
+      cmd,
+      { [`${outputFileName}.geojson`]: filterListLocationsGeojson },
+      (err, output) => {
+        const keys = Object.keys(output);
+        keys.forEach((key) => {
+          archive.append(output[key], { name: key });
+        });
 
-      archive.finalize();
-    });
+        archive.finalize();
+      }
+    );
   } catch (e) {
     console.log('Error:', e.stack);
   }
@@ -274,9 +283,17 @@ const getLocationAttributesList = async (req, locations, isGfwList) => {
   } else {
     const userLists = await ListManager.getUserLists(req);
     const orgLists = await ListManager.getAllLists(req);
-    const sharedListsRecords = await ShareManager.getUserInternalShareLists(req, req.session.organization_user_id);
-    const userSharedLists = await ShareManager.findSharedListsInsideOrganization(sharedListsRecords, orgLists);
-    selectedList = [...userLists, ...userSharedLists].filter((list) => list.id === locations[0].list_id)[0];
+    const sharedListsRecords = await ShareManager.getUserInternalShareLists(
+      req,
+      req.session.organization_user_id
+    );
+    const userSharedLists = await ShareManager.findSharedListsInsideOrganization(
+      sharedListsRecords,
+      orgLists
+    );
+    selectedList = [...userLists, ...userSharedLists].filter(
+      (list) => list.id === locations[0].list_id
+    )[0];
   }
 
   const isListExcluded = findIfListIsExcluded(selectedList);

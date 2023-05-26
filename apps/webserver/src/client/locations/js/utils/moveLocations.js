@@ -206,7 +206,10 @@ const assembleGfwListGeojson = (featProps, geometries) => {
 const getGFWListLocationGeom = (list_id, location_ids) => {
   const deferred = new Deferred();
   httpRequest
-    .fetchForm('/locations/getGFWListLocationGeom', `list_id=${list_id}&location_ids=${location_ids}`)
+    .fetchForm(
+      '/locations/getGFWListLocationGeom',
+      `list_id=${list_id}&location_ids=${location_ids}`
+    )
     .then((response) => {
       const geometries = JSON.parse(response);
       deferred.resolve(geometries);
@@ -234,7 +237,9 @@ const addGfwStepTwoFields = (feature, columnsToAdd, sourceListName, addType) => 
       feature.ID = feature['Mill ID'] ? feature['Mill ID'].toString() : '';
       delete feature['Mill ID'];
       feature['Company ID'] = 'n/a';
-      feature['Alternative Mill Name'] = feature['Alternative Name'] ? feature['Alternative Name'].toString() : '';
+      feature['Alternative Mill Name'] = feature['Alternative Name']
+        ? feature['Alternative Name'].toString()
+        : '';
       delete feature['Alternative Name'];
     } else if (sourceListName === 'Administrative Areas') {
       feature['Location Classification'] = 'Administrative Area';
@@ -319,17 +324,17 @@ const saveGfwListLocations = (
   const customAttributeHeaders =
     selectedList.list_name === 'Palm Oil Mills'
       ? [
-        { field: 'Attribute1', custom: 'Alternative Mill Name' },
-        { field: 'Attribute2', custom: 'Group Name' },
-        { field: 'Attribute3', custom: 'Attribute3' },
-      ]
+          { field: 'Attribute1', custom: 'Alternative Mill Name' },
+          { field: 'Attribute2', custom: 'Group Name' },
+          { field: 'Attribute3', custom: 'Attribute3' },
+        ]
       : listName === 'Protected Areas'
-        ? [
+      ? [
           { field: 'Attribute1', custom: 'IUCN Category' },
           { field: 'Attribute2', custom: 'Designation Type' },
           { field: 'Attribute3', custom: 'Designation' },
         ]
-        : [
+      : [
           { field: 'Attribute1', custom: 'Attribute1' },
           { field: 'Attribute2', custom: 'Attribute2' },
           { field: 'Attribute3', custom: 'Attribute3' },
@@ -406,7 +411,10 @@ const saveGfwListLocations = (
     // Figure out which fields are missing from the data we have so we can add them later.
     const columnsToAdd = [];
     templateData.forEach((data) => {
-      if (data.template_name === template_name && uploadingData[0][data.template_datum_field_name] === undefined) {
+      if (
+        data.template_name === template_name &&
+        uploadingData[0][data.template_datum_field_name] === undefined
+      ) {
         columnsToAdd.push(data.template_datum_field_name);
       }
     });
@@ -457,7 +465,10 @@ const saveGfwListLocations = (
     // Figure out which fields are missing from the data we have so we can add them later.
     const columnsToAdd = [];
     templateData.forEach((data) => {
-      if (data.template_name === 'Investment' && uploadingData[0][data.template_datum_field_name] === undefined) {
+      if (
+        data.template_name === 'Investment' &&
+        uploadingData[0][data.template_datum_field_name] === undefined
+      ) {
         columnsToAdd.push(data.template_datum_field_name);
       }
     });
@@ -576,7 +587,9 @@ const saveGfwListLocations = (
             list_status_id: getListStatusId(isSaveAsDraft),
           };
 
-          const requestPath = isSaveAsDraft ? saveAsDraftListConfig.route : '/locations/addToNewList';
+          const requestPath = isSaveAsDraft
+            ? saveAsDraftListConfig.route
+            : '/locations/addToNewList';
           request.open('POST', requestPath, true);
         } else {
           if (moveToList && moveToList.list_locations_count + geojson.features.length > 1500) {
@@ -608,7 +621,13 @@ const saveGfwListLocations = (
       console.warn('err', err);
     });
 
-  ga('send', 'event', 'Add GFW Click', 'Next button clicked', 'User copied locations from a GFW list');
+  ga(
+    'send',
+    'event',
+    'Add GFW Click',
+    'Next button clicked',
+    'User copied locations from a GFW list'
+  );
   return deferred;
 };
 
@@ -664,7 +683,9 @@ const moveLocations = (
     }
 
     const customAttributeNames =
-      selectedList.custom_attribute_names.length > 0 ? selectedList.custom_attribute_names.split(',') : [];
+      selectedList.custom_attribute_names.length > 0
+        ? selectedList.custom_attribute_names.split(',')
+        : [];
     const genericFields = [];
     templateData.forEach((template) => {
       // Only specify custom attributes if the field name has been changed.
@@ -809,9 +830,14 @@ const moveLocations = (
       });
 
       const { associated_gfwlist } = moveToList ? moveToList : selectedList;
-      const gfw_list_id = associated_gfwlist === 'null' || !associated_gfwlist ? 0 : associated_gfwlist;
+      const gfw_list_id =
+        associated_gfwlist === 'null' || !associated_gfwlist ? 0 : associated_gfwlist;
       if (selectedNewOrExisting === 'new') {
-        request.open('POST', isSaveAsDraft ? saveAsDraftListConfig.route : '/locations/addToNewListEdit', true);
+        request.open(
+          'POST',
+          isSaveAsDraft ? saveAsDraftListConfig.route : '/locations/addToNewListEdit',
+          true
+        );
         const list_id = selectedList.id;
         const list_table_name = selectedList.list_table_name;
         const location_classification = selectedList.location_classification;

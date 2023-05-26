@@ -41,15 +41,17 @@ module.exports = (app, limiter) => {
    */
   app.get('/map/getPlanetTilesInfo', (req, res) => {
     const url = `https://api.planet.com/basemaps/v1/mosaics?api_key=${process.env.PLANET_TILES_API_KEY}`;
-    axios.get(url).then((results) => {
-      res.set('Cache-control', results.headers['cache-control']);
-      res.contentType(results.headers['content-type']);
-      res.send(results.data);
-    })
-    .catch((error) => {
-      console.log('getPlanetTilesInfo Error:', error);
-      res.send({message: '/map/getPlanetTilesInfo failed'});
-    });
+    axios
+      .get(url)
+      .then((results) => {
+        res.set('Cache-control', results.headers['cache-control']);
+        res.contentType(results.headers['content-type']);
+        res.send(results.data);
+      })
+      .catch((error) => {
+        console.log('getPlanetTilesInfo Error:', error);
+        res.send({ message: '/map/getPlanetTilesInfo failed' });
+      });
   });
 
   /**
@@ -60,15 +62,17 @@ module.exports = (app, limiter) => {
     const tile = req.params[0];
     const { proc = '' } = req.query;
     const url = `https://tiles.planet.com/${tile}?proc=${proc}&api_key=${process.env.PLANET_TILES_API_KEY}`;
-    axios.get(url, { responseType: 'arraybuffer' }).then((results) => {
-      res.set('Cache-control', results.headers['cache-control']);
-      res.contentType(results.headers['content-type']);
-      res.send(results.data);
-    })
-    .catch((error) => {
-      console.log('getPlanetTile Error:', error);
-      res.send({message: '/map/getPlanetTile failed'});
-    });
+    axios
+      .get(url, { responseType: 'arraybuffer' })
+      .then((results) => {
+        res.set('Cache-control', results.headers['cache-control']);
+        res.contentType(results.headers['content-type']);
+        res.send(results.data);
+      })
+      .catch((error) => {
+        console.log('getPlanetTile Error:', error);
+        res.send({ message: '/map/getPlanetTile failed' });
+      });
   });
 
   app.post('/map/getUserListLocationData-map', (req, res) => {

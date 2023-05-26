@@ -3,7 +3,13 @@ import { checkValid, getLastValue } from '../../utils/locationsTableUtils';
 import { updateFilteredData } from '../../actions/locationActions';
 
 // Filter a list based on filtered values
-const filterListData = (listData, filters, selectedLists, getAdministrativeAreasData, getProtectedAreasData) => {
+const filterListData = (
+  listData,
+  filters,
+  selectedLists,
+  getAdministrativeAreasData,
+  getProtectedAreasData
+) => {
   if (Object.keys(filters).length > 0 && selectedLists.list_name === 'Administrative Areas') {
     getAdministrativeAreasData({ filters, id: selectedLists.id });
   } else if (Object.keys(filters).length > 0 && selectedLists.list_name === 'Protected Areas') {
@@ -39,13 +45,17 @@ const filterListData = (listData, filters, selectedLists, getAdministrativeAreas
         }
         if (found && key === 'showTreeCoverExtent' && filters[key]) {
           found =
-            (location.tree_cover_extent_total / location['Analysis Area']) * 100 >= filters.treeCoverExtentMin &&
-            (location.tree_cover_extent_total / location['Analysis Area']) * 100 <= filters.treeCoverExtentMax;
+            (location.tree_cover_extent_total / location['Analysis Area']) * 100 >=
+              filters.treeCoverExtentMin &&
+            (location.tree_cover_extent_total / location['Analysis Area']) * 100 <=
+              filters.treeCoverExtentMax;
         }
         if (found && key === 'showTreeCoverLoss' && filters[key]) {
           found =
-            (location.tree_cover_loss_total_yearly / location['Analysis Area']) * 100 >= filters.treeCoverLossMin &&
-            (location.tree_cover_loss_total_yearly / location['Analysis Area']) * 100 <= filters.treeCoverLossMax;
+            (location.tree_cover_loss_total_yearly / location['Analysis Area']) * 100 >=
+              filters.treeCoverLossMin &&
+            (location.tree_cover_loss_total_yearly / location['Analysis Area']) * 100 <=
+              filters.treeCoverLossMax;
         }
         if (found && key === 'showTreeCoverLossProtectedAreas' && filters[key]) {
           found =

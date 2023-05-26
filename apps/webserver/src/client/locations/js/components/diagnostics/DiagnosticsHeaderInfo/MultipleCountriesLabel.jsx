@@ -11,8 +11,7 @@ function MultipleCountriesLabel({ listId }) {
     getListFilterValues(listId).then((filterValues) => {
       setCountries(Object.keys(filterValues));
     });
-  }, [listId])
-  
+  }, [listId]);
 
   const showAllCountriesToggle = () => {
     if (countries.length <= 3) {
@@ -30,7 +29,9 @@ function MultipleCountriesLabel({ listId }) {
 
   return (
     <button onClick={showAllCountriesToggle} type="button" className="diagnostics-countries-label">
-      <div className={`${showAllCountries ? 'diagnostics-countries-label--show-all' : ''}`}>{countriesNamesList}</div>
+      <div className={`${showAllCountries ? 'diagnostics-countries-label--show-all' : ''}`}>
+        {countriesNamesList}
+      </div>
     </button>
   );
 }

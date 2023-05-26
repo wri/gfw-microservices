@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
-import {
-  cloneRow,
-  formatPct,
-  validatePct,
-  parseListData,
-} from '../shared/functions';
+import { cloneRow, formatPct, validatePct, parseListData } from '../shared/functions';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
@@ -31,18 +26,11 @@ export class ForestLossService extends DashboardHandleDownload {
 
     EXCEL_TEMPLATES[table].forEach((key) => {
       key.composites.forEach((field) => {
-        const totalStatValue = parseListData(field.attribute, [
-          listLevelAnalysis,
-        ]);
+        const totalStatValue = parseListData(field.attribute, [listLevelAnalysis]);
         const dataRow = [list_name];
 
         let rowValue = 0;
-        if (
-          !Object.prototype.hasOwnProperty.call(
-            listLevelAnalysis ?? {},
-            field.attribute
-          )
-        ) {
+        if (!Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, field.attribute)) {
           return;
         }
         const yearlyData = JSON.parse(listLevelAnalysis[field.attribute]);
@@ -65,9 +53,7 @@ export class ForestLossService extends DashboardHandleDownload {
               currentBrazilianRow.push(rowValue[biomeYear]);
               currentBrazilianRow.push(biomeYear);
               currentBrazilianRow.push(totalBiomeValue.toFixed(2));
-              const percent = formatPct(
-                validatePct((rowValue[biomeYear] / totalBiomeValue) * 100)
-              );
+              const percent = formatPct(validatePct((rowValue[biomeYear] / totalBiomeValue) * 100));
               currentRow.push(percent);
               csvData.push(currentBrazilianRow);
             });
@@ -76,9 +62,7 @@ export class ForestLossService extends DashboardHandleDownload {
             currentRow.push(year);
             currentRow.push(totalStatValue);
 
-            const percent = formatPct(
-              validatePct((rowValue / totalStatValue) * 100)
-            );
+            const percent = formatPct(validatePct((rowValue / totalStatValue) * 100));
             currentRow.push(percent);
 
             if (totalStatValue > 0) {
@@ -109,9 +93,6 @@ export class ForestLossService extends DashboardHandleDownload {
 
   isForestLossFile(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    return (
-      listView === 'forest_change' &&
-      (type === 'forestLoss' || type === 'everything')
-    );
+    return listView === 'forest_change' && (type === 'forestLoss' || type === 'everything');
   }
 }

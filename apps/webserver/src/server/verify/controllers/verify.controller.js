@@ -16,7 +16,11 @@ exports.verify = (req, res) => {
   res.header('Pragma', 'no-cache');
 
   const { session } = req;
-  if (session.hasOwnProperty('verified_promanager') && session.ispromanager && session.verified_promanager) {
+  if (
+    session.hasOwnProperty('verified_promanager') &&
+    session.ispromanager &&
+    session.verified_promanager
+  ) {
     console.log('Is Verified Pro Manager');
     res.redirect('/pro-manager-list');
   } else if (session.hasOwnProperty('organization_database') && session.organization_database) {

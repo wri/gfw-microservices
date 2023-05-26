@@ -132,11 +132,23 @@ export default class DashboardMap extends Component {
     const { selectedAlert, data } = this.props;
 
     const propsDataAndPreviousPropsDataNotEqual = !isEqual(data, prevProps.data);
-    const propsDataAndPreviousPropsSelectedAlertNotEqual = !isEqual(selectedAlert, prevProps.selectedAlert);
+    const propsDataAndPreviousPropsSelectedAlertNotEqual = !isEqual(
+      selectedAlert,
+      prevProps.selectedAlert
+    );
     if (propsDataAndPreviousPropsDataNotEqual || propsDataAndPreviousPropsSelectedAlertNotEqual) {
       const { map, view, selectedTimeframe, locationFilters, zoomLevel, rawData } = this.props;
 
-      mapUtils.updateLayer(map, view, data, selectedAlert, selectedTimeframe, locationFilters, zoomLevel, rawData);
+      mapUtils.updateLayer(
+        map,
+        view,
+        data,
+        selectedAlert,
+        selectedTimeframe,
+        locationFilters,
+        zoomLevel,
+        rawData
+      );
     }
   }
 
@@ -164,7 +176,10 @@ export default class DashboardMap extends Component {
 
   handleMouseMove = (evt) => {
     const element = document.getElementById('bubblePopup');
-    element.setAttribute('style', `left:${evt.pageX + 10}px;top:${evt.pageY - element.clientHeight - 5}px`);
+    element.setAttribute(
+      'style',
+      `left:${evt.pageX + 10}px;top:${evt.pageY - element.clientHeight - 5}px`
+    );
   };
 
   checkInfoBubbleCache = (id) => {
@@ -254,14 +269,18 @@ export default class DashboardMap extends Component {
               <IconButton
                 style={{ padding: 0, width: 34 }}
                 className={`metadata-info-button ${
-                  popoverLoading === dashboardPage.infoBubbleConfig.locationsAlertMap ? 'metadata-icon-loading' : ''
+                  popoverLoading === dashboardPage.infoBubbleConfig.locationsAlertMap
+                    ? 'metadata-icon-loading'
+                    : ''
                 }`}
                 id={dashboardPage.infoBubbleConfig.locationsAlertMap}
                 onClick={this.togglePopover}
               >
                 <InfoIcon
                   color={`${
-                    this.props.popoverLoading === dashboardPage.infoBubbleConfig.locationsAlertMap ? '#262626' : 'gray'
+                    this.props.popoverLoading === dashboardPage.infoBubbleConfig.locationsAlertMap
+                      ? '#262626'
+                      : 'gray'
                   }`}
                 />
               </IconButton>
@@ -338,7 +357,9 @@ export default class DashboardMap extends Component {
                 >
                   <div
                     id="bubblePopup"
-                    className={`${showLegendTooltip ? '' : 'hidden'} flex-grid-column dashboard-map__bubble-hover`}
+                    className={`${
+                      showLegendTooltip ? '' : 'hidden'
+                    } flex-grid-column dashboard-map__bubble-hover`}
                   >
                     <p>Legend</p>
                     <span>{`Small: 0-25% of ${zoomLevelTotal} locations`}</span>
@@ -358,7 +379,13 @@ export default class DashboardMap extends Component {
                 <div>DENSITY OF ALERTS</div>
               </div>
               <div className="legend-content">
-                <SvgLinearGradients start={'#008000'} middle={'#FF0'} end={'#FFA500'} width={'230'} height={'15'} />
+                <SvgLinearGradients
+                  start={'#008000'}
+                  middle={'#FF0'}
+                  end={'#FFA500'}
+                  width={'230'}
+                  height={'15'}
+                />
                 <div className="flex-grid space-between">
                   <span>Low</span>
                   <span>High</span>

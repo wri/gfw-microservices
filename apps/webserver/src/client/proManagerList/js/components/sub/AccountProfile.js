@@ -11,11 +11,15 @@ import '../../../../profile/css/profile.scss';
 export default class AccountProfile extends Component {
   constructor(props) {
     super(props);
-    const classesArray = this.props.currentAccount.organization_classifications_ids.split(',').map((classification) => {
-      const classId = parseInt(classification, 10);
-      const data = this.props.classificationsData.find((c) => c.id === classId);
-      return data ? { label: data.classification_name, value: classId } : { label: '', value: classId };
-    });
+    const classesArray = this.props.currentAccount.organization_classifications_ids
+      .split(',')
+      .map((classification) => {
+        const classId = parseInt(classification, 10);
+        const data = this.props.classificationsData.find((c) => c.id === classId);
+        return data
+          ? { label: data.classification_name, value: classId }
+          : { label: '', value: classId };
+      });
     const usersArray = this.setAccountUsers();
     this.state = {
       organization_id: this.props.currentAccount.organization_id,
@@ -88,7 +92,9 @@ export default class AccountProfile extends Component {
     const xmlhttp = new XMLHttpRequest();
     const { organization_status_id } = this.state;
     const route =
-      organization_status_id === 1 ? '/pro-manager/activateProAccount' : '/pro-manager/activateProActiveAccount';
+      organization_status_id === 1
+        ? '/pro-manager/activateProAccount'
+        : '/pro-manager/activateProActiveAccount';
     xmlhttp.open('POST', route);
     this.setState({
       dialogOpen: true,
@@ -189,10 +195,16 @@ export default class AccountProfile extends Component {
       }
     });
 
-    if (this.state.organization_is_subsidiary && this.state.organization_parent.trim().length === 0) {
+    if (
+      this.state.organization_is_subsidiary &&
+      this.state.organization_parent.trim().length === 0
+    ) {
       errors.push('You must provide a parent organization if your organization is a subsidy.');
     }
-    if (!this.state.organization_is_subsidiary && this.state.organization_parent.trim().length !== 0) {
+    if (
+      !this.state.organization_is_subsidiary &&
+      this.state.organization_parent.trim().length !== 0
+    ) {
       errors.push('You must check the subsidiary box if a parent organization is supplied.');
     }
     fieldValidations.organization_address.validations.forEach((validation) => {
@@ -327,7 +339,8 @@ export default class AccountProfile extends Component {
 
   render() {
     const { dialogOpen, dialogTitle, dialogMessage } = this.state;
-    const dialogContent = typeof dialogMessage === 'string' ? dialogMessage : dialogMessage?.map(this.generateMessages);
+    const dialogContent =
+      typeof dialogMessage === 'string' ? dialogMessage : dialogMessage?.map(this.generateMessages);
     const action = this.shouldCloseDialog;
 
     // TODO: Add my my Users table at the bottom! Users belonging to this account, presumably
@@ -398,7 +411,9 @@ export default class AccountProfile extends Component {
               </div>
               <div className="flex-grid-column">
                 <div className="col flex-grid-column">
-                  <span className="profile-label label--block required-param">Account Classifications</span>
+                  <span className="profile-label label--block required-param">
+                    Account Classifications
+                  </span>
                   <Select
                     required
                     disabled={this.props.disable}
@@ -427,7 +442,10 @@ export default class AccountProfile extends Component {
                     onChange={this.updateSubsidary}
                     className="account-info-input"
                   />
-                  <label htmlFor="updateSubsidary" className="profile-label profile-checkbox__label">
+                  <label
+                    htmlFor="updateSubsidary"
+                    className="profile-label profile-checkbox__label"
+                  >
                     Is Subsidiary ?
                   </label>
                 </div>
@@ -515,7 +533,9 @@ export default class AccountProfile extends Component {
             value="Save"
           />
           <GfwButton
-            classNames={`btn-green ${this.state.organization_status_id === 2 ? 'button-disabled' : ''}`}
+            classNames={`btn-green ${
+              this.state.organization_status_id === 2 ? 'button-disabled' : ''
+            }`}
             disabled={this.state.organization_status_id === 2}
             onClick={this.activateAccount}
             value="Activate"

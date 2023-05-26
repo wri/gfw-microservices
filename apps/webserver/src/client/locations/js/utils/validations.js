@@ -247,7 +247,12 @@ const policyRankingCheck = (str) => {
 
 const timeHorizon = (str) => {
   let returnValue = true;
-  if (str && str.toLowerCase() !== '3 months' && str.toLowerCase() !== '6 months' && str.toLowerCase() !== '1 year') {
+  if (
+    str &&
+    str.toLowerCase() !== '3 months' &&
+    str.toLowerCase() !== '6 months' &&
+    str.toLowerCase() !== '1 year'
+  ) {
     returnValue = false;
   }
   return returnValue;
@@ -491,7 +496,8 @@ const locationClassCheck = (str) => {
     str = str.toLowerCase();
   }
   return (
-    mandatoryCheck(str) && (str === 'property' || str === 'supply shed' || str === 'administrative area' || str === '')
+    mandatoryCheck(str) &&
+    (str === 'property' || str === 'supply shed' || str === 'administrative area' || str === '')
   );
 };
 
@@ -500,7 +506,10 @@ const analysisCheck = (value) => {
 };
 
 const oilTypeCheck = (str) => {
-  if (str && (str === '' || str.toLowerCase() === 'palm oil' || str.toLowerCase() === 'palm kernel oil')) {
+  if (
+    str &&
+    (str === '' || str.toLowerCase() === 'palm oil' || str.toLowerCase() === 'palm kernel oil')
+  ) {
     return true;
   } else if (str === '' || str === ' ') {
     return true;
@@ -541,7 +550,10 @@ const rspoTypeCheck = (value, template) => {
 const riskLevelCheck = (str) => {
   if (
     str &&
-    (str === '' || str.toLowerCase() === 'high' || str.toLowerCase() === 'medium' || str.toLowerCase() === 'low')
+    (str === '' ||
+      str.toLowerCase() === 'high' ||
+      str.toLowerCase() === 'medium' ||
+      str.toLowerCase() === 'low')
   ) {
     return true;
   } else if (str === '' || str === ' ') {
@@ -837,7 +849,8 @@ export const fieldValidations = {
         'Please ensure that Certification is populated with one or more of the following: RSPO, ISPO, MSPO, SAN, ISCC, Other Standard or None. If more than one Certification is selected, please comma separate',
       soyFarm:
         'Please ensure that Certification is populated with one or more of the following: RTRS, ISCC, AAPRESID, Other Standard or None. If more than one Certification is selected, please comma separate',
-      soyGeneric: 'Please ensure that Certification is populated with one of the following: Yes or No',
+      soyGeneric:
+        'Please ensure that Certification is populated with one of the following: Yes or No',
       soySilo:
         'Please ensure that Certification is populated with one or more of the following: RTRS, ISCC, AAPRESID, Other Standard or None. If more than one Certification is selected, please comma separate',
     },

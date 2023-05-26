@@ -46,7 +46,10 @@ loadenv
     // Setup Express to listen on https port for everything but production.
     // NOTE: Production SSL is handled via the Load Balancer.
     // NOTE: test does not use SSL
-    if (!PRODUCTION_ENVIRONMENTS.includes(process.env.NODE_ENV) && process.env.NODE_ENV !== 'test') {
+    if (
+      !PRODUCTION_ENVIRONMENTS.includes(process.env.NODE_ENV) &&
+      process.env.NODE_ENV !== 'test'
+    ) {
       const sslOptions = {
         key: fs.readFileSync(`/srv/src/config/ssl/${process.env.NODE_ENV}/gfwpro.key`),
         cert: fs.readFileSync(`/srv/src/config/ssl/${process.env.NODE_ENV}/gfwpro.crt`),

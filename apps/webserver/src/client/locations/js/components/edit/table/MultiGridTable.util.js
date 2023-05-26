@@ -3,7 +3,8 @@ export const _getFeatures = (features, showValidated) => {
 };
 
 const _checkIfRowHaveError = (showValidated, feature) =>
-  (showValidated === 'valid' && feature.valid === false) || (showValidated === 'invalid' && feature.valid === true);
+  (showValidated === 'valid' && feature.valid === false) ||
+  (showValidated === 'invalid' && feature.valid === true);
 
 /**
  * Adding `location_id` property for each feature of List

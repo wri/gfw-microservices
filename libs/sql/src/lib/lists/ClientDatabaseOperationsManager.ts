@@ -341,7 +341,6 @@ export const BulkDeleteLocations = (
 export const DeleteList = (databaseName, listId, userId) => {
   return new Promise((resolve, reject) => {
     // Important variables
-    let list; // used to logger
     new UspGetListLockStatus()
       .run(databaseName, {
         list_id: listId,
@@ -363,7 +362,6 @@ export const DeleteList = (databaseName, listId, userId) => {
       })
       .then((record) => {
         // 2. Deleting list locations
-        list = record;
         new UspDeleteList().run(
           databaseName,
           record.list_name,

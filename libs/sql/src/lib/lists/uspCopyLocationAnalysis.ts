@@ -1,5 +1,5 @@
 import { SQLUtils } from '../util/sql.utils';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { CopyLocationRequest } from './model';

@@ -14,6 +14,11 @@ interface MaxId {
   max_id?: number;
 }
 
+interface ColumnType {
+  COLUMN_NAME: string;
+  DATA_TYPE: string;
+}
+
 @Injectable()
 export class ListBulkCopy {
   /** @function {uploadBulkLocations}
@@ -36,7 +41,12 @@ export class ListBulkCopy {
       ...SQL_CONFIG,
       database: databaseName,
     };
-    Logger.log(`Upload bulk locations with configuration: ${JSON.stringify(clientConnectionConfiguration)}`, 'ListBulkCopy');
+    Logger.log(
+      `Upload bulk locations with configuration: ${JSON.stringify(
+        clientConnectionConfiguration
+      )}`,
+      'ListBulkCopy'
+    );
 
     const connection = new SQLUtils(clientConnectionConfiguration);
     await connection.connect();
@@ -72,7 +82,7 @@ export class ListBulkCopy {
     const dataArray = [];
 
     // Push column name types into respective arrays
-    tableColumnsResult.forEach((column: any) => {
+    tableColumnsResult.forEach((column: ColumnType) => {
       if (
         column.COLUMN_NAME === 'location_id' ||
         column.COLUMN_NAME.includes('flag_')
@@ -187,13 +197,20 @@ export class ListBulkCopy {
       { field: 'start_location_id', type: sql.Int, value: max_id },
     ];
 
-    Logger.log(`Add Location to Analysis table with configuration: ${JSON.stringify(clientConnectionConfiguration)}`, 'ListBulkCopy');
+    Logger.log(
+      `Add Location to Analysis table with configuration: ${JSON.stringify(
+        clientConnectionConfiguration
+      )}`,
+      'ListBulkCopy'
+    );
 
     const recorsets = await connection.executeQueryArray<Promise<unknown[]>>(
       'uspAddNewLocationToAnalysisTable',
       sqlAddNewLocationToAnalysisTableParameters
     );
-    const resultGeoJson = createGeoJSON(Array.isArray(recorsets) ? recorsets : [recorsets]);
+    const resultGeoJson = createGeoJSON(
+      Array.isArray(recorsets) ? recorsets : [recorsets]
+    );
 
     return resultGeoJson;
   }

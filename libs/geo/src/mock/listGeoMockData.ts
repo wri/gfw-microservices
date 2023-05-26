@@ -38,42 +38,42 @@ export const keys = [
 ];
 
 export class GeoListObject {
-  'list_id': number = 0;
-  'Location Name': string = '';
-  'Latitude': number = 0;
-  'Longitude': number = 0;
-  'Analysis Radius': number = 0;
-  'Analysis Area': number = 0;
-  'Commodity': string = '';
-  'Location Classification': string = '';
-  'Company ID': number = 0;
-  'Volume': number = 0;
-  'Owner Name': string = '';
-  'Owner ID': string = '';
-  'Company Name': string = '';
-  'Supplier Name': string = '';
-  'Facility Name': string = '';
-  'Refinery Name': string = '';
-  'Certification': string = '';
-  'Start Date': string = '';
-  'End Date': string = '';
-  'Time Horizon': string = '';
-  'Accuracy Rating of Location Entered': string = '';
-  'Country': string = '';
-  'State': string = '';
-  'Sub State': string = '';
-  'Wind Barrier': string = '';
-  'Riparian Buffers': string = '';
-  'Buffer Zones': string = '';
-  'gadmid': string = '';
-  'location_id': number = 0;
-  'flag_general': string = '';
-  'flag_gran_chaco': string = '';
-  'flag_glad': string = '';
-  'flag_forma': string = '';
-  'flag_viirs': string = '';
-  'flag_terrai': string = '';
-  'WKTGeometry': string = '';
+  'list_id' = 0;
+  'Location Name' = '';
+  'Latitude' = 0;
+  'Longitude' = 0;
+  'Analysis Radius' = 0;
+  'Analysis Area' = 0;
+  'Commodity' = '';
+  'Location Classification' = '';
+  'Company ID' = 0;
+  'Volume' = 0;
+  'Owner Name' = '';
+  'Owner ID' = '';
+  'Company Name' = '';
+  'Supplier Name' = '';
+  'Facility Name' = '';
+  'Refinery Name' = '';
+  'Certification' = '';
+  'Start Date' = '';
+  'End Date' = '';
+  'Time Horizon' = '';
+  'Accuracy Rating of Location Entered' = '';
+  'Country' = '';
+  'State' = '';
+  'Sub State' = '';
+  'Wind Barrier' = '';
+  'Riparian Buffers' = '';
+  'Buffer Zones' = '';
+  'gadmid' = '';
+  'location_id' = 0;
+  'flag_general' = '';
+  'flag_gran_chaco' = '';
+  'flag_glad' = '';
+  'flag_forma' = '';
+  'flag_viirs' = '';
+  'flag_terrai' = '';
+  'WKTGeometry' = '';
 
   /*setValue = (property: string, value: string | number) => {
     //type typeOf = keyof this; //keyof this['Accuracy Rating of Location Entered'];
@@ -38199,8 +38199,7 @@ export const templateData = [
     id: 360,
     template_id: 13,
     template_datum_field_name: 'Location Name',
-    template_datum_field_description:
-      'Name of the location, name of the Mill, name of the farm',
+    template_datum_field_description: 'Name of the location, name of the Mill, name of the farm',
     template_datum_type_id: 7,
     template_datum_mandatory: true,
     template_datum_system: true,
@@ -38292,8 +38291,7 @@ export const templateData = [
     id: 367,
     template_id: 13,
     template_datum_field_name: 'Company ID',
-    template_datum_field_description:
-      'Unique ID assigned by your company to the point or polygon',
+    template_datum_field_description: 'Unique ID assigned by your company to the point or polygon',
     template_datum_type_id: 7,
     template_datum_mandatory: false,
     template_datum_system: true,
@@ -38320,8 +38318,7 @@ export const templateData = [
     id: 369,
     template_id: 13,
     template_datum_field_name: 'Owner Name',
-    template_datum_field_description:
-      'Name of the owner of the point or polygon',
+    template_datum_field_description: 'Name of the owner of the point or polygon',
     template_datum_type_id: 7,
     template_datum_mandatory: false,
     template_datum_system: true,
@@ -38334,8 +38331,7 @@ export const templateData = [
     id: 370,
     template_id: 13,
     template_datum_field_name: 'Owner ID',
-    template_datum_field_description:
-      'Unique ID of the owner of the point or polygon',
+    template_datum_field_description: 'Unique ID of the owner of the point or polygon',
     template_datum_type_id: 7,
     template_datum_mandatory: false,
     template_datum_system: true,
@@ -38348,8 +38344,7 @@ export const templateData = [
     id: 371,
     template_id: 13,
     template_datum_field_name: 'Company Name',
-    template_datum_field_description:
-      'Company name associated with the point or polygon',
+    template_datum_field_description: 'Company name associated with the point or polygon',
     template_datum_type_id: 7,
     template_datum_mandatory: false,
     template_datum_system: true,

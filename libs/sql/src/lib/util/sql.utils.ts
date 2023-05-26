@@ -1,11 +1,6 @@
 import * as sql from 'mssql';
 import { get } from '../connectionpool';
-
-type ParameterType = {
-  field: string;
-  type: sql.ISqlType | sql.ISqlTypeFactoryWithNoParams;
-  value?: unknown;
-};
+import { ParameterType } from './types';
 
 export class SQLUtils {
   config: sql.config;
@@ -70,10 +65,7 @@ export class SQLUtils {
     });
   }
 
-  executeQueryArray<T>(
-    query: string,
-    parameters?: ParameterType[]
-  ): Promise<Array<T>> {
+  executeQueryArray<T>(query: string, parameters?: ParameterType[]): Promise<Array<T>> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {

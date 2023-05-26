@@ -38,42 +38,42 @@ export const keys = [
 ];
 
 export class GeoListObject {
-  'list_id': number = 0;
-  'Location Name': string = '';
-  'Latitude': number = 0;
-  'Longitude': number = 0;
-  'Analysis Radius': number = 0;
-  'Analysis Area': number = 0;
-  'Commodity': string = '';
-  'Location Classification': string = '';
-  'Company ID': number = 0;
-  'Volume': number = 0;
-  'Owner Name': string = '';
-  'Owner ID': string = '';
-  'Company Name': string = '';
-  'Supplier Name': string = '';
-  'Facility Name': string = '';
-  'Refinery Name': string = '';
-  'Certification': string = '';
-  'Start Date': string = '';
-  'End Date': string = '';
-  'Time Horizon': string = '';
-  'Accuracy Rating of Location Entered': string = '';
-  'Country': string = '';
-  'State': string = '';
-  'Sub State': string = '';
-  'Wind Barrier': string = '';
-  'Riparian Buffers': string = '';
-  'Buffer Zones': string = '';
-  'gadmid': string = '';
-  'location_id': number = 0;
-  'flag_general': string = '';
-  'flag_gran_chaco': string = '';
-  'flag_glad': string = '';
-  'flag_forma': string = '';
-  'flag_viirs': string = '';
-  'flag_terrai': string = '';
-  'WKTGeometry': string = '';
+  'list_id' = 0;
+  'Location Name' = '';
+  'Latitude' = 0;
+  'Longitude' = 0;
+  'Analysis Radius' = 0;
+  'Analysis Area' = 0;
+  'Commodity' = '';
+  'Location Classification' = '';
+  'Company ID' = 0;
+  'Volume' = 0;
+  'Owner Name' = '';
+  'Owner ID' = '';
+  'Company Name' = '';
+  'Supplier Name' = '';
+  'Facility Name' = '';
+  'Refinery Name' = '';
+  'Certification' = '';
+  'Start Date' = '';
+  'End Date' = '';
+  'Time Horizon' = '';
+  'Accuracy Rating of Location Entered' = '';
+  'Country' = '';
+  'State' = '';
+  'Sub State' = '';
+  'Wind Barrier' = '';
+  'Riparian Buffers' = '';
+  'Buffer Zones' = '';
+  'gadmid' = '';
+  'location_id' = 0;
+  'flag_general' = '';
+  'flag_gran_chaco' = '';
+  'flag_glad' = '';
+  'flag_forma' = '';
+  'flag_viirs' = '';
+  'flag_terrai' = '';
+  'WKTGeometry' = '';
 
   /*setValue = (property: string, value: string | number) => {
     //type typeOf = keyof this; //keyof this['Accuracy Rating of Location Entered'];
@@ -87,13 +87,6 @@ export class GeoListObject {
     }
   };*/
 }
-
-type Arrayish = { [n: number]: unknown };
-type A = keyof Arrayish;
-
-type PointCopy1 = {
-  [key in keyof GeoListObject]: GeoListObject[key];
-};
 
 export const mockData = [
   [

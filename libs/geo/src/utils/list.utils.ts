@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import { selectedList } from './../mock/listGeoMockData';
 import {
   GetTableAnalysisColumnsById,
   PerformListBulkCopy,
@@ -269,6 +268,10 @@ export const ComposeAnalysisCopyQuery = (
   `;
 };
 
+interface RecordType {
+  COLUMN_NAME: string;
+}
+
 export const ComposeCopyQueryStatement = async (
   clientDatabase: string,
   selectedListId: number,
@@ -278,7 +281,8 @@ export const ComposeCopyQueryStatement = async (
     clientDatabase,
     selectedListId
   );
-  const columns = tableColumns.map((record: any) => record.COLUMN_NAME);
+
+  const columns = tableColumns.map((record: RecordType) => record.COLUMN_NAME);
   const statement = columns
     .map((column) => `[${column}] = [${srcListAnalysisTable}].[${column}]`)
     .join(',');

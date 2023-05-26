@@ -88,13 +88,6 @@ export class GeoListObject {
   };*/
 }
 
-type Arrayish = { [n: number]: unknown };
-type A = keyof Arrayish;
-
-type PointCopy1 = {
-  [key in keyof GeoListObject]: GeoListObject[key];
-};
-
 export const mockData = [
   [
     '5257',

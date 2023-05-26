@@ -39,7 +39,7 @@ export class SQLUtils {
     });
   }
 
-  query<T>(query: string, parameters?: ParametersType[]): Promise<T> {
+  query<T>(query: string, parameters?: ParameterType[]): Promise<T> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { columnHeaders } from '../../../../common/js/config';
+import { columnHeaders, locationsPage } from '../../../../common/js/config';
 import CustomTooltip from '../../../../common/js/components/CustomTooltip/CustomTooltip';
 import FailedTooltip from '../../../../common/js/components/CustomTooltip/FailedTooltip';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
@@ -23,8 +23,8 @@ const react_table__location_name = [
     Cell: (cellInfo) => {
       if (cellInfo.original.location_status_id === 4) {
         const tooltipMessage = cellInfo.original.draftNonOwner
-          ? 'This location has not been analyzed. The list owner will need to submit the list for analysis. Once submitted, this list will not be accessible until analysis is complete.'
-          : 'This location has not been analyzed. To view location details and diagnostics for this list, please click the submit button at the top of the screen.';
+          ? locationsPage.columns.notAnalyzedList.nonOwner
+          : locationsPage.columns.notAnalyzedList.owner;
         // draft location
         return (
           <span
@@ -70,7 +70,7 @@ const react_table__location_name = [
               <FailedTooltip
                 placement="top"
                 label=""
-                tooltipMessage="This location has failed analysis. To receive results, resubmit this list for analysis."
+                tooltipMessage={locationsPage.columns.tooltipMessage}
               />
             </span>
           </span>

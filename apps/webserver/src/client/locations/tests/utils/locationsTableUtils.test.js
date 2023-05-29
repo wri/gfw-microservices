@@ -56,8 +56,8 @@ describe('sortByNone', () => {
   const secondValue = 321;
 
   it('Should be 0 when both value are equal', () => {
-    expect(sortByNone(noneValue, noneValue)).toBe(0)
-    expect(sortByNone(firstValue, firstValue)).toBe(0)
+    expect(sortByNone(noneValue, noneValue)).toBe(sortOrderOption.sameValue)
+    expect(sortByNone(firstValue, firstValue)).toBe(sortOrderOption.sameValue)
   });
 
   it('Should be 1 when first value is none', () => {

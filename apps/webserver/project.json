@@ -10,12 +10,9 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/webserver"],
+      "executor": "nx:run-commands",
       "options": {
-        "jestConfig": "apps/webserver/src/jest.config.json",
-        "passWithNoTests": true,
-        "prefix": "apps/webserver/src"
+        "command": "npm --prefix ./apps/webserver/src run test"
       }
     }
   },

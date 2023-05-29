@@ -13,6 +13,12 @@ export const getColorByLevelClasse = {
   2: 'red',
 }
 
+export const sortOrderOption = {
+  sameValue: 0,
+  invert: -1,
+  keep: 1,
+}
+
 export const sortAlphaNum = (a, b) => {
   const reA = /[^a-zA-Z]/g;
   const reN = /[^0-9]/g;
@@ -21,9 +27,9 @@ export const sortAlphaNum = (a, b) => {
   if (aA === bA) {
     const aN = parseInt(a.replace(reN, ''), 10);
     const bN = parseInt(b.replace(reN, ''), 10);
-    return aN === bN ? 0 : aN > bN ? 1 : -1;
+    return aN === bN ? sortOrderOption.sameValue : aN > bN ? sortOrderOption.keep : sortOrderOption.invert;
   }
-  return aA > bA ? 1 : -1;
+  return aA > bA ? sortOrderOption.keep : sortOrderOption.invert;
 };
 
 const isStringNone = (string) => {
@@ -32,18 +38,18 @@ const isStringNone = (string) => {
 
 export const sortByNone = (rowA, rowB) => {
   if (isStringNone(rowA) && rowA !== rowB) {
-    return 1;
+    return sortOrderOption.keep;
   }
   if (isStringNone(rowB) && rowA !== rowB) {
-    return -1;
+    return sortOrderOption.invert;
   }
   if (rowA < rowB) {
-    return -1;
+    return sortOrderOption.invert;
   }
   if (rowA > rowB) {
-    return 1;
+    return sortOrderOption.keep;
   }
-  return 0;
+  return sortOrderOption.sameValue;
 };
 
 export const locationIsActive = (location) => {
@@ -68,16 +74,16 @@ const isNeitherLocationsAreActive = (rowA, rowB) => {
 
 export const sortByStatus = (rowA, rowB) => {
   if (isOnlyLastLocationsIsActive(rowA, rowB)) {
-    return -1;
+    return sortOrderOption.invert;
   } else if (isNeitherLocationsAreActive(rowA, rowB)) {
-    return 0;
+    return sortOrderOption.sameValue;
   } else if (isOnlyFirstLocationsIsActive(rowA, rowB)) {
-    return 1;
+    return sortOrderOption.keep;
   } else if (isBothLocationsAreActive(rowA, rowB)) {
     return 2;
   }
 
-  return 0;
+  return sortOrderOption.sameValue;
 };
 
 export const checkValid = (value) =>
@@ -150,7 +156,7 @@ export const sortObjectNumbers = (rowA, rowB) => {
 
 export const sortByDate = (a, b) => {
   if (a === '') {
-    return -1;
+    return sortOrderOption.invert;
   }
   const x = new Date(a);
   const y = new Date(b);

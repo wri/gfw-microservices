@@ -4,7 +4,8 @@ import { listStatus,
   sortByNone,
   locationIsActive,
   checkValid,
-  numberWithCommas
+  numberWithCommas,
+  sortOrderOption
 } from '../../js/utils/locationsTableUtils';
 import { ActiveLocationOne, PedingLocation } from '../mockedData';
 
@@ -35,17 +36,17 @@ describe('sortAlphaNum', () => {
 
   it('should return -1 if both string are the same', () => {
     const response = sortAlphaNum(firstString, firstString);
-    expect(response).toBe(-1);
+    expect(response).toBe(sortOrderOption.invert);
   });
 
   it('should return -1 if fisrtString come before', () => {
     const response = sortAlphaNum(firstString, secondString);
-    expect(response).toBe(-1);
+    expect(response).toBe(sortOrderOption.invert);
   });
 
   it('should return 1 if last String come before', () => {
     const response = sortAlphaNum(secondString, firstString);
-    expect(response).toBe(1);
+    expect(response).toBe(sortOrderOption.keep);
   });
 });
 
@@ -60,32 +61,32 @@ describe('sortByNone', () => {
   });
 
   it('Should be 1 when first value is none', () => {
-    expect(sortByNone(noneValue, firstValue)).toBe(1);
+    expect(sortByNone(noneValue, firstValue)).toBe(sortOrderOption.keep);
   });
 
   it('Should be -1 when first value is bigger', () => {
-    expect(sortByNone(firstValue, secondValue)).toBe(-1);
+    expect(sortByNone(firstValue, secondValue)).toBe(sortOrderOption.invert);
   });
 
   it('Should be -1 when last value is none', () => {
-    expect(sortByNone(firstValue, noneValue)).toBe(-1);
+    expect(sortByNone(firstValue, noneValue)).toBe(sortOrderOption.invert);
   });
 
   it('Should be 1 when second value is bigger', () => {
-    expect(sortByNone(secondValue, firstValue)).toBe(1);
+    expect(sortByNone(secondValue, firstValue)).toBe(sortOrderOption.keep);
   });
   
 });
 
 describe('sortByStatus', ()=>{
   it('should return area diference when both status are active', () => {
-    const a = {
-      location_status_id: 2,
+    const locationA = {
+      location_status_id: listStatus.active,
     }
-    const b = {
-      location_status_id: 2,
+    const locationB = {
+      location_status_id: listStatus.active,
     }
-    const response = sortByStatus(a, b);
+    const response = sortByStatus(locationA, locationB);
     expect(response).toBe(2);
   });
 
@@ -103,25 +104,25 @@ describe('sortByStatus', ()=>{
 
   it('should return 1 when just first status locations is active', () => {
     const a = {
-      location_status_id: 2,
+      location_status_id: listStatus.active,
     }
     const b = {
-      location_status_id: 3,
+      location_status_id: listStatus.pending,
     }
 
     const response = sortByStatus(a, b);
-    expect(response).toBe(1)
+    expect(response).toBe(sortOrderOption.keep)
   });
 
   it('should return -1 when just second status locations is active', () => {
     const a = {
-      location_status_id: 3,
+      location_status_id: listStatus.pending,
     }
     const b = {
-      location_status_id: 2,
+      location_status_id: listStatus.active,
     }
     const response = sortByStatus(a, b);
-    expect(response).toBe(-1)
+    expect(response).toBe(sortOrderOption.invert)
   });
 });
 

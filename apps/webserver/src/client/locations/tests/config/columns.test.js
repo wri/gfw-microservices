@@ -1,5 +1,6 @@
 import columns from '../../js/config/columns';
 import { ActiveLocationOne, ActiveLocationTwo, PedingLocation } from '../mockedData';
+import { sortOrderOption } from '../../js/utils/locationsTableUtils'
 
 const runSortTests = (sortMethod) => {
   describe('sortMethod', ()=>{
@@ -8,19 +9,19 @@ const runSortTests = (sortMethod) => {
       expect(response).toBe(2);
     });
 
-    it('should return 0 when both status locations are not active', () => {
+    it('should return same value when both status locations are not active', () => {
       const response = sortMethod(PedingLocation, PedingLocation);
-      expect(response).toBe(0);
+      expect(response).toBe(sortOrderOption.sameValue);
     })
 
-    it('should return 1 when just first status locations is active', () => {
+    it('should keep same order when just first status locations is active', () => {
       const response = sortMethod(ActiveLocationOne, PedingLocation);
-      expect(response).toBe(1)
+      expect(response).toBe(sortOrderOption.keep)
     });
 
-    it('should return -1 when just second status locations is active', () => {
+    it('should invert order when just second status locations is active', () => {
       const response = sortMethod(PedingLocation, ActiveLocationOne);
-      expect(response).toBe(-1)
+      expect(response).toBe(sortOrderOption.invert)
     })
   });
 }

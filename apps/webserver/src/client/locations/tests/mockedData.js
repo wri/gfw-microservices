@@ -1,5 +1,7 @@
+import { listStatus } from '../js/utils/locationsTableUtils';
+
 export const ActiveLocationOne = {
-  location_status_id: 2,
+  location_status_id: listStatus.active,
   total_area: 5,
   tree_cover_extent_total: 5,
   tree_cover_loss_total_yearly: '{"2021": 5}',
@@ -24,7 +26,7 @@ export const ActiveLocationOne = {
 }
 
 export const ActiveLocationTwo = {
-  location_status_id: 2,
+  location_status_id: listStatus.active,
   total_area: 3,
   tree_cover_extent_total: 3,
   tree_cover_loss_total_yearly: '{"2021": 3}',
@@ -49,7 +51,7 @@ export const ActiveLocationTwo = {
 }
 
 export const PedingLocation = {
-  location_status_id: 1,
+  location_status_id: listStatus.pending,
   total_area: 3,
   tree_cover_extent_total: 3,
   tree_cover_loss_total_yearly: '{"2021": 3}',

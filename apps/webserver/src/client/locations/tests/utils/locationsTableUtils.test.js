@@ -99,7 +99,7 @@ describe('sortByStatus', ()=>{
     }
 
     const response = sortByStatus(a, b);
-    expect(response).toBe(0);
+    expect(response).toBe(sortOrderOption.sameValue);
   })
 
   it('should return 1 when just first status locations is active', () => {

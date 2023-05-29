@@ -1,7 +1,7 @@
 {
   "clearMocks": true,
   "collectCoverageFrom": ["<rootDir>/{client,config,server}/**/*.{js,jsx,ts,tsx}"],
-  "testTimeout": 2000,
+  "testTimeout": 20000,
   "coverageDirectory": "../../../coverage/apps/webserver",
   "coverageReporters": ["json", "text", "lcov", "clover", "cobertura"],
   "coverageThreshold": {

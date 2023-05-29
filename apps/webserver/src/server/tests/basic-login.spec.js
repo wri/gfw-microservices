@@ -22,7 +22,7 @@ describe('Basic smoke with REST APIs', () => {
     });
   });
 
-  xit('login', async () => {
+  it('login', async () => {
     const request = supertest(app);
     const resLogin = await request
       .post('/auth/signinpost')

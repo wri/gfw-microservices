@@ -165,5 +165,5 @@ jobs:
       - name: Run e2e
         run: nx e2e gfwpro-e2e
 
-      - name: Start containers
+      - name: Stop containers
         run: docker-compose -f "./apps/webserver/docker-compose.yml" down

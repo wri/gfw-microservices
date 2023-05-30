@@ -206,6 +206,12 @@ const getActivityLog = (req) => {
 module.exports = {
   listActivityTypes,
   log,
+  silly: logger.silly,
+  debug: logger.debug,
+  verbose: logger.verbose,
+  info: logger.info,
+  warn: logger.warn,
+  error: logger.error,
   logActivity,
   getActivityLog,
 };

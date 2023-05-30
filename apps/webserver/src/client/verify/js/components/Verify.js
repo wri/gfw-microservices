@@ -112,7 +112,9 @@ export default class Verify extends Component {
     const { token, dialogOpen, dialogTitle, dialogMessage, showModalLoader } = this.state;
     const action = this.shouldCloseDialog;
 
-    const defaultAction = [<Button variant="primary" label="OK" keyboardFocused onClick={action} />];
+    const defaultAction = [
+      <Button variant="primary" label="OK" keyboardFocused onClick={action} />,
+    ];
 
     return (
       <Page links={pageOptions.links} active="verify">

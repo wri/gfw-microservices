@@ -71,7 +71,12 @@ export default class Upload extends Component {
               const data = response.data;
               const oldSpatialRef = new SpatialReference(projDefs[1]);
               const newSpatialRef = new SpatialReference(4326);
-              if (data && data.attributes && data.attributes.features && data.attributes.features.length > 0) {
+              if (
+                data &&
+                data.attributes &&
+                data.attributes.features &&
+                data.attributes.features.length > 0
+              ) {
                 const feat = data.attributes.features[0];
                 if (
                   feat.geometry &&
@@ -83,7 +88,9 @@ export default class Upload extends Component {
                   const oldFeatGeometry = new Polygon({
                     rings: esriJson.rings,
                     spatialReference:
-                      esriJson.spatialReference.wkid === newSpatialRef.wkid ? esriJson.spatialReference : oldSpatialRef,
+                      esriJson.spatialReference.wkid === newSpatialRef.wkid
+                        ? esriJson.spatialReference
+                        : oldSpatialRef,
                   });
                   geom = this.projection.project(oldFeatGeometry, newSpatialRef);
                 } else if (
@@ -110,7 +117,11 @@ export default class Upload extends Component {
                     const kilosSquared = feat.properties.Analysis_A / 100;
                     const kilos = Math.sqrt(kilosSquared / Math.PI);
                     //this line never gets hit
-                    geom = GeometryEngine.geodesicBuffer(this.state.originalGeometry, kilos.toFixed(2), 'kilometers');
+                    geom = GeometryEngine.geodesicBuffer(
+                      this.state.originalGeometry,
+                      kilos.toFixed(2),
+                      'kilometers'
+                    );
                   } else {
                     geom = GeometryEngine.geodesicBuffer(projectedCenterPoint, 4, 'kilometers'); //Medium Buffer
                   }
@@ -118,7 +129,13 @@ export default class Upload extends Component {
 
                 this.props.setGeometry(geom);
                 this.setState({ isUploading: false });
-                ga('send', 'event', 'Locations File Upload', 'add location upload file', 'user uploaded a zip file');
+                ga(
+                  'send',
+                  'event',
+                  'Locations File Upload',
+                  'add location upload file',
+                  'user uploaded a zip file'
+                );
               }
             } else if (xmlhttp.readyState === 4) {
               console.log('Error: shapefile not working');
@@ -186,7 +203,13 @@ export default class Upload extends Component {
             this.setState({
               isUploading: false,
             });
-            ga('send', 'event', 'Locations File Upload', 'add location upload file', 'user uploaded an xls file');
+            ga(
+              'send',
+              'event',
+              'Locations File Upload',
+              'add location upload file',
+              'user uploaded an xls file'
+            );
           } else {
             this.setState({
               dialogOpen: true,
@@ -205,7 +228,11 @@ export default class Upload extends Component {
 
         let geom;
         if (feature['Analysis Radius']) {
-          geom = GeometryEngine.geodesicBuffer(point, parseFloat(feature['Analysis Radius']), 'kilometers');
+          geom = GeometryEngine.geodesicBuffer(
+            point,
+            parseFloat(feature['Analysis Radius']),
+            'kilometers'
+          );
         } else if (feature['Analysis Area']) {
           const kilosSquared = feature['Analysis Area'] / 100;
           const kilos = Math.sqrt(kilosSquared / Math.PI);
@@ -229,7 +256,13 @@ export default class Upload extends Component {
         this.setState({
           isUploading: false,
         });
-        ga('send', 'event', 'Locations File Upload', 'add location upload file', 'user uploaded an xls file');
+        ga(
+          'send',
+          'event',
+          'Locations File Upload',
+          'add location upload file',
+          'user uploaded an xls file'
+        );
       }
     };
     reader.onerror = (err) => {
@@ -248,7 +281,13 @@ export default class Upload extends Component {
       .then((geometry) => {
         this.props.setGeometry(geometry);
         this.setState({ isUploading: false });
-        ga('send', 'event', 'Locations File Upload', 'add location upload file', 'user uploaded an kmz/kml file');
+        ga(
+          'send',
+          'event',
+          'Locations File Upload',
+          'add location upload file',
+          'user uploaded an kmz/kml file'
+        );
       })
       .catch((e) => console.error('Failed to parse KMZ/KML file', e));
   };
@@ -264,7 +303,13 @@ export default class Upload extends Component {
             this.setState({
               isUploading: false,
             });
-            ga('send', 'event', 'Locations File Upload', 'add location upload file', 'user uploaded a csv file');
+            ga(
+              'send',
+              'event',
+              'Locations File Upload',
+              'add location upload file',
+              'user uploaded a csv file'
+            );
           } else {
             this.setState({
               dialogOpen: true,
@@ -284,7 +329,13 @@ export default class Upload extends Component {
         this.setState({
           isUploading: false,
         });
-        ga('send', 'event', 'Locations File Upload', 'add location upload file', 'user uploaded a csv file');
+        ga(
+          'send',
+          'event',
+          'Locations File Upload',
+          'add location upload file',
+          'user uploaded a csv file'
+        );
       }
     }
   };
@@ -349,7 +400,9 @@ export default class Upload extends Component {
         this.handleKMZandKML(inputFile);
         break;
       default:
-        console.log(`File extension ${inputFile.name.slice(-3)} is not supported. (csv, xlx, zip, kml, kmz)`);
+        console.log(
+          `File extension ${inputFile.name.slice(-3)} is not supported. (csv, xlx, zip, kml, kmz)`
+        );
         this.setState({
           dialogOpen: true,
           dialogTitle: locationsPage.add.errors.fileExtensionNotSupported.title,
@@ -363,20 +416,28 @@ export default class Upload extends Component {
     if (!file) {
       return;
     }
-  }
+  };
 
   render() {
     const { country, state, substate } = this.props;
     const { dialogOpen, dialogTitle, dialogMessage, inputKey, isUploading } = this.state;
 
     const locationString =
-      substate && state ? [substate, state, country].join(', ') : state ? [state, country].join(', ') : country;
+      substate && state
+        ? [substate, state, country].join(', ')
+        : state
+        ? [state, country].join(', ')
+        : country;
 
     return (
       <div className="locations-add-subpage">
         <div className="locations-add-subpage__content">
           <div className="flex-grid locations-upload-step upload-form">
-            <FileDrop inputKey={inputKey} isUploading={isUploading} onFileUpload={this.fileUpload} />
+            <FileDrop
+              inputKey={inputKey}
+              isUploading={isUploading}
+              onFileUpload={this.fileUpload}
+            />
             <div className="instructions-container flex-grid-column justify-center">
               <p>
                 {locationsPage.upload.maximumLocations} {numberWithCommas(maxLocations)}

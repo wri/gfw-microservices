@@ -82,7 +82,12 @@ export default class Admin extends Component {
   render() {
     const { dialogOpen, dialogTitle, dialogMessage } = this.state;
     const defaultAction = [
-      <Button variant="primary" label="OK" keyboardFocused={true} onClick={this.shouldCloseDialog} />,
+      <Button
+        variant="primary"
+        label="OK"
+        keyboardFocused={true}
+        onClick={this.shouldCloseDialog}
+      />,
     ];
     return (
       <Page links={pageOptions.links} active="admin">
@@ -104,12 +109,19 @@ export default class Admin extends Component {
               </div>
               <div>
                 <div>Password</div>
-                <TextField type="password" onKeyPress={this.handleKeyPress} ref="password" name="password" />
+                <TextField
+                  type="password"
+                  onKeyPress={this.handleKeyPress}
+                  ref="password"
+                  name="password"
+                />
               </div>
               <div>
                 <Button variant="primary" onClick={this.signIn} label="Launch GFW Pro" />
               </div>
-              {this.state.loginError ? <div className="login__error">There was a login error!</div> : null}
+              {this.state.loginError ? (
+                <div className="login__error">There was a login error!</div>
+              ) : null}
             </div>
           </div>
         </div>

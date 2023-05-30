@@ -47,9 +47,13 @@ export default class BiomassControls extends Component {
     const years = mapPage.biomassLossYears;
     years.forEach((year) => {
       if (year > to_value || year < from_value) {
-        $(`.biomass-slider-container .irs-grid-text:contains("${year}")`).addClass('irs-inactive-year');
+        $(`.biomass-slider-container .irs-grid-text:contains("${year}")`).addClass(
+          'irs-inactive-year'
+        );
       } else {
-        $(`.biomass-slider-container .irs-grid-text:contains("${year}")`).removeClass('irs-inactive-year');
+        $(`.biomass-slider-container .irs-grid-text:contains("${year}")`).removeClass(
+          'irs-inactive-year'
+        );
       }
     });
   };
@@ -61,7 +65,11 @@ export default class BiomassControls extends Component {
 
   render() {
     return (
-      <div className={`timeline-container loss biomass-slider-container ${this.props.visible ? '' : ' hidden'}`}>
+      <div
+        className={`timeline-container loss biomass-slider-container ${
+          this.props.visible ? '' : ' hidden'
+        }`}
+      >
         <input id="biomass-slider" />
       </div>
     );

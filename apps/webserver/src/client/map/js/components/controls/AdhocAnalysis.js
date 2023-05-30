@@ -15,13 +15,26 @@ export default class AdhocAnalysis extends Component {
   }
 
   render() {
-    const { visible, title, start, sliderDate, end, changeStart, changeEnd, changeSlider } = this.props;
+    const { visible, title, start, sliderDate, end, changeStart, changeEnd, changeSlider } =
+      this.props;
 
     const timeComponent =
       title === 'GLAD' || title === 'RADD' ? (
-        <DatePickerControl title={title} start={start} end={end} changeStart={changeStart} changeEnd={changeEnd} />
+        <DatePickerControl
+          title={title}
+          start={start}
+          end={end}
+          changeStart={changeStart}
+          changeEnd={changeEnd}
+        />
       ) : (
-        <MonthPickerControl title={title} start={start} end={end} changeStart={changeStart} changeEnd={changeEnd} />
+        <MonthPickerControl
+          title={title}
+          start={start}
+          end={end}
+          changeStart={changeStart}
+          changeEnd={changeEnd}
+        />
       );
 
     return (

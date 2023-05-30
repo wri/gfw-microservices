@@ -101,7 +101,8 @@ function ListDownload({
 
   const isGFWList = selectedList.associated_gfwlist || gfwListNames.includes(listName);
   const downloadEnabled = !isDownloadDisabledForThisList(selectedList);
-  const isSourceFileDownloadEnabled = !isGFWList && currentUser.access_level_id !== userAccessLevel.VIEWER;
+  const isSourceFileDownloadEnabled =
+    !isGFWList && currentUser.access_level_id !== userAccessLevel.VIEWER;
   return (
     downloadEnabled && (
       <>
@@ -121,11 +122,17 @@ function ListDownload({
           <MenuItem value={{ format: 'csv', type: 'results' }} primaryText="Results" />
 
           {isSourceFileDownloadEnabled && (
-            <MenuItem value={{ format: 'csv', type: 'input' }} primaryText={locationsPage.lists.csv} />
+            <MenuItem
+              value={{ format: 'csv', type: 'input' }}
+              primaryText={locationsPage.lists.csv}
+            />
           )}
 
           {isSourceFileDownloadEnabled && (
-            <MenuItem value={{ format: 'shapefile', type: 'input' }} primaryText={locationsPage.lists.shapefile} />
+            <MenuItem
+              value={{ format: 'shapefile', type: 'input' }}
+              primaryText={locationsPage.lists.shapefile}
+            />
           )}
         </IconMenu>
         <ConfirmDialog open={dialogOpen} setDialogOpen={setDialogOpen} />

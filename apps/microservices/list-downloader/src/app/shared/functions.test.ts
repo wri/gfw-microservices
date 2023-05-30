@@ -110,9 +110,7 @@ describe('parseListData', () => {
           '{"Cerrado": {"2000": 1,"2001": 2,"2002": 3,"2003": 4,"2004": 5,"2005": 6,"2006": 7,"2007": 6,"2008": 5,"2009": 4,"2010": 3,"2011": 2}, "Pantanal": {"2000": 1,"2001": 2,"2002": 3,"2003": 4,"2004": 5,"2005": 6,"2006": 7,"2007": 6,"2008": 5,"2009": 4,"2010": 3,"2011": 2}}',
       },
     ];
-    expect(
-      parseListData('tree_cover_loss_brazil_biomes_yearly', listLevelAnalysis)
-    ).toEqual(96);
+    expect(parseListData('tree_cover_loss_brazil_biomes_yearly', listLevelAnalysis)).toEqual(96);
   });
 
   test('Should receive a parameter with empty biome', () => {
@@ -121,16 +119,12 @@ describe('parseListData', () => {
         tree_cover_loss_brazil_biomes_yearly: '{}',
       },
     ];
-    expect(
-      parseListData('tree_cover_loss_brazil_biomes_yearly', listLevelAnalysis)
-    ).toEqual(0);
+    expect(parseListData('tree_cover_loss_brazil_biomes_yearly', listLevelAnalysis)).toEqual(0);
   });
 
   test('Should handle empty list level analysis', () => {
     const listLevelAnalysis = [];
-    expect(
-      parseListData('tree_cover_loss_brazil_biomes_yearly', listLevelAnalysis)
-    ).toEqual(0);
+    expect(parseListData('tree_cover_loss_brazil_biomes_yearly', listLevelAnalysis)).toEqual(0);
   });
 
   test('Should accept empty json and return 0', () => {
@@ -139,9 +133,7 @@ describe('parseListData', () => {
         tree_cover_loss_brazil_biomes_yearly: '{}',
       },
     ];
-    expect(
-      parseListData('tree_cover_loss_brazil_biomes_yearly', listLevelAnalysis)
-    ).toEqual(0);
+    expect(parseListData('tree_cover_loss_brazil_biomes_yearly', listLevelAnalysis)).toEqual(0);
   });
 
   test('Should accept a number 58 and return 58', () => {

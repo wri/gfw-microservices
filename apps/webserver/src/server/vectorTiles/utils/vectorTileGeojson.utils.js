@@ -3,7 +3,9 @@ const _ = require('lodash');
 const path = require('path');
 
 // Configs
-const { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } = require('../../../config/config/locations.config');
+const {
+  DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED,
+} = require('../../../config/config/locations.config');
 
 // Utils
 const { getCurrentDateTimeFormatted } = require('./vectorTile.utils');
@@ -81,7 +83,13 @@ const createTempGeojsonFile = async (req, uuidString, tempFilesPath, listID, loc
  * @param {number} numberOfLocations - Number of locations in list (e.g. 64)
  * @return {Promise<void>}
  */
-const createTempGeojsonFiles = async (req, numberOfLocations, uuidString, tempFilesPath, listID) => {
+const createTempGeojsonFiles = async (
+  req,
+  numberOfLocations,
+  uuidString,
+  tempFilesPath,
+  listID
+) => {
   const numberOfChunks = Math.ceil(numberOfLocations / DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED);
   const numberOfChunksArray = _.range(numberOfChunks);
   let startLocationID = 0;
@@ -98,7 +106,13 @@ const createTempGeojsonFiles = async (req, numberOfLocations, uuidString, tempFi
     logger.info(
       `Working on chunk ${currentChunk}. Locations from ${locationsFrom} to ${locationsTo} will be processed out of ${numberOfLocations} locations`
     );
-    const { lastLocationID } = await createTempGeojsonFile(req, uuidString, tempFilesPath, listID, startLocationID);
+    const { lastLocationID } = await createTempGeojsonFile(
+      req,
+      uuidString,
+      tempFilesPath,
+      listID,
+      startLocationID
+    );
     startLocationID = lastLocationID;
   }
 };

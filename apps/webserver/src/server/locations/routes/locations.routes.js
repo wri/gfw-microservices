@@ -157,10 +157,18 @@ module.exports = (app, limiter) => {
         if (original_gfw_list) {
           // Copy Locations Analysis if list created from original GFW list
           const src_list = await GFWListManager.getGFWListSchema(req, gfw_list_id);
-          const dest_location_ids = resultGeoJSON.features.map((feature) => feature.properties.location_id);
+          const dest_location_ids = resultGeoJSON.features.map(
+            (feature) => feature.properties.location_id
+          );
           dest_location_ids.sort((a, b) => a - b);
 
-          await GFWListManager.copyGFWLocationsToList(req, src_list, dest_list, src_location_ids, dest_location_ids);
+          await GFWListManager.copyGFWLocationsToList(
+            req,
+            src_list,
+            dest_list,
+            src_location_ids,
+            dest_location_ids
+          );
         }
 
         // Call List Level Analysis
@@ -211,10 +219,18 @@ module.exports = (app, limiter) => {
           // Copy GFW Locations to another list
           const src_list = await GFWListManager.getGFWListSchema(req, gfw_list_id);
           const dest_list = await ListManager.getListByListName(req, list_name);
-          const dest_location_ids = resultGeoJSON.features.map((feature) => feature.properties.location_id);
+          const dest_location_ids = resultGeoJSON.features.map(
+            (feature) => feature.properties.location_id
+          );
           dest_location_ids.sort((a, b) => a - b);
 
-          await GFWListManager.copyGFWLocationsToList(req, src_list, dest_list, src_location_ids, dest_location_ids);
+          await GFWListManager.copyGFWLocationsToList(
+            req,
+            src_list,
+            dest_list,
+            src_location_ids,
+            dest_location_ids
+          );
         }
 
         res.send(saveAsDraftListConfig.success);
@@ -241,7 +257,15 @@ module.exports = (app, limiter) => {
   app.post('/locations/addToNewListEdit', (req, res) => {
     console.log('POST /locations/addToNewListEdit');
     const isEdit = false;
-    const { list_name, template_id, commodity, geojson, location_classification, list_id, gfw_list_id } = req.body;
+    const {
+      list_name,
+      template_id,
+      commodity,
+      geojson,
+      location_classification,
+      list_id,
+      gfw_list_id,
+    } = req.body;
 
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
     const custom_attributes = req.body.custom_attributes ? req.body.custom_attributes : [];
@@ -249,7 +273,10 @@ module.exports = (app, limiter) => {
     ListManager.getListLockStatus(req, list_id)
       .then((record) => {
         const { lock_status, lock_user_id } = record;
-        if (lock_status === null || (lock_status !== null && lock_user_id !== req.session.organization_user_id)) {
+        if (
+          lock_status === null ||
+          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
+        ) {
           throw record;
         } else {
           return ListManager.uploadToNewList(
@@ -319,9 +346,17 @@ module.exports = (app, limiter) => {
           // Copy GFW Locations to another list
           const src_list = await GFWListManager.getGFWListSchema(req, gfw_list_id);
           const dest_list = await ListManager.getListByListName(req, table_name);
-          const dest_location_ids = resultGeoJSON.features.map((feature) => feature.properties.location_id);
+          const dest_location_ids = resultGeoJSON.features.map(
+            (feature) => feature.properties.location_id
+          );
           dest_location_ids.sort((a, b) => a - b);
-          await GFWListManager.copyGFWLocationsToList(req, src_list, dest_list, src_location_ids, dest_location_ids);
+          await GFWListManager.copyGFWLocationsToList(
+            req,
+            src_list,
+            dest_list,
+            src_location_ids,
+            dest_location_ids
+          );
         }
 
         if (!original_gfw_list && list_status_id === config.platformVars.status.Draft) {
@@ -443,7 +478,8 @@ module.exports = (app, limiter) => {
       controller
         .handleEditLocations(req, list_id, location_ids, attributes)
         .then((response) => {
-          const { error, locationsEditedMessageFailed, locationsEditedMessageSuccessfully } = response;
+          const { error, locationsEditedMessageFailed, locationsEditedMessageSuccessfully } =
+            response;
           if (error) {
             winstonLogger.error(locationsEditedMessageFailed);
             winstonLogger.error(error);
@@ -476,9 +512,18 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/moveLocations', (req, res) => {
     console.log('POST /locations/moveLocations');
-    const { src_list_id, src_location_ids, dest_list_id, gfw_list_id, geojson, delete_src_list } = req.body;
+    const { src_list_id, src_location_ids, dest_list_id, gfw_list_id, geojson, delete_src_list } =
+      req.body;
 
-    ListManager.moveLocations(req, src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id, delete_src_list)
+    ListManager.moveLocations(
+      req,
+      src_list_id,
+      src_location_ids,
+      dest_list_id,
+      geojson,
+      gfw_list_id,
+      delete_src_list
+    )
       .then(async () => {
         res.send('LocationMoved');
       })
@@ -527,7 +572,14 @@ module.exports = (app, limiter) => {
     console.log('POST /locations/copyLocations');
     const { src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id } = req.body;
 
-    ListManager.copyLocations(req, src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id)
+    ListManager.copyLocations(
+      req,
+      src_list_id,
+      src_location_ids,
+      dest_list_id,
+      geojson,
+      gfw_list_id
+    )
       .then(async () => {
         res.send('LocationsCopied');
       })
@@ -543,7 +595,14 @@ module.exports = (app, limiter) => {
     // const { src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id } = req.body;
     const { src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id } = req.query;
 
-    ListManager.copyLocations(req, src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id)
+    ListManager.copyLocations(
+      req,
+      src_list_id,
+      src_location_ids,
+      dest_list_id,
+      geojson,
+      gfw_list_id
+    )
       .then(() => {
         res.send('LocationsCopied');
       })
@@ -558,7 +617,9 @@ module.exports = (app, limiter) => {
     console.log('POST /locations/getUserListLocationSpatialData');
     const { list_ids, location_id, rowsRequested } = req.body;
     const parsed_ids = list_ids.map((id) => parseInt(id, 10));
-    const promises = parsed_ids.map((id) => ListManager.getListLocations(req, id, location_id, rowsRequested));
+    const promises = parsed_ids.map((id) =>
+      ListManager.getListLocations(req, id, location_id, rowsRequested)
+    );
     Promise.all(promises)
       .then((listData) => {
         res.send(listData);
@@ -617,7 +678,11 @@ module.exports = (app, limiter) => {
     try {
       const listAnalyses = await AnalysisManager.getListAnalyses(req, list_id);
       const locationAttributeArray = await ListManager.getListLocationsNoGeom(req, list_id);
-      const locationAttributeList = await LocationManager.getLocationAttributesList(req, locationAttributeArray, false);
+      const locationAttributeList = await LocationManager.getLocationAttributesList(
+        req,
+        locationAttributeArray,
+        false
+      );
       const locationAnalysisArray = await AnalysisManager.getAnalysisDataForUserList(req, list_id);
 
       res.send({
@@ -683,7 +748,11 @@ module.exports = (app, limiter) => {
 
     try {
       const listAnalyses = await AnalysisManager.getListAnalyses(req, listID);
-      const locationAttributeArray = await ListManager.getPaginatedAnalysisDataForUserList(req, listID, filters);
+      const locationAttributeArray = await ListManager.getPaginatedAnalysisDataForUserList(
+        req,
+        listID,
+        filters
+      );
       const { numberOfPages, numberOfResults, maximumAnalysisAreaInTheList } =
         await ListManager.getNumberPagesForAnalysisDataUserList(req, listID, filters);
 
@@ -717,7 +786,10 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/downloadingSelectedLocations', controller.downloadingSelectedLocations);
 
-  app.post('/locations/downloadingSelectedLocations/json', controller.downloadingSelectedLocationsJson);
+  app.post(
+    '/locations/downloadingSelectedLocations/json',
+    controller.downloadingSelectedLocationsJson
+  );
 
   // ********************************************************************************************************************
   // New method to delete locations from filtered list
@@ -726,7 +798,16 @@ module.exports = (app, limiter) => {
   // ********************************************************************************************************************
   app.get('/locations/deleteAllFilteredLocations', (req, res) => {
     console.log('GET /locations/deleteAllFilteredLocations');
-    const { listID, gfw_list_id, country, state, subState, selectedAreaMin, selectedAreaMax, searchString } = req.query;
+    const {
+      listID,
+      gfw_list_id,
+      country,
+      state,
+      subState,
+      selectedAreaMin,
+      selectedAreaMax,
+      searchString,
+    } = req.query;
     const filters = { country, state, subState, selectedAreaMin, selectedAreaMax, searchString };
 
     ListManager.deleteFilteredLocations(req, listID, filters, gfw_list_id)
@@ -843,12 +924,14 @@ module.exports = (app, limiter) => {
       .then((listData) => {
         const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
         const locationIds = listDataSalted.map((l) => Number(l.location_id));
-        AnalysisManager.getAnalysisDataForGFWList(req, listID, locationIds).then((protectedLocationResult) => {
-          res.send({
-            list_analysis: [],
-            location_analyses: [listDataSalted, protectedLocationResult],
-          });
-        });
+        AnalysisManager.getAnalysisDataForGFWList(req, listID, locationIds).then(
+          (protectedLocationResult) => {
+            res.send({
+              list_analysis: [],
+              location_analyses: [listDataSalted, protectedLocationResult],
+            });
+          }
+        );
       })
       .catch((err) => {
         console.log('Error /getAdministrativeAreasData', err);

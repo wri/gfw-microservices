@@ -21,7 +21,10 @@ export default class SelectAddress extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.searchWidget && (!this.props.hasGeometry || prevProps.addMethod !== this.props.addMethod)) {
+    if (
+      this.searchWidget &&
+      (!this.props.hasGeometry || prevProps.addMethod !== this.props.addMethod)
+    ) {
       this.searchWidget.clear();
     }
   }

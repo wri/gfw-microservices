@@ -13,7 +13,9 @@ export default class SelectCertified extends Component {
   }
 
   componentDidMount() {
-    const certifiedAreaQT = new QueryTask('https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/1');
+    const certifiedAreaQT = new QueryTask(
+      'https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/1'
+    );
     const query = new Query();
     query.returnGeometry = false;
     query.outFields = ['name'];
@@ -101,9 +103,17 @@ export default class SelectCertified extends Component {
     const stateOption = this.createState();
     const subStateOption = this.createSubState();
     return (
-      <div className={`locations-add-subpage ${this.props.addMethod === 'byCertified' ? '' : 'hidden'}`}>
+      <div
+        className={`locations-add-subpage ${
+          this.props.addMethod === 'byCertified' ? '' : 'hidden'
+        }`}
+      >
         <div className="locations-add-subpage__content">
-          <select onChange={this.selectCertified} className="locations-select" value={this.state.certified}>
+          <select
+            onChange={this.selectCertified}
+            className="locations-select"
+            value={this.state.certified}
+          >
             <option>Select Certified Area</option>
             {this.state.certifiedOptions.map(this.createCertified)}
           </select>

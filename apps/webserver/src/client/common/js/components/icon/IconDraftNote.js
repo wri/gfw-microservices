@@ -2,7 +2,13 @@ import * as React from 'react';
 
 export default function IconDraftNote(props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width={10} height={13.684} viewBox="0 0 10 13.684" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={10}
+      height={13.684}
+      viewBox="0 0 10 13.684"
+      {...props}
+    >
       <defs>
         <style>{'.prefix__a{fill:#97bd3d}'}</style>
       </defs>

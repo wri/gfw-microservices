@@ -38,7 +38,9 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
     sources: {
       local: {
         type: 'vector',
-        tiles: [`${SERVER_DOMAIN_ORIGIN}/arcgis/rest/services/${mbtileLayerName}/VectorTileServer/{z}/{x}/{y}.pbf`],
+        tiles: [
+          `${SERVER_DOMAIN_ORIGIN}/arcgis/rest/services/${mbtileLayerName}/VectorTileServer/{z}/{x}/{y}.pbf`,
+        ],
       },
     },
     capabilities: 'TilesOnly, TileInfo, FeatureInfo',

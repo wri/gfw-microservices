@@ -33,8 +33,17 @@ export default class InfoBubbleContent extends Component {
 
     return (
       <div className="locations-diagnostics-bubble-view-container">
-        <div title="close" style={closeIconContainerStyle} className="app__modal-close-icon-container">
-          <svg viewBox="0 0 25 25" style={closeIconContainer} onClick={closeBubble} className="app_modal-close-icon">
+        <div
+          title="close"
+          style={closeIconContainerStyle}
+          className="app__modal-close-icon-container"
+        >
+          <svg
+            viewBox="0 0 25 25"
+            style={closeIconContainer}
+            onClick={closeBubble}
+            className="app_modal-close-icon"
+          >
             <title>Close</title>
             <path d="M 5 19 L 19 5 L 21 7 L 7 21 L 5 19 ZM 7 5 L 21 19 L 19 21 L 5 7 L 7 5 Z" />
           </svg>
@@ -48,7 +57,9 @@ export default class InfoBubbleContent extends Component {
 
           {bubbleData['What this Section Explains'] ? <h3>What this Section Explains</h3> : null}
           {bubbleData['What this Section Explains'] ? (
-            <p dangerouslySetInnerHTML={{ __html: marked(bubbleData['What this Section Explains']) }}></p>
+            <p
+              dangerouslySetInnerHTML={{ __html: marked(bubbleData['What this Section Explains']) }}
+            ></p>
           ) : null}
 
           {bubbleData["How it's Calculated"] ? <h3>How it's Calculated</h3> : null}
@@ -57,7 +68,9 @@ export default class InfoBubbleContent extends Component {
           ) : null}
 
           {bubbleData.Notes ? <h3>Notes</h3> : null}
-          {bubbleData.Notes ? <p dangerouslySetInnerHTML={{ __html: marked(bubbleData.Notes) }}></p> : null}
+          {bubbleData.Notes ? (
+            <p dangerouslySetInnerHTML={{ __html: marked(bubbleData.Notes) }}></p>
+          ) : null}
         </div>
       </div>
     );

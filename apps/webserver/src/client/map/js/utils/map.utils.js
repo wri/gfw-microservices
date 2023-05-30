@@ -31,7 +31,10 @@ export async function getLocationGeometry(props, mapView, selectedList) {
       listTableName = selectedList?.list_table_name;
     }
 
-    const selectedFeaturePopupGraphic = await getSelectedPopupFeatureEsriGraphic(listTableName, selectedFeaturePopup);
+    const selectedFeaturePopupGraphic = await getSelectedPopupFeatureEsriGraphic(
+      listTableName,
+      selectedFeaturePopup
+    );
     geometry = selectedFeaturePopupGraphic.geometry;
   } else if (mapView?.popup?.features && mapView?.popup?.features.length > 0) {
     geometry = mapView.popup.features[mapView.popup.selectedFeatureIndex].geometry;

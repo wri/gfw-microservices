@@ -114,10 +114,18 @@ const requestNewAccount = (
           // Use Organization ID to add Classifications.
           const parameters = [
             { field: 'orgID', type: sql.Int, value: organizationId },
-            { field: 'classification_ids', type: sql.VarChar(200), value: arr_org_classification_ids.toString() },
+            {
+              field: 'classification_ids',
+              type: sql.VarChar(200),
+              value: arr_org_classification_ids.toString(),
+            },
           ];
           // Add classifications for new account.
-          return sqlUtils.executeSystemStoredProcedure(req, 'uspCreateNewAccountClassifications', parameters);
+          return sqlUtils.executeSystemStoredProcedure(
+            req,
+            'uspCreateNewAccountClassifications',
+            parameters
+          );
         }
         // TODO @Hanseul - handle error
         console.log('ERROR: Recordset Length', recordsets.length);
@@ -145,10 +153,18 @@ const requestNewAccount = (
           userId = recordsets[0].user_id;
           const parameters = [
             { field: 'userID', type: sql.Int, value: userId },
-            { field: 'geography_ids', type: sql.VarChar(200), value: arr_user_geography_ids.toString() },
+            {
+              field: 'geography_ids',
+              type: sql.VarChar(200),
+              value: arr_user_geography_ids.toString(),
+            },
           ];
           // Add Geographies for new user for new account.
-          return sqlUtils.executeSystemStoredProcedure(req, 'uspCreateNewAccountUserGeographies', parameters);
+          return sqlUtils.executeSystemStoredProcedure(
+            req,
+            'uspCreateNewAccountUserGeographies',
+            parameters
+          );
         }
         // TODO @Hanseul - handle error
       })
@@ -157,10 +173,18 @@ const requestNewAccount = (
         // Use User ID to add Commodities.
         const parameters = [
           { field: 'userID', type: sql.Int, value: userId },
-          { field: 'commodity_ids', type: sql.VarChar(200), value: arr_user_commodity_ids.toString() },
+          {
+            field: 'commodity_ids',
+            type: sql.VarChar(200),
+            value: arr_user_commodity_ids.toString(),
+          },
         ];
         // Add Commodities for new user for new account.
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspCreateNewAccountUserCommodities', parameters);
+        return sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspCreateNewAccountUserCommodities',
+          parameters
+        );
       })
       .then(() => {
         uspCreateNewAccountUserCommoditiesExecuted = true;
@@ -204,7 +228,13 @@ const requestNewAccount = (
           config.platformVars.emailType.REQUEST_ORGANIZATION,
           content
         );
-        AWSSES.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, requestingUserMessage);
+        AWSSES.sendEmail(
+          req,
+          config.AWSVars.ses.sender,
+          [user_email],
+          subject,
+          requestingUserMessage
+        );
         resolve(true);
       })
       .catch((errorMessage) => {
@@ -220,13 +250,28 @@ const requestNewAccount = (
           );
         }
         if (uspCreateNewAccountUserExecuted) {
-          rollbackUtils.deleteSystemTableRow(req, 'PendingAccountsUsers', organizationId, 'pendingaccounts_id');
+          rollbackUtils.deleteSystemTableRow(
+            req,
+            'PendingAccountsUsers',
+            organizationId,
+            'pendingaccounts_id'
+          );
         }
         if (uspCreateNewAccountUserGeographiesExecuted) {
-          rollbackUtils.deleteSystemTableRow(req, 'PendingAccountsUsersGeographies', userId, 'pendingaccountsuser_id');
+          rollbackUtils.deleteSystemTableRow(
+            req,
+            'PendingAccountsUsersGeographies',
+            userId,
+            'pendingaccountsuser_id'
+          );
         }
         if (uspCreateNewAccountUserCommoditiesExecuted) {
-          rollbackUtils.deleteSystemTableRow(req, 'PendingAccountsUsersCommodities', userId, 'pendingaccountsuser_id');
+          rollbackUtils.deleteSystemTableRow(
+            req,
+            'PendingAccountsUsersCommodities',
+            userId,
+            'pendingaccountsuser_id'
+          );
         }
         const errorObject = errorUtils.createErrorMessage(
           req,
@@ -303,10 +348,18 @@ const updateAccountProfile = (
       .then(() => {
         // Update Classifications
         const parameters = [
-          { field: 'classification_ids', type: sql.VarChar(200), value: arr_org_classification_ids.toString() },
+          {
+            field: 'classification_ids',
+            type: sql.VarChar(200),
+            value: arr_org_classification_ids.toString(),
+          },
         ];
         // Update Classifications for Account.
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspUpdateAccountClassifications', parameters);
+        return sqlUtils.executeOrganizationStoredProcedure(
+          req,
+          'uspUpdateAccountClassifications',
+          parameters
+        );
       })
       .then(() => {
         logger.logActivity(
@@ -350,8 +403,14 @@ const getUsersList = (req) => {
       .then((recordsets) => {
         // Users list is missing authentication preference which is stored in SYSTEM so retrieve
         usersList = recordsets;
-        const params = [{ field: 'organization_id', type: sql.Int, value: req.session.organization_id }];
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspGetUsersAuthenticationPreferences', params);
+        const params = [
+          { field: 'organization_id', type: sql.Int, value: req.session.organization_id },
+        ];
+        return sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetUsersAuthenticationPreferences',
+          params
+        );
       })
       .then((results) => {
         // Use Object.assign() to assign the correct authentication preference to user
@@ -406,7 +465,11 @@ const updatePendingAccount = (
       { field: 'orgWebsite', type: sql.NVarChar(200), value: org_website },
       { field: 'isSubsidiary', type: sql.Bit, value: is_subsidiary },
       { field: 'orgParent', type: sql.NVarChar(200), value: parent_org_name },
-      { field: 'classification_ids', type: sql.NVarChar(200), value: arr_org_classification_ids.toString() },
+      {
+        field: 'classification_ids',
+        type: sql.NVarChar(200),
+        value: arr_org_classification_ids.toString(),
+      },
     ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspUpdatePendingAccount', params)

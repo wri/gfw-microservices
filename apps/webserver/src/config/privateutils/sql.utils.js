@@ -185,7 +185,13 @@ const sqliteQuery = async (sqliteDB, connectConfig, mssqlQuery, namedQuery, para
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
  * @returns Promise with data returned by given stored proedure
  */
-const mssqlExecuteWithRetries = async (triesLeft, connectConfig, queryStrParam, storedProcedureName, params) => {
+const mssqlExecuteWithRetries = async (
+  triesLeft,
+  connectConfig,
+  queryStrParam,
+  storedProcedureName,
+  params
+) => {
   try {
     if (queryStrParam && storedProcedureName) {
       throw new Error('Both query and stored procedure specified');
@@ -223,11 +229,23 @@ const mssqlExecuteWithRetries = async (triesLeft, connectConfig, queryStrParam, 
     }
     return rawResults.recordsets;
   } catch (err) {
-    logger.error('mssqlExecute failed ', triesLeft, connectConfig && connectConfig.database, storedProcedureName, queryStrParam && queryStrParam.slice(0, 100));
+    logger.error(
+      'mssqlExecute failed ',
+      triesLeft,
+      connectConfig && connectConfig.database,
+      storedProcedureName,
+      queryStrParam && queryStrParam.slice(0, 100)
+    );
     logger.error(err);
     removePool(connectConfig);
     if (triesLeft > 0) {
-      return mssqlExecuteWithRetries(triesLeft - 1, connectConfig, queryStrParam, storedProcedureName, params);
+      return mssqlExecuteWithRetries(
+        triesLeft - 1,
+        connectConfig,
+        queryStrParam,
+        storedProcedureName,
+        params
+      );
     }
     throw err;
   }
@@ -289,7 +307,14 @@ const executeOrganizationStoredProcedure = async (req, storedProcedureName, para
  * @param {Array} columnTypes - An array specifying the type of each of the columns in the table.
  * @param {Array} data - An array of arrays with each array representing a row of data.
  */
-const executeOrganizationBulkUpload = async (req, listTableName, createTable, columnNames, columnTypes, data) => {
+const executeOrganizationBulkUpload = async (
+  req,
+  listTableName,
+  createTable,
+  columnNames,
+  columnTypes,
+  data
+) => {
   const connectConfig = { ...SQLSYSTEMCONFIG, database: req.session.organization_database };
   // Setup the new SQL Table.
   const objTable = new sql.Table(listTableName);

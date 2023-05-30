@@ -14,7 +14,8 @@ const langResources = {
     invaidInitialPasswordChange: 'User does not require an initial password change.',
     criticalError: 'Critical Error! Please contact your local IT Administrator.',
     executeSystemStoredProcedure: 'Failed to execute system stored procedure in database.',
-    executeOrganizationStoredProcedure: 'Failed to execute organization stored procedure in database.',
+    executeOrganizationStoredProcedure:
+      'Failed to execute organization stored procedure in database.',
     failedToAuthenticate: 'Failed to authenticate user.',
     failedToSendEmail: 'Failed to send email.',
     failedSQLConnection: 'Failure to connect to SQL server',
@@ -35,7 +36,8 @@ const langResources = {
     missingListIds: 'Make sure to add list IDs to the request.',
     missingFolderName: 'Make sure to add a folder name to the request.',
     missingSourceFolderId: 'Please make sure to include the source folder ID in the request.',
-    missingDestinationFolderId: 'Please make sure to include the desination folder ID in the request.',
+    missingDestinationFolderId:
+      'Please make sure to include the desination folder ID in the request.',
   },
 };
 

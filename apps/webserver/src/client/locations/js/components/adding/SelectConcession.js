@@ -25,10 +25,18 @@ export default class SelectConcession extends Component {
   }
 
   componentDidMount() {
-    const loggingQT = new QueryTask('https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/3');
-    const miningQT = new QueryTask('https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/2');
-    const palmOilQT = new QueryTask('https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/1');
-    const woodFiberQT = new QueryTask('https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/0');
+    const loggingQT = new QueryTask(
+      'https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/3'
+    );
+    const miningQT = new QueryTask(
+      'https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/2'
+    );
+    const palmOilQT = new QueryTask(
+      'https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/1'
+    );
+    const woodFiberQT = new QueryTask(
+      'https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/0'
+    );
 
     const query = new Query();
     query.returnGeometry = false;
@@ -49,9 +57,15 @@ export default class SelectConcession extends Component {
         this.queryConcessions('logging');
       } else if (this.state.concessionType === 'Mining Concession' && this.state.miningConcession) {
         this.queryConcessions('mining');
-      } else if (this.state.concessionType === 'Palm Oil Concession' && this.state.palmOilConcession) {
+      } else if (
+        this.state.concessionType === 'Palm Oil Concession' &&
+        this.state.palmOilConcession
+      ) {
         this.queryConcessions('palmOil');
-      } else if (this.state.concessionType === 'Wood Fiber Concession' && this.state.woodFiberConcession) {
+      } else if (
+        this.state.concessionType === 'Wood Fiber Concession' &&
+        this.state.woodFiberConcession
+      ) {
         this.queryConcessions('woodFiber');
       }
     } else if (this.state.loggingConcession !== prevState.loggingConcession) {
@@ -284,7 +298,11 @@ export default class SelectConcession extends Component {
     }
 
     return (
-      <div className={`locations-add-subpage ${this.props.addMethod === 'byConcession' ? '' : 'hidden'}`}>
+      <div
+        className={`locations-add-subpage ${
+          this.props.addMethod === 'byConcession' ? '' : 'hidden'
+        }`}
+      >
         <div className="locations-add-subpage__content">
           <div className="concession-area__concession-type-dropdown">
             <h3>Select Concession Type</h3>
@@ -308,7 +326,9 @@ export default class SelectConcession extends Component {
           <select
             value={activeCommodity}
             onChange={this.setOption}
-            className={`locations-subpage-select-custom half-width ${this.state.concessionType ? '' : 'hidden'}`}
+            className={`locations-subpage-select-custom half-width ${
+              this.state.concessionType ? '' : 'hidden'
+            }`}
             size="10"
           >
             {commodityOptions.map(this.createOptions)}

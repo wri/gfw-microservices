@@ -200,17 +200,20 @@ export default class EditList extends Component {
         if (template.template_name === template_name) {
           if (template.template_datum_field_name === 'Attribute1') {
             if (this.state.customAttributeHeaders[0].custom !== 'Attribute1') {
-              template.template_datum_field_name_updated = this.state.customAttributeHeaders[0].custom;
+              template.template_datum_field_name_updated =
+                this.state.customAttributeHeaders[0].custom;
               customAttributeNames.push(template.template_datum_field_name_updated);
             }
           } else if (template.template_datum_field_name === 'Attribute2') {
             if (this.state.customAttributeHeaders[1].custom !== 'Attribute2') {
-              template.template_datum_field_name_updated = this.state.customAttributeHeaders[1].custom;
+              template.template_datum_field_name_updated =
+                this.state.customAttributeHeaders[1].custom;
               customAttributeNames.push(template.template_datum_field_name_updated);
             }
           } else if (template.template_datum_field_name === 'Attribute3') {
             if (this.state.customAttributeHeaders[2].custom !== 'Attribute3') {
-              template.template_datum_field_name_updated = this.state.customAttributeHeaders[2].custom;
+              template.template_datum_field_name_updated =
+                this.state.customAttributeHeaders[2].custom;
               customAttributeNames.push(template.template_datum_field_name_updated);
             }
           } else {
@@ -286,17 +289,20 @@ export default class EditList extends Component {
         if (template.template_name === template_name) {
           if (template.template_datum_field_name === 'Attribute1') {
             if (this.state.customAttributeHeaders[0].custom !== 'Attribute1') {
-              template.template_datum_field_name_updated = this.state.customAttributeHeaders[0].custom;
+              template.template_datum_field_name_updated =
+                this.state.customAttributeHeaders[0].custom;
               customAttributeNames.push(template.template_datum_field_name_updated);
             }
           } else if (template.template_datum_field_name === 'Attribute2') {
             if (this.state.customAttributeHeaders[1].custom !== 'Attribute2') {
-              template.template_datum_field_name_updated = this.state.customAttributeHeaders[1].custom;
+              template.template_datum_field_name_updated =
+                this.state.customAttributeHeaders[1].custom;
               customAttributeNames.push(template.template_datum_field_name_updated);
             }
           } else if (template.template_datum_field_name === 'Attribute3') {
             if (this.state.customAttributeHeaders[2].custom !== 'Attribute3') {
-              template.template_datum_field_name_updated = this.state.customAttributeHeaders[2].custom;
+              template.template_datum_field_name_updated =
+                this.state.customAttributeHeaders[2].custom;
               customAttributeNames.push(template.template_datum_field_name_updated);
             }
           } else {
@@ -412,7 +418,8 @@ export default class EditList extends Component {
           this.setState({
             dialogOpen: true,
             dialogTitle: 'Locations not edited',
-            dialogMessage: 'This account request has failed on the server. Please try again at another time.',
+            dialogMessage:
+              'This account request has failed on the server. Please try again at another time.',
             refreshPage: true,
             isLoading: false,
           });
@@ -517,10 +524,18 @@ export default class EditList extends Component {
     } = this.state;
     const { selectedLists, selectedLocationData } = this.props;
 
-    const dialogContent = typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
+    const dialogContent =
+      typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
 
     const defaultAction = refreshPage
-      ? [<Button variant="primary" label="OK" keyboardFocused={true} onClick={this.shouldRefresh} />]
+      ? [
+          <Button
+            variant="primary"
+            label="OK"
+            keyboardFocused={true}
+            onClick={this.shouldRefresh}
+          />,
+        ]
       : [<Button label="OK" keyboardFocused={true} onClick={this.shouldCloseDialog} />];
 
     return (
@@ -541,7 +556,8 @@ export default class EditList extends Component {
             title={`${selectedLists[0].list_name} diagnostic failed to load.`}
             message={
               <p>
-                Please select the list to try loading the diagnostic again. If diagnostic continue to fail, email{' '}
+                Please select the list to try loading the diagnostic again. If diagnostic continue
+                to fail, email{' '}
                 <a className="popup__link" href="mailto:GFWPROsupport@wri.org">
                   GFWPROsupport@wri.org
                 </a>{' '}
@@ -570,7 +586,9 @@ export default class EditList extends Component {
 
         <section className="buttons-container">
           {this.state.showError ? (
-            <div className="validation-error">Please make sure you have only selected valid data</div>
+            <div className="validation-error">
+              Please make sure you have only selected valid data
+            </div>
           ) : null}
           <Button
             variant="primary"

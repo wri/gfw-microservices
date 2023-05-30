@@ -4,13 +4,21 @@ import CardContent from '@material-ui/core/CardContent';
 import { profilePage } from '../../../../../../common/js/config';
 import '../../B2bConnectionItem.scss';
 
-function B2bMultipleAccountsItem({ country, organizationName, status, selectedAccount, setSelectedAccount }) {
+function B2bMultipleAccountsItem({
+  country,
+  organizationName,
+  status,
+  selectedAccount,
+  setSelectedAccount,
+}) {
   let action;
 
   switch (status) {
     case 'pending':
       action = (
-        <div className="b2b-connection-item__pending-action">{profilePage.profileManager.b2bSection.pending}</div>
+        <div className="b2b-connection-item__pending-action">
+          {profilePage.profileManager.b2bSection.pending}
+        </div>
       );
       break;
     case 'connected':

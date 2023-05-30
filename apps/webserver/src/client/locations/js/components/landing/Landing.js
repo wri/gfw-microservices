@@ -36,7 +36,11 @@ import { getIsDiagnosticStatusDraft } from '../../utils/draft.utils';
 import { normalizeShaledLists, nameContainsText } from '../../utils/shareList.utils';
 import MyListsTabs from './MyListsTabs';
 import { getMySharedLists, getListsSharedWithMe } from './getSharedLists';
-import { MY_LISTS, MY_SHARED_LISTS, LISTS_SHARED_WITH_ME } from './MyListsTabs/MyListsTabs.constants';
+import {
+  MY_LISTS,
+  MY_SHARED_LISTS,
+  LISTS_SHARED_WITH_ME,
+} from './MyListsTabs/MyListsTabs.constants';
 
 class Landing extends Component {
   constructor(props) {
@@ -71,7 +75,7 @@ class Landing extends Component {
     }
 
     this.loadFolders();
-    if(this.props.B2BsharedListEnabled){
+    if (this.props.B2BsharedListEnabled) {
       // fetch endpoints to get "my shared lists" and "lists shared with me"
       getMySharedLists().then((mySharedLists) => {
         this.setState({ mySharedLists });
@@ -112,7 +116,13 @@ class Landing extends Component {
     const { history } = this.props;
     history.push('/add');
     store.dispatch(changeView('add'));
-    ga('send', 'event', 'Landing Page Click', 'Add a Location button clicked', 'user clicked to add a single location');
+    ga(
+      'send',
+      'event',
+      'Landing Page Click',
+      'Add a Location button clicked',
+      'user clicked to add a single location'
+    );
   };
 
   changeFolderView = (folder) => {
@@ -197,7 +207,11 @@ class Landing extends Component {
       store.dispatch(updateFolders(folders));
       this.setState({ foldersLoaded: true });
 
-      if (userFolders.length === 0 && userLists.length > 1 && !document.cookie.includes('FolderFeatureSeen')) {
+      if (
+        userFolders.length === 0 &&
+        userLists.length > 1 &&
+        !document.cookie.includes('FolderFeatureSeen')
+      ) {
         this.setState({ folderFeatureNew: true });
       }
     });
@@ -239,7 +253,9 @@ class Landing extends Component {
         .filter((list) => nameContainsText(list.list_name, userListFilterText))
         .sort((l1, l2) => l1.list_name.localeCompare(l2.list_name))
         .map((list) => {
-          const parent = userFolders.find((folder) => (folder.lists ? folder.lists.includes(list.id) : false));
+          const parent = userFolders.find((folder) =>
+            folder.lists ? folder.lists.includes(list.id) : false
+          );
           return Object.assign(list, { folder: parent });
         })
         .map(this.createLocationsFromList); // TODO: Show that some are pending!! -->
@@ -266,7 +282,7 @@ class Landing extends Component {
     };
 
     const onListsTabSelected = (newSelectedTab) => {
-      this.setState({selectedTab: newSelectedTab,});
+      this.setState({ selectedTab: newSelectedTab });
     };
 
     return (
@@ -289,7 +305,10 @@ class Landing extends Component {
           open={dialogOpen}
           onRequestClose={this.handleDialogClose}
         >
-          <div className="dialog-content-email" dangerouslySetInnerHTML={{ __html: dialogContent }} />
+          <div
+            className="dialog-content-email"
+            dangerouslySetInnerHTML={{ __html: dialogContent }}
+          />
         </Dialog>
 
         <Dialog
@@ -346,36 +365,42 @@ class Landing extends Component {
                 <div className="my-locations__title">{locationsPage.landing.myLocations}</div>
                 <ListsFilter value={userListFilterText} onChange={onChangeListsFilter} />
               </div>
-              {(userFoldersFiltered.length > 0 || userListsFiltered.length > 0) && userListFilterText.length > 0 && (
-                <p className="search-result-count">
-                  {`${numberWithCommas(
-                    userListsFiltered.length + userFoldersFiltered.length
-                  )} ${(userListsFiltered.length + userFoldersFiltered.length === 1
-                    ? locationsPage.landing.resultItem
-                    : locationsPage.landing.resultItems
-                  ).toLowerCase()}`}
-                </p>
-              )}
+              {(userFoldersFiltered.length > 0 || userListsFiltered.length > 0) &&
+                userListFilterText.length > 0 && (
+                  <p className="search-result-count">
+                    {`${numberWithCommas(
+                      userListsFiltered.length + userFoldersFiltered.length
+                    )} ${(userListsFiltered.length + userFoldersFiltered.length === 1
+                      ? locationsPage.landing.resultItem
+                      : locationsPage.landing.resultItems
+                    ).toLowerCase()}`}
+                  </p>
+                )}
               {/* FOLDERS */}
               {userListFilterText.length === 0 && userFoldersFiltered.length > 0 && (
                 <h3 className="my-folders-title">{locationsPage.landing.myFolders}</h3>
               )}
-              {userFoldersFiltered.length > 0 && <ul className="my-folders-list">{userFoldersFiltered}</ul>}
+              {userFoldersFiltered.length > 0 && (
+                <ul className="my-folders-list">{userFoldersFiltered}</ul>
+              )}
 
               {/* LISTS */}
-              {B2BsharedListEnabled && <MyListsTabs
-                selectedTab={selectedTab}
-                onListsTabSelected={onListsTabSelected}
-                showMySharedLists={!!mySharedLists.length || true}
-                showListsSharedWithMe={!!listsSharedWithMe.length || true}
-              />}
+              {B2BsharedListEnabled && (
+                <MyListsTabs
+                  selectedTab={selectedTab}
+                  onListsTabSelected={onListsTabSelected}
+                  showMySharedLists={!!mySharedLists.length || true}
+                  showListsSharedWithMe={!!listsSharedWithMe.length || true}
+                />
+              )}
               {foldersLoaded && !!folderFeatureNew && (
                 <Banner
                   className="folder-feature-banner"
                   intent="new"
                   onBannerClose={() => {
                     if (document.cookie) {
-                      document.cookie = 'FolderFeatureSeen=true; expires=Fri, 31 Dec 9999 23:59:59 GMT';
+                      document.cookie =
+                        'FolderFeatureSeen=true; expires=Fri, 31 Dec 9999 23:59:59 GMT';
                       this.setState({ folderFeatureNew: false });
                     }
                   }}
@@ -399,10 +424,16 @@ class Landing extends Component {
                   </>
                 </Banner>
               )}
-              {userListsFiltered.length > 0 && <ul className="my-lists-list">{userListsFiltered}</ul>}
+              {userListsFiltered.length > 0 && (
+                <ul className="my-lists-list">{userListsFiltered}</ul>
+              )}
               {userListsFiltered.length === 0 && userListFilterText.length === 0 && (
                 <div className="no-lists">
-                  <img className="no-lists__illustration" alt="no results" src={NoResultsIllustration} />
+                  <img
+                    className="no-lists__illustration"
+                    alt="no results"
+                    src={NoResultsIllustration}
+                  />
                   <AddLocationsPrompt key={language} languageCode={language} />
                   <Button
                     className="no-lists__button"
@@ -414,16 +445,20 @@ class Landing extends Component {
                 </div>
               )}
               {/* SEARCH: NO RESULTS */}
-              {userFoldersFiltered.length === 0 && userListsFiltered.length === 0 && userListFilterText.length > 0 && (
-                <div className="no-search-results">
-                  <p className="no-search-results__message">{locationsPage.landing.noSearchResults}</p>
-                  <LinkButton
-                    className="no-search-results__clear"
-                    label={locationsPage.landing.clearSearch}
-                    onClick={() => this.setState({ userListFilterText: '' })}
-                  />
-                </div>
-              )}
+              {userFoldersFiltered.length === 0 &&
+                userListsFiltered.length === 0 &&
+                userListFilterText.length > 0 && (
+                  <div className="no-search-results">
+                    <p className="no-search-results__message">
+                      {locationsPage.landing.noSearchResults}
+                    </p>
+                    <LinkButton
+                      className="no-search-results__clear"
+                      label={locationsPage.landing.clearSearch}
+                      onClick={() => this.setState({ userListFilterText: '' })}
+                    />
+                  </div>
+                )}
             </section>
           </section>
         </section>

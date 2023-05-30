@@ -5,7 +5,11 @@
  * @param {number} yearEnd - Year End
  * @return {Object} - GFW Vector Tile Style
  */
-export const getProdesUpdatedVectorTileStyle = (prodesInitialVectorTileStyle, yearStart, yearEnd) => {
+export const getProdesUpdatedVectorTileStyle = (
+  prodesInitialVectorTileStyle,
+  yearStart,
+  yearEnd
+) => {
   const layers = prodesInitialVectorTileStyle.layers.map((layer) => {
     return {
       ...layer,

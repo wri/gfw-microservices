@@ -22,9 +22,9 @@ const Button = (props) => {
   return (
     <RaisedButton
       {...props}
-      className={`button ${props.className ? props.className : ''} ${props.size ? `button--${props.size}` : ''} ${
-        props.variant ? `button--${props.variant}` : ''
-      }`}
+      className={`button ${props.className ? props.className : ''} ${
+        props.size ? `button--${props.size}` : ''
+      } ${props.variant ? `button--${props.variant}` : ''}`}
       data-tip={props.datatip}
       data-for={props.datafor}
       onClick={props.onClick}

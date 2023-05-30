@@ -56,10 +56,16 @@ export default class SelectAdmin extends Component {
       query.returnDistinctValues = true;
       queryTask.execute(query).then((res) => {
         const uniqueSubs = [
-          ...new Set(res.features.filter((item) => item.attributes.name_1).map((item) => item.attributes.name_1)),
+          ...new Set(
+            res.features
+              .filter((item) => item.attributes.name_1)
+              .map((item) => item.attributes.name_1)
+          ),
         ];
         const uniqueAttributes = [
-          ...new Set(res.features.filter((item) => item.attributes.name_1).map((item) => item.attributes)),
+          ...new Set(
+            res.features.filter((item) => item.attributes.name_1).map((item) => item.attributes)
+          ),
         ];
         uniqueSubs.sort();
         this.setState({
@@ -103,7 +109,9 @@ export default class SelectAdmin extends Component {
       : [];
     let regionAbbrev;
     if (this.props.adminSelections.smallerRegion && this.state.smallerObjects) {
-      regionAbbrev = this.state.smallerObjects.filter((obj) => obj.name_1 === this.props.adminSelections.smallerRegion);
+      regionAbbrev = this.state.smallerObjects.filter(
+        (obj) => obj.name_1 === this.props.adminSelections.smallerRegion
+      );
     }
 
     if (regionAbbrev && regionAbbrev[0] && abbrev[0]) {
@@ -149,10 +157,14 @@ export default class SelectAdmin extends Component {
     query.outFields = ['gadmid']; // ['name_0', 'name_1', 'name_2', 'gadmid'];// 'gadmid'
 
     queryTask.execute(query).then((res) => {
-      let gadmId = res && res.features && res.features.length > 0 ? res.features[0].attributes.gadmid : '';
+      let gadmId =
+        res && res.features && res.features.length > 0 ? res.features[0].attributes.gadmid : '';
       if (gadmId !== '') {
         const gadmLevels = gadmId.split('.');
-        gadmId = adminSelections.smallerRegion === '' ? gadmLevels[0] : `${gadmLevels[0]}.${gadmLevels[1]}`;
+        gadmId =
+          adminSelections.smallerRegion === ''
+            ? gadmLevels[0]
+            : `${gadmLevels[0]}.${gadmLevels[1]}`;
       }
       this.props.subscribeAdmin({
         country: this.props.adminSelections.country,
@@ -210,11 +222,19 @@ export default class SelectAdmin extends Component {
               </button>
             )}
           </div>
-          <div className={`region-countries-search-container ${this.props.adminSelections.country ? '' : 'hidden'}`}>
+          <div
+            className={`region-countries-search-container ${
+              this.props.adminSelections.country ? '' : 'hidden'
+            }`}
+          >
             <svg className="svg-icon">
               <use xlinkHref="#icon-control-search" />
             </svg>
-            <input className="region-countries-search" value={filterStr} onChange={this.searchCountries} />
+            <input
+              className="region-countries-search"
+              value={filterStr}
+              onChange={this.searchCountries}
+            />
           </div>
           <div
             className={`select-administrative-region__smaller-region-dropdown ${
@@ -235,7 +255,9 @@ export default class SelectAdmin extends Component {
           </div>
         </div>
         <div
-          className={`select-administrative-region-actions ${analysisResults && analysisResults.data ? 'hidden' : ''}`}
+          className={`select-administrative-region-actions ${
+            analysisResults && analysisResults.data ? 'hidden' : ''
+          }`}
         >
           <GfwButton
             classNames="AnalysisPanel__button btn-green text__semi-bold-12"

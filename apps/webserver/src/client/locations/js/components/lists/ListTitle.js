@@ -34,7 +34,8 @@ function ListTitle({
 }) {
   const userIsAdmin = currentUser.access_level_id === userAccessLevel.ADMIN;
   const userIsOwner = currentUser.id === selectedList.user_id;
-  const draftTooltipMSG = !userIsAdmin && !userIsOwner ? draftTooltipMessages.nonOwner : draftTooltipMessages.owner;
+  const draftTooltipMSG =
+    !userIsAdmin && !userIsOwner ? draftTooltipMessages.nonOwner : draftTooltipMessages.owner;
 
   const TOOLTIP__MESSAGE = draftTooltipMSG;
 
@@ -51,7 +52,10 @@ function ListTitle({
 
   if (!isGfwProList) {
     listLength = listLocationsCount ?? selectedList.list_locations_count;
-    countriesSelected = listLocationsCount < selectedList.list_locations_count ? countries : Object.keys(filterValues);
+    countriesSelected =
+      listLocationsCount < selectedList.list_locations_count
+        ? countries
+        : Object.keys(filterValues);
   } else {
     listLength = filteredLists.length;
     countriesSelected = countries;
@@ -59,12 +63,16 @@ function ListTitle({
   let countriesString = countriesSelected.join(', ');
   countriesString = countriesString.replaceAll('null', '--');
   const countriesStringSummary =
-    countriesSelected.length > 3 ? countriesSelected.slice(0, 3).join(', ').replaceAll('null', '--') : countriesString;
+    countriesSelected.length > 3
+      ? countriesSelected.slice(0, 3).join(', ').replaceAll('null', '--')
+      : countriesString;
 
   return (
     <header className="list-detail-header__info-container notranslate">
       <h1
-        className={`${shareView ? 'underline pointer back-arrows list-title' : 'list-detail-header__title'}`}
+        className={`${
+          shareView ? 'underline pointer back-arrows list-title' : 'list-detail-header__title'
+        }`}
         onClick={() => {
           if (shareView) {
             showShareList(false);
@@ -111,7 +119,8 @@ function ListTitle({
             {listLength === 1
               ? transifex(locationsPage.lists.titleLocation)
               : transifex(locationsPage.lists.titleLocations)}{' '}
-            <span className="bullet-divider">•</span> {countriesSelected.length <= 3 && countriesStringSummary}
+            <span className="bullet-divider">•</span>{' '}
+            {countriesSelected.length <= 3 && countriesStringSummary}
             {countriesSelected.length > 3 && (
               <span className="country-name-extend">
                 {countriesStringSummary}…

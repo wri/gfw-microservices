@@ -50,13 +50,27 @@ function App() {
       });
   }, []);
 
-  const { users, userInfo, classifications, commodities, geographies, titles, userToEdit = {} } = userProfileData ?? {};
+  const {
+    users,
+    userInfo,
+    classifications,
+    commodities,
+    geographies,
+    titles,
+    userToEdit = {},
+  } = userProfileData ?? {};
 
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
       {isLoading ? (
         <div
-          style={{ display: 'flex', width: '100vw', height: '100vh', alignItems: 'center', justifyContent: 'center' }}
+          style={{
+            display: 'flex',
+            width: '100vw',
+            height: '100vh',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
           <CircularProgress color="success" />
         </div>

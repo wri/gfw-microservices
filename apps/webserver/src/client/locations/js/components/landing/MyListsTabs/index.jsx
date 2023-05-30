@@ -3,14 +3,22 @@ import { MY_LISTS, MY_SHARED_LISTS, LISTS_SHARED_WITH_ME } from './MyListsTabs.c
 import { locationsPage } from '../../../../../common/js/config';
 import './MyListsTabs.scss';
 
-function MyListsTabs({ selectedTab, onListsTabSelected, showMySharedLists, showListsSharedWithMe }) {
+function MyListsTabs({
+  selectedTab,
+  onListsTabSelected,
+  showMySharedLists,
+  showListsSharedWithMe,
+}) {
   const onlyShowMyListsOption = !showMySharedLists && !showListsSharedWithMe;
-  const isMyListsOptionsSelected = (selectedTab === MY_LISTS || selectedTab === '') && !onlyShowMyListsOption;
+  const isMyListsOptionsSelected =
+    (selectedTab === MY_LISTS || selectedTab === '') && !onlyShowMyListsOption;
 
   return (
     <div className="my-lists-tabs">
       <button
-        className={`my-lists-tabs__tab ${isMyListsOptionsSelected ? 'my-lists-tabs__tab--selected' : ''} `}
+        className={`my-lists-tabs__tab ${
+          isMyListsOptionsSelected ? 'my-lists-tabs__tab--selected' : ''
+        } `}
         type="button"
         onClick={() => onListsTabSelected(MY_LISTS)}
       >
@@ -18,7 +26,9 @@ function MyListsTabs({ selectedTab, onListsTabSelected, showMySharedLists, showL
       </button>
       {showMySharedLists && (
         <button
-          className={`my-lists-tabs__tab ${selectedTab === MY_SHARED_LISTS ? 'my-lists-tabs__tab--selected' : ''} `}
+          className={`my-lists-tabs__tab ${
+            selectedTab === MY_SHARED_LISTS ? 'my-lists-tabs__tab--selected' : ''
+          } `}
           type="button"
           onClick={() => onListsTabSelected(MY_SHARED_LISTS)}
         >

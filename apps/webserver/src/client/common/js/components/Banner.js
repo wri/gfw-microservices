@@ -25,7 +25,9 @@ export default class Banner extends Component {
             {intent === 'positive' && <IconCheck className="banner__icon" />}
             <div className="banner__prompt">{children}</div>
           </div>
-          {onBannerClose && <IconButton icon={<IconTimes />} size="medium" onClick={() => onBannerClose()} />}
+          {onBannerClose && (
+            <IconButton icon={<IconTimes />} size="medium" onClick={() => onBannerClose()} />
+          )}
         </div>
       </div>
     );

@@ -66,7 +66,12 @@ const columns = {
       show: true,
       width: 100,
       maxWidth: 100,
-      Cell: (row) => (checkValid(row.value) ? <span title={transifex(row.value)}>{transifex(row.value)}</span> : '--'),
+      Cell: (row) =>
+        checkValid(row.value) ? (
+          <span title={transifex(row.value)}>{transifex(row.value)}</span>
+        ) : (
+          '--'
+        ),
     },
     {
       Header: () => (
@@ -79,7 +84,12 @@ const columns = {
       show: true,
       width: 150,
       maxWidth: 150,
-      Cell: (row) => (checkValid(row.value) ? <span title={transifex(row.value)}>{transifex(row.value)}</span> : '--'),
+      Cell: (row) =>
+        checkValid(row.value) ? (
+          <span title={transifex(row.value)}>{transifex(row.value)}</span>
+        ) : (
+          '--'
+        ),
       sortMethod: sortByNone,
     },
   ],
@@ -89,7 +99,8 @@ const columns = {
       Header: () => (
         <span>
           <span className="title-text" title={transifex(columnHeaders.treeCoverExtentInHa)}>
-            {transifex(columnHeaders.treeCoverExtent)} <span className="title-text__units">(ha)</span>
+            {transifex(columnHeaders.treeCoverExtent)}{' '}
+            <span className="title-text__units">(ha)</span>
           </span>
         </span>
       ),
@@ -173,8 +184,14 @@ const columns = {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
               returnValue =
-                Object.values(JSON.parse(a.tree_cover_loss_total_yearly)).reduce((aa, bb) => aa + bb, 0) -
-                Object.values(JSON.parse(b.tree_cover_loss_total_yearly)).reduce((aa, bb) => aa + bb, 0);
+                Object.values(JSON.parse(a.tree_cover_loss_total_yearly)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                ) -
+                Object.values(JSON.parse(b.tree_cover_loss_total_yearly)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                );
             } else {
               returnValue = 0;
             }
@@ -203,7 +220,10 @@ const columns = {
                     row.value.protected_areas_area
                   )}
                 >
-                  {getValidatedValue(row.value.tree_cover_loss_protected_areas_yearly, row.value.protected_areas_area)}
+                  {getValidatedValue(
+                    row.value.tree_cover_loss_protected_areas_yearly,
+                    row.value.protected_areas_area
+                  )}
                 </span>
               ) : (
                 0
@@ -222,8 +242,14 @@ const columns = {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
               returnValue =
-                Object.values(JSON.parse(a.tree_cover_loss_protected_areas_yearly)).reduce((aa, bb) => aa + bb, 0) -
-                Object.values(JSON.parse(b.tree_cover_loss_protected_areas_yearly)).reduce((aa, bb) => aa + bb, 0);
+                Object.values(JSON.parse(a.tree_cover_loss_protected_areas_yearly)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                ) -
+                Object.values(JSON.parse(b.tree_cover_loss_protected_areas_yearly)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                );
             } else {
               returnValue = 0;
             }
@@ -274,8 +300,14 @@ const columns = {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
               returnValue =
-                Object.values(JSON.parse(a.tree_cover_loss_primary_forest_yearly)).reduce((aa, bb) => aa + bb, 0) -
-                Object.values(JSON.parse(b.tree_cover_loss_primary_forest_yearly)).reduce((aa, bb) => aa + bb, 0);
+                Object.values(JSON.parse(a.tree_cover_loss_primary_forest_yearly)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                ) -
+                Object.values(JSON.parse(b.tree_cover_loss_primary_forest_yearly)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                );
             } else {
               returnValue = 0;
             }
@@ -313,7 +345,11 @@ const columns = {
       width: 75,
       maxWidth: 75,
       Cell: (row) =>
-        checkValid(row.value) ? <span title={formatDigit(row.value)}>{formatDigit(row.value)}</span> : '--',
+        checkValid(row.value) ? (
+          <span title={formatDigit(row.value)}>{formatDigit(row.value)}</span>
+        ) : (
+          '--'
+        ),
     },
     {
       Header: () => (
@@ -615,7 +651,8 @@ const columns = {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
               returnValue =
-                getLastValue(a.commodity_mill_priority_level) - getLastValue(b.commodity_mill_priority_level);
+                getLastValue(a.commodity_mill_priority_level) -
+                getLastValue(b.commodity_mill_priority_level);
             } else {
               returnValue = 0;
             }
@@ -629,7 +666,8 @@ const columns = {
       Header: () => (
         <div className="react-table-commodity-risk">
           <span className="title-text" title={transifex(columnHeaders.threats)}>
-            {transifex(columnHeaders.threats)} <IconButtonWrapper id={locationsPage.infoBubbleConfig.threats} />
+            {transifex(columnHeaders.threats)}{' '}
+            <IconButtonWrapper id={locationsPage.infoBubbleConfig.threats} />
           </span>
         </div>
       ),
@@ -730,7 +768,9 @@ const columns = {
             } else if (a.location_status_id === 2 && b.location_status_id !== 2) {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
-              returnValue = getLastValue(a.commodity_threat_peat_level) - getLastValue(b.commodity_threat_peat_level);
+              returnValue =
+                getLastValue(a.commodity_threat_peat_level) -
+                getLastValue(b.commodity_threat_peat_level);
             } else {
               returnValue = 0;
             }
@@ -834,7 +874,9 @@ const columns = {
             } else if (a.location_status_id === 2 && b.location_status_id !== 2) {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
-              returnValue = getLastValue(a.commodity_threat_fires_level) - getLastValue(b.commodity_threat_fires_level);
+              returnValue =
+                getLastValue(a.commodity_threat_fires_level) -
+                getLastValue(b.commodity_threat_fires_level);
             } else {
               returnValue = 0;
             }
@@ -888,8 +930,14 @@ const columns = {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
               returnValue =
-                Object.values(JSON.parse(a.commodity_threat_overall_level)).reduce((aa, bb) => aa + bb, 0) -
-                Object.values(JSON.parse(b.commodity_threat_overall_level)).reduce((aa, bb) => aa + bb, 0);
+                Object.values(JSON.parse(a.commodity_threat_overall_level)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                ) -
+                Object.values(JSON.parse(b.commodity_threat_overall_level)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                );
             } else {
               returnValue = 0;
             }
@@ -903,7 +951,8 @@ const columns = {
       Header: () => (
         <div className="react-table-commodity-risk">
           <span className="title-text" title={transifex(columnHeaders.values)}>
-            {transifex(columnHeaders.values)} <IconButtonWrapper id={locationsPage.infoBubbleConfig.values} />
+            {transifex(columnHeaders.values)}{' '}
+            <IconButtonWrapper id={locationsPage.infoBubbleConfig.values} />
           </span>
         </div>
       ),
@@ -952,8 +1001,14 @@ const columns = {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
               returnValue =
-                Object.values(JSON.parse(a.commodity_value_forest_extent_level)).reduce((aa, bb) => aa + bb, 0) -
-                Object.values(JSON.parse(b.commodity_value_forest_extent_level)).reduce((aa, bb) => aa + bb, 0);
+                Object.values(JSON.parse(a.commodity_value_forest_extent_level)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                ) -
+                Object.values(JSON.parse(b.commodity_value_forest_extent_level)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                );
             } else {
               returnValue = 0;
             }
@@ -1005,8 +1060,14 @@ const columns = {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
               returnValue =
-                Object.values(JSON.parse(a.commodity_value_peat_level)).reduce((aa, bb) => aa + bb, 0) -
-                Object.values(JSON.parse(b.commodity_value_peat_level)).reduce((aa, bb) => aa + bb, 0);
+                Object.values(JSON.parse(a.commodity_value_peat_level)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                ) -
+                Object.values(JSON.parse(b.commodity_value_peat_level)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                );
             } else {
               returnValue = 0;
             }
@@ -1058,8 +1119,14 @@ const columns = {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
               returnValue =
-                Object.values(JSON.parse(a.commodity_value_protected_areas_level)).reduce((aa, bb) => aa + bb, 0) -
-                Object.values(JSON.parse(b.commodity_value_protected_areas_level)).reduce((aa, bb) => aa + bb, 0);
+                Object.values(JSON.parse(a.commodity_value_protected_areas_level)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                ) -
+                Object.values(JSON.parse(b.commodity_value_protected_areas_level)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                );
             } else {
               returnValue = 0;
             }
@@ -1113,8 +1180,14 @@ const columns = {
               returnValue = 1;
             } else if (a.location_status_id === 2 && b.location_status_id === 2) {
               returnValue =
-                Object.values(JSON.parse(a.commodity_value_overall_level)).reduce((aa, bb) => aa + bb, 0) -
-                Object.values(JSON.parse(b.commodity_value_overall_level)).reduce((aa, bb) => aa + bb, 0);
+                Object.values(JSON.parse(a.commodity_value_overall_level)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                ) -
+                Object.values(JSON.parse(b.commodity_value_overall_level)).reduce(
+                  (aa, bb) => aa + bb,
+                  0
+                );
             } else {
               returnValue = 0;
             }

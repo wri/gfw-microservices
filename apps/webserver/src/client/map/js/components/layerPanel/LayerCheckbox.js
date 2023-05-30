@@ -26,11 +26,17 @@ export default class LayerCheckbox extends Component {
       store.dispatch(toggleRaddLayers());
     } else if (layer.id === clarkLabsAquacultureLandCover) {
       // hide clarkLabsAquacultureLandCover if hidding this layer
-      if (store.getState().clarkLabsLayers && visibleLayers.includes(clarkLabsAquacultureLandCover)) {
+      if (
+        store.getState().clarkLabsLayers &&
+        visibleLayers.includes(clarkLabsAquacultureLandCover)
+      ) {
         store.dispatch(toggleLayer(clarkLabsAquacultureLandCover));
       }
       // hide clarkLabsAquacultureLandChange if hidding this layer
-      if (store.getState().clarkLabsLayers && visibleLayers.includes(clarkLabsAquacultureLandChange)) {
+      if (
+        store.getState().clarkLabsLayers &&
+        visibleLayers.includes(clarkLabsAquacultureLandChange)
+      ) {
         store.dispatch(toggleLayer(clarkLabsAquacultureLandChange));
       }
       // show clarkLabsAquacultureLandCover if turning on this layer
@@ -89,8 +95,12 @@ export default class LayerCheckbox extends Component {
             <use xlinkHref="#shape-info" />
           </svg>
         </span>
-        {layer.legendConfig.items && layer.legendConfig.items[0] && layer.legendConfig.items[0].source ? (
-          <span className="layer-sub-info">{this.cleanSource(layer.legendConfig.items[0].source)}</span>
+        {layer.legendConfig.items &&
+        layer.legendConfig.items[0] &&
+        layer.legendConfig.items[0].source ? (
+          <span className="layer-sub-info">
+            {this.cleanSource(layer.legendConfig.items[0].source)}
+          </span>
         ) : null}
       </div>
     );

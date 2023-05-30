@@ -39,7 +39,9 @@ describe('Test Header Component', () => {
     expect(getByText('Map')).toBeInTheDocument();
     expect(getByText('Dashboard')).toBeInTheDocument();
     await waitFor(() => {
-      const spanElement = container.querySelector('.new-feature-notifications__unread-notifications');
+      const spanElement = container.querySelector(
+        '.new-feature-notifications__unread-notifications'
+      );
       expect(spanElement).toBeInTheDocument();
       expect(spanElement.textContent).toBe('1');
     });

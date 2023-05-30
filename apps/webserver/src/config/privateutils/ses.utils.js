@@ -67,7 +67,9 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
         `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"><tr><td><u>Account Information</u></td></tr><tr><td>Company Name:</td><td>${
           content.org_name
         }</td></tr>${
-          content.is_subsidiary ? `<tr><td>Parent Company Name:</td><td>${content.parent_org_name}</td></tr>` : ''
+          content.is_subsidiary
+            ? `<tr><td>Parent Company Name:</td><td>${content.parent_org_name}</td></tr>`
+            : ''
         }<tr><td>Company Address:</td><td>${content.org_address}</td></tr>` +
         `<tr><td>Company Website:</td><td>${content.org_website}</td></tr>${
           content.policyNames.length > 0
@@ -92,8 +94,9 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
     case config.platformVars.emailType.REQUEST_ORGANIZATION:
       title = `<h3>Dear ${content.user_first_name} ${content.user_last_name},</h3>`;
       msg =
-        `<p>We received your GFW Pro Account application submitted on ${moment().format('DD MMM YYYY, hh:mm a')}.</p>` +
-        '<p>We will review your application and respond within 2 business days.</p>';
+        `<p>We received your GFW Pro Account application submitted on ${moment().format(
+          'DD MMM YYYY, hh:mm a'
+        )}.</p>` + '<p>We will review your application and respond within 2 business days.</p>';
       break;
     case config.platformVars.emailType.ORGANIZATION_ACTIVATED:
       title = `<h3>Dear ${content.user_first_name} ${content.user_last_name},</h3>`;
@@ -131,7 +134,9 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
         `<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"><tr><td><u>Account Profile</u></td></tr><tr><td>Company Name:</td><td>${
           content.org_name
         }</td></tr>${
-          content.is_subsidiary ? `<tr><td>Parent Company Name:</td><td>${content.parent_org_name}</td></tr>` : ''
+          content.is_subsidiary
+            ? `<tr><td>Parent Company Name:</td><td>${content.parent_org_name}</td></tr>`
+            : ''
         }<tr><td>Company Address:</td><td>${content.org_address}</td></tr>` +
         `<tr><td>Company Website:</td><td>${content.org_website}</td></tr>${
           content.policyNames.length > 0

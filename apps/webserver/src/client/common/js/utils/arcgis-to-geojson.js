@@ -281,7 +281,8 @@ function arcgisToGeoJSON(arcgis, idAttribute) {
     geojson.geometry = arcgis.geometry ? arcgisToGeoJSON(arcgis.geometry) : null;
     geojson.properties = arcgis.attributes ? shallowClone(arcgis.attributes) : null;
     if (arcgis.attributes) {
-      geojson.id = arcgis.attributes[idAttribute] || arcgis.attributes.OBJECTID || arcgis.attributes.FID;
+      geojson.id =
+        arcgis.attributes[idAttribute] || arcgis.attributes.OBJECTID || arcgis.attributes.FID;
     }
   }
 

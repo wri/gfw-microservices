@@ -4,7 +4,8 @@ import React from 'react';
  */
 export default function ModalWrapper(props) {
   const contentClass = `modal-content custom-scroll ${props.theme ? props.theme : ''}`;
-  const closeClass = props.theme === 'no-download search-tool-wrapper' ? 'search-tool-close-icon' : '';
+  const closeClass =
+    props.theme === 'no-download search-tool-wrapper' ? 'search-tool-close-icon' : '';
   return (
     <div className="modal-container" data-modal-type={props.modalType}>
       <div className="modal-background" onClick={props.onClose} />

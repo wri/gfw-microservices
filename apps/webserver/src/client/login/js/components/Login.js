@@ -216,7 +216,9 @@ export default class Login extends Component {
         <div key={actionItem.description} className="login__why__section__action">
           <button
             onClick={() => (actionItem.requestDemo ? this.requestDemo() : null)}
-            className={`button login__why__section__action__title ${actionItem.requestDemo ? 'pointer' : ''}`}
+            className={`button login__why__section__action__title ${
+              actionItem.requestDemo ? 'pointer' : ''
+            }`}
           >
             {actionItem.description} »
           </button>
@@ -285,12 +287,22 @@ export default class Login extends Component {
           paperClassName="dialog-paper"
           title={dialogTitle}
           actions={[
-            <Button variant="primary" label="OK" className="login-ok-button" onClick={this.handleDialogClose} />,
+            <Button
+              variant="primary"
+              label="OK"
+              className="login-ok-button"
+              onClick={this.handleDialogClose}
+            />,
           ]}
           modal={false}
           open={dialogOpen}
           onRequestClose={this.handleDialogClose}
-          children={<div className="dialog-content-email" dangerouslySetInnerHTML={{ __html: dialogMessage }} />}
+          children={
+            <div
+              className="dialog-content-email"
+              dangerouslySetInnerHTML={{ __html: dialogMessage }}
+            />
+          }
         />
         <div className={`hero videoHidden-${videoHidden}`}>
           <div className="hero__content container">
@@ -346,12 +358,20 @@ export default class Login extends Component {
                 </div>
                 <div className="split__left">
                   {isEnglishLanguage && (
-                    <video className="login__why__section__video" poster={gwfInActionPoster} controls>
+                    <video
+                      className="login__why__section__video"
+                      poster={gwfInActionPoster}
+                      controls
+                    >
                       <source src={gfwInAction} />
                     </video>
                   )}
                   {!isEnglishLanguage && (
-                    <video className="login__why__section__video" poster={gwfInActionPoster} controls>
+                    <video
+                      className="login__why__section__video"
+                      poster={gwfInActionPoster}
+                      controls
+                    >
                       <source src={gfwInActionEs} />
                     </video>
                   )}
@@ -375,7 +395,9 @@ export default class Login extends Component {
                   {subsections.map((item) => (
                     <div key={item.title}>
                       <div
-                        className={`role-highlight__item ${activeRole === item.id ? 'active-role' : ''}`}
+                        className={`role-highlight__item ${
+                          activeRole === item.id ? 'active-role' : ''
+                        }`}
                         onClick={() => this.changeRole(item.id)}
                       >
                         <div className="role-icon">
@@ -386,7 +408,11 @@ export default class Login extends Component {
                           </span>
                         </div>
                         <h4 className="role-highlight__title">{item.title}</h4>
-                        <img className="role-highlight__arrow" src={iconArrowRight} alt="Arrow icon" />
+                        <img
+                          className="role-highlight__arrow"
+                          src={iconArrowRight}
+                          alt="Arrow icon"
+                        />
                       </div>
                       <div className="accordion">
                         {activeRole === item.id && (
@@ -400,7 +426,9 @@ export default class Login extends Component {
                             <div className="tool-highlight__item" key={itemHighLight.description}>
                               <div className="tool-highlight__item-content">
                                 <h3 className="tool-highlight__title">{itemHighLight.title}</h3>
-                                <p className="tool-highlight__description">{itemHighLight.description}</p>
+                                <p className="tool-highlight__description">
+                                  {itemHighLight.description}
+                                </p>
                               </div>
                             </div>
                           ))}
@@ -435,7 +463,11 @@ export default class Login extends Component {
               <div className="quote" key={item.image}>
                 <div className="quote__container">
                   <div className="quote__image-container">
-                    <img className="quote__image" src={item.image} alt={`item image ${item.image}`} />
+                    <img
+                      className="quote__image"
+                      src={item.image}
+                      alt={`item image ${item.image}`}
+                    />
                   </div>
                   <div>
                     <span className="quote__name">{item.name}</span> •{' '}
@@ -452,7 +484,11 @@ export default class Login extends Component {
           <div className="split">
             <div className="split__left">
               <p>{loginPage.moreInfo.help.paragraphText}</p>
-              <button type="button" onClick={() => this.requestMoreInfo()} className="button button--secondary">
+              <button
+                type="button"
+                onClick={() => this.requestMoreInfo()}
+                className="button button--secondary"
+              >
                 {loginPage.moreInfo.help.buttonText}
               </button>
             </div>

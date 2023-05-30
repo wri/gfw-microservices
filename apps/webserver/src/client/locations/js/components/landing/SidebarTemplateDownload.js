@@ -23,7 +23,9 @@ class SidebarTemplateDownload extends Component {
   downloadTemplate = () => {
     const { selectedTemplate } = this.state;
     const templateOptions = locationsPage.landing.selectTemplateOptions;
-    const selectedTemplateLabel = templateOptions.find((i) => i.templateName === selectedTemplate).label;
+    const selectedTemplateLabel = templateOptions.find(
+      (i) => i.templateName === selectedTemplate
+    ).label;
     ga('send', 'event', 'Landing Page Click', 'Download button clicked', selectedTemplateLabel);
     window.open(selectedTemplate);
   };
@@ -88,7 +90,9 @@ class SidebarTemplateDownload extends Component {
                 fullWidth={true}
               />
             </div>
-            <div dangerouslySetInnerHTML={{ __html: strings.howToGuideFooter(this.props.language) }} />
+            <div
+              dangerouslySetInnerHTML={{ __html: strings.howToGuideFooter(this.props.language) }}
+            />
           </div>
         )}
       </div>

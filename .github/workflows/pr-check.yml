@@ -140,3 +140,29 @@ jobs:
 
       - name: Run Build
         run: npx nx affected --target=build --parallel=3
+
+  Run-e2e:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.15.1]
+
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: nrwl/nx-set-shas@v3
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Start containers
+      run: docker compose -f "./apps/webserver/docker-compose.yml" up -d --build
+
+    - name: Run e2e
+      run: nx e2e gfwpro-e2e
+
+    - name: Start containers
+      run: docker-compose -f "./apps/webserver/docker-compose.yml" down

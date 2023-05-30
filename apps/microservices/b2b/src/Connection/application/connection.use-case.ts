@@ -1,24 +1,20 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
-import { error } from 'console';
-import { DataServices } from '../../Shared/domain/data-service';
 import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';
-import { CreateConnectionDto } from '../application/dtos/connection.dto';
-import { Connection, ConnectionStatus } from '../domain/connection';
+import { ConnectionStatus } from '../../Connection/domain/connection';
 import { ConnectionRepository } from '../domain/connection.repository';
 import { ConnectionDataMapper } from './connection.mapper';
-import {
-  ConnectionChangeDto,
-  ConnectionUpdateStatusHttpDto,
-} from './dtos/connection-status.dto';
-import { ConnectionDbDto } from './dtos/connection-db.dto';
-import { ConnectionFiltersDto } from './dtos/connection-filters.dto';
-import { ConnectionGetDto } from './dtos/connection-get.dto';
-import { PromiseResult } from 'aws-sdk/lib/request';
 import { ConnectionAdminOrganizationDto } from './dtos/connection-admin-organizations.dto';
 import { LogsUseCases } from '../../Logs/application/log.use-case';
 import { ActivityType } from '../../Logs/application/dtos/log.dto';
+import { ConnectionFiltersDto } from './dtos/connection-filters.dto';
+import { ConnectionGetDto } from './dtos/connection-get.dto';
+import {
+  ConnectionUpdateStatusHttpDto,
+  ConnectionChangeDto,
+} from './dtos/connection-status.dto';
+import { CreateConnectionDto } from './dtos/connection.dto';
+import { EmailService } from '@wri-monorepos/aws';
 
 @Injectable()
 export class ConnectionUseCases {
@@ -29,6 +25,9 @@ export class ConnectionUseCases {
 
   @Inject(LogsUseCases)
   private readonly logsUseCases: LogsUseCases;
+
+  @Inject(EmailService)
+  private readonly emailService: EmailService;
 
   async getConnections(
     filtersDto: ConnectionFiltersDto,
@@ -42,6 +41,51 @@ export class ConnectionUseCases {
       return Result.ok(connectionsGetDto);
     }
     return Result.fail(connectionsRes.getError());
+  }
+
+  async createConnection(
+    createConnectionDto: CreateConnectionDto,
+  ): ResultPromise<boolean> {
+    const invitation =
+      this.mapper.createConnectionDtotoConnectionInvitation(
+        createConnectionDto,
+      );
+    const result = await this.connectionRepo.createConnection(invitation);
+
+    if (result.isSuccess) {
+      this.logsUseCases.saveActivityLog({
+        activityType: ActivityType.ConnectionRequested,
+        userEmail: createConnectionDto.sourceEmail,
+        organizationTarget: createConnectionDto.sourceOrganization,
+        description: `${createConnectionDto.sourceEmail} Has requested to make a trusted connection to ${createConnectionDto.targetOrganization}`,
+      });
+
+      this.logsUseCases.saveActivityLog({
+        activityType: ActivityType.ConnectionRequested,
+        userEmail: createConnectionDto.targetEmail,
+        organizationTarget: createConnectionDto.targetOrganization,
+        description: `${createConnectionDto.sourceEmail} from ${createConnectionDto.sourceOrganization} Has requested to make a trusted conect`,
+      });
+
+      this.emailService.sendEmail(
+        process.env.SES_SENDER_EMAIL,
+        [invitation.targetEmail],
+        `[GFW-PRO] You have a new connection invitation from ${invitation.sourceEmail} that belongs to the organization ${invitation.sourceOrganization}.`,
+        'connectInvite',
+        {
+          sourceEmail: invitation.sourceEmail,
+          sourceOrganization: invitation.sourceOrganization,
+          targetEmail: invitation.targetEmail,
+          targetOrganization: invitation.targetOrganization,
+        },
+      );
+      return Result.ok(true);
+    }
+    return Result.fail(result.getError());
+  }
+
+  resendConnection(id: number) {
+    return this.connectionRepo.resendConnection(id);
   }
 
   async acceptConnection(
@@ -95,6 +139,7 @@ export class ConnectionUseCases {
     return Result.fail(result.getError());
   }
 
+  //TODO: move to user service
   async getOrganizationsByUser(
     email: string,
   ): ResultPromise<ConnectionAdminOrganizationDto[]> {

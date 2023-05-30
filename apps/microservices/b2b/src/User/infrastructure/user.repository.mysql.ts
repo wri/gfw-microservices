@@ -48,4 +48,5 @@ export class UserRepositoryMysql
     const user = await getUserByEmail.execute<User>(db);
     return user;
   }
+
 }

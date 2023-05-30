@@ -1,24 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { DatabaseProvider } from '../../Database/database.provider';
 import ResultPromise from '../../Shared/domain/result/result.promise';
-import { SharedListEntity } from '../infrastructure/list-shared.entity';
-import { ListRepository } from './connection.repository';
+import {  } from '../../SharedList/domain/list-shared.repository';
+import { List } from '../domain/list.entity';
+import { ListRepository } from '../domain/list.repository';
 
 @Injectable()
-export class ListService {
+export class ListUseCases {
+
+  @Inject(DatabaseProvider)
+  private readonly databaseProvider: DatabaseProvider;
+
   constructor(private readonly listRepository: ListRepository) {}
 
-  async create(list: SharedListEntity): ResultPromise<SharedListEntity> {
-    return this.listRepository.create(list);
+  async findListsByFilters(filters: any): ResultPromise<List[]> {
+    await this.databaseProvider.getConnection('clientstore-DevCo')
+    //console.log(this.databaseProvider.getConnections())
+    const lists = await this.listRepository.findListsByFilters(filters);
+    return lists;
   }
 
-  async update(
-    id: number,
-    list: SharedListEntity,
-  ): ResultPromise<SharedListEntity> {
-    return this.listRepository.update(id, list);
-  }
-
-  async delete(id: number): ResultPromise<void> {
-    return this.listRepository.delete(id);
+  async findListById(id: number): ResultPromise<List | undefined> {
+    const list = await this.listRepository.findListById(id);
+    return list;
   }
 }

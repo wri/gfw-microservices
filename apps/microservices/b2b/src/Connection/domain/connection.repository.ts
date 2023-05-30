@@ -6,7 +6,8 @@ import {
 import { ConnectionDbDto } from '../application/dtos/connection-db.dto';
 import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto';
 import { ConnectionChangeDto } from '../application/dtos/connection-status.dto';
-import { Connection } from './connection';
+import { Connection } from '../../Connection/domain/connection';
+import { ConnectionInvitation } from './connection';
 
 export abstract class ConnectionRepository {
   abstract updateStatusConnection(
@@ -18,4 +19,6 @@ export abstract class ConnectionRepository {
   abstract getConnections(
     filtersDto: ConnectionFiltersDto,
   ): ResultPromise<Connection[]>;
+  abstract resendConnection(id: number): ResultPromise<void>;
+  abstract createConnection(connectionInvitation: ConnectionInvitation): ResultPromise<Number>;
 }

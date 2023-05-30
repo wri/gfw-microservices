@@ -1,7 +1,7 @@
 import { ConnectionRepository } from '../../Connection/domain/connection.repository';
-import { InvitationRepository } from '../../Invitation/domain/invitation.repository';
+import { ListRepository } from '../../List/domain/list.repository';
 
 export abstract class DataServices {
   abstract connection: ConnectionRepository;
-  abstract invitation: InvitationRepository;
+  abstract list: ListRepository;
 }

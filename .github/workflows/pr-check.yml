@@ -140,7 +140,6 @@ jobs:
 
       - name: Run Build
         run: npx nx affected --target=build --parallel=3
-
 #  Run-e2e:
 #    runs-on: ubuntu-latest
 #

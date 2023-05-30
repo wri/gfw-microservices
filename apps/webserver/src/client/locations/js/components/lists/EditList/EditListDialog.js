@@ -3,7 +3,7 @@ import * as PropTypes from 'prop-types';
 import Dialog from 'material-ui/Dialog';
 import { IconClose } from '../../../../../common/js/components/icon/IconClose';
 
-const EditListDialog = props => {
+const EditListDialog = (props) => {
   return (
     <Dialog
       title={
@@ -16,20 +16,14 @@ const EditListDialog = props => {
       onRequestClose={() => props.onRequestClose()}
       actions={
         <div className="ModalDialog__footer">
-          <button
-            className="gfw-button btn-green"
-            onClick={() => props.onRequestClose()}
-          >
+          <button className="gfw-button btn-green" onClick={() => props.onRequestClose()}>
             OK
           </button>
         </div>
       }
     >
       <div className="ModalDialog__body">
-        <p>
-          To edit locations in a list, you must first select the locations you
-          wish to add
-        </p>
+        <p>To edit locations in a list, you must first select the locations you wish to add</p>
       </div>
     </Dialog>
   );

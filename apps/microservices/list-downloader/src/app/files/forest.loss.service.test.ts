@@ -40,30 +40,9 @@ describe('Forest Loss Service', () => {
         'Loss (all years) (ha)',
         '% of TCL',
       ],
-      [
-        'sensitive_areas_loss_of_forests_aggregate',
-        'Tree Cover Loss',
-        2,
-        '2010',
-        9,
-        '22.22',
-      ],
-      [
-        'sensitive_areas_loss_of_forests_aggregate',
-        'Tree Cover Loss',
-        3,
-        '2011',
-        9,
-        '33.33',
-      ],
-      [
-        'sensitive_areas_loss_of_forests_aggregate',
-        'Tree Cover Loss',
-        4,
-        '2012',
-        9,
-        '44.44',
-      ],
+      ['sensitive_areas_loss_of_forests_aggregate', 'Tree Cover Loss', 2, '2010', 9, '22.22'],
+      ['sensitive_areas_loss_of_forests_aggregate', 'Tree Cover Loss', 3, '2011', 9, '33.33'],
+      ['sensitive_areas_loss_of_forests_aggregate', 'Tree Cover Loss', 4, '2012', 9, '44.44'],
     ]);
   });
 
@@ -85,21 +64,43 @@ describe('Forest Loss Service', () => {
         'Loss (all years) (ha)',
         '% of TCL',
       ],
+      ['sensitive_areas_loss_of_forests_aggregate', 'Tree Cover Loss', 2, '2010', 2, '100.00'],
+      ['sensitive_areas_loss_of_forests_aggregate', 'Primary Forest', 2, '2011', 2, '100.00'],
+    ]);
+  });
+
+  test('Receive an empty analysis data', () => {
+    const returnData = forestLossService.generateAggregate(
+      'forestLossAggregate',
+      'sensitive_areas_loss_of_forests_aggregate',
+      {}
+    );
+    expect(returnData).toEqual([
       [
-        'sensitive_areas_loss_of_forests_aggregate',
-        'Tree Cover Loss',
-        2,
-        '2010',
-        2,
-        '100.00',
+        'List Name',
+        'Data Layer Name',
+        'Forest Loss (ha)',
+        'Year',
+        'Loss (all years) (ha)',
+        '% of TCL',
       ],
+    ]);
+  });
+
+  test('Receive an undefined analysis data', () => {
+    const returnData = forestLossService.generateAggregate(
+      'forestLossAggregate',
+      'sensitive_areas_loss_of_forests_aggregate',
+      undefined
+    );
+    expect(returnData).toEqual([
       [
-        'sensitive_areas_loss_of_forests_aggregate',
-        'Primary Forest',
-        2,
-        '2011',
-        2,
-        '100.00',
+        'List Name',
+        'Data Layer Name',
+        'Forest Loss (ha)',
+        'Year',
+        'Loss (all years) (ha)',
+        '% of TCL',
       ],
     ]);
   });

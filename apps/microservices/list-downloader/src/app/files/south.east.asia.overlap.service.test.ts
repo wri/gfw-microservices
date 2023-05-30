@@ -21,13 +21,7 @@ describe('South East Asia Overlap Service', () => {
       }
     );
     expect(returnData).toEqual([
-      [
-        'List Name',
-        'Data Layer Name',
-        'Forest Loss (ha)',
-        'Year',
-        'Total Loss (ha)',
-      ],
+      ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
     ]);
   });
 
@@ -45,42 +39,12 @@ describe('South East Asia Overlap Service', () => {
       }
     );
     expect(returnData).toEqual([
-      [
-        'List Name',
-        'Data Layer Name',
-        'Forest Loss (ha)',
-        'Year',
-        'Total Loss (ha)',
-      ],
+      ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
       ['south_east_asia_tcl_aggregate', 'Tree Cover Loss', 30, '2018', '30.00'],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Southeast Asia Landcover',
-        20,
-        '2018',
-        '20.00',
-      ],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Indonesia Landcover',
-        30,
-        '2018',
-        '30.00',
-      ],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Indonesia Legal Classification',
-        20,
-        '2018',
-        '20.00',
-      ],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Indonesia Forest Moratorium',
-        50,
-        '2018',
-        '50.00',
-      ],
+      ['south_east_asia_tcl_aggregate', 'Southeast Asia Landcover', 20, '2018', '20.00'],
+      ['south_east_asia_tcl_aggregate', 'Indonesia Landcover', 30, '2018', '30.00'],
+      ['south_east_asia_tcl_aggregate', 'Indonesia Legal Classification', 20, '2018', '20.00'],
+      ['south_east_asia_tcl_aggregate', 'Indonesia Forest Moratorium', 50, '2018', '50.00'],
       ['south_east_asia_tcl_aggregate', 'Primary Forest', 40, '2018', '40.00'],
     ]);
   });
@@ -94,79 +58,46 @@ describe('South East Asia Overlap Service', () => {
         tree_cover_loss_sea_landcover_yearly: '{"2018": 20, "2019": 30}',
         tree_cover_loss_idn_landcover_yearly: '{"2018": 30, "2019": 40}',
         tree_cover_loss_idn_legal_yearly: '{"2018": 20, "2019": 30}',
-        tree_cover_loss_idn_forest_moratorium_yearly:
-          '{"2018": 50, "2019": 30}',
+        tree_cover_loss_idn_forest_moratorium_yearly: '{"2018": 50, "2019": 30}',
         tree_cover_loss_idn_primary_forest_yearly: '{"2018": 40, "2019": 30}',
       }
     );
     expect(returnData).toEqual([
-      [
-        'List Name',
-        'Data Layer Name',
-        'Forest Loss (ha)',
-        'Year',
-        'Total Loss (ha)',
-      ],
+      ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
       ['south_east_asia_tcl_aggregate', 'Tree Cover Loss', 30, '2018', '50.00'],
       ['south_east_asia_tcl_aggregate', 'Tree Cover Loss', 20, '2019', '50.00'],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Southeast Asia Landcover',
-        20,
-        '2018',
-        '50.00',
-      ],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Southeast Asia Landcover',
-        30,
-        '2019',
-        '50.00',
-      ],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Indonesia Landcover',
-        30,
-        '2018',
-        '70.00',
-      ],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Indonesia Landcover',
-        40,
-        '2019',
-        '70.00',
-      ],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Indonesia Legal Classification',
-        20,
-        '2018',
-        '50.00',
-      ],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Indonesia Legal Classification',
-        30,
-        '2019',
-        '50.00',
-      ],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Indonesia Forest Moratorium',
-        50,
-        '2018',
-        '80.00',
-      ],
-      [
-        'south_east_asia_tcl_aggregate',
-        'Indonesia Forest Moratorium',
-        30,
-        '2019',
-        '80.00',
-      ],
+      ['south_east_asia_tcl_aggregate', 'Southeast Asia Landcover', 20, '2018', '50.00'],
+      ['south_east_asia_tcl_aggregate', 'Southeast Asia Landcover', 30, '2019', '50.00'],
+      ['south_east_asia_tcl_aggregate', 'Indonesia Landcover', 30, '2018', '70.00'],
+      ['south_east_asia_tcl_aggregate', 'Indonesia Landcover', 40, '2019', '70.00'],
+      ['south_east_asia_tcl_aggregate', 'Indonesia Legal Classification', 20, '2018', '50.00'],
+      ['south_east_asia_tcl_aggregate', 'Indonesia Legal Classification', 30, '2019', '50.00'],
+      ['south_east_asia_tcl_aggregate', 'Indonesia Forest Moratorium', 50, '2018', '80.00'],
+      ['south_east_asia_tcl_aggregate', 'Indonesia Forest Moratorium', 30, '2019', '80.00'],
       ['south_east_asia_tcl_aggregate', 'Primary Forest', 40, '2018', '70.00'],
       ['south_east_asia_tcl_aggregate', 'Primary Forest', 30, '2019', '70.00'],
+    ]);
+  });
+
+  test('Receive an empty object ', () => {
+    const returnData = southAmericaLossService.generateAggregate(
+      'seAsiaTCLAggregate',
+      'south_east_asia_tcl_aggregate',
+      {}
+    );
+    expect(returnData).toEqual([
+      ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
+    ]);
+  });
+
+  test('Receive an undefined data', () => {
+    const returnData = southAmericaLossService.generateAggregate(
+      'seAsiaTCLAggregate',
+      'south_east_asia_tcl_aggregate',
+      undefined
+    );
+    expect(returnData).toEqual([
+      ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
     ]);
   });
 });

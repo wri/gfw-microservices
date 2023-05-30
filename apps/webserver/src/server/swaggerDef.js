@@ -3,9 +3,11 @@ const path = require('path');
 
 const app = express();
 
-app.use(bodyparser.json({
-  strict: false,
-}));
+app.use(
+  bodyparser.json({
+    strict: false,
+  })
+);
 
 // -- setup up swagger-jsdoc --
 const swaggerDefinition = {

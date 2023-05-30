@@ -29,13 +29,17 @@ export default class StepTwo extends Component {
     const investmentTemplate = this.props.templateData.filter(
       (template) => template.location_type_name === 'Investment'
     );
-    const commodityTemplate = this.props.templateData.filter((template) => template.location_type_name === 'Commodity');
+    const commodityTemplate = this.props.templateData.filter(
+      (template) => template.location_type_name === 'Commodity'
+    );
 
     return (
       <div className="locations-upload-step">
         <h2 className="locations-upload-step__step-title">
           {locationsPage.add.additionalAttributes}
-          <span className="locations-subpage-header__label optional">{locationsPage.add.optional}</span>
+          <span className="locations-subpage-header__label optional">
+            {locationsPage.add.optional}
+          </span>
         </h2>
 
         <DescribeInvestment

@@ -39,27 +39,9 @@ describe('Historic Percent Service', () => {
         0,
         0,
       ],
-      [
-        'sensitive_areas_percentage_historic_area_lost_aggregate',
-        'Primary Forest',
-        '0.00',
-        0,
-        0,
-      ],
-      [
-        'sensitive_areas_percentage_historic_area_lost_aggregate',
-        'Protected Areas',
-        '0.00',
-        0,
-        0,
-      ],
-      [
-        'sensitive_areas_percentage_historic_area_lost_aggregate',
-        'Peat',
-        '0.00',
-        0,
-        0,
-      ],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Primary Forest', '0.00', 0, 0],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Protected Areas', '0.00', 0, 0],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Peat', '0.00', 0, 0],
       [
         'sensitive_areas_percentage_historic_area_lost_aggregate',
         'Intact Forest Landscapes',
@@ -102,13 +84,7 @@ describe('Historic Percent Service', () => {
         5,
         15,
       ],
-      [
-        'sensitive_areas_percentage_historic_area_lost_aggregate',
-        'Primary Forest',
-        '54.55',
-        6,
-        11,
-      ],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Primary Forest', '54.55', 6, 11],
       [
         'sensitive_areas_percentage_historic_area_lost_aggregate',
         'Protected Areas',
@@ -116,19 +92,81 @@ describe('Historic Percent Service', () => {
         7,
         19,
       ],
-      [
-        'sensitive_areas_percentage_historic_area_lost_aggregate',
-        'Peat',
-        '40.00',
-        8,
-        20,
-      ],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Peat', '40.00', 8, 20],
       [
         'sensitive_areas_percentage_historic_area_lost_aggregate',
         'Intact Forest Landscapes',
         '42.86',
         9,
         21,
+      ],
+    ]);
+  });
+
+  test('Receive an empty analysis data', () => {
+    const returnData = historicPercentService.generateAggregate(
+      'historicPercentAggregate',
+      'sensitive_areas_percentage_historic_area_lost_aggregate',
+      {}
+    );
+    expect(returnData).toEqual([
+      [
+        'List Name',
+        'Data Layer Name',
+        '% of Historic Area Lost',
+        'Loss (all years) (ha)',
+        'Tree Cover Extent (2000) (ha)',
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Tree Cover Extent',
+        '0.00',
+        0,
+        0,
+      ],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Primary Forest', '0.00', 0, 0],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Protected Areas', '0.00', 0, 0],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Peat', '0.00', 0, 0],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Intact Forest Landscapes',
+        '0.00',
+        0,
+        0,
+      ],
+    ]);
+  });
+
+  test('Receive an empty analysis data', () => {
+    const returnData = historicPercentService.generateAggregate(
+      'historicPercentAggregate',
+      'sensitive_areas_percentage_historic_area_lost_aggregate',
+      undefined
+    );
+    expect(returnData).toEqual([
+      [
+        'List Name',
+        'Data Layer Name',
+        '% of Historic Area Lost',
+        'Loss (all years) (ha)',
+        'Tree Cover Extent (2000) (ha)',
+      ],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Tree Cover Extent',
+        '0.00',
+        0,
+        0,
+      ],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Primary Forest', '0.00', 0, 0],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Protected Areas', '0.00', 0, 0],
+      ['sensitive_areas_percentage_historic_area_lost_aggregate', 'Peat', '0.00', 0, 0],
+      [
+        'sensitive_areas_percentage_historic_area_lost_aggregate',
+        'Intact Forest Landscapes',
+        '0.00',
+        0,
+        0,
       ],
     ]);
   });

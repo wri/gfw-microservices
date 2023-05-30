@@ -5,23 +5,23 @@ const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
 /**
-* @name exports
-* @static
-* @summary Dashboard page routes
-*/
+ * @name exports
+ * @static
+ * @summary Dashboard page routes
+ */
 module.exports = (app, limiter) => {
   /**
-  * @name /dashboard
-  * @see dashboard.controller
-  * @memberof Router
-  */
+   * @name /dashboard
+   * @see dashboard.controller
+   * @memberof Router
+   */
 
   // All methods must under /dashboard must pass through middleware
   const routeMiddlewares = [
     middlewares.checkOrganization,
     middlewares.checkAuthentication,
     middlewares.checkActive,
-    middlewares.checkInactivity
+    middlewares.checkInactivity,
   ];
 
   if (rateLimiterUtil.useRateLimiter()) {
@@ -36,16 +36,16 @@ module.exports = (app, limiter) => {
     app.set('from-map', false);
   });
 
-  app.post('/dashboard/map-locations', function(req, res) {
+  app.post('/dashboard/map-locations', function (req, res) {
     app.set('from-map', true);
     res.send('return');
   });
 
   app.post('/dashboard/analyze-list', (request, response) => {
-    request.setTimeout(600000);         // in milleseconds - currently 10 minutes
+    request.setTimeout(600000); // in milleseconds - currently 10 minutes
     const { list, gfw } = request.body;
     AnalysisManager.requestDashboardAnalysis(request, list, gfw)
-      .then(result => response.send(result))
-      .catch(err => response.send(err));
+      .then((result) => response.send(result))
+      .catch((err) => response.send(err));
   });
 };

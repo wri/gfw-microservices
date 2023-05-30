@@ -7,11 +7,7 @@ import Button from '../../../common/js/components/Button';
 import LinkButton from '../../../common/js/components/LinkButton';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import { fieldValidations } from '../../../profile/js/utils/validations';
-import {
-  termsAndConditions,
-  privacyPolicy,
-  profilePage,
-} from '../../../common/js/config';
+import { termsAndConditions, privacyPolicy, profilePage } from '../../../common/js/config';
 import '../../css/account.scss';
 
 export default class Account extends Component {
@@ -45,13 +41,7 @@ export default class Account extends Component {
   }
 
   removeExtraSpaces = () => {
-    const {
-      org_name,
-      parent_org_name,
-      org_address,
-      user_first_name,
-      user_last_name,
-    } = this.state;
+    const { org_name, parent_org_name, org_address, user_first_name, user_last_name } = this.state;
     this.setState({
       org_name: org_name.trim(),
       parent_org_name: parent_org_name.trim(),
@@ -77,37 +67,22 @@ export default class Account extends Component {
         errors.push(fieldValidations.organization_name.text);
       }
     });
-    fieldValidations.organization_name.mandatoryChecks.forEach(
-      (mandatoryCheck) => {
-        if (mandatoryCheck(this.state.org_name.trim()) === false) {
-          missing.push(fieldValidations.organization_name.text);
-        }
+    fieldValidations.organization_name.mandatoryChecks.forEach((mandatoryCheck) => {
+      if (mandatoryCheck(this.state.org_name.trim()) === false) {
+        missing.push(fieldValidations.organization_name.text);
       }
-    );
+    });
 
     if (this.state.org_name.trim().length > 150) {
       errors.push('You organization name must have less than 150 characters.');
     }
-    if (
-      this.state.is_subsidiary &&
-      this.state.parent_org_name.trim().length === 0
-    ) {
-      errors.push(
-        'You must provide a parent organization if your organization is a subsidy.'
-      );
+    if (this.state.is_subsidiary && this.state.parent_org_name.trim().length === 0) {
+      errors.push('You must provide a parent organization if your organization is a subsidy.');
     }
-    if (
-      !this.state.is_subsidiary &&
-      this.state.parent_org_name.trim().length !== 0
-    ) {
-      errors.push(
-        'You must check the subsidiary box if a parent organization is supplied.'
-      );
+    if (!this.state.is_subsidiary && this.state.parent_org_name.trim().length !== 0) {
+      errors.push('You must check the subsidiary box if a parent organization is supplied.');
     }
-    if (
-      parseInt(this.state.user_title_id) === 10 &&
-      this.state.otherTitle.trim().length === 0
-    ) {
+    if (parseInt(this.state.user_title_id) === 10 && this.state.otherTitle.trim().length === 0) {
       errors.push('You must provide an alternative title.');
     }
     if (this.state.arr_org_classification_ids.length === 0) {
@@ -119,26 +94,22 @@ export default class Account extends Component {
         errors.push(fieldValidations.organization_address.text);
       }
     });
-    fieldValidations.organization_address.mandatoryChecks.forEach(
-      (mandatoryCheck) => {
-        if (mandatoryCheck(this.state.org_address.trim()) === false) {
-          missing.push(fieldValidations.organization_address.text);
-        }
+    fieldValidations.organization_address.mandatoryChecks.forEach((mandatoryCheck) => {
+      if (mandatoryCheck(this.state.org_address.trim()) === false) {
+        missing.push(fieldValidations.organization_address.text);
       }
-    );
+    });
 
     fieldValidations.organization_website.validations.forEach((validation) => {
       if (validation(this.state.org_website.trim()) === false) {
         errors.push(fieldValidations.organization_website.text);
       }
     });
-    fieldValidations.organization_website.mandatoryChecks.forEach(
-      (mandatoryCheck) => {
-        if (mandatoryCheck(this.state.org_website.trim()) === false) {
-          missing.push(fieldValidations.organization_website.text);
-        }
+    fieldValidations.organization_website.mandatoryChecks.forEach((mandatoryCheck) => {
+      if (mandatoryCheck(this.state.org_website.trim()) === false) {
+        missing.push(fieldValidations.organization_website.text);
       }
-    );
+    });
 
     fieldValidations.first_name.validations.forEach((validation) => {
       if (validation(this.state.user_first_name.trim()) === false) {
@@ -223,8 +194,7 @@ export default class Account extends Component {
           this.setState({
             dialogOpen: true,
             dialogTitle: 'Account Not Created',
-            dialogMessage:
-              'This account request has failed. Please try again at another time.',
+            dialogMessage: 'This account request has failed. Please try again at another time.',
             creatingAccount: false,
           });
         }
@@ -238,14 +208,9 @@ export default class Account extends Component {
       request.open('POST', '/createnewaccount', true);
       request.setRequestHeader('Content-Type', 'application/json');
       const obj = Object.assign({}, this.state);
-      obj.arr_org_classification_ids =
-        this.state.arr_org_classification_ids.map((c) => c.value);
-      obj.arr_user_geography_ids = this.state.arr_user_geography_ids.map(
-        (g) => g.value
-      );
-      obj.arr_user_commodity_ids = this.state.arr_user_commodity_ids.map(
-        (c) => c.value
-      );
+      obj.arr_org_classification_ids = this.state.arr_org_classification_ids.map((c) => c.value);
+      obj.arr_user_geography_ids = this.state.arr_user_geography_ids.map((g) => g.value);
+      obj.arr_user_commodity_ids = this.state.arr_user_commodity_ids.map((c) => c.value);
       request.send(JSON.stringify(obj));
     } else {
       if (errors.length > 0 && missing.length > 0) {
@@ -317,9 +282,7 @@ export default class Account extends Component {
       reader.readAsDataURL(evt.target.files[key]);
       reader.onload = function () {
         policyList.push(
-          reader.result.match(/base64,(.*)/)[1]
-            ? reader.result.match(/base64,(.*)/)[1]
-            : ''
+          reader.result.match(/base64,(.*)/)[1] ? reader.result.match(/base64,(.*)/)[1] : ''
         );
       };
       reader.onerror = function (error) {
@@ -408,32 +371,16 @@ export default class Account extends Component {
   };
 
   render() {
-    const {
-      dialogOpen,
-      dialogTitle,
-      dialogMessage,
-      accountSubmitted,
-      creatingAccount,
-    } = this.state;
+    const { dialogOpen, dialogTitle, dialogMessage, accountSubmitted, creatingAccount } =
+      this.state;
     const dialogContent =
-      typeof dialogMessage === 'string'
-        ? dialogMessage
-        : dialogMessage.map(this.generateMessages);
+      typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
 
-    const action = accountSubmitted
-      ? this.shouldRedirect
-      : this.shouldCloseDialog;
+    const action = accountSubmitted ? this.shouldRedirect : this.shouldCloseDialog;
 
     const defaultAction = creatingAccount
       ? []
-      : [
-          <Button
-            variant="primary"
-            label="OK"
-            keyboardFocused={true}
-            onClick={action}
-          />,
-        ];
+      : [<Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />];
 
     const options = this.props.classificationsData.map(this.createClassOptions);
     const commOptions = this.props.commoditiesData.map(this.createCommOptions);
@@ -466,10 +413,7 @@ export default class Account extends Component {
             <h2 className="section-title-large">Account Information</h2>
             <div>
               <div className="input-field__block-container">
-                <label
-                  htmlFor="org_name"
-                  className="block-label profile-label required-param"
-                >
+                <label htmlFor="org_name" className="block-label profile-label required-param">
                   Organization Name
                 </label>
                 <input
@@ -498,10 +442,7 @@ export default class Account extends Component {
               </div>
 
               <div className="input-field__block-container">
-                <label
-                  htmlFor="org_address"
-                  className="block-label profile-label required-param"
-                >
+                <label htmlFor="org_address" className="block-label profile-label required-param">
                   Organization Address
                 </label>
                 <input
@@ -533,10 +474,7 @@ export default class Account extends Component {
                 />
               </div>
               <div className="input-field__block-container">
-                <label
-                  htmlFor="org_website"
-                  className="block-label profile-label required-param"
-                >
+                <label htmlFor="org_website" className="block-label profile-label required-param">
                   Organization Website
                 </label>
                 <input
@@ -567,23 +505,13 @@ export default class Account extends Component {
                 />
               </div>
               <div className="input-field__block-container">
-                <label className="block-label profile-label">
-                  Organization Policy
-                </label>
+                <label className="block-label profile-label">Organization Policy</label>
                 <span className="hint-text">
-                  Upload policy document to reference within the system (.doc,
-                  .pdf)
+                  Upload policy document to reference within the system (.doc, .pdf)
                 </span>
                 <div className="upload-policy-container">
-                  <form
-                    className="policies-form"
-                    method="post"
-                    encType="multipart/form-data"
-                  >
-                    <label
-                      htmlFor="uploadPolicy"
-                      className="gfw-button btn-green"
-                    >
+                  <form className="policies-form" method="post" encType="multipart/form-data">
+                    <label htmlFor="uploadPolicy" className="gfw-button btn-green">
                       {'Upload policy'}{' '}
                       <span>{`${
                         this.state.policyName.length === 0
@@ -607,15 +535,10 @@ export default class Account extends Component {
             </div>
           </section>
           <section>
-            <h2 className="section-title-large">
-              Account Manager Contact Information
-            </h2>
+            <h2 className="section-title-large">Account Manager Contact Information</h2>
 
             <div className="input-field__block-container">
-              <label
-                htmlFor="user_first_name"
-                className="block-label profile-label required-param"
-              >
+              <label htmlFor="user_first_name" className="block-label profile-label required-param">
                 First Name
               </label>
               <input
@@ -629,10 +552,7 @@ export default class Account extends Component {
             </div>
 
             <div className="input-field__block-container">
-              <label
-                htmlFor="user_last_name"
-                className="block-label profile-label required-param"
-              >
+              <label htmlFor="user_last_name" className="block-label profile-label required-param">
                 Last Name
               </label>
               <input
@@ -647,10 +567,7 @@ export default class Account extends Component {
             </div>
 
             <div className="input-field__block-container">
-              <label
-                htmlFor="user_email"
-                className="block-label profile-label required-param"
-              >
+              <label htmlFor="user_email" className="block-label profile-label required-param">
                 E-mail
               </label>
               <input
@@ -664,10 +581,7 @@ export default class Account extends Component {
             </div>
 
             <div className="input-field__block-container">
-              <label
-                htmlFor="user_phone"
-                className="block-label profile-label required-param"
-              >
+              <label htmlFor="user_phone" className="block-label profile-label required-param">
                 Phone
               </label>
               <input
@@ -681,10 +595,7 @@ export default class Account extends Component {
             </div>
 
             <div className="input-field__block-container">
-              <label
-                htmlFor="title-select"
-                className="block-label profile-label required-param"
-              >
+              <label htmlFor="title-select" className="block-label profile-label required-param">
                 Title
               </label>
               <GfwSelect
@@ -717,10 +628,7 @@ export default class Account extends Component {
             </div>
 
             <div className="input-field__block-container">
-              <label
-                htmlFor="arr_user_commodity_ids"
-                className="block-label profile-label-select"
-              >
+              <label htmlFor="arr_user_commodity_ids" className="block-label profile-label-select">
                 Geographies of Interest
               </label>
               <Select
@@ -737,10 +645,7 @@ export default class Account extends Component {
             </div>
 
             <div className="input-field__block-container">
-              <label
-                htmlFor="arr_user_geography_ids"
-                className="block-label profile-label-select"
-              >
+              <label htmlFor="arr_user_geography_ids" className="block-label profile-label-select">
                 Commodities of Interest
               </label>
               <Select
@@ -763,11 +668,7 @@ export default class Account extends Component {
               />
               <label htmlFor="checkBox">
                 I have read and accept the{' '}
-                <a
-                  href={termsAndConditions}
-                  className="gfw-green"
-                  target="_blank"
-                >
+                <a href={termsAndConditions} className="gfw-green" target="_blank">
                   GFW Pro Terms & Conditions
                 </a>{' '}
                 and{' '}

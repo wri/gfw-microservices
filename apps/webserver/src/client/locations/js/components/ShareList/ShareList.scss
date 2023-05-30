@@ -99,7 +99,7 @@ $react-select__z-index: 1000;
   &__body {
     height: 100vh;
   }
-  
+
   &__footer {
     position: absolute;
     bottom: 0;
@@ -131,17 +131,17 @@ $react-select__z-index: 1000;
 .sharelist {
   &__search {
     display: flex;
-  
+
     .MuiFormControl-root {
       margin: 0;
       margin-right: -1px;
       min-width: 150px;
     }
-  
+
     .sharelist__label {
       display: none;
     }
-  
+
     .MuiInputBase-root {
       border-radius: 3px 0 0 3px;
 
@@ -151,16 +151,16 @@ $react-select__z-index: 1000;
         float: left;
         height: 23px;
       }
-  
+
       &:hover {
-        background: #0000000D;
+        background: #0000000d;
       }
     }
-  
+
     .MuiOutlinedInput-notchedOutline {
       border-color: #e5e5df;
     }
-  
+
     .sharelist__input {
       border-radius: 0 3px 3px 0;
     }
@@ -173,7 +173,7 @@ $react-select__z-index: 1000;
     background: transparent;
     top: 21px;
     right: 21px;
-  
+
     svg {
       width: 24px;
       height: 24px;
@@ -183,11 +183,11 @@ $react-select__z-index: 1000;
   &__success {
     padding: 50px 0;
     text-align: center;
-  
+
     svg {
-      opacity: .25;
+      opacity: 0.25;
     }
-  
+
     .sharelist__title {
       margin: 50px 0 24px;
     }
@@ -201,19 +201,19 @@ $react-select__z-index: 1000;
     text-align: center;
     padding: 10px 16px;
     border-radius: 18px;
-    background: #F24E1E;
+    background: #f24e1e;
     text-transform: uppercase;
     color: #fff;
     border: 0;
     cursor: pointer;
-  
+
     & + .sharelist__button {
       margin-left: 10px;
     }
-  
+
     &.white {
       background-color: #fff;
-      color: #000000BA;
+      color: #000000ba;
     }
   }
 
@@ -225,16 +225,16 @@ $react-select__z-index: 1000;
     position: absolute;
     display: block;
     width: 100%;
-  
+
     &::-webkit-scrollbar {
       width: 5px;
     }
-  
-    &::-webkit-scrollbar-thumb { 
+
+    &::-webkit-scrollbar-thumb {
       border-radius: 2px;
-      background: #C4C4C4;
+      background: #c4c4c4;
     }
-  
+
     &::-webkit-scrollbar-track {
       background: #fff;
       border-radius: 2px;
@@ -248,7 +248,7 @@ $react-select__z-index: 1000;
   }
 
   &__label {
-    color: #0000008A;
+    color: #0000008a;
     font-size: 12px;
     margin: 0;
   }
@@ -262,7 +262,7 @@ $react-select__z-index: 1000;
     font-weight: 400;
     color: rgba(0, 0, 0, 0.73);
     line-height: 21px;
-    border: 1px solid #E5E5DE;
+    border: 1px solid #e5e5de;
     background-color: #fff;
     margin-bottom: 12px;
     cursor: pointer;
@@ -289,7 +289,7 @@ $react-select__z-index: 1000;
 
   &__input {
     width: 100%;
-    border: 1px solid #E5E5DE;
+    border: 1px solid #e5e5de;
     height: 56px;
     margin-bottom: 24px;
   }

@@ -4,7 +4,7 @@ export const GFW_LIST_NAME = {
   universalMillList: 'Palm Oil Mills',
   protectedAreas: 'Protected Areas',
   rspoConcessions: 'RSPO Palm Concessions',
-}
+};
 
 export const gfwListNames = Object.values(GFW_LIST_NAME);
 

@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { formatPct, validatePct } from '../shared/functions';
-import {
-  DATA_LAYER,
-  EXCEL_TEMPLATES,
-  EXCEL_TEMPLATE_HEADERS,
-} from '../shared/constants';
+import { DATA_LAYER, EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
 
@@ -22,9 +18,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
 
   process(data, filters: GenerationFileRequest) {
     if (this.isSouthAmericaBiomesFile(filters)) {
-      const locations = data.filter(
-        (location) => location.south_america_presence === 'true'
-      );
+      const locations = data.filter((location) => location.south_america_presence === 'true');
       if (locations && locations.length > 0) {
         this.existSouthLocation = true;
         super.process(locations, filters);
@@ -37,10 +31,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
 
     EXCEL_TEMPLATES[table].forEach((key) => {
-      if (
-        Object.prototype.hasOwnProperty.call(listLevelAnalysis, key.name) ===
-        false
-      ) {
+      if (Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, key.name) === false) {
         return;
       }
 
@@ -54,9 +45,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
 
       Object.keys(analysisData).forEach((biome) => {
         const dataRow = [list_name, dataLayer, biome];
-        const overlapPercent = formatPct(
-          validatePct((analysisData[biome] / total) * 100)
-        );
+        const overlapPercent = formatPct(validatePct((analysisData[biome] / total) * 100));
         dataRow.push(overlapPercent);
         csvData.push(dataRow);
       });
@@ -84,8 +73,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
   isSouthAmericaBiomesFile(filters: GenerationFileRequest) {
     const { listView, type } = filters;
     return (
-      listView === 'forest_change' &&
-      (type === 'southAmericaOverlap' || type === 'everything')
+      listView === 'forest_change' && (type === 'southAmericaOverlap' || type === 'everything')
     );
   }
 }

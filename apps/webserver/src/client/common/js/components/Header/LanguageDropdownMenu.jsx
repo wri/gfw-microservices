@@ -54,8 +54,14 @@ function LanguageDropdownMenu({ languageChange }) {
       }}
     >
       <div className={`drop-down-nav ${displayOptions ? 'drop-down-navv--selected' : ''}`}>
-        <button type="button" className="drop-down-nav__button" onClick={() => setDisplayOptions(!displayOptions)}>
-          <span style={{ paddingRight: '5px' }}>{getLanguageNameAbbreviation(selectedLanguage?.code)}</span>
+        <button
+          type="button"
+          className="drop-down-nav__button"
+          onClick={() => setDisplayOptions(!displayOptions)}
+        >
+          <span style={{ paddingRight: '5px' }}>
+            {getLanguageNameAbbreviation(selectedLanguage?.code)}
+          </span>
           <Icon style={{ fontSize: '14px' }}>language</Icon>
         </button>
         <div className={`drop-down-nav__list ${displayOptions ? 'show' : 'hide'}`}>
@@ -64,7 +70,9 @@ function LanguageDropdownMenu({ languageChange }) {
               <button
                 type="button"
                 key={language.code}
-                className={`drop-down-nav__list-item ${selectedLanguage?.name === language.name ? 'selected' : ''}`}
+                className={`drop-down-nav__list-item ${
+                  selectedLanguage?.name === language.name ? 'selected' : ''
+                }`}
                 onClick={() => changeLanguage(language)}
               >
                 {language.name}

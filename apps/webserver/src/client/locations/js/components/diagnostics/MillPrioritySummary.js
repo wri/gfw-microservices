@@ -8,16 +8,36 @@ const lastYear = locationsPage.diagnostics.lastDataYear;
 export default class MillPrioritySummary extends Component {
   renderMillTable = () => {
     const { getYearlyData } = this.props;
-    const data = getYearlyData('commodity_mill_priority_level', 2001, latestTreeCoverLossYearCR, true);
+    const data = getYearlyData(
+      'commodity_mill_priority_level',
+      2001,
+      latestTreeCoverLossYearCR,
+      true
+    );
 
     const highRows = Object.keys(data).map((year, idx) => {
-      return <td key={idx} className={`locations-mill-data ${data[year] === 2 ? 'high-priority' : ''}`}></td>;
+      return (
+        <td
+          key={idx}
+          className={`locations-mill-data ${data[year] === 2 ? 'high-priority' : ''}`}
+        ></td>
+      );
     });
     const mediumRows = Object.keys(data).map((year, idx) => {
-      return <td key={idx} className={`locations-mill-data ${data[year] === 1 ? 'medium-priority' : ''}`}></td>;
+      return (
+        <td
+          key={idx}
+          className={`locations-mill-data ${data[year] === 1 ? 'medium-priority' : ''}`}
+        ></td>
+      );
     });
     const lowRows = Object.keys(data).map((year, idx) => {
-      return <td key={idx} className={`locations-mill-data ${data[year] === 0 ? 'low-priority' : ''}`}></td>;
+      return (
+        <td
+          key={idx}
+          className={`locations-mill-data ${data[year] === 0 ? 'low-priority' : ''}`}
+        ></td>
+      );
     });
 
     const yearRows = Object.keys(data).map((year, idx) => {
@@ -76,9 +96,15 @@ export default class MillPrioritySummary extends Component {
       locationName = filteredLocations[0]['Location Name'];
     }
 
-    const millPriority = getYearlyData('commodity_mill_priority_level', lastYear, lastYear)[lastYear];
-    const overallThreat = getYearlyData('commodity_threat_overall_level', lastYear, lastYear)[lastYear];
-    const overallValue = getYearlyData('commodity_value_overall_level', lastYear, lastYear)[lastYear];
+    const millPriority = getYearlyData('commodity_mill_priority_level', lastYear, lastYear)[
+      lastYear
+    ];
+    const overallThreat = getYearlyData('commodity_threat_overall_level', lastYear, lastYear)[
+      lastYear
+    ];
+    const overallValue = getYearlyData('commodity_value_overall_level', lastYear, lastYear)[
+      lastYear
+    ];
 
     return (
       <div
@@ -93,7 +119,10 @@ export default class MillPrioritySummary extends Component {
         >
           <div className="subsection-subtitle__container">
             <h4 className="diagnostics-section-title-risk">Mill Priority Summary</h4>
-            <span onClick={() => this.props.fireDownload('millPriority')} className="locations-diagnostics-icon-holder">
+            <span
+              onClick={() => this.props.fireDownload('millPriority')}
+              className="locations-diagnostics-icon-holder"
+            >
               <svg className="svg-icon">
                 <use xlinkHref="#icon-download" />
               </svg>
@@ -142,7 +171,8 @@ export default class MillPrioritySummary extends Component {
           <div className="locations-diagnostics-section-title__container">
             <div className="locations-diagnostics__flex-center subsection-subtitle__container">
               <h4 className="diagnostics-section-title-risk">
-                Mill Priority History<span className="diagnostics-section-subtitle"> Threat + Value</span>
+                Mill Priority History
+                <span className="diagnostics-section-subtitle"> Threat + Value</span>
               </h4>
               <IconButtonWrapper id={locationsPage.infoBubbleConfig.millPriorityHistory} />
             </div>

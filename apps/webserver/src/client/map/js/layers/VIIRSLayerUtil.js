@@ -1,7 +1,8 @@
 import VectorTileLayer from 'esri/layers/VectorTileLayer';
 import moment from 'moment';
 
-const maxDateURL = 'https://tiles.globalforestwatch.org/nasa_viirs_fire_alerts/latest/max_alert__date';
+const maxDateURL =
+  'https://tiles.globalforestwatch.org/nasa_viirs_fire_alerts/latest/max_alert__date';
 
 //Getting the latest available day for tiles as it will not always be today or yesterday.
 //Those assuptions cannot be made so that is why they have this endpoint to check the day.

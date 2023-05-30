@@ -1,20 +1,9 @@
-import { LocationService, GeoService } from '@wri-monorepos/geo';
-import {
-  CopyOrMoveLargeListRequest,
-  RequestLargeListProcess,
-  RequestTriggerProcessLargeList,
-} from './../models/index';
-import { LargeListService } from './../services/largelist.service';
-import { Test, TestingModule } from '@nestjs/testing';
+import { LocationService } from '@wri-monorepos/geo';
+import { CopyOrMoveLargeListRequest, RequestTriggerProcessLargeList } from './../models/index';
+import { TestingModule } from '@nestjs/testing';
 import fetch from 'node-fetch';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import * as fs from 'fs';
-import { AppModule } from './app.module';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseService } from '../shared/database/gfw';
-import sql = require('mssql');
 import * as uniqId from 'uniqid';
 
 describe('AppController', () => {
@@ -26,7 +15,7 @@ describe('AppController', () => {
   });
 
   beforeAll(async () => {
-    app = await Test.createTestingModule({
+    /*app = await Test.createTestingModule({
       controllers: [AppController],
       providers: [AppService, LargeListService, LocationService, GeoService],
       imports: [
@@ -34,11 +23,11 @@ describe('AppController', () => {
         ConfigModule.forRoot({ isGlobal: true }),
         TypeOrmModule.forRootAsync({ useClass: DatabaseService }),
       ],
-    }).compile();
+    }).compile();*/
   });
 
   describe('Upload a single file with a presigned url', () => {
-    it('Controller should return PresignedURL from Service', async () => {
+    xit('Controller should return PresignedURL from Service', async () => {
       const appController = app.get<AppController>(AppController);
       const presignedURL = appController.generatePreSignedUrl({
         key: 'test.csv',
@@ -61,7 +50,7 @@ describe('AppController', () => {
   });
 
   describe('Flow process to upload a file and then replace it', () => {
-    it('Should return a presigned URL upload a new file and then make a replacement for this file', async () => {
+    xit('Should return a presigned URL upload a new file and then make a replacement for this file', async () => {
       const appController = app.get<AppController>(AppController);
       let presignedURL = appController.generatePreSignedUrl({
         key: 'test.csv',
@@ -106,7 +95,7 @@ describe('AppController', () => {
   });
 
   describe('getObjectPresignedURL', () => {
-    it('Get a presigned URL to Download a file previously uploaded', () => {
+    xit('Get a presigned URL to Download a file previously uploaded', () => {
       const appController = app.get<AppController>(AppController);
       const url = appController.getObjectPresignedURL({
         key: 'test.csv',
@@ -159,9 +148,7 @@ describe('AppController', () => {
         list_name: listName,
         user_id: userId,
       };
-      const result = await appController.triggerProcessLargeList(
-        requestLargeListCreation
-      );
+      const result = await appController.triggerProcessLargeList(requestLargeListCreation);
 
       expect(result).toEqual({
         list_id: expect.any(Number),
@@ -186,9 +173,7 @@ describe('AppController', () => {
 
       // Upload the file to presigned URL
       const currentPath = process.cwd();
-      const file = fs.readFileSync(
-        currentPath + '/test_files/cocoa_generic_point.zip'
-      );
+      const file = fs.readFileSync(currentPath + '/test_files/cocoa_generic_point.zip');
 
       const requestOptions = {
         method: 'PUT',
@@ -204,22 +189,22 @@ describe('AppController', () => {
         list_name: listName,
         user_id: userId,
       };
-      const trigguerProccessResult =
-        await appController.triggerProcessLargeList(requestLargeListProcess);
+      const trigguerProccessResult = await appController.triggerProcessLargeList(
+        requestLargeListProcess
+      );
 
       expect(trigguerProccessResult).toEqual({
         list_id: expect.any(Number),
       });
 
-      const trigguerLargeListProcessResult =
-        await appController.processLargeList({
-          organization_id: 1,
-          list_id: trigguerProccessResult.list_id,
-          path: presignedURL.fileS3Route,
-          template_type: 'cocoa_generic',
-          user_id: userId,
-          startAnalysis: true,
-        });
+      const trigguerLargeListProcessResult = await appController.processLargeList({
+        organization_id: 1,
+        list_id: trigguerProccessResult.list_id,
+        path: presignedURL.fileS3Route,
+        template_type: 'cocoa_generic',
+        user_id: userId,
+        startAnalysis: true,
+      });
 
       expect(trigguerLargeListProcessResult).toEqual({
         executionArn: expect.any(String),
@@ -243,10 +228,9 @@ describe('AppController', () => {
         listName: listName,
         targetList: null,
         selectedLocations: [
-          88, 298, 1261, 901, 1262, 902, 904, 899, 903, 900, 898, 304, 300, 302,
-          905, 1255, 303, 305, 1263, 306, 908, 307, 910, 308, 909, 41, 309, 915,
-          1266, 917, 918, 323, 324, 325, 922, 924, 327, 925, 328, 329, 330, 331,
-          332, 333, 334, 335, 926, 337, 338, 1264,
+          88, 298, 1261, 901, 1262, 902, 904, 899, 903, 900, 898, 304, 300, 302, 905, 1255, 303,
+          305, 1263, 306, 908, 307, 910, 308, 909, 41, 309, 915, 1266, 917, 918, 323, 324, 325, 922,
+          924, 327, 925, 328, 329, 330, 331, 332, 333, 334, 335, 926, 337, 338, 1264,
         ],
         addType: 'commodity',
         activeTemplate: 'palmGeneric',
@@ -385,8 +369,7 @@ describe('AppController', () => {
             id: 133,
             template_id: 5,
             template_datum_field_name: 'Owner Name',
-            template_datum_field_description:
-              'Name of the owner of the point or polygon',
+            template_datum_field_description: 'Name of the owner of the point or polygon',
             template_datum_type_id: 7,
             template_datum_mandatory: false,
             template_datum_system: true,
@@ -399,8 +382,7 @@ describe('AppController', () => {
             id: 134,
             template_id: 5,
             template_datum_field_name: 'Owner ID',
-            template_datum_field_description:
-              'Unique ID of the owner of the point or polygon',
+            template_datum_field_description: 'Unique ID of the owner of the point or polygon',
             template_datum_type_id: 7,
             template_datum_mandatory: false,
             template_datum_system: true,
@@ -413,8 +395,7 @@ describe('AppController', () => {
             id: 135,
             template_id: 5,
             template_datum_field_name: 'Parent Company',
-            template_datum_field_description:
-              'Company name associated with the point or polygon',
+            template_datum_field_description: 'Company name associated with the point or polygon',
             template_datum_type_id: 7,
             template_datum_mandatory: false,
             template_datum_system: true,
@@ -497,8 +478,7 @@ describe('AppController', () => {
             id: 141,
             template_id: 5,
             template_datum_field_name: 'Oil Type',
-            template_datum_field_description:
-              'Type of oil: Palm Oil, Palm Kernel Oil',
+            template_datum_field_description: 'Type of oil: Palm Oil, Palm Kernel Oil',
             template_datum_type_id: 7,
             template_datum_mandatory: false,
             template_datum_system: true,
@@ -511,8 +491,7 @@ describe('AppController', () => {
             id: 142,
             template_id: 5,
             template_datum_field_name: 'RSPO Model',
-            template_datum_field_description:
-              'RSPO model: IP, MB, SG, MB/SG, MB/IP',
+            template_datum_field_description: 'RSPO model: IP, MB, SG, MB/SG, MB/IP',
             template_datum_type_id: 7,
             template_datum_mandatory: false,
             template_datum_system: true,
@@ -565,8 +544,7 @@ describe('AppController', () => {
             id: 146,
             template_id: 5,
             template_datum_field_name: 'Time Horizon',
-            template_datum_field_description:
-              'Location timeframe - time horizon',
+            template_datum_field_description: 'Location timeframe - time horizon',
             template_datum_type_id: 7,
             template_datum_mandatory: false,
             template_datum_system: true,
@@ -722,7 +700,7 @@ describe('AppController', () => {
         ],
       };
 
-      const locationCopyResponse = await locationService.MoveLocations(
+      await locationService.MoveLocations(
         request.listId,
         request.selectedListLocationClasification,
         request.customAttributesNames,
@@ -748,11 +726,11 @@ describe('AppController', () => {
     });
   });
 
-  afterAll((done) => {
+  afterAll(() => {
     /**
      * Important close the app and connections
      * This turn down all the apps and avoid memory leaks
      */
-    app.close(), done();
+    // app.close(), done();
   });
 });

@@ -13,11 +13,15 @@ export default class AccountProfile extends Component {
   constructor(props) {
     super(props);
     const { currentUser } = props;
-    const classifications = this.props.currentAccount.classification_ids.split(',').map((classification) => {
-      const classId = parseInt(classification);
-      const data = this.props.classificationsData.find((d) => d.id === classId);
-      return data ? { label: data.classification_name, value: classId } : { label: '', value: classId };
-    });
+    const classifications = this.props.currentAccount.classification_ids
+      .split(',')
+      .map((classification) => {
+        const classId = parseInt(classification);
+        const data = this.props.classificationsData.find((d) => d.id === classId);
+        return data
+          ? { label: data.classification_name, value: classId }
+          : { label: '', value: classId };
+      });
 
     const userStatusData = profilePage.userProfile.statusOptions;
     const status_id = currentUser.status_id ? currentUser.status_id : 1;
@@ -49,7 +53,9 @@ export default class AccountProfile extends Component {
       organization_is_subsidiary: this.props.currentAccount.organization_is_subsidiary
         ? this.props.currentAccount.organization_is_subsidiary
         : false,
-      organization_name: this.props.currentAccount.organization_name ? this.props.currentAccount.organization_name : '',
+      organization_name: this.props.currentAccount.organization_name
+        ? this.props.currentAccount.organization_name
+        : '',
       organization_parent: this.props.currentAccount.organization_parent
         ? this.props.currentAccount.organization_parent
         : '',
@@ -128,10 +134,16 @@ export default class AccountProfile extends Component {
       }
     });
 
-    if (this.state.organization_is_subsidiary && this.state.organization_parent.trim().length === 0) {
+    if (
+      this.state.organization_is_subsidiary &&
+      this.state.organization_parent.trim().length === 0
+    ) {
       errors.push('You must provide a parent organization if your organization is a subsidy.');
     }
-    if (!this.state.organization_is_subsidiary && this.state.organization_parent.trim().length !== 0) {
+    if (
+      !this.state.organization_is_subsidiary &&
+      this.state.organization_parent.trim().length !== 0
+    ) {
       errors.push('You must check the subsidiary box if a parent organization is supplied.');
     }
 
@@ -323,7 +335,9 @@ export default class AccountProfile extends Component {
       const reader = new FileReader();
       reader.readAsDataURL(evt.target.files[key]);
       reader.onload = function () {
-        policyList.push(reader.result.match(/base64,(.*)/)[1] ? reader.result.match(/base64,(.*)/)[1] : '');
+        policyList.push(
+          reader.result.match(/base64,(.*)/)[1] ? reader.result.match(/base64,(.*)/)[1] : ''
+        );
       };
       reader.onerror = function (error) {
         console.log('Error: ', error);
@@ -349,11 +363,13 @@ export default class AccountProfile extends Component {
   };
 
   handleDropdownUserStatusSelection = (evt) => {
-    const selectedDropdownUserStatusOption = this.state.dropdownUserStatusOptions.filter((option) => {
-      if (option.value === parseInt(evt.value)) {
-        return option.label;
+    const selectedDropdownUserStatusOption = this.state.dropdownUserStatusOptions.filter(
+      (option) => {
+        if (option.value === parseInt(evt.value)) {
+          return option.label;
+        }
       }
-    })[0];
+    )[0];
     this.setState({
       selectedDropdownUserStatusOption: selectedDropdownUserStatusOption,
       status_id: parseInt(evt.value),
@@ -361,10 +377,12 @@ export default class AccountProfile extends Component {
   };
 
   render() {
-    const { dialogOpen, dialogFileOpen, dialogTitle, dialogMessage, updating, updatingPolicy } = this.state;
+    const { dialogOpen, dialogFileOpen, dialogTitle, dialogMessage, updating, updatingPolicy } =
+      this.state;
     const action = this.shouldCloseDialog;
     const actionOverwrite = this.shouldOverwrite;
-    const dialogContent = typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
+    const dialogContent =
+      typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
     const defaultFileAction = updatingPolicy
       ? []
       : [
@@ -481,7 +499,9 @@ export default class AccountProfile extends Component {
             </div>
 
             <div className="input-field__block-container">
-              <label className="block-label">{profilePage.profileManager.accountProfileFields[5]}</label>
+              <label className="block-label">
+                {profilePage.profileManager.accountProfileFields[5]}
+              </label>
               <span className="profile-label profile-label-organization-policy">
                 {profilePage.profileManager.policyPrompt}
               </span>
@@ -524,7 +544,10 @@ export default class AccountProfile extends Component {
                     onClick={this.deletePolicies}
                     label={profilePage.profileManager.policyDelete}
                   />
-                  <Button onClick={this.downloadPolicies} label={profilePage.profileManager.policyDownload} />
+                  <Button
+                    onClick={this.downloadPolicies}
+                    label={profilePage.profileManager.policyDownload}
+                  />
                 </div>
               </form>
             </div>

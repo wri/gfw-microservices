@@ -35,13 +35,7 @@ export class PipeService {
   private readonly logger = new Logger(PipeService.name);
 
   public async makeFile(filters: GenerationFileRequest) {
-    const {
-      organizationDatabase,
-      listID,
-      combinedColumns,
-      selectedLocations,
-      file,
-    } = filters;
+    const { organizationDatabase, listID, combinedColumns, selectedLocations, file } = filters;
 
     this.logger.log(`(${listID}) - Receive request to build file for list`);
 
@@ -50,10 +44,7 @@ export class PipeService {
       rowsPerPage: this.MAX_NUMBER_OF_ROWS_PER_PAGE,
     };
 
-    const listSchema = await this.uspGetListNameSchema.run(
-      organizationDatabase,
-      filters
-    );
+    const listSchema = await this.uspGetListNameSchema.run(organizationDatabase, filters);
 
     const numberOfPages = await this.uspGetAnalysisDataCountForUserList.run(
       organizationDatabase,
@@ -76,10 +67,9 @@ export class PipeService {
       ? []
       : selectedLocations.split(',').map((x) => parseInt(x, 10));
 
-    const [listLevelAnalysis] = await this.uspGetListAnalysis.run(
-      organizationDatabase,
-      { listId: listID }
-    );
+    const [listLevelAnalysis] = await this.uspGetListAnalysis.run(organizationDatabase, {
+      listId: listID,
+    });
 
     filters = {
       ...filters,
@@ -99,23 +89,16 @@ export class PipeService {
 
     const composeResults = async (i: number) => {
       const newFilters = { ...filters, page: i };
-      const analysisData =
-        await this.uspGetPaginatedAnalysisDataForUserList.run(
-          organizationDatabase,
-          newFilters
-        );
+      const analysisData = await this.uspGetPaginatedAnalysisDataForUserList.run(
+        organizationDatabase,
+        newFilters
+      );
       service.process(analysisData, newFilters);
       return i;
     };
 
-    for await (const localPage of asyncPool(
-      this.POOL_SIZE,
-      arrayOfPages,
-      composeResults
-    )) {
-      this.logger.log(
-        `(${listID}) - Get page of number ${localPage} from database`
-      );
+    for await (const localPage of asyncPool(this.POOL_SIZE, arrayOfPages, composeResults)) {
+      this.logger.log(`(${listID}) - Get page of number ${localPage} from database`);
     }
 
     service.finish(filters);

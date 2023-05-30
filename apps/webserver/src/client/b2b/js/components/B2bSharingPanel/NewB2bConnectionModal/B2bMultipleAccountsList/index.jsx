@@ -14,10 +14,18 @@ function B2bMultipleAccountsList({ accountsList, onCloseModal }) {
         </div>
         <div>{profilePage.profileManager.b2bSection.multipleAccountsDescription}</div>
 
-        <SquadList data={accountsList} activeItem={selectedAccount} setActiveItem={setSelectedAccount} />
+        <SquadList
+          data={accountsList}
+          activeItem={selectedAccount}
+          setActiveItem={setSelectedAccount}
+        />
       </CardContent>
       <CardActions style={{ justifyContent: 'right' }}>
-        <button type="button" className="new-b2b-connection-modal__action-button" onClick={onCloseModal}>
+        <button
+          type="button"
+          className="new-b2b-connection-modal__action-button"
+          onClick={onCloseModal}
+        >
           {profilePage.profileManager.b2bSection.cancel}
         </button>
         <button

@@ -27,7 +27,9 @@ const SummaryRow = ({ label, value }) => {
 const SavedLocationsSummary = ({ counts }) => {
   return (
     <div className="saved-locations-summary">
-      <h3 className="saved-locations-summary__title">{locationsPage.lists.savedLocationsSummary}</h3>
+      <h3 className="saved-locations-summary__title">
+        {locationsPage.lists.savedLocationsSummary}
+      </h3>
       <table className="saved-locations-summary__inner">
         <tbody>
           {counts.map((c, i) => {

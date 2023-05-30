@@ -20,7 +20,8 @@ export default class DescribeInvestment extends Component {
     } else {
       const notCommodityField = template.template_datum_field_name.toLowerCase() !== 'commodity';
       const notIgnored =
-        locationsPage.upload.ignoredInvestmentFields.indexOf(template.template_datum_field_name) === -1;
+        locationsPage.upload.ignoredInvestmentFields.indexOf(template.template_datum_field_name) ===
+        -1;
       return notIgnored && notCommodityField;
     }
   };
@@ -84,7 +85,9 @@ export default class DescribeInvestment extends Component {
                 placeholder={template.template_datum_field_description}
                 value={defaultVal}
                 onChange={(evt) => this.props.editTemplate(evt, template)}
-                className={`location-input-field value ${!this.props.contentEditable ? 'read-only-input' : ''}`}
+                className={`location-input-field value ${
+                  !this.props.contentEditable ? 'read-only-input' : ''
+                }`}
                 readOnly={!this.props.contentEditable}
               ></input>
             )}
@@ -115,12 +118,18 @@ export default class DescribeInvestment extends Component {
   render() {
     const templateBodies = this.createInvestmentTemplate(this.props.templateData);
     return (
-      <section className={`investment-table ${this.props.addType === 'investment' ? '' : 'hidden'}`}>
+      <section
+        className={`investment-table ${this.props.addType === 'investment' ? '' : 'hidden'}`}
+      >
         <div className="locations-describe-table">
           <table>
             <tbody>
               {templateBodies && templateBodies}
-              <tr className={`investment-size-container ${this.props.contentEditable ? '' : 'hidden'}`}>
+              <tr
+                className={`investment-size-container ${
+                  this.props.contentEditable ? '' : 'hidden'
+                }`}
+              >
                 <td className="user-table-td value">
                   <label id="size-of-investment-tag" className="user-table-td tag block-label">
                     {locationsPage.add.sizeOfInvestment}
@@ -148,7 +157,9 @@ export default class DescribeInvestment extends Component {
         </div>
         {!templateBodies && (
           <div className="locations-describe__empty-container">
-            <p className="locations-describe__description">{locationsPage.add.additionalFieldsNotSupported}</p>
+            <p className="locations-describe__description">
+              {locationsPage.add.additionalFieldsNotSupported}
+            </p>
           </div>
         )}
       </section>

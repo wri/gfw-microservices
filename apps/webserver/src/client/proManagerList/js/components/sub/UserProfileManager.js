@@ -153,7 +153,9 @@ export default class UserProfileManager extends Component {
       if (this.state.userDir === 'asc') {
         if (aValue[this.state.userSortingCategory] < bValue[this.state.userSortingCategory]) {
           return -1;
-        } else if (aValue[this.state.userSortingCategory] > bValue[this.state.userSortingCategory]) {
+        } else if (
+          aValue[this.state.userSortingCategory] > bValue[this.state.userSortingCategory]
+        ) {
           return 1;
         } else {
           return 0;
@@ -161,7 +163,9 @@ export default class UserProfileManager extends Component {
       } else {
         if (aValue[this.state.userSortingCategory] < bValue[this.state.userSortingCategory]) {
           return 1;
-        } else if (aValue[this.state.userSortingCategory] > bValue[this.state.userSortingCategory]) {
+        } else if (
+          aValue[this.state.userSortingCategory] > bValue[this.state.userSortingCategory]
+        ) {
           return -1;
         } else {
           return 0;
@@ -220,7 +224,8 @@ export default class UserProfileManager extends Component {
                   className={`sortable-carrot ${
                     this.state.userSortingCategory === 'first_name' && this.state.userDir === 'asc'
                       ? 'active-asc'
-                      : this.state.userSortingCategory === 'first_name' && this.state.userDir === 'des'
+                      : this.state.userSortingCategory === 'first_name' &&
+                        this.state.userDir === 'des'
                       ? 'active-des'
                       : ''
                   }`}
@@ -272,9 +277,11 @@ export default class UserProfileManager extends Component {
                 Access Level
                 <div
                   className={`sortable-carrot ${
-                    this.state.userSortingCategory === 'accesslevel_name' && this.state.userDir === 'asc'
+                    this.state.userSortingCategory === 'accesslevel_name' &&
+                    this.state.userDir === 'asc'
                       ? 'active-asc'
-                      : this.state.userSortingCategory === 'accesslevel_name' && this.state.userDir === 'des'
+                      : this.state.userSortingCategory === 'accesslevel_name' &&
+                        this.state.userDir === 'des'
                       ? 'active-des'
                       : ''
                   }`}
@@ -292,7 +299,8 @@ export default class UserProfileManager extends Component {
                   className={`sortable-carrot ${
                     this.state.userSortingCategory === 'status_name' && this.state.userDir === 'asc'
                       ? 'active-asc'
-                      : this.state.userSortingCategory === 'status_name' && this.state.userDir === 'des'
+                      : this.state.userSortingCategory === 'status_name' &&
+                        this.state.userDir === 'des'
                       ? 'active-des'
                       : ''
                   }`}

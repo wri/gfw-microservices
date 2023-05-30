@@ -75,7 +75,8 @@ export default class StepOneGFW extends Component {
   };
 
   render() {
-    const list_name = this.props.selectedLists.length > 0 ? this.props.selectedLists[0].list_name : '';
+    const list_name =
+      this.props.selectedLists.length > 0 ? this.props.selectedLists[0].list_name : '';
     return (
       <div className={`locations-upload-step ${this.props.step === 1 ? '' : 'hidden'}`}>
         <h2 className="locations-subpage-header subtitle page-heading">
@@ -113,7 +114,9 @@ export default class StepOneGFW extends Component {
         </div>
         <div className="locations-subpage-subheader">Select Commodity Type:</div>
         <div id="commodityTypeOptions">
-          {locationsPage.upload.commodityTypeOptions.filter(this.filterOptions).map(this.createRadio)}
+          {locationsPage.upload.commodityTypeOptions
+            .filter(this.filterOptions)
+            .map(this.createRadio)}
           <input
             className={`locations-upload-other-name ${
               this.props.addType === 'commodity' ? 'commodity-other' : 'investment-other'

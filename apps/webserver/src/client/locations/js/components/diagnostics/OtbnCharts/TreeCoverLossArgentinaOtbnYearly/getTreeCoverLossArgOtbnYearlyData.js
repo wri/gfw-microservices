@@ -28,7 +28,9 @@ const getTreeCoverLossArgOtbnYearlyData = (
   }
 
   const filterDataByYearRange = (obj) =>
-    Object.entries(obj).filter(([key]) => parseInt(key, 10) >= startYear && parseInt(key, 10) <= endYear);
+    Object.entries(obj).filter(
+      ([key]) => parseInt(key, 10) >= startYear && parseInt(key, 10) <= endYear
+    );
 
   const chartData = [];
   let otbnTotalLoss = 0;

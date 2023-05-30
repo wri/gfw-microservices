@@ -49,14 +49,18 @@ exports.generateTiles = async (req, res) => {
  */
 exports.retrieveTiles = async (request, response) => {
   logger.info(
-    `[GET] /vectorTile/:id => PARAMS: ${JSON.stringify(request.params)} Query PARAMS: ${JSON.stringify(request.query)}`
+    `[GET] /vectorTile/:id => PARAMS: ${JSON.stringify(
+      request.params
+    )} Query PARAMS: ${JSON.stringify(request.query)}`
   );
 
   const { id: listID } = request.params;
   const { latitude, longitude, zoom } = request.query;
 
   if (latitude === undefined || zoom === undefined || longitude === undefined) {
-    return response.status(400).json({ success: false, message: 'you have to inform latitude, longitude and zoom.' });
+    return response
+      .status(400)
+      .json({ success: false, message: 'you have to inform latitude, longitude and zoom.' });
   }
 
   getTileUsingZoomAndPosition(request, listID, latitude, longitude, zoom)

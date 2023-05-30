@@ -67,23 +67,37 @@ export default class AnalysisPanel extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const previousForestChange = prevProps.visibleLayers.some((layer) => mapPage.exclusiveLayers.includes(layer));
-    const currentForestChange = this.props.visibleLayers.some((layer) => mapPage.exclusiveLayers.includes(layer));
+    const previousForestChange = prevProps.visibleLayers.some((layer) =>
+      mapPage.exclusiveLayers.includes(layer)
+    );
+    const currentForestChange = this.props.visibleLayers.some((layer) =>
+      mapPage.exclusiveLayers.includes(layer)
+    );
 
     //TODO: Remove all radd layer checks when we have OTF analysis ready
     const prevRaddLayerVisible = prevProps.visibleLayers.includes(raddAlertsID);
     const currentRaddLayerVisible = this.props.visibleLayers.includes(raddAlertsID);
 
-    if ((previousForestChange && !currentForestChange) || (!prevRaddLayerVisible && currentRaddLayerVisible)) {
+    if (
+      (previousForestChange && !currentForestChange) ||
+      (!prevRaddLayerVisible && currentRaddLayerVisible)
+    ) {
       this.setState({
         analysisDisabled: true,
       });
       store.dispatch(analysisActions.setAnalysis(''));
-    } else if (previousForestChange !== currentForestChange && this.props.userInfo.access_level_id !== 3) {
+    } else if (
+      previousForestChange !== currentForestChange &&
+      this.props.userInfo.access_level_id !== 3
+    ) {
       this.setState({
         analysisDisabled: false,
       });
-    } else if (prevRaddLayerVisible && !currentRaddLayerVisible && this.props.userInfo.access_level_id !== 3) {
+    } else if (
+      prevRaddLayerVisible &&
+      !currentRaddLayerVisible &&
+      this.props.userInfo.access_level_id !== 3
+    ) {
       this.setState({
         analysisDisabled: false,
       });
@@ -146,7 +160,9 @@ export default class AnalysisPanel extends Component {
         )}
 
         <span
-          className={`info-icon metadata analysis-panel-metadata pointer ${basemap.id + '-basemap-metadata'}`}
+          className={`info-icon metadata analysis-panel-metadata pointer ${
+            basemap.id + '-basemap-metadata'
+          }`}
           onClick={this.showBasemapInfo}
         >
           <svg className={`${basemap.id + '-basemap-metadata'}`}>
@@ -162,7 +178,10 @@ export default class AnalysisPanel extends Component {
     let basemapId;
     if (evt.target.id) {
       basemapId = evt.target.id;
-    } else if (evt.target.classList.contains('basemap-image') || evt.target.classList.contains('basemap-label')) {
+    } else if (
+      evt.target.classList.contains('basemap-image') ||
+      evt.target.classList.contains('basemap-label')
+    ) {
       basemapId = evt.target.classList[1];
     }
 
@@ -239,7 +258,11 @@ export default class AnalysisPanel extends Component {
 
   changeActive = (evt) => {
     const active = evt.target.id.split('-active-analysis')[0];
-    if (active && active !== this.state.activeAnalysis && !evt.target.classList.contains('disabled-analysis')) {
+    if (
+      active &&
+      active !== this.state.activeAnalysis &&
+      !evt.target.classList.contains('disabled-analysis')
+    ) {
       if (this.props.drawingActive && active !== 'analysis') {
         this.startDrawing();
       }
@@ -266,7 +289,8 @@ export default class AnalysisPanel extends Component {
   };
 
   discernGadm = () => {
-    const prefix = 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer';
+    const prefix =
+      'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer';
     const { adminSelections } = this.props;
 
     const queryTask = new QueryTask({
@@ -281,7 +305,8 @@ export default class AnalysisPanel extends Component {
     query.outFields = ['gadmid']; //['name_0', 'name_1', 'name_2', 'gadmid'];// 'gadmid'
 
     queryTask.execute(query).then((res) => {
-      const gadmId = res && res.features && res.features.length > 0 ? res.features[0].attributes.gadmid : '';
+      const gadmId =
+        res && res.features && res.features.length > 0 ? res.features[0].attributes.gadmid : '';
       this.subscribeAdmin({
         country: this.props.adminSelections.country,
         region: this.props.adminSelections.smallerRegion,
@@ -310,7 +335,10 @@ export default class AnalysisPanel extends Component {
       <li key={j} className="analysis__body__instructions__item">
         {instruction}
         {j === 0 ? (
-          <span className="info-icon metadata layer-panel instructions pointer" onClick={this.showInstructions}>
+          <span
+            className="info-icon metadata layer-panel instructions pointer"
+            onClick={this.showInstructions}
+          >
             <svg>
               <use xlinkHref="#shape-info" />
             </svg>
@@ -438,10 +466,14 @@ export default class AnalysisPanel extends Component {
             label=""
             icon={
               <span
-                className={`module-tabs header-tabs analysis-header-click ${analysisDisabled ? 'disabled-header' : ''}`}
+                className={`module-tabs header-tabs analysis-header-click ${
+                  analysisDisabled ? 'disabled-header' : ''
+                }`}
                 id="analysis-header-icon"
               >
-                <svg className={`analysis-header-click ${analysisDisabled ? 'disabled-header' : ''}`}>
+                <svg
+                  className={`analysis-header-click ${analysisDisabled ? 'disabled-header' : ''}`}
+                >
                   <use
                     className={`analysis-header-click ${analysisDisabled ? 'disabled-header' : ''}`}
                     xlinkHref="#icon-tab-analysis"
@@ -458,7 +490,10 @@ export default class AnalysisPanel extends Component {
             }`}
             label=""
             icon={
-              <span className="module-tabs header-tabs pointer basemap-header-click" id="basemap-header-icon">
+              <span
+                className="module-tabs header-tabs pointer basemap-header-click"
+                id="basemap-header-icon"
+              >
                 <svg className="basemap-header-click">
                   <use className="basemap-header-click" xlinkHref="#icon-basemap" />
                 </svg>
@@ -495,7 +530,9 @@ export default class AnalysisPanel extends Component {
             />
           </div>
           <div
-            className={`analysis__body__subitem ${activeAnalysis === 'draw' && !analysisResults.data ? '' : 'hidden'}`}
+            className={`analysis__body__subitem ${
+              activeAnalysis === 'draw' && !analysisResults.data ? '' : 'hidden'
+            }`}
           >
             <div className="analysis__body__instructions">
               <ModalLoader position="absolute" size={60} open={spinnerOn} />
@@ -519,28 +556,49 @@ export default class AnalysisPanel extends Component {
               subscribeAdmin={this.subscribeAdmin}
             />
           </div>
-          <div className={`analysis__body__results ${analysisResults.data && spinnerOn === false ? '' : 'hidden'}`}>
+          <div
+            className={`analysis__body__results ${
+              analysisResults.data && spinnerOn === false ? '' : 'hidden'
+            }`}
+          >
             <p className="analysis__body__results__label">
               {totalLabel} {totalCountLabel}
             </p>
             <p className="analysis__body__results__value">
-              {isNaN(totalSelected.toString().replace(/[,]+/g, '')) ? 'Not Available' : `${totalSelected} ha`}
+              {isNaN(totalSelected.toString().replace(/[,]+/g, ''))
+                ? 'Not Available'
+                : `${totalSelected} ha`}
             </p>
-            <p className="analysis__body__results__label">{utils.setValueLabel(valueLabel, this.props)}</p>
+            <p className="analysis__body__results__label">
+              {utils.setValueLabel(valueLabel, this.props)}
+            </p>
             <p className="analysis__body__results__value loss-value">
-              {isNaN(value.toString().replace(/[,]+/g, '')) ? 'Not Available' : utils.setValue(valueLabel, value)}
+              {isNaN(value.toString().replace(/[,]+/g, ''))
+                ? 'Not Available'
+                : utils.setValue(valueLabel, value)}
             </p>
-            {additionalLabel ? <p className="analysis__body__results__label">{additionalLabel}</p> : null}
-            {additionalValue ? <p className="analysis__body__results__value loss-value">{additionalValue}</p> : null}
-            <p className="analysis__body__results__value warning-message">{mapPage.algorithmDisclaimer}</p>
+            {additionalLabel ? (
+              <p className="analysis__body__results__label">{additionalLabel}</p>
+            ) : null}
+            {additionalValue ? (
+              <p className="analysis__body__results__value loss-value">{additionalValue}</p>
+            ) : null}
+            <p className="analysis__body__results__value warning-message">
+              {mapPage.algorithmDisclaimer}
+            </p>
             <p className="analysis__body__results__value warning-message">
               {mapPage.noteDisclaimer}{' '}
-              <span className="pointer link" onClick={() => store.dispatch(toggleDrawShapeNoteDetailsModal())}>
+              <span
+                className="pointer link"
+                onClick={() => store.dispatch(toggleDrawShapeNoteDetailsModal())}
+              >
                 Learn more.
               </span>
             </p>
           </div>
-          <div className={`analysis__headers-list footer-list ${analysisResults.data ? '' : 'hidden'}`}>
+          <div
+            className={`analysis__headers-list footer-list ${analysisResults.data ? '' : 'hidden'}`}
+          >
             <div className="analysis__body__results__button">
               <GfwButton
                 classNames="AnalysisPanel__button btn-green text__semi-bold-12"
@@ -593,7 +651,11 @@ export default class AnalysisPanel extends Component {
             </div>
           </div>
         </div>
-        <div className={`analysis__body__item basemap__item ${selectedAnalysis === 'basemap' ? '' : 'hidden'}`}>
+        <div
+          className={`analysis__body__item basemap__item ${
+            selectedAnalysis === 'basemap' ? '' : 'hidden'
+          }`}
+        >
           <div className="analysis-basemaps">{mapPage.basemaps.map(this.generateBasemap)}</div>
         </div>
       </div>

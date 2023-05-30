@@ -57,7 +57,8 @@ export const constructLayerObject = (visibleLayers, layer) => {
   } else if (
     layer.attributes &&
     layer.attributes.layerConfig &&
-    (layer.attributes.layerConfig.type === 'tileLayer' || layer.attributes.layerConfig.type === 'tilelayer')
+    (layer.attributes.layerConfig.type === 'tileLayer' ||
+      layer.attributes.layerConfig.type === 'tilelayer')
   ) {
     layerUrl = layer.attributes.layerConfig.body.url
       ? layer.attributes.layerConfig.body.url

@@ -46,7 +46,9 @@ export default class FileDrop extends Component {
             name="upload"
             ref="upload"
           >
-            <span className="analysis-instructions-upload">{locationsPage.upload.uploadInstructions}</span>
+            <span className="analysis-instructions-upload">
+              {locationsPage.upload.uploadInstructions}
+            </span>
 
             <input type="file" name="file" ref="fileInput" />
             <input type="hidden" name="publishParameters" value="{}" />
@@ -73,7 +75,6 @@ export default class FileDrop extends Component {
     };
     fetch('https://gfwpro-lpl-dev.s3.amazonaws.com/iizotfwl6zqilak-test.zip?AWSAccessKeyId=AKIAY7KBJ32RFTDIH3JD&Content-Type=application%2Fzip&Expires=1660869893&Signature=1VWWwfBrsoq%2Foh7KMT1Od%2FmkQjg%3D', requestOptions)
       .then(response => console.log(response)) */
-
 
     if (!file) {
       return;

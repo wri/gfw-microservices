@@ -11,7 +11,12 @@ import Dialog from 'material-ui/Dialog';
 import Select from 'react-select';
 import fetch from '../../../common/js/utils/fetch';
 import { fieldValidations } from '../../../profile/js/utils/validations';
-import { addUser, changeUser, updateUser, updateCurrentUser } from '../../../profile/js/actions/profileActions';
+import {
+  addUser,
+  changeUser,
+  updateUser,
+  updateCurrentUser,
+} from '../../../profile/js/actions/profileActions';
 import { profilePage, authMessages } from '../../../common/js/config';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import Button from '../../../common/js/components/Button';
@@ -71,7 +76,9 @@ export default class UserProfile extends Component {
       props.geographiesData && props.geographiesData.length
         ? geographyArray.map((g) => {
             const datum = props.geographiesData.find((d) => d.id === g);
-            return datum ? { label: datum.geography_name, value: datum.id } : { label: '', value: g };
+            return datum
+              ? { label: datum.geography_name, value: datum.id }
+              : { label: '', value: g };
           })
         : [];
 
@@ -86,7 +93,9 @@ export default class UserProfile extends Component {
         ? commodityArray.map((c) => {
             const datum = props.commoditiesData.find((d) => d.id === c);
             // Note that 'commodity' is misspelled with 3 m's in the user profile data from the API
-            return datum ? { label: datum.commmodity_name, value: datum.id } : { label: '', value: c };
+            return datum
+              ? { label: datum.commmodity_name, value: datum.id }
+              : { label: '', value: c };
           })
         : [];
 
@@ -109,7 +118,9 @@ export default class UserProfile extends Component {
       viirsAlerts: currentUser.viirs_email_frequency ? currentUser.viirs_email_frequency : 0,
       gladAlerts: currentUser.glad_email_frequency ? currentUser.glad_email_frequency : 0,
       formaAlerts: currentUser.forma_email_frequency ? currentUser.forma_email_frequency : 0,
-      granChacoAlerts: currentUser.gran_chaco_email_frequency ? currentUser.gran_chaco_email_frequency : 0,
+      granChacoAlerts: currentUser.gran_chaco_email_frequency
+        ? currentUser.gran_chaco_email_frequency
+        : 0,
       auth_preference_id: currentUser.auth_preference_id ? currentUser.auth_preference_id : 0,
       // UI STATE
       dialogOpen: false,
@@ -122,7 +133,10 @@ export default class UserProfile extends Component {
       dropdownAccessLevelOptions: dropdownAccessLevelOptions(accessLevelData),
       dropdownUserStatusOptions: dropdownUserStatusOptions(statusData),
       selectedDropdownTitleOption: this.getUserTitle(currentUser.title_id, this.props.titlesData),
-      selectedDropdownAccessLevelOption: this.getUserAccessLevel(currentUser.access_level_id, accessLevelData),
+      selectedDropdownAccessLevelOption: this.getUserAccessLevel(
+        currentUser.access_level_id,
+        accessLevelData
+      ),
       selectedDropdownUserStatusOption: this.getUserStatus(currentUser.status_id, statusData),
     };
 
@@ -241,13 +255,16 @@ export default class UserProfile extends Component {
     // Determine if the current logged user is attempting to deactivate themselves
     const isSelf = userInfo.id === id;
     // Determine the number of admins in the organization
-    const numberOfOrgAdmins = users.filter((user) => user.access_level_id === 1 && user.status_id === 2).length;
+    const numberOfOrgAdmins = users.filter(
+      (user) => user.access_level_id === 1 && user.status_id === 2
+    ).length;
 
     if (numberOfOrgAdmins <= 1 && isAdmin) {
       this.setState({
         dialogOpen: true,
         dialogTitle: 'Unable to deactivate user',
-        dialogMessage: 'Deactivating this user will leave the organization without an administrator.',
+        dialogMessage:
+          'Deactivating this user will leave the organization without an administrator.',
         updating: false,
       });
     } else if (isSelf && isAdmin) {
@@ -388,7 +405,8 @@ export default class UserProfile extends Component {
                       const commodityIds = commodities.map((g) => g.value).join(',');
                       const userObject = {
                         access_level_id,
-                        activated_time: typeof activated_time === 'object' ? activated_time : new Date(),
+                        activated_time:
+                          typeof activated_time === 'object' ? activated_time : new Date(),
                         auth_preference_id,
                         email,
                         email_subscription: false,
@@ -473,7 +491,10 @@ export default class UserProfile extends Component {
               dialogTitle: authMessages.resetLimit.title,
               dialogMessage: authMessages.resetLimit.message,
             });
-          } else if (Object.prototype.hasOwnProperty.call(res, 'message') && res.message === 'Success') {
+          } else if (
+            Object.prototype.hasOwnProperty.call(res, 'message') &&
+            res.message === 'Success'
+          ) {
             this.setState({
               showModalLoader: false,
               dialogOpen: true,
@@ -598,7 +619,8 @@ export default class UserProfile extends Component {
       dropdownTitleOptions,
     } = this.state;
     // Handle dialog content
-    const dialogContent = typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
+    const dialogContent =
+      typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
     const geographyOptions = geographiesData.map(this.createGeogOptions);
     const commodityOptions = commoditiesData.map(this.createCommOptions);
 
@@ -631,8 +653,12 @@ export default class UserProfile extends Component {
 
         <h1 className="profile-page__title">{profilePage.profileManager.userProfileTitle}</h1>
 
-        <h2 className="profile-page__subheader">{profilePage.profileManager.userContactInfoTitle}</h2>
-        <p className={`${newUser ? '' : 'hidden'}`}>{profilePage.profileManager.userProfilePrompt}</p>
+        <h2 className="profile-page__subheader">
+          {profilePage.profileManager.userContactInfoTitle}
+        </h2>
+        <p className={`${newUser ? '' : 'hidden'}`}>
+          {profilePage.profileManager.userProfilePrompt}
+        </p>
 
         <section className="section-container">
           <div className="input-field__block-container">
@@ -673,7 +699,9 @@ export default class UserProfile extends Component {
               id="user_email"
               name="user_email"
               readOnly={!newUser}
-              onChange={(evt) => this.setState({ email: evt.target.value.toString().toLowerCase() })}
+              onChange={(evt) =>
+                this.setState({ email: evt.target.value.toString().toLowerCase() })
+              }
             />
           </div>
 
@@ -704,7 +732,9 @@ export default class UserProfile extends Component {
         </section>
 
         <section className="section-container">
-          <h2 className="profile-page__subheader">{profilePage.profileManager.userProfileInfoTitle}</h2>
+          <h2 className="profile-page__subheader">
+            {profilePage.profileManager.userProfileInfoTitle}
+          </h2>
 
           <section className="section-container">
             <div className="input-field__block-container">
@@ -730,7 +760,9 @@ export default class UserProfile extends Component {
                     id="access_level"
                     name="access_level"
                     readOnly={userOnly}
-                    value={selectedDropdownAccessLevelOption.label || selectedDropdownAccessLevelOption}
+                    value={
+                      selectedDropdownAccessLevelOption.label || selectedDropdownAccessLevelOption
+                    }
                   />
                 </>
               )}
@@ -798,7 +830,9 @@ export default class UserProfile extends Component {
         </section>
 
         <section className="section-container">
-          <h2 className="profile-page__subheader">{profilePage.profileManager.userSecondLevelTitle}</h2>
+          <h2 className="profile-page__subheader">
+            {profilePage.profileManager.userSecondLevelTitle}
+          </h2>
           <p className="profile-label">{profilePage.profileManager.userSecondLevelPrompt}</p>
 
           <div className="flex-grid space-element">
@@ -848,9 +882,15 @@ export default class UserProfile extends Component {
         <div className="profile-button-container justify-end">
           {/* status_id === 2 is active user */}
 
-          <Button variant="primary" onClick={this.updateUser} label={profilePage.profileManager.save} />
+          <Button
+            variant="primary"
+            onClick={this.updateUser}
+            label={profilePage.profileManager.save}
+          />
 
-          {userOnly ? null : <Button onClick={this.back} label={profilePage.profileManager.cancel} />}
+          {userOnly ? null : (
+            <Button onClick={this.back} label={profilePage.profileManager.cancel} />
+          )}
 
           {userOnly || newUser ? null : (
             <Button
@@ -869,8 +909,14 @@ export default class UserProfile extends Component {
             />
           ) : null}
 
-          {userOnly || newUser || !(status_id === 2) || (userInfo.email === email && !newUser) ? null : (
-            <Button onClick={this.adminResetPassword} label={profilePage.profileManager.resetPassword} />
+          {userOnly ||
+          newUser ||
+          !(status_id === 2) ||
+          (userInfo.email === email && !newUser) ? null : (
+            <Button
+              onClick={this.adminResetPassword}
+              label={profilePage.profileManager.resetPassword}
+            />
           )}
 
           {userOnly || newUser ? null : (

@@ -30,7 +30,11 @@ const onListFromViewToList = (list, canopyModalVisible, history) => {
   store.dispatch(updateFilteredData([]));
   store.dispatch(updateSelectedLocations([]));
 
-  if (list.list_name !== 'All Locations' && list.list_name !== 'Investments' && list.list_name !== 'Commodities') {
+  if (
+    list.list_name !== 'All Locations' &&
+    list.list_name !== 'Investments' &&
+    list.list_name !== 'Commodities'
+  ) {
     store.dispatch(addList(list));
   }
   store.dispatch(changeView('lists'));

@@ -14,17 +14,12 @@ const formatPct = (value) => {
 };
 
 // Formats number with commas
-const prettifyNum = (value) =>
-  value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+const prettifyNum = (value) => value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 const validatePct = (percentage) => {
   if (percentage > 100) {
     return 100;
-  } else if (
-    isNaN(percentage) ||
-    !isFinite(percentage) ||
-    Math.sign(percentage) === -1
-  ) {
+  } else if (isNaN(percentage) || !isFinite(percentage) || Math.sign(percentage) === -1) {
     return 0;
   } else {
     return percentage;
@@ -36,7 +31,7 @@ const parseListData = (property, listLevelAnalysis) => {
 
   const listAnalysisData = listLevelAnalysis[0];
 
-  if (listAnalysisData[property]) {
+  if (Object.prototype.hasOwnProperty.call(listAnalysisData ?? {}, property)) {
     const yearlyData = JSON.parse(listAnalysisData[property]);
 
     if (
@@ -47,7 +42,7 @@ const parseListData = (property, listLevelAnalysis) => {
         'tree_cover_loss_idn_legal_yearly',
       ].includes(property)
     ) {
-      const biomes = Object.keys(yearlyData);
+      const biomes = Object.keys(yearlyData ?? {});
       biomes.forEach((biome) => {
         Object.entries(yearlyData[biome]).forEach((entry) => {
           const [, value] = entry;
@@ -77,16 +72,11 @@ const parseListData = (property, listLevelAnalysis) => {
 };
 
 const parseListTotals = (property, listLevelAnalysis) => {
-  const total = listLevelAnalysis[property];
-
+  let total = Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, property)
+    ? listLevelAnalysis[property]
+    : 0;
+  total = total ?? 0;
   return Math.round(total * 100) / 100;
 };
 
-export {
-  cloneRow,
-  formatPct,
-  prettifyNum,
-  validatePct,
-  parseListData,
-  parseListTotals,
-};
+export { cloneRow, formatPct, prettifyNum, validatePct, parseListData, parseListTotals };

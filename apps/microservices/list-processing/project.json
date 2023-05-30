@@ -40,9 +40,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/apps/microservices/list-processing"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/apps/microservices/list-processing"],
       "options": {
         "jestConfig": "apps/microservices/list-processing/jest.config.ts",
         "passWithNoTests": true

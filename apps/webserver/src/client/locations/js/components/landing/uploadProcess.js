@@ -43,7 +43,11 @@ const saveListToProcessStep = async (param) => {
   const { listName, keyFile, list_id: listID } = param;
 
   try {
-    const { data } = axios.post('/locations/save-list-to-process', { list_id: listID, key: keyFile, listName });
+    const { data } = axios.post('/locations/save-list-to-process', {
+      list_id: listID,
+      key: keyFile,
+      listName,
+    });
     return { ...param, ...data };
   } catch (error) {
     console.log(error);
@@ -73,7 +77,8 @@ const promiseCompose =
   (...initialArgs) => {
     return functions
       .reduceRight((currFunc, nextFunc) => {
-        return (...arg) => currFunc.call(this, ...arg).then((resolvedV) => nextFunc.call(this, resolvedV));
+        return (...arg) =>
+          currFunc.call(this, ...arg).then((resolvedV) => nextFunc.call(this, resolvedV));
       })
       .call(this, ...initialArgs);
   };

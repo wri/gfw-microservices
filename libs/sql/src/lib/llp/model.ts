@@ -31,7 +31,7 @@ export interface GenerationFileRequest {
   selectedLocationsList?: Array<number>;
   listView?: string;
   aggregation?: boolean;
-  listLevelAnalysis?: any;
+  listLevelAnalysis?: unknown;
 }
 
 /*export interface GetAnalysisDataCountForUserListResponse {

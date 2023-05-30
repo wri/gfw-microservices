@@ -23,7 +23,14 @@ const initialColumnWidth = 45;
 class MultiGridTable extends Component {
   constructor(props) {
     super(props);
-    const { addType, activeTemplate, commodityType, customAttributeHeaders, templateData, isListExcluded } = this.props;
+    const {
+      addType,
+      activeTemplate,
+      commodityType,
+      customAttributeHeaders,
+      templateData,
+      isListExcluded,
+    } = this.props;
     this._cache = new CellMeasurerCache({
       defaultHeight: defaultCellHeight,
       defaultWidth: 180,
@@ -65,7 +72,10 @@ class MultiGridTable extends Component {
     const newFixedColumnIndex = parseInt(e.target.value);
     const { multiGridHeaders } = this.state;
     const newfixedColumnName = multiGridHeaders[newFixedColumnIndex];
-    const newMultiGridHeaders = [newfixedColumnName, ...multiGridHeaders.filter((item) => item !== newfixedColumnName)];
+    const newMultiGridHeaders = [
+      newfixedColumnName,
+      ...multiGridHeaders.filter((item) => item !== newfixedColumnName),
+    ];
     this.setState({ multiGridHeaders: newMultiGridHeaders });
   };
 
@@ -155,7 +165,11 @@ class MultiGridTable extends Component {
         ));
         return (
           <div style={fixedRowHeaderStyle} key={key}>
-            <select className="gfw-table__fixed-row-select" value={multiGridHeaders[0]} onChange={this._setFixedColumn}>
+            <select
+              className="gfw-table__fixed-row-select"
+              value={multiGridHeaders[0]}
+              onChange={this._setFixedColumn}
+            >
               {fixedColumnSelectOptions}
             </select>
           </div>
@@ -167,13 +181,20 @@ class MultiGridTable extends Component {
         </div>
       );
     }
-    const rowHaveError = feature && feature.invalidFields ? feature.invalidFields.length > 0 : false;
+    const rowHaveError =
+      feature && feature.invalidFields ? feature.invalidFields.length > 0 : false;
 
     if (columnIndex === 0) {
       if (initialColumnIsValid) {
         return (
-          <div key={key} className="MultiGridHeader__checkbox row-icon gfw-table__td" style={iconCellStyle}>
-            <span>{feature.valid ? '' : <IconExclamationTriangle className="row-invalid__icon" />}</span>
+          <div
+            key={key}
+            className="MultiGridHeader__checkbox row-icon gfw-table__td"
+            style={iconCellStyle}
+          >
+            <span>
+              {feature.valid ? '' : <IconExclamationTriangle className="row-invalid__icon" />}
+            </span>
           </div>
         );
       }
@@ -190,12 +211,20 @@ class MultiGridTable extends Component {
       );
     }
     return (
-      <CellMeasurer key={key} cache={this._cache} columnIndex={columnIndex} parent={parent} rowIndex={rowIndex}>
+      <CellMeasurer
+        key={key}
+        cache={this._cache}
+        columnIndex={columnIndex}
+        parent={parent}
+        rowIndex={rowIndex}
+      >
         <div
           key={key}
           style={bodyCellStyle}
           className={`gfw-table__td ${rowHaveError ? 'row-invalid' : 'row-valid'} ${
-            rowHaveError && featuresColumnCount === columnIndex ? 'row-invalid--last' : 'row-valid--last'
+            rowHaveError && featuresColumnCount === columnIndex
+              ? 'row-invalid--last'
+              : 'row-valid--last'
           }`}
         >
           <MultiGridCellRegular

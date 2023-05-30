@@ -18,9 +18,7 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
 
   process(data, filters: GenerationFileRequest) {
     if (this.isSouthEastAsiaTCL(filters)) {
-      const locations = data.filter(
-        (location) => location.southeast_asia_presence === 'true'
-      );
+      const locations = data.filter((location) => location.southeast_asia_presence === 'true');
       if (locations && locations.length > 0) {
         this.existSouthEastLocation = true;
         super.process(locations, filters);
@@ -42,7 +40,7 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
         const dataRow = [list_name];
 
         let rowValue = 0;
-        if (!listLevelAnalysis[attribute]) {
+        if (!Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, attribute)) {
           return;
         }
         const yearlyData = JSON.parse(listLevelAnalysis[attribute]);
@@ -99,9 +97,6 @@ export class SouthEastAsiaTCLService extends DashboardHandleDownload {
 
   isSouthEastAsiaTCL(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    return (
-      listView === 'forest_change' &&
-      (type === 'southEastAsiaTCL' || type === 'everything')
-    );
+    return listView === 'forest_change' && (type === 'southEastAsiaTCL' || type === 'everything');
   }
 }

@@ -1,10 +1,10 @@
 /********************************************************************
-*   @name: error.utils.js
-*   @description: A utility file to allow creating standard error
-*                 messages.
-*   @function {createErrorMessage}
-*
-********************************************************************/
+ *   @name: error.utils.js
+ *   @description: A utility file to allow creating standard error
+ *                 messages.
+ *   @function {createErrorMessage}
+ *
+ ********************************************************************/
 //Imports required for this module.
 const path = require('path');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
@@ -89,23 +89,23 @@ const ERROR_CODES = {
   failedToGetPolicyList: 115,
   failedToDeletePolicies: 116,
   failedToMovePolicies: 117,
-  SQSError: 901
+  SQSError: 901,
 };
 
 /**
-* @function createErrorMessage
-* @summary Creates a new standard error message object that can be used across.
-* @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
-* @param {int} error_code - Error Code used for identifying the error.
-* @param {String} user_msg - A message that could be provided to the user if necessary.
-* @param {String} system_msg - The more detailed system message for logging or debugging.
-* @return {Object} An error message object containing the above parameters.
-*/
+ * @function createErrorMessage
+ * @summary Creates a new standard error message object that can be used across.
+ * @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param {int} error_code - Error Code used for identifying the error.
+ * @param {String} user_msg - A message that could be provided to the user if necessary.
+ * @param {String} system_msg - The more detailed system message for logging or debugging.
+ * @return {Object} An error message object containing the above parameters.
+ */
 function createErrorMessage(req, error_code, user_msg, system_msg) {
   const objError = {
     errorCode: error_code,
     userMessage: user_msg,
-    systemMessage: system_msg
+    systemMessage: system_msg,
   };
   // log error
   logger.log(req, 0, objError);
@@ -127,7 +127,10 @@ function errorHandler(error) {
     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
     // http.ClientRequest in node.js
     console.log(error.request);
-    return { status: 500, data: { message: 'Error communicating with microservice creating pre-signed URL' } };
+    return {
+      status: 500,
+      data: { message: 'Error communicating with microservice creating pre-signed URL' },
+    };
   }
 
   // Something happened in setting up the request that triggered an Error

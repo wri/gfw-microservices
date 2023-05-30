@@ -21,7 +21,9 @@ export async function fetchGfwProLayers() {
   const apiLayers = await esriRequest(layerURL, { responseType: 'json' });
 
   Object.values(proLayers).forEach((layerName) => {
-    const apiLayer = apiLayers.data.data.find((apiLayerRes) => apiLayerRes.attributes.name === layerName);
+    const apiLayer = apiLayers.data.data.find(
+      (apiLayerRes) => apiLayerRes.attributes.name === layerName
+    );
     if (apiLayer) {
       layersData.push(apiLayer);
     } else {
@@ -30,9 +32,13 @@ export async function fetchGfwProLayers() {
   });
 
   if (failedLayers.length > 0 && !PRODUCTION_ENVIRONMENTS.includes(window.CURRENT_ENVIRONMENT)) {
-    const prodAPILayers = await esriRequest(mapPage.gfw_production_layers_url, { responseType: 'json' });
+    const prodAPILayers = await esriRequest(mapPage.gfw_production_layers_url, {
+      responseType: 'json',
+    });
     failedLayers.forEach((layerName) => {
-      const apiLayer = prodAPILayers.data.data.find((apiLayerRes) => apiLayerRes.attributes.name === layerName);
+      const apiLayer = prodAPILayers.data.data.find(
+        (apiLayerRes) => apiLayerRes.attributes.name === layerName
+      );
       if (apiLayer) {
         layersData.push(apiLayer);
       }

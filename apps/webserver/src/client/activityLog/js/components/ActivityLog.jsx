@@ -63,7 +63,13 @@ function ActivityLog() {
   const download = () => {
     const headers = 'Username,Category,Activity Name, Activity Description,Timestamp\n';
     const rows = activities.map((activity) => {
-      const { activity_description, activity_time, activity_type_category_name, activity_type_name, email } = activity;
+      const {
+        activity_description,
+        activity_time,
+        activity_type_category_name,
+        activity_type_name,
+        email,
+      } = activity;
       return `${email},${activity_type_category_name},${activity_type_name},${activity_description},${activity_time}`;
     });
     const csv = headers + rows.join('\n');
@@ -74,7 +80,9 @@ function ActivityLog() {
   // startDate is initialized to 0 if no date is selected
   const start = isNaN(new Date(startDate)) ? 0 : new Date(startDate).setHours(0, 0, 0, 0);
   // endDate is initialized to 12/31/9999 if no date is selected
-  const end = isNaN(new Date(endDate)) ? new Date('12/31/9999') : new Date(endDate).setHours(23, 59, 59, 999);
+  const end = isNaN(new Date(endDate))
+    ? new Date('12/31/9999')
+    : new Date(endDate).setHours(23, 59, 59, 999);
   const filteredElements = activities.filter((activity) => {
     return (
       ((activity.email ? activity.email.toLowerCase().indexOf(filterStr.toLowerCase()) > -1 : '') ||
@@ -150,7 +158,12 @@ function ActivityLog() {
           </MuiThemeProvider>
         </div>
 
-        <Button className="activity-log__action-button" variant="primary" onClick={() => download()} label="Download" />
+        <Button
+          className="activity-log__action-button"
+          variant="primary"
+          onClick={() => download()}
+          label="Download"
+        />
       </div>
       {rows.length > 0 && (
         <div className="gfw-table-container">
@@ -170,7 +183,9 @@ function ActivityLog() {
       )}
       {!displayLoader && rows.length === 0 && (
         <div className="activity-log__no-results">
-          <p className="activity-log__no-results-prompt">{locationsPage.lists.listsFilterNoMatch}</p>
+          <p className="activity-log__no-results-prompt">
+            {locationsPage.lists.listsFilterNoMatch}
+          </p>
           <LinkButton
             className="activity-log__no-results-clear"
             label={locationsPage.lists.listsFilterClear}

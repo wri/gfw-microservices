@@ -1,29 +1,24 @@
-define([
-  'esri/request',
-  'esri/layers/BaseTileLayer'
-], function(
-  esriRequest,
-  BaseTileLayer
-) {
-
+define(['esri/request', 'esri/layers/BaseTileLayer'], function (esriRequest, BaseTileLayer) {
   const intensityBank = {};
-  const getScalePowFunc = exp => {
+  const getScalePowFunc = (exp) => {
     // y = m * x ^ k + b
     const domain = [0, 256];
     const range = [0, 256];
     const b = range[0] - domain[0];
-    const m = (range[1] - b) / (Math.pow(domain[1], exp));
+    const m = (range[1] - b) / Math.pow(domain[1], exp);
 
     return (x) => {
       return Math.pow(x, exp) * m + b;
     };
   };
 
-  for (let z = 1; z < 21; z++) { //each zoom level on the map
+  for (let z = 1; z < 21; z++) {
+    //each zoom level on the map
     intensityBank[z] = [];
-    const exp = z < 11 ? 0.3 + ((z - 3) / 20) : 1;
+    const exp = z < 11 ? 0.3 + (z - 3) / 20 : 1;
     const lMoney = getScalePowFunc(exp);
-    for (let f = 0; f < 256; f++) { //each potential intensity value
+    for (let f = 0; f < 256; f++) {
+      //each potential intensity value
       intensityBank[z][f] = [];
       intensityBank[z][f].push(151);
       intensityBank[z][f].push(189);
@@ -33,12 +28,11 @@ define([
   }
 
   const TreeCoverLayer = BaseTileLayer.createSubclass({
-
     properties: {
-      threshold: 30
+      threshold: 30,
     },
 
-    getTileUrl: function(level, row, column) {
+    getTileUrl: function (level, row, column) {
       return this.urlTemplate
         .replace('{z}', level)
         .replace('{x}', column)
@@ -46,7 +40,7 @@ define([
         .replace('{thresh}', this.threshold);
     },
 
-    fetchTile: function(level, row, column) {
+    fetchTile: function (level, row, column) {
       // call getTileUrl() method to construct the URL to tiles
       // for a given level, row and col provided by the LayerView
       const url = this.getTileUrl(level, row, column);
@@ -55,11 +49,11 @@ define([
       // cross-domain access to create WebGL textures for 3D.
       return esriRequest(url, {
         responseType: 'image',
-        allowImageDataAccess: true
+        allowImageDataAccess: true,
       }).then(
-        function(response) {
+        function (response) {
           // We use a promise because we can't return an empty canvas before the image data has loaded, been filtered, and properly colored
-          const promise = new Promise(resolve => {
+          const promise = new Promise((resolve) => {
             // when esri request resolves successfully
             // get the image from the response
             const image = response.data;
@@ -88,10 +82,11 @@ define([
             imageObject.src = image.src;
           });
           return promise;
-        }.bind(this));
+        }.bind(this)
+      );
     },
 
-    filter: function(data) {
+    filter: function (data) {
       const z = this.view.zoom;
 
       for (let i = 0; i < data.length; i += 4) {
@@ -99,21 +94,39 @@ define([
         const slice = [data[i], data[i + 1], data[i + 2]];
         const values = this.decodeIntensity(slice);
 
-        data[i] = intensityBank[z] && intensityBank[z][values.intensity] && intensityBank[z][values.intensity][0] ? intensityBank[z][values.intensity][0] : 0;
-        data[i + 1] = intensityBank[z] && intensityBank[z][values.intensity] && intensityBank[z][values.intensity][1] ? intensityBank[z][values.intensity][1] : 0;
-        data[i + 2] = intensityBank[z] && intensityBank[z][values.intensity] && intensityBank[z][values.intensity][2] ? intensityBank[z][values.intensity][2] : 0;
-        data[i + 3] = intensityBank[z] && intensityBank[z][values.intensity] && intensityBank[z][values.intensity][3] ? intensityBank[z][values.intensity][3] : 0;
-
+        data[i] =
+          intensityBank[z] &&
+          intensityBank[z][values.intensity] &&
+          intensityBank[z][values.intensity][0]
+            ? intensityBank[z][values.intensity][0]
+            : 0;
+        data[i + 1] =
+          intensityBank[z] &&
+          intensityBank[z][values.intensity] &&
+          intensityBank[z][values.intensity][1]
+            ? intensityBank[z][values.intensity][1]
+            : 0;
+        data[i + 2] =
+          intensityBank[z] &&
+          intensityBank[z][values.intensity] &&
+          intensityBank[z][values.intensity][2]
+            ? intensityBank[z][values.intensity][2]
+            : 0;
+        data[i + 3] =
+          intensityBank[z] &&
+          intensityBank[z][values.intensity] &&
+          intensityBank[z][values.intensity][3]
+            ? intensityBank[z][values.intensity][3]
+            : 0;
       }
       return data;
     },
 
-    decodeIntensity: function(pixel) {
+    decodeIntensity: function (pixel) {
       const intensity = pixel[1];
       return { intensity: intensity };
-    }
+    },
   });
 
   return TreeCoverLayer;
-
 });

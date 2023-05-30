@@ -23,12 +23,10 @@ export function isGfwList(listName) {
  */
 
 export const flipGFWListNames = (obj) => {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => [value, key])
-  );
+  return Object.fromEntries(Object.entries(obj).map(([key, value]) => [value, key]));
 };
 
-const GFW_LISTS = flipGFWListNames(GFW_LIST_NAME)
+const GFW_LISTS = flipGFWListNames(GFW_LIST_NAME);
 
 export const discernGfwID = (gfwListName) => {
   const layerName = GFW_LISTS[gfwListName];
@@ -40,7 +38,8 @@ export const discernGfwID = (gfwListName) => {
  * @param {object} selectedList - List object
  * @return {boolean} - True if the list is a user list
  */
-export const isUserList = (selectedList) => Object.prototype.hasOwnProperty.call(selectedList, 'user_id');
+export const isUserList = (selectedList) =>
+  Object.prototype.hasOwnProperty.call(selectedList, 'user_id');
 
 /**
  * @description - Get the layer name from the list name
@@ -51,8 +50,8 @@ export function getGfwProMapLayerName(layerID) {
   if (layerID === 'Administrative Areas') {
     return;
   }
-  
-  return discernGfwID(layerID)
+
+  return discernGfwID(layerID);
 }
 
 /**

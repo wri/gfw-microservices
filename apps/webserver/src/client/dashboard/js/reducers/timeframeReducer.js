@@ -2,7 +2,12 @@ import * as types from '../actions/actionTypes';
 import csvUtils from '../utils/csvUtils';
 import isEmpty from 'lodash/isEmpty';
 
-function timeframeFilterDissolved(intermediateState = {}, previousState = {}, action, clonedRawData) {
+function timeframeFilterDissolved(
+  intermediateState = {},
+  previousState = {},
+  action,
+  clonedRawData
+) {
   const { timeframeDissolved } = previousState;
   const { selectedTimeframe } = intermediateState;
   const { dissolvedGeoJSON } = clonedRawData;
@@ -41,7 +46,12 @@ function timeframeFilterGeojson(intermediateState = {}, previousState = {}, acti
   }
 }
 
-function timeframeFilterGeojsonForFooter(intermediateState = {}, previousState = {}, action, clonedRawData) {
+function timeframeFilterGeojsonForFooter(
+  intermediateState = {},
+  previousState = {},
+  action,
+  clonedRawData
+) {
   const { timeframeGeojsonForFooter } = previousState;
   const { selectedTimeframe } = intermediateState;
   const { geojson } = clonedRawData;

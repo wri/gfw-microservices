@@ -100,10 +100,14 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         return;
       }
 
-      const checkListExists = userLists.find((list) => list.list_name.toLowerCase() === listName.toLowerCase());
+      const checkListExists = userLists.find(
+        (list) => list.list_name.toLowerCase() === listName.toLowerCase()
+      );
       if (checkListExists) {
         setDialogTitle('List not created');
-        setDialogMessage('A list already exists with this name. Enter a new list name and click Continue button.');
+        setDialogMessage(
+          'A list already exists with this name. Enter a new list name and click Continue button.'
+        );
         setDialogOpen(true);
         return;
       }
@@ -205,7 +209,9 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         <div className="add-location-chooser__content dialog__content">
           <div
             id={chooser.single.id}
-            className={`selection-card ${choice === CHOICES.SINGLE ? 'selection-card--selected' : ''}`}
+            className={`selection-card ${
+              choice === CHOICES.SINGLE ? 'selection-card--selected' : ''
+            }`}
             onClick={() => setChoice(CHOICES.SINGLE)}
           >
             <div className="selection-card__icon-container">
@@ -217,7 +223,9 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
 
           <div
             id={chooser.multiple.id}
-            className={`selection-card ${choice === CHOICES.MULTIPLE ? 'selection-card--selected' : ''}`}
+            className={`selection-card ${
+              choice === CHOICES.MULTIPLE ? 'selection-card--selected' : ''
+            }`}
             onClick={() => setChoice(CHOICES.MULTIPLE)}
           >
             <div className="selection-card__icon-container">
@@ -229,7 +237,9 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
 
           <div
             id={chooser.large_list.id}
-            className={`selection-card ${choice === CHOICES.LARGE_LIST ? 'selection-card--selected' : ''}`}
+            className={`selection-card ${
+              choice === CHOICES.LARGE_LIST ? 'selection-card--selected' : ''
+            }`}
             onClick={() => {
               if (subscription_status_id === 2) {
                 setIsLargeListUpload(true);
@@ -267,7 +277,10 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
               ref={fileInputRef}
               style={{ display: 'none' }}
             />
-            <DriveFolderUploadTwoToneIcon size={256} style={{ color: '#ffdbb2', width: '4em', height: '4em' }} />
+            <DriveFolderUploadTwoToneIcon
+              size={256}
+              style={{ color: '#ffdbb2', width: '4em', height: '4em' }}
+            />
             <h2 className="gfw-lists__title">DROP YOUR FILES HERE OR CLICK TO UPLOAD</h2>
             <div className="add-location-chooser__filedrop_description">
               <b>Accepted file types</b>
@@ -284,11 +297,15 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
       {isLargeListUpload && llpStep2 && (
         <div className="upload-step-1">
           <section className="add-location-chooser__general-section add-location-chooser__upload_progress">
-            <FolderZipIcon className="zip-icon" style={{ color: '#1ABCFE', width: '24px', height: '24px' }} />
+            <FolderZipIcon
+              className="zip-icon"
+              style={{ color: '#1ABCFE', width: '24px', height: '24px' }}
+            />
             <div className="upload-process-label">Upload process</div>
             <div className="upload-process-filename">{largeListFile ? largeListFile.name : ''}</div>
             <div className="upload-process-progress">
-              {stringDate} • {fileBytesUploaded} / {formatBytes(largeListFile ? largeListFile.size : 0)}
+              {stringDate} • {fileBytesUploaded} /{' '}
+              {formatBytes(largeListFile ? largeListFile.size : 0)}
             </div>
             <CircularProgressWithLabel value={uploadedPercentaje} />
           </section>
@@ -348,7 +365,10 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
       {isLargeListUpload && llpStep3 && (
         <div className="add-location-chooser__filedrop_process_end">
           <div>
-            <PendingTwoToneIcon size={256} style={{ color: '#baeaff', width: '4em', height: '4em' }} />
+            <PendingTwoToneIcon
+              size={256}
+              style={{ color: '#baeaff', width: '4em', height: '4em' }}
+            />
             <h2 className="gfw-lists__title">Now it is up to us!</h2>
             <p>You will soon receive an email notification that your list has begun processing</p>
           </div>
@@ -386,7 +406,12 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         open={dialogOpen}
         title={dialogTitle}
         actions={[
-          <Button className="dialog__primary-action" variant="primary" label="OK" onClick={shouldCloseDialog} />,
+          <Button
+            className="dialog__primary-action"
+            variant="primary"
+            label="OK"
+            onClick={shouldCloseDialog}
+          />,
         ]}
         onRequestClose={shouldCloseDialog}
       >

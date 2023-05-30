@@ -29,7 +29,9 @@ function SquadListItem({ country, organizationName, status, activeItem, setActiv
           <div>{organizationName}</div>
         </div>
         {pending && (
-          <div className="b2b-connection-item__pending-action">{profilePage.profileManager.b2bSection.pending}</div>
+          <div className="b2b-connection-item__pending-action">
+            {profilePage.profileManager.b2bSection.pending}
+          </div>
         )}
       </CardContent>
     </Card>

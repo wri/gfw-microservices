@@ -62,9 +62,16 @@ export default class DescribeLocation extends Component {
 
   filterTemplates = (template) => {
     if (this.props.locationType === 'multiple') {
-      return locationsPage.upload.ignoredMultipleCommodityFields.indexOf(template.template_datum_field_name) === -1;
+      return (
+        locationsPage.upload.ignoredMultipleCommodityFields.indexOf(
+          template.template_datum_field_name
+        ) === -1
+      );
     } else {
-      return locationsPage.upload.ignoredCommodityFields.indexOf(template.template_datum_field_name) === -1;
+      return (
+        locationsPage.upload.ignoredCommodityFields.indexOf(template.template_datum_field_name) ===
+        -1
+      );
     }
   };
 
@@ -144,7 +151,8 @@ export default class DescribeLocation extends Component {
           !!this.props.required === !!template.template_datum_mandatory &&
           (!this.isReadOnly(template) || this.props.locationType === 'multiple') &&
           // Only display additional attributes on multi-upload wizard
-          (this.props.locationType !== 'multiple' || template.template_datum_field_name.indexOf('Attribute') === 0)
+          (this.props.locationType !== 'multiple' ||
+            template.template_datum_field_name.indexOf('Attribute') === 0)
         );
       }
     });
@@ -156,7 +164,10 @@ export default class DescribeLocation extends Component {
 
     if (!this.props.contentEditable) {
       readOnly = true;
-    } else if (template.template_datum_field_name === 'Commodity' && this.props.activeTemplate === 'other') {
+    } else if (
+      template.template_datum_field_name === 'Commodity' &&
+      this.props.activeTemplate === 'other'
+    ) {
       readOnly = false;
     } else if (template.template_datum_field_name === 'Commodity') {
       readOnly = true;
@@ -235,7 +246,8 @@ export default class DescribeLocation extends Component {
   createRow = (template, j) => {
     if (template.template_datum_field_name === 'Location Classification') {
       if (this.findLocationClassValue() === true) {
-        template.template_datum_field_value = locationsPage.locationClassValues[this.props.activeTemplate].value;
+        template.template_datum_field_value =
+          locationsPage.locationClassValues[this.props.activeTemplate].value;
       } else if (this.props.addMethod) {
         if (!this.findLocationClassValue() && this.props.addMethod === 'bySelection') {
           template.template_datum_field_value = 'Administrative Area';
@@ -255,7 +267,10 @@ export default class DescribeLocation extends Component {
       template.template_datum_field_value = template.template_datum_field_description;
     }
 
-    if (customAttributeRegex.test(template.template_datum_field_name) && !template.template_datum_field_name_updated) {
+    if (
+      customAttributeRegex.test(template.template_datum_field_name) &&
+      !template.template_datum_field_name_updated
+    ) {
       template.template_datum_field_name_updated = template.template_datum_field_name;
     }
     const permanentClassTag = 'tag';
@@ -357,7 +372,9 @@ export default class DescribeLocation extends Component {
   render() {
     const templateOptions = locationsPage.upload.templateOptions;
     const templateBodies =
-      this.props.addType === 'commodity' ? [this.createLocationTemplate(this.props.templateData)] : [];
+      this.props.addType === 'commodity'
+        ? [this.createLocationTemplate(this.props.templateData)]
+        : [];
 
     return this.props.required ? (
       <div
@@ -370,7 +387,9 @@ export default class DescribeLocation extends Component {
         </table>
       </div>
     ) : (
-      <div className={`locations-add-describe ${this.props.addType === 'commodity' ? '' : 'hidden'}`}>
+      <div
+        className={`locations-add-describe ${this.props.addType === 'commodity' ? '' : 'hidden'}`}
+      >
         <div className="locations-subpage-describe">
           <p>{locationsPage.add.additionalAttributesDescriptionSingle}</p>
           <div className="locations-describe-table">

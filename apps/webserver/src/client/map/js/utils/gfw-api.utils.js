@@ -47,14 +47,22 @@ export const getBBoxAndGeostoreIDs = async (GFW_LIST, QUERY_FIELD, IDs, date) =>
  * @param {Object} gfwVectorTileStyle - GFW Vector Tile Style
  * @return {Object} - GFW Vector Tile Style
  */
-export const getVectorTileStyle = async (GFW_LIST, QUERY_FIELD, IDs, gfwVectorTileUrl, gfwVectorTileStyle) => {
+export const getVectorTileStyle = async (
+  GFW_LIST,
+  QUERY_FIELD,
+  IDs,
+  gfwVectorTileUrl,
+  gfwVectorTileStyle
+) => {
   const layers = gfwVectorTileStyle.layers.map((layer) => ({
     id: layer.id,
     source: GFW_LIST,
     'source-layer': GFW_LIST,
     type: layer.typeName,
     paint: layer.paint,
-    filter: layer.filter ? [...layer.filter, ['in', QUERY_FIELD, ...IDs]] : ['all', ['in', QUERY_FIELD, ...IDs]],
+    filter: layer.filter
+      ? [...layer.filter, ['in', QUERY_FIELD, ...IDs]]
+      : ['all', ['in', QUERY_FIELD, ...IDs]],
   }));
 
   return {

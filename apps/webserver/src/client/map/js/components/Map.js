@@ -25,7 +25,10 @@ import VectorTileLayer from 'esri/layers/VectorTileLayer';
 import WebTileLayer from 'esri/layers/WebTileLayer';
 import all from 'dojo/promise/all';
 import esriConfig from 'esri/config';
-import { geographicToWebMercator, webMercatorToGeographic } from 'esri/geometry/support/webMercatorUtils';
+import {
+  geographicToWebMercator,
+  webMercatorToGeographic,
+} from 'esri/geometry/support/webMercatorUtils';
 import { open } from 'esri/core/workers';
 
 import store from '../store';
@@ -205,8 +208,14 @@ export default class Map extends Component {
         startYear: treeCoverLossYearsFC[0],
         endYear: treeCoverLossYearsFC[treeCoverLossYearsFC.length - 1],
       },
-      biomassLossDateRange: { startYear: biomassLossYears[0], endYear: biomassLossYears[biomassLossYears.length - 1] },
-      prodesDateRange: { startYear: prodesLossYears[0], endYear: prodesLossYears[prodesLossYears.length - 1] },
+      biomassLossDateRange: {
+        startYear: biomassLossYears[0],
+        endYear: biomassLossYears[biomassLossYears.length - 1],
+      },
+      prodesDateRange: {
+        startYear: prodesLossYears[0],
+        endYear: prodesLossYears[prodesLossYears.length - 1],
+      },
       prodesInitialVectorTileStyle: null,
       listSelectDropDownOpen: false,
       selectedListFromDropdown: false,
@@ -289,7 +298,9 @@ export default class Map extends Component {
 
     if (prevState.visibleLayers.length < visibleLayers.length) {
       this.view.popup.close();
-      const nowVisible = visibleLayers.filter((layer) => prevState.visibleLayers.indexOf(layer) === -1);
+      const nowVisible = visibleLayers.filter(
+        (layer) => prevState.visibleLayers.indexOf(layer) === -1
+      );
       nowVisible.forEach((nowVisibleLayer) => {
         let mapLayer = this.view.map.findLayerById(nowVisibleLayer);
         if (mapLayer) {
@@ -332,11 +343,19 @@ export default class Map extends Component {
             }
           });
         }
-        ga('send', 'event', 'Map Click', 'layer toggle', `user turned the ${nowVisibleLayer} layer on`);
+        ga(
+          'send',
+          'event',
+          'Map Click',
+          'layer toggle',
+          `user turned the ${nowVisibleLayer} layer on`
+        );
       });
     } else if (prevState.visibleLayers.length > visibleLayers.length) {
       this.view.popup.close();
-      const nowHidden = prevState.visibleLayers.filter((layer) => visibleLayers.indexOf(layer) === -1);
+      const nowHidden = prevState.visibleLayers.filter(
+        (layer) => visibleLayers.indexOf(layer) === -1
+      );
       nowHidden.forEach((nowHiddenLayer) => {
         const mapLayer = this.view.map.findLayerById(nowHiddenLayer);
 
@@ -356,10 +375,18 @@ export default class Map extends Component {
             }
           });
         }
-        ga('send', 'event', 'Map Click', 'layer toggle', `user turned the ${nowHiddenLayer} layer off`);
+        ga(
+          'send',
+          'event',
+          'Map Click',
+          'layer toggle',
+          `user turned the ${nowHiddenLayer} layer off`
+        );
       });
 
-      const nowVisible = visibleLayers.filter((layer) => prevState.visibleLayers.indexOf(layer) === -1);
+      const nowVisible = visibleLayers.filter(
+        (layer) => prevState.visibleLayers.indexOf(layer) === -1
+      );
       nowVisible.forEach((nowVisibleLayer) => {
         let mapLayer = this.view.map.findLayerById(nowVisibleLayer);
         if (!mapLayer) {
@@ -386,13 +413,23 @@ export default class Map extends Component {
       // This is only for toggling between forest change layers
       if (visibleLayers.length > 0) {
         visibleLayers.forEach((visibleLayer) => {
-          const [mapLayerConfig] = mapPage.layers.filter((mapLayer) => mapLayer.id === visibleLayer);
-          const nowVisibleId = visibleLayers.filter((layer) => prevState.visibleLayers.indexOf(layer) === -1);
+          const [mapLayerConfig] = mapPage.layers.filter(
+            (mapLayer) => mapLayer.id === visibleLayer
+          );
+          const nowVisibleId = visibleLayers.filter(
+            (layer) => prevState.visibleLayers.indexOf(layer) === -1
+          );
           if (nowVisibleId.length > 0 && mapLayerConfig.group === 'forest-change') {
             let nowVisibleLayer = this.view.map.findLayerById(visibleLayer);
             if (nowVisibleLayer) {
               nowVisibleLayer.visible = true;
-              ga('send', 'event', 'Map Click', 'layer toggle', `user turned the ${nowVisibleLayer.id} layer on`);
+              ga(
+                'send',
+                'event',
+                'Map Click',
+                'layer toggle',
+                `user turned the ${nowVisibleLayer.id} layer on`
+              );
             } else {
               nowVisibleLayer = layersToAdd.find((layer) => layer.id === visibleLayer);
               const configLayer = mapPage.layers.find((layer) => layer.id === visibleLayer);
@@ -402,7 +439,13 @@ export default class Map extends Component {
                 }
                 this.view.map.add(nowVisibleLayer);
                 nowVisibleLayer.visible = true;
-                ga('send', 'event', 'Map Click', 'layer toggle', `user turned the ${nowVisibleLayer.id} layer on`);
+                ga(
+                  'send',
+                  'event',
+                  'Map Click',
+                  'layer toggle',
+                  `user turned the ${nowVisibleLayer.id} layer on`
+                );
               } else if (visibleLayer === formaAlertsID) {
                 this.getFormaLayer(this.state.mapLayers).then((formaLayer) => {
                   this.getFormaLayerCallback(configLayer, formaLayer);
@@ -420,7 +463,9 @@ export default class Map extends Component {
             }
           }
 
-          const nowHiddenIds = prevState.visibleLayers.filter((layer) => visibleLayers.indexOf(layer) === -1);
+          const nowHiddenIds = prevState.visibleLayers.filter(
+            (layer) => visibleLayers.indexOf(layer) === -1
+          );
           if (nowHiddenIds.length > 0) {
             nowHiddenIds.forEach((nowHiddenId) => {
               const nowHiddenLayer = this.view.map.findLayerById(nowHiddenId);
@@ -433,7 +478,13 @@ export default class Map extends Component {
                     raddCoverageLayer.visible = false;
                   }
                 }
-                ga('send', 'event', 'Map Click', 'layer toggle', `user turned the ${nowHiddenLayer.id} layer off`);
+                ga(
+                  'send',
+                  'event',
+                  'Map Click',
+                  'layer toggle',
+                  `user turned the ${nowHiddenLayer.id} layer off`
+                );
               }
             });
           }
@@ -458,7 +509,9 @@ export default class Map extends Component {
     } else if (Object.keys(prevState.gfwListDef).length < Object.keys(gfwListDef).length) {
       // Adding GFW list layer to Sidebar panel
 
-      const locationDefaultID = gfwListName ? gfwListsLocationID[gfwListName].arcgis_field : 'globalid';
+      const locationDefaultID = gfwListName
+        ? gfwListsLocationID[gfwListName].arcgis_field
+        : 'globalid';
       const activeLayerId = Object.keys(gfwListDef)[0];
       const activeGFWLayer = this.view.map.findLayerById(activeLayerId);
       this.activeGFWLayer = activeGFWLayer;
@@ -491,7 +544,9 @@ export default class Map extends Component {
 
     if (
       prevState.visibleLayers !== visibleLayers &&
-      (this.view.graphics.items.length > 0 || drawnGraphic.length > 0 || activeAnalysis === 'region')
+      (this.view.graphics.items.length > 0 ||
+        drawnGraphic.length > 0 ||
+        activeAnalysis === 'region')
     ) {
       const disablePolygon = !visibleLayers.some(
         (visibleLayer) => mapPage.exclusiveDrawLayers.indexOf(visibleLayer) !== -1
@@ -666,7 +721,10 @@ export default class Map extends Component {
       });
     }
 
-    if (prevState.planetTileLayer !== planetTileLayer || prevState.planetTileColor !== planetTileColor) {
+    if (
+      prevState.planetTileLayer !== planetTileLayer ||
+      prevState.planetTileColor !== planetTileColor
+    ) {
       const planetColorValue = store.getState().planetTileColor;
       const planetBasemapLayer = this.view.map.findLayerById(PLANET_BASEMAP);
       const index = this.view.map.layers.findIndex((l) => l.id === PLANET_BASEMAP);
@@ -691,7 +749,10 @@ export default class Map extends Component {
 
     const { gladDateRange, formaDateRange, raddDateRange, biomassRange } = this.state;
     if (prevState.gladDateRange !== gladDateRange) {
-      if (prevState.gladDateRange.start !== gladDateRange.start || prevState.gladDateRange.end !== gladDateRange.end) {
+      if (
+        prevState.gladDateRange.start !== gladDateRange.start ||
+        prevState.gladDateRange.end !== gladDateRange.end
+      ) {
         const mapLayer = this.view.map.findLayerById(gladAlertsID);
 
         // `julianTo` and `julianFrom` are used in GladLayer.js to filter the data in image provided by - tiles.globalforestwatch.org
@@ -711,7 +772,10 @@ export default class Map extends Component {
       }
     }
 
-    if (prevState.biomassRange.min !== biomassRange.min || prevState.biomassRange.max !== biomassRange.max) {
+    if (
+      prevState.biomassRange.min !== biomassRange.min ||
+      prevState.biomassRange.max !== biomassRange.max
+    ) {
       const mapLayer = this.view.map.findLayerById(treeBiomassLossID);
       if (mapLayer) {
         mapLayer.minRange = biomassRange.min;
@@ -753,7 +817,10 @@ export default class Map extends Component {
     }
 
     if (prevState.raddDateRange !== raddDateRange) {
-      if (prevState.raddDateRange.start !== raddDateRange.start || prevState.raddDateRange.end !== raddDateRange.end) {
+      if (
+        prevState.raddDateRange.start !== raddDateRange.start ||
+        prevState.raddDateRange.end !== raddDateRange.end
+      ) {
         const mapLayer = this.view.map.findLayerById(raddAlertsID);
         mapLayer.startDate = raddDateRange.start;
         mapLayer.endDate = raddDateRange.end;
@@ -799,9 +866,13 @@ export default class Map extends Component {
   }
 
   sortMapArray = (mapLayer) => {
-    const mapLayerConfigIndex = mapPage.layers.findIndex((configLayer) => configLayer.id === mapLayer.id);
+    const mapLayerConfigIndex = mapPage.layers.findIndex(
+      (configLayer) => configLayer.id === mapLayer.id
+    );
     this.view.map.layers.items.some((layer, index) => {
-      const configLayerIndex = mapPage.layers.findIndex((configLayer) => configLayer.id === layer.id);
+      const configLayerIndex = mapPage.layers.findIndex(
+        (configLayer) => configLayer.id === layer.id
+      );
       // this layer exists in the layer config
       if (configLayerIndex > -1) {
         // get order number for current layer
@@ -912,7 +983,9 @@ export default class Map extends Component {
     view.popup.watch('visible', () => {
       const analyzeAction = this.view.popup.actions.items.find((item) => item.id === 'ANALYZE');
       if (analyzeAction) {
-        const analysisEnabledLayerExists = this.state.visibleLayers.some((l) => mapPage.exclusiveLayers.includes(l));
+        const analysisEnabledLayerExists = this.state.visibleLayers.some((l) =>
+          mapPage.exclusiveLayers.includes(l)
+        );
         analyzeAction.visible = analysisEnabledLayerExists;
       }
     });
@@ -1486,7 +1559,9 @@ export default class Map extends Component {
       let queryURL;
 
       if (type === 'viirs') {
-        const fireDayStart = moment(new Date()).subtract(this.state.fireDays, 'days').format('YYYY-MM-DD');
+        const fireDayStart = moment(new Date())
+          .subtract(this.state.fireDays, 'days')
+          .format('YYYY-MM-DD');
         queryURL = `${DATA_API_URL}/dataApi/analysisVIIRS/?geostore_origin=${origin}&geostoreID=${geostoreID}&fireDayStart=${fireDayStart}`;
       }
 
@@ -1672,7 +1747,9 @@ export default class Map extends Component {
     const { geometry, attributes } = graphic;
 
     // Adhoc analysis requires the geometries' spatial reference to be geographic (wkid 4326)
-    const geographicGeometry = geometry.spatialReference.isGeographic ? geometry : webMercatorToGeographic(geometry);
+    const geographicGeometry = geometry.spatialReference.isGeographic
+      ? geometry
+      : webMercatorToGeographic(geometry);
     const geojsonGeometry = geojsonUtil.arcgisToGeoJSON(geographicGeometry);
     const geojson = {
       type: 'FeatureCollection',
@@ -1700,7 +1777,9 @@ export default class Map extends Component {
     } else {
       //Ensure that we are using the right geostore origin (any drawn/non gfw list geostore ID is "rw" origin)
       origin = 'rw';
-      geostoreResponse = await registerGeometry(geojson).then((r) => (r.status === 200 ? r.json() : null));
+      geostoreResponse = await registerGeometry(geojson).then((r) =>
+        r.status === 200 ? r.json() : null
+      );
       geostoreID = geostoreResponse ? geostoreResponse.data.id : null;
     }
 
@@ -1726,7 +1805,12 @@ export default class Map extends Component {
     //For certain layers we want to use geostore analysis approach, we still able to use the old enpoints for those datasets
     //that are not following the new standard
     if (supportedGeostoreAnalysis.includes(microservice.type)) {
-      this.geostoreAnalysisCall(geostoreResponse.data.attributes.areaHa, microservice.type, geostoreID, origin);
+      this.geostoreAnalysisCall(
+        geostoreResponse.data.attributes.areaHa,
+        microservice.type,
+        geostoreID,
+        origin
+      );
     } else {
       this.legacyAnalysisCall(microservice.microservice, geojson);
     }
@@ -1737,7 +1821,8 @@ export default class Map extends Component {
   };
 
   goToLocations = () => {
-    const { esriJson, locationName, globalIds, activeGFWList, selectedMapFeatureAttributes } = this.state;
+    const { esriJson, locationName, globalIds, activeGFWList, selectedMapFeatureAttributes } =
+      this.state;
     this.setState({ spinnerOn: true });
     const geoString = JSON.stringify(esriJson);
 
@@ -1819,7 +1904,9 @@ export default class Map extends Component {
       'event',
       'Map Click',
       'analyses activate',
-      `user ran the ${analysisType} analysis against ${type === 'admin' ? 'an administrative' : 'a custom'} area`
+      `user ran the ${analysisType} analysis against ${
+        type === 'admin' ? 'an administrative' : 'a custom'
+      } area`
     );
     ga(
       'send',
@@ -1855,13 +1942,21 @@ export default class Map extends Component {
           return adminData.data;
         })
         .catch((e) => console.log(e));
-      this.geostoreAnalysisCall(geostoreResponse.attributes.areaHa, analysisType, geostoreResponse.id);
+      this.geostoreAnalysisCall(
+        geostoreResponse.attributes.areaHa,
+        analysisType,
+        geostoreResponse.id
+      );
     } else {
       if (microserviceUrl && (data.country.length || data.region)) {
         // Target the correct administrative boundary
         const index = microserviceUrl.indexOf('?period');
         const countryInfo = `/admin/${data.country}${data.region ? `/${data.region}` : ''}`;
-        microserviceUrl = [microserviceUrl.slice(0, index), countryInfo, microserviceUrl.slice(index)].join('');
+        microserviceUrl = [
+          microserviceUrl.slice(0, index),
+          countryInfo,
+          microserviceUrl.slice(index),
+        ].join('');
 
         currentAnalysisCall = new XMLHttpRequest();
         currentAnalysisCall.onload = () => {
@@ -1921,14 +2016,17 @@ export default class Map extends Component {
     this.view.popup.watch('selectedFeatureIndex', (index) => {
       const selectedFeat = this.view.popup.features[index];
       if (selectedFeat) {
-        const currentForestChange = visibleLayers.some((layer) => mapPage.exclusiveLayers.includes(layer));
+        const currentForestChange = visibleLayers.some((layer) =>
+          mapPage.exclusiveLayers.includes(layer)
+        );
         this.view.popup.actions.forEach((action) => {
           if (selectedFeat.layerName === viirsActiveFiresID) {
             action.visible = false;
           } else {
             action.visible =
               (action.id === 'ANALYZE' && currentForestChange) ||
-              (action.id === 'ADD LOCATION' && mapPage.noLocationLayers.indexOf(selectedFeat.layerName) === -1);
+              (action.id === 'ADD LOCATION' &&
+                mapPage.noLocationLayers.indexOf(selectedFeat.layerName) === -1);
           }
         });
       }
@@ -1951,7 +2049,9 @@ export default class Map extends Component {
     );
 
     const initialLayers = layersToAdd
-      .filter((layer) => mapPage.visibleLayers.indexOf(layer.id) > -1 || layer.id === raddCoverageID)
+      .filter(
+        (layer) => mapPage.visibleLayers.indexOf(layer.id) > -1 || layer.id === raddCoverageID
+      )
       .sort((layerA, layerB) => {
         if (layerA.order > layerB.order) {
           return -1;
@@ -1994,7 +2094,13 @@ export default class Map extends Component {
       // Create Custom GFW Vector Tile Layer
       this.customGfwVectorTileLayer = new VectorTileLayer({
         id: `${gfwLayer.id} - Custom`,
-        style: await getVectorTileStyle(GFW_LIST, QUERY_FIELD, locationIDs, gfwVectorTileUrl, gfwVectorTileStyle),
+        style: await getVectorTileStyle(
+          GFW_LIST,
+          QUERY_FIELD,
+          locationIDs,
+          gfwVectorTileUrl,
+          gfwVectorTileStyle
+        ),
       });
       view.map.add(this.customGfwVectorTileLayer);
       gfwLayer.opacity = 0;
@@ -2157,7 +2263,11 @@ export default class Map extends Component {
                 },
               ];
               const { transitionListData } = this.state;
-              setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
+              setVectorTileLayerForFilteredList(
+                selectedLocationsData,
+                transitionListData,
+                this.view
+              );
               store.dispatch(addList(userList));
               return;
             }
@@ -2177,7 +2287,13 @@ export default class Map extends Component {
       request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
       request.send(`list_ids=${list_ids}`);
-      ga('send', 'event', 'Map Load', 'locations add', `user added locations from the ${userList.list_name} list`);
+      ga(
+        'send',
+        'event',
+        'Map Load',
+        'locations add',
+        `user added locations from the ${userList.list_name} list`
+      );
     } else if (i && gfwlist) {
       const id = GFWLists[i - 1];
       let mapLayer;
@@ -2272,7 +2388,11 @@ export default class Map extends Component {
     if (hashLayersToAdd.length > 0) {
       //TODO: Could we do this twice?! why are the 'hashLayersToAdd' getting checked and toggled twice?
       store.dispatch(toggleLayer(hashLayersToAdd));
-      if (gfwListDefinitions && Object.keys(gfwListDefinitions).length > 0 && gfwListDefinitions[g].length > 0) {
+      if (
+        gfwListDefinitions &&
+        Object.keys(gfwListDefinitions).length > 0 &&
+        gfwListDefinitions[g].length > 0
+      ) {
         store.dispatch(updateGFWLocations(gfwListDefinitions));
       }
     }
@@ -2289,7 +2409,9 @@ export default class Map extends Component {
     });
 
     const { visibleLayers, selectedLists } = this.state;
-    const index = selectedLists.findIndex((selectedList) => selectedList.list_name === list.list_name);
+    const index = selectedLists.findIndex(
+      (selectedList) => selectedList.list_name === list.list_name
+    );
     const list_ids = selectedLists.map((selectedList) => selectedList.id);
     const GFWindex = GFWLists.indexOf(list.list_name);
 
@@ -2394,7 +2516,13 @@ export default class Map extends Component {
     request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
     request.send(`list_ids=${list_ids}`);
-    ga('send', 'event', 'Map Click', 'locations add', `user added locations from the ${listName} list`);
+    ga(
+      'send',
+      'event',
+      'Map Click',
+      'locations add',
+      `user added locations from the ${listName} list`
+    );
   };
 
   getFormaLayer = (layers) => {
@@ -2614,7 +2742,13 @@ export default class Map extends Component {
         }
       }
     );
-    ga('send', 'event', 'Map Click', 'timeslider update', 'user updated the tree cover loss timeslider');
+    ga(
+      'send',
+      'event',
+      'Map Click',
+      'timeslider update',
+      'user updated the tree cover loss timeslider'
+    );
   };
 
   setBiomassTimeline = (startYear, endYear) => {
@@ -2639,7 +2773,13 @@ export default class Map extends Component {
         }
       }
     );
-    ga('send', 'event', 'Map Click', 'timeslider update', 'user updated the biomass loss timeslider');
+    ga(
+      'send',
+      'event',
+      'Map Click',
+      'timeslider update',
+      'user updated the biomass loss timeslider'
+    );
   };
 
   setProdesTimeline = (startYear, endYear) => {
@@ -2778,7 +2918,11 @@ export default class Map extends Component {
 
   render() {
     const defaultAction = [
-      <GfwButton classNames="AnalysisPanel__dialog-button btn-green" value="OK" onClick={this.shouldCloseDialog} />,
+      <GfwButton
+        classNames="AnalysisPanel__dialog-button btn-green"
+        value="OK"
+        onClick={this.shouldCloseDialog}
+      />,
     ];
     const {
       mapLayers,
@@ -2845,16 +2989,20 @@ export default class Map extends Component {
             title="Map view for your list is still in progress"
             message={
               <p>
-                Please check back in 2 hours to view your list on the map. If you are still unable to load your list
-                successfully, please contact{' '}
+                Please check back in 2 hours to view your list on the map. If you are still unable
+                to load your list successfully, please contact{' '}
                 <a className="popup__link" href="mailto:GFWPROsupport@wri.org">
                   GFWPROsupport@wri.org
                 </a>
                 .
               </p>
             }
-            onOkButtonPress={() => this.setState({ listVectorTileIsAvailable: !listVectorTileIsAvailable })}
-            onRequestClose={() => this.setState({ listVectorTileIsAvailable: !listVectorTileIsAvailable })}
+            onOkButtonPress={() =>
+              this.setState({ listVectorTileIsAvailable: !listVectorTileIsAvailable })
+            }
+            onRequestClose={() =>
+              this.setState({ listVectorTileIsAvailable: !listVectorTileIsAvailable })
+            }
           />
         )}
         <Warning visible={analysisWarning} />
@@ -2904,7 +3052,12 @@ export default class Map extends Component {
           </div>
         </div>
 
-        <ControlPanel mapView={this.view} panelsVisible={panelsVisible} zoomOut={this.zoomOut} zoomIn={this.zoomIn} />
+        <ControlPanel
+          mapView={this.view}
+          panelsVisible={panelsVisible}
+          zoomOut={this.zoomOut}
+          zoomIn={this.zoomIn}
+        />
 
         <AdhocAnalysis
           visible={
@@ -2939,9 +3092,16 @@ export default class Map extends Component {
           setLossTimeline={this.setLossTimeline}
         />
 
-        <FiresControls fireDays={this.state.fireDays} visible={visibleLayers.indexOf(viirsActiveFiresID) > -1} />
+        <FiresControls
+          fireDays={this.state.fireDays}
+          visible={visibleLayers.indexOf(viirsActiveFiresID) > -1}
+        />
 
-        <div className={`layer-modal-container modal-wrapper ${visibleLayerInfo.title ? '' : 'hidden'}`}>
+        <div
+          className={`layer-modal-container modal-wrapper ${
+            visibleLayerInfo.title ? '' : 'hidden'
+          }`}
+        >
           <LayerModal title={visibleLayerInfo.title} info={visibleLayerInfo} />
         </div>
         <div className={`layer-modal-container modal-wrapper ${searchVisible ? '' : 'hidden'}`}>
@@ -2951,17 +3111,31 @@ export default class Map extends Component {
             mapLayers={mapLayers}
           />
         </div>
-        <div className={`layer-modal-container modal-wrapper ${visibleLayerInfo.custom ? '' : 'hidden'}`}>
+        <div
+          className={`layer-modal-container modal-wrapper ${
+            visibleLayerInfo.custom ? '' : 'hidden'
+          }`}
+        >
           <InfoModal info={visibleLayerInfo} />
         </div>
-        <div className={`layer-modal-container modal-wrapper ${visibleBasemapInfo ? '' : 'hidden'}`}>
+        <div
+          className={`layer-modal-container modal-wrapper ${visibleBasemapInfo ? '' : 'hidden'}`}
+        >
           <BasemapModal content={visibleBasemapInfo} />
         </div>
-        <div className={`layer-modal-container modal-wrapper ${canopyModalVisible ? '' : 'hidden'}`}>
+        <div
+          className={`layer-modal-container modal-wrapper ${canopyModalVisible ? '' : 'hidden'}`}
+        >
           <CanopyModal content={canopyDensity} />
         </div>
-        <div className={`layer-modal-container modal-wrapper ${drawShapeNoteDetailsModalVisible ? '' : 'hidden'}`}>
-          <DrawShapeNoteDetailsModal onClose={() => store.dispatch(toggleDrawShapeNoteDetailsModal())} />
+        <div
+          className={`layer-modal-container modal-wrapper ${
+            drawShapeNoteDetailsModalVisible ? '' : 'hidden'
+          }`}
+        >
+          <DrawShapeNoteDetailsModal
+            onClose={() => store.dispatch(toggleDrawShapeNoteDetailsModal())}
+          />
         </div>
 
         <LayerPanel mapLayers={mapLayers} visibleLayers={visibleLayers} iconLoading={iconLoading} />

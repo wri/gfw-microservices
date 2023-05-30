@@ -14,7 +14,11 @@ function More({ languageCode, userGuideLink }) {
                 <a href="http://www.globalforestwatch.org/" target="_blank" rel="noreferrer" />
               </li>
               <li className="box gfw-watcher">
-                <a href="http://forestwatcher.globalforestwatch.org/" target="_blank" rel="noreferrer" />
+                <a
+                  href="http://forestwatcher.globalforestwatch.org/"
+                  target="_blank"
+                  rel="noreferrer"
+                />
               </li>
               <li className="box map-builder">
                 <a href="https://mapbuilder.wri.org/" target="_blank" rel="noreferrer" />

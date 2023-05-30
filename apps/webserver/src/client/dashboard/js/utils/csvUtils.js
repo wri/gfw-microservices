@@ -204,7 +204,8 @@ function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
  */
 const calculateAlertHistoryForList = (geojson, selectedAlert, selectedTimeframe) => {
   const selectedTimeframeProperty = dictionary.alertType_featureTimeframeProperty[selectedAlert];
-  const selectedTimeframe_StartEndGroupings = getSelectedTimeframeStartEndGroupings(selectedTimeframe);
+  const selectedTimeframe_StartEndGroupings =
+    getSelectedTimeframeStartEndGroupings(selectedTimeframe);
 
   const { features } = geojson;
   const filtered = features
@@ -294,7 +295,11 @@ function generate_Alert_AdminAreasLevel_Csv(state) {
      * @param {Object} adminLevelObject - Sum of all alerts for admin level
      * @param {String} adminLevelName - Name of admin
      */
-    const sumFeatureAlertsForAdminLevel = (currentAlertsCount, adminLevelObject, adminLevelName) => {
+    const sumFeatureAlertsForAdminLevel = (
+      currentAlertsCount,
+      adminLevelObject,
+      adminLevelName
+    ) => {
       const countsObjectValueCurrent = adminLevelObject[adminLevelName] || 0;
       adminLevelObject[adminLevelName] = countsObjectValueCurrent + currentAlertsCount;
     };
@@ -306,7 +311,16 @@ function generate_Alert_AdminAreasLevel_Csv(state) {
     sumFeatureAlertsForAdminLevel(featureAlertTotal, stateCounts.alerts, stateName);
     sumFeatureAlertsForAdminLevel(featureAlertTotal, countryCounts.alerts, countryName);
 
-    return [listName, subStateName, stateName, countryName, selectedAlertText, selectedTimeframe, startDate, endDate];
+    return [
+      listName,
+      subStateName,
+      stateName,
+      countryName,
+      selectedAlertText,
+      selectedTimeframe,
+      startDate,
+      endDate,
+    ];
   });
 
   const headers = [
@@ -412,7 +426,11 @@ function generate_AlertsHistory_Csv(state) {
 
   const selectedAlertText = dictionary.alertType_alertText[selectedAlert];
   const geojson = applyTimeframeFilter(cloneDeep(dissolvedGeoJSON), selectedTimeframe);
-  const groupedTimeframeArray = calculateAlertHistoryForList(geojson, selectedAlert, selectedTimeframe);
+  const groupedTimeframeArray = calculateAlertHistoryForList(
+    geojson,
+    selectedAlert,
+    selectedTimeframe
+  );
   const sorted = groupedTimeframeArray.sort(momentSort);
 
   const endDateSchema = {
@@ -439,7 +457,14 @@ function generate_AlertsHistory_Csv(state) {
     return [listName, selectedAlertText, selectedTimeframe, total, start, endDate];
   });
 
-  const headers = ['List Name', 'Alert Type', 'Timeframe', 'Number of Alerts', 'Start Date', 'End Date'];
+  const headers = [
+    'List Name',
+    'Alert Type',
+    'Timeframe',
+    'Number of Alerts',
+    'Start Date',
+    'End Date',
+  ];
 
   const csv = `${headers.join(',')}\n${_sortBy(rows, 1).join('\n')}`;
   return new Blob([csv], { type: typeCSV });
@@ -481,7 +506,16 @@ function generate_AlertsPriorities_AdminAreasLevel_Csv(state) {
     sumFeatureDensityForAdminLevel(feature.properties.umd, stateCounts.density, stateName);
     sumFeatureDensityForAdminLevel(feature.properties.umd, countryCounts.density, countryName);
 
-    return [listName, subStateName, stateName, countryName, alertTypeText, selectedTimeframe, startDate, endDate];
+    return [
+      listName,
+      subStateName,
+      stateName,
+      countryName,
+      alertTypeText,
+      selectedTimeframe,
+      startDate,
+      endDate,
+    ];
   });
 
   const headers = [
@@ -590,7 +624,10 @@ function generate_AlertsSummary_Csv(state) {
   const selectedProperty = dictionary.alertType_featureTimeframeProperty[selectedAlert];
   const selectedAlertsProperty = dictionary.alertType_featureCoverageProperty[selectedAlert];
   const filteredLocationGeoJSON = applyTimeframeFilter(cloneDeep(geojson), selectedTimeframe);
-  const filteredDissolvedGeoJSON = applyTimeframeFilter(cloneDeep(dissolvedGeoJSON), selectedTimeframe);
+  const filteredDissolvedGeoJSON = applyTimeframeFilter(
+    cloneDeep(dissolvedGeoJSON),
+    selectedTimeframe
+  );
   const locationsWithinAlerts = filteredLocationGeoJSON.features.reduce(
     (a, feature) => a + (feature.properties[selectedAlertsProperty] ? 1 : 0),
     0
@@ -695,7 +732,13 @@ function downloadDashboard() {
     density: {},
   };
 
-  ga('send', 'event', 'Dashboard Download', 'Download button clicked', 'user downloaded dashboard data');
+  ga(
+    'send',
+    'event',
+    'Dashboard Download',
+    'Download button clicked',
+    'user downloaded dashboard data'
+  );
 }
 
 module.exports = {

@@ -2,9 +2,7 @@ import { SouthAmericaLossAggregateStrategy } from '.';
 import { cloneRow } from '../../../shared/functions';
 import { StrategyFieldType } from './type';
 
-export default class DefaultStrategy
-  implements SouthAmericaLossAggregateStrategy
-{
+export default class DefaultStrategy implements SouthAmericaLossAggregateStrategy {
   // TODO: Remove any and validate types
   processLabel(
     field: StrategyFieldType,

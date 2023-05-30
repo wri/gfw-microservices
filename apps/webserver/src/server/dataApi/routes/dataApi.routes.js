@@ -53,5 +53,8 @@ module.exports = (app, limiter) => {
 
   app.post('/dataApi/getBBoxAndGeostoreIDs/', controller.getBBoxAndGeostoreIDs);
 
-  app.post('dataApi/getPreSignedUrlForLargeProccessingList', controller.getPreSignedUrlForLargeProccessingList);
+  app.post(
+    'dataApi/getPreSignedUrlForLargeProccessingList',
+    controller.getPreSignedUrlForLargeProccessingList
+  );
 };

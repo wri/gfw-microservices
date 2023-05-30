@@ -4,7 +4,9 @@ import * as PropTypes from 'prop-types';
 function HeaderNavLink({ active, link, label, className = '' }) {
   return (
     <a
-      className={`header__nav-link ${active === link.replace('/', '') || active === true ? 'active' : ''} ${className}`}
+      className={`header__nav-link ${
+        active === link.replace('/', '') || active === true ? 'active' : ''
+      } ${className}`}
       aria-label={label}
       href={link}
     >

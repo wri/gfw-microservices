@@ -13,7 +13,11 @@ function ConnectionAlreadyExistsMessage({ onCloseModal }) {
         <div>{profilePage.profileManager.b2bSection.connectionAlreadyExistsDescription}</div>
       </CardContent>
       <CardActions style={{ justifyContent: 'right' }}>
-        <button type="button" className="new-b2b-connection-modal__action-button" onClick={onCloseModal}>
+        <button
+          type="button"
+          className="new-b2b-connection-modal__action-button"
+          onClick={onCloseModal}
+        >
           {profilePage.profileManager.b2bSection.cancel}
         </button>
       </CardActions>

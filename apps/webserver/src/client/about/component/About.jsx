@@ -52,20 +52,31 @@ export default class About extends Component {
                 <h3>{aboutPage.aboutTitle}</h3>
                 <div dangerouslySetInnerHTML={{ __html: aboutPage.aboutDescription }} />
               </section>
-              <section className="history" style={{ display: sectionOpen === 'History' ? 'block' : 'none' }}>
+              <section
+                className="history"
+                style={{ display: sectionOpen === 'History' ? 'block' : 'none' }}
+              >
                 <h3>{aboutPage.historyTitle}</h3>
                 <div dangerouslySetInnerHTML={{ __html: aboutPage.historyDescription }} />
               </section>
-              <section className="tutorials" style={{ display: sectionOpen === 'Tutorials' ? 'block' : 'none' }}>
+              <section
+                className="tutorials"
+                style={{ display: sectionOpen === 'Tutorials' ? 'block' : 'none' }}
+              >
                 <h3>{aboutPage.tutorialsTitle}</h3>
                 <p>
-                  Global Forest Watch PRO offers a wide range of content and capabilities to serve a variety of users
-                  and purposes. Whether you arrive at GFW Pro with a clear purpose or are simply exploring different
-                  features, we can help you learn to use the platform.
+                  Global Forest Watch PRO offers a wide range of content and capabilities to serve a
+                  variety of users and purposes. Whether you arrive at GFW Pro with a clear purpose
+                  or are simply exploring different features, we can help you learn to use the
+                  platform.
                 </p>
                 <p>
                   Visit our
-                  <a href="https://www.globalforestwatch.org/help/gfw-pro/" target="_blank" rel="noreferrer">
+                  <a
+                    href="https://www.globalforestwatch.org/help/gfw-pro/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     Help Center
                   </a>
                   to see all tutorials.

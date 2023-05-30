@@ -22,9 +22,7 @@ const percentParser = (operation, dataRow, data, csvData) => {
     }
     const attributeExtent = data[field.extentAttribute];
 
-    const percent = formatPct(
-      validatePct((tclOnAttribute / attributeExtent) * 100)
-    );
+    const percent = formatPct(validatePct((tclOnAttribute / attributeExtent) * 100));
 
     if (field.label) {
       currentRow.push(field.label);

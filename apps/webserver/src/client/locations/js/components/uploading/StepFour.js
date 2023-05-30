@@ -21,7 +21,9 @@ export default class StepFour extends Component {
           let num = 0;
           if (result !== null) {
             num = parseInt(result[0]);
-            locationClassification = `${locationClassification.substring(0, result.index)}${num + 1}`;
+            locationClassification = `${locationClassification.substring(0, result.index)}${
+              num + 1
+            }`;
           } else {
             locationClassification = `${locationClassification} ${count}`;
           }
@@ -44,7 +46,9 @@ export default class StepFour extends Component {
           let num = 0;
           if (result !== null) {
             num = parseInt(result[0]);
-            locationClassification = `${locationClassification.substring(0, result.index)}${num + 1}`;
+            locationClassification = `${locationClassification.substring(0, result.index)}${
+              num + 1
+            }`;
           } else {
             locationClassification = `${locationClassification} ${count}`;
           }
@@ -59,7 +63,6 @@ export default class StepFour extends Component {
       _newListName: locationClassification,
       _selectedExistingList: { name: '', value: '' },
     };
-
   }
 
   componentDidMount() {
@@ -90,7 +93,12 @@ export default class StepFour extends Component {
 
   render() {
     let validLists = this.props.userLists.filter((t) =>
-      filterValidTemplates(t, this.props.activeTemplate, this.props.addType, this.props.commodityType)
+      filterValidTemplates(
+        t,
+        this.props.activeTemplate,
+        this.props.addType,
+        this.props.commodityType
+      )
     );
 
     if (this.props.addType === 'commodity') {
@@ -149,7 +157,6 @@ export default class StepFour extends Component {
                 this.props.updateSelected(val);
               }}
             />
-
           </div>
 
           <div className="locations-upload-save__option-container">

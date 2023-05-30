@@ -23,7 +23,13 @@ const LightTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
-export default function CustomTooltip({ label, tooltipMessage, placement, iconWidth = 15, iconHeight = 18 }) {
+export default function CustomTooltip({
+  label,
+  tooltipMessage,
+  placement,
+  iconWidth = 15,
+  iconHeight = 18,
+}) {
   return (
     <div>
       <LightTooltip title={tooltipMessage} placement={placement} arrow>

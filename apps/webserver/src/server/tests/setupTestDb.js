@@ -145,7 +145,6 @@ const mssql2sqliteForCreate = (mssqlQuery) => {
     newQuery = newQuery.replaceAll(/,\s*CONSTRAINT.+\s+PRIMARY\s+KEY.*\([^)]+\)/g, '');
   }
   return newQuery;
-
 };
 
 // SQL commands to insert minimal test data in the tables

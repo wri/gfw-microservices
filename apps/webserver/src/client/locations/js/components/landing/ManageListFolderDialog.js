@@ -49,7 +49,8 @@ export default class ManageListFolderDialog extends Component {
 
     const isInFolder = !!list.folder;
     const confirmDisabled =
-      (option === OPTIONS.CREATE && folderName === '') || (option === OPTIONS.MOVE && existingFolder === undefined);
+      (option === OPTIONS.CREATE && folderName === '') ||
+      (option === OPTIONS.MOVE && existingFolder === undefined);
     const folderOptions = folders
       .map((folder, idx) =>
         folder !== list.folder ? (
@@ -75,7 +76,12 @@ export default class ManageListFolderDialog extends Component {
                 label={strings.confirm}
                 disabled={confirmDisabled}
                 onClick={() => {
-                  ga('send', 'event', 'Landing Page Click', 'User Added List to Folder on Landing Page');
+                  ga(
+                    'send',
+                    'event',
+                    'Landing Page Click',
+                    'User Added List to Folder on Landing Page'
+                  );
                   this._confirm();
                 }}
                 variant="primary"
@@ -110,8 +116,14 @@ export default class ManageListFolderDialog extends Component {
                 <label htmlFor="addToExistingFolder">{strings.addToExisting}</label>
                 {option == OPTIONS.MOVE && (
                   <select
-                    value={this.state.existingFolder ? this.props.folders.indexOf(this.state.existingFolder) : ''}
-                    onChange={(evt) => this.setState({ existingFolder: this.props.folders[evt.target.value] })}
+                    value={
+                      this.state.existingFolder
+                        ? this.props.folders.indexOf(this.state.existingFolder)
+                        : ''
+                    }
+                    onChange={(evt) =>
+                      this.setState({ existingFolder: this.props.folders[evt.target.value] })
+                    }
                   >
                     <option value="">{strings.foldersSelectPlaceholder}</option>
                     {folderOptions}
@@ -133,9 +145,14 @@ export default class ManageListFolderDialog extends Component {
                   }}
                 />
               )}
-              <label htmlFor={folders.length > 0 ? 'addToNewFolder' : null}>{strings.createNew}</label>
+              <label htmlFor={folders.length > 0 ? 'addToNewFolder' : null}>
+                {strings.createNew}
+              </label>
               {option === OPTIONS.CREATE && (
-                <input value={folderName} onChange={(evt) => this.setState({ folderName: evt.target.value })} />
+                <input
+                  value={folderName}
+                  onChange={(evt) => this.setState({ folderName: evt.target.value })}
+                />
               )}
             </div>
             {isInFolder && (
@@ -187,9 +204,17 @@ export default class ManageListFolderDialog extends Component {
       const msg = (
         <>
           <b>{this.props.list.list_name}</b>
-          {option === OPTIONS.REMOVE ? strings.removed1 : isInFolder ? strings.moved1 : strings.added1}
+          {option === OPTIONS.REMOVE
+            ? strings.removed1
+            : isInFolder
+            ? strings.moved1
+            : strings.added1}
           <b>{folder.name}</b>
-          {option === OPTIONS.REMOVE ? strings.removed2 : isInFolder ? strings.moved2 : strings.added2}
+          {option === OPTIONS.REMOVE
+            ? strings.removed2
+            : isInFolder
+            ? strings.moved2
+            : strings.added2}
         </>
       );
       this.props.onComplete(msg);
@@ -197,7 +222,12 @@ export default class ManageListFolderDialog extends Component {
   };
 
   _addToFolder = () => {
-    ga('send', 'event', 'Landing Page Click', 'User moves list from new folder to newly created folder');
+    ga(
+      'send',
+      'event',
+      'Landing Page Click',
+      'User moves list from new folder to newly created folder'
+    );
 
     return fetch({
       url: '/folder',

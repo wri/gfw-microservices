@@ -46,14 +46,20 @@ export default class Forgot extends Component {
           res = null;
         }
         if (res) {
-          if (res.hasOwnProperty('systemMessage') && res.systemMessage.code === 'LimitExceededException') {
+          if (
+            res.hasOwnProperty('systemMessage') &&
+            res.systemMessage.code === 'LimitExceededException'
+          ) {
             this.setState({
               showModalLoader: false,
               dialogOpen: true,
               dialogTitle: authMessages.resetLimit.title,
               dialogMessage: authMessages.resetLimit.message,
             });
-          } else if (res.hasOwnProperty('systemMessage') && res.systemMessage === 'User does not exist') {
+          } else if (
+            res.hasOwnProperty('systemMessage') &&
+            res.systemMessage === 'User does not exist'
+          ) {
             this.setState({
               showModalLoader: false,
               dialogOpen: true,
@@ -103,7 +109,9 @@ export default class Forgot extends Component {
     if (dialogTitle === 'Success') {
       action = this.shouldRedirect;
     }
-    const defaultAction = [<Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />];
+    const defaultAction = [
+      <Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />,
+    ];
 
     return (
       <Page links={pageOptions.links} active="forgot">

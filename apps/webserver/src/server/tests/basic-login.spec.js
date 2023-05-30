@@ -24,7 +24,10 @@ describe('Basic smoke with REST APIs', () => {
 
   it('login', async () => {
     const request = supertest(app);
-    const resLogin = await request.post('/auth/signinpost').send({ username, password: 'unsafe' }).expect(200);
+    const resLogin = await request
+      .post('/auth/signinpost')
+      .send({ username, password: 'unsafe' })
+      .expect(200);
     cookies = resLogin.headers['set-cookie'];
 
     expect(resLogin.text).toBe('Authenticated');

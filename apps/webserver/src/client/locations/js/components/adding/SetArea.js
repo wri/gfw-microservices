@@ -101,7 +101,9 @@ export default class SetArea extends Component {
                       id="use-hectares"
                       onClick={this.props.setMeaurementUnit}
                       className={`toggle-button__option address-sub-area-label-area ${
-                        this.props.measurementUnit === 'hectares' ? 'selected toggle-button__option--selected' : ''
+                        this.props.measurementUnit === 'hectares'
+                          ? 'selected toggle-button__option--selected'
+                          : ''
                       }`}
                     >
                       <span className="toggle-button__text">{strings.hectareAbbrev}</span>
@@ -110,7 +112,9 @@ export default class SetArea extends Component {
                       id="use-kilometers"
                       onClick={this.props.setMeaurementUnit}
                       className={`toggle-button__option address-sub-area-label-area ${
-                        this.props.measurementUnit === 'kilometers' ? 'selected toggle-button__option--selected' : ''
+                        this.props.measurementUnit === 'kilometers'
+                          ? 'selected toggle-button__option--selected'
+                          : ''
                       }`}
                     >
                       <span className="toggle-button__text">{strings.kilometerAbbrev}</span>
@@ -122,7 +126,9 @@ export default class SetArea extends Component {
                   <div className="locations-set-area__calculation-text">
                     {strings.calculatedSourcingArea}:
                     <span className="locations-set-area__calculation-num">
-                      {this.props.calculatedArea === 0 ? '' : numberWithCommas(this.props.calculatedArea)}
+                      {this.props.calculatedArea === 0
+                        ? ''
+                        : numberWithCommas(this.props.calculatedArea)}
                     </span>
                   </div>
                 )}
@@ -139,15 +145,21 @@ export default class SetArea extends Component {
                         <ul>
                           <li className="address-sub-area-label">{strings.fiftyKmPalm}</li>
                           <li className="address-sub-area-label">{strings.thirtyKmSoy}</li>
-                          <li className="address-sub-area-label">{numberWithCommas(0.5) + strings.dash18KmCocoa}</li>
+                          <li className="address-sub-area-label">
+                            {numberWithCommas(0.5) + strings.dash18KmCocoa}
+                          </li>
                         </ul>
                       </>
                     ) : (
                       <>
                         <p className="address-sub-area-label">{strings.suggestedAreas}</p>
                         <ul>
-                          <li className="address-sub-area-label">{numberWithCommas(785000) + strings.haPalm}</li>
-                          <li className="address-sub-area-label">{numberWithCommas(283000) + strings.haSoy}</li>
+                          <li className="address-sub-area-label">
+                            {numberWithCommas(785000) + strings.haPalm}
+                          </li>
+                          <li className="address-sub-area-label">
+                            {numberWithCommas(283000) + strings.haSoy}
+                          </li>
                           <li className="address-sub-area-label">
                             {strings.eightyDash + numberWithCommas(102000) + strings.haCocoa}
                           </li>

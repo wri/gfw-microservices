@@ -15,7 +15,7 @@ export const PlanetTilesOptions = () => {
   useEffect(() => {
     axios.get(`${window.location.origin}/map/getPlanetTilesInfo`).then((response) => {
       const tilesInfo = response.data.mosaics
-        .filter(tile => tile.name.includes('planet_medres_normalized_analytic'))
+        .filter((tile) => tile.name.includes('planet_medres_normalized_analytic'))
         .map((tile) =>
           tile.name
             .replace('planet_medres_normalized_analytic_', '')

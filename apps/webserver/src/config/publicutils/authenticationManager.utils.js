@@ -74,9 +74,17 @@ const unsafeDevOnlyLogin = async (req, username, secret, promanagerLogin) => {
   const params = [{ field: 'userEmail', type: sql.NVarChar(50), value: normalizeUsername }];
   let recordsets;
   if (promanagerLogin) {
-    recordsets = await sqlUtils.executeSystemStoredProcedure(req, 'uspGetGFWProRootUserInfo', params);
+    recordsets = await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspGetGFWProRootUserInfo',
+      params
+    );
   } else {
-    recordsets = await sqlUtils.executeSystemStoredProcedure(req, 'uspGetInitialUserRouteInfo', params);
+    recordsets = await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspGetInitialUserRouteInfo',
+      params
+    );
   }
   const [userRecord] = recordsets;
   if (!userRecord) {
@@ -134,8 +142,15 @@ const login = async (req, username, password, promanager_login = false) => {
         ) {
           const userMessage = langResources.getResourceString('loginFailed');
           const sysMessage = `UserEmail: ${email}   Authentication Status: ${authenticationStatus}`;
-          throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, userMessage, sysMessage);
-        } else if (authenticationStatus === config.platformVars.authenticationStatus.ResetRequired) {
+          throw new errorUtils.createErrorMessage(
+            req,
+            errorUtils.errorCodes.userNotAdmin,
+            userMessage,
+            sysMessage
+          );
+        } else if (
+          authenticationStatus === config.platformVars.authenticationStatus.ResetRequired
+        ) {
           const userMessage = 'ResetRequired';
           const sysMessage = [`Error User Authentication: Account disabled for ${email}`];
           throw new errorUtils.createErrorMessage(
@@ -154,7 +169,9 @@ const login = async (req, username, password, promanager_login = false) => {
             userMessage,
             sysMessage
           );
-        } else if (new Date(authenticationResponse['custom:passwordUpdatedAt']) <= new Date(newDate)) {
+        } else if (
+          new Date(authenticationResponse['custom:passwordUpdatedAt']) <= new Date(newDate)
+        ) {
           await AWSCognito.adminResetUserPassword(req, normalizeUsername);
           const userMessage = 'PasswordExpired';
           const sysMessage = [`Error User Authentication: Password expired for ${email}`];
@@ -179,7 +196,12 @@ const login = async (req, username, password, promanager_login = false) => {
         if (recordsets.length === 0) {
           const userMessage = langResources.getResourceString('loginFailed');
           const sysMessage = `UserEmail: ${username} is a user, but not found for the requested site`;
-          throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, userMessage, sysMessage);
+          throw new errorUtils.createErrorMessage(
+            req,
+            errorUtils.errorCodes.userNotAdmin,
+            userMessage,
+            sysMessage
+          );
         } else {
           // If there is a record, set the session variables
           [userRecord] = recordsets;
@@ -201,8 +223,14 @@ const login = async (req, username, password, promanager_login = false) => {
       })
       .then((token) => {
         speakEasyToken = token;
-        const parameters = [{ field: 'userEmail', type: sql.NVarChar(50), value: userRecord.user_email }];
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspGetVerifiedUserRouteInfo', parameters);
+        const parameters = [
+          { field: 'userEmail', type: sql.NVarChar(50), value: userRecord.user_email },
+        ];
+        return sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetVerifiedUserRouteInfo',
+          parameters
+        );
       })
       .then((recordsets) => {
         if (recordsets.length === 1) {
@@ -211,11 +239,19 @@ const login = async (req, username, password, promanager_login = false) => {
           if (organization_status_id === config.platformVars.status.Inactive) {
             const userMessage = langResources.getResourceString('loginFailed');
             const sysMessage = `UserEmail: ${username} is a user, but not found for the requested site`;
-            throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, userMessage, sysMessage);
+            throw new errorUtils.createErrorMessage(
+              req,
+              errorUtils.errorCodes.userNotAdmin,
+              userMessage,
+              sysMessage
+            );
           }
         }
 
-        if (authenticatedInformation.authenticationStatus === config.platformVars.authenticationStatus.Authenticated) {
+        if (
+          authenticatedInformation.authenticationStatus ===
+          config.platformVars.authenticationStatus.Authenticated
+        ) {
           // Send the Verification Email if it is the user's preference
           if (authenticationPreference === config.platformVars.authenticationPreference.Email) {
             const subject = 'GFW Pro Verification Code';
@@ -226,7 +262,13 @@ const login = async (req, username, password, promanager_login = false) => {
               content,
               'success'
             );
-            return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [req.session.user_email], subject, msg);
+            return AWSSES.sendEmail(
+              req,
+              config.AWSVars.ses.sender,
+              [req.session.user_email],
+              subject,
+              msg
+            );
           }
         }
       })
@@ -237,7 +279,8 @@ const login = async (req, username, password, promanager_login = false) => {
         // Check if a temporary password needs to be sent
         AWSCognito.resendTemporaryPassword(req, normalizeUsername, err)
           .then(() => {
-            authenticatedInformation.authenticationStatus = config.platformVars.authenticationStatus.ResendPassword;
+            authenticatedInformation.authenticationStatus =
+              config.platformVars.authenticationStatus.ResendPassword;
             resolve(authenticatedInformation);
           })
           .catch((resendTemporaryPasswordErr) => {
@@ -279,7 +322,12 @@ const setOrgSessions = (req, org) => {
           if (recordsets.length === 0) {
             const userMessage = langResources.getResourceString('AuthenticationFailure');
             const sysMessage = `CRITICAL ERROR: Obtaining user access level for ${req.session.user_email}`;
-            throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, userMessage, sysMessage);
+            throw new errorUtils.createErrorMessage(
+              req,
+              errorUtils.errorCodes.userNotAdmin,
+              userMessage,
+              sysMessage
+            );
           } else {
             // Set User Access Level.
             req.session.user_access_level_id = recordsets[0].access_level_id;
@@ -313,7 +361,11 @@ const unsafeDevOnlyVerify = async (req, user, secret) => {
     req.session.verified_promanager = true;
   } else {
     const params = [{ field: 'userEmail', type: sql.NVarChar(50), value: req.session.user_email }];
-    const recordsets = await sqlUtils.executeSystemStoredProcedure(req, 'uspGetVerifiedUserRouteInfo', params);
+    const recordsets = await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspGetVerifiedUserRouteInfo',
+      params
+    );
     const retval = await setOrgSessions(req, recordsets[0]);
     return retval;
   }
@@ -335,7 +387,12 @@ const verifyLogin = (req, userToken) => {
     // Check to make sure this is a valid session with initial login verified.
     if (req.session.user_email === undefined) {
       const userMessage = langResources.getResourceString('InvalidSession');
-      throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, userMessage, userMessage);
+      throw new errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.userNotAdmin,
+        userMessage,
+        userMessage
+      );
     }
     // Verify Token.
     SpeakEasy.validateToken(req, req.session.user_secret, userToken)
@@ -344,7 +401,12 @@ const verifyLogin = (req, userToken) => {
         if (validateResult === false) {
           const userMessage = langResources.getResourceString('verificationFailed');
           const sysMessage = `UserEmail: ${req.session.user_email}   Verification Code: ${userToken}`;
-          throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, userMessage, sysMessage);
+          throw new errorUtils.createErrorMessage(
+            req,
+            errorUtils.errorCodes.userNotAdmin,
+            userMessage,
+            sysMessage
+          );
         }
         // Reset the Cognito failure count
         AWSCognito.setLoginFailCount(0, req.session.user_email, config.AWSVars.cognito.userpoolId);
@@ -352,7 +414,9 @@ const verifyLogin = (req, userToken) => {
         // If the user is logging in as a normal user, obtain additional Information to set for the session.
         if (req.session.ispromanager === false) {
           // Setup Parameters to pass to get User Info.
-          const params = [{ field: 'userEmail', type: sql.NVarChar(50), value: req.session.user_email }];
+          const params = [
+            { field: 'userEmail', type: sql.NVarChar(50), value: req.session.user_email },
+          ];
           // Get Information on User from Platform Db.
           return sqlUtils.executeSystemStoredProcedure(req, 'uspGetVerifiedUserRouteInfo', params);
         }
@@ -364,7 +428,12 @@ const verifyLogin = (req, userToken) => {
           if (recordsets.length === 0) {
             const userMessage = langResources.getResourceString('AuthenticationFailure');
             const sysMessage = `CRITICAL ERROR: Obtaining user info for ${req.session.user_email}`;
-            throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, userMessage, sysMessage);
+            throw new errorUtils.createErrorMessage(
+              req,
+              errorUtils.errorCodes.userNotAdmin,
+              userMessage,
+              sysMessage
+            );
             // If the user only has ONE organization then proceed to regular verification
           } else if (recordsets.length === 1) {
             // Determine if the only organization is DEACTIVATED
@@ -372,7 +441,12 @@ const verifyLogin = (req, userToken) => {
             if (organization.organization_status_id === config.platformVars.status.Inactive) {
               const userMessage = langResources.getResourceString('AuthenticationFailure');
               const sysMessage = `${organization.organization_name} is deactivated`;
-              throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, userMessage, sysMessage);
+              throw new errorUtils.createErrorMessage(
+                req,
+                errorUtils.errorCodes.userNotAdmin,
+                userMessage,
+                sysMessage
+              );
             } else {
               return setOrgSessions(req, recordsets[0]);
             }
@@ -401,7 +475,9 @@ const verifyLogin = (req, userToken) => {
  */
 const getOrganizations = (req) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'userEmail', type: sql.NVarChar(50), value: req.session.user_email }];
+    const parameters = [
+      { field: 'userEmail', type: sql.NVarChar(50), value: req.session.user_email },
+    ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetVerifiedUserRouteInfo', parameters)
       .then((recordsets) => {
@@ -458,14 +534,21 @@ const setInitialPassword = (req, old_password, new_password) => {
  */
 const requestPasswordReset = (req, user_email) => {
   return new Promise((resolve, reject) => {
-    const checkUserEmailParameters = [{ field: 'email', type: sql.NVarChar(50), value: user_email }];
+    const checkUserEmailParameters = [
+      { field: 'email', type: sql.NVarChar(50), value: user_email },
+    ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspCheckUserEmail', checkUserEmailParameters)
       .then((recordsets) => {
         if (recordsets.length === 0) {
           const userMessage = langResources.getResourceString('invalidEmail');
           const sysMessage = `CRITICAL ERROR: User not found - ${user_email}`;
-          errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotFound, userMessage, sysMessage);
+          errorUtils.createErrorMessage(
+            req,
+            errorUtils.errorCodes.userNotFound,
+            userMessage,
+            sysMessage
+          );
           throw new Error('User does not exist');
         }
         // Cognito reset password
@@ -493,14 +576,21 @@ const requestPasswordReset = (req, user_email) => {
 
 const adminResetUserPassword = (req, user_email) => {
   return new Promise((resolve, reject) => {
-    const checkUserEmailParameters = [{ field: 'email', type: sql.NVarChar(50), value: user_email }];
+    const checkUserEmailParameters = [
+      { field: 'email', type: sql.NVarChar(50), value: user_email },
+    ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspCheckUserEmail', checkUserEmailParameters)
       .then((recordsets) => {
         if (recordsets.length === 0) {
           const userMessage = langResources.getResourceString('invalidEmail');
           const sysMessage = `CRITICAL ERROR: User not found - ${user_email}`;
-          errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotFound, userMessage, sysMessage);
+          errorUtils.createErrorMessage(
+            req,
+            errorUtils.errorCodes.userNotFound,
+            userMessage,
+            sysMessage
+          );
           throw new Error('User does not exist');
         }
         // Cognito reset password
@@ -589,14 +679,20 @@ const changePassword = (req, previousPassword, proposedPassword) => {
 const getUserInfo = (req) => {
   return new Promise((resolve, reject) => {
     // Retrieve organization user information and System Auth pref information
-    const organizationParameters = [{ field: 'userID', type: sql.Int, value: req.session.organization_user_id }];
+    const organizationParameters = [
+      { field: 'userID', type: sql.Int, value: req.session.organization_user_id },
+    ];
     const systemParameters = [
       { field: 'organization_id', type: sql.Int, value: req.session.organization_id },
       { field: 'user_email', type: sql.NVarChar(150), value: req.session.user_email },
     ];
     Promise.all([
       sqlUtils.executeOrganizationStoredProcedure(req, 'uspGetUserInfo', organizationParameters),
-      sqlUtils.executeSystemStoredProcedure(req, 'uspGetUserAuthenticationPreferences', systemParameters),
+      sqlUtils.executeSystemStoredProcedure(
+        req,
+        'uspGetUserAuthenticationPreferences',
+        systemParameters
+      ),
     ])
       .then((results) => {
         const [organizationResults, systemResults] = results;
@@ -625,7 +721,9 @@ const getUserInfo = (req) => {
  */
 const getUserOrganizationStatus = (req) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'user_id', type: sql.Int, value: req.session.organization_user_id }];
+    const parameters = [
+      { field: 'user_id', type: sql.Int, value: req.session.organization_user_id },
+    ];
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetUserStatus', parameters)
       .then((recordsets) => {
@@ -657,7 +755,11 @@ const getOrganizationStatus = (request) => {
         resolve(organization_status_id);
       })
       .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(request, 'Failed to get organization status', err);
+        const errorObject = errorUtils.createErrorMessage(
+          request,
+          'Failed to get organization status',
+          err
+        );
         reject(errorObject);
       });
   });
@@ -681,7 +783,13 @@ const resendVerifyToken = (req) => {
           content,
           'success'
         );
-        return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [req.session.user_email], subject, msg);
+        return AWSSES.sendEmail(
+          req,
+          config.AWSVars.ses.sender,
+          [req.session.user_email],
+          subject,
+          msg
+        );
       })
       .then(() => {
         resolve(true);

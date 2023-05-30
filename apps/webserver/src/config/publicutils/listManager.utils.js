@@ -86,8 +86,12 @@ const createList = (
   // Transform list name
   const list = listUtils.createListNameSchema(list_name);
 
-  const custom_attribute_names = custom_attributes ? custom_attributes.map((a) => a.column_name).toString() : [];
-  const custom_attribute_types = custom_attributes ? custom_attributes.map((a) => a.column_type).toString() : [];
+  const custom_attribute_names = custom_attributes
+    ? custom_attributes.map((a) => a.column_name).toString()
+    : [];
+  const custom_attribute_types = custom_attributes
+    ? custom_attributes.map((a) => a.column_type).toString()
+    : [];
 
   // When creating new list, status is always pending.
   const list_status_id = config.platformVars.status.Pending;
@@ -164,7 +168,13 @@ const createList = (
         uspCreateListTableExecuted = true;
 
         // create the corresponding analysis table
-        const params = [{ field: 'list_analysis_table_name', type: sql.NVarChar(150), value: list.analysis_table }];
+        const params = [
+          {
+            field: 'list_analysis_table_name',
+            type: sql.NVarChar(150),
+            value: list.analysis_table,
+          },
+        ];
         return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateAnalysisTable', params);
       })
       .then(() => {
@@ -235,8 +245,12 @@ const saveAsDraftList = (
   // Transform list name
   const list = listUtils.createListNameSchema(list_name);
 
-  const custom_attribute_names = custom_attributes ? custom_attributes.map((a) => a.column_name).toString() : [];
-  const custom_attribute_types = custom_attributes ? custom_attributes.map((a) => a.column_type).toString() : [];
+  const custom_attribute_names = custom_attributes
+    ? custom_attributes.map((a) => a.column_name).toString()
+    : [];
+  const custom_attribute_types = custom_attributes
+    ? custom_attributes.map((a) => a.column_type).toString()
+    : [];
   // When creating new list, status is always Draft when we Save as Draft list
   const list_status_id = config.platformVars.status.Draft;
 
@@ -313,7 +327,13 @@ const saveAsDraftList = (
         uspCreateListTableExecuted = true;
 
         // create the corresponding analysis table
-        const params = [{ field: 'list_analysis_table_name', type: sql.NVarChar(150), value: list.analysis_table }];
+        const params = [
+          {
+            field: 'list_analysis_table_name',
+            type: sql.NVarChar(150),
+            value: list.analysis_table,
+          },
+        ];
         return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateAnalysisTable', params);
       })
       .then(() => {
@@ -488,7 +508,12 @@ const getAllLists = (req) => {
  *   @param  {Integer} rowsRequested
  *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
-const getListLocations = (req, list_id, location_id = 0, rowsRequested = DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED) => {
+const getListLocations = (
+  req,
+  list_id,
+  location_id = 0,
+  rowsRequested = DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED
+) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'listID', type: sql.Int, value: list_id },
@@ -556,10 +581,16 @@ const getDashboardListLocations = (req, list) => {
     const { id, template_id } = list;
     const parameters = [{ field: 'listId', type: sql.Int, value: id }];
     const storedProcedure =
-      template_id === 1 ? 'uspGetDashboardInvestmentLocations' : 'uspGetDashboardCommodityLocations';
+      template_id === 1
+        ? 'uspGetDashboardInvestmentLocations'
+        : 'uspGetDashboardCommodityLocations';
     Promise.all([
       sqlUtils.executeOrganizationStoredProcedure(req, storedProcedure, parameters),
-      sqlUtils.executeOrganizationStoredProcedure(req, 'uspGetDashboardDissolvedS3Location', parameters),
+      sqlUtils.executeOrganizationStoredProcedure(
+        req,
+        'uspGetDashboardDissolvedS3Location',
+        parameters
+      ),
     ])
       .then((results) => {
         const [locationRecordsets, s3Recordsets] = results;
@@ -682,12 +713,28 @@ const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
       { field: 'LocationLogic', type: sql.NVarChar, value: LocationLogic },
       // commodity risk filters
       { field: 'selectedSupplier', type: sql.NVarChar, value: selectedSupplier || null },
-      { field: 'selectedSecondSupplier', type: sql.NVarChar, value: selectedSecondSupplier || null },
+      {
+        field: 'selectedSecondSupplier',
+        type: sql.NVarChar,
+        value: selectedSecondSupplier || null,
+      },
       { field: 'selectedParentCompany', type: sql.NVarChar, value: selectedParentCompany || null },
       { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || null },
-      { field: 'selectedOverallThreats', type: sql.NVarChar, value: JSON.stringify(selectedOverallThreats) || null },
-      { field: 'selectedOverallValues', type: sql.NVarChar, value: JSON.stringify(selectedOverallValues) || null },
-      { field: 'selectedMillPriority', type: sql.NVarChar, value: JSON.stringify(selectedMillPriority) || null },
+      {
+        field: 'selectedOverallThreats',
+        type: sql.NVarChar,
+        value: JSON.stringify(selectedOverallThreats) || null,
+      },
+      {
+        field: 'selectedOverallValues',
+        type: sql.NVarChar,
+        value: JSON.stringify(selectedOverallValues) || null,
+      },
+      {
+        field: 'selectedMillPriority',
+        type: sql.NVarChar,
+        value: JSON.stringify(selectedMillPriority) || null,
+      },
     ];
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetPaginatedAnalysisDataForUserList', parameters)
@@ -714,7 +761,6 @@ const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const getNumberPagesForAnalysisDataUserList = (req, list_id, filters) => {
-
   return new Promise((resolve, reject) => {
     const {
       pageSize,
@@ -742,17 +788,35 @@ const getNumberPagesForAnalysisDataUserList = (req, list_id, filters) => {
       { field: 'analysisAreaMax', type: sql.Int, value: analysisAreaMax || null },
       // commodity risk filters
       { field: 'selectedSupplier', type: sql.NVarChar, value: selectedSupplier || null },
-      { field: 'selectedSecondSupplier', type: sql.NVarChar, value: selectedSecondSupplier || null },
+      {
+        field: 'selectedSecondSupplier',
+        type: sql.NVarChar,
+        value: selectedSecondSupplier || null,
+      },
       { field: 'selectedParentCompany', type: sql.NVarChar, value: selectedParentCompany || null },
       { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || null },
-      { field: 'selectedOverallThreats', type: sql.NVarChar, value: JSON.stringify(selectedOverallThreats) || null },
-      { field: 'selectedOverallValues', type: sql.NVarChar, value: JSON.stringify(selectedOverallValues) || null },
-      { field: 'selectedMillPriority', type: sql.NVarChar, value: JSON.stringify(selectedMillPriority) || null },
+      {
+        field: 'selectedOverallThreats',
+        type: sql.NVarChar,
+        value: JSON.stringify(selectedOverallThreats) || null,
+      },
+      {
+        field: 'selectedOverallValues',
+        type: sql.NVarChar,
+        value: JSON.stringify(selectedOverallValues) || null,
+      },
+      {
+        field: 'selectedMillPriority',
+        type: sql.NVarChar,
+        value: JSON.stringify(selectedMillPriority) || null,
+      },
     ];
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetAnalysisDataCountForUserList', parameters)
       .then((recordsets) => {
-        const totalRows = recordsets.find((record) => record.statistic_type === 'Row Count').statistic;
+        const totalRows = recordsets.find(
+          (record) => record.statistic_type === 'Row Count'
+        ).statistic;
         const maximumAnalysisAreaInTheList = recordsets.find(
           (record) => record.statistic_type === 'Max Area'
         ).statistic;
@@ -789,12 +853,18 @@ const getLocationsCount = (req) => {
     let promise;
     // Retrieve user access level
     const { user_access_level_id, organization_database, organization_user_id } = req.session;
-    const parameters = [{ field: 'org_db', type: sql.NVarChar, value: req.session.organization_database }];
+    const parameters = [
+      { field: 'org_db', type: sql.NVarChar, value: req.session.organization_database },
+    ];
     if (user_access_level_id === config.platformVars.accessLevel.Administrator) {
       promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetLocationsCount', parameters);
     } else {
       parameters.push({ field: 'user_id', type: sql.Int, value: organization_user_id });
-      promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetLocationsCountEditor', parameters);
+      promise = sqlUtils.executeSystemStoredProcedure(
+        req,
+        'uspGetLocationsCountEditor',
+        parameters
+      );
     }
     promise
       .then((recordsets) => {
@@ -925,7 +995,15 @@ const uploadToNewListAndSaveAsDraft = (
   let listID;
 
   return new Promise((resolve, reject) => {
-    saveAsDraftList(req, list_name, template_id, location_classification, user_id, custom_attributes, gfw_list_id)
+    saveAsDraftList(
+      req,
+      list_name,
+      template_id,
+      location_classification,
+      user_id,
+      custom_attributes,
+      gfw_list_id
+    )
       .then((list_id) => {
         listID = list_id;
         return uploadToExistingList(req, list_id, list_name, geojson, commodity);
@@ -939,7 +1017,12 @@ const uploadToNewListAndSaveAsDraft = (
 
         if (!original_gfw_list) {
           // Changing all locations status IDs to be Draft
-          await updateIndividualLocationsStatusID(req, analysis_table, locationsIDs, config.platformVars.status.Draft);
+          await updateIndividualLocationsStatusID(
+            req,
+            analysis_table,
+            locationsIDs,
+            config.platformVars.status.Draft
+          );
         }
 
         logger.logActivity(
@@ -970,7 +1053,12 @@ const uploadToNewListAndSaveAsDraft = (
  * @param {number } location_status_id - Location status ID (eg. 4)
  * @return {Promise}
  */
-const updateIndividualLocationsStatusID = (req, list_analysis_table_name, location_id, location_status_id) => {
+const updateIndividualLocationsStatusID = (
+  req,
+  list_analysis_table_name,
+  location_id,
+  location_status_id
+) => {
   return new Promise((resolve, reject) => {
     const sqlParameters = [
       { field: 'analysis_table_name', type: sql.NVarChar(150), value: list_analysis_table_name },
@@ -978,7 +1066,11 @@ const updateIndividualLocationsStatusID = (req, list_analysis_table_name, locati
       { field: 'location_status_id', type: sql.Int, value: location_status_id },
     ];
     sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspUpdateLocationAnalysisStatusInBulk', sqlParameters)
+      .executeOrganizationStoredProcedure(
+        req,
+        'uspUpdateLocationAnalysisStatusInBulk',
+        sqlParameters
+      )
       .then((result) => {
         logger.logActivity(
           req,
@@ -1018,7 +1110,10 @@ const deleteLocations = (req, list_id, location_ids, gfw_list_id) => {
       .then((record) => {
         const { lock_status, lock_user_id } = record;
         // 1. List is unlocked
-        if (lock_status === null || (lock_status !== null && lock_user_id !== req.session.organization_user_id)) {
+        if (
+          lock_status === null ||
+          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
+        ) {
           // Reject object
           throw { isLocked: true, lock_user_id };
         } else {
@@ -1086,7 +1181,10 @@ const deleteFilteredLocations = (req, list_id, filters, gfw_list_id) => {
       .then((record) => {
         const { lock_status, lock_user_id } = record;
         // 1. List is unlocked
-        if (lock_status === null || (lock_status !== null && lock_user_id !== req.session.organization_user_id)) {
+        if (
+          lock_status === null ||
+          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
+        ) {
           // Reject object
           throw { isLocked: true, lock_user_id };
         } else {
@@ -1169,26 +1267,44 @@ const editLocations = (req, list_id, location_ids, arrayAttributes) => {
       .then((record) => {
         const { lock_status, lock_user_id } = record;
         // List is unlocked
-        if (lock_status === null || (lock_status !== null && lock_user_id !== req.session.organization_user_id)) {
+        if (
+          lock_status === null ||
+          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
+        ) {
           // Reject object
           throw { isLocked: true, lock_user_id };
         } else {
           location_ids.forEach((location_id, idx) => {
             promiseResolver = promiseResolver.then(() => {
               const location = arrayAttributes[idx];
-              const locationTransformedKeysToLowerCase = _.transform(location, (result, val, key) => {
-                // eslint-disable-next-line no-param-reassign
-                result[key.toLowerCase()] = val;
-              });
-              const locationAttributesFiltered = _.omit(locationTransformedKeysToLowerCase, EDIT_EXCLUDED_COLUMNS);
-              return listUtils.editSingleLocation(req, list_id, location_id, locationAttributesFiltered);
+              const locationTransformedKeysToLowerCase = _.transform(
+                location,
+                (result, val, key) => {
+                  // eslint-disable-next-line no-param-reassign
+                  result[key.toLowerCase()] = val;
+                }
+              );
+              const locationAttributesFiltered = _.omit(
+                locationTransformedKeysToLowerCase,
+                EDIT_EXCLUDED_COLUMNS
+              );
+              return listUtils.editSingleLocation(
+                req,
+                list_id,
+                location_id,
+                locationAttributesFiltered
+              );
             });
           });
           return promiseResolver;
         }
       })
       .then(() => {
-        logger.logActivity(req, logger.listActivityTypes.List.LocationUpdatedInList, 'Locations have been updated.');
+        logger.logActivity(
+          req,
+          logger.listActivityTypes.List.LocationUpdatedInList,
+          'Locations have been updated.'
+        );
         resolve(true);
       })
       .catch((err) => {
@@ -1214,7 +1330,14 @@ const editLocations = (req, list_id, location_ids, arrayAttributes) => {
  *   @param  {Number} gfw_list_id
  *   @return {Promise}
  */
-const copyLocations = (req, src_list_id, src_location_ids, dest_list_id, src_geojson, gfw_list_id) => {
+const copyLocations = (
+  req,
+  src_list_id,
+  src_location_ids,
+  dest_list_id,
+  src_geojson,
+  gfw_list_id
+) => {
   let promiseResolver = Promise.resolve();
   // Return a promise for copying all locations
   return new Promise((resolve, reject) => {
@@ -1236,7 +1359,10 @@ const copyLocations = (req, src_list_id, src_location_ids, dest_list_id, src_geo
       return;
     }
 
-    Promise.all([listUtils.getListNameSchema(req, src_list_id), listUtils.getListNameSchema(req, dest_list_id)])
+    Promise.all([
+      listUtils.getListNameSchema(req, src_list_id),
+      listUtils.getListNameSchema(req, dest_list_id),
+    ])
       .then((results) => {
         const [src, dest] = results;
         src_list = src;
@@ -1247,7 +1373,10 @@ const copyLocations = (req, src_list_id, src_location_ids, dest_list_id, src_geo
       .then((record) => {
         const { lock_status, lock_user_id } = record;
         // List is unlocked
-        if (lock_status === null || (lock_status !== null && lock_user_id !== req.session.organization_user_id)) {
+        if (
+          lock_status === null ||
+          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
+        ) {
           // Reject object
           throw { isLocked: true, lock_user_id };
         } else {
@@ -1265,11 +1394,17 @@ const copyLocations = (req, src_list_id, src_location_ids, dest_list_id, src_geo
 
         // Get analysis columns to be copied
         const parameters = [{ field: 'list_id', type: sql.Int, value: src_list.id }];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspGetAnalysisColumns', parameters);
+        return sqlUtils.executeOrganizationStoredProcedure(
+          req,
+          'uspGetAnalysisColumns',
+          parameters
+        );
       })
       .then((recordsets) => {
         const columns = recordsets.map((record) => record.COLUMN_NAME);
-        const statement = columns.map((column) => `[${column}] = [${src_list.analysis_table}].[${column}]`).join(',');
+        const statement = columns
+          .map((column) => `[${column}] = [${src_list.analysis_table}].[${column}]`)
+          .join(',');
 
         // Loop copy single location analysis
         src_location_ids.forEach((src_location_id, idx) => {
@@ -1316,15 +1451,17 @@ const copyLocations = (req, src_list_id, src_location_ids, dest_list_id, src_geo
       })
       .catch((err) => {
         console.log('Error copying location', err);
-        Promise.all([setListUnlocked(req, dest_list_id), setListUnlocked(req, src_list_id)]).then(() => {
-          const errorObject = errorUtils.createErrorMessage(
-            req,
-            errorUtils.errorCodes.failedTocopyLocations,
-            `Failed to copy locations from list id ${src_list_id} to list id ${dest_list_id}`,
-            err
-          );
-          reject(errorObject);
-        });
+        Promise.all([setListUnlocked(req, dest_list_id), setListUnlocked(req, src_list_id)]).then(
+          () => {
+            const errorObject = errorUtils.createErrorMessage(
+              req,
+              errorUtils.errorCodes.failedTocopyLocations,
+              `Failed to copy locations from list id ${src_list_id} to list id ${dest_list_id}`,
+              err
+            );
+            reject(errorObject);
+          }
+        );
       });
   });
 };
@@ -1340,19 +1477,37 @@ const copyLocations = (req, src_list_id, src_location_ids, dest_list_id, src_geo
  *   @param  {Boolean} delete_src_list - Delete list signal (TRUE/FALSE)
  *   @return {Promise} - Returns resolve TRUE or reject error message
  */
-const moveLocations = (req, src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id, delete_src_list) => {
+const moveLocations = (
+  req,
+  src_list_id,
+  src_location_ids,
+  dest_list_id,
+  geojson,
+  gfw_list_id,
+  delete_src_list
+) => {
   return new Promise((resolve, reject) => {
     // Important Variables
     let src_list;
     let dest_list;
 
-    Promise.all([listUtils.getListNameSchema(req, src_list_id), listUtils.getListNameSchema(req, dest_list_id)])
+    Promise.all([
+      listUtils.getListNameSchema(req, src_list_id),
+      listUtils.getListNameSchema(req, dest_list_id),
+    ])
       .then((record) => {
         const [src, dest] = record;
         src_list = src;
         dest_list = dest;
         // 1. Run copy location
-        return copyLocations(req, src_list_id, src_location_ids, dest_list_id, geojson, gfw_list_id);
+        return copyLocations(
+          req,
+          src_list_id,
+          src_location_ids,
+          dest_list_id,
+          geojson,
+          gfw_list_id
+        );
       })
       .then(() => {
         return setListLocked(req, src_list_id);
@@ -1567,7 +1722,12 @@ const setListUnlocked = (req, list_id) => {
  *   @param {number} [list_status_id = config.platformVars.status.Draft] list_status_id - List status ID (eg. 2, 4)
  *   @return {Promise} A promise object that returns true, otherwise error object
  */
-const resetListStatus = (req, list_id, gfw_list_id, list_status_id = config.platformVars.status.Draft) => {
+const resetListStatus = (
+  req,
+  list_id,
+  gfw_list_id,
+  list_status_id = config.platformVars.status.Draft
+) => {
   return new Promise(async (resolve, reject) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
@@ -1612,7 +1772,10 @@ const deleteList = (req, list_id) => {
       .then((record) => {
         const { lock_status, lock_user_id } = record;
         // List is unlocked
-        if (lock_status === null || (lock_status !== null && lock_user_id !== req.session.organization_user_id)) {
+        if (
+          lock_status === null ||
+          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
+        ) {
           // Reject object
           throw { isLocked: true, lock_user_id };
         } else {
@@ -1655,16 +1818,32 @@ const setListStatus = (req, list_id, newStatus) => {
     const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     switch (newStatus) {
       case config.platformVars.status.Pending:
-        parameters.push({ field: 'status_id', type: sql.Int, value: config.platformVars.status.Pending });
+        parameters.push({
+          field: 'status_id',
+          type: sql.Int,
+          value: config.platformVars.status.Pending,
+        });
         break;
       case config.platformVars.status.Active:
-        parameters.push({ field: 'status_id', type: sql.Int, value: config.platformVars.status.Active });
+        parameters.push({
+          field: 'status_id',
+          type: sql.Int,
+          value: config.platformVars.status.Active,
+        });
         break;
       case config.platformVars.status.Inactive:
-        parameters.push({ field: 'status_id', type: sql.Int, value: config.platformVars.status.Inactive });
+        parameters.push({
+          field: 'status_id',
+          type: sql.Int,
+          value: config.platformVars.status.Inactive,
+        });
         break;
       case config.platformVars.status.Draft:
-        parameters.push({ field: 'status_id', type: sql.Int, value: config.platformVars.status.Draft });
+        parameters.push({
+          field: 'status_id',
+          type: sql.Int,
+          value: config.platformVars.status.Draft,
+        });
         break;
       default:
         reject('incorrect status id');

@@ -19,7 +19,16 @@ const _ = require('lodash');
  * @returns {listData<Object>: {list_analysis: []), location_analyses: [locationAttributes[], locationAnalyses[]]}} - Returns the list data filtered locations and list analysis
  */
 exports.getListDataFiltered = (listData, filters) => {
-  const { country, state, subState, analysisArea, sortByAttribute, order = 'asc', page = 0, pageSize = 50 } = filters;
+  const {
+    country,
+    state,
+    subState,
+    analysisArea,
+    sortByAttribute,
+    order = 'asc',
+    page = 0,
+    pageSize = 50,
+  } = filters;
 
   const allLocationAttributes = listData.location_analyses[0];
   const allLocationAnalysis = listData.location_analyses[1];
@@ -59,7 +68,10 @@ exports.getListDataFiltered = (listData, filters) => {
     listDataFiltered = {
       filter_attributes: { ...filters, page, pageSize, totalPages, elements },
       list_analysis: listData.list_analysis,
-      location_analyses: [_.slice(finalLocationAttributes, start, end), _.slice(finalLocationAnalyses, start, end)],
+      location_analyses: [
+        _.slice(finalLocationAttributes, start, end),
+        _.slice(finalLocationAnalyses, start, end),
+      ],
     };
   } else {
     listDataFiltered = {

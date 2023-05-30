@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import ModalWrapper from '../modals/ModalWrapper';
 import store from '../../store';
-import { toggleCanopyModal, updateFilters, setFilterCount, removeList } from '../../actions/locationActions';
+import {
+  toggleCanopyModal,
+  updateFilters,
+  setFilterCount,
+  removeList,
+} from '../../actions/locationActions';
 import { locationsPage } from '../../../../common/js/config';
 import Button from '../../../../common/js/components/Button';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
@@ -16,7 +21,11 @@ export default class GFWAdminForestChangeFilter extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.filterCount !== 0 && nextProps.filterCount === 0 && nextProps.listView === 'forest_change') {
+    if (
+      this.props.filterCount !== 0 &&
+      nextProps.filterCount === 0 &&
+      nextProps.listView === 'forest_change'
+    ) {
       this.setState(this.initialState);
     }
   }
@@ -109,10 +118,13 @@ export default class GFWAdminForestChangeFilter extends Component {
 
   render() {
     const { adminAreas } = this.props;
-    const { selectedCountry, selectedStates, selectedSubStates, filterState, filterSubstate } = this.state;
+    const { selectedCountry, selectedStates, selectedSubStates, filterState, filterSubstate } =
+      this.state;
 
     const countryOptions = [
-      ...new Set(adminAreas.filter((location) => location.Country !== '').map((list) => list.Country)),
+      ...new Set(
+        adminAreas.filter((location) => location.Country !== '').map((list) => list.Country)
+      ),
     ].map(this.createOptions);
     const stateOptions = [
       ...new Set(
@@ -149,11 +161,18 @@ export default class GFWAdminForestChangeFilter extends Component {
     ].sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
     const selectSubStateOptions = adminAreas
       .filter(
-        (area) => area.Country === selectedCountry && area['Sub State'] !== '' && selectedStates.includes(area.State)
+        (area) =>
+          area.Country === selectedCountry &&
+          area['Sub State'] !== '' &&
+          selectedStates.includes(area.State)
       )
       .map((area) => area['Sub State'])
       .map(this.makeOption);
-    const dropdownOptionsMethodsCountry = buildDropdownOptions(countryOptions, 'id', selectedCountry);
+    const dropdownOptionsMethodsCountry = buildDropdownOptions(
+      countryOptions,
+      'id',
+      selectedCountry
+    );
     return (
       <div>
         <ModalWrapper
@@ -209,7 +228,9 @@ export default class GFWAdminForestChangeFilter extends Component {
             <Button
               variant="primary"
               disabled={
-                selectedCountry !== '' || selectedStates.length > 0 || selectedSubStates.length > 0 ? false : true
+                selectedCountry !== '' || selectedStates.length > 0 || selectedSubStates.length > 0
+                  ? false
+                  : true
               }
               onClick={() => {
                 selectedCountry !== '' || selectedStates.length > 0 || selectedSubStates.length > 0

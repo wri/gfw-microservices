@@ -22,7 +22,8 @@ export class PrivacyPolicyBanner extends Component {
     const cookieExpire = new Date();
     const oneDay = 1000 * 60 * 60 * 24;
     cookieExpire.setTime(now.getTime() + oneDay * 30);
-    document.cookie = 'PrivacyPolicyChecked=true; expires=' + cookieExpire.toUTCString() + '; path=/;';
+    document.cookie =
+      'PrivacyPolicyChecked=true; expires=' + cookieExpire.toUTCString() + '; path=/;';
     this.setState({ PrivacyPolicyChecked: true });
   }
 
@@ -31,8 +32,9 @@ export class PrivacyPolicyBanner extends Component {
 
     return (
       <div id="PrivacyPolicyBanner" className={PrivacyPolicyChecked ? 'hidden' : null}>
-        This website uses cookies to provide you with an improved user experience. By continuing to browse this site,
-        you consent to the use of cookies and similar technologies. For further details please visit our{' '}
+        This website uses cookies to provide you with an improved user experience. By continuing to
+        browse this site, you consent to the use of cookies and similar technologies. For further
+        details please visit our{' '}
         <a href={PRIVACY_POLICY_LINK} style={{ color: '#97BD3D' }} target="_blank">
           privacy policy
         </a>

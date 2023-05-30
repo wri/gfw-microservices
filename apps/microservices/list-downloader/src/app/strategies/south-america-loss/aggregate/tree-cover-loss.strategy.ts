@@ -2,9 +2,7 @@ import { SouthAmericaLossAggregateStrategy } from '.';
 import { cloneRow } from '../../../shared/functions';
 import { StrategyFieldType } from './type';
 
-export class TreeCoverLossAggregateStrategy
-  implements SouthAmericaLossAggregateStrategy
-{
+export class TreeCoverLossAggregateStrategy implements SouthAmericaLossAggregateStrategy {
   // TODO: Remove any and validate types
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(private params: any) {}

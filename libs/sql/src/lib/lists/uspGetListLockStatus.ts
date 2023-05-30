@@ -24,9 +24,10 @@ export class UspGetListLockStatus {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      const recordsets = await connection.executeQuery<
-        Promise<UspGetListLockStatusRecorset>
-      >('uspGetListLockStatus', parameters);
+      const recordsets = await connection.executeQuery<Promise<UspGetListLockStatusRecorset>>(
+        'uspGetListLockStatus',
+        parameters
+      );
       connection.disconnect();
       return recordsets;
     } catch (error) {

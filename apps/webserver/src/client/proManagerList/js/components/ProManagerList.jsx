@@ -54,7 +54,9 @@ class proManagerList extends Component {
     );
 
     if (selectedUser) {
-      const selectedOrganization = allAccountsList.find((account) => account.organization_id === organizationId);
+      const selectedOrganization = allAccountsList.find(
+        (account) => account.organization_id === organizationId
+      );
       selectedUser.org_status = selectedOrganization.organization_status_id;
     }
 
@@ -66,7 +68,8 @@ class proManagerList extends Component {
     const organizationId = parseInt(new URLSearchParams(location.search).get('organizationId'), 10);
     const organizationName = new URLSearchParams(location.search).get('organizationName');
     const selectedAccount = allAccountsList.find(
-      (account) => account.organization_id === organizationId && account.organization_name === organizationName
+      (account) =>
+        account.organization_id === organizationId && account.organization_name === organizationName
     );
     return selectedAccount;
   };
@@ -97,7 +100,9 @@ class proManagerList extends Component {
 
   findStatusString = (account) => {
     const { statusData } = this.props;
-    const statusString = statusData.find((status) => status.id === account.organization_status_id).status_name;
+    const statusString = statusData.find(
+      (status) => status.id === account.organization_status_id
+    ).status_name;
     return statusString;
   };
 
@@ -347,7 +352,8 @@ class proManagerList extends Component {
   sortAccounts = (filteredAccts) => {
     const { accountSortingCategory, accountDir } = this.state;
     const sortedAccounts =
-      accountSortingCategory === 'pendingDateString' || accountSortingCategory === 'activeDateString'
+      accountSortingCategory === 'pendingDateString' ||
+      accountSortingCategory === 'activeDateString'
         ? _.orderBy(
             filteredAccts,
             (acct) => new Date(acct.organization_activated_time),
@@ -537,7 +543,9 @@ class proManagerList extends Component {
     const sortedFilteredUsers = this.sortUsers(filteredUsers);
     const usersList = sortedFilteredUsers.map(this.createUsersList);
 
-    const listAction = [<Button variant="primary" label="Ok" keyboardFocused onClick={this.toggleGFWLists} />];
+    const listAction = [
+      <Button variant="primary" label="Ok" keyboardFocused onClick={this.toggleGFWLists} />,
+    ];
     const showListOfUsersAndAccounts = !selectedAccount && !selectedUser;
 
     return (

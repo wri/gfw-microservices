@@ -42,7 +42,10 @@ function groupGeoJSON(geojson, zoomLevel) {
   // If the Admin level is defined above, we need to group features together for that admin area
   if (zoomLevel < 3) {
     const selectedProperty = dictionary.zoomLevel_gadmidGroupBy[zoomLevel];
-    const groupedObject = groupBy(geojson.features, (location) => location.properties[selectedProperty]);
+    const groupedObject = groupBy(
+      geojson.features,
+      (location) => location.properties[selectedProperty]
+    );
     return groupedObject;
   } else {
     // Otherwise return individual locations but manipulated for consistency
@@ -213,8 +216,13 @@ function applyLocationFilters(groupedObject, locationFilters, selectedAlert, zoo
           });
         }
       } else {
-        const isSelectedTimeframeEmpty = isEmpty(groupedObject[adminGroupKey].properties[selectedTimeframeProperty]);
-        if ((onlyAlertsSelected && !isSelectedTimeframeEmpty) || (onlyNoAlertsSelected && isSelectedTimeframeEmpty)) {
+        const isSelectedTimeframeEmpty = isEmpty(
+          groupedObject[adminGroupKey].properties[selectedTimeframeProperty]
+        );
+        if (
+          (onlyAlertsSelected && !isSelectedTimeframeEmpty) ||
+          (onlyNoAlertsSelected && isSelectedTimeframeEmpty)
+        ) {
           filteredObject[adminGroupKey] = groupedObject[adminGroupKey];
         }
       }
@@ -227,7 +235,8 @@ function applyLocationFilters(groupedObject, locationFilters, selectedAlert, zoo
 }
 
 function reduceData(intermediateState, clonedRawData) {
-  const { rawData, selectedAlert, selectedTimeframe, selectedAdmin, locationFilters, zoomLevel } = intermediateState;
+  const { rawData, selectedAlert, selectedTimeframe, selectedAdmin, locationFilters, zoomLevel } =
+    intermediateState;
   // If there is no raw data to process - return
   if (isEmpty(rawData)) {
     return {};
@@ -240,7 +249,11 @@ function reduceData(intermediateState, clonedRawData) {
     // 3. Group the filtered geojson by either Countries, States, SubStates
     const groupedObject = groupGeoJSON(filteredGeoJSON, zoomLevel);
     // 4. Filter and group timeframe for the selected alert
-    const filteredTimeframeObject = applyDataReducerTimeframeFilter(groupedObject, selectedTimeframe, zoomLevel);
+    const filteredTimeframeObject = applyDataReducerTimeframeFilter(
+      groupedObject,
+      selectedTimeframe,
+      zoomLevel
+    );
     // 5. Apply the location filters
     const filteredLocationsObject = applyLocationFilters(
       filteredTimeframeObject,
@@ -254,7 +267,12 @@ function reduceData(intermediateState, clonedRawData) {
 }
 
 // REDUCER
-export default function dataReducer(intermediateState = {}, previousState = {}, action, clonedRawData) {
+export default function dataReducer(
+  intermediateState = {},
+  previousState = {},
+  action,
+  clonedRawData
+) {
   const { data } = previousState;
   switch (action.type) {
     case types.SELECT_ALERT:

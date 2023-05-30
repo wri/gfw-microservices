@@ -28,7 +28,14 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
  *   @param {String} statement - SQL Statement
  *   @return {Promise} Returns true if successful, else error object
  */
-const copySingleLocation = (req, src_list, dest_list, src_location_id, dest_location_id, statement) => {
+const copySingleLocation = (
+  req,
+  src_list,
+  dest_list,
+  src_location_id,
+  dest_location_id,
+  statement
+) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'dest_list_id', type: sql.Int, value: dest_list.id },
@@ -106,7 +113,11 @@ const deleteFilteredLocations = (req, list_id, filters) => {
     ];
     console.log(parameters);
     sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspDeleteLocationIdsFilteredDataForUserList', parameters)
+      .executeOrganizationStoredProcedure(
+        req,
+        'uspDeleteLocationIdsFilteredDataForUserList',
+        parameters
+      )
       .then(() => {
         resolve(true);
       })
@@ -130,8 +141,11 @@ const editSingleLocation = (req, list_id, location_id, attributes) => {
     const statement = Object.entries(attributes)
       .map((attribute) => {
         const [column, value] = attribute;
-        return `[${column}]=${typeof value === 'string' || typeof value === 'boolean' ? `'${value.replace(/'/g, "''")}'` : value
-          }`;
+        return `[${column}]=${
+          typeof value === 'string' || typeof value === 'boolean'
+            ? `'${value.replace(/'/g, "''")}'`
+            : value
+        }`;
       })
       .join(',');
 
@@ -204,7 +218,11 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
         primary_key = recordsets[0].max_id === null ? 1 : recordsets[0].max_id + 1;
         // 2. Get Columns from list/table
         const sqlParameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspGetTableColumns', sqlParameters);
+        return sqlUtils.executeOrganizationStoredProcedure(
+          req,
+          'uspGetTableColumns',
+          sqlParameters
+        );
       })
       .then((recordsets) => {
         const columnNamesArray = [];
@@ -235,7 +253,16 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
             }
           });
           // Add the feature geometry, feature primary key Add flag property for general, gran cho, glad, forma, viirs, terrai
-          featureArray.push(locationUtils.getWKTGeometry(req, feature.geometry), primary_key, 0, 0, 0, 0, 0, 0);
+          featureArray.push(
+            locationUtils.getWKTGeometry(req, feature.geometry),
+            primary_key,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          );
           // Increment key for next feature
           primary_key += 1;
           dataArray.push(featureArray);
@@ -255,7 +282,11 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
           { field: 'table_name', type: sql.NVarChar(150), value: list.list_table },
           { field: 'list_id', type: sql.Int, value: list_id },
         ];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspUpdateListCount', sqlParameters);
+        return sqlUtils.executeOrganizationStoredProcedure(
+          req,
+          'uspUpdateListCount',
+          sqlParameters
+        );
       })
       .then(() => {
         // Copy over list-<TABLE_NAME> ids to analysis-<TABLE_NAME>
@@ -263,7 +294,11 @@ const uploadBulkLocations = (req, list_id, list_name, geojson, commodity) => {
           { field: 'list_id', type: sql.Int, value: list_id },
           { field: 'start_location_id', type: sql.Int, value: max_id },
         ];
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspAddNewLocationToAnalysisTable', sqlParameters);
+        return sqlUtils.executeOrganizationStoredProcedure(
+          req,
+          'uspAddNewLocationToAnalysisTable',
+          sqlParameters
+        );
       })
       .then((recordsets) => {
         logger.logActivity(

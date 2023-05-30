@@ -57,7 +57,11 @@ const NewFeatureNotification = ({ data, read }) => {
           anchorEl={imageAnchorEl}
           placement="left-start"
         >
-          <img className="new-feature-notification__image" src={urlForImage(data.image).url()} alt={data?.title} />
+          <img
+            className="new-feature-notification__image"
+            src={urlForImage(data.image).url()}
+            alt={data?.title}
+          />
         </Popper>
       )}
     </div>

@@ -172,21 +172,32 @@ export default class ForestChangeFilter extends Component {
 
   render() {
     const { filterValues, maximumAnalysisAreaInTheList } = this.props;
-    const { selectedCountry, selectedState, selectedSubState, selectedAreaMin, selectedAreaMax } = this.state;
+    const { selectedCountry, selectedState, selectedSubState, selectedAreaMin, selectedAreaMax } =
+      this.state;
 
     const countryList = Object.keys(filterValues);
     const countryOptions = countryList.map(createSelectOptions);
 
     const stateList =
-      selectedCountry && selectedCountry in filterValues ? Object.keys(filterValues[selectedCountry]) : [];
+      selectedCountry && selectedCountry in filterValues
+        ? Object.keys(filterValues[selectedCountry])
+        : [];
     const stateOptions = stateList.map(createSelectOptions);
 
     const subStateList = selectedState ? filterValues[selectedCountry][selectedState] : [];
     const subStateOptions = subStateList.map(createSelectOptions);
 
-    const dropdownOptionsMethodsCountry = buildDropdownOptions(countryOptions, 'id', selectedCountry);
+    const dropdownOptionsMethodsCountry = buildDropdownOptions(
+      countryOptions,
+      'id',
+      selectedCountry
+    );
     const dropdownOptionsMethodsState = buildDropdownOptions(stateOptions, 'id', selectedState);
-    const dropdownOptionsMethodsSubstate = buildDropdownOptions(subStateOptions, 'id', selectedSubState);
+    const dropdownOptionsMethodsSubstate = buildDropdownOptions(
+      subStateOptions,
+      'id',
+      selectedSubState
+    );
 
     return (
       <div>

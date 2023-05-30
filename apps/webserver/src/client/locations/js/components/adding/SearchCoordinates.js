@@ -6,7 +6,12 @@ import React, { Component } from 'react';
 export default class SearchCoordinates extends Component {
   updateLat = (evt) => {
     const lastChar = evt.target.value.charAt(evt.target.value.length - 1);
-    if (lastChar === '.' || isNaN(parseInt(lastChar)) === false || !lastChar || evt.target.value === '-') {
+    if (
+      lastChar === '.' ||
+      isNaN(parseInt(lastChar)) === false ||
+      !lastChar ||
+      evt.target.value === '-'
+    ) {
       this.props.setLat(evt);
 
       if (this.props.lng && lastChar && lastChar !== '.' && lastChar !== '-') {
@@ -17,7 +22,12 @@ export default class SearchCoordinates extends Component {
 
   updateLng = (evt) => {
     const lastChar = evt.target.value.charAt(evt.target.value.length - 1);
-    if (lastChar === '.' || isNaN(parseInt(lastChar)) === false || !lastChar || evt.target.value === '-') {
+    if (
+      lastChar === '.' ||
+      isNaN(parseInt(lastChar)) === false ||
+      !lastChar ||
+      evt.target.value === '-'
+    ) {
       this.props.setLng(evt);
 
       if (this.props.lat && lastChar && lastChar !== '.' && lastChar !== '-') {

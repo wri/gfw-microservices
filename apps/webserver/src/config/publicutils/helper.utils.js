@@ -6,10 +6,10 @@
 
 ********************************************************************/
 
-function isUndefined (value) {
-    return typeof value === 'undefined';
+function isUndefined(value) {
+  return typeof value === 'undefined';
 }
 
 module.exports = {
-    isUndefined
+  isUndefined,
 };

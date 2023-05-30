@@ -29,8 +29,16 @@ function App() {
       });
   }, []);
 
-  const { organization, userInfo, users, classifications, commodities, geographies, titles, policyList } =
-    profileInfo ?? {};
+  const {
+    organization,
+    userInfo,
+    users,
+    classifications,
+    commodities,
+    geographies,
+    titles,
+    policyList,
+  } = profileInfo ?? {};
   const isLoading = !profileInfo;
 
   if (!isLoading && !users?.length) {

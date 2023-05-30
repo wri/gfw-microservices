@@ -110,10 +110,16 @@ export default class RegionLegend extends Component {
   getCountryOptions = () => {
     const { countryGroup } = this.state;
     return Object.keys(countryGroup).map((country, j) => {
-      const forestChangeLayers = countryGroup[country].filter((layer) => layer.subGroup === 'forest-change');
-      const landCoverLayers = countryGroup[country].filter((layer) => layer.subGroup === 'land-cover');
+      const forestChangeLayers = countryGroup[country].filter(
+        (layer) => layer.subGroup === 'forest-change'
+      );
+      const landCoverLayers = countryGroup[country].filter(
+        (layer) => layer.subGroup === 'land-cover'
+      );
       const landUseLayers = countryGroup[country].filter((layer) => layer.subGroup === 'land-use');
-      const conservationLayers = countryGroup[country].filter((layer) => layer.subGroup === 'conservation');
+      const conservationLayers = countryGroup[country].filter(
+        (layer) => layer.subGroup === 'conservation'
+      );
       const peopleLayers = countryGroup[country].filter((layer) => layer.subGroup === 'people');
       const normalLayers = countryGroup[country].filter((layer) => layer.subGroup === '');
 
@@ -227,6 +233,8 @@ export default class RegionLegend extends Component {
     const { visibleRegion } = this.props;
     const countryGroupOptions = this.getCountryOptions();
 
-    return <div className={`region-legend ${visibleRegion ? '' : 'hidden'}`}>{countryGroupOptions}</div>;
+    return (
+      <div className={`region-legend ${visibleRegion ? '' : 'hidden'}`}>{countryGroupOptions}</div>
+    );
   }
 }

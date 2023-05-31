@@ -408,13 +408,10 @@ export default class Lists extends Component {
     const { selectedLists } = this.props;
     if (selectedLists[0].id !== listID) {
       this.setState({ isLoading: true });
-      ga(
-        'send',
-        'event',
-        'List View Click',
-        'List in side panel clicked',
-        `user clicked on ${listID}`
-      );
+      gtag('event', 'List in side panel clicked', {
+        'event_category': 'List View Click',
+        'event_label': `user clicked on ${listID}`,
+      });
       window.location = `/locations?id=${listID}${gfwList ? '&gfw=true' : ''}`;
     }
   };
@@ -461,13 +458,10 @@ export default class Lists extends Component {
       );
     }
 
-    ga(
-      'send',
-      'event',
-      'List View Click',
-      'Location checkbox clicked',
-      'user checked/unchecked a location in the list'
-    );
+    gtag('event', 'Location checkbox clicked', {
+      'event_category': 'List View Click',
+      'event_label': 'user checked/unchecked a location in the list'
+    });
   };
 
   // Select all locations in a list
@@ -491,13 +485,10 @@ export default class Lists extends Component {
     ) {
       store.dispatch(updateSelectedLocations([]));
       store.dispatch(updateSelectedAndVisibleLocations([]));
-      ga(
-        'send',
-        'event',
-        'List View Click',
-        'Location checkbox clicked',
-        'user unchecked all locations in the list'
-      );
+      gtag('event', 'Location checkbox clicked', {
+        'event_category': 'List View Click',
+        'event_label': 'user unchecked all locations in the list',
+      });
     } else {
       const locationIDs =
         listFilteredLocations.length > 0
@@ -505,13 +496,10 @@ export default class Lists extends Component {
           : filteredLocationData.map((v) => v.location_id);
       store.dispatch(updateSelectedLocations(locationIDs));
       store.dispatch(updateSelectedAndVisibleLocations(locationIDs));
-      ga(
-        'send',
-        'event',
-        'List View Click',
-        'Location checkbox clicked',
-        'user checked all locations in the list'
-      );
+      gtag('event', 'Location checkbox clicked', {
+        'event_category': 'List View Click',
+        'event_label': 'user checked all locations in the list',
+      });
     }
   };
 
@@ -550,13 +538,10 @@ export default class Lists extends Component {
                 refreshPage: true,
                 isLoading: false,
               });
-              ga(
-                'send',
-                'event',
-                'Lists Click',
-                'locations all deleted',
-                'user deleted all locations from their own list'
-              );
+              gtag('event', 'locations all deleted', {
+                'event_category': 'Lists Click',
+                'event_label': 'user deleted all locations from their own list',
+              });
             } else {
               console.warn('Got unrecognized location delete response', response);
               this.setState({
@@ -626,13 +611,10 @@ export default class Lists extends Component {
               refreshPage: true,
               isLoading: false,
             });
-            ga(
-              'send',
-              'event',
-              'Lists Click',
-              'locations deleted',
-              'user deleted locations from their own list'
-            );
+            gtag('event', 'locations deleted', {
+              'event_category': 'Lists Click',
+              'event_label': 'user deleted locations from their own list',
+            });
           } else if (response.includes('isLocked')) {
             // Shouldn't happen due to call to unlock list above, but handle it if it does
             this.setState({
@@ -927,9 +909,15 @@ export default class Lists extends Component {
                 onClick={() => {
                   this.setState({ isSaveAsDraft: true }, () => {
                     if (selectedMoveOrCopy === 'copy') {
-                      ga('send', 'event', 'Copy', 'Copy List', 'User copies a list to draft');
+                      gtag('event', 'Copy List', {
+                        'event_category': 'Copy',
+                        'event_label': 'User copies a list to draft',
+                      });
                     } else {
-                      ga('send', 'event', 'Move', 'Move List', 'User moves a list to draft');
+                      gtag('event', 'Move List', {
+                        'event_category': 'Move',
+                        'event_label': 'User moves a list to draft',
+                      });
                     }
                     this.moveSelectedLocations();
                   });
@@ -943,9 +931,15 @@ export default class Lists extends Component {
                 label={locationsPage.lists.submit}
                 onClick={() => {
                   if (selectedMoveOrCopy === 'copy') {
-                    ga('send', 'event', 'Copy', 'Copy List', 'User copies a list and submits');
+                    gtag('event', 'Copy List', {
+                      'event_category': 'Copy',
+                      'event_label': 'User copies a list and submits',
+                    });
                   } else {
-                    ga('send', 'event', 'Move', 'Move List', 'User moves a list and submits');
+                    gtag('event', 'Move List', {
+                      'event_category': 'Move',
+                      'event_label': 'User moves a list and submits',
+                    });
                   }
                   this.setState({ isSaveAsDraft: false, showSubmitModal: true });
                 }}
@@ -1347,13 +1341,10 @@ export default class Lists extends Component {
               store.dispatch(changeView('edit'));
               const { history } = this.props;
               history.push('/edit');
-              ga(
-                'send',
-                'event',
-                'Lists Click',
-                'Edit button clicked',
-                'user clicked to enter edit list workflow'
-              );
+              gtag('event', 'Edit button clicked', {
+                'event_category': 'Lists Click',
+                'event_label': 'user clicked to enter edit list workflow',
+              });
             }
           })
           .catch((err) => {
@@ -1374,13 +1365,10 @@ export default class Lists extends Component {
       store.dispatch(changeView('gfw'));
       const { history } = this.props;
       history.push('/gfw');
-      ga(
-        'send',
-        'event',
-        'Lists Click',
-        'Edit button clicked',
-        'user clicked to enter add from gfw workflow'
-      );
+      gtag('event', 'Edit button clicked', {
+        'event_category': 'Lists Click',
+        'event_label': 'user clicked to enter add from gfw workflow',
+      });
     } else {
       this.showGFWUnselectedDialog();
     }
@@ -1519,13 +1507,10 @@ export default class Lists extends Component {
     };
 
     redirectToPage('/map', sendData);
-    ga(
-      'send',
-      'event',
-      'Lists Click',
-      'Header button click',
-      'user is re-directed to the map page via a Lists Header button click'
-    );
+    gtag('event', 'Header button click', {
+      'event_category': 'Lists Click',
+      'event_label': 'user is re-directed to the map page via a Lists Header button click',
+    });
   };
 
   // Search selected lists
@@ -1661,13 +1646,10 @@ export default class Lists extends Component {
           isLoading: false,
         });
       });
-    ga(
-      'send',
-      'event',
-      'List',
-      'update button click',
-      'user clicked on the ok button in the modal window to confirm updating the list'
-    );
+    gtag('event', 'update button click', {
+      'event_category': 'List',
+      'event_label': 'user clicked on the ok button in the modal window to confirm updating the list',
+    });
   };
 
   // Flag close function
@@ -1737,13 +1719,10 @@ export default class Lists extends Component {
   setHeaderProps = (state) => {
     return {
       onClick: () => {
-        ga(
-          'send',
-          'event',
-          'Lists Click',
-          'list table header click',
-          `user sorted lists table ${state.sorted.length > 0 ? `by ${state.sorted[0].id}` : ''}`
-        );
+        gtag('event', 'list table header click', {
+          'event_category': 'Lists Click',
+          'event_label': `user sorted lists table ${state.sorted.length > 0 ? `by ${state.sorted[0].id}` : ''}`
+        });
       },
     };
   };
@@ -2319,10 +2298,14 @@ export default class Lists extends Component {
                   value={myListsSearchFilterSidebarString}
                   onChange={(value) => {
                     if (value !== '' && userListFilterText === '') {
-                      ga('send', 'event', 'List Click', 'User enters search');
+                      gtag('event', 'User enters search', {
+                        'event_category': 'Lists Click',
+                      });
                     }
                     if (value === '' && userListFilterText !== '') {
-                      ga('send', 'event', 'List Click', 'User clears search');
+                      gtag('event', 'User clears search', {
+                        'event_category': 'Lists Click',
+                      });
                     }
                     this.setState({ myListsSearchFilterSidebarString: value });
                   }}
@@ -2510,43 +2493,36 @@ export default class Lists extends Component {
                         </div>
                       ) : null}
 
-                      <CustomDraftDialog
-                        open={draftSubmitDialogOpen}
-                        closeAction={() => {
-                          this.setState({ draftSubmitDialogOpen: false });
-                        }}
-                        dialogTitle={locationsPage.lists.confirmListSubmission}
-                        dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
-                        dialogActionConfirm={() => {
-                          requestGeoTrellisAnalyzeList(selectedList)
-                            .then(() => {
-                              ga(
-                                'send',
-                                'event',
-                                'Submit',
-                                'Submit List',
-                                'User submits a list for analysis'
-                              );
-                              ga(
-                                'send',
-                                'event',
-                                'Submit',
-                                'Submit List',
-                                'User submits a list from listview page'
-                              );
-                              // TODO: Get details what to do after list is submitted
-                              window.location.reload();
-                            })
-                            .catch((error) => {
-                              // TODO: Get details what to do after list submission fails
-                              console.log(error);
-                            })
-                            .finally(() => {
-                              this.setState({ draftSubmitDialogOpen: false });
-                            });
-                        }}
-                      />
-                    </div>
+                        <CustomDraftDialog
+                          open={draftSubmitDialogOpen}
+                          closeAction={() => {
+                            this.setState({ draftSubmitDialogOpen: false });
+                          } }
+                          dialogTitle={locationsPage.lists.confirmListSubmission}
+                          dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
+                          dialogActionConfirm={() => {
+                            requestGeoTrellisAnalyzeList(selectedList)
+                              .then(() => {
+                                gtag('event', 'Submit List', {
+                                  'event_category': 'Submit',
+                                  'event_label': 'User submits a list for analysis',
+                                });
+                                gtag('event', 'Submit List', {
+                                  'event_category': 'Submit',
+                                  'event_label': 'User submits a list from listview page',
+                                });
+                                // TODO: Get details what to do after list is submitted
+                                window.location.reload();
+                              })
+                              .catch((error) => {
+                                // TODO: Get details what to do after list submission fails
+                                console.log(error);
+                              })
+                              .finally(() => {
+                                this.setState({ draftSubmitDialogOpen: false });
+                              });
+                          } } />
+                      </div>
                   </div>
                   {!(isFailed || isBeingAnalized) && (
                     <>

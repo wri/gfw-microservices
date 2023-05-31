@@ -102,13 +102,10 @@ const ShareListModal = (props) => {
     setShareListModalTab('success');
     updateShowActionsState(false);
 
-    ga(
-      'send',
-      'event',
-      'Share List',
-      'Add User button click',
-      `user clicked on the ok button in the modal window to start sharing list with ${selectedUser}`
-    );
+    gtag('event', 'Add User button click', {
+      'event_category': 'Share List',
+      'event_label': `user clicked on the ok button in the modal window to start sharing list with ${selectedUser}`,
+    });
   };
 
   const handleTypeChange = (event) => {

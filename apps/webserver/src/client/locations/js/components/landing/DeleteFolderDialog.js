@@ -37,12 +37,9 @@ export default class DeleteFolderDialog extends Component {
                 className="dialog__primary-action"
                 label={strings.confirm}
                 onClick={() => {
-                  ga(
-                    'send',
-                    'event',
-                    'Landing Page Click',
-                    'User Removed Folder from Landing Page'
-                  );
+                  gtag('event', 'User Removed Folder from Landing Page', {
+                    'event_category': 'Landing Page Click',
+                  });
                   this._deleteFolder(folder.id);
                 }}
                 variant="primary"

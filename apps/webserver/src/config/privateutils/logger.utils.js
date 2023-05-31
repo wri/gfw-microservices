@@ -143,14 +143,6 @@ const log = (req, level, message) => {
  * @return {Boolean} - return true if resolved or throws error.
  */
 const logActivity = (req, activityTypeId, activityDescription) => {
-  //Temporary debug
-  console.log(
-    'logActivity DEBUG2',
-    req.originalUrl,
-    req.session,
-    activityTypeId,
-    activityDescription
-  );
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'userID', type: sql.Int, value: req.session.organization_user_id },

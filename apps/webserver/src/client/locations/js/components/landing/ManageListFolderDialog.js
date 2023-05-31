@@ -76,12 +76,9 @@ export default class ManageListFolderDialog extends Component {
                 label={strings.confirm}
                 disabled={confirmDisabled}
                 onClick={() => {
-                  ga(
-                    'send',
-                    'event',
-                    'Landing Page Click',
-                    'User Added List to Folder on Landing Page'
-                  );
+                  gtag('event', 'User Added List to Folder on Landing Page', {
+                    'event_category': 'Landing Page Click',
+                  });
                   this._confirm();
                 }}
                 variant="primary"
@@ -222,12 +219,9 @@ export default class ManageListFolderDialog extends Component {
   };
 
   _addToFolder = () => {
-    ga(
-      'send',
-      'event',
-      'Landing Page Click',
-      'User moves list from new folder to newly created folder'
-    );
+    gtag('event', 'User moves list from new folder to newly created folder', {
+      'event_category': 'Landing Page Click',
+    });
 
     return fetch({
       url: '/folder',
@@ -254,7 +248,9 @@ export default class ManageListFolderDialog extends Component {
   };
 
   _addList = (folder) => {
-    ga('send', 'event', 'Landing Page Click', 'User moves list from one folder to another');
+    gtag('event', 'User moves list from one folder to another', {
+      'event_category': 'Landing Page Click',
+    });
     return fetch({
       url: '/folder/' + folder.id + '/add_lists',
       method: 'POST',
@@ -280,7 +276,9 @@ export default class ManageListFolderDialog extends Component {
   };
 
   _removeFromFolder = () => {
-    ga('send', 'event', 'Landing Page Click', 'User removes list from folder');
+    gtag('event', 'User removes list from folder', {
+      'event_category': 'Landing Page Click',
+    });
     const folder = this.props.list.folder;
 
     return fetch({

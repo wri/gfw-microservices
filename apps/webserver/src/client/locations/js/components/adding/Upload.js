@@ -129,13 +129,10 @@ export default class Upload extends Component {
 
                 this.props.setGeometry(geom);
                 this.setState({ isUploading: false });
-                ga(
-                  'send',
-                  'event',
-                  'Locations File Upload',
-                  'add location upload file',
-                  'user uploaded a zip file'
-                );
+                gtag('event', 'add location upload file', {
+                  'event_category': 'Locations File Upload',
+                  'event_label': 'user uploaded a zip file',
+                });
               }
             } else if (xmlhttp.readyState === 4) {
               console.log('Error: shapefile not working');
@@ -149,13 +146,10 @@ export default class Upload extends Component {
             dialogTitle: locationsPage.upload.errors.dataProjection,
             dialogMessage: projDefs[0],
           });
-          ga(
-            'send',
-            'event',
-            'Locations File Upload error',
-            'add location upload projection error',
-            'user uploaded a shapefile in the wrong projection'
-          );
+          gtag('event', 'add location upload projection error', {
+            'event_category': 'Locations File Upload error',
+            'event_label': 'user uploaded a shapefile in the wrong projection',
+          });
         }
       },
       function (ex) {
@@ -165,13 +159,10 @@ export default class Upload extends Component {
           dialogMessage: ex,
           isUploading: false,
         });
-        ga(
-          'send',
-          'event',
-          'Locations File Upload error',
-          'add location upload data read error',
-          'user uploaded a shapefile that could not be read'
-        );
+        gtag('event', 'add location upload data read error', {
+          'event_category': 'Locations File Upload error',
+          'event_label': 'user uploaded a shapefile that could not be read',
+        });
       }
     );
   };
@@ -203,13 +194,10 @@ export default class Upload extends Component {
             this.setState({
               isUploading: false,
             });
-            ga(
-              'send',
-              'event',
-              'Locations File Upload',
-              'add location upload file',
-              'user uploaded an xls file'
-            );
+            gtag('event', 'add location upload file', {
+              'event_category': 'Locations File Upload',
+              'event_label': 'user uploaded an xls file',
+            });
           } else {
             this.setState({
               dialogOpen: true,
@@ -256,13 +244,10 @@ export default class Upload extends Component {
         this.setState({
           isUploading: false,
         });
-        ga(
-          'send',
-          'event',
-          'Locations File Upload',
-          'add location upload file',
-          'user uploaded an xls file'
-        );
+        gtag('event', 'add location upload file', {
+          'event_category': 'Locations File Upload',
+          'event_label': 'user uploaded an xls file',
+        });
       }
     };
     reader.onerror = (err) => {
@@ -281,13 +266,10 @@ export default class Upload extends Component {
       .then((geometry) => {
         this.props.setGeometry(geometry);
         this.setState({ isUploading: false });
-        ga(
-          'send',
-          'event',
-          'Locations File Upload',
-          'add location upload file',
-          'user uploaded an kmz/kml file'
-        );
+        gtag('event', 'add location upload file', {
+          'event_category': 'Locations File Upload',
+          'event_label': 'user uploaded an kmz/kml file',
+        });
       })
       .catch((e) => console.error('Failed to parse KMZ/KML file', e));
   };
@@ -303,13 +285,10 @@ export default class Upload extends Component {
             this.setState({
               isUploading: false,
             });
-            ga(
-              'send',
-              'event',
-              'Locations File Upload',
-              'add location upload file',
-              'user uploaded a csv file'
-            );
+            gtag('event', 'add location upload file', {
+              'event_category': 'Locations File Upload',
+              'event_label': 'user uploaded a csv file',
+            });
           } else {
             this.setState({
               dialogOpen: true,
@@ -329,13 +308,10 @@ export default class Upload extends Component {
         this.setState({
           isUploading: false,
         });
-        ga(
-          'send',
-          'event',
-          'Locations File Upload',
-          'add location upload file',
-          'user uploaded a csv file'
-        );
+        gtag('event', 'add location upload file', {
+          'event_category': 'Locations File Upload',
+          'event_label': 'user uploaded a csv file',
+        });
       }
     }
   };

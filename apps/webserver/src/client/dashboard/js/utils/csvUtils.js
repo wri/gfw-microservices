@@ -732,13 +732,10 @@ function downloadDashboard() {
     density: {},
   };
 
-  ga(
-    'send',
-    'event',
-    'Dashboard Download',
-    'Download button clicked',
-    'user downloaded dashboard data'
-  );
+  gtag('event', 'Download button clicked', {
+    'event_category': 'Dashboard Download',
+    'event_label': 'user downloaded dashboard data',
+  });
 }
 
 module.exports = {

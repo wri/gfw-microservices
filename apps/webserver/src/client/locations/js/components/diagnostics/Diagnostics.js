@@ -367,13 +367,10 @@ export default class Diagnostics extends Component {
     };
 
     redirectToPage('/map', sendData);
-    ga(
-      'send',
-      'event',
-      'Diagnostics Click',
-      'map click',
-      'user is re-directed to the map page via a Diagnostics Header map click'
-    );
+    gtag('event', 'map click', {
+      'event_category': 'Diagnostics Click',
+      'event_label': 'user is re-directed to the map page via a Diagnostics Header map click'
+    });
   };
 
   getFilteredLocations = () => {
@@ -489,14 +486,10 @@ export default class Diagnostics extends Component {
 
     request.open('POST', `${DATA_API_URL}/dataApi/getInfoBubbleData/${infoBubbleId}`);
     request.send();
-
-    ga(
-      'send',
-      'event',
-      'Diagnostics Click',
-      'info button clicked',
-      `user clicked on the info button for ${infoBubbleId}`
-    );
+    gtag('event', 'info button clicked', {
+      'event_category': 'Diagnostics Click',
+      'event_label': `user clicked on the info button for ${infoBubbleId}`
+    });
   };
 
   toggleTooltips = (prop) => {
@@ -518,22 +511,16 @@ export default class Diagnostics extends Component {
     const { history } = this.props;
     history.push('/lists');
     if (currentView === 'forest_change') {
-      ga(
-        'send',
-        'event',
-        'Forest Change Diagnostics Click',
-        'Back to list link clicked',
-        'user returned to the list view'
-      );
+      gtag('event', 'Back to list link clicked', {
+        'event_category': 'Forest Change Diagnostics Click',
+        'event_label': 'user returned to the list view'
+      });
     }
     if (currentView === 'commodity_risk') {
-      ga(
-        'send',
-        'event',
-        'Commodity Risk Diagnostics Click',
-        'Back to list link clicked',
-        'user returned to the list view'
-      );
+      gtag('event', 'Back to list link clicked', {
+        'event_category': 'Commodity Risk Diagnostics Click',
+        'event_label': 'user returned to the list view'
+      });
     }
   };
 
@@ -551,13 +538,10 @@ export default class Diagnostics extends Component {
       this.setState({
         currentView: listView,
       });
-      ga(
-        'send',
-        'event',
-        'Diagnostic Click',
-        'diagnostic topic click',
-        `user switched to ${listView} diagnostics from ${listViewProps}`
-      );
+      gtag('event', 'diagnostic topic click', {
+        'event_category': 'Diagnostic Click',
+        'event_label': `user switched to ${listView} diagnostics from ${listViewProps}`
+      });
     }
   };
 
@@ -565,29 +549,20 @@ export default class Diagnostics extends Component {
     const { currentView } = this.state;
     window.print(); // TODO: Update print css -header is too tall, highcharts too wide
     if (currentView === 'forest_change') {
-      ga(
-        'send',
-        'event',
-        'Forest Change Diagnostics Print',
-        'Report button clicked',
-        'user printed forest change diagnostics report'
-      );
+      gtag('event', 'Report button clicked', {
+        'event_category': 'Forest Change Diagnostics Print',
+        'event_label': 'user printed forest change diagnostics report'
+      });
     } else if (currentView === 'commodity_risk') {
-      ga(
-        'send',
-        'event',
-        'Commodity Risk Diagnostics Print',
-        'Report button clicked',
-        'user printed commodity risk diagnostics report'
-      );
+      gtag('event', 'Report button clicked', {
+        'event_category': 'Commodity Risk Diagnostics Print',
+        'event_label': 'user printed commodity risk diagnostics report'
+      });
     } else {
-      ga(
-        'send',
-        'event',
-        'Diagnostics Print',
-        'Report button clicked',
-        'user printed diagnostics report'
-      );
+      gtag('event', 'Report button clicked', {
+        'event_category': 'Diagnostics Print',
+        'event_label': 'user printed diagnostics report',
+      });
     }
   };
 

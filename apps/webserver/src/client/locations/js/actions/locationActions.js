@@ -45,13 +45,10 @@ export function changeAddMethod(data) {
 }
 
 export function changeTemplate(data) {
-  ga(
-    'send',
-    'event',
-    'Upload Locations Select',
-    'Upload locations template radio button clicked',
-    `user selected ${data} template for uploading locations`
-  );
+  gtag('event', 'Upload locations template radio button clicked', {
+    'event_category': 'Upload Locations Select',
+    'event_label': `user selected ${data} template for uploading locations`,
+  });
   return { type: CHANGE_TEMPLATE, data };
 }
 

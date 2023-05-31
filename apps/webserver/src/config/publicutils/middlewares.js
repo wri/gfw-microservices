@@ -67,42 +67,18 @@ const checkAuthentication = (request, response, next) => {
  */
 const checkInactivity = (request, response, next) => {
   const { method, baseUrl } = request;
-  const { last_activity_time, ispromanager, user_first_name, user_last_name } = request.session;
+  const {
+    last_activity_time,
+    ispromanager,
+    user_first_name,
+    user_last_name,
+    organization_database,
+  } = request.session;
   const inactiveLimit = moment().subtract(4, 'hours');
   const lastActiveTimeMoment = moment(last_activity_time);
   const isInactiveSession = baseUrl === '/session' && !last_activity_time ? true : false;
 
-  if (lastActiveTimeMoment.isBefore(inactiveLimit)) {
-    if (ispromanager) {
-      request.session.destroy();
-      if (method === 'POST') {
-        response.status(401).json({
-          redirect: '/',
-        });
-      } else {
-        response.redirect('/');
-      }
-    } else {
-      const message = `User ${user_first_name} ${user_last_name} has logged out due to inactivity.`;
-      logger
-        .logActivity(request, logger.listActivityTypes.User.UserLogout, message)
-        .finally(() => {
-          request.session.destroy();
-          if (method === 'POST') {
-            response.status(401).json({
-              redirect: '/',
-            });
-          } else {
-            response.redirect('/');
-          }
-        })
-        .catch(() => {
-          logger.error('Ignoring logActivity error during logout to avoid app crash');
-        });
-    }
-  } else if (isInactiveSession) {
-    // If the session has expired and the user has multiple tabs open, last_activity_time is undefined
-    // We can therefore log them out
+  function redirectClient() {
     if (method === 'POST') {
       response.status(401).json({
         redirect: '/',
@@ -110,6 +86,34 @@ const checkInactivity = (request, response, next) => {
     } else {
       response.redirect('/');
     }
+  }
+
+  if (lastActiveTimeMoment.isBefore(inactiveLimit)) {
+    if (ispromanager) {
+      request.session.destroy();
+      redirectClient();
+    } else {
+      // organization_database is empty when user logs in with password but without verifying 2FA token
+      if (organization_database) {
+        const message = `User ${user_first_name} ${user_last_name} has logged out due to inactivity.`;
+        logger
+          .logActivity(request, logger.listActivityTypes.User.UserLogout, message)
+          .finally(() => {
+            request.session.destroy();
+            redirectClient();
+          })
+          .catch(() => {
+            logger.error('Ignoring logActivity error during logout to avoid app crash');
+          });
+      } else {
+        request.session.destroy();
+        redirectClient();
+      }
+    }
+  } else if (isInactiveSession) {
+    // If the session has expired and the user has multiple tabs open, last_activity_time is undefined
+    // We can therefore log them out
+    redirectClient();
   } else {
     // If we are checking for the session, do not update the last activity time
     // This is done so that the checking user activity does not affect their last activity

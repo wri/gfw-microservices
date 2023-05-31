@@ -104,6 +104,9 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Install dependencies for webserver
+        run: npm --prefix ./apps/webserver/src install --legacy-peer-deps
+
       - name: Run Test
         run: npx nx affected --target=test --parallel=3 --configuration=ci --coverage
 

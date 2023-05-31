@@ -215,7 +215,7 @@ export default class LocationList extends Component {
 
             const joinedLocAnalyses = [];
             locationData.forEach((loc) => {
-              if (analysisData.length > 0) {
+              if (analysisData && analysisData.length > 0) {
                 let analysisList = [];
 
                 const { location_id, list_id } = loc;

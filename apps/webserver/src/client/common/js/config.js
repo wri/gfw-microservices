@@ -2662,6 +2662,14 @@ export const locationsPage = {
     AnalyzingDiagnostic: 5,
     AnalyzingDashboard: 6,
   },
+  statusLabel: {
+    Pending: 'Pending',
+    Active: 'Active',
+    Inactive: 'Inactive',
+    Draft: 'Draft',
+    AnalyzingDiagnostic: 'Analyzing diagnostic',
+    AnalyzingDashboard: 'Analyzing dashboard',
+  },
   columns: {
     notAnalyzedList: {
       owner: 'This location has not been analyzed. To view location details and diagnostics for this list, please click the submit button at the top of the screen.',

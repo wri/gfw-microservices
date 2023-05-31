@@ -126,15 +126,10 @@ export const viewDiagnostic = async (
 
     history.push('/diagnostics');
 
-    ga(
-      'send',
-      'event',
-      'List View Click',
-      'View Diagnostic click',
-      `user viewed ${listView} diagnostics for ${
-        isSingleLocation ? 'a single location' : 'an entire list'
-      }`
-    );
+    gtag('event', 'View Diagnostic click', {
+      'event_category': 'List View Click',
+      'event_label': `user viewed ${listView} diagnostics for ${isSingleLocation ? 'a single location' : 'an entire list'}`,
+    });
   }
 
   return data;

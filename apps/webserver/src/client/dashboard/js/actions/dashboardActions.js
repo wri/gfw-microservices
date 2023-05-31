@@ -64,13 +64,10 @@ export function selectList(list) {
 }
 
 export function selectAlert(alert) {
-  ga(
-    'send',
-    'event',
-    'Dashboard Click',
-    'Dashboard alert type dropdown clicked',
-    'user switched the dashboard alert type (Deforestation (GLAD), Fires (VIIRS))'
-  );
+  gtag('event', 'Dashboard alert type dropdown clicked', {
+    'event_category': 'Dashboard Click',
+    'event_label': 'user switched the dashboard alert type (Deforestation (GLAD), Fires (VIIRS))',
+  });
   return {
     type: types.SELECT_ALERT,
     alert,
@@ -78,13 +75,10 @@ export function selectAlert(alert) {
 }
 
 export function selectTimeframe(timeframe) {
-  ga(
-    'send',
-    'event',
-    'Dashboard Click',
-    'Dashboard timeframe radio button clicked',
-    'user changed the dashboard timeframe (week, month, quarter, year)'
-  );
+  gtag('event', 'Dashboard timeframe radio button clicked', {
+    'event_category': 'Dashboard Click',
+    'event_label': 'user changed the dashboard timeframe (week, month, quarter, year)',
+  });
   return {
     type: types.SELECT_TIMEFRAME,
     timeframe,

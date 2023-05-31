@@ -150,14 +150,10 @@ export default class DrawShape extends Component {
 
     this.setState({ geometry: polygon, mode: DrawShapeMode.Complete });
     this.props.setGeometry(polygon);
-
-    ga(
-      'send',
-      'event',
-      'Locations Draw',
-      'add location map draw',
-      'user drew a polygon on the Add Location map'
-    );
+    gtag('event', 'add location map draw', {
+      'event_category': 'Locations Draw',
+      'event_label': 'user drew a polygon on the Add Location map',
+    });
   };
 
   render() {

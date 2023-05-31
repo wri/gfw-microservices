@@ -64,13 +64,10 @@ function SelectedListDescription({
       return;
     }
     const { dashboard_map_extent } = transitionListData || {};
-    ga(
-      'send',
-      'event',
-      'Map Click',
-      'Map GO TO MAP link clicked',
-      'User click on a GO TO MAP link'
-    );
+    gtag('event', 'Map GO TO MAP link clicked', {
+      'event_category': 'Map Click',
+      'event_label': 'User click on a GO TO MAP link',
+    });
     if (dashboard_map_extent) {
       goToDashboard();
     } else {

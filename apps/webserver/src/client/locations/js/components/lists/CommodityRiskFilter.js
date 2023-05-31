@@ -115,7 +115,10 @@ export default class CommodityRiskFilter extends Component {
     store.dispatch(updateFilters(this.state));
     store.dispatch(setFilterCount(counter));
 
-    ga('send', 'event', 'Lists Click', 'list table filter', 'user filtered the lists table');
+    gtag('event', 'list table filter', {
+      'event_category': 'Lists Click',
+      'event_label': 'user filtered the lists table',
+    });
   };
 
   close = () => {

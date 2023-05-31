@@ -330,13 +330,10 @@ class ShareList extends React.Component {
     });
 
     addUserToSharedListService(selectedUser, updatedNotAdminsOwner, this);
-    ga(
-      'send',
-      'event',
-      'Share List',
-      'Add User button click',
-      `user clicked on the ok button in the modal window to start sharing list with ${selectedUser}`
-    );
+    gtag('event', 'Add User button click', {
+      'event_category': 'Share List',
+      'event_label': `user clicked on the ok button in the modal window to start sharing list with ${selectedUser}`,
+    });
   };
 
   /**
@@ -357,19 +354,11 @@ class ShareList extends React.Component {
       return user;
     });
 
-    removeUserFromSharedListService(
-      userToRemove,
-      updateSharedListUsers,
-      updatedNotAdminsOwner,
-      this
-    );
-    ga(
-      'send',
-      'event',
-      'Share List',
-      'X button click',
-      `user clicked on the ok button in the modal window to stop sharing list with ${userToRemove}`
-    );
+    removeUserFromSharedListService(userToRemove, updateSharedListUsers, updatedNotAdminsOwner, this);
+    gtag('event', 'X button click', {
+      'event_category': 'Share List',
+      'event_label': `user clicked on the ok button in the modal window to stop sharing list with ${userToRemove}`,
+    });
   };
 
   /**
@@ -378,13 +367,10 @@ class ShareList extends React.Component {
    */
   _removeAllUsersFromSharedList = () => {
     removeAllUsersFromSharedListService(this);
-    ga(
-      'send',
-      'event',
-      'Share List',
-      'Stop Sharing With All button click',
-      'user clicked on the ok button in the modal window to stop sharing list with everyone'
-    );
+    gtag('event', 'Stop Sharing With All button click', {
+      'event_category': 'Share List',
+      'event_label': 'user clicked on the ok button in the modal window to stop sharing list with everyone',
+    });
   };
 }
 

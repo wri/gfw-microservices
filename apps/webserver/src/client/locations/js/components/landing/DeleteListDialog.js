@@ -48,7 +48,9 @@ export default class DeleteListDialog extends Component {
                 label={strings.deleteListDialog.confirm}
                 variant="primary"
                 onClick={() => {
-                  ga('send', 'event', 'Landing Page Click', 'User Removed List from Landing Page');
+                  gtag('event', 'User Removed List from Landing Page', {
+                    'event_category': 'Landing Page Click',
+                  });
                   this._deleteList(list.id);
                 }}
               />

@@ -143,13 +143,10 @@ export default class Dashboard extends Component {
     }
 
     this.unsubscribe = store.subscribe(this.storeDidUpdate);
-    ga(
-      'send',
-      'event',
-      'Dashboard Load',
-      'Dashboard page loaded',
-      'user navigated to the Dashboard page by clicking on Dashboard link in navigation'
-    );
+    gtag('event', 'Dashboard page loaded', {
+      'event_category': 'Dashboard Load',
+      'event_label': 'user navigated to the Dashboard page by clicking on Dashboard link in navigation',
+    });
   }
 
   storeDidUpdate = () => {
@@ -318,14 +315,10 @@ export default class Dashboard extends Component {
         // console.log('Error fetching /dashboard/analyze-list', error);
         // }
         // }
-
-        ga(
-          'send',
-          'event',
-          'Dashboard Click',
-          'List from Show Lists dropdown clicked',
-          'user clicked on a list from Show Lists to analyze'
-        );
+        gtag('event', 'List from Show Lists dropdown clicked', {
+          'event_category': 'Dashboard Click',
+          'event_label': 'user clicked on a list from Show Lists to analyze',
+        });
       } catch (e) {
         store.dispatch(
           toggleDialog({
@@ -338,13 +331,10 @@ export default class Dashboard extends Component {
   };
 
   printReport = () => {
-    ga(
-      'send',
-      'event',
-      'Dashboard Click',
-      'Report button clicked',
-      'user printed dashboard report'
-    );
+    gtag('event', 'Report button clicked', {
+      'event_category': 'Dashboard Click',
+      'event_label': 'user printed dashboard report',
+    });
     window.print();
   };
 

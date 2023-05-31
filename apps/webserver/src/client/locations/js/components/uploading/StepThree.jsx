@@ -796,13 +796,10 @@ export default class StepThree extends Component {
           dialogTitle: 'Incorrect template uploaded',
           dialogMessage: projDefs[0],
         });
-        ga(
-          'send',
-          'event',
-          'Locations File Upload error',
-          'upload location upload projection error',
-          'user uploaded a shapefile in the wrong projection'
-        );
+        gtag('event', 'upload location upload projection error', {
+          'event_category': 'Locations File Upload error',
+          'event_label': 'user uploaded a shapefile in the wrong projection',
+        });
       }
     });
   };
@@ -1352,21 +1349,15 @@ export default class StepThree extends Component {
 
   toggleValidated = (evt) => {
     if (evt.target.value === 'all') {
-      ga(
-        'send',
-        'event',
-        'Upload Locations Click',
-        'User clicks All locations radio button on validation step',
-        'Validation step 3'
-      );
+      gtag('event', 'User clicks All locations radio button on validation step', {
+        'event_category': 'Upload Locations Click',
+        'event_label': 'Validation step 3',
+      });
     } else if (evt.target.value === 'invalid') {
-      ga(
-        'send',
-        'event',
-        'Upload Locations Click',
-        'User clicks Locations with errors on validation step',
-        'Validation step 3'
-      );
+      gtag('event', 'User clicks Locations with errors on validation step', {
+        'event_category': 'Upload Locations Click',
+        'event_label': 'Validation step 3',
+      });
     }
     this.setState({ showValidated: evt.target.value });
   };
@@ -1539,13 +1530,10 @@ export default class StepThree extends Component {
     });
 
     downloaders.downloadCSV(csvData);
-    ga(
-      'send',
-      'event',
-      'Upload Locations Click',
-      'User clicks Download from validation step',
-      'Validation step 3'
-    );
+    gtag('event', 'User clicks Download from validation step', {
+      'event_category': 'Upload Locations Click',
+      'event_label': 'Validation step 3',
+    });
   };
 
   premiumFileUpload = (file) => {

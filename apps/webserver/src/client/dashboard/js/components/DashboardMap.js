@@ -157,13 +157,10 @@ export default class DashboardMap extends Component {
     const target = evt.target;
     const updatedFilter = { [target.name]: target.checked };
     store.dispatch(updateLocationFilter(Object.assign(locationFilters, updatedFilter)));
-    ga(
-      'send',
-      'event',
-      'Dashboard Click',
-      'Locations with alerts checkbox clicked',
-      'user checked locations with alerts/no alerts'
-    );
+    gtag('event', 'Locations with alerts checkbox clicked', {
+      'event_category': 'Dashboard Click',
+      'event_label': 'user checked locations with alerts/no alerts'
+    });
   };
 
   showLegendTooltip = (evt) => {
@@ -231,13 +228,10 @@ export default class DashboardMap extends Component {
     request.open('POST', `${DATA_API_URL}/dataApi/getInfoBubbleData/${infoBubbleId}`);
     request.send();
 
-    ga(
-      'send',
-      'event',
-      'Dashboard Click',
-      'info button clicked',
-      `user clicked on the info button for ${infoBubbleId}`
-    );
+    gtag('event', 'info button clicked', {
+      'event_category': 'Dashboard Click',
+      'event_label': `user clicked on the info button for ${infoBubbleId}`,
+    });
   };
 
   closePopover = () => {
@@ -332,13 +326,10 @@ export default class DashboardMap extends Component {
               onClick={() => {
                 store.dispatch(resetZoomLevel());
                 store.dispatch(setZoomLevelTotal(getAlertsTotal()));
-                ga(
-                  'send',
-                  'event',
-                  'Dashboard Click',
-                  'Dashboard Map zoom out button clicked',
-                  'User click on a Zoom Out button'
-                );
+                gtag('event', 'Dashboard Map zoom out button clicked', {
+                  'event_category': 'Dashboard Click',
+                  'event_label': 'User click on a Zoom Out button',
+                });
               }}
             />
             <p>Click on a bubble to zoom in.</p>

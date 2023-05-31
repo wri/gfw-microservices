@@ -15,25 +15,19 @@ export default class StepOne extends Component {
   toggleCommodityType = (evt) => {
     const newType = evt.target.value;
     this.props.updateCommodityType(newType);
-    ga(
-      'send',
-      'event',
-      'Upload Locations Select',
-      'Upload locations template radio button clicked',
-      `user selected ${newType} template for uploading locations`
-    );
+    gtag('event', 'Upload locations template radio button clicked', {
+      'event_category': 'Upload Locations Select',
+      'event_label': `user selected ${newType} template for uploading locations`
+    });
   };
 
   toggleOtherType = (evt) => {
     const newVal = evt.target.value;
     this.props.updateOtherCommodityType(newVal);
-    ga(
-      'send',
-      'event',
-      'Upload Locations Select',
-      'Upload locations template radio button clicked',
-      `user selected ${newVal} template for uploading locations`
-    );
+    gtag('event', 'Upload locations template radio button clicked', {
+      'event_category': 'Upload Locations Select',
+      'event_label': `user selected ${newVal} template for uploading locations`,
+    });
   };
 
   createRadio = (optionName, optionId, i) => {

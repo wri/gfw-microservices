@@ -51,8 +51,8 @@ export default class SearchCoordinates extends Component {
     });
     this.props.setGeometry(geom);
     gtag('event', 'add location enter coordinates', {
-      'event_category': 'Locations Enter',
-      'event_label': 'user entered latitude and longitude in the add location page',
+      event_category: 'Locations Enter',
+      event_label: 'user entered latitude and longitude in the add location page',
     });
   };
 

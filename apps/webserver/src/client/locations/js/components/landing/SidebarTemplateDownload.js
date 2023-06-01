@@ -23,10 +23,12 @@ class SidebarTemplateDownload extends Component {
   downloadTemplate = () => {
     const { selectedTemplate } = this.state;
     const templateOptions = locationsPage.landing.selectTemplateOptions;
-    const selectedTemplateLabel = templateOptions.find((i) => i.templateName === selectedTemplate).label;
+    const selectedTemplateLabel = templateOptions.find(
+      (i) => i.templateName === selectedTemplate
+    ).label;
     gtag('event', 'Download button clicked', {
-      'event_category': 'Landing Page Click',
-      'event_label': selectedTemplateLabel,
+      event_category: 'Landing Page Click',
+      event_label: selectedTemplateLabel,
     });
     window.open(selectedTemplate);
   };

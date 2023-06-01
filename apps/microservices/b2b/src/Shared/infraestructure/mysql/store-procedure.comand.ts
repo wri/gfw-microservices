@@ -16,12 +16,10 @@ export class StoredProcedureCommand implements Command {
     try {
       if (database) await this.connection.connect(database);
       else await this.connection.connect();
-      console.log(this.procedureName, this.parameters);
       const result = await this.connection.executeQuery<T>(
         this.procedureName,
         this.parameters,
       );
-      console.log(result);
       await this.connection.disconnect();
       return Result.ok(result);
     } catch (error) {

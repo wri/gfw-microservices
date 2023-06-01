@@ -29,7 +29,6 @@ export class LogsUseCases {
     }
 
     const db = dbRes.getValue();
-    console.log(db)
     const logRes = await this.mapper.createLog(logDto, db, this.userRepo);
 
     if (logRes.isFailure) {

@@ -39,7 +39,6 @@ export class SQLUtils {
 
   executeQuery<T>(query: string, parameters?: any[]): Promise<T> {
     const request = this.connection.request();
-    console.log(request);
 
     if (parameters && Array.isArray(parameters)) {
       parameters.forEach((param) => {

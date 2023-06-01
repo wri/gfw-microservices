@@ -45,7 +45,7 @@ export class ConnectionDataMapper extends GenericMapper {
         params.push({
           field: field,
           type: sql.NVarChar(20),
-          value: value,
+          value: String(value),
         });
       }
     });

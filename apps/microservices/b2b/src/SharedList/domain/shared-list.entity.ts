@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('Connection_Shared_List')
-export class ListShared {
+export class SharedList {
   @PrimaryGeneratedColumn()
   id: number;
 

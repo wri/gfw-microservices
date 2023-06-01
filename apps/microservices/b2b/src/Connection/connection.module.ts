@@ -16,4 +16,4 @@ import { AwsModule } from '@wri-monorepos/aws';
   ],
   exports: [ConnectionDataMapper, ConnectionUseCases],
 })
-export class ConnectionUseCasesModule {}
+export class ConnectionModule {}

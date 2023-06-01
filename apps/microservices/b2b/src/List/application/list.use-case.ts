@@ -1,22 +1,27 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DatabaseProvider } from '../../Database/database.provider';
+import { OrganizationUseCases } from '../../Organization/application/organization.use-case';
+import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';
-import {  } from '../../SharedList/domain/list-shared.repository';
+import {} from '../../SharedList/domain/shared-list.repository';
 import { List } from '../domain/list.entity';
 import { ListRepository } from '../domain/list.repository';
 
 @Injectable()
 export class ListUseCases {
-
-  @Inject(DatabaseProvider)
-  private readonly databaseProvider: DatabaseProvider;
+  @Inject(OrganizationUseCases)
+  private readonly organizationUseCases: OrganizationUseCases;
 
   constructor(private readonly listRepository: ListRepository) {}
 
-  async findListsByFilters(filters: any): ResultPromise<List[]> {
-    await this.databaseProvider.getConnection('clientstore-DevCo')
-    //console.log(this.databaseProvider.getConnections())
-    const lists = await this.listRepository.findListsByFilters(filters);
+  async findListsByFilters(filters: any, orgId: number): ResultPromise<List[]> {
+    const orgRes = await this.organizationUseCases.findById(orgId);
+    if (orgRes.isFailure) return Result.fail(orgRes.getError());
+    const org = orgRes.getValue();
+    const lists = await this.listRepository.findListsByFilters(
+      filters,
+      org.organizationDb,
+    );
     return lists;
   }
 

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ListUseCases } from '../../List/application/list.use-case';
 
 import Result from '../../Shared/domain/result';
+import ResultError from '../../Shared/domain/result/result.error';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import { UserRepository } from '../domain/user.repository';
 
@@ -32,7 +33,7 @@ export class UserUseCases {
     email: string,
     listId: number,
     db: string,
-  ): Promise<boolean> {
+  ): ResultPromise<boolean> {
     const promises = await Promise.allSettled([
       this.userRepo.getUserByEmail(email, db),
       this.userRepo.getUserAdminOrg(email),
@@ -52,6 +53,9 @@ export class UserUseCases {
     const userAdminOrgs = validatePromise(userAdminOrgsPromise);
     const list = validatePromise(listPromise);
 
-    return user && list && userAdminOrgs.some((org) => org.listId === listId);
+    const result = user && list && userAdminOrgs.some((org) => org.listId === listId);
+
+    return result ? Result.ok(result) : Result.fail(new ResultError('this user not able to access this list', 500));
   }
+
 }

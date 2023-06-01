@@ -1,8 +1,9 @@
+import { PartialType } from '@nestjs/mapped-types';
 import { Transform } from 'class-transformer';
 import { IsEnum, IsNumber, IsOptional } from 'class-validator';
 import { ConnectionStatus } from '../../domain/connection';
 
-export class ConnectionFiltersDto {
+export class FullConnectionFiltersDto {
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
@@ -22,3 +23,5 @@ export class ConnectionFiltersDto {
   @Transform(({ value }) => Number(value))
   sourceId: Number;
 }
+
+export class ConnectionFiltersDto extends PartialType(FullConnectionFiltersDto) {}

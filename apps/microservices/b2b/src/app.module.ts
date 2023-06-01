@@ -3,7 +3,7 @@ import { AppController } from './Shared/infraestructure/app.controller';
 import { AppService } from './Shared/application/app.service';
 import { DataServicesModule } from './Shared/application/data-service/data-service.module';
 import { ConnectionController } from './Connection/infraestructure/connection.controller';
-import { ConnectionUseCasesModule } from './Connection/connection.module';
+import { ConnectionModule } from './Connection/connection.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LogsModule } from './Logs/log.module';
 import { UserModule } from './User/user.module';
@@ -13,11 +13,17 @@ import { DatabaseProvider } from './Shared/domain/database-provider/database.pro
 import { DataSourceOptions } from 'typeorm';
 import { ListController } from './List/infrastructure/list.controller';
 import { ListModule } from './List/list.module';
+import { OrganizationModule } from './Organization/organization.module';
+import { OrganizationController } from './Organization/infrastructure/organization.controller';
+import { SharedListController } from './SharedList/infrastructure/shared-list.controller';
+import { SharedListModule } from './SharedList/shared-list.module';
 
 @Module({
   imports: [
     UserModule,
-    ConnectionUseCasesModule,
+    ConnectionModule,
+    OrganizationModule,
+    SharedListModule,
     LogsModule,
     ListModule,
     ConfigModule.forRoot({ isGlobal: true }),
@@ -30,7 +36,7 @@ import { ListModule } from './List/list.module';
           username: process.env.MSSQL_USERNAME,
           password: process.env.MSSQL_PASSWORD,
           database: process.env.MSSQL_DATABASE,
-          entities: entities, //[__dirname + '/**/*.entity{.ts,.js}'],
+          entities: entities,
           extra: {
             trustServerCertificate: true,
           },
@@ -39,7 +45,13 @@ import { ListModule } from './List/list.module';
       },
     }),
   ],
-  controllers: [AppController, ConnectionController, ListController],
+  controllers: [
+    AppController,
+    ConnectionController,
+    ListController,
+    OrganizationController,
+    SharedListController
+  ],
   providers: [AppService],
 })
 export class AppModule {}

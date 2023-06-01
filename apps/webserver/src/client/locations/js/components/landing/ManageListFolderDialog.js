@@ -77,7 +77,7 @@ export default class ManageListFolderDialog extends Component {
                 disabled={confirmDisabled}
                 onClick={() => {
                   gtag('event', 'User Added List to Folder on Landing Page', {
-                    'event_category': 'Landing Page Click',
+                    ''event_category'': 'Landing Page Click',
                   });
                   this._confirm();
                 }}
@@ -220,7 +220,7 @@ export default class ManageListFolderDialog extends Component {
 
   _addToFolder = () => {
     gtag('event', 'User moves list from new folder to newly created folder', {
-      'event_category': 'Landing Page Click',
+      ''event_category'': 'Landing Page Click',
     });
 
     return fetch({
@@ -249,7 +249,7 @@ export default class ManageListFolderDialog extends Component {
 
   _addList = (folder) => {
     gtag('event', 'User moves list from one folder to another', {
-      'event_category': 'Landing Page Click',
+      ''event_category'': 'Landing Page Click',
     });
     return fetch({
       url: '/folder/' + folder.id + '/add_lists',
@@ -277,7 +277,7 @@ export default class ManageListFolderDialog extends Component {
 
   _removeFromFolder = () => {
     gtag('event', 'User removes list from folder', {
-      'event_category': 'Landing Page Click',
+      ''event_category'': 'Landing Page Click',
     });
     const folder = this.props.list.folder;
 

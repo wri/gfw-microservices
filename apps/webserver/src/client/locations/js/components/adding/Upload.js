@@ -131,7 +131,7 @@ export default class Upload extends Component {
                 this.setState({ isUploading: false });
                 gtag('event', 'add location upload file', {
                   'event_category': 'Locations File Upload',
-                  ''event_label'': 'user uploaded a zip file',
+                  'event_label': 'user uploaded a zip file',
                 });
               }
             } else if (xmlhttp.readyState === 4) {
@@ -148,7 +148,7 @@ export default class Upload extends Component {
           });
           gtag('event', 'add location upload projection error', {
             'event_category': 'Locations File Upload error',
-            ''event_label'': 'user uploaded a shapefile in the wrong projection',
+            'event_label': 'user uploaded a shapefile in the wrong projection',
           });
         }
       },
@@ -161,7 +161,7 @@ export default class Upload extends Component {
         });
         gtag('event', 'add location upload data read error', {
           'event_category': 'Locations File Upload error',
-          ''event_label'': 'user uploaded a shapefile that could not be read',
+          'event_label': 'user uploaded a shapefile that could not be read',
         });
       }
     );
@@ -196,7 +196,7 @@ export default class Upload extends Component {
             });
             gtag('event', 'add location upload file', {
               'event_category': 'Locations File Upload',
-              ''event_label'': 'user uploaded an xls file',
+              'event_label': 'user uploaded an xls file',
             });
           } else {
             this.setState({
@@ -246,7 +246,7 @@ export default class Upload extends Component {
         });
         gtag('event', 'add location upload file', {
           'event_category': 'Locations File Upload',
-          ''event_label'': 'user uploaded an xls file',
+          'event_label': 'user uploaded an xls file',
         });
       }
     };
@@ -268,7 +268,7 @@ export default class Upload extends Component {
         this.setState({ isUploading: false });
         gtag('event', 'add location upload file', {
           'event_category': 'Locations File Upload',
-          ''event_label'': 'user uploaded an kmz/kml file',
+          'event_label': 'user uploaded an kmz/kml file',
         });
       })
       .catch((e) => console.error('Failed to parse KMZ/KML file', e));
@@ -287,7 +287,7 @@ export default class Upload extends Component {
             });
             gtag('event', 'add location upload file', {
               'event_category': 'Locations File Upload',
-              ''event_label'': 'user uploaded a csv file',
+              'event_label': 'user uploaded a csv file',
             });
           } else {
             this.setState({
@@ -310,7 +310,7 @@ export default class Upload extends Component {
         });
         gtag('event', 'add location upload file', {
           'event_category': 'Locations File Upload',
-          ''event_label'': 'user uploaded a csv file',
+          'event_label': 'user uploaded a csv file',
         });
       }
     }

@@ -734,7 +734,7 @@ function downloadDashboard() {
 
   gtag('event', 'Download button clicked', {
     'event_category': 'Dashboard Download',
-    ''event_label'': 'user downloaded dashboard data',
+    'event_label': 'user downloaded dashboard data',
   });
 }
 

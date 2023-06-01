@@ -118,7 +118,7 @@ class Landing extends Component {
     store.dispatch(changeView('add'));
     gtag('event', 'Add a Location button clicked', {
       'event_category': 'Landing Page Click',
-      ''event_label'': 'user clicked to add a single location',
+      'event_label': 'user clicked to add a single location',
     });
   };
 

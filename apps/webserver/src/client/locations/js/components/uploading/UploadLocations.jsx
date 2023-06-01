@@ -870,17 +870,17 @@ class UploadLocations extends Component {
                 if (isSaveAsDraft) {
                   gtag('event', 'Upload List', {
                     'event_category': 'Submit',
-                    ''event_label'': 'User uploads a list with multiple locations as a draft',
+                    'event_label': 'User uploads a list with multiple locations as a draft',
                   });
                 } else {
                   gtag('event', 'Upload List', {
                     'event_category': 'Submit',
-                    ''event_label'': 'User uploads a list with multiple locations and submits',
+                    'event_label': 'User uploads a list with multiple locations and submits',
                   });
                 }
                 gtag('event', 'upload locations save as draft button clicked', {
                   'event_category': 'Locations Click',
-                  ''event_label'': `user saved as draft a list with a newly uploaded ${addType} location with a commodity type of ${activeTemplate}`,
+                  'event_label': `user saved as draft a list with a newly uploaded ${addType} location with a commodity type of ${activeTemplate}`,
                 });
               } else if (selectedList === '') {
                 request.open('POST', '/locations/addToNewList', true);
@@ -898,17 +898,17 @@ class UploadLocations extends Component {
                 if (isSaveAsDraft) {
                   gtag('event', 'Upload List', {
                     'event_category': 'Submit',
-                    ''event_label'': 'User uploads a list with multiple locations as a draft',
+                    'event_label': 'User uploads a list with multiple locations as a draft',
                   });
                 } else {
                   gtag('event', 'Upload List', {
                     'event_category': 'Submit',
-                    ''event_label'': 'User uploads a list with multiple locations and submits',
+                    'event_label': 'User uploads a list with multiple locations and submits',
                   });
                 }
                 gtag('event', 'upload locations save button clicked', {
                   'event_category': 'Locations Click',
-                  ''event_label'': `user created a list with a newly uploaded ${addType} location with a commodity type of ${activeTemplate}`,
+                  'event_label': `user created a list with a newly uploaded ${addType} location with a commodity type of ${activeTemplate}`,
                 });
               } else {
                 const activeList = userLists.filter((list) => {
@@ -937,11 +937,11 @@ class UploadLocations extends Component {
                 };
                 gtag('event', 'Upload List', {
                   'event_category': 'Submit',
-                  ''event_label'': 'User uploads a list with multiple locations and submits',
+                  'event_label': 'User uploads a list with multiple locations and submits',
                 });
                 gtag('event', 'upload locations save button clicked', {
                   'event_category': 'Locations Click',
-                  ''event_label'': `user uploaded ${addType} location to an existing list with a commodity type of ${activeTemplate}`,
+                  'event_label': `user uploaded ${addType} location to an existing list with a commodity type of ${activeTemplate}`,
                 });
               }
               request.setRequestHeader('Content-Type', 'application/json');
@@ -1048,7 +1048,7 @@ class UploadLocations extends Component {
       }
       gtag('event', 'next step click', {
         'event_category': 'Upload Locations Click',
-        ''event_label'': `user completed step ${step} of the upload locations workflow`,
+        'event_label': `user completed step ${step} of the upload locations workflow`,
       });
     } else {
       console.warn(`current step ${step} is not valid`);
@@ -1404,7 +1404,7 @@ class UploadLocations extends Component {
                 onClick={() => {
                   gtag('event', 'Save button clicked', {
                     'event_category': 'Upload Locations Click',
-                    ''event_label'': 'User saves list with invalid locations',
+                    'event_label': 'User saves list with invalid locations',
                   });
                   this.toNextStep();
                   this.shouldCloseDialog();

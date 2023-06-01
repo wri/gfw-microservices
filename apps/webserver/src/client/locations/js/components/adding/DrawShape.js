@@ -152,7 +152,7 @@ export default class DrawShape extends Component {
     this.props.setGeometry(polygon);
     gtag('event', 'add location map draw', {
       'event_category': 'Locations Draw',
-      ''event_label'': 'user drew a polygon on the Add Location map',
+      'event_label': 'user drew a polygon on the Add Location map',
     });
   };
 

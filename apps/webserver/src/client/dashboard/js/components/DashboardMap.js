@@ -159,7 +159,7 @@ export default class DashboardMap extends Component {
     store.dispatch(updateLocationFilter(Object.assign(locationFilters, updatedFilter)));
     gtag('event', 'Locations with alerts checkbox clicked', {
       'event_category': 'Dashboard Click',
-      ''event_label'': 'user checked locations with alerts/no alerts'
+      'event_label': 'user checked locations with alerts/no alerts'
     });
   };
 
@@ -230,7 +230,7 @@ export default class DashboardMap extends Component {
 
     gtag('event', 'info button clicked', {
       'event_category': 'Dashboard Click',
-      ''event_label'': `user clicked on the info button for ${infoBubbleId}`,
+      'event_label': `user clicked on the info button for ${infoBubbleId}`,
     });
   };
 
@@ -328,7 +328,7 @@ export default class DashboardMap extends Component {
                 store.dispatch(setZoomLevelTotal(getAlertsTotal()));
                 gtag('event', 'Dashboard Map zoom out button clicked', {
                   'event_category': 'Dashboard Click',
-                  ''event_label'': 'User click on a Zoom Out button',
+                  'event_label': 'User click on a Zoom Out button',
                 });
               }}
             />

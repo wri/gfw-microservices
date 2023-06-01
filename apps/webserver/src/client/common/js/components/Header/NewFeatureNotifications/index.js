@@ -19,7 +19,7 @@ const NewFeatureNotifications = () => {
     setShowList(true);
     gtag('event', 'In-App Notifications Icon Clicked', {
       'event_category': 'In-App Notifications Click',
-      ''event_label'': 'User click on icon to display In-App Notifications',
+      'event_label': 'User click on icon to display In-App Notifications',
     });
   };
 

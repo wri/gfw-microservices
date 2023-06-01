@@ -369,7 +369,7 @@ export default class Diagnostics extends Component {
     redirectToPage('/map', sendData);
     gtag('event', 'map click', {
       'event_category': 'Diagnostics Click',
-      ''event_label'': 'user is re-directed to the map page via a Diagnostics Header map click'
+      'event_label': 'user is re-directed to the map page via a Diagnostics Header map click'
     });
   };
 
@@ -488,7 +488,7 @@ export default class Diagnostics extends Component {
     request.send();
     gtag('event', 'info button clicked', {
       'event_category': 'Diagnostics Click',
-      ''event_label'': `user clicked on the info button for ${infoBubbleId}`
+      'event_label': `user clicked on the info button for ${infoBubbleId}`
     });
   };
 
@@ -513,13 +513,13 @@ export default class Diagnostics extends Component {
     if (currentView === 'forest_change') {
       gtag('event', 'Back to list link clicked', {
         'event_category': 'Forest Change Diagnostics Click',
-        ''event_label'': 'user returned to the list view'
+        'event_label': 'user returned to the list view'
       });
     }
     if (currentView === 'commodity_risk') {
       gtag('event', 'Back to list link clicked', {
         'event_category': 'Commodity Risk Diagnostics Click',
-        ''event_label'': 'user returned to the list view'
+        'event_label': 'user returned to the list view'
       });
     }
   };
@@ -540,7 +540,7 @@ export default class Diagnostics extends Component {
       });
       gtag('event', 'diagnostic topic click', {
         'event_category': 'Diagnostic Click',
-        ''event_label'': `user switched to ${listView} diagnostics from ${listViewProps}`
+        'event_label': `user switched to ${listView} diagnostics from ${listViewProps}`
       });
     }
   };
@@ -551,17 +551,17 @@ export default class Diagnostics extends Component {
     if (currentView === 'forest_change') {
       gtag('event', 'Report button clicked', {
         'event_category': 'Forest Change Diagnostics Print',
-        ''event_label'': 'user printed forest change diagnostics report'
+        'event_label': 'user printed forest change diagnostics report'
       });
     } else if (currentView === 'commodity_risk') {
       gtag('event', 'Report button clicked', {
         'event_category': 'Commodity Risk Diagnostics Print',
-        ''event_label'': 'user printed commodity risk diagnostics report'
+        'event_label': 'user printed commodity risk diagnostics report'
       });
     } else {
       gtag('event', 'Report button clicked', {
         'event_category': 'Diagnostics Print',
-        ''event_label'': 'user printed diagnostics report',
+        'event_label': 'user printed diagnostics report',
       });
     }
   };

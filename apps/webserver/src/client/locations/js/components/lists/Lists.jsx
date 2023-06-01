@@ -409,7 +409,7 @@ export default class Lists extends Component {
     if (selectedLists[0].id !== listID) {
       this.setState({ isLoading: true });
       gtag('event', 'List in side panel clicked', {
-        ''event_category'': 'List View Click',
+        'event_category': 'List View Click',
         ''event_label'': `user clicked on ${listID}`,
       });
       window.location = `/locations?id=${listID}${gfwList ? '&gfw=true' : ''}`;
@@ -459,7 +459,7 @@ export default class Lists extends Component {
     }
 
     gtag('event', 'Location checkbox clicked', {
-      ''event_category'': 'List View Click',
+      'event_category': 'List View Click',
       ''event_label'': 'user checked/unchecked a location in the list'
     });
   };
@@ -486,7 +486,7 @@ export default class Lists extends Component {
       store.dispatch(updateSelectedLocations([]));
       store.dispatch(updateSelectedAndVisibleLocations([]));
       gtag('event', 'Location checkbox clicked', {
-        ''event_category'': 'List View Click',
+        'event_category': 'List View Click',
         ''event_label'': 'user unchecked all locations in the list',
       });
     } else {
@@ -497,7 +497,7 @@ export default class Lists extends Component {
       store.dispatch(updateSelectedLocations(locationIDs));
       store.dispatch(updateSelectedAndVisibleLocations(locationIDs));
       gtag('event', 'Location checkbox clicked', {
-        ''event_category'': 'List View Click',
+        'event_category': 'List View Click',
         ''event_label'': 'user checked all locations in the list',
       });
     }
@@ -539,7 +539,7 @@ export default class Lists extends Component {
                 isLoading: false,
               });
               gtag('event', 'locations all deleted', {
-                ''event_category'': 'Lists Click',
+                'event_category': 'Lists Click',
                 ''event_label'': 'user deleted all locations from their own list',
               });
             } else {
@@ -612,7 +612,7 @@ export default class Lists extends Component {
               isLoading: false,
             });
             gtag('event', 'locations deleted', {
-              ''event_category'': 'Lists Click',
+              'event_category': 'Lists Click',
               ''event_label'': 'user deleted locations from their own list',
             });
           } else if (response.includes('isLocked')) {
@@ -910,12 +910,12 @@ export default class Lists extends Component {
                   this.setState({ isSaveAsDraft: true }, () => {
                     if (selectedMoveOrCopy === 'copy') {
                       gtag('event', 'Copy List', {
-                        ''event_category'': 'Copy',
+                        'event_category': 'Copy',
                         ''event_label'': 'User copies a list to draft',
                       });
                     } else {
                       gtag('event', 'Move List', {
-                        ''event_category'': 'Move',
+                        'event_category': 'Move',
                         ''event_label'': 'User moves a list to draft',
                       });
                     }
@@ -932,12 +932,12 @@ export default class Lists extends Component {
                 onClick={() => {
                   if (selectedMoveOrCopy === 'copy') {
                     gtag('event', 'Copy List', {
-                      ''event_category'': 'Copy',
+                      'event_category': 'Copy',
                       ''event_label'': 'User copies a list and submits',
                     });
                   } else {
                     gtag('event', 'Move List', {
-                      ''event_category'': 'Move',
+                      'event_category': 'Move',
                       ''event_label'': 'User moves a list and submits',
                     });
                   }
@@ -1342,7 +1342,7 @@ export default class Lists extends Component {
               const { history } = this.props;
               history.push('/edit');
               gtag('event', 'Edit button clicked', {
-                ''event_category'': 'Lists Click',
+                'event_category': 'Lists Click',
                 ''event_label'': 'user clicked to enter edit list workflow',
               });
             }
@@ -1366,7 +1366,7 @@ export default class Lists extends Component {
       const { history } = this.props;
       history.push('/gfw');
       gtag('event', 'Edit button clicked', {
-        ''event_category'': 'Lists Click',
+        'event_category': 'Lists Click',
         ''event_label'': 'user clicked to enter add from gfw workflow',
       });
     } else {
@@ -1508,7 +1508,7 @@ export default class Lists extends Component {
 
     redirectToPage('/map', sendData);
     gtag('event', 'Header button click', {
-      ''event_category'': 'Lists Click',
+      'event_category': 'Lists Click',
       ''event_label'': 'user is re-directed to the map page via a Lists Header button click',
     });
   };
@@ -1647,7 +1647,7 @@ export default class Lists extends Component {
         });
       });
     gtag('event', 'update button click', {
-      ''event_category'': 'List',
+      'event_category': 'List',
       ''event_label'': 'user clicked on the ok button in the modal window to confirm updating the list',
     });
   };
@@ -1720,7 +1720,7 @@ export default class Lists extends Component {
     return {
       onClick: () => {
         gtag('event', 'list table header click', {
-          ''event_category'': 'Lists Click',
+          'event_category': 'Lists Click',
           ''event_label'': `user sorted lists table ${state.sorted.length > 0 ? `by ${state.sorted[0].id}` : ''}`
         });
       },
@@ -2299,12 +2299,12 @@ export default class Lists extends Component {
                   onChange={(value) => {
                     if (value !== '' && userListFilterText === '') {
                       gtag('event', 'User enters search', {
-                        ''event_category'': 'Lists Click',
+                        'event_category': 'Lists Click',
                       });
                     }
                     if (value === '' && userListFilterText !== '') {
                       gtag('event', 'User clears search', {
-                        ''event_category'': 'Lists Click',
+                        'event_category': 'Lists Click',
                       });
                     }
                     this.setState({ myListsSearchFilterSidebarString: value });
@@ -2504,11 +2504,11 @@ export default class Lists extends Component {
                             requestGeoTrellisAnalyzeList(selectedList)
                               .then(() => {
                                 gtag('event', 'Submit List', {
-                                  ''event_category'': 'Submit',
+                                  'event_category': 'Submit',
                                   ''event_label'': 'User submits a list for analysis',
                                 });
                                 gtag('event', 'Submit List', {
-                                  ''event_category'': 'Submit',
+                                  'event_category': 'Submit',
                                   ''event_label'': 'User submits a list from listview page',
                                 });
                                 // TODO: Get details what to do after list is submitted

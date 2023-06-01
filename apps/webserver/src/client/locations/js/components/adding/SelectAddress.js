@@ -42,7 +42,7 @@ export default class SelectAddress extends Component {
       });
       this.props.setGeometry(geom);
       gtag('event', 'add location enter address', {
-        ''event_category'': 'Locations Enter',
+        'event_category': 'Locations Enter',
         ''event_label'': 'user entered an address in the add location page',
       });
     });

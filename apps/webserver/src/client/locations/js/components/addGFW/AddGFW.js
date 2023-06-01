@@ -539,8 +539,8 @@ export default class AddGFW extends Component {
         console.log('err', err);
       });
       gtag('event', 'Next button clicked', {
-        'event_category': 'Add GFW Click',
-        'event_label': 'user completed step 3 of add from gfw list workflow',
+        ''event_category'': 'Add GFW Click',
+        ''event_label'': 'user completed step 3 of add from gfw list workflow',
       });
   };
 
@@ -627,8 +627,8 @@ export default class AddGFW extends Component {
         });
       }
       gtag('event', 'Next button clicked', {
-        'event_category': 'Add GFW Click',
-        'event_label': 'user completed step 2 of add from gfw list workflow',
+        ''event_category'': 'Add GFW Click',
+        ''event_label'': 'user completed step 2 of add from gfw list workflow',
       });
     } else if (this.state.step === 2 && !!this.state.uploadingData && this.state.uploadingData.length === 0) {
       this.setState({
@@ -640,8 +640,8 @@ export default class AddGFW extends Component {
       if (this.state.step === 1) {
         this.addAdditonalValues();
         gtag('event', 'Next button clicked', {
-          'event_category': 'Add GFW Click',
-          'event_label': 'user completed step 1 of add from gfw list workflow',
+          ''event_category'': 'Add GFW Click',
+          ''event_label'': 'user completed step 1 of add from gfw list workflow',
         });
       }
       this.setState({ step: this.state.step + 1 });

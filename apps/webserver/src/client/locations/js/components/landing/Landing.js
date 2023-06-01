@@ -117,8 +117,8 @@ class Landing extends Component {
     history.push('/add');
     store.dispatch(changeView('add'));
     gtag('event', 'Add a Location button clicked', {
-      'event_category': 'Landing Page Click',
-      'event_label': 'user clicked to add a single location',
+      ''event_category'': 'Landing Page Click',
+      ''event_label'': 'user clicked to add a single location',
     });
   };
 
@@ -271,12 +271,12 @@ class Landing extends Component {
     const onChangeListsFilter = (value) => {
       if (value !== '' && userListFilterText === '') {
         gtag('event', 'User enters a search', {
-          'event_category': 'Landing Page Click',
+          ''event_category'': 'Landing Page Click',
         });
       }
       if (value === '' && userListFilterText !== '') {
         gtag('event', 'User clears search', {
-          'event_category': 'Landing Page Click',
+          ''event_category'': 'Landing Page Click',
         });
       }
       this.setState({ userListFilterText: value });

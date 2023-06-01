@@ -69,20 +69,20 @@ function ListDownload({
       case 'csv':
         if (type === 'results') {
           gtag('event', 'results download click', {
-            'event_category': 'Download',
-            'event_label': 'user clicked on the results option in the download dropdown menu',
+            ''event_category'': 'Download',
+            ''event_label'': 'user clicked on the results option in the download dropdown menu',
           });
         } else {
           gtag('event', 'csv download click', {
-            'event_category': 'Download',
-            'event_label': 'user clicked on the csv option in the download dropdown menu',
+            ''event_category'': 'Download',
+            ''event_label'': 'user clicked on the csv option in the download dropdown menu',
           });
         }
         break;
       case 'shapefile':
         gtag('event', 'shapefile download click', {
-          'event_category': 'Download',
-          'event_label': 'user clicked on the shapefile option in the download dropdown menu',
+          ''event_category'': 'Download',
+          ''event_label'': 'user clicked on the shapefile option in the download dropdown menu',
         });
         break;
       default:

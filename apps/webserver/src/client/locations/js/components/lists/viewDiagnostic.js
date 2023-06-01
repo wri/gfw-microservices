@@ -127,7 +127,7 @@ export const viewDiagnostic = async (
     history.push('/diagnostics');
 
     gtag('event', 'View Diagnostic click', {
-      ''event_category'': 'List View Click',
+      'event_category': 'List View Click',
       ''event_label'': `user viewed ${listView} diagnostics for ${isSingleLocation ? 'a single location' : 'an entire list'}`,
     });
   }

@@ -35,7 +35,7 @@ function LocationsTableColumnSelector({ listColumns, setListColumns, disabled })
     newListColumnsState[index].show = !newListColumnsState[index].show;
     setArrayOfVisibleColumns(newListColumnsState);
     gtag('event', 'Add column', {
-      ''event_category'': 'Lists Click',
+      'event_category': 'Lists Click',
       ''event_label'': 'user toggled a column in the lists table',
     });
   };

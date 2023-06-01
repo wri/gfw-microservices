@@ -16,8 +16,8 @@ export default class StepOne extends Component {
     const newType = evt.target.value;
     this.props.updateCommodityType(newType);
     gtag('event', 'Upload locations template radio button clicked', {
-      'event_category': 'Upload Locations Select',
-      'event_label': `user selected ${newType} template for uploading locations`
+      ''event_category'': 'Upload Locations Select',
+      ''event_label'': `user selected ${newType} template for uploading locations`
     });
   };
 
@@ -25,8 +25,8 @@ export default class StepOne extends Component {
     const newVal = evt.target.value;
     this.props.updateOtherCommodityType(newVal);
     gtag('event', 'Upload locations template radio button clicked', {
-      'event_category': 'Upload Locations Select',
-      'event_label': `user selected ${newVal} template for uploading locations`,
+      ''event_category'': 'Upload Locations Select',
+      ''event_label'': `user selected ${newVal} template for uploading locations`,
     });
   };
 

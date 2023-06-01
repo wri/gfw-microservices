@@ -49,7 +49,7 @@ export default class DeleteListDialog extends Component {
                 variant="primary"
                 onClick={() => {
                   gtag('event', 'User Removed List from Landing Page', {
-                    'event_category': 'Landing Page Click',
+                    ''event_category'': 'Landing Page Click',
                   });
                   this._deleteList(list.id);
                 }}

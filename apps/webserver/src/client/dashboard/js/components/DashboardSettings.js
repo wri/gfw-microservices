@@ -147,8 +147,8 @@ export default class DashboardSettings extends Component {
 
     redirectToPage('/map', sendData);
     gtag('event', 'view map clicked', {
-      'event_category': 'Dashboard Click',
-      'event_label': 'user is re-directed to the map page via a Dashboard View Map click',
+      ''event_category'': 'Dashboard Click',
+      ''event_label'': 'user is re-directed to the map page via a Dashboard View Map click',
     });
   };
 

@@ -317,8 +317,8 @@ export default class SouthAmericaRegions extends Component {
         sliderActive: false,
       });
       gtag('event', 'timeslider update', {
-        'event_category': 'Diagnostics Click',
-        'event_label': 'user updated the south america timeslider',
+        ''event_category'': 'Diagnostics Click',
+        ''event_label'': 'user updated the south america timeslider',
       });
     }
   };
@@ -760,8 +760,8 @@ export default class SouthAmericaRegions extends Component {
               biomesChecked: false,
             });
             gtag('event', 'South America Asia checkbox clicked', {
-              'event_category': 'Forest Change Diagnostics Click',
-              'event_label': 'user checked soy on tree cover loss',
+              ''event_category'': 'Forest Change Diagnostics Click',
+              ''event_label'': 'user checked soy on tree cover loss',
             });
           };
           break;
@@ -783,8 +783,8 @@ export default class SouthAmericaRegions extends Component {
               biomesChecked: false,
             });
             gtag('event', 'South America Asia checkbox clicked', {
-              'event_category': 'Forest Change Diagnostics Click',
-              'event_label': 'user checked prodes',
+              ''event_category'': 'Forest Change Diagnostics Click',
+              ''event_label'': 'user checked prodes',
             });
           };
           break;
@@ -797,8 +797,8 @@ export default class SouthAmericaRegions extends Component {
           onChange = () => {
             this.handleProtectedAreaCheck();
             gtag('event', 'South America Asia checkbox clicked', {
-              'event_category': 'Forest Change Diagnostics Click',
-              'event_label': 'user checked protected areas',
+              ''event_category'': 'Forest Change Diagnostics Click',
+              ''event_label'': 'user checked protected areas',
             });
           };
           break;
@@ -811,8 +811,8 @@ export default class SouthAmericaRegions extends Component {
           onChange = () => {
             this.handlePrimaryForestCheck();
             gtag('event', 'South America Asia checkbox clicked', {
-              'event_category': 'Forest Change Diagnostics Click',
-              'event_label': 'user checked primary forest',
+              ''event_category'': 'Forest Change Diagnostics Click',
+              ''event_label'': 'user checked primary forest',
             });
           };
           break;
@@ -835,8 +835,8 @@ export default class SouthAmericaRegions extends Component {
               otbnArgentinaShowCategoryIIIChecked: false,
             });
             gtag('event', 'South America Asia checkbox clicked', {
-              'event_category': 'Forest Change Diagnostics Click',
-              'event_label': 'user checked tree cover loss',
+              ''event_category'': 'Forest Change Diagnostics Click',
+              ''event_label'': 'user checked tree cover loss',
             });
           };
           break;
@@ -860,8 +860,8 @@ export default class SouthAmericaRegions extends Component {
               otbnArgentinaShowCategoryIIIChecked: !this.state.otbnArgentinaChecked,
             });
             gtag('event', 'South America Asia checkbox clicked', {
-              'event_category': 'Forest Change Diagnostics Click',
-              'event_label': 'user checked Tree Cover Loss on Argentina OTBN',
+              ''event_category'': 'Forest Change Diagnostics Click',
+              ''event_label'': 'user checked Tree Cover Loss on Argentina OTBN',
             });
           };
           break;
@@ -884,8 +884,8 @@ export default class SouthAmericaRegions extends Component {
               biomesChecked: !this.state.biomesChecked,
             });
             gtag('event', 'South America Asia checkbox clicked', {
-              'event_category': 'Forest Change Diagnostics Click',
-              'event_label': 'user checked brazil biomes',
+              ''event_category'': 'Forest Change Diagnostics Click',
+              ''event_label'': 'user checked brazil biomes',
             });
           };
           break;

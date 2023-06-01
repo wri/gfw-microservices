@@ -737,7 +737,7 @@ export default class SoutheastAsiaRegions extends Component {
             });
             gtag('event', 'Southeast Asia checkbox clicked', {
               'event_category': 'Forest Change Diagnostics Click',
-              ''event_label'': 'user checked tree cover loss',
+              'event_label': 'user checked tree cover loss',
             });
           };
           indent = false;
@@ -757,7 +757,7 @@ export default class SoutheastAsiaRegions extends Component {
             });
             gtag('event', 'Southeast Asia checkbox clicked', {
               'event_category': 'Forest Change Diagnostics Click',
-              ''event_label'': 'user checked southeast asia landcover'
+              'event_label': 'user checked southeast asia landcover'
             });
           };
           disabled = seaPresence ? false : true;
@@ -777,7 +777,7 @@ export default class SoutheastAsiaRegions extends Component {
             });
             gtag('event', 'Southeast Asia checkbox clicked', {
               'event_category': 'Forest Change Diagnostics Click',
-              ''event_label'': 'user checked indonesia landcover',
+              'event_label': 'user checked indonesia landcover',
             });
           };
           indent = true;
@@ -797,7 +797,7 @@ export default class SoutheastAsiaRegions extends Component {
             });
             gtag('event', 'Southeast Asia checkbox clicked', {
               'event_category': 'Forest Change Diagnostics Click',
-              ''event_label'': 'user checked indonesia legal classification',
+              'event_label': 'user checked indonesia legal classification',
             });
           };
           indent = true;
@@ -817,7 +817,7 @@ export default class SoutheastAsiaRegions extends Component {
             });
             gtag('event', 'Southeast Asia checkbox clicked', {
               'event_category': 'Forest Change Diagnostics Click',
-              ''event_label'': 'user checked indonesia forest moratorium',
+              'event_label': 'user checked indonesia forest moratorium',
             });
           };
           indent = true;
@@ -837,7 +837,7 @@ export default class SoutheastAsiaRegions extends Component {
             });
             gtag('event', 'Southeast Asia checkbox clicked', {
               'event_category': 'Forest Change Diagnostics Click',
-              ''event_label'': 'user checked indonesia primary forest',
+              'event_label': 'user checked indonesia primary forest',
             });
           };
           indent = true;
@@ -907,7 +907,7 @@ export default class SoutheastAsiaRegions extends Component {
       });
       gtag('event', 'timeslider update', {
         'event_category': 'Diagnostics Click',
-        ''event_label'': 'user updated the southeast asia timeslider',
+        'event_label': 'user updated the southeast asia timeslider',
       });
     }
   };

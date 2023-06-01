@@ -2830,7 +2830,7 @@ export default class Map extends Component {
   toggleLayerVisibility = (layerId) => {
     const mapLayer = this.view.map.findLayerById(layerId);
     const previousVisibility = mapLayer.visible;
-    gtag('event', 'layer toggle',, {
+    gtag('event', 'layer toggle', {
       'event_category': 'Map Click',
       'event_label': `user turned the ${layerId} layer ${previousVisibility ? 'off' : 'on'}`,
     });

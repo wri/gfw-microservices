@@ -40,12 +40,12 @@ function LandingDownload({
     if (downloadRequestedFromFolder) {
       // if the user clicked on the map option from a folder
       gtag('event', 'Folder Click', {
-        ''event_category'': 'Landing Page Click',
+        'event_category': 'Landing Page Click',
         ''event_label'': 'User downloads list from folder view',
       });
     } else {
       gtag('event', 'User opens more menu for list from locations page', {
-        ''event_category'': 'Landing',
+        'event_category': 'Landing',
         ''event_label'': 'Download',
       });
     }

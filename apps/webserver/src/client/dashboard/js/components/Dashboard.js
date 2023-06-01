@@ -145,7 +145,7 @@ export default class Dashboard extends Component {
     this.unsubscribe = store.subscribe(this.storeDidUpdate);
     gtag('event', 'Dashboard page loaded', {
       'event_category': 'Dashboard Load',
-      ''event_label'': 'user navigated to the Dashboard page by clicking on Dashboard link in navigation',
+      'event_label': 'user navigated to the Dashboard page by clicking on Dashboard link in navigation',
     });
   }
 
@@ -317,7 +317,7 @@ export default class Dashboard extends Component {
         // }
         gtag('event', 'List from Show Lists dropdown clicked', {
           'event_category': 'Dashboard Click',
-          ''event_label'': 'user clicked on a list from Show Lists to analyze',
+          'event_label': 'user clicked on a list from Show Lists to analyze',
         });
       } catch (e) {
         store.dispatch(
@@ -333,7 +333,7 @@ export default class Dashboard extends Component {
   printReport = () => {
     gtag('event', 'Report button clicked', {
       'event_category': 'Dashboard Click',
-      ''event_label'': 'user printed dashboard report',
+      'event_label': 'user printed dashboard report',
     });
     window.print();
   };

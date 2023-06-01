@@ -26,7 +26,7 @@ class SidebarTemplateDownload extends Component {
     const selectedTemplateLabel = templateOptions.find((i) => i.templateName === selectedTemplate).label;
     gtag('event', 'Download button clicked', {
       'event_category': 'Landing Page Click',
-      ''event_label'': selectedTemplateLabel,
+      'event_label': selectedTemplateLabel,
     });
     window.open(selectedTemplate);
   };

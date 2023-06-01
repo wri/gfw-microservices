@@ -128,7 +128,7 @@ export const viewDiagnostic = async (
 
     gtag('event', 'View Diagnostic click', {
       'event_category': 'List View Click',
-      ''event_label'': `user viewed ${listView} diagnostics for ${isSingleLocation ? 'a single location' : 'an entire list'}`,
+      'event_label': `user viewed ${listView} diagnostics for ${isSingleLocation ? 'a single location' : 'an entire list'}`,
     });
   }
 

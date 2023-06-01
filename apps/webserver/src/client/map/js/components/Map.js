@@ -1886,11 +1886,18 @@ export default class Map extends Component {
     //TODO: Should we combine these two events?
     gtag('event', 'analyses activate', {
       'event_category': 'Map Click',
-      'event_label': `user ran the ${analysisType} analysis against ${type === 'admin' ? 'an administrative' : 'a custom'} area`
+      'event_label':
+        `user ran the ${analysisType} analysis against ${
+          type === 'admin' ? 'an administrative' : 'a custom'
+        } area`
     });
     gtag('event', 'analyses type', {
       'event_category': this.state.activeAnalysis === 'region' ? 'Map Select' : 'Map Draw',
-      'event_label': `user ran the analysis via ${ this.state.activeAnalysis === 'region' ? 'selecting a country or region' : 'drawing an area' }`
+      'event_label':
+      `user ran the analysis via ${
+        this.state.activeAnalysis === 'region' ?
+        'selecting a country or region' : 'drawing an area'
+      }`
     });
     return { microservice: microservice, type: analysisType };
   };

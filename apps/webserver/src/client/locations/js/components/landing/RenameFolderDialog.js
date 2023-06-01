@@ -43,7 +43,7 @@ export default class RenameFolderDialog extends Component {
               disabled={confirmDisabled}
               onClick={() => {
                 gtag('event', 'User Renamed Folder on Landing Page', {
-                  ''event_category'': 'Landing Page Click',
+                  'event_category': 'Landing Page Click',
                 });
                 this._renameFolder(folder.id, folderName);
               }}

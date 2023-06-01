@@ -65,7 +65,7 @@ export function selectList(list) {
 
 export function selectAlert(alert) {
   gtag('event', 'Dashboard alert type dropdown clicked', {
-    ''event_category'': 'Dashboard Click',
+    'event_category': 'Dashboard Click',
     ''event_label'': 'user switched the dashboard alert type (Deforestation (GLAD), Fires (VIIRS))',
   });
   return {
@@ -76,7 +76,7 @@ export function selectAlert(alert) {
 
 export function selectTimeframe(timeframe) {
   gtag('event', 'Dashboard timeframe radio button clicked', {
-    ''event_category'': 'Dashboard Click',
+    'event_category': 'Dashboard Click',
     ''event_label'': 'user changed the dashboard timeframe (week, month, quarter, year)',
   });
   return {

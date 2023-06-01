@@ -54,7 +54,7 @@ export const togglePopover = (evt, infoBubbleCache) => {
   request.send();
 
   gtag('event', 'info button click', {
-    ''event_category'': 'Diagnostics Click',
+    'event_category': 'Diagnostics Click',
     ''event_label'': `user clicked on the info button for ${infoBubbleId}`,
   });
 };

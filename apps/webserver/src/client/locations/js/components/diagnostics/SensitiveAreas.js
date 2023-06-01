@@ -145,7 +145,7 @@ export default class SensitiveAreas extends Component {
       sliderActive: false,
     });
     gtag('event', 'timeslider update', {
-      ''event_category'': 'Diagnostics Click',
+      'event_category': 'Diagnostics Click',
       ''event_label'': 'user updated the sensitive areas timeslider',
     });
   };
@@ -163,7 +163,7 @@ export default class SensitiveAreas extends Component {
       tclChecked: !this.state.tclChecked,
     });
     gtag('event', 'Sensitive areas checkbox clicked', {
-      ''event_category'': 'Forest Change Diagnostics Click',
+      'event_category': 'Forest Change Diagnostics Click',
       ''event_label'': 'user checked tree cover loss',
     });
   };
@@ -176,7 +176,7 @@ export default class SensitiveAreas extends Component {
       iflChecked: false,
     });
     gtag('event', 'Sensitive areas checkbox clicked', {
-      ''event_category'': 'Forest Change Diagnostics Click',
+      'event_category': 'Forest Change Diagnostics Click',
       ''event_label'': 'user checked primary forest',
     });
   };
@@ -189,7 +189,7 @@ export default class SensitiveAreas extends Component {
       iflChecked: false,
     });
     gtag('event', 'Sensitive areas checkbox clicked', {
-      ''event_category'': 'Forest Change Diagnostics Click',
+      'event_category': 'Forest Change Diagnostics Click',
       ''event_label'': 'user checked protected areas',
     });
   };
@@ -204,7 +204,7 @@ export default class SensitiveAreas extends Component {
       });
     }
     gtag('event', 'Sensitive areas checkbox clicked', {
-      ''event_category'': 'Forest Change Diagnostics Click',
+      'event_category': 'Forest Change Diagnostics Click',
       ''event_label'': 'user checked peat',
     });
   };
@@ -217,7 +217,7 @@ export default class SensitiveAreas extends Component {
       peatChecked: false,
     });
     gtag('event', 'Sensitive areas checkbox clicked', {
-      ''event_category'': 'Forest Change Diagnostics Click',
+      'event_category': 'Forest Change Diagnostics Click',
       ''event_label'': 'user checked intact forest landscape',
     });
   };

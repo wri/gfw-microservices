@@ -117,7 +117,7 @@ export default class CommodityRiskFilter extends Component {
 
     gtag('event', 'list table filter', {
       'event_category': 'Lists Click',
-      ''event_label'': 'user filtered the lists table',
+      'event_label': 'user filtered the lists table',
     });
   };
 

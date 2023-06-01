@@ -798,7 +798,7 @@ export default class StepThree extends Component {
         });
         gtag('event', 'upload location upload projection error', {
           'event_category': 'Locations File Upload error',
-          ''event_label'': 'user uploaded a shapefile in the wrong projection',
+          'event_label': 'user uploaded a shapefile in the wrong projection',
         });
       }
     });
@@ -1351,12 +1351,12 @@ export default class StepThree extends Component {
     if (evt.target.value === 'all') {
       gtag('event', 'User clicks All locations radio button on validation step', {
         'event_category': 'Upload Locations Click',
-        ''event_label'': 'Validation step 3',
+        'event_label': 'Validation step 3',
       });
     } else if (evt.target.value === 'invalid') {
       gtag('event', 'User clicks Locations with errors on validation step', {
         'event_category': 'Upload Locations Click',
-        ''event_label'': 'Validation step 3',
+        'event_label': 'Validation step 3',
       });
     }
     this.setState({ showValidated: evt.target.value });
@@ -1532,7 +1532,7 @@ export default class StepThree extends Component {
     downloaders.downloadCSV(csvData);
     gtag('event', 'User clicks Download from validation step', {
       'event_category': 'Upload Locations Click',
-      ''event_label'': 'Validation step 3',
+      'event_label': 'Validation step 3',
     });
   };
 

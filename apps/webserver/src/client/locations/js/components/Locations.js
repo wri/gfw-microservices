@@ -279,12 +279,12 @@ class Locations extends Component {
     if (show) {
       gtag('event', 'Back to list view link clicked', {
         'event_category': 'Sharing',
-        ''event_label'': 'user clicked on the back to list view link from the sharing page',
+        'event_label': 'user clicked on the back to list view link from the sharing page',
       });
     } else {
       gtag('event', 'list table share', {
         'event_category': 'Lists Click',
-        ''event_label'': 'user clicked share list',
+        'event_label': 'user clicked share list',
       });
     }
     this.setState({

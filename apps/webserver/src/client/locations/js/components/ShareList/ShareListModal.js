@@ -104,7 +104,7 @@ const ShareListModal = (props) => {
 
     gtag('event', 'Add User button click', {
       'event_category': 'Share List',
-      ''event_label'': `user clicked on the ok button in the modal window to start sharing list with ${selectedUser}`,
+      'event_label': `user clicked on the ok button in the modal window to start sharing list with ${selectedUser}`,
     });
   };
 

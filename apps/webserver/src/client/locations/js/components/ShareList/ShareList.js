@@ -332,7 +332,7 @@ class ShareList extends React.Component {
     addUserToSharedListService(selectedUser, updatedNotAdminsOwner, this);
     gtag('event', 'Add User button click', {
       'event_category': 'Share List',
-      ''event_label'': `user clicked on the ok button in the modal window to start sharing list with ${selectedUser}`,
+      'event_label': `user clicked on the ok button in the modal window to start sharing list with ${selectedUser}`,
     });
   };
 
@@ -357,7 +357,7 @@ class ShareList extends React.Component {
     removeUserFromSharedListService(userToRemove, updateSharedListUsers, updatedNotAdminsOwner, this);
     gtag('event', 'X button click', {
       'event_category': 'Share List',
-      ''event_label'': `user clicked on the ok button in the modal window to stop sharing list with ${userToRemove}`,
+      'event_label': `user clicked on the ok button in the modal window to stop sharing list with ${userToRemove}`,
     });
   };
 
@@ -369,7 +369,7 @@ class ShareList extends React.Component {
     removeAllUsersFromSharedListService(this);
     gtag('event', 'Stop Sharing With All button click', {
       'event_category': 'Share List',
-      ''event_label'': 'user clicked on the ok button in the modal window to stop sharing list with everyone',
+      'event_label': 'user clicked on the ok button in the modal window to stop sharing list with everyone',
     });
   };
 }

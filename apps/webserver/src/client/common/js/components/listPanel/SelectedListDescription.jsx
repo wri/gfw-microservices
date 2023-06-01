@@ -66,7 +66,7 @@ function SelectedListDescription({
     const { dashboard_map_extent } = transitionListData || {};
     gtag('event', 'Map GO TO MAP link clicked', {
       'event_category': 'Map Click',
-      ''event_label'': 'User click on a GO TO MAP link',
+      'event_label': 'User click on a GO TO MAP link',
     });
     if (dashboard_map_extent) {
       goToDashboard();

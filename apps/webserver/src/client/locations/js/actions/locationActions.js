@@ -46,8 +46,8 @@ export function changeAddMethod(data) {
 
 export function changeTemplate(data) {
   gtag('event', 'Upload locations template radio button clicked', {
-    'event_category': 'Upload Locations Select',
-    'event_label': `user selected ${data} template for uploading locations`,
+    event_category: 'Upload Locations Select',
+    event_label: `user selected ${data} template for uploading locations`,
   });
   return { type: CHANGE_TEMPLATE, data };
 }

@@ -344,8 +344,8 @@ export default class Map extends Component {
           });
         }
         gtag('event', 'layer toggle', {
-          'event_category': 'Map Click',
-          'event_label': `user turned the ${nowVisibleLayer} layer on`,
+          event_category: 'Map Click',
+          event_label: `user turned the ${nowVisibleLayer} layer on`,
         });
       });
     } else if (prevState.visibleLayers.length > visibleLayers.length) {
@@ -373,8 +373,8 @@ export default class Map extends Component {
           });
         }
         gtag('event', 'layer toggle', {
-          'event_category': 'Map Click',
-          'event_label': `user turned the ${nowHiddenLayer} layer off`,
+          event_category: 'Map Click',
+          event_label: `user turned the ${nowHiddenLayer} layer off`,
         });
       });
 
@@ -418,8 +418,8 @@ export default class Map extends Component {
             if (nowVisibleLayer) {
               nowVisibleLayer.visible = true;
               gtag('event', 'layer toggle', {
-                'event_category': 'Map Click',
-                'event_label': `user turned the ${nowVisibleLayer.id} layer on`,
+                event_category: 'Map Click',
+                event_label: `user turned the ${nowVisibleLayer.id} layer on`,
               });
             } else {
               nowVisibleLayer = layersToAdd.find((layer) => layer.id === visibleLayer);
@@ -431,8 +431,8 @@ export default class Map extends Component {
                 this.view.map.add(nowVisibleLayer);
                 nowVisibleLayer.visible = true;
                 gtag('event', 'layer toggle', {
-                  'event_category': 'Map Click',
-                  'event_label': `user turned the ${nowVisibleLayer.id} layer on`,
+                  event_category: 'Map Click',
+                  event_label: `user turned the ${nowVisibleLayer.id} layer on`,
                 });
               } else if (visibleLayer === formaAlertsID) {
                 this.getFormaLayer(this.state.mapLayers).then((formaLayer) => {
@@ -467,8 +467,8 @@ export default class Map extends Component {
                   }
                 }
                 gtag('event', 'layer toggle', {
-                  'event_category': 'Map Click',
-                  'event_label': `user turned the ${nowHiddenLayer.id} layer off`,
+                  event_category: 'Map Click',
+                  event_label: `user turned the ${nowHiddenLayer.id} layer off`,
                 });
               }
             });
@@ -1885,14 +1885,14 @@ export default class Map extends Component {
 
     //TODO: Should we combine these two events?
     gtag('event', 'analyses activate', {
-      'event_category': 'Map Click',
-      'event_label': `user ran the ${analysisType} analysis against ${
+      event_category: 'Map Click',
+      event_label: `user ran the ${analysisType} analysis against ${
         type === 'admin' ? 'an administrative' : 'a custom'
       } area`,
     });
     gtag('event', 'analyses type', {
-      'event_category': this.state.activeAnalysis === 'region' ? 'Map Select' : 'Map Draw',
-      'event_label': `user ran the analysis via ${
+      event_category: this.state.activeAnalysis === 'region' ? 'Map Select' : 'Map Draw',
+      event_label: `user ran the analysis via ${
         this.state.activeAnalysis === 'region' ? 'selecting a country or region' : 'drawing an area'
       }`,
     });
@@ -2267,8 +2267,8 @@ export default class Map extends Component {
 
       request.send(`list_ids=${list_ids}`);
       gtag('event', 'locations add', {
-        'event_category': 'Map Load',
-        'event_label': `user added locations from the ${userList.list_name} list`,
+        event_category: 'Map Load',
+        event_label: `user added locations from the ${userList.list_name} list`,
       });
     } else if (i && gfwlist) {
       const id = GFWLists[i - 1];
@@ -2493,8 +2493,8 @@ export default class Map extends Component {
 
     request.send(`list_ids=${list_ids}`);
     gtag('event', 'locations add', {
-      'event_category': 'Map Click',
-      'event_label': `user added locations from the ${listName} list`,
+      event_category: 'Map Click',
+      event_label: `user added locations from the ${listName} list`,
     });
   };
 
@@ -2527,8 +2527,8 @@ export default class Map extends Component {
     this.view.map.add(formaLayer);
     formaLayer.visible = true;
     gtag('event', 'layer toggle', {
-      'event_category': 'Map Click',
-      'event_label': `user turned the ${formaLayer.id} layer on`,
+      event_category: 'Map Click',
+      event_label: `user turned the ${formaLayer.id} layer on`,
     });
     this.setLayerWatching(configLayer, formaLayer);
   };
@@ -2719,8 +2719,8 @@ export default class Map extends Component {
       }
     );
     gtag('event', 'timeslider update', {
-      'event_category': 'Map Click',
-      'event_label': 'user updated the tree cover loss timeslider',
+      event_category: 'Map Click',
+      event_label: 'user updated the tree cover loss timeslider',
     });
   };
 
@@ -2747,8 +2747,8 @@ export default class Map extends Component {
       }
     );
     gtag('event', 'timeslider update', {
-      'event_category': 'Map Click',
-      'event_label': 'user updated the biomass loss timeslider',
+      event_category: 'Map Click',
+      event_label: 'user updated the biomass loss timeslider',
     });
   };
 
@@ -2770,8 +2770,8 @@ export default class Map extends Component {
     });
 
     gtag('event', 'timeslider update', {
-      'event_category': 'Map Click',
-      'event_label': 'user updated the prodes timeslider',
+      event_category: 'Map Click',
+      event_label: 'user updated the prodes timeslider',
     });
   };
 
@@ -2826,8 +2826,8 @@ export default class Map extends Component {
 
     this.forceUpdate();
     gtag('event', 'basemap change', {
-      'event_category': 'Map Click',
-      'event_label': `user turned the ${id} basemap on`,
+      event_category: 'Map Click',
+      event_label: `user turned the ${id} basemap on`,
     });
   };
 
@@ -2835,8 +2835,8 @@ export default class Map extends Component {
     const mapLayer = this.view.map.findLayerById(layerId);
     const previousVisibility = mapLayer.visible;
     gtag('event', 'layer toggle', {
-      'event_category': 'Map Click',
-      'event_label': `user turned the ${layerId} layer ${previousVisibility ? 'off' : 'on'}`,
+      event_category: 'Map Click',
+      event_label: `user turned the ${layerId} layer ${previousVisibility ? 'off' : 'on'}`,
     });
     mapLayer.visible = !mapLayer.visible;
     if (this.customGfwVectorTileLayer && mapLayer.id === this.activeGFWLayer.id) {

@@ -1,4 +1,24 @@
-// Function to sort string alphanumerically
+export const listStatus = {
+  pending: 1,
+  active: 2,
+  inactive: 3,
+  draft: 4,
+  analyzingDiagnostic: 5,
+  analyzingDashboard: 6,
+}
+
+export const getColorByLevelClasse = {
+  0: 'yellow',
+  1: 'orange',
+  2: 'red',
+}
+
+export const sortOrderOption = {
+  sameValue: 0,
+  invert: -1,
+  keep: 1,
+}
+
 export const sortAlphaNum = (a, b) => {
   const reA = /[^a-zA-Z]/g;
   const reN = /[^0-9]/g;
@@ -7,31 +27,63 @@ export const sortAlphaNum = (a, b) => {
   if (aA === bA) {
     const aN = parseInt(a.replace(reN, ''), 10);
     const bN = parseInt(b.replace(reN, ''), 10);
-    return aN === bN ? 0 : aN > bN ? 1 : -1;
+    return aN === bN ? sortOrderOption.sameValue : aN > bN ? sortOrderOption.keep : sortOrderOption.invert;
   }
-  return aA > bA ? 1 : -1;
+  return aA > bA ? sortOrderOption.keep : sortOrderOption.invert;
 };
-// Function to sort string by none
-export const sortByNone = (a, b) => {
-  if (a === null) {
-    return 1;
+
+const isStringNone = (string) => {
+  return string === null || string === 'None';
+}
+
+export const sortByNone = (rowA, rowB) => {
+  if (isStringNone(rowA) && rowA !== rowB) {
+    return sortOrderOption.keep;
   }
-  if (b === null) {
-    return -1;
+  if (isStringNone(rowB) && rowA !== rowB) {
+    return sortOrderOption.invert;
   }
-  if (a === 'None' && a !== b) {
-    return 1;
+  if (rowA < rowB) {
+    return sortOrderOption.invert;
   }
-  if (b === 'None' && a !== b) {
-    return -1;
+  if (rowA > rowB) {
+    return sortOrderOption.keep;
   }
-  if (a < b) {
-    return -1;
+  return sortOrderOption.sameValue;
+};
+
+export const locationIsActive = (location) => {
+  return location.location_status_id === listStatus['active'];
+}
+
+const isOnlyLastLocationsIsActive = (rowA, rowB) => {
+  return !locationIsActive(rowA) && locationIsActive(rowB);
+}
+
+const isOnlyFirstLocationsIsActive = (rowA, rowB) => {
+  return locationIsActive(rowA) && !locationIsActive(rowB);
+}
+
+const isBothLocationsAreActive = (rowA, rowB) => {
+  return locationIsActive(rowA) && locationIsActive(rowB);
+}
+
+const isNeitherLocationsAreActive = (rowA, rowB) => {
+  return !locationIsActive(rowA) && !locationIsActive(rowB);;
+}
+
+export const sortByStatus = (rowA, rowB) => {
+  if (isOnlyLastLocationsIsActive(rowA, rowB)) {
+    return sortOrderOption.invert;
+  } else if (isNeitherLocationsAreActive(rowA, rowB)) {
+    return sortOrderOption.sameValue;
+  } else if (isOnlyFirstLocationsIsActive(rowA, rowB)) {
+    return sortOrderOption.keep;
+  } else if (isBothLocationsAreActive(rowA, rowB)) {
+    return 2;
   }
-  if (a > b) {
-    return 1;
-  }
-  return 0;
+
+  return sortOrderOption.sameValue;
 };
 
 export const checkValid = (value) =>
@@ -69,7 +121,7 @@ export const getDigit = (value, lat) => {
 };
 
 export const getValue = (data) => {
-  return formatDigit(Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0));
+  return formatDigit(Object.values(JSON.parse(data)).reduce((rowA, rowB) => rowA + rowB, 0));
 };
 
 export const getValidatedValue = (data, auditData) => {
@@ -91,16 +143,20 @@ export const getLastYear = (data) => {
   return parseInt(lastValue);
 };
 
-const sortObjectNumbers = (a, b) => {
-  const x = a === '{}' || !a ? 0 : parseFloat(getValue(a).replace(',', ''));
-  const y = b === '{}' || !b ? 0 : parseFloat(getValue(b).replace(',', ''));
+export const normalizeColunmData = (data) => {
+  return Object.values(JSON.parse(data)).reduce((columnA, columnB) => columnA + columnB, 0)
+} 
+
+export const sortObjectNumbers = (rowA, rowB) => {
+  const x = rowA === '{}' || !rowA ? 0 : parseFloat(getValue(rowA).replace(',', ''));
+  const y = rowB === '{}' || !rowB ? 0 : parseFloat(getValue(rowB).replace(',', ''));
 
   return x - y;
 };
 
 export const sortByDate = (a, b) => {
   if (a === '') {
-    return -1;
+    return sortOrderOption.invert;
   }
   const x = new Date(a);
   const y = new Date(b);

@@ -1,24 +1,12 @@
+import { SearchDto } from '../../Shared/application/dtos/search.dto';
+import { QueryCriteria } from '../../Shared/domain/criteria/query';
 import ResultPromise from '../../Shared/domain/result/result.promise';
-import {
-  ConnectionAdminOrganizationDbDto,
-  ConnectionAdminOrganizationDto,
-} from '../application/dtos/connection-admin-organizations.dto';
-import { ConnectionDbDto } from '../application/dtos/connection-db.dto';
-import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto';
-import { ConnectionChangeDto } from '../application/dtos/connection-status.dto';
-import { Connection } from '../../Connection/domain/connection';
-import { ConnectionInvitation } from './connection';
+import { SearchResult } from '../../Shared/domain/types';
+import { ConnectionRequest } from './connection.entity';
 
-export abstract class ConnectionRepository {
-  abstract updateStatusConnection(
-    changeStatusDto: ConnectionChangeDto,
-  ): ResultPromise<Number>;
-  abstract getUserAdminOrganization(
-    email: string,
-  ): ResultPromise<ConnectionAdminOrganizationDto[]>;
-  abstract getConnections(
-    filtersDto: ConnectionFiltersDto,
-  ): ResultPromise<Connection[]>;
-  abstract resendConnection(id: number): ResultPromise<void>;
-  abstract createConnection(connectionInvitation: ConnectionInvitation): ResultPromise<Number>;
+export abstract class ConnectionRequestRepository {
+  abstract search(
+    query: QueryCriteria,
+    organizationId: string
+  ): ResultPromise<SearchResult<ConnectionRequest> | undefined>;
 }

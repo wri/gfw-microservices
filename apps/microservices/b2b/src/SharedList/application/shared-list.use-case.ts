@@ -11,12 +11,11 @@ import { UserUseCases } from '../../User/application/user.use-case';
 import Result from '../../Shared/domain/result';
 import ResultError from '../../Shared/domain/result/result.error';
 import { OrganizationUseCases } from '../../Organization/application/organization.use-case';
+import { ERRORS } from '../../Shared/domain/constants';
 
 @Injectable()
 export class SharedListUseCases {
-  constructor(
-    private readonly sharedListRepository: SharedListRepository, //private readonly sharedListRepository: SharedListRepository,
-  ) {}
+  constructor(private readonly sharedListRepository: SharedListRepository) {}
 
   @Inject(ConnectionUseCases)
   private readonly connectionUseCases: ConnectionUseCases;
@@ -54,8 +53,7 @@ export class SharedListUseCases {
     );
     const connectionId = connections[0] && connections[0].id;
 
-    if (!connectionId)
-      Result.fail(new ResultError('Has no connection with this company', 404));
+    if (!connectionId) Result.fail(ERRORS.HAS_NOT_CONNECTIONS_WITH_COMPANY);
 
     const orgRes = await this.organizationUseCases.findById(orgId);
 
@@ -68,7 +66,8 @@ export class SharedListUseCases {
       organization.organizationDb,
     );
 
-    if(checkRes.isFailure || checkRes.getValue()) return Result.fail(checkRes.getError())
+    if (checkRes.isFailure || !checkRes.getValue())
+      return Result.fail(checkRes.getError());
 
     const sharedList = new SharedList();
     sharedList.idConnectionRequest = connectionId;
@@ -80,7 +79,9 @@ export class SharedListUseCases {
     return await this.sharedListRepository.create(sharedList);
   }
 
-  private validatePromise = (promise) => {
+  private validatePromise = <T>(
+    promise: PromiseSettledResult<Result<T[], ResultError>>,
+  ) => {
     if (promise.status == 'fulfilled' && promise.value.isSuccess) {
       return promise.value.getValue();
     }

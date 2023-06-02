@@ -1,4 +1,4 @@
-import { RepositoryMysql } from '../../Shared/infraestructure/mysql/repository.mysql';
+import { RepositoryMssqlSP } from '../../Shared/infraestructure/mysql/repository.mysql';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import Result from '../../Shared/domain/result';
 import ResultError from '../../Shared/domain/result/result.error';
@@ -8,7 +8,7 @@ import { UserMapper } from '../application/user.mapper';
 import { ConnectionAdminOrganizationDbDto } from '../../Connection/application/dtos/connection-admin-organizations.dto';
 
 export class UserRepositoryMysql
-  extends RepositoryMysql
+  extends RepositoryMssqlSP
   implements UserRepository
 {
   private mapper: UserMapper;

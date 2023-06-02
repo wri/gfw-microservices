@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SharedModule } from '@wri-monorepos/shared';
 import { DatabaseModule } from '../Database/database.module';
 import { DataServicesModule } from '../Shared/application/data-service/data-service.module';
+import { MapperQueryTypeORM } from '../Shared/infraestructure/typeorm/query.mapper';
 import { OrganizationUseCases } from './application/organization.use-case';
 import { Organization } from './domain/organization.entity';
 import { OrganizationRepository } from './domain/organization.repository';
@@ -10,11 +12,13 @@ import { OrganizationRepositoryMssql } from './infrastructure/organization.repos
 @Module({
   imports: [
     DatabaseModule,
+    SharedModule,
     DataServicesModule,
     TypeOrmModule.forFeature([Organization]),
   ],
   providers: [
     OrganizationUseCases,
+    MapperQueryTypeORM,
     { provide: OrganizationRepository, useClass: OrganizationRepositoryMssql },
   ],
   exports: [OrganizationUseCases],

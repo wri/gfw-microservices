@@ -1,8 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOperator,
+  FindOptions,
+  FindOptionsOrder,
+  FindOptionsWhere,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
+import { ConnectionRequest } from '../../../Connection/domain/connection.entity';
 import { DatabaseProvider } from '../../../Database/database.provider';
+import { ERRORS } from '../../domain/constants';
+import { QueryCriteria } from '../../domain/criteria/query';
 import Result from '../../domain/result';
 import ResultPromise from '../../domain/result/result.promise';
+import { SearchResult } from '../../domain/types';
+import { MapperQueryTypeORM } from './query.mapper';
 
 @Injectable()
 export abstract class MultiConnectRepository<T> {
@@ -10,6 +23,9 @@ export abstract class MultiConnectRepository<T> {
 
   @Inject(DatabaseProvider)
   private readonly databaseProvider: DatabaseProvider;
+
+  @Inject(MapperQueryTypeORM)
+  private readonly convertQuery: MapperQueryTypeORM;
 
   constructor(repository: Repository<T>) {
     this.repository = repository;
@@ -25,6 +41,36 @@ export abstract class MultiConnectRepository<T> {
       );
     }
     return Result.fail(connect.getError());
+  }
+
+  protected async searchByCriteria(
+    query: QueryCriteria,
+    options?: { findOptions?: FindManyOptions<T>; repository?: Repository<T> },
+  ): ResultPromise<SearchResult<T>> {
+    const repository = (options && options.repository) || this.repository;
+    const findOptions = (options && options.findOptions) || {};
+
+    const typeormQuery = this.convertQuery.convert(query);
+
+    const sequelizeQuery: FindManyOptions = {
+      ...typeormQuery,
+      ...findOptions,
+    };
+
+    console.log(sequelizeQuery);
+
+    const promises = await Promise.allSettled([
+      repository.find(sequelizeQuery),
+      repository.count(sequelizeQuery),
+    ]);
+
+    const verifyPromise = (promise) =>
+      promise.status === 'fulfilled' ? promise.value : null;
+
+    const items = verifyPromise(promises[0]);
+    const count = verifyPromise(promises[1]);
+    if (items && count != null) return Result.ok({ count, items });
+    return Result.fail(ERRORS.NOT_ELEMENTS_FOUND);
   }
 
   public async getConnection(databaseName: string): Promise<Repository<T>> {

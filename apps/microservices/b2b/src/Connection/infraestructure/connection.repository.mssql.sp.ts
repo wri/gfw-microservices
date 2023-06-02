@@ -1,7 +1,7 @@
-import { ConnectionRepository } from '../domain/connection.repository';
+import { ConnectionRepositorySP } from '../domain/connection.repository.sp';
 import { Connection, ConnectionInvitation } from '../domain/connection';
-import { RepositoryMysql } from '../../Shared/infraestructure/mysql/repository.mysql';
-import { ConnectionDataMapper } from '../../Connection/application/connection.mapper';
+import { RepositoryMssqlSP } from '../../Shared/infraestructure/mysql/repository.mysql';
+import { ConnectionDataMapper } from '../application/connection.mapper';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto';
 import { ConnectionDbDto } from '../application/dtos/connection-db.dto';
@@ -11,12 +11,12 @@ import { Injectable } from '@nestjs/common';
 import {
   ConnectionAdminOrganizationDbDto,
   ConnectionAdminOrganizationDto,
-} from '../../Connection/application/dtos/connection-admin-organizations.dto';
+} from '../application/dtos/connection-admin-organizations.dto';
 
 @Injectable()
-export class ConnectionRepositoryMysql
-  extends RepositoryMysql
-  implements ConnectionRepository
+export class ConnectionRepositoryMssqlSP
+  extends RepositoryMssqlSP
+  implements ConnectionRepositorySP
 {
   constructor(private mapper: ConnectionDataMapper) {
     super();

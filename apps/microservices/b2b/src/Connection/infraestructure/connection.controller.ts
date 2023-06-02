@@ -12,10 +12,17 @@ import { CreateConnectionDto } from '../application/dtos/connection.dto';
 import { ConnectionUseCases } from '../application/connection.use-case';
 import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto';
 import { IdNumericDto } from '../../Shared/application/dtos/id-numeric.dto';
-import { ConnectionUpdateStatusHttpDto  } from '../application/dtos/connection-status.dto';
+import { ConnectionUpdateStatusHttpDto } from '../application/dtos/connection-status.dto';
 import { IdStringDto } from '../../Shared/application/dtos/id-string.dto';
+import { SearchDto } from '../../Shared/application/dtos/search.dto';
+import {
+  FilterType,
+  OrderType,
+  QueryCriteria,
+} from '../../Shared/domain/criteria/query';
+import result from '../../Shared/domain/result';
 
-@Controller('api/connection')
+@Controller('api/organizations/:orgId/connections')
 export class ConnectionController {
   constructor(private connectionUseCases: ConnectionUseCases) {}
 
@@ -71,6 +78,25 @@ export class ConnectionController {
     throw new HttpException(error.message, error.code);
   }
 
+  @Get('search')
+  async search(@Query() searchDto: SearchDto, @Param('orgId') orgId: string) {
+    const { filters, orders, limit, offset } = searchDto;
+
+    const query = new QueryCriteria(
+      filters as Array<FilterType>,
+      orders as Array<OrderType>,
+      limit ? Number(limit) : undefined,
+      offset ? Number(offset) : undefined,
+    );
+
+    const result = await this.connectionUseCases.search(query, orgId);
+
+    if (result.isSuccess) return result.getValue();
+    const error = result.getError();
+    throw new HttpException(error.message, error.code);
+  }
+
+  //TODO: Move this to user module
   @Get('user/:id')
   async getUserOrganizations(@Param() { id }: IdStringDto) {
     const result = await this.connectionUseCases.getOrganizationsByUser(id);

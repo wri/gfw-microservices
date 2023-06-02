@@ -17,6 +17,8 @@ import { OrganizationModule } from './Organization/organization.module';
 import { OrganizationController } from './Organization/infrastructure/organization.controller';
 import { SharedListController } from './SharedList/infrastructure/shared-list.controller';
 import { SharedListModule } from './SharedList/shared-list.module';
+import { SharedModule } from './Shared/shared.module';
+import { MapperQueryTypeORM } from './Shared/infraestructure/typeorm/query.mapper';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { SharedListModule } from './SharedList/shared-list.module';
     SharedListModule,
     LogsModule,
     ListModule,
+    SharedModule,
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useFactory: () => {
@@ -50,7 +53,7 @@ import { SharedListModule } from './SharedList/shared-list.module';
     ConnectionController,
     ListController,
     OrganizationController,
-    SharedListController
+    SharedListController,
   ],
   providers: [AppService],
 })

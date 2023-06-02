@@ -2,7 +2,7 @@ import { SQLUtils } from '../../../../../../../libs/sql/src';
 import { SqlConfig } from './config';
 import { StoredProcedureCommandFactory } from './store-procedure.comand.factory';
 
-export abstract class RepositoryMysql {
+export abstract class RepositoryMssqlSP {
   private readonly connection: SQLUtils;
   protected readonly storeProcedureFactory: StoredProcedureCommandFactory;
 

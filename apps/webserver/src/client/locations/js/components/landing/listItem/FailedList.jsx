@@ -1,0 +1,144 @@
+import React, { useState } from 'react';
+import PublicIcon from '@mui/icons-material/Public';
+import GroupsIcon from '@mui/icons-material/Groups';
+import Divider from 'material-ui/Divider';
+import Dialog from 'material-ui/Dialog';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
+import Popover from 'material-ui/Popover';
+import DownloadLargeListFile from '../DownloadLargeListFile';
+import IconUsers from '../../../../../common/js/components/icon/IconUsers';
+import IconButton from '../../../../../common/js/components/IconButton';
+import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
+import Button from '../../../../../common/js/components/Button';
+import sharedColumnText from './sharedColumnText';
+import FailedTooltip from '../../../../../common/js/components/CustomTooltip/FailedTooltip';
+import { locationsPage, nav } from '../../../../../common/js/config';
+// TODO difference between isAListSharedWithMe, isShared, showSharedColumn
+// difference between showRerun and showRerunOpt
+function FailedList({
+  listName,
+  isAListSharedWithMe,
+  isShared,
+  showSharedColumn,
+  hasLockStatus,
+  showRerun,
+  isLargeList,
+  handleRerunDialogState,
+  isInFolder,
+  showDelete,
+  setManageListFolderOpen,
+  setDeleteDialogOpen,
+}) {
+  const [openDownloadLargeListFileDialog, setOpenDownloadLargeListFileDialog] = useState(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  return (
+    <>
+      <li className="locations-list locations-list--failed">
+        <div className="locations-list__title">
+          {isAListSharedWithMe && <PublicIcon />}
+          {listName}
+          {isShared && <IconUsers className="locations-list__shared-icon" />}
+        </div>
+        {showSharedColumn && (
+          <div className="locations-list__shared">
+            <GroupsIcon />
+            {sharedColumnText()}
+          </div>
+        )}
+        <div className="locations-list__controls">
+          {showRerun && !hasLockStatus && (
+            <Button
+              className="locations-list__update-button"
+              onClick={handleRerunDialogState}
+              label={locationsPage.lists.update}
+              size="small"
+              variant="secondary"
+            />
+          )}
+
+          {!hasLockStatus && (
+            <span className="locations-list__failed">
+              <FailedTooltip
+                placement="top"
+                label={locationsPage.lists.failed}
+                tooltipMessage={`This list has failed analysis. To receive results, resubmit this list for analysis. ${
+                  isLargeList ? 'Click to download the file and fix errors.' : ''
+                }`}
+                onClickAction={
+                  isLargeList
+                    ? () => {
+                        setOpenDownloadLargeListFileDialog(true);
+                      }
+                    : undefined
+                }
+              />
+            </span>
+          )}
+        </div>
+
+        <div className="locations-list__menu-container">
+          <IconButton
+            icon={<IconMenuDots />}
+            title={nav.more}
+            size="medium"
+            variant="menu"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setMenuAnchorEl(e.currentTarget);
+              setIsMenuOpen(!isMenuOpen);
+            }}
+          />
+          <Popover
+            anchorEl={menuAnchorEl}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            open={isMenuOpen}
+            onRequestClose={() => setIsMenuOpen(false)}
+            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            <Menu className="context-menu">
+              <MenuItem
+                primaryText={
+                  isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
+                }
+                onClick={() => {
+                  setManageListFolderOpen();
+                  setIsMenuOpen(false);
+                }}
+              />
+              {showDelete && (
+                <>
+                  <Divider />
+                  <MenuItem
+                    primaryText={locationsPage.lists.delete}
+                    className="MenuItem--danger"
+                    onClick={() => {
+                      setDeleteDialogOpen();
+                      setIsMenuOpen(false);
+                    }}
+                  />
+                </>
+              )}
+            </Menu>
+          </Popover>
+        </div>
+      </li>
+
+      <Dialog
+        modal
+        open={openDownloadLargeListFileDialog}
+        autoDetectWindowHeight={false}
+        autoScrollBodyContent={false}
+        contentStyle={{ width: '80%', maxWidth: 'none' }}
+        children={
+          <DownloadLargeListFile onCancel={() => setOpenDownloadLargeListFileDialog(false)} />
+        }
+      />
+    </>
+  );
+}
+
+export default FailedList;

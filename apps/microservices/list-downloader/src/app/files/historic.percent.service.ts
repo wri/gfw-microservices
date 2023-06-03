@@ -16,11 +16,7 @@ import { generateCSV } from '../shared/generate.csv';
 export class HistoricPercentService extends DashboardHandleDownload {
   start(filters: GenerationFileRequest) {
     if (this.isHistoricPercentFile(filters)) {
-      super.start(
-        filters,
-        'historicPercent',
-        'sensitive_areas_percentage_historic_area_lost'
-      );
+      super.start(filters, 'historicPercent', 'sensitive_areas_percentage_historic_area_lost');
     }
   }
 
@@ -39,17 +35,10 @@ export class HistoricPercentService extends DashboardHandleDownload {
 
       key.numerators.forEach((field) => {
         const currentRow = cloneRow(dataRow);
-        const tclOnAttribute = parseListData(field.tclAttribute, [
-          listLevelAnalysis,
-        ]);
-        const attributeExtent = parseListTotals(
-          field.extentAttribute,
-          listLevelAnalysis
-        );
+        const tclOnAttribute = parseListData(field.tclAttribute, [listLevelAnalysis]);
+        const attributeExtent = parseListTotals(field.extentAttribute, listLevelAnalysis);
 
-        const percent = formatPct(
-          validatePct((tclOnAttribute / attributeExtent) * 100)
-        );
+        const percent = formatPct(validatePct((tclOnAttribute / attributeExtent) * 100));
 
         if (field.label) {
           currentRow.push(field.label);
@@ -82,9 +71,6 @@ export class HistoricPercentService extends DashboardHandleDownload {
 
   isHistoricPercentFile(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    return (
-      listView === 'forest_change' &&
-      (type === 'historicPercent' || type === 'everything')
-    );
+    return listView === 'forest_change' && (type === 'historicPercent' || type === 'everything');
   }
 }

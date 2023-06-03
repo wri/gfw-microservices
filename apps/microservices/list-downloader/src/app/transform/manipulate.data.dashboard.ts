@@ -8,10 +8,7 @@ import { totalParser } from '../parser/total.parser';
 import { yearlyParser } from '../parser/yearly.parser';
 
 class ManipulateDataForDashboard extends Transform {
-  constructor(
-    private templateOperations: TemplateOperation,
-    private listLevelAnalysis
-  ) {
+  constructor(private templateOperations: TemplateOperation, private listLevelAnalysis) {
     super({ objectMode: true });
   }
 

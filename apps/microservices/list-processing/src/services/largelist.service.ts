@@ -23,12 +23,9 @@ export class LargeListService {
   async startAnalisysProcessForList(
     request: RequestLargeListProcess
   ): Promise<ResponseLargeListProcess> {
-    const largeListProcesingEndPoint = this.config.get<string>(
-      'LARGE_LIST_PROCESING_ENDPOINT'
-    );
+    const largeListProcesingEndPoint = this.config.get<string>('LARGE_LIST_PROCESING_ENDPOINT');
 
-    const microserviceEnvironment =
-      this.config.get<string>('MICROSERVICES_ENV');
+    const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
 
     const payloadBody = { ...request, environment: microserviceEnvironment };
 
@@ -143,8 +140,10 @@ export class LargeListService {
       const command = this.dataSource.createQueryRunner();
       await command.connect();
 
-      const queryCreateTableResult: QueryCreateTableResult[] =
-        await command.query('uspGetTableQueryString @0', [template_id]);
+      const queryCreateTableResult: QueryCreateTableResult[] = await command.query(
+        'uspGetTableQueryString @0',
+        [template_id]
+      );
 
       await connection.executeQuery('uspCreateListTable', [
         {

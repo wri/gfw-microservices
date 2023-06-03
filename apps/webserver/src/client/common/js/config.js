@@ -2672,11 +2672,14 @@ export const locationsPage = {
   },
   columns: {
     notAnalyzedList: {
-      owner: 'This location has not been analyzed. To view location details and diagnostics for this list, please click the submit button at the top of the screen.',
-      nonOwner: 'This location has not been analyzed. The list owner will need to submit the list for analysis. Once submitted, this list will not be accessible until analysis is complete.',
+      owner:
+        'This location has not been analyzed. To view location details and diagnostics for this list, please click the submit button at the top of the screen.',
+      nonOwner:
+        'This location has not been analyzed. The list owner will need to submit the list for analysis. Once submitted, this list will not be accessible until analysis is complete.',
     },
-    tooltipMessage: 'This location has failed analysis. To receive results, resubmit this list for analysis.'
-  }
+    tooltipMessage:
+      'This location has failed analysis. To receive results, resubmit this list for analysis.',
+  },
 };
 
 export const folderDetailPage = {

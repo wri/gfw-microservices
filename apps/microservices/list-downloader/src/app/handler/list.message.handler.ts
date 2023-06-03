@@ -52,14 +52,9 @@ export class ListMessageHandler {
       return value ? JSON.parse(value) : {};
     };
 
-    const {
-      analysisArea,
-      file,
-      geoInfo,
-      list,
-      organizationDatabase,
-      userEmail,
-    } = JSON.parse(message.Body);
+    const { analysisArea, file, geoInfo, list, organizationDatabase, userEmail } = JSON.parse(
+      message.Body
+    );
 
     return {
       organizationDatabase: getValues(organizationDatabase),

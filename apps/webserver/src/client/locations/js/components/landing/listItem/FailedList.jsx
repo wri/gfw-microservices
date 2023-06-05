@@ -17,15 +17,12 @@ import { locationsPage, nav } from '../../../../../common/js/config';
 // TODO difference between isAListSharedWithMe, isShared, showSharedColumn
 // difference between showRerun and showRerunOpt
 function FailedList({
-  listName,
+  list,
   isAListSharedWithMe,
-  isShared,
   showSharedColumn,
   hasLockStatus,
   showRerun,
-  isLargeList,
   handleRerunDialogState,
-  isInFolder,
   showDelete,
   setManageListFolderOpen,
   setDeleteDialogOpen,
@@ -33,14 +30,16 @@ function FailedList({
   const [openDownloadLargeListFileDialog, setOpenDownloadLargeListFileDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const { list_name, large_list_id, folder, is_shared } = list;
+  const isLargeList = !!large_list_id;
+  const isInFolder = !!folder;
   return (
     <>
       <li className="locations-list locations-list--failed">
         <div className="locations-list__title">
           {isAListSharedWithMe && <PublicIcon />}
-          {listName}
-          {isShared && <IconUsers className="locations-list__shared-icon" />}
+          {list_name}
+          {is_shared && <IconUsers className="locations-list__shared-icon" />}
         </div>
         {showSharedColumn && (
           <div className="locations-list__shared">

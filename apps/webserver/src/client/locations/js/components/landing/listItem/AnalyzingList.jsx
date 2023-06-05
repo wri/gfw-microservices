@@ -9,7 +9,9 @@ import sharedColumnText from './sharedColumnText';
 import { locationsPage } from '../../../../../common/js/config';
 
 // returns 'anaylizing' (also called 'pending') list items
-function AnalyzingList({ listName, isAListSharedWithMe, isShared, showSharedColumn }) {
+function AnalyzingList({ list, isAListSharedWithMe, isShared, showSharedColumn }) {
+  const { list_name, is_shared } = list;
+
   return (
     <li
       className="locations-list locations-list--inactive"
@@ -17,8 +19,8 @@ function AnalyzingList({ listName, isAListSharedWithMe, isShared, showSharedColu
     >
       <div className="locations-list__title">
         {isAListSharedWithMe && <PublicIcon />}
-        {listName}
-        {isShared && <IconUsers className="locations-list__shared-icon" />}
+        {list_name}
+        {is_shared && <IconUsers className="locations-list__shared-icon" />}
       </div>
       {showSharedColumn && (
         <div className="locations-list__shared">

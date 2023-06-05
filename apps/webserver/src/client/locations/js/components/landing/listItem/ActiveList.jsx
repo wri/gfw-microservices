@@ -1,0 +1,234 @@
+import React, { useState } from 'react';
+import Popover from 'material-ui/Popover';
+import PublicIcon from '@mui/icons-material/Public';
+import GroupsIcon from '@mui/icons-material/Groups';
+import Divider from 'material-ui/Divider';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
+import Button from '../../../../../common/js/components/Button';
+import IconUsers from '../../../../../common/js/components/icon/IconUsers';
+import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
+import IconButton from '../../../../../common/js/components/IconButton';
+import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
+import sharedColumnText from './sharedColumnText';
+import redirectToPage from '../../../../../common/js/utils/redirect';
+import LandingDownload from '../../lists/download/LandingDownload';
+import { viewDiagnostic } from '../../lists/viewDiagnostic';
+import { numberWithCommas } from '../../../utils/locationsTableUtils';
+import { locationsPage, nav, treeCoverLossID } from '../../../../../common/js/config';
+
+function ActiveList({
+  list,
+  locations,
+  showListSharedWithMeIcon,
+  showSharedColumn,
+  showDelete,
+  showRerun,
+  showRerunOpt,
+  hasLockStatus,
+  showMapOpt,
+  showDownloadOpt,
+  setManageListFolderOpen,
+  showConfirmDownloadDialog,
+  shareList,
+  setDeleteDialogOpen,
+  userIsAdmin,
+  handleRerunDialogState,
+  history,
+}) {
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoadingDiagnostic, setIsLoadingDiagnostic] = useState(false);
+
+  const {
+    list_name,
+    id,
+    is_shared,
+    folder,
+    list_locations_count,
+    error_file_storage_path,
+    large_list_id,
+  } = list;
+  const isLargeList = !!large_list_id;
+  const hasErrorFile = !!error_file_storage_path;
+  const showDiagnosticOpt = !is_shared && locations > 0;
+  const isEmptyList = locations === 0;
+
+  const clickLocationRow = () => {
+    if (hasLockStatus || isEmptyList) {
+      return;
+    }
+    // clicked a location with a successfully completed analysis; go to it
+    gtag('event', 'List click', {
+      event_category: 'Landing',
+      event_label: `user clicked on list ${list_name}`,
+    });
+
+    window.location = `/locations?id=${id}${is_shared ? '&shared=true' : ''}`;
+  };
+
+  const viewMap = () => {
+    if (folder) {
+      // if the user clicked on the map option from a folder
+      gtag('event', 'Folder Click', {
+        event_category: 'Landing Page Click',
+        event_label: 'User goes to map for list from folder view',
+      });
+    } else {
+      gtag('event', 'List item map click', {
+        event_category: 'Landing',
+        event_label: `user clicked to go to the map for list ${list_name}`,
+      });
+    }
+
+    const sendData = {
+      l: [treeCoverLossID],
+      i: id,
+      name: list_name,
+      gfwListName: false,
+      filterCount: 0,
+      listView: '',
+      numLocations: list_locations_count,
+      canopyDensity: '',
+      filteredLists: '',
+      g: false,
+      path: 'lists',
+      showFullListMap: true,
+      totalNumberOfLocationsInList: list_locations_count,
+    };
+
+    redirectToPage('/map', sendData);
+  };
+
+  return (
+    <li
+      className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
+      onClick={clickLocationRow}
+    >
+      <div className="locations-list__title">
+        {showListSharedWithMeIcon && <PublicIcon />}
+        {list_name}
+        {is_shared && <IconUsers className="locations-list__shared-icon" />}
+      </div>
+
+      {showSharedColumn && (
+        <div className="locations-list__shared">
+          <GroupsIcon />
+          {sharedColumnText()}
+        </div>
+      )}
+
+      <div className="locations-list__controls">
+        {showRerun && !hasLockStatus && (
+          <Button
+            className="locations-list__update-button"
+            onClick={handleRerunDialogState}
+            label={locationsPage.lists.update}
+            size="small"
+            variant="secondary"
+          />
+        )}
+
+        {!hasLockStatus && (
+          <span className="locations-list__count">
+            {numberWithCommas(locations || 0)} {locationsPage.lists.locations.toLowerCase()}
+          </span>
+        )}
+
+        {hasLockStatus && (
+          <span className="locations-list__analyzing">
+            <InlineLoader />
+            Working...
+          </span>
+        )}
+      </div>
+
+      <div className="locations-list__menu-container">
+        <IconButton
+          icon={<IconMenuDots />}
+          title={nav.more}
+          size="medium"
+          variant="menu"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setMenuAnchorEl(e.currentTarget);
+            setIsMenuOpen(!isMenuOpen);
+          }}
+        />
+        <Popover
+          anchorEl={menuAnchorEl}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          open={isMenuOpen}
+          onRequestClose={() => setIsMenuOpen(false)}
+          targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
+          <Menu className="context-menu">
+            {showDiagnosticOpt && (
+              <MenuItem
+                primaryText={locationsPage.lists.diagnostic}
+                leftIcon={isLoadingDiagnostic ? <InlineLoader /> : null}
+                onClick={() => {
+                  setIsLoadingDiagnostic(true);
+                  viewDiagnostic(list, history);
+                }}
+              />
+            )}
+            {showMapOpt && <MenuItem primaryText={locationsPage.lists.map} onClick={viewMap} />}
+            {showDownloadOpt && (
+              <LandingDownload
+                locations={locations || 0}
+                listID={id}
+                isLargeList={isLargeList}
+                hasErrorFile={hasErrorFile}
+                downloadRequestedFromFolder={!!folder}
+                closeMenu={() => setIsMenuOpen(false)}
+                setConfirmDialog={() => showConfirmDownloadDialog()}
+                error_file_storage_path={error_file_storage_path}
+              />
+            )}
+            {userIsAdmin && (
+              <MenuItem
+                primaryText={locationsPage.lists.share}
+                onClick={(e) => shareList(e, list)}
+              />
+            )}
+            {showRerunOpt && (
+              <MenuItem
+                primaryText={locationsPage.lists.update}
+                onClick={(e) => {
+                  setIsMenuOpen(false);
+                  handleRerunDialogState(e);
+                }}
+              />
+            )}
+
+            <Divider />
+            <MenuItem
+              primaryText={!!folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
+              onClick={() => {
+                setManageListFolderOpen();
+                setIsMenuOpen(false);
+              }}
+            />
+            {showDelete && (
+              <>
+                <Divider />
+                <MenuItem
+                  primaryText={locationsPage.lists.delete}
+                  className="MenuItem--danger"
+                  onClick={() => {
+                    setDeleteDialogOpen();
+                    setIsMenuOpen(false);
+                  }}
+                />
+              </>
+            )}
+          </Menu>
+        </Popover>
+      </div>
+    </li>
+  );
+}
+
+export default ActiveList;

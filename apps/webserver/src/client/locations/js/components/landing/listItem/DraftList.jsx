@@ -26,8 +26,6 @@ import {
 function DraftList({
   list,
   locations,
-  isLargeList,
-  isEmptyList,
   showListSharedWithMeIcon,
   showNonOwnerDraft,
   showDelete,
@@ -39,15 +37,25 @@ function DraftList({
   showConfirmDownloadDialog,
   shareList,
   setDeleteDialogOpen,
-  isInFolder,
-  hasErrorFile,
   userIsAdmin,
 }) {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
-  const { list_name, id, is_shared, folder, list_locations_count, error_file_storage_path } = list;
+  const {
+    list_name,
+    id,
+    is_shared,
+    folder,
+    list_locations_count,
+    error_file_storage_path,
+    large_list_id,
+  } = list;
+  const isLargeList = !!large_list_id;
+  const hasErrorFile = !!error_file_storage_path;
+  const isInFolder = !!folder;
+  const isEmptyList = locations === 0;
 
   const clickLocationRow = () => {
     if (hasLockStatus || isEmptyList) {
@@ -172,7 +180,7 @@ function DraftList({
                 listID={id}
                 isLargeList={isLargeList}
                 hasErrorFile={hasErrorFile}
-                downloadRequestedFromFolder={!!folder}
+                downloadRequestedFromFolder={isInFolder}
                 closeMenu={() => setIsMenuOpen(false)}
                 setConfirmDialog={() => showConfirmDownloadDialog()}
                 error_file_storage_path={error_file_storage_path}

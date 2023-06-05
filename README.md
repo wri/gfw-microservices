@@ -19,6 +19,7 @@ npm install --legacy-peer-deps
 ```
 
 ---
+
 **NOTE**
 
 we use Husky to automatically run format, lint and test , but to install it you must run `npm install --legacy-peer-deps` at least once. Thus, lint-staged will see what is being changed and run the steps on top of them.
@@ -80,7 +81,8 @@ LISTS_MICROSERVICE_URL=http://host.docker.internal:3333/api
 > recommend that you connect to the special DNS name `host.docker.internal` which resolves to the internal IP address used by the host
 
 ### Webserver
-> This project contains our front-end and back-end 
+
+> This project contains our front-end and back-end
 
 #### Docker Command to Build/Run
 

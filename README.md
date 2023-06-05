@@ -82,21 +82,10 @@ LISTS_MICROSERVICE_URL=http://host.docker.internal:3333/api
 ### Webserver
 > This project contains our front-end and back-end 
 
-##### Windows Environment Settings
-
-```
-1. Enabled HYPER V
-2. Disabled WSL2
-3. Enable File Sharing
-4. Get dev.secrets file
-5. git update (https://forums.docker.com/t/file-not-found-error-resolved/53302):
-git config --global core.autocrlf false
-```
-
 #### Docker Command to Build/Run
 
 ```sh
-docker compose -f "./apps/webserver/docker-compose.yml" up
+docker compose -f "./apps/webserver/docker-compose.yml" up --build
 ```
 
 ### Test

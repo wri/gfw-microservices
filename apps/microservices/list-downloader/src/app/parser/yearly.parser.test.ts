@@ -48,34 +48,10 @@ describe('Yearly Parser.', () => {
       csvData,
     });
     expect(csvData.length).toEqual(4);
-    expect(csvData[0]).toEqual([
-      'Tree Cover Loss',
-      12114.5364,
-      '2018',
-      40736.9613,
-      '29.74',
-    ]);
-    expect(csvData[1]).toEqual([
-      'Tree Cover Loss',
-      10570.2785,
-      '2019',
-      40736.9613,
-      '25.95',
-    ]);
-    expect(csvData[2]).toEqual([
-      'Tree Cover Loss',
-      8481.1971,
-      '2020',
-      40736.9613,
-      '20.82',
-    ]);
-    expect(csvData[3]).toEqual([
-      'Tree Cover Loss',
-      9570.9493,
-      '2021',
-      40736.9613,
-      '23.49',
-    ]);
+    expect(csvData[0]).toEqual(['Tree Cover Loss', 12114.5364, '2018', 40736.9613, '29.74']);
+    expect(csvData[1]).toEqual(['Tree Cover Loss', 10570.2785, '2019', 40736.9613, '25.95']);
+    expect(csvData[2]).toEqual(['Tree Cover Loss', 8481.1971, '2020', 40736.9613, '20.82']);
+    expect(csvData[3]).toEqual(['Tree Cover Loss', 9570.9493, '2021', 40736.9613, '23.49']);
   });
 
   test('Totalize a field that is an array of numbers.', () => {
@@ -97,41 +73,16 @@ describe('Yearly Parser.', () => {
       data: {
         tree_cover_loss_total_yearly:
           '{"2018":12114.5364,"2019":10570.2785,"2020":8481.1971,"2021":9570.9493}',
-        tree_cover_loss_total_yearly_total:
-          '[12114.5364, 10570.2785, 8481.1971, 9570.9493]',
+        tree_cover_loss_total_yearly_total: '[12114.5364, 10570.2785, 8481.1971, 9570.9493]',
       },
       dataRow,
       csvData,
     });
     expect(csvData.length).toEqual(4);
-    expect(csvData[0]).toEqual([
-      'Tree Cover Loss',
-      12114.5364,
-      '2018',
-      40736.9613,
-      '29.74',
-    ]);
-    expect(csvData[1]).toEqual([
-      'Tree Cover Loss',
-      10570.2785,
-      '2019',
-      40736.9613,
-      '25.95',
-    ]);
-    expect(csvData[2]).toEqual([
-      'Tree Cover Loss',
-      8481.1971,
-      '2020',
-      40736.9613,
-      '20.82',
-    ]);
-    expect(csvData[3]).toEqual([
-      'Tree Cover Loss',
-      9570.9493,
-      '2021',
-      40736.9613,
-      '23.49',
-    ]);
+    expect(csvData[0]).toEqual(['Tree Cover Loss', 12114.5364, '2018', 40736.9613, '29.74']);
+    expect(csvData[1]).toEqual(['Tree Cover Loss', 10570.2785, '2019', 40736.9613, '25.95']);
+    expect(csvData[2]).toEqual(['Tree Cover Loss', 8481.1971, '2020', 40736.9613, '20.82']);
+    expect(csvData[3]).toEqual(['Tree Cover Loss', 9570.9493, '2021', 40736.9613, '23.49']);
   });
 
   test('When the some input data is zero we should append it to the array.', () => {
@@ -147,8 +98,7 @@ describe('Yearly Parser.', () => {
         ],
       },
       data: {
-        tree_cover_loss_total_yearly:
-          '{"2018":0,"2019":0,"2020":0,"2021":9570.9493}',
+        tree_cover_loss_total_yearly: '{"2018":0,"2019":0,"2020":0,"2021":9570.9493}',
       },
       dataRow,
       csvData,
@@ -186,34 +136,10 @@ describe('Yearly Parser.', () => {
       csvData,
     });
     expect(csvData.length).toEqual(4);
-    expect(csvData[0]).toEqual([
-      'Tree Cover Loss',
-      12114.5364,
-      '2018',
-      81473.92259999999,
-      '14.87',
-    ]);
-    expect(csvData[1]).toEqual([
-      'Tree Cover Loss',
-      10570.2785,
-      '2019',
-      81473.92259999999,
-      '12.97',
-    ]);
-    expect(csvData[2]).toEqual([
-      'Tree Cover Loss',
-      8481.1971,
-      '2020',
-      81473.92259999999,
-      '10.41',
-    ]);
-    expect(csvData[3]).toEqual([
-      'Tree Cover Loss',
-      9570.9493,
-      '2021',
-      81473.92259999999,
-      '11.75',
-    ]);
+    expect(csvData[0]).toEqual(['Tree Cover Loss', 12114.5364, '2018', 81473.92259999999, '14.87']);
+    expect(csvData[1]).toEqual(['Tree Cover Loss', 10570.2785, '2019', 81473.92259999999, '12.97']);
+    expect(csvData[2]).toEqual(['Tree Cover Loss', 8481.1971, '2020', 81473.92259999999, '10.41']);
+    expect(csvData[3]).toEqual(['Tree Cover Loss', 9570.9493, '2021', 81473.92259999999, '11.75']);
   });
 
   test('Parse attribute commodity_mill_priority_level.', () => {
@@ -224,8 +150,7 @@ describe('Yearly Parser.', () => {
         composites: [{ attribute: 'commodity_mill_priority_level', label: '' }],
       },
       data: {
-        commodity_mill_priority_level:
-          '{"2018": 0, "2019": 1, "2020": 2, "2021": 3}',
+        commodity_mill_priority_level: '{"2018": 0, "2019": 1, "2020": 2, "2021": 3}',
       },
       dataRow,
       csvData,
@@ -258,11 +183,7 @@ describe('Yearly Parser.', () => {
       csvData,
     });
     expect(csvData.length).toEqual(4);
-    expect(csvData[0]).toEqual([
-      'Brazil Biomes - Amazônia',
-      37726.0064,
-      '2018',
-    ]);
+    expect(csvData[0]).toEqual(['Brazil Biomes - Amazônia', 37726.0064, '2018']);
     expect(csvData[1]).toEqual(['Brazil Biomes - Amazônia', 7939.4091, '2019']);
     expect(csvData[2]).toEqual(['Brazil Biomes - Amazônia', 8115.7826, '2020']);
     expect(csvData[3]).toEqual(['Brazil Biomes - Amazônia', 9165.8674, '2021']);

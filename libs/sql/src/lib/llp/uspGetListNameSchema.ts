@@ -7,10 +7,7 @@ import { SQL_CONFIG } from '../config/config';
 
 @Injectable()
 export class UspGetListNameSchema {
-  async run(
-    databaseName: string,
-    filters: GenerationFileRequest
-  ): Promise<ListNameSchema> {
+  async run(databaseName: string, filters: GenerationFileRequest): Promise<ListNameSchema> {
     const { listID } = filters;
 
     const parameters = [{ field: 'list_id', type: sql.Int, value: listID }];

@@ -7,7 +7,7 @@ const transifex = Transifex.live.translateText;
 
 const renderCell = (row) => {
   return checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--';
-}
+};
 
 const policy_locations = [
   {
@@ -31,7 +31,11 @@ const policy_locations = [
     width: 75,
     maxWidth: 75,
     Cell: (row) =>
-      checkValid(row.value) ? <span title={formatDigit(row.value)}>{formatDigit(row.value)}</span> : '--',
+      checkValid(row.value) ? (
+        <span title={formatDigit(row.value)}>{formatDigit(row.value)}</span>
+      ) : (
+        '--'
+      ),
   },
   {
     Header: () => <ColumnsHeader label={columnHeaders.commodity} />,

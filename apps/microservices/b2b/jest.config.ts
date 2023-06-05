@@ -12,15 +12,7 @@ export default {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  collectCoverageFrom: [
-    "./src/**/*.{js,jsx,ts,tsx}"
-  ],
+  collectCoverageFrom: ['./src/**/*.{js,jsx,ts,tsx}'],
   coverageDirectory: '../../../coverage/apps/microservices/b2b',
-  coverageReporters: [
-    "json",
-    "text",
-    "lcov",
-    "clover",
-    "cobertura"
-  ],
+  coverageReporters: ['json', 'text', 'lcov', 'clover', 'cobertura'],
 };

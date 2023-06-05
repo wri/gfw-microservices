@@ -21,10 +21,7 @@ config.update({
 });
 
 @Module({
-  imports: [
-    envModule,
-    TypeOrmModule.forRootAsync({ useClass: DatabaseService }),
-  ],
+  imports: [envModule, TypeOrmModule.forRootAsync({ useClass: DatabaseService })],
   controllers: [AppController],
   providers: [AppService, LargeListService, LocationService, GeoService],
 })

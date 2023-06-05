@@ -32,8 +32,7 @@ export class ForestChangeDiagnosticLocationSummaryService extends DashboardHandl
     const { listView, type } = filters;
     return (
       listView === 'forest_change' &&
-      (type === 'forestChangeDiagnosticLocationSummary' ||
-        type === 'everything')
+      (type === 'forestChangeDiagnosticLocationSummary' || type === 'everything')
     );
   }
 }

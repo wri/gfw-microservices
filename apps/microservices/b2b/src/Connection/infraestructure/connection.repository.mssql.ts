@@ -1,13 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Filter } from '../../Shared/domain/criteria/filter';
-import { FilterField } from '../../Shared/domain/criteria/filter.field';
 import {
-  FilterOperator,
   Operator,
 } from '../../Shared/domain/criteria/filter.operator';
-import { FilterValue } from '../../Shared/domain/criteria/filter.value';
 import { QueryCriteria } from '../../Shared/domain/criteria/query';
 import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';

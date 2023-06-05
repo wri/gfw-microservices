@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
-import {
-  cloneRow,
-  formatPct,
-  validatePct,
-  parseListData,
-} from '../shared/functions';
+import { cloneRow, formatPct, validatePct, parseListData } from '../shared/functions';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
@@ -23,9 +18,7 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
 
   process(data, filters: GenerationFileRequest) {
     if (this.isSouthEastAsiaOverlapFile(filters)) {
-      const locations = data.filter(
-        (location) => location.southeast_asia_presence === 'true'
-      );
+      const locations = data.filter((location) => location.southeast_asia_presence === 'true');
       if (locations && locations.length > 0) {
         this.existSouthEastLocation = true;
         super.process(locations, filters);
@@ -39,13 +32,12 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
 
     EXCEL_TEMPLATES[table].forEach((key) => {
       key.composites.forEach((field) => {
-        const totalStatValue = parseListData(field.attribute, [
-          listLevelAnalysis,
-        ]);
+        const totalStatValue = parseListData(field.attribute, [listLevelAnalysis]);
         const dataRow = [list_name];
 
         if (totalStatValue > 0) {
-          if (!listLevelAnalysis[field.attribute]) {
+          const { attribute } = field;
+          if (!Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, attribute)) {
             return;
           }
 
@@ -56,9 +48,7 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
               const currentRow = cloneRow(dataRow);
               currentRow.push(field.label);
               currentRow.push(location);
-              const percent = formatPct(
-                validatePct((yearlyData[location] / totalStatValue) * 100)
-              );
+              const percent = formatPct(validatePct((yearlyData[location] / totalStatValue) * 100));
               currentRow.push(percent);
               csvData.push(currentRow);
             });
@@ -89,20 +79,19 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
     return csvData;
   }
 
-  finish(filters: GenerationFileRequest) {
-    this.logger.log('South East Asia Overlap Finish');
+  async finish(filters: GenerationFileRequest) {
     const { selectedLocationsList } = filters;
-    if (
-      this.isSouthEastAsiaOverlapFile(filters) &&
-      selectedLocationsList.length != 1 &&
-      this.existSouthEastLocation
-    ) {
-      generateCSV(
-        filters,
-        'seAsiaOverlapAggregate',
-        'south_east_asia_overlap_aggregate',
-        this.generateAggregate
-      );
+    if (this.isSouthEastAsiaOverlapFile(filters)) {
+      this.logger.log('South East Asia Overlap Finish');
+      if (selectedLocationsList.length != 1 && this.existSouthEastLocation) {
+        generateCSV(
+          filters,
+          'seAsiaOverlapAggregate',
+          'south_east_asia_overlap_aggregate',
+          this.generateAggregate
+        );
+      }
+      await super.finish(filters);
     }
     this.existSouthEastLocation = false;
   }
@@ -110,8 +99,7 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
   isSouthEastAsiaOverlapFile(filters: GenerationFileRequest) {
     const { listView, type } = filters;
     return (
-      listView === 'forest_change' &&
-      (type === 'southEastAsiaOverlap' || type === 'everything')
+      listView === 'forest_change' && (type === 'southEastAsiaOverlap' || type === 'everything')
     );
   }
 }

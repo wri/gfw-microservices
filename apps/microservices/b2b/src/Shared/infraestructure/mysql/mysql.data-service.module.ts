@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { DataServicesModule } from '../../application/data-service/data-service.module';
 import { DataServicesService } from '../../application/data-service/data-services.service';
 import { DataServices } from '../../domain/data-service';
 

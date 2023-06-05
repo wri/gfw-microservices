@@ -1,0 +1,27 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/subHeader';
+@import '../../proManagerList/css/profile.scss';
+
+.account {
+  max-width: 1024px;
+  padding: 0 3rem;
+  margin: auto;
+  .input-field__block-container {
+    max-width: 400px;
+  }
+}
+@media (min-width: 1400px) {
+  .account {
+    padding: 0;
+    max-width: $full-max-width;
+    width: $full-width;
+  }
+}
+
+@media (min-width: 850px) and (max-width: 1399px) {
+  .account {
+    padding: 0;
+    max-width: $mobile-max-width;
+    width: $mobile-width;
+  }
+}

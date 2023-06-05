@@ -7,7 +7,7 @@ import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto
 import { ConnectionDbDto } from '../application/dtos/connection-db.dto';
 import Result from '../../Shared/domain/result';
 import { ConnectionChangeDto } from '../application/dtos/connection-status.dto';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   ConnectionAdminOrganizationDbDto,
   ConnectionAdminOrganizationDto,
@@ -18,6 +18,8 @@ export class ConnectionRepositoryMssqlSP
   extends RepositoryMssqlSP
   implements ConnectionRepositorySP
 {
+  public readonly logger = new Logger(ConnectionRepositoryMssqlSP.name);
+
   constructor(private mapper: ConnectionDataMapper) {
     super();
   }
@@ -33,14 +35,14 @@ export class ConnectionRepositoryMssqlSP
 
   async createConnection(
     connectionInvitation: ConnectionInvitation,
-  ): ResultPromise<Number> {
+  ): ResultPromise<number> {
     const params =
       this.mapper.toCreateConnectionProcedureParam(connectionInvitation);
     const createInvitation = this.storeProcedureFactory.create(
       'uspCreateConnectionRequest',
       params,
     );
-    let result = await createInvitation.execute<Number>();
+    const result = await createInvitation.execute<number>();
     return result;
   }
 
@@ -50,11 +52,13 @@ export class ConnectionRepositoryMssqlSP
     const params = this.mapper.createStoreProcedureStringParam([
       ['email', email],
     ]);
+    this.logger.debug(params);
     const getUserAdminOrganizations = this.storeProcedureFactory.create(
       'uspGetUserAdminOrganizations',
       params,
     );
-    let result = await getUserAdminOrganizations.execute<
+    this.logger.debug(getUserAdminOrganizations);
+    const result = await getUserAdminOrganizations.execute<
       ConnectionAdminOrganizationDbDto[]
     >();
     if (result.isSuccess) {
@@ -84,9 +88,10 @@ export class ConnectionRepositoryMssqlSP
       'uspGetConnectionRequest',
       params,
     );
-    let result = await createInvitation.execute<ConnectionDbDto[]>();
+    const result = await createInvitation.execute<ConnectionDbDto[]>();
     if (result.isSuccess) {
       const connectionsDbDto = result.getValue();
+      this.logger.debug(connectionsDbDto);
       let connections = [];
       if (Array.isArray(connectionsDbDto)) {
         connections = connectionsDbDto.map((connectionDbDto) =>
@@ -104,7 +109,7 @@ export class ConnectionRepositoryMssqlSP
 
   async updateStatusConnection(
     changeStatusDto: ConnectionChangeDto,
-  ): ResultPromise<Number> {
+  ): ResultPromise<number> {
     const params = this.mapper.toChangeStatusConnectionParam(changeStatusDto);
     const updateStatusConnection = this.storeProcedureFactory.create(
       'uspChangeConnectionRequestStatus',

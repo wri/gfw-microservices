@@ -1,0 +1,54 @@
+/* eslint-disable import/no-dynamic-require */
+// Set the environment to test in case it is not already set
+process.env.NODE_ENV = 'test';
+const path = require('path');
+const fs = require('fs');
+
+const makeWebpackConfig = require(path.resolve('./config/webpack.config'));
+const logger = require(path.resolve('./config/lib/winston'));
+const assets = require(path.resolve('./config/assets'));
+
+const jestConfigPath = path.resolve('./jest.config.json');
+const aliases = {};
+
+// Replace fixed paths with <rootDir> relative paths
+const replacePathWithRootDir = (fixedPath) =>
+  fixedPath.replace(/.*gfw-microservices\/apps\/webserver\/src/, '<rootDir>');
+
+try {
+  // Read in our base jest config
+  const jestConfig = JSON.parse(fs.readFileSync(jestConfigPath, 'utf-8'));
+  // Grab our aliases
+  const { alias } = makeWebpackConfig().resolve;
+  // Update our aliases to use the correct expression, like ^js(.*)$": "<rootDir>/src/js$1"
+  Object.keys(alias).forEach((namespace) => {
+    aliases[`^${namespace}(.*)$`] = replacePathWithRootDir(`${alias[namespace]}$1`);
+  });
+  // Update it based on our aliases, and mocks
+  jestConfig.moduleNameMapper = {
+    '^axios$': replacePathWithRootDir(require.resolve('axios')),
+    '^mapshaper$': replacePathWithRootDir(require.resolve('mapshaper')),
+    '\\.(css|scss)$': '<rootDir>/test/__mocks__/object.js',
+    '\\.(jpe?g|png|gif|svg)$': '<rootDir>/test/__mocks__/object.js',
+    // 'material-ui/Popover': '<rootDir>/__mocks__/constructor.js',
+    'src/client/map/js/layers(.*)$': '<rootDir>/test/__mocks__/constructor.js',
+    'map/js/layers/TreeCoverLossLayer': '<rootDir>/test/__mocks__/constructor.js',
+    'esri/Map': '<rootDir>/test/__mocks__/constructor.js',
+    'esri/tasks/QueryTask': '<rootDir>/test/__mocks__/QueryTask.js',
+    'esri/tasks/support/Query': '<rootDir>/test/__mocks__/constructor.js',
+    'esri/views/MapView': '<rootDir>/test/__mocks__/MapView.js',
+    'esri/config': '<rootDir>/test/__mocks__/config.js',
+    '^tests(.*)$': '<rootDir>/test/client/tests$1',
+    '^dojo(.*)$': '<rootDir>/test/__mocks__/object.js',
+    '^esri(.*)$': '<rootDir>/test/__mocks__/object.js',
+    '^dijit(.*)$': '<rootDir>/test/__mocks__/object.js',
+    ...aliases,
+  };
+  // Set the test paths
+  jestConfig.testMatch = [`<rootDir>/${assets.clientJest}`, `<rootDir>/${assets.serverJest}`];
+  // Write the file back out to jestConfig
+  fs.writeFileSync(jestConfigPath, JSON.stringify(jestConfig, null, 2), 'utf-8');
+} catch (err) {
+  logger.error('Error preparing jest configuration file', err);
+  throw new Error('Error preparing jest configuration file', err);
+}

@@ -1,0 +1,30 @@
+@import '../../../css/colorsGFW';
+
+.icon-link {
+  background: white;
+  font-size: 14px;
+  border: 1px solid lightgray;
+  color: black;
+  border-radius: 7px;
+  padding: 10px;
+  width: 80px;
+  height: 80px;
+  margin: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  a,
+  a:hover,
+  a:visited,
+  a:active {
+    text-decoration: none;
+    color: black;
+    .material-icons {
+      color: $gfw-green;
+    }
+  }
+  img {
+    width: 50px;
+  }
+}

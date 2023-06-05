@@ -1,4 +1,3 @@
-import { SearchDto } from '../../Shared/application/dtos/search.dto';
 import { QueryCriteria } from '../../Shared/domain/criteria/query';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import { SearchResult } from '../../Shared/domain/types';

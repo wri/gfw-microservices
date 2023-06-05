@@ -1,0 +1,87 @@
+@import 'baseGFW.scss';
+
+.banner {
+  border-radius: $border-radius;
+  padding: $space-small $space-medium;
+  box-shadow: $box-shadow__small;
+  max-width: 1024px;
+  width: 95%;
+  margin: 0 auto;
+
+  @media (min-width: 1399px) {
+    max-width: 1200px;
+  }
+
+  a {
+    color: $gfw-black;
+    font-weight: $font-weight-semibold;
+    text-decoration: underline;
+  }
+
+  &__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__content {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  &__prompt {
+    line-height: 1.5;
+  }
+
+  &__icon {
+    width: auto;
+    height: 16px;
+    max-width: 16px;
+    margin: $space-tiny $space-small 0 0;
+    flex: 0 0 auto;
+  }
+
+  // Alert Yellow Banner
+  &--alert {
+    background: $theme-alert-x-light-yellow;
+  }
+
+  &--alert & {
+    &__icon {
+      color: $theme-alert-yellow-2;
+    }
+  }
+
+  // Danger Red Banner
+  &--danger {
+    background: $theme-danger-x-light-red;
+  }
+
+  &--danger & {
+    &__icon {
+      color: $theme-danger-red-2;
+    }
+  }
+
+  // New Feature Purple Banner
+  &--new {
+    background: $theme-new-x-light-purple;
+  }
+
+  &--new & {
+    &__icon {
+      color: $theme-new-purple;
+    }
+  }
+
+  // Positive Green Banner
+  &--positive {
+    background: $gfw-x-light-green;
+  }
+
+  &--positive & {
+    &__icon {
+      color: $gfw-green;
+    }
+  }
+}

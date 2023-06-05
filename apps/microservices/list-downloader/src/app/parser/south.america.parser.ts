@@ -1,35 +1,50 @@
 import { sum } from 'lodash';
+import { DATA_LAYER } from '../shared/constants';
 import { cloneRow, formatPct, validatePct } from '../shared/functions';
 
-const brazilBiomesParser = ({ data, dataRow, csvData }) => {
-  const { brazil_biomes } = data;
-  const brazilBiomeLocations = JSON.parse(brazil_biomes ?? '{}');
+const dataLayerParser = ({ data, dataRow, csvData }) => {
+  const { brazil_biomes: brazilBiomes, arg_otbn_area: argentinaOTBN } = data;
 
+  const brazilData = {
+    dataLayerName: DATA_LAYER.brazil_biomes,
+    data: JSON.parse(brazilBiomes ?? '{}'),
+    available: Object.entries(JSON.parse(brazilBiomes ?? '{}')).length > 0,
+  };
+
+  const argentinaData = {
+    dataLayerName: DATA_LAYER.arg_otbn_area,
+    data: JSON.parse(argentinaOTBN ?? '{}'),
+    available: Object.entries(JSON.parse(argentinaOTBN ?? '{}')).length > 0,
+  };
+
+  const objToProcess = brazilData.available
+    ? brazilData
+    : argentinaData.available
+    ? argentinaData
+    : { data: {}, dataLayerName: '' };
+
+  dataLayerProcessor(objToProcess, dataRow, csvData);
+};
+
+const dataLayerProcessor = ({ data, dataLayerName }, dataRow, csvData) => {
   let total = 0;
-  Object.keys(brazilBiomeLocations).forEach((biome) => {
-    total += brazilBiomeLocations[biome];
+  Object.keys(data).forEach((biome) => {
+    total += data[biome];
   });
 
-  Object.keys(brazilBiomeLocations).forEach((location) => {
+  Object.keys(data).forEach((location) => {
     const currentRow = cloneRow(dataRow);
+    currentRow.push(dataLayerName);
     currentRow.push(location);
 
-    const overlapPercent = formatPct(
-      validatePct((brazilBiomeLocations[location] / total) * 100)
-    );
+    const overlapPercent = formatPct(validatePct((data[location] / total) * 100));
     currentRow.push(overlapPercent);
 
     csvData.push(currentRow);
   });
 };
 
-const brazilBiomesYearlyTCLParser = ({
-  field,
-  yearlyData,
-  totalStat,
-  dataRow,
-  csvData,
-}) => {
+const brazilBiomesYearlyTCLParser = ({ field, yearlyData, totalStat, dataRow, csvData }) => {
   const totalSubCategoryValues = {};
 
   const biomes = Object.keys(yearlyData);
@@ -51,9 +66,7 @@ const brazilBiomesYearlyTCLParser = ({
       const totalSubCategory = totalSubCategoryValues[biomeName];
       if (totalStat) {
         currentRow.push(totalSubCategory);
-        const percent = formatPct(
-          validatePct((total / totalSubCategory) * 100)
-        );
+        const percent = formatPct(validatePct((total / totalSubCategory) * 100));
         currentRow.push(percent);
       }
 
@@ -64,4 +77,4 @@ const brazilBiomesYearlyTCLParser = ({
   });
 };
 
-export { brazilBiomesParser, brazilBiomesYearlyTCLParser };
+export { dataLayerParser, brazilBiomesYearlyTCLParser };

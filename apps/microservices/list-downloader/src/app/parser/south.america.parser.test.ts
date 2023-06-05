@@ -1,13 +1,10 @@
-import {
-  brazilBiomesParser,
-  brazilBiomesYearlyTCLParser,
-} from './south.america.parser';
+import { dataLayerParser, brazilBiomesYearlyTCLParser } from './south.america.parser';
 
 describe('Brazil Biomes Parser', () => {
   test('Receive empty and get an empty array', () => {
     const csvData = [];
     const dataRow = [];
-    brazilBiomesParser({
+    dataLayerParser({
       data: {},
       dataRow,
       csvData,
@@ -18,7 +15,7 @@ describe('Brazil Biomes Parser', () => {
   test('Receive [brazil_biomes] and get an array with [Amazônia, Cerrado]', () => {
     const csvData = [];
     const dataRow = [];
-    brazilBiomesParser({
+    dataLayerParser({
       data: {
         brazil_biomes: '{"Amazônia":785212.7094, "Cerrado": 235212.7094}',
       },
@@ -26,8 +23,10 @@ describe('Brazil Biomes Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(2);
-    expect(csvData[0]).toEqual(['Amazônia', '76.95']);
-    expect(csvData[1]).toEqual(['Cerrado', '23.05']);
+    expect(csvData).toEqual([
+      ['Brazil Biomes', 'Amazônia', '76.95'],
+      ['Brazil Biomes', 'Cerrado', '23.05'],
+    ]);
   });
 });
 
@@ -82,20 +81,8 @@ describe('Brazil Biomes Yearly TCL Parser', () => {
       65569.05840000001,
       '28.21',
     ]);
-    expect(csvData[4]).toEqual([
-      'teste - Amazônia',
-      7405.8949,
-      '2021',
-      65569.05840000001,
-      '11.29',
-    ]);
-    expect(csvData[9]).toEqual([
-      'teste - Cerrado',
-      14105.0713,
-      '2021',
-      47231.65119999999,
-      '29.86',
-    ]);
+    expect(csvData[4]).toEqual(['teste - Amazônia', 7405.8949, '2021', 65569.05840000001, '11.29']);
+    expect(csvData[9]).toEqual(['teste - Cerrado', 14105.0713, '2021', 47231.65119999999, '29.86']);
   });
 
   test('Pass input without totalStat and the result come without percent calculation', () => {

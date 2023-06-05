@@ -1,0 +1,43 @@
+###
+# Quering - GFW DATA API
+# https://data-api.globalforestwatch.org/
+# OLD - https://vizzuality.github.io/gfw-doc-api/#from-country-and-region
+# https://data-api.globalforestwatch.org/datasets/
+###
+
+###
+# Get single Palm Oil Mill
+GET https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/query?sql=select * from data where uml_id='PO1000004523'
+Accept: application/json
+
+###
+# Get single Palm Oil Mill - [latitude, longitude]
+GET https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/query?sql=select latitude, longitude from data where uml_id in ('PO1000004523')
+Accept: application/json
+
+###
+# Get multiple Palm Oil Mills
+GET https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/query?sql=select * from data where uml_id in ('PO1000004269','PO1000008590','PO1000008347')
+Accept: application/json
+
+###
+# Get multiple Palm Oil Mills - Only GeoJSON
+GET https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/query?sql=select gfw_geojson from data where uml_id in ('PO1000004269','PO1000008590','PO1000008347')
+Accept: application/json
+
+###################################################################################################
+### Protected Areas - Count
+GET https://data-api.globalforestwatch.org/dataset/wdpa_protected_areas/v202010/query?sql=select count(*) from data
+
+### Protected Areas - Limit 1
+GET https://data-api.globalforestwatch.org/dataset/wdpa_protected_areas/v202010/query?sql=select geostore_id from data limit 1
+
+### Protected Areas - Query by geostore_id
+GET https://data-api.globalforestwatch.org/dataset/wdpa_protected_areas/v202010/query?sql=select * from data where gfw_geostore_id = 'e0e3de53-527f-9817-2837-3458dc2d722a'
+
+### Protected Areas - Query by geostore_id - Latest
+GET https://data-api.globalforestwatch.org/dataset/wdpa_protected_areas/latest/query?sql=select * from data where gfw_geostore_id = 'e0e3de53-527f-9817-2837-3458dc2d722a'
+
+###################################################################################################
+### Palm Oil Mills
+GET https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/query?sql=select gfw_geostore_id, gfw_bbox from data where uml_id in ('PO1000008154', 'PO1000004269')

@@ -1,6 +1,6 @@
-import { rejects } from 'assert';
-import { config } from 'aws-sdk';
 import * as sql from 'mssql';
+
+import { ParameterType } from '@wri-monorepos/sql';
 
 export class SQLUtils {
   config: sql.config;
@@ -14,7 +14,7 @@ export class SQLUtils {
     this.connection = await sql.connect(this.config);
   }
 
-  executeQuery<T>(query: string, parameters?: any[]): Promise<T> {
+  executeQuery<T>(query: string, parameters?: ParameterType[]): Promise<T> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {
@@ -39,7 +39,7 @@ export class SQLUtils {
     });
   }
 
-  query<T>(query: string, parameters?: any[]): Promise<T> {
+  query<T>(query: string, parameters?: ParameterType[]): Promise<T> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {

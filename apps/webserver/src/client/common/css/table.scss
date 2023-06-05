@@ -1,0 +1,119 @@
+// ---------------
+// Table elements
+// ---------------
+table {
+  display: table;
+  font-size: $font-size-medium;
+  border-collapse: collapse;
+  width: 100%;
+
+  thead tr {
+    border-bottom: 1px solid $table-border__header;
+  }
+  tbody tr {
+    border-bottom: 1px solid $table-border__body;
+  }
+  th,
+  td {
+    padding: 0.5em 0.75em;
+    text-align: left;
+    white-space: nowrap;
+  }
+  th {
+    font-weight: 500;
+  }
+}
+
+.table__container {
+  overflow-x: auto;
+}
+
+.table__row {
+  display: table-row;
+}
+
+.table__cell {
+  display: table-cell;
+}
+
+.gfw-table-container {
+  overflow-x: auto;
+}
+
+.gfw-table {
+  min-width: 100%;
+  width: 100%;
+  max-width: 1200px;
+  border-collapse: collapse;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid $table-border-color;
+  border-radius: $border-radius;
+
+  thead {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 0 auto;
+    flex: 1 0 auto;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .gfw-table__thead,
+  thead th {
+    background-color: $table-header-bg;
+    height: $table-row-height;
+    padding: $table-cell-pad;
+    -webkit-transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease;
+
+    @include text($size: 200, $color: $table-header-color, $weight: $font-weight-medium);
+  }
+
+  thead tr {
+    border-bottom: 1px solid $table-border-color;
+  }
+
+  th,
+  .gfw-table__thead,
+  td,
+  .gfw-table__td {
+    border-right: 1px solid $table-border-color;
+  }
+
+  // We can't do zebra striping in Multiupload wizard
+  .gfw-table__thead,
+  .gfw-table__td {
+    border-bottom: 1px solid $table-border-color;
+  }
+
+  tbody {
+    line-height: 1.5;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .gfw-table__td,
+  tbody td {
+    border-right: 1px solid $table-border-color;
+    height: $table-row-height;
+
+    &:last-child {
+      border-right: 0;
+    }
+  }
+
+  tbody tr {
+    border-bottom: none;
+
+    &:nth-child(even) {
+      background: $table-row-e-bg;
+    }
+  }
+
+  .td-num {
+    text-align: right;
+  }
+}

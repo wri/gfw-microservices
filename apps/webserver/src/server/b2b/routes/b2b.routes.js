@@ -1,0 +1,111 @@
+const path = require('path');
+const axios = require('axios');
+const express = require('express');
+
+const { compiledAssets } = require(path.resolve('./config/config'));
+
+const middlewares = require(path.resolve('./config/publicutils/middlewares'));
+const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
+
+const invitationController = require('../controllers/invitation.controller');
+const connectionController = require('../controllers/connection.controller');
+
+const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
+
+const b2bRoutes = express.Router();
+
+const BASE_URL = '/b2b';
+
+const PREMIUM_ACCOUNT_CODE = 2;
+const ADMIN_ACCESS_LEVEL_CODE = 1;
+
+/**
+ * @name exports
+ * @static
+ * @summary b2b page routes
+ */
+module.exports = (app, limiter) => {
+  /**
+   * @name /b2b
+   * @see b2b.controller
+   * @memberof Router
+   */
+
+  // All methods must under /b2b must pass through middleware
+  const routeMiddlewares = [
+    middlewares.checkOrganization,
+    middlewares.checkAuthentication,
+    middlewares.checkActive,
+    middlewares.checkInactivity,
+  ];
+
+  if (rateLimiterUtil.useRateLimiter()) {
+    routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));
+  }
+
+  const getB2BUrl = () => {
+    const { B2B_MICROSERVICE_URL } = process.env;
+    return B2B_MICROSERVICE_URL;
+  };
+
+  const runB2BRequest = async (requestData, request, response, next) => {
+    const { method, url, data } = requestData;
+    const newUrl = `${getB2BUrl()}${url}`;
+    try {
+      const { data: result } = await axios({
+        url: newUrl,
+        method,
+        headers: {
+          'Content-type': 'application/json',
+        },
+        data,
+      });
+      return response.status(200).send(result);
+    } catch (err) {
+      const { status: statusCode, data: error } = err.response;
+      return response.status(statusCode).send(error);
+    }
+  };
+
+  const isPremiumAndAdmin = (req, res, next) => {
+    AuthManager.getOrganizations(req)
+      .then((organizations) => {
+        const [organization] = organizations;
+        const { subscription_status_id: subscriptionStatusId } = organization;
+
+        // If user is premium or admin, allow access
+        if (
+          subscriptionStatusId === PREMIUM_ACCOUNT_CODE &&
+          req.session.user_access_level_id === ADMIN_ACCESS_LEVEL_CODE
+        ) {
+          return next();
+        }
+        return res.status(403).send({ message: 'Forbidden' });
+      })
+      .catch((err) => {
+        return res.status(500).send({ message: err });
+      });
+  };
+
+  app.use(`${BASE_URL}`, [...routeMiddlewares, isPremiumAndAdmin, b2bRoutes, runB2BRequest]);
+
+  app.get(`${BASE_URL}`, (req, res) => {
+    console.log(`GET ${BASE_URL}`);
+    res.render('b2b', {
+      common: compiledAssets.js.common,
+      b2bjs: compiledAssets.js.b2b,
+      b2bcss: compiledAssets.css.b2b,
+    });
+  });
+
+  // Invitation routes
+  b2bRoutes.post('/invitation', invitationController.createInvitation);
+  b2bRoutes.post('/invitation/:id', invitationController.resendInvite);
+
+  // Connection routes
+  b2bRoutes.get('/orgs/:email', connectionController.getUserOrganizations);
+  b2bRoutes.get('/connection', connectionController.getConnections);
+  b2bRoutes.put('/connection/accept/:id', connectionController.acceptConnection);
+  b2bRoutes.put('/connection/reject/:id', connectionController.rejectConnection);
+  b2bRoutes.put('/connection/cancel/:id', connectionController.cancelConnection);
+};

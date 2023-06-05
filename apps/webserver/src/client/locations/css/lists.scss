@@ -1,0 +1,299 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/subHeader';
+@import '../../common/css/location';
+
+.list-detail-page .main-panel {
+  flex: 1;
+
+  .section-container {
+    max-width: none;
+    width: 100%;
+  }
+}
+
+///////////
+// Banner
+//////////
+.lists-banner {
+  margin-top: $space-small;
+}
+
+//////////////////////////
+// List Detail Header
+/////////////////////////
+.list-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: $space-normal;
+  border-bottom: 1px solid $gfw-light-gray;
+
+  .bullet-divider {
+    padding: 0 $space-compact;
+    color: $gfw-gray-2;
+  }
+
+  &__title {
+    @include heading(600);
+    margin: 0 0 $space-small;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__info-container {
+    max-width: 50%;
+  }
+}
+
+.list-actions-container {
+  display: flex;
+  flex: 0 0 auto;
+  margin-left: auto;
+
+  > div:not(:last-child) {
+    margin-right: $space-small;
+  }
+}
+
+/////////////////////////
+// Country names, Flagged
+/////////////////////////
+.countries-popover {
+  max-width: 500px;
+
+  &__inner {
+    padding: $space-comfortable;
+  }
+
+  &__prompt {
+    margin: 0;
+  }
+}
+
+.country-name-extend {
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+.flag-count {
+  font-size: $font-size-large;
+}
+
+//////////////////////////
+// Filters bar
+/////////////////////////
+.list-detail-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-medium 0;
+  margin-bottom: $space-normal;
+  border-bottom: 1px solid $gfw-light-gray;
+
+  &__view {
+    margin-right: $space-small;
+  }
+
+  &__content-filters {
+    display: flex;
+    align-items: center;
+
+    .input-search {
+      margin-right: $space-small;
+    }
+
+    .button:last-child {
+      margin-left: $space-small;
+    }
+  }
+}
+
+// Filter Button
+.compound-button {
+  display: flex;
+
+  &__action-button button {
+    border-radius: $border-radius__button 0 0 $border-radius__button !important;
+  }
+
+  &__clear {
+    margin-left: $space-tiny !important;
+    border-radius: 0 $border-radius__button $border-radius__button 0 !important;
+  }
+}
+
+//////////////////////////
+// Select Columns
+/////////////////////////
+.add-columns-list {
+  .select-columns {
+    padding: $space-small;
+
+    &__checkbox-container {
+      padding: $space-compact 0;
+    }
+  }
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    padding: $space-small 0 0;
+    margin: $space-small $space-small 0;
+    border-top: 1px solid $gfw-light-gray;
+
+    .button {
+      flex: 0 0 48%;
+    }
+
+    .button:first-child {
+      margin-right: 2%;
+    }
+  }
+}
+
+//////////////////////////
+// Action button bar
+// View Diagnostic, View Map, Move, Edit, Download
+/////////////////////////
+.list-detail-action-bar {
+  display: flex;
+
+  > *:not(:last-child) {
+    margin-right: $space-small;
+  }
+  padding-bottom: 10px;
+}
+
+//////////////////////////
+// Side panel Summaries
+/////////////////////////
+.list-side-panel {
+  max-width: 225px;
+  min-width: 225px;
+}
+
+.list-detail-page .list-detail-summary {
+  margin-bottom: $space-normal;
+}
+
+.saved-locations-summary {
+  margin-bottom: $space-normal;
+}
+
+.my-lists-summary,
+.shared-lists-summary,
+.gfw-lists-summary {
+  border: 1px solid $gfw-light-gray-2;
+  padding: $space-comfortable;
+  margin-bottom: $space-normal;
+  border-radius: $border-radius;
+  text-align: left;
+
+  &__title {
+    @include heading(100);
+    margin-top: $space-compact;
+  }
+
+  &__list-item {
+    padding: $space-compact 0;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    border-radius: $border-radius;
+
+    &--inactive,
+    &--failed {
+      @include text(200, $color: $gfw-gray-2);
+      font-style: italic;
+      cursor: not-allowed;
+      overflow: hidden;
+    }
+
+    &--selected {
+      background: $gfw-xx-light-green;
+      box-shadow: 0 0 0 2px $gfw-xx-light-green;
+    }
+  }
+
+  &__list-name {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  &__list-count,
+  &__icon-container {
+    margin-left: $space-small;
+  }
+
+  &__icon--failed {
+    color: $theme-danger-red;
+    height: 16px;
+    width: 16px;
+  }
+
+  &__list-count {
+    @include text(200, $color: $gfw-gray-2);
+    text-align: right;
+  }
+
+  .input-search {
+    width: 100%;
+    margin-bottom: $space-small;
+  }
+
+  &__no-results {
+    text-align: center;
+    padding: $space-medium;
+    background: $gfw-x-light-gray;
+  }
+
+  &__no-results-prompt {
+    @include text(200);
+    font-style: italic;
+  }
+}
+
+.RerunList__dialog-buttons {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem 0.5rem 1rem;
+}
+
+@media screen and (max-width: 1023px) {
+  .list-selection-buttons {
+    flex-direction: column;
+    height: 80px;
+  }
+  .main-panel {
+    max-width: 80%;
+    .table-container {
+      overflow-x: auto;
+    }
+  }
+}
+
+.cancel-upload-wizard {
+  margin-top: 1em;
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+}
+
+.move-to-list-select {
+  select {
+    width: 100% !important;
+  }
+}
+
+.admin-area-modal {
+  min-height: 600px;
+}
+
+.admin-area-row {
+  padding-bottom: 10px;
+}

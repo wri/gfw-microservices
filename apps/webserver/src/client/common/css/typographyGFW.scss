@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:300,400,500,600,700');
+@import 'colorsGFW.scss';
+
+// Font family
+$gfw-font-family: 'Fira Sans', sans-serif;
+
+// Font size increment
+$font-size-regular: 12px;
+$font-size-medium: 14px;
+$font-size-medium-large: 16px;
+$font-size-large: 21px;
+$font-size-x-large: 28px;
+$font-size-xx-large: 35px;
+$font-size-xxx-large: 47px;
+$font-size-xxxx-large: 64px;
+
+// Font weight increment
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+h1 {
+  font-size: $font-size-xxx-large;
+  font-weight: $font-weight-light;
+  color: $gfw-dark-gray;
+  line-height: 1em;
+}
+h2 {
+  font-size: $font-size-xx-large;
+  font-weight: $font-weight-light;
+  color: $gfw-dark-gray;
+  line-height: 1em;
+}
+h3 {
+  font-size: $font-size-large;
+  font-weight: $font-weight-medium;
+  color: $gfw-dark-gray;
+  line-height: 1em;
+}
+h4 {
+  font-size: $font-size-medium;
+  font-weight: $font-weight-medium;
+  color: $gfw-dark-gray;
+  line-height: 1em;
+}
+
+%uppercase {
+  text-transform: uppercase;
+}
+
+// Type style settings
+$text-settings: (
+  100: (
+    font-family: $gfw-font-family,
+    color: map-get($font-colors, dark),
+    font-weight: $font-weight-regular,
+    font-size: $font-size-regular,
+    line-height: 1.5,
+  ),
+  200: (
+    font-family: $gfw-font-family,
+    color: map-get($font-colors, dark),
+    font-weight: $font-weight-regular,
+    font-size: $font-size-medium,
+    line-height: 1.5,
+  ),
+  300: (
+    font-family: $gfw-font-family,
+    color: map-get($font-colors, dark),
+    font-weight: $font-weight-regular,
+    font-size: $font-size-medium-large,
+    line-height: 1.5,
+  ),
+  400: (
+    font-family: $gfw-font-family,
+    color: map-get($font-colors, normal),
+    font-weight: $font-weight-regular,
+    font-size: $font-size-large,
+    line-height: 1.5,
+  ),
+);
+
+$heading-settings: (
+  100: (
+    font-family: $gfw-font-family,
+    color: map-get($font-colors, normal),
+    font-weight: $font-weight-bold,
+    font-size: $font-size-regular,
+    line-height: 1.2,
+    text-transform: uppercase,
+  ),
+  200: (
+    font-family: $gfw-font-family,
+    color: map-get($font-colors, normal),
+    font-weight: $font-weight-medium,
+    font-size: $font-size-medium,
+    line-height: 1.2,
+    text-transform: uppercase,
+  ),
+  300: (
+    font-family: $gfw-font-family,
+    color: map-get($font-colors, normal),
+    font-weight: $font-weight-medium,
+    font-size: $font-size-medium-large,
+    line-height: 1.2,
+    text-transform: uppercase,
+  ),
+  400: (
+    font-family: $gfw-font-family,
+    color: map-get($font-colors, normal),
+    font-weight: $font-weight-regular,
+    font-size: $font-size-large,
+    line-height: 1.2,
+  ),
+  500: (
+    font-family: $gfw-font-family,
+    color: map-get($font-colors, normal),
+    font-weight: $font-weight-light,
+    font-size: $font-size-x-large,
+    line-height: 1.2,
+  ),
+  600: (
+    font-family: $gfw-font-family,
+    color: map-get($font-colors, normal),
+    font-weight: $font-weight-light,
+    font-size: $font-size-xx-large,
+    line-height: 1.2,
+  ),
+);

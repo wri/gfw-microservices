@@ -1,5 +1,5 @@
 import { SQLUtils } from '../util/sql.utils';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { SQL_CONFIG } from '../config/config';
@@ -24,11 +24,11 @@ export class UspGetListLockStatus {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      const recordsets = await connection.executeQuery<
-        Promise<UspGetListLockStatusRecorset>
-      >('uspGetListLockStatus', parameters);
+      const recordsets = await connection.executeQuery<Promise<UspGetListLockStatusRecorset>>(
+        'uspGetListLockStatus',
+        parameters
+      );
       connection.disconnect();
-      Logger.log(recordsets);
       return recordsets;
     } catch (error) {
       connection.disconnect();

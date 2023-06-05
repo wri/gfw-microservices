@@ -1,0 +1,66 @@
+@import '../../../css/_variables';
+@import '../../../css/colorsGFW';
+
+.drop-down-nav {
+  all: unset;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  height: 100%;
+  padding: 0px 5px;
+
+  &:hover,
+  &--selected {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+  .material-icons {
+    color: white;
+  }
+  &__button {
+    all: unset;
+    display: flex;
+    height: 100%;
+    align-items: center;
+  }
+
+  &__list {
+    right: 0px;
+    position: absolute;
+    top: 62px;
+    display: none;
+    flex-direction: column;
+    background-color: $header-background;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    color: #000;
+    padding: 0.5rem;
+
+    &.show {
+      display: flex;
+    }
+  }
+
+  &__list-item {
+    all: unset;
+    cursor: pointer;
+    line-height: 32px;
+    white-space: nowrap;
+    padding: 0 0.5rem;
+    text-align: right;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+
+    &:hover,
+    &.selected:hover {
+      text-decoration: none;
+      background-color: darken($header-background, 6.5);
+    }
+
+    &.selected {
+      background-color: darken($header-background, 3.25);
+    }
+  }
+}

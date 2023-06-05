@@ -1,0 +1,33 @@
+.drag-drop-file {
+  width: 28rem;
+  margin: auto;
+  text-align: center;
+  &__input {
+    display: none;
+  }
+  &__label {
+    border: dashed;
+    padding: 20px;
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-width: 3px;
+    border-radius: 8px;
+    border-style: dashed;
+    border-color: #e5e5de;
+    text-transform: none;
+  }
+  &__label--drag-active {
+    background-color: #e5e5de;
+  }
+  &__drag-file-element {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+  }
+}

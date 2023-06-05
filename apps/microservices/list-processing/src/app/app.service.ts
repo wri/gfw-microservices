@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
-import { DataSource, QueryFailedError } from 'typeorm';
+import { DataSource } from 'typeorm';
 import * as uniqId from 'uniqid';
 import {
   ResponsePreSignedURLModel,
@@ -124,16 +124,23 @@ export class AppService {
       };
       return dataResult;
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
     }
   }
 
-  async getFilenameForUser(name: string): Promise<MyObject[]> {
+  async getFilenameForUser(): Promise<MyObject[]> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     //const result = await queryRunner.query(`SELECT * FROM GFWLists`);
     const result = await queryRunner.connection.getRepository(MyObject).find();
     return result;
+  }
+
+  /**
+   * Healthcheck for fargate
+   */
+  getHealthCheck(): string {
+    return 'Healthy';
   }
 }

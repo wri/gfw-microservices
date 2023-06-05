@@ -4,11 +4,9 @@ import {
   Param,
   Post,
   Body,
-  Delete,
   Query,
   HttpException,
 } from '@nestjs/common';
-import { CreateConnectionDto } from '../application/dtos/connection.dto';
 import { ConnectionUseCases } from '../application/connection.use-case';
 import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto';
 import { IdNumericDto } from '../../Shared/application/dtos/id-numeric.dto';
@@ -20,7 +18,7 @@ import {
   OrderType,
   QueryCriteria,
 } from '../../Shared/domain/criteria/query';
-import result from '../../Shared/domain/result';
+import { CreateConnectionDto } from '../application/dtos/connection.dto';
 
 @Controller('api/organizations/:orgId/connections')
 export class ConnectionController {

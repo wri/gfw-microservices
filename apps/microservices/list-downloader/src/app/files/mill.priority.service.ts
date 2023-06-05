@@ -17,17 +17,23 @@ export class MillPriorityService extends DashboardHandleDownload {
     }
   }
 
-  finish() {
-    this.logger.log('Mill Priority Finish');
+  async finish(filters: GenerationFileRequest) {
+    if (this.isMillPriorityFile(filters)) {
+      this.logger.log('Mill Priority Finish');
+      super.finish(filters);
+    }
   }
 
   isMillPriorityFile(filters: GenerationFileRequest) {
-    const { listView, type } = filters;
+    const { listView, type, selectedLocationsList } = filters;
     return (
       listView === 'commodity_risk' &&
-      (type === 'palmRiskAnalysis' ||
-        type === 'millPriority' ||
-        type === 'everything')
+      ((selectedLocationsList.length === 1 &&
+        (type === 'millPriority' || type === 'everything')) ||
+        (selectedLocationsList.length !== 1 &&
+          (type === 'palmRiskAnalysis' ||
+            type === 'millPriority' ||
+            type === 'everything')))
     );
   }
 }

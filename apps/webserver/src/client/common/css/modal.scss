@@ -1,0 +1,115 @@
+@import '../../common/css/baseGFW';
+
+.modal-loader__dialog {
+  height: 100%;
+  width: 100%;
+  z-index: 5000 !important;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  overflow-x: hidden;
+  transition: 0.5s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-loader-message {
+  position: fixed;
+  text-align: center;
+  margin-top: 100px;
+  color: white;
+  h1,
+  h2,
+  h3 {
+    color: white;
+  }
+}
+
+.modal-loader {
+  display: inline-block;
+  position: absolute;
+  width: 124px;
+  height: 124px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.modal-loader div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 121px;
+  height: 121px;
+  margin: 6px;
+  border: 4px solid #97bd3d;
+  border-radius: 50%;
+  animation: modal-loader 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #97bd3d transparent transparent transparent;
+}
+.modal-loader div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+.modal-loader div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.modal-loader div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+@keyframes modal-loader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.dialog {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    @include heading(400);
+    margin: 0;
+  }
+
+  &__prompt {
+    @include text(300);
+    padding-top: $space-normal;
+  }
+
+  &__body {
+    padding: $space-spacious;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 $space-normal $space-normal;
+
+    .button,
+    .link-button {
+      margin-right: $space-comfortable;
+    }
+  }
+
+  &__primary-action {
+    min-width: 150px !important;
+  }
+
+  &__primary-cancel {
+    margin: 0 0.5rem;
+  }
+}
+
+.PromptMoveSelectedLocations__actions {
+  flex: 1;
+  display: flex;
+}

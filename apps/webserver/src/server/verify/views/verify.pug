@@ -1,0 +1,9 @@
+extends ../../core/views/layout.pug
+block head
+  link(href=verifycss, rel='stylesheet')
+  script(src=common)
+block content
+  script.
+    window.onunload = function(){};
+  div#verify-mount
+  script(src=verifyjs, async)

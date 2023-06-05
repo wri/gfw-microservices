@@ -1,0 +1,35 @@
+@import '../../common/css/baseGFW';
+@import '../../common/css/profile';
+@import '../../common/css/_variables';
+@import '../../common/css/colorsGFW';
+
+.add-location-card {
+  box-shadow: $card-box-shadow;
+  border: $card-border;
+  border-radius: $border-radius;
+  margin-bottom: $space-medium;
+  padding: $card-padding;
+
+  &__title {
+    @include heading(400);
+    margin-top: 0;
+  }
+
+  &__optional-indicator {
+    @include heading(300, $color: $gfw-gray);
+    margin-left: $space-small;
+  }
+
+  &__content {
+    padding: $space-comfortable 0;
+  }
+
+  &__prompt {
+    @include text(200);
+    max-width: 35rem;
+  }
+
+  &__radio-group > div {
+    margin: $space-small 0;
+  }
+}

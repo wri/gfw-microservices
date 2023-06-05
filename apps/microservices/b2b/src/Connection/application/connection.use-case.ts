@@ -16,7 +16,6 @@ import {
 import { CreateConnectionDto } from './dtos/connection.dto';
 import { EmailService } from '@wri-monorepos/aws';
 import { ConnectionRequestRepository } from '../domain/connection.repository';
-import { SearchDto } from '../../Shared/application/dtos/search.dto';
 import { QueryCriteria } from '../../Shared/domain/criteria/query';
 import { SearchResult } from '../../Shared/domain/types';
 import { ConnectionRequest } from '../domain/connection.entity';

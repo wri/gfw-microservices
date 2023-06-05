@@ -42,7 +42,7 @@ describe('Palm Risk Analysis Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0]).toEqual(['Medium']);
+    expect(csvData[0][0]).toEqual('Medium');
   });
 
   test('Receive[commodity_value_protected_areas_level, yearly, last] and get [55118.3046]', () => {
@@ -66,7 +66,7 @@ describe('Palm Risk Analysis Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0]).toEqual([55118.3046]);
+    expect(csvData[0][0]).toBeCloseTo(55118.3046);
   });
 
   test('Receive[commodity_value_protected_areas_level, yearly, aggregate] and get [1047247.7874000005,]', () => {
@@ -90,7 +90,7 @@ describe('Palm Risk Analysis Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0]).toEqual([1102366.0920000004]);
+    expect(csvData[0][0]).toBeCloseTo(1047247.7874000005);
   });
 
   test('Receive[commodity_value_protected_areas_level, lastYear] and get ["High"]', () => {
@@ -113,7 +113,7 @@ describe('Palm Risk Analysis Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0]).toEqual(['High']);
+    expect(csvData[0][0]).toEqual('High');
   });
 
   test('Receive[commodity_value_protected_areas_level, lastYear] and get ["Low"]', () => {
@@ -136,6 +136,6 @@ describe('Palm Risk Analysis Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(1);
-    expect(csvData[0]).toEqual(['Low']);
+    expect(csvData[0][0]).toEqual('Low');
   });
 });

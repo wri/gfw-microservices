@@ -1,0 +1,3 @@
+export const MY_LISTS = 'MY LISTS';
+export const MY_SHARED_LISTS = 'MY SHARED LISTS';
+export const LISTS_SHARED_WITH_ME = 'LISTS SHARED WITH ME';

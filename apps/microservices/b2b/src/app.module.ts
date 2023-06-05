@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './Shared/infraestructure/app.controller';
 import { AppService } from './Shared/application/app.service';
-import { DataServicesModule } from './Shared/application/data-service/data-service.module';
 import { ConnectionController } from './Connection/infraestructure/connection.controller';
 import { ConnectionModule } from './Connection/connection.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { LogsModule } from './Logs/log.module';
 import { UserModule } from './User/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import entities from './Shared/infraestructure/typeorm/entities';
-import { DatabaseProvider } from './Shared/domain/database-provider/database.provider';
 import { DataSourceOptions } from 'typeorm';
 import { ListController } from './List/infrastructure/list.controller';
 import { ListModule } from './List/list.module';
@@ -18,7 +16,6 @@ import { OrganizationController } from './Organization/infrastructure/organizati
 import { SharedListController } from './SharedList/infrastructure/shared-list.controller';
 import { SharedListModule } from './SharedList/shared-list.module';
 import { SharedModule } from './Shared/shared.module';
-import { MapperQueryTypeORM } from './Shared/infraestructure/typeorm/query.mapper';
 
 @Module({
   imports: [

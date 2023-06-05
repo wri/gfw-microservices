@@ -1,0 +1,179 @@
+@import '../../../../../../client/common/css/baseGFW';
+@import '../../../../../../client/common/css/colorsGFW';
+@import '../../../../../../client/common/css/variables';
+
+.ModalDialog__header {
+  display: flex;
+
+  .close-icon.pointer {
+    align-items: flex-start;
+    padding: 0;
+  }
+}
+
+.ModalDialog__body {
+  p,
+  li {
+    margin: 0;
+    line-height: 1.5rem;
+  }
+}
+
+.ModalDialog__footer {
+  padding: 0 16px 16px 16px;
+}
+
+.edit-step {
+  &__title {
+    @include heading(400);
+  }
+}
+
+// Filter and status bar above table
+.table-controls-container {
+  margin-bottom: $space-normal;
+
+  &__status-controls {
+    > div {
+      margin-right: $space-small;
+    }
+  }
+}
+
+.gfw-table.step-one-edit-table-container {
+  overflow: hidden;
+  .gfw-table__td.row-valid.row-valid--last {
+    border-right: 1px solid #e5e5df;
+  }
+}
+
+// MultiGrid
+#StepOneEdit__MultiGridTable {
+  .ReactVirtualized__Grid {
+    outline: none;
+  }
+
+  div > div > div:nth-child(2) > .ReactVirtualized__Grid {
+    overflow: hidden !important;
+  }
+
+  div > div > div:nth-child(2) > .ReactVirtualized__Grid:hover {
+    overflow: auto !important;
+  }
+
+  input {
+    width: 100%;
+    height: 30px;
+    padding: 0 0.5em;
+    border: none !important;
+
+    &:not(:focus) {
+      background-color: transparent !important;
+    }
+  }
+
+  .ReactVirtualized__Table__row:nth-child(even) {
+    background: $table-row-e-bg;
+  }
+
+  .locations-grid-cell {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 $table-cell-pad;
+    height: 40px;
+
+    // Editable cell styles
+    .locations-grid-cell__icon-container,
+    .locations-grid-cell__icon {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    &:focus {
+      background-color: $gfw-white;
+    }
+
+    &:hover:not(:focus-within) {
+      .locations-grid-cell__icon-container {
+        opacity: 1;
+        position: absolute;
+        right: $space-compact;
+        top: 50%;
+        height: 30px;
+        width: 30px;
+        border-radius: 100%;
+        background-color: $gfw-green;
+        box-shadow: $box-shadow__flat;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .locations-grid-cell__icon {
+        opacity: 1;
+        color: $gfw-white;
+      }
+    }
+  }
+
+  // Exclamation triangle within errored rows
+  .row-invalid__icon {
+    color: $theme-danger-red-2;
+  }
+
+  .row-invalid,
+  .row-invalid--first,
+  .row-invalid--last {
+    background: rgba($theme-danger-red-2, 0.1);
+  }
+
+  // Text container for non-editable cells
+  .step-three-cell-span {
+    min-height: 17px;
+    width: 100%;
+    display: block;
+  }
+
+  // Invalid cell styles
+  .invalid-td {
+    box-shadow: inset 0 0 0 2px $theme-danger-red-2 !important;
+  }
+
+  .invalid-tooltip {
+    display: inline-block;
+    background-color: $gfw-light-gray !important;
+    width: 450px;
+
+    &.place-top {
+      &:after {
+        border-top-color: $gfw-light-gray !important;
+        border-top-style: solid !important;
+        border-top-width: 6px !important;
+      }
+    }
+    &.place-bottom {
+      &:after {
+        border-bottom-color: $gfw-light-gray !important;
+        border-bottom-style: solid !important;
+        border-bottom-width: 6px !important;
+      }
+    }
+    &.place-right {
+      &:after {
+        border-right-color: $gfw-light-gray !important;
+        border-right-style: solid !important;
+        border-right-width: 6px !important;
+      }
+    }
+    &.place-left {
+      &:after {
+        border-left-color: $gfw-light-gray !important;
+        border-left-style: solid !important;
+        border-left-width: 6px !important;
+      }
+    }
+  }
+}

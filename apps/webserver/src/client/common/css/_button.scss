@@ -1,0 +1,547 @@
+// ----- Button -----
+$button-height: 35px;
+
+.gfw-button {
+  margin: 0 0.25em;
+  padding: 0 1.5em;
+  font-size: $font-size-medium;
+  font-weight: 700;
+  height: $button-height;
+  line-height: $button-height;
+  border-radius: calc(#{$button-height} / 2);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s linear;
+  text-align: center;
+  display: inline-block;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  &__content {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  &.disabled,
+  &.disabled:hover,
+  &.button-disabled &[disabled],
+  &[disabled] {
+    background-color: #ccc;
+    color: #fff;
+    cursor: default;
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &.btn-dark-gray {
+    background-color: #4a4a4a !important;
+    &:hover {
+      background-color: #e6e6e6;
+    }
+  }
+}
+
+.btn-white {
+  background-color: $gfw-white;
+  color: $gfw-green;
+
+  &:hover {
+    background-color: $gfw-light-gray;
+  }
+}
+
+.button-primary,
+.btn-green {
+  background-color: $home_top_brand-color;
+  color: #fff;
+
+  &:hover {
+    background-color: #789631 !important;
+  }
+
+  &.button-disabled {
+    background-color: #ccc;
+    color: #fff;
+    &:hover {
+      background-color: #ccc !important;
+    }
+  }
+}
+
+.button-secondary,
+.btn-gray {
+  background-color: #cccccc;
+  color: #fff;
+
+  &:hover {
+    background-color: $gfw-light-gray;
+  }
+
+  &.button-disabled {
+    background-color: #ccc;
+    color: #fff;
+    &:hover {
+      background-color: #ccc !important;
+    }
+  }
+}
+
+.btn-white {
+  background-color: #fff;
+  color: $home_top_brand-color;
+
+  &:hover {
+    background-color: $gfw-light-gray;
+  }
+
+  &.button-disabled {
+    background-color: #ccc;
+    color: #fff !important;
+    &:hover {
+      background-color: #ccc !important;
+    }
+  }
+}
+
+.btn-red {
+  background-color: $gfw-red;
+  color: #fff;
+
+  &:hover {
+    background-color: darken($gfw-red, 10%);
+  }
+}
+
+.buttons-container {
+  border-top: 1px solid $gfw-light-gray;
+  margin: 2em 0 0 0;
+  padding: 1em 0;
+
+  .button,
+  .link-button {
+    margin-right: $space-normal;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.btn-width-12rem {
+  flex-shrink: 0;
+  flex-grow: 0;
+  margin: 0.5rem 0;
+  width: 12rem;
+}
+
+.clear-button {
+  color: #000;
+  border-radius: 100%;
+  background-color: #fff;
+  padding: 0;
+  height: 24px;
+  width: 24px;
+  line-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  position: absolute;
+  left: 9rem;
+  bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.clear-button-gfw {
+  color: #000;
+  border-radius: 100%;
+  background-color: #fff;
+  padding: 0;
+  height: 24px;
+  width: 24px;
+  line-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  position: absolute;
+  left: 9rem;
+  bottom: 0.75rem;
+  cursor: pointer;
+}
+
+.clear-button-map {
+  color: #000;
+  border-radius: 100%;
+  background-color: #fff;
+  padding: 0;
+  height: 24px;
+  width: 24px;
+  line-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  position: absolute;
+  left: 7.9rem;
+  bottom: 0.7rem;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.filter-button {
+  margin-right: 0 !important;
+  width: 140px;
+}
+
+.btn-transparent {
+  background-color: transparent;
+  color: $gfw-black;
+
+  &:hover {
+    background-color: $gfw-light-gray;
+  }
+
+  &:focus {
+    @include focus-outline();
+  }
+
+  &.button-disabled {
+    background-color: transparent !important;
+    color: rgba($gfw-black, 0.5) !important;
+
+    &:hover {
+      background-color: transparent !important;
+    }
+  }
+}
+
+// --------------
+// LinkButton
+// --------------
+.link-button {
+  &:focus {
+    @include focus-outline();
+    background: transparent !important;
+  }
+
+  &:hover:not([disabled]) {
+    color: $gfw-green !important;
+    background-color: transparent !important;
+  }
+
+  &:active,
+  &:active:hover:not([disabled]) {
+    color: darken($gfw-green, 5%) !important;
+  }
+
+  &[disabled] {
+    cursor: not-allowed !important;
+    opacity: 0.5;
+  }
+}
+
+.back-button {
+  svg {
+    margin-left: 0 !important;
+    margin-right: 12px !important;
+  }
+}
+
+// --------------
+// Button
+// (based on RaisedButton)
+// --------------
+.button,
+.button--secondary {
+  background-color: transparent;
+  color: $gfw-x-dark-gray;
+  box-shadow: none !important;
+
+  button {
+    background-color: $gfw-light-gray !important;
+
+    &:focus {
+      @include focus-outline();
+    }
+
+    &:hover:not([disabled]) {
+      background-color: darken($gfw-light-gray, 10%) !important;
+    }
+
+    &:active,
+    &:active:hover:not([disabled]) {
+      background-color: darken($gfw-light-gray, 20%) !important;
+    }
+
+    &[disabled] {
+      cursor: not-allowed !important;
+      opacity: 0.5;
+
+      span {
+        opacity: 0.5 !important;
+      }
+    }
+  }
+
+  // Sizes
+  &--small {
+    button {
+      height: 20px !important;
+      padding: 3px !important;
+      line-height: 1 !important;
+    }
+  }
+
+  // Variations
+  &--primary {
+    color: $gfw-white !important;
+
+    button {
+      background-color: $gfw-green !important;
+
+      &:hover:not([disabled]) {
+        background-color: darken($gfw-green, 10%) !important;
+      }
+
+      &:active,
+      &:active:hover:not([disabled]) {
+        background-color: darken($gfw-green, 20%) !important;
+      }
+
+      &[disabled] {
+        color: $gfw-white !important;
+        opacity: 0.5;
+
+        span {
+          opacity: 1 !important;
+        }
+      }
+    }
+  }
+
+  &--tertiary {
+    button {
+      background-color: transparent !important;
+      border: 1px solid $gfw-light-gray !important;
+
+      &:hover:not([disabled]) {
+        background-color: $gfw-x-light-gray !important;
+      }
+
+      &:active,
+      &:active:hover:not([disabled]) {
+        background-color: darken($gfw-x-light-gray, 5%) !important;
+      }
+
+      &[disabled] {
+        opacity: 0.5;
+
+        span {
+          opacity: 1 !important;
+        }
+      }
+    }
+  }
+
+  &--clear {
+    button {
+      width: 100px;
+      border: none;
+      background-color: transparent !important;
+
+      &:hover:not([disabled]) {
+        background-color: $gfw-x-light-gray !important;
+      }
+
+      &:active,
+      &:active:hover:not([disabled]) {
+        background-color: darken($gfw-x-light-gray, 5%) !important;
+      }
+
+      &[disabled] {
+        opacity: 0.5;
+
+        span {
+          opacity: 1 !important;
+        }
+      }
+    }
+  }
+
+  &--danger {
+    button {
+      transition: none !important;
+      color: $theme-danger-dark-red !important;
+      background-color: transparent !important;
+      border: 1px solid $theme-danger-red !important;
+
+      &:hover:not([disabled]) {
+        color: $gfw-white !important;
+        background-color: $theme-danger-red !important;
+      }
+
+      &:active,
+      &:active:hover:not([disabled]) {
+        color: $gfw-white !important;
+        background-color: darken($theme-danger-red, 5%) !important;
+      }
+
+      &[disabled] {
+        color: $theme-danger-dark-red !important;
+        background-color: transparent !important;
+        opacity: 0.3;
+
+        span {
+          opacity: 1 !important;
+        }
+      }
+    }
+  }
+
+  &--link {
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
+    color: #789631;
+    margin: 0 auto;
+  }
+}
+
+// --------------
+// IconButton
+// --------------
+.icon-button {
+  &:focus {
+    @include focus-outline();
+  }
+
+  &:hover:not([disabled]) {
+    background-color: $gfw-light-gray !important;
+    transform: scale(1.04);
+  }
+
+  &:active,
+  &:active:hover:not([disabled]) {
+    background-color: darken($gfw-light-gray, 10%) !important;
+    transform: scale(0.99);
+  }
+
+  &[disabled] {
+    cursor: not-allowed !important;
+    opacity: 0.5;
+  }
+
+  // Variations
+  &--menu {
+    background-color: $gfw-light-gray !important;
+
+    &:focus {
+      background-color: transparent !important;
+    }
+
+    &:hover:not([disabled]) {
+      background-color: darken($gfw-light-gray, 10%) !important;
+    }
+
+    &:active,
+    &:active:hover:not([disabled]) {
+      background-color: darken($gfw-light-gray, 20%) !important;
+    }
+
+    &[disabled] {
+      background-color: transparent !important;
+      opacity: 0.5;
+    }
+  }
+
+  // Sizes
+  &--small {
+    width: 16px !important;
+    height: 16px !important;
+    padding: 2px !important;
+
+    svg {
+      width: 12px;
+      height: auto;
+    }
+  }
+
+  &--medium {
+    width: 28px !important;
+    height: 28px !important;
+    padding: 6px !important;
+
+    svg {
+      width: 16px;
+      height: auto;
+    }
+  }
+
+  &--large {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 6px !important;
+
+    svg {
+      width: 24px;
+      height: auto;
+    }
+  }
+
+  &--x-large {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 6px !important;
+
+    svg {
+      width: 40px;
+      height: auto;
+    }
+  }
+
+  // Variations
+  &--primary {
+    color: $gfw-white;
+    background-color: $gfw-green !important;
+
+    &:hover:not([disabled]) {
+      background-color: darken($gfw-green, 10%) !important;
+    }
+
+    &:active,
+    &:active:hover:not([disabled]) {
+      background-color: darken($gfw-green, 20%) !important;
+    }
+
+    &[disabled] {
+      opacity: 0.5;
+
+      svg {
+        fill: $gfw-white !important;
+      }
+    }
+  }
+
+  &--secondary {
+    color: $gfw-dark-gray;
+    background-color: $gfw-light-gray !important;
+
+    &:hover:not([disabled]) {
+      background-color: darken($gfw-light-gray, 10%) !important;
+    }
+
+    &:active,
+    &:active:hover:not([disabled]) {
+      background-color: darken($gfw-light-gray, 20%) !important;
+    }
+
+    &[disabled] {
+      opacity: 0.5;
+    }
+  }
+}

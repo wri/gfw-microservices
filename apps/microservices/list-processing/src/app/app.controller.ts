@@ -6,7 +6,7 @@ import {
   RequestSaveLargeListProcessModel,
   RequestTriggerProcessLargeList,
 } from './../models/index';
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { LocationService } from '@wri-monorepos/geo';
@@ -39,9 +39,7 @@ export class AppController {
    * @returns
    */
   @Post('/get-object-presigned-url')
-  getObjectPresignedURL(
-    @Body() request: Omit<RequestPreSignedURLModel, 'contentType'>
-  ) {
+  getObjectPresignedURL(@Body() request: Omit<RequestPreSignedURLModel, 'contentType'>) {
     return this.appService.getObjectPreSignedUrl(request.key);
   }
 
@@ -90,5 +88,13 @@ export class AppController {
       request.srcListAnalysisTable
     );
     return 'processing';
+  }
+
+  /**
+   * Healthcheck for fargate
+   */
+  @Get('/HealthCheck')
+  getHealthCheck(): string {
+    return this.appService.getHealthCheck();
   }
 }

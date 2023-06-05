@@ -1,6 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { PassThrough } from 'stream';
+import { finished } from 'stream/promises';
 
 export abstract class IPipeService {
   @Inject(EmailService)
@@ -68,5 +70,12 @@ export abstract class IPipeService {
       .then((location) => {
         this.finishedEmail(filters, location);
       });
+  }
+
+  public async waitFinishedProcess(inputStream: PassThrough) {
+    inputStream.end();
+    await finished(inputStream);
+    inputStream.removeAllListeners();
+    inputStream.destroy();
   }
 }

@@ -7,21 +7,21 @@ export class FullConnectionFiltersDto {
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  id: Number;
+  id: number;
 
   @IsOptional()
   @IsEnum(ConnectionStatus)
-  status: String;
+  status: string;
 
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  targetId: Number;
+  targetId: number;
 
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  sourceId: Number;
+  sourceId: number;
 }
 
 export class ConnectionFiltersDto extends PartialType(FullConnectionFiltersDto) {}

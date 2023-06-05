@@ -343,13 +343,10 @@ export default class Map extends Component {
             }
           });
         }
-        ga(
-          'send',
-          'event',
-          'Map Click',
-          'layer toggle',
-          `user turned the ${nowVisibleLayer} layer on`
-        );
+        gtag('event', 'layer toggle', {
+          event_category: 'Map Click',
+          event_label: `user turned the ${nowVisibleLayer} layer on`,
+        });
       });
     } else if (prevState.visibleLayers.length > visibleLayers.length) {
       this.view.popup.close();
@@ -375,13 +372,10 @@ export default class Map extends Component {
             }
           });
         }
-        ga(
-          'send',
-          'event',
-          'Map Click',
-          'layer toggle',
-          `user turned the ${nowHiddenLayer} layer off`
-        );
+        gtag('event', 'layer toggle', {
+          event_category: 'Map Click',
+          event_label: `user turned the ${nowHiddenLayer} layer off`,
+        });
       });
 
       const nowVisible = visibleLayers.filter(
@@ -423,13 +417,10 @@ export default class Map extends Component {
             let nowVisibleLayer = this.view.map.findLayerById(visibleLayer);
             if (nowVisibleLayer) {
               nowVisibleLayer.visible = true;
-              ga(
-                'send',
-                'event',
-                'Map Click',
-                'layer toggle',
-                `user turned the ${nowVisibleLayer.id} layer on`
-              );
+              gtag('event', 'layer toggle', {
+                event_category: 'Map Click',
+                event_label: `user turned the ${nowVisibleLayer.id} layer on`,
+              });
             } else {
               nowVisibleLayer = layersToAdd.find((layer) => layer.id === visibleLayer);
               const configLayer = mapPage.layers.find((layer) => layer.id === visibleLayer);
@@ -439,13 +430,10 @@ export default class Map extends Component {
                 }
                 this.view.map.add(nowVisibleLayer);
                 nowVisibleLayer.visible = true;
-                ga(
-                  'send',
-                  'event',
-                  'Map Click',
-                  'layer toggle',
-                  `user turned the ${nowVisibleLayer.id} layer on`
-                );
+                gtag('event', 'layer toggle', {
+                  event_category: 'Map Click',
+                  event_label: `user turned the ${nowVisibleLayer.id} layer on`,
+                });
               } else if (visibleLayer === formaAlertsID) {
                 this.getFormaLayer(this.state.mapLayers).then((formaLayer) => {
                   this.getFormaLayerCallback(configLayer, formaLayer);
@@ -478,13 +466,10 @@ export default class Map extends Component {
                     raddCoverageLayer.visible = false;
                   }
                 }
-                ga(
-                  'send',
-                  'event',
-                  'Map Click',
-                  'layer toggle',
-                  `user turned the ${nowHiddenLayer.id} layer off`
-                );
+                gtag('event', 'layer toggle', {
+                  event_category: 'Map Click',
+                  event_label: `user turned the ${nowHiddenLayer.id} layer off`,
+                });
               }
             });
           }
@@ -1899,24 +1884,18 @@ export default class Map extends Component {
     }
 
     //TODO: Should we combine these two events?
-    ga(
-      'send',
-      'event',
-      'Map Click',
-      'analyses activate',
-      `user ran the ${analysisType} analysis against ${
+    gtag('event', 'analyses activate', {
+      event_category: 'Map Click',
+      event_label: `user ran the ${analysisType} analysis against ${
         type === 'admin' ? 'an administrative' : 'a custom'
-      } area`
-    );
-    ga(
-      'send',
-      'event',
-      this.state.activeAnalysis === 'region' ? 'Map Select' : 'Map Draw',
-      'analyses type',
-      `user ran the analysis via ${
+      } area`,
+    });
+    gtag('event', 'analyses type', {
+      event_category: this.state.activeAnalysis === 'region' ? 'Map Select' : 'Map Draw',
+      event_label: `user ran the analysis via ${
         this.state.activeAnalysis === 'region' ? 'selecting a country or region' : 'drawing an area'
-      }`
-    );
+      }`,
+    });
     return { microservice: microservice, type: analysisType };
   };
 
@@ -2287,13 +2266,10 @@ export default class Map extends Component {
       request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
       request.send(`list_ids=${list_ids}`);
-      ga(
-        'send',
-        'event',
-        'Map Load',
-        'locations add',
-        `user added locations from the ${userList.list_name} list`
-      );
+      gtag('event', 'locations add', {
+        event_category: 'Map Load',
+        event_label: `user added locations from the ${userList.list_name} list`,
+      });
     } else if (i && gfwlist) {
       const id = GFWLists[i - 1];
       let mapLayer;
@@ -2516,13 +2492,10 @@ export default class Map extends Component {
     request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
     request.send(`list_ids=${list_ids}`);
-    ga(
-      'send',
-      'event',
-      'Map Click',
-      'locations add',
-      `user added locations from the ${listName} list`
-    );
+    gtag('event', 'locations add', {
+      event_category: 'Map Click',
+      event_label: `user added locations from the ${listName} list`,
+    });
   };
 
   getFormaLayer = (layers) => {
@@ -2553,7 +2526,10 @@ export default class Map extends Component {
   getFormaLayerCallback = (configLayer, formaLayer) => {
     this.view.map.add(formaLayer);
     formaLayer.visible = true;
-    ga('send', 'event', 'Map Click', 'layer toggle', `user turned the ${formaLayer.id} layer on`);
+    gtag('event', 'layer toggle', {
+      event_category: 'Map Click',
+      event_label: `user turned the ${formaLayer.id} layer on`,
+    });
     this.setLayerWatching(configLayer, formaLayer);
   };
 
@@ -2742,13 +2718,10 @@ export default class Map extends Component {
         }
       }
     );
-    ga(
-      'send',
-      'event',
-      'Map Click',
-      'timeslider update',
-      'user updated the tree cover loss timeslider'
-    );
+    gtag('event', 'timeslider update', {
+      event_category: 'Map Click',
+      event_label: 'user updated the tree cover loss timeslider',
+    });
   };
 
   setBiomassTimeline = (startYear, endYear) => {
@@ -2773,13 +2746,10 @@ export default class Map extends Component {
         }
       }
     );
-    ga(
-      'send',
-      'event',
-      'Map Click',
-      'timeslider update',
-      'user updated the biomass loss timeslider'
-    );
+    gtag('event', 'timeslider update', {
+      event_category: 'Map Click',
+      event_label: 'user updated the biomass loss timeslider',
+    });
   };
 
   setProdesTimeline = (startYear, endYear) => {
@@ -2799,7 +2769,10 @@ export default class Map extends Component {
       }
     });
 
-    ga('send', 'event', 'Map Click', 'timeslider update', 'user updated the prodes timeslider');
+    gtag('event', 'timeslider update', {
+      event_category: 'Map Click',
+      event_label: 'user updated the prodes timeslider',
+    });
   };
 
   /**
@@ -2852,19 +2825,19 @@ export default class Map extends Component {
     }
 
     this.forceUpdate();
-    ga('send', 'event', 'Map Click', 'basemap change', `user turned the ${id} basemap on`);
+    gtag('event', 'basemap change', {
+      event_category: 'Map Click',
+      event_label: `user turned the ${id} basemap on`,
+    });
   };
 
   toggleLayerVisibility = (layerId) => {
     const mapLayer = this.view.map.findLayerById(layerId);
     const previousVisibility = mapLayer.visible;
-    ga(
-      'send',
-      'event',
-      'Map Click',
-      'layer toggle',
-      `user turned the ${layerId} layer ${previousVisibility ? 'off' : 'on'}`
-    );
+    gtag('event', 'layer toggle', {
+      event_category: 'Map Click',
+      event_label: `user turned the ${layerId} layer ${previousVisibility ? 'off' : 'on'}`,
+    });
     mapLayer.visible = !mapLayer.visible;
     if (this.customGfwVectorTileLayer && mapLayer.id === this.activeGFWLayer.id) {
       // Hide/show Custom GFW Vector Tile depending on active GFW Layer

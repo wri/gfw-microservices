@@ -735,13 +735,10 @@ export default class SoutheastAsiaRegions extends Component {
             this.setState({
               tclChecked: !tclChecked,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'Southeast Asia checkbox clicked',
-              'user checked tree cover loss'
-            );
+            gtag('event', 'Southeast Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked tree cover loss',
+            });
           };
           indent = false;
           disabled = false;
@@ -758,13 +755,10 @@ export default class SoutheastAsiaRegions extends Component {
               idnPrimaryForestChecked: false,
               seaChecked: !this.state.seaChecked,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'Southeast Asia checkbox clicked',
-              'user checked southeast asia landcover'
-            );
+            gtag('event', 'Southeast Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked southeast asia landcover',
+            });
           };
           disabled = seaPresence ? false : true;
           indent = true;
@@ -781,13 +775,10 @@ export default class SoutheastAsiaRegions extends Component {
               idnPrimaryForestChecked: false,
               idnChecked: !this.state.idnChecked,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'Southeast Asia checkbox clicked',
-              'user checked indonesia landcover'
-            );
+            gtag('event', 'Southeast Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked indonesia landcover',
+            });
           };
           indent = true;
           disabled = indonesiaPresence ? false : true;
@@ -804,13 +795,10 @@ export default class SoutheastAsiaRegions extends Component {
               idnPrimaryForestChecked: false,
               idnLegalChecked: !this.state.idnLegalChecked,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'Southeast Asia checkbox clicked',
-              'user checked indonesia legal classification'
-            );
+            gtag('event', 'Southeast Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked indonesia legal classification',
+            });
           };
           indent = true;
           disabled = indonesiaPresence ? false : true;
@@ -827,13 +815,10 @@ export default class SoutheastAsiaRegions extends Component {
               idnPrimaryForestChecked: false,
               idnMoratoriumChecked: !this.state.idnMoratoriumChecked,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'Southeast Asia checkbox clicked',
-              'user checked indonesia forest moratorium'
-            );
+            gtag('event', 'Southeast Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked indonesia forest moratorium',
+            });
           };
           indent = true;
           disabled = indonesiaPresence ? false : true;
@@ -850,13 +835,10 @@ export default class SoutheastAsiaRegions extends Component {
               idnMoratoriumChecked: false,
               idnPrimaryForestChecked: !this.state.idnPrimaryForestChecked,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'Southeast Asia checkbox clicked',
-              'user checked indonesia primary forest'
-            );
+            gtag('event', 'Southeast Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked indonesia primary forest',
+            });
           };
           indent = true;
           disabled = indonesiaPresence ? false : true;
@@ -923,13 +905,10 @@ export default class SoutheastAsiaRegions extends Component {
         endYear: data.to_value,
         sliderActive: false,
       });
-      ga(
-        'send',
-        'event',
-        'Diagnostics Click',
-        'timeslider update',
-        'user updated the southeast asia timeslider'
-      );
+      gtag('event', 'timeslider update', {
+        event_category: 'Diagnostics Click',
+        event_label: 'user updated the southeast asia timeslider',
+      });
     }
   };
 

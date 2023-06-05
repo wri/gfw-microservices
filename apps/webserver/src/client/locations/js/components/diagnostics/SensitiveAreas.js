@@ -144,13 +144,10 @@ export default class SensitiveAreas extends Component {
       endYear: data.to_value,
       sliderActive: false,
     });
-    ga(
-      'send',
-      'event',
-      'Diagnostics Click',
-      'timeslider update',
-      'user updated the sensitive areas timeslider'
-    );
+    gtag('event', 'timeslider update', {
+      event_category: 'Diagnostics Click',
+      event_label: 'user updated the sensitive areas timeslider',
+    });
   };
 
   sliderChanging = () => {
@@ -165,13 +162,10 @@ export default class SensitiveAreas extends Component {
     this.setState({
       tclChecked: !this.state.tclChecked,
     });
-    ga(
-      'send',
-      'event',
-      'Forest Change Diagnostics Click',
-      'Sensitive areas checkbox clicked',
-      'user checked tree cover loss'
-    );
+    gtag('event', 'Sensitive areas checkbox clicked', {
+      event_category: 'Forest Change Diagnostics Click',
+      event_label: 'user checked tree cover loss',
+    });
   };
 
   updatePF = () => {
@@ -181,13 +175,10 @@ export default class SensitiveAreas extends Component {
       peatChecked: false,
       iflChecked: false,
     });
-    ga(
-      'send',
-      'event',
-      'Forest Change Diagnostics Click',
-      'Sensitive areas checkbox clicked',
-      'user checked primary forest'
-    );
+    gtag('event', 'Sensitive areas checkbox clicked', {
+      event_category: 'Forest Change Diagnostics Click',
+      event_label: 'user checked primary forest',
+    });
   };
 
   updatePA = () => {
@@ -197,13 +188,10 @@ export default class SensitiveAreas extends Component {
       peatChecked: false,
       iflChecked: false,
     });
-    ga(
-      'send',
-      'event',
-      'Forest Change Diagnostics Click',
-      'Sensitive areas checkbox clicked',
-      'user checked protected areas'
-    );
+    gtag('event', 'Sensitive areas checkbox clicked', {
+      event_category: 'Forest Change Diagnostics Click',
+      event_label: 'user checked protected areas',
+    });
   };
 
   updatePeat = () => {
@@ -215,13 +203,10 @@ export default class SensitiveAreas extends Component {
         iflChecked: false,
       });
     }
-    ga(
-      'send',
-      'event',
-      'Forest Change Diagnostics Click',
-      'Sensitive areas checkbox clicked',
-      'user checked peat'
-    );
+    gtag('event', 'Sensitive areas checkbox clicked', {
+      event_category: 'Forest Change Diagnostics Click',
+      event_label: 'user checked peat',
+    });
   };
 
   updateIFL = () => {
@@ -231,13 +216,10 @@ export default class SensitiveAreas extends Component {
       paChecked: false,
       peatChecked: false,
     });
-    ga(
-      'send',
-      'event',
-      'Forest Change Diagnostics Click',
-      'Sensitive areas checkbox clicked',
-      'user checked intact forest landscape'
-    );
+    gtag('event', 'Sensitive areas checkbox clicked', {
+      event_category: 'Forest Change Diagnostics Click',
+      event_label: 'user checked intact forest landscape',
+    });
   };
 
   processTotals = () => {

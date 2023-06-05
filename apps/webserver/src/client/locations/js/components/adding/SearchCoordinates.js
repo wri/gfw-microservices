@@ -50,13 +50,10 @@ export default class SearchCoordinates extends Component {
       longitude: lng,
     });
     this.props.setGeometry(geom);
-    ga(
-      'send',
-      'event',
-      'Locations Enter',
-      'add location enter coordinates',
-      'user entered latitude and longitude in the add location page'
-    );
+    gtag('event', 'add location enter coordinates', {
+      event_category: 'Locations Enter',
+      event_label: 'user entered latitude and longitude in the add location page',
+    });
   };
 
   setArea = (evt) => {

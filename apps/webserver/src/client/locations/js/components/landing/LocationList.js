@@ -118,13 +118,10 @@ export default class LocationList extends Component {
         console.log('Error when re-running a list', err);
       });
 
-    ga(
-      'send',
-      'event',
-      'Landing',
-      'update button click',
-      'user clicked on the ok button in the modal window to confirm updating the list'
-    );
+    gtag('event', 'update button click', {
+      event_category: 'Landing',
+      event_label: 'user clicked on the ok button in the modal window to confirm updating the list',
+    });
   };
 
   handleRerunDialogState = (e) => {
@@ -151,15 +148,15 @@ export default class LocationList extends Component {
     const { folder } = listProps;
     if (folder) {
       // if the user clicked on the map option from a folder
-      ga(
-        'send',
-        'event',
-        'Landing Page Click',
-        'Folder Click',
-        'User shares list from folder view'
-      );
+      gtag('event', 'Folder Click', {
+        event_category: 'Landing Page Click',
+        event_label: 'User shares list from folder view',
+      });
     } else {
-      ga('send', 'event', 'Landing', 'User opens more menu for list from locations page', 'Share');
+      gtag('event', 'User opens more menu for list from locations page', {
+        event_category: 'Landing',
+        event_label: 'Share',
+      });
     }
 
     store.dispatch(resetList());
@@ -181,21 +178,15 @@ export default class LocationList extends Component {
 
     if (folder) {
       // if the user clicked on the map option from a folder
-      ga(
-        'send',
-        'event',
-        'Landing Page Click',
-        'Folder Click',
-        'User goes to diagnostic for list from folder view'
-      );
+      gtag('event', 'Folder Click', {
+        event_category: 'Landing Page Click',
+        event_label: 'User goes to diagnostic for list from folder view',
+      });
     } else {
-      ga(
-        'send',
-        'event',
-        'Landing',
-        'User opens more menu for list from locations page',
-        'Diagnostic'
-      );
+      gtag('event', 'Diagnostic', {
+        event_category: 'Landing',
+        event_label: 'User opens more menu for list from locations page',
+      });
     }
     this.setState({ isLoadingDiagnostic: true });
     fetch({
@@ -278,21 +269,15 @@ export default class LocationList extends Component {
 
     if (folder) {
       // if the user clicked on the map option from a folder
-      ga(
-        'send',
-        'event',
-        'Landing Page Click',
-        'Folder Click',
-        'User goes to map for list from folder view'
-      );
+      gtag('event', 'Folder Click', {
+        event_category: 'Landing Page Click',
+        event_label: 'User goes to map for list from folder view',
+      });
     } else {
-      ga(
-        'send',
-        'event',
-        'Landing',
-        'List item map click',
-        `user clicked to go to the map for list ${list.list_name}`
-      );
+      gtag('event', 'List item map click', {
+        event_category: 'Landing',
+        event_label: `user clicked to go to the map for list ${list.list_name}`,
+      });
     }
 
     const sendData = {
@@ -395,10 +380,16 @@ export default class LocationList extends Component {
 
       if (list_status_id === locationsPage.listStatus.Active) {
         // clicked a location with a successfully completed analysis; go to it
-        ga('send', 'event', 'Landing', 'List click', `user clicked on list ${list_name}`);
+        gtag('event', 'List click', {
+          event_category: 'Landing',
+          event_label: `user clicked on list ${list_name}`,
+        });
       } else if (list_status_id === locationsPage.listStatus.Draft) {
         // clicked a Draft list; go to it
-        ga('send', 'event', 'Landing', 'List click', `user clicked on Draft list ${list_name}`);
+        gtag('event', 'List click', {
+          event_category: 'Landing',
+          event_label: `user clicked on Draft list ${list_name}`,
+        });
       }
       window.location = `/locations?id=${id}${is_shared ? '&shared=true' : ''}`;
     };
@@ -602,20 +593,12 @@ export default class LocationList extends Component {
               dialogActionConfirm={() => {
                 requestGeoTrellisAnalyzeList(list)
                   .then((response) => {
-                    ga(
-                      'send',
-                      'event',
-                      'Submit',
-                      'Submit List',
-                      'User submits a list for analysis'
-                    );
-                    ga(
-                      'send',
-                      'event',
-                      'Submit',
-                      'Submit List',
-                      'User submits a list from landing page'
-                    );
+                    gtag('event', 'User submits a list from landing page', {
+                      event_category: 'Submit List',
+                    });
+                    gtag('event', 'Submit List', 'User submits a list from landing page', {
+                      event_category: 'Submit List',
+                    });
                     // TODO: Get details what to do after list is submitted
                     console.log(response.data);
                     window.location.reload();
@@ -637,13 +620,10 @@ export default class LocationList extends Component {
             list={list}
             onCancel={() => this.setState({ isManageListFolderOpen: false })}
             onComplete={(msg) => {
-              ga(
-                'send',
-                'event',
-                'Landing',
-                'User opens more menu for list from locations page',
-                'Add to folder'
-              );
+              gtag('event', 'User opens more menu for list from locations page', {
+                event_category: 'Landing',
+                event_label: 'Add to folder',
+              });
               this.setState({ isManageListFolderOpen: false });
               onFolderChange(msg);
             }}
@@ -655,13 +635,10 @@ export default class LocationList extends Component {
               list={list}
               onCancel={() => this.setState({ isDeleteDialogOpen: false })}
               onComplete={() => {
-                ga(
-                  'send',
-                  'event',
-                  'Landing',
-                  'User opens more menu for list from locations page',
-                  'Delete'
-                );
+                gtag('event', 'User opens more menu for list from locations page', {
+                  event_category: 'Landing',
+                  event_label: 'Delete',
+                });
                 this.setState({ isDeleteDialogOpen: false });
               }}
             />

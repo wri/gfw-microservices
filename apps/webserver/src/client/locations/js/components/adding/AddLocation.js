@@ -1489,33 +1489,27 @@ export default class AddLocation extends Component {
             );
 
             if (isSaveAsDraft) {
-              ga(
-                'send',
-                'event',
-                'Submit',
-                'Upload List',
-                'User uploads a list with single location as a draft'
-              );
+              gtag('event', 'Upload List', {
+                event_category: 'Submit',
+                event_label: 'User uploads a list with single location as a draft',
+              });
             } else {
-              ga(
-                'send',
-                'event',
-                'Submit',
-                'Upload List',
-                'User uploads a list with single location and submits'
-              );
+              gtag('event', 'Upload List', {
+                event_category: 'Submit',
+                event_label: 'User uploads a list with single location and submits',
+              });
             }
-
-            ga(
-              'send',
+            gtag(
               'event',
-              'Locations Click',
               isSaveAsDraft
                 ? 'add locations save button clicked'
                 : 'add locations save as draft button clicked',
-              isSaveAsDraft
-                ? `user created a list with a newly added ${this.props.addType} location with a commodity type of ${this.props.activeTemplate}`
-                : `user created as draft a list with a newly added ${this.props.addType} location with a commodity type of ${this.props.activeTemplate}`
+              {
+                event_category: 'Locations Click',
+                event_label: isSaveAsDraft
+                  ? `user created a list with a newly added ${this.props.addType} location with a commodity type of ${this.props.activeTemplate}`
+                  : `user created as draft a list with a newly added ${this.props.addType} location with a commodity type of ${this.props.activeTemplate}`,
+              }
             );
           } else {
             const activeList = this.props.userLists.filter((list) => {
@@ -1557,31 +1551,20 @@ export default class AddLocation extends Component {
               };
               request.open('POST', '/locations/updateExistingList', true);
               if (isSaveAsDraft) {
-                ga(
-                  'send',
-                  'event',
-                  'Submit',
-                  'Upload List',
-                  'User uploads a list with single location as a draft'
-                );
+                gtag('event', 'Upload List', {
+                  event_category: 'Submit',
+                  event_label: 'User uploads a list with single location as a draft',
+                });
               } else {
-                ga(
-                  'send',
-                  'event',
-                  'Submit',
-                  'Upload List',
-                  'User uploads a list with single location and submits'
-                );
+                gtag('event', 'Upload List', {
+                  event_category: 'Submit',
+                  event_label: 'User uploads a list with single location and submits',
+                });
               }
-
-              ga(
-                'send',
-                'event',
-                'Locations Click',
-                'add locations save button clicked',
-                `user added ${this.props.addType} location to an existing list with a commodity type of ${this.props.activeTemplate}`
-              );
-
+              gtag('event', 'add locations save button clicked', {
+                event_category: 'Locations Click',
+                event_label: `user added ${this.props.addType} location to an existing list with a commodity type of ${this.props.activeTemplate}`,
+              });
               this.setState({ saved: true });
             }
           }

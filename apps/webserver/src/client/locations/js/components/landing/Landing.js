@@ -116,13 +116,10 @@ class Landing extends Component {
     const { history } = this.props;
     history.push('/add');
     store.dispatch(changeView('add'));
-    ga(
-      'send',
-      'event',
-      'Landing Page Click',
-      'Add a Location button clicked',
-      'user clicked to add a single location'
-    );
+    gtag('event', 'Add a Location button clicked', {
+      event_category: 'Landing Page Click',
+      event_label: 'user clicked to add a single location',
+    });
   };
 
   changeFolderView = (folder) => {
@@ -273,10 +270,14 @@ class Landing extends Component {
 
     const onChangeListsFilter = (value) => {
       if (value !== '' && userListFilterText === '') {
-        ga('send', 'event', 'Landing Page Click', 'User enters a search');
+        gtag('event', 'User enters a search', {
+          event_category: 'Landing Page Click',
+        });
       }
       if (value === '' && userListFilterText !== '') {
-        ga('send', 'event', 'Landing Page Click', 'User clears search');
+        gtag('event', 'User clears search', {
+          event_category: 'Landing Page Click',
+        });
       }
       this.setState({ userListFilterText: value });
     };

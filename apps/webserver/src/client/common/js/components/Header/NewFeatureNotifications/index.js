@@ -17,13 +17,10 @@ const NewFeatureNotifications = () => {
   const handleShow = (event) => {
     setAnchorEl(event.currentTarget);
     setShowList(true);
-    ga(
-      'send',
-      'event',
-      'In-App Notifications Click',
-      'In-App Notifications Icon Clicked',
-      'User click on icon to display In-App Notifications'
-    );
+    gtag('event', 'In-App Notifications Icon Clicked', {
+      event_category: 'In-App Notifications Click',
+      event_label: 'User click on icon to display In-App Notifications',
+    });
   };
 
   const handleClose = () => {

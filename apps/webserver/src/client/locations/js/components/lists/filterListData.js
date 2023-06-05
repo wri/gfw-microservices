@@ -113,8 +113,10 @@ const filterListData = (
     const dataIds = listData.map((d) => d.location_id);
     store.dispatch(updateFilteredData(dataIds));
   }
-
-  ga('send', 'event', 'Lists Click', 'List table filter', 'user filtered the lists table');
+  gtag('event', 'list table filter', {
+    event_category: 'Lists Click',
+    event_label: 'user filtered the lists table',
+  });
 };
 
 export default filterListData;

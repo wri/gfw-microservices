@@ -316,13 +316,10 @@ export default class SouthAmericaRegions extends Component {
         endYear: data.to_value,
         sliderActive: false,
       });
-      ga(
-        'send',
-        'event',
-        'Diagnostics Click',
-        'timeslider update',
-        'user updated the south america timeslider'
-      );
+      gtag('event', 'timeslider update', {
+        event_category: 'Diagnostics Click',
+        event_label: 'user updated the south america timeslider',
+      });
     }
   };
 
@@ -762,13 +759,10 @@ export default class SouthAmericaRegions extends Component {
               otbnArgentinaShowCategoryIIIChecked: false,
               biomesChecked: false,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'South America Asia checkbox clicked',
-              'user checked soy on tree cover loss'
-            );
+            gtag('event', 'South America Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked soy on tree cover loss',
+            });
           };
           break;
         case 'totalProdes':
@@ -788,13 +782,10 @@ export default class SouthAmericaRegions extends Component {
               otbnArgentinaShowCategoryIIIChecked: false,
               biomesChecked: false,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'South America Asia checkbox clicked',
-              'user checked prodes'
-            );
+            gtag('event', 'South America Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked prodes',
+            });
           };
           break;
         case 'totalPA':
@@ -805,13 +796,10 @@ export default class SouthAmericaRegions extends Component {
           disabled = !(legalAmazon && value !== 0);
           onChange = () => {
             this.handleProtectedAreaCheck();
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'South America Asia checkbox clicked',
-              'user checked protected areas'
-            );
+            gtag('event', 'South America Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked protected areas',
+            });
           };
           break;
         case 'totalPF':
@@ -822,13 +810,10 @@ export default class SouthAmericaRegions extends Component {
           disabled = !(legalAmazon && value !== 0);
           onChange = () => {
             this.handlePrimaryForestCheck();
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'South America Asia checkbox clicked',
-              'user checked primary forest'
-            );
+            gtag('event', 'South America Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked primary forest',
+            });
           };
           break;
         case 'saTotalTCL':
@@ -849,13 +834,10 @@ export default class SouthAmericaRegions extends Component {
               otbnArgentinaShowCategoryIIChecked: false,
               otbnArgentinaShowCategoryIIIChecked: false,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'South America Asia checkbox clicked',
-              'user checked tree cover loss'
-            );
+            gtag('event', 'South America Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked tree cover loss',
+            });
           };
           break;
         case 'otbnArgentina':
@@ -877,13 +859,10 @@ export default class SouthAmericaRegions extends Component {
               otbnArgentinaShowCategoryIIChecked: !this.state.otbnArgentinaChecked,
               otbnArgentinaShowCategoryIIIChecked: !this.state.otbnArgentinaChecked,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'South America Asia checkbox clicked',
-              'user checked Tree Cover Loss on Argentina OTBN'
-            );
+            gtag('event', 'South America Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked Tree Cover Loss on Argentina OTBN',
+            });
           };
           break;
         case 'totalBiomes':
@@ -904,13 +883,10 @@ export default class SouthAmericaRegions extends Component {
               otbnArgentinaShowCategoryIIIChecked: false,
               biomesChecked: !this.state.biomesChecked,
             });
-            ga(
-              'send',
-              'event',
-              'Forest Change Diagnostics Click',
-              'South America Asia checkbox clicked',
-              'user checked brazil biomes'
-            );
+            gtag('event', 'South America Asia checkbox clicked', {
+              event_category: 'Forest Change Diagnostics Click',
+              event_label: 'user checked brazil biomes',
+            });
           };
           break;
       }

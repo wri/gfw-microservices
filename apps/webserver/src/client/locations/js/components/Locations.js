@@ -277,15 +277,15 @@ class Locations extends Component {
 
   showShareList = (show) => {
     if (show) {
-      ga(
-        'send',
-        'event',
-        'Sharing',
-        'Back to list view link clicked',
-        'user clicked on the back to list view link from the sharing page'
-      );
+      gtag('event', 'Back to list view link clicked', {
+        event_category: 'Sharing',
+        event_label: 'user clicked on the back to list view link from the sharing page',
+      });
     } else {
-      ga('send', 'event', 'Lists Click', 'list table share', 'user clicked share list');
+      gtag('event', 'list table share', {
+        event_category: 'Lists Click',
+        event_label: 'user clicked share list',
+      });
     }
     this.setState({
       shareView: show,

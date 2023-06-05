@@ -621,13 +621,10 @@ const saveGfwListLocations = (
       console.warn('err', err);
     });
 
-  ga(
-    'send',
-    'event',
-    'Add GFW Click',
-    'Next button clicked',
-    'User copied locations from a GFW list'
-  );
+  gtag('event', 'Next button clicked', {
+    event_category: 'Add GFW Click',
+    event_label: 'User copied locations from a GFW list',
+  });
   return deferred;
 };
 

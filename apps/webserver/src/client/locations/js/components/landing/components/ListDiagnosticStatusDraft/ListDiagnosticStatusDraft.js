@@ -54,14 +54,14 @@ export default function ListDiagnosticStatusDraft({ list }) {
           dialogActionConfirm={() => {
             requestGeoTrellisAnalyzeList(list)
               .then((response) => {
-                ga('send', 'event', 'Submit', 'Submit List', 'User submits a list for analysis');
-                ga(
-                  'send',
-                  'event',
-                  'Submit',
-                  'Submit List',
-                  'User submits a list from landing page'
-                );
+                gtag('event', 'Submit List', {
+                  event_category: 'Submit',
+                  event_label: 'User submits a list for analysis',
+                });
+                gtag('event', 'Submit List', {
+                  event_category: 'Submit',
+                  event_label: 'User submits a list from landing page',
+                });
                 // TODO: Get details what to do after list is submitted
                 window.location.reload();
               })

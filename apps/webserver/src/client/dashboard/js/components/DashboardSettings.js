@@ -146,13 +146,10 @@ export default class DashboardSettings extends Component {
     };
 
     redirectToPage('/map', sendData);
-    ga(
-      'send',
-      'event',
-      'Dashboard Click',
-      'view map clicked',
-      'user is re-directed to the map page via a Dashboard View Map click'
-    );
+    gtag('event', 'view map clicked', {
+      event_category: 'Dashboard Click',
+      event_label: 'user is re-directed to the map page via a Dashboard View Map click',
+    });
   };
 
   createTimeframeOptions = () => {

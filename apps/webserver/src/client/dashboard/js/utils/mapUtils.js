@@ -55,13 +55,11 @@ function initializeMap(view) {
         store.dispatch(setZoomLevelTotal(locationsWithAlert));
         store.dispatch(selectAdmin(selectedAdmin));
         store.dispatch(incrementZoomLevel());
-        ga(
-          'send',
-          'event',
-          'Dashboard Click',
-          'Dashboard Map zoom in clicked',
-          'User click on a circle on the Dashboard to zoom the map in to the next level'
-        );
+        gtag('event', 'Dashboard Map zoom in clicked', {
+          event_category: 'Dashboard Click',
+          event_label:
+            'User click on a circle on the Dashboard to zoom the map in to the next level',
+        });
       } else {
         view.popup.close();
       }

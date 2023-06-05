@@ -49,10 +49,7 @@ export class UspDeleteLocationIdsFilteredDataForUserList {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      await connection.executeQuery(
-        'uspDeleteLocationIdsFilteredDataForUserList',
-        parameters
-      );
+      await connection.executeQuery('uspDeleteLocationIdsFilteredDataForUserList', parameters);
       connection.disconnect();
     } catch (error) {
       connection.disconnect();

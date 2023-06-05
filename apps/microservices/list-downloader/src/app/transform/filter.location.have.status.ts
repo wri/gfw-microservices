@@ -10,7 +10,10 @@ class FilterLocationHaveStatus extends Transform {
       return next();
     }
 
-    if (Object.prototype.hasOwnProperty.call(chunk, 'location_status_id') && chunk.location_status_id === this.status) {
+    if (
+      Object.prototype.hasOwnProperty.call(chunk, 'location_status_id') &&
+      chunk.location_status_id === this.status
+    ) {
       return next(null, chunk);
     }
     next();

@@ -97,13 +97,7 @@ export class GeoService {
    * @param {Array} gladValidateData Validated glad data
    * @param {Boolean} withGeom Boolean indicating the need for the geometry property
    */
-  mergeGeoJSONWithAnalysis = (
-    geojson,
-    gladData,
-    fireData,
-    extentData,
-    gladValidateData
-  ) => {
+  mergeGeoJSONWithAnalysis = (geojson, gladData, fireData, extentData, gladValidateData) => {
     return new Promise((resolve) =>
       resolve({
         type: 'FeatureCollection',
@@ -156,24 +150,12 @@ export class GeoService {
    * @param {Array} listAnalyses List level analysis data
    * @param {Array} dissolvedAnalyses Location level analysis data
    */
-  dashboardMerger = (
-    listGeoJSON,
-    dissolvedGeoJSON,
-    listAnalyses,
-    dissolvedAnalyses
-  ) => {
+  dashboardMerger = (listGeoJSON, dissolvedGeoJSON, listAnalyses, dissolvedAnalyses) => {
     return new Promise((resolve) => {
       const [listGlad, listFire, listExtent, listValidate] = listAnalyses;
-      const [dissolvedGlad, dissolvedFire, dissolvedExtent, dissolvedValidate] =
-        dissolvedAnalyses;
+      const [dissolvedGlad, dissolvedFire, dissolvedExtent, dissolvedValidate] = dissolvedAnalyses;
       Promise.all([
-        this.mergeGeoJSONWithAnalysis(
-          listGeoJSON,
-          listGlad,
-          listFire,
-          listExtent,
-          listValidate
-        ),
+        this.mergeGeoJSONWithAnalysis(listGeoJSON, listGlad, listFire, listExtent, listValidate),
         this.mergeGeoJSONWithAnalysis(
           dissolvedGeoJSON,
           dissolvedGlad,

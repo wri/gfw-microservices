@@ -129,8 +129,7 @@ describe('Palm Risk Analysis Parser', () => {
         ],
       },
       data: {
-        commodity_value_protected_areas_level:
-          '{ "2019": 1, "2020": 0,  "2021": 2}',
+        commodity_value_protected_areas_level: '{ "2019": 1, "2020": 0,  "2021": 2}',
       },
       dataRow,
       csvData,

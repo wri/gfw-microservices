@@ -7,10 +7,7 @@ import { SQL_CONFIG } from '../config/config';
 
 @Injectable()
 export class UspGetListAnalysis {
-  async run(
-    databaseName: string,
-    { listId: listID }: ListColumnsByIDRequest
-  ): Promise<unknown[]> {
+  async run(databaseName: string, { listId: listID }: ListColumnsByIDRequest): Promise<unknown[]> {
     const parameters = [{ field: 'list_id', type: sql.Int, value: listID }];
 
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });

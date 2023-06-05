@@ -9,15 +9,12 @@ import { SQL_CONFIG } from '../config/config';
 @Injectable()
 export class RawSQLRunner {
   /**
-   * 
+   *
    * @param databaseName - Client store database where the query will be run
    * @param SQL - SQL query to run
    * @returns void
    **/
-  async run(
-    databaseName: string,
-    SQL: string
-  ) {
+  async run(databaseName: string, SQL: string) {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {

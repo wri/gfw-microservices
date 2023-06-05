@@ -36,9 +36,7 @@ export class ShapefileService extends IPipeService {
     );
 
     const fields =
-      columnsTemplateId[templateId] ??
-      columnsListName[templateId] ??
-      columnsTemplateId[14];
+      columnsTemplateId[templateId] ?? columnsListName[templateId] ?? columnsTemplateId[14];
     let allFields = [...fields, ...combinedColumnsSplitted];
     allFields = [...new Set(allFields)];
 
@@ -52,9 +50,7 @@ export class ShapefileService extends IPipeService {
 
   async finish(filters: GenerationFileRequest) {
     const { listID } = filters;
-    this.logger.log(
-      `(${listID}) - Finished to process data and generate shapefile`
-    );
+    this.logger.log(`(${listID}) - Finished to process data and generate shapefile`);
     this.waitFinishedProcess(this.inputStream);
   }
 

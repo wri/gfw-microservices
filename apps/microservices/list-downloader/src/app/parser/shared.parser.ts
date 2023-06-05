@@ -1,8 +1,7 @@
 import { cloneRow, formatPct, validatePct } from '../shared/functions';
 
 const locationNameParser = ({ data, dataRow }) => {
-  const { 'Investment Name': investmentName, 'Location Name': locationName } =
-    data;
+  const { 'Investment Name': investmentName, 'Location Name': locationName } = data;
   if (investmentName) {
     if (investmentName.includes(',')) {
       dataRow.push('"' + investmentName + '"');
@@ -25,9 +24,7 @@ const listNameParser = ({ data, dataRow }) => {
 
 const pieChartParser = ({ operation, dataRow, data, csvData }) => {
   operation.composites.forEach((field) => {
-    const categoryData = data[field.attribute]
-      ? JSON.parse(data[field.attribute])
-      : {};
+    const categoryData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
 
     const rowValue = Object.values(categoryData)
       .flatMap((category) => Object.values(category))
@@ -46,9 +43,7 @@ const pieChartParser = ({ operation, dataRow, data, csvData }) => {
       currentRow.push(label ?? '');
       currentRow.push(category);
 
-      let layerPercent = formatPct(
-        validatePct((categoryCount / rowValue) * 100)
-      );
+      let layerPercent = formatPct(validatePct((categoryCount / rowValue) * 100));
       if (!categoryCount || !rowValue) {
         layerPercent = '0';
       }
@@ -71,23 +66,15 @@ const accumulateYearlyParser = (data, operationName) => {
     } else if (typeof yearlyData === 'number') {
       total += yearlyData;
     } else {
-      total = Object.entries(yearlyData).reduce(
-        (accumulator, [, currentValue]) => {
-          if (typeof currentValue === 'number') {
-            return accumulator + currentValue;
-          }
-          return accumulator;
-        },
-        0
-      );
+      total = Object.entries(yearlyData).reduce((accumulator, [, currentValue]) => {
+        if (typeof currentValue === 'number') {
+          return accumulator + currentValue;
+        }
+        return accumulator;
+      }, 0);
     }
   }
   return total;
 };
 
-export {
-  locationNameParser,
-  listNameParser,
-  pieChartParser,
-  accumulateYearlyParser,
-};
+export { locationNameParser, listNameParser, pieChartParser, accumulateYearlyParser };

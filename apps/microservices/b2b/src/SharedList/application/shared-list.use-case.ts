@@ -1,8 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { UserRepository } from '../../User/domain/user.repository';
 import { SharedListRepository } from '../domain/shared-list.repository';
-import { ListRepository } from '../../List/domain/list.repository';
-import { User } from '../../User/domain/user';
 import { SharedList } from '../domain/shared-list.entity';
 import { ConnectionUseCases } from '../../Connection/application/connection.use-case';
 import ResultPromise from '../../Shared/domain/result/result.promise';

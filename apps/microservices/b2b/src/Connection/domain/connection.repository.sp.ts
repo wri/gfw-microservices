@@ -1,9 +1,7 @@
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import {
-  ConnectionAdminOrganizationDbDto,
   ConnectionAdminOrganizationDto,
 } from '../application/dtos/connection-admin-organizations.dto';
-import { ConnectionDbDto } from '../application/dtos/connection-db.dto';
 import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto';
 import { ConnectionChangeDto } from '../application/dtos/connection-status.dto';
 import { Connection } from './connection';
@@ -12,7 +10,7 @@ import { ConnectionInvitation } from './connection';
 export abstract class ConnectionRepositorySP {
   abstract updateStatusConnection(
     changeStatusDto: ConnectionChangeDto,
-  ): ResultPromise<Number>;
+  ): ResultPromise<number>;
   abstract getUserAdminOrganization(
     email: string,
   ): ResultPromise<ConnectionAdminOrganizationDto[]>;
@@ -20,5 +18,5 @@ export abstract class ConnectionRepositorySP {
     filtersDto: ConnectionFiltersDto,
   ): ResultPromise<Connection[]>;
   abstract resendConnection(id: number): ResultPromise<void>;
-  abstract createConnection(connectionInvitation: ConnectionInvitation): ResultPromise<Number>;
+  abstract createConnection(connectionInvitation: ConnectionInvitation): ResultPromise<number>;
 }

@@ -1,7 +1,7 @@
 import { Filter } from "./filter";
 
 export class Filters {
-  readonly filters: Filter[];
+  filters: Filter[];
 
   constructor(filters: Filter[]) {
     this.filters = filters;
@@ -11,8 +11,10 @@ export class Filters {
     return new Filters(filters.map(Filter.fromValues));
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   addFilter(filter: Object): void {
     const filterMap = new Map(Object.entries(filter));
+    console.log(filterMap)
     this.filters.push(Filter.fromValues(filterMap));
   }
 

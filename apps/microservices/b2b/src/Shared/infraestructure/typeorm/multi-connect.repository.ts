@@ -1,14 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  FindManyOptions,
-  FindOperator,
-  FindOptions,
-  FindOptionsOrder,
-  FindOptionsWhere,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
-import { ConnectionRequest } from '../../../Connection/domain/connection.entity';
+import { FindManyOptions, Repository } from 'typeorm';
 import { DatabaseProvider } from '../../../Database/database.provider';
 import { ERRORS } from '../../domain/constants';
 import { QueryCriteria } from '../../domain/criteria/query';
@@ -56,7 +47,7 @@ export abstract class MultiConnectRepository<T> {
       ...typeormQuery,
       ...findOptions,
     };
-
+    const { limit, offset } = query;
     console.log(sequelizeQuery);
 
     const promises = await Promise.allSettled([
@@ -69,7 +60,8 @@ export abstract class MultiConnectRepository<T> {
 
     const items = verifyPromise(promises[0]);
     const count = verifyPromise(promises[1]);
-    if (items && count != null) return Result.ok({ count, items });
+    if (items && count != null)
+      return Result.ok({ count, offset, limit, items });
     return Result.fail(ERRORS.NOT_ELEMENTS_FOUND);
   }
 

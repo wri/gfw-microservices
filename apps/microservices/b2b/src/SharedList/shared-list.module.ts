@@ -3,8 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { SharedModule } from '@wri-monorepos/shared';
 import { ConnectionModule } from '../Connection/connection.module';
 import { DatabaseModule } from '../Database/database.module';
-import { ListDataMapper } from '../List/application/list.mapper';
-import { ListUseCases } from '../List/application/list.use-case';
 import { ListModule } from '../List/list.module';
 import { OrganizationModule } from '../Organization/organization.module';
 import { DataServicesModule } from '../Shared/application/data-service/data-service.module';

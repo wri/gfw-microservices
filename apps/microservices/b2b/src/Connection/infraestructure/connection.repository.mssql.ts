@@ -1,9 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityRepository, FindOperator, Repository } from 'typeorm';
-import { DatabaseProvider } from '../../Database/database.provider';
-import { SearchDto } from '../../Shared/application/dtos/search.dto';
-import { ERRORS } from '../../Shared/domain/constants';
+import { Repository } from 'typeorm';
 import { Filter } from '../../Shared/domain/criteria/filter';
 import { FilterField } from '../../Shared/domain/criteria/filter.field';
 import {
@@ -13,7 +10,6 @@ import {
 import { FilterValue } from '../../Shared/domain/criteria/filter.value';
 import { QueryCriteria } from '../../Shared/domain/criteria/query';
 import Result from '../../Shared/domain/result';
-import ResultError from '../../Shared/domain/result/result.error';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import { SearchResult } from '../../Shared/domain/types';
 import { MultiConnectRepository } from '../../Shared/infraestructure/typeorm/multi-connect.repository';
@@ -35,30 +31,16 @@ export class ConnectionRequestRepositoryMssql
     query: QueryCriteria,
     organizationId: string,
   ): ResultPromise<SearchResult<ConnectionRequest>> {
-    query.filters.filters.filter(
+    query.filters.filters = query.filters.filters.filter(
       (filter) =>
         filter.field.value !== 'idTargetOrganization' &&
         filter.field.value !== 'idSourceOrganization',
     );
-
-/*
-    query.filters.addFilter(
-      new Filter(
-        new FilterField('idSourceOrganization'),
-        new FilterOperator(Operator.EQUAL),
-        new FilterValue(organizationId),
-      ),
-    );
-
-    query.filters.addFilter(
-      new Filter(
-        new FilterField('idTargetOrganization'),
-        new FilterOperator(Operator.EQUAL),
-        new FilterValue(organizationId),
-      ),
-    );
-*/
-    console.log(query.filters)
+    query.filters.addFilter({
+      field: 'idTargetOrganization',
+      operator: Operator.EQUAL,
+      value: organizationId,
+    });
 
     const result = await this.searchByCriteria(query);
     if (result.isSuccess) return Result.ok(result.getValue());

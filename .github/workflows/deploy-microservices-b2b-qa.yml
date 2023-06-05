@@ -52,8 +52,8 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         run: |
-          echo "${{secrets.MICROSERVICES_B2B_QA_ENV}}" > ./apps/microservices/list-processing/.env
-          docker build -f apps/microservices/list-processing/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "${{secrets.MICROSERVICES_B2B_QA_ENV}}" > ./apps/microservices/b2b/.env
+          docker build -f apps/microservices/b2b/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"

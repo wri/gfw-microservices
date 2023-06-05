@@ -4,8 +4,8 @@ import { checkValid } from '../../utils/locationsTableUtils';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
 const renderCell = (label) => {
-  return checkValid(label) ? <span title={label}>{label}</span> : '--'
-}
+  return checkValid(label) ? <span title={label}>{label}</span> : '--';
+};
 
 const commodity_locations = [
   {

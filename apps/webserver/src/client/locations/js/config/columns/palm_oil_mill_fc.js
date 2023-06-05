@@ -5,7 +5,7 @@ import ColumnsHeader from '../../components/columns/ColumnsHeader';
 
 const renderCell = (row) => {
   return checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--';
-}
+};
 
 const palm_oil_mill_fc = [
   {

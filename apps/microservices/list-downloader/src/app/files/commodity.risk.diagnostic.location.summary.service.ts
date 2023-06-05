@@ -32,8 +32,7 @@ export class CommodityRiskDiagnosticLocationSummaryService extends DashboardHand
     const { listView, type } = filters;
     return (
       listView === 'commodity_risk' &&
-      (type === 'commodityRiskDiagnosticLocationSummary' ||
-        type === 'everything')
+      (type === 'commodityRiskDiagnosticLocationSummary' || type === 'everything')
     );
   }
 }

@@ -29,9 +29,7 @@ export class ResultService extends IPipeService {
     const allFields = EXCEL_TEMPLATES[listView];
     const headerPrint = allFields.map((x) => x.name);
     const headerFilter = allFields.map((x) => x.key);
-    const columnGetLastValue = allFields
-      .filter((x) => x.analysis)
-      .map((x) => x.key);
+    const columnGetLastValue = allFields.filter((x) => x.analysis).map((x) => x.key);
 
     this.organizeStream(filters, headerFilter, columnGetLastValue);
     fs.writeFileSync(`/tmp/${key}.csv`, `${headerPrint.join(',')}\n`);

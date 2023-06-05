@@ -1,8 +1,5 @@
 {
-  "presets": [
-    "@babel/preset-react",
-    "@babel/preset-env"
-  ],
+  "presets": ["@babel/preset-react", "@babel/preset-env"],
   "plugins": [
     [
       "@babel/plugin-transform-runtime",
@@ -38,9 +35,6 @@
     "@babel/plugin-proposal-do-expressions",
     "@babel/plugin-proposal-function-bind"
   ],
-  "ignore": [
-    "node_modules",
-    "build"
-  ],
+  "ignore": ["node_modules", "build"],
   "env": {}
 }

@@ -16,7 +16,7 @@ const forest_change_locations = [
     id: 'total_area',
     Header: () => (
       <span className="title-text" title={transifex('Size in ha')}>
-          {transifex('Size')} <span className="title-text__units">{transifex('(ha)')}</span>
+        {transifex('Size')} <span className="title-text__units">{transifex('(ha)')}</span>
       </span>
     ),
     accessor: (d) => {
@@ -31,8 +31,8 @@ const forest_change_locations = [
     },
     sortMethod: (a, b) => {
       const sortStatus = sortByStatus(a, b);
-      if(sortStatus == 2) {
-          return  a.total_area - b.total_area;
+      if (sortStatus == 2) {
+        return a.total_area - b.total_area;
       }
 
       return sortStatus;
@@ -47,7 +47,12 @@ const forest_change_locations = [
     show: true,
     width: 100,
     maxWidth: 100,
-    Cell: (row) => (checkValid(row.value) ? <span title={transifex(row.value)}>{transifex(row.value)}</span> : '--'),
+    Cell: (row) =>
+      checkValid(row.value) ? (
+        <span title={transifex(row.value)}>{transifex(row.value)}</span>
+      ) : (
+        '--'
+      ),
   },
   {
     Header: () => <ColumnsHeader label={columnHeaders.state} />,
@@ -56,9 +61,14 @@ const forest_change_locations = [
     show: true,
     width: 150,
     maxWidth: 150,
-    Cell: (row) => (checkValid(row.value) ? <span title={transifex(row.value)}>{transifex(row.value)}</span> : '--'),
+    Cell: (row) =>
+      checkValid(row.value) ? (
+        <span title={transifex(row.value)}>{transifex(row.value)}</span>
+      ) : (
+        '--'
+      ),
     sortMethod: sortByNone,
   },
 ];
 
-export default forest_change_locations 
+export default forest_change_locations;

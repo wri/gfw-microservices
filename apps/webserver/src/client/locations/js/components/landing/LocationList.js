@@ -225,7 +225,6 @@ export default class LocationList extends Component {
     return (
       <>
         {listStatusComponent(list)}
-        {/* This must be outside the menu, otherwise it will not be rendered while the menu is closed */}
         <ManageListFolderDialog
           isOpen={isManageListFolderOpen}
           folders={folders}
@@ -241,7 +240,6 @@ export default class LocationList extends Component {
           }}
         />
         {isDeleteDialogOpen && (
-          /* This must be outside the menu, otherwise it will not be rendered while the menu is closed */
           <DeleteListDialog
             isOpen={isDeleteDialogOpen}
             list={list}

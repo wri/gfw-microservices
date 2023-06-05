@@ -14,8 +14,7 @@ import Button from '../../../../../common/js/components/Button';
 import sharedColumnText from './sharedColumnText';
 import FailedTooltip from '../../../../../common/js/components/CustomTooltip/FailedTooltip';
 import { locationsPage, nav } from '../../../../../common/js/config';
-// TODO difference between isAListSharedWithMe, isShared, showSharedColumn
-// difference between showRerun and showRerunOpt
+
 function FailedList({
   list,
   isAListSharedWithMe,

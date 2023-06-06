@@ -49,7 +49,9 @@ const getTreeCoverLossArgOtbnYearlyData = (
       const YEARS_RANGE = _range(startYear, endYear + 1);
 
       const treeCoverLossArgOtbnYearlyForCategory = treeCoverLossArgOtbnYearly[category];
-      const treeCoverLossArgOtbnYearlyForCategoryIsEmpty = _isEmpty(treeCoverLossArgOtbnYearlyForCategory);
+      const treeCoverLossArgOtbnYearlyForCategoryIsEmpty = _isEmpty(
+        treeCoverLossArgOtbnYearlyForCategory
+      );
       if (treeCoverLossArgOtbnYearlyForCategory && !treeCoverLossArgOtbnYearlyForCategoryIsEmpty) {
         dataFilteredByYearRange = filterDataByYearRange(treeCoverLossArgOtbnYearlyForCategory);
       } else {

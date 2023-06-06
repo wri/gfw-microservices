@@ -6,11 +6,7 @@ const generateCSV = (
   filters: GenerationFileRequest,
   table: string,
   fileSuffix: string,
-  mountCsv: (
-    table: string,
-    list_name: string,
-    listLevelAnalysis
-  ) => Array<Array<string>>
+  mountCsv: (table: string, list_name: string, listLevelAnalysis) => Array<Array<string>>
 ) => {
   if (filters.selectedLocationsList.length != 1) {
     const { key, listName, listLevelAnalysis } = filters;

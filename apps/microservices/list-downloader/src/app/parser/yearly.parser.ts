@@ -6,9 +6,7 @@ import { brazilBiomesYearlyTCLParser } from './south.america.parser';
 const yearlyParser = ({ operation, data, dataRow, csvData }) => {
   const { composites, following } = operation;
   composites?.forEach((field) => {
-    const yearlyData = data[field.attribute]
-      ? JSON.parse(data[field.attribute])
-      : {};
+    const yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
 
     let totalListLevelCount = 0;
 
@@ -20,8 +18,7 @@ const yearlyParser = ({ operation, data, dataRow, csvData }) => {
       }
     }
 
-    const totalStat =
-      field.following ?? following?.find((stat) => stat.parsed === 'total');
+    const totalStat = field.following ?? following?.find((stat) => stat.parsed === 'total');
 
     let totalStatValue = 0;
     if (totalStat && totalStat.attribute) {
@@ -93,9 +90,7 @@ const yearlyParser = ({ operation, data, dataRow, csvData }) => {
 
             if (totalStat) {
               nestedRow.push(totalListLevelCount);
-              const percent = formatPct(
-                validatePct((val / totalStatValue) * 100)
-              );
+              const percent = formatPct(validatePct((val / totalStatValue) * 100));
               nestedRow.push(percent);
             }
 
@@ -120,9 +115,7 @@ const yearlyParser = ({ operation, data, dataRow, csvData }) => {
             if (totalStat) {
               currentRow.push(totalStatValue);
 
-              const percent = formatPct(
-                validatePct((rowValue / totalStatValue) * 100)
-              );
+              const percent = formatPct(validatePct((rowValue / totalStatValue) * 100));
               currentRow.push(percent);
             }
 

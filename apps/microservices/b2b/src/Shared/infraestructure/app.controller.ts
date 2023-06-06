@@ -9,4 +9,12 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
+
+  /**
+   * Healthcheck for fargate
+   */
+  @Get('/HealthCheck')
+  HealthCheck(): string {
+    return 'Is Alive';
+  }
 }

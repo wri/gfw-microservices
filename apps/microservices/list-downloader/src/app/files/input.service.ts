@@ -23,9 +23,7 @@ export class InputService extends IPipeService {
     this.inputStream = new PassThrough({ objectMode: true });
 
     const fields =
-      columnsTemplateId[templateId] ??
-      columnsListName[templateId] ??
-      columnsTemplateId[14];
+      columnsTemplateId[templateId] ?? columnsListName[templateId] ?? columnsTemplateId[14];
     let allFields = [...fields, ...combinedColumnsSplitted];
     allFields = [...new Set(allFields)];
 

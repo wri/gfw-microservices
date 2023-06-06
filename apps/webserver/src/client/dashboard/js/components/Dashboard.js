@@ -83,8 +83,15 @@ export default class Dashboard extends Component {
       const cachedMap = JSON.parse(window.localStorage.getItem('GFW'));
 
       if (cachedMap) {
-        const { selectedList, selectedAdmin, locationFilters, selectedTimeframe, selectedAlert, zoomLevel, gfwList } =
-          cachedMap;
+        const {
+          selectedList,
+          selectedAdmin,
+          locationFilters,
+          selectedTimeframe,
+          selectedAlert,
+          zoomLevel,
+          gfwList,
+        } = cachedMap;
         // Cached List Id to pull from redis
         if (selectedList) {
           let listToSelect;
@@ -92,9 +99,13 @@ export default class Dashboard extends Component {
           if (gfwList) {
             listToSelect = this.state.gfwLists.find((sharedList) => sharedList.id === selectedList);
           } else {
-            listToSelect = store.getState().userLists.find((userList) => userList.id === selectedList);
+            listToSelect = store
+              .getState()
+              .userLists.find((userList) => userList.id === selectedList);
             if (!listToSelect) {
-              listToSelect = this.props.userSharedLists.find((sharedList) => sharedList.id === selectedList);
+              listToSelect = this.props.userSharedLists.find(
+                (sharedList) => sharedList.id === selectedList
+              );
             }
           }
 
@@ -132,13 +143,11 @@ export default class Dashboard extends Component {
     }
 
     this.unsubscribe = store.subscribe(this.storeDidUpdate);
-    ga(
-      'send',
-      'event',
-      'Dashboard Load',
-      'Dashboard page loaded',
-      'user navigated to the Dashboard page by clicking on Dashboard link in navigation'
-    );
+    gtag('event', 'Dashboard page loaded', {
+      event_category: 'Dashboard Load',
+      event_label:
+        'user navigated to the Dashboard page by clicking on Dashboard link in navigation',
+    });
   }
 
   storeDidUpdate = () => {
@@ -190,7 +199,9 @@ export default class Dashboard extends Component {
       //if list is gfw list, url is "getGFWListDashboardData"
       const gfwListIds = [2, 3, 5];
       const isGFWList = gfwListIds.includes(id) && GFWList;
-      const DASHBOARD_DATA_URL = isGFWList ? '/dashboard/getGFWListDashboardData' : '/dashboard/getDashboardData';
+      const DASHBOARD_DATA_URL = isGFWList
+        ? '/dashboard/getGFWListDashboardData'
+        : '/dashboard/getDashboardData';
       const DASHBOARD_TIMESTAMP_URL = isGFWList
         ? '/dashboard/getGFWListDashboardTimestamp'
         : '/dashboard/getListDashboardTimestamp';
@@ -214,7 +225,10 @@ export default class Dashboard extends Component {
           body: { list_id: id },
         });
 
-        if (!listDashboardTimestamp.hasOwnProperty('errorCode') && listDashboardTimestamp.length !== 0) {
+        if (
+          !listDashboardTimestamp.hasOwnProperty('errorCode') &&
+          listDashboardTimestamp.length !== 0
+        ) {
           const formatTimestamp = moment(listDashboardTimestamp[0].dashboard_last_results).format(
             'D MMMM YYYY, h:mm A'
           );
@@ -302,14 +316,10 @@ export default class Dashboard extends Component {
         // console.log('Error fetching /dashboard/analyze-list', error);
         // }
         // }
-
-        ga(
-          'send',
-          'event',
-          'Dashboard Click',
-          'List from Show Lists dropdown clicked',
-          'user clicked on a list from Show Lists to analyze'
-        );
+        gtag('event', 'List from Show Lists dropdown clicked', {
+          event_category: 'Dashboard Click',
+          event_label: 'user clicked on a list from Show Lists to analyze',
+        });
       } catch (e) {
         store.dispatch(
           toggleDialog({
@@ -322,7 +332,10 @@ export default class Dashboard extends Component {
   };
 
   printReport = () => {
-    ga('send', 'event', 'Dashboard Click', 'Report button clicked', 'user printed dashboard report');
+    gtag('event', 'Report button clicked', {
+      event_category: 'Dashboard Click',
+      event_label: 'user printed dashboard report',
+    });
     window.print();
   };
 
@@ -372,7 +385,10 @@ export default class Dashboard extends Component {
             />,
           ]}
         >
-          <p className="dangerous-dialog" dangerouslySetInnerHTML={{ __html: dialogContent.body }}></p>
+          <p
+            className="dangerous-dialog"
+            dangerouslySetInnerHTML={{ __html: dialogContent.body }}
+          ></p>
         </Dialog>
 
         <ModalLoader
@@ -415,7 +431,10 @@ export default class Dashboard extends Component {
                 <ReportIcon color="#b9b9bb" />
                 <span>Report</span>
               </div>
-              <div className={`${isEmpty(rawData) ? 'hidden' : ''}`} onClick={() => downloadDashboard()}>
+              <div
+                className={`${isEmpty(rawData) ? 'hidden' : ''}`}
+                onClick={() => downloadDashboard()}
+              >
                 <DownloadIcon color="#b9b9bb" />
                 <span>Download</span>
               </div>

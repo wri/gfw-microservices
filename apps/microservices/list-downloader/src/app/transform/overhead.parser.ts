@@ -1,17 +1,6 @@
-import {
-  cloneRow,
-  formatPct,
-  validatePct,
-  parseListData,
-} from '../shared/functions';
+import { cloneRow, formatPct, validatePct, parseListData } from '../shared/functions';
 
-const overheadParser = (
-  operation,
-  dataRow,
-  data,
-  csvData,
-  listLevelAnalysis
-) => {
+const overheadParser = (operation, dataRow, data, csvData, listLevelAnalysis) => {
   if (operation.name === 'list_name') {
     const { list_name } = data;
     dataRow.push(list_name ?? '');
@@ -41,24 +30,18 @@ const overheadParser = (
       const currentRow = cloneRow(dataRow);
       currentRow.push(location);
 
-      const overlapPercent = formatPct(
-        validatePct((brazilBiomeLocations[location] / total) * 100)
-      );
+      const overlapPercent = formatPct(validatePct((brazilBiomeLocations[location] / total) * 100));
       currentRow.push(overlapPercent);
 
       csvData.push(currentRow);
     });
   } else if (operation.name === 'seAsia_overlap') {
     operation.composites.forEach((field) => {
-      const totalStatValue = parseListData(field.attribute, [
-        listLevelAnalysis,
-      ]);
+      const totalStatValue = parseListData(field.attribute, [listLevelAnalysis]);
       const currentRow = cloneRow(dataRow);
 
       if (totalStatValue > 0) {
-        const yearlyData = data[field.attribute]
-          ? JSON.parse(data[field.attribute])
-          : {};
+        const yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
 
         if (isNaN(parseInt(yearlyData)) === true) {
           let totalStatV = 0;
@@ -71,9 +54,7 @@ const overheadParser = (
             const nestedRow = cloneRow(currentRow);
             nestedRow.push(field.label);
             nestedRow.push(locationName);
-            const percent = formatPct(
-              validatePct((yearlyData[locationName] / totalStatV) * 100)
-            );
+            const percent = formatPct(validatePct((yearlyData[locationName] / totalStatV) * 100));
             nestedRow.push(percent);
             if (totalStatV > 0) {
               csvData.push(nestedRow);
@@ -83,9 +64,7 @@ const overheadParser = (
           const currentRowIn = cloneRow(dataRow);
           currentRowIn.push(field.label);
           currentRowIn.push('Within Forest Moratorium');
-          const percentIn = formatPct(
-            validatePct((yearlyData / data.total_area) * 100)
-          );
+          const percentIn = formatPct(validatePct((yearlyData / data.total_area) * 100));
           currentRowIn.push(percentIn);
           csvData.push(currentRowIn);
 
@@ -93,9 +72,7 @@ const overheadParser = (
           const currentRowOut = cloneRow(dataRow);
           currentRowOut.push(field.label);
           currentRowOut.push('Outside Forest Moratorium');
-          const percentOut = formatPct(
-            validatePct((hectaresOut / data.total_area) * 100)
-          );
+          const percentOut = formatPct(validatePct((hectaresOut / data.total_area) * 100));
           currentRowOut.push(percentOut);
           csvData.push(currentRowOut);
         }
@@ -109,16 +86,12 @@ const overheadParser = (
       totalSoy += soyTotalArea[year];
     });
     const currentRow = cloneRow(dataRow);
-    const soyPercent = formatPct(
-      validatePct((totalSoy / data.total_area) * 100)
-    );
+    const soyPercent = formatPct(validatePct((totalSoy / data.total_area) * 100));
     currentRow.push(soyPercent);
     currentRow.push(totalSoy);
 
     const totalPre2001 = data.soy_pre2001_nonforest_area;
-    const pre2001Percent = formatPct(
-      validatePct((totalPre2001 / data.total_area) * 100)
-    );
+    const pre2001Percent = formatPct(validatePct((totalPre2001 / data.total_area) * 100));
     currentRow.push(pre2001Percent);
     currentRow.push(totalPre2001);
     csvData.push(currentRow);
@@ -126,9 +99,7 @@ const overheadParser = (
     const currentRow = cloneRow(dataRow);
     operation.fields.forEach((field) => {
       if (field.type === 'yearly') {
-        const totalProp = data[field.attribute]
-          ? JSON.parse(data[field.attribute])
-          : {};
+        const totalProp = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
 
         let val = 0;
         Object.keys(totalProp).forEach((year) => {
@@ -136,10 +107,7 @@ const overheadParser = (
         });
 
         if (field.parsed === 'category') {
-          const lastYear =
-            totalProp[
-              Object.keys(totalProp)[Object.keys(totalProp).length - 1]
-            ];
+          const lastYear = totalProp[Object.keys(totalProp)[Object.keys(totalProp).length - 1]];
           let label;
           if (lastYear === 0) {
             label = 'Low';
@@ -184,9 +152,7 @@ const overheadParser = (
     const totalArea = data.total_area;
 
     operation.fields.forEach((field) => {
-      const fieldValue = data[field.attribute]
-        ? JSON.parse(data[field.attribute])
-        : 0;
+      const fieldValue = data[field.attribute] ? JSON.parse(data[field.attribute]) : 0;
 
       if (field.parsed === 'percent') {
         const percent = formatPct(validatePct((fieldValue / totalArea) * 100));
@@ -206,13 +172,9 @@ const overheadParser = (
           break;
         case 'object':
           // eslint-disable-next-line no-case-declarations
-          const fieldValue = data[field.attribute]
-            ? JSON.parse(data[field.attribute])
-            : 0;
+          const fieldValue = data[field.attribute] ? JSON.parse(data[field.attribute]) : 0;
           if (fieldValue && field.parsed === 'percent') {
-            const percent = formatPct(
-              validatePct((fieldValue / totalArea) * 100)
-            );
+            const percent = formatPct(validatePct((fieldValue / totalArea) * 100));
             currentRow.push(percent);
           } else if (fieldValue && field.parsed === 'aggregate') {
             currentRow.push(fieldValue.toFixed(2));
@@ -229,9 +191,7 @@ const overheadParser = (
     csvData.push(currentRow);
   } else if (operation.name === 'pie_chart') {
     operation.composites.forEach((field) => {
-      const categoryData = data[field.attribute]
-        ? JSON.parse(data[field.attribute])
-        : {};
+      const categoryData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
 
       let rowValue = 0;
       Object.keys(categoryData).forEach((category) => {
@@ -255,9 +215,7 @@ const overheadParser = (
         }
         currentRow.push(category);
 
-        let layerPercent = formatPct(
-          validatePct((categoryCount / rowValue) * 100)
-        );
+        let layerPercent = formatPct(validatePct((categoryCount / rowValue) * 100));
         if (!categoryCount || !rowValue) {
           layerPercent = '0';
         }

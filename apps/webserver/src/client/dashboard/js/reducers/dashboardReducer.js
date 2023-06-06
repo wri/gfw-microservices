@@ -29,7 +29,11 @@ import {
 } from './mapReducer';
 
 import dataReducer from './dataReducer';
-import { timeframeFilterDissolved, timeframeFilterGeojson, timeframeFilterGeojsonForFooter } from './timeframeReducer';
+import {
+  timeframeFilterDissolved,
+  timeframeFilterGeojson,
+  timeframeFilterGeojsonForFooter,
+} from './timeframeReducer';
 
 const combinedReducers = combineReducers({
   accessLevel: saveAccessLevel,
@@ -70,9 +74,24 @@ function crossSliceReducer(intermediateState, previousState, action) {
   return {
     ...intermediateState,
     data: dataReducer(intermediateState, previousState, action, clonedRawData),
-    timeframeGeojson: timeframeFilterGeojson(intermediateState, previousState, action, clonedRawData),
-    timeframeGeojsonForFooter: timeframeFilterGeojsonForFooter(intermediateState, previousState, action, clonedRawData),
-    timeframeDissolved: timeframeFilterDissolved(intermediateState, previousState, action, clonedRawData),
+    timeframeGeojson: timeframeFilterGeojson(
+      intermediateState,
+      previousState,
+      action,
+      clonedRawData
+    ),
+    timeframeGeojsonForFooter: timeframeFilterGeojsonForFooter(
+      intermediateState,
+      previousState,
+      action,
+      clonedRawData
+    ),
+    timeframeDissolved: timeframeFilterDissolved(
+      intermediateState,
+      previousState,
+      action,
+      clonedRawData
+    ),
   };
 }
 

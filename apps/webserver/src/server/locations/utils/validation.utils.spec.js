@@ -24,14 +24,17 @@ describe('Validate List attributes', () => {
   );
 
   // Volume
-  it.each([undefined, -20, 'test'])('[Volume] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ Volume: value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Volume');
-  });
+  it.each([undefined, -20, 'test'])(
+    '[Volume] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ Volume: value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Volume');
+    }
+  );
 
   it.each([0, 10, 1.7, '1.7'])('[Volume] should accept the following value: %p', (value) => {
     const errorListSize = 0;
@@ -43,52 +46,67 @@ describe('Validate List attributes', () => {
   });
 
   // Facility Code
-  it.each(['gfw-pro', '3.3', 3.3])('[Facility Code] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ 'Facility Code': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Facility Code');
-  });
+  it.each(['gfw-pro', '3.3', 3.3])(
+    '[Facility Code] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ 'Facility Code': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Facility Code');
+    }
+  );
 
-  it.each([10, 'gfwpro10', '33', undefined])('[Facility Code] should accept the following value: %p', (value) => {
-    const errorListSize = 0;
-    const attributes = [{ 'Facility Code': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toBe(undefined);
-  });
+  it.each([10, 'gfwpro10', '33', undefined])(
+    '[Facility Code] should accept the following value: %p',
+    (value) => {
+      const errorListSize = 0;
+      const attributes = [{ 'Facility Code': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toBe(undefined);
+    }
+  );
 
   // Facility Email
-  it.each([undefined, 'teste', 1234])('[Facility Email] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ 'Facility Email': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Facility Email');
-  });
+  it.each([undefined, 'teste', 1234])(
+    '[Facility Email] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ 'Facility Email': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Facility Email');
+    }
+  );
 
-  it.each(['test@wri.com', 'test@cardio.br'])('[Facility Email] should accept the following value: %p', (value) => {
-    const errorListSize = 0;
-    const attributes = [{ 'Facility Email': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toBe(undefined);
-  });
+  it.each(['test@wri.com', 'test@cardio.br'])(
+    '[Facility Email] should accept the following value: %p',
+    (value) => {
+      const errorListSize = 0;
+      const attributes = [{ 'Facility Email': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toBe(undefined);
+    }
+  );
 
   // Analysis Radius
-  it.each([undefined, -1234])('[Analysis Radius] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ 'Analysis Radius': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Analysis Radius');
-  });
+  it.each([undefined, -1234])(
+    '[Analysis Radius] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ 'Analysis Radius': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Analysis Radius');
+    }
+  );
 
   it.each([123, ''])('[Analysis Radius] should accept the following value: %p', (value) => {
     const errorListSize = 0;
@@ -100,14 +118,17 @@ describe('Validate List attributes', () => {
   });
 
   // Commodity
-  it.each(['Select...', undefined, ''])('[Commodity] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ Commodity: value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Commodity');
-  });
+  it.each(['Select...', undefined, ''])(
+    '[Commodity] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ Commodity: value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Commodity');
+    }
+  );
 
   it.each([123, '123'])('[Commodity] should accept the following value: %p', (value) => {
     const errorListSize = 0;
@@ -128,14 +149,17 @@ describe('Validate List attributes', () => {
     expect(error).toContain('Company ID');
   });
 
-  it.each([123, '123', 'Select...', 'gfw-pro', -123])('[Company ID] should accept the following value: %p', (value) => {
-    const errorListSize = 0;
-    const attributes = [{ 'Company ID': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toBe(undefined);
-  });
+  it.each([123, '123', 'Select...', 'gfw-pro', -123])(
+    '[Company ID] should accept the following value: %p',
+    (value) => {
+      const errorListSize = 0;
+      const attributes = [{ 'Company ID': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toBe(undefined);
+    }
+  );
 
   // Location Classification
   it.each(['teste124', undefined, ''])(
@@ -163,14 +187,17 @@ describe('Validate List attributes', () => {
   );
 
   // Time Horizon
-  it.each(['teste124', '123', 123])('[Time Horizon] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ 'Time Horizon': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Time Horizon');
-  });
+  it.each(['teste124', '123', 123])(
+    '[Time Horizon] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ 'Time Horizon': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Time Horizon');
+    }
+  );
 
   it.each(['3 months', '6 months', '1 year', undefined, ''])(
     '[Time Horizon] should accept the following value: %p',
@@ -185,14 +212,17 @@ describe('Validate List attributes', () => {
   );
 
   // Accuracy Rating of Location Entered
-  it.each(['123', 123])('[Accuracy Rating of Location Entered] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ 'Accuracy Rating of Location Entered': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Accuracy Rating');
-  });
+  it.each(['123', 123])(
+    '[Accuracy Rating of Location Entered] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ 'Accuracy Rating of Location Entered': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Accuracy Rating');
+    }
+  );
 
   it.each(['very confident', 'moderately confident', 'not confident', "don't know", '', undefined])(
     '[Accuracy Rating of Location Entered] should accept the following value: %p',
@@ -207,14 +237,17 @@ describe('Validate List attributes', () => {
   );
 
   // Latitude
-  it.each([-180, 180, '', undefined, 'teste'])('[Latitude] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ Latitude: value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Latitude');
-  });
+  it.each([-180, 180, '', undefined, 'teste'])(
+    '[Latitude] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ Latitude: value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Latitude');
+    }
+  );
 
   it.each(['20', 20, -21])('[Latitude] should accept the following value: %p', (value) => {
     const errorListSize = 0;
@@ -226,14 +259,17 @@ describe('Validate List attributes', () => {
   });
 
   // Longitude
-  it.each([-270, 270, '', undefined, 'teste'])('[Longitude] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ Longitude: value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Longitude');
-  });
+  it.each([-270, 270, '', undefined, 'teste'])(
+    '[Longitude] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ Longitude: value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Longitude');
+    }
+  );
 
   it.each(['180', 180, -120])('[Longitude] should accept the following value: %p', (value) => {
     const errorListSize = 0;
@@ -245,14 +281,17 @@ describe('Validate List attributes', () => {
   });
 
   // End Date
-  it.each(['31/10/2023', 'teste123'])('[End Date] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ 'End Date': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('End Date');
-  });
+  it.each(['31/10/2023', 'teste123'])(
+    '[End Date] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ 'End Date': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('End Date');
+    }
+  );
 
   it.each(['10/10/2023', '12/30/2023', '', '120', undefined, 123])(
     '[End Date] should accept the following value: %p',
@@ -325,14 +364,17 @@ describe('Validate List attributes', () => {
     expect(error).toContain('Risk Level');
   });
 
-  it.each(['medium', undefined, 'high', 'low'])('[Risk Level] should accept the following value: %p', (value) => {
-    const errorListSize = 0;
-    const attributes = [{ 'Risk Level': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toBe(undefined);
-  });
+  it.each(['medium', undefined, 'high', 'low'])(
+    '[Risk Level] should accept the following value: %p',
+    (value) => {
+      const errorListSize = 0;
+      const attributes = [{ 'Risk Level': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toBe(undefined);
+    }
+  );
 
   // CCY
   it.each(['10.5', 'test'])('[CCY] should not accept the following value: %p', (value) => {
@@ -536,14 +578,17 @@ describe('Validate List attributes', () => {
   });
 
   // Company Policy Ranking
-  it.each(['test', 10.5])('[Company Policy Ranking] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ 'Company Policy Ranking': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Company Policy Ranking');
-  });
+  it.each(['test', 10.5])(
+    '[Company Policy Ranking] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ 'Company Policy Ranking': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Company Policy Ranking');
+    }
+  );
 
   it.each(['a', 'b', 'c', undefined, null, ''])(
     '[Company Policy Ranking] should accept the following value: %p',
@@ -558,14 +603,17 @@ describe('Validate List attributes', () => {
   );
 
   // Company Policy Ranking
-  it.each(['test', 10.5])('[Type of Investment] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ 'Type of Investment': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Type of Investment');
-  });
+  it.each(['test', 10.5])(
+    '[Type of Investment] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ 'Type of Investment': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Type of Investment');
+    }
+  );
 
   it.each(['new investment', 'renewal', undefined])(
     '[Type of Investment] should accept the following value: %p',
@@ -580,14 +628,17 @@ describe('Validate List attributes', () => {
   );
 
   // Verified?
-  it.each(['test', 10.5, undefined])('[Verified?] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ 'Verified?': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Verified?');
-  });
+  it.each(['test', 10.5, undefined])(
+    '[Verified?] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ 'Verified?': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Verified?');
+    }
+  );
 
   it.each(['yes', 'no'])('[Verified?] should accept the following value: %p', (value) => {
     const errorListSize = 0;
@@ -599,14 +650,17 @@ describe('Validate List attributes', () => {
   });
 
   // Country
-  it.each(['none', 10.5, undefined])('[Country] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ Country: value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Country');
-  });
+  it.each(['none', 10.5, undefined])(
+    '[Country] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ Country: value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Country');
+    }
+  );
 
   it.each(['Brazil', 'test'])('[Country] should accept the following value: %p', (value) => {
     const errorListSize = 0;
@@ -618,14 +672,17 @@ describe('Validate List attributes', () => {
   });
 
   // Oil Type
-  it.each(['none', 'test', '10.5'])('[Oil Type] should not accept the following value: %p', (value) => {
-    const errorListSize = 1;
-    const attributes = [{ 'Oil Type': value }];
-    const errors = validateAttributes(attributes, 'cocoa generic');
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toContain('Oil Type');
-  });
+  it.each(['none', 'test', '10.5'])(
+    '[Oil Type] should not accept the following value: %p',
+    (value) => {
+      const errorListSize = 1;
+      const attributes = [{ 'Oil Type': value }];
+      const errors = validateAttributes(attributes, 'cocoa generic');
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toContain('Oil Type');
+    }
+  );
 
   it.each(['Palm Kernel Oil', 'palm oil', ' ', '', undefined])(
     '[Oil Type] should accept the following value: %p',
@@ -804,14 +861,17 @@ describe('Validate List attributes', () => {
     ['test', 'cocoaGeneric'],
     ['none', 'cocoaGeneric'],
     ['sg', 'cocoaGeneric'],
-  ])('[RSPO Model] should accept the following value: %p using the following template %p', (value, activeTemplate) => {
-    const errorListSize = 0;
-    const attributes = [{ 'RSPO Model': value }];
-    const errors = validateAttributes(attributes, activeTemplate);
-    expect(errors.length).toEqual(errorListSize);
-    const [error] = errors;
-    expect(error).toBe(undefined);
-  });
+  ])(
+    '[RSPO Model] should accept the following value: %p using the following template %p',
+    (value, activeTemplate) => {
+      const errorListSize = 0;
+      const attributes = [{ 'RSPO Model': value }];
+      const errors = validateAttributes(attributes, activeTemplate);
+      expect(errors.length).toEqual(errorListSize);
+      const [error] = errors;
+      expect(error).toBe(undefined);
+    }
+  );
 
   it('returns multiple validation errors', () => {
     const attributes = [

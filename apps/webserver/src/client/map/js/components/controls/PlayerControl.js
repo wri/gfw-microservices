@@ -78,7 +78,9 @@ export default class PlayerControl extends Component {
         <div className="slider-container player-control__irs">
           <input id="adhoc-slider" />
         </div>
-        <span style={{ minWidth: '100px', paddingLeft: '20px', color: '#9bbe50' }}>{formattedValue}</span>
+        <span style={{ minWidth: '100px', paddingLeft: '20px', color: '#9bbe50' }}>
+          {formattedValue}
+        </span>
       </div>
     );
   }

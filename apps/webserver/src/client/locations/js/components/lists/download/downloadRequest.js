@@ -16,7 +16,8 @@ const downloadRequest = ({
 }) => {
   // 'Location Name' is named 'Investment Name' in the backend
   // adding quotation marks (stringify) to the column name as some of the field names in the database contain spaces
-  const sortByAttribute = tableSortedBy === 'Location Name' ? 'Investment Name' : JSON.stringify(tableSortedBy);
+  const sortByAttribute =
+    tableSortedBy === 'Location Name' ? 'Investment Name' : JSON.stringify(tableSortedBy);
 
   const data = {
     type,

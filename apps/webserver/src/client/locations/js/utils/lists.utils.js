@@ -5,7 +5,11 @@ import { proLayers, locationsPage } from '../../../common/js/config';
 import { gfwListsLocationID } from '../components/lists/Lists.config';
 import { GFWLists } from '../config/listNames';
 import { getListStatusIdByStatusName } from './draft.utils';
-import { FILTER_STRING_VARIABLES, FILTER_ARRAY_VARIABLES, FILTER_BOOLEAN_VARIABLES } from '../constants/components';
+import {
+  FILTER_STRING_VARIABLES,
+  FILTER_ARRAY_VARIABLES,
+  FILTER_BOOLEAN_VARIABLES,
+} from '../constants/components';
 import {
   GFW_LISTS_WITH_DOWNLOAD_OPTION_DISABLED,
   GFW_LISTS_NAMES_WITH_DOWNLOAD_OPTION_DISABLED,
@@ -14,7 +18,13 @@ import {
   LIST_STATUS_ANALYZING_DASHBOARD,
 } from '../../../common/js/constants/lists.constants';
 
-const { administrativeAreas, oilPalmConcessions, protectedAreas, rspoConcessions, universalMillList } = proLayers;
+const {
+  administrativeAreas,
+  oilPalmConcessions,
+  protectedAreas,
+  rspoConcessions,
+  universalMillList,
+} = proLayers;
 
 // Check to see which views should be enabled
 const checkValidView = (listData) => {
@@ -169,7 +179,9 @@ const containsPunctuation = (list_name) => {
  * @returns {Array} - Filter results
  */
 export const getListFilteredLocations = (filteredLocationData, combinedColumns, listFilterStr) => {
-  const activeColumns = combinedColumns.filter((v) => v.show && v.accessor !== 'checkbox' && v.accessor !== 'flags');
+  const activeColumns = combinedColumns.filter(
+    (v) => v.show && v.accessor !== 'checkbox' && v.accessor !== 'flags'
+  );
   return filteredLocationData.filter((e) => {
     return (
       activeColumns
@@ -180,7 +192,10 @@ export const getListFilteredLocations = (filteredLocationData, combinedColumns, 
               : typeof col.accessor === 'string'
               ? e[col.accessor]
               : undefined;
-          return cellValue && cellValue.toString().toLowerCase().includes(listFilterStr.toString().toLowerCase());
+          return (
+            cellValue &&
+            cellValue.toString().toLowerCase().includes(listFilterStr.toString().toLowerCase())
+          );
         })
         .filter((v) => v).length > 0
     );
@@ -248,7 +263,11 @@ const getGfwListName = (selectedLists) => {
  * @return {boolean} - [ true/false ] value in case that list is excluded GFW list or not
  */
 const isDownloadDisabledForThisList = (selectedList) => {
-  const { associated_gfwlist: associatedGfwlist, globalForestWatchList, list_name: ListName } = selectedList;
+  const {
+    associated_gfwlist: associatedGfwlist,
+    globalForestWatchList,
+    list_name: ListName,
+  } = selectedList;
 
   if (associatedGfwlist) {
     return GFW_LISTS_WITH_DOWNLOAD_OPTION_DISABLED.includes(associatedGfwlist);
@@ -267,7 +286,9 @@ const isDownloadDisabledForThisList = (selectedList) => {
  * @return {*}
  */
 const removeReturnCharacters = (value) => {
-  return typeof value === 'string' && value.length > 0 ? value.replace(/(\r\n|\n|\r)/gm, '') : value;
+  return typeof value === 'string' && value.length > 0
+    ? value.replace(/(\r\n|\n|\r)/gm, '')
+    : value;
 };
 
 /**
@@ -353,7 +374,11 @@ const findArrIndex = (arr, itemProp, value, itemPropTwo, valueTwo) => {
 };
 
 const isAnalyzingStatus = (status) => {
-  return [LIST_STATUS_PENDING, LIST_STATUS_AANALYZING_DIAGNOSTIC, LIST_STATUS_ANALYZING_DASHBOARD].includes(status);
+  return [
+    LIST_STATUS_PENDING,
+    LIST_STATUS_AANALYZING_DIAGNOSTIC,
+    LIST_STATUS_ANALYZING_DASHBOARD,
+  ].includes(status);
 };
 
 const isFailedList = (list) => list?.list_status_id === locationsPage.listStatus.Inactive;

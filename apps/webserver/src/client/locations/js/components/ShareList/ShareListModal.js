@@ -102,33 +102,31 @@ const ShareListModal = (props) => {
     setShareListModalTab('success');
     updateShowActionsState(false);
 
-    ga(
-      'send',
-      'event',
-      'Share List',
-      'Add User button click',
-      `user clicked on the ok button in the modal window to start sharing list with ${selectedUser}`
-    );
+    gtag('event', 'Add User button click', {
+      event_category: 'Share List',
+      event_label: `user clicked on the ok button in the modal window to start sharing list with ${selectedUser}`,
+    });
   };
 
   const handleTypeChange = (event) => {
     setShowShareType(event.target.value);
   };
 
-  return(
+  return (
     <Dialog
       open={isOpen}
       modal={true}
       bodyClassName="share-dialog__body"
       contentClassName="dialog__content"
-      onRequestClose={onClose}>
+      onRequestClose={onClose}
+    >
       <h2 className="sharelist__title">{selectedList.list_name}</h2>
 
       <button className="sharelist__close" onClick={onClose}>
         <IconClose />
       </button>
 
-      { shareListModalTab === 'list' &&
+      {shareListModalTab === 'list' && (
         <div>
           <div className="sharelist__search">
             <FormControl sx={{ m: 1, minWidth: 120 }}>
@@ -154,43 +152,65 @@ const ShareListModal = (props) => {
                 </MenuItem>
               </Select>
             </FormControl>
-            <input 
-              value={ filterUsersLabel }
+            <input
+              value={filterUsersLabel}
               className="sharelist__input"
               type="text"
-              onChange={ (e) => { setFilterUsersLabel(e.target.value)} } />
+              onChange={(e) => {
+                setFilterUsersLabel(e.target.value);
+              }}
+            />
           </div>
 
           <div className="sharelist__options">
-            { intenalListIsSelect && 
-              <ShareListOption listOpitions={filterUserList()} handleClick={(user) => { handleUserSelect(user) }} />
-            }
+            {intenalListIsSelect && (
+              <ShareListOption
+                listOpitions={filterUserList()}
+                handleClick={(user) => {
+                  handleUserSelect(user);
+                }}
+              />
+            )}
 
-            {
-              !intenalListIsSelect && 
-              <ShareListOption listOpitions={filterCompanyList()} handleClick={(company) => { handleCompanySelect(company) }} />
-            }
+            {!intenalListIsSelect && (
+              <ShareListOption
+                listOpitions={filterCompanyList()}
+                handleClick={(company) => {
+                  handleCompanySelect(company);
+                }}
+              />
+            )}
           </div>
         </div>
-      }
+      )}
 
-      { shareListModalTab === 'shareType' && 
-        <ShareListType handleResults={() => updateShowActionsState(true)} handleList={() => updateShowActionsState(true)} title={selectedUser.name} />
-      }
+      {shareListModalTab === 'shareType' && (
+        <ShareListType
+          handleResults={() => updateShowActionsState(true)}
+          handleList={() => updateShowActionsState(true)}
+          title={selectedUser.name}
+        />
+      )}
 
-      { shareListModalTab === 'success' &&
+      {shareListModalTab === 'success' && (
         <ShareListSuccess listName={selectedList.list_name} userName={selectedUser.name} />
-      }
+      )}
 
-      { showActions && intenalListIsSelect &&
-        <ShareListActions handleDeny={() => handleUserSelect(false)} handleConfirm={addUserToSharedList} />
-      }
+      {showActions && intenalListIsSelect && (
+        <ShareListActions
+          handleDeny={() => handleUserSelect(false)}
+          handleConfirm={addUserToSharedList}
+        />
+      )}
 
-      { showActions && !intenalListIsSelect &&
-        <ShareListActions handleDeny={() => handleCompanySelect(false)} handleConfirm={() => setShareListModalTab('success')} />
-      }
+      {showActions && !intenalListIsSelect && (
+        <ShareListActions
+          handleDeny={() => handleCompanySelect(false)}
+          handleConfirm={() => setShareListModalTab('success')}
+        />
+      )}
     </Dialog>
   );
-}
+};
 
 export default ShareListModal;

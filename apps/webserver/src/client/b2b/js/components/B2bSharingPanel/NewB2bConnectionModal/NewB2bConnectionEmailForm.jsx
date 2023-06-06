@@ -34,7 +34,11 @@ function NewB2bConnectionEmailForm({ setApiResponse }) {
             placeholder={profilePage.profileManager.b2bSection.email}
             onChange={(evt) => setEmail(evt.target.value)}
           />
-          <div dangerouslySetInnerHTML={{ __html: profilePage.profileManager.b2bSection.termsOfUseWarning }} />
+          <div
+            dangerouslySetInnerHTML={{
+              __html: profilePage.profileManager.b2bSection.termsOfUseWarning,
+            }}
+          />
         </div>
       </CardContent>
       <CardActions style={{ justifyContent: 'right' }}>

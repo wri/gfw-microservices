@@ -16,15 +16,18 @@
     font-size: 13px;
     margin: 10px;
     &:hover {
-        text-decoration: none;
-        background-color: rgba(255, 255, 255, 0.2);
+      text-decoration: none;
+      background-color: rgba(255, 255, 255, 0.2);
     }
   }
   &__title {
     font-size: 20px;
     padding: 10px;
   }
-  a, a:hover, a:visited, a:active {
+  a,
+  a:hover,
+  a:visited,
+  a:active {
     text-decoration: none;
     color: $gfw-green;
   }

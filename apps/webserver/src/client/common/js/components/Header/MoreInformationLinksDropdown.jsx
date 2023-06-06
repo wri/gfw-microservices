@@ -22,13 +22,20 @@ function MoreInformationLinksDropdown() {
         <IconButton onClick={() => setShowList(!showList)}>
           <Icon>apps</Icon>
         </IconButton>
-        <div className={`drop-down-nav__list ${showList ? 'show' : 'hide'}`} style={{ width: '330px' }}>
+        <div
+          className={`drop-down-nav__list ${showList ? 'show' : 'hide'}`}
+          style={{ width: '330px' }}
+        >
           <div className="more-info-links-dropdown__title">{nav.moreMenu.apps}</div>
-          <div className="more-info-links-dropdown__description">{nav.moreMenu.appsDescription}</div>
+          <div className="more-info-links-dropdown__description">
+            {nav.moreMenu.appsDescription}
+          </div>
           <OtherAppsLinks />
           <hr />
           <div className="more-info-links-dropdown__title">{nav.more}</div>
-          <div className="more-info-links-dropdown__description">{nav.moreMenu.sharingAndSecurityDescription}</div>
+          <div className="more-info-links-dropdown__description">
+            {nav.moreMenu.sharingAndSecurityDescription}
+          </div>
           <MoreInformationLinks />
         </div>
       </div>

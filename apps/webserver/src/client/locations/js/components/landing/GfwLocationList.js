@@ -9,7 +9,9 @@ const GfwLocationList = ({ changeList, list }) => {
       <div className="locations-list-gfw__inner">
         <h4 className="locations-list-gfw__title">{list.list_name}</h4>
         <div className="locations-list-gfw__count">
-          <span className="locations-list-gfw__number">{numberWithCommas(list.list_locations_count)}</span>
+          <span className="locations-list-gfw__number">
+            {numberWithCommas(list.list_locations_count)}
+          </span>
           <span className="locations-list-gfw__label">locations</span>
         </div>
       </div>

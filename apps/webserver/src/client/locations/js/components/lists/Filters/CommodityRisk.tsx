@@ -9,7 +9,12 @@ interface CommodityRiskFilterProps {
   listView: string;
 }
 
-export const CommodityRiskFilterDrawer = ({ listName, listData, filterCount, listView }: CommodityRiskFilterProps) => {
+export const CommodityRiskFilterDrawer = ({
+  listName,
+  listData,
+  filterCount,
+  listView,
+}: CommodityRiskFilterProps) => {
   return listName === 'Palm Oil Mills' ? (
     <GFWCommodityRiskFilter listData={listData} filterCount={filterCount} listView={listView} />
   ) : (

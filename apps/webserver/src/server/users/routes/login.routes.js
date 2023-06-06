@@ -4,16 +4,16 @@ const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
 /**
-* @name exports
-* @static
-* @summary Login route
-*/
+ * @name exports
+ * @static
+ * @summary Login route
+ */
 module.exports = (app, limiter) => {
   /**
-  * @name /login
-  * @see login.controller
-  * @memberof Router
-  */
+   * @name /login
+   * @see login.controller
+   * @memberof Router
+   */
 
   // All methods must under /pro-manager must pass through middleware
   const routeMiddlewares = [];

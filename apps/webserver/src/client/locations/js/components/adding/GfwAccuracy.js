@@ -8,7 +8,9 @@ export default class GfwAccuracy extends Component {
         onClick={this.props.updateAccuracy}
         id={option.id}
         key={i}
-        className={`locations-instructions-option ${this.props.accuracy === option.label ? 'selected' : ''}`}
+        className={`locations-instructions-option ${
+          this.props.accuracy === option.label ? 'selected' : ''
+        }`}
       >
         {option.label}
       </option>

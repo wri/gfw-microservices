@@ -74,7 +74,10 @@ module.exports = (app, limiter) => {
         const { subscription_status_id: subscriptionStatusId } = organization;
 
         // If user is premium or admin, allow access
-        if (subscriptionStatusId === PREMIUM_ACCOUNT_CODE && req.session.user_access_level_id === ADMIN_ACCESS_LEVEL_CODE) {
+        if (
+          subscriptionStatusId === PREMIUM_ACCOUNT_CODE &&
+          req.session.user_access_level_id === ADMIN_ACCESS_LEVEL_CODE
+        ) {
           return next();
         }
         return res.status(403).send({ message: 'Forbidden' });

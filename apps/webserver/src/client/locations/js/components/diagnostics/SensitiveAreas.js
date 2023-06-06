@@ -92,7 +92,16 @@ export default class SensitiveAreas extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { view } = this.props;
-    const { tclChecked, pfChecked, paChecked, peatChecked, iflChecked, peatEnabled, startYear, endYear } = this.state;
+    const {
+      tclChecked,
+      pfChecked,
+      paChecked,
+      peatChecked,
+      iflChecked,
+      peatEnabled,
+      startYear,
+      endYear,
+    } = this.state;
 
     if (
       (prevProps.view !== 'diagnostics' && view === 'diagnostics') ||
@@ -117,9 +126,13 @@ export default class SensitiveAreas extends Component {
     const { from_value, to_value } = data;
     YEARS_RANGE.forEach((year) => {
       if (year > to_value || year < from_value) {
-        $(`.sensitive-area-slider__container .irs-grid-text:contains("${year}")`).addClass('irs-inactive-year');
+        $(`.sensitive-area-slider__container .irs-grid-text:contains("${year}")`).addClass(
+          'irs-inactive-year'
+        );
       } else {
-        $(`.sensitive-area-slider__container .irs-grid-text:contains("${year}")`).removeClass('irs-inactive-year');
+        $(`.sensitive-area-slider__container .irs-grid-text:contains("${year}")`).removeClass(
+          'irs-inactive-year'
+        );
       }
     });
   };
@@ -131,7 +144,10 @@ export default class SensitiveAreas extends Component {
       endYear: data.to_value,
       sliderActive: false,
     });
-    ga('send', 'event', 'Diagnostics Click', 'timeslider update', 'user updated the sensitive areas timeslider');
+    gtag('event', 'timeslider update', {
+      event_category: 'Diagnostics Click',
+      event_label: 'user updated the sensitive areas timeslider',
+    });
   };
 
   sliderChanging = () => {
@@ -146,13 +162,10 @@ export default class SensitiveAreas extends Component {
     this.setState({
       tclChecked: !this.state.tclChecked,
     });
-    ga(
-      'send',
-      'event',
-      'Forest Change Diagnostics Click',
-      'Sensitive areas checkbox clicked',
-      'user checked tree cover loss'
-    );
+    gtag('event', 'Sensitive areas checkbox clicked', {
+      event_category: 'Forest Change Diagnostics Click',
+      event_label: 'user checked tree cover loss',
+    });
   };
 
   updatePF = () => {
@@ -162,13 +175,10 @@ export default class SensitiveAreas extends Component {
       peatChecked: false,
       iflChecked: false,
     });
-    ga(
-      'send',
-      'event',
-      'Forest Change Diagnostics Click',
-      'Sensitive areas checkbox clicked',
-      'user checked primary forest'
-    );
+    gtag('event', 'Sensitive areas checkbox clicked', {
+      event_category: 'Forest Change Diagnostics Click',
+      event_label: 'user checked primary forest',
+    });
   };
 
   updatePA = () => {
@@ -178,13 +188,10 @@ export default class SensitiveAreas extends Component {
       peatChecked: false,
       iflChecked: false,
     });
-    ga(
-      'send',
-      'event',
-      'Forest Change Diagnostics Click',
-      'Sensitive areas checkbox clicked',
-      'user checked protected areas'
-    );
+    gtag('event', 'Sensitive areas checkbox clicked', {
+      event_category: 'Forest Change Diagnostics Click',
+      event_label: 'user checked protected areas',
+    });
   };
 
   updatePeat = () => {
@@ -196,7 +203,10 @@ export default class SensitiveAreas extends Component {
         iflChecked: false,
       });
     }
-    ga('send', 'event', 'Forest Change Diagnostics Click', 'Sensitive areas checkbox clicked', 'user checked peat');
+    gtag('event', 'Sensitive areas checkbox clicked', {
+      event_category: 'Forest Change Diagnostics Click',
+      event_label: 'user checked peat',
+    });
   };
 
   updateIFL = () => {
@@ -206,13 +216,10 @@ export default class SensitiveAreas extends Component {
       paChecked: false,
       peatChecked: false,
     });
-    ga(
-      'send',
-      'event',
-      'Forest Change Diagnostics Click',
-      'Sensitive areas checkbox clicked',
-      'user checked intact forest landscape'
-    );
+    gtag('event', 'Sensitive areas checkbox clicked', {
+      event_category: 'Forest Change Diagnostics Click',
+      event_label: 'user checked intact forest landscape',
+    });
   };
 
   processTotals = () => {
@@ -289,10 +296,14 @@ export default class SensitiveAreas extends Component {
             </div>
           </td>
           <td className="center">
-            {extent === 'totalExtPeat' && !this.state.peatEnabled ? '--' : prettifyNum(formatNum(lossValue))}
+            {extent === 'totalExtPeat' && !this.state.peatEnabled
+              ? '--'
+              : prettifyNum(formatNum(lossValue))}
           </td>
           <td className="right">
-            {extent === 'totalExtPeat' && !this.state.peatEnabled ? '--' : prettifyNum(formatNum(percents[extent]))}
+            {extent === 'totalExtPeat' && !this.state.peatEnabled
+              ? '--'
+              : prettifyNum(formatNum(percents[extent]))}
           </td>
         </tr>
       );
@@ -303,14 +314,25 @@ export default class SensitiveAreas extends Component {
 
   renderChart = (el) => {
     const { getYearlyData, getYearlyHighchartSeries } = this.props;
-    const { startYear, endYear, tclChecked, pfChecked, paChecked, peatChecked, peatEnabled, iflChecked } = this.state;
+    const {
+      startYear,
+      endYear,
+      tclChecked,
+      pfChecked,
+      paChecked,
+      peatChecked,
+      peatEnabled,
+      iflChecked,
+    } = this.state;
     const series = [];
 
     if (tclChecked) {
       series.push({
         name: 'Tree Cover Loss',
         stack: 'Tree Cover Loss',
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_total_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_total_yearly', startYear, endYear)
+        ),
         color: '#ef669a',
         groupPadding: 0,
         showInLegend: false,
@@ -321,7 +343,9 @@ export default class SensitiveAreas extends Component {
       series.push({
         name: 'Primary Forest',
         stack: 'Primary Forest',
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_primary_forest_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_primary_forest_yearly', startYear, endYear)
+        ),
         color: '#686868',
         groupPadding: 0,
         showInLegend: false,
@@ -332,7 +356,9 @@ export default class SensitiveAreas extends Component {
       series.push({
         name: 'Protected Areas',
         stack: 'Protected Areas',
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_protected_areas_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_protected_areas_yearly', startYear, endYear)
+        ),
         color: '#686868',
         groupPadding: 0,
         showInLegend: false,
@@ -343,7 +369,9 @@ export default class SensitiveAreas extends Component {
       series.push({
         name: 'Peat',
         stack: 'Peat',
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_peat_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_peat_yearly', startYear, endYear)
+        ),
         color: '#686868',
         groupPadding: 0,
         showInLegend: false,
@@ -354,7 +382,9 @@ export default class SensitiveAreas extends Component {
       series.push({
         name: 'Intact Forest Landscape',
         stack: 'Intact Forest Landscape',
-        data: getYearlyHighchartSeries(getYearlyData('tree_cover_loss_intact_forest_yearly', startYear, endYear)),
+        data: getYearlyHighchartSeries(
+          getYearlyData('tree_cover_loss_intact_forest_yearly', startYear, endYear)
+        ),
         color: '#686868',
         groupPadding: 0,
         showInLegend: false,
@@ -394,7 +424,9 @@ export default class SensitiveAreas extends Component {
         pointFormatter: function () {
           return `<tr><td style="color:${this.color};padding:0">${
             this.series.name
-          }: </td><td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(formatNum(this.y))} ha</b></td></tr>`;
+          }: </td><td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(
+            formatNum(this.y)
+          )} ha</b></td></tr>`;
         },
         footerFormat: '</table><span style="font-size:10px">in {point.key}</span>',
         shared: true,
@@ -510,7 +542,9 @@ export default class SensitiveAreas extends Component {
             <label
               htmlFor={`sensitive-${tote}-check`}
               className={`legend-square-label ${
-                (tote === 'totalTCLonPeat' && !this.state.peatEnabled) || disabled ? 'peat-disabled' : ''
+                (tote === 'totalTCLonPeat' && !this.state.peatEnabled) || disabled
+                  ? 'peat-disabled'
+                  : ''
               }`}
             >
               {label}
@@ -547,20 +581,34 @@ export default class SensitiveAreas extends Component {
     if (startYear === endYear) {
       lossLabel = <span key="SensitiveAreasLossLabel__same-years">Loss, ({startYear}) (ha)</span>;
     } else if (startYear !== START_YEAR || endYear !== END_YEAR) {
-      lossLabel = <span key="SensitiveAreasLossLabel__different-years">Loss, {`${startYear} - ${endYear}`} (ha)</span>;
+      lossLabel = (
+        <span key="SensitiveAreasLossLabel__different-years">
+          Loss, {`${startYear} - ${endYear}`} (ha)
+        </span>
+      );
     }
 
-    let lossTableLabel = <span key="SensitiveAreasLossTableLabel__default">Loss, all years (ha)</span>;
+    let lossTableLabel = (
+      <span key="SensitiveAreasLossTableLabel__default">Loss, all years (ha)</span>
+    );
     if (startYear === endYear) {
-      lossTableLabel = <span key="SensitiveAreasLossTableLabel__same-years">Loss, {startYear} (ha)</span>;
+      lossTableLabel = (
+        <span key="SensitiveAreasLossTableLabel__same-years">Loss, {startYear} (ha)</span>
+      );
     } else if (startYear !== START_YEAR || endYear !== END_YEAR) {
       lossTableLabel = (
-        <span key="SensitiveAreasLossTableLabel__different-years">Loss, {`${startYear}-${endYear}`} (ha)</span>
+        <span key="SensitiveAreasLossTableLabel__different-years">
+          Loss, {`${startYear}-${endYear}`} (ha)
+        </span>
       );
     }
 
     return (
-      <div className={`locations-diagnostics-section ${this.props.listView === 'forest_change' ? '' : 'hidden'}`}>
+      <div
+        className={`locations-diagnostics-section ${
+          this.props.listView === 'forest_change' ? '' : 'hidden'
+        }`}
+      >
         <h2 className="locations-diagnostics__subtitle">Sensitive Areas</h2>
 
         <div className="locations-diagnostics__subsection section__loss-of-forests">
@@ -568,7 +616,10 @@ export default class SensitiveAreas extends Component {
             <div className="locations-diagnostics__flex-center subsection-subtitle__container">
               <h3 className="locations-diagnostics-subsection-title">Loss of Forests</h3>
               <IconButtonWrapper id={locationsPage.infoBubbleConfig.saLossOfForests} />
-              <span onClick={() => this.props.fireDownload('forestLoss')} className="locations-diagnostics-icon-holder">
+              <span
+                onClick={() => this.props.fireDownload('forestLoss')}
+                className="locations-diagnostics-icon-holder"
+              >
                 <svg className="svg-icon">
                   <use xlinkHref="#icon-download" />
                 </svg>
@@ -608,7 +659,9 @@ export default class SensitiveAreas extends Component {
                 <tr className="historic-area__title-row">
                   <th className="historic-area__title-container" colSpan={3}>
                     <div className="historic-area__title">
-                      <h3 className="locations-diagnostics-subsection-title">Percentage of Historic Area Lost</h3>
+                      <h3 className="locations-diagnostics-subsection-title">
+                        Percentage of Historic Area Lost
+                      </h3>
                       <IconButtonWrapper id={locationsPage.infoBubbleConfig.saHistoricAreasLoss} />
                       <span
                         onClick={() => this.props.fireDownload('historicPercent')}
@@ -620,8 +673,8 @@ export default class SensitiveAreas extends Component {
                       </span>
                     </div>
                     <p className="locations-instructional__text">
-                      Change years displayed in the graphs above and start and end dates for total loss calculations in
-                      the tables at right.
+                      Change years displayed in the graphs above and start and end dates for total
+                      loss calculations in the tables at right.
                     </p>
                   </th>
                   <th className="label left">{lossLabel}</th>
@@ -635,7 +688,11 @@ export default class SensitiveAreas extends Component {
           </div>
         </div>
         <div className="locations-diagnostics-subsection">
-          <div className={`sensitive-area-slider__container slider__container ${sliderActive ? 'slider-active' : ''}`}>
+          <div
+            className={`sensitive-area-slider__container slider__container ${
+              sliderActive ? 'slider-active' : ''
+            }`}
+          >
             <input id="tree-cover-percent-slider" />
           </div>
         </div>

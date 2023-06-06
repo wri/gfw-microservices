@@ -1,5 +1,7 @@
 import * as sql from 'mssql';
 import { get } from '../connectionpool';
+import { ParameterType } from './types';
+
 export class SQLUtils {
   config: sql.config;
   connection: sql.ConnectionPool;
@@ -12,7 +14,7 @@ export class SQLUtils {
     this.connection = await get(this.config.database, this.config); //sql.connect(this.config);
   }
 
-  query<T>(query: string, parameters?: any[]): Promise<T> {
+  query<T>(query: string, parameters?: ParameterType[]): Promise<T> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {
@@ -36,7 +38,7 @@ export class SQLUtils {
     });
   }
 
-  executeQuery<T>(query: string, parameters?: any[]): Promise<T> {
+  executeQuery<T>(query: string, parameters?: ParameterType[]): Promise<T> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {
@@ -63,7 +65,7 @@ export class SQLUtils {
     });
   }
 
-  executeQueryArray<T>(query: string, parameters?: any[]): Promise<Array<T>> {
+  executeQueryArray<T>(query: string, parameters?: ParameterType[]): Promise<Array<T>> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {

@@ -21,7 +21,10 @@ export default class SelectAddress extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.searchWidget && (!this.props.hasGeometry || prevProps.addMethod !== this.props.addMethod)) {
+    if (
+      this.searchWidget &&
+      (!this.props.hasGeometry || prevProps.addMethod !== this.props.addMethod)
+    ) {
       this.searchWidget.clear();
     }
   }
@@ -38,13 +41,10 @@ export default class SelectAddress extends Component {
         longitude: evt.result.feature.geometry.longitude,
       });
       this.props.setGeometry(geom);
-      ga(
-        'send',
-        'event',
-        'Locations Enter',
-        'add location enter address',
-        'user entered an address in the add location page'
-      );
+      gtag('event', 'add location enter address', {
+        event_category: 'Locations Enter',
+        event_label: 'user entered an address in the add location page',
+      });
     });
   };
 

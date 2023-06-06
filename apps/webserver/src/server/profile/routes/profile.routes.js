@@ -88,9 +88,11 @@ module.exports = (app, limiter) => {
       .then((result) => {
         console.log('updateAccountProfile: Success', result);
         if (policyUploadList.length > 0) {
-          PolicyManager.uploadPolicies(req, policyUploadList, policyNames, overwrite).then((policyResult) => {
-            res.send({ redirect: '/profile', policyResult });
-          });
+          PolicyManager.uploadPolicies(req, policyUploadList, policyNames, overwrite).then(
+            (policyResult) => {
+              res.send({ redirect: '/profile', policyResult });
+            }
+          );
         } else {
           res.send({ redirect: '/profile', policyResult: [] });
         }

@@ -38,7 +38,11 @@ function MobileHeader({ isLoggedIn }) {
             </div>
 
             <div style={{ justifyContent: 'center', display: 'flex', paddingBottom: '10px' }}>
-              <HeaderNavLink link="/account" label={nav.requestAccount} className="header__request-account-button" />
+              <HeaderNavLink
+                link="/account"
+                label={nav.requestAccount}
+                className="header__request-account-button"
+              />
             </div>
             <MenuItem>
               <ListItemText>
@@ -48,7 +52,10 @@ function MobileHeader({ isLoggedIn }) {
             <Divider />
             <MenuItem>
               <ListItemText>
-                <HeaderNavLink link="https://www.globalforestwatch.org/blog/tag/gfw-pro" label="Blog" />
+                <HeaderNavLink
+                  link="https://www.globalforestwatch.org/blog/tag/gfw-pro"
+                  label="Blog"
+                />
               </ListItemText>
             </MenuItem>
             <Divider />

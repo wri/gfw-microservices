@@ -7,7 +7,12 @@ import Graphic from 'esri/Graphic';
 import Point from 'esri/geometry/Point';
 import FeatureLayer from 'esri/layers/FeatureLayer';
 
-import { incrementZoomLevel, saveView, selectAdmin, setZoomLevelTotal } from '../actions/dashboardActions';
+import {
+  incrementZoomLevel,
+  saveView,
+  selectAdmin,
+  setZoomLevelTotal,
+} from '../actions/dashboardActions';
 import store from '../store';
 
 import dictionary from './dictionary';
@@ -38,7 +43,9 @@ function initializeMap(view) {
       const state = store.getState();
       const { zoomLevel } = state;
       const { results } = response;
-      const dashboardGraphic = results.find((layer) => layer.graphic.attributes.hasOwnProperty('numberOfAlerts'));
+      const dashboardGraphic = results.find((layer) =>
+        layer.graphic.attributes.hasOwnProperty('numberOfAlerts')
+      );
       if (
         dashboardGraphic.graphic.attributes.numberOfLocations > 0 ||
         (dashboardGraphic.graphic.attributes.numberOfLocations === 0 && zoomLevel < 2)
@@ -48,13 +55,11 @@ function initializeMap(view) {
         store.dispatch(setZoomLevelTotal(locationsWithAlert));
         store.dispatch(selectAdmin(selectedAdmin));
         store.dispatch(incrementZoomLevel());
-        ga(
-          'send',
-          'event',
-          'Dashboard Click',
-          'Dashboard Map zoom in clicked',
-          'User click on a circle on the Dashboard to zoom the map in to the next level'
-        );
+        gtag('event', 'Dashboard Map zoom in clicked', {
+          event_category: 'Dashboard Click',
+          event_label:
+            'User click on a circle on the Dashboard to zoom the map in to the next level',
+        });
       } else {
         view.popup.close();
       }
@@ -65,7 +70,9 @@ function initializeMap(view) {
     // Perform hit text at the screenpoint
     view.hitTest({ x: evt.x, y: evt.y }).then((response) => {
       const { results } = response;
-      const dashboardGraphic = results.find((layer) => layer.graphic.attributes.hasOwnProperty('numberOfAlerts'));
+      const dashboardGraphic = results.find((layer) =>
+        layer.graphic.attributes.hasOwnProperty('numberOfAlerts')
+      );
       if (dashboardGraphic) {
         handleFeatureHover(view, dashboardGraphic);
       } else {
@@ -259,7 +266,15 @@ function getCentroidGeometries(gadmids, zoomLevel, data) {
   });
 }
 
-function mergeData(featuresArray, data, zoomLevel, selectedAlert, rawData, locationFilters, selectedTimeframe) {
+function mergeData(
+  featuresArray,
+  data,
+  zoomLevel,
+  selectedAlert,
+  rawData,
+  locationFilters,
+  selectedTimeframe
+) {
   const { zoomLevelTotal } = store.getState();
 
   const { ALERTS, NOALERTS } = locationFilters;
@@ -274,7 +289,9 @@ function mergeData(featuresArray, data, zoomLevel, selectedAlert, rawData, locat
     // data is and object that has features grouped by admin unit depending on zoom level it can be IDN.[1].[15] (e.g "IDN": [...features], "LKA": [...features])
     const activeAdminId = feature.attributes[selectedAdminProperty];
     const adminUnitData = data[feature.attributes[selectedAdminProperty]];
-    const hasDataForAlert = adminUnitData.some((f) => f.properties[selectedCoverageProperty] === true);
+    const hasDataForAlert = adminUnitData.some(
+      (f) => f.properties[selectedCoverageProperty] === true
+    );
 
     const numberOfLocations = rawData.geojson.features.reduce((acc, val) => {
       if (val.properties[selectedAdminProperty] === activeAdminId) {
@@ -305,7 +322,10 @@ function mergeData(featuresArray, data, zoomLevel, selectedAlert, rawData, locat
     const numberOfAlerts = getNumberOfAlerts(adminUnitData, selectedTimeframe, timeframeProperty);
 
     const percentageOfLocations = (numberOfLocations / zoomLevelTotal) * 100;
-    const treeCoverArea = adminUnitData.reduce((totalTree, f) => totalTree + Number(f.properties.umd), 0);
+    const treeCoverArea = adminUnitData.reduce(
+      (totalTree, f) => totalTree + Number(f.properties.umd),
+      0
+    );
 
     return {
       ...feature,
@@ -426,7 +446,9 @@ function getAlertsTotal(selectedAdmin = '', zoomLevel = -1) {
  * @returns {Array} - List of graphics
  */
 function createGraphics(features, locationFilters, zoomLevel) {
-  const densityArray = features.map((feature) => feature.attributes.treeDensity).filter((density) => !isNaN(density));
+  const densityArray = features
+    .map((feature) => feature.attributes.treeDensity)
+    .filter((density) => !isNaN(density));
   const maxDensity = Math.max(...densityArray);
 
   return features.map((feature) => {
@@ -486,7 +508,16 @@ function parseGADMId(id, zoomLevel) {
   }
 }
 
-function updateLayer(map, view, data, selectedAlert, selectedTimeframe, locationFilters, zoomLevel, rawData) {
+function updateLayer(
+  map,
+  view,
+  data,
+  selectedAlert,
+  selectedTimeframe,
+  locationFilters,
+  zoomLevel,
+  rawData
+) {
   // Clone for mutation sake
   // const clonedData = cloneDeep(data);
   const clonedData = data;
@@ -548,7 +579,9 @@ function updateLayer(map, view, data, selectedAlert, selectedTimeframe, location
 
                 if ([0, 1].includes(zoomLevel)) {
                   const selectedAdminProperty = dictionary.zoomLevel_gadmidGroupBy[zoomLevel];
-                  const uniqAdmins = _uniq(graphics.map((graphic) => graphic.attributes[selectedAdminProperty]));
+                  const uniqAdmins = _uniq(
+                    graphics.map((graphic) => graphic.attributes[selectedAdminProperty])
+                  );
                   if (uniqAdmins.length === 1) {
                     view.scale = dictionary.zoomLevel_scale[zoomLevel];
                   }

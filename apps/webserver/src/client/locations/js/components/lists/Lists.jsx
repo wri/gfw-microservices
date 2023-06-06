@@ -25,7 +25,11 @@ import IconListAlt from 'common/js/components/icon/IconListAlt';
 import IconGlobeAmericas from 'common/js/components/icon/IconGlobeAmericas';
 import getUserLocationDataFromAPI from './getUserLocationDataFromAPI';
 import filterListData from './filterListData';
-import { filterValidCustom, filterValidTemplates, saveGfwListLocations } from '../../utils/moveLocations';
+import {
+  filterValidCustom,
+  filterValidTemplates,
+  saveGfwListLocations,
+} from '../../utils/moveLocations';
 import store from '../../store';
 import { locationsPage, proLayers, userAccessLevel } from '../../../../common/js/config';
 import {
@@ -176,7 +180,13 @@ export default class Lists extends Component {
     });
     this.setAddTypeAndTemplate();
 
-    filterListData(listData, filters, selectedLists[0], this.getAdministrativeAreasData, this.getProtectedAreasData);
+    filterListData(
+      listData,
+      filters,
+      selectedLists[0],
+      this.getAdministrativeAreasData,
+      this.getProtectedAreasData
+    );
 
     if (isUserList(selectedLists[0])) {
       getListFilterValues(selectedLists[0].id).then((filterValues) => {
@@ -222,7 +232,12 @@ export default class Lists extends Component {
   componentDidUpdate(prevProps) {
     const { listView, listData, selectedLists, filters } = this.props;
     if (listView !== prevProps.listView) {
-      const columnNames = getAllColumnNames(listView, listData[0], selectedLists, this.getCheckboxColumn);
+      const columnNames = getAllColumnNames(
+        listView,
+        listData[0],
+        selectedLists,
+        this.getCheckboxColumn
+      );
       this.setState({
         listColumns: columnNames.list.filter((c) => this.showListColumn(c)),
         combinedColumns: columnNames.combinedColumns,
@@ -326,7 +341,9 @@ export default class Lists extends Component {
       case 1: // Analyzing
       case 5:
       case 6:
-        listItem = <UserListSidebarItemAnalyzing key={index} isSelected={isSelected} listName={list_name} />;
+        listItem = (
+          <UserListSidebarItemAnalyzing key={index} isSelected={isSelected} listName={list_name} />
+        );
         break;
       case 2: // Active
         listItem = (
@@ -340,7 +357,9 @@ export default class Lists extends Component {
         );
         break;
       case 3: // Failed
-        listItem = <UserListSidebarItemFailed key={index} isSelected={isSelected} listName={list_name} />;
+        listItem = (
+          <UserListSidebarItemFailed key={index} isSelected={isSelected} listName={list_name} />
+        );
         break;
       default:
     }
@@ -371,7 +390,8 @@ export default class Lists extends Component {
     this.setState({
       dialogOpen: true,
       dialogTitle: 'No locations selected',
-      dialogContent: 'To add locations from a GFW List, you must first select the locations you wish to add.',
+      dialogContent:
+        'To add locations from a GFW List, you must first select the locations you wish to add.',
     });
   };
 
@@ -388,7 +408,10 @@ export default class Lists extends Component {
     const { selectedLists } = this.props;
     if (selectedLists[0].id !== listID) {
       this.setState({ isLoading: true });
-      ga('send', 'event', 'List View Click', 'List in side panel clicked', `user clicked on ${listID}`);
+      gtag('event', 'List in side panel clicked', {
+        event_category: 'List View Click',
+        event_label: `user clicked on ${listID}`,
+      });
       window.location = `/locations?id=${listID}${gfwList ? '&gfw=true' : ''}`;
     }
   };
@@ -430,16 +453,15 @@ export default class Lists extends Component {
     } else {
       const selectedAndVisibleLocationsClone = cloneDeep(selectedAndVisibleLocations);
       selectedAndVisibleLocationsClone.push(location_id);
-      store.dispatch(updateSelectedAndVisibleLocations(selectedAndVisibleLocationsClone.sort((a, b) => a - b)));
+      store.dispatch(
+        updateSelectedAndVisibleLocations(selectedAndVisibleLocationsClone.sort((a, b) => a - b))
+      );
     }
 
-    ga(
-      'send',
-      'event',
-      'List View Click',
-      'Location checkbox clicked',
-      'user checked/unchecked a location in the list'
-    );
+    gtag('event', 'Location checkbox clicked', {
+      event_category: 'List View Click',
+      event_label: 'user checked/unchecked a location in the list',
+    });
   };
 
   // Select all locations in a list
@@ -458,11 +480,15 @@ export default class Lists extends Component {
 
     if (
       (!allLocationsSelected && selectedLocations.length === filteredData.length) ||
-      (selectedLocations.length === listFilteredLocations.length && listFilteredLocations.length !== 0)
+      (selectedLocations.length === listFilteredLocations.length &&
+        listFilteredLocations.length !== 0)
     ) {
       store.dispatch(updateSelectedLocations([]));
       store.dispatch(updateSelectedAndVisibleLocations([]));
-      ga('send', 'event', 'List View Click', 'Location checkbox clicked', 'user unchecked all locations in the list');
+      gtag('event', 'Location checkbox clicked', {
+        event_category: 'List View Click',
+        event_label: 'user unchecked all locations in the list',
+      });
     } else {
       const locationIDs =
         listFilteredLocations.length > 0
@@ -470,7 +496,10 @@ export default class Lists extends Component {
           : filteredLocationData.map((v) => v.location_id);
       store.dispatch(updateSelectedLocations(locationIDs));
       store.dispatch(updateSelectedAndVisibleLocations(locationIDs));
-      ga('send', 'event', 'List View Click', 'Location checkbox clicked', 'user checked all locations in the list');
+      gtag('event', 'Location checkbox clicked', {
+        event_category: 'List View Click',
+        event_label: 'user checked all locations in the list',
+      });
     }
   };
 
@@ -509,13 +538,10 @@ export default class Lists extends Component {
                 refreshPage: true,
                 isLoading: false,
               });
-              ga(
-                'send',
-                'event',
-                'Lists Click',
-                'locations all deleted',
-                'user deleted all locations from their own list'
-              );
+              gtag('event', 'locations all deleted', {
+                event_category: 'Lists Click',
+                event_label: 'user deleted all locations from their own list',
+              });
             } else {
               console.warn('Got unrecognized location delete response', response);
               this.setState({
@@ -585,7 +611,10 @@ export default class Lists extends Component {
               refreshPage: true,
               isLoading: false,
             });
-            ga('send', 'event', 'Lists Click', 'locations deleted', 'user deleted locations from their own list');
+            gtag('event', 'locations deleted', {
+              event_category: 'Lists Click',
+              event_label: 'user deleted locations from their own list',
+            });
           } else if (response.includes('isLocked')) {
             // Shouldn't happen due to call to unlock list above, but handle it if it does
             this.setState({
@@ -621,7 +650,11 @@ export default class Lists extends Component {
     this.setState({
       dialogActions: [
         <div className="PromptDeleteSelectedLocations dialog__footer">
-          <Button variant="primary" label={locationsPage.lists.ok} onClick={this.deleteSelectedLocations} />
+          <Button
+            variant="primary"
+            label={locationsPage.lists.ok}
+            onClick={this.deleteSelectedLocations}
+          />
           <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
         </div>,
       ],
@@ -638,7 +671,9 @@ export default class Lists extends Component {
         isLoading: false,
         listNotAccessible: true,
       });
-    } else if (Object.prototype.hasOwnProperty.call(locationsPage.lists.copyMoveMessages, moveError)) {
+    } else if (
+      Object.prototype.hasOwnProperty.call(locationsPage.lists.copyMoveMessages, moveError)
+    ) {
       this.setState({
         dialogOpen: true,
         dialogTitle: locationsPage.lists.copyMoveMessages[moveError].title,
@@ -708,13 +743,16 @@ export default class Lists extends Component {
 
     const list_id = selectedList.id;
 
-    const listTemplateFields = templateData.filter((field) => field.template_id === selectedList.template_id);
+    const listTemplateFields = templateData.filter(
+      (field) => field.template_id === selectedList.template_id
+    );
     const destinationListName = moveToList?.list_name || newListName;
 
     if (!selectedList.globalForestWatchList) {
       httpRequest.fetchJSON('/locations/lockList', { list_id }).then(() => {
         const { associated_gfwlist } = moveToList || selectedList;
-        const gfw_list_id = associated_gfwlist === 'null' || !associated_gfwlist ? 0 : associated_gfwlist;
+        const gfw_list_id =
+          associated_gfwlist === 'null' || !associated_gfwlist ? 0 : associated_gfwlist;
         const myFilters = {
           analysisAreaMin: filters.selectedAreaMin || 0,
           ...(filters.selectedAreaMax ? { analysisAreaMax: filters.selectedAreaMax } : {}),
@@ -746,7 +784,8 @@ export default class Lists extends Component {
         httpRequest.fetchJSON('/locations/cm-large-list', copyLocationsRequestBody).then(
           () => {
             const dialogTitle = 'Locations Moved';
-            const dialogContent = 'Location move process starts, this can take a while, please be patient.';
+            const dialogContent =
+              'Location move process starts, this can take a while, please be patient.';
 
             this.setState({
               dialogOpen: true,
@@ -781,9 +820,16 @@ export default class Lists extends Component {
       result.then(
         (response) => {
           // locations copy/move has finished
-          if (Object.prototype.hasOwnProperty.call(locationsPage.lists.copyMoveMessages, response)) {
+          if (
+            Object.prototype.hasOwnProperty.call(locationsPage.lists.copyMoveMessages, response)
+          ) {
             const dialogTitle = getDialogTitle(response, locationData.length);
-            const dialogContent = getDialogContent(response, destinationListName, isSaveAsDraft, locationData.length);
+            const dialogContent = getDialogContent(
+              response,
+              destinationListName,
+              isSaveAsDraft,
+              locationData.length
+            );
 
             this.setState({
               dialogOpen: true,
@@ -833,13 +879,18 @@ export default class Lists extends Component {
 
   updateNewListName = (newListName) => {
     const { userLists } = this.props;
-    const isNewListNameDuplicate = userLists.filter((list) => list.list_name === newListName).length > 0;
+    const isNewListNameDuplicate =
+      userLists.filter((list) => list.list_name === newListName).length > 0;
     this.setState({ newListName, isNewListNameDuplicate, dialogChildren: true });
     this.promptMoveSelectedLocations({ ...this.state, newListName, isNewListNameDuplicate });
   };
 
   // Prompt to move the locations currently selected in the list
-  promptMoveSelectedLocations = ({ newListName, isNewListNameDuplicate, selectedNewOrExisting }) => {
+  promptMoveSelectedLocations = ({
+    newListName,
+    isNewListNameDuplicate,
+    selectedNewOrExisting,
+  }) => {
     const { selectedLocations, selectedMoveOrCopy } = this.props;
     if (selectedLocations.length > maxLocations) {
       this.setState({
@@ -858,27 +909,43 @@ export default class Lists extends Component {
                 onClick={() => {
                   this.setState({ isSaveAsDraft: true }, () => {
                     if (selectedMoveOrCopy === 'copy') {
-                      ga('send', 'event', 'Copy', 'Copy List', 'User copies a list to draft');
+                      gtag('event', 'Copy List', {
+                        event_category: 'Copy',
+                        event_label: 'User copies a list to draft',
+                      });
                     } else {
-                      ga('send', 'event', 'Move', 'Move List', 'User moves a list to draft');
+                      gtag('event', 'Move List', {
+                        event_category: 'Move',
+                        event_label: 'User moves a list to draft',
+                      });
                     }
                     this.moveSelectedLocations();
                   });
                 }}
-                disabled={selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)}
+                disabled={
+                  selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)
+                }
               />
               <Button
                 variant="primary"
                 label={locationsPage.lists.submit}
                 onClick={() => {
                   if (selectedMoveOrCopy === 'copy') {
-                    ga('send', 'event', 'Copy', 'Copy List', 'User copies a list and submits');
+                    gtag('event', 'Copy List', {
+                      event_category: 'Copy',
+                      event_label: 'User copies a list and submits',
+                    });
                   } else {
-                    ga('send', 'event', 'Move', 'Move List', 'User moves a list and submits');
+                    gtag('event', 'Move List', {
+                      event_category: 'Move',
+                      event_label: 'User moves a list and submits',
+                    });
                   }
                   this.setState({ isSaveAsDraft: false, showSubmitModal: true });
                 }}
-                disabled={selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)}
+                disabled={
+                  selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)
+                }
               />
             </div>
             <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
@@ -994,12 +1061,18 @@ export default class Lists extends Component {
 
       if (analysisData.length > 0) {
         let analysisList = [];
-        if (selectedLists[0].list_name === 'Protected Areas' || selectedLists[0].list_name === 'Administrative Areas') {
+        if (
+          selectedLists[0].list_name === 'Protected Areas' ||
+          selectedLists[0].list_name === 'Administrative Areas'
+        ) {
           // for protected areas and admin areas we dont match list_ids, just location ids
-          [analysisList] = analysisData.filter((analysis) => analysis.location_id === loc.location_id);
+          [analysisList] = analysisData.filter(
+            (analysis) => analysis.location_id === loc.location_id
+          );
         } else {
           [analysisList] = analysisData.filter(
-            (analysis) => analysis.location_id === loc.location_id && analysis.list_id === loc.list_id
+            (analysis) =>
+              analysis.location_id === loc.location_id && analysis.list_id === loc.list_id
           );
         }
         data.push({ ...loc, ...analysisList });
@@ -1029,7 +1102,7 @@ export default class Lists extends Component {
 
     if (isAnalyzingStatus(selectedLists[0]?.list_status_id)) {
       this.setState({
-        isLoading: false
+        isLoading: false,
       });
       return;
     }
@@ -1041,7 +1114,12 @@ export default class Lists extends Component {
       const analysisData = location_analyses[1];
       if (locationData.length > 0) {
         const data = this.setListData(locationData, analysisData);
-        const columnNames = getAllColumnNames(listView, locationData[0], selectedLists, this.getCheckboxColumn);
+        const columnNames = getAllColumnNames(
+          listView,
+          locationData[0],
+          selectedLists,
+          this.getCheckboxColumn
+        );
         const filteredIds = data.map((d) => d.location_id);
         store.dispatch(updateListData(data));
         store.dispatch(updateFilteredData(filteredIds));
@@ -1060,8 +1138,12 @@ export default class Lists extends Component {
 
         if (locationNameForGFW) {
           if (typeof locationNameForGFW === 'string') {
-            data[0]['Investment Name'] = data[0]['Investment Name'] ? data[0]['Investment Name'] : locationNameForGFW;
-            data[0]['Location Name'] = data[0]['Location Name'] ? data[0]['Location Name'] : locationNameForGFW;
+            data[0]['Investment Name'] = data[0]['Investment Name']
+              ? data[0]['Investment Name']
+              : locationNameForGFW;
+            data[0]['Location Name'] = data[0]['Location Name']
+              ? data[0]['Location Name']
+              : locationNameForGFW;
           }
 
           const { location_id } = data[0];
@@ -1118,7 +1200,9 @@ export default class Lists extends Component {
     const { stopLoading } = this.props;
     // Original check of `gfwList.id` was breaking GFW list ID 3 and cutting first character from string
     // If we are passing globalIds, they contain brackets ({}) that we removed using slice
-    const updatedGlobalIds = [1, 2, 3].includes(gfwList.id) ? globalIds : globalIds.map((id) => id.slice(1, -1));
+    const updatedGlobalIds = [1, 2, 3].includes(gfwList.id)
+      ? globalIds
+      : globalIds.map((id) => id.slice(1, -1));
     const params = `list_id=${gfwList.id}&global_ids=["${updatedGlobalIds}"]`;
     httpRequest
       .fetchForm('/locations/getGFWListLocationsGlobalId', params)
@@ -1156,8 +1240,13 @@ export default class Lists extends Component {
 
     getUserLocationDataFromAPI(filters, list_id, filterString, tableSortedBy, tableSortedDesc, page)
       .then((response) => {
-        const { list_analysis, location_analyses, numberOfPages, maximumAnalysisAreaInTheList, numberOfResults } =
-          response;
+        const {
+          list_analysis,
+          location_analyses,
+          numberOfPages,
+          maximumAnalysisAreaInTheList,
+          numberOfResults,
+        } = response;
         const listData = {
           list_analysis,
           location_analyses: [location_analyses, location_analyses],
@@ -1252,7 +1341,10 @@ export default class Lists extends Component {
               store.dispatch(changeView('edit'));
               const { history } = this.props;
               history.push('/edit');
-              ga('send', 'event', 'Lists Click', 'Edit button clicked', 'user clicked to enter edit list workflow');
+              gtag('event', 'Edit button clicked', {
+                event_category: 'Lists Click',
+                event_label: 'user clicked to enter edit list workflow',
+              });
             }
           })
           .catch((err) => {
@@ -1273,7 +1365,10 @@ export default class Lists extends Component {
       store.dispatch(changeView('gfw'));
       const { history } = this.props;
       history.push('/gfw');
-      ga('send', 'event', 'Lists Click', 'Edit button clicked', 'user clicked to enter add from gfw workflow');
+      gtag('event', 'Edit button clicked', {
+        event_category: 'Lists Click',
+        event_label: 'user clicked to enter add from gfw workflow',
+      });
     } else {
       this.showGFWUnselectedDialog();
     }
@@ -1334,7 +1429,9 @@ export default class Lists extends Component {
     } else if (filterCount > 0) {
       // The user has set some filters so we want to send along all of the filtered locations
       if (gfwList) {
-        locationIds = filteredLocationData.map((location) => getGFWListLocationIDs(gfwList, location));
+        locationIds = filteredLocationData.map((location) =>
+          getGFWListLocationIDs(gfwList, location)
+        );
       } else {
         locationIds = filteredData;
       }
@@ -1349,7 +1446,11 @@ export default class Lists extends Component {
             );
             return (
               activeColumns
-                .map((col) => e[col.accessor] && e[col.accessor].toString().toLowerCase().includes(normalizedFilterStr))
+                .map(
+                  (col) =>
+                    e[col.accessor] &&
+                    e[col.accessor].toString().toLowerCase().includes(normalizedFilterStr)
+                )
                 .filter((v) => v).length > 0
             );
           })
@@ -1362,7 +1463,11 @@ export default class Lists extends Component {
             );
             return (
               activeColumns
-                .map((col) => e[col.accessor] && e[col.accessor].toString().toLowerCase().includes(normalizedFilterStr))
+                .map(
+                  (col) =>
+                    e[col.accessor] &&
+                    e[col.accessor].toString().toLowerCase().includes(normalizedFilterStr)
+                )
                 .filter((v) => v).length > 0
             );
           })
@@ -1402,13 +1507,10 @@ export default class Lists extends Component {
     };
 
     redirectToPage('/map', sendData);
-    ga(
-      'send',
-      'event',
-      'Lists Click',
-      'Header button click',
-      'user is re-directed to the map page via a Lists Header button click'
-    );
+    gtag('event', 'Header button click', {
+      event_category: 'Lists Click',
+      event_label: 'user is re-directed to the map page via a Lists Header button click',
+    });
   };
 
   // Search selected lists
@@ -1468,10 +1570,16 @@ export default class Lists extends Component {
 
     if (filterString) {
       // replace with prop
-      listFilteredLocations = getListFilteredLocations(filteredLocationData, combinedColumns, filterString);
+      listFilteredLocations = getListFilteredLocations(
+        filteredLocationData,
+        combinedColumns,
+        filterString
+      );
     }
     if (listFilteredLocations.length > 0 && selectedLocations.length > 0) {
-      searchedLocations = listFilteredLocations.filter((location) => selectedLocations.includes(location.location_id));
+      searchedLocations = listFilteredLocations.filter((location) =>
+        selectedLocations.includes(location.location_id)
+      );
     }
     this.setState({
       searchedLocations: searchedLocations || [],
@@ -1538,13 +1646,10 @@ export default class Lists extends Component {
           isLoading: false,
         });
       });
-    ga(
-      'send',
-      'event',
-      'List',
-      'update button click',
-      'user clicked on the ok button in the modal window to confirm updating the list'
-    );
+    gtag('event', 'update button click', {
+      event_category: 'List',
+      event_label: 'user clicked on the ok button in the modal window to confirm updating the list',
+    });
   };
 
   // Flag close function
@@ -1567,7 +1672,8 @@ export default class Lists extends Component {
     store.dispatch(setFilterCount(0));
     if (
       selectedLists.length > 0 &&
-      (selectedLists[0].list_name === 'Administrative Areas' || selectedLists[0].list_name === 'Protected Areas')
+      (selectedLists[0].list_name === 'Administrative Areas' ||
+        selectedLists[0].list_name === 'Protected Areas')
     ) {
       if (filteredData.length > 0) {
         store.dispatch(updateListData([]));
@@ -1603,7 +1709,8 @@ export default class Lists extends Component {
 
     return {
       style: {
-        background: rowInfo && rowInfo.original && returnBgColor(rowInfo.original.location_status_id),
+        background:
+          rowInfo && rowInfo.original && returnBgColor(rowInfo.original.location_status_id),
         color: rowInfo && rowInfo.original && returnFgColor(rowInfo.original.location_status_id),
       },
     };
@@ -1612,13 +1719,12 @@ export default class Lists extends Component {
   setHeaderProps = (state) => {
     return {
       onClick: () => {
-        ga(
-          'send',
-          'event',
-          'Lists Click',
-          'list table header click',
-          `user sorted lists table ${state.sorted.length > 0 ? `by ${state.sorted[0].id}` : ''}`
-        );
+        gtag('event', 'list table header click', {
+          event_category: 'Lists Click',
+          event_label: `user sorted lists table ${
+            state.sorted.length > 0 ? `by ${state.sorted[0].id}` : ''
+          }`,
+        });
       },
     };
   };
@@ -1725,7 +1831,12 @@ export default class Lists extends Component {
   changeListView(listView) {
     const { listView: listViewProps, listData, selectedLists } = this.props;
     if (listView !== listViewProps) {
-      const columnNames = getAllColumnNames(listView, listData[0], selectedLists, this.getCheckboxColumn);
+      const columnNames = getAllColumnNames(
+        listView,
+        listData[0],
+        selectedLists,
+        this.getCheckboxColumn
+      );
       store.dispatch(changeListView(listView));
       this.clearFilters();
       this.setState({
@@ -1764,7 +1875,9 @@ export default class Lists extends Component {
     const singleLocationCheck = areAllSelectedValid && selectedLocations.length === 1;
     if (!getIsDiagnosticStatusDraft(list)) {
       // List that is not in Draft
-      return list && (singleLocationCheck || selectedLocations.length === list.list_locations_count);
+      return (
+        list && (singleLocationCheck || selectedLocations.length === list.list_locations_count)
+      );
     }
     // If one location is selected in draft mode and the location is valid (analyzed) we enable the button
     return singleLocationCheck;
@@ -1895,7 +2008,9 @@ export default class Lists extends Component {
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
     const customAttributeNames =
-      selectedList && selectedList.custom_attribute_names && selectedList.custom_attribute_names.length > 0
+      selectedList &&
+      selectedList.custom_attribute_names &&
+      selectedList.custom_attribute_names.length > 0
         ? selectedList.custom_attribute_names.split(',')
         : [];
     const flagOptions = columns.flags.map(this.createFlagList);
@@ -1916,7 +2031,8 @@ export default class Lists extends Component {
     const userIsOwner = currentUser.id === selectedList.user_id;
     const validLists = userListsProps.filter((t) => {
       return (
-        filterValidTemplates(t, activeTemplate, addType, commodityType) && filterValidCustom(t, customAttributeNames)
+        filterValidTemplates(t, activeTemplate, addType, commodityType) &&
+        filterValidCustom(t, customAttributeNames)
       );
     });
 
@@ -1927,7 +2043,9 @@ export default class Lists extends Component {
 
     // Viewers cannot move or copy any list
     const canMove =
-      selectedList && selectedLocations.length > 0 && currentUser.access_level_id !== userAccessLevel.VIEWER;
+      selectedList &&
+      selectedLocations.length > 0 &&
+      currentUser.access_level_id !== userAccessLevel.VIEWER;
 
     // Admins can delete locations from any list.
     // Viewers cannot delete any locations.
@@ -1944,7 +2062,10 @@ export default class Lists extends Component {
     }
 
     if (checkValidViewCommodity(selectedLists, listData)) {
-      listViewOptions.push({ value: 'commodity_risk', label: locationsPage.lists.viewCommodityRisk });
+      listViewOptions.push({
+        value: 'commodity_risk',
+        label: locationsPage.lists.viewCommodityRisk,
+      });
     }
 
     const toggleableColumns = listColumns.map((column) => column.accessor);
@@ -2043,7 +2164,11 @@ export default class Lists extends Component {
     return (
       <div className={`${view === 'lists' ? '' : 'hidden'}`}>
         {bannerContent && (
-          <Banner className="lists-banner" intent="positive" onBannerClose={() => this.setState({ bannerContent: '' })}>
+          <Banner
+            className="lists-banner"
+            intent="positive"
+            onBannerClose={() => this.setState({ bannerContent: '' })}
+          >
             <span>{bannerContent}</span>
           </Banner>
         )}
@@ -2083,7 +2208,10 @@ export default class Lists extends Component {
                 validLists={validLists}
               />
             ) : (
-              <div className="dialog-content-email" dangerouslySetInnerHTML={{ __html: dialogContent }} />
+              <div
+                className="dialog-content-email"
+                dangerouslySetInnerHTML={{ __html: dialogContent }}
+              />
             )}
           </Dialog>
         )}
@@ -2106,7 +2234,8 @@ export default class Lists extends Component {
             title={`${listName} diagnostic failed to load.`}
             message={
               <p>
-                Please select the list to try loading the diagnostic again. If diagnostic continue to fail, email{' '}
+                Please select the list to try loading the diagnostic again. If diagnostic continue
+                to fail, email{' '}
                 <a className="popup__link" href="mailto:GFWPROsupport@wri.org">
                   GFWPROsupport@wri.org
                 </a>{' '}
@@ -2123,9 +2252,15 @@ export default class Lists extends Component {
         <section className="locations-body list-detail-page">
           {selectedList && (
             <Breadcrumbs>
-              <LinkButton label={locationsPage.lists.locations} onClick={() => this.changeToLocationView()} />
+              <LinkButton
+                label={locationsPage.lists.locations}
+                onClick={() => this.changeToLocationView()}
+              />
               {currentFolder && (
-                <LinkButton label={currentFolder.name} onClick={() => this.changeFolderView(currentFolder)} />
+                <LinkButton
+                  label={currentFolder.name}
+                  onClick={() => this.changeFolderView(currentFolder)}
+                />
               )}
               {shareView ? (
                 <LinkButton label={listName} onClick={() => showShareList(false)} />
@@ -2148,23 +2283,31 @@ export default class Lists extends Component {
 
               {currentUser.access_level_id !== userAccessLevel.ADMIN && !shareView && (
                 <div className="shared-lists-summary">
-                  <div className="shared-lists-summary__title">{locationsPage.lists.sharedLists}</div>
+                  <div className="shared-lists-summary__title">
+                    {locationsPage.lists.sharedLists}
+                  </div>
                   {sharedLists}
                 </div>
               )}
 
               <div
-                className={`my-lists-summary ${currentUser.access_level_id === userAccessLevel.VIEWER ? 'hidden' : ''}`}
+                className={`my-lists-summary ${
+                  currentUser.access_level_id === userAccessLevel.VIEWER ? 'hidden' : ''
+                }`}
               >
                 <h3 className="my-lists-summary__title">{locationsPage.lists.myLists}</h3>
                 <ListsFilter
                   value={myListsSearchFilterSidebarString}
                   onChange={(value) => {
                     if (value !== '' && userListFilterText === '') {
-                      ga('send', 'event', 'List Click', 'User enters search');
+                      gtag('event', 'User enters search', {
+                        event_category: 'Lists Click',
+                      });
                     }
                     if (value === '' && userListFilterText !== '') {
-                      ga('send', 'event', 'List Click', 'User clears search');
+                      gtag('event', 'User clears search', {
+                        event_category: 'Lists Click',
+                      });
                     }
                     this.setState({ myListsSearchFilterSidebarString: value });
                   }}
@@ -2174,7 +2317,9 @@ export default class Lists extends Component {
                     userLists
                   ) : (
                     <div className="my-lists-summary__no-results">
-                      <p className="my-lists-summary__no-results-prompt">{locationsPage.lists.listsFilterNoMatch}</p>
+                      <p className="my-lists-summary__no-results-prompt">
+                        {locationsPage.lists.listsFilterNoMatch}
+                      </p>
                       <LinkButton
                         className="my-lists-summary__no-results-clear"
                         label={locationsPage.lists.listsFilterClear}
@@ -2203,7 +2348,8 @@ export default class Lists extends Component {
                       selectedList={selectedList}
                       shareView={shareView}
                       showShareList={showShareList}
-                      toggleCountriesPopover={this.toggleCountriesPopover} />
+                      toggleCountriesPopover={this.toggleCountriesPopover}
+                    />
                   </div>
                   {!(isFailed || isBeingAnalized) && (
                     <div className="section-container">
@@ -2211,7 +2357,8 @@ export default class Lists extends Component {
                         key={selectedList.id}
                         usersList={usersList}
                         currentUser={currentUser}
-                        selectedList={selectedList} />
+                        selectedList={selectedList}
+                      />
                     </div>
                   )}
                 </>
@@ -2231,284 +2378,343 @@ export default class Lists extends Component {
                       selectedList={selectedList}
                       shareView={shareView}
                       showShareList={showShareList}
-                      toggleCountriesPopover={this.toggleCountriesPopover} />
-                      <div className="list-actions-container">
-                        {selectedList && !selectedList.globalForestWatchList && (
-                          <div>
-                            <Button
-                              label={isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
-                              onClick={() => {
-                                this.setState({ isManageListFolderOpen: true });
-                              } } />
-                            <ManageListFolderDialog
-                              isOpen={isManageListFolderOpen}
-                              folders={folders}
-                              list={selectedList}
-                              onCancel={() => this.setState({ isManageListFolderOpen: false })}
-                              onComplete={(msg) => {
-                                getFolders().then((foldersLocal) => {
-                                  store.dispatch(updateFolders(foldersLocal));
-                                  const currentFolderLocal = folders && folders.length > 0
-                                    ? folders.find((folder) => folder.lists && folder.lists.length > 0
-                                      ? folder.lists.find((listId) => listId === selectedList.id)
-                                      : null
-                                    )
+                      toggleCountriesPopover={this.toggleCountriesPopover}
+                    />
+                    <div className="list-actions-container">
+                      {selectedList && !selectedList.globalForestWatchList && (
+                        <div>
+                          <Button
+                            label={
+                              isInFolder
+                                ? locationsPage.lists.manage
+                                : locationsPage.lists.addToFolder
+                            }
+                            onClick={() => {
+                              this.setState({ isManageListFolderOpen: true });
+                            }}
+                          />
+                          <ManageListFolderDialog
+                            isOpen={isManageListFolderOpen}
+                            folders={folders}
+                            list={selectedList}
+                            onCancel={() => this.setState({ isManageListFolderOpen: false })}
+                            onComplete={(msg) => {
+                              getFolders().then((foldersLocal) => {
+                                store.dispatch(updateFolders(foldersLocal));
+                                const currentFolderLocal =
+                                  folders && folders.length > 0
+                                    ? folders.find((folder) =>
+                                        folder.lists && folder.lists.length > 0
+                                          ? folder.lists.find(
+                                              (listId) => listId === selectedList.id
+                                            )
+                                          : null
+                                      )
                                     : null;
-                                  this.setState({
-                                    bannerContent: msg,
-                                    isManageListFolderOpen: false,
-                                    currentFolder: currentFolderLocal,
-                                  });
+                                this.setState({
+                                  bannerContent: msg,
+                                  isManageListFolderOpen: false,
+                                  currentFolder: currentFolderLocal,
                                 });
-                              } } />
-                          </div>
-                        )}
-                        {(currentUser.access_level_id === userAccessLevel.ADMIN ||
-                          (selectedList &&
-                            currentUser.id === selectedList.user_id &&
-                            currentUser.access_level_id !== userAccessLevel.VIEWER)) &&
-                          selectedList &&
-                          selectedList.list_status_id !== 1 &&
-                          !getIsDiagnosticStatusDraft(selectedList) &&
-                          !selectedList.globalForestWatchList ? (
-                          <div id="RerunList" className="selected-rerun-list">
-                            <Button
-                              className="RerunList__button"
-                              onClick={this.handleRerunDialogState}
-                              icon={<IconRerun height="14px" />}
-                              label="Update" />
-                            <Dialog
-                              title={locationsPage.lists.confirmListUpdate}
-                              actions={<div className="RerunList__dialog-buttons">
+                              });
+                            }}
+                          />
+                        </div>
+                      )}
+                      {(currentUser.access_level_id === userAccessLevel.ADMIN ||
+                        (selectedList &&
+                          currentUser.id === selectedList.user_id &&
+                          currentUser.access_level_id !== userAccessLevel.VIEWER)) &&
+                      selectedList &&
+                      selectedList.list_status_id !== 1 &&
+                      !getIsDiagnosticStatusDraft(selectedList) &&
+                      !selectedList.globalForestWatchList ? (
+                        <div id="RerunList" className="selected-rerun-list">
+                          <Button
+                            className="RerunList__button"
+                            onClick={this.handleRerunDialogState}
+                            icon={<IconRerun height="14px" />}
+                            label="Update"
+                          />
+                          <Dialog
+                            title={locationsPage.lists.confirmListUpdate}
+                            actions={
+                              <div className="RerunList__dialog-buttons">
                                 <Button
                                   variant="primary"
                                   className="RerunList__button"
                                   label="OK"
-                                  onClick={this.rerunList} />
+                                  onClick={this.rerunList}
+                                />
                                 <LinkButton
                                   className="RerunList__button"
                                   label="Cancel"
-                                  onClick={this.handleRerunDialogState} />
-                              </div>}
-                              modal={false}
-                              open={rerunDialogState}
-                              onRequestClose={this.handleRerunDialogState}
-                              bodyClassName="dialog__body"
-                              contentClassName="dialog__content"
-                            >
-                              {rerunListDialog}
-                            </Dialog>
-                          </div>
-                        ) : null}
+                                  onClick={this.handleRerunDialogState}
+                                />
+                              </div>
+                            }
+                            modal={false}
+                            open={rerunDialogState}
+                            onRequestClose={this.handleRerunDialogState}
+                            bodyClassName="dialog__body"
+                            contentClassName="dialog__content"
+                          >
+                            {rerunListDialog}
+                          </Dialog>
+                        </div>
+                      ) : null}
 
-                        {currentUser.access_level_id === userAccessLevel.ADMIN &&
-                          selectedList &&
-                          selectedList.list_status_id !== 1 &&
-                          !selectedList.globalForestWatchList ? (
-                          <div id="ShareList">
-                            <Button
-                              className="ShareList__button"
-                              onClick={() => {
-                                showShareList(true);
-                              } }
-                              icon={<IconShare height="14px" />}
-                              label="Share" />
-                          </div>
-                        ) : null}
-                        {(currentUser.access_level_id === userAccessLevel.ADMIN ||
-                          (currentUser.access_level_id !== userAccessLevel.ADMIN && userIsOwner)) &&
-                          selectedList &&
-                          selectedList.list_status_id !== 1 &&
-                          getIsDiagnosticStatusDraft(selectedList) &&
-                          !selectedList.globalForestWatchList ? (
-                          <div id="ShareList">
-                            <Button
-                              variant="primary"
-                              className="ShareList__button"
-                              onClick={(e) => this.handleDraftSubmit(e)}
-                              label="Submit" />
-                          </div>
-                        ) : null}
+                      {currentUser.access_level_id === userAccessLevel.ADMIN &&
+                      selectedList &&
+                      selectedList.list_status_id !== 1 &&
+                      !selectedList.globalForestWatchList ? (
+                        <div id="ShareList">
+                          <Button
+                            className="ShareList__button"
+                            onClick={() => {
+                              showShareList(true);
+                            }}
+                            icon={<IconShare height="14px" />}
+                            label="Share"
+                          />
+                        </div>
+                      ) : null}
+                      {(currentUser.access_level_id === userAccessLevel.ADMIN ||
+                        (currentUser.access_level_id !== userAccessLevel.ADMIN && userIsOwner)) &&
+                      selectedList &&
+                      selectedList.list_status_id !== 1 &&
+                      getIsDiagnosticStatusDraft(selectedList) &&
+                      !selectedList.globalForestWatchList ? (
+                        <div id="ShareList">
+                          <Button
+                            variant="primary"
+                            className="ShareList__button"
+                            onClick={(e) => this.handleDraftSubmit(e)}
+                            label="Submit"
+                          />
+                        </div>
+                      ) : null}
 
-                        <CustomDraftDialog
-                          open={draftSubmitDialogOpen}
-                          closeAction={() => {
-                            this.setState({ draftSubmitDialogOpen: false });
-                          } }
-                          dialogTitle={locationsPage.lists.confirmListSubmission}
-                          dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
-                          dialogActionConfirm={() => {
-                            requestGeoTrellisAnalyzeList(selectedList)
-                              .then(() => {
-                                ga('send', 'event', 'Submit', 'Submit List', 'User submits a list for analysis');
-                                ga('send', 'event', 'Submit', 'Submit List', 'User submits a list from listview page');
-                                // TODO: Get details what to do after list is submitted
-                                window.location.reload();
-                              })
-                              .catch((error) => {
-                                // TODO: Get details what to do after list submission fails
-                                console.log(error);
-                              })
-                              .finally(() => {
-                                this.setState({ draftSubmitDialogOpen: false });
+                      <CustomDraftDialog
+                        open={draftSubmitDialogOpen}
+                        closeAction={() => {
+                          this.setState({ draftSubmitDialogOpen: false });
+                        }}
+                        dialogTitle={locationsPage.lists.confirmListSubmission}
+                        dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
+                        dialogActionConfirm={() => {
+                          requestGeoTrellisAnalyzeList(selectedList)
+                            .then(() => {
+                              gtag('event', 'Submit List', {
+                                event_category: 'Submit',
+                                event_label: 'User submits a list for analysis',
                               });
-                          } } />
-                      </div>
+                              gtag('event', 'Submit List', {
+                                event_category: 'Submit',
+                                event_label: 'User submits a list from listview page',
+                              });
+                              // TODO: Get details what to do after list is submitted
+                              window.location.reload();
+                            })
+                            .catch((error) => {
+                              // TODO: Get details what to do after list submission fails
+                              console.log(error);
+                            })
+                            .finally(() => {
+                              this.setState({ draftSubmitDialogOpen: false });
+                            });
+                        }}
+                      />
+                    </div>
                   </div>
                   {!(isFailed || isBeingAnalized) && (
-                  <>
-                    <div className="list-detail-filters">
-                      <div className="list-detail-filters__view">
-                        {listViewOptions.length > 1 && (
-                          // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists
-                          <>
-                            <label htmlFor="viewToggle">{locationsPage.lists.viewToggleLabel}</label>
-                            <GfwSelect
-                              id="viewToggle"
-                              name="viewToggle"
-                              onChange={(e) => this.changeListView(e.value)}
-                              value={{ value: listView }}
-                              options={listViewOptions} />
-                          </>
-                        )}
-                      </div>
+                    <>
+                      <div className="list-detail-filters">
+                        <div className="list-detail-filters__view">
+                          {listViewOptions.length > 1 && (
+                            // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists
+                            <>
+                              <label htmlFor="viewToggle">
+                                {locationsPage.lists.viewToggleLabel}
+                              </label>
+                              <GfwSelect
+                                id="viewToggle"
+                                name="viewToggle"
+                                onChange={(e) => this.changeListView(e.value)}
+                                value={{ value: listView }}
+                                options={listViewOptions}
+                              />
+                            </>
+                          )}
+                        </div>
 
-                      <div className="list-detail-filters__content-filters">
-                        {!shareView && (
-                          <ListsFilter
-                            placeholder={isGfwList ? '' : locationsPage.lists.searchStringInputPlaceholder}
-                            value={filterStringInputValue}
-                            onChange={this.myListsSearchFilter}
-                            onkeydown={this.setSearchString} />
-                        )}
-                        {filterCount === 0 ? (
-                          <Button
-                            disabled={!selectedList}
-                            onClick={this.toggleCanopyModal}
-                            label={transifex(locationsPage.lists.selectFilters)} />
-                        ) : (
-                          <div className="compound-button">
+                        <div className="list-detail-filters__content-filters">
+                          {!shareView && (
+                            <ListsFilter
+                              placeholder={
+                                isGfwList ? '' : locationsPage.lists.searchStringInputPlaceholder
+                              }
+                              value={filterStringInputValue}
+                              onChange={this.myListsSearchFilter}
+                              onkeydown={this.setSearchString}
+                            />
+                          )}
+                          {filterCount === 0 ? (
                             <Button
-                              variant="primary"
-                              className="compound-button__action-button"
                               disabled={!selectedList}
                               onClick={this.toggleCanopyModal}
-                              label={`${filterCount} ${filterCount === 1
-                                  ? transifex(locationsPage.lists.filter)
-                                  : transifex(locationsPage.lists.filters)}`}
-                              title={filterCount > 0
-                                ? // Display a comma-separated list of active filter values.
-                                Object.entries(filters)
-                                  .filter(this.isFilterValueDifferentThanDefault)
-                                  // eslint-disable-next-line array-callback-return
-                                  .map(([key, val]) => {
-                                    if (val !== undefined && val !== null && val !== '') {
-                                      const strValue = String(val)
-                                        .split(',')
-                                        .map((x) => transifex(x.charAt(0).toUpperCase() + x.slice(1)))
-                                        .join(',');
-                                      return `${transifex(locationsPage.lists[key])}: ${strValue}`;
-                                    }
-                                  })
-                                  .join(' - ')
-                                : ''} />
-                            <IconButton
-                              variant="primary"
-                              className="compound-button__clear"
-                              onClick={this.clearFilters}
-                              icon={<IconTimes height="15" />}
-                              size="large"
-                              title={locationsPage.lists.clearFilters} />
-                          </div>
-                        )}
-                        <LocationsTableColumnSelector
-                          listColumns={listColumns}
-                          setListColumns={(newVisibleColumns) => this.setState({
-                            visibleColumns: newVisibleColumns,
-                          })}
-                          disabled={!selectedList} />
+                              label={transifex(locationsPage.lists.selectFilters)}
+                            />
+                          ) : (
+                            <div className="compound-button">
+                              <Button
+                                variant="primary"
+                                className="compound-button__action-button"
+                                disabled={!selectedList}
+                                onClick={this.toggleCanopyModal}
+                                label={`${filterCount} ${
+                                  filterCount === 1
+                                    ? transifex(locationsPage.lists.filter)
+                                    : transifex(locationsPage.lists.filters)
+                                }`}
+                                title={
+                                  filterCount > 0
+                                    ? // Display a comma-separated list of active filter values.
+                                      Object.entries(filters)
+                                        .filter(this.isFilterValueDifferentThanDefault)
+                                        // eslint-disable-next-line array-callback-return
+                                        .map(([key, val]) => {
+                                          if (val !== undefined && val !== null && val !== '') {
+                                            const strValue = String(val)
+                                              .split(',')
+                                              .map((x) =>
+                                                transifex(x.charAt(0).toUpperCase() + x.slice(1))
+                                              )
+                                              .join(',');
+                                            return `${transifex(
+                                              locationsPage.lists[key]
+                                            )}: ${strValue}`;
+                                          }
+                                        })
+                                        .join(' - ')
+                                    : ''
+                                }
+                              />
+                              <IconButton
+                                variant="primary"
+                                className="compound-button__clear"
+                                onClick={this.clearFilters}
+                                icon={<IconTimes height="15" />}
+                                size="large"
+                                title={locationsPage.lists.clearFilters}
+                              />
+                            </div>
+                          )}
+                          <LocationsTableColumnSelector
+                            listColumns={listColumns}
+                            setListColumns={(newVisibleColumns) =>
+                              this.setState({
+                                visibleColumns: newVisibleColumns,
+                              })
+                            }
+                            disabled={!selectedList}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="list-detail-action-bar">
-                      {!getIsDiagnosticStatusDraft(selectedList) &&
-                        listName !== 'Administrative Areas' &&
-                        listName !== 'Protected Areas' && (
+                      <div className="list-detail-action-bar">
+                        {!getIsDiagnosticStatusDraft(selectedList) &&
+                          listName !== 'Administrative Areas' &&
+                          listName !== 'Protected Areas' && (
+                            <Button
+                              variant="primary"
+                              className="list-detail-action-bar__diagnostic-button"
+                              onClick={() => this.viewDiagnostic(false)}
+                              label="List diagnostic"
+                              icon={<IconListAlt />}
+                            />
+                          )}
+                        <Button
+                          className="list-detail-action-bar__map-button"
+                          onClick={() => this.viewMap({ showFullListMap: true })}
+                          label="Full List Map"
+                          icon={<IconGlobeAmericas />}
+                        />
+                      </div>
+                      <div className="list-detail-action-bar">
+                        {selectedLocations.length === 1 && (
                           <Button
                             variant="primary"
                             className="list-detail-action-bar__diagnostic-button"
-                            onClick={() => this.viewDiagnostic(false)}
-                            label="List diagnostic"
-                            icon={<IconListAlt />} />
+                            disabled={!this.listDiagnosticAccess(selectedList)}
+                            onClick={() => this.viewDiagnostic(true)}
+                            label="Location diagnostic"
+                            icon={<IconListAlt />}
+                          />
                         )}
-                      <Button
-                        className="list-detail-action-bar__map-button"
-                        onClick={() => this.viewMap({ showFullListMap: true })}
-                        label="Full List Map"
-                        icon={<IconGlobeAmericas />} />
-                    </div>
-                    <div className="list-detail-action-bar">
-                      {selectedLocations.length === 1 && (
-                        <Button
-                          variant="primary"
-                          className="list-detail-action-bar__diagnostic-button"
-                          disabled={!this.listDiagnosticAccess(selectedList)}
-                          onClick={() => this.viewDiagnostic(true)}
-                          label="Location diagnostic"
-                          icon={<IconListAlt />} />
-                      )}
-                      {selectedList && selectedLocations.length > 0 && (
-                        <Button
-                          className="list-detail-action-bar__map-button"
-                          onClick={() => this.viewMap({ showFullListMap: false })}
-                          label="Location(s) Map"
-                          icon={<IconGlobeAmericas />} />
-                      )}
-                      {selectedList && selectedLocations.length > 0 && !isGfwList && !selectedListIsShared && (
-                        <EditList
-                          editList={this.editList}
-                          currentUser={currentUser}
-                          selectedLocations={selectedLocations} />
-                      )}
-                      {canMove && (
-                        <Button
-                          variant="tertiary"
-                          onClick={this.promptMoveSelectedLocations}
-                          label={locationsPage.lists.move} />
-                      )}
-                      {selectedList && selectedLocations.length > 0 && listData.length > 0 && (
-                        <ListDownload
-                          listID={listID}
-                          listName={listName}
-                          filters={filters}
-                          listFilterStr={filterString}
-                          tableSortedBy={tableSortedBy}
-                          tableSortedDesc={tableSortedDesc}
-                          selectedList={selectedList}
-                          combinedColumns={visibleColumns}
-                          selectedLocations={selectedLocations}
-                          currentUser={currentUser}
-                          allLocationsSelected={allLocationsSelected}
-                          listView={listView}
-                          isLoading={(loading) => {
-                            this.setState({ isLoading: loading });
-                          } } />
-                      )}
-                      {canDelete && (
-                        <Button
-                          className="list-detail-action-bar__delete-button"
-                          variant="danger"
-                          onClick={this.promptDeleteSelectedLocations}
-                          label={locationsPage.lists.delete} />
-                      )}
-                    </div>
-                    <section className="section-container table-container">
-                      {filteredLists.length > 0 && listView !== '' && filteredLocationData.length > 0 ? (
-                        <ReactTable
-                          className={`-striped -highlight notranslate lists-react-table table__${listView}`}
-                          {...reactTableOptions} />
-                      ) : null}
-                    </section>
-                  </>
+                        {selectedList && selectedLocations.length > 0 && (
+                          <Button
+                            className="list-detail-action-bar__map-button"
+                            onClick={() => this.viewMap({ showFullListMap: false })}
+                            label="Location(s) Map"
+                            icon={<IconGlobeAmericas />}
+                          />
+                        )}
+                        {selectedList &&
+                          selectedLocations.length > 0 &&
+                          !isGfwList &&
+                          !selectedListIsShared && (
+                            <EditList
+                              editList={this.editList}
+                              currentUser={currentUser}
+                              selectedLocations={selectedLocations}
+                            />
+                          )}
+                        {canMove && (
+                          <Button
+                            variant="tertiary"
+                            onClick={this.promptMoveSelectedLocations}
+                            label={locationsPage.lists.move}
+                          />
+                        )}
+                        {selectedList && selectedLocations.length > 0 && listData.length > 0 && (
+                          <ListDownload
+                            listID={listID}
+                            listName={listName}
+                            filters={filters}
+                            listFilterStr={filterString}
+                            tableSortedBy={tableSortedBy}
+                            tableSortedDesc={tableSortedDesc}
+                            selectedList={selectedList}
+                            combinedColumns={visibleColumns}
+                            selectedLocations={selectedLocations}
+                            currentUser={currentUser}
+                            allLocationsSelected={allLocationsSelected}
+                            listView={listView}
+                            isLoading={(loading) => {
+                              this.setState({ isLoading: loading });
+                            }}
+                          />
+                        )}
+                        {canDelete && (
+                          <Button
+                            className="list-detail-action-bar__delete-button"
+                            variant="danger"
+                            onClick={this.promptDeleteSelectedLocations}
+                            label={locationsPage.lists.delete}
+                          />
+                        )}
+                      </div>
+                      <section className="section-container table-container">
+                        {filteredLists.length > 0 &&
+                        listView !== '' &&
+                        filteredLocationData.length > 0 ? (
+                          <ReactTable
+                            className={`-striped -highlight notranslate lists-react-table table__${listView}`}
+                            {...reactTableOptions}
+                          />
+                        ) : null}
+                      </section>
+                    </>
                   )}
                 </>
               )}
@@ -2533,7 +2739,9 @@ export default class Lists extends Component {
             </div>
           </Menu>
         </Popover>
-        <div className={`layer-modal-container modal-wrapper ${canopyModalVisible ? '' : 'hidden'}`}>
+        <div
+          className={`layer-modal-container modal-wrapper ${canopyModalVisible ? '' : 'hidden'}`}
+        >
           {(() => {
             if (listView === 'commodity_risk') {
               return (

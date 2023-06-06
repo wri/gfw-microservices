@@ -53,7 +53,11 @@ import { getListStatusIdByStatusName } from '../../utils/draft.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
 
 // Configs
-import { appendListConfig, saveAsDraftListConfig, saveListConfig } from '../../../../../config/config/locations.config';
+import {
+  appendListConfig,
+  saveAsDraftListConfig,
+  saveListConfig,
+} from '../../../../../config/config/locations.config';
 import { defaultCustomAttributeHeaders } from '../edit/table/MultiGridTable.config';
 
 // Style
@@ -123,7 +127,9 @@ class UploadLocations extends Component {
         this.shouldRefresh();
       } else {
         const nextStep =
-          location && location.state && typeof location.state.step === 'number' ? location.state.step : 1;
+          location && location.state && typeof location.state.step === 'number'
+            ? location.state.step
+            : 1;
         nextStepError = this.getStepError(nextStep);
         this.setState({ canGoNext: !nextStepError, step: nextStep });
       }
@@ -345,13 +351,17 @@ class UploadLocations extends Component {
           : otherCommodity[commodityType]
           ? otherCommodity[commodityType]
           : commodityType ||
-            (classificationObj[activeTemplate] ? classificationObj[activeTemplate].commodity : 'Other');
+            (classificationObj[activeTemplate]
+              ? classificationObj[activeTemplate].commodity
+              : 'Other');
       } else {
         feature.Commodity = classificationObj[activeTemplate]
           ? classificationObj[activeTemplate].commodity
           : otherCommodity[commodityType]
           ? otherCommodity[commodityType]
-          : otherCommodityType || commodityType || (feature.Commodity ? feature.Commodity : 'Other');
+          : otherCommodityType ||
+            commodityType ||
+            (feature.Commodity ? feature.Commodity : 'Other');
       }
 
       if (addType === 'commodity') {
@@ -359,7 +369,10 @@ class UploadLocations extends Component {
           ? feature['Location Classification']
           : classificationObj[activeTemplate].value;
 
-        if (!activeTemplate.toLowerCase().includes('generic') && !unTouchables.includes('Location Classification')) {
+        if (
+          !activeTemplate.toLowerCase().includes('generic') &&
+          !unTouchables.includes('Location Classification')
+        ) {
           // not a generic template and we haven't already added it
           // to the list of unTouchable fields
           unTouchables.push('Location Classification');
@@ -437,7 +450,10 @@ class UploadLocations extends Component {
         feature.valid = false;
         feature.invalidFields.push('Analysis Radius');
         feature.invalidFields.push('Analysis Area');
-      } else if (analysisFields['Analysis Radius'] === '' && analysisFields['Analysis Area'] === '') {
+      } else if (
+        analysisFields['Analysis Radius'] === '' &&
+        analysisFields['Analysis Area'] === ''
+      ) {
         feature.valid = false;
         feature.invalidFields.push('Analysis Radius');
         feature.invalidFields.push('Analysis Area');
@@ -447,7 +463,14 @@ class UploadLocations extends Component {
   };
 
   saveLocations = ({ isSaveAsDraft }) => {
-    const { selectedList, customList, addType, commodityType, customAttributeHeaders, uploadingData } = this.state;
+    const {
+      selectedList,
+      customList,
+      addType,
+      commodityType,
+      customAttributeHeaders,
+      uploadingData,
+    } = this.state;
     const { activeTemplate, userLists, templateData } = this.props;
     this.setState(
       {
@@ -552,7 +575,10 @@ class UploadLocations extends Component {
               const properties = {};
 
               Object.keys(feature).forEach((prop) => {
-                if (prop === 'Location Classification' && locationClassifications.indexOf(feature[prop]) === -1) {
+                if (
+                  prop === 'Location Classification' &&
+                  locationClassifications.indexOf(feature[prop]) === -1
+                ) {
                   locationClassifications.push(feature[prop]);
                 }
 
@@ -734,7 +760,9 @@ class UploadLocations extends Component {
             this.calculateClippedArea(sequencedGeoJSON);
             const listName = selectedList === '' ? customList : selectedList;
             // Check if customList is the same name as an existing list
-            const checkListExists = userLists.find((list) => list.list_name.toLowerCase() === listName.toLowerCase());
+            const checkListExists = userLists.find(
+              (list) => list.list_name.toLowerCase() === listName.toLowerCase()
+            );
 
             if (sequencedGeoJSON.features.length !== uploadFeatureCount) {
               // We have lost landless features in the clip operation, stop the upload!
@@ -756,7 +784,8 @@ class UploadLocations extends Component {
                 isSaving: false,
                 dialogOpen: true,
                 dialogTitle: 'List not created',
-                dialogMessage: 'A list already exists with this name. Enter a new list name and click save.',
+                dialogMessage:
+                  'A list already exists with this name. Enter a new list name and click save.',
               });
             } else if (listName) {
               const request = new XMLHttpRequest();
@@ -773,10 +802,20 @@ class UploadLocations extends Component {
                     request.responseText === appendListConfig.success
                   ) {
                     dialogTitle = getDialogTitle(request.responseText, geoms.length);
-                    dialogMessage = getDialogContent(request.responseText, listName, isSaveAsDraft, geoms.length);
+                    dialogMessage = getDialogContent(
+                      request.responseText,
+                      listName,
+                      isSaveAsDraft,
+                      geoms.length
+                    );
                   } else if (request.responseText === saveAsDraftListConfig.success) {
                     dialogTitle = getDialogTitle(saveListConfig.success, geoms.length);
-                    dialogMessage = getDialogContent(saveListConfig.success, listName, true, geoms.length);
+                    dialogMessage = getDialogContent(
+                      saveListConfig.success,
+                      listName,
+                      true,
+                      geoms.length
+                    );
                   }
 
                   const finalState = {
@@ -823,35 +862,26 @@ class UploadLocations extends Component {
                   template_id: templateId,
                   geojson: sequencedGeoJSON,
                   custom_attributes: customAttributes,
-                  location_classification: locationClassifications.length === 0 ? '' : locationClassifications[0],
+                  location_classification:
+                    locationClassifications.length === 0 ? '' : locationClassifications[0],
                   list_status_id: getListStatusIdByStatusName('Draft'),
                 };
 
                 if (isSaveAsDraft) {
-                  ga(
-                    'send',
-                    'event',
-                    'Submit',
-                    'Upload List',
-                    'User uploads a list with multiple locations as a draft'
-                  );
+                  gtag('event', 'Upload List', {
+                    event_category: 'Submit',
+                    event_label: 'User uploads a list with multiple locations as a draft',
+                  });
                 } else {
-                  ga(
-                    'send',
-                    'event',
-                    'Submit',
-                    'Upload List',
-                    'User uploads a list with multiple locations and submits'
-                  );
+                  gtag('event', 'Upload List', {
+                    event_category: 'Submit',
+                    event_label: 'User uploads a list with multiple locations and submits',
+                  });
                 }
-
-                ga(
-                  'send',
-                  'event',
-                  'Locations Click',
-                  'upload locations save as draft button clicked',
-                  `user saved as draft a list with a newly uploaded ${addType} location with a commodity type of ${activeTemplate}`
-                );
+                gtag('event', 'upload locations save as draft button clicked', {
+                  event_category: 'Locations Click',
+                  event_label: `user saved as draft a list with a newly uploaded ${addType} location with a commodity type of ${activeTemplate}`,
+                });
               } else if (selectedList === '') {
                 request.open('POST', '/locations/addToNewList', true);
 
@@ -860,34 +890,26 @@ class UploadLocations extends Component {
                   template_id: templateId,
                   geojson: sequencedGeoJSON,
                   custom_attributes: customAttributes,
-                  location_classification: locationClassifications.length === 0 ? '' : locationClassifications[0],
+                  location_classification:
+                    locationClassifications.length === 0 ? '' : locationClassifications[0],
                   list_status_id: getListStatusId(isSaveAsDraft),
                 };
 
                 if (isSaveAsDraft) {
-                  ga(
-                    'send',
-                    'event',
-                    'Submit',
-                    'Upload List',
-                    'User uploads a list with multiple locations as a draft'
-                  );
+                  gtag('event', 'Upload List', {
+                    event_category: 'Submit',
+                    event_label: 'User uploads a list with multiple locations as a draft',
+                  });
                 } else {
-                  ga(
-                    'send',
-                    'event',
-                    'Submit',
-                    'Upload List',
-                    'User uploads a list with multiple locations and submits'
-                  );
+                  gtag('event', 'Upload List', {
+                    event_category: 'Submit',
+                    event_label: 'User uploads a list with multiple locations and submits',
+                  });
                 }
-                ga(
-                  'send',
-                  'event',
-                  'Locations Click',
-                  'upload locations save button clicked',
-                  `user created a list with a newly uploaded ${addType} location with a commodity type of ${activeTemplate}`
-                );
+                gtag('event', 'upload locations save button clicked', {
+                  event_category: 'Locations Click',
+                  event_label: `user created a list with a newly uploaded ${addType} location with a commodity type of ${activeTemplate}`,
+                });
               } else {
                 const activeList = userLists.filter((list) => {
                   return list.list_name === listName;
@@ -913,14 +935,14 @@ class UploadLocations extends Component {
                   list_analysis_table_name: activeList[0].list_analysis_table_name,
                   list_status_id: getListStatusId(isSaveAsDraft),
                 };
-                ga('send', 'event', 'Submit', 'Upload List', 'User uploads a list with multiple locations and submits');
-                ga(
-                  'send',
-                  'event',
-                  'Locations Click',
-                  'upload locations save button clicked',
-                  `user uploaded ${addType} location to an existing list with a commodity type of ${activeTemplate}`
-                );
+                gtag('event', 'Upload List', {
+                  event_category: 'Submit',
+                  event_label: 'User uploads a list with multiple locations and submits',
+                });
+                gtag('event', 'upload locations save button clicked', {
+                  event_category: 'Locations Click',
+                  event_label: `user uploaded ${addType} location to an existing list with a commodity type of ${activeTemplate}`,
+                });
               }
               request.setRequestHeader('Content-Type', 'application/json');
               request.send(JSON.stringify(bigObj));
@@ -1002,7 +1024,9 @@ class UploadLocations extends Component {
                   <IconCheck className="locations-uploading__icon" />
                   <span className="locations-uploading__label">
                     {uploadingData.length}{' '}
-                    {uploadingData.length === 1 ? locationsPage.add.validLocation : locationsPage.add.validLocations}
+                    {uploadingData.length === 1
+                      ? locationsPage.add.validLocation
+                      : locationsPage.add.validLocations}
                   </span>
                 </li>
                 <li className="locations-uploading__list-item--invalid">
@@ -1022,13 +1046,10 @@ class UploadLocations extends Component {
         });
         this.toNextStep();
       }
-      ga(
-        'send',
-        'event',
-        'Upload Locations Click',
-        'next step click',
-        `user completed step ${step} of the upload locations workflow`
-      );
+      gtag('event', 'next step click', {
+        event_category: 'Upload Locations Click',
+        event_label: `user completed step ${step} of the upload locations workflow`,
+      });
     } else {
       console.warn(`current step ${step} is not valid`);
       const dialogStrings = locationsPage.add.errors[error];
@@ -1086,7 +1107,8 @@ class UploadLocations extends Component {
   addValidFeature = (feature) => {
     const { features, uploadingData, totalFeatures } = this.state;
     const validatedFeatures = this.getValidatedFeatures([feature]);
-    const validatedFeature = validatedFeatures && validatedFeatures.length ? validatedFeatures[0] : null;
+    const validatedFeature =
+      validatedFeatures && validatedFeatures.length ? validatedFeatures[0] : null;
     const allFeatures = features.slice();
     if (validatedFeature) {
       allFeatures.push(validatedFeature);
@@ -1323,7 +1345,8 @@ class UploadLocations extends Component {
   };
 
   render() {
-    const { view, activeTemplate, templateDropdowns, templateData, userLists, orgLists } = this.props;
+    const { view, activeTemplate, templateDropdowns, templateData, userLists, orgLists } =
+      this.props;
     const {
       addType,
       selectedList,
@@ -1346,7 +1369,8 @@ class UploadLocations extends Component {
     } = this.state;
 
     const dialogContent =
-      dialogTitle === locationsPage.add.errors.notAllLocationsValid.title || typeof dialogMessage === 'string'
+      dialogTitle === locationsPage.add.errors.notAllLocationsValid.title ||
+      typeof dialogMessage === 'string'
         ? dialogMessage
         : dialogMessage.map(this.generateMessages);
 
@@ -1362,7 +1386,12 @@ class UploadLocations extends Component {
       dialogTitle === saveListConfig.UploadLocationsMultipleNewList.dialogTitle
         ? [
             <div className="dialog__footer" data-button-action="shouldRefresh">
-              <Button className="dialog__primary-action" label="OK" variant="primary" onClick={this.shouldRefresh} />
+              <Button
+                className="dialog__primary-action"
+                label="OK"
+                variant="primary"
+                onClick={this.shouldRefresh}
+              />
             </div>,
           ]
         : dialogTitle === locationsPage.add.errors.notAllLocationsValid.title
@@ -1373,13 +1402,10 @@ class UploadLocations extends Component {
                 label={locationsPage.add.yes}
                 variant="primary"
                 onClick={() => {
-                  ga(
-                    'send',
-                    'event',
-                    'Upload Locations Click',
-                    'Save button clicked',
-                    'User saves list with invalid locations'
-                  );
+                  gtag('event', 'Save button clicked', {
+                    event_category: 'Upload Locations Click',
+                    event_label: 'User saves list with invalid locations',
+                  });
                   this.toNextStep();
                   this.shouldCloseDialog();
                 }}
@@ -1487,7 +1513,9 @@ class UploadLocations extends Component {
 
                 <div className="locations-multiupload-footer flex-grid space-between">
                   {showError ? (
-                    <div className="validation-error">Please make sure you have only selected valid data</div>
+                    <div className="validation-error">
+                      Please make sure you have only selected valid data
+                    </div>
                   ) : null}
 
                   <div className="locations-multiupload-footer__button-container">
@@ -1508,7 +1536,9 @@ class UploadLocations extends Component {
                     )}
 
                     <Button
-                      className={`locations-multiupload-footer__primary ${step === 4 ? 'hidden' : ''}`}
+                      className={`locations-multiupload-footer__primary ${
+                        step === 4 ? 'hidden' : ''
+                      }`}
                       variant="primary"
                       onClick={this.next}
                       disabled={!canGoNext}
@@ -1516,7 +1546,9 @@ class UploadLocations extends Component {
                     />
 
                     <Button
-                      className={`locations-multiupload-footer__primary ${step === 4 ? '' : 'hidden'}
+                      className={`locations-multiupload-footer__primary ${
+                        step === 4 ? '' : 'hidden'
+                      }
                     }`}
                       variant="primary"
                       onClick={isSaving ? null : this.saveLocations}

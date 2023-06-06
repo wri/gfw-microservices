@@ -13,7 +13,7 @@
     "webpack:build:staging": "webpack --merge --config ./config/webpack.config.js --config ./config/webpack.staging.config.js",
     "webpack:build:production": "webpack --merge --config ./config/webpack.config.js --config ./config/webpack.production.config.js",
     "pretest": "node ./test/prepare-jest; set -e; ",
-    "test": "jest --config=./jest.config.json --forceExit",
+    "test": "jest --config=./jest.config.json --forceExit  --passWithNoTests",
     "test:coverage": "npm run pretest; jest --config=./jest.config.json --coverage --forceExit",
     "mocha": "node config/scripts/mocha"
   },

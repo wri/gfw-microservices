@@ -1,9 +1,18 @@
 @import '../../common/css/_variables';
 
 .esri-popup {
-  .esri-popup__content, .esri-popup--feature-updated .esri-popup__header-title {animation: none !important;}
-  .esri-popup__header, .esri-popup__feature-buttons {display: none !important;}
-  .esri-popup__pointer-direction, .esri-popup__pointer {display: none !important;}
+  .esri-popup__content,
+  .esri-popup--feature-updated .esri-popup__header-title {
+    animation: none !important;
+  }
+  .esri-popup__header,
+  .esri-popup__feature-buttons {
+    display: none !important;
+  }
+  .esri-popup__pointer-direction,
+  .esri-popup__pointer {
+    display: none !important;
+  }
   .esri-popup__content {
     overflow: hidden !important;
     margin: 0 !important;

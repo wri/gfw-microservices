@@ -1,26 +1,20 @@
-define([
-  'esri/request',
-  'esri/layers/BaseTileLayer',
-  'moment'
-], function(
+define(['esri/request', 'esri/layers/BaseTileLayer', 'moment'], function (
   esriRequest,
   BaseTileLayer,
   moment
 ) {
-
   const START_DATE = '2012-01-01';
   const baseDate = moment.utc(START_DATE);
   const currentDate = moment.utc();
 
   const FormaLayer = BaseTileLayer.createSubclass({
-
     properties: {
       period: '48 hours',
       julianFrom: 12000,
-      julianTo: new Date().getJulian()
+      julianTo: new Date().getJulian(),
     },
 
-    fetchTile: function(level, row, column) {
+    fetchTile: function (level, row, column) {
       // call getTileUrl() method to construct the URL to tiles
       // for a given level, row and col provided by the LayerView
       const url = this.getTileUrl(level, row, column);
@@ -29,11 +23,11 @@ define([
       // cross-domain access to create WebGL textures for 3D.
       return esriRequest(url, {
         responseType: 'image',
-        allowImageDataAccess: true
+        allowImageDataAccess: true,
       }).then(
-        function(response) {
+        function (response) {
           // We use a promise because we can't return an empty canvas before the image data has loaded, been filtered, and properly colored
-          const promise = new Promise(resolve => {
+          const promise = new Promise((resolve) => {
             // when esri request resolves successfully
             // get the image from the response
             const image = response.data;
@@ -62,18 +56,22 @@ define([
             imageObject.src = image.src;
           });
           return promise;
-        }.bind(this));
+        }.bind(this)
+      );
     },
 
-    filter: function(data) {
+    filter: function (data) {
       const startDate = this.startDate;
       const endDate = this.endDate;
 
-      const start = startDate && Math.abs(baseDate.diff(startDate, 'days')) !== 0 ? Math.abs(baseDate.diff(startDate, 'days')) : 1;
+      const start =
+        startDate && Math.abs(baseDate.diff(startDate, 'days')) !== 0
+          ? Math.abs(baseDate.diff(startDate, 'days'))
+          : 1;
       const end = Math.abs(baseDate.diff(endDate ? endDate : currentDate, 'days'));
 
       for (var i = 0; i < data.length; i += 4) {
-        const timeLoss = (255 * data[i + 1]) + data[i + 2];
+        const timeLoss = 255 * data[i + 1] + data[i + 2];
 
         if (timeLoss >= start && timeLoss <= end) {
           data[i] = 220; // R
@@ -85,7 +83,9 @@ define([
           // Scale the intensity to make it visible
           var intensity = intensity_raw * 55;
           // Set intensity to 255 if it's > than that value
-          if (intensity > 255) { intensity = 255; }
+          if (intensity > 255) {
+            intensity = 255;
+          }
 
           data[i + 3] = intensity;
         } else {
@@ -99,17 +99,16 @@ define([
       return data;
     },
 
-    padNumber: function(number) {
+    padNumber: function (number) {
       var s = '00' + number;
       return s.substr(s.length - 3);
     },
 
-    pad: function(num) {
+    pad: function (num) {
       var str = '00' + num;
       return str.slice(str.length - 3);
-    }
+    },
   });
 
   return FormaLayer;
-
 });

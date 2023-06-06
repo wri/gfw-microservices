@@ -177,7 +177,11 @@ export default class Change extends Component {
               <ul>
                 <li>At least 1 uppercase letter</li>
                 <li>At least 1 lowercase letter</li>
-                <li>{'At least 1 special character: ^ $ * . [ ] { } ( ) ? - " ! @ # % & /  , > < \' : ; | _ ~ `'}</li>
+                <li>
+                  {
+                    'At least 1 special character: ^ $ * . [ ] { } ( ) ? - " ! @ # % & /  , > < \' : ; | _ ~ `'
+                  }
+                </li>
                 <li>At least 1 numeric character</li>
               </ul>
             </li>
@@ -212,7 +216,10 @@ export default class Change extends Component {
             />
           </div>
           <div className="buttons-container">
-            <Button onClick={this.toggleShow} label={this.state.type === 'input' ? 'Hide' : 'Show'} />
+            <Button
+              onClick={this.toggleShow}
+              label={this.state.type === 'input' ? 'Hide' : 'Show'}
+            />
             <Button variant="primary" onClick={this.submit} label="Submit" />
             <LinkButton className="back-button" label="Back" onClick={this.back} />
           </div>

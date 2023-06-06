@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { parse as wellknown, stringify } from 'wellknown';
 import { objectHasOwnProperty } from './object';
 

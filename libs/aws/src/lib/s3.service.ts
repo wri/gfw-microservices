@@ -4,8 +4,7 @@ import * as fsp from 'fs';
 
 @Injectable()
 export class S3Service {
-
-  async sendFiletoS3(key: string, fileExtension: string, contentType: string, bucket: string){
+  async sendFiletoS3(key: string, fileExtension: string, contentType: string, bucket: string) {
     const s3 = new S3({
       apiVersion: 'v2',
       credentials: {
@@ -24,10 +23,9 @@ export class S3Service {
     };
 
     await s3.upload(params).promise();
-  };
+  }
 
-
-  async getFileSignedUrl(key: string, fileExtension: string, bucket: string){
+  async getFileSignedUrl(key: string, fileExtension: string, bucket: string) {
     const s3 = new S3({
       signatureVersion: 'v4',
       credentials: {
@@ -45,6 +43,5 @@ export class S3Service {
 
     const url = await s3.getSignedUrl('getObject', params);
     return url;
-  };
-
+  }
 }

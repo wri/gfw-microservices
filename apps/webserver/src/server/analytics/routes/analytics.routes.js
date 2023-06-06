@@ -5,23 +5,23 @@ const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
 /**
-* @name exports
-* @static
-* @summary Analytics page routes
-*/
+ * @name exports
+ * @static
+ * @summary Analytics page routes
+ */
 module.exports = (app, limiter) => {
   /**
-  * @name /analytics
-  * @see analytics.controller
-  * @memberof Router
-  */
+   * @name /analytics
+   * @see analytics.controller
+   * @memberof Router
+   */
 
   // All methods must under /analytics must pass through middleware
   const routeMiddlewares = [
     middlewares.checkOrganization,
     middlewares.checkAuthentication,
     middlewares.checkActive,
-    middlewares.checkInactivity
+    middlewares.checkInactivity,
   ];
 
   if (rateLimiterUtil.useRateLimiter()) {

@@ -91,32 +91,34 @@ const lstStatuses = [
   {
     id: 1,
     status_name: 'Pending',
-    status_description: 'Entity has been created but not activated.'
+    status_description: 'Entity has been created but not activated.',
   },
   {
     id: 2,
     status_name: 'Active',
-    status_description: 'Entity that is active'
+    status_description: 'Entity that is active',
   },
   {
     id: 3,
     status_name: 'Inactive',
-    status_description: 'Entity that is de-activated'
+    status_description: 'Entity that is de-activated',
   },
   {
     id: 4,
     status_name: 'Draft',
-    status_description: 'Entity that has been edited and is ready for analysis.'
+    status_description: 'Entity that has been edited and is ready for analysis.',
   },
   {
     id: 5,
     status_name: 'Analyzing Diagnostic',
-    status_description: 'Entity that has been triggered for diagnostic analysis; dashboard is ready.'
+    status_description:
+      'Entity that has been triggered for diagnostic analysis; dashboard is ready.',
   },
   {
     id: 6,
     status_name: 'Analyzing Dashboard',
-    status_description: 'Entity that has been triggered for dashboard analysis; diagnostic is ready.'
+    status_description:
+      'Entity that has been triggered for dashboard analysis; diagnostic is ready.',
   },
 ];
 
@@ -232,7 +234,12 @@ const activateUser = (req, user_id, user_email, first_name, last_name, unit_test
     // Make sure the user is an Administrator before making the call.
     if (!isAdministrator(req)) {
       const errMessage = langResources.getResourceString('userisNotAnAdmin');
-      throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, errMessage, errMessage);
+      throw new errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.userNotAdmin,
+        errMessage,
+        errMessage
+      );
     }
     // Setup Parameters to pass to set status SP.
     const params = [
@@ -277,7 +284,11 @@ const activateUser = (req, user_id, user_email, first_name, last_name, unit_test
             first_name,
             last_name,
           };
-          const msg = AWSSES.createBodyContent(req, config.platformVars.emailType.INVITATION, content);
+          const msg = AWSSES.createBodyContent(
+            req,
+            config.platformVars.emailType.INVITATION,
+            content
+          );
           // Send the token via email to the user.
           return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
         }
@@ -317,7 +328,12 @@ const deactivateUser = (req, user_id) => {
     // Make sure the user is an Administrator before making the call.
     if (!isAdministrator(req)) {
       const errMessage = langResources.getResourceString('userisNotAnAdmin');
-      throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, errMessage, errMessage);
+      throw new errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.userNotAdmin,
+        errMessage,
+        errMessage
+      );
     }
     // Setup Parameters to pass to set status SP.
     const params = [
@@ -406,7 +422,12 @@ const createNewUser = (
     // Make sure the user is an Administrator before making the call.
     if (!isAdministrator(req)) {
       const errMessage = langResources.getResourceString('userisNotAnAdmin');
-      throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userNotAdmin, errMessage, errMessage);
+      throw new errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.userNotAdmin,
+        errMessage,
+        errMessage
+      );
     }
     // Setup Parameters to pass to set status SP.
     const params = [{ field: 'userEmail', type: sql.NVarChar(50), value: user_email }];
@@ -417,7 +438,12 @@ const createNewUser = (
         // If the user already exists, return an error.
         if (recordsets.length > 0) {
           const errMessage = langResources.getResourceString('userExistInOrg');
-          throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userExists, errMessage, user_email);
+          throw new errorUtils.createErrorMessage(
+            req,
+            errorUtils.errorCodes.userExists,
+            errMessage,
+            user_email
+          );
         } else {
           // Create the new user - Setup Parameters to pass to set status SP.
           const parameters = [
@@ -431,13 +457,25 @@ const createNewUser = (
             { field: 'accessLevelId', type: sql.Int, value: access_level_id },
             { field: 'statusId', type: sql.Int, value: config.platformVars.status.Pending },
             { field: 'email_subscription', type: sql.Bit, value: email_subscription },
-            { field: 'commodity_ids', type: sql.NVarChar(200), value: arr_user_commodity_ids.toString() },
-            { field: 'geography_ids', type: sql.NVarChar(200), value: arr_user_geography_ids.toString() },
+            {
+              field: 'commodity_ids',
+              type: sql.NVarChar(200),
+              value: arr_user_commodity_ids.toString(),
+            },
+            {
+              field: 'geography_ids',
+              type: sql.NVarChar(200),
+              value: arr_user_geography_ids.toString(),
+            },
             { field: 'viirs_email_frequency', type: sql.Int, value: viirs_email_frequency },
             { field: 'glad_email_frequency', type: sql.Int, value: glad_email_frequency },
             { field: 'forma_email_frequency', type: sql.Int, value: forma_email_frequency },
             { field: 'terrai_email_frequency', type: sql.Int, value: terrai_email_frequency },
-            { field: 'gran_chaco_email_frequency', type: sql.Int, value: gran_chaco_email_frequency },
+            {
+              field: 'gran_chaco_email_frequency',
+              type: sql.Int,
+              value: gran_chaco_email_frequency,
+            },
           ];
           // Add user to organization.
           return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateNewUser', parameters);
@@ -461,7 +499,12 @@ const createNewUser = (
           return sqlUtils.executeSystemStoredProcedure(req, 'uspCreateNewUserRoute', parameters);
         }
         const errMessage = langResources.getResourceString('userExistInOrg');
-        throw new errorUtils.createErrorMessage(req, errorUtils.errorCodes.userExists, errMessage, user_email);
+        throw new errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.userExists,
+          errMessage,
+          user_email
+        );
       })
       .then(() => {
         logger.logActivity(
@@ -569,7 +612,11 @@ const updateUserInfo = (
           { field: 'user_email', type: sql.NVarChar(150), value: user_email },
           { field: 'user_auth_preference_id', type: sql.Int, value: user_auth_preference_id },
         ];
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspUpdateUserAuthenticationPreference', parameters);
+        return sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspUpdateUserAuthenticationPreference',
+          parameters
+        );
       })
       .then(() => {
         logger.logActivity(

@@ -32,7 +32,7 @@ $list-section-button__length: 250px;
       background: rgb(75, 75, 75);
       border: 1px solid rgb(75, 75, 75);
       color: rgb(192, 197, 197);
-      transition: .5s;
+      transition: 0.5s;
     }
 
     .list-menu-container {
@@ -43,7 +43,7 @@ $list-section-button__length: 250px;
       z-index: 2100;
       background: white;
       border-radius: 0 0 17.5px 17.5px;
-      box-shadow: 2px 2px 2px rgba(0, 0, 0, .25);
+      box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
       padding: 0 10px;
       font-size: 14px;
       flex: 1 0 320px;
@@ -65,7 +65,7 @@ $list-section-button__length: 250px;
       }
       .sidebar-divider {
         padding-bottom: 1em;
-        margin-bottom: .5em;
+        margin-bottom: 0.5em;
         border-bottom: 1px solid #e6e6e6;
       }
       .locations-list-group .locations-list-body {
@@ -86,7 +86,6 @@ $list-section-button__length: 250px;
           cursor: default;
           text-decoration: none;
           color: $gfw-x-dark-gray__30;
-
         }
         &.locations-list-name__failed {
           cursor: default;

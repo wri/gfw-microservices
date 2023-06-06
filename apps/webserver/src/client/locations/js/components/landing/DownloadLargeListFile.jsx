@@ -25,8 +25,8 @@ function DownloadLarleListFile({ onCancel }) {
           />
           <h2 className="gfw-lists__title">We found some errors in your file</h2>
           <p>
-            There are data errors in your file. You can download it below, fix the errors and continue the upload
-            process.
+            There are data errors in your file. You can download it below, fix the errors and
+            continue the upload process.
           </p>
           <RaisedButton
             style={{

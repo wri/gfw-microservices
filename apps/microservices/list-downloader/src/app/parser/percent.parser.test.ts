@@ -17,8 +17,7 @@ describe('Percent Parser', () => {
       },
       data: {
         tree_cover_extent_total: 5,
-        tree_cover_loss_total_yearly:
-          '{"2019": 1,"2020": 2,"2021": 3,"202": 4}',
+        tree_cover_loss_total_yearly: '{"2019": 1,"2020": 2,"2021": 3,"202": 4}',
       },
       dataRow,
       csvData,
@@ -41,8 +40,7 @@ describe('Percent Parser', () => {
       },
       data: {
         tree_cover_extent_total: 5,
-        tree_cover_loss_total_yearly:
-          '{"2019": 1,"2020": 2,"2021": 3,"202": 4}',
+        tree_cover_loss_total_yearly: '{"2019": 1,"2020": 2,"2021": 3,"202": 4}',
       },
       dataRow,
       csvData,

@@ -1,29 +1,28 @@
 .otbn-table {
-    width: 450px;
-    display: inline-block;
-    thead {
-        border-bottom: 1px solid gray;
+  width: 450px;
+  display: inline-block;
+  thead {
+    border-bottom: 1px solid gray;
+  }
+  tr {
+    border-bottom: none;
+    th {
+      font-family: 'Fira Sans', sans-serif;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #555555;
+      font-weight: 600;
     }
-    tr {
-        
-        border-bottom: none;
-        th {
-            font-family: "Fira Sans", sans-serif;
-            font-size: 11px;
-            text-transform: uppercase;
-            color: #555555;
-            font-weight: 600;
-        }
-        td:last-of-type,
-        th:last-of-type {
-            text-align: right;
-        }
+    td:last-of-type,
+    th:last-of-type {
+      text-align: right;
     }
-};
+  }
+}
 
 .otbn-checkbox {
-    width: 15px;
-    height: 15px;
-    margin-right: 12px;
-    display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 12px;
+  display: inline-block;
 }

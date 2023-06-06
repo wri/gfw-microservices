@@ -11,11 +11,7 @@ export abstract class IPipeService {
   @Inject(S3Service)
   private readonly s3Service: S3Service;
 
-  abstract start(
-    filters: GenerationFileRequest,
-    table?: string,
-    fileSuffix?: string
-  );
+  abstract start(filters: GenerationFileRequest, table?: string, fileSuffix?: string);
   abstract process(data, filters: GenerationFileRequest);
   abstract finish(filters: GenerationFileRequest);
 
@@ -59,17 +55,10 @@ export abstract class IPipeService {
 
   public async uploadToS3(filters: GenerationFileRequest) {
     const { key } = filters;
-    this.s3Service.sendFiletoS3(
-      key,
-      'zip',
-      'application/zip',
-      process.env.AWS_TMP_BUCKET
-    );
-    this.s3Service
-      .getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET)
-      .then((location) => {
-        this.finishedEmail(filters, location);
-      });
+    this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
+    this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET).then((location) => {
+      this.finishedEmail(filters, location);
+    });
   }
 
   public async waitFinishedProcess(inputStream: PassThrough) {

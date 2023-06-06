@@ -18,29 +18,61 @@ export default class PalmRiskAnalysis extends Component {
       locationName = filteredLocations[0]['Location Name'];
     }
 
-    const deforestationThreatAmount = getYearlyData('commodity_threat_deforestation', lastYear, lastYear)[lastYear]; //Threats - Deforestation - Amount
+    const deforestationThreatAmount = getYearlyData(
+      'commodity_threat_deforestation',
+      lastYear,
+      lastYear
+    )[lastYear]; //Threats - Deforestation - Amount
     const peatThreatAmount = getYearlyData('commodity_threat_peat', lastYear, lastYear)[lastYear]; //Threats - Peat - Amount
-    const paThreatAmount = getYearlyData('commodity_threat_protected_areas', lastYear, lastYear)[lastYear]; //Threats - Protected Areas - Amount
+    const paThreatAmount = getYearlyData('commodity_threat_protected_areas', lastYear, lastYear)[
+      lastYear
+    ]; //Threats - Protected Areas - Amount
     const firesThreatAmount = getYearlyData('commodity_threat_fires', lastYear, lastYear)[lastYear]; //Threats - Protected Areas - Amount
 
-    const forestValueAmount = getYearlyData('commodity_value_forest_extent', lastYear, lastYear)[lastYear]; //Values - Forest - Amount
+    const forestValueAmount = getYearlyData('commodity_value_forest_extent', lastYear, lastYear)[
+      lastYear
+    ]; //Values - Forest - Amount
     const peatValueAmount = getYearlyData('commodity_value_peat', lastYear, lastYear)[lastYear]; //Values - Peat - Amount
-    const paValueAmount = getYearlyData('commodity_value_protected_areas', lastYear, lastYear)[lastYear]; //Values - Protected Areas - Amount
+    const paValueAmount = getYearlyData('commodity_value_protected_areas', lastYear, lastYear)[
+      lastYear
+    ]; //Values - Protected Areas - Amount
 
-    const deforestationThreatRisk = getYearlyData('commodity_threat_deforestation_level', lastYear, lastYear)[lastYear]; //Threats - Deforestation - Risk Level
-    const peatThreatRisk = getYearlyData('commodity_threat_peat_level', lastYear, lastYear)[lastYear]; //Threats - Peat - Risk Level
-    const paThreatRisk = getYearlyData('commodity_threat_protected_areas_level', lastYear, lastYear)[lastYear]; //Threats - Protected Areas - Risk Level
-    const firesThreatRisk = getYearlyData('commodity_threat_fires_level', lastYear, lastYear)[lastYear]; //Threats - Fire - Risk Level
+    const deforestationThreatRisk = getYearlyData(
+      'commodity_threat_deforestation_level',
+      lastYear,
+      lastYear
+    )[lastYear]; //Threats - Deforestation - Risk Level
+    const peatThreatRisk = getYearlyData('commodity_threat_peat_level', lastYear, lastYear)[
+      lastYear
+    ]; //Threats - Peat - Risk Level
+    const paThreatRisk = getYearlyData(
+      'commodity_threat_protected_areas_level',
+      lastYear,
+      lastYear
+    )[lastYear]; //Threats - Protected Areas - Risk Level
+    const firesThreatRisk = getYearlyData('commodity_threat_fires_level', lastYear, lastYear)[
+      lastYear
+    ]; //Threats - Fire - Risk Level
 
-    const forestValueThreat = getYearlyData('commodity_value_forest_extent_level', lastYear, lastYear)[lastYear]; //Values - Forest - Risk Level
-    const peatValueThreat = getYearlyData('commodity_value_peat_level', lastYear, lastYear)[lastYear]; //Values - Peat - Risk Level
-    const paValueThreat = getYearlyData('commodity_value_protected_areas_level', lastYear, lastYear)[lastYear]; //Values - Protected Areas - Risk Level
+    const forestValueThreat = getYearlyData(
+      'commodity_value_forest_extent_level',
+      lastYear,
+      lastYear
+    )[lastYear]; //Values - Forest - Risk Level
+    const peatValueThreat = getYearlyData('commodity_value_peat_level', lastYear, lastYear)[
+      lastYear
+    ]; //Values - Peat - Risk Level
+    const paValueThreat = getYearlyData(
+      'commodity_value_protected_areas_level',
+      lastYear,
+      lastYear
+    )[lastYear]; //Values - Protected Areas - Risk Level
 
     return (
       <div
-        className={`locations-diagnostics-section-risk ${listView === 'commodity_risk' ? '' : 'hidden'} ${
-          selectedLocations.length === 1 ? '' : 'hidden'
-        }`}
+        className={`locations-diagnostics-section-risk ${
+          listView === 'commodity_risk' ? '' : 'hidden'
+        } ${selectedLocations.length === 1 ? '' : 'hidden'}`}
       >
         <div
           className={`locations-diagnostics-sub-section-risk palm-risk ${

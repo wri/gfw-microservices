@@ -197,7 +197,8 @@ export const loginPage = {
       buttonText: 'Find out more',
     },
     subscribe: {
-      paragraphText: 'Subscribe to the Global Forest Watch newsletter for general application information and updates.',
+      paragraphText:
+        'Subscribe to the Global Forest Watch newsletter for general application information and updates.',
       buttonText: 'Stay updated',
     },
   },
@@ -298,7 +299,8 @@ export const loginPage = {
           'edge of technology and data applications that will help us work with our clients to better identify and manage deforestation risk. ' +
           'That’s delivering positive impact for our clients, for the countries in our region, and for future generations.”',
         image: 'banker.jpg',
-        quoteRef: 'Luiz Gabriel Todt de Azevedo, Chief, Environmental, Social & Governance Division - IDB Invest',
+        quoteRef:
+          'Luiz Gabriel Todt de Azevedo, Chief, Environmental, Social & Governance Division - IDB Invest',
         descriptions: [
           {
             title: 'Upload & Save',
@@ -307,7 +309,8 @@ export const loginPage = {
           },
           {
             title: 'Analyze & Monitor',
-            description: 'Discover compliance-related forest insights to assess risk and prioritize.',
+            description:
+              'Discover compliance-related forest insights to assess risk and prioritize.',
           },
           {
             title: 'Collaborate',
@@ -326,7 +329,8 @@ export const loginPage = {
         quote:
           '“GFW Pro allows us to upload all our production areas, monitor them for deforestation on a day-to-day basis, and prioritize engagement accurately and efficiently. It’s a win-win.”',
         image: 'producer.jpg',
-        quoteRef: 'Moray McLeish, Vice President, Corporate Responsibility and Sustainability for Asia, Olam',
+        quoteRef:
+          'Moray McLeish, Vice President, Corporate Responsibility and Sustainability for Asia, Olam',
         descriptions: [
           {
             title: 'Upload & Save',
@@ -362,7 +366,8 @@ export const loginPage = {
         descriptions: [
           {
             title: 'Upload & Save',
-            description: 'Create a portfolio within GFW Pro of production locations received from your suppliers.',
+            description:
+              'Create a portfolio within GFW Pro of production locations received from your suppliers.',
           },
           {
             title: 'Analyze & Monitor',
@@ -375,7 +380,8 @@ export const loginPage = {
           },
           {
             title: 'Manage',
-            description: 'Identify priority areas in your supply chain for adhering to zero-deforestation commitments.',
+            description:
+              'Identify priority areas in your supply chain for adhering to zero-deforestation commitments.',
           },
         ],
       },
@@ -391,7 +397,8 @@ export const loginPage = {
         descriptions: [
           {
             title: 'Upload & Save',
-            description: 'Receive and monitor production location portfolios from your suppliers within GFW Pro.',
+            description:
+              'Receive and monitor production location portfolios from your suppliers within GFW Pro.',
           },
           {
             title: 'Analyze & Monitor',
@@ -400,7 +407,8 @@ export const loginPage = {
           },
           {
             title: 'Collaborate',
-            description: 'Receive aggregated risk and progress assessments from individual suppliers within GFW Pro.',
+            description:
+              'Receive aggregated risk and progress assessments from individual suppliers within GFW Pro.',
           },
           {
             title: 'Manage',
@@ -869,7 +877,8 @@ export const locationsPage = {
       },
       listIsLocked: {
         title: 'List is locked',
-        message: 'The list that you have selected is currently being edited by another user. Please try again later.',
+        message:
+          'The list that you have selected is currently being edited by another user. Please try again later.',
       },
       invalidListName: {
         title: 'Invalid List Name',
@@ -882,7 +891,10 @@ export const locationsPage = {
       },
       // listNotAccessible has no user-facing message
       listNotAccessible: { title: '', message: '' },
-      missingListName: { title: 'Invalid List Name', message: 'You must create a new list or select an existing one.' },
+      missingListName: {
+        title: 'Invalid List Name',
+        message: 'You must create a new list or select an existing one.',
+      },
     },
     deleteListDialog: {
       title: 'Confirm deletion',
@@ -891,14 +903,18 @@ export const locationsPage = {
       text: ' will be deleted. Please press ‘OK’ to confirm.',
     },
     deleteLocationsMessages: {
-      confirm: { title: 'Confirm deletion', message: 'Are you sure you want to delete the selected location(s)?' },
+      confirm: {
+        title: 'Confirm deletion',
+        message: 'Are you sure you want to delete the selected location(s)?',
+      },
       error: {
         title: 'Location(s) not deleted',
         message: 'This account request has failed. Please try again at another time.',
       },
       listLocked: {
         title: 'List is locked',
-        message: 'The list that you have selected is currently being edited by another user. Please try again later',
+        message:
+          'The list that you have selected is currently being edited by another user. Please try again later',
       },
       success: { title: 'Location(s) Deleted', message: 'Successfully deleted the location(s).' },
     },
@@ -909,7 +925,8 @@ export const locationsPage = {
       },
       listLocked: {
         title: 'List is locked',
-        message: 'The list that you have selected is currently being edited by another user. Please try again later',
+        message:
+          'The list that you have selected is currently being edited by another user. Please try again later',
       },
       success: { title: 'Location(s) Moved', message: 'Successfully moved the location(s).' },
     },
@@ -947,7 +964,8 @@ export const locationsPage = {
     tooltips: {
       analyzing:
         'List is analyzing. You will receive an email once analysis is complete and can reload the page to access the results.',
-      failed: 'Analysis for this list has failed. Please return to the Locations page to re-process this list.',
+      failed:
+        'Analysis for this list has failed. Please return to the Locations page to re-process this list.',
     },
     selectedCountry: 'Country',
     selectedCommodity: 'Commodity',
@@ -1360,7 +1378,10 @@ export const locationsPage = {
     errors: {
       cannotBeEditedInBrowser:
         'This column cannot be edited in the browser. Download the file to fix these errors, then re-upload above.',
-      noLocationsSelected: { title: 'No locations selected', message: 'Select locations to upload.' },
+      noLocationsSelected: {
+        title: 'No locations selected',
+        message: 'Select locations to upload.',
+      },
       addTypeRequired: {
         title: 'You must select a type',
         message: 'Please pick a type (investment or commodity).',
@@ -1451,16 +1472,20 @@ export const locationsPage = {
       'pro.globalforestwatch.org':
         'MCrBhmBWwyPefdQamP74oGxZkDeWMoeP5qSUlKkeYxMInNyuC7e2Sg_5Cz70d8UQU4Y5lEALv2dedpuGo5Dv3A..',
     },
-    protectedAreasUrl: 'https://gis-gfw.wri.org/arcgis/rest/services/cached/wdpa_protected_areas/MapServer',
-    protectedServicesUrl: 'https://gis-gfw.wri.org/arcgis/rest/services/protected_services/MapServer',
+    protectedAreasUrl:
+      'https://gis-gfw.wri.org/arcgis/rest/services/cached/wdpa_protected_areas/MapServer',
+    protectedServicesUrl:
+      'https://gis-gfw.wri.org/arcgis/rest/services/protected_services/MapServer',
     accuracyDescription:
       'Please select one of the accuracy levels that best describes the commodity or investment locations',
     address: 'Address',
     additionalAttributes: 'Additional attributes',
     additionalAttributeLabel: 'Attribute ',
     optional: '(optional)',
-    additionalFieldsNotSupported: 'This template type does not allow for defining additional attributes.',
-    additionalAttributesDescriptionSingle: 'Add additional metadata tags to your templates before uploading.',
+    additionalFieldsNotSupported:
+      'This template type does not allow for defining additional attributes.',
+    additionalAttributesDescriptionSingle:
+      'Add additional metadata tags to your templates before uploading.',
     additionalAttributesDescription:
       'If you used any “define your own attribute” columns in your template, add them here prior to uploading. Column names must match exactly: take note of special characters, spacing, and capitalization.',
     addToListTitle: 'List',
@@ -1469,7 +1494,8 @@ export const locationsPage = {
     addToListInstructions: 'Add to existing',
     addToAnExistingList: 'Add to an existing list',
     createListInstructions: 'Create new',
-    uploadWindText: 'Please click if your file includes: wind barriers, riparian areas, and buffer zones',
+    uploadWindText:
+      'Please click if your file includes: wind barriers, riparian areas, and buffer zones',
     concessionTypes: [
       {
         name: 'Logging Concession',
@@ -1731,7 +1757,8 @@ export const locationsPage = {
           {
             Tag: 'Owner ID',
             mandatory: false,
-            Value: 'National ID of the ranch owner - use CPF for Brazil, RUC for Paraguay, and CUIT for Argentina',
+            Value:
+              'National ID of the ranch owner - use CPF for Brazil, RUC for Paraguay, and CUIT for Argentina',
           },
           {
             Tag: 'Company Name',
@@ -2232,7 +2259,8 @@ export const locationsPage = {
           {
             Tag: 'Owner ID',
             mandatory: false,
-            Value: 'National ID of the farm owner - use CPF for Brazil, RUC for Paraguay, and CUIT for Argentina',
+            Value:
+              'National ID of the farm owner - use CPF for Brazil, RUC for Paraguay, and CUIT for Argentina',
           },
           {
             Tag: 'Company Name',
@@ -2290,7 +2318,8 @@ export const locationsPage = {
           {
             Tag: 'Commodity',
             mandatory: true,
-            Value: 'Cattle, cocoa, coffee, palm oil, rubber, pulp and paper, soy, sugar cane, other',
+            Value:
+              'Cattle, cocoa, coffee, palm oil, rubber, pulp and paper, soy, sugar cane, other',
           },
           {
             Tag: 'Location Classification',
@@ -2342,7 +2371,8 @@ export const locationsPage = {
           {
             Tag: 'Facility Name',
             mandatory: false,
-            Value: "Name of the point's or polygon's associated processing facility (e.g. mill, crusher, grinder)",
+            Value:
+              "Name of the point's or polygon's associated processing facility (e.g. mill, crusher, grinder)",
           },
           {
             Tag: 'Refinery Name',
@@ -2352,7 +2382,8 @@ export const locationsPage = {
           {
             Tag: 'Certification',
             mandatory: false,
-            Value: 'Yes means this point or polygon is certified; No means this point or polygon is not certified',
+            Value:
+              'Yes means this point or polygon is certified; No means this point or polygon is not certified',
           },
           {
             Tag: 'Additional Attribute 1',
@@ -2631,6 +2662,24 @@ export const locationsPage = {
     AnalyzingDiagnostic: 5,
     AnalyzingDashboard: 6,
   },
+  statusLabel: {
+    Pending: 'Pending',
+    Active: 'Active',
+    Inactive: 'Inactive',
+    Draft: 'Draft',
+    AnalyzingDiagnostic: 'Analyzing diagnostic',
+    AnalyzingDashboard: 'Analyzing dashboard',
+  },
+  columns: {
+    notAnalyzedList: {
+      owner:
+        'This location has not been analyzed. To view location details and diagnostics for this list, please click the submit button at the top of the screen.',
+      nonOwner:
+        'This location has not been analyzed. The list owner will need to submit the list for analysis. Once submitted, this list will not be accessible until analysis is complete.',
+    },
+    tooltipMessage:
+      'This location has failed analysis. To receive results, resubmit this list for analysis.',
+  },
 };
 
 export const folderDetailPage = {
@@ -2853,7 +2902,13 @@ export const profilePage = {
     changePassword: 'Change password',
     resetPassword: 'Reset password',
     deactivate: 'Deactivate',
-    activityLogHeaders: ['Username', 'Category', 'Activity name', 'Activity description', 'Timestamp'],
+    activityLogHeaders: [
+      'Username',
+      'Category',
+      'Activity name',
+      'Activity description',
+      'Timestamp',
+    ],
     b2bSection: {
       b2bCommingSoonTitle: 'B2B sharing trial coming soon!',
       b2bCommingSoonDescription1:
@@ -2862,10 +2917,12 @@ export const profilePage = {
       b2bConnections: 'B2B Connections',
       connect: 'Connect',
       connectDescription: 'Connections allow you to share your lists between companies.',
-      sendInvitationDescription: 'Insert the e-mail address of the user you would like to connect with below',
+      sendInvitationDescription:
+        'Insert the e-mail address of the user you would like to connect with below',
       invitationSent: 'Invitation sent!',
       createANewConnection: 'Create a new connection',
-      invitationSentDescription: 'You will be notified when the company accepts your B2B connection request.',
+      invitationSentDescription:
+        'You will be notified when the company accepts your B2B connection request.',
       email: 'E-mail',
       name: 'name',
       accountManagerInformation: 'Account Manager Information',
@@ -2882,12 +2939,14 @@ export const profilePage = {
       reject: 'Reject',
       removeConnection: 'Remove connection',
       requestExpired: 'Request Expired',
-      termsOfUseWarning: 'By using this feature, you agree with the <a href="/terms-of-use">Terms of Use </a>.',
+      termsOfUseWarning:
+        'By using this feature, you agree with the <a href="/terms-of-use">Terms of Use </a>.',
       connectionAlreadyExists: 'This connection already exists!',
       connectionAlreadyExistsDescription:
         'You already have a connection with this organization. To manage or remove connections, navigate to the B2B page.',
       notAdministrator: 'User does not have required permission',
-      notAdministratorDescription: 'The e-mail address entered does not belong to an account with administrator.',
+      notAdministratorDescription:
+        'The e-mail address entered does not belong to an account with administrator.',
       userNotFound: 'GFW Pro user not found',
       userNotFoundDescription: 'The e-mail address does not belong to GFW Pro account.',
       tryAgain: 'Try again',
@@ -2938,15 +2997,20 @@ export const mapPage = {
   totalLoss: 'LOSS',
   algorithmDisclaimer:
     'This algorithm approximates the results by sampling the selected area. Results are more accurate at closer zoom levels.',
-  noteDisclaimer: 'NOTE: tree cover loss and gain statistics cannot be compared against each other.',
+  noteDisclaimer:
+    'NOTE: tree cover loss and gain statistics cannot be compared against each other.',
   noteDisclaimerText: ' Learn more.',
   noteDisclaimerLink:
     'https://www.globalforestwatch.org/map/5/13.60/97.91/ARG/grayscale/loss/582,573,556?tab=analysis-tab&geostore=a794f8f3f3e57373910c40cb95625f28&begin=2001-01-01&end=2016-01-01&threshold=30&dont_analyze=true#',
   downloadLinks: {
-    [proLayers.treeCoverLossID]: 'https://earthenginepartners.appspot.com/science-2013-global-forest',
-    [proLayers.treeCoverGainID]: 'https://earthenginepartners.appspot.com/science-2013-global-forest',
-    [proLayers.prodesDeforestationID]: 'http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes',
-    [proLayers.treeBiomassLossID]: 'https://data.globalforestwatch.org/datasets/d33587b6aee248faa2f388aaac96f92c_0',
+    [proLayers.treeCoverLossID]:
+      'https://earthenginepartners.appspot.com/science-2013-global-forest',
+    [proLayers.treeCoverGainID]:
+      'https://earthenginepartners.appspot.com/science-2013-global-forest',
+    [proLayers.prodesDeforestationID]:
+      'http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes',
+    [proLayers.treeBiomassLossID]:
+      'https://data.globalforestwatch.org/datasets/d33587b6aee248faa2f388aaac96f92c_0',
     [proLayers.gladAlertsID]: 'http://glad-forest-alert.appspot.com/',
     [proLayers.viirsActiveFiresID]:
       'https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/active-fire-data',
@@ -2962,7 +3026,9 @@ export const mapPage = {
   gfw_production_layers_url:
     'https://production-api.globalforestwatch.org/v1/layer?app=gfw-pro&page[size]=1000&env=production',
   gfw_staging_layers_url: `https://production-api.globalforestwatch.org/v1/layer?app=gfw-pro&page[size]=1000&t=${Date.now()}&env=staging`,
-  biomassLossYears: [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016],
+  biomassLossYears: [
+    2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
+  ],
   // treeCoverLossYears: [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
   treeCoverLossYearsFC: fillYears(2001, latestTreeCoverLossYearFC),
   treeCoverLossYearsCR: fillYears(2001, latestTreeCoverLossYearCR),
@@ -3631,7 +3697,8 @@ export const mapPage = {
   visibleLayers: [proLayers.treeCoverLossID, proLayers.treeCoverGainID, proLayers.treeCoverID],
   share: {
     title: 'Share this view',
-    linkInstructions: 'Copy and paste the link to share it or use the buttons below to share on social media.',
+    linkInstructions:
+      'Copy and paste the link to share it or use the buttons below to share on social media.',
     copyFailure:
       'Sorry, we were unable to copy this to your clipboard, please press Cmd + c on Mac or Ctrl + c on Windows/Linux.',
     copyButton: 'Copy',
@@ -3640,7 +3707,11 @@ export const mapPage = {
     twitterUrl: (url) => `https://twitter.com/share?url=${url}&via=gfw-water`,
     facebookUrl: (url) => `https://www.facebook.com/sharer.php?u=${url}`,
   },
-  densityDisplayLayers: [proLayers.treeCoverID, proLayers.lreeCoverLossID, proLayers.treeBiomassLossID],
+  densityDisplayLayers: [
+    proLayers.treeCoverID,
+    proLayers.lreeCoverLossID,
+    proLayers.treeBiomassLossID,
+  ],
   groundBiomassStart: 'Displaying above ground biomass',
   densityLossStart: 'Displaying loss with ',
   densityLossEnd: ' canopy density.',
@@ -3707,7 +3778,8 @@ export const mapPage = {
     {
       id: 'landsat',
       label: 'Landsat',
-      customUrl: 'https://production-api.globalforestwatch.org/v2/landsat-tiles/2017/{level}/{col}/{row}',
+      customUrl:
+        'https://production-api.globalforestwatch.org/v2/landsat-tiles/2017/{level}/{col}/{row}',
       content:
         '<div class="basemap-modal-title">Landsat</div><p class="first">These base maps show a composite of the best annual Landsat satellite imagery (USGS/NASA) from 2013-2017. The annual composites were generated by Google in the Google Earth Engine. The Landsat composites display “Top-of-Atmosphere,” or the most cloud-free, images at 30-meter resolution. More information on Landsat imagery is available from the <a href="http://landsat.usgs.gov/" target="_blank">Landsat website</a>. Read the terms of service <a href="http://www.google.com/help/terms_maps.html" target="_blank">here</a>.</p><p><strong>Note:</strong> Because of the very large file size of the annual Landsat composite layers, images will take some time to reload on the website and as you zoom in and out.</p>',
     },

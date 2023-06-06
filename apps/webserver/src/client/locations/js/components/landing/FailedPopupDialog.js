@@ -16,7 +16,12 @@ export function FailedPopupDialog(props) {
       onRequestClose={props.onRequestClose}
       actions={
         <div className="dialog__footer FailedPopupDialog__dialog-buttons">
-          <Button variant="primary" className="FailedPopupDialog__button" label="OK" onClick={props.onOkButtonPress} />
+          <Button
+            variant="primary"
+            className="FailedPopupDialog__button"
+            label="OK"
+            onClick={props.onOkButtonPress}
+          />
         </div>
       }
     >

@@ -10,7 +10,9 @@ import FileSaver from 'file-saver';
 const _createCSVBlobUrl = (CSVString) => {
   const fileType = { type: 'text/csv;charset=utf-8' };
   const csvBlob = new Blob([CSVString], fileType);
-  return window.URL ? window.URL.createObjectURL(csvBlob) : window.webkitURL.createObjectURL(csvBlob);
+  return window.URL
+    ? window.URL.createObjectURL(csvBlob)
+    : window.webkitURL.createObjectURL(csvBlob);
 };
 
 const downloadResults = (csvData) => {

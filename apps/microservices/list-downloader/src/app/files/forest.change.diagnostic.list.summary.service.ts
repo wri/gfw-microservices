@@ -45,9 +45,7 @@ class EventEmitterTransform extends Transform {
 
 @Injectable()
 export class ForestChangeDiagnosticListSummaryService extends IPipeService {
-  private readonly logger = new Logger(
-    ForestChangeDiagnosticListSummaryService.name
-  );
+  private readonly logger = new Logger(ForestChangeDiagnosticListSummaryService.name);
   private writeStream: PassThrough;
   private countryAggregator: CountryAggregator;
 
@@ -71,9 +69,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   process(analysisData, filters: GenerationFileRequest) {
     if (this.isForestChangeDiagnosticListSummaryFile(filters)) {
       const { listName } = filters;
-      analysisData.forEach((data) =>
-        this.writeStream.write({ list_name: listName, ...data })
-      );
+      analysisData.forEach((data) => this.writeStream.write({ list_name: listName, ...data }));
     }
   }
 
@@ -105,11 +101,13 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   private generateAggregate(filters: GenerationFileRequest) {
     const fileSuffix = this.getSuffix(filters);
     const { key, listName, listLevelAnalysis } = filters;
-    const { total_area } = listLevelAnalysis ?? {};
+    let totalArea = Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, 'total_area')
+      ? listLevelAnalysis['total_area']
+      : 0;
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS['forestChangeDiagnosticListSummary']);
     const dataRow = [listName];
-    const totalArea = total_area ?? 0;
+    totalArea = totalArea ?? 0;
     const countryStr = [...this.countryAggregator.getCountries()].join(',');
 
     EXCEL_TEMPLATES['forestChangeDiagnosticListSummary'].forEach((key) => {
@@ -117,17 +115,12 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
       dataRow.push(countryStr.replace(/,/g, ';'));
       fields.forEach((field) => {
         const { attribute } = field;
-        const input = Object.prototype.hasOwnProperty.call(
-          listLevelAnalysis ?? {},
-          attribute
-        )
+        const input = Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, attribute)
           ? listLevelAnalysis[attribute]
           : '0';
         const fieldValue = JSON.parse(input);
         if (field.parsed === 'percent') {
-          const percent = formatPct(
-            validatePct((fieldValue / totalArea) * 100)
-          );
+          const percent = formatPct(validatePct((fieldValue / totalArea) * 100));
           dataRow.push(percent);
         } else if (field.parsed === 'aggregate') {
           dataRow.push(fieldValue.toFixed(2));

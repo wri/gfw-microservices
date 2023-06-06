@@ -150,8 +150,10 @@ export default class DrawShape extends Component {
 
     this.setState({ geometry: polygon, mode: DrawShapeMode.Complete });
     this.props.setGeometry(polygon);
-
-    ga('send', 'event', 'Locations Draw', 'add location map draw', 'user drew a polygon on the Add Location map');
+    gtag('event', 'add location map draw', {
+      event_category: 'Locations Draw',
+      event_label: 'user drew a polygon on the Add Location map',
+    });
   };
 
   render() {
@@ -180,9 +182,9 @@ export default class DrawShape extends Component {
       case DrawShapeMode.Complete: {
         const areaKm = geometry ? GeometryEngine.geodesicArea(geometry, 'square-kilometers') : 0;
         const areaHa = geometry ? GeometryEngine.geodesicArea(geometry, 'hectares') : 0;
-        userMessage = `Area: ${numberWithCommas(parseInt(areaKm.toFixed(0)))} km (${numberWithCommas(
-          parseInt(areaHa.toFixed(0))
-        )} ha)`;
+        userMessage = `Area: ${numberWithCommas(
+          parseInt(areaKm.toFixed(0))
+        )} km (${numberWithCommas(parseInt(areaHa.toFixed(0)))} ha)`;
         break;
       }
       default:
@@ -193,7 +195,11 @@ export default class DrawShape extends Component {
       <div className="add-location-map">
         <div className={'add-location-map__message'}>{userMessage}</div>
         <div style={containerStyle} className="add-location-map__map-container">
-          <Button className="add-location-map__draw-button" onClick={this.onDrawButtonClick} label={buttonTitle} />
+          <Button
+            className="add-location-map__draw-button"
+            onClick={this.onDrawButtonClick}
+            label={buttonTitle}
+          />
           <div style={mapStyle} ref="mapView"></div>
         </div>
       </div>

@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import { selectedList } from './../mock/listGeoMockData';
 import {
   GetTableAnalysisColumnsById,
   PerformListBulkCopy,
@@ -26,9 +25,7 @@ export const ContainsPunctuation = (list_name) => {
  * @return {number} - List status ID (eg. Pending = 1 || Draft = 4)
  */
 export function getListStatusId(isSaveAsDraft) {
-  return isSaveAsDraft
-    ? LIST_STATUS.LIST_STATUS_DRAFT
-    : LIST_STATUS.LIST_STATUS_PENDING;
+  return isSaveAsDraft ? LIST_STATUS.LIST_STATUS_DRAFT : LIST_STATUS.LIST_STATUS_PENDING;
 }
 
 export const discernPropValue = (feature, prop) => {
@@ -83,20 +80,15 @@ export function getActiveTye(commodityType: string, currentActiveTye: string) {
   return currentActiveTye;
 }
 
-export function getCustomAttributeNamesAndGenericFields(
-  customAttributes: string,
-  templateData
-) {
-  const customAttributeNames =
-    customAttributes.length > 0 ? customAttributes.split(',') : [];
+export function getCustomAttributeNamesAndGenericFields(customAttributes: string, templateData) {
+  const customAttributeNames = customAttributes.length > 0 ? customAttributes.split(',') : [];
   const genericFields = [];
 
   templateData.forEach((template) => {
     // Only specify custom attributes if the field name has been changed.
     if (
       template.template_datum_field_name_updated &&
-      template.template_datum_field_name_updated !==
-        template.template_datum_field_name
+      template.template_datum_field_name_updated !== template.template_datum_field_name
     ) {
       customAttributeNames.push(template.template_datum_field_name_updated);
     } else {
@@ -107,11 +99,7 @@ export function getCustomAttributeNamesAndGenericFields(
   return [customAttributeNames, genericFields];
 }
 
-export function createfeaturePropsForCommodity(
-  locationData,
-  customAttributeNames,
-  genericFields
-) {
+export function createfeaturePropsForCommodity(locationData, customAttributeNames, genericFields) {
   const featProps = [];
   locationData.forEach((feature) => {
     const properties = {};
@@ -269,16 +257,18 @@ export const ComposeAnalysisCopyQuery = (
   `;
 };
 
+interface RecordType {
+  COLUMN_NAME: string;
+}
+
 export const ComposeCopyQueryStatement = async (
   clientDatabase: string,
   selectedListId: number,
   srcListAnalysisTable: string
 ) => {
-  const tableColumns = await GetTableAnalysisColumnsById(
-    clientDatabase,
-    selectedListId
-  );
-  const columns = tableColumns.map((record: any) => record.COLUMN_NAME);
+  const tableColumns = await GetTableAnalysisColumnsById(clientDatabase, selectedListId);
+
+  const columns = tableColumns.map((record: RecordType) => record.COLUMN_NAME);
   const statement = columns
     .map((column) => `[${column}] = [${srcListAnalysisTable}].[${column}]`)
     .join(',');
@@ -318,9 +308,7 @@ export const CheckListNameIsValid = (
 ) => {
   const lowerListName = listName ? listName.toLowerCase() : listName;
   const checkListExists = userListNames.find((name) => name === lowerListName);
-  const checkForPunctuation = lowerListName
-    ? ContainsPunctuation(lowerListName)
-    : false;
+  const checkForPunctuation = lowerListName ? ContainsPunctuation(lowerListName) : false;
 
   if (!listName) {
     throw new Error('MISSING_LIST_NAME');
@@ -339,11 +327,10 @@ export const createFeatureProps = (
 ) => {
   const customAttributes = [];
   if (addType === 'commodity') {
-    const [customAttributeNames, genericFields] =
-      getCustomAttributeNamesAndGenericFields(
-        customAttributesNames,
-        templateData
-      );
+    const [customAttributeNames, genericFields] = getCustomAttributeNamesAndGenericFields(
+      customAttributesNames,
+      templateData
+    );
 
     customAttributeNames.forEach((customAtt) => {
       customAttributes.push({
@@ -354,11 +341,7 @@ export const createFeatureProps = (
 
     // templateId = templateData ? templateData[0].template_id : -1;
 
-    return createfeaturePropsForCommodity(
-      locationData,
-      customAttributeNames,
-      genericFields
-    );
+    return createfeaturePropsForCommodity(locationData, customAttributeNames, genericFields);
   } else {
     // templateId = templateData ? templateData[0].template_id : -1;
     return createFeaturePropsForNonCommodity(locationData);

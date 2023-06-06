@@ -1,32 +1,32 @@
 .upload-process {
-    &__file-list {
+  &__file-list {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0px 20px;
-    }
-    &__file-detail {
-        width: 80%;
-        display: flex;
-    }
-    &__file-info {
-        font-weight: 400;
-        font-size: 12px;
-        line-height: 21px;
-        color: rgba(0, 0, 0, 0.37);
-    }
-    &__file-name {
-        font-weight: 600;
-        font-size: 14px;
-        line-height: 21px;
-        letter-spacing: 0.1px;
-        color: rgba(0, 0, 0, 0.73);
-    }
-    &__subtitle {
-        color: #A1A1A1;
-        margin-bottom: 15px;
-        font-size: 16px;
-        font-weight: 500;
-        line-height: 15px;
-    }
+  }
+  &__file-detail {
+    width: 80%;
+    display: flex;
+  }
+  &__file-info {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 21px;
+    color: rgba(0, 0, 0, 0.37);
+  }
+  &__file-name {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 21px;
+    letter-spacing: 0.1px;
+    color: rgba(0, 0, 0, 0.73);
+  }
+  &__subtitle {
+    color: #a1a1a1;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 15px;
+  }
 }

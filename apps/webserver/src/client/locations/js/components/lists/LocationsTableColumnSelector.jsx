@@ -23,7 +23,9 @@ function LocationsTableColumnSelector({ listColumns, setListColumns, disabled })
   };
 
   const setArrayOfVisibleColumns = (newListColumnsState) => {
-    const visibleColumns = newListColumnsState.filter((col) => col.show).map((column) => column.accessor);
+    const visibleColumns = newListColumnsState
+      .filter((col) => col.show)
+      .map((column) => column.accessor);
     setListColumns(visibleColumns);
   };
 
@@ -32,7 +34,10 @@ function LocationsTableColumnSelector({ listColumns, setListColumns, disabled })
     const newListColumnsState = listColumns.slice();
     newListColumnsState[index].show = !newListColumnsState[index].show;
     setArrayOfVisibleColumns(newListColumnsState);
-    ga('send', 'event', 'Lists Click', 'Add column', 'user toggled a column in the lists table');
+    gtag('event', 'Add column', {
+      event_category: 'Lists Click',
+      event_label: 'user toggled a column in the lists table',
+    });
   };
 
   const selectAllColumnsToggle = (newState) => {
@@ -61,7 +66,11 @@ function LocationsTableColumnSelector({ listColumns, setListColumns, disabled })
 
   return (
     <>
-      <Button onClick={toggleColumnMenu} disabled={disabled} label={transifex(locationsPage.lists.addColumns)} />
+      <Button
+        onClick={toggleColumnMenu}
+        disabled={disabled}
+        label={transifex(locationsPage.lists.addColumns)}
+      />
       <Popover
         open={displayColumnSelectionMenu}
         anchorEl={anchorElColumnMenu}

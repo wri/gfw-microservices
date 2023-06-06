@@ -211,7 +211,8 @@ export default class StepOneEdit extends Component {
   downloadCsv = () => {
     const { templateData, activeTemplate, features, addType, selectedLists } = this.props;
     const isListExcluded = isDownloadDisabledForThisList(selectedLists[0]);
-    const template_name = activeTemplate === 'investment' ? 'Investment' : deduceActiveName(activeTemplate);
+    const template_name =
+      activeTemplate === 'investment' ? 'Investment' : deduceActiveName(activeTemplate);
     const properFields = templateData
       .filter((dbTemplate) => dbTemplate.template_name === template_name)
       .map((template) => template.template_datum_field_name)

@@ -6,7 +6,11 @@ import * as watchUtils from 'esri/core/watchUtils';
 
 // Utils
 import geojsonUtil from '../../utils/arcgis-to-geojson';
-import { getLongLat, getVectorTilePointFeature, handleVectorTileHighlightLayerStyle } from './userListLocations.util';
+import {
+  getLongLat,
+  getVectorTilePointFeature,
+  handleVectorTileHighlightLayerStyle,
+} from './userListLocations.util';
 
 // Configs
 import { USER_LIST_LOCATIONS_VECTOR_TILE_LAYER_ID } from '../../../../map/js/config/map.config';
@@ -55,7 +59,12 @@ export function createGraphicFromGeojson(geojson, properties) {
  * @param {Object} listMbtileInfo - List MBTile file info
  * @param {string} page - Page name where List Locations Vector Tile Layer is rendered (e.g. 'map', 'locations', etc.)
  */
-export async function setUserListLocationsVectorTileLayer(esriMapView, listMbtileInfo, page, locationIDs = []) {
+export async function setUserListLocationsVectorTileLayer(
+  esriMapView,
+  listMbtileInfo,
+  page,
+  locationIDs = []
+) {
   const { listMbtileFileNameOnly } = listMbtileInfo;
 
   const userListLocationsVectorTileStyle = generateUserListLocationsVectorTileLayerStyle(
@@ -72,7 +81,10 @@ export async function setUserListLocationsVectorTileLayer(esriMapView, listMbtil
   await userLocationsVectorTileLayer.when(() => {
     esriMapView.popup.watch('selectedFeature', (graphic) => {
       if (graphic) {
-        handleVectorTileHighlightLayerStyle(userLocationsVectorTileLayer, graphic.attributes.location_id);
+        handleVectorTileHighlightLayerStyle(
+          userLocationsVectorTileLayer,
+          graphic.attributes.location_id
+        );
       }
     });
 

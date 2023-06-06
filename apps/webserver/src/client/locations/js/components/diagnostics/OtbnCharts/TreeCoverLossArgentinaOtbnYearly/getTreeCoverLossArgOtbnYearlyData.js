@@ -1,4 +1,5 @@
 import _range from 'lodash/range';
+import _isEmpty from 'lodash/isEmpty';
 import { otbnCategories, otbnChartsColors } from '../OtbnChartsColors.constants';
 
 const getTreeCoverLossArgOtbnYearlyData = (
@@ -48,10 +49,11 @@ const getTreeCoverLossArgOtbnYearlyData = (
       const YEARS_RANGE = _range(startYear, endYear + 1);
 
       const treeCoverLossArgOtbnYearlyForCategory = treeCoverLossArgOtbnYearly[category];
-      if (treeCoverLossArgOtbnYearlyForCategory) {
+      const treeCoverLossArgOtbnYearlyForCategoryIsEmpty = _isEmpty(treeCoverLossArgOtbnYearlyForCategory);
+      if (treeCoverLossArgOtbnYearlyForCategory && !treeCoverLossArgOtbnYearlyForCategoryIsEmpty) {
         dataFilteredByYearRange = filterDataByYearRange(treeCoverLossArgOtbnYearlyForCategory);
       } else {
-        dataFilteredByYearRange = YEARS_RANGE.map((year) => [year, 0]);
+        dataFilteredByYearRange = YEARS_RANGE.map((year) => [`${year}`, 0]);
       }
 
       const categoryLoss = dataFilteredByYearRange

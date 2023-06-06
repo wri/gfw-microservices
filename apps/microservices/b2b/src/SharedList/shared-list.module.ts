@@ -6,7 +6,8 @@ import { DatabaseModule } from '../Database/database.module';
 import { ListModule } from '../List/list.module';
 import { OrganizationModule } from '../Organization/organization.module';
 import { DataServicesModule } from '../Shared/application/data-service/data-service.module';
-import { MapperQueryTypeORM } from '../Shared/infraestructure/typeorm/query.mapper';
+import { MapperFindTypeORM } from '../Shared/infraestructure/typeorm/find.mapper';
+import { MapperQueryTypeORM } from '../Shared/infraestructure/typeorm/query-builder.mapper';
 import { UserModule } from '../User/user.module';
 import { SharedListUseCases } from './application/shared-list.use-case';
 import { SharedList } from './domain/shared-list.entity';
@@ -27,6 +28,7 @@ import { SharedListRepositoryMssql } from './infrastructure/shared-list.reposito
   providers: [
     SharedListUseCases,
     MapperQueryTypeORM,
+    MapperFindTypeORM,
     { provide: SharedListRepository, useClass: SharedListRepositoryMssql },
   ],
   exports: [SharedListUseCases],

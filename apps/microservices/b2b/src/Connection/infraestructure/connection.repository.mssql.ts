@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  Operator,
-} from '../../Shared/domain/criteria/filter.operator';
 import { QueryCriteria } from '../../Shared/domain/criteria/query';
 import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';
@@ -32,14 +29,31 @@ export class ConnectionRequestRepositoryMssql
         filter.field.value !== 'idTargetOrganization' &&
         filter.field.value !== 'idSourceOrganization',
     );
-    query.filters.addFilter({
-      field: 'idTargetOrganization',
-      operator: Operator.EQUAL,
-      value: organizationId,
-    });
+    const qb = this.repository
+      .createQueryBuilder()
+      .where(
+        'id_source_organization = :orgId OR id_target_organization = :orgId',
+        { orgId: organizationId },
+      );
 
-    const result = await this.searchByCriteria(query);
+    const result = await this.searchByCriteriaQuery(query, this.repository, qb);
     if (result.isSuccess) return Result.ok(result.getValue());
     return Result.fail(result.getError());
+  }
+
+  async getConnectionRequestID(orgId1, orgId2) {
+    const result = await this.repository
+      .createQueryBuilder()
+      .where(
+        'id_source_organization = :orgId1 AND id_target_organization = :orgId2',
+        { orgId1, orgId2 },
+      )
+      .orWhere(
+        'id_source_organization = :orgId2 AND id_target_organization = :orgId1',
+        { orgId1, orgId2 },
+      )
+      .getOne();
+
+    return Result.ok(result);
   }
 }

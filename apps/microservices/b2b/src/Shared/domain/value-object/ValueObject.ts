@@ -3,7 +3,7 @@ import { InvalidArgumentError } from './InvalidArgumentError';
 export type Primitives = String | string | number | Boolean | boolean | Date;
 
 export abstract class ValueObject<T extends Primitives> {
-  readonly value: T;
+  value: T;
 
   constructor(value: T) {
     this.value = value;

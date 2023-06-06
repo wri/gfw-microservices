@@ -6,5 +6,5 @@ import { List } from './list.entity';
 
 export abstract class ListRepository {
   abstract findListsByFilters(filters: any, db: string): ResultPromise<List[]>;
-  abstract findListById(id: number): ResultPromise<List | undefined>;
+  abstract findListById(id: number, db: string): ResultPromise<List | undefined>;
 }

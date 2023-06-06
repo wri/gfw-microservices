@@ -9,8 +9,6 @@ import ResultPromise from "../Shared/domain/result/result.promise";
 export class DatabaseProvider {
   private readonly connections: Record<string, DataSource> = {};
 
-  constructor() {}
-
   async getConnection(database: string): ResultPromise<DataSource> {
     if (!this.connections[database]) {
       try {

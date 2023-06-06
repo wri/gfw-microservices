@@ -4,7 +4,7 @@ import { FilterOperator } from './filter.operator';
 import { FilterValue } from './filter.value';
 
 export class Filter {
-  readonly field: FilterField;
+  field: FilterField;
   readonly operator: FilterOperator;
   readonly value: FilterValue;
 
@@ -25,4 +25,6 @@ export class Filter {
 
     return new Filter(new FilterField(field), FilterOperator.fromValue(operator), new FilterValue(value));
   }
+
+
 }

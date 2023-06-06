@@ -1,4 +1,4 @@
-import { FindOperator, Like, Not } from 'typeorm';
+import { FindOperator } from 'typeorm';
 import { OrderTypes } from '../../domain/criteria/order.type';
 import type { Orders } from '../../domain/criteria/orders';
 import { Operator } from '../../domain/criteria/filter.operator';
@@ -35,7 +35,7 @@ interface TransformerFunction<T, K> {
   (value: T): K;
 }
 
-export class MapperQueryTypeORM {
+export class MapperFindTypeORM {
   private ordersTransformers: Map<
     OrderTypes,
     TransformerFunction<Order, TypeORMSort>

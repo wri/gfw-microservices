@@ -25,8 +25,14 @@ export class ListUseCases {
     return lists;
   }
 
-  async findListById(id: number): ResultPromise<List | undefined> {
-    const list = await this.listRepository.findListById(id);
+  async findListById(
+    id: number,
+    orgId: number,
+  ): ResultPromise<List | undefined> {
+    const orgRes = await this.organizationUseCases.findById(orgId);
+    if (orgRes.isFailure) return Result.fail(orgRes.getError());
+    const org = orgRes.getValue();
+    const list = await this.listRepository.findListById(id, org.organizationDb);
     return list;
   }
 }

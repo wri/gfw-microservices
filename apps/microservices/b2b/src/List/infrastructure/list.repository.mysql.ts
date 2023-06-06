@@ -33,8 +33,13 @@ export class ListRepositoryMysql
     return Result.fail(new ResultError('List Repository not found', 500));
   }
 
-  async findListById(id: number): ResultPromise<List | undefined> {
-    const list = await this.repository.findOneBy({ id });
-    return Result.ok(list);
+  async findListById(id: number, db: string): ResultPromise<List | undefined> {
+    const repoPromise = await this.dbRepositorySelector(db);
+    const repo = repoPromise.isSuccess ? repoPromise.getValue() : null;
+    if (repo) {
+      const list = await repo.findOneBy({ id });
+      return Result.ok(list);
+    }
+    return Result.fail(new ResultError('List Repository not found', 500));
   }
 }

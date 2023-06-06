@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from '../Database/database.module';
 import { OrganizationModule } from '../Organization/organization.module';
 import { DataServicesModule } from '../Shared/application/data-service/data-service.module';
-import { MapperQueryTypeORM } from '../Shared/infraestructure/typeorm/query.mapper';
+import { MapperQueryTypeORM } from '../Shared/infraestructure/typeorm/query-builder.mapper';
 import { SharedModule } from '../Shared/shared.module';
 import { ListDataMapper } from './application/list.mapper';
 import { ListUseCases } from './application/list.use-case';

@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ConnectionRequest } from '../../Connection/domain/connection.entity';
+import { QueryCriteria } from '../../Shared/domain/criteria/query';
 import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';
+import { SearchResult } from '../../Shared/domain/types';
 import { MultiConnectRepository } from '../../Shared/infraestructure/typeorm/multi-connect.repository';
 import { SharedList } from '../domain/shared-list.entity';
 import { SharedListRepository } from '../domain/shared-list.repository';
@@ -29,6 +32,12 @@ export class SharedListRepositoryMssql
   async create(entity: SharedList): ResultPromise<SharedList> {
     const createdEntity = await this.repository.save(entity);
     return Result.ok(createdEntity);
+  }
+
+  async search(query: QueryCriteria): ResultPromise<SearchResult<SharedList>> {
+    const result = await this.searchByCriteriaFind(query);
+    if (result.isSuccess) return Result.ok(result.getValue());
+    return Result.fail(result.getError());
   }
 
   /*

@@ -33,19 +33,19 @@ export class UserUseCases {
     email: string,
     listId: number,
     db: string,
+    orgId,
   ): ResultPromise<boolean> {
-    const promises = await Promise.allSettled([
-      this.userRepo.getUserByEmail(email, db),
-      this.userRepo.getUserAdminOrg(email),
-      this.listUseCases.findListById(listId),
-    ]);
+    console.log();
 
-    const [userPromise, userAdminOrgsPromise, listPromise] = promises;
+    const userPromise = await this.userRepo.getUserByEmail(email, db);
+    const userAdminOrgsPromise = await this.userRepo.getUserAdminOrg(email);
+    const listPromise = await this.listUseCases.findListById(listId, orgId);
 
-    const validatePromise = (promise) => {
-      if (promise.status == 'fulfilled' && promise.value.isSuccess) {
-        return promise.value.getValue();
+    const validatePromise = <T, R>(promise: Result<T, R>) => {
+      if (promise.isSuccess) {
+        return promise.getValue();
       }
+      console.log(promise.getError());
       return null;
     };
 
@@ -53,9 +53,15 @@ export class UserUseCases {
     const userAdminOrgs = validatePromise(userAdminOrgsPromise);
     const list = validatePromise(listPromise);
 
-    const result = user && list && userAdminOrgs.some((org) => org.listId === listId);
+    const result =
+      user &&
+      list &&
+      userAdminOrgs.some((org) => Number(org.id) === Number(orgId));
 
-    return result ? Result.ok(result) : Result.fail(new ResultError('this user not able to access this list', 500));
+    return result
+      ? Result.ok(result)
+      : Result.fail(
+          new ResultError('this user not able to access this list', 500),
+        );
   }
-
 }

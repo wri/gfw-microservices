@@ -153,6 +153,13 @@ export class ConnectionUseCases {
     return this.connectionRepo.search(query, orgId);
   }
 
+  async getConnectionRequestID(
+    orgId1: number,
+    orgId2: number,
+  ): ResultPromise<ConnectionRequest> {
+    return this.connectionRepo.getConnectionRequestID(orgId1, orgId2);
+  }
+
   //TODO: move to user service
   async getOrganizationsByUser(
     email: string,

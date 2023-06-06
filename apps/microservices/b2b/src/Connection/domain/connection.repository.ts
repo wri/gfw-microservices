@@ -6,6 +6,11 @@ import { ConnectionRequest } from './connection.entity';
 export abstract class ConnectionRequestRepository {
   abstract search(
     query: QueryCriteria,
-    organizationId: string
+    organizationId: string,
   ): ResultPromise<SearchResult<ConnectionRequest> | undefined>;
+
+  abstract getConnectionRequestID(
+    orgId1,
+    orgId2,
+  ): ResultPromise<ConnectionRequest | undefined>;
 }

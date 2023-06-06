@@ -9,6 +9,8 @@ import Result from '../../Shared/domain/result';
 import ResultError from '../../Shared/domain/result/result.error';
 import { OrganizationUseCases } from '../../Organization/application/organization.use-case';
 import { ERRORS } from '../../Shared/domain/constants';
+import { QueryCriteria } from '../../Shared/domain/criteria/query';
+import { SearchResult } from '../../Shared/domain/types';
 
 @Injectable()
 export class SharedListUseCases {
@@ -27,30 +29,11 @@ export class SharedListUseCases {
     orgId: number,
     { userEmail, listId, orgTargetId },
   ): ResultPromise<SharedList> {
-    const promisesSettled = await Promise.allSettled([
-      this.connectionUseCases.getConnections({
-        sourceId: orgId,
-        //targetId: orgTargetId,
-        status: 'accepted',
-      }),
-      this.connectionUseCases.getConnections({
-        sourceId: orgTargetId,
-        //targetId: orgId,
-        status: 'accepted',
-      }),
-    ]);
+    const connectionResult =
+      await this.connectionUseCases.getConnectionRequestID(orgId, orgTargetId);
 
-    const connections: ConnectionRequest[] = promisesSettled.reduce(
-      (acc, promise) => {
-        const items = this.validatePromise(promise);
-        if (items) return [...acc, ...items];
-        return acc;
-      },
-      [],
-    );
-    const connectionId = connections[0] && connections[0].id;
-
-    if (!connectionId) Result.fail(ERRORS.HAS_NOT_CONNECTIONS_WITH_COMPANY);
+    if (connectionResult.isFailure || connectionResult.getValue() === null)
+      return Result.fail(ERRORS.HAS_NOT_CONNECTIONS_WITH_COMPANY);
 
     const orgRes = await this.organizationUseCases.findById(orgId);
 
@@ -61,13 +44,14 @@ export class SharedListUseCases {
       userEmail,
       listId,
       organization.organizationDb,
+      orgId,
     );
 
     if (checkRes.isFailure || !checkRes.getValue())
       return Result.fail(checkRes.getError());
 
     const sharedList = new SharedList();
-    sharedList.idConnectionRequest = connectionId;
+    sharedList.idConnectionRequest = connectionResult.getValue().id;
     sharedList.idList = listId;
     sharedList.sharedWithGeometry = true;
     sharedList.enabled = true;
@@ -76,14 +60,10 @@ export class SharedListUseCases {
     return await this.sharedListRepository.create(sharedList);
   }
 
-  private validatePromise = <T>(
-    promise: PromiseSettledResult<Result<T[], ResultError>>,
-  ) => {
-    if (promise.status == 'fulfilled' && promise.value.isSuccess) {
-      return promise.value.getValue();
-    }
-    return null;
-  };
+  async search(query: QueryCriteria): ResultPromise<SearchResult<SharedList>> {
+    return await this.sharedListRepository.search(query);
+  }
+
   /*
 
   async updateSharedList(

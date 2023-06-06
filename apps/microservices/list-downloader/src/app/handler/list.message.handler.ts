@@ -45,16 +45,15 @@ export class ListMessageHandler {
   reorganizeFilters(messages: AWS.SQS.Message) {
     const message = messages;
 
-    const getValues = (obj) => {
+    const getValues = (obj, spread = false) => {
       let value = obj?.StringValue;
-      value = value === 'undefined' ? '' : value;
+      if (spread) {
+        value = value === 'undefined' ? '{}' : value;
+        value = value ? JSON.parse(value ?? '{}') : {};
+      } else {
+        value = value === 'undefined' ? '' : value;
+      }
       return value;
-    };
-
-    const getValuesAndSpread = (obj) => {
-      let value = obj?.StringValue;
-      value = value === 'undefined' ? '{}' : value;
-      return value ? JSON.parse(value ?? '{}') : {};
     };
 
     const { analysisArea, file, geoInfo, list, organizationDatabase, userEmail } = JSON.parse(
@@ -63,17 +62,17 @@ export class ListMessageHandler {
 
     const filters = {
       organizationDatabase: getValues(organizationDatabase),
-      ...getValuesAndSpread(analysisArea),
-      ...getValuesAndSpread(file),
-      ...getValuesAndSpread(geoInfo),
-      ...getValuesAndSpread(list),
+      ...getValues(analysisArea, true),
+      ...getValues(file, true),
+      ...getValues(geoInfo, true),
+      ...getValues(list, true),
     };
 
     this.logger.log(`Received message ${JSON.stringify(filters)}...`);
 
-    // avoid logging sensitive data
     return {
       ...filters,
+      // avoid logging sensitive data
       userEmail: getValues(userEmail),
     };
   }

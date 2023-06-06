@@ -68,7 +68,8 @@ export class ListMessageHandler {
       ...getValues(list, true),
     };
 
-    this.logger.log(`Received message ${JSON.stringify(filters)}...`);
+    // temporally log just to understand type error bug
+    this.logger.debug(`Received message ${JSON.stringify(filters)}...`);
 
     return {
       ...filters,

@@ -6,7 +6,7 @@ import './NewB2bConnectionModal/NewB2bConnectionModal.scss';
 const isProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
 
 const B2bSharingPanel = () => {
-  return isProduction ? <B2BComingSoon /> : <B2bConnectionsList /> ;
+  return isProduction ? <B2BComingSoon /> : <B2bConnectionsList />;
 };
 
 export default B2bSharingPanel;

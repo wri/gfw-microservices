@@ -12,7 +12,11 @@ const filterHelpCenterRequest = async (req, res, next) => {
 
   try {
     const params = [{ field: 'environment', type: sql.NVarChar, value: PARAM_ENVIRONMENT }];
-    const allowedDomainsRecords = await sqlUtils.executeSystemStoredProcedure(req, 'uspGetAllowedDomains', params);
+    const allowedDomainsRecords = await sqlUtils.executeSystemStoredProcedure(
+      req,
+      'uspGetAllowedDomains',
+      params
+    );
     const allowedDomainNames = allowedDomainsRecords.map((record) => {
       return record.domain_name;
     });
@@ -22,7 +26,11 @@ const filterHelpCenterRequest = async (req, res, next) => {
       logger.info(`Request header: ${JSON.stringify(req.headers)}`);
       next();
     } else {
-      logger.error(`Host NOT ALLOWED: ${host}: ${JSON.stringify(req.headers)}. Checked with "uspGetAllowedDomains" SP`);
+      logger.error(
+        `Host NOT ALLOWED: ${host}: ${JSON.stringify(
+          req.headers
+        )}. Checked with "uspGetAllowedDomains" SP`
+      );
       res.json({
         success: false,
         message: 'Not allowed',

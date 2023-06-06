@@ -5,7 +5,9 @@ const GFWlistManager = require(path.resolve('./config/publicutils/gfwListManager
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const ShareManager = require('../../../config/publicutils/shareManager.utils');
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
-const { findSharedListsInsideOrganization } = require('../../../config/publicutils/shareManager.utils');
+const {
+  findSharedListsInsideOrganization,
+} = require('../../../config/publicutils/shareManager.utils');
 
 /**
  * @function dashboard

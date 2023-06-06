@@ -69,10 +69,22 @@ async function getVectorTileFeature({ zoom, longLat, tile, layerName, listMbtile
  * @param {string} layerName - Layer name (e.g. 'plants-layer')
  * @param {Object} listMbtileInfo - List MBTile file info
  */
-export async function getVectorTilePointFeature({ esriMapView, longLat, tile, layerName, listMbtileInfo }) {
+export async function getVectorTilePointFeature({
+  esriMapView,
+  longLat,
+  tile,
+  layerName,
+  listMbtileInfo,
+}) {
   const { zoom } = esriMapView;
 
-  const features = await getVectorTileFeature({ zoom, longLat, tile, layerName, listMbtileInfo }).catch((error) => {
+  const features = await getVectorTileFeature({
+    zoom,
+    longLat,
+    tile,
+    layerName,
+    listMbtileInfo,
+  }).catch((error) => {
     console.error(error);
   });
 
@@ -107,14 +119,21 @@ export function handleVectorTileHighlightLayerStyle(userLocationsVectorTileLayer
  * @param {string} page - Page name where List Locations Vector Tile Layer is rendered (e.g. 'map', 'locations', etc.)
  * @return {Promise<void>}
  */
-export async function handleUserListLocationsVectorTileLayer(esriMapView, listID, page = 'map', locationIDs = []) {
+export async function handleUserListLocationsVectorTileLayer(
+  esriMapView,
+  listID,
+  page = 'map',
+  locationIDs = []
+) {
   const listMbtileInfo = await getListMbtileInfo(listID);
   const { bounds, listMbtileFileNameOnly } = listMbtileInfo;
 
   goToUserListLocations(esriMapView, bounds);
 
   // Attach Vector Tile Layer if is not already attached otherwise just update vector tile layer style
-  const userListLocationsVectorTileLayer = esriMapView.map.findLayerById(USER_LIST_LOCATIONS_VECTOR_TILE_LAYER_ID);
+  const userListLocationsVectorTileLayer = esriMapView.map.findLayerById(
+    USER_LIST_LOCATIONS_VECTOR_TILE_LAYER_ID
+  );
 
   if (!userListLocationsVectorTileLayer) {
     await setUserListLocationsVectorTileLayer(esriMapView, listMbtileInfo, page, locationIDs);
@@ -135,9 +154,15 @@ export async function handleUserListLocationsVectorTileLayer(esriMapView, listID
  * @return {Object} - Selected Popup Feature ESRI Graphic
  */
 export async function getSelectedPopupFeatureEsriGraphic(listTableName, selectedPopupFeature) {
-  const { geojson } = await getListLocationGeometry(listTableName, selectedPopupFeature.attributes.location_id);
+  const { geojson } = await getListLocationGeometry(
+    listTableName,
+    selectedPopupFeature.attributes.location_id
+  );
 
-  const selectedPopupFeatureGraphic = createGraphicFromGeojson(geojson, selectedPopupFeature.attributes);
+  const selectedPopupFeatureGraphic = createGraphicFromGeojson(
+    geojson,
+    selectedPopupFeature.attributes
+  );
 
   return selectedPopupFeatureGraphic;
 }

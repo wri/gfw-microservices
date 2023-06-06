@@ -55,7 +55,9 @@ exports.getInfoBubbleDataController = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/getInfoBubbleData/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/getInfoBubbleData/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(404).json(responseError);
     });
 };
@@ -97,7 +99,9 @@ exports.getMetadataTaskData = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/getMetadataTaskData/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/getMetadataTaskData/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(404).json(responseError);
     });
 };
@@ -193,7 +197,9 @@ exports.getAnalysisVIIRS = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/getAnalysisVIIRS/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/getAnalysisVIIRS/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(errorStatus).json(responseError);
     });
 };
@@ -241,7 +247,9 @@ exports.getAnalysisPRODES = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/getAnalysisPRODES/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/getAnalysisPRODES/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(errorStatus).json(responseError);
     });
 };
@@ -254,7 +262,15 @@ exports.getAnalysisPRODES = (req, res) => {
  * @return {Promise} - request Promise
  */
 exports.analysisTreeCoverLoss = (req, res) => {
-  const { geostore_origin = 'rw', geostoreID, sum, startYear, endYear, filter, filter_value } = req.query;
+  const {
+    geostore_origin = 'rw',
+    geostoreID,
+    sum,
+    startYear,
+    endYear,
+    filter,
+    filter_value,
+  } = req.query;
   logger.info(`/dataApi/analysisTreeCoverLoss/ - Request => QUERY: ${JSON.stringify(req.query)}`);
 
   const config = {
@@ -292,7 +308,9 @@ exports.analysisTreeCoverLoss = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/analysisTreeCoverLoss/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/analysisTreeCoverLoss/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(errorStatus).json(responseError);
     });
 };
@@ -340,7 +358,9 @@ exports.analysisTreeCoverGain = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/analysisTreeCoverGain/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/analysisTreeCoverGain/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(errorStatus).json(responseError);
     });
 };
@@ -353,7 +373,15 @@ exports.analysisTreeCoverGain = (req, res) => {
  * @return {Promise} - request Promise
  */
 exports.analysisTreeBiomassLoss = (req, res) => {
-  const { geostore_origin = 'rw', geostoreID, sum, startYear, endYear, filter, filter_value } = req.query;
+  const {
+    geostore_origin = 'rw',
+    geostoreID,
+    sum,
+    startYear,
+    endYear,
+    filter,
+    filter_value,
+  } = req.query;
   logger.info(`/dataApi/analysisTreeBiomassLoss/ - Request => QUERY: ${JSON.stringify(req.query)}`);
 
   const config = {
@@ -391,7 +419,9 @@ exports.analysisTreeBiomassLoss = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/analysisTreeBiomassLoss/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/analysisTreeBiomassLoss/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(errorStatus).json(responseError);
     });
 };
@@ -405,7 +435,9 @@ exports.analysisTreeBiomassLoss = (req, res) => {
  */
 exports.analysisTreeBiomassTotal = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, sum } = req.query;
-  logger.info(`/dataApi/analysisTreeBiomassTotal/ - Request => QUERY: ${JSON.stringify(req.query)}`);
+  logger.info(
+    `/dataApi/analysisTreeBiomassTotal/ - Request => QUERY: ${JSON.stringify(req.query)}`
+  );
 
   const config = {
     method: 'get',
@@ -439,7 +471,9 @@ exports.analysisTreeBiomassTotal = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/analysisTreeBiomassTotal/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/analysisTreeBiomassTotal/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(errorStatus).json(responseError);
     });
 };
@@ -482,7 +516,9 @@ exports.analysisAdminRegion = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/analysisAdminRegion/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/analysisAdminRegion/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(errorStatus).json(responseError);
     });
 };
@@ -528,7 +564,9 @@ exports.getPalmOilMillLatLong = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/getPalmOilMillLatLong/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/getPalmOilMillLatLong/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(errorStatus).json(responseError);
     });
 };
@@ -576,7 +614,9 @@ exports.getBBoxAndGeostoreIDs = (req, res) => {
         ],
       };
 
-      logger.error(`/dataApi/getBBoxAndGeostoreIDs/ - Request Error => ${JSON.stringify(responseError)}`);
+      logger.error(
+        `/dataApi/getBBoxAndGeostoreIDs/ - Request Error => ${JSON.stringify(responseError)}`
+      );
       res.status(errorStatus).json(responseError);
     });
 };

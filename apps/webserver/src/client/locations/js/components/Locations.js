@@ -27,7 +27,8 @@ import '../../css/locations.scss';
 import { getIsDiagnosticStatusDraft } from '../utils/draft.utils';
 import ShareListModal from './ShareList/ShareListModal';
 
-const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } = proLayers;
+const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } =
+  proLayers;
 
 const pageOptions = {
   links: {
@@ -68,10 +69,11 @@ class Locations extends Component {
 
     if (locationIdSearch) {
       const listToSearch = isGfwList ? gfwLists : isSharedList ? userSharedLists : userLists;
-      listToRedirect = listToSearch?.find((listData) => listData.id === locationIdSearch)
+      listToRedirect = listToSearch?.find((listData) => listData.id === locationIdSearch);
     } else if (redirectedFromMap) {
       const userList = userLists.find((userList) => userList.list_name === locationName);
-      listToRedirect = userList || (dashList = gfwLists.find((gfwList) => gfwList.list_name === locationName));
+      listToRedirect =
+        userList || (dashList = gfwLists.find((gfwList) => gfwList.list_name === locationName));
     }
 
     if (listToRedirect) {
@@ -172,7 +174,13 @@ class Locations extends Component {
         // We know that these lists for sure do not require last character slice modification, but we are keeping the old logic also
         // to prevent undesirable regressions
         let updatedGlobalIds = [];
-        const gfwTestedList = [universalMillList, oilPalmConcessions, rspoConcessions, protectedAreas, adminAreas];
+        const gfwTestedList = [
+          universalMillList,
+          oilPalmConcessions,
+          rspoConcessions,
+          protectedAreas,
+          adminAreas,
+        ];
         if (gfwTestedList.includes(listName)) {
           updatedGlobalIds = globalIds;
         } else {
@@ -200,7 +208,10 @@ class Locations extends Component {
 
               // Fetch the bounds for the admin area
               httpRequest
-                .fetchForm('/locations/getGFWListLocationGeom', `list_id=${listId}&location_ids=${locationIds}`)
+                .fetchForm(
+                  '/locations/getGFWListLocationGeom',
+                  `list_id=${listId}&location_ids=${locationIds}`
+                )
                 .then((response) => {
                   // convert GeoJSON admin bounds to ESRI JSON format for map
                   const esriGeom = geojsonUtil.geojsonToArcGIS(JSON.parse(response));
@@ -215,7 +226,8 @@ class Locations extends Component {
                   });
 
                   // Add type overrides based on which listName (RSPO, UML, WDPA, etc) we are working with
-                  let addType = this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
+                  let addType =
+                    this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
                   if (gfwInfoFromMap && gfwInfoFromMap.gfwData.listName === universalMillList) {
                     addType = 'commodity';
                   }
@@ -265,15 +277,15 @@ class Locations extends Component {
 
   showShareList = (show) => {
     if (show) {
-      ga(
-        'send',
-        'event',
-        'Sharing',
-        'Back to list view link clicked',
-        'user clicked on the back to list view link from the sharing page'
-      );
+      gtag('event', 'Back to list view link clicked', {
+        event_category: 'Sharing',
+        event_label: 'user clicked on the back to list view link from the sharing page',
+      });
     } else {
-      ga('send', 'event', 'Lists Click', 'list table share', 'user clicked share list');
+      gtag('event', 'list table share', {
+        event_category: 'Lists Click',
+        event_label: 'user clicked share list',
+      });
     }
     this.setState({
       shareView: show,
@@ -355,14 +367,15 @@ class Locations extends Component {
     return (
       <Page links={pageOptions.links} active="locations">
         <ModalLoader open={isLoading} />
-        { showShareListModal && 
-            <ShareListModal 
-              usersList={usersList}
-              selectedList={selectedList}
-              isOpen={showShareListModal}
-              onClose={() => this.showShareList(false)}
-              currentUser={userInfo} /> 
-        }
+        {showShareListModal && (
+          <ShareListModal
+            usersList={usersList}
+            selectedList={selectedList}
+            isOpen={showShareListModal}
+            onClose={() => this.showShareList(false)}
+            currentUser={userInfo}
+          />
+        )}
         <Switch>
           <Route path="/add">
             <AddLocation

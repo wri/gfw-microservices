@@ -1,10 +1,19 @@
 import React from 'react';
 import * as PropTypes from 'prop-types';
 
-export const MultiGridCellCheckbox = ({ i, locationID, style, checkboxChecked, rowHaveError, _handlingCheckboxChange }) => (
+export const MultiGridCellCheckbox = ({
+  i,
+  locationID,
+  style,
+  checkboxChecked,
+  rowHaveError,
+  _handlingCheckboxChange,
+}) => (
   <div
     key={i + checkboxChecked}
-    className={`column-checkbox-location ${rowHaveError ? 'row-invalid--first' : 'row-valid--first'}`}
+    className={`column-checkbox-location ${
+      rowHaveError ? 'row-invalid--first' : 'row-valid--first'
+    }`}
     style={{ ...style }}
   >
     <input

@@ -7,14 +7,14 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
 const Cognito = require(path.resolve('./config/privateutils/cognito.utils'));
 
 /**
-* @function login
-* @summary login the user to the request
-* @param {User} user
-* @param {Express.Request} req - Express request object
-* @param {Express.Response} res - Express response object
-*/
-const login = function login (user, req, res) {
-  req.login(user, err => {
+ * @function login
+ * @summary login the user to the request
+ * @param {User} user
+ * @param {Express.Request} req - Express request object
+ * @param {Express.Response} res - Express response object
+ */
+const login = function login(user, req, res) {
+  req.login(user, (err) => {
     if (err) {
       res.status(400).send({ error: true, message: err.message });
     }
@@ -23,13 +23,13 @@ const login = function login (user, req, res) {
 };
 
 /**
-* @function authenticateAndLogin
-* @summary Authenticate the user and then log them in
-* @param {String} strategy - Strategy to use
-* @param {Express.Request} req - Express request object
-* @param {Express.Response} res - Express response object
-* @param {Function} next - Next middleware
-*/
+ * @function authenticateAndLogin
+ * @summary Authenticate the user and then log them in
+ * @param {String} strategy - Strategy to use
+ * @param {Express.Request} req - Express request object
+ * @param {Express.Response} res - Express response object
+ * @param {Function} next - Next middleware
+ */
 // const authenticateAndLogin = function authenticateAndLogin (strategy, req, res, next) {
 //   console.log('strategy', strategy);
 //   passport.authenticate(strategy, (error, user, info) => {
@@ -46,13 +46,13 @@ const login = function login (user, req, res) {
 // };
 
 /**
-* @function signout
-* @summary sign the user out
-* @name exports.signout
-* @static
-* @param {Express.Request} req - Express request object
-* @param {Express.Response} res - Express response object
-*/
+ * @function signout
+ * @summary sign the user out
+ * @name exports.signout
+ * @static
+ * @param {Express.Request} req - Express request object
+ * @param {Express.Response} res - Express response object
+ */
 exports.signout = (req, res) => {
   // req.logout();
   AuthManager.logout(req);
@@ -61,27 +61,27 @@ exports.signout = (req, res) => {
 };
 
 /**
-* @function signin
-* @summary sign the user to the in
-* @name exports.signin
-* @static
-* @param {Express.Request} req - Express request object
-* @param {Express.Response} res - Express response object
-* @param {Function} next - next middleware
-*/
+ * @function signin
+ * @summary sign the user to the in
+ * @name exports.signin
+ * @static
+ * @param {Express.Request} req - Express request object
+ * @param {Express.Response} res - Express response object
+ * @param {Function} next - next middleware
+ */
 exports.signin = (req, res, next) => {
   console.log('signin');
   authenticateAndLogin('local', req, res, next);
 };
 
 /**
-* @function signup
-* @summary create a new user and then log them in
-* @name exports.signup
-* @static
-* @param {Express.Request} req - Express request object
-* @param {Express.Response} res - Express response object
-*/
+ * @function signup
+ * @summary create a new user and then log them in
+ * @name exports.signup
+ * @static
+ * @param {Express.Request} req - Express request object
+ * @param {Express.Response} res - Express response object
+ */
 exports.signup = (req, res) => {
   console.log(res);
   // const user = new User(User.makeCopy(res.body));
@@ -96,13 +96,13 @@ exports.signup = (req, res) => {
 };
 
 /**
-* @function forgot
-* @summary send the user a link to reset their password
-* @name exports.forgot
-* @static
-* @param {Express.Request} req - Express request object
-* @param {Express.Response} res - Express response object
-*/
+ * @function forgot
+ * @summary send the user a link to reset their password
+ * @name exports.forgot
+ * @static
+ * @param {Express.Request} req - Express request object
+ * @param {Express.Response} res - Express response object
+ */
 exports.forgot = (req, res) => {
   res.end('Feature coming soon');
 };

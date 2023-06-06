@@ -8,7 +8,10 @@ export default class ModalLoader extends Component {
     const stylePosition = position === 'absolute' ? 'absolute' : 'fixed';
 
     return (
-      <div className={`modal-loader__dialog ${open ? '' : 'hidden'}`} style={{ position: stylePosition }}>
+      <div
+        className={`modal-loader__dialog ${open ? '' : 'hidden'}`}
+        style={{ position: stylePosition }}
+      >
         {/* <CircularProgress size={wheelSize} thickness={5} color='#97bd3d' /> */}
         {showSpinner && (
           <div className="modal-loader">

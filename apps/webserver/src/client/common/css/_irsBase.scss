@@ -19,7 +19,9 @@
   outline: none !important;
 }
 
-.irs-line-left, .irs-line-mid, .irs-line-right {
+.irs-line-left,
+.irs-line-mid,
+.irs-line-right {
   position: absolute;
   display: block;
   top: 0;
@@ -66,7 +68,10 @@
   display: block;
   cursor: default;
   z-index: 1;
-  &.single, &.from, &.to {}
+  &.single,
+  &.from,
+  &.to {
+  }
   &.type_last {
     z-index: 2;
   }
@@ -86,7 +91,9 @@
   cursor: default;
 }
 
-.irs-from, .irs-to, .irs-single {
+.irs-from,
+.irs-to,
+.irs-single {
   position: absolute;
   display: none;
   top: 0;

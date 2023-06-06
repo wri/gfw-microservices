@@ -7,7 +7,9 @@ const { createElement } = require('react');
 const { renderToString } = require('react-dom/server');
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const ShareManager = require('../../../config/publicutils/shareManager.utils');
-const { findSharedListsInsideOrganization } = require('../../../config/publicutils/shareManager.utils');
+const {
+  findSharedListsInsideOrganization,
+} = require('../../../config/publicutils/shareManager.utils');
 
 /**
  * @function map

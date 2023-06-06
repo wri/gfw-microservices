@@ -17,13 +17,10 @@ const NewFeatureNotifications = () => {
   const handleShow = (event) => {
     setAnchorEl(event.currentTarget);
     setShowList(true);
-    ga(
-      'send',
-      'event',
-      'In-App Notifications Click',
-      'In-App Notifications Icon Clicked',
-      'User click on icon to display In-App Notifications'
-    );
+    gtag('event', 'In-App Notifications Icon Clicked', {
+      event_category: 'In-App Notifications Click',
+      event_label: 'User click on icon to display In-App Notifications',
+    });
   };
 
   const handleClose = () => {
@@ -81,7 +78,9 @@ const NewFeatureNotifications = () => {
   }, [notifications]);
 
   useEffect(() => {
-    const unread = notifications.filter((i) => !notificationsReadStatus?.includes(`${i.title}${i.releaseDate}`));
+    const unread = notifications.filter(
+      (i) => !notificationsReadStatus?.includes(`${i.title}${i.releaseDate}`)
+    );
     setUnreadNotifications(unread.length);
   }, [notificationsReadStatus, notifications]);
 
@@ -97,11 +96,18 @@ const NewFeatureNotifications = () => {
     <div className="drop-down-nav">
       <IconButton onClick={handleShow}>
         {unreadNotifications > 0 && (
-          <span className="new-feature-notifications__unread-notifications">{unreadNotifications}</span>
+          <span className="new-feature-notifications__unread-notifications">
+            {unreadNotifications}
+          </span>
         )}
         <Icon>campaign</Icon>
       </IconButton>
-      <Popover className="new-feature-notifications" open={showList} anchorEl={anchorEl} onRequestClose={handleClose}>
+      <Popover
+        className="new-feature-notifications"
+        open={showList}
+        anchorEl={anchorEl}
+        onRequestClose={handleClose}
+      >
         <Menu onClose={handleClose}>
           <div className="new-feature-notifications__header">
             <div>What&apos;s new</div>

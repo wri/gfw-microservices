@@ -5,9 +5,13 @@ import { ConnectionController } from './Connection/infrastructure/connection.con
 import { InvitationController } from './Invitation/infrastructure/invitation.controller';
 import { InvitationUseCasesModule } from './Invitation/invitation.module';
 import { ConnectionUseCasesModule } from './Connection/connection.module';
+import { ConfigModule } from '@nestjs/config';
 
+const envModule = ConfigModule.forRoot({
+  isGlobal: true,
+});
 @Module({
-  imports: [InvitationUseCasesModule, ConnectionUseCasesModule],
+  imports: [envModule, InvitationUseCasesModule, ConnectionUseCasesModule],
   controllers: [AppController, ConnectionController, InvitationController],
   providers: [AppService],
 })

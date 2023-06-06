@@ -126,7 +126,10 @@ export default class PalmRiskList extends Component {
       }
 
       return (
-        <td key={`commodity-${attr.attribute}`} className={`risk ${this.assignRiskPriorityClass(millValue)}`}>
+        <td
+          key={`commodity-${attr.attribute}`}
+          className={`risk ${this.assignRiskPriorityClass(millValue)}`}
+        >
           {millValue}
           {attr.attribute === 'commodity_threat_deforestation' ||
           attr.attribute === 'commodity_threat_peat' ||
@@ -214,12 +217,14 @@ export default class PalmRiskList extends Component {
 
     return (
       <div
-        className={`locations-diagnostics-section-risk ${listView === 'commodity_risk' ? '' : 'hidden'} ${
-          selectedLocations.length > 1 ? '' : 'hidden'
-        }`}
+        className={`locations-diagnostics-section-risk ${
+          listView === 'commodity_risk' ? '' : 'hidden'
+        } ${selectedLocations.length > 1 ? '' : 'hidden'}`}
       >
         <div
-          className={`locations-diagnostics-sub-section-risk palm-risk ${selectedLocations.length > 1 ? '' : 'hidden'}`}
+          className={`locations-diagnostics-sub-section-risk palm-risk ${
+            selectedLocations.length > 1 ? '' : 'hidden'
+          }`}
         >
           <div className="diagnostics-section-title-container subsection-subtitle__container">
             <h4 className="diagnostics-section-title-risk">Palm Risk Analysis</h4>
@@ -258,7 +263,10 @@ export default class PalmRiskList extends Component {
                 checked={viewBy === 'riskLevel'}
                 onChange={this.changeViewBy}
               />
-              <label htmlFor="risk-level-radio" className="locations-select-type-label radio-button">
+              <label
+                htmlFor="risk-level-radio"
+                className="locations-select-type-label radio-button"
+              >
                 Risk Level
               </label>
             </div>

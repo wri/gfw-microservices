@@ -88,7 +88,10 @@ const locationClassCheck = (str) => {
   const newStr = (str ?? '').toLowerCase();
   return (
     mandatoryCheck(newStr) &&
-    (newStr === 'property' || newStr === 'supply shed' || newStr === 'administrative area' || newStr === '')
+    (newStr === 'property' ||
+      newStr === 'supply shed' ||
+      newStr === 'administrative area' ||
+      newStr === '')
   );
 };
 
@@ -203,7 +206,10 @@ const existsCheck = (str) => {
 const riskLevelCheck = (str) => {
   if (
     str &&
-    (str === '' || str.toLowerCase() === 'high' || str.toLowerCase() === 'medium' || str.toLowerCase() === 'low')
+    (str === '' ||
+      str.toLowerCase() === 'high' ||
+      str.toLowerCase() === 'medium' ||
+      str.toLowerCase() === 'low')
   ) {
     return true;
   }
@@ -480,7 +486,10 @@ const certificationCheck = (value, template) => {
 };
 
 const oilTypeCheck = (str) => {
-  if (str && (str === '' || str.toLowerCase() === 'palm oil' || str.toLowerCase() === 'palm kernel oil')) {
+  if (
+    str &&
+    (str === '' || str.toLowerCase() === 'palm oil' || str.toLowerCase() === 'palm kernel oil')
+  ) {
     return true;
   }
   if (str === '' || str === ' ') {
@@ -813,7 +822,8 @@ const fieldValidations = {
         'Please ensure that Certification is populated with one or more of the following: RSPO, ISPO, MSPO, SAN, ISCC, Other Standard or None. If more than one Certification is selected, please comma separate',
       soyFarm:
         'Please ensure that Certification is populated with one or more of the following: RTRS, ISCC, AAPRESID, Other Standard or None. If more than one Certification is selected, please comma separate',
-      soyGeneric: 'Please ensure that Certification is populated with one of the following: Yes or No',
+      soyGeneric:
+        'Please ensure that Certification is populated with one of the following: Yes or No',
       soySilo:
         'Please ensure that Certification is populated with one or more of the following: RTRS, ISCC, AAPRESID, Other Standard or None. If more than one Certification is selected, please comma separate',
     },

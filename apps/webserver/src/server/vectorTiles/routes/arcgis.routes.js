@@ -25,7 +25,10 @@ module.exports = (app, limiter) => {
   // Implement middlewares check
   // app.use('/arcgis', routeMiddlewares);
 
-  app.get('/arcgis/rest/services/services/VectorTileServer/', arcgisController.getEsriVectorTileMetadata);
+  app.get(
+    '/arcgis/rest/services/services/VectorTileServer/',
+    arcgisController.getEsriVectorTileMetadata
+  );
 
   app.get(
     '/arcgis/rest/services/services/VectorTileServer/resources/styles/root.json',
@@ -36,5 +39,8 @@ module.exports = (app, limiter) => {
    * Handle Vector Tile PBF Request
    * Expects urls in the format: /arcgis/rest/services/{listID}/VectorTileServer/{Z}/{X}/{Y}.pbf
    */
-  app.get('/arcgis/rest/services/:mbtile/VectorTileServer/:z/:x/:y.pbf', arcgisController.handleVectorTilePbfRequest);
+  app.get(
+    '/arcgis/rest/services/:mbtile/VectorTileServer/:z/:x/:y.pbf',
+    arcgisController.handleVectorTilePbfRequest
+  );
 };

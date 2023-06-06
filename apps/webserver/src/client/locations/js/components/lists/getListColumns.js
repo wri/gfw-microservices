@@ -22,7 +22,8 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
           ),
           accessor: key,
           show: false,
-          Cell: (row) => (checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--'),
+          Cell: (row) =>
+            checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--',
           sortMethod: (a, b) => {
             const first = priorities.indexOf(a.toLowerCase());
             const second = priorities.indexOf(b.toLowerCase());
@@ -40,7 +41,8 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
             ),
             accessor: key,
             show: false,
-            Cell: (row) => (checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--'),
+            Cell: (row) =>
+              checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--',
             sortMethod: sortByNone,
           });
         }
@@ -56,7 +58,11 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
             accessor: key,
             show: false,
             Cell: (row) =>
-              checkValid(row.value) ? <span title={row.value.toFixed(3)}>{row.value.toFixed(3)}</span> : '--',
+              checkValid(row.value) ? (
+                <span title={row.value.toFixed(3)}>{row.value.toFixed(3)}</span>
+              ) : (
+                '--'
+              ),
             sortMethod: sortByNone,
           });
         }
@@ -71,7 +77,8 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
             ),
             accessor: key,
             show: false,
-            Cell: (row) => (checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--'),
+            Cell: (row) =>
+              checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--',
             sortMethod: sortByNone,
           });
         }
@@ -86,7 +93,8 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
             ),
             accessor: key,
             show: false,
-            Cell: (row) => (checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--'),
+            Cell: (row) =>
+              checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--',
             sortMethod: sortByDate,
           });
         }
@@ -106,7 +114,11 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
           accessor: key,
           show: false,
           Cell: (row) =>
-            checkValid(row.value) ? <span title={formatDigit(row.value)}>{formatDigit(row.value)}</span> : '--',
+            checkValid(row.value) ? (
+              <span title={formatDigit(row.value)}>{formatDigit(row.value)}</span>
+            ) : (
+              '--'
+            ),
         });
       } else if (keyIndex === -1 && customAttributes && customAttributes.indexOf(key) > -1) {
         columnNames.push({
@@ -115,7 +127,11 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
           show: false,
           className: 'td-num',
           Cell: (row) =>
-            checkValid(row.value) ? <span title={formatDigit(row.value)}>{formatDigit(row.value)}</span> : '--',
+            checkValid(row.value) ? (
+              <span title={formatDigit(row.value)}>{formatDigit(row.value)}</span>
+            ) : (
+              '--'
+            ),
         });
       }
     });

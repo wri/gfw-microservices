@@ -9,5 +9,10 @@ export const profileTabs = {
     title: 'My Organization',
     userAccessLevel: [ADMIN, EDITOR, VIEWER],
   },
-  userManagement: { id: 'USER_MANAGEMENT', icon: 'people', title: 'User Management', userAccessLevel: [ADMIN] },
+  userManagement: {
+    id: 'USER_MANAGEMENT',
+    icon: 'people',
+    title: 'User Management',
+    userAccessLevel: [ADMIN],
+  },
 };

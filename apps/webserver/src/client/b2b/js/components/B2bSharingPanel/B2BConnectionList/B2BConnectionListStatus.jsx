@@ -14,7 +14,6 @@ const B2BConnectionListStatus = (props) => {
     pending: 'Cancel',
   };
 
-
   const { status, email } = props;
   const handleSubmit = () => {
     if (status === 'pending') {

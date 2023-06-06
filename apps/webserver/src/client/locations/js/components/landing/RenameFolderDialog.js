@@ -42,7 +42,9 @@ export default class RenameFolderDialog extends Component {
               label={strings.confirm}
               disabled={confirmDisabled}
               onClick={() => {
-                ga('send', 'event', 'Landing Page Click', 'User Renamed Folder on Landing Page');
+                gtag('event', 'User Renamed Folder on Landing Page', {
+                  event_category: 'Landing Page Click',
+                });
                 this._renameFolder(folder.id, folderName);
               }}
               variant="primary"
@@ -58,7 +60,10 @@ export default class RenameFolderDialog extends Component {
         <div className="dialog__prompt">{strings.renameFolderPrompt}</div>
         <div className="RenameFolder__dialog-options">
           <div className="RenameFolder__dialog-options__option">
-            <input value={folderName} onChange={(evt) => this.setState({ folderName: evt.target.value })} />
+            <input
+              value={folderName}
+              onChange={(evt) => this.setState({ folderName: evt.target.value })}
+            />
           </div>
         </div>
         <div className="RenameFolder__dialog-error">{error}</div>

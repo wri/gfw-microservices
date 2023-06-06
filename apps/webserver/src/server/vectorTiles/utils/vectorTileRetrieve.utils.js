@@ -15,7 +15,10 @@ const lon2tile = (lon, zoom) => {
 
 const lat2tile = (lat, zoom) => {
   return Math.floor(
-    ((1 - Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) / Math.PI) / 2) * 2 ** zoom
+    ((1 -
+      Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) / Math.PI) /
+      2) *
+      2 ** zoom
   );
 };
 

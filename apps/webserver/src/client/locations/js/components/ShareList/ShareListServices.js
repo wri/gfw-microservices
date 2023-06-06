@@ -8,7 +8,7 @@ const REQUEST_HEADERS = { 'Content-type': 'application/json' };
  * Updating component state based on selected list and data fetched from Database Service
  * @param {Object} self - State of component `this`
  */
-const updateSharedListUsersService = self => {
+const updateSharedListUsersService = (self) => {
   const { selectedList, NotAdminsOwner } = self.state;
 
   fetch({
@@ -19,14 +19,14 @@ const updateSharedListUsersService = self => {
       list_id: selectedList.id,
     },
   })
-    .then(remoteSharedListUsers => {
+    .then((remoteSharedListUsers) => {
       const SharedListUsers = [];
-      const SharedListUsersIDs = remoteSharedListUsers.map(user => user.user_id);
+      const SharedListUsersIDs = remoteSharedListUsers.map((user) => user.user_id);
 
-      const updatedNotAdminsOwner = NotAdminsOwner.map(user => {
+      const updatedNotAdminsOwner = NotAdminsOwner.map((user) => {
         if (SharedListUsersIDs.includes(user.user_id)) {
           const remoteSharedListUsersDateTime = remoteSharedListUsers.filter(
-            remoteUser => remoteUser.user_id === user.user_id
+            (remoteUser) => remoteUser.user_id === user.user_id
           )[0]['datetime'];
           user['timestamp'] = getFormattedDateTime(remoteSharedListUsersDateTime);
           user['disabled'] = true;
@@ -44,7 +44,7 @@ const updateSharedListUsersService = self => {
         SharedListUsers: SharedListUsers,
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log('Error when executing update Shared List Users: ', err);
     });
 };
@@ -68,7 +68,7 @@ const addUserToSharedListService = (selectedUser, updatedNotAdminsOwner, self) =
       list: selectedList,
     },
   })
-    .then(response => {
+    .then((response) => {
       console.log(response);
 
       self.setState({
@@ -77,7 +77,7 @@ const addUserToSharedListService = (selectedUser, updatedNotAdminsOwner, self) =
         addUserToSharedListDialog__isOpen: false,
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log('Error when executing add User to Shared List: ', err);
     });
 };
@@ -107,7 +107,7 @@ const removeUserFromSharedListService = (
       list: selectedList,
     },
   })
-    .then(response => {
+    .then((response) => {
       console.log(response);
 
       self.setState({
@@ -117,7 +117,7 @@ const removeUserFromSharedListService = (
         removeUserFromSharedListDialog__isOpen: false,
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log('Error when executing remove User From Shared List: ', err);
     });
 };
@@ -128,8 +128,8 @@ const removeUserFromSharedListService = (
  */
 const removeAllUsersFromSharedListService = (self) => {
   const { selectedList, NotAdminsOwner, SharedListUsers, currentUser } = self.state;
-  const allSharedListUsersID = SharedListUsers.map(user => user.user_id).join(', ');
-  const allSharedListUsersName = SharedListUsers.map(user => user.name).join(', ');
+  const allSharedListUsersID = SharedListUsers.map((user) => user.user_id).join(', ');
+  const allSharedListUsersName = SharedListUsers.map((user) => user.name).join(', ');
 
   fetch({
     url: '/locations/shareList/removeAllUsersFromSharedList',
@@ -142,10 +142,10 @@ const removeAllUsersFromSharedListService = (self) => {
       list: selectedList,
     },
   })
-    .then(response => {
+    .then((response) => {
       console.log(response);
 
-      const updatedNotAdminsOwner = NotAdminsOwner.map(user => {
+      const updatedNotAdminsOwner = NotAdminsOwner.map((user) => {
         if (allSharedListUsersID.includes(user.user_id)) {
           user['disabled'] = false;
           return user;
@@ -160,7 +160,7 @@ const removeAllUsersFromSharedListService = (self) => {
         stopSharingWithAllDialog__isOpen: false,
       });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log('Error when executing remove User From Shared List: ', err);
     });
 };

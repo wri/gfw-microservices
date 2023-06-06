@@ -60,7 +60,6 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
   );
   columnNames.list = [...columnNamesCloneFiltered, site_id];
   if (listView === 'forest_change') {
-
     const { columns: forestChangeAnalysisColumns, ...forestChangeAnalysisRestOfProperties } =
       columns.forest_change_analysis[1];
 
@@ -103,7 +102,13 @@ const getAllColumnNames = (listView, locationData, selectedLists, getCheckboxCol
     ];
   } else if (listView === 'commodity_risk') {
     const analysis = columns.commodity_analysis.slice();
-    columnNames.combinedColumns = [checkbox, location_name, ...analysis, ...gfwColumns, ...columnNames.list];
+    columnNames.combinedColumns = [
+      checkbox,
+      location_name,
+      ...analysis,
+      ...gfwColumns,
+      ...columnNames.list,
+    ];
   }
 
   return columnNames;

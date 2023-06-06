@@ -94,7 +94,8 @@ export default class Reset extends Component {
               this.setState({
                 dialogOpen: true,
                 dialogTitle: 'Password reset error',
-                dialogMessage: 'Please confirm that you have entered the correct email address and verification code.',
+                dialogMessage:
+                  'Please confirm that you have entered the correct email address and verification code.',
               });
             }
           })
@@ -143,7 +144,9 @@ export default class Reset extends Component {
     if (dialogTitle === 'Success') {
       action = this.shouldRedirect;
     }
-    const defaultAction = [<Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />];
+    const defaultAction = [
+      <Button variant="primary" label="OK" keyboardFocused={true} onClick={action} />,
+    ];
     const matching = this.state.newPass === this.state.confirm;
     return (
       <Page links={pageOptions.links} active="reset">
@@ -167,7 +170,11 @@ export default class Reset extends Component {
               <ul>
                 <li>At least 1 uppercase letter</li>
                 <li>At least 1 lowercase letter</li>
-                <li>{'At least 1 special character: ^ $ * . [ ] { } ( ) ? - " ! @ # % & /  , > < \' : ; | _ ~ `'}</li>
+                <li>
+                  {
+                    'At least 1 special character: ^ $ * . [ ] { } ( ) ? - " ! @ # % & /  , > < \' : ; | _ ~ `'
+                  }
+                </li>
                 <li>At least 1 numeric character</li>
               </ul>
             </li>
@@ -225,7 +232,10 @@ export default class Reset extends Component {
           </div>
 
           <div className="buttons-container">
-            <Button onClick={this.toggleShow} label={this.state.type === 'input' ? 'Hide' : 'Show'} />
+            <Button
+              onClick={this.toggleShow}
+              label={this.state.type === 'input' ? 'Hide' : 'Show'}
+            />
             <Button variant="primary" onClick={this.submit} label="Submit" />
             <LinkButton onClick={this.back} label="Back" />
           </div>

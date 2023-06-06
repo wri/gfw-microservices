@@ -94,7 +94,9 @@ const make = () => {
       );
       logger.info('===================');
     } catch (err) {
-      logger.warn(`No compiled assets JS and CSS files found matching environment ${process.envExp.NODE_ENV}`);
+      logger.warn(
+        `No compiled assets JS and CSS files found matching environment ${process.envExp.NODE_ENV}`
+      );
     }
   }
 

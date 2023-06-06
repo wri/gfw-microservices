@@ -76,15 +76,7 @@ describe('South East Asia Overlap Parser', () => {
       csvData,
     });
     expect(csvData.length).toEqual(2);
-    expect(csvData[0]).toEqual([
-      'Tree Cover Loss',
-      'Within Forest Moratorium',
-      '15.38',
-    ]);
-    expect(csvData[1]).toEqual([
-      'Tree Cover Loss',
-      'Outside Forest Moratorium',
-      '84.62',
-    ]);
+    expect(csvData[0]).toEqual(['Tree Cover Loss', 'Within Forest Moratorium', '15.38']);
+    expect(csvData[1]).toEqual(['Tree Cover Loss', 'Outside Forest Moratorium', '84.62']);
   });
 });

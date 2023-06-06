@@ -47,7 +47,13 @@ function initialize() {
       const messageBody = JSON.parse(message.Body);
       const { organization_database, organization_id, list_id } = messageBody;
       const messageTimestamp = parseInt(message.Attributes.ApproximateFirstReceiveTimestamp, 10);
-      logger.info('VECTOR TILE MESSAGE INFO', organization_database, organization_id, list_id, messageTimestamp);
+      logger.info(
+        'VECTOR TILE MESSAGE INFO',
+        organization_database,
+        organization_id,
+        list_id,
+        messageTimestamp
+      );
       const req = {
         messageTimestamp,
         session: {

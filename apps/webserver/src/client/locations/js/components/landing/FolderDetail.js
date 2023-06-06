@@ -75,7 +75,9 @@ export default class FolderDetail extends Component {
         onFolderChange={(msg) => {
           this.setState({ bannerContent: msg });
           getFolders().then((folders) => {
-            store.dispatch(selectFolder(folders.find((f) => f.id === this.props.selectedFolder.id)));
+            store.dispatch(
+              selectFolder(folders.find((f) => f.id === this.props.selectedFolder.id))
+            );
           });
         }}
       />
@@ -85,14 +87,20 @@ export default class FolderDetail extends Component {
   render() {
     const { selectedFolder, lists } = this.props;
 
-    const folderLists = lists.filter((list) => (selectedFolder.lists ? selectedFolder.lists.includes(list.id) : false));
+    const folderLists = lists.filter((list) =>
+      selectedFolder.lists ? selectedFolder.lists.includes(list.id) : false
+    );
 
-    const locationCount = folderLists.map((list) => list.list_locations_count).reduce((l1, l2) => l1 + l2, 0);
+    const locationCount = folderLists
+      .map((list) => list.list_locations_count)
+      .reduce((l1, l2) => l1 + l2, 0);
 
     const strings = folderDetailPage;
 
     const filteredFolderLists = this.state.userListFilterText
-      ? folderLists.filter((l) => l.list_name.toLowerCase().includes(this.state.userListFilterText.toLowerCase()))
+      ? folderLists.filter((l) =>
+          l.list_name.toLowerCase().includes(this.state.userListFilterText.toLowerCase())
+        )
       : folderLists;
 
     return (
@@ -123,7 +131,10 @@ export default class FolderDetail extends Component {
                 <div className="folder-detail__counts">
                   {numberWithCommas(folderLists ? folderLists.length : 0) +
                     ' ' +
-                    (folderLists && folderLists.length === 1 ? strings.folderItem : strings.folderItems).toLowerCase()}
+                    (folderLists && folderLists.length === 1
+                      ? strings.folderItem
+                      : strings.folderItems
+                    ).toLowerCase()}
                   <span className="folder-detail__counts-divider">•</span>
                   {numberWithCommas(locationCount ? locationCount : 0) +
                     ' ' +
@@ -142,12 +153,16 @@ export default class FolderDetail extends Component {
             </div>
             {/* LISTS */}
             <div className="folder-detail__location_lists">
-              <ul className="my-lists-list">{filteredFolderLists.map(this.createLocationsFromList)}</ul>
+              <ul className="my-lists-list">
+                {filteredFolderLists.map(this.createLocationsFromList)}
+              </ul>
             </div>
             {/* SEARCH: NO RESULTS */}
             {filteredFolderLists.length === 0 && folderLists.length !== 0 && (
               <div className="no-search-results">
-                <p className="no-search-results__message">{locationsPage.landing.noSearchResults}</p>
+                <p className="no-search-results__message">
+                  {locationsPage.landing.noSearchResults}
+                </p>
                 <LinkButton
                   className="no-search-results__clear"
                   label={locationsPage.landing.clearSearch}

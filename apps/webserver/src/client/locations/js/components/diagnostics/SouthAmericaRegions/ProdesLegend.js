@@ -8,7 +8,9 @@ import { PRODES_HIGHCHARTS_BAR_CONFIGS } from './SouthAmericaRegions.config';
 const ProdesLegend = ({ data }) => {
   const prodesLegendLabelValues = {};
 
-  PRODES_HIGHCHARTS_BAR_CONFIGS.forEach((configItem) => (prodesLegendLabelValues[configItem.label] = []));
+  PRODES_HIGHCHARTS_BAR_CONFIGS.forEach(
+    (configItem) => (prodesLegendLabelValues[configItem.label] = [])
+  );
   PRODES_HIGHCHARTS_BAR_CONFIGS.forEach((configItem) => {
     Object.keys(data).forEach((year) => {
       if (configItem.years.includes(parseInt(year))) {
@@ -25,7 +27,9 @@ const ProdesLegend = ({ data }) => {
             <div className="legend-square" style={{ backgroundColor: config.color }} />
             <span>{config.label}</span>
           </td>
-          <td className="right">{prettifyNum(formatNum(_sum(prodesLegendLabelValues[config.label])))}</td>
+          <td className="right">
+            {prettifyNum(formatNum(_sum(prodesLegendLabelValues[config.label])))}
+          </td>
         </tr>
       ))}
     </React.Fragment>

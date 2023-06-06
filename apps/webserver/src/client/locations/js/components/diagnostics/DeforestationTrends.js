@@ -3,7 +3,10 @@ import React, { Component } from 'react';
 import { formatNum, prettifyNum } from '../../utils/diagnostics.utils';
 import Highcharts from 'highcharts';
 import IconButtonWrapper from '../IconButtonWrapper';
-import { locationsPage, latest_CommodityRisk__TrendsInDeforestation } from '../../../../common/js/config';
+import {
+  locationsPage,
+  latest_CommodityRisk__TrendsInDeforestation,
+} from '../../../../common/js/config';
 
 export default class DeforestationTrends extends Component {
   componentDidMount() {
@@ -17,7 +20,11 @@ export default class DeforestationTrends extends Component {
     series.push({
       name: 'Tree Cover Loss',
       data: getYearlyHighchartSeries(
-        getYearlyData('commodity_threat_deforestation', 2002, latest_CommodityRisk__TrendsInDeforestation)
+        getYearlyData(
+          'commodity_threat_deforestation',
+          2002,
+          latest_CommodityRisk__TrendsInDeforestation
+        )
       ),
       color: '#ef669a',
       groupPadding: 0,
@@ -59,7 +66,9 @@ export default class DeforestationTrends extends Component {
         pointFormatter: function () {
           return `<tr><td style="color:${this.color};padding:0">${
             this.series.name
-          }: </td><td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(formatNum(this.y))} ha</b></td></tr>`;
+          }: </td><td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(
+            formatNum(this.y)
+          )} ha</b></td></tr>`;
         },
         footerFormat: '</table><span style="font-size:10px">in {point.key}</span>',
         shared: true,
@@ -87,7 +96,8 @@ export default class DeforestationTrends extends Component {
     const [location] = filteredLocations;
 
     const supplierName = location && location['Supplier Name'] ? location['Supplier Name'] : '';
-    const supplierNameTwo = location && location['Second Supplier Name'] ? location['Second Supplier Name'] : '';
+    const supplierNameTwo =
+      location && location['Second Supplier Name'] ? location['Second Supplier Name'] : '';
     const parentCompany = location && location['Parent Company'] ? location['Parent Company'] : '';
     const certified = location && location.Certification === 'RSPO' ? 'Yes' : 'No';
 

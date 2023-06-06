@@ -26,12 +26,7 @@ describe('South America Biomes Service', () => {
     );
     expect(returnData).toEqual([
       ['List Name', 'Data Layer', 'Sub-Layer', 'Overlap with Sub-Layer (%)'],
-      [
-        'south_america_brazil_biomes_aggregate',
-        'Brazil Biomes',
-        'cerrado',
-        '100.00',
-      ],
+      ['south_america_brazil_biomes_aggregate', 'Brazil Biomes', 'cerrado', '100.00'],
     ]);
   });
 
@@ -43,18 +38,8 @@ describe('South America Biomes Service', () => {
     );
     expect(returnData).toEqual([
       ['List Name', 'Data Layer', 'Sub-Layer', 'Overlap with Sub-Layer (%)'],
-      [
-        'south_america_brazil_biomes_aggregate',
-        'Brazil Biomes',
-        'cerrado',
-        '41.67',
-      ],
-      [
-        'south_america_brazil_biomes_aggregate',
-        'Brazil Biomes',
-        'amazonia',
-        '58.33',
-      ],
+      ['south_america_brazil_biomes_aggregate', 'Brazil Biomes', 'cerrado', '41.67'],
+      ['south_america_brazil_biomes_aggregate', 'Brazil Biomes', 'amazonia', '58.33'],
     ]);
   });
 

@@ -10,7 +10,8 @@ import FailedTooltip from '../../../../../common/js/components/CustomTooltip/Fai
 export class MultiGridCellRegular extends PureComponent {
   constructor(props, context) {
     super(props, context);
-    const { addType, activeTemplate, commodityType, customAttributeHeaders, templateData } = this.props;
+    const { addType, activeTemplate, commodityType, customAttributeHeaders, templateData } =
+      this.props;
 
     let headerKey;
     locationsPage.tableKeyArray.forEach((object) => {
@@ -99,7 +100,9 @@ export class MultiGridCellRegular extends PureComponent {
           <FailedTooltip
             placement={'top'}
             label={''}
-            tooltipMessage={'This location has failed analysis. To receive results, resubmit this list for analysis.'}
+            tooltipMessage={
+              'This location has failed analysis. To receive results, resubmit this list for analysis.'
+            }
           />
         </span>
       );
@@ -108,7 +111,11 @@ export class MultiGridCellRegular extends PureComponent {
     }
 
     let returnedEl = (
-      <div id={j} key={j} className={`locations-table-td ${feature.valid ? 'valid-td' : 'invalid-td'}`} />
+      <div
+        id={j}
+        key={j}
+        className={`locations-table-td ${feature.valid ? 'valid-td' : 'invalid-td'}`}
+      />
     );
     if (key === 'Attribute1' || key === 'Attribute2' || key === 'Attribute3') {
       let customAttributeName;
@@ -121,7 +128,11 @@ export class MultiGridCellRegular extends PureComponent {
       }
 
       returnedEl = (
-        <div title={''} key={j} className={`locations-grid-cell ${valid ? 'valid-td' : 'invalid-td'}`}>
+        <div
+          title={''}
+          key={j}
+          className={`locations-grid-cell ${valid ? 'valid-td' : 'invalid-td'}`}
+        >
           <input
             onInput={(evt) => {
               _handleTrackCellUpdates(feature['location_id']);
@@ -162,7 +173,11 @@ export class MultiGridCellRegular extends PureComponent {
               key === 'Sub State')
               ? 'invalid-td'
               : ''
-          } ${(valid && !feature.invalidFields) || !feature.invalidFields.includes(key) ? 'valid-td' : 'invalid-td'}`}
+          } ${
+            (valid && !feature.invalidFields) || !feature.invalidFields.includes(key)
+              ? 'valid-td'
+              : 'invalid-td'
+          }`}
         >
           <span
             title={
@@ -232,8 +247,12 @@ export class MultiGridCellRegular extends PureComponent {
       }
 
       if (
-        (key === 'Analysis Radius' && feature.invalidFields && feature.invalidFields.indexOf('Analysis Radius') > -1) ||
-        (key === 'Analysis Area' && feature.invalidFields && feature.invalidFields.indexOf('Analysis Area') > -1)
+        (key === 'Analysis Radius' &&
+          feature.invalidFields &&
+          feature.invalidFields.indexOf('Analysis Radius') > -1) ||
+        (key === 'Analysis Area' &&
+          feature.invalidFields &&
+          feature.invalidFields.indexOf('Analysis Area') > -1)
       ) {
         valid = false;
       }
@@ -250,7 +269,9 @@ export class MultiGridCellRegular extends PureComponent {
       returnedEl = (
         <div
           key={j}
-          className={`locations-grid-cell locations-grid-cell--editable ${valid ? 'valid-td' : 'invalid-td'}`}
+          className={`locations-grid-cell locations-grid-cell--editable ${
+            valid ? 'valid-td' : 'invalid-td'
+          }`}
         >
           <React.Fragment>
             <input
@@ -266,7 +287,13 @@ export class MultiGridCellRegular extends PureComponent {
               onMouseEnter={valid ? null : () => this.setState({ showErrorMessage: true })}
               onMouseLeave={valid ? null : () => this.setState({ showErrorMessage: false })}
             />
-            {!valid && <PopupTooltipError key={j} errorMessage={hoverTitle} showErrorMessage={showErrorMessage} />}
+            {!valid && (
+              <PopupTooltipError
+                key={j}
+                errorMessage={hoverTitle}
+                showErrorMessage={showErrorMessage}
+              />
+            )}
           </React.Fragment>
           <div className="locations-grid-cell__icon-container">
             <IconEdit className="locations-grid-cell__icon" />
@@ -287,7 +314,8 @@ export class MultiGridCellRegular extends PureComponent {
         column.template_datum_field_name !== 'Wind Barrier' &&
         column.template_datum_field_name !== 'Riparian Buffers' &&
         column.template_datum_field_name !== 'Buffer Zones' &&
-        (column.template_datum_field_name === columnName || column.template_datum_field_name_updated === columnName)
+        (column.template_datum_field_name === columnName ||
+          column.template_datum_field_name_updated === columnName)
       ) {
         return this._createCell(column, j);
       } else if (addType === 'investment' && column.template_datum_field_name === columnName) {

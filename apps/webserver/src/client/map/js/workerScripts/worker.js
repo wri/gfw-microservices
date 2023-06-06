@@ -2,14 +2,8 @@ define([
   'esri/config',
   'esri/core/promiseUtils',
   'esri/geometry/geometryEngine',
-  'esri/geometry/Polygon'
-],
-function(
-  esriConfig,
-  promiseUtils,
-  geometryEngine,
-  Polygon
-  ) {
+  'esri/geometry/Polygon',
+], function (esriConfig, promiseUtils, geometryEngine, Polygon) {
   class MyWorker {
     // magic({extent}, {proxy}) {
     //   // proxy.connection.invoke('progress', 'starting');
@@ -28,7 +22,7 @@ function(
     //   // return promiseUtils.resolve({ data: buffers });
     //   return promiseUtils.resolve({ data: extent });
     // }
-    pointsEqual (a, b) {
+    pointsEqual(a, b) {
       for (var i = 0; i < a.length; i++) {
         if (a[i] !== b[i]) {
           return false;
@@ -38,7 +32,7 @@ function(
     }
 
     // checks if the first and last points of a ring are equal and closes the ring
-    closeRing (coordinates) {
+    closeRing(coordinates) {
       if (!this.pointsEqual(coordinates[0], coordinates[coordinates.length - 1])) {
         coordinates.push(coordinates[0]);
       }
@@ -48,7 +42,7 @@ function(
     // determine if polygon ring coordinates are clockwise. clockwise signifies outer ring, counter-clockwise an inner ring
     // or hole. this logic was found at http://stackoverflow.com/questions/1165647/how-to-determine-if-a-list-of-polygon-
     // points-are-in-clockwise-order
-    ringIsClockwise (ringToTest) {
+    ringIsClockwise(ringToTest) {
       var total = 0;
       var i = 0;
       var rLength = ringToTest.length;
@@ -59,11 +53,11 @@ function(
         total += (pt2[0] - pt1[0]) * (pt2[1] + pt1[1]);
         pt1 = pt2;
       }
-      return (total >= 0);
+      return total >= 0;
     }
 
     // ported from terraformer.js https://github.com/Esri/Terraformer/blob/master/terraformer.js#L504-L519
-    vertexIntersectsVertex (a1, a2, b1, b2) {
+    vertexIntersectsVertex(a1, a2, b1, b2) {
       var uaT = (b2[0] - b1[0]) * (a1[1] - b1[1]) - (b2[1] - b1[1]) * (a1[0] - b1[0]);
       var ubT = (a2[0] - a1[0]) * (a1[1] - b1[1]) - (a2[1] - a1[1]) * (a1[0] - b1[0]);
       var uB = (b2[1] - b1[1]) * (a2[0] - a1[0]) - (b2[0] - b1[0]) * (a2[1] - a1[1]);
@@ -81,7 +75,7 @@ function(
     }
 
     // ported from terraformer.js https://github.com/Esri/Terraformer/blob/master/terraformer.js#L521-L531
-    arrayIntersectsArray (a, b) {
+    arrayIntersectsArray(a, b) {
       for (var i = 0; i < a.length - 1; i++) {
         for (var j = 0; j < b.length - 1; j++) {
           if (this.vertexIntersectsVertex(a[i], a[i + 1], b[j], b[j + 1])) {
@@ -94,12 +88,17 @@ function(
     }
 
     // ported from terraformer.js https://github.com/Esri/Terraformer/blob/master/terraformer.js#L470-L480
-    coordinatesContainPoint (coordinates, point) {
+    coordinatesContainPoint(coordinates, point) {
       var contains = false;
       for (var i = -1, l = coordinates.length, j = l - 1; ++i < l; j = i) {
-        if (((coordinates[i][1] <= point[1] && point[1] < coordinates[j][1]) ||
-             (coordinates[j][1] <= point[1] && point[1] < coordinates[i][1])) &&
-            (point[0] < (coordinates[j][0] - coordinates[i][0]) * (point[1] - coordinates[i][1]) / (coordinates[j][1] - coordinates[i][1]) + coordinates[i][0])) {
+        if (
+          ((coordinates[i][1] <= point[1] && point[1] < coordinates[j][1]) ||
+            (coordinates[j][1] <= point[1] && point[1] < coordinates[i][1])) &&
+          point[0] <
+            ((coordinates[j][0] - coordinates[i][0]) * (point[1] - coordinates[i][1])) /
+              (coordinates[j][1] - coordinates[i][1]) +
+              coordinates[i][0]
+        ) {
           contains = !contains;
         }
       }
@@ -107,7 +106,7 @@ function(
     }
 
     // ported from terraformer-arcgis-parser.js https://github.com/Esri/terraformer-arcgis-parser/blob/master/terraformer-arcgis-parser.js#L106-L113
-    coordinatesContainCoordinates (outer, inner) {
+    coordinatesContainCoordinates(outer, inner) {
       var intersects = this.arrayIntersectsArray(outer, inner);
       var contains = this.coordinatesContainPoint(outer, inner[0]);
       if (!intersects && contains) {
@@ -119,7 +118,7 @@ function(
     // do any polygons in this array contain any other polygons in this array?
     // used for checking for holes in arcgis rings
     // ported from terraformer-arcgis-parser.js https://github.com/Esri/terraformer-arcgis-parser/blob/master/terraformer-arcgis-parser.js#L117-L172
-    convertRingsToGeoJSON (rings) {
+    convertRingsToGeoJSON(rings) {
       var outerRings = [];
       var holes = [];
       var x; // iterator
@@ -134,7 +133,7 @@ function(
         }
         // is this ring an outer ring? is it clockwise?
         if (this.ringIsClockwise(ring)) {
-          var polygon = [ ring ];
+          var polygon = [ring];
           outerRings.push(polygon); // push to outer rings
         } else {
           holes.push(ring); // counterclockwise push to holes
@@ -193,16 +192,16 @@ function(
       if (outerRings.length === 1) {
         return {
           type: 'Polygon',
-          coordinates: outerRings[0]
+          coordinates: outerRings[0],
         };
       } else {
         return {
           type: 'MultiPolygon',
-          coordinates: outerRings
+          coordinates: outerRings,
         };
       }
     }
-    orientRings (poly) {
+    orientRings(poly) {
       var output = [];
       var polygon = poly.slice(0);
       var outerRing = this.closeRing(polygon.shift().slice(0));
@@ -227,7 +226,7 @@ function(
       return output;
     }
 
-    flattenMultiPolygonRings (rings) {
+    flattenMultiPolygonRings(rings) {
       var output = [];
       for (var i = 0; i < rings.length; i++) {
         var polygon = this.orientRings(rings[i]);
@@ -238,7 +237,7 @@ function(
       }
       return output;
     }
-    shallowClone (obj) {
+    shallowClone(obj) {
       var target = {};
       for (var i in obj) {
         if (obj.hasOwnProperty(i)) {
@@ -247,7 +246,7 @@ function(
       }
       return target;
     }
-    geojsonToArcGIS (geojson, idAttribute) {
+    geojsonToArcGIS(geojson, idAttribute) {
       idAttribute = idAttribute || 'OBJECTID';
       var spatialReference = { wkid: 4326 };
       var result = {};
@@ -283,7 +282,7 @@ function(
           if (geojson.geometry) {
             result.geometry = this.geojsonToArcGIS(geojson.geometry, idAttribute);
           }
-          result.attributes = (geojson.properties) ? this.shallowClone(geojson.properties) : {};
+          result.attributes = geojson.properties ? this.shallowClone(geojson.properties) : {};
           if (geojson.id) {
             result.attributes[idAttribute] = geojson.id;
           }
@@ -304,15 +303,15 @@ function(
 
       return result;
     }
-    magicTwo({jsonData}, {proxy}) {
+    magicTwo({ jsonData }, { proxy }) {
       const data = {
-        properties: []
+        properties: [],
       };
 
-      const geojson = jsonData.rows.map(row => {
+      const geojson = jsonData.rows.map((row) => {
         if (jsonData.cartoLayer.cartoFields) {
           const props = {};
-          Object.keys(row).forEach(prop => {
+          Object.keys(row).forEach((prop) => {
             if (prop !== 'geometry') {
               props[prop] = row[prop] ? row[prop] : '';
             }
@@ -326,7 +325,7 @@ function(
       const esriJson = [];
       geojson.forEach((geo, j) => {
         const feat = {
-          geometry: this.geojsonToArcGIS(geo)
+          geometry: this.geojsonToArcGIS(geo),
         };
 
         if (jsonData.cartoLayer.cartoFields) {
@@ -342,7 +341,7 @@ function(
 
         return {
           attributes: x.attributes,
-          rings: x.geometry.rings
+          rings: x.geometry.rings,
         };
       });
 

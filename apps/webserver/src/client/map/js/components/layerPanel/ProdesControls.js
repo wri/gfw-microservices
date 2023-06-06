@@ -27,9 +27,13 @@ export default class ProdesControls extends Component {
     const { from_value, to_value } = data;
     prodesLossYears.forEach((year) => {
       if (year > to_value || year < from_value) {
-        $(`.prodes-slider-container .irs-grid-text:contains("${year}")`).addClass('irs-inactive-year');
+        $(`.prodes-slider-container .irs-grid-text:contains("${year}")`).addClass(
+          'irs-inactive-year'
+        );
       } else {
-        $(`.prodes-slider-container .irs-grid-text:contains("${year}")`).removeClass('irs-inactive-year');
+        $(`.prodes-slider-container .irs-grid-text:contains("${year}")`).removeClass(
+          'irs-inactive-year'
+        );
       }
     });
   };
@@ -41,7 +45,11 @@ export default class ProdesControls extends Component {
 
   render() {
     return (
-      <div className={`timeline-container loss prodes-slider-container ${this.props.visible ? '' : 'hidden'}`}>
+      <div
+        className={`timeline-container loss prodes-slider-container ${
+          this.props.visible ? '' : 'hidden'
+        }`}
+      >
         <div className="slider-tooltip" ref="sliderTooltip" />
         <input id="prodes-slider" />
       </div>

@@ -16,10 +16,13 @@ const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
 const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const { handleGeoTrellisAnalyzeListRequest } = require('../../server/geoTrellis/utils/geoTrellis.utils');
+const {
+  handleGeoTrellisAnalyzeListRequest,
+} = require('../../server/geoTrellis/utils/geoTrellis.utils');
 
 const analyzeLocation = (req, organization_database, list, geojson) => {
-  const { organization_user_id, organization_id, user_first_name, user_last_name, user_email } = req.session;
+  const { organization_user_id, organization_id, user_first_name, user_last_name, user_email } =
+    req.session;
   const { appendLocations } = req.body;
 
   // Log the action
@@ -92,7 +95,12 @@ const analyzeList = async (req, organization_database, list) => {
     );
 
     const subject = 'Error Submitting for Analysis';
-    const msg = AWSSES.createBodyContent(req, config.platformVars.emailType.LIST_ANALYSIS_ERROR, {}, 'error');
+    const msg = AWSSES.createBodyContent(
+      req,
+      config.platformVars.emailType.LIST_ANALYSIS_ERROR,
+      {},
+      'error'
+    );
     return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
   }
 };
@@ -127,14 +135,26 @@ const rerunList = (req, organization_database, list) => {
     .then(() => {
       const content = { list_name: list.list_name };
       const subject = `Diagnostics and List Views rerun process for the GFW Pro list ${list.list_name} has started`;
-      const msg = AWSSES.createBodyContent(req, config.platformVars.emailType.LIST_ANALYSIS_RERUN_SUCCESS, content);
-      logger.logActivity(req, logger.listActivityTypes.List.ListAnalyzing, `(${list.list_name}) sent to queue.`);
+      const msg = AWSSES.createBodyContent(
+        req,
+        config.platformVars.emailType.LIST_ANALYSIS_RERUN_SUCCESS,
+        content
+      );
+      logger.logActivity(
+        req,
+        logger.listActivityTypes.List.ListAnalyzing,
+        `(${list.list_name}) sent to queue.`
+      );
       return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
     })
     .catch((err) => {
       console.log('Error sending rerun list to queue', err);
       const subject = 'Error Submitting Analysis for rerun';
-      const msg = AWSSES.createBodyContent(req, config.platformVars.emailType.LIST_ANALYSIS_ERROR, 'error');
+      const msg = AWSSES.createBodyContent(
+        req,
+        config.platformVars.emailType.LIST_ANALYSIS_ERROR,
+        'error'
+      );
       // logger.logActivity(req, logger.listActivityTypes.List.ListAnalyzing, `Error sending ${list.list_name} to queue`);
       errorUtils.createErrorMessage(
         req,

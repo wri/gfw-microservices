@@ -18,7 +18,11 @@ exports.updateListVectorTilesStoragePathDB = async (req, listID, mbtileS3FilePat
   ];
 
   await sqlUtils
-    .executeOrganizationStoredProcedure(req, 'uspUpdateListStringResult', spParamsVectorTilesStoragePath)
+    .executeOrganizationStoredProcedure(
+      req,
+      'uspUpdateListStringResult',
+      spParamsVectorTilesStoragePath
+    )
     .catch((err) => {
       const errorMessage = 'Updating List Vector Tiles Storage Path in DB failed';
       logger.error(`${errorMessage}: ${err}`);
@@ -32,7 +36,11 @@ exports.updateListVectorTilesStoragePathDB = async (req, listID, mbtileS3FilePat
   ];
 
   await sqlUtils
-    .executeOrganizationStoredProcedure(req, 'uspSetDashboardTimestamp', spParamsVectorTilesLastUpdated)
+    .executeOrganizationStoredProcedure(
+      req,
+      'uspSetDashboardTimestamp',
+      spParamsVectorTilesLastUpdated
+    )
     .catch((err) => {
       const errorMessage = 'Updating List Vector Tiles last updated in DB failed';
       logger.error(`${errorMessage}: ${err}`);

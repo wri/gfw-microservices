@@ -15,25 +15,19 @@ export default class StepOne extends Component {
   toggleCommodityType = (evt) => {
     const newType = evt.target.value;
     this.props.updateCommodityType(newType);
-    ga(
-      'send',
-      'event',
-      'Upload Locations Select',
-      'Upload locations template radio button clicked',
-      `user selected ${newType} template for uploading locations`
-    );
+    gtag('event', 'Upload locations template radio button clicked', {
+      event_category: 'Upload Locations Select',
+      event_label: `user selected ${newType} template for uploading locations`,
+    });
   };
 
   toggleOtherType = (evt) => {
     const newVal = evt.target.value;
     this.props.updateOtherCommodityType(newVal);
-    ga(
-      'send',
-      'event',
-      'Upload Locations Select',
-      'Upload locations template radio button clicked',
-      `user selected ${newVal} template for uploading locations`
-    );
+    gtag('event', 'Upload locations template radio button clicked', {
+      event_category: 'Upload Locations Select',
+      event_label: `user selected ${newVal} template for uploading locations`,
+    });
   };
 
   createRadio = (optionName, optionId, i) => {
@@ -92,7 +86,10 @@ export default class StepOne extends Component {
               <div className="locations-upload-step__suboptions-description">
                 {locationsPage.upload.investmentAddType}
               </div>
-              <div id="locationsAddTypeOptions" className="locations-upload-step__suboptions-container">
+              <div
+                id="locationsAddTypeOptions"
+                className="locations-upload-step__suboptions-container"
+              >
                 {locationsPage.upload.commodityTypeOptions.map((option) => {
                   return this.createRadio(option.name, option.id, option.id);
                 })}
@@ -118,7 +115,10 @@ export default class StepOne extends Component {
               <div className="locations-upload-step__suboptions-description">
                 {locationsPage.upload.commodityAddType}
               </div>
-              <div id="commodityAddTypeOptions" className="locations-upload-step__suboptions-container">
+              <div
+                id="commodityAddTypeOptions"
+                className="locations-upload-step__suboptions-container"
+              >
                 {Object.keys(commodityOptions).map((key) => {
                   const option = commodityOptions[key];
                   return this.createRadio(option.label, option.id, key);

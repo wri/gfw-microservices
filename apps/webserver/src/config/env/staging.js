@@ -1,8 +1,8 @@
 /**
-* @name exports
-* @static
-* @summary Staging environment configurations
-*/
+ * @name exports
+ * @static
+ * @summary Staging environment configurations
+ */
 const autoprefixer = require('autoprefixer');
 const webpack = require('webpack');
 
@@ -11,7 +11,7 @@ module.exports = {
   compiledAssets: {
     // Storage location for compiled assets.
     js: {},
-    css: {}
+    css: {},
   },
   webpack: {
     mode: 'production',
@@ -20,9 +20,9 @@ module.exports = {
       new webpack.NoEmitOnErrorsPlugin(),
       new webpack.LoaderOptionsPlugin({
         options: {
-          postcss: [autoprefixer]
-        }
+          postcss: [autoprefixer],
+        },
       }),
-    ]
-  }
+    ],
+  },
 };

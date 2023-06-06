@@ -34,7 +34,10 @@ export const vt2geojson = async (args) => {
           return res.arrayBuffer();
         })
         .then(async (tileArrayBuffer) => {
-          const tileFeatureCollection = await getVectorTileFeatureCollection(args, tileArrayBuffer).catch((err) => {
+          const tileFeatureCollection = await getVectorTileFeatureCollection(
+            args,
+            tileArrayBuffer
+          ).catch((err) => {
             new Error(`Could not get get VectorTile Feature Collection: ${args.uri} - ${err}.`);
           });
           resolve(tileFeatureCollection);

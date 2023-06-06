@@ -16,7 +16,9 @@ function DesktopHeader({ isLoggedIn, active }) {
       <nav className="header__container">
         <Logo isLoggedIn={isLoggedIn} />
 
-        {isLoggedIn && isProManager && <HeaderNavLink active={active} link="/auth/signout" label="Logout" />}
+        {isLoggedIn && isProManager && (
+          <HeaderNavLink active={active} link="/auth/signout" label="Logout" />
+        )}
 
         {isLoggedIn && !isProManager && (
           <>
@@ -32,7 +34,11 @@ function DesktopHeader({ isLoggedIn, active }) {
         {!isLoggedIn && (
           <>
             <HeaderNavLink active={active} link="/about" label="About" />
-            <HeaderNavLink active={active} link="https://www.globalforestwatch.org/blog/tag/gfw-pro" label="Blog" />
+            <HeaderNavLink
+              active={active}
+              link="https://www.globalforestwatch.org/blog/tag/gfw-pro"
+              label="Blog"
+            />
             <HeaderNavLink
               link="/account"
               label={nav.requestAccount}

@@ -16,7 +16,10 @@ function ConnectionDetailsButton({ connectionData }) {
         Details
       </button>
       {displayModal && (
-        <B2bConnectionDetailsModal onCloseModal={() => setDisplayModal(false)} connectionData={connectionData} />
+        <B2bConnectionDetailsModal
+          onCloseModal={() => setDisplayModal(false)}
+          connectionData={connectionData}
+        />
       )}
     </>
   );

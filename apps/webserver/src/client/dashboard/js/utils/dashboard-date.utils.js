@@ -1,7 +1,10 @@
 import moment from 'moment';
 import groupBy from 'lodash/groupBy';
 
-import { SELECTED_TIMEFRAME_GLAD_MAPPING, SELECTED_TIMEFRAME_VIIRS_MAPPING } from '../config/dashboard.config';
+import {
+  SELECTED_TIMEFRAME_GLAD_MAPPING,
+  SELECTED_TIMEFRAME_VIIRS_MAPPING,
+} from '../config/dashboard.config';
 import * as dictionary from './dictionary';
 import { getTimeframeBoundaries } from './dateUtils';
 
@@ -197,7 +200,8 @@ export function getViirsGrouped(feature, momentStart, momentEnd, propertyFilter)
  * @return {string} - Timeframe Attribute (e.g. 'glad_alerts_daily', ...)
  */
 export function getTimeframeProperty(selectedAlert, selectedTimeframe) {
-  const alertMapping = selectedAlert === 'GLAD' ? SELECTED_TIMEFRAME_GLAD_MAPPING : SELECTED_TIMEFRAME_VIIRS_MAPPING;
+  const alertMapping =
+    selectedAlert === 'GLAD' ? SELECTED_TIMEFRAME_GLAD_MAPPING : SELECTED_TIMEFRAME_VIIRS_MAPPING;
   return alertMapping[selectedTimeframe];
 }
 
@@ -242,7 +246,9 @@ export function getNumberOfAlerts(adminUnitData, selectedTimeframe, timeframePro
     .map((l) => l.properties[timeframeProperty])
     .map((l) =>
       l.reduce((total, current) => {
-        return TIMEFRAME_RANGE[selectedTimeframe].includes(current.day) ? total + current.count : total;
+        return TIMEFRAME_RANGE[selectedTimeframe].includes(current.day)
+          ? total + current.count
+          : total;
       }, 0)
     )
     .reduce((totalFeatures, current) => totalFeatures + current, 0);

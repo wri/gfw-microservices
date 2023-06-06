@@ -50,7 +50,9 @@ const ClarkLabsLayerLeyend = ({ disabled, landCoverLayer, landChangeLayer }) => 
         </div>
       </li>
       <li>
-        <ul className="layer-legend">{landCoverLayer.legendConfig.items[0].categories.map(layerLegendMap)}</ul>
+        <ul className="layer-legend">
+          {landCoverLayer.legendConfig.items[0].categories.map(layerLegendMap)}
+        </ul>
       </li>
 
       <li
@@ -69,7 +71,9 @@ const ClarkLabsLayerLeyend = ({ disabled, landCoverLayer, landChangeLayer }) => 
         </div>
       </li>
       <li>
-        <ul className="layer-legend">{landChangeLayer.legendConfig.items[0].categories.map(layerLegendMap)}</ul>
+        <ul className="layer-legend">
+          {landChangeLayer.legendConfig.items[0].categories.map(layerLegendMap)}
+        </ul>
       </li>
     </ul>
   );

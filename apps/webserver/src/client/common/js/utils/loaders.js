@@ -1,12 +1,12 @@
-
 const loaders = {
-
-  loadCSS: url => {
+  loadCSS: (url) => {
     const sheet = document.createElement('link');
     sheet.rel = 'stylesheet';
     sheet.type = 'text/css';
     sheet.href = url;
-    requestAnimationFrame(function () { document.getElementsByTagName('head')[0].appendChild(sheet); });
+    requestAnimationFrame(function () {
+      document.getElementsByTagName('head')[0].appendChild(sheet);
+    });
   },
 
   loadJS: (url, async) => {
@@ -18,11 +18,12 @@ const loaders = {
       script.onload = resolve;
       script.onerror = reject;
       script['data-current'] = 'gfw-water';
-      requestAnimationFrame(function () { document.getElementsByTagName('head')[0].appendChild(script); });
+      requestAnimationFrame(function () {
+        document.getElementsByTagName('head')[0].appendChild(script);
+      });
     });
     return promise;
-  }
-
+  },
 };
 
 export const loadCSS = loaders.loadCSS;

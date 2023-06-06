@@ -38,7 +38,10 @@ export const discernProjection = (file) => {
               else if (unzippedProj.indexOf('GEOGCS["') > -1) {
                 const projSplit = unzippedProj.split('GEOGCS["')[1];
                 geogCS = spatialReferenceDictionary__GCS[projSplit.split('",')[0]];
-              } else if (unzippedProj.indexOf('PROJCS["') === -1 && unzippedProj.indexOf('GEOGCS["') === -1) {
+              } else if (
+                unzippedProj.indexOf('PROJCS["') === -1 &&
+                unzippedProj.indexOf('GEOGCS["') === -1
+              ) {
                 errMessage = locationsPage.upload.errors.zipfile;
               }
               deferred.resolve([errMessage, geogCS]);

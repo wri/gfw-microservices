@@ -24,7 +24,12 @@ import Polygon from 'esri/geometry/Polygon';
 import Point from 'esri/geometry/Point';
 import GeometryEngine from 'esri/geometry/geometryEngine';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
-import { discernProjection, maxFileSizeBytes, maxFileSizeMB, maxLocations } from '../../utils/upload.utils';
+import {
+  discernProjection,
+  maxFileSizeBytes,
+  maxFileSizeMB,
+  maxLocations,
+} from '../../utils/upload.utils';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import FileDrop from './FileDrop';
 import Banner from '../../../../common/js/components/Banner';
@@ -257,7 +262,8 @@ export default class StepThree extends Component {
     if (feat.geometry.centroid) {
       latLngValue = feat.geometry.centroid[val.toLowerCase()];
     } else if (feat.geometry.coordinates && typeof feat.geometry.coordinates[0] === 'number') {
-      latLngValue = val === 'Latitude' ? feat.geometry.coordinates[1] : feat.geometry.coordinates[0];
+      latLngValue =
+        val === 'Latitude' ? feat.geometry.coordinates[1] : feat.geometry.coordinates[0];
     } else {
       latLngValue = 0;
     }
@@ -265,7 +271,15 @@ export default class StepThree extends Component {
   };
 
   complete = (results) => {
-    const { activeTemplate, setUploading, addType, commodityType, templateData, accuracy, setFeatures } = this.props;
+    const {
+      activeTemplate,
+      setUploading,
+      addType,
+      commodityType,
+      templateData,
+      accuracy,
+      setFeatures,
+    } = this.props;
     const { integers, floats } = this.state;
     let headerKey;
     let active = activeTemplate;
@@ -301,7 +315,8 @@ export default class StepThree extends Component {
       if (data.template_name === headerKey) {
         if (
           activeTemplate !== 'palmMill' ||
-          (data.template_datum_field_name !== 'Latitude' && data.template_datum_field_name !== 'Longitude')
+          (data.template_datum_field_name !== 'Latitude' &&
+            data.template_datum_field_name !== 'Longitude')
         ) {
           headerArray.push(data.template_datum_field_name);
         }
@@ -314,14 +329,19 @@ export default class StepThree extends Component {
 
     const missingHeaders = [];
     headerArray.forEach((header) => {
-      if (resultsKeys.indexOf(header) === -1 && locationsPage.upload.generatedHeaderFields.indexOf(header) === -1) {
+      if (
+        resultsKeys.indexOf(header) === -1 &&
+        locationsPage.upload.generatedHeaderFields.indexOf(header) === -1
+      ) {
         missingHeaders.push(header);
         matchingTemplate = false;
         console.log(`Your data is missing a property: ${header} !`);
       }
       if (
         resultsKeys.indexOf('RSPO Model') > -1 &&
-        (activeTemplate === 'soyGeneric' || activeTemplate === 'cocoaGeneric' || activeTemplate === 'cattleGeneric')
+        (activeTemplate === 'soyGeneric' ||
+          activeTemplate === 'cocoaGeneric' ||
+          activeTemplate === 'cattleGeneric')
       ) {
         matchingTemplate = false;
         wrongTemplateUploaded = true;
@@ -342,14 +362,18 @@ export default class StepThree extends Component {
               (key === 'Analysis Area' && feature[key] !== '') ||
               (key === 'Analysis Radius' && feature[key] !== '')
             ) {
-              feature[resultsKeys[k]] = parseInt(feature[key], 10) ? parseInt(feature[key], 10) : '';
+              feature[resultsKeys[k]] = parseInt(feature[key], 10)
+                ? parseInt(feature[key], 10)
+                : '';
             } else if (
               (key === 'Analysis Area' && feature[key] === '') ||
               (key === 'Analysis Radius' && feature[key] === '')
             ) {
               feature[resultsKeys[k]] = feature[key];
             } else {
-              feature[resultsKeys[k]] = parseInt(feature[key], 10) ? parseInt(feature[key], 10) : '';
+              feature[resultsKeys[k]] = parseInt(feature[key], 10)
+                ? parseInt(feature[key], 10)
+                : '';
             }
           } else if (floats.indexOf(key) > -1) {
             if (
@@ -403,10 +427,13 @@ export default class StepThree extends Component {
       } else {
         let text = `The uploaded file format does not match the ${templateDescription} template type. Please make sure the template type selected in Pro matches the uploaded template type.`;
         if (missingHeaders.length > 0) {
-          text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(', ')}`;
+          text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(
+            ', '
+          )}`;
         } else {
-          text += ` Either your csv is empty, or you are missing a ${addType === 'commodity' ? 'Location Name' : 'Investment Name'
-            } column.`;
+          text += ` Either your csv is empty, or you are missing a ${
+            addType === 'commodity' ? 'Location Name' : 'Investment Name'
+          } column.`;
         }
         setUploading(false);
         this.setState({
@@ -426,7 +453,9 @@ export default class StepThree extends Component {
     } else {
       let text = `The uploaded file format does not match the ${templateDescription} template type. Please make sure the template type selected in Pro matches the uploaded template type.`;
       if (missingHeaders.length > 0) {
-        text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(', ')}`;
+        text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(
+          ', '
+        )}`;
       }
       this.setState({
         dialogOpen: true,
@@ -443,7 +472,8 @@ export default class StepThree extends Component {
     this.setState({
       dialogOpen: true,
       dialogTitle: 'Error',
-      dialogMessage: 'There was an error parsing your upload. Please make sure your file matches our specifications!',
+      dialogMessage:
+        'There was an error parsing your upload. Please make sure your file matches our specifications!',
     });
 
     setUploading(false);
@@ -452,7 +482,15 @@ export default class StepThree extends Component {
   };
 
   parseZip = (file) => {
-    const { setUploading, activeTemplate, addType, commodityType, templateData, accuracy, setFeatures } = this.props;
+    const {
+      setUploading,
+      activeTemplate,
+      addType,
+      commodityType,
+      templateData,
+      accuracy,
+      setFeatures,
+    } = this.props;
 
     const { integers, floats } = this.state;
     if (file.size > maxFileSizeBytes) {
@@ -476,7 +514,12 @@ export default class StepThree extends Component {
           if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
             const response = JSON.parse(xmlhttp.responseText);
             const { data } = response;
-            if (data && data.attributes && data.attributes.features && data.attributes.features.length > 0) {
+            if (
+              data &&
+              data.attributes &&
+              data.attributes.features &&
+              data.attributes.features.length > 0
+            ) {
               if (data.attributes.features.length > maxLocations) {
                 this.setState({
                   dialogOpen: true,
@@ -504,7 +547,9 @@ export default class StepThree extends Component {
                   const oldFeatGeometry = new Polygon({
                     rings: esriJson.rings,
                     spatialReference:
-                      esriJson.spatialReference.wkid === newSpatialRef.wkid ? esriJson.spatialReference : oldSpatialRef,
+                      esriJson.spatialReference.wkid === newSpatialRef.wkid
+                        ? esriJson.spatialReference
+                        : oldSpatialRef,
                   });
                   feat.geometry = this.projection.project(oldFeatGeometry, newSpatialRef);
                   feat.properties.Analysis_R = '';
@@ -556,7 +601,9 @@ export default class StepThree extends Component {
                       'kilometers'
                     );
                   } else if (feat.properties.Analysis_A && feat.properties.Analysis_A !== ' ') {
-                    feat.properties.Analysis_R = Math.sqrt(parseFloat(feat.properties.Analysis_A) / Math.PI);
+                    feat.properties.Analysis_R = Math.sqrt(
+                      parseFloat(feat.properties.Analysis_A) / Math.PI
+                    );
                     feat.properties.Analysis_A = '';
                     feat.geometry = GeometryEngine.geodesicBuffer(
                       projectedCenterPoint,
@@ -602,7 +649,9 @@ export default class StepThree extends Component {
 
               templateData.forEach((template) => {
                 if (template.template_name === headerKey) {
-                  shortHeaders.push(template.template_datum_field_name.split(' ').join('_').substring(0, 10));
+                  shortHeaders.push(
+                    template.template_datum_field_name.split(' ').join('_').substring(0, 10)
+                  );
                   headerArray.push(template.template_datum_field_name);
                 }
               });
@@ -678,7 +727,9 @@ export default class StepThree extends Component {
                       } else {
                         const date = new Date(feature.properties[key]);
                         if (!isNaN(date.getUTCFullYear())) {
-                          const dateString = `${date.getUTCMonth() + 1}/${date.getUTCDate()}/${date.getUTCFullYear()}`;
+                          const dateString = `${
+                            date.getUTCMonth() + 1
+                          }/${date.getUTCDate()}/${date.getUTCFullYear()}`;
                           feature[headerArray[k]] = dateString;
                         }
                       }
@@ -745,19 +796,24 @@ export default class StepThree extends Component {
           dialogTitle: 'Incorrect template uploaded',
           dialogMessage: projDefs[0],
         });
-        ga(
-          'send',
-          'event',
-          'Locations File Upload error',
-          'upload location upload projection error',
-          'user uploaded a shapefile in the wrong projection'
-        );
+        gtag('event', 'upload location upload projection error', {
+          event_category: 'Locations File Upload error',
+          event_label: 'user uploaded a shapefile in the wrong projection',
+        });
       }
     });
   };
 
   parseXlsx = (f) => {
-    const { setUploading, activeTemplate, addType, commodityType, templateData, accuracy, setFeatures } = this.props;
+    const {
+      setUploading,
+      activeTemplate,
+      addType,
+      commodityType,
+      templateData,
+      accuracy,
+      setFeatures,
+    } = this.props;
     const { integers, floats } = this.state;
     const reader = new FileReader();
     if (f.size > maxFileSizeBytes) {
@@ -774,8 +830,14 @@ export default class StepThree extends Component {
       const data = !e ? reader.content : e.target.result;
 
       /* if binary string, read with type 'binary' */
-      const workbook = ExcelParse.read(data, { type: 'binary', cellDates: true, dateNF: 'mm/dd/yyyy' });
-      const jsonVar = ExcelParse.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { header: 1 });
+      const workbook = ExcelParse.read(data, {
+        type: 'binary',
+        cellDates: true,
+        dateNF: 'mm/dd/yyyy',
+      });
+      const jsonVar = ExcelParse.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {
+        header: 1,
+      });
 
       if (jsonVar.length > 1501) {
         this.setState({
@@ -831,7 +893,8 @@ export default class StepThree extends Component {
         if (template.template_name === headerKey) {
           if (
             activeTemplate !== 'palmMill' ||
-            (template.template_datum_field_name !== 'Latitude' && template.template_datum_field_name !== 'Longitude')
+            (template.template_datum_field_name !== 'Latitude' &&
+              template.template_datum_field_name !== 'Longitude')
           ) {
             headerArray.push(template.template_datum_field_name);
           }
@@ -847,14 +910,19 @@ export default class StepThree extends Component {
 
       const missingHeaders = [];
       headerArray.forEach((header) => {
-        if (resultsKeys.indexOf(header) === -1 && locationsPage.upload.generatedHeaderFields.indexOf(header) === -1) {
+        if (
+          resultsKeys.indexOf(header) === -1 &&
+          locationsPage.upload.generatedHeaderFields.indexOf(header) === -1
+        ) {
           missingHeaders.push(header);
           matchingTemplate = false;
           console.log(`Your data is missing a property: ${header} !`);
         }
         if (
           resultsKeys.indexOf('RSPO Model') > -1 &&
-          (activeTemplate === 'soyGeneric' || activeTemplate === 'cocoaGeneric' || activeTemplate === 'cattleGeneric')
+          (activeTemplate === 'soyGeneric' ||
+            activeTemplate === 'cocoaGeneric' ||
+            activeTemplate === 'cattleGeneric')
         ) {
           matchingTemplate = false;
           wrongTemplateUploaded = true;
@@ -938,8 +1006,14 @@ export default class StepThree extends Component {
          * @param {String} templateDescription - Template name
          * @return {boolean} - returns true is all Location Classification have value and template is in 'excelLocationClassificationMandatory' list
          */
-        const checkLocationClassificationValidity = (localSubmittedData, localTemplateDescription) => {
-          const allLocationClassificationHaveValue = _every(localSubmittedData, 'Location Classification');
+        const checkLocationClassificationValidity = (
+          localSubmittedData,
+          localTemplateDescription
+        ) => {
+          const allLocationClassificationHaveValue = _every(
+            localSubmittedData,
+            'Location Classification'
+          );
           return (
             excelLocationClassificationMandatory.includes(localTemplateDescription) &&
             allLocationClassificationHaveValue
@@ -966,7 +1040,9 @@ export default class StepThree extends Component {
       } else if (wrongTemplateUploaded) {
         let text = `The uploaded file format does not match the ${templateDescription} template type. Please make sure the template type selected in Pro matches the uploaded template type.`;
         if (missingHeaders.length > 0) {
-          text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(', ')}`;
+          text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(
+            ', '
+          )}`;
         }
         setUploading(false);
         this.setState({
@@ -977,7 +1053,9 @@ export default class StepThree extends Component {
       } else {
         let text = `The uploaded file format does not match the ${templateDescription} template type. Please make sure the template type selected in Pro matches the uploaded template type.`;
         if (missingHeaders.length > 0) {
-          text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(', ')}`;
+          text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(
+            ', '
+          )}`;
         }
         this.setState({
           dialogOpen: true,
@@ -991,7 +1069,15 @@ export default class StepThree extends Component {
   };
 
   parseKML = async (file) => {
-    const { addType, activeTemplate, templateData, commodityType, setUploading, accuracy, setFeatures } = this.props;
+    const {
+      addType,
+      activeTemplate,
+      templateData,
+      commodityType,
+      setUploading,
+      accuracy,
+      setFeatures,
+    } = this.props;
 
     let kmlFile = file;
     if (file.name.includes('.kmz')) {
@@ -1042,8 +1128,10 @@ export default class StepThree extends Component {
             feat.properties[analysisArea] = GeometryEngine.geodesicArea(feat.geometry, 'hectares');
           }
 
-          feat.properties.Latitude = feat.properties.Latitude || this.returnLatLong(feat, 'Latitude');
-          feat.properties.Longitude = feat.properties.Longitude || this.returnLatLong(feat, 'Longitude');
+          feat.properties.Latitude =
+            feat.properties.Latitude || this.returnLatLong(feat, 'Latitude');
+          feat.properties.Longitude =
+            feat.properties.Longitude || this.returnLatLong(feat, 'Longitude');
         } else if (
           feat.geometry &&
           feat.geometry.coordinates &&
@@ -1094,14 +1182,20 @@ export default class StepThree extends Component {
       });
 
       propertiesKeys = Object.keys(data.features[0].properties);
-      const templateHeadersList = getTemplateHeadersList({ addType, commodityType, activeTemplate, templateData });
+      const templateHeadersList = getTemplateHeadersList({
+        addType,
+        commodityType,
+        activeTemplate,
+        templateData,
+      });
       const headerMapping = getHeaderMapping(templateHeadersList, propertiesKeys);
 
       const missingHeaders = [];
       let matchingTemplate = true;
       let wrongTemplateUploaded = false;
       templateHeadersList.forEach((header) => {
-        const generatedHeaderMatch = locationsPage.upload.generatedHeaderFields.indexOf(header) === -1;
+        const generatedHeaderMatch =
+          locationsPage.upload.generatedHeaderFields.indexOf(header) === -1;
         if (!headerMapping[header] && generatedHeaderMatch) {
           missingHeaders.push(header);
           matchingTemplate = false;
@@ -1110,7 +1204,9 @@ export default class StepThree extends Component {
 
         if (
           propertiesKeys.indexOf('RSPO Model') > -1 &&
-          (activeTemplate === 'soyGeneric' || activeTemplate === 'cocoaGeneric' || activeTemplate === 'cattleGeneric')
+          (activeTemplate === 'soyGeneric' ||
+            activeTemplate === 'cocoaGeneric' ||
+            activeTemplate === 'cattleGeneric')
         ) {
           matchingTemplate = false;
           wrongTemplateUploaded = true;
@@ -1143,7 +1239,9 @@ export default class StepThree extends Component {
               }
             } else if (key.indexOf('Date') > -1) {
               feature[key] =
-                feature.properties[header].length > 0 ? moment(feature.properties[header]).format('MM/DD/YYYY') : '';
+                feature.properties[header].length > 0
+                  ? moment(feature.properties[header]).format('MM/DD/YYYY')
+                  : '';
             } else {
               feature[key] = feature.properties[header];
             }
@@ -1177,7 +1275,9 @@ export default class StepThree extends Component {
       } else if (wrongTemplateUploaded) {
         let text = `The uploaded file format does not match the ${templateDescription} template type. Please make sure the template type selected in Pro matches the uploaded template type.`;
         if (missingHeaders.length > 0) {
-          text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(', ')}`;
+          text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(
+            ', '
+          )}`;
         }
         this.setState({
           dialogOpen: true,
@@ -1188,7 +1288,9 @@ export default class StepThree extends Component {
       } else {
         let text = `The uploaded file format does not match the ${templateDescription} template type. Please make sure the template type selected in Pro matches the uploaded template type. `;
         if (missingHeaders.length > 0) {
-          text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(', ')}`;
+          text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(
+            ', '
+          )}`;
         }
         this.setState({
           dialogOpen: true,
@@ -1247,21 +1349,15 @@ export default class StepThree extends Component {
 
   toggleValidated = (evt) => {
     if (evt.target.value === 'all') {
-      ga(
-        'send',
-        'event',
-        'Upload Locations Click',
-        'User clicks All locations radio button on validation step',
-        'Validation step 3'
-      );
+      gtag('event', 'User clicks All locations radio button on validation step', {
+        event_category: 'Upload Locations Click',
+        event_label: 'Validation step 3',
+      });
     } else if (evt.target.value === 'invalid') {
-      ga(
-        'send',
-        'event',
-        'Upload Locations Click',
-        'User clicks Locations with errors on validation step',
-        'Validation step 3'
-      );
+      gtag('event', 'User clicks Locations with errors on validation step', {
+        event_category: 'Upload Locations Click',
+        event_label: 'Validation step 3',
+      });
     }
     this.setState({ showValidated: evt.target.value });
   };
@@ -1339,7 +1435,10 @@ export default class StepThree extends Component {
           valid = false;
           newFeaturesState[index].invalidFields.push('Analysis Radius');
           newFeaturesState[index].invalidFields.push('Analysis Area');
-        } else if (analysisFieldsEditing['Analysis Radius'] === '' && analysisFieldsEditing['Analysis Area'] === '') {
+        } else if (
+          analysisFieldsEditing['Analysis Radius'] === '' &&
+          analysisFieldsEditing['Analysis Area'] === ''
+        ) {
           valid = false;
           newFeaturesState[index].invalidFields.push('Analysis Radius');
           newFeaturesState[index].invalidFields.push('Analysis Area');
@@ -1358,7 +1457,13 @@ export default class StepThree extends Component {
     const csvData = [[]];
     // eslint-disable-next-line no-unused-vars
     for (const key in features[0]) {
-      if (key !== 'valid' && key !== 'invalidFields' && key !== 'geometry' && key !== 'type' && key !== 'gadmid') {
+      if (
+        key !== 'valid' &&
+        key !== 'invalidFields' &&
+        key !== 'geometry' &&
+        key !== 'type' &&
+        key !== 'gadmid'
+      ) {
         if (addType === 'commodity') {
           if (
             key !== 'Wind Barrier' &&
@@ -1399,7 +1504,9 @@ export default class StepThree extends Component {
           if (addType === 'commodity') {
             if (key !== 'Wind Barrier' && key !== 'Riparian Buffers' && key !== 'Buffer Zones') {
               dataRow.push(
-                feature[key] && feature[key].includes && feature[key].includes(',') ? `"${feature[key]}"` : feature[key]
+                feature[key] && feature[key].includes && feature[key].includes(',')
+                  ? `"${feature[key]}"`
+                  : feature[key]
               );
               if (key === 'Time Horizon') {
                 const acc = feature['Accuracy Rating of Location Entered'];
@@ -1408,7 +1515,9 @@ export default class StepThree extends Component {
             }
           } else {
             dataRow.push(
-              feature[key] && feature[key].includes && feature[key].includes(',') ? `"${feature[key]}"` : feature[key]
+              feature[key] && feature[key].includes && feature[key].includes(',')
+                ? `"${feature[key]}"`
+                : feature[key]
             );
             if (key === 'Time Horizon') {
               const acc = feature['Accuracy Rating of Location Entered'];
@@ -1421,7 +1530,10 @@ export default class StepThree extends Component {
     });
 
     downloaders.downloadCSV(csvData);
-    ga('send', 'event', 'Upload Locations Click', 'User clicks Download from validation step', 'Validation step 3');
+    gtag('event', 'User clicks Download from validation step', {
+      event_category: 'Upload Locations Click',
+      event_label: 'Validation step 3',
+    });
   };
 
   premiumFileUpload = (file) => {
@@ -1441,26 +1553,42 @@ export default class StepThree extends Component {
         updateFeatures(file);
         break;
       default:
-        console.log(`File extension ${file.name.slice(-3)} is not supported. (csv, xlx, zip, kml, kmz)`);
+        console.log(
+          `File extension ${file.name.slice(-3)} is not supported. (csv, xlx, zip, kml, kmz)`
+        );
         this.setState({
           dialogOpen: true,
           dialogTitle: locationsPage.add.errors.fileExtensionNotSupported.title,
           dialogMessage: locationsPage.add.errors.fileExtensionNotSupported.message,
         });
     }
-  }
+  };
 
   render() {
-    const { dialogOpen, dialogTitle, dialogMessage, inputKey, totalFeatures, showValidated } = this.state;
-    const { features, isUploading, addType, activeTemplate, commodityType, customAttributeHeaders, templateData } =
-      this.props;
+    const { dialogOpen, dialogTitle, dialogMessage, inputKey, totalFeatures, showValidated } =
+      this.state;
+    const {
+      features,
+      isUploading,
+      addType,
+      activeTemplate,
+      commodityType,
+      customAttributeHeaders,
+      templateData,
+    } = this.props;
 
     const validFeatures = features.filter((item) => item.valid).length;
     const invalidFeatures = features.length - validFeatures;
 
-    const dialogContent = typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
+    const dialogContent =
+      typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
     const defaultAction = [
-      <Button className="dialog__primary-action" variant="primary" label="OK" onClick={this.shouldCloseDialog} />,
+      <Button
+        className="dialog__primary-action"
+        variant="primary"
+        label="OK"
+        onClick={this.shouldCloseDialog}
+      />,
     ];
 
     const { stepThree } = locationsPage.upload;
@@ -1485,7 +1613,8 @@ export default class StepThree extends Component {
           />
           <div className="instructions-container flex-grid-column">
             <p>
-              {locationsPage.upload.maximumLocations} <strong>{numberWithCommas(maxLocations)}</strong>
+              {locationsPage.upload.maximumLocations}{' '}
+              <strong>{numberWithCommas(maxLocations)}</strong>
             </p>
             <p>
               {locationsPage.upload.maximumFilesize} <strong>{maxFileSizeMB}MB</strong>

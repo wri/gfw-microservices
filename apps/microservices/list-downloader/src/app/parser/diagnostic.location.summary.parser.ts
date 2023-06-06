@@ -11,12 +11,7 @@ const aggregateParser = ({ fieldValue }) => {
   return fieldValue.toFixed(2);
 };
 
-const diagnosticLocationSummaryParser = ({
-  operation,
-  data,
-  dataRow,
-  csvData,
-}) => {
+const diagnosticLocationSummaryParser = ({ operation, data, dataRow, csvData }) => {
   const currentRow = cloneRow(dataRow);
   const { Country, State, total_area: totalArea } = data;
   const { fields, additionalFields } = operation;
@@ -30,9 +25,7 @@ const diagnosticLocationSummaryParser = ({
   }
 
   fields?.forEach((field) => {
-    const fieldValue = data[field.attribute]
-      ? JSON.parse(data[field.attribute])
-      : 0;
+    const fieldValue = data[field.attribute] ? JSON.parse(data[field.attribute]) : 0;
 
     if (field.parsed === 'percent') {
       currentRow.push(percentParser({ fieldValue, totalArea }));

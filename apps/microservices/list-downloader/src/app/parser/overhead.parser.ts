@@ -1,21 +1,11 @@
-import {
-  listNameParser,
-  pieChartParser,
-  locationNameParser,
-} from './shared.parser';
+import { listNameParser, pieChartParser, locationNameParser } from './shared.parser';
 import { dataLayerParser } from './south.america.parser';
 import { southEastAsiaOverlapParser } from './south.east.asia.parser';
 import { soyParser } from './soy.parser';
 import { palmRiskAnalysisParser } from './palm.risk.analysis.parser';
 import { diagnosticLocationSummaryParser } from './diagnostic.location.summary.parser';
 
-const overheadParser = ({
-  operation,
-  listLevelAnalysis,
-  data,
-  dataRow,
-  csvData,
-}) => {
+const overheadParser = ({ operation, listLevelAnalysis, data, dataRow, csvData }) => {
   const parserFunctions = {
     list_name: listNameParser,
     pie_chart: pieChartParser,

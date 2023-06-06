@@ -18,7 +18,7 @@ export class UspUpdateListCount {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-     await connection.executeQuery('uspUpdateListCount', parameters);
+      await connection.executeQuery('uspUpdateListCount', parameters);
       connection.disconnect();
     } catch (error) {
       connection.disconnect();

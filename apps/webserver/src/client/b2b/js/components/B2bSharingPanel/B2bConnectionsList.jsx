@@ -9,11 +9,9 @@ import { b2bConnectionsMock } from './b2bConnectionsMock';
 import { getConnections } from './fetchB2b';
 import './NewB2bConnectionModal/NewB2bConnectionModal.scss';
 
-
 const B2bConnectionsList = () => {
   const [b2bConnections, setB2bConnections] = useState([]);
   const [filter, setfilter] = useState('');
-
 
   useEffect(() => {
     getConnections().then((res) => {
@@ -29,7 +27,6 @@ const B2bConnectionsList = () => {
     }
     setB2bConnections(b2bConnectionsMock.filter((el) => el.status === status));
     setfilter(status);
-
   };
 
   const activeFilter = (status) => {
@@ -40,16 +37,22 @@ const B2bConnectionsList = () => {
     <Container>
       <Grid container direction="row" justifyContent="space-between" alignItems="center">
         <div>
-
-          <button type="button" onClick={() => filterPerStatus('pending')} className={`tag ${activeFilter('pending')}`}>
+          <button
+            type="button"
+            onClick={() => filterPerStatus('pending')}
+            className={`tag ${activeFilter('pending')}`}
+          >
             Pending
           </button>
-          <button type="button" onClick={() => filterPerStatus('expired')} className={`tag ${activeFilter('expired')}`}>
+          <button
+            type="button"
+            onClick={() => filterPerStatus('expired')}
+            className={`tag ${activeFilter('expired')}`}
+          >
             Expired
           </button>
           <button
             type="button"
-
             onClick={() => filterPerStatus('connected')}
             className={`tag ${activeFilter('connected')}`}
           >

@@ -15,10 +15,7 @@ export class UspSetListUnlocked {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      const recordsets = await connection.executeQuery(
-        'uspSetListUnlocked',
-        parameters
-      );
+      const recordsets = await connection.executeQuery('uspSetListUnlocked', parameters);
       connection.disconnect();
       return recordsets;
     } catch (error) {

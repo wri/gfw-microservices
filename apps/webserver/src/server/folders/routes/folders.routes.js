@@ -117,9 +117,9 @@ module.exports = (app, limiter) => {
         return;
       }
     } catch (error) {
-      res
-        .status(422)
-        .send({ error: `Error while trying to remove lists ${req.body.list_ids} from folder id ${folder_id}` });
+      res.status(422).send({
+        error: `Error while trying to remove lists ${req.body.list_ids} from folder id ${folder_id}`,
+      });
     }
   });
 
@@ -136,12 +136,19 @@ module.exports = (app, limiter) => {
       return;
     }
     if (!Number.isInteger(to_folder_id)) {
-      res.status(422).send({ error: langResources.getResourceString('missingDestinationFolderId') });
+      res
+        .status(422)
+        .send({ error: langResources.getResourceString('missingDestinationFolderId') });
       return;
     }
 
     try {
-      const results = await FolderManager.moveListToFolder(req, from_folder_id, to_folder_id, list_ids);
+      const results = await FolderManager.moveListToFolder(
+        req,
+        from_folder_id,
+        to_folder_id,
+        list_ids
+      );
       res.send(results);
     } catch (error) {
       res.status(422).send({ error: error.userMessage });

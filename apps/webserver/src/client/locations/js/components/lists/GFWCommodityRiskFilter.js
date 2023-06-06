@@ -45,9 +45,17 @@ export default class CommodityRiskFilter extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.filterCount !== 0 && nextProps.filterCount === 0 && nextProps.listView === 'commodity_risk') {
+    if (
+      this.props.filterCount !== 0 &&
+      nextProps.filterCount === 0 &&
+      nextProps.listView === 'commodity_risk'
+    ) {
       this.setState(cloneDeep(this.initialState));
-    } else if (this.props.filterCount === 0 && nextProps.filterCount === 0 && nextProps.listView === 'commodity_risk') {
+    } else if (
+      this.props.filterCount === 0 &&
+      nextProps.filterCount === 0 &&
+      nextProps.listView === 'commodity_risk'
+    ) {
       this.setState(cloneDeep(locationsPage.defaultFilterValues));
     }
   }
@@ -175,7 +183,9 @@ export default class CommodityRiskFilter extends Component {
     } = this.state;
 
     const countryOptions = [
-      ...new Set(listData.filter((location) => location.Country !== '').map((list) => list.Country)),
+      ...new Set(
+        listData.filter((location) => location.Country !== '').map((list) => list.Country)
+      ),
     ].map(this.createOptions);
     const stateOptions = [
       ...new Set(
@@ -189,7 +199,9 @@ export default class CommodityRiskFilter extends Component {
         listData
           .filter(
             (location) =>
-              location['Sub State'] !== '' && location.Country === selectedCountry && location.State === selectedState
+              location['Sub State'] !== '' &&
+              location.Country === selectedCountry &&
+              location.State === selectedState
           )
           .map((list) => list['Sub State'])
       ),
@@ -213,10 +225,22 @@ export default class CommodityRiskFilter extends Component {
       .sort()
       .map(this.createOptions);
 
-    const dropdownOptionsMethodsCountry = buildDropdownOptions(countryOptions, 'id', selectedCountry);
+    const dropdownOptionsMethodsCountry = buildDropdownOptions(
+      countryOptions,
+      'id',
+      selectedCountry
+    );
     const dropdownOptionsMethodsState = buildDropdownOptions(stateOptions, 'id', selectedState);
-    const dropdownOptionsMethodsSubstate = buildDropdownOptions(subStateOptions, 'id', selectedSubState);
-    const dropdownOptionsMethodsParentCompany = buildDropdownOptions(parentCompanyOptions, 'id', selectedParentCompany);
+    const dropdownOptionsMethodsSubstate = buildDropdownOptions(
+      subStateOptions,
+      'id',
+      selectedSubState
+    );
+    const dropdownOptionsMethodsParentCompany = buildDropdownOptions(
+      parentCompanyOptions,
+      'id',
+      selectedParentCompany
+    );
 
     const selectedNameLabels = selectedNames.map((v) => v.label.toLowerCase());
     const multiOptions = listData
@@ -485,7 +509,11 @@ export default class CommodityRiskFilter extends Component {
             />
           </div>
           <div className="dialog__footer">
-            <Button variant="primary" onClick={this.updateValues} label={locationsPage.lists.applyFilters} />
+            <Button
+              variant="primary"
+              onClick={this.updateValues}
+              label={locationsPage.lists.applyFilters}
+            />
           </div>
         </ModalWrapper>
       </div>

@@ -11,9 +11,7 @@ lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 function App() {
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-      <BrowserRouter
-        basename="/pro-manager-list"
-      >
+      <BrowserRouter basename="/pro-manager-list">
         <ProManagerList
           allAccountsList={allAccountsList}
           allUsersList={allUsersList}

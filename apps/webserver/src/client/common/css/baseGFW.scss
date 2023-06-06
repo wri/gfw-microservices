@@ -150,7 +150,7 @@ a {
 
 .tag {
   padding: 5px 10px;
-  background: #0000001F;
+  background: #0000001f;
   border-radius: 12px;
   border: 0;
   font-size: 12px;
@@ -163,24 +163,24 @@ a {
     line-height: 10px;
   }
 
-  &--gray{
+  &--gray {
     background: #00000061;
-    color: #FFFFFFDE;
+    color: #ffffffde;
   }
 
-  &--green{
-    background: #4CAF50;
-    color: #FFFFFFDE;
+  &--green {
+    background: #4caf50;
+    color: #ffffffde;
   }
 
-  &--blue{
-    background: #2196F3;
-    color: #FFFFFFDE;
+  &--blue {
+    background: #2196f3;
+    color: #ffffffde;
   }
 
-  &.active{
-    background: #4CAF50;
-    color: #FFFFFFDE;
+  &.active {
+    background: #4caf50;
+    color: #ffffffde;
   }
 }
 

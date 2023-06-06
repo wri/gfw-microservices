@@ -3,9 +3,7 @@ import { cloneRow, formatPct, validatePct } from '../shared/functions';
 
 const yearlyParser = (operation, dataRow, data, csvData) => {
   operation.composites.forEach((field) => {
-    const yearlyData = data[field.attribute]
-      ? JSON.parse(data[field.attribute])
-      : {};
+    const yearlyData = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
 
     let totalListLevelCount = 0;
 
@@ -83,16 +81,13 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
           const totalSubCategory = totalSubCategoryValues[biomeName];
           if (totalStat) {
             currentRow.push(totalSubCategory);
-            const percent = formatPct(
-              validatePct((total / totalSubCategory) * 100)
-            );
+            const percent = formatPct(validatePct((total / totalSubCategory) * 100));
             currentRow.push(percent);
           }
 
           if (
             totalSubCategory > 0 &&
-            (data.south_america_presence === true ||
-              data.south_america_presence === 'true') &&
+            (data.south_america_presence === true || data.south_america_presence === 'true') &&
             data.Country === 'Brazil'
           ) {
             csvData.push(currentRow);
@@ -146,9 +141,7 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
 
             if (totalStat) {
               nestedRow.push(totalListLevelCount);
-              const percent = formatPct(
-                validatePct((val / totalStatValue) * 100)
-              );
+              const percent = formatPct(validatePct((val / totalStatValue) * 100));
               nestedRow.push(percent);
             }
 
@@ -173,9 +166,7 @@ const yearlyParser = (operation, dataRow, data, csvData) => {
             if (totalStat) {
               currentRow.push(totalStatValue);
 
-              const percent = formatPct(
-                validatePct((rowValue / totalStatValue) * 100)
-              );
+              const percent = formatPct(validatePct((rowValue / totalStatValue) * 100));
               currentRow.push(percent);
             }
 

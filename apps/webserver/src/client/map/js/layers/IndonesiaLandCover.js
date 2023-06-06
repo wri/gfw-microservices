@@ -57,7 +57,7 @@ define(['esri/request', 'esri/layers/BaseTileLayer'], function (esriRequest, Bas
           data[i + 2] = 0;
           data[i + 1] = 0;
           data[i] = 0;
-        } 
+        }
       }
       return data;
     },

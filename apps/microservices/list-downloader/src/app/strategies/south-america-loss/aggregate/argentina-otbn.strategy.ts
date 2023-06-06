@@ -3,9 +3,7 @@ import { DATA_LAYER } from '../../../shared/constants';
 import { TreeCoverLossAggregateStrategy } from './tree-cover-loss.strategy';
 import { StrategyFieldType } from './type';
 
-export class ArgentinaOTBNStrategy
-  implements SouthAmericaLossAggregateStrategy
-{
+export class ArgentinaOTBNStrategy implements SouthAmericaLossAggregateStrategy {
   // TODO: Remove any and validate types
   processLabel(
     field: StrategyFieldType,

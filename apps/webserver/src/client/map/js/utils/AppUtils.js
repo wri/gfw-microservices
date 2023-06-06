@@ -126,7 +126,12 @@ const utils = {
     });
     // Should have an array of arrays now, ex: [['a','b'], ['foo','bar']]
     pairs.forEach((pair) => {
-      if (pair[0] === null || typeof pair[0] === 'undefined' || pair[0] === null || typeof pair[0] === 'undefined') {
+      if (
+        pair[0] === null ||
+        typeof pair[0] === 'undefined' ||
+        pair[0] === null ||
+        typeof pair[0] === 'undefined'
+      ) {
         console.warn(`You provided an invalid key-value pair, ${pair[0]} is being omitted.`);
         return;
       }
@@ -184,30 +189,42 @@ const utils = {
     switch (label) {
       case 'FORMA':
         date = props.formaDateRange;
-        startDate = `${date.start.toLocaleString('en-us', { month: 'short' })}-${date.start.toLocaleString('en-us', {
+        startDate = `${date.start.toLocaleString('en-us', {
+          month: 'short',
+        })}-${date.start.toLocaleString('en-us', {
           year: 'numeric',
         })}`;
-        endDate = `${date.end.toLocaleString('en-us', { month: 'short' })}-${date.end.toLocaleString('en-us', {
+        endDate = `${date.end.toLocaleString('en-us', {
+          month: 'short',
+        })}-${date.end.toLocaleString('en-us', {
           year: 'numeric',
         })}`;
         valueLabel = `total alerts (${startDate} to ${endDate})`;
         break;
       case 'GLAD':
         date = props.gladDateRange;
-        startDate = `${date.start.toLocaleString('en-us', { month: 'short' })}-${date.start.toLocaleString('en-us', {
+        startDate = `${date.start.toLocaleString('en-us', {
+          month: 'short',
+        })}-${date.start.toLocaleString('en-us', {
           year: 'numeric',
         })}`;
-        endDate = `${date.end.toLocaleString('en-us', { month: 'short' })}-${date.end.toLocaleString('en-us', {
+        endDate = `${date.end.toLocaleString('en-us', {
+          month: 'short',
+        })}-${date.end.toLocaleString('en-us', {
           year: 'numeric',
         })}`;
         valueLabel = `total alerts (${startDate} to ${endDate})`;
         break;
       case 'RADD':
         date = props.raddDateRange;
-        startDate = `${date.start.toLocaleString('en-us', { month: 'short' })}-${date.start.toLocaleString('en-us', {
+        startDate = `${date.start.toLocaleString('en-us', {
+          month: 'short',
+        })}-${date.start.toLocaleString('en-us', {
           year: 'numeric',
         })}`;
-        endDate = `${date.end.toLocaleString('en-us', { month: 'short' })}-${date.end.toLocaleString('en-us', {
+        endDate = `${date.end.toLocaleString('en-us', {
+          month: 'short',
+        })}-${date.end.toLocaleString('en-us', {
           year: 'numeric',
         })}`;
         valueLabel = `total alerts (${startDate} to ${endDate})`;
@@ -222,7 +239,10 @@ const utils = {
         valueLabel = `tree cover (2000) with >${props.canopyDensity}% canopy density`;
         break;
       case 'VIIRS':
-        valueLabel = props.fireDays < 7 ? `total alerts (${props.fireDays * 24} hours)` : 'total alerts (past week)';
+        valueLabel =
+          props.fireDays < 7
+            ? `total alerts (${props.fireDays * 24} hours)`
+            : 'total alerts (past week)';
         break;
       default:
         valueLabel = label;

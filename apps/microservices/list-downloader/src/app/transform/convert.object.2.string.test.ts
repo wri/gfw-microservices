@@ -4,8 +4,8 @@ describe('ConvertObject2CSV', () => {
   test('Should convert object to string', () => {
     const geojson = {
       test: 'test',
-      total: 20
-    }
+      total: 20,
+    };
     const convertObject2CSV = new ConvertObject2String();
     convertObject2CSV._transform(geojson, '', (err, data) => {
       expect(data).toEqual('{"test":"test","total":20}');
@@ -13,7 +13,7 @@ describe('ConvertObject2CSV', () => {
   });
 
   test('Should return empty json if receive empty json ', () => {
-    const geojson = {}
+    const geojson = {};
     const convertObject2CSV = new ConvertObject2String();
     convertObject2CSV._transform(geojson, '', (err, data) => {
       expect(data).toEqual('{}');
@@ -21,11 +21,10 @@ describe('ConvertObject2CSV', () => {
   });
 
   test('Should return undefined if receive undefined', () => {
-    const geojson = undefined
+    const geojson = undefined;
     const convertObject2CSV = new ConvertObject2String();
     convertObject2CSV._transform(geojson, '', (err, data) => {
       expect(data).toEqual(undefined);
     });
   });
 });
-

@@ -5,11 +5,17 @@ const { v4: uuidV4 } = require('uuid');
 // Utils
 const { createTempGeojsonFiles } = require('./vectorTileGeojson.utils');
 const { createTippecanoeMBTiles } = require('./vectorTileTippecanoe.utils');
-const { getListVectorTileS3PathDB, updateListVectorTilesStoragePathDB } = require('./vectorTileDB.utils');
+const {
+  getListVectorTileS3PathDB,
+  updateListVectorTilesStoragePathDB,
+} = require('./vectorTileDB.utils');
 const { uploadMBTileToS3Bucket, deletingMBTileFromS3Bucket } = require('./vectorTileS3.utils');
 
 // Configs
-const { VECTOR_TILES_TEMP_LOCATION, VECTOR_TILES_LOCATION } = require('../config/vectorTiles.config');
+const {
+  VECTOR_TILES_TEMP_LOCATION,
+  VECTOR_TILES_LOCATION,
+} = require('../config/vectorTiles.config');
 
 // Global
 const logger = require('../../../config/lib/winston');
@@ -23,7 +29,9 @@ const ListManager = require('../../../config/publicutils/listManager.utils');
  * @return {Promise<{message: string}>}
  */
 exports.generateAndStoreVectorTiles = async (req, listID) => {
-  const userLists = req.session.isNodeServer ? await ListManager.getAllLists(req) : await ListManager.getUserLists(req);
+  const userLists = req.session.isNodeServer
+    ? await ListManager.getAllLists(req)
+    : await ListManager.getUserLists(req);
   const listInfo = userLists.find((list) => {
     return list.id === listID;
   });
@@ -36,8 +44,14 @@ exports.generateAndStoreVectorTiles = async (req, listID) => {
       const minutesDifference = (queueTime.getTime() - lastUpdatedTime.getTime()) / 1000 / 60;
       return minutesDifference;
     };
-    if (listInfo.vector_tiles_last_updated instanceof Date && isFinite(listInfo.vector_tiles_last_updated.getTime())) {
-      const minutesDifference = calculateMinutesDifference(req.messageTimestamp, listInfo.vector_tiles_last_updated);
+    if (
+      listInfo.vector_tiles_last_updated instanceof Date &&
+      isFinite(listInfo.vector_tiles_last_updated.getTime())
+    ) {
+      const minutesDifference = calculateMinutesDifference(
+        req.messageTimestamp,
+        listInfo.vector_tiles_last_updated
+      );
       if (minutesDifference > 0 && minutesDifference < 5) {
         const failedMessage = `Vector Tiles already generated for this list: ${listID}. (Last updated: ${listInfo.vector_tiles_last_updated})`;
         logger.info(failedMessage);

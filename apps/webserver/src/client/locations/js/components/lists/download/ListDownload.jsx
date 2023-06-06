@@ -68,31 +68,22 @@ function ListDownload({
     switch (format) {
       case 'csv':
         if (type === 'results') {
-          ga(
-            'send',
-            'event',
-            'Download',
-            'results download click',
-            'user clicked on the results option in the download dropdown menu'
-          );
+          gtag('event', 'results download click', {
+            event_category: 'Download',
+            event_label: 'user clicked on the results option in the download dropdown menu',
+          });
         } else {
-          ga(
-            'send',
-            'event',
-            'Download',
-            'csv download click',
-            'user clicked on the csv option in the download dropdown menu'
-          );
+          gtag('event', 'csv download click', {
+            event_category: 'Download',
+            event_label: 'user clicked on the csv option in the download dropdown menu',
+          });
         }
         break;
       case 'shapefile':
-        ga(
-          'send',
-          'event',
-          'Download',
-          'shapefile download click',
-          'user clicked on the shapefile option in the download dropdown menu'
-        );
+        gtag('event', 'shapefile download click', {
+          event_category: 'Download',
+          event_label: 'user clicked on the shapefile option in the download dropdown menu',
+        });
         break;
       default:
         break;
@@ -101,7 +92,8 @@ function ListDownload({
 
   const isGFWList = selectedList.associated_gfwlist || gfwListNames.includes(listName);
   const downloadEnabled = !isDownloadDisabledForThisList(selectedList);
-  const isSourceFileDownloadEnabled = !isGFWList && currentUser.access_level_id !== userAccessLevel.VIEWER;
+  const isSourceFileDownloadEnabled =
+    !isGFWList && currentUser.access_level_id !== userAccessLevel.VIEWER;
   return (
     downloadEnabled && (
       <>
@@ -121,11 +113,17 @@ function ListDownload({
           <MenuItem value={{ format: 'csv', type: 'results' }} primaryText="Results" />
 
           {isSourceFileDownloadEnabled && (
-            <MenuItem value={{ format: 'csv', type: 'input' }} primaryText={locationsPage.lists.csv} />
+            <MenuItem
+              value={{ format: 'csv', type: 'input' }}
+              primaryText={locationsPage.lists.csv}
+            />
           )}
 
           {isSourceFileDownloadEnabled && (
-            <MenuItem value={{ format: 'shapefile', type: 'input' }} primaryText={locationsPage.lists.shapefile} />
+            <MenuItem
+              value={{ format: 'shapefile', type: 'input' }}
+              primaryText={locationsPage.lists.shapefile}
+            />
           )}
         </IconMenu>
         <ConfirmDialog open={dialogOpen} setDialogOpen={setDialogOpen} />

@@ -7,19 +7,24 @@ const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
 /**
-* @name exports
-* @static
-* @summary Analytics page routes
-*/
+ * @name exports
+ * @static
+ * @summary Analytics page routes
+ */
 module.exports = (app, limiter) => {
   /**
-  * @name /change
-  * @see change.controller
-  * @memberof Router
-  */
+   * @name /change
+   * @see change.controller
+   * @memberof Router
+   */
 
   if (rateLimiterUtil.useRateLimiter()) {
-    app.get('/change', limiter(middlewares.rateLimitUnauthenticated), middlewares.checkRecognized, controller.change);
+    app.get(
+      '/change',
+      limiter(middlewares.rateLimitUnauthenticated),
+      middlewares.checkRecognized,
+      controller.change
+    );
   } else {
     app.get('/change', middlewares.checkRecognized, controller.change);
   }
@@ -29,8 +34,15 @@ module.exports = (app, limiter) => {
   app.post('/auth/updatePass', (request, response) => {
     const { currentPass, newPass } = request.body;
     AuthManager.setInitialPassword(request, currentPass, newPass)
-      .then(() => AuthManager.login(request, UserManager.getUserEmail(request), newPass, UserManager.isProManager(request)))
-      .then(result => {
+      .then(() =>
+        AuthManager.login(
+          request,
+          UserManager.getUserEmail(request),
+          newPass,
+          UserManager.isProManager(request)
+        )
+      )
+      .then((result) => {
         const { authenticationStatus } = result;
         if (authenticationStatus === 1) {
           response.send('Authenticated');
@@ -38,6 +50,6 @@ module.exports = (app, limiter) => {
           response.send('Unauthenticated');
         }
       })
-      .catch(err => response.send(err));
+      .catch((err) => response.send(err));
   });
 };

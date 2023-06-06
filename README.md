@@ -18,6 +18,14 @@ Install all dependencies needed for the project:
 npm install --legacy-peer-deps
 ```
 
+---
+
+**NOTE**
+
+we use Husky to automatically run format, lint and test , but to install it you must run `npm install --legacy-peer-deps` at least once. Thus, lint-staged will see what is being changed and run the steps on top of them.
+
+---
+
 ### Run
 
 Before running the microservices, you have to create a `.env` file inside the root of the project.
@@ -72,6 +80,16 @@ LISTS_MICROSERVICE_URL=http://host.docker.internal:3333/api
 
 > recommend that you connect to the special DNS name `host.docker.internal` which resolves to the internal IP address used by the host
 
+### Webserver
+
+> This project contains our front-end and back-end
+
+#### Docker Command to Build/Run
+
+```sh
+docker compose -f "./apps/webserver/docker-compose.yml" up --build
+```
+
 ### Test
 
 To run tests for a microservice, just specify the name of the microservice:
@@ -101,6 +119,7 @@ nx lint microservices-list-downloader
 ```sh
 .
 ├── apps/              # contains the application projects.
+│   ├── webserver/     # gfwpro project contains our front-end and back-end
 │   └── microservices/
 │       ├── b2b/       # store all b2b logic
 │       ├── list-downloader/ # store all list downloader logic

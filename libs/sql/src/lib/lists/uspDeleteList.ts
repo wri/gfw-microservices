@@ -6,12 +6,7 @@ import { SQL_CONFIG } from '../config/config';
 
 @Injectable()
 export class UspDeleteList {
-  async run(
-    databaseName: string,
-    listName: string,
-    listTable: string,
-    listAnalysisTable
-  ) {
+  async run(databaseName: string, listName: string, listTable: string, listAnalysisTable) {
     const parameters = [
       { field: 'list_name', type: sql.NVarChar(150), value: listName },
       { field: 'list_table', type: sql.NVarChar(150), value: listTable },

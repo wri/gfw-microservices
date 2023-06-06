@@ -10,14 +10,13 @@ The application layer is responsible for the use cases and business logic of the
 
 ### Invitation
 
--   `invitation.use-case.ts`: Contains the use cases related to Invitations.
--   `invitation.dto.ts`: Contains the DTOs related to Invitations.
+- `invitation.use-case.ts`: Contains the use cases related to Invitations.
+- `invitation.dto.ts`: Contains the DTOs related to Invitations.
 
 ### Connection
 
--   `connection.use-case.ts`: Contains the use cases related to Connections.
--   `connection.dto.ts`: Contains the DTOs related to Connections.
-
+- `connection.use-case.ts`: Contains the use cases related to Connections.
+- `connection.dto.ts`: Contains the DTOs related to Connections.
 
 ## Domain Layer
 
@@ -25,13 +24,13 @@ The domain layer contains the business logic of the microservice. It is where th
 
 ### Invitation
 
--   `invitation.entity.ts`: Contains the Invitation entity definition.
--   `invitation.repository.ts`: Contains the interface for the Invitation repository.
+- `invitation.entity.ts`: Contains the Invitation entity definition.
+- `invitation.repository.ts`: Contains the interface for the Invitation repository.
 
 ### Connection
 
--   `connection.entity.ts`: Contains the Connection entity definition.
--   `connection.repository.ts`: Contains the interface for the Connection repository.
+- `connection.entity.ts`: Contains the Connection entity definition.
+- `connection.repository.ts`: Contains the interface for the Connection repository.
 
 ## Infrastructure Layer
 
@@ -39,14 +38,13 @@ The infrastructure layer contains the implementation details of the microservice
 
 ### Invitation
 
--   `invitation.repository.impl.ts`: Contains the implementation of the Invitation repository using a database.
+- `invitation.repository.impl.ts`: Contains the implementation of the Invitation repository using a database.
 - `invitation.controller.ts`: Contains the NestJS controllers related to Invitations.
 
 ### Connection
 
--   `connection.repository.impl.ts`: Contains the implementation of the Connection repository using a database.
--   `connection.controller.ts`: Contains the NestJS controllers related to Connections.
-
+- `connection.repository.impl.ts`: Contains the implementation of the Connection repository using a database.
+- `connection.controller.ts`: Contains the NestJS controllers related to Connections.
 
 ## Shared Layer
 

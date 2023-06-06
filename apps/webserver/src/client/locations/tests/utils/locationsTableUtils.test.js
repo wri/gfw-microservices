@@ -1,11 +1,12 @@
-import { listStatus,
+import {
+  listStatus,
   sortAlphaNum,
   sortByStatus,
   sortByNone,
   locationIsActive,
   checkValid,
   numberWithCommas,
-  sortOrderOption
+  sortOrderOption,
 } from '../../js/utils/locationsTableUtils';
 import { ActiveLocationOne, PedingLocation } from '../mockedData';
 
@@ -56,8 +57,8 @@ describe('sortByNone', () => {
   const secondValue = 321;
 
   it('Should be 0 when both value are equal', () => {
-    expect(sortByNone(noneValue, noneValue)).toBe(sortOrderOption.sameValue)
-    expect(sortByNone(firstValue, firstValue)).toBe(sortOrderOption.sameValue)
+    expect(sortByNone(noneValue, noneValue)).toBe(sortOrderOption.sameValue);
+    expect(sortByNone(firstValue, firstValue)).toBe(sortOrderOption.sameValue);
   });
 
   it('Should be 1 when first value is none', () => {
@@ -75,17 +76,16 @@ describe('sortByNone', () => {
   it('Should be 1 when second value is bigger', () => {
     expect(sortByNone(secondValue, firstValue)).toBe(sortOrderOption.keep);
   });
-  
 });
 
-describe('sortByStatus', ()=>{
+describe('sortByStatus', () => {
   it('should return area diference when both status are active', () => {
     const locationA = {
       location_status_id: listStatus.active,
-    }
+    };
     const locationB = {
       location_status_id: listStatus.active,
-    }
+    };
     const response = sortByStatus(locationA, locationB);
     expect(response).toBe(2);
   });
@@ -93,36 +93,36 @@ describe('sortByStatus', ()=>{
   it('should return 0 when both status locations are not active', () => {
     const a = {
       location_status_id: 3,
-    }
+    };
     const b = {
       location_status_id: 4,
-    }
+    };
 
     const response = sortByStatus(a, b);
     expect(response).toBe(sortOrderOption.sameValue);
-  })
+  });
 
   it('should return 1 when just first status locations is active', () => {
     const a = {
       location_status_id: listStatus.active,
-    }
+    };
     const b = {
       location_status_id: listStatus.pending,
-    }
+    };
 
     const response = sortByStatus(a, b);
-    expect(response).toBe(sortOrderOption.keep)
+    expect(response).toBe(sortOrderOption.keep);
   });
 
   it('should return -1 when just second status locations is active', () => {
     const a = {
       location_status_id: listStatus.pending,
-    }
+    };
     const b = {
       location_status_id: listStatus.active,
-    }
+    };
     const response = sortByStatus(a, b);
-    expect(response).toBe(sortOrderOption.invert)
+    expect(response).toBe(sortOrderOption.invert);
   });
 });
 
@@ -134,7 +134,7 @@ describe('locationIsActive', () => {
   it('should return false when location status is not active', () => {
     expect(locationIsActive(PedingLocation)).toBe(false);
   });
-})
+});
 
 describe('checkValid', () => {
   it('Shuold return true when data is not empty', () => {

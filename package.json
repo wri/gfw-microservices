@@ -89,9 +89,12 @@
     "typescript": "^4.8.4"
   },
   "lint-staged": {
-    "{apps,libs,tools}/**/*.{ts, js, json, md}": [
+    "{apps,libs,tools}/**/*.{ts, js}": [
       "nx affected --target lint --uncommitted --fix true",
       "nx affected --target test --uncommitted",
+      "nx format:write --uncommitted"
+    ],
+    "*.{json, md, yml}": [
       "nx format:write --uncommitted"
     ]
   }

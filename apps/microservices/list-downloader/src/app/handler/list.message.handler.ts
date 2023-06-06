@@ -21,7 +21,7 @@ export class ListMessageHandler {
   @SqsMessageHandler('list-generate-file', true)
   async handleMessage(messages: Array<AWS.SQS.Message>) {
     const [message] = messages;
-    const filters = this.reorganizeFilers(message);
+    const filters = this.reorganizeFilters(message);
 
     const { listID } = filters;
     // TODO: improve remove message should be automatically
@@ -42,27 +42,39 @@ export class ListMessageHandler {
     this.logger.log(`Removed message: ${JSON.stringify(removedMessage)}`);
   }
 
-  reorganizeFilers(messages: AWS.SQS.Message) {
+  reorganizeFilters(messages: AWS.SQS.Message) {
     const message = messages;
 
-    const getValues = (obj) => obj?.StringValue;
+    const getValues = (obj) => {
+      let value = obj?.StringValue;
+      value = value === 'undefined' ? '' : value;
+      return value;
+    };
 
     const getValuesAndSpread = (obj) => {
-      const value = obj?.StringValue;
-      return value ? JSON.parse(value) : {};
+      let value = obj?.StringValue;
+      value = value === 'undefined' ? '{}' : value;
+      return value ? JSON.parse(value ?? '{}') : {};
     };
 
     const { analysisArea, file, geoInfo, list, organizationDatabase, userEmail } = JSON.parse(
-      message.Body
+      message.Body ?? '{}'
     );
 
-    return {
+    const filters = {
       organizationDatabase: getValues(organizationDatabase),
-      userEmail: getValues(userEmail),
       ...getValuesAndSpread(analysisArea),
       ...getValuesAndSpread(file),
       ...getValuesAndSpread(geoInfo),
       ...getValuesAndSpread(list),
+    };
+
+    this.logger.log(`Received message ${JSON.stringify(filters)}...`);
+
+    // avoid logging sensitive data
+    return {
+      ...filters,
+      userEmail: getValues(userEmail),
     };
   }
 }

@@ -5,13 +5,13 @@ import './OtbnTable.scss';
 
 function Table({ data }) {
   const argentinaOtbnArea = JSON.parse(data?.arg_otbn_area);
-  const categoryIArea = argentinaOtbnArea['Category I'] || 0;
-  const categoryIIArea = argentinaOtbnArea['Category II'] || 0;
-  const categoryIIIArea = argentinaOtbnArea['Category III'] || 0;
+  const categoryIArea = argentinaOtbnArea['Category I'];
+  const categoryIIArea = argentinaOtbnArea['Category II'];
+  const categoryIIIArea = argentinaOtbnArea['Category III'];
   const totalArea = categoryIArea + categoryIIArea + categoryIIIArea;
 
   const categoryRows = otbnCategories.map((category) => {
-    const categoryArea = argentinaOtbnArea[category] || 0;
+    const categoryArea = argentinaOtbnArea[category];
     const categoryPercentage = (categoryArea / totalArea) * 100;
     return (
       <tr key={category}>

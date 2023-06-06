@@ -28,7 +28,7 @@ const getTreeCoverLossArgOtbnYearlyData = (
   }
 
   const filterDataByYearRange = (obj) =>
-    Object.entries(obj)?.filter(
+    Object.entries(obj).filter(
       ([key]) => parseInt(key, 10) >= startYear && parseInt(key, 10) <= endYear
     );
 
@@ -37,12 +37,10 @@ const getTreeCoverLossArgOtbnYearlyData = (
   const totalLossByCategory = {};
 
   categories.forEach((category) => {
-    const dataFilteredByYearRange = treeCoverLossArgOtbnYearly[category]
-      ? filterDataByYearRange(treeCoverLossArgOtbnYearly[category])
-      : [];
+    const dataFilteredByYearRange = filterDataByYearRange(treeCoverLossArgOtbnYearly[category]);
     const categoryLoss = dataFilteredByYearRange
-      ?.map(([, value]) => value)
-      ?.reduce((x, y) => parseFloat(x) + parseFloat(y), 0);
+      .map(([, value]) => value)
+      .reduce((x, y) => parseFloat(x) + parseFloat(y));
 
     if (
       (category === 'Category I' && showCategoryI) ||

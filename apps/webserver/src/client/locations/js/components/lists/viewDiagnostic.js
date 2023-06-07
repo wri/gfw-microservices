@@ -5,6 +5,8 @@ import axios from 'axios';
 import store from '../../store';
 import {
   changeView,
+  resetList,
+  addList,
   updateSelectedAndVisibleLocations,
   updateSelectedLocations,
   updateSpatialData,
@@ -38,29 +40,29 @@ function getUserListDataRequestRoute(isSingleLocation = false) {
 }
 
 export const viewDiagnostic = async (
-  isSingleLocation,
   selectedList,
-  selectedLocations,
-  listView,
   history,
-  list_locations_count,
-  filters
+  filters = {},
+  isSingleLocation = false,
+  selectedLocations = [],
+  listView = ''
 ) => {
-  const isGFWList = gfwListNames.includes(selectedList.list_name);
+  const { id, list_name, list_locations_count } = selectedList;
+  const isGFWList = gfwListNames.includes(list_name);
   const route = isGFWList
     ? getGfwProListDataRequestRoute(isSingleLocation)
     : getUserListDataRequestRoute(isSingleLocation);
 
   const requestDataParams = isGFWList
     ? {
-        list_id: selectedList.id,
+        list_id: id,
         location_ids: isSingleLocation ? selectedLocations : [],
-        rowsRequested: list_locations_count || 0,
+        rowsRequested: list_locations_count,
       }
     : {
-        list_ids: [selectedList.id],
+        list_ids: [id],
         location_id: isSingleLocation ? selectedLocations[0] : 0,
-        rowsRequested: isSingleLocation ? 1 : list_locations_count || 0,
+        rowsRequested: isSingleLocation ? 1 : list_locations_count,
         columnsToReturn: isSingleLocation ? null : 'Latitude,Longitude,location_id',
         filters: isSingleLocation ? null : filters,
       };
@@ -116,7 +118,7 @@ export const viewDiagnostic = async (
             },
           });
         });
-
+      store.dispatch(resetList(selectedList));
       store.dispatch(updateSelectedLocations(locationIDs));
       store.dispatch(updateSelectedAndVisibleLocations(locationIDs));
       store.dispatch(updateSpatialData(locationsSpatialFeatures));

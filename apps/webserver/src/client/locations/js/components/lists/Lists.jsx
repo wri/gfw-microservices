@@ -1377,20 +1377,18 @@ export default class Lists extends Component {
   viewDiagnostic = async (isSingleLocation) => {
     const { selectedLists, selectedLocations, listView, history, filters } = this.props;
     const [selectedList] = selectedLists;
-    const { list_locations_count } = selectedList;
 
     this.setState({
       isLoading: true,
     });
 
     const response = await viewDiagnostic(
-      isSingleLocation,
       selectedList,
-      selectedLocations,
-      listView,
       history,
-      list_locations_count,
-      filters
+      filters,
+      isSingleLocation,
+      selectedLocations,
+      listView
     );
 
     if (response?.errorCode === 604) {

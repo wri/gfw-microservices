@@ -2924,6 +2924,7 @@ export const profilePage = {
       invitationSentDescription:
         'You will be notified when the company accepts your B2B connection request.',
       email: 'E-mail',
+      organizationName: 'Organization Name',
       name: 'name',
       accountManagerInformation: 'Account Manager Information',
       status: 'status',
@@ -2953,6 +2954,7 @@ export const profilePage = {
       withAnAdministratorEmail: 'with an administrator e-mail.',
       multipleAccountsMessage: 'Select one account',
       multipleAccountsDescription: 'This email has more than 1 account. Select one below.',
+      emailAndOrgNotMatchingError: 'Your e-mail or organization name does not match. Try again.',
     },
   },
 };

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import TextField from '@mui/material/TextField';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@mui/material/CardActions';
 import { validEmail } from '../../../../../locations/js/utils/validations';
@@ -7,8 +8,17 @@ import { sendInvitation } from '../fetchB2b';
 
 function NewB2bConnectionEmailForm({ setApiResponse }) {
   const [email, setEmail] = useState('');
+  const [organizationName, setOrganizationName] = useState('');
+  const [emailAndOrgNotMatchingError, setEmailAndOrgNotMatchingError] = useState(false);
 
   const handleSubmit = () => {
+    setEmailAndOrgNotMatchingError(false);
+
+    if (Math.random() < 0.5) {
+      setEmailAndOrgNotMatchingError(true);
+    }
+    /*
+    TODO: front end - backend integration
     sendInvitation(email)
       .then(() => {
         setApiResponse('success');
@@ -17,34 +27,46 @@ function NewB2bConnectionEmailForm({ setApiResponse }) {
         if (err === 401) {
           return setApiResponse('emailNotFound');
         }
-
         setApiResponse('connectionAlreadyExists');
       });
+    */
   };
+  const isSubmitDisabled = !email || !validEmail(email) || !organizationName;
 
   return (
     <>
       <CardContent>
         <div>{profilePage.profileManager.b2bSection.sendInvitationDescription}</div>
-        <div className="input-search">
-          <input
-            type="search"
-            value={email}
-            aria-label={profilePage.profileManager.b2bSection.email}
-            placeholder={profilePage.profileManager.b2bSection.email}
-            onChange={(evt) => setEmail(evt.target.value)}
-          />
-          <div
-            dangerouslySetInnerHTML={{
-              __html: profilePage.profileManager.b2bSection.termsOfUseWarning,
-            }}
-          />
-        </div>
+        <TextField
+          style={{ marginBottom: '10px' }}
+          value={email}
+          fullWidth
+          error={emailAndOrgNotMatchingError}
+          placeholder={profilePage.profileManager.b2bSection.email}
+          onChange={(evt) => setEmail(evt.target.value)}
+        />
+        <TextField
+          value={organizationName}
+          fullWidth
+          error={emailAndOrgNotMatchingError}
+          placeholder={profilePage.profileManager.b2bSection.organizationName}
+          onChange={(evt) => setOrganizationName(evt.target.value)}
+        />
+        {emailAndOrgNotMatchingError && (
+          <div className="new-b2b-connection-modal__error-message">
+            {profilePage.profileManager.b2bSection.emailAndOrgNotMatchingError}
+          </div>
+        )}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: profilePage.profileManager.b2bSection.termsOfUseWarning,
+          }}
+        />
       </CardContent>
       <CardActions style={{ justifyContent: 'right' }}>
         <button
           type="button"
-          disabled={!email || !validEmail(email)}
+          disabled={isSubmitDisabled}
           className="new-b2b-connection-modal__action-button"
           onClick={handleSubmit}
         >

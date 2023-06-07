@@ -155,7 +155,7 @@ class Landing extends Component {
 
   createLocationsFromList = (list, i) => {
     const { history, userFolders, currentUser, showShareList } = this.props;
-    const showIcon = this.state.selectedTab === LISTS_SHARED_WITH_ME;
+    const isAListSharedWithMe = this.state.selectedTab === LISTS_SHARED_WITH_ME;
 
     return (
       <LocationList
@@ -170,12 +170,11 @@ class Landing extends Component {
         currentUser={currentUser}
         showShareList={showShareList}
         B2BsharedListEnabled={this.props.B2BsharedListEnabled}
-        isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(list)}
         onFolderChange={(msg) => {
           this.setState({ bannerContent: msg });
           this.loadFolders();
         }}
-        showIcon={showIcon}
+        isAListSharedWithMe={isAListSharedWithMe}
       />
     );
   };

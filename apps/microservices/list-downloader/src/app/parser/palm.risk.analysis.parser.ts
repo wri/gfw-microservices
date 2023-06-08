@@ -15,8 +15,7 @@ const priorityLabel = {
 };
 
 const categoryParser = ({ totalProp, currentRow }) => {
-  const lastYear =
-    totalProp[Object.keys(totalProp)[Object.keys(totalProp).length - 1]];
+  const lastYear = totalProp[Object.keys(totalProp)[Object.keys(totalProp).length - 1]];
 
   const label = priorityLabel[lastYear];
   if (label) {
@@ -37,9 +36,7 @@ const palmRiskAnalysisParser = ({ operation, data, dataRow, csvData }) => {
   const currentRow = cloneRow(dataRow);
   operation.fields.forEach((field) => {
     if (field.type === 'yearly') {
-      let totalProp = data[field.attribute]
-        ? JSON.parse(data[field.attribute])
-        : {};
+      let totalProp = data[field.attribute] ? JSON.parse(data[field.attribute]) : {};
 
       totalProp = filterBelow2021(totalProp);
       const val = Object.entries(totalProp).reduce((acc, [, value]) => {

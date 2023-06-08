@@ -2,10 +2,7 @@ import { SQLUtils } from '../util/sql.utils';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
-import {
-  GenerationFileRequest,
-  GetAnalysisDataCountForUserListResponse,
-} from './model';
+import { GenerationFileRequest, GetAnalysisDataCountForUserListResponse } from './model';
 import { SQL_CONFIG } from '../config/config';
 
 @Injectable()
@@ -19,8 +16,8 @@ export class UspGetAnalysisDataCountForUserList {
       rowsPerPage,
       analysisAreaMin,
       analysisAreaMax,
-      searchString
-    } =  filters;
+      searchString,
+    } = filters;
 
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
@@ -43,11 +40,10 @@ export class UspGetAnalysisDataCountForUserList {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      const recordsets =
-        await connection.executeQuery<GetAnalysisDataCountForUserListResponse>(
-          'uspGetAnalysisDataCountForUserList',
-          parameters
-        );
+      const recordsets = await connection.executeQuery<GetAnalysisDataCountForUserListResponse>(
+        'uspGetAnalysisDataCountForUserList',
+        parameters
+      );
 
       const numberOfPages = Math.ceil(recordsets[0].statistic / rowsPerPage);
       connection.disconnect();

@@ -26,9 +26,6 @@ export class PalmRiskAnalysisService extends DashboardHandleDownload {
 
   isPalmRiskAnalysisFile(filters: GenerationFileRequest) {
     const { listView, type } = filters;
-    return (
-      listView === 'commodity_risk' &&
-      (type === 'palmRiskAnalysis' || type === 'everything')
-    );
+    return listView === 'commodity_risk' && (type === 'palmRiskAnalysis' || type === 'everything');
   }
 }

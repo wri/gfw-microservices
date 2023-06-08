@@ -705,14 +705,6 @@ export const EXCEL_TEMPLATES = {
             parsed: 'total',
           },
         },
-        {
-          attribute: 'tree_cover_loss_intact_forest_yearly',
-          label: 'Intact Forest Landscapes',
-          following: {
-            attribute: 'tree_cover_loss_intact_forest_yearly',
-            parsed: 'total',
-          },
-        },
       ],
     },
   ],

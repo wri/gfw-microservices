@@ -23,7 +23,7 @@ export const ActiveLocationOne = {
   commodity_value_peat_level: '{"2021": 5}',
   commodity_value_protected_areas_level: '{"2021": 5}',
   commodity_value_overall_level: '{"2021": 5}',
-}
+};
 
 export const ActiveLocationTwo = {
   location_status_id: listStatus.active,
@@ -48,7 +48,7 @@ export const ActiveLocationTwo = {
   commodity_value_peat_level: '{"2021": 3}',
   commodity_value_protected_areas_level: '{"2021": 3}',
   commodity_value_overall_level: '{"2021": 3}',
-}
+};
 
 export const PedingLocation = {
   location_status_id: listStatus.pending,
@@ -73,4 +73,4 @@ export const PedingLocation = {
   commodity_value_peat_level: '{"2021": 3}',
   commodity_value_protected_areas_level: '{"2021": 3}',
   commodity_value_overall_level: '{"2021": 3}',
-}
+};

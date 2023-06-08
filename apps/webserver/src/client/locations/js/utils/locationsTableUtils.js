@@ -5,19 +5,19 @@ export const listStatus = {
   draft: 4,
   analyzingDiagnostic: 5,
   analyzingDashboard: 6,
-}
+};
 
 export const getColorByLevelClasse = {
   0: 'yellow',
   1: 'orange',
   2: 'red',
-}
+};
 
 export const sortOrderOption = {
   sameValue: 0,
   invert: -1,
   keep: 1,
-}
+};
 
 export const sortAlphaNum = (a, b) => {
   const reA = /[^a-zA-Z]/g;
@@ -27,14 +27,18 @@ export const sortAlphaNum = (a, b) => {
   if (aA === bA) {
     const aN = parseInt(a.replace(reN, ''), 10);
     const bN = parseInt(b.replace(reN, ''), 10);
-    return aN === bN ? sortOrderOption.sameValue : aN > bN ? sortOrderOption.keep : sortOrderOption.invert;
+    return aN === bN
+      ? sortOrderOption.sameValue
+      : aN > bN
+      ? sortOrderOption.keep
+      : sortOrderOption.invert;
   }
   return aA > bA ? sortOrderOption.keep : sortOrderOption.invert;
 };
 
 const isStringNone = (string) => {
   return string === null || string === 'None';
-}
+};
 
 export const sortByNone = (rowA, rowB) => {
   if (isStringNone(rowA) && rowA !== rowB) {
@@ -54,23 +58,23 @@ export const sortByNone = (rowA, rowB) => {
 
 export const locationIsActive = (location) => {
   return location.location_status_id === listStatus['active'];
-}
+};
 
 const isOnlyLastLocationsIsActive = (rowA, rowB) => {
   return !locationIsActive(rowA) && locationIsActive(rowB);
-}
+};
 
 const isOnlyFirstLocationsIsActive = (rowA, rowB) => {
   return locationIsActive(rowA) && !locationIsActive(rowB);
-}
+};
 
 const isBothLocationsAreActive = (rowA, rowB) => {
   return locationIsActive(rowA) && locationIsActive(rowB);
-}
+};
 
 const isNeitherLocationsAreActive = (rowA, rowB) => {
-  return !locationIsActive(rowA) && !locationIsActive(rowB);;
-}
+  return !locationIsActive(rowA) && !locationIsActive(rowB);
+};
 
 export const sortByStatus = (rowA, rowB) => {
   if (isOnlyLastLocationsIsActive(rowA, rowB)) {
@@ -144,8 +148,8 @@ export const getLastYear = (data) => {
 };
 
 export const normalizeColunmData = (data) => {
-  return Object.values(JSON.parse(data)).reduce((columnA, columnB) => columnA + columnB, 0)
-} 
+  return Object.values(JSON.parse(data)).reduce((columnA, columnB) => columnA + columnB, 0);
+};
 
 export const sortObjectNumbers = (rowA, rowB) => {
   const x = rowA === '{}' || !rowA ? 0 : parseFloat(getValue(rowA).replace(',', ''));

@@ -1,6 +1,5 @@
 import React from 'react';
 import WarningTwoToneIcon from '@mui/icons-material/WarningTwoTone';
-import Button from '@mui/material/Button';
 import RaisedButton from 'material-ui/RaisedButton';
 import { locationsPage } from '../../../../common/js/config';
 import IconTimes from '../../../../common/js/components/icon/IconTimes';

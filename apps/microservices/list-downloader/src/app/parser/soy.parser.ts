@@ -5,9 +5,7 @@ const _soyParserForPre2001 = ({ data, currentRow }) => {
 
   if (!currentRow) return;
 
-  const pre2001Percent = formatPct(
-    validatePct((totalPre2001 / data.total_area) * 100)
-  );
+  const pre2001Percent = formatPct(validatePct((totalPre2001 / data.total_area) * 100));
 
   if (pre2001Percent) {
     currentRow.push(pre2001Percent);

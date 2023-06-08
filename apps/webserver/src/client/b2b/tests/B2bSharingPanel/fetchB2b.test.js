@@ -33,7 +33,7 @@ const runfetchTests = (action) => {
     await action(email);
     expect(console.log).toHaveBeenCalledWith(expectedError);
   });
-}
+};
 
 jest.mock('../../../../common/js/utils/httpRequest', () => ({
   fetchJSON: jest.fn(),

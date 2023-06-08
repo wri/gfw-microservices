@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import Result from '../../Shared/domain/result';
-import ResultError from '../../Shared/domain/result/result.error';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import { MultiConnectRepository } from '../../Shared/infraestructure/typeorm/multi-connect.repository';
 import { Organization } from '../domain/organization.entity';
@@ -20,7 +19,9 @@ export class OrganizationRepositoryMssql
     super(repository);
   }
 
-  async findByFilters(filters: any): ResultPromise<Organization[]> {
+  async findByFilters(filters: {
+    [key in string]: string | boolean;
+  }): ResultPromise<Organization[]> {
     const query = this.repository
       .createQueryBuilder('organizations')
       .where(filters);

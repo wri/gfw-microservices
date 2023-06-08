@@ -1,7 +1,6 @@
 import { RepositoryMssqlSP } from '../../Shared/infraestructure/mysql/repository.mysql';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import Result from '../../Shared/domain/result';
-import ResultError from '../../Shared/domain/result/result.error';
 import { UserRepository } from '../domain/user.repository';
 import { User, UserOrganization } from '../domain/user';
 import { UserMapper } from '../application/user.mapper';

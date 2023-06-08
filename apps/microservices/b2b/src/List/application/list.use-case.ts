@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DatabaseProvider } from '../../Database/database.provider';
 import { OrganizationUseCases } from '../../Organization/application/organization.use-case';
 import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';
@@ -14,7 +13,10 @@ export class ListUseCases {
 
   constructor(private readonly listRepository: ListRepository) {}
 
-  async findListsByFilters(filters: any, orgId: number): ResultPromise<List[]> {
+  async findListsByFilters(
+    filters: { [key in string]: string | boolean },
+    orgId: number,
+  ): ResultPromise<List[]> {
     const orgRes = await this.organizationUseCases.findById(orgId);
     if (orgRes.isFailure) return Result.fail(orgRes.getError());
     const org = orgRes.getValue();

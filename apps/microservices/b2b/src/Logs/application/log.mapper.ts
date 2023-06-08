@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import * as sql from 'mssql';
 import { LogActivityDto } from '../application/dtos/log.dto';
@@ -8,7 +8,6 @@ import { UserRepository } from '../../User/domain/user.repository';
 import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import ResultError from '../../Shared/domain/result/result.error';
-import { User } from '../../User/domain/user';
 
 export class LogDataMapper {
   async createLog(
@@ -16,9 +15,12 @@ export class LogDataMapper {
     db: string,
     userRepository: UserRepository,
   ): ResultPromise<Log> {
-    const userResponse = await userRepository.getUserByEmail(logDto.userEmail, db);
+    const userResponse = await userRepository.getUserByEmail(
+      logDto.userEmail,
+      db,
+    );
     if (userResponse.isFailure) {
-      console.log('Error while getting user to save log');
+      Logger.log('Error while getting user to save log');
       return Result.fail(
         new ResultError('Error while getting user to save log', 500),
       );

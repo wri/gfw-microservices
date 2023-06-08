@@ -1,7 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityRepository, Repository } from 'typeorm';
-import { DatabaseProvider } from '../../Database/database.provider';
+import { Repository } from 'typeorm';
 import Result from '../../Shared/domain/result';
 import ResultError from '../../Shared/domain/result/result.error';
 import ResultPromise from '../../Shared/domain/result/result.promise';
@@ -21,7 +20,10 @@ export class ListRepositoryMysql
     super(repository);
   }
 
-  async findListsByFilters(filters: any, db: string): ResultPromise<List[]> {
+  async findListsByFilters(
+    filters: { [key in string]: string | boolean },
+    db: string,
+  ): ResultPromise<List[]> {
     const repoPromise = await this.dbRepositorySelector(db);
     const repo = repoPromise.isSuccess ? repoPromise.getValue() : null;
     if (repo) {

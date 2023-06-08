@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ConnectionRequest } from '../../Connection/domain/connection.entity';
 import { QueryCriteria } from '../../Shared/domain/criteria/query';
 import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';
@@ -23,9 +22,11 @@ export class SharedListRepositoryMssql
   }
 
   update(id: number, entity: SharedList): ResultPromise<SharedList> {
+    console.log(id, entity);
     throw new Error('Method not implemented.');
   }
   delete(id: number): ResultPromise<void> {
+    console.log(id);
     throw new Error('Method not implemented.');
   }
 

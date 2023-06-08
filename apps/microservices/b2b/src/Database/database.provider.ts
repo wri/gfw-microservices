@@ -1,9 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import {
-  DatabaseConfig,
-  databaseConfig,
-} from '../Shared/domain/database-provider/database.config';
 import Result from '../Shared/domain/result';
 import ResultError from '../Shared/domain/result/result.error';
 import ResultPromise from '../Shared/domain/result/result.promise';
@@ -13,18 +9,14 @@ import entities from '../Shared/infraestructure/typeorm/entities';
 export class DatabaseProvider {
   private readonly connections: Record<string, DataSource> = {};
 
-  constructor() {}
-
   getConnections() {
     return this.connections;
   }
 
   async getConnection(database: string): ResultPromise<DataSource> {
-    console.log('Connection Exist', !!this.connections[database]);
+    Logger.log('Connection Exist', !!this.connections[database]);
     if (!this.connections[database]) {
       try {
-        //const config: DatabaseConfig = databaseConfig[database];
-
         const connectionDb = new DataSource({
           type: 'mssql',
           host: process.env.MSSQL_HOSTNAME,
@@ -32,7 +24,7 @@ export class DatabaseProvider {
           username: process.env.MSSQL_USERNAME,
           password: process.env.MSSQL_PASSWORD,
           database: database,
-          entities: entities, //[__dirname + '/**/*.entity{.ts,.js}'],
+          entities: entities,
           extra: {
             trustServerCertificate: true,
           },
@@ -40,10 +32,10 @@ export class DatabaseProvider {
 
         this.connections[database] = await connectionDb.initialize();
 
-        console.log(`Data Source ${database} has been initialized`);
+        Logger.log(`Data Source ${database} has been initialized`);
         return Result.ok(this.connections[database]);
       } catch (error) {
-        console.error(`Data Source ${database} initialization error`, error);
+        Logger.error(`Data Source ${database} initialization error`, error);
         return Result.fail(
           new ResultError(`Data Source initialization error`, 500),
         );

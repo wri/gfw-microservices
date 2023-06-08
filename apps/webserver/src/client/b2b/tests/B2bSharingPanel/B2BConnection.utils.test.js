@@ -34,7 +34,7 @@ describe('filterPerStatus', () => {
     const data = [
       { id: 1, status: 'pending' },
       { id: 2, status: 'approved' },
-      { id: 3, status: 'rejected' },
+      { id: 3, status: 'approved' },
     ];
     const status = 'approved';
     const filter = 'rejected';

@@ -962,6 +962,8 @@ export const locationsPage = {
       removed2: ' folder',
     },
     tooltips: {
+      working:
+      'This list is being processed. Reload the page once the analysis is finished to access the results.',
       analyzing:
         'List is analyzing. You will receive an email once analysis is complete and can reload the page to access the results.',
       failed:

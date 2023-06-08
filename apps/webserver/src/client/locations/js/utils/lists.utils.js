@@ -383,6 +383,14 @@ const isAnalyzingStatus = (status) => {
 
 const isFailedList = (list) => list?.list_status_id === locationsPage.listStatus.Inactive;
 
+const isLocationDataNotAvailable = (list) => {
+  const isFailed = isFailedList(list);
+  const isBeingAnalized = isAnalyzingStatus(list.list_status_id);
+  const hasLockStatus = !!list.lock_status && !!list.lock_user_id;
+  return isFailed || isBeingAnalized || hasLockStatus;
+}
+
+
 module.exports = {
   checkValidView,
   checkValidViewCommodity,
@@ -408,4 +416,5 @@ module.exports = {
   findArrIndex,
   isAnalyzingStatus,
   isFailedList,
+  isLocationDataNotAvailable,
 };

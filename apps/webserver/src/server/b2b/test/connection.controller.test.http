@@ -1,25 +1,25 @@
 ### get organization that user is admin
 GET https://localhost:8443/b2b/orgs/gustavo.figueiredo.5@wriconsultant.org
 Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+Cookie: gfwpro.globalforestwatch.org=s%3A0e332600-0472-11ee-be56-99cb2ebeff76.tnOlLX%2BnZb4C7dc%2BhgauOPd1IcM8ujmJFjege1gr2ec
 
 
 ### get all connections
 GET https://localhost:8443/b2b/connection?
 Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+Cookie: gfwpro.globalforestwatch.org=s%3A0e332600-0472-11ee-be56-99cb2ebeff76.tnOlLX%2BnZb4C7dc%2BhgauOPd1IcM8ujmJFjege1gr2ec
 
 ### accpect connection
 PUT https://localhost:8443/b2b/connection/accept/75
 Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+Cookie: gfwpro.globalforestwatch.org=s%3A0e332600-0472-11ee-be56-99cb2ebeff76.tnOlLX%2BnZb4C7dc%2BhgauOPd1IcM8ujmJFjege1gr2ec
 
 ### accpect connection
 PUT https://localhost:8443/b2b/connection/reject/75
 Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+Cookie: gfwpro.globalforestwatch.org=s%3A0e332600-0472-11ee-be56-99cb2ebeff76.tnOlLX%2BnZb4C7dc%2BhgauOPd1IcM8ujmJFjege1gr2ec
 
 ### accpect connection
 PUT https://localhost:8443/b2b/connection/cancel/75
 Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+Cookie: gfwpro.globalforestwatch.org=s%3A0e332600-0472-11ee-be56-99cb2ebeff76.tnOlLX%2BnZb4C7dc%2BhgauOPd1IcM8ujmJFjege1gr2ec

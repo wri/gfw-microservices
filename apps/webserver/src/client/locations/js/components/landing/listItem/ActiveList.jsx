@@ -25,7 +25,6 @@ function ActiveList({
   showDelete,
   showRerun,
   showRerunOpt,
-  hasLockStatus,
   showMapOpt,
   showDownloadOpt,
   setManageListFolderOpen,
@@ -55,7 +54,7 @@ function ActiveList({
   const isEmptyList = locations === 0;
 
   const clickLocationRow = () => {
-    if (hasLockStatus || isEmptyList) {
+    if (isEmptyList) {
       return;
     }
     // clicked a location with a successfully completed analysis; go to it
@@ -119,7 +118,7 @@ function ActiveList({
       )}
 
       <div className="locations-list__controls">
-        {showRerun && !hasLockStatus && (
+        {showRerun && (
           <Button
             className="locations-list__update-button"
             onClick={handleRerunDialogState}
@@ -128,19 +127,9 @@ function ActiveList({
             variant="secondary"
           />
         )}
-
-        {!hasLockStatus && (
-          <span className="locations-list__count">
-            {numberWithCommas(locations || 0)} {locationsPage.lists.locations.toLowerCase()}
-          </span>
-        )}
-
-        {hasLockStatus && (
-          <span className="locations-list__analyzing">
-            <InlineLoader />
-            Working...
-          </span>
-        )}
+        <span className="locations-list__count">
+          {numberWithCommas(locations || 0)} {locationsPage.lists.locations.toLowerCase()}
+        </span>
       </div>
 
       <div className="locations-list__menu-container">

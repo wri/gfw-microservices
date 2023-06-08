@@ -19,7 +19,6 @@ function FailedList({
   list,
   isAListSharedWithMe,
   showSharedColumn,
-  hasLockStatus,
   showRerun,
   handleRerunDialogState,
   showDelete,
@@ -47,7 +46,7 @@ function FailedList({
           </div>
         )}
         <div className="locations-list__controls">
-          {showRerun && !hasLockStatus && (
+          {showRerun && (
             <Button
               className="locations-list__update-button"
               onClick={handleRerunDialogState}
@@ -56,25 +55,22 @@ function FailedList({
               variant="secondary"
             />
           )}
-
-          {!hasLockStatus && (
-            <span className="locations-list__failed">
-              <FailedTooltip
-                placement="top"
-                label={locationsPage.lists.failed}
-                tooltipMessage={`This list has failed analysis. To receive results, resubmit this list for analysis. ${
-                  isLargeList ? 'Click to download the file and fix errors.' : ''
-                }`}
-                onClickAction={
-                  isLargeList
-                    ? () => {
-                        setOpenDownloadLargeListFileDialog(true);
-                      }
-                    : undefined
-                }
-              />
-            </span>
-          )}
+          <span className="locations-list__failed">
+            <FailedTooltip
+              placement="top"
+              label={locationsPage.lists.failed}
+              tooltipMessage={`This list has failed analysis. To receive results, resubmit this list for analysis. ${
+                isLargeList ? 'Click to download the file and fix errors.' : ''
+              }`}
+              onClickAction={
+                isLargeList
+                  ? () => {
+                      setOpenDownloadLargeListFileDialog(true);
+                    }
+                  : undefined
+              }
+            />
+          </span>
         </div>
 
         <div className="locations-list__menu-container">

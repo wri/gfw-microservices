@@ -27,6 +27,7 @@ try {
   // Update it based on our aliases, and mocks
   jestConfig.moduleNameMapper = {
     '^axios$': replacePathWithRootDir(require.resolve('axios')),
+    '^uuid$': replacePathWithRootDir(require.resolve('uuid')),
     '^mapshaper$': replacePathWithRootDir(require.resolve('mapshaper')),
     '\\.(css|scss)$': '<rootDir>/test/__mocks__/object.js',
     '\\.(jpe?g|png|gif|svg)$': '<rootDir>/test/__mocks__/object.js',
@@ -45,7 +46,11 @@ try {
     ...aliases,
   };
   // Set the test paths
-  jestConfig.testMatch = [`<rootDir>/${assets.clientJest}`, `<rootDir>/${assets.serverJest}`];
+  jestConfig.testMatch = [
+    `<rootDir>/${assets.clientJest}`,
+    `<rootDir>/${assets.serverJest}`,
+    `<rootDir>/${assets.configJest}`,
+  ];
   // Write the file back out to jestConfig
   fs.writeFileSync(jestConfigPath, JSON.stringify(jestConfig, null, 2), 'utf-8');
 } catch (err) {

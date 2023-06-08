@@ -1,16 +1,19 @@
 {
+  "name": "microservices-list-processing",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/microservices/list-processing/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/microservices/list-processing",
         "main": "apps/microservices/list-processing/src/main.ts",
         "tsConfig": "apps/microservices/list-processing/tsconfig.app.json",
-        "assets": ["apps/microservices/list-processing/src/assets"]
+        "assets": ["apps/microservices/list-processing/src/assets"],
+        "compiler": "tsc",
+        "target": "node"
       },
       "configurations": {
         "production": {
@@ -26,20 +29,20 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/node:node",
       "options": {
         "buildTarget": "microservices-list-processing:build"
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/microservices/list-processing/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/microservices/list-processing"],
       "options": {
         "jestConfig": "apps/microservices/list-processing/jest.config.ts",

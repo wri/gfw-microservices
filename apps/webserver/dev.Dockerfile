@@ -34,21 +34,26 @@ WORKDIR /
 RUN rm -rf /tmp/tippecanoe-src \
   && apt-get -y remove --purge build-essential && apt-get -y autoremove
 
+WORKDIR /
+RUN mkdir @wri-monorepos
+COPY dist/libs/shared @wri-monorepos/shared
+COPY dist/libs/sql @wri-monorepos/sql
+
 # Set the working directory
 WORKDIR /srv/src
 
 # Copy all required files into the working directory.
-COPY src/package.json .
-COPY src/package-lock.json .
-COPY src/postcss.config.js .
-COPY src/.babelrc .
-COPY src/server.js .
-COPY src/load-env.js .
-COPY src/run-app.sh .
-COPY src/client client
-COPY src/config config
-COPY src/server server
-COPY tsconfig.json .
+COPY apps/webserver/src/package.json .
+COPY apps/webserver/src/package-lock.json .
+COPY apps/webserver/src/postcss.config.js .
+COPY apps/webserver/src/.babelrc .
+COPY apps/webserver/src/server.js .
+COPY apps/webserver/src/load-env.js .
+COPY apps/webserver/src/run-app.sh .
+COPY apps/webserver/src/client client
+COPY apps/webserver/src/config config
+COPY apps/webserver/src/server server
+COPY apps/webserver/tsconfig.json .
 
 # Create Vector tiles directory
 RUN mkdir vectorTiles
@@ -56,6 +61,7 @@ RUN chmod -R 775 vectorTiles
 
 # Install all dependencies. Expects lockfile version to match.
 RUN npm --legacy-peer-deps ci
+RUN cp -r /@wri-monorepos ./node_modules/@wri-monorepos
 
 # Change file permissions for run script.
 RUN chmod -R 774 run-app.sh

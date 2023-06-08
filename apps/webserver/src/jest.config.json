@@ -17,7 +17,11 @@
   "setupFiles": ["@testing-library/react/dont-cleanup-after-each"],
   "setupFilesAfterEnv": ["./test/jest.setup.js", "@testing-library/jest-dom/extend-expect"],
   "testEnvironment": "jest-environment-jsdom",
-  "testMatch": ["<rootDir>/client/**/*.test.js", "<rootDir>/server/**/*.spec.js"],
+  "testMatch": [
+    "<rootDir>/client/**/*.test.js",
+    "<rootDir>/server/**/*.spec.js",
+    "<rootDir>/config/**/*.spec.js"
+  ],
   "transform": {
     ".+\\.(css|css!|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
     "^.+\\.(js|jsx)?$": "babel-jest"
@@ -26,6 +30,7 @@
   "verbose": false,
   "moduleNameMapper": {
     "^axios$": "<rootDir>/node_modules/axios/dist/node/axios.cjs",
+    "^uuid$": "<rootDir>/node_modules/uuid/dist/index.js",
     "^mapshaper$": "<rootDir>/node_modules/mapshaper/mapshaper.js",
     "\\.(css|scss)$": "<rootDir>/test/__mocks__/object.js",
     "\\.(jpe?g|png|gif|svg)$": "<rootDir>/test/__mocks__/object.js",

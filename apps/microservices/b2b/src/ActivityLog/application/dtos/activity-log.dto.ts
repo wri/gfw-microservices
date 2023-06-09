@@ -8,7 +8,7 @@ export enum ActivityType {
   ConnectionCancelled = 32,
 }
 
-export class LogActivityDto {
+export class ActivityLogDto {
   @IsNotEmpty()
   userEmail: string;
 

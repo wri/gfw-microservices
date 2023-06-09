@@ -4,7 +4,6 @@ import { AppService } from './Shared/application/app.service';
 import { ConnectionController } from './Connection/infraestructure/connection.controller';
 import { ConnectionModule } from './Connection/connection.module';
 import { ConfigModule } from '@nestjs/config';
-import { LogsModule } from './Logs/log.module';
 import { UserModule } from './User/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import entities from './Shared/infraestructure/typeorm/entities';
@@ -16,6 +15,7 @@ import { OrganizationController } from './Organization/infrastructure/organizati
 import { SharedListController } from './SharedList/infrastructure/shared-list.controller';
 import { SharedListModule } from './SharedList/shared-list.module';
 import { SharedModule } from './Shared/shared.module';
+import { ActivityLogModule } from './ActivityLog/activity-log.module';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { SharedModule } from './Shared/shared.module';
     ConnectionModule,
     OrganizationModule,
     SharedListModule,
-    LogsModule,
+    ActivityLogModule,
     ListModule,
     SharedModule,
     ConfigModule.forRoot({ isGlobal: true }),

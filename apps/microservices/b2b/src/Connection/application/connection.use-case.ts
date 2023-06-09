@@ -5,8 +5,6 @@ import { ConnectionStatus } from '../../Connection/domain/connection';
 import { ConnectionRepositorySP } from '../domain/connection.repository.sp';
 import { ConnectionDataMapper } from './connection.mapper';
 import { ConnectionAdminOrganizationDto } from './dtos/connection-admin-organizations.dto';
-import { LogsUseCases } from '../../Logs/application/log.use-case';
-import { ActivityType } from '../../Logs/application/dtos/log.dto';
 import { ConnectionFiltersDto } from './dtos/connection-filters.dto';
 import { ConnectionGetDto } from './dtos/connection-get.dto';
 import {
@@ -19,6 +17,8 @@ import { ConnectionRequestRepository } from '../domain/connection.repository';
 import { QueryCriteria } from '../../Shared/domain/criteria/query';
 import { SearchResult } from '../../Shared/domain/types';
 import { ConnectionRequest } from '../domain/connection.entity';
+import { ActivityLogUseCases } from '../../ActivityLog/application/activity-log.use-case';
+import { ActivityType } from '../../ActivityLog/application/dtos/activity-log.dto';
 
 @Injectable()
 export class ConnectionUseCases {
@@ -28,8 +28,8 @@ export class ConnectionUseCases {
     private mapper: ConnectionDataMapper,
   ) {}
 
-  @Inject(LogsUseCases)
-  private readonly logsUseCases: LogsUseCases;
+  @Inject(ActivityLogUseCases)
+  private readonly logsUseCases: ActivityLogUseCases;
 
   @Inject(EmailService)
   private readonly emailService: EmailService;

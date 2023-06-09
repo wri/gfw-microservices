@@ -1,7 +1,7 @@
 import { User } from '../../User/domain/user';
-import { ActivityType } from '../application/dtos/log.dto';
+import { ActivityType } from '../application/dtos/activity-log.dto';
 
-export class Log {
+export class ActivityLog {
   user: User;
   type: ActivityType;
   description: number;

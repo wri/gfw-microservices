@@ -1,20 +1,20 @@
 import { Logger } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import * as sql from 'mssql';
-import { LogActivityDto } from '../application/dtos/log.dto';
-import { Log } from '../domain/log';
 import { ParamStoreProcedure } from '../../Shared/infraestructure/mysql/store-procedure.params';
 import { UserRepository } from '../../User/domain/user.repository';
 import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import ResultError from '../../Shared/domain/result/result.error';
+import { ActivityLog } from '../domain/activity-log';
+import { ActivityLogDto } from './dtos/activity-log.dto';
 
-export class LogDataMapper {
+export class ActivityLogDataMapper {
   async createLog(
-    logDto: LogActivityDto,
+    logDto: ActivityLogDto,
     db: string,
     userRepository: UserRepository,
-  ): ResultPromise<Log> {
+  ): ResultPromise<ActivityLog> {
     const userResponse = await userRepository.getUserByEmail(
       logDto.userEmail,
       db,
@@ -29,7 +29,7 @@ export class LogDataMapper {
 
     //const user: User = plainToInstance(User, { email: logDto.userEmail });
     return Result.ok(
-      plainToInstance(Log, {
+      plainToInstance(ActivityLog, {
         user: user.id,
         type: logDto.activityType,
         description: logDto.description,
@@ -38,7 +38,7 @@ export class LogDataMapper {
     );
   }
 
-  toProcedureParam(log: Log): ParamStoreProcedure[] {
+  toProcedureParam(log: ActivityLog): ParamStoreProcedure[] {
     const params: ParamStoreProcedure[] = [
       {
         field: 'userID',

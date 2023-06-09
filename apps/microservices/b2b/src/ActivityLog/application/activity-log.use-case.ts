@@ -1,24 +1,24 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { LogDataMapper } from './log.mapper';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import Result from '../../Shared/domain/result';
 import { UserRepository } from '../../User/domain/user.repository';
-import { LogActivityDto } from './dtos/log.dto';
-import { LogsRepository } from '../domain/log.repository';
 import { UserUseCases } from '../../User/application/user.use-case';
+import { ActivityLogRepository } from '../domain/activity-log.repository';
+import { ActivityLogDataMapper } from './activity-log.mapper';
+import { ActivityLogDto } from './dtos/activity-log.dto';
 
 @Injectable()
-export class LogsUseCases {
+export class ActivityLogUseCases {
   constructor(
-    private logRepo: LogsRepository,
+    private logRepo: ActivityLogRepository,
     private userRepo: UserRepository,
-    private mapper: LogDataMapper,
+    private mapper: ActivityLogDataMapper,
   ) {}
 
   @Inject(UserUseCases)
   private readonly userUseCases: UserUseCases;
 
-  async saveActivityLog(logDto: LogActivityDto): ResultPromise<boolean> {
+  async saveActivityLog(logDto: ActivityLogDto): ResultPromise<boolean> {
     const dbRes = await this.userUseCases.getUserDB(
       logDto.userEmail,
       logDto.organizationTarget,

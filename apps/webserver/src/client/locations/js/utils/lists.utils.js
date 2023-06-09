@@ -388,8 +388,7 @@ const isLocationDataNotAvailable = (list) => {
   const isBeingAnalized = isAnalyzingStatus(list.list_status_id);
   const hasLockStatus = !!list.lock_status && !!list.lock_user_id;
   return isFailed || isBeingAnalized || hasLockStatus;
-}
-
+};
 
 module.exports = {
   checkValidView,

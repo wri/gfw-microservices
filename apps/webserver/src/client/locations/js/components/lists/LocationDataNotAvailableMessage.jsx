@@ -1,11 +1,8 @@
-
 import React from 'react';
 import { isAnalyzingStatus, isFailedList } from '../../utils/lists.utils';
-import { locationsPage} from '../../../../common/js/config';
+import { locationsPage } from '../../../../common/js/config';
 
-function LocationDataNotAvailableMessage({
-  list
-}) {
+function LocationDataNotAvailableMessage({ list }) {
   const { list_status_id, lock_status, lock_user_id } = list;
   const isFailed = isFailedList(list);
   const isBeingAnalized = isAnalyzingStatus(list_status_id);
@@ -20,11 +17,7 @@ function LocationDataNotAvailableMessage({
     message = locationsPage.lists.tooltips.failed;
   }
 
-  return (
-    <h4 style={{ color: '#ed1846' }}>
-      {message}
-    </h4>
-  );
+  return <h4 style={{ color: '#ed1846' }}>{message}</h4>;
 }
 
 export default LocationDataNotAvailableMessage;

@@ -1723,12 +1723,7 @@ const setListUnlocked = (req, list_id) => {
  *   @param {number} [list_status_id = listStatus.Draft] list_status_id - List status ID (eg. 2, 4)
  *   @return {Promise} A promise object that returns true, otherwise error object
  */
-const resetListStatus = (
-  req,
-  list_id,
-  gfw_list_id,
-  list_status_id = listStatus.Draft
-) => {
+const resetListStatus = (req, list_id, gfw_list_id, list_status_id = listStatus.Draft) => {
   return new Promise(async (resolve, reject) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },

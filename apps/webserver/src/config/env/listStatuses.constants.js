@@ -40,9 +40,9 @@ const listStatus = {
   Draft: 4,
   AnalyzingDiagnostic: 5,
   AnalyzingDashboard: 6,
-}
+};
 
 module.exports = {
   listStatusDescriptions,
-  listStatus
+  listStatus,
 };

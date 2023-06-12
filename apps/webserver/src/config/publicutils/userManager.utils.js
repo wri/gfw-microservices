@@ -39,7 +39,9 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const AWSCognito = require(path.resolve('./config/privateutils/cognito.utils'));
 const SpeakEasy = require(path.resolve('./config/privateutils/speakeasy.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
-const { listStatusDescriptions, listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+const { listStatusDescriptions, listStatus } = require(path.resolve(
+  './config/env/listStatuses.constants'
+));
 
 const lstTitles = [
   { id: 1, title: 'Analyst' },

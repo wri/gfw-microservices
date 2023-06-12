@@ -21,7 +21,6 @@ const {
 } = require('../../server/geoTrellis/utils/geoTrellis.utils');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 
-
 const analyzeLocation = (req, organization_database, list, geojson) => {
   const { organization_user_id, organization_id, user_first_name, user_last_name, user_email } =
     req.session;

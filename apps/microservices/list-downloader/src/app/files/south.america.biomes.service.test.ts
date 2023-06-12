@@ -64,4 +64,17 @@ describe('South America Biomes Service', () => {
       ['List Name', 'Data Layer', 'Sub-Layer', 'Overlap with Sub-Layer (%)'],
     ]);
   });
+
+  test('Receive a property with null', () => {
+    const returnData = southAmericaBiomesService.generateAggregate(
+      'sAmericaBiomesAggregate',
+      'south_america_brazil_biomes_aggregate',
+      {
+        arg_otbn_area: null,
+      }
+    );
+    expect(returnData).toEqual([
+      ['List Name', 'Data Layer', 'Sub-Layer', 'Overlap with Sub-Layer (%)'],
+    ]);
+  });
 });

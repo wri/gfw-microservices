@@ -39,6 +39,7 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const AWSCognito = require(path.resolve('./config/privateutils/cognito.utils'));
 const SpeakEasy = require(path.resolve('./config/privateutils/speakeasy.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
+const { listStatusDescriptions, listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 
 const lstTitles = [
   { id: 1, title: 'Analyst' },
@@ -85,40 +86,6 @@ const lstAccessLevels = [
     id: 3,
     accesslevel_name: 'Viewer',
     accesslevel_description: 'A user allowed to run and view analysis on existing data',
-  },
-];
-const lstStatuses = [
-  {
-    id: 1,
-    status_name: 'Pending',
-    status_description: 'Entity has been created but not activated.',
-  },
-  {
-    id: 2,
-    status_name: 'Active',
-    status_description: 'Entity that is active',
-  },
-  {
-    id: 3,
-    status_name: 'Inactive',
-    status_description: 'Entity that is de-activated',
-  },
-  {
-    id: 4,
-    status_name: 'Draft',
-    status_description: 'Entity that has been edited and is ready for analysis.',
-  },
-  {
-    id: 5,
-    status_name: 'Analyzing Diagnostic',
-    status_description:
-      'Entity that has been triggered for diagnostic analysis; dashboard is ready.',
-  },
-  {
-    id: 6,
-    status_name: 'Analyzing Dashboard',
-    status_description:
-      'Entity that has been triggered for dashboard analysis; diagnostic is ready.',
   },
 ];
 
@@ -169,7 +136,7 @@ function getAccessLevels() {
  * @return  An array of strings containing all the Statuses.
  */
 function getStatuses() {
-  return lstStatuses;
+  return listStatusDescriptions;
 }
 
 /**
@@ -244,7 +211,7 @@ const activateUser = (req, user_id, user_email, first_name, last_name, unit_test
     // Setup Parameters to pass to set status SP.
     const params = [
       { field: 'userID', type: sql.Int, value: user_id },
-      { field: 'statusID', type: sql.Int, value: config.platformVars.status.Active },
+      { field: 'statusID', type: sql.Int, value: listStatus.Active },
       { field: 'activatedTime', type: sql.SmallDateTime, value: new Date() },
     ];
     // Set User Status in the organization database.
@@ -255,7 +222,7 @@ const activateUser = (req, user_id, user_email, first_name, last_name, unit_test
         const parameters = [
           { field: 'orgID', type: sql.Int, value: req.session.organization_id },
           { field: 'OrgUserID', type: sql.Int, value: user_id },
-          { field: 'OrgUserStatusID', type: sql.Int, value: config.platformVars.status.Active },
+          { field: 'OrgUserStatusID', type: sql.Int, value: listStatus.Active },
         ];
         // Set User Status in the Routes Table.
         return sqlUtils.executeSystemStoredProcedure(req, 'uspSetUserRouteStatus', parameters);
@@ -338,7 +305,7 @@ const deactivateUser = (req, user_id) => {
     // Setup Parameters to pass to set status SP.
     const params = [
       { field: 'userID', type: sql.Int, value: user_id },
-      { field: 'statusID', type: sql.Int, value: config.platformVars.status.Inactive },
+      { field: 'statusID', type: sql.Int, value: listStatus.Inactive },
       { field: 'activatedTime', type: sql.SmallDateTime, value: null },
     ];
     // Set User Status.
@@ -349,7 +316,7 @@ const deactivateUser = (req, user_id) => {
         const parameters = [
           { field: 'orgID', type: sql.Int, value: req.session.organization_id },
           { field: 'OrgUserID', type: sql.Int, value: user_id },
-          { field: 'OrgUserStatusID', type: sql.Int, value: config.platformVars.status.Inactive },
+          { field: 'OrgUserStatusID', type: sql.Int, value: listStatus.Inactive },
         ];
         // Set User Status in the Routes Table.
         return sqlUtils.executeSystemStoredProcedure(req, 'uspSetUserRouteStatus', parameters);
@@ -455,7 +422,7 @@ const createNewUser = (
             { field: 'titleId', type: sql.Int, value: user_title_id },
             { field: 'other_title', type: sql.NVarChar(150), value: other_title },
             { field: 'accessLevelId', type: sql.Int, value: access_level_id },
-            { field: 'statusId', type: sql.Int, value: config.platformVars.status.Pending },
+            { field: 'statusId', type: sql.Int, value: listStatus.Pending },
             { field: 'email_subscription', type: sql.Bit, value: email_subscription },
             {
               field: 'commodity_ids',
@@ -493,7 +460,7 @@ const createNewUser = (
             { field: 'userEmail', type: sql.NVarChar(50), value: user_email },
             { field: 'orgID', type: sql.Int, value: req.session.organization_id },
             { field: 'OrgUserID', type: sql.Int, value: recordsets[0].NewUserID },
-            { field: 'OrgUserStatusID', type: sql.Int, value: config.platformVars.status.Pending },
+            { field: 'OrgUserStatusID', type: sql.Int, value: listStatus.Pending },
           ];
           // Add to User Routes.
           return sqlUtils.executeSystemStoredProcedure(req, 'uspCreateNewUserRoute', parameters);

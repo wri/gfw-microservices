@@ -1,11 +1,4 @@
-export const listStatus = {
-  pending: 1,
-  active: 2,
-  inactive: 3,
-  draft: 4,
-  analyzingDiagnostic: 5,
-  analyzingDashboard: 6,
-};
+import { listStatus } from '../../../../config/env/listStatuses.constants';
 
 export const getColorByLevelClasse = {
   0: 'yellow',
@@ -57,7 +50,7 @@ export const sortByNone = (rowA, rowB) => {
 };
 
 export const locationIsActive = (location) => {
-  return location.location_status_id === listStatus['active'];
+  return location.location_status_id === listStatus['Active'];
 };
 
 const isOnlyLastLocationsIsActive = (rowA, rowB) => {

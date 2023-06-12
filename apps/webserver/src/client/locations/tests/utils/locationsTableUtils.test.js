@@ -1,5 +1,4 @@
 import {
-  listStatus,
   sortAlphaNum,
   sortByStatus,
   sortByNone,
@@ -8,6 +7,7 @@ import {
   numberWithCommas,
   sortOrderOption,
 } from '../../js/utils/locationsTableUtils';
+import { listStatus } from '../../../../config/env/listStatuses.constants';
 import { ActiveLocationOne, PedingLocation } from '../mockedData';
 
 describe('listStatus', () => {

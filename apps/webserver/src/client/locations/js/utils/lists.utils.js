@@ -1,7 +1,7 @@
 /* eslint-disable import/no-import-module-exports */
 import difference from 'lodash/difference';
 import intersection from 'lodash/intersection';
-import { proLayers, locationsPage } from '../../../common/js/config';
+import { proLayers } from '../../../common/js/config';
 import { gfwListsLocationID } from '../components/lists/Lists.config';
 import { GFWLists } from '../config/listNames';
 import { getListStatusIdByStatusName } from './draft.utils';
@@ -13,10 +13,8 @@ import {
 import {
   GFW_LISTS_WITH_DOWNLOAD_OPTION_DISABLED,
   GFW_LISTS_NAMES_WITH_DOWNLOAD_OPTION_DISABLED,
-  LIST_STATUS_PENDING,
-  LIST_STATUS_AANALYZING_DIAGNOSTIC,
-  LIST_STATUS_ANALYZING_DASHBOARD,
 } from '../../../common/js/constants/lists.constants';
+import { listStatus } from '../../../../config/env/listStatuses.constants';
 
 const {
   administrativeAreas,
@@ -325,7 +323,7 @@ const getListValidStatus = (list_status_id) => {
  * @return {number} - List status ID (eg. Pending = 1 || Draft = 4)
  */
 export function getListStatusId(isSaveAsDraft) {
-  return isSaveAsDraft ? locationsPage.listStatus.Draft : locationsPage.listStatus.Pending;
+  return isSaveAsDraft ? listStatus.Draft : listStatus.Pending;
 }
 
 /**
@@ -375,13 +373,13 @@ const findArrIndex = (arr, itemProp, value, itemPropTwo, valueTwo) => {
 
 const isAnalyzingStatus = (status) => {
   return [
-    LIST_STATUS_PENDING,
-    LIST_STATUS_AANALYZING_DIAGNOSTIC,
-    LIST_STATUS_ANALYZING_DASHBOARD,
+    listStatus.Pending,
+    listStatus.AnalyzingDiagnostic,
+    listStatus.AnalyzingDiagnostic,
   ].includes(status);
 };
 
-const isFailedList = (list) => list?.list_status_id === locationsPage.listStatus.Inactive;
+const isFailedList = (list) => list?.list_status_id === listStatus.Inactive;
 
 module.exports = {
   checkValidView,

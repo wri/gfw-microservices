@@ -53,6 +53,7 @@ const dynamoUtils = require(path.resolve('./config/privateutils/dynamodb.utils')
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
+const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -94,7 +95,7 @@ const createList = (
     : [];
 
   // When creating new list, status is always pending.
-  const list_status_id = config.platformVars.status.Pending;
+  const list_status_id = listStatus.Pending;
 
   return new Promise((resolve, reject) => {
     // Parameters for stored procedure
@@ -252,7 +253,7 @@ const saveAsDraftList = (
     ? custom_attributes.map((a) => a.column_type).toString()
     : [];
   // When creating new list, status is always Draft when we Save as Draft list
-  const list_status_id = config.platformVars.status.Draft;
+  const list_status_id = listStatus.Draft;
 
   return new Promise((resolve, reject) => {
     // Parameters for stored procedure
@@ -453,7 +454,7 @@ const rerunExistingList = (req) => {
       .analyzeList(req, organization_database, list)
       .then(async () => {
         // Set list status ID to Pending
-        await setListStatus(req, list_id, config.platformVars.status.Pending);
+        await setListStatus(req, list_id, listStatus.Pending);
 
         logger.logActivity(
           req,
@@ -1021,7 +1022,7 @@ const uploadToNewListAndSaveAsDraft = (
             req,
             analysis_table,
             locationsIDs,
-            config.platformVars.status.Draft
+            listStatus.Draft
           );
         }
 
@@ -1144,7 +1145,7 @@ const deleteLocations = (req, list_id, location_ids, gfw_list_id) => {
       })
       .then(async () => {
         // 5. Set list status to DRAFT
-        await resetListStatus(req, list_id, gfw_list_id, config.platformVars.status.Draft);
+        await resetListStatus(req, list_id, gfw_list_id, listStatus.Draft);
         logger.logActivity(
           req,
           logger.listActivityTypes.List.LocationDeletedFromList,
@@ -1210,7 +1211,7 @@ const deleteFilteredLocations = (req, list_id, filters, gfw_list_id) => {
       })
       .then(async () => {
         // 5. Set list status to DRAFT
-        await resetListStatus(req, list_id, gfw_list_id, config.platformVars.status.Draft);
+        await resetListStatus(req, list_id, gfw_list_id, listStatus.Draft);
         logger.logActivity(
           req,
           logger.listActivityTypes.List.LocationDeletedFromList,
@@ -1719,14 +1720,14 @@ const setListUnlocked = (req, list_id) => {
  *   @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param {number} list_id - ID of list to be unlocked
  *   @param {number} gfw_list_id - The ID of the GFW List that this new list is associated with
- *   @param {number} [list_status_id = config.platformVars.status.Draft] list_status_id - List status ID (eg. 2, 4)
+ *   @param {number} [list_status_id = listStatus.Draft] list_status_id - List status ID (eg. 2, 4)
  *   @return {Promise} A promise object that returns true, otherwise error object
  */
 const resetListStatus = (
   req,
   list_id,
   gfw_list_id,
-  list_status_id = config.platformVars.status.Draft
+  list_status_id = listStatus.Draft
 ) => {
   return new Promise(async (resolve, reject) => {
     const parameters = [
@@ -1817,32 +1818,32 @@ const setListStatus = (req, list_id, newStatus) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     switch (newStatus) {
-      case config.platformVars.status.Pending:
+      case listStatus.Pending:
         parameters.push({
           field: 'status_id',
           type: sql.Int,
-          value: config.platformVars.status.Pending,
+          value: listStatus.Pending,
         });
         break;
-      case config.platformVars.status.Active:
+      case listStatus.Active:
         parameters.push({
           field: 'status_id',
           type: sql.Int,
-          value: config.platformVars.status.Active,
+          value: listStatus.Active,
         });
         break;
-      case config.platformVars.status.Inactive:
+      case listStatus.Inactive:
         parameters.push({
           field: 'status_id',
           type: sql.Int,
-          value: config.platformVars.status.Inactive,
+          value: listStatus.Inactive,
         });
         break;
-      case config.platformVars.status.Draft:
+      case listStatus.Draft:
         parameters.push({
           field: 'status_id',
           type: sql.Int,
-          value: config.platformVars.status.Draft,
+          value: listStatus.Draft,
         });
         break;
       default:
@@ -1921,17 +1922,17 @@ function deleteListIfEmpty(req, listID) {
                 DECLARE @listLocationTableName NVARCHAR(1000);
                 DECLARE @listAnalysisTableName NVARCHAR(1000);
                 DECLARE @SQL NVARCHAR(1000);
-                                    
+
                 SELECT @listName=list_name, @listLocationTableName = list_table_name, @listAnalysisTableName = list_analysis_table_name FROM Lists WHERE id = @listID;
-                
-                                    
+
+
                 DECLARE @TEMPLATE NVARCHAR(1000) = 'DECLARE @DataCount as INT = 0
                                   SELECT @DataCount = COUNT(*) FROM [{TABLE_NAME}]
                                   IF @DataCount<=0
                                     exec uspDeleteList  @listName, @listLocationTableName, @listAnalysisTableName';
                 SET @SQL = REPLACE(@TEMPLATE, '{TABLE_NAME}', @listLocationTableName);
-                
-                EXEC sp_executesql @SQL, 
+
+                EXEC sp_executesql @SQL,
                           N'@listName NVARCHAR(1000), @listLocationTableName NVARCHAR(1000), @listAnalysisTableName NVARCHAR(1000)',
                           @listName=@listName, @listLocationTableName=@listLocationTableName, @listAnalysisTableName=@listAnalysisTableName;
                 `;

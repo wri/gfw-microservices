@@ -1,4 +1,4 @@
-import { listStatus } from '../js/utils/locationsTableUtils';
+import { listStatus } from '../../../config/env/listStatuses.constants';
 
 export const ActiveLocationOne = {
   location_status_id: listStatus.active,

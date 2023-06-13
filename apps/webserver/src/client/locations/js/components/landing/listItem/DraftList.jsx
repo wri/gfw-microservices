@@ -30,7 +30,6 @@ function DraftList({
   showNonOwnerDraft,
   showDelete,
   showRerunOpt,
-  hasLockStatus,
   showSharedColumn,
   showMapOpt,
   showDownloadOpt,
@@ -58,7 +57,7 @@ function DraftList({
   const isEmptyList = locations === 0;
 
   const clickLocationRow = () => {
-    if (hasLockStatus || isEmptyList) {
+    if (isEmptyList) {
       return;
     }
 
@@ -123,8 +122,8 @@ function DraftList({
       )}
 
       <div className="locations-list__controls">
-        {showRerunOpt && !hasLockStatus && <ListDiagnosticStatusDraft list={list} />}
-        {showNonOwnerDraft && !hasLockStatus && (
+        {showRerunOpt && <ListDiagnosticStatusDraft list={list} />}
+        {showNonOwnerDraft && (
           <span className="DiagnosticStatusDraft__label">
             <CustomTooltip
               placement="top"
@@ -135,19 +134,9 @@ function DraftList({
             />
           </span>
         )}
-
-        {!hasLockStatus && (
-          <span className="locations-list__count">
-            {numberWithCommas(locations || 0)} {locationsPage.lists.locations.toLowerCase()}
-          </span>
-        )}
-
-        {hasLockStatus && (
-          <span className="locations-list__analyzing">
-            <InlineLoader />
-            Working...
-          </span>
-        )}
+        <span className="locations-list__count">
+          {numberWithCommas(locations || 0)} {locationsPage.lists.locations.toLowerCase()}
+        </span>
       </div>
 
       <div className="locations-list__menu-container">

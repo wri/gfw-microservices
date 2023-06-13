@@ -77,7 +77,7 @@ import {
   dataCleanup,
   getTemplateData,
   findArrIndex,
-  isFailedList,
+  isLocationDataNotAvailable,
   isAnalyzingStatus,
 } from '../../utils/lists.utils';
 
@@ -100,6 +100,7 @@ import LocationsTableColumnSelector from './LocationsTableColumnSelector';
 import columns from '../../config/columns';
 import { isUserList } from '../../../../common/js/utils/gfw.utils';
 import { CommodityRiskFilterDrawer, ForestChangeFilterDrawer } from './Filters';
+import LocationDataNotAvailableMessage from './LocationDataNotAvailableMessage';
 // CONSTANTS
 import {
   gfwListNames,
@@ -2000,8 +2001,7 @@ export default class Lists extends Component {
       .map(this.createUserLists);
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
-    const isFailed = isFailedList(selectedList);
-    const isBeingAnalized = isAnalyzingStatus(selectedList.list_status_id);
+    const locationDataIsNotAvailable = isLocationDataNotAvailable(selectedList);
 
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
@@ -2349,7 +2349,7 @@ export default class Lists extends Component {
                       toggleCountriesPopover={this.toggleCountriesPopover}
                     />
                   </div>
-                  {!(isFailed || isBeingAnalized) && (
+                  {!locationDataIsNotAvailable && (
                     <div className="section-container">
                       <ShareList
                         key={selectedList.id}
@@ -2525,7 +2525,7 @@ export default class Lists extends Component {
                       />
                     </div>
                   </div>
-                  {!(isFailed || isBeingAnalized) && (
+                  {!locationDataIsNotAvailable && (
                     <>
                       <div className="list-detail-filters">
                         <div className="list-detail-filters__view">
@@ -2716,10 +2716,7 @@ export default class Lists extends Component {
                   )}
                 </>
               )}
-              <h4 style={{ color: '#ed1846' }}>
-                {isFailed && locationsPage.lists.tooltips.failed}
-                {isBeingAnalized && locationsPage.lists.tooltips.analyzing}
-              </h4>
+              <LocationDataNotAvailableMessage list={selectedList} />
             </section>
           </div>
         </section>

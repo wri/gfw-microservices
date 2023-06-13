@@ -1,9 +1,9 @@
 const path = require('path');
 const moment = require('moment');
 
-const config = require('../config');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
+const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 
 /** @function {checkActive}
  *   @summary Used to check if the user is an active user
@@ -16,7 +16,7 @@ const checkActive = (request, response, next) => {
   const { method } = request;
   AuthManager.getUserOrganizationStatus(request)
     .then((status_id) => {
-      if (status_id === config.platformVars.status.Active) {
+      if (status_id === listStatus.Active) {
         return next();
       } else {
         if (method === 'POST') {
@@ -128,7 +128,7 @@ const checkOrganization = (request, response, next) => {
   const { method } = request;
   AuthManager.getOrganizationStatus(request)
     .then((statusId) => {
-      if (statusId === config.platformVars.status.Active) {
+      if (statusId === listStatus.Active) {
         return next();
       } else {
         if (method === 'POST') {

@@ -2656,22 +2656,6 @@ export const locationsPage = {
       },
     ],
   },
-  listStatus: {
-    Pending: 1,
-    Active: 2,
-    Inactive: 3,
-    Draft: 4,
-    AnalyzingDiagnostic: 5,
-    AnalyzingDashboard: 6,
-  },
-  statusLabel: {
-    Pending: 'Pending',
-    Active: 'Active',
-    Inactive: 'Inactive',
-    Draft: 'Draft',
-    AnalyzingDiagnostic: 'Analyzing diagnostic',
-    AnalyzingDashboard: 'Analyzing dashboard',
-  },
   columns: {
     notAnalyzedList: {
       owner:

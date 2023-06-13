@@ -50,7 +50,7 @@ export const sortByNone = (rowA, rowB) => {
 };
 
 export const locationIsActive = (location) => {
-  return location.location_status_id === listStatus['Active'];
+  return location.location_status_id === listStatus.Active;
 };
 
 const isOnlyLastLocationsIsActive = (rowA, rowB) => {

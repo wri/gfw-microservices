@@ -150,12 +150,13 @@ export default class LocationList extends Component {
     const showRerunOpt = (userIsAdmin || (!userIsViewer && userIsOwner)) && locations > 0;
     const showNonOwnerDraft = !userIsAdmin && isShared;
 
-    const IS_LOCK_STATUS = !!(list.lock_status && list.lock_user_id);
+    // list is in lock status, copying or moving locations
+    const hasLockStatus = !!list.lock_status && !!list.lock_user_id;
 
     const showSharedColumn = list.sharedWith || list.sharedList;
 
     const listStatusComponent = (list) => {
-      if (isAnalyzingStatus(list.list_status_id)) {
+      if (isAnalyzingStatus(list.list_status_id) || hasLockStatus) {
         return (
           <AnalyzingList
             list={list}
@@ -169,7 +170,6 @@ export default class LocationList extends Component {
             list={list}
             showListSharedWithMeIcon={isAListSharedWithMe}
             showSharedColumn={showSharedColumn}
-            hasLockStatus={IS_LOCK_STATUS}
             showRerun={showRerun}
             handleRerunDialogState={this.handleRerunDialogState}
             showDelete={showDelete}
@@ -187,7 +187,6 @@ export default class LocationList extends Component {
             showNonOwnerDraft={showNonOwnerDraft}
             showDelete={showDelete}
             showRerunOpt={showRerunOpt}
-            hasLockStatus={IS_LOCK_STATUS}
             showMapOpt={showMapOpt}
             showDownloadOpt={showDownloadOpt}
             setManageListFolderOpen={() => this.setState({ isManageListFolderOpen: true })}
@@ -207,7 +206,6 @@ export default class LocationList extends Component {
             showDelete={showDelete}
             showRerun={showRerun}
             showRerunOpt={showRerunOpt}
-            hasLockStatus={IS_LOCK_STATUS}
             showMapOpt={showMapOpt}
             showDownloadOpt={showDownloadOpt}
             setManageListFolderOpen={() => this.setState({ isManageListFolderOpen: true })}

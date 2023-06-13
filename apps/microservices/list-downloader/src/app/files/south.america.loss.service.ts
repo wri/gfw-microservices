@@ -30,7 +30,6 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
   generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
-
     EXCEL_TEMPLATES[table].forEach((key) => {
       const { composites } = key;
       composites.forEach((field) => {
@@ -43,7 +42,9 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
           return;
         }
 
-        const yearlyData = JSON.parse(listLevelAnalysis[field.attribute]);
+        const yearlyData = JSON.parse(
+          listLevelAnalysis[field.attribute] == null ? '{}' : listLevelAnalysis[field.attribute]
+        );
         let totalSubCategory = 0;
         if (!Object.values(DATA_LAYER).some((dataLayer) => field.label == dataLayer)) {
           Object.keys(yearlyData).forEach((yr) => {

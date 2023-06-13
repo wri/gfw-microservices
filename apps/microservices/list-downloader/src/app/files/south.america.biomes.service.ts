@@ -29,13 +29,14 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
   generateAggregate(table: string, list_name: string, listLevelAnalysis) {
     const csvData = [];
     csvData.push(EXCEL_TEMPLATE_HEADERS[table]);
-
     EXCEL_TEMPLATES[table].forEach((key) => {
       if (Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, key.name) === false) {
         return;
       }
 
-      const analysisData = JSON.parse(listLevelAnalysis[key.name]);
+      const analysisData = JSON.parse(
+        listLevelAnalysis[key.name] == null ? '{}' : listLevelAnalysis[key.name]
+      );
       const dataLayer = DATA_LAYER[key.name];
 
       let total = 0;

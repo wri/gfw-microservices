@@ -45,8 +45,11 @@ try {
     ...aliases,
   };
   // Set the test paths
-  jestConfig.testMatch = [`<rootDir>/${assets.clientJest}`, `<rootDir>/${assets.serverJest}`];
-  // Write the file back out to jestConfig
+  jestConfig.testMatch = [
+    `<rootDir>/${assets.clientJest}`,
+    `<rootDir>/${assets.serverJest}`,
+    `<rootDir>/${assets.configJest}`,
+  ]; // Write the file back out to jestConfig
   fs.writeFileSync(jestConfigPath, JSON.stringify(jestConfig, null, 2), 'utf-8');
 } catch (err) {
   logger.error('Error preparing jest configuration file', err);

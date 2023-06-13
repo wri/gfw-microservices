@@ -28,3 +28,5 @@ coverage/
 dist/*
 dev.secrets
 qa.secrets
+
+apps/webserver/src/queries

@@ -18,7 +18,7 @@ import { QueryCriteria } from '../../Shared/domain/criteria/query';
 import { SearchResult } from '../../Shared/domain/types';
 import { ConnectionRequest } from '../domain/connection.entity';
 import { ActivityLogUseCases } from '../../ActivityLog/application/activity-log.use-case';
-import { ActivityType } from '../../ActivityLog/application/dtos/activity-log.dto';
+import { ConstantsConfigIds, B2bStatus } from '@wri-monorepos/constants';
 
 @Injectable()
 export class ConnectionUseCases {
@@ -26,6 +26,7 @@ export class ConnectionUseCases {
     private connectionRepoSp: ConnectionRepositorySP,
     private connectionRepo: ConnectionRequestRepository,
     private mapper: ConnectionDataMapper,
+    @Inject(ConstantsConfigIds.B2B_STATUS) private b2bStatusValues: B2bStatus,
   ) {}
 
   @Inject(ActivityLogUseCases)
@@ -61,14 +62,14 @@ export class ConnectionUseCases {
 
     if (result.isSuccess) {
       this.logsUseCases.saveActivityLog({
-        activityType: ActivityType.ConnectionRequested,
+        activityType: this.b2bStatusValues.ConnectionRequested,
         userEmail: createConnectionDto.sourceEmail,
         organizationTarget: createConnectionDto.sourceOrganization,
         description: `${createConnectionDto.sourceEmail} Has requested to make a trusted connection to ${createConnectionDto.targetOrganization}`,
       });
 
       this.logsUseCases.saveActivityLog({
-        activityType: ActivityType.ConnectionRequested,
+        activityType: this.b2bStatusValues.ConnectionRequested,
         userEmail: createConnectionDto.targetEmail,
         organizationTarget: createConnectionDto.targetOrganization,
         description: `${createConnectionDto.sourceEmail} from ${createConnectionDto.sourceOrganization} Has requested to make a trusted conect`,

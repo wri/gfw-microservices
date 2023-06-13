@@ -1,19 +1,13 @@
-import { IsIn, IsNotEmpty } from 'class-validator';
-
-export enum ActivityType {
-  ConnectionRequested = 28,
-  ConnectionAccepted = 29,
-  ConnectionRejected = 30,
-  ConnectionResent = 31,
-  ConnectionCancelled = 32,
-}
+import { IsNotEmpty, IsNumber } from 'class-validator';
+import { B2bStatus } from '../../../../../../../libs/constants/types/b2b-status';
 
 export class ActivityLogDto {
   @IsNotEmpty()
   userEmail: string;
 
-  @IsIn(['28', '29', '30', '31', '32'])
-  activityType: ActivityType;
+  @IsNumber()
+  @IsNotEmpty()
+  activityType: B2bStatus;
 
   @IsNotEmpty()
   organizationTarget: number;

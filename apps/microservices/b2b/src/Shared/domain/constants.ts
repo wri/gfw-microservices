@@ -13,4 +13,8 @@ export const ERRORS = {
     'Elements not found',
     404,
   ),
+  BAD_REQUEST: new ResultError(
+    'Bad Request',
+    400,
+  ),
 };

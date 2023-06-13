@@ -1,8 +1,8 @@
-export const filterPerStatus = (data, status, filter) => {
-  if (status === filter) {
+export const filterPerStatus = (data, currentStatusFilter, newStatusFilter) => {
+  if (currentStatusFilter === newStatusFilter) {
     return { data, filter: '' };
   }
 
-  const filteredData = data.filter((el) => el.status === filter);
-  return { data: filteredData, filter: filter };
+  const filteredData = data.filter((el) => el.status === newStatusFilter);
+  return { data: filteredData, filter: newStatusFilter };
 };

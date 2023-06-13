@@ -106,7 +106,7 @@ import {
   gfwListNames,
   defaultMaximumAreaSizeForLocationsFilter,
 } from '../../../../common/js/constants/lists.constants';
-
+import { listStatus } from '../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from './getListFilterValues';
 import getAllColumnNames from './getAllColumnNames';
 import { viewDiagnostic } from './viewDiagnostic';
@@ -1629,7 +1629,7 @@ export default class Lists extends Component {
         template_id,
         list_id,
         list_locations_count,
-        list_status_id: locationsPage.listStatus.Pending,
+        list_status_id: listStatus.Pending,
         reanalyze: true,
       },
     })

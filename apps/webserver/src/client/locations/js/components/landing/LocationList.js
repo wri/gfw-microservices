@@ -21,12 +21,12 @@ import AnalyzingList from './listItem/AnalyzingList';
 import FailedList from './listItem/FailedList';
 import DraftList from './listItem/DraftList';
 import ActiveList from './listItem/ActiveList';
+import { listStatus } from '../../../../../config/env/listStatuses.constants';
 
 export default class LocationList extends Component {
   constructor(props) {
     super(props);
     const { B2BsharedListEnabled } = this.props;
-
     this.state = {
       isManageListFolderOpen: false,
       isDeleteDialogOpen: false,
@@ -63,7 +63,7 @@ export default class LocationList extends Component {
         template_id,
         list_id,
         list_locations_count,
-        list_status_id: locationsPage.listStatus.Pending,
+        list_status_id: listStatus.Pending,
         reanalyze: true,
       },
     })

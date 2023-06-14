@@ -6,11 +6,13 @@ jest.mock('esri/tasks/QueryTask');
 describe('LayerUtils#queryAdmin', () => {
   describe('Integration: QueryTask#execute', () => {
     const mockAndDontCareAboutResponse = jest.fn(() => Promise.resolve());
-    beforeEach(() => {
-      mockAndDontCareAboutResponse.mockClear();
+    beforeAll(() => {
       QueryTask.mockImplementation(() => {
         return { execute: mockAndDontCareAboutResponse };
       });
+    });
+    beforeEach(() => {
+      mockAndDontCareAboutResponse.mockClear();
     });
     it('query includes the `gadmid`', async () => {
       const result = await queryAdmin({ gadmid: 'ABW', serverLayerId: 6 });
@@ -52,26 +54,26 @@ describe('LayerUtils#queryAdmin', () => {
     });
   });
   describe('Success', () => {
-    const stubWithFeaturesInResponse = jest.fn(() =>
-      Promise.resolve({
-        features: [
-          {
-            geometry: 'geometry',
-            attributes: {
-              iso: 'US',
-              name_0: 'United States',
-            },
-          },
-        ],
-      })
-    );
-    beforeEach(() => {
-      stubWithFeaturesInResponse.mockClear();
-      QueryTask.mockImplementation(() => {
-        return { execute: stubWithFeaturesInResponse };
-      });
-    });
     describe('When the ArcGIS QueryTask returns features', () => {
+      beforeAll(() => {
+        const stubWithFeaturesInResponse = jest.fn(() =>
+          Promise.resolve({
+            features: [
+              {
+                geometry: 'geometry',
+                attributes: {
+                  iso: 'US',
+                  name_0: 'United States',
+                },
+              },
+            ],
+          })
+        );
+
+        QueryTask.mockImplementation(() => {
+          return { execute: stubWithFeaturesInResponse };
+        });
+      });
       it('resolves with geometry, country and region data', async () => {
         const result = await queryAdmin({ gadmid: 'gadmid', serverLayerId: 6 });
         expect(result).toStrictEqual({
@@ -82,6 +84,39 @@ describe('LayerUtils#queryAdmin', () => {
           stateText: '',
           substateText: '',
         });
+      });
+    });
+    describe('When the ArcGIS QueryTask does NOT return features', () => {
+      beforeAll(() => {
+        const stubWithNoFeaturesInResponse = jest.fn(() =>
+          Promise.resolve({
+            features: [],
+          })
+        );
+
+        QueryTask.mockImplementation(() => {
+          return { execute: stubWithNoFeaturesInResponse };
+        });
+      });
+      it('resolves to `false`', async () => {
+        const result = await queryAdmin({ gadmid: 'ABW', serverLayerId: 6 });
+        expect(result).toBe(false);
+      });
+    });
+  });
+  describe('Failure', () => {
+    describe('When the ArcGIS QueryTask throws an error', () => {
+      beforeAll(() => {
+        jest.spyOn(console, 'log').mockImplementation(() => {}); // silence the console output in queryAdmin
+        const stubThatRejects = jest.fn(() => Promise.reject(new Error('Something went wrong')));
+
+        QueryTask.mockImplementation(() => {
+          return { execute: stubThatRejects };
+        });
+      });
+      it('resolves to `false`', async () => {
+        const result = await queryAdmin({ gadmid: 'ABW', serverLayerId: 6 });
+        expect(result).toBe(false);
       });
     });
   });

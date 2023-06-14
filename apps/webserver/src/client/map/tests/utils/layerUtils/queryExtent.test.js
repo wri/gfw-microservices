@@ -1,5 +1,5 @@
 import QueryTask from 'esri/tasks/QueryTask';
-import {queryExtent} from '../../../js/utils/LayerUtils';
+import { queryExtent } from '../../../js/utils/LayerUtils';
 
 jest.mock('esri/tasks/QueryTask');
 
@@ -8,7 +8,7 @@ describe('LayerUtils#queryExtent', () => {
     const mockAndDontCareAboutResponse = jest.fn(() => Promise.resolve());
     beforeAll(() => {
       QueryTask.mockImplementation(() => {
-        return {executeForExtent: mockAndDontCareAboutResponse};
+        return { executeForExtent: mockAndDontCareAboutResponse };
       });
     });
     beforeEach(() => {
@@ -16,14 +16,14 @@ describe('LayerUtils#queryExtent', () => {
     });
     it("uses a default query if one isn't passed as an argument", async () => {
       await queryExtent('https://example.com');
-      const expected = {where: '1=1'};
-      const queryObject = {...mockAndDontCareAboutResponse.mock.calls[0][0]};
+      const expected = { where: '1=1' };
+      const queryObject = { ...mockAndDontCareAboutResponse.mock.calls[0][0] };
       expect(queryObject).toMatchObject(expected);
     });
     it('uses the provided query if one is passed as an argument', async () => {
       await queryExtent('https://example.com', 'myQuery=42');
-      const expected = {where: 'myQuery=42'};
-      const queryObject = {...mockAndDontCareAboutResponse.mock.calls[0][0]};
+      const expected = { where: 'myQuery=42' };
+      const queryObject = { ...mockAndDontCareAboutResponse.mock.calls[0][0] };
       expect(queryObject).toMatchObject(expected);
     });
   });
@@ -31,14 +31,14 @@ describe('LayerUtils#queryExtent', () => {
     describe('Success', () => {
       describe('When the ArcGIS QueryTask returns an extent', () => {
         const mockExpand = jest.fn();
-        const mockAndReturnAnExtent = jest.fn(() => Promise.resolve(
-          {
-            extent: {expand: mockExpand}
-          }
-        ));
+        const mockAndReturnAnExtent = jest.fn(() =>
+          Promise.resolve({
+            extent: { expand: mockExpand },
+          })
+        );
         beforeAll(() => {
           QueryTask.mockImplementation(() => {
-            return {executeForExtent: mockAndReturnAnExtent};
+            return { executeForExtent: mockAndReturnAnExtent };
           });
         });
         beforeEach(() => {
@@ -54,16 +54,16 @@ describe('LayerUtils#queryExtent', () => {
   });
   describe('Success', () => {
     describe('When the ArcGIS QueryTask returns an extent', () => {
-      const dummyExtent = {name: 'DummyExtent'};
+      const dummyExtent = { name: 'DummyExtent' };
       const stubExpand = jest.fn(() => dummyExtent);
-      const stubAndReturnAnExtent = jest.fn(() => Promise.resolve(
-        {
-          extent: {expand: stubExpand}
-        }
-      ));
+      const stubAndReturnAnExtent = jest.fn(() =>
+        Promise.resolve({
+          extent: { expand: stubExpand },
+        })
+      );
       beforeAll(() => {
         QueryTask.mockImplementation(() => {
-          return {executeForExtent: stubAndReturnAnExtent};
+          return { executeForExtent: stubAndReturnAnExtent };
         });
       });
       it('returns the Extent object', async () => {
@@ -75,7 +75,7 @@ describe('LayerUtils#queryExtent', () => {
       const stubNoExtentReturned = jest.fn(() => Promise.resolve({}));
       beforeAll(() => {
         QueryTask.mockImplementation(() => {
-          return {executeForExtent: stubNoExtentReturned};
+          return { executeForExtent: stubNoExtentReturned };
         });
       });
       it('resolves to `false`', async () => {
@@ -88,10 +88,9 @@ describe('LayerUtils#queryExtent', () => {
     describe('When the ArcGIS QueryTask throws an error', () => {
       const stubAndReject = jest.fn(() => Promise.reject(new Error('Something went wrong')));
       beforeAll(() => {
-        jest.spyOn(console, 'log').mockImplementation(() => {
-        }); // silence the console output in queryAdmin
+        jest.spyOn(console, 'log').mockImplementation(() => {}); // silence the console output in queryAdmin
         QueryTask.mockImplementation(() => {
-          return {executeForExtent: stubAndReject};
+          return { executeForExtent: stubAndReject };
         });
       });
       it('resolves to `false`', async () => {

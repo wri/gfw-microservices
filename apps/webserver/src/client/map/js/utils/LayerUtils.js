@@ -65,7 +65,7 @@ export const queryAdmin = (location) => {
 };
 
 export const queryExtent = (url, defQuery = '1=1') => {
-  const deferred = new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const queryTask = new QueryTask({
       url: url,
     });
@@ -89,8 +89,6 @@ export const queryExtent = (url, defQuery = '1=1') => {
       }
     );
   });
-
-  return deferred;
 };
 
 export const identifyPoints = (layer, evt, view) => {

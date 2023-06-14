@@ -1,7 +1,6 @@
 /**
  * Cache for information about each layer, to be shown in the modal
  */
-import Deferred from 'dojo/Deferred';
 import { DATA_API_URL } from '../../../common/js/config';
 
 const _cache = {};
@@ -9,27 +8,27 @@ const _cache = {};
 /**
  * Fetch the metadata from GFW's Metadata API
  * @param {string} url - api url plus technical name, e.g. urls.metadataApi + '/tree_cover_loss'
- * @return {Deferred} promise
+ * @return promise
  */
 function getMetadataTask(url) {
-  const metadataUrlPartsList = url.split('/');
-  const metadataID = metadataUrlPartsList[metadataUrlPartsList.length - 1];
+  return new Promise((resolve) => {
+    const metadataUrlPartsList = url.split('/');
+    const metadataID = metadataUrlPartsList[metadataUrlPartsList.length - 1];
 
-  const promise = new Deferred();
-  const request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
 
-  request.addEventListener('load', () => {
-    const { data } = JSON.parse(request.response);
-    promise.resolve(data);
+    request.addEventListener('load', () => {
+      const { data } = JSON.parse(request.response);
+      resolve(data);
+    });
+
+    request.onerror = () => {
+      resolve(false);
+    };
+
+    request.open('POST', `${DATA_API_URL}/dataApi/getMetadataTaskData/${metadataID}`);
+    request.send();
   });
-
-  request.onerror = () => {
-    promise.resolve(false);
-  };
-
-  request.open('POST', `${DATA_API_URL}/dataApi/getMetadataTaskData/${metadataID}`);
-  request.send();
-  return promise;
 }
 
 /**
@@ -60,15 +59,15 @@ export default {
   },
 
   fetch(layer) {
-    const promise = new Deferred();
-    if (layer.metadataId) {
-      getMetadataTask(layer.metadataId).then((results) => {
-        _cache[layer.metadataId] = results;
-        promise.resolve(results);
-      });
-    } else {
-      promise.resolve();
-    }
-    return promise;
+    return new Promise((resolve) => {
+      if (layer.metadataId) {
+        getMetadataTask(layer.metadataId).then((results) => {
+          _cache[layer.metadataId] = results;
+          resolve(results);
+        });
+      } else {
+        resolve();
+      }
+    });
   },
 };

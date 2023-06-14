@@ -1,10 +1,10 @@
 import { filterPerStatus } from '../../js/components/B2bSharingPanel/B2BConnection.utils';
 
 const defaultData = [
-    { id: 1, status: 'pending' },
-    { id: 2, status: 'approved' },
-    { id: 3, status: 'rejected' },
-  ];
+  { id: 1, status: 'pending' },
+  { id: 2, status: 'approved' },
+  { id: 3, status: 'rejected' },
+];
 
 describe('filterPerStatus', () => {
   it('should return unfiltered data and empty filter when status matches filter', () => {
@@ -17,7 +17,6 @@ describe('filterPerStatus', () => {
   });
 
   it('should return filtered data and the matching status as filter', () => {
-
     const status = 'approved';
     const filter = 'pending';
 

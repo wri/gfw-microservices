@@ -1,4 +1,4 @@
-import httpRequest from '../../../../common/js/utils/httpRequest';
+import httpRequest from './../../../common/js/utils/httpRequest';
 import {
   getConnections,
   sendInvitation,
@@ -7,69 +7,108 @@ import {
   rejectConnection,
   resendInvitation,
   getOrgsList,
-} from './yourModule';
+} from './../../js/components/B2bSharingPanel/fetchB2b';
 
-const runfetchTests = (action) => {
+const email = 'test@example.com';
+const mockedResponse = { result: 'mocked response' };
+const id = 10;
+
+jest.mock('./../../../common/js/utils/httpRequest', () => ({
+  fetchJSON: jest.fn(() => Promise.resolve(mockedResponse)),
+  fetchForm: jest.fn(() => Promise.resolve(mockedResponse)),
+}));
+
+const runfetchTests = ({action, param, path, httpMethod, body}) => {
   it('should call fetchJSON with the correct URL', async () => {
-    const email = 'test@example.com';
-    await action(email);
-    expect(httpRequest.fetchJSON).toHaveBeenCalledWith(`/connection/${email}`, {});
+    await action(param);
+    expect(httpMethod).toHaveBeenCalledWith(path, body);
   });
 
   it('should return parsed JSON response', async () => {
-    const mockedResponse = { result: 'mocked response' };
-    httpRequest.fetchJSON.mockResolvedValueOnce(JSON.stringify(mockedResponse));
-
-    const email = 'test@example.com';
-    const result = await action(email);
-    expect(result).toEqual(mockedResponse);
+    httpMethod.mockResolvedValueOnce(JSON.stringify(mockedResponse));
+    const result = await action(param);
+    expect(mockedResponse).toEqual(result);
   });
 
   it('should log an error on failure', async () => {
     const expectedError = new Error('Mocked error');
-    httpRequest.fetchJSON.mockRejectedValueOnce(expectedError);
-
-    const email = 'test@example.com';
-    await action(email);
-    expect(console.log).toHaveBeenCalledWith(expectedError);
+    httpMethod.mockRejectedValueOnce(expectedError);
+    const result = await action(param);
+    expect(result).toEqual(expectedError);
   });
 };
 
-jest.mock('../../../../common/js/utils/httpRequest', () => ({
-  fetchJSON: jest.fn(),
-  fetchForm: jest.fn(),
-}));
+
 
 describe('fetchB2b', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
 
   describe('getOrgsList', () => {
-    runfetchTests(getOrgsList);
+    runfetchTests({
+      action: getOrgsList,
+      param: email,
+      path: `/connection/${email}`,
+      httpMethod: httpRequest.fetchJSON,
+      body: {},
+    });
   });
 
   describe('getConnections', () => {
-    runfetchTests(getConnections);
+    runfetchTests({
+      action: getConnections,
+      param: email,
+      path: '/connection',
+      httpMethod: httpRequest.fetchJSON,
+      body: {},
+    });
   });
 
   describe('sendInvitation', () => {
-    runfetchTests(sendInvitation);
+    runfetchTests({
+      action: sendInvitation,
+      param: email,
+      path: '/invitation',
+      httpMethod: httpRequest.fetchForm,
+      body: { email },
+    });
   });
 
   describe('resendInvitation', () => {
-    runfetchTests(resendInvitation);
+    runfetchTests({
+      action: resendInvitation,
+      param: id,
+      path: `/invitation/${id}`,
+      httpMethod: httpRequest.fetchForm,
+      body: {},
+    });
   });
 
   describe('acceptConnection', () => {
-    runfetchTests(acceptConnection);
+    runfetchTests({
+      action: acceptConnection,
+      param: id,
+      path: `/connection/accept/${id}`,
+      httpMethod: httpRequest.fetchForm,
+      body: {},
+    });
   });
 
   describe('rejectConnection', () => {
-    runfetchTests(rejectConnection);
+    runfetchTests({
+      action: rejectConnection,
+      param: id,
+      path: `/connection/reject/${id}`,
+      httpMethod: httpRequest.fetchForm,
+      body: {},
+    });
   });
 
   describe('cancelConnection', () => {
-    runfetchTests(cancelConnection);
+    runfetchTests({
+      action: cancelConnection,
+      param: id,
+      path: `/connection/cancel/${id}`,
+      httpMethod: httpRequest.fetchForm,
+      body: {},
+    });
   });
 });

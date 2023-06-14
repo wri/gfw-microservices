@@ -1,79 +1,79 @@
 import httpRequest from '../../../../common/js/utils/httpRequest';
 
 async function getOrgsList(email) {
-  httpRequest
+  return httpRequest
     .fetchJSON(`/connection/${email}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      console.log(err);
+      return err;
     });
 }
 
 async function getConnections() {
-  httpRequest
+  return httpRequest
     .fetchJSON('/connection', {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      console.log(err);
+      return err;
     });
 }
 
 async function sendInvitation(email) {
-  httpRequest
+  return httpRequest
     .fetchForm('/invitation', { email })
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      console.log(err);
+      return err;
     });
 }
 
 async function resendInvitation(id) {
-  httpRequest
+  return httpRequest
     .fetchForm(`/invitation/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      console.log(err);
+      return err;
     });
 }
 
 async function acceptConnection(id) {
-  httpRequest
+  return httpRequest
     .fetchForm(`/connection/accept/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      console.log(err);
+      return err;
     });
 }
 
 async function rejectConnection(id) {
-  httpRequest
+  return httpRequest
     .fetchForm(`/connection/reject/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      console.log(err);
+      return err;
     });
 }
 
 async function cancelConnection(id) {
-  httpRequest
+  return httpRequest
     .fetchForm(`/connection/cancel/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      console.log(err);
+      return err;
     });
 }
 

@@ -77,7 +77,7 @@ export const queryExtent = (url, defQuery = '1=1') => {
 
     queryTask.executeForExtent(query).then(
       (res) => {
-        if (res && res.extent) {
+        if (res?.extent) {
           resolve(res.extent.expand(1.2));
         } else {
           resolve(false);

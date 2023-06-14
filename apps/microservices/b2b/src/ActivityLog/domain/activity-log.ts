@@ -1,9 +1,8 @@
 import { User } from '../../User/domain/user';
-import { ActivityType } from '../application/dtos/activity-log.dto';
 
 export class ActivityLog {
   user: User;
-  type: ActivityType;
+  type: number;
   description: number;
   time: number;
 }

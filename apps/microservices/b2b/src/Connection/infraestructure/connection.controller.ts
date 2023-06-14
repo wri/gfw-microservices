@@ -20,11 +20,11 @@ import {
 } from '../../Shared/domain/criteria/query';
 import { CreateConnectionDto } from '../application/dtos/connection.dto';
 
-@Controller('api/organizations/:orgId/connections')
+@Controller('organizations/:orgId/connections')
 export class ConnectionController {
   constructor(private connectionUseCases: ConnectionUseCases) {}
 
-  @Post('accept/:id')
+  @Post('/:id/accept')
   async acceptConnection(
     @Param() { id }: IdNumericDto,
     @Body() connectionAcceptDto: ConnectionUpdateStatusHttpDto,
@@ -38,7 +38,7 @@ export class ConnectionController {
     throw new HttpException(error.message, error.code);
   }
 
-  @Post('reject/:id')
+  @Post('/:id/reject')
   async rejectConnection(
     @Param() { id }: IdNumericDto,
     @Body() connectionRejectDto: ConnectionUpdateStatusHttpDto,
@@ -52,7 +52,7 @@ export class ConnectionController {
     throw new HttpException(error.message, error.code);
   }
 
-  @Post('cancel/:id')
+  @Post('/:id/cancel')
   async cancelConnection(
     @Param() { id }: IdNumericDto,
     @Body() connectionCancelDto: ConnectionUpdateStatusHttpDto,
@@ -114,7 +114,7 @@ export class ConnectionController {
     throw new HttpException(error.message, error.code);
   }
 
-  @Post(':id')
+  @Post(':id/resend')
   resendInvitation(@Param('id') invitationId: number) {
     return this.connectionUseCases.resendConnection(invitationId);
   }

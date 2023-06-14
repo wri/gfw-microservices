@@ -2,7 +2,7 @@ import { Controller, Get, HttpException, Param } from '@nestjs/common';
 import { OrganizationUseCases } from '../application/organization.use-case';
 import { Organization } from '../domain/organization.entity';
 
-@Controller('api/organizations')
+@Controller('organizations')
 export class OrganizationController {
   constructor(private readonly organizationUseCases: OrganizationUseCases) {}
 

@@ -13,6 +13,7 @@ import { ConnectionRequest } from './domain/connection.entity';
 import { DatabaseModule } from '../Database/database.module';
 import { SharedModule } from '../Shared/shared.module';
 import { ActivityLogModule } from '../ActivityLog/activity-log.module';
+import { ConstantsConfig, ConstantsConfigIds } from '@wri-monorepos/constants';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { ActivityLogModule } from '../ActivityLog/activity-log.module';
       provide: ConnectionRequestRepository,
       useClass: ConnectionRequestRepositoryMssql,
     },
+    ConstantsConfig[ConstantsConfigIds.B2B_STATUS],
   ],
   exports: [ConnectionDataMapper, ConnectionUseCases],
 })

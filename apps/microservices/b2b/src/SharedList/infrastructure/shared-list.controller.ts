@@ -18,7 +18,7 @@ import { CreateSharedListDto } from '../application/dtos/create-shared-list.dto'
 import { SharedListUseCases } from '../application/shared-list.use-case';
 import { SharedList } from '../domain/shared-list.entity';
 
-@Controller('api/organizations/:orgId/shared-lists')
+@Controller('organizations/:orgId/shared-lists')
 export class SharedListController {
   constructor(private readonly sharedListUseCases: SharedListUseCases) {}
 

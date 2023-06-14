@@ -1,5 +1,11 @@
-import { Controller, Get, Query, HttpException, Param } from '@nestjs/common';
-import { ConnectionFiltersDto } from '../../Connection/application/dtos/connection-filters.dto';
+import {
+  Controller,
+  Get,
+  Query,
+  HttpException,
+  Param,
+  Logger,
+} from '@nestjs/common';
 import {
   FilterType,
   OrderType,
@@ -8,7 +14,7 @@ import {
 import { SearchListDto } from '../application/dtos/search-list.dto';
 import { ListUseCases } from '../application/list.use-case';
 
-@Controller('api/organizations/:orgId/lists')
+@Controller('organizations/:orgId/lists')
 export class ListController {
   constructor(private listUseCases: ListUseCases) {}
 
@@ -25,6 +31,7 @@ export class ListController {
       limit ? Number(limit) : undefined,
       offset ? Number(offset) : undefined,
     );
+    Logger.log(query);
 
     const listRes = await this.listUseCases.findListsByFilters({}, orgId);
     if (listRes.isSuccess) return listRes.getValue();

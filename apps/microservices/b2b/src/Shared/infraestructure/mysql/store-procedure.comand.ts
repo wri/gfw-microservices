@@ -32,6 +32,7 @@ export class StoredProcedureCommand implements Command {
       await this.connection.disconnect();
       return Result.ok(result);
     } catch (error) {
+      console.log(error)
       Logger.error('Error Executing The Stored Proccedure', error, database);
       return Result.fail(
         new ResultError('Error when executing stored procedure', 500),

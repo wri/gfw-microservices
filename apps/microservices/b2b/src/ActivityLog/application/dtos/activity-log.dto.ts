@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
-import { B2bStatus } from '@wri-monorepos/constants';
 
 export class ActivityLogDto {
   @IsNotEmpty()
@@ -7,7 +6,7 @@ export class ActivityLogDto {
 
   @IsNumber()
   @IsNotEmpty()
-  activityType: B2bStatus;
+  activityType: number;
 
   @IsNotEmpty()
   organizationTarget: number;

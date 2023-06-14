@@ -1,9 +1,8 @@
 const logger = require('../../../config/lib/winston');
 const ListManager = require('../../../config/publicutils/listManager.utils');
 const { handleGeoTrellisAnalyzeListRequest } = require('../utils/geoTrellis.utils');
-
-const config = require('../../../config/config');
 const { GEO_TRELLIS_ANALYZE_LIST } = require('../../../config/config/locations.config');
+const { listStatus } = require('../../../config/env/listStatuses.constants');
 
 /**
  * Handling GeoTrellis Submit Edits request
@@ -19,7 +18,7 @@ exports.geoTrellisAnalyzeListController = async (req, res) => {
 
   try {
     // Set list status ID to be Pending
-    await ListManager.setListStatus(req, listID, config.platformVars.status.Pending);
+    await ListManager.setListStatus(req, listID, listStatus.Pending);
 
     // Send request to GeoTrellis step function
     const { data } = await handleGeoTrellisAnalyzeListRequest(req, list);

@@ -962,6 +962,8 @@ export const locationsPage = {
       removed2: ' folder',
     },
     tooltips: {
+      working:
+        'This list is being processed. Reload the page once the analysis is finished to access the results.',
       analyzing:
         'List is analyzing. You will receive an email once analysis is complete and can reload the page to access the results.',
       failed:
@@ -2653,22 +2655,6 @@ export const locationsPage = {
         validation: '',
       },
     ],
-  },
-  listStatus: {
-    Pending: 1,
-    Active: 2,
-    Inactive: 3,
-    Draft: 4,
-    AnalyzingDiagnostic: 5,
-    AnalyzingDashboard: 6,
-  },
-  statusLabel: {
-    Pending: 'Pending',
-    Active: 'Active',
-    Inactive: 'Inactive',
-    Draft: 'Draft',
-    AnalyzingDiagnostic: 'Analyzing diagnostic',
-    AnalyzingDashboard: 'Analyzing dashboard',
   },
   columns: {
     notAnalyzedList: {

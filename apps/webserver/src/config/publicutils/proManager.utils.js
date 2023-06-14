@@ -32,6 +32,7 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
+const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 
 /**
  * @function getAllAccountsList
@@ -135,12 +136,12 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
         const pendingOrganization = recordsets.find(
           (org) =>
             org.organization_id === pendingaccount_id &&
-            org.organization_status_id === config.platformVars.status.Pending
+            org.organization_status_id === listStatus.Pending
         );
         const nonPendingOrganizations = recordsets.filter(
           (org) =>
-            org.organization_status_id === config.platformVars.status.Active ||
-            org.organization_status_id === config.platformVars.status.Inactive
+            org.organization_status_id === listStatus.Active ||
+            org.organization_status_id === listStatus.Inactive
         );
 
         // check if pending org name matches any active org names
@@ -584,7 +585,7 @@ const deletePendingAccount = (req, organization_id) => {
  */
 const reactivateAccount = (req, organization_id) => {
   return new Promise((resolve, reject) => {
-    const organization_status_id = config.platformVars.status.Active;
+    const organization_status_id = listStatus.Active;
     const params = [
       { field: 'organization_id', type: sql.Int, value: organization_id },
       { field: 'organization_status_id', type: sql.Int, value: organization_status_id },
@@ -612,7 +613,7 @@ const deactivateAccount = (request, organization_id) => {
       {
         field: 'organization_status_id',
         type: sql.Int,
-        value: config.platformVars.status.Inactive,
+        value: listStatus.Inactive,
       },
     ];
     // Promise.all([

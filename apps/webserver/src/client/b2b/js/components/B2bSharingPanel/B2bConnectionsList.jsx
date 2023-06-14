@@ -4,6 +4,7 @@ import { Container, Grid } from '@mui/material';
 import B2BConnectionListTable from './B2BConnectionList/B2BConnectionListTable';
 import NewConnectionButton from './NewConnectionButton';
 import ConnectionDetailsButton from './ConnectionDetailsButton';
+import { b2bConnectionsMock } from './b2bConnectionsMock';
 
 import { getConnections } from './fetchB2b';
 import './NewB2bConnectionModal/NewB2bConnectionModal.scss';
@@ -20,16 +21,10 @@ const B2bConnectionsList = () => {
 
   const filterPerStatus = (status) => {
     if (status === filter) {
-      getConnections().then((res) => {
-        setB2bConnections(res);
-      });
+      setB2bConnections(b2bConnectionsMock);
       setfilter('');
       return;
     }
-
-    getConnections().then((res) => {
-      setB2bConnections(res.filter((el) => el.status === status));
-    });
     setB2bConnections(b2bConnectionsMock.filter((el) => el.status === status));
     setfilter(status);
   };

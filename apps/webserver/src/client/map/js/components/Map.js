@@ -22,7 +22,6 @@ import SketchViewModal from 'esri/widgets/Sketch/SketchViewModel';
 import TileLayer from 'esri/layers/TileLayer';
 import VectorTileLayer from 'esri/layers/VectorTileLayer';
 import WebTileLayer from 'esri/layers/WebTileLayer';
-import all from 'dojo/promise/all';
 import esriConfig from 'esri/config';
 import {
   geographicToWebMercator,
@@ -1132,7 +1131,7 @@ export default class Map extends Component {
         }
       }
     });
-    all(deferreds).then((response) => {
+    Promise.all(deferreds).then((response) => {
       const popFeats = [];
       response.forEach((layer) => {
         layer.response.results.forEach((result) => {

@@ -11,12 +11,12 @@ import { ConstantsConfigIds, B2bStatus } from '@wri-monorepos/constants';
 
 @Injectable()
 export class ActivityLogUseCases {
-  constructor(
+  constructor (
     private logRepo: ActivityLogRepository,
     private userRepo: UserRepository,
     private mapper: ActivityLogDataMapper,
     @Inject(ConstantsConfigIds.B2B_STATUS) private b2bStatusValues: B2bStatus,
-  ) {}
+  ) { }
 
   @Inject(UserUseCases)
   private readonly userUseCases: UserUseCases;

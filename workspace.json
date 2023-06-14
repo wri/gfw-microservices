@@ -10,6 +10,7 @@
     "microservices-list-downloader": "apps/microservices/list-downloader",
     "microservices-list-processing": "apps/microservices/list-processing",
     "shared": "libs/shared",
-    "sql": "libs/sql"
+    "sql": "libs/sql",
+    "constants": "libs/constants"
   }
 }

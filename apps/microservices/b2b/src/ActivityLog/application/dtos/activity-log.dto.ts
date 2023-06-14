@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
-import { B2bStatus } from '../../../../../../../libs/constants/types/b2b-status';
+import { B2bStatus } from '@wri-monorepos/constants';
 
 export class ActivityLogDto {
   @IsNotEmpty()

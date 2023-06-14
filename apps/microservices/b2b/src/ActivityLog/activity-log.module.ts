@@ -9,7 +9,7 @@ import { ActivityLogRepositoryMysql } from './infrastructure/activity-log.reposi
 import {
   ConstantsConfig,
   ConstantsConfigIds,
-} from '../../../../../libs/constants';
+} from '@wri-monorepos/constants';
 
 @Module({
   imports: [UserModule],
@@ -22,4 +22,4 @@ import {
   ],
   exports: [ActivityLogUseCases],
 })
-export class ActivityLogModule {}
+export class ActivityLogModule { }

@@ -4,7 +4,7 @@ import QueryTask from 'esri/tasks/QueryTask';
 import Query from 'esri/tasks/support/Query';
 
 export const queryAdmin = (location) => {
-  const deferred = new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const { gadmid, serverLayerId } = location;
     //GADMID comes in these 3 options (e.g. "ABW", "ABW.2", "ABW.2.12") each denotes level
 
@@ -62,8 +62,6 @@ export const queryAdmin = (location) => {
       }
     );
   });
-
-  return deferred;
 };
 
 export const queryExtent = (url, defQuery = '1=1') => {

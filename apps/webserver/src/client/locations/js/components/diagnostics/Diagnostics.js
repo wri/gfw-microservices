@@ -114,7 +114,10 @@ export default class Diagnostics extends Component {
       popoverLoading: '',
       bubbleData: {},
       hoverProp: '',
-      highChartColorConfig: {},
+      highChartColorConfig: {
+        ...locationsPage.highchartColorBackup,
+        ...highchartColorsIndonesiaLegalClassification2020,
+      },
       isLoading: true,
       currentView: '',
       openDownloadDialog: false,
@@ -208,12 +211,6 @@ export default class Diagnostics extends Component {
       })
       .catch((e) => {
         console.log('Error retrieving color configuration - using backup', e);
-        this.setState({
-          highChartColorConfig: {
-            ...locationsPage.highchartColorBackup,
-            ...highchartColorsIndonesiaLegalClassification2020,
-          },
-        });
       });
   };
 

@@ -19,6 +19,7 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const {
   handleGeoTrellisAnalyzeListRequest,
 } = require('../../server/geoTrellis/utils/geoTrellis.utils');
+const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 
 const analyzeLocation = (req, organization_database, list, geojson) => {
   const { organization_user_id, organization_id, user_first_name, user_last_name, user_email } =
@@ -83,7 +84,7 @@ const analyzeList = async (req, organization_database, list) => {
   const id = listID || dest_list_id || list_id;
 
   try {
-    if (list_status_id === config.platformVars.status.Pending) {
+    if (list_status_id === listStatus.Pending) {
       // Send list to be analysed
       await handleGeoTrellisAnalyzeListRequest(req, { id, list_name });
     }

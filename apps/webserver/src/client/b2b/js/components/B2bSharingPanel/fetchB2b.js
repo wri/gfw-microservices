@@ -22,9 +22,9 @@ async function getConnections() {
     });
 }
 
-async function sendInvitation(email) {
+async function sendInvitation(email, organizationName) {
   return httpRequest
-    .fetchForm('/invitation', { email })
+    .fetchForm('/invitation', { email, organizationName })
     .then((response) => {
       return JSON.parse(response);
     })

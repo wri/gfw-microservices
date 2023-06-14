@@ -28,6 +28,7 @@ const { saveAsDraftListConfig } = require('../../../config/config/locations.conf
 const { removeExistingVectorTileFromS3 } = require('../../vectorTiles/utils/vectorTile.utils');
 const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
+const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 
 /**
  * @name exports
@@ -359,20 +360,20 @@ module.exports = (app, limiter) => {
           );
         }
 
-        if (!original_gfw_list && list_status_id === config.platformVars.status.Draft) {
+        if (!original_gfw_list && list_status_id === listStatus.Draft) {
           // 3.a Set newly added location's status to Draft if user selected Save As Draft button
           const locationsIDs = getLocationIdsFromGeoJSON(resultGeoJSON);
           await ListManager.updateIndividualLocationsStatusID(
             req,
             list_analysis_table_name,
             locationsIDs,
-            config.platformVars.status.Draft
+            listStatus.Draft
           );
 
-          await ListManager.setListStatus(req, list_id, config.platformVars.status.Draft);
+          await ListManager.setListStatus(req, list_id, listStatus.Draft);
         }
 
-        if (list_status_id === config.platformVars.status.Pending) {
+        if (list_status_id === listStatus.Pending) {
           // 3.b Run analysis on the updated list
           await AnalysisManager.requestAnalysis(req, table_name);
         }

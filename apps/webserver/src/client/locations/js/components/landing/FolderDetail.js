@@ -71,7 +71,6 @@ export default class FolderDetail extends Component {
         showFailedDialog={this.showFailedDialog}
         currentUser={this.props.currentUser}
         showShareList={this.props.showShareList}
-        isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(list)}
         onFolderChange={(msg) => {
           this.setState({ bannerContent: msg });
           getFolders().then((folders) => {

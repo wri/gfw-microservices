@@ -97,4 +97,17 @@ describe('South America Loss Service', () => {
       ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
     ]);
   });
+
+  test('Receive a property with null', () => {
+    const returnData = southAmericaLossService.generateAggregate(
+      'sAmericaLossAggregate',
+      'south_america_loss_of_forests_aggregate',
+      {
+        tree_cover_loss_soy_yearly: null,
+      }
+    );
+    expect(returnData).toEqual([
+      ['List Name', 'Data Layer Name', 'Forest Loss (ha)', 'Year', 'Total Loss (ha)'],
+    ]);
+  });
 });

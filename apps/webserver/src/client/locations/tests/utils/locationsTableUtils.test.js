@@ -1,5 +1,4 @@
 import {
-  listStatus,
   sortAlphaNum,
   sortByStatus,
   sortByNone,
@@ -8,26 +7,27 @@ import {
   numberWithCommas,
   sortOrderOption,
 } from '../../js/utils/locationsTableUtils';
+import { listStatus } from '../../../../config/env/listStatuses.constants';
 import { ActiveLocationOne, PedingLocation } from '../mockedData';
 
 describe('listStatus', () => {
   it('when Calls Pending return 1', () => {
-    expect(listStatus.pending).toBe(1);
+    expect(listStatus.Pending).toBe(1);
   });
   it('when Calls Active return 1', () => {
-    expect(listStatus.active).toBe(2);
+    expect(listStatus.Active).toBe(2);
   });
   it('when Calls Inactive return 1', () => {
-    expect(listStatus.inactive).toBe(3);
+    expect(listStatus.Inactive).toBe(3);
   });
   it('when Calls draft return 1', () => {
-    expect(listStatus.draft).toBe(4);
+    expect(listStatus.Draft).toBe(4);
   });
   it('when Calls analyzingDiagnostic return 1', () => {
-    expect(listStatus.analyzingDiagnostic).toBe(5);
+    expect(listStatus.AnalyzingDiagnostic).toBe(5);
   });
   it('when Calls analyzingDashboard return 1', () => {
-    expect(listStatus.analyzingDashboard).toBe(6);
+    expect(listStatus.AnalyzingDashboard).toBe(6);
   });
 });
 
@@ -81,10 +81,10 @@ describe('sortByNone', () => {
 describe('sortByStatus', () => {
   it('should return area diference when both status are active', () => {
     const locationA = {
-      location_status_id: listStatus.active,
+      location_status_id: listStatus.Active,
     };
     const locationB = {
-      location_status_id: listStatus.active,
+      location_status_id: listStatus.Active,
     };
     const response = sortByStatus(locationA, locationB);
     expect(response).toBe(2);
@@ -104,10 +104,10 @@ describe('sortByStatus', () => {
 
   it('should return 1 when just first status locations is active', () => {
     const a = {
-      location_status_id: listStatus.active,
+      location_status_id: listStatus.Active,
     };
     const b = {
-      location_status_id: listStatus.pending,
+      location_status_id: listStatus.Pending,
     };
 
     const response = sortByStatus(a, b);
@@ -116,10 +116,10 @@ describe('sortByStatus', () => {
 
   it('should return -1 when just second status locations is active', () => {
     const a = {
-      location_status_id: listStatus.pending,
+      location_status_id: listStatus.Pending,
     };
     const b = {
-      location_status_id: listStatus.active,
+      location_status_id: listStatus.Active,
     };
     const response = sortByStatus(a, b);
     expect(response).toBe(sortOrderOption.invert);

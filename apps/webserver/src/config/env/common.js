@@ -53,14 +53,6 @@ module.exports = {
       Editor: 2,
       Viewer: 3,
     },
-    status: {
-      Pending: 1,
-      Active: 2,
-      Inactive: 3,
-      Draft: 4,
-      AnalyzingDiagnostic: 5,
-      AnalyzingDashboard: 6,
-    },
     // Status returned as part of Cognito Authentication Process.
     authenticationStatus: {
       // Authenticated.

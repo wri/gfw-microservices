@@ -200,8 +200,8 @@ export default class Diagnostics extends Component {
         this.setState(
           {
             highChartColorConfig: {
+              ...this.state.highChartColorConfig,
               ...highChartColorConfig,
-              ...highchartColorsIndonesiaLegalClassification2020,
             },
           },
           () => {

@@ -36,7 +36,7 @@ export const queryAdmin = (location) => {
 
     queryTask.execute(query).then(
       (res) => {
-        if (res && res.features && res.features.length > 0) {
+        if (res?.features?.length > 0) {
           const { geometry, attributes } = res.features[0];
           const country = attributes.iso;
           const countryText = attributes.name_0;

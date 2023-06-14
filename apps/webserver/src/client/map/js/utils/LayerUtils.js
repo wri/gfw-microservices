@@ -92,7 +92,7 @@ export const queryExtent = (url, defQuery = '1=1') => {
 };
 
 export const identifyPoints = (layer, evt, view) => {
-  const deferred = new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const visibleLayers = [];
     if (layer.sublayers) {
       layer.sublayers.forEach((sub) => {
@@ -127,6 +127,4 @@ export const identifyPoints = (layer, evt, view) => {
       }
     );
   });
-
-  return deferred;
 };

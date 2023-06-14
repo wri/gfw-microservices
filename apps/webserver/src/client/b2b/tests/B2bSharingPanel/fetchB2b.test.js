@@ -18,7 +18,7 @@ jest.mock('./../../../common/js/utils/httpRequest', () => ({
   fetchForm: jest.fn(() => Promise.resolve(mockedResponse)),
 }));
 
-const runfetchTests = ({action, param, path, httpMethod, body}) => {
+const runfetchTests = ({ action, param, path, httpMethod, body }) => {
   it('should call fetchJSON with the correct URL', async () => {
     await action(param);
     expect(httpMethod).toHaveBeenCalledWith(path, body);
@@ -38,10 +38,7 @@ const runfetchTests = ({action, param, path, httpMethod, body}) => {
   });
 };
 
-
-
 describe('fetchB2b', () => {
-
   describe('getOrgsList', () => {
     runfetchTests({
       action: getOrgsList,

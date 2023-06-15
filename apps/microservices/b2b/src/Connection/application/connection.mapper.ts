@@ -1,23 +1,33 @@
 import { plainToInstance } from 'class-transformer';
 import * as sql from 'mssql';
-import { CreateConnectionDto } from '../application/dtos/connection.dto';
-import { Connection, ConnectionStatus } from '../domain/connection';
+import {
+  Connection,
+  ConnectionStatus,
+} from '../../Connection/domain/connection';
 import { ParamStoreProcedure } from '../../Shared/infraestructure/mysql/store-procedure.params';
-import { ConnectionFiltersDto } from './dtos/connection-filters.dto';
-import { ConnectionDbDto } from './dtos/connection-db.dto';
-import { ConnectionGetDto } from './dtos/connection-get.dto';
-import { ConnectionChangeDto } from './dtos/connection-status.dto';
 import { Injectable } from '@nestjs/common';
 import { GenericMapper } from '../../Shared/domain/mapper';
 import {
   ConnectionAdminOrganizationDbDto,
   ConnectionAdminOrganizationDto,
 } from './dtos/connection-admin-organizations.dto';
+import { ConnectionDbDto } from './dtos/connection-db.dto';
+import { ConnectionFiltersDto } from './dtos/connection-filters.dto';
+import { ConnectionGetDto } from './dtos/connection-get.dto';
+import { ConnectionChangeDto } from './dtos/connection-status.dto';
+import { CreateConnectionDto } from './dtos/connection.dto';
+import { ConnectionInvitation } from '../domain/connection';
 
 @Injectable()
 export class ConnectionDataMapper extends GenericMapper {
-  static createConnectionDtotoConnection(connectionDto: CreateConnectionDto) {
+  static createConnectionDtotoConnection(connectionDto: ConnectionGetDto) {
     return plainToInstance(Connection, connectionDto);
+  }
+
+  createConnectionDtotoConnectionInvitation(
+    invitationDto: CreateConnectionDto,
+  ) {
+    return plainToInstance(ConnectionInvitation, invitationDto);
   }
 
   toGetProcedureParam(filtersDto: ConnectionFiltersDto): ParamStoreProcedure[] {
@@ -35,7 +45,7 @@ export class ConnectionDataMapper extends GenericMapper {
         params.push({
           field: field,
           type: sql.NVarChar(20),
-          value: value,
+          value: String(value),
         });
       }
     });
@@ -114,5 +124,34 @@ export class ConnectionDataMapper extends GenericMapper {
         value: id,
       },
     ];
+  }
+
+  toCreateConnectionProcedureParam(
+    connectionInvitation: ConnectionInvitation,
+  ): ParamStoreProcedure[] {
+    const params: ParamStoreProcedure[] = [
+      {
+        field: 'source_email',
+        type: sql.NVarChar(250),
+        value: connectionInvitation.sourceEmail,
+      },
+      {
+        field: 'target_email',
+        type: sql.NVarChar(250),
+        value: connectionInvitation.targetEmail,
+      },
+      {
+        field: 'source_organization',
+        type: sql.Int(),
+        value: connectionInvitation.sourceOrganization,
+      },
+      {
+        field: 'target_organization',
+        type: sql.Int(),
+        value: connectionInvitation.targetOrganization,
+      },
+    ];
+
+    return params;
   }
 }

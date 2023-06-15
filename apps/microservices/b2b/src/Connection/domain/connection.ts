@@ -16,3 +16,10 @@ export class Connection {
   status: ConnectionStatus;
   description: string;
 }
+
+export class ConnectionInvitation {
+  sourceEmail: string;
+  targetEmail: string;
+  sourceOrganization: number;
+  targetOrganization: number;
+}

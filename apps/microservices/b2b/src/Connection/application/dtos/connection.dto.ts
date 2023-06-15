@@ -1,34 +1,22 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsArray,
-  MinLength,
-  ValidateNested,
-} from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
-import { Type } from 'class-transformer';
-
-export class ConnectionMembersDto {
-  @IsString()
-  @IsNotEmpty()
-  memeberName: string;
-
-  @IsString()
-  @IsNotEmpty()
-  listId: string;
-}
+import { IsEmail, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateConnectionDto {
-  @IsString()
+  @IsEmail()
   @IsNotEmpty()
-  connectionName: string;
+  sourceEmail: string;
 
-  @IsArray()
+  @IsEmail()
   @IsNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => ConnectionMembersDto)
-  @MinLength(2)
-  connectionList: ConnectionMembersDto[];
+  targetEmail: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  targetOrganization: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  sourceOrganization: number;
 }
 
 export class UpdateConnectionDto extends PartialType(CreateConnectionDto) {}

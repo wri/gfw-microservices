@@ -13,9 +13,16 @@ export class StoredProcedureCommand implements Command {
     private readonly parameters: ParamStoreProcedure[],
   ) {}
 
-  async execute<T>(): ResultPromise<T> {
+  async execute<T>(database: string | null = null): ResultPromise<T> {
     try {
-      await this.connection.connect();
+      if (database) await this.connection.connect(database);
+      else await this.connection.connect();
+      console.log(
+        this.procedureName,
+        database,
+        this.parameters,
+        this.connection.config,
+      );
       Logger.log(this.procedureName, this.parameters);
       const result = await this.connection.executeQuery<T>(
         this.procedureName,
@@ -25,7 +32,8 @@ export class StoredProcedureCommand implements Command {
       await this.connection.disconnect();
       return Result.ok(result);
     } catch (error) {
-      Logger.log('Error Executing The Stored Proccedure', error);
+      console.log(error);
+      Logger.error('Error Executing The Stored Proccedure', error, database);
       return Result.fail(
         new ResultError('Error when executing stored procedure', 500),
       );

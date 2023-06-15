@@ -1,6 +1,6 @@
 import { InvalidArgumentError } from './InvalidArgumentError';
 
-export type Primitives = String | string | number | Boolean | boolean | Date;
+export type Primitives = string | number | boolean | Date;
 
 export abstract class ValueObject<T extends Primitives> {
   value: T;
@@ -17,7 +17,10 @@ export abstract class ValueObject<T extends Primitives> {
   }
 
   equals(other: ValueObject<T>): boolean {
-    return other.constructor.name === this.constructor.name && other.value === this.value;
+    return (
+      other.constructor.name === this.constructor.name &&
+      other.value === this.value
+    );
   }
 
   toString(): string {

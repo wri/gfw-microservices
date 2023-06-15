@@ -1134,7 +1134,7 @@ export default class Map extends Component {
     Promise.all(deferreds).then((response) => {
       const popFeats = [];
       response.forEach((layer) => {
-        layer.response.results.forEach((result) => {
+        layer?.response?.results?.forEach((result) => {
           const popupTemplate = utils.getObject(mapPage.layers, 'id', layer.layer).popupTemplate;
           result.feature.popupTemplate = popupTemplate;
           result.feature.layerName = layer.layer;

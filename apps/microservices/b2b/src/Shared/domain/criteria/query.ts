@@ -1,5 +1,5 @@
-import { Filters } from "./filters";
-import { Orders } from "./orders";
+import { Filters } from './filters';
+import { Orders } from './orders';
 
 export type FilterType = { value: string; operator: string; field: string };
 export type OrderType = { by: string; type: string };
@@ -14,7 +14,7 @@ export class QueryCriteria {
     filters: Array<FilterType>,
     orders: Array<OrderType>,
     limit?: number,
-    offset?: number
+    offset?: number,
   ) {
     this.filters = Filters.fromValues(this.parseFilters(filters));
     this.orders = Orders.fromValues(this.parseOrders(orders));
@@ -41,9 +41,9 @@ export class QueryCriteria {
       const operator = filter.operator;
 
       return new Map([
-        ["field", field],
-        ["operator", operator],
-        ["value", value],
+        ['field', field],
+        ['operator', operator],
+        ['value', value],
       ]);
     });
   }
@@ -58,8 +58,8 @@ export class QueryCriteria {
       const type = order.type;
 
       return new Map([
-        ["field", field],
-        ["type", type],
+        ['field', field],
+        ['type', type],
       ]);
     });
   }

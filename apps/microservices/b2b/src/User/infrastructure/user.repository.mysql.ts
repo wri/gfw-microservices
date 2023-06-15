@@ -44,9 +44,8 @@ export class UserRepositoryMysql
       'uspGetUserInfoByEmail',
       params,
     );
-    console.log(db, getUserByEmail)
+    console.log(db, getUserByEmail);
     const user = await getUserByEmail.execute<User>(db);
     return user;
   }
-
 }

@@ -24,4 +24,6 @@ export class FullConnectionFiltersDto {
   sourceId: number;
 }
 
-export class ConnectionFiltersDto extends PartialType(FullConnectionFiltersDto) {}
+export class ConnectionFiltersDto extends PartialType(
+  FullConnectionFiltersDto,
+) {}

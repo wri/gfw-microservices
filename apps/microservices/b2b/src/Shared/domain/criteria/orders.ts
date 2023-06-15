@@ -1,4 +1,4 @@
-import { Order } from "./order";
+import { Order } from './order';
 
 export class Orders {
   readonly orders: Order[];

@@ -6,10 +6,7 @@ import { ActivityLogDataMapper } from './application/activity-log.mapper';
 import { ActivityLogUseCases } from './application/activity-log.use-case';
 import { ActivityLogRepository } from './domain/activity-log.repository';
 import { ActivityLogRepositoryMysql } from './infrastructure/activity-log.repository.mysql';
-import {
-  ConstantsConfig,
-  ConstantsConfigIds,
-} from '@wri-monorepos/constants';
+import { ConstantsConfig, ConstantsConfigIds } from '@wri-monorepos/constants';
 
 @Module({
   imports: [UserModule],
@@ -22,4 +19,4 @@ import {
   ],
   exports: [ActivityLogUseCases],
 })
-export class ActivityLogModule { }
+export class ActivityLogModule {}

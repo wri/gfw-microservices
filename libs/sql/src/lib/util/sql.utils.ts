@@ -11,9 +11,9 @@ export class SQLUtils {
   }
 
   async connect(database: string = this.config.database): Promise<void> {
-    console.log(database)
-    const config = {...this.config, database};
-    console.log(config)
+    console.log(database);
+    const config = { ...this.config, database };
+    console.log(config);
     this.connection = await get(database, config); //sql.connect(this.config);
   }
 

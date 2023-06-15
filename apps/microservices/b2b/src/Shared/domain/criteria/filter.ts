@@ -8,7 +8,11 @@ export class Filter {
   readonly operator: FilterOperator;
   readonly value: FilterValue;
 
-  constructor(field: FilterField, operator: FilterOperator, value: FilterValue) {
+  constructor(
+    field: FilterField,
+    operator: FilterOperator,
+    value: FilterValue,
+  ) {
     this.field = field;
     this.operator = operator;
     this.value = value;
@@ -23,8 +27,10 @@ export class Filter {
       throw new InvalidArgumentError(`The filter is invalid`);
     }
 
-    return new Filter(new FilterField(field), FilterOperator.fromValue(operator), new FilterValue(value));
+    return new Filter(
+      new FilterField(field),
+      FilterOperator.fromValue(operator),
+      new FilterValue(value),
+    );
   }
-
-
 }

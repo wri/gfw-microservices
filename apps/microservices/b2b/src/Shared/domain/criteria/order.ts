@@ -1,5 +1,5 @@
-import { OrderBy } from "./order.by";
-import { OrderType, OrderTypes } from "./order.type";
+import { OrderBy } from './order.by';
+import { OrderType, OrderTypes } from './order.type';
 
 export class Order {
   readonly orderBy: OrderBy;
@@ -11,8 +11,8 @@ export class Order {
   }
 
   static fromValues(values: Map<string, string>): Order {
-    const field = values.get("field");
-    const type = values.get("type");
+    const field = values.get('field');
+    const type = values.get('type');
 
     if (!field || !type) {
       return Order.none();
@@ -22,7 +22,7 @@ export class Order {
   }
 
   static none(): Order {
-    return new Order(new OrderBy(""), new OrderType(OrderTypes.NONE));
+    return new Order(new OrderBy(''), new OrderType(OrderTypes.NONE));
   }
 
   static desc(orderBy: string): Order {

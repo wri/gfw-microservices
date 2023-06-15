@@ -17,7 +17,7 @@ class Result<V, E> {
     this.error = error;
   }
 
-  public static ok<V>(value: V): Result<V, undefined> {
+  public static ok<V>(value: V = undefined): Result<V, undefined> {
     return new Result(true, value, undefined);
   }
 

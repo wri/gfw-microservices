@@ -1,4 +1,4 @@
-type ErrorCode = 404 | 500;
+type ErrorCode = 404 | 500 | 400;
 
 class ResultError extends Error {
   public code: ErrorCode;

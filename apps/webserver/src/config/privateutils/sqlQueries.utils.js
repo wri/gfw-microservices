@@ -30,7 +30,6 @@ function startup() {
   createQueryMap(ProSQLRepo.Organization, false);
 }
 
-
 // Verify given connection is for system (gfwpro) DB
 const verifySystemDB = (connectConfig) => {
   if (connectConfig.database !== process.env.MSSQL_DATABASE) {

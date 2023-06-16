@@ -179,13 +179,7 @@ module.exports = (app, limiter) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        ListManager.deleteList(req, list_name)
-          .then(() => {
-            res.send('Location add failed');
-          })
-          .catch(() => {
-            res.send('Location add failed');
-          });
+        res.send('Location add failed');
       });
   });
 
@@ -238,13 +232,7 @@ module.exports = (app, limiter) => {
       })
       .catch((err) => {
         console.log('Reject', err);
-        ListManager.deleteList(req, list_name)
-          .then(() => {
-            res.send(saveAsDraftListConfig.failed);
-          })
-          .catch(() => {
-            res.send(saveAsDraftListConfig.failed);
-          });
+        res.send(saveAsDraftListConfig.failed);
       });
   });
 

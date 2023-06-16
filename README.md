@@ -101,7 +101,7 @@ docker-compose -f docker-compose.website.dev.yml build
 #### Doing changes in stored procedures
 
 ```sh
-npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries -w
+npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries --watch
 ```
 
 ### Test

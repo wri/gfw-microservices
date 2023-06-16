@@ -56,11 +56,11 @@ describe('Test New Raw Queries', () => {
   ];
 
   const checkQuery = (storedProcedureName, isSystemQuery = true) => {
-    const systemQuery = getQueryStr(
+    const sqlQuery = getQueryStr(
       isSystemQuery ? SQLSYSTEMCONFIG : SQLORGCONFIG,
       storedProcedureName
     );
-    expect(systemQuery).not.toBeNull();
+    expect(sqlQuery).not.toBeNull();
 
     const tryAccessToNotAllowedQuery = () => {
       // inverse the config to try to access to a query that doesn't belong to the connection

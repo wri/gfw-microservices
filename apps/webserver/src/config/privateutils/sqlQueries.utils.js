@@ -5,6 +5,33 @@
  */
 
 const ProSQLRepo = require('../../queries');
+const queryMap = {};
+
+// Helper to address the database verification to the right function
+const verifyDB = (connectConfig, isSystemVerification) => {
+  if (isSystemVerification) {
+    return verifySystemDB(connectConfig);
+  } else {
+    return verifyOrgDB(connectConfig);
+  }
+};
+
+const createQueryMap = (queryRepository, isSystem) => {
+  Object.keys(queryRepository).forEach((queryName) => {
+    queryMap[queryName] = (connectConfig) => {
+      verifyDB(connectConfig, isSystem);
+      return queryRepository[queryName];
+    };
+  });
+};
+
+function startup() {
+  createQueryMap(ProSQLRepo.System, true);
+  createQueryMap(ProSQLRepo.Organization, false);
+}
+
+startup();
+
 // Verify given connection is for system (gfwpro) DB
 const verifySystemDB = (connectConfig) => {
   if (connectConfig.database !== process.env.MSSQL_DATABASE) {
@@ -20,20 +47,11 @@ const verifyOrgDB = (connectConfig) => {
 };
 
 const returnQueryClosure = (queryName) => {
+  // Removing prefixes for stored procedures and lowercasing first letter
   const cleanQueryName = queryName.replace('uspG', 'g').replace('uspS', 's');
 
-  if (ProSQLRepo.System[cleanQueryName]) {
-    return (connectConfig) => {
-      verifySystemDB(connectConfig);
-      return ProSQLRepo.System[cleanQueryName];
-    };
-  }
-
-  if (ProSQLRepo.Organization[cleanQueryName]) {
-    return (connectConfig) => {
-      verifyOrgDB(connectConfig);
-      return ProSQLRepo.Organization[cleanQueryName];
-    };
+  if (queryMap[cleanQueryName]) {
+    return queryMap[cleanQueryName];
   }
 
   return null;

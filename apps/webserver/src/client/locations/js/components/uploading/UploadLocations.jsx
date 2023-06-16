@@ -158,6 +158,16 @@ class UploadLocations extends Component {
     history.goBack();
   };
 
+  displayUploadErrorDialog = () => {
+    this.setState({
+      isSaving: false,
+      dialogOpen: true,
+      dialogTitle: locationsPage.upload.errors.uploadErrorTile,
+      dialogMessage: locationsPage.upload.errors.uploadErrorDialogMessage,
+      dialogEmail: true,
+    });
+  };
+
   batchGeoms = (geojson) => {
     geojson.features.sort((a, b) => a.properties.longitude - b.properties.longitude);
 
@@ -233,19 +243,7 @@ class UploadLocations extends Component {
         }
       });
     } catch (error) {
-      this.setState({
-        isSaving: false,
-        dialogOpen: true,
-        dialogTitle: 'Upload error occurred',
-        dialogMessage: [
-          'One or more of your locations failed to upload. Please follow the steps below:',
-          '1. Please re-upload your locations, and on Step 3, search for "none" entries in the country, state, or sub-state fields. “None” entries occur when GFW Pro cannot identify a country, state, and sub-state for your uploaded locations.',
-          '2. Check the following potential causes:',
-          '• One or more of the failed locations may be on water. Please remove or correct those locations re-upload your list.',
-          '• If the issue above has been addressed, and your locations are on land, a system interruption may have occurred. Please re-upload your list.',
-        ],
-        dialogEmail: true,
-      });
+      this.displayUploadErrorDialog();
     }
 
     geomsToConvert?.forEach((convertedGeom, j) => {
@@ -766,19 +764,7 @@ class UploadLocations extends Component {
 
             if (sequencedGeoJSON.features.length !== uploadFeatureCount) {
               // We have lost landless features in the clip operation, stop the upload!
-              this.setState({
-                isSaving: false,
-                dialogOpen: true,
-                dialogTitle: 'Upload error occurred',
-                dialogMessage: [
-                  'One or more of your locations failed to upload. Please follow the steps below:',
-                  '1. Please re-upload your locations, and on Step 3, search for "none" entries in the country, state, or sub-state fields. “None” entries occur when GFW Pro cannot identify a country, state, and sub-state for your uploaded locations.',
-                  '2. Check the following potential causes:',
-                  '• One or more of the failed locations may be on water. Please remove or correct those locations re-upload your list.',
-                  '• If the issue above has been addressed, and your locations are on land, a system interruption may have occurred. Please re-upload your list.',
-                ],
-                dialogEmail: true,
-              });
+              this.displayUploadErrorDialog();
             } else if (checkListExists && selectedList === '') {
               this.setState({
                 isSaving: false,
@@ -828,19 +814,7 @@ class UploadLocations extends Component {
 
                   this.setState(finalState);
                 } else {
-                  this.setState({
-                    isSaving: false,
-                    dialogOpen: true,
-                    dialogTitle: 'Upload error occurred',
-                    dialogMessage: [
-                      'One or more of your locations failed to upload. Please follow the steps below:',
-                      '1. Please re-upload your locations, and on Step 3, search for "none" entries in the country, state, or sub-state fields. “None” entries occur when GFW Pro cannot identify a country, state, and sub-state for your uploaded locations.',
-                      '2. Check the following potential causes:',
-                      '• One or more of the failed locations may be on water. Please remove or correct those locations re-upload your list.',
-                      '• If the issue above has been addressed, and your locations are on land, a system interruption may have occurred. Please re-upload your list.',
-                    ],
-                    dialogEmail: true,
-                  });
+                  this.displayUploadErrorDialog();
                 }
               };
               request.onerror = (err) => {

@@ -84,10 +84,24 @@ LISTS_MICROSERVICE_URL=http://host.docker.internal:3333/api
 
 > This project contains our front-end and back-end
 
+#### Pre-requisites
+
+> run the following command to create the database queries inside the webserver project
+
+```sh
+npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries
+```
+
 #### Docker Command to Build/Run
 
 ```sh
-docker compose -f "./apps/webserver/docker-compose.yml" up --build
+docker-compose -f docker-compose.website.dev.yml build
+```
+
+#### Doing changes in stored procedures
+
+```sh
+npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries --watch
 ```
 
 ### Test

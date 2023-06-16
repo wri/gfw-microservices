@@ -20,6 +20,7 @@ services:
       - ./apps/webserver/src/config:/srv/src/config
       - ./apps/webserver/src/vectorTiles:/srv/src/vectorTiles
       - ./apps/webserver/src/server.js:/srv/src/server.js
+      - ./apps/webserver/src/queries:/srv/src/queries
   redis:
     image: redis:5.0.7-alpine
     container_name: gfwpro-website-redis

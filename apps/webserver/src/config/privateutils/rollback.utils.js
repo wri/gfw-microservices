@@ -63,7 +63,7 @@ const dropSystemTable = (req, table_name) => {
 const deleteOrganizationTableRow = (req, table_name, primary_key, column_name) => {
   return new Promise((resolve, reject) => {
     const parameters = [
-      { field: 'table_name', type: sql.NVarChar, value: 'Lists' },
+      { field: 'table_name', type: sql.NVarChar, value: table_name },
       { field: 'primary_key', type: sql.Int, value: primary_key },
       { field: 'column', type: sql.NVarChar, value: column_name },
     ];

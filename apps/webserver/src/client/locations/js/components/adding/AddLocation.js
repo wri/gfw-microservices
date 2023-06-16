@@ -1392,14 +1392,8 @@ export default class AddLocation extends Component {
             this.setState({
               isLoading: false,
               dialogOpen: true,
-              dialogTitle: 'Upload error occurred',
-              dialogMessage: [
-                'One or more of your locations failed to upload. Please follow the steps below:',
-                '1. Please re-upload your locations, and on Step 3, search for "none" entries in the country, state, or sub-state fields. “None” entries occur when GFW Pro cannot identify a country, state, and sub-state for your uploaded locations.',
-                '2. Check the following potential causes:',
-                '• One or more of the failed locations may be on water. Please remove or correct those locations re-upload your list.',
-                '• If the issue above has been addressed, and your locations are on land, a system interruption may have occurred. Please re-upload your list.',
-              ],
+              dialogTitle: locationsPage.upload.errors.uploadErrorTile,
+              dialogMessage: locationsPage.upload.errors.uploadErrorDialogMessage,
               dialogEmail: true,
             });
             return;

@@ -12,6 +12,7 @@
 ********************************************************************/
 const path = require('path');
 const sql = require('mssql');
+const logger = require('./logger.utils');
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 
 const dropDatabase = (req, pendingaccounts_id) => {
@@ -23,7 +24,8 @@ const dropDatabase = (req, pendingaccounts_id) => {
         resolve(true);
       })
       .catch((err) => {
-        reject(err);
+        // don't propagate errors during rollback because they can trigger app crash
+        logger.error('Ignoring error from rollback.utils:dropDatabase', err);
       });
   });
 };
@@ -37,7 +39,8 @@ const dropOrganizationTable = (req, table_name) => {
         resolve(true);
       })
       .catch((err) => {
-        reject(err);
+        // don't propagate errors during rollback because they can trigger app crash
+        logger.error('Ignoring error from rollback.utils:dropOrganizationTable', err);
       });
   });
 };
@@ -51,7 +54,8 @@ const dropSystemTable = (req, table_name) => {
         resolve(true);
       })
       .catch((err) => {
-        reject(err);
+        // don't propagate errors during rollback because they can trigger app crash
+        logger.error('Ignoring error from rollback.utils:dropSystemTable', err);
       });
   });
 };
@@ -69,7 +73,8 @@ const deleteOrganizationTableRow = (req, table_name, primary_key, column_name) =
         resolve(true);
       })
       .catch((err) => {
-        reject(err);
+        // don't propagate errors during rollback because they can trigger app crash
+        logger.error('Ignoring error from rollback.utils:deleteOrganizationTableRow', err);
       });
   });
 };
@@ -87,7 +92,8 @@ const deleteSystemTableRow = (req, table_name, primary_key, column_name) => {
         resolve(true);
       })
       .catch((err) => {
-        reject(err);
+        // don't propagate errors during rollback because they can trigger app crash
+        logger.error('Ignoring error from rollback.utils:deleteSystemTableRow', err);
       });
   });
 };
@@ -105,7 +111,8 @@ const dropUserRoute = (req, user_email, organization_id, organization_user_id) =
         resolve(true);
       })
       .catch((err) => {
-        reject(err);
+        // don't propagate errors during rollback because they can trigger app crash
+        logger.error('Ignoring error from rollback.utils:dropUserRoute', err);
       });
   });
 };
@@ -119,7 +126,8 @@ const deleteUserSecret = (req, user_email) => {
         resolve(true);
       })
       .catch((err) => {
-        reject(err);
+        // don't propagate errors during rollback because they can trigger app crash
+        logger.error('Ignoring error from rollback.utils:deleteUserSecret', err);
       });
   });
 };

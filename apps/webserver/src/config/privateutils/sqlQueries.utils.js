@@ -30,7 +30,6 @@ function startup() {
   createQueryMap(ProSQLRepo.Organization, false);
 }
 
-startup();
 
 // Verify given connection is for system (gfwpro) DB
 const verifySystemDB = (connectConfig) => {
@@ -46,19 +45,16 @@ const verifyOrgDB = (connectConfig) => {
   }
 };
 
-const returnQueryClosure = (queryName) => {
-  // Removing prefixes for stored procedures and lowercasing first letter
-  const cleanQueryName = queryName.replace('uspG', 'g').replace('uspS', 's');
-
-  if (queryMap[cleanQueryName]) {
-    return queryMap[cleanQueryName];
+const getQueryStr = (connectConfig, storedProcedureName) => {
+  // check that the map has been created
+  if (Object.keys(queryMap).length === 0) {
+    startup();
   }
 
-  return null;
-};
+  // Removing prefixes for stored procedures and lowercasing first letter
+  const cleanQueryName = storedProcedureName.replace('uspG', 'g').replace('uspS', 's');
 
-const getQueryStr = (connectConfig, storedProcedureName) => {
-  const queryFn = returnQueryClosure(storedProcedureName);
+  const queryFn = queryMap[cleanQueryName];
   if (queryFn) {
     return queryFn(connectConfig);
   }

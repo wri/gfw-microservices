@@ -185,7 +185,8 @@ export default class Diagnostics extends Component {
     );
     Promise.all(promises)
       .then((responses) => {
-        const highChartColorConfig = {};
+        const { highChartColorConfig } = this.state;
+        const highChartColorConfigFromAPI = {};
 
         const jsonConfigs = responses.map((response) => JSON.parse(response));
         jsonConfigs.forEach((config) => {
@@ -194,14 +195,14 @@ export default class Diagnostics extends Component {
             config?.data[0]?.attributes?.legendConfig?.items;
           categories?.forEach((category) => {
             const { name, color } = category;
-            highChartColorConfig[name] = color;
+            highChartColorConfigFromAPI[name] = color;
           });
         });
         this.setState(
           {
             highChartColorConfig: {
-              ...this.state.highChartColorConfig,
               ...highChartColorConfig,
+              ...highChartColorConfigFromAPI,
             },
           },
           () => {

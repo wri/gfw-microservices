@@ -1,79 +1,86 @@
 import httpRequest from '../../../../common/js/utils/httpRequest';
 
 async function getOrgsList(email) {
-  return httpRequest
+  httpRequest
     .fetchJSON(`/connection/${email}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      return err;
+      console.log(err);
+      return [];
     });
 }
 
 async function getConnections() {
-  return httpRequest
+  httpRequest
     .fetchJSON('/connection', {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      return err;
+      console.log(err);
+      return [];
     });
 }
 
-async function sendInvitation(email, organizationName) {
-  return httpRequest
-    .fetchForm('/invitation', { email, organizationName })
+async function sendInvitation(email) {
+  httpRequest
+    .fetchForm('/invitation', { email })
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      return err;
+      console.log(err);
+      return [];
     });
 }
 
 async function resendInvitation(id) {
-  return httpRequest
+  httpRequest
     .fetchForm(`/invitation/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      return err;
+      console.log(err);
+      return [];
     });
 }
 
 async function acceptConnection(id) {
-  return httpRequest
+  httpRequest
     .fetchForm(`/connection/accept/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      return err;
+      console.log(err);
+      return [];
     });
 }
 
 async function rejectConnection(id) {
-  return httpRequest
+  httpRequest
     .fetchForm(`/connection/reject/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      return err;
+      console.log(err);
+      return [];
     });
 }
 
 async function cancelConnection(id) {
-  return httpRequest
+  httpRequest
     .fetchForm(`/connection/cancel/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
     .catch((err) => {
-      return err;
+      console.log(err);
+      return [];
     });
 }
 

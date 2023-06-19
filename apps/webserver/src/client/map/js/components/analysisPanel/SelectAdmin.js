@@ -48,9 +48,9 @@ export default class SelectAdmin extends Component {
       const queryTask = new QueryTask({
         url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/5',
       });
-
       const query = new Query();
-      query.where = `name_0 = '${this.props.adminSelections.country}'`;
+      const scapedCountryName = new URLSearchParams(this.props.adminSelections.country).toString();
+      query.where = `name_0 = '${scapedCountryName}'`;
       query.returnGeometry = false;
       query.outFields = ['name_1', 'id_1']; // 'gadmid'
       query.returnDistinctValues = true;

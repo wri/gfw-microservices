@@ -114,7 +114,10 @@ export default class Diagnostics extends Component {
       popoverLoading: '',
       bubbleData: {},
       hoverProp: '',
-      highChartColorConfig: {},
+      highChartColorConfig: {
+        ...locationsPage.highchartColorBackup,
+        ...highchartColorsIndonesiaLegalClassification2020,
+      },
       isLoading: true,
       currentView: '',
       openDownloadDialog: false,
@@ -182,7 +185,8 @@ export default class Diagnostics extends Component {
     );
     Promise.all(promises)
       .then((responses) => {
-        const highChartColorConfig = {};
+        const { highChartColorConfig } = this.state;
+        const highChartColorConfigFromAPI = {};
 
         const jsonConfigs = responses.map((response) => JSON.parse(response));
         jsonConfigs.forEach((config) => {
@@ -191,14 +195,14 @@ export default class Diagnostics extends Component {
             config?.data[0]?.attributes?.legendConfig?.items;
           categories?.forEach((category) => {
             const { name, color } = category;
-            highChartColorConfig[name] = color;
+            highChartColorConfigFromAPI[name] = color;
           });
         });
         this.setState(
           {
             highChartColorConfig: {
               ...highChartColorConfig,
-              ...highchartColorsIndonesiaLegalClassification2020,
+              ...highChartColorConfigFromAPI,
             },
           },
           () => {
@@ -208,12 +212,6 @@ export default class Diagnostics extends Component {
       })
       .catch((e) => {
         console.log('Error retrieving color configuration - using backup', e);
-        this.setState({
-          highChartColorConfig: {
-            ...locationsPage.highchartColorBackup,
-            ...highchartColorsIndonesiaLegalClassification2020,
-          },
-        });
       });
   };
 

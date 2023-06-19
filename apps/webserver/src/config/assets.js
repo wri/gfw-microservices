@@ -10,5 +10,6 @@ module.exports = {
   mocha: 'server/*/tests/**/*.js',
   clientJest: 'client/**/*.test.js',
   serverJest: 'server/**/*.spec.js',
+  configJest: 'config/**/*.spec.js',
   views: 'server/*/views',
 };

@@ -244,6 +244,7 @@ export default class AddLocation extends Component {
       ),
       selectedList: 'Create New List',
       customList: this.props.activeTemplate,
+      newListName: '',
       measurementUnit: 'hectares',
       dialogOpen: false,
       dialogTitle: '',
@@ -847,11 +848,9 @@ export default class AddLocation extends Component {
   saveItem = ({ isSaveAsDraft }) => {
     const errorTitle = 'Mandatory fields missing';
     const errorMessages = [];
-
-    const listName =
-      this.state.selectedList === 'Create New List'
-        ? this.state.customList
-        : this.state.selectedList;
+    const isANewList = this.state.selectedList === 'Create New List';
+    const newListNameOrPlaceholder = this.state.newListName || this.state.customList;
+    const listName = isANewList ? newListNameOrPlaceholder : this.state.selectedList;
     // Check if customList is the same name as an existing list
     const checkListExists = this.props.userLists.find(
       (list) => list.list_name.toLowerCase() === listName.toLowerCase()
@@ -1392,14 +1391,8 @@ export default class AddLocation extends Component {
             this.setState({
               isLoading: false,
               dialogOpen: true,
-              dialogTitle: 'Upload error occurred',
-              dialogMessage: [
-                'One or more of your locations failed to upload. Please follow the steps below:',
-                '1. Please re-upload your locations, and on Step 3, search for "none" entries in the country, state, or sub-state fields. “None” entries occur when GFW Pro cannot identify a country, state, and sub-state for your uploaded locations.',
-                '2. Check the following potential causes:',
-                '• One or more of the failed locations may be on water. Please remove or correct those locations re-upload your list.',
-                '• If the issue above has been addressed, and your locations are on land, a system interruption may have occurred. Please re-upload your list.',
-              ],
+              dialogTitle: locationsPage.upload.errors.uploadErrorTile,
+              dialogMessage: locationsPage.upload.errors.uploadErrorDialogMessage,
               dialogEmail: true,
             });
             return;
@@ -1686,10 +1679,16 @@ export default class AddLocation extends Component {
     });
   };
 
-  updateCustomList = (evt) => {
+  updateNewListName = (evt) => {
     this.setState({
-      customList: evt.target.value,
+      newListName: evt.target.value,
       saved: false,
+    });
+  };
+
+  trimNewListName = () => {
+    this.setState({
+      newListName: this.state.newListName.trim(),
     });
   };
 
@@ -1874,6 +1873,7 @@ export default class AddLocation extends Component {
     } = this.state;
     const { view, addMethod, addType, locationType, activeTemplate, userLists, templateDropdowns } =
       this.props;
+
     let listPlaceholderValue =
       activeTemplate === 'investment' && customList === 'investment' && addType === 'commodity'
         ? 'Recent Other'
@@ -2083,7 +2083,9 @@ export default class AddLocation extends Component {
             selectedLocationClassification={selectedLocationClassification}
             clearAddToListDropdown={this.clearAddToListDropdown}
             listPlaceholderValue={listPlaceholderValue}
-            updateCustomList={this.updateCustomList}
+            newListName={this.state.newListName}
+            updateNewListName={this.updateNewListName}
+            trimNewListName={this.trimNewListName}
           />
 
           <DescribeLocation

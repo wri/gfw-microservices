@@ -15,6 +15,7 @@
     "baseUrl": ".",
     "paths": {
       "@wri-monorepos/aws": ["libs/aws/src/index.ts"],
+      "@wri-monorepos/constants": ["libs/constants/src/index.ts"],
       "@wri-monorepos/geo": ["libs/geo/src/index.ts"],
       "@wri-monorepos/shared": ["libs/shared/src/index.ts"],
       "@wri-monorepos/sql": ["libs/sql/src/index.ts"]

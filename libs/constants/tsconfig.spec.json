@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "module": "commonjs",
+    "types": ["jest", "node"]
+  },
+  "include": [
+    "jest.config.ts",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.d.ts",
+    "src/types/user-activity-type.ts",
+    "src/types/list-activity-type.ts",
+    "src/types/b2b-status.ts",
+    "src/types/account-status.ts"
+  ]
+}

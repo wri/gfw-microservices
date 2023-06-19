@@ -10,8 +10,11 @@ export class SQLUtils {
     this.config = config;
   }
 
-  async connect() {
-    this.connection = await get(this.config.database, this.config); //sql.connect(this.config);
+  async connect(database: string = this.config.database): Promise<void> {
+    console.log(database);
+    const config = { ...this.config, database };
+    console.log(config);
+    this.connection = await get(database, config); //sql.connect(this.config);
   }
 
   query<T>(query: string, parameters?: ParameterType[]): Promise<T> {

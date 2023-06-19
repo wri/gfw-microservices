@@ -1,7 +1,7 @@
 import httpRequest from '../../../../common/js/utils/httpRequest';
 
 async function getOrgsList(email) {
-  httpRequest
+  return httpRequest
     .fetchJSON(`/connection/${email}`, {})
     .then((response) => {
       return JSON.parse(response);
@@ -13,7 +13,7 @@ async function getOrgsList(email) {
 }
 
 async function getConnections() {
-  httpRequest
+  return httpRequest
     .fetchJSON('/connection', {})
     .then((response) => {
       return JSON.parse(response);
@@ -25,7 +25,7 @@ async function getConnections() {
 }
 
 async function sendInvitation(email) {
-  httpRequest
+  return httpRequest
     .fetchForm('/invitation', { email })
     .then((response) => {
       return JSON.parse(response);
@@ -37,7 +37,7 @@ async function sendInvitation(email) {
 }
 
 async function resendInvitation(id) {
-  httpRequest
+  return httpRequest
     .fetchForm(`/invitation/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
@@ -49,7 +49,7 @@ async function resendInvitation(id) {
 }
 
 async function acceptConnection(id) {
-  httpRequest
+  return httpRequest
     .fetchForm(`/connection/accept/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
@@ -61,7 +61,7 @@ async function acceptConnection(id) {
 }
 
 async function rejectConnection(id) {
-  httpRequest
+  return httpRequest
     .fetchForm(`/connection/reject/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
@@ -73,7 +73,7 @@ async function rejectConnection(id) {
 }
 
 async function cancelConnection(id) {
-  httpRequest
+  return httpRequest
     .fetchForm(`/connection/cancel/${id}`, {})
     .then((response) => {
       return JSON.parse(response);

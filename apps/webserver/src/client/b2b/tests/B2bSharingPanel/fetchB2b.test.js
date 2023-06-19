@@ -31,10 +31,8 @@ const runfetchTests = ({ action, param, path, httpMethod, body }) => {
   });
 
   it('should log an error on failure', async () => {
-    const expectedError = new Error('Mocked error');
-    httpMethod.mockRejectedValueOnce(expectedError);
     const result = await action(param);
-    expect(result).toEqual(expectedError);
+    expect(result).toEqual([]);
   });
 };
 

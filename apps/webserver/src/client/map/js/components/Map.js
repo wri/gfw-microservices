@@ -2543,8 +2543,6 @@ export default class Map extends Component {
       request.onload = () => {
         const jsonData = JSON.parse(request.responseText);
         jsonData.cartoLayer = cartoLayer;
-        // const workerUrl = `${pro_AWS_base}/js/worker.js`;
-        // const workerUrl = 'https://alpha.blueraster.io/pro/worker.js';
         const workerUrl = `${pro_AWS_base}/js/worker-update.js`;
 
         open(workerUrl)
@@ -2563,7 +2561,6 @@ export default class Map extends Component {
               }),
             ];
 
-            // console.log(cartoLayer.layerConfig.body.options); //TODO: use this in the symbol's opacity!
             const fillSymbol = new SimpleFillSymbol({
               color: cartoLayer.layerConfig.body.options.color,
               outline: {

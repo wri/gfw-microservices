@@ -5,7 +5,7 @@ import './OtbnTable.scss';
 
 function Table({ data }) {
   const argentinaOtbnArea = JSON.parse(data?.arg_otbn_area);
-  const categoryIArea = argentinaOtbnArea['Category I'] || 0
+  const categoryIArea = argentinaOtbnArea['Category I'] || 0;
   const categoryIIArea = argentinaOtbnArea['Category II'] || 0;
   const categoryIIIArea = argentinaOtbnArea['Category III'] || 0;
   const totalArea = categoryIArea + categoryIIArea + categoryIIIArea;

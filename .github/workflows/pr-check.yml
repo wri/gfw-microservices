@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Install dependencies
+      - name: Check code format
         run: npx nx format:check
 
   Check-lint:

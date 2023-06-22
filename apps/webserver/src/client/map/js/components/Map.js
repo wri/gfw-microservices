@@ -3,8 +3,6 @@ import moment from 'moment';
 import Dialog from 'material-ui/Dialog';
 import _isEmpty from 'lodash/isEmpty';
 
-import on from 'dojo/on';
-
 // ESRI Imports
 import EsriMap from 'esri/Map';
 import Extent from 'esri/geometry/Extent';
@@ -588,7 +586,7 @@ export default class Map extends Component {
             duplicate.threshold = canopyDensity;
 
             //this is to force-trigger a re-add of this layer which will make new tile requests w/ the new density
-            on.once(this.view.map.allLayers, 'change', (evt) => {
+            this.view.map.allLayers.once('change', (evt) => {
               if (evt.removed.length > 0) {
                 if (evt.removed[0].id === duplicate.id) {
                   const promise = new Promise((resolve) => {
@@ -961,7 +959,7 @@ export default class Map extends Component {
 
     this.initializeSketchViewModel(view);
 
-    on(view.popup, 'trigger-action', this.fireActions);
+    view.popup.on('trigger-action', this.fireActions);
 
     view.popup.watch('visible', () => {
       const analyzeAction = this.view.popup.actions.items.find((item) => item.id === 'ANALYZE');
@@ -2684,7 +2682,7 @@ export default class Map extends Component {
     duplicate.maxYear = endYear;
 
     // this is to force-trigger a re-add of this layer which will make new tile requests w/ the new density
-    on.once(this.view.map.allLayers, 'change', (evt) => {
+    this.view.map.allLayers.once('change', (evt) => {
       if (evt.removed.length > 0) {
         if (evt.removed[0].id === duplicate.id) {
           const promise = new Promise((resolve) => {

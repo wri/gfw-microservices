@@ -3,7 +3,6 @@ import moment from 'moment';
 import Dialog from 'material-ui/Dialog';
 import _isEmpty from 'lodash/isEmpty';
 
-import Deferred from 'dojo/Deferred';
 import on from 'dojo/on';
 
 // ESRI Imports
@@ -23,7 +22,6 @@ import SketchViewModal from 'esri/widgets/Sketch/SketchViewModel';
 import TileLayer from 'esri/layers/TileLayer';
 import VectorTileLayer from 'esri/layers/VectorTileLayer';
 import WebTileLayer from 'esri/layers/WebTileLayer';
-import all from 'dojo/promise/all';
 import esriConfig from 'esri/config';
 import {
   geographicToWebMercator,
@@ -1133,10 +1131,10 @@ export default class Map extends Component {
         }
       }
     });
-    all(deferreds).then((response) => {
+    Promise.all(deferreds).then((response) => {
       const popFeats = [];
       response.forEach((layer) => {
-        layer.response.results.forEach((result) => {
+        layer?.response?.results?.forEach((result) => {
           const popupTemplate = utils.getObject(mapPage.layers, 'id', layer.layer).popupTemplate;
           result.feature.popupTemplate = popupTemplate;
           result.feature.layerName = layer.layer;
@@ -2499,28 +2497,29 @@ export default class Map extends Component {
   };
 
   getFormaLayer = (layers) => {
-    const formaLayer = layers.filter((layer) => layer && layer.type === 'forma')[0];
-    const deferred = new Deferred();
-    const request = new XMLHttpRequest();
-    request.onload = () => {
-      const jsonData = JSON.parse(request.responseText);
-      deferred.resolve(
-        new FormaLayer({
-          id: formaLayer.id,
-          visible: false,
-          urlTemplate: jsonData.url,
-          date: jsonData.date,
-        })
-      );
-    };
-    request.onerror = (err) => {
-      console.log('Request Error:', err);
-      deferred.resolve(false);
-    };
+    return new Promise((resolve) => {
+      const formaLayer = layers.filter((layer) => layer && layer.type === 'forma')[0];
 
-    request.open('GET', formaLayer.url, true);
-    request.send();
-    return deferred.promise;
+      const request = new XMLHttpRequest();
+      request.onload = () => {
+        const jsonData = JSON.parse(request.responseText);
+        resolve(
+          new FormaLayer({
+            id: formaLayer.id,
+            visible: false,
+            urlTemplate: jsonData.url,
+            date: jsonData.date,
+          })
+        );
+      };
+      request.onerror = (err) => {
+        console.log('Request Error:', err);
+        resolve(false);
+      };
+
+      request.open('GET', formaLayer.url, true);
+      request.send();
+    });
   };
 
   getFormaLayerCallback = (configLayer, formaLayer) => {
@@ -2534,100 +2533,98 @@ export default class Map extends Component {
   };
 
   getCartoGraphics = (cartoLayer) => {
-    let tableName = cartoLayer.url.split('tables/')[1];
-    if (tableName.indexOf('/') > -1) {
-      tableName = tableName.split('/')[0];
-    }
+    return new Promise((resolve) => {
+      let tableName = cartoLayer.url.split('tables/')[1];
+      if (tableName.indexOf('/') > -1) {
+        tableName = tableName.split('/')[0];
+      }
 
-    const deferred = new Deferred();
-    const request = new XMLHttpRequest();
-    request.onload = () => {
-      const jsonData = JSON.parse(request.responseText);
-      jsonData.cartoLayer = cartoLayer;
-      // const workerUrl = `${pro_AWS_base}/js/worker.js`;
-      // const workerUrl = 'https://alpha.blueraster.io/pro/worker.js';
-      const workerUrl = `${pro_AWS_base}/js/worker-update.js`;
+      const request = new XMLHttpRequest();
+      request.onload = () => {
+        const jsonData = JSON.parse(request.responseText);
+        jsonData.cartoLayer = cartoLayer;
+        const workerUrl = `${pro_AWS_base}/js/worker-update.js`;
 
-      open(workerUrl)
-        .then((connection) => {
-          return connection.invoke('magicTwo', {
-            jsonData: jsonData,
-          });
-        })
-        .then((results) => {
-          let popupTemplate;
-          const fields = [
-            new Field({
-              name: 'ObjectID',
-              alias: 'ObjectID',
-              type: 'oid',
-            }),
-          ];
-
-          // console.log(cartoLayer.layerConfig.body.options); //TODO: use this in the symbol's opacity!
-          const fillSymbol = new SimpleFillSymbol({
-            color: cartoLayer.layerConfig.body.options.color,
-            outline: {
-              width: '0px',
-            },
-          }); //TODO: Try a layer renderer (simple, one-symbol) rather than a symbol for each feature!
-
-          const feats = results.data ? results.data : results;
-
-          const geometries = feats.map((result) => {
-            //TODO: Can we do some of this - specifically the geographicToWebMercator - in the worker as well?!
-            return new Graphic({
-              geometry: geographicToWebMercator(
-                new Polygon({
-                  rings: result.rings,
-                  spatialReference: { wkid: 4326 },
-                })
-              ),
-              symbol: fillSymbol,
-              attributes: result.attributes,
+        open(workerUrl)
+          .then((connection) => {
+            return connection.invoke('magicTwo', {
+              jsonData: jsonData,
             });
-          });
+          })
+          .then((results) => {
+            let popupTemplate;
+            const fields = [
+              new Field({
+                name: 'ObjectID',
+                alias: 'ObjectID',
+                type: 'oid',
+              }),
+            ];
 
-          if (cartoLayer.cartoFields) {
-            popupTemplate = utils.getObject(mapPage.layers, 'id', cartoLayer.id).popupTemplate;
-            cartoLayer.cartoFields.forEach((field) => {
-              fields.push(
-                new Field({
-                  name: field,
-                  alias: field,
-                  type: typeof geometries[0].attributes[field] === 'string' ? 'string' : 'integer',
-                })
-              );
+            const fillSymbol = new SimpleFillSymbol({
+              color: cartoLayer.layerConfig.body.options.color,
+              outline: {
+                width: '0px',
+              },
+            }); //TODO: Try a layer renderer (simple, one-symbol) rather than a symbol for each feature!
+
+            const feats = results.data ? results.data : results;
+
+            const geometries = feats.map((result) => {
+              //TODO: Can we do some of this - specifically the geographicToWebMercator - in the worker as well?!
+              return new Graphic({
+                geometry: geographicToWebMercator(
+                  new Polygon({
+                    rings: result.rings,
+                    spatialReference: { wkid: 4326 },
+                  })
+                ),
+                symbol: fillSymbol,
+                attributes: result.attributes,
+              });
             });
-          }
 
-          const layer = new FeatureLayer({
-            popupTemplate: popupTemplate,
-            id: cartoLayer.id,
-            source: geometries,
-            fields: fields,
-            objectIdField: 'ObjectID',
-            geometryType: 'polygon',
-            visible: cartoLayer.visible,
+            if (cartoLayer.cartoFields) {
+              popupTemplate = utils.getObject(mapPage.layers, 'id', cartoLayer.id).popupTemplate;
+              cartoLayer.cartoFields.forEach((field) => {
+                fields.push(
+                  new Field({
+                    name: field,
+                    alias: field,
+                    type:
+                      typeof geometries[0].attributes[field] === 'string' ? 'string' : 'integer',
+                  })
+                );
+              });
+            }
+
+            const layer = new FeatureLayer({
+              popupTemplate: popupTemplate,
+              id: cartoLayer.id,
+              source: geometries,
+              fields: fields,
+              objectIdField: 'ObjectID',
+              geometryType: 'polygon',
+              visible: cartoLayer.visible,
+            });
+
+            resolve(layer);
           });
+      };
+      request.onerror = (err) => {
+        console.log('Request Error:', err);
+        resolve(false);
+      };
 
-          deferred.resolve(layer);
-        });
-    };
-    request.onerror = (err) => {
-      console.log('Request Error:', err);
-      deferred.resolve(false);
-    };
+      const queryFields = cartoLayer.cartoFields ? cartoLayer.cartoFields.join(',') + ',' : '';
 
-    const queryFields = cartoLayer.cartoFields ? cartoLayer.cartoFields.join(',') + ',' : '';
-
-    request.open(
-      'GET',
-      `https://wri-01.carto.com/api/v2/sql?q=SELECT ${queryFields}ST_AsGeoJSON(the_geom) as geometry from ${tableName}`,
-      true
-    );
-    request.send();
-    return deferred.promise;
+      request.open(
+        'GET',
+        `https://wri-01.carto.com/api/v2/sql?q=SELECT ${queryFields}ST_AsGeoJSON(the_geom) as geometry from ${tableName}`,
+        true
+      );
+      request.send();
+    });
   };
 
   addCustomBasemaps = (view) => {

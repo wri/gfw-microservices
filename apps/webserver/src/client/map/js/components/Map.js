@@ -586,7 +586,8 @@ export default class Map extends Component {
             duplicate.threshold = canopyDensity;
 
             //this is to force-trigger a re-add of this layer which will make new tile requests w/ the new density
-            this.view.map.allLayers.once('change', (evt) => {
+            const handler = this.view.map.allLayers.on('change', (evt) => {
+              handler.remove(); // this ensures that we only do this once
               if (evt.removed.length > 0) {
                 if (evt.removed[0].id === duplicate.id) {
                   const promise = new Promise((resolve) => {
@@ -2682,7 +2683,8 @@ export default class Map extends Component {
     duplicate.maxYear = endYear;
 
     // this is to force-trigger a re-add of this layer which will make new tile requests w/ the new density
-    this.view.map.allLayers.once('change', (evt) => {
+    const handler = this.view.map.allLayers.on('change', (evt) => {
+      handler.remove(); // this ensures we only do this once
       if (evt.removed.length > 0) {
         if (evt.removed[0].id === duplicate.id) {
           const promise = new Promise((resolve) => {

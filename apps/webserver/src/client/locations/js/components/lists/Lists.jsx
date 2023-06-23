@@ -2625,6 +2625,7 @@ export default class Lists extends Component {
                           listName !== 'Protected Areas' && (
                             <Button
                               variant="primary"
+                              data-cy="list-diagnostics"
                               className="list-detail-action-bar__diagnostic-button"
                               onClick={() => this.viewDiagnostic(false)}
                               label="List diagnostic"

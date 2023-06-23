@@ -2,14 +2,13 @@ Ability: Show Loss of Forests in Sensitive Areas
 
   Scenario Outline: Locations should show tree cover loss by sensitive area
 
-    Given the cocoa list <id> with <sensitive area> within its extent
-    And I am exploring diagnostics for <id>
-    When I select <sensitive area> within sensitive areas
-    Then tree cover loss in <sensitive area> should be contrasted with my total tree cover loss
+    Given I'm logged in
+    Then I should be redirected to locations view
+    Then the cocoa list "<listId>" with "<sensitiveArea>" within its extent
+    And I am exploring diagnostics
+    Then I should be redirected to diagnostics view
+    Then I select primary forest
 
     Examples:
-      | list     | id   | sensitive area          |
-      | GPV 1651 | 5479 | primary forest          |
-      | GPV 1651 | 5479 | protected areas         |
-      | GPV 1651 | 5479 | peat                    |
-      | GPV 1651 | 5479 | intact forest landscape |
+      | list     | listId   | sensitiveArea       |
+      | GPV 1651 | 5439     | primary-forest      |

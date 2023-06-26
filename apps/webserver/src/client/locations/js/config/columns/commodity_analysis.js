@@ -1,6 +1,7 @@
 import React from 'react';
 import IconButtonWrapper from '../../components/IconButtonWrapper';
 import { columnHeaders, locationsPage } from '../../../../common/js/config';
+import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
   checkValid,
   getLastValue,

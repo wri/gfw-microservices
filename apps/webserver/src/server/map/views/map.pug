@@ -7,7 +7,6 @@ block content
   div#map-mount
   //- script(src=mapjs, async)
   //FYI: 4,17 is the last version of ESRI that support IE11 and Edge Legacy
-  link(rel='stylesheet', href='https://js.arcgis.com/4.20/esri/css/main.css')
   include ./svg.pug
   script.
     var userLists = !{JSON.stringify(userLists)};

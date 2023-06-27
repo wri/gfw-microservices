@@ -1167,7 +1167,7 @@ class UploadLocations extends Component {
               method: 'POST',
               url: `${DATA_API_URL}/dataApi/getPalmOilMillLatLong/?PalmOilMillID=${feature.ID}`,
             };
-            let data
+            let data;
             try {
               const { response = [] } = await axios(requestConfig).catch((err) => {
                 console.log('getPalmOilMillLatLong:', err);

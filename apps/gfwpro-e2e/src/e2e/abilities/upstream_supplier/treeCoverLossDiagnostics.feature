@@ -7,8 +7,9 @@ Ability: Show Loss of Forests in Sensitive Areas
     Then the cocoa list "<listId>" with "<sensitiveArea>" within its extent
     And I am exploring diagnostics
     Then I should be redirected to diagnostics view
-    Then I select primary forest
+    Then I select "<checkboxId>"
+    Then shows tooltip for "<sensitiveArea>" and Tree Cover Loss labels
 
     Examples:
-      | list     | listId   | sensitiveArea       |
-      | GPV 1651 | 5439     | primary-forest      |
+      | list     | listId   | sensitiveArea     | checkboxId      |
+      | GPV 1651 | 5439     | Primary Forest    | primary-forest  |

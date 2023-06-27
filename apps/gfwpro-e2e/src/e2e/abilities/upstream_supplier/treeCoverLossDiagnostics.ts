@@ -26,7 +26,16 @@ Then('I should be redirected to diagnostics view', () => {
   cy.url().should('include', '/locations/diagnostics');
 });
 
-Then('I select primary forest', () => {
-  cy.get('[data-cy="primary-forest"]').click();
+Then('I select {string}', (checkboxId) => {
+  cy.get(`[data-cy="${checkboxId}"]`).click();
 });
 
+
+Then('shows tooltip for {string} and Tree Cover Loss labels', (sensitiveArea) => {
+  cy.get(".sensitive-areas-chart > svg > g.highcharts-series-group rect").eq(0).click();
+    cy.get('.sensitive-areas-chart div.highcharts-label.highcharts-tooltip > span > table > tbody')
+  .contains('td', 'Tree Cover Loss').should('be.visible')
+  cy.get('.sensitive-areas-chart div.highcharts-label.highcharts-tooltip > span > table > tbody')
+  .contains('td', sensitiveArea).should('be.visible');
+
+});

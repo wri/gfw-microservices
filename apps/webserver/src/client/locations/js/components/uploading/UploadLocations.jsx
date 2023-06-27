@@ -1167,12 +1167,17 @@ class UploadLocations extends Component {
               method: 'POST',
               url: `${DATA_API_URL}/dataApi/getPalmOilMillLatLong/?PalmOilMillID=${feature.ID}`,
             };
+            let data
+            try {
+              const { response = [] } = await axios(requestConfig).catch((err) => {
+                console.log('getPalmOilMillLatLong:', err);
+              });
+              data = response;
+            } catch (e) {
+              console.log(e);
+            }
 
-            const { data } = await axios(requestConfig).catch((err) => {
-              console.log('getPalmOilMillLatLong:', err);
-            });
-
-            if (data) {
+            if (data?.data?.[0]) {
               const { latitude, longitude } = data.data[0];
 
               if (latitude && longitude && data.status === 200) {

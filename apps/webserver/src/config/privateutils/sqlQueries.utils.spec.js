@@ -62,7 +62,10 @@ describe('Test New Raw Queries', () => {
     );
     expect(sqlQuery).not.toBeNull();
 
-    const wrongDBquery = getQueryStr(isSystemQuery ? SQLORGCONFIG : SQLSYSTEMCONFIG, storedProcedureName);
+    const wrongDBquery = getQueryStr(
+      isSystemQuery ? SQLORGCONFIG : SQLSYSTEMCONFIG,
+      storedProcedureName
+    );
     expect(wrongDBquery).toBeNull();
   };
 

@@ -19,6 +19,7 @@
   },
   "license": "UNLICENSED",
   "dependencies": {
+    "@arcgis/core": "^4.20.2",
     "@babel/runtime-corejs2": "7.17.9",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",

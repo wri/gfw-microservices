@@ -1,4 +1,6 @@
-import { ListNameSchema } from './../llp/model';
+import * as sql from 'mssql';
+import { SQLUtils } from '../util';
+import { ListNameSchema } from '../queries';
 import { UspUpdateListCount } from './uspUpdateListCount';
 import { UspDeleteLocation } from './uspDeleteLocation';
 import { UspGetAnalysisColumns } from './uspGetAnalysisColumns';
@@ -7,7 +9,6 @@ import { CreateListResult, SPSListCreation } from './listCreation';
 import { UspGetListLocations } from './uspGetListLocations';
 import { UspGetListLockStatus } from './uspGetListLockStatus';
 import { UspCopyLocationAnalysis } from './uspCopyLocationAnalysis';
-import { UspGetListNameSchema } from '../llp/uspGetListNameSchema';
 import { UspSetListUnlocked } from './uspSetListUnlocked';
 import { UspResetListStatus } from './uspResetListStatus';
 import { UspDeleteList } from './uspDeleteList';
@@ -142,9 +143,8 @@ export const DeleteLocations = (databaseName, listId, locationIds, userId, gfwLi
           );
           throw { isLocked: true, lock_user_id };
         } else {
-          return new UspGetListNameSchema().run(databaseName, {
-            listID: listId,
-          });
+          const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
+          return SQLUtils.queryDB<ListNameSchema>(databaseName, 'uspGetListNameSchema', parameters);
         }
       })
       .then((record) => {
@@ -240,9 +240,8 @@ export const BulkDeleteLocations = (
           );
           throw { isLocked: true, lock_user_id };
         } else {
-          return new UspGetListNameSchema().run(databaseName, {
-            listID: listId,
-          });
+          const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
+          return SQLUtils.queryDB<ListNameSchema>(databaseName, 'uspGetListNameSchema', parameters);
         }
       })
       .then((record) => {
@@ -307,9 +306,8 @@ export const DeleteList = (databaseName, listId, userId) => {
           // Reject object
           throw { isLocked: true, lock_user_id };
         } else {
-          return new UspGetListNameSchema().run(databaseName, {
-            listID: listId,
-          });
+          const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
+          return SQLUtils.queryDB<ListNameSchema>(databaseName, 'uspGetListNameSchema', parameters);
         }
       })
       .then((record) => {

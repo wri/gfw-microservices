@@ -62,12 +62,8 @@ describe('Test New Raw Queries', () => {
     );
     expect(sqlQuery).not.toBeNull();
 
-    const tryAccessToNotAllowedQuery = () => {
-      // inverse the config to try to access to a query that doesn't belong to the connection
-      getQueryStr(isSystemQuery ? SQLORGCONFIG : SQLSYSTEMCONFIG, storedProcedureName);
-    };
-
-    expect(tryAccessToNotAllowedQuery).toThrowError();
+    const wrongDBquery = getQueryStr(isSystemQuery ? SQLORGCONFIG : SQLSYSTEMCONFIG, storedProcedureName);
+    expect(wrongDBquery).toBeNull();
   };
 
   it('Check a non existing query', () => {

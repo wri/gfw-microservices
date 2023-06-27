@@ -42,11 +42,3 @@ export interface GetAnalysisDataCountForUserListResponse {
   statistic_type: string;
   statistic: number;
 }
-
-export class ListNameSchema {
-  id: number;
-  userId: string;
-  list_name: string;
-  list_table_name: string;
-  list_analysis_table_name: string;
-}

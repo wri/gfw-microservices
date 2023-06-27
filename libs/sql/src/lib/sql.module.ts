@@ -5,11 +5,7 @@ import { UspGetListAnalysis } from './lists';
 
 import { DatabaseService } from './util/database.service';
 
-import {
-  UspGetAnalysisDataCountForUserList,
-  UspGetPaginatedAnalysisDataForUserList,
-  UspGetListNameSchema,
-} from './llp';
+import { UspGetAnalysisDataCountForUserList, UspGetPaginatedAnalysisDataForUserList } from './llp';
 
 @Module({
   imports: [TypeOrmModule.forRootAsync({ useClass: DatabaseService })],
@@ -17,14 +13,12 @@ import {
   providers: [
     UspGetAnalysisDataCountForUserList,
     UspGetPaginatedAnalysisDataForUserList,
-    UspGetListNameSchema,
     UspGetListLocations,
     UspGetListAnalysis,
   ],
   exports: [
     UspGetAnalysisDataCountForUserList,
     UspGetPaginatedAnalysisDataForUserList,
-    UspGetListNameSchema,
     UspGetListLocations,
     UspGetListAnalysis,
   ],

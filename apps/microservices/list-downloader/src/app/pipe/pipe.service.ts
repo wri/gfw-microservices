@@ -1,11 +1,13 @@
 import { Logger, Injectable } from '@nestjs/common';
 
 import * as asyncPool from 'tiny-async-pool';
+import * as sql from 'mssql';
 
 import {
+  SQLUtils,
+  ListNameSchema,
   GenerationFileRequest,
   UspGetPaginatedAnalysisDataForUserList,
-  UspGetListNameSchema,
   UspGetAnalysisDataCountForUserList,
   UspGetListAnalysis,
 } from '@wri-monorepos/sql';
@@ -24,7 +26,6 @@ export class PipeService {
   constructor(
     private uspGetPaginatedAnalysisDataForUserList: UspGetPaginatedAnalysisDataForUserList,
     private uspGetAnalysisDataCountForUserList: UspGetAnalysisDataCountForUserList,
-    private uspGetListNameSchema: UspGetListNameSchema,
     private inputService: InputService,
     private shapefileService: ShapefileService,
     private dashboardService: DashboardService,
@@ -44,7 +45,12 @@ export class PipeService {
       rowsPerPage: this.MAX_NUMBER_OF_ROWS_PER_PAGE,
     };
 
-    const listSchema = await this.uspGetListNameSchema.run(organizationDatabase, filters);
+    const parameters = [{ field: 'list_id', type: sql.Int, value: listID }];
+    const listSchema = await SQLUtils.queryDB<ListNameSchema>(
+      organizationDatabase,
+      'uspGetListNameSchema',
+      parameters
+    );
 
     const numberOfPages = await this.uspGetAnalysisDataCountForUserList.run(
       organizationDatabase,

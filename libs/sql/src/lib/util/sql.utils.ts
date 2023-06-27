@@ -1,6 +1,8 @@
 import * as sql from 'mssql';
 import { get } from '../connectionpool';
 import { ParameterType } from './types';
+import { getQueryStr } from '../queries';
+import { SQL_CONFIG } from '../config/config';
 
 export class SQLUtils {
   config: sql.config;
@@ -94,5 +96,25 @@ export class SQLUtils {
 
   disconnect() {
     return this.connection.close();
+  }
+
+  // setup connection, lookup query by name, query DB, disconnect
+  static async queryDB<T>(
+    databaseName: string,
+    queryName: string,
+    parameters?: ParameterType[]
+  ): Promise<T> {
+    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
+    await connection.connect();
+    try {
+      const isSystemQuery = databaseName === SQL_CONFIG.database;
+      const queryStr = getQueryStr(isSystemQuery, queryName);
+      const recordsets = await connection.query<T>(queryStr, parameters);
+      connection.disconnect();
+      return recordsets as T;
+    } catch (error) {
+      connection.disconnect();
+      throw new Error(error);
+    }
   }
 }

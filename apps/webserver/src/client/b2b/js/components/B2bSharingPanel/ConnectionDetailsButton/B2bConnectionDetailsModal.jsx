@@ -8,10 +8,11 @@ import Button from '../../../../../common/js/components/Button';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconTimes from '../../../../../common/js/components/icon/IconTimes';
 import { profilePage } from '../../../../../common/js/config';
+import { acceptConnection, rejectConnection } from '../fetchB2b';
 import './B2bConnectionDetailsModal.scss';
 
 function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
-  const { organizationName, status, name, email } = connectionData;
+  const { organizationName, status, name, email, id } = connectionData;
 
   return (
     <Backdrop style={{ zIndex: '1' }} open>
@@ -50,18 +51,14 @@ function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
             <button
               type="button"
               className="b2b-connection-details-modal__action-button"
-              onClick={() => {
-                console.log('reject');
-              }}
+              onClick={() => rejectConnection(id)}
             >
               {profilePage.profileManager.b2bSection.reject}
             </button>
             <Button
               variant="primary"
               style={{ textTransform: 'unset', margin: '10px' }}
-              onClick={() => {
-                console.log('accept');
-              }}
+              onClick={() => acceptConnection(id)}
               label="Accept"
             />
           </CardActions>

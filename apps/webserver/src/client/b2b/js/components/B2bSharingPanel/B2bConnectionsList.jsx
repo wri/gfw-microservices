@@ -30,7 +30,7 @@ const B2bConnectionsList = () => {
     getConnections().then((res) => {
       setB2bConnections(res.filter((el) => el.status === status));
     });
-    setB2bConnections(b2bConnectionsMock.filter((el) => el.status === status));
+    setB2bConnections(b2bConnections.filter((el) => el.status === status));
     setfilter(status);
   };
 
@@ -67,14 +67,6 @@ const B2bConnectionsList = () => {
         <NewConnectionButton />
       </Grid>
       {b2bConnections && <B2BConnectionListTable rows={b2bConnections} />}
-      <ConnectionDetailsButton
-        connectionData={{
-          organizationName: 'Farm Inc',
-          status: 'pending',
-          name: 'John Doe',
-          email: 'john@gmail.com',
-        }}
-      />
     </Container>
   );
 };

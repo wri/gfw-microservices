@@ -1,0 +1,22 @@
+{
+  "pull_request": {
+    "title": "Your Custom Title",
+    "head": {
+      "ref": "sample-head-ref"
+    },
+    "base": {
+      "ref": "sample-base-ref"
+    }
+  },
+  "label": {
+    "name": "LP-QA"
+  },
+  "act": true,
+  "refs": {
+    "tags": {
+      "*:refs": {
+        "tags": []
+      }
+    }
+  }
+}

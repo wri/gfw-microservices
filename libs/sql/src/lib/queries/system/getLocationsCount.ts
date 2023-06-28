@@ -1,4 +1,4 @@
-const getLocationsCount = `DECLARE @organization_db NVARCHAR(200)
+export const getLocationsCount = `DECLARE @organization_db NVARCHAR(200)
 DECLARE @TEMPLATE NVARCHAR(1000)
 DECLARE @SQL NVARCHAR(2000)
 
@@ -33,5 +33,3 @@ SET @TEMPLATE = '
 '
 SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @organization_db)
 EXEC sp_executesql @SQL`;
-
-export { getLocationsCount };

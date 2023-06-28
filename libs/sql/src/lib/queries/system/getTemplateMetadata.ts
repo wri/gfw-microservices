@@ -1,4 +1,4 @@
-const getTemplateMetadata = `SELECT
+export const getTemplateMetadata = `SELECT
 TM.id,
 TM.template_id,
 TM.template_datum_field_name,
@@ -14,5 +14,3 @@ FROM TemplateMetadata TM
 LEFT JOIN UITypes UT on TM.template_datum_ui_id = UT.id
 LEFT JOIN Templates T ON TM.template_id = T.id
 LEFT JOIN LocationType LT ON T.location_type_id = LT.id`;
-
-export { getTemplateMetadata };

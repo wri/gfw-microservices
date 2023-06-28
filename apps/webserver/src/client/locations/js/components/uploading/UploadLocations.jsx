@@ -1170,6 +1170,7 @@ class UploadLocations extends Component {
 
             const { data } = await axios(requestConfig).catch((err) => {
               console.log('getPalmOilMillLatLong:', err);
+              return [];
             });
 
             if (data) {

@@ -1,4 +1,4 @@
-import { When, Then, Given} from '@badeball/cypress-cucumber-preprocessor';
+import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor';
 
 Given("I'm logged in", () => {
   cy.on('uncaught:exception', () => {
@@ -30,11 +30,15 @@ When('I select the sensitive area option with id {string}', (checkboxId) => {
   cy.get(`[data-cy="${checkboxId}"]`).click();
 });
 
-Then('clicking on the chart shows a tooltip with {string} and Tree Cover Loss labels', (sensitiveArea) => {
-  cy.get('.sensitive-areas-chart > svg > g.highcharts-series-group rect').eq(0).click();
+Then(
+  'clicking on the chart shows a tooltip with {string} and Tree Cover Loss labels',
+  (sensitiveArea) => {
+    cy.get('.sensitive-areas-chart > svg > g.highcharts-series-group rect').eq(0).click();
 
-  cy.get('.sensitive-areas-chart div.highcharts-label.highcharts-tooltip > span > table > tbody')
-  .eq(0).as('firstChartBar');
-  cy.get('@firstChartBar').contains('td', 'Tree Cover Loss').should('be.visible')
-  cy.get('@firstChartBar').contains('td', sensitiveArea).should('be.visible');
-});
+    cy.get('.sensitive-areas-chart div.highcharts-label.highcharts-tooltip > span > table > tbody')
+      .eq(0)
+      .as('firstChartBar');
+    cy.get('@firstChartBar').contains('td', 'Tree Cover Loss').should('be.visible');
+    cy.get('@firstChartBar').contains('td', sensitiveArea).should('be.visible');
+  }
+);

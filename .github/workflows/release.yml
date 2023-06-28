@@ -80,7 +80,11 @@ jobs:
           if [[ "${{ github.event.act }}" == false || -z "${{ github.event.act }}" ]]; then
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
-
+            git checkout develop
+            git pull
+            git checkout qa
+            git rebase develop
+            git push origin qa
             git tag -a ${{env.NEW_VERSION}} -m "Release ${{env.NEW_VERSION}}"
             git push origin ${{env.NEW_VERSION}}
           else

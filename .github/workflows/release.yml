@@ -21,7 +21,7 @@ jobs:
           else
             echo "::set-output name=skip::false"
           fi
-  
+
   prepare-release:
     needs: check-skip-by-title
     name: Prepare package for release

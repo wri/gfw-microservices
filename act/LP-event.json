@@ -8,14 +8,14 @@
       "ref": "sample-base-ref"
     }
   },
-  "label":{
-    "name":"LP-QA"
+  "label": {
+    "name": "LP-QA"
   },
   "act": true,
-  "refs":{
-    "tags":{
-      "*:refs":{
-        "tags":[]
+  "refs": {
+    "tags": {
+      "*:refs": {
+        "tags": []
       }
     }
   }

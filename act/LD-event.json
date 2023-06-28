@@ -8,14 +8,14 @@
       "ref": "sample-base-ref"
     }
   },
-  "label":{
-    "name":"LD-QA"
+  "label": {
+    "name": "LD-QA"
   },
   "act": true,
-  "refs":{
-    "tags":{
-      "*:refs":{
-        "tags":[]
+  "refs": {
+    "tags": {
+      "*:refs": {
+        "tags": []
       }
     }
   }

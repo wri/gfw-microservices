@@ -8,14 +8,14 @@
       "ref": "sample-base-ref"
     }
   },
-  "label":{
-    "name":"WEB-QA"
+  "label": {
+    "name": "WEB-QA"
   },
   "act": true,
-  "refs":{
-    "tags":{
-      "*:refs":{
-        "tags":[]
+  "refs": {
+    "tags": {
+      "*:refs": {
+        "tags": []
       }
     }
   }

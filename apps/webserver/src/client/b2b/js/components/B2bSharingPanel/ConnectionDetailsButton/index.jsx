@@ -13,7 +13,7 @@ function ConnectionDetailsButton({ connectionData }) {
           setDisplayModal(true);
         }}
       >
-        { connectionData.organizationName }
+        {connectionData.organizationName}
       </button>
       {displayModal && (
         <B2bConnectionDetailsModal

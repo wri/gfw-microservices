@@ -8,7 +8,7 @@ import Button from '../../../../../common/js/components/Button';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconTimes from '../../../../../common/js/components/icon/IconTimes';
 import { profilePage } from '../../../../../common/js/config';
-import { acceptConnection, rejectConnection } from '../fetchB2b'
+import { acceptConnection, rejectConnection } from '../fetchB2b';
 import './B2bConnectionDetailsModal.scss';
 
 function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {

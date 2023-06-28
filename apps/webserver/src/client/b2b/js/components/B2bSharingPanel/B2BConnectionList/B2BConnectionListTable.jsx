@@ -7,7 +7,7 @@ const B2BConnectionListTable = (props) => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const columns = [
-    { 
+    {
       field: 'organizationName',
       headerName: 'Organization Name',
       flex: 1,
@@ -18,7 +18,7 @@ const B2BConnectionListTable = (props) => {
             status: params.row.status,
             name: params.row.name,
             email: params.row.email,
-            id: params.row.id
+            id: params.row.id,
           }}
         />
       ),

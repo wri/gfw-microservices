@@ -395,7 +395,7 @@ export default class SensitiveAreas extends Component {
       chart: {
         renderTo: el,
         type: 'column',
-        className: 'sensitive-areas-chart'
+        className: 'sensitive-areas-chart',
       },
       title: {
         text: '',

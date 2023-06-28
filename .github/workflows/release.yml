@@ -28,10 +28,10 @@ jobs:
     runs-on: ubuntu-latest
     if: needs.check-skip-by-title.outputs.skip != 'true'
     steps:
-      - name: Release for LP
+      - name: Release for Large list process microservice
         if: ${{ github.event.label.name == 'LP-QA' }}
         run: echo "RELEASE=${{ github.event.label.name }}" >> $GITHUB_ENV
-      - name: Release for LD
+      - name: Release for List downloader microservice
         if: ${{ github.event.label.name == 'LD-QA' }}
         run: echo "RELEASE=${{ github.event.label.name }}" >> $GITHUB_ENV
       - name: Release for Web Server

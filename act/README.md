@@ -1,6 +1,6 @@
 # Run GitHub Actions locally
 
-This is a foldet that contain Action configuration that allows you to run GitHub Actions locally. It's powered by [act](https://github.com/nektos/act).
+This is a folder that contain Action configuration that allows you to run GitHub Actions locally. It's powered by [act](https://github.com/nektos/act).
 
 Check the installation guide in the act repository, and then run the any of the following command to run the action locally:
 

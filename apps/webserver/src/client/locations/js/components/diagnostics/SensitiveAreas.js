@@ -492,7 +492,7 @@ export default class SensitiveAreas extends Component {
           checked = this.state.paChecked;
           onChange = this.updatePA;
           label = 'Protected Areas';
-          dataCy = '';
+          dataCy = 'protected-areas';
           percent = paPercent;
           if (protectedArea > 0) {
             disabled = false;
@@ -506,7 +506,7 @@ export default class SensitiveAreas extends Component {
           checked = this.state.peatChecked;
           onChange = this.updatePeat;
           label = 'Peat';
-          dataCy = '';
+          dataCy = 'peat';
           percent = peatPercent;
           if (peat > 0) {
             disabled = false;
@@ -520,7 +520,7 @@ export default class SensitiveAreas extends Component {
           checked = this.state.iflChecked;
           onChange = this.updateIFL;
           label = 'Intact Forest Landscape';
-          dataCy = '';
+          dataCy = 'intact-forest-landscape';
           percent = iflPercent;
           if (ifl > 0) {
             disabled = false;

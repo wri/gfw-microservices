@@ -9,16 +9,16 @@ Given("I'm logged in", () => {
   cy.login('dt_test1@example.com', 'unsafe', 'unsafe');
 });
 
-Then('I should be redirected to locations view', () => {
+Given('I am redirected to locations view', () => {
   cy.url().should('include', '/locations');
 });
 
-Then('the cocoa list {string} with {string} within its extent', (listId, sensitiveArea) => {
+When('I access the cocoa list with id {string}', (listId) => {
   cy.visit(`https://localhost:8443/locations?id=${listId}`);
   cy.url().should('include', '/locations/lists');
 });
 
-Then('I am exploring diagnostics', () => {
+When('I click on the list diagnostics', () => {
   cy.get('[data-cy="list-diagnostics"]').click();
 });
 
@@ -26,16 +26,15 @@ Then('I should be redirected to diagnostics view', () => {
   cy.url().should('include', '/locations/diagnostics');
 });
 
-Then('I select {string}', (checkboxId) => {
+When('I select the sensitive area option with id {string}', (checkboxId) => {
   cy.get(`[data-cy="${checkboxId}"]`).click();
 });
 
+Then('clicking on the chart shows a tooltip with {string} and Tree Cover Loss labels', (sensitiveArea) => {
+  cy.get('.sensitive-areas-chart > svg > g.highcharts-series-group rect').eq(0).click();
 
-Then('shows tooltip for {string} and Tree Cover Loss labels', (sensitiveArea) => {
-  cy.get(".sensitive-areas-chart > svg > g.highcharts-series-group rect").eq(0).click();
-    cy.get('.sensitive-areas-chart div.highcharts-label.highcharts-tooltip > span > table > tbody')
-  .contains('td', 'Tree Cover Loss').should('be.visible')
   cy.get('.sensitive-areas-chart div.highcharts-label.highcharts-tooltip > span > table > tbody')
-  .contains('td', sensitiveArea).should('be.visible');
-
+  .eq(0).as('firstChartBar');
+  cy.get('@firstChartBar').contains('td', 'Tree Cover Loss').should('be.visible')
+  cy.get('@firstChartBar').contains('td', sensitiveArea).should('be.visible');
 });

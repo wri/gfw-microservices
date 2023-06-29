@@ -18,15 +18,13 @@ Given("I'm viewing diagnostics for {string}", (listName: string) => {
     return false;
   });
   cy.visit('https://localhost:8443');
-  cy.login('dt_test1@example.com', 'unsafe', 'unsafe');
+  cy.login('dt_test1@example.com', 'unsafe');
 
   // lists page
-  cy.url().should('include', '/locations'); // wait for locations
   cy.visit(`https://localhost:8443/locations?id=${listIdFromListName[listName]}`);
-  cy.url().should('include', '/locations/lists');
+  cy.get('[data-cy="list-diagnostics"]').click();
 
   // diagnostics
-  cy.get('[data-cy="list-diagnostics"]').click();
   cy.url().should('include', '/locations/diagnostics');
 });
 

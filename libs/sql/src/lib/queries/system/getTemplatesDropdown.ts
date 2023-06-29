@@ -1,3 +1,1 @@
-const getTemplatesDropdown = 'SELECT * FROM TemplateDropdowns';
-
-export { getTemplatesDropdown };
+export const getTemplatesDropdown = 'SELECT * FROM TemplateDropdowns';

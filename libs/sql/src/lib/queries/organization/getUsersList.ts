@@ -1,4 +1,4 @@
-const getUsersList = `-- Create a Table Variable to store the compiled user data  for the company.
+export const getUsersList = `-- Create a Table Variable to store the compiled user data  for the company.
 DECLARE @CompiledUsers TABLE
 (
   [first_name] NVARCHAR(35) NOT NULL,
@@ -93,5 +93,3 @@ CLOSE user_cursor
 DEALLOCATE user_cursor
 
 SELECT * FROM @CompiledUsers`;
-
-export { getUsersList };

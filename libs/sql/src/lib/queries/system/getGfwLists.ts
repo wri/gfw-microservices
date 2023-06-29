@@ -1,3 +1,1 @@
-const getGfwLists = 'SELECT * FROM GFWLists';
-
-export { getGfwLists };
+export const getGfwLists = 'SELECT * FROM GFWLists';

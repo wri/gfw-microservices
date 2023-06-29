@@ -52,5 +52,6 @@ export default defineConfig({
     ...nxE2EPreset(__dirname),
     specPattern: '**/*.feature',
     setupNodeEvents,
+    defaultCommandTimeout: 10000,
   },
 });

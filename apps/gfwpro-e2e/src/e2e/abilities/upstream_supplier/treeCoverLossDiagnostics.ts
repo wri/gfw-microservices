@@ -17,11 +17,11 @@ Given("I'm viewing diagnostics for {string}", (listName: string) => {
     // work around for existing errors that otherwise fail the test
     return false;
   });
-  cy.visit('https://localhost:8443');
+  cy.visit('/');
   cy.login('dt_test1@example.com', 'unsafe');
 
   // lists page
-  cy.visit(`https://localhost:8443/locations?id=${listIdFromListName[listName]}`);
+  cy.visit(`/locations?id=${listIdFromListName[listName]}`);
   cy.get('[data-cy="list-diagnostics"]').click();
 
   // diagnostics

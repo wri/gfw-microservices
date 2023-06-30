@@ -1,8 +1,28 @@
 {
+  "name": "webserver",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/webserver/src",
   "projectType": "application",
   "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "options": {
+        "outputPath": "dist/apps/webserver",
+        "rootDir": "apps/webserver",
+        "main": "apps/webserver/src/server.js",
+        "tsConfig": "apps/webserver/tsconfig.app.json",
+        "assets": [
+          "**/tsconfig.client.json",
+          "apps/webserver/src/vectorTiles/**",
+          "apps/webserver/src/client/**",
+          "**/.babelrc",
+          "**/*.png",
+          "**/*.pug",
+          "**/*.key",
+          "**/*.crt"
+        ]
+      }
+    },
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {

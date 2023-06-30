@@ -1,5 +1,5 @@
 {
-  "name": "gfwpro",
+  "name": "webserver",
   "version": "1.0.0",
   "description": "Global Forest Watch Pro Web Application.",
   "main": "server.js",

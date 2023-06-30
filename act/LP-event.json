@@ -6,7 +6,17 @@
     },
     "base": {
       "ref": "sample-base-ref"
-    }
+    },
+    "labels": [
+      {
+        "id": 3,
+        "node_id": "MDU6TGFiZWwz",
+        "url": "https://api.github.com/repos/owner/repo/labels/LP-QA",
+        "name": "LP-QA",
+        "color": "0000ff",
+        "default": false
+      }
+    ]
   },
   "label": {
     "name": "LP-QA"

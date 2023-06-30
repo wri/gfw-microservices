@@ -50,9 +50,10 @@ async function setupNodeEvents(
 export default defineConfig({
   e2e: {
     ...nxE2EPreset(__dirname),
+    setupNodeEvents,
+    supportFile: 'cypress/support/e2e.ts',
     baseUrl: 'https://localhost:8443',
     specPattern: '**/*.feature',
-    setupNodeEvents,
     defaultCommandTimeout: 10000,
   },
 });

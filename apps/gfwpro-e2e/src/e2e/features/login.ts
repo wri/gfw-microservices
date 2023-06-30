@@ -5,7 +5,7 @@ When('I login in the landing page', () => {
     // work around for existing errors that otherwise fail the test
     return false;
   });
-  cy.visit('https://localhost:8443');
+  cy.visit('/');
 
   cy.get('[data-cy="desktopHeader"]').then((desktopHeader) => {
     cy.wrap(desktopHeader).find('[data-cy="loginNav"]').click();

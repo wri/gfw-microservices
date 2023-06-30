@@ -6,7 +6,17 @@
     },
     "base": {
       "ref": "sample-base-ref"
-    }
+    },
+    "labels": [
+      {
+        "id": 1,
+        "node_id": "MDU6TGFiZWwx",
+        "url": "https://api.github.com/repos/owner/repo/labels/WEB-QA",
+        "name": "WEB-QA",
+        "color": "ff0000",
+        "default": false
+      }
+    ]
   },
   "label": {
     "name": "WEB-QA"

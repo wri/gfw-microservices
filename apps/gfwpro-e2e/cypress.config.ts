@@ -55,5 +55,6 @@ export default defineConfig({
     baseUrl: 'https://localhost:8443',
     specPattern: '**/*.feature',
     defaultCommandTimeout: 10000,
+    scrollBehavior: 'center',
   },
 });

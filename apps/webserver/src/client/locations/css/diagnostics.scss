@@ -1380,9 +1380,8 @@ $print-width: 95%;
 //----------------
 //////////////////
 @media print {
-  size: letter;
-
   body {
+    size: letter;
     padding: 10px;
 
     .app {

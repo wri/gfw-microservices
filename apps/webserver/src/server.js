@@ -21,6 +21,16 @@ process.on('SIGINT', () => {
   exit(0);
 });
 
+// Validate the NODE_ENV and set a default if not provided
+if (process.env.NODE_ENV === null || process.env.NODE_ENV === undefined) {
+  logger.warn('NODE_ENV is not set, setting to "development"');
+  process.env.NODE_ENV = 'development';
+}
+if (process.env.NODE_ENV === 'development') {
+  // chdir needed because several require() calls use paths relative to webserver/src
+  process.chdir(__dirname);
+}
+
 const app = express();
 // Load all the neccesary environment variables.
 loadenv
@@ -51,8 +61,10 @@ loadenv
       process.env.NODE_ENV !== 'test'
     ) {
       const sslOptions = {
-        key: fs.readFileSync(`/srv/src/config/ssl/${process.env.NODE_ENV}/gfwpro.key`),
-        cert: fs.readFileSync(`/srv/src/config/ssl/${process.env.NODE_ENV}/gfwpro.crt`),
+        key: fs.readFileSync(path.join(__dirname, `config/ssl/${process.env.NODE_ENV}/gfwpro.key`)),
+        cert: fs.readFileSync(
+          path.join(__dirname, `config/ssl/${process.env.NODE_ENV}/gfwpro.crt`)
+        ),
       };
       https.createServer(sslOptions, app).listen(config.port);
       logger.info(`App listening on port: ${config.port}`);

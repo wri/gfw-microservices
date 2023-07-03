@@ -1,5 +1,5 @@
 const listIdFromListName = {
-  'GPV 1651': 5439,
+  'Argentina Jujuy OTBN': 5439,
 };
 
 const List = {

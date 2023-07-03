@@ -7,8 +7,8 @@ Ability: Show Loss of Forests in Sensitive Areas
     Then I can see tree cover loss within <sensitiveArea> by year
 
     Examples:
-      | list       | sensitiveArea             |
-      | "GPV 1651" | "Primary Forest"          |
-      | "GPV 1651" | "Protected Areas"         |
-      | "GPV 1651" | "Peat"                    |
-      | "GPV 1651" | "Intact Forest Landscape" |
+      | list                   | sensitiveArea             |
+      | "Argentina Jujuy OTBN" | "Primary Forest"          |
+      | "Argentina Jujuy OTBN" | "Protected Areas"         |
+      | "Argentina Jujuy OTBN" | "Peat"                    |
+      | "Argentina Jujuy OTBN" | "Intact Forest Landscape" |

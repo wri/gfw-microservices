@@ -19,6 +19,7 @@ import {
   QueryCriteria,
 } from '../../Shared/domain/criteria/query';
 import { CreateConnectionDto } from '../application/dtos/connection.dto';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('organizations/:orgId/connections')
 export class ConnectionController {
@@ -26,7 +27,7 @@ export class ConnectionController {
 
   @Post('/:id/accept')
   async acceptConnection(
-    @Param() { id }: IdNumericDto,
+    @Param('id') id: number,
     @Body() connectionAcceptDto: ConnectionUpdateStatusHttpDto,
   ) {
     const result = await this.connectionUseCases.acceptConnection(
@@ -103,6 +104,10 @@ export class ConnectionController {
     throw new HttpException(error.message, error.code);
   }
 
+  @ApiOperation({
+    summary:
+      'Send a invitation to a organization, this is equals to create a new invitation.',
+  })
   @Post()
   async createConnection(@Body() creationConnectionDto: CreateConnectionDto) {
     const result = await this.connectionUseCases.createConnection(

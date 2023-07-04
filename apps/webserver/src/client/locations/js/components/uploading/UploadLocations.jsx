@@ -1173,7 +1173,7 @@ class UploadLocations extends Component {
               return [];
             });
 
-            if (data) {
+            if (data?.data[0]) {
               const { latitude, longitude } = data.data[0];
 
               if (latitude && longitude && data.status === 200) {

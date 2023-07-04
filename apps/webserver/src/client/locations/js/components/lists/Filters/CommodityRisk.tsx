@@ -11,6 +11,8 @@ interface CommodityRiskFilterProps {
   clearFilters: () => void;
 }
 
+const PALM_OIL_INDEX = 2;
+
 export const CommodityRiskFilterDrawer = ({
   listName,
   listData,
@@ -18,7 +20,7 @@ export const CommodityRiskFilterDrawer = ({
   listView,
   clearFilters,
 }: CommodityRiskFilterProps) => {
-  return listName === GFWLists[2] ? (
+  return listName === GFWLists[PALM_OIL_INDEX] ? (
     <GFWCommodityRiskFilter
       listData={listData}
       filterCount={filterCount}

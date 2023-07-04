@@ -239,6 +239,7 @@ export default class GFWAdminForestChangeFilter extends Component {
               }}
               label={locationsPage.lists.adminFilters.apply}
             />
+            <Button variant="secondary" onClick={this.close} label={locationsPage.lists.cancel} />
           </div>
         </ModalWrapper>
       </div>

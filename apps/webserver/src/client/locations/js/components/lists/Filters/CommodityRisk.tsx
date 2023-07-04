@@ -7,6 +7,7 @@ interface CommodityRiskFilterProps {
   listData: [];
   filterCount: number;
   listView: string;
+  clearFilters: () => void;
 }
 
 export const CommodityRiskFilterDrawer = ({
@@ -14,10 +15,21 @@ export const CommodityRiskFilterDrawer = ({
   listData,
   filterCount,
   listView,
+  clearFilters,
 }: CommodityRiskFilterProps) => {
   return listName === 'Palm Oil Mills' ? (
-    <GFWCommodityRiskFilter listData={listData} filterCount={filterCount} listView={listView} />
+    <GFWCommodityRiskFilter
+      listData={listData}
+      filterCount={filterCount}
+      listView={listView}
+      clearFilters={clearFilters}
+    />
   ) : (
-    <CommodityRiskFilter listData={listData} filterCount={filterCount} listView={listView} />
+    <CommodityRiskFilter
+      listData={listData}
+      filterCount={filterCount}
+      listView={listView}
+      clearFilters={clearFilters}
+    />
   );
 };

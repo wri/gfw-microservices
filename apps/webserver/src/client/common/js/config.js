@@ -791,6 +791,7 @@ export const locationsPage = {
     filterModalTitle: 'Filters',
     protectedFiltersModalHeader: 'Show Protected Areas for',
     applyFilters: 'Apply filters',
+    resetFilters: 'Reset',
     rerunListDialog: {
       title: 'Confirm update',
       text: `Select ‘OK’ to update your list. Your list will not be available while the update is processing.

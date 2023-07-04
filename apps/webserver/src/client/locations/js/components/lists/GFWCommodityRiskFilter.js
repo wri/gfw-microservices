@@ -161,6 +161,10 @@ export default class CommodityRiskFilter extends Component {
     store.dispatch(setFilterCount(counter));
   };
 
+  resetFilters = () => {
+    this.setState(cloneDeep(this.initialState));
+  };
+
   close = () => {
     if (this.props.filterCount === 0) {
       this.setState(this.initialState);
@@ -514,6 +518,12 @@ export default class CommodityRiskFilter extends Component {
               onClick={this.updateValues}
               label={locationsPage.lists.applyFilters}
             />
+            <Button
+              variant="secondary"
+              onClick={this.resetFilters}
+              label={locationsPage.lists.resetFilters}
+            />
+            <Button variant="secondary" onClick={this.close} label={locationsPage.lists.cancel} />
           </div>
         </ModalWrapper>
       </div>

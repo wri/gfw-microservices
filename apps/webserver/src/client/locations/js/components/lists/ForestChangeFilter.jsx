@@ -166,6 +166,14 @@ export default class ForestChangeFilter extends Component {
     store.dispatch(toggleCanopyModal());
   };
 
+  resetFilters = () => {
+    this.setState(this.initialState, () => {
+      store.dispatch(toggleCanopyModal());
+      store.dispatch(updateFilters(this.initialState));
+      store.dispatch(setFilterCount(0));
+    });
+  };
+
   changeTreeCoverLoss(data) {
     this.setState({
       treeCoverLossMin: data.from,
@@ -233,6 +241,12 @@ export default class ForestChangeFilter extends Component {
               onClick={() => this.updateValues(this.state)}
               label={locationsPage.lists.applyFilters}
             />
+            <Button
+              variant="secondary"
+              onClick={this.resetFilters}
+              label={locationsPage.lists.resetFilters}
+            />
+            <Button variant="secondary" onClick={this.close} label={locationsPage.lists.cancel} />
           </div>
         </ModalWrapper>
       </div>

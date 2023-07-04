@@ -20,6 +20,7 @@ interface ForestChangeFilterProps {
   protectedAreas: [];
   filterValues: {};
   maximumAnalysisAreaInTheList: number;
+  clearFilters: () => void;
 }
 
 export const ForestChangeFilterDrawer = ({
@@ -32,6 +33,7 @@ export const ForestChangeFilterDrawer = ({
   protectedAreas,
   filterValues,
   maximumAnalysisAreaInTheList,
+  clearFilters,
 }: ForestChangeFilterProps) => {
   if (FOREST_CHANGE_FILTER_LIST.includes(listName)) {
     return (
@@ -40,6 +42,7 @@ export const ForestChangeFilterDrawer = ({
         filterCount={filterCount}
         listView={listView}
         list_name={listName}
+        clearFilters={clearFilters}
       />
     );
   }
@@ -62,6 +65,7 @@ export const ForestChangeFilterDrawer = ({
         listView={listView}
         protectedAreas={protectedAreas}
         history={history}
+        clearFilters={clearFilters}
       />
     );
   }

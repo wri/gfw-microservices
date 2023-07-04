@@ -159,6 +159,11 @@ export default class GFWForestChangeFilter extends Component {
     store.dispatch(setFilterCount(filterCount));
   };
 
+  resetFilters = () => {
+    this.props.clearFilters();
+    store.dispatch(toggleCanopyModal());
+  };
+
   close = () => {
     if (this.props.filterCount === 0) {
       this.setState(this.initialState);
@@ -329,6 +334,12 @@ export default class GFWForestChangeFilter extends Component {
               onClick={this.updateValues}
               label={locationsPage.lists.applyFilters}
             />
+            <Button
+              variant="secondary"
+              onClick={this.resetFilters}
+              label={locationsPage.lists.resetFilters}
+            />
+            <Button variant="secondary" onClick={this.close} label={locationsPage.lists.cancel} />
           </div>
         </ModalWrapper>
       </div>

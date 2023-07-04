@@ -2745,6 +2745,7 @@ export default class Lists extends Component {
                   listData={listData}
                   filterCount={filterCount}
                   listView={listView}
+                  clearFilters={this.clearFilters}
                 />
               );
             }
@@ -2760,6 +2761,7 @@ export default class Lists extends Component {
                   protectedAreas={pAreas}
                   filterValues={filterValues}
                   maximumAnalysisAreaInTheList={maximumAnalysisAreaInTheList}
+                  clearFilters={this.clearFilters}
                 />
               );
             }

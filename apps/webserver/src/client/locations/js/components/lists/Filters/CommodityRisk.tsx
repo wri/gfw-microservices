@@ -1,6 +1,7 @@
 import React from 'react';
 import GFWCommodityRiskFilter from '../GFWCommodityRiskFilter';
 import CommodityRiskFilter from '../CommodityRiskFilter';
+import { GFWLists } from '../../../config/listNames';
 
 interface CommodityRiskFilterProps {
   listName: string;
@@ -17,7 +18,7 @@ export const CommodityRiskFilterDrawer = ({
   listView,
   clearFilters,
 }: CommodityRiskFilterProps) => {
-  return listName === 'Palm Oil Mills' ? (
+  return listName === GFWLists[2] ? (
     <GFWCommodityRiskFilter
       listData={listData}
       filterCount={filterCount}

@@ -5,17 +5,21 @@ import {
   RequestPreSignedURLModel,
   RequestSaveLargeListProcessModel,
   RequestTriggerProcessLargeList,
+  getNumberOfPagesPaginatedListDataRequest,
+  getPaginatedListDataRequest,
 } from './../models/index';
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, BadRequestException } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { LocationService } from '@wri-monorepos/geo';
+import { ListService } from '../services/list.service';
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly largeListService: LargeListService,
-    private readonly locationService: LocationService
+    private readonly locationService: LocationService,
+    private readonly listService: ListService
   ) {}
 
   /**
@@ -34,7 +38,7 @@ export class AppController {
   }
 
   /**
-   * Enpoint used to download the file in case there is a problem with the file when processing
+   * Endpoint used to download the file in case there is a problem with the file when processing
    * @param request
    * @returns
    */
@@ -88,6 +92,43 @@ export class AppController {
       request.srcListAnalysisTable
     );
     return 'processing';
+  }
+
+  @Get('/paginated-list-data')
+  async getPaginatedListData(@Query() queryParam: getPaginatedListDataRequest) {
+    this.validatePaginatedRequest(queryParam);
+    const result = await this.listService.getPaginatedListData(queryParam);
+    return result;
+  }
+
+  @Get('/pages-paginated-list-data')
+  async getNumberOfPagesPaginatedListData(
+    @Query() queryParam: getNumberOfPagesPaginatedListDataRequest
+  ) {
+    this.validatePaginatedRequest(queryParam);
+    const result = await this.listService.getNumberOfPagesPaginatedListData(queryParam);
+    return result;
+  }
+
+  @Get('/paginated-list-data-with-pages')
+  async getPaginatedListDataWithPages(@Query() queryParam: getPaginatedListDataRequest) {
+    this.validatePaginatedRequest(queryParam);
+    const result = this.listService.getPaginatedListDataWithPages(queryParam);
+    return result;
+  }
+
+  validatePaginatedRequest(queryParam: getPaginatedListDataRequest) {
+    if (queryParam.listID == undefined || queryParam.listID == null || queryParam.listID == 0) {
+      throw new BadRequestException('listID is required');
+    }
+
+    if (
+      queryParam.organizationDatabase == undefined ||
+      queryParam.organizationDatabase == null ||
+      queryParam.organizationDatabase == ''
+    ) {
+      throw new BadRequestException('organizationDatabase is required');
+    }
   }
 
   /**

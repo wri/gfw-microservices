@@ -40,14 +40,28 @@ export class UspGetAnalysisDataCountForUserList {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      const recordsets = await connection.executeQuery<GetAnalysisDataCountForUserListResponse>(
-        'uspGetAnalysisDataCountForUserList',
-        parameters
-      );
+      const recordsets =
+        await connection.executeQueryArray<GetAnalysisDataCountForUserListResponse>(
+          'uspGetAnalysisDataCountForUserList',
+          parameters
+        );
 
-      const numberOfPages = Math.ceil(recordsets[0].statistic / rowsPerPage);
+      const totalRows = recordsets.find(
+        (record) => record.statistic_type === 'Row Count'
+      ).statistic;
+      const maximumAnalysisAreaInTheList = recordsets.find(
+        (record) => record.statistic_type === 'Max Area'
+      ).statistic;
+      let numberOfPages = 2;
+      if (totalRows) {
+        numberOfPages = rowsPerPage ? Math.ceil(totalRows / rowsPerPage) : 1;
+      }
       connection.disconnect();
-      return numberOfPages;
+      return {
+        numberOfPages,
+        numberOfResults: totalRows,
+        maximumAnalysisAreaInTheList,
+      };
     } catch (error) {
       console.log(error);
       connection.disconnect();

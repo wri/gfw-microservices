@@ -14,8 +14,8 @@ export interface GenerationFileRequest {
   page?: number;
   numberOfPages?: number;
   rowsPerPage?: number;
-  analysisAreaMax?: string;
-  analysisAreaMin?: string;
+  analysisAreaMax?: number;
+  analysisAreaMin?: number;
   sortByAttribute?: string;
   state?: string;
   subState?: string;

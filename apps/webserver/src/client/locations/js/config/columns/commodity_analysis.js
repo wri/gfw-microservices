@@ -14,9 +14,7 @@ import {
 const transifex = Transifex.live.translateText;
 
 const getListIconClasse = (level) => {
-  return `list-icons-container list-icons-container--${
-    getColorByLevelClasse[getLastValue(level)]
-  }`;
+  return `list-icons-container list-icons-container--${getColorByLevelClasse[getLastValue(level)]}`;
 };
 
 const getAnalysisTextClasse = (level) => {
@@ -110,7 +108,7 @@ const commodity_analysis = [
         show: true,
         width: 75,
         maxWidth: 75,
-        Cell: (row) => 
+        Cell: (row) =>
           !locationIsActive(row.value)
             ? '--'
             : renderAnalysisIcon(row.value.commodity_threat_deforestation_level),

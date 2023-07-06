@@ -288,7 +288,7 @@ const saveAsDraftList = (
         uspAddListToAnalysesExecuted = true;
 
         // Create table query String
-        const params = [{ field: 'template_id', type: sql.NVarChar(150), value: template_id }];
+        const params = [{ field: 'template_id', type: sql.Int, value: template_id }];
         for (let i = 0; i < custom_attributes.length; i++) {
           const columnNameParameter = {
             field: `custom_attribute_${i + 1}`,
@@ -1667,7 +1667,7 @@ const setListLocked = (req, list_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
-      { field: 'user_id', type: sql.NVarChar(150), value: req.session.organization_user_id },
+      { field: 'user_id', type: sql.Int, value: req.session.organization_user_id },
     ];
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspSetListLocked', parameters)

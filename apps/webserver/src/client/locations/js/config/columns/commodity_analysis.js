@@ -15,7 +15,7 @@ const transifex = Transifex.live.translateText;
 
 const getListIconClasse = (level) => {
   return `list-icons-container list-icons-container--${
-    getColorByLevelClasse[getLastValue(level)] || 'red'
+    getColorByLevelClasse[getLastValue(level)]
   }`;
 };
 

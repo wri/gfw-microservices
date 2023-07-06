@@ -1,5 +1,11 @@
 ## Automated Acceptance Testing
 
+Run once. Installs the Cucumber Cypress Pre-Processes/
+
+```
+npm i --legacy-peer-deps
+```
+
 There are two ways to run the tests:
 
 In the console, headless, from the root folder _/gfw-microservices_

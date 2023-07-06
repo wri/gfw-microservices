@@ -395,6 +395,7 @@ export default class SensitiveAreas extends Component {
       chart: {
         renderTo: el,
         type: 'column',
+        className: 'sensitive-areas-chart',
       },
       title: {
         text: '',
@@ -456,6 +457,7 @@ export default class SensitiveAreas extends Component {
     let checked,
       onChange,
       label,
+      dataCy,
       percent,
       disabled = false;
 
@@ -470,11 +472,13 @@ export default class SensitiveAreas extends Component {
           checked = this.state.tclChecked;
           onChange = this.updateTCL;
           label = 'Tree Cover Loss';
+          dataCy = '';
           break;
         case 'totalTCLonPF':
           checked = this.state.pfChecked;
           onChange = this.updatePF;
           label = 'Primary Forest';
+          dataCy = 'primary-forest';
           percent = pfPercent;
           if (primaryForest > 0) {
             disabled = false;
@@ -488,6 +492,7 @@ export default class SensitiveAreas extends Component {
           checked = this.state.paChecked;
           onChange = this.updatePA;
           label = 'Protected Areas';
+          dataCy = 'protected-areas';
           percent = paPercent;
           if (protectedArea > 0) {
             disabled = false;
@@ -501,6 +506,7 @@ export default class SensitiveAreas extends Component {
           checked = this.state.peatChecked;
           onChange = this.updatePeat;
           label = 'Peat';
+          dataCy = 'peat';
           percent = peatPercent;
           if (peat > 0) {
             disabled = false;
@@ -514,6 +520,7 @@ export default class SensitiveAreas extends Component {
           checked = this.state.iflChecked;
           onChange = this.updateIFL;
           label = 'Intact Forest Landscape';
+          dataCy = 'intact-forest-landscape';
           percent = iflPercent;
           if (ifl > 0) {
             disabled = false;
@@ -540,6 +547,7 @@ export default class SensitiveAreas extends Component {
               disabled={(tote === 'totalTCLonPeat' && !this.state.peatEnabled) || disabled}
             />
             <label
+              data-cy={dataCy}
               htmlFor={`sensitive-${tote}-check`}
               className={`legend-square-label ${
                 (tote === 'totalTCLonPeat' && !this.state.peatEnabled) || disabled

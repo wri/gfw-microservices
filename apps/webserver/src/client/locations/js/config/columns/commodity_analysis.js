@@ -110,12 +110,10 @@ const commodity_analysis = [
         show: true,
         width: 75,
         maxWidth: 75,
-        Cell: (row) => {
-          console.log(`row.value.commodity_threat_deforestation_level`, row.value.commodity_threat_deforestation_level)
-          return !locationIsActive(row.value)
+        Cell: (row) => 
+          !locationIsActive(row.value)
             ? '--'
-            : renderAnalysisIcon(row.value.commodity_threat_deforestation_level)
-        },
+            : renderAnalysisIcon(row.value.commodity_threat_deforestation_level),
         sortMethod: (a, b) => {
           const sortStatus = sortByStatus(a, b);
           if (sortStatus == 2) {

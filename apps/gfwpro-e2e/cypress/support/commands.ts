@@ -12,21 +12,29 @@
 declare namespace Cypress {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface Chainable<Subject> {
-    login(email: string, password: string, verifyToken: string): void;
+    login(email: string, password: string, verifyToken?: string): void;
   }
 }
 
 // login using desktop header and verify MFA token
-Cypress.Commands.add('login', (email: string, password: string, verifyToken: string) => {
-  cy.get('[data-cy="desktopHeader"]').then((desktopHeader) => {
-    cy.wrap(desktopHeader).find('[data-cy="loginNav"]').click();
-    cy.wrap(desktopHeader).find('[data-cy="username"]').type('dt_test1@example.com');
-    cy.wrap(desktopHeader).find('[data-cy="password"]').type('unsafe');
-    cy.wrap(desktopHeader).find('[data-cy="loginButton"]').click();
+Cypress.Commands.add('login', (email: string, password: string, verifyToken = 'unsafe') => {
+  cy.request({
+    method: 'POST',
+    url: '/auth/signinpost',
+    body: {
+      username: email,
+      password: password,
+    },
   });
 
-  cy.get('[data-cy="verifyToken"]').type(verifyToken);
-  cy.get('[data-cy="verifyButton"]').click();
+  cy.request({
+    method: 'POST',
+    url: '/auth/verifyLogin',
+    form: true,
+    body: {
+      tokenID: verifyToken,
+    },
+  });
 });
 
 //

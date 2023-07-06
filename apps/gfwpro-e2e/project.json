@@ -1,7 +1,7 @@
 {
   "name": "gfwpro-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/gfwpro-e2e/src",
+  "sourceRoot": "apps/gfwpro-e2e/cypress",
   "projectType": "application",
   "targets": {
     "e2e": {

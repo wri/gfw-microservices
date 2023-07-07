@@ -10,7 +10,7 @@ exports.createInvitation = async (req, res, next) => {
 
   next({
     method: 'POST',
-    url: '/invitation',
+    url: '/connections',
     data: {
       sourceEmail: userEmail,
       targetEmail: email,
@@ -25,6 +25,6 @@ exports.resendInvite = async (req, res, next) => {
 
   next({
     method: 'POST',
-    url: `/invitation/${id}`,
+    url: `/connections/${id}/resend`,
   });
 };

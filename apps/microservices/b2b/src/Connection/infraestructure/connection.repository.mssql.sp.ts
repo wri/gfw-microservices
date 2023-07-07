@@ -13,6 +13,7 @@ import {
   ConnectionAdminOrganizationDto,
 } from '../application/dtos/connection-admin-organizations.dto';
 
+import { getQueryStr } from '@wri-monorepos/sql';
 @Injectable()
 export class ConnectionRepositoryMssqlSP
   extends RepositoryMssqlSP
@@ -39,7 +40,7 @@ export class ConnectionRepositoryMssqlSP
     const params =
       this.mapper.toCreateConnectionProcedureParam(connectionInvitation);
     const createInvitation = this.storeProcedureFactory.create(
-      'uspCreateConnectionRequest',
+      getQueryStr(true, 'setCreateConnectionRequest'),
       params,
     );
     const result = await createInvitation.execute<number>();
@@ -52,12 +53,12 @@ export class ConnectionRepositoryMssqlSP
     const params = this.mapper.createStoreProcedureStringParam([
       ['email', email],
     ]);
-    this.logger.debug(params);
+
     const getUserAdminOrganizations = this.storeProcedureFactory.create(
-      'uspGetUserAdminOrganizations',
+      getQueryStr(true, 'getUserAdminOrganizations'),
       params,
     );
-    this.logger.debug(getUserAdminOrganizations);
+
     const result = await getUserAdminOrganizations.execute<
       ConnectionAdminOrganizationDbDto[]
     >();
@@ -91,7 +92,7 @@ export class ConnectionRepositoryMssqlSP
     const result = await createInvitation.execute<ConnectionDbDto[]>();
     if (result.isSuccess) {
       const connectionsDbDto = result.getValue();
-      this.logger.debug(connectionsDbDto);
+
       let connections = [];
       if (Array.isArray(connectionsDbDto)) {
         connections = connectionsDbDto.map((connectionDbDto) =>

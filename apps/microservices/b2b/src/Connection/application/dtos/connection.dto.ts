@@ -15,7 +15,7 @@ export class CreateConnectionDto {
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty({
-    example: 'target@email.com',
+    example: 'targer@email.com',
     description:
       'This is the email of the organization that is going to receive the invitation.',
   })

@@ -4,6 +4,7 @@ import Result from '../../Shared/domain/result';
 import { ActivityLogDataMapper } from '../application/activity-log.mapper';
 import { ActivityLogRepository } from '../domain/activity-log.repository';
 import { ActivityLog } from '../domain/activity-log';
+import { getQueryStr } from '@wri-monorepos/sql';
 
 export class ActivityLogRepositoryMysql
   extends RepositoryMssqlSP
@@ -22,7 +23,7 @@ export class ActivityLogRepositoryMysql
   ): ResultPromise<boolean> {
     const params = this.mapper.toProcedureParam(log);
     const saveLogActivity = this.storeProcedureFactory.create(
-      'uspSetActivityLog',
+      getQueryStr(false, 'uspSetActivityLog'),
       params,
     );
     await saveLogActivity.execute(db);

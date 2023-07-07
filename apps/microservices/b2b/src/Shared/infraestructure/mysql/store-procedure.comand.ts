@@ -9,7 +9,7 @@ import { ParamStoreProcedure } from './store-procedure.params';
 export class StoredProcedureCommand implements Command {
   constructor(
     private readonly connection: SQLUtils,
-    private readonly procedureName: string,
+    private readonly sql: string,
     private readonly parameters: ParamStoreProcedure[],
   ) {}
 
@@ -17,25 +17,20 @@ export class StoredProcedureCommand implements Command {
     try {
       if (database) await this.connection.connect(database);
       else await this.connection.connect();
-      console.log(
-        this.procedureName,
-        database,
-        this.parameters,
-        this.connection.config,
-      );
-      Logger.log(this.procedureName, this.parameters);
-      const result = await this.connection.executeQuery<T>(
-        this.procedureName,
-        this.parameters,
-      );
-      Logger.log(result);
+
+      const result = await this.connection.query<T>(this.sql, this.parameters);
+
       await this.connection.disconnect();
       return Result.ok(result);
     } catch (error) {
-      console.log(error);
       Logger.error('Error Executing The Stored Proccedure', error, database);
       return Result.fail(
-        new ResultError('Error when executing stored procedure', 500),
+        new ResultError(
+          error.message
+            ? error.message
+            : 'Error when executing stored procedure',
+          500,
+        ),
       );
     }
   }

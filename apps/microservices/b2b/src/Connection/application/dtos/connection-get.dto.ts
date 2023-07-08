@@ -1,5 +1,5 @@
 export class ConnectionGetDto {
-  id: string;
+  id: number;
   createDate: string;
   sourceOrganizationName: string;
   targetOrganizationName: string;

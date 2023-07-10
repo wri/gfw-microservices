@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ListUseCases } from '../../List/application/list.use-case';
+import { ERRORS } from '../../Shared/domain/constants';
 
 import Result from '../../Shared/domain/result';
 import ResultError from '../../Shared/domain/result/result.error';
@@ -25,6 +26,8 @@ export class UserUseCases {
       });
       if (organization) {
         return Result.ok(organization.organizationDb);
+      } else {
+        return Result.fail(ERRORS.NOT_ELEMENTS_FOUND);
       }
     }
   }
@@ -35,8 +38,6 @@ export class UserUseCases {
     db: string,
     orgId,
   ): ResultPromise<boolean> {
-    console.log();
-
     const userPromise = await this.userRepo.getUserByEmail(email, db);
     const userAdminOrgsPromise = await this.userRepo.getUserAdminOrg(email);
     const listPromise = await this.listUseCases.findListById(listId, orgId);

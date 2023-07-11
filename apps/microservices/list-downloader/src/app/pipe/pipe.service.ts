@@ -8,7 +8,6 @@ import {
   ListNameSchema,
   GenerationFileRequest,
   getNumberPagesForAnalysisDataUserList,
-  GetAnalysisDataCountForUserListResponse,
   UspGetPaginatedAnalysisDataForUserList,
   UspGetListAnalysis,
 } from '@wri-monorepos/sql';

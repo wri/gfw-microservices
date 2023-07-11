@@ -79,7 +79,16 @@ describe('getNumberPagesForAnalysisDataUserList', () => {
     mockQueryDB.mockRejectedValue(error);
 
     const organizationDatabase = ORG_DB;
-    const filters: any = {};
+    const filters: GenerationFileRequest = {
+      country: null,
+      listID: 5464,
+      state: null,
+      subState: null,
+      rowsPerPage: 5,
+      analysisAreaMin: '0',
+      analysisAreaMax: null,
+      searchString: null,
+    };
 
     // Call the function and expect it to throw an error
     await expect(

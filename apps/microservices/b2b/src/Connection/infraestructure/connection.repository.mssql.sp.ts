@@ -31,19 +31,17 @@ export class ConnectionRepositoryMssqlSP
       'resendInvitation',
       params,
     );
-    return await resendInvitation.execute();
+    return await resendInvitation.getOne();
   }
 
-  async createConnection(
-    connectionInvitation: ConnectionInvitation,
-  ): ResultPromise<number> {
+  async createConnection(connectionInvitation: ConnectionInvitation) {
     const params =
       this.mapper.toCreateConnectionProcedureParam(connectionInvitation);
     const createInvitation = this.storeProcedureFactory.create(
       getQueryStr(true, 'setCreateConnectionRequest'),
       params,
     );
-    const result = await createInvitation.execute<number>();
+    const result = await createInvitation.execute();
     return result;
   }
 
@@ -59,9 +57,8 @@ export class ConnectionRepositoryMssqlSP
       params,
     );
 
-    const result = await getUserAdminOrganizations.execute<
-      ConnectionAdminOrganizationDbDto[]
-    >();
+    const result =
+      await getUserAdminOrganizations.getMany<ConnectionAdminOrganizationDbDto>();
     if (result.isSuccess) {
       const organizationsDbDto = result.getValue();
       let organizations = [];
@@ -89,7 +86,7 @@ export class ConnectionRepositoryMssqlSP
       'uspGetConnectionRequest',
       params,
     );
-    const result = await createInvitation.execute<ConnectionDbDto[]>();
+    const result = await createInvitation.getMany<ConnectionDbDto>();
     if (result.isSuccess) {
       const connectionsDbDto = result.getValue();
 
@@ -113,9 +110,9 @@ export class ConnectionRepositoryMssqlSP
   ): ResultPromise<number> {
     const params = this.mapper.toChangeStatusConnectionParam(changeStatusDto);
     const updateStatusConnection = this.storeProcedureFactory.create(
-      'uspChangeConnectionRequestStatus',
+      getQueryStr(true, 'uspChangeConnectionRequestStatus'),
       params,
     );
-    return await updateStatusConnection.execute<number>();
+    return await updateStatusConnection.getOne<number>();
   }
 }

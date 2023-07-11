@@ -26,7 +26,7 @@ export class ActivityLogRepositoryMysql
       getQueryStr(false, 'uspSetActivityLog'),
       params,
     );
-    await saveLogActivity.execute(db);
+    await saveLogActivity.getOne(db);
     return Result.ok(true);
   }
 }

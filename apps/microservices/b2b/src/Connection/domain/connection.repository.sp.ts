@@ -16,7 +16,5 @@ export abstract class ConnectionRepositorySP {
     filtersDto: ConnectionFiltersDto,
   ): ResultPromise<Connection[]>;
   abstract resendConnection(id: number): ResultPromise<void>;
-  abstract createConnection(
-    connectionInvitation: ConnectionInvitation,
-  ): ResultPromise<number>;
+  abstract createConnection(connectionInvitation: ConnectionInvitation);
 }

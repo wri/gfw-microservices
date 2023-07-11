@@ -5,21 +5,21 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
 
 ### get all connections
-GET https://localhost:8443/b2b/connection?
+GET https://localhost:8443/b2b/connection
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
-### accpect connection
-PUT https://localhost:8443/b2b/connection/accept/75
+### accept connection
+PUT https://localhost:8443/b2b/connection/accept/158
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
-### accpect connection
-PUT https://localhost:8443/b2b/connection/reject/75
+### reject connection
+PUT https://localhost:8443/b2b/connection/reject/158
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
-### accpect connection
-PUT https://localhost:8443/b2b/connection/cancel/75
+### cancel connection
+PUT https://localhost:8443/b2b/connection/cancel/158
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

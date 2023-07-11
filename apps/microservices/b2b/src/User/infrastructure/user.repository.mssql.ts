@@ -25,9 +25,8 @@ export class UserRepositoryMysql
       getQueryStr(true, 'getUserAdminOrganizations'),
       params,
     );
-    const userAdminOrganizationsRes = await getUserAdminOrganizations.execute<
-      ConnectionAdminOrganizationDbDto[]
-    >();
+    const userAdminOrganizationsRes =
+      await getUserAdminOrganizations.getMany<ConnectionAdminOrganizationDbDto>();
 
     if (userAdminOrganizationsRes.isSuccess) {
       const userAdminOrganizations = userAdminOrganizationsRes.getValue();
@@ -46,7 +45,7 @@ export class UserRepositoryMysql
       params,
     );
 
-    const user = await getUserByEmail.execute<User>(db);
+    const user = await getUserByEmail.getOne<User>(db);
     return user;
   }
 }

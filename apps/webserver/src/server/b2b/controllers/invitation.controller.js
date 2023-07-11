@@ -5,10 +5,8 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
 
 exports.createInvitation = async (req, res, next) => {
   const { email, organization } = req.body;
-
   const userEmail = UserManager.getUserEmail(req);
-
-  next({
+  const request = {
     method: 'POST',
     url: '/connections',
     data: {
@@ -17,14 +15,17 @@ exports.createInvitation = async (req, res, next) => {
       targetOrganization: organization,
       sourceOrganization: req.session.organization_id,
     },
-  });
+  };
+
+  next(request);
 };
 
 exports.resendInvite = async (req, res, next) => {
   const { id } = req.params;
-
-  next({
+  const request = {
     method: 'POST',
     url: `/connections/${id}/resend`,
-  });
+  }
+
+  next(request);
 };

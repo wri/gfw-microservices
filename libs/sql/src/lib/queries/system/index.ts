@@ -12,3 +12,4 @@ export * from './getUsersAuthenticationPreferences';
 export * from './getVerifiedUserRouteInfo';
 export * from './setCreateConnectionRequest';
 export * from './getUserAdminOrganizations';
+export * from './uspChangeConnectionRequestStatus';

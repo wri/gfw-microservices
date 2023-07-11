@@ -22,7 +22,7 @@ import {
   QueryCriteria,
 } from '../../Shared/domain/criteria/query';
 import { CreateConnectionDto } from '../application/dtos/connection.dto';
-import { ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('/connections')
 export class ConnectionController {
@@ -117,7 +117,9 @@ export class ConnectionController {
   }
 
   //TODO: Move this to user module
-  //CHANGE THIS: If using email should be a post
+  @ApiOperation({
+    summary: 'Get the list of organizations by user email.',
+  })
   @Get('user/:email')
   async getUserOrganizations(@Param() { email }: IdStringDto) {
     const result = await this.connectionUseCases.getOrganizationsByUser(email);
@@ -141,6 +143,10 @@ export class ConnectionController {
     throw new HttpException(error.message, error.code);
   }
 
+  @ApiOperation({
+    summary:
+      'Resend an invitation by using the invitation id. The invitation must be in pending status.',
+  })
   @Post(':id/resend')
   resendInvitation(@Param('id') invitationId: number) {
     return this.connectionUseCases.resendConnection(invitationId);

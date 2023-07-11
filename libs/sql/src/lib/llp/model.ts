@@ -37,8 +37,3 @@ export interface GenerationFileRequest {
 /*export interface GetAnalysisDataCountForUserListResponse {
   TotalRows: number;
 }*/
-
-export interface GetAnalysisDataCountForUserListResponse {
-  statistic_type: string;
-  statistic: number;
-}

@@ -30,7 +30,7 @@ import { open } from 'esri/core/workers';
 import store from '../store';
 import {
   addList,
-  loadList,
+  showMapLoader,
   populateLayers,
   removeList,
   resetList,
@@ -944,7 +944,7 @@ export default class Map extends Component {
       className: 'map-popup-analyze',
       visible: false,
     };
-
+    store.dispatch(showMapLoader(true));
     this.addProLayers(view);
     this.addCustomBasemaps(view);
     this.view = view;
@@ -2214,12 +2214,13 @@ export default class Map extends Component {
     } else if (i && !gfwlist) {
       const { userLists, userSharedLists } = this.props;
       const combinedUserLists = [...userLists, ...userSharedLists];
-
+      store.dispatch(showMapLoader(true));
       const list_ids = [i];
       const userList = combinedUserLists.find((list) => list.id === list_ids[0]);
 
       const request = new XMLHttpRequest();
       request.onload = () => {
+        store.dispatch(showMapLoader(false));
         if (request.responseText === '') {
           console.log('LIST DATA IS NOT AVAILABLE');
         } else {
@@ -2258,6 +2259,7 @@ export default class Map extends Component {
       };
       request.onerror = (err) => {
         console.log(`Error: ${err}`);
+        store.dispatch(showMapLoader(false));
       };
       request.open('POST', '/map/getUserListLocationData-map', true);
       request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -2464,10 +2466,10 @@ export default class Map extends Component {
   };
 
   getUserLocationData = (list_ids, listName) => {
-    store.dispatch(loadList());
+    store.dispatch(showMapLoader(true));
     const request = new XMLHttpRequest();
     request.onload = () => {
-      store.dispatch(loadList());
+      store.dispatch(showMapLoader(false));
 
       const responseParsed = JSON.parse(request.response);
       if (responseParsed.errorCode && responseParsed.errorCode === 604) {
@@ -2482,7 +2484,7 @@ export default class Map extends Component {
       }
     };
     request.onerror = (err) => {
-      store.dispatch(loadList());
+      store.dispatch(showMapLoader(false));
       console.log(`Error: ${err}`);
     };
     request.open('POST', '/map/getUserListLocationData-map', true);
@@ -2927,7 +2929,7 @@ export default class Map extends Component {
       userInfo,
       selectedListFromDropdown,
       transitionListData,
-      listLoading,
+      isMapLoading,
       listNotAccessible,
       listVectorTileIsAvailable,
       selectedList,
@@ -2952,7 +2954,7 @@ export default class Map extends Component {
 
     return (
       <Page links={pageOptions.links} active="map">
-        <ModalLoader position="absolute" size={60} open={listLoading} />
+        <ModalLoader position="absolute" size={60} open={isMapLoading} />
         {selectedList && !listVectorTileIsAvailable && !isGfwList(selectedList.list_name) && (
           <FailedPopupDialog
             open={!listVectorTileIsAvailable}

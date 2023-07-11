@@ -5,7 +5,7 @@ import {
   TURN_LAYER_OFF,
   REMOVE_EXCLUSIVE_LAYERS,
   SHOW_LOADING,
-  LOAD_LIST,
+  SHOW_MAP_LOADER,
   UPDATE_ADMIN_SELECTIONS,
   GET_LAYER_INFO,
   UPDATE_GFW_LOCATIONS,
@@ -139,8 +139,8 @@ export function showLoading(state = initialLocationState.iconLoading, action) {
   return action.type !== SHOW_LOADING ? state : action.data;
 }
 
-export function loadList(state = initialLocationState.listLoading, action) {
-  return action.type !== LOAD_LIST ? state : !state;
+export function showMapLoader(state = initialLocationState.listLoading, action) {
+  return action.type !== SHOW_MAP_LOADER ? state : action.data;
 }
 
 export function toggleCanopyModal(state = initialLocationState.canopyModalVisible, action) {

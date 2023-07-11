@@ -5,7 +5,7 @@ import {
   REMOVE_EXCLUSIVE_LAYERS,
   POPULATE_LAYERS,
   SHOW_LOADING,
-  LOAD_LIST,
+  SHOW_MAP_LOADER,
   GET_LAYER_INFO,
   UPDATE_GFW_LOCATIONS,
   SHOW_LAYER_INFO,
@@ -54,8 +54,8 @@ export function showLoading(data) {
   return { type: SHOW_LOADING, data };
 }
 
-export function loadList() {
-  return { type: LOAD_LIST };
+export function showMapLoader(data) {
+  return { type: SHOW_MAP_LOADER, data };
 }
 
 export function getLayerInfo(data) {

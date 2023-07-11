@@ -1,37 +1,44 @@
 export interface GenerationFileRequest {
+  aggregation?: boolean;
   analysisArea?: number;
+  analysisAreaMax?: number;
+  analysisAreaMin?: number;
   analysisAreaOperator?: string;
   combinedColumns?: string;
   combinedColumnsSplitted?: Array<string>;
   country?: string;
+  fields?: Array<string>;
   file?: string;
   geometry?: number;
   key?: string;
   listID: number;
+  listLevelAnalysis?: unknown;
   listName?: string;
+  listView?: string;
+  locationIds?: string;
+  locationLogic?: string;
+  locationStatement?: string;
+  numberOfPages?: number;
   orderType?: string;
   organizationDatabase?: string;
   page?: number;
-  numberOfPages?: number;
   rowsPerPage?: number;
-  analysisAreaMax?: number;
-  analysisAreaMin?: number;
+  searchString?: string;
+  selectedLocations?: string;
+  selectedLocationsList?: Array<number>;
+  selectedMillPriority?: string;
+  selectedOverallThreats?: string;
+  selectedOverallValues?: string;
+  selectedParentCompany?: string;
+  selectedSecondSupplier?: string;
+  selectedSupplier?: string;
+  showRSPOCertified?: boolean;
   sortByAttribute?: string;
   state?: string;
   subState?: string;
+  templateId?: number;
   type?: string;
   userEmail?: string;
-  searchString?: string;
-  locationLogic?: string;
-  locationIds?: string;
-  locationStatement?: string;
-  fields?: Array<string>;
-  templateId?: number;
-  selectedLocations?: string;
-  selectedLocationsList?: Array<number>;
-  listView?: string;
-  aggregation?: boolean;
-  listLevelAnalysis?: unknown;
 }
 
 /*export interface GetAnalysisDataCountForUserListResponse {

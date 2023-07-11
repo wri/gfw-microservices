@@ -10,3 +10,5 @@ export * from './getTemplatesDropdown';
 export * from './getUserAuthenticationPreferences';
 export * from './getUsersAuthenticationPreferences';
 export * from './getVerifiedUserRouteInfo';
+export * from './getAnalysisDataCountForGFWList';
+export * from './getPaginatedAnalysisDataForGFWList';

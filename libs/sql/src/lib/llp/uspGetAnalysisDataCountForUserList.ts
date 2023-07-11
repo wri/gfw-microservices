@@ -1,9 +1,10 @@
 import { SQLUtils } from '../util/sql.utils';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Query } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { GenerationFileRequest, GetAnalysisDataCountForUserListResponse } from './model';
 import { SQL_CONFIG } from '../config/config';
+import { getAnalysisDataCountForGFWList, getAnalysisDataCountForUserList } from '../queries';
 
 @Injectable()
 export class UspGetAnalysisDataCountForUserList {
@@ -17,6 +18,13 @@ export class UspGetAnalysisDataCountForUserList {
       analysisAreaMin,
       analysisAreaMax,
       searchString,
+      showRSPOCertified,
+      selectedSupplier,
+      selectedSecondSupplier,
+      selectedParentCompany,
+      selectedOverallThreats,
+      selectedOverallValues,
+      selectedMillPriority,
     } = filters;
 
     const parameters = [
@@ -35,17 +43,37 @@ export class UspGetAnalysisDataCountForUserList {
         value: analysisAreaMax || null,
       },
       { field: 'SearchString', type: sql.Float, value: searchString || null },
+      { field: 'selectedSupplier', type: sql.NVarChar, value: selectedSupplier || null },
+      {
+        field: 'selectedSecondSupplier',
+        type: sql.NVarChar,
+        value: selectedSecondSupplier || null,
+      },
+      { field: 'selectedParentCompany', type: sql.NVarChar, value: selectedParentCompany || null },
+      { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
+      {
+        field: 'selectedOverallThreats',
+        type: sql.NVarChar,
+        value: selectedOverallThreats || null,
+      },
+      { field: 'selectedOverallValues', type: sql.NVarChar, value: selectedOverallValues || null },
+      { field: 'selectedMillPriority', type: sql.NVarChar, value: selectedMillPriority || null },
     ];
+
+    const query =
+      databaseName == SQL_CONFIG.database
+        ? getAnalysisDataCountForGFWList
+        : getAnalysisDataCountForUserList;
 
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      const recordsets =
-        await connection.executeQueryArray<GetAnalysisDataCountForUserListResponse>(
-          'uspGetAnalysisDataCountForUserList',
-          parameters
-        );
+      const recordsets = await connection.queryArray<GetAnalysisDataCountForUserListResponse>(
+        query,
+        parameters
+      );
 
+      console.log(recordsets);
       const totalRows = recordsets.find(
         (record) => record.statistic_type === 'Row Count'
       ).statistic;

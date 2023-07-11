@@ -4,6 +4,8 @@ import * as sql from 'mssql';
 
 import { GenerationFileRequest } from './model';
 import { SQL_CONFIG } from '../config/config';
+import { getPaginatedAnalysisDataForUserList } from '../queries/organization/getPaginatedAnalysisDataForUserList';
+import { getPaginatedAnalysisDataForGFWList } from '../queries';
 
 @Injectable()
 export class UspGetPaginatedAnalysisDataForUserList {
@@ -11,20 +13,27 @@ export class UspGetPaginatedAnalysisDataForUserList {
     const {
       analysisAreaMax,
       analysisAreaMin,
+      combinedColumns,
       country,
       geometry,
       listID,
+      locationIds,
+      locationLogic,
+      locationStatement,
       orderType,
       page,
       rowsPerPage,
+      searchString,
+      selectedMillPriority,
+      selectedOverallThreats,
+      selectedOverallValues,
+      selectedParentCompany,
+      selectedSecondSupplier,
+      selectedSupplier,
+      showRSPOCertified,
       sortByAttribute,
       state,
       subState,
-      locationLogic,
-      locationIds,
-      locationStatement,
-      combinedColumns,
-      searchString,
     } = filters;
 
     const parameters = [
@@ -33,7 +42,7 @@ export class UspGetPaginatedAnalysisDataForUserList {
       { field: 'RowsOfPage', type: sql.Int, value: rowsPerPage || 0 },
       {
         field: 'OrderByColumn',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: sortByAttribute || 'Location Name',
       },
       { field: 'Order', type: sql.NVarChar, value: orderType || 'ASC' },
@@ -72,16 +81,32 @@ export class UspGetPaginatedAnalysisDataForUserList {
         value: searchString || null,
       },
       { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
+      { field: 'selectedSupplier', type: sql.NVarChar, value: selectedSupplier || null },
+      {
+        field: 'selectedSecondSupplier',
+        type: sql.NVarChar,
+        value: selectedSecondSupplier || null,
+      },
+      { field: 'selectedParentCompany', type: sql.NVarChar, value: selectedParentCompany || null },
+      { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
+      {
+        field: 'selectedOverallThreats',
+        type: sql.NVarChar,
+        value: selectedOverallThreats || null,
+      },
+      { field: 'selectedOverallValues', type: sql.NVarChar, value: selectedOverallValues || null },
+      { field: 'selectedMillPriority', type: sql.NVarChar, value: selectedMillPriority || null },
     ];
 
+    const query =
+      databaseName == SQL_CONFIG.database
+        ? getPaginatedAnalysisDataForGFWList
+        : getPaginatedAnalysisDataForUserList;
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const createListResult = await connection.executeQueryArray<any>(
-        'uspGetPaginatedAnalysisDataForUserList',
-        parameters
-      );
+      const createListResult = await connection.queryArray<any>(query, parameters);
       await connection.disconnect();
       return createListResult;
     } catch (error) {

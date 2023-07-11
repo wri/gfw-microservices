@@ -58,7 +58,8 @@ export class PipeService {
 
     const queryString = this.convertToQueryFields(filters);
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
-    const { numberOfPages } = await fetch(url, this.OPTIONS);
+    const response = await fetch(url, this.OPTIONS);
+    const { numberOfPages } = await response.json();
 
     this.logger.log(`(${listID}) - Number of pages: ${numberOfPages}`);
 
@@ -101,8 +102,9 @@ export class PipeService {
       const newFilters = { ...filters, page: i };
 
       const queryString = this.convertToQueryFields(newFilters);
-      const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
-      const analysisData = await fetch(url, this.OPTIONS);
+      const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
+      const response = await fetch(url, this.OPTIONS);
+      const analysisData = await response.json();
 
       service.process(analysisData, newFilters);
       return i;
@@ -135,8 +137,10 @@ export class PipeService {
     };
 
     const queryString = this.convertToQueryFields(newFilters);
-    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
-    const analysisData = await fetch(url, this.OPTIONS);
+    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
+    console.log('url', url);
+    const response = await fetch(url, this.OPTIONS);
+    const analysisData = await response.json();
 
     const [element] = analysisData;
 

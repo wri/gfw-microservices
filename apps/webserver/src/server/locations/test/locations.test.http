@@ -146,3 +146,16 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
     {"list_id": 100, "location_id": 42, "Type of Investment": "new investment"}
   ]
 }
+
+
+### Get Lists Paginated - Existing list_ID
+GET https://localhost:8443/locations/getListsPaginated
+  ?pageSize=5
+  &page=1
+  &listID=5464
+  &searchString=
+  &sortByAttribute=Investment+Name
+  &order=asc
+  &analysisAreaMin=0
+Content-Type: application/json; charset=utf-8
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

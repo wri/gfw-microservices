@@ -1,6 +1,6 @@
 import * as sql from 'mssql';
 import { SQLUtils } from '../util';
-import { ListNameSchema } from '../queries';
+import { GetAnalysisDataCountForUserListResponse, ListNameSchema } from '../queries';
 import { UspUpdateListCount } from './uspUpdateListCount';
 import { UspDeleteLocation } from './uspDeleteLocation';
 import { UspGetAnalysisColumns } from './uspGetAnalysisColumns';
@@ -14,6 +14,7 @@ import { UspResetListStatus } from './uspResetListStatus';
 import { UspDeleteList } from './uspDeleteList';
 import { Logger } from '@nestjs/common';
 import { UspDeleteLocationIdsFilteredDataForUserList } from './uspDeleteLocationIdsFilteredDataForUserList';
+import { GenerationFileRequest } from '../llp';
 const logger = new Logger('ClientDatabaseOperationsManager');
 
 const DEFAULT_ROWS_REQUESTED = 200000;
@@ -349,4 +350,65 @@ export const UnlockList = (clientDatabase, listId) => {
 
 export const SetListDrafStatus = (clientDatabase, listId, gfwListId) => {
   return new UspResetListStatus().run(clientDatabase, listId, ListStatus.Draft, gfwListId);
+};
+
+/** @function {getNumberPagesForAnalysisDataUserList}
+ *   @summary Get function to return the number of pages for the paginated analysis data for a user list.
+ *   @param  {String} organizationDatabase - required
+ *   @param  {GenerationFileRequest} filter
+ *   @return {Promise} Promise<{numberOfPages, numberOfResults, maximumAnalysisAreaInTheList}>
+ */
+export const getNumberPagesForAnalysisDataUserList = async (
+  organizationDatabase: string,
+  filters: GenerationFileRequest
+): Promise<{
+  numberOfPages: number;
+  numberOfResults: number;
+  maximumAnalysisAreaInTheList: number;
+}> => {
+  const {
+    country,
+    listID,
+    state,
+    subState,
+    rowsPerPage,
+    analysisAreaMin,
+    analysisAreaMax,
+    searchString,
+  } = filters;
+
+  const parameters = [
+    { field: 'listID', type: sql.Int, value: listID },
+    { field: 'Country', type: sql.NVarChar, value: country || null },
+    { field: 'State', type: sql.NVarChar, value: state || null },
+    { field: 'SubState', type: sql.NVarChar, value: subState || null },
+    {
+      field: 'AnalysisAreaMin',
+      type: sql.Int,
+      value: analysisAreaMin || null,
+    },
+    {
+      field: 'AnalysisAreaMax',
+      type: sql.Int,
+      value: analysisAreaMax || null,
+    },
+    { field: 'SearchString', type: sql.Float, value: searchString || null },
+  ];
+  let numberOfPages: number;
+  let numberOfResults: number;
+  let maximumAnalysisAreaInTheList: number;
+  try {
+    const recordsets = await SQLUtils.queryDB<GetAnalysisDataCountForUserListResponse>(
+      organizationDatabase,
+      'uspGetAnalysisDataCountForUserList',
+      parameters
+    );
+    numberOfResults = recordsets[0].statistic;
+    maximumAnalysisAreaInTheList = recordsets[1].statistic;
+    numberOfPages = Math.ceil(numberOfResults / rowsPerPage);
+  } catch (error) {
+    console.log(error);
+    throw new Error(error);
+  }
+  return { numberOfPages, numberOfResults, maximumAnalysisAreaInTheList };
 };

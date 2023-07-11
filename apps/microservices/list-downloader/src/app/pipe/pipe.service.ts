@@ -7,8 +7,9 @@ import {
   SQLUtils,
   ListNameSchema,
   GenerationFileRequest,
+  getNumberPagesForAnalysisDataUserList,
+  GetAnalysisDataCountForUserListResponse,
   UspGetPaginatedAnalysisDataForUserList,
-  UspGetAnalysisDataCountForUserList,
   UspGetListAnalysis,
 } from '@wri-monorepos/sql';
 
@@ -25,7 +26,6 @@ export class PipeService {
 
   constructor(
     private uspGetPaginatedAnalysisDataForUserList: UspGetPaginatedAnalysisDataForUserList,
-    private uspGetAnalysisDataCountForUserList: UspGetAnalysisDataCountForUserList,
     private inputService: InputService,
     private shapefileService: ShapefileService,
     private dashboardService: DashboardService,
@@ -52,10 +52,7 @@ export class PipeService {
       parameters
     );
 
-    const numberOfPages = await this.uspGetAnalysisDataCountForUserList.run(
-      organizationDatabase,
-      filters
-    );
+    const numberOfPages = await this.getNumberOfPages(organizationDatabase, filters);
     this.logger.log(`(${listID}) - Number of pages: ${numberOfPages}`);
 
     let arrayOfPages = Array.from(Array(numberOfPages).keys());
@@ -139,5 +136,13 @@ export class PipeService {
       fields: Object.keys(element),
       templateId: element.template_id,
     };
+  }
+
+  private async getNumberOfPages(organizationDatabase: string, filters: GenerationFileRequest) {
+    const { numberOfPages } = await getNumberPagesForAnalysisDataUserList(
+      organizationDatabase,
+      filters
+    );
+    return numberOfPages;
   }
 }

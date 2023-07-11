@@ -149,7 +149,6 @@ export default class Lists extends Component {
       isLoading: !!selectedLists.length,
       isManageListFolderOpen: false,
       searchedLocations: [],
-      downloadVisible: false,
       selectedMoveOrCopy: 'copy',
       selectedNewOrExisting: 'existing',
       newListName: '',
@@ -425,15 +424,9 @@ export default class Lists extends Component {
   // Update how many locations are selected
   searchLocations = (location_id) => {
     const { selectedLocations, selectedAndVisibleLocations } = this.props;
-    const { filterString, downloadVisible, allLocationsSelected } = this.state;
+    const { filterString, allLocationsSelected } = this.state;
     const index = selectedLocations.indexOf(location_id);
     const tempLocations = selectedLocations.slice();
-
-    if (downloadVisible) {
-      this.setState({
-        downloadVisible: false,
-      });
-    }
 
     if (allLocationsSelected) {
       this.setState({ allLocationsSelected: false });
@@ -468,16 +461,12 @@ export default class Lists extends Component {
   // Select all locations in a list
   addAllSelectedLocations = (evt) => {
     const { selectedLocations, filteredData, filteredLocationData } = this.props;
-    const { downloadVisible, listFilteredLocations } = this.state;
-
+    const { listFilteredLocations } = this.state;
     const allLocationsSelected = evt.target.checked;
-    this.setState({ allLocationsSelected });
-
-    if (downloadVisible) {
-      this.setState({
-        downloadVisible: false,
-      });
-    }
+    this.setState({
+      allLocationsSelected,
+      isLoading: true,
+    });
 
     if (
       (!allLocationsSelected && selectedLocations.length === filteredData.length) ||
@@ -502,6 +491,10 @@ export default class Lists extends Component {
         event_label: 'user checked all locations in the list',
       });
     }
+
+    this.setState({
+      isLoading: false,
+    });
   };
 
   cancelDialog = () => {
@@ -1411,7 +1404,7 @@ export default class Lists extends Component {
       filters,
       filteredLocationData,
     } = this.props;
-    const { filterString, combinedColumns } = this.state;
+    const { filterString, combinedColumns, allLocationsSelected } = this.state;
     let locationIds = [];
     const gfwList = getGfwListName(selectedLists);
 
@@ -1501,7 +1494,7 @@ export default class Lists extends Component {
       filteredLists: locationIds,
       g: gfwList ? discernGfwID(gfwList) : false,
       path: 'lists',
-      showFullListMap,
+      showFullListMap: allLocationsSelected || showFullListMap,
       totalNumberOfLocationsInList: selectedLists[0].list_locations_count,
     };
 

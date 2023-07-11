@@ -9,8 +9,7 @@ function SelectedListDescription({
 }) {
   // list data comming from previous view (dashboard or list view)
   const { filterCount, name, numLocations } = transitionListData;
-
-  const listId = selectedLists?.id;
+  const listId = selectedLists?.id || transitionListData?.id;
   const isListSelected =
     Object.keys(selectedLists).length || Object.keys(transitionListData).length;
 

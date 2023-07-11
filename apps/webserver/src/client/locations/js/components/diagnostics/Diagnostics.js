@@ -53,11 +53,8 @@ import {
 } from '../../utils/lists.utils';
 import { handleUserListLocationsVectorTileLayer } from '../../../../common/js/userListLocations/utils/userListLocations.util';
 import { generateCentroidGraphic } from '../../../../common/js/utils/esri.utils';
-import {
-  handleGfwProListVectorTileLayer,
-  isGfwList,
-  discernGfwID,
-} from '../../../../common/js/utils/gfw.utils';
+import { isGfwList, discernGfwID } from '../../../../common/js/utils/gfw.utils';
+import { handleGfwProListVectorTileLayer } from '../../../../common/js/utils/vectorTileLayer';
 
 // Configs
 import {

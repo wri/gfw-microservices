@@ -7,10 +7,10 @@
  * just the Map functionality, common code has been copied down into src/client/map when necessary.
  * There is a ticket to do this so we don't forget: https://gfw.atlassian.net/browse/GPV-2000
  *********************************************************************************************************/
-import Graphic from "@arcgis/core/Graphic.js";
+import Graphic from '@arcgis/core/Graphic';
 
 // Configs
-import { centroidSymbol } from '../../../common/js/map.config'
+import { centroidSymbol } from '../../../common/js/map.config';
 
 /**
  * @description - Create centroid graphic

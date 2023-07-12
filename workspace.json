@@ -5,12 +5,12 @@
     "aws": "libs/aws",
     "constants": "libs/constants",
     "geo": "libs/geo",
-    "gfwpro": "apps/webserver",
     "gfwpro-e2e": "apps/gfwpro-e2e",
     "microservices-b2b": "apps/microservices/b2b",
     "microservices-list-downloader": "apps/microservices/list-downloader",
     "microservices-list-processing": "apps/microservices/list-processing",
     "shared": "libs/shared",
-    "sql": "libs/sql"
+    "sql": "libs/sql",
+    "webserver": "apps/webserver"
   }
 }

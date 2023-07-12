@@ -57,6 +57,7 @@ module.exports = () => {
           compilerOptions: {
             noEmit: false,
           },
+          configFile: 'tsconfig.client.json',
         },
       },
     ],
@@ -67,7 +68,7 @@ module.exports = () => {
     test: /\.(scss|css)$/,
     use: [
       { loader: MiniCssExtractPlugin.loader },
-      { loader: 'css-loader' },
+      { loader: 'css-loader', options: { esModule: false } },
       { loader: 'postcss-loader' },
       { loader: 'sass-loader' },
     ],

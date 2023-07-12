@@ -48,7 +48,7 @@ COPY apps/webserver/src/run-app.sh .
 COPY apps/webserver/src/client client
 COPY apps/webserver/src/config config
 COPY apps/webserver/src/server server
-COPY apps/webserver/tsconfig.json .
+COPY apps/webserver/tsconfig.client.json .
 
 # Create Vector tiles directory
 RUN mkdir vectorTiles

@@ -1,19 +1,21 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestingModule } from '@nestjs/testing';
 import { UserUseCases } from './user.use-case';
 import { ListUseCases } from '../../List/application/list.use-case';
 import { UserRepository } from '../domain/user.repository';
 import Result from '../../Shared/domain/result';
 import ResultError from '../../Shared/domain/result/result.error';
-import { ModuleMocker, MockFunctionMetadata } from 'jest-mock';
 import { User, UserOrganization } from '../domain/user';
 import { List } from '../../List/domain/list.entity';
 import { ERRORS } from '../../Shared/domain/constants';
-
-const moduleMocker = new ModuleMocker(global);
+import { createMockModule } from '@wri-monorepos/shared';
 
 describe('UserUseCases', () => {
   let useCases: UserUseCases;
   let listUseCases: ListUseCases;
+  let email: string;
+  let userOrganizations: UserOrganization[];
+  let list: List;
+  let user: User;
 
   const userRepo: UserRepository = {
     getUserByEmail: jest.fn(),
@@ -21,48 +23,74 @@ describe('UserUseCases', () => {
   };
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    email = 'test@example.com';
+
+    userOrganizations = [
+      {
+        id: 1,
+        organizationDb: 'db1',
+        organizationStatusId: 1,
+        organizationName: 'test',
+      },
+      {
+        id: 2,
+        organizationDb: 'test2',
+        organizationStatusId: 1,
+        organizationName: 'test2',
+      },
+    ];
+
+    list = {
+      id: 1,
+      userId: 2,
+      templateId: 3,
+      listName: 'test',
+      listTableName: 'test',
+      listAnalysisTableName: 'test',
+      listStatusId: 0,
+      listErrorMessage: 'test',
+      locationClassification: 'test',
+      customAttributeNames: 'test',
+      customAttributeTypes: 'test',
+      listLocationsCount: 0,
+      lockStatus: 0,
+      lockUserId: 0,
+      associatedGfwlist: 0,
+      dashboardLastSubmit: undefined,
+      dashboardLastResults: undefined,
+      vectorTilesStoragePath: 'test',
+      errorFileStoragePath: 'test',
+      vectorTilesLastUpdated: undefined,
+    };
+
+    user = {
+      id: 1,
+      firstName: 'test',
+      lastName: 'test',
+      email: 'test@example.com',
+      phone: '111111',
+    };
+
+    const module: TestingModule = await createMockModule({
       providers: [
         UserUseCases,
         ListUseCases,
         { provide: UserRepository, useValue: userRepo },
       ],
-    })
-      .useMocker((token) => {
-        if (typeof token === 'function') {
-          const mockMetadata = moduleMocker.getMetadata(
-            token,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ) as MockFunctionMetadata<any, any>;
-          const Mock = moduleMocker.generateFromMetadata(mockMetadata);
-          return new Mock();
-        }
-      })
-      .compile();
+    }).compile();
 
     useCases = module.get<UserUseCases>(UserUseCases);
     listUseCases = module.get<ListUseCases>(ListUseCases);
   });
 
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   describe('getUserDB', () => {
     it('should return the organization DB when the user and organization exist', async () => {
       // Mock dependencies
-      const email = 'test@example.com';
       const organizationId = 1;
-      const userOrganizations: UserOrganization[] = [
-        {
-          id: 1,
-          organizationDb: 'db1',
-          organizationStatusId: 1,
-          organizationName: 'test',
-        },
-        {
-          id: 2,
-          organizationDb: 'db2',
-          organizationStatusId: 1,
-          organizationName: 'test2',
-        },
-      ];
 
       jest
         .spyOn(userRepo, 'getUserAdminOrg')
@@ -77,22 +105,7 @@ describe('UserUseCases', () => {
 
     it('should return failure if the user or organization does not exist', async () => {
       // Mock dependencies
-      const email = 'test@example.com';
       const organizationId = 3;
-      const userOrganizations: UserOrganization[] = [
-        {
-          id: 1,
-          organizationDb: 'test',
-          organizationStatusId: 1,
-          organizationName: 'test',
-        },
-        {
-          id: 2,
-          organizationDb: 'test2',
-          organizationStatusId: 1,
-          organizationName: 'test2',
-        },
-      ];
 
       jest
         .spyOn(userRepo, 'getUserAdminOrg')
@@ -109,53 +122,9 @@ describe('UserUseCases', () => {
   describe('checkUserIsListAdmin', () => {
     it('should return true if the user is an admin of the list', async () => {
       // Mock dependencies
-      const email = 'test@example.com';
       const listId = 1;
       const db = 'db1';
       const orgId = 1;
-      const user: User = {
-        id: 1,
-        firstName: 'test',
-        lastName: 'test',
-        email: 'test@example.com',
-        phone: '111111',
-      };
-      const userOrganizations: UserOrganization[] = [
-        {
-          id: 1,
-          organizationDb: 'test',
-          organizationStatusId: 1,
-          organizationName: 'test',
-        },
-        {
-          id: 2,
-          organizationDb: 'test2',
-          organizationStatusId: 1,
-          organizationName: 'test2',
-        },
-      ];
-      const list: List = {
-        id: 1,
-        userId: 2,
-        templateId: 3,
-        listName: 'test',
-        listTableName: 'test',
-        listAnalysisTableName: 'test',
-        listStatusId: 0,
-        listErrorMessage: 'test',
-        locationClassification: 'test',
-        customAttributeNames: 'test',
-        customAttributeTypes: 'test',
-        listLocationsCount: 0,
-        lockStatus: 0,
-        lockUserId: 0,
-        associatedGfwlist: 0,
-        dashboardLastSubmit: undefined,
-        dashboardLastResults: undefined,
-        vectorTilesStoragePath: 'test',
-        errorFileStoragePath: 'test',
-        vectorTilesLastUpdated: undefined,
-      };
 
       jest.spyOn(userRepo, 'getUserByEmail').mockResolvedValue(Result.ok(user));
       jest
@@ -181,53 +150,9 @@ describe('UserUseCases', () => {
 
     it('should return failure if the user is not an admin of the list', async () => {
       // Mock dependencies
-      const email = 'test@example.com';
       const listId = 1;
       const db = 'db1';
       const orgId = 3;
-      const user: User = {
-        id: 1,
-        firstName: 'test',
-        lastName: 'test',
-        email: 'test@example.com',
-        phone: '111111',
-      };
-      const userOrganizations: UserOrganization[] = [
-        {
-          id: 1,
-          organizationDb: 'test',
-          organizationStatusId: 1,
-          organizationName: 'test',
-        },
-        {
-          id: 2,
-          organizationDb: 'test2',
-          organizationStatusId: 1,
-          organizationName: 'test2',
-        },
-      ];
-      const list: List = {
-        id: 1,
-        userId: 2,
-        templateId: 3,
-        listName: 'test',
-        listTableName: 'test',
-        listAnalysisTableName: 'test',
-        listStatusId: 0,
-        listErrorMessage: 'test',
-        locationClassification: 'test',
-        customAttributeNames: 'test',
-        customAttributeTypes: 'test',
-        listLocationsCount: 0,
-        lockStatus: 0,
-        lockUserId: 0,
-        associatedGfwlist: 0,
-        dashboardLastSubmit: undefined,
-        dashboardLastResults: undefined,
-        vectorTilesStoragePath: 'test',
-        errorFileStoragePath: 'test',
-        vectorTilesLastUpdated: undefined,
-      };
 
       jest.spyOn(userRepo, 'getUserByEmail').mockResolvedValue(Result.ok(user));
       jest

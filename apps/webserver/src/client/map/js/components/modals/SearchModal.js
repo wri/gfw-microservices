@@ -1,9 +1,8 @@
 import ModalWrapper from './ModalWrapper';
 import { toggleSearch } from '../../actions/mapActions';
 import store from '../../store';
-import Search from 'esri/widgets/Search';
-import FeatureLayer from 'esri/layers/FeatureLayer';
-import Locator from 'esri/tasks/Locator';
+import Search from '@arcgis/core/widgets/Search';
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import React, { Component } from 'react';
 import { proLayers } from '../../../../common/js/config';
 
@@ -76,9 +75,7 @@ export default class SearchModal extends Component {
       minSuggestCharacters: 3,
       sources: [
         {
-          locator: new Locator({
-            url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer',
-          }),
+          url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
           singleLineFieldName: 'SingleLine',
           outFields: ['Addr_type'],
           maxSuggestions: 3,

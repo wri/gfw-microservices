@@ -132,3 +132,8 @@ SELECT @listLocationTableName = list_table_name, @listAnalysisTableName = list_a
 				@Country=@Country, @State=@State, @SubState=@SubState, @AnalysisAreaMin=@AnalysisAreaMin, @AnalysisAreaMax=@AnalysisAreaMax, @selectedSupplier=@selectedSupplier,@selectedSecondSupplier=@selectedSecondSupplier,@selectedParentCompany=@selectedParentCompany,@showRSPOCertified=@showRSPOCertified,@selectedOverallThreats=@selectedOverallThreats,@selectedOverallValues=@selectedOverallValues,@selectedMillPriority=@selectedMillPriority;
   END
 `;
+
+export interface AnalysisDataCountType {
+  statistic_type: string;
+  statistic: number;
+}

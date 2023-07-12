@@ -2,13 +2,26 @@ import { SQLUtils } from '../util/sql.utils';
 import { Injectable, Query } from '@nestjs/common';
 import * as sql from 'mssql';
 
-import { GenerationFileRequest, GetAnalysisDataCountForUserListResponse } from './model';
+import { GenerationFileRequest } from './model';
 import { SQL_CONFIG } from '../config/config';
-import { getAnalysisDataCountForGFWList, getAnalysisDataCountForUserList } from '../queries';
+import {
+  AnalysisDataCountType,
+  getAnalysisDataCountForGFWList,
+  getAnalysisDataCountForUserList,
+} from '../queries';
+
+export interface AnalysisDataCountReturnType {
+  numberOfPages: number;
+  numberOfResults: number;
+  maximumAnalysisAreaInTheList: number;
+}
 
 @Injectable()
 export class UspGetAnalysisDataCountForUserList {
-  async run(databaseName: string, filters: GenerationFileRequest) {
+  async run(
+    databaseName: string,
+    filters: GenerationFileRequest
+  ): Promise<AnalysisDataCountReturnType> {
     const {
       country,
       listID,
@@ -68,10 +81,7 @@ export class UspGetAnalysisDataCountForUserList {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      const recordsets = await connection.queryArray<GetAnalysisDataCountForUserListResponse>(
-        query,
-        parameters
-      );
+      const recordsets = await connection.queryArray<AnalysisDataCountType>(query, parameters);
 
       console.log(recordsets);
       const totalRows = recordsets.find(

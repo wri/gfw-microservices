@@ -4,7 +4,10 @@ import * as sql from 'mssql';
 
 import { GenerationFileRequest } from './model';
 import { SQL_CONFIG } from '../config/config';
-import { getPaginatedAnalysisDataForUserList } from '../queries/organization/getPaginatedAnalysisDataForUserList';
+import {
+  AnalysisDataType,
+  getPaginatedAnalysisDataForUserList,
+} from '../queries/organization/getPaginatedAnalysisDataForUserList';
 import { getPaginatedAnalysisDataForGFWList } from '../queries';
 
 @Injectable()
@@ -106,7 +109,7 @@ export class UspGetPaginatedAnalysisDataForUserList {
     await connection.connect();
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const createListResult = await connection.queryArray<any>(query, parameters);
+      const createListResult = await connection.queryArray<AnalysisDataType>(query, parameters);
       await connection.disconnect();
       return createListResult;
     } catch (error) {

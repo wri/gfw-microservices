@@ -20,26 +20,13 @@ export class SQLUtils {
   }
 
   query<T>(query: string, parameters?: ParameterType[]): Promise<T> {
-    const request = this.connection.request();
-
-    if (parameters && Array.isArray(parameters)) {
-      parameters.forEach((param) => {
-        request.input(param.field, param.type, param.value);
-      });
-    }
-
     return new Promise((resolve, reject) => {
-      request
-        .query(query)
-        .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
-          if (Number(result.recordsets.length) > 0) {
-            resolve(result.recordsets[0][0]);
-          }
-          resolve(undefined);
-        })
-        .catch((errorMessage) => {
-          reject(errorMessage);
-        });
+      this.queryArray<T>(query, parameters).then((result) => {
+        if (result && Array.isArray(result) && result.length > 0) {
+          resolve(result[0]);
+        }
+        resolve(undefined);
+      });
     });
   }
 
@@ -68,29 +55,13 @@ export class SQLUtils {
   }
 
   executeQuery<T>(query: string, parameters?: ParameterType[]): Promise<T> {
-    const request = this.connection.request();
-
-    if (parameters && Array.isArray(parameters)) {
-      parameters.forEach((param) => {
-        request.input(param.field, param.type, param.value);
-      });
-    }
-
     return new Promise((resolve, reject) => {
-      request
-        .execute(query)
-        .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
-          if (Number(result.recordsets.length) > 0) {
-            if (Number(result.recordsets[0].length) > 1) {
-              resolve(result.recordsets[0] as T);
-            }
-            resolve(result.recordsets[0][0] as T);
-          }
-          resolve(undefined);
-        })
-        .catch((errorMessage) => {
-          reject(errorMessage);
-        });
+      this.executeQueryArray<T>(query, parameters).then((result) => {
+        if (Number(result.length) > 1) {
+          resolve(result as T);
+        }
+        resolve(result[0] as T);
+      });
     });
   }
 

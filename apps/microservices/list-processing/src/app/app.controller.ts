@@ -118,14 +118,14 @@ export class AppController {
   }
 
   validatePaginatedRequest(queryParam: getPaginatedListDataRequest) {
-    if (queryParam.listID == undefined || queryParam.listID == null || queryParam.listID == 0) {
+    if (queryParam.listID === undefined || queryParam.listID === null || queryParam.listID === 0) {
       throw new BadRequestException('listID is required');
     }
 
     if (
-      queryParam.organizationDatabase == undefined ||
-      queryParam.organizationDatabase == null ||
-      queryParam.organizationDatabase == ''
+      queryParam.organizationDatabase === undefined ||
+      queryParam.organizationDatabase === null ||
+      queryParam.organizationDatabase === ''
     ) {
       throw new BadRequestException('organizationDatabase is required');
     }

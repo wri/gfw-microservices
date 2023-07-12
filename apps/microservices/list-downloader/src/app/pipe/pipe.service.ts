@@ -8,6 +8,7 @@ import {
   ListNameSchema,
   GenerationFileRequest,
   UspGetListAnalysis,
+  AnalysisDataCountReturnType,
 } from '@wri-monorepos/sql';
 
 import { InputService } from '../files/input.service';
@@ -16,6 +17,7 @@ import { ShapefileService } from '../files/shapefile.service';
 import { DashboardService } from './dashboard.service';
 import { IPipeService } from './IPipeService';
 import fetch from 'node-fetch';
+import { AnalysisDataType } from '@wri-monorepos/sql';
 
 @Injectable()
 export class PipeService {
@@ -56,11 +58,7 @@ export class PipeService {
       parameters
     );
 
-    const queryString = this.convertToQueryFields(filters);
-    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
-    const response = await fetch(url, this.OPTIONS);
-    const { numberOfPages } = await response.json();
-
+    const numberOfPages = await this.getNumberOfPages(filters);
     this.logger.log(`(${listID}) - Number of pages: ${numberOfPages}`);
 
     let arrayOfPages = Array.from(Array(numberOfPages).keys());
@@ -101,10 +99,7 @@ export class PipeService {
     const composeResults = async (i: number) => {
       const newFilters = { ...filters, page: i };
 
-      const queryString = this.convertToQueryFields(newFilters);
-      const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
-      const response = await fetch(url, this.OPTIONS);
-      const analysisData = await response.json();
+      const analysisData = await this.getAnalysisData(newFilters);
 
       service.process(analysisData, newFilters);
       return i;
@@ -136,18 +131,29 @@ export class PipeService {
       rowsPerPage: 1,
     };
 
-    const queryString = this.convertToQueryFields(newFilters);
-    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
-    console.log('url', url);
-    const response = await fetch(url, this.OPTIONS);
-    const analysisData = await response.json();
-
+    const analysisData = await this.getAnalysisData(newFilters);
     const [element] = analysisData;
 
     return {
       fields: Object.keys(element),
       templateId: element.template_id,
     };
+  }
+
+  private async getAnalysisData(filter): Promise<AnalysisDataType[]> {
+    const queryString = this.convertToQueryFields(filter);
+    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
+    const response = await fetch(encodeURIComponent(url), this.OPTIONS);
+    const analysisData = (await response.json()) as AnalysisDataType[];
+    return analysisData;
+  }
+
+  private async getNumberOfPages(filters: GenerationFileRequest): Promise<number> {
+    const queryString = this.convertToQueryFields(filters);
+    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
+    const response = await fetch(encodeURIComponent(url), this.OPTIONS);
+    const { numberOfPages } = (await response.json()) as AnalysisDataCountReturnType;
+    return numberOfPages;
   }
 
   private convertToQueryFields(filters: GenerationFileRequest): string {

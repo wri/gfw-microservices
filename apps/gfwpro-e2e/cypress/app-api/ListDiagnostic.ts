@@ -1,12 +1,11 @@
-const datatCyIdFromSensitiveAreaName = {
-  'Primary Forest': 'primary-forest',
-  'Protected Areas': 'protected-areas',
-  Peat: 'peat',
-  'Intact Forest Landscape': 'intact-forest-landscape',
-};
+import { datatCyIdFromSensitiveAreaName, datatCyIdFromRegionsName } from './ListLabels';
 
 const viewTreeCoverLossForSensitiveArea = (name: string) => {
   cy.get(`[data-cy="${datatCyIdFromSensitiveAreaName[name]}"]`).click();
 };
 
-export { viewTreeCoverLossForSensitiveArea };
+const viewTreeCoverLossForRegions = (name: string) => {
+  cy.get(`[data-cy="${datatCyIdFromRegionsName[name]}"]`).click();
+};
+
+export { viewTreeCoverLossForSensitiveArea, viewTreeCoverLossForRegions };

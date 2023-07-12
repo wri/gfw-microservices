@@ -737,6 +737,7 @@ export default class SouthAmericaRegions extends Component {
     let legendColor;
     let child = false;
     let disabled = false;
+    let dataCy = '';
 
     return Object.entries(totals).map((entry) => {
       const [category, value] = entry;
@@ -746,6 +747,7 @@ export default class SouthAmericaRegions extends Component {
           legendColor = checked = soyChecked;
           child = false;
           disabled = !value;
+          dataCy = 'soy-cover-loss';
           onChange = () => {
             this.setState({
               soyChecked: !this.state.soyChecked,
@@ -906,6 +908,7 @@ export default class SouthAmericaRegions extends Component {
                 checked={checked}
                 onChange={onChange}
                 disabled={disabled}
+                data-cy={dataCy}
               />
               <label
                 htmlFor={`${category}-checkbox`}
@@ -1277,6 +1280,7 @@ export default class SouthAmericaRegions extends Component {
         className={`locations-diagnostics-section ${
           regionObject.count > 0 && this.props.listView === 'forest_change' ? '' : 'hidden'
         }`}
+        data-cy="south-america-regions"
       >
         <div className="locations-diagnostics-section-title">South America</div>
 

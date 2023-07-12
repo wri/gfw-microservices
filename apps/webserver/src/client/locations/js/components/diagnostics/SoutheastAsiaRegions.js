@@ -174,6 +174,7 @@ export default class SoutheastAsiaRegions extends Component {
         className={`locations-diagnostics-section ${
           regionObject.count && listView === 'forest_change' ? '' : 'hidden'
         }`}
+        data-cy="southeast-asia-regions"
       >
         {/* HEADER FOR PANEL */}
         <div className="locations-diagnostics-section-title">Southeast Asia</div>

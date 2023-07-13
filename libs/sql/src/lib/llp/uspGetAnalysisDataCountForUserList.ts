@@ -1,5 +1,5 @@
 import { SQLUtils } from '../util/sql.utils';
-import { Injectable, Query } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { GenerationFileRequest } from './model';
@@ -73,17 +73,14 @@ export class UspGetAnalysisDataCountForUserList {
       { field: 'selectedMillPriority', type: sql.NVarChar, value: selectedMillPriority || null },
     ];
 
-    const query =
-      databaseName == SQL_CONFIG.database
-        ? getAnalysisDataCountForGFWList
-        : getAnalysisDataCountForUserList;
+    const query = SQLUtils.isSystemDatabase(databaseName)
+      ? getAnalysisDataCountForGFWList
+      : getAnalysisDataCountForUserList;
 
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
       const recordsets = await connection.queryArray<AnalysisDataCountType>(query, parameters);
-
-      console.log(recordsets);
       const totalRows = recordsets.find(
         (record) => record.statistic_type === 'Row Count'
       ).statistic;

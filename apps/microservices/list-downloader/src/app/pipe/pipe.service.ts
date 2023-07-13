@@ -9,6 +9,7 @@ import {
   GenerationFileRequest,
   UspGetListAnalysis,
   AnalysisDataCountReturnType,
+  AnalysisDataType,
 } from '@wri-monorepos/sql';
 
 import { InputService } from '../files/input.service';
@@ -17,7 +18,6 @@ import { ShapefileService } from '../files/shapefile.service';
 import { DashboardService } from './dashboard.service';
 import { IPipeService } from './IPipeService';
 import fetch from 'node-fetch';
-import { AnalysisDataType } from '@wri-monorepos/sql';
 
 @Injectable()
 export class PipeService {

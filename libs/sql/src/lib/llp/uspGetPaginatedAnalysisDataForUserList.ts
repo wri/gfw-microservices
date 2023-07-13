@@ -7,8 +7,8 @@ import { SQL_CONFIG } from '../config/config';
 import {
   AnalysisDataType,
   getPaginatedAnalysisDataForUserList,
-} from '../queries/organization/getPaginatedAnalysisDataForUserList';
-import { getPaginatedAnalysisDataForGFWList } from '../queries';
+  getPaginatedAnalysisDataForGFWList,
+} from '../queries';
 
 @Injectable()
 export class UspGetPaginatedAnalysisDataForUserList {
@@ -101,10 +101,9 @@ export class UspGetPaginatedAnalysisDataForUserList {
       { field: 'selectedMillPriority', type: sql.NVarChar, value: selectedMillPriority || null },
     ];
 
-    const query =
-      databaseName == SQL_CONFIG.database
-        ? getPaginatedAnalysisDataForGFWList
-        : getPaginatedAnalysisDataForUserList;
+    const query = SQLUtils.isSystemDatabase(databaseName)
+      ? getPaginatedAnalysisDataForGFWList
+      : getPaginatedAnalysisDataForUserList;
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {

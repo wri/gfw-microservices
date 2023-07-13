@@ -13,14 +13,12 @@ export class SQLUtils {
   }
 
   async connect(database: string = this.config.database): Promise<void> {
-    console.log(database);
     const config = { ...this.config, database };
-    console.log(config);
     this.connection = await get(database, config); //sql.connect(this.config);
   }
 
   query<T>(query: string, parameters?: ParameterType[]): Promise<T> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.queryArray<T>(query, parameters).then((result) => {
         if (result && Array.isArray(result) && result.length > 0) {
           resolve(result[0]);
@@ -55,7 +53,7 @@ export class SQLUtils {
   }
 
   executeQuery<T>(query: string, parameters?: ParameterType[]): Promise<T> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.executeQueryArray<T>(query, parameters).then((result) => {
         if (Number(result.length) > 1) {
           resolve(result as T);
@@ -111,5 +109,9 @@ export class SQLUtils {
       connection.disconnect();
       throw new Error(error);
     }
+  }
+
+  static isSystemDatabase(databaseName: string): boolean {
+    return databaseName === SQL_CONFIG.database;
   }
 }

@@ -218,7 +218,7 @@ export default class UserProfile extends Component {
   };
 
   back = () => {
-    window.location.href = '/pro-manager-list';
+    window.location.href = '/pro-manager-list&tab=users';
   };
 
   // createClassOptions = (option, i) => {

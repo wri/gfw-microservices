@@ -6,11 +6,10 @@ import ListItemText from '@mui/material/ListItemText';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Icon from '@material-ui/core/Icon';
-import { profileTabs } from './profileTabs';
 import './Profile.scss';
 
-function ProfileSideBar({ selectedTab, setSelectedTab, userAccessLevel }) {
-  const filteredTabsByPermission = Object.values(profileTabs).filter((item) =>
+function ProfileSideBar({ selectedTab, setSelectedTab, userAccessLevel, tabOptions }) {
+  const filteredTabsByPermission = Object.values(tabOptions).filter((item) =>
     item.userAccessLevel.includes(userAccessLevel)
   );
 

@@ -20,6 +20,7 @@ function Profile({
     <div className="profile">
       <div className="profile__container">
         <ProfileSideBar
+          tabOptions={profileTabs}
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
           userAccessLevel={userInfo.access_level_id}

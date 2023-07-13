@@ -55,7 +55,7 @@ export default class AccountProfile extends Component {
   };
 
   back = () => {
-    window.location.href = '/pro-manager-list';
+    window.location.href = '/pro-manager-list&tab=accounts';
   };
 
   updateName = (evt) => {

@@ -5,7 +5,7 @@ block head
 block content
   div#proManagerList-mount
   script(src=proManagerListjs, async)
-  script.
+  //-script.
     var allAccountsList = !{JSON.stringify(accounts)};
     var allUsersList = !{JSON.stringify(users)};
     var classes = !{JSON.stringify(classes)};
@@ -15,3 +15,6 @@ block content
     var statusData = !{JSON.stringify(statusData)};
     var accessData = !{JSON.stringify(accessData)};
     var policyList = !{JSON.stringify(policyList)};
+    var selectedUser = !{JSON.stringify(selectedUser)};
+    var selectedAccount = !{JSON.stringify(selectedAccount)};
+    var selectedTab = !{JSON.stringify(tab)};

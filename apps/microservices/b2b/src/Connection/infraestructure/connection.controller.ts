@@ -89,6 +89,8 @@ export class ConnectionController {
   async getConnection(@Param('orgId') orgId: number) {
     const connectionsFiltersDto = new FullConnectionFiltersDto();
     connectionsFiltersDto.sourceId = orgId;
+    connectionsFiltersDto.status = null;
+    connectionsFiltersDto.id = null;
 
     const result = await this.connectionUseCases.getConnections(
       connectionsFiltersDto,

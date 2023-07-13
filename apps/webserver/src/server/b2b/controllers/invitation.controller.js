@@ -25,7 +25,7 @@ exports.resendInvite = async (req, res, next) => {
   const request = {
     method: 'POST',
     url: `/connections/${id}/resend`,
-  }
+  };
 
   next(request);
 };

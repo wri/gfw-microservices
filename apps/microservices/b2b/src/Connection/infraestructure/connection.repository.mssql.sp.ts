@@ -13,7 +13,7 @@ import {
   ConnectionAdminOrganizationDto,
 } from '../application/dtos/connection-admin-organizations.dto';
 
-import { getQueryStr } from '@wri-monorepos/sql';
+import { ConnectionRequestStatus } from '@wri-monorepos/sql';
 @Injectable()
 export class ConnectionRepositoryMssqlSP
   extends RepositoryMssqlSP
@@ -31,14 +31,14 @@ export class ConnectionRepositoryMssqlSP
       'resendInvitation',
       params,
     );
-    return await resendInvitation.getOne();
+    return await resendInvitation.execute();
   }
 
   async createConnection(connectionInvitation: ConnectionInvitation) {
     const params =
       this.mapper.toCreateConnectionProcedureParam(connectionInvitation);
     const createInvitation = this.storeProcedureFactory.create(
-      getQueryStr(true, 'setCreateConnectionRequest'),
+      'setCreateConnectionRequest',
       params,
     );
     const result = await createInvitation.execute();
@@ -53,7 +53,7 @@ export class ConnectionRepositoryMssqlSP
     ]);
 
     const getUserAdminOrganizations = this.storeProcedureFactory.create(
-      getQueryStr(true, 'getUserAdminOrganizations'),
+      'getUserAdminOrganizations',
       params,
     );
 
@@ -86,7 +86,8 @@ export class ConnectionRepositoryMssqlSP
       'uspGetConnectionRequest',
       params,
     );
-    const result = await createInvitation.getMany<ConnectionDbDto>();
+
+    const result = await createInvitation.execute<ConnectionDbDto>();
     if (result.isSuccess) {
       const connectionsDbDto = result.getValue();
 
@@ -107,12 +108,12 @@ export class ConnectionRepositoryMssqlSP
 
   async updateStatusConnection(
     changeStatusDto: ConnectionChangeDto,
-  ): ResultPromise<number> {
+  ): ResultPromise<ConnectionRequestStatus> {
     const params = this.mapper.toChangeStatusConnectionParam(changeStatusDto);
     const updateStatusConnection = this.storeProcedureFactory.create(
-      getQueryStr(true, 'uspChangeConnectionRequestStatus'),
+      'uspChangeConnectionRequestStatus',
       params,
     );
-    return await updateStatusConnection.getOne<number>();
+    return await updateStatusConnection.execute<ConnectionRequestStatus>();
   }
 }

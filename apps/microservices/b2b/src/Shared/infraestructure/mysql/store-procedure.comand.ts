@@ -40,26 +40,13 @@ export class StoredProcedureCommand implements Command {
     );
   }
 
-  async execute(database: string | null = null) {
+  async execute<T>(database: string | null = null) {
     try {
-      await this.connectToDatabase(database);
-
-      await this.connection.query(this.sql, this.parameters);
-
-      await this.disconnectFromDatabase();
-      return Result.ok(true);
-    } catch (error) {
-      return Result.fail(this.handleError(error, this.sql, database));
-    }
-  }
-
-  async getOne<T>(database: string | null = null): ResultPromise<T> {
-    try {
-      await this.connectToDatabase(database);
-
-      const result = await this.connection.query<T>(this.sql, this.parameters);
-
-      await this.disconnectFromDatabase();
+      const result = await SQLUtils.queryDB<T>(
+        database ? database : this.connection.config.database,
+        this.sql,
+        this.parameters,
+      );
       return Result.ok(result);
     } catch (error) {
       return Result.fail(this.handleError(error, this.sql, database));

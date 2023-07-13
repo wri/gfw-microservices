@@ -36,18 +36,15 @@ export class ConnectionDataMapper extends GenericMapper {
     const storeProcedureParams = {
       id: filtersDto.id,
       source_organization: filtersDto.sourceId,
-      target_organization: filtersDto.targetId,
       status: filtersDto.status,
     };
 
     Object.entries(storeProcedureParams).forEach(([field, value]) => {
-      if (value) {
-        params.push({
-          field: field,
-          type: sql.NVarChar(20),
-          value: String(value),
-        });
-      }
+      params.push({
+        field: field,
+        type: field === 'status' ? sql.NVarChar(50) : sql.Int(),
+        value: null || value,
+      });
     });
 
     return params;

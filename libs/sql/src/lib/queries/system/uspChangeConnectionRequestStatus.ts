@@ -40,6 +40,10 @@ DECLARE @ID INT
         SET @ID = @@identity
     END TRY
     BEGIN CATCH
-        THROW 500400, 'could not change the connection status', 16;
+        THROW 500400, 'Could not change the connection status', 16;
     END CATCH
     SELECT @ID as "id";`;
+
+export class ConnectionRequestStatus {
+  id: number;
+}

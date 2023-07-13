@@ -1,3 +1,4 @@
+import { ConnectionRequestStatus } from '@wri-monorepos/sql';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import { ConnectionAdminOrganizationDto } from '../application/dtos/connection-admin-organizations.dto';
 import { ConnectionFiltersDto } from '../application/dtos/connection-filters.dto';
@@ -8,7 +9,7 @@ import { ConnectionInvitation } from './connection';
 export abstract class ConnectionRepositorySP {
   abstract updateStatusConnection(
     changeStatusDto: ConnectionChangeDto,
-  ): ResultPromise<number>;
+  ): ResultPromise<ConnectionRequestStatus>;
   abstract getUserAdminOrganization(
     email: string,
   ): ResultPromise<ConnectionAdminOrganizationDto[]>;

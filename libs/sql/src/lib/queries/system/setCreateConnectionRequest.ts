@@ -53,3 +53,7 @@ export const setCreateConnectionRequest = `
         END CATCH
 
         SELECT @id as "id";`;
+
+export class ConnectionRequest {
+  id: number;
+}

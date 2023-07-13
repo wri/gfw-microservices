@@ -68,3 +68,10 @@ DECLARE @VALUE AS nvarchar(250);
 	 END
 
     SELECT org.id, org.organization_db, org.organization_status_id, org.organization_name FROM [dbo].[Organizations] org INNER JOIN @myTableVariable t on org.organization_db = t.name`;
+
+export class UserAdminOrganization {
+  id: number;
+  organization_name: string;
+  organization_status_id: number;
+  organization_db: string;
+}

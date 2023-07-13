@@ -23,13 +23,6 @@ export class FullConnectionFiltersDto {
   @IsOptional()
   @IsNumber()
   @Transform(({ value }) => Number(value))
-  targetId: number;
-
-  @ApiProperty()
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  @Transform(({ value }) => Number(value))
   sourceId: number;
 }
 

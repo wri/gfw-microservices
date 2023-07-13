@@ -17,6 +17,7 @@ export class UserRepositoryMysql
     super();
     this.mapper = new UserMapper();
   }
+  //TODO: This function need to use the Code from Gustavo.
   async getUserAdminOrg(email: string): ResultPromise<UserOrganization[]> {
     const params = this.mapper.createStoreProcedureStringParam([
       ['email', email],
@@ -41,11 +42,11 @@ export class UserRepositoryMysql
   async getUserByEmail(email: string, db: string = null): ResultPromise<User> {
     const params = this.mapper.toEmailParam(email);
     const getUserByEmail = this.storeProcedureFactory.create(
-      getQueryStr(false, 'getUserInfoByEmail'),
+      'getUserInfoByEmail',
       params,
     );
 
-    const user = await getUserByEmail.getOne<User>(db);
+    const user = await getUserByEmail.execute<User>(db);
     return user;
   }
 }

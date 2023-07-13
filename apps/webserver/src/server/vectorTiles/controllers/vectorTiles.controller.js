@@ -104,9 +104,8 @@ exports.getListMbtileInfo = async (req, res) => {
     // eslint-disable-next-line no-new
     new MBTiles(`${localMbtileFilePath}?mode=ro`, (err, mbtiles) => {
       mbtiles.getInfo((err, data) => {
-
         if (data?.filesize === 0) {
-          console.log({localMbtileFilePath, err, data});
+          console.log({ localMbtileFilePath, err, data });
           res.status(204).json({
             bounds: [],
             success: false,

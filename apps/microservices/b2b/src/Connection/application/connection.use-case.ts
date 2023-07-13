@@ -41,13 +41,13 @@ export class ConnectionUseCases {
     const connectionsRes = await this.connectionRepoSp.getConnections(
       filtersDto,
     );
-   
+
     if (connectionsRes.isSuccess) {
       const connections = connectionsRes.getValue();
       const connectionsGetDto: ConnectionGetDto[] = connections.map(
         (connection) => this.mapper.connectionToGetDto(connection),
       );
-      console.log(connectionsGetDto)
+      console.log(connectionsGetDto);
       return Result.ok(connectionsGetDto);
     }
     return Result.fail(connectionsRes.getError());

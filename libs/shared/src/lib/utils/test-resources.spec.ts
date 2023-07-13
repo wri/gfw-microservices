@@ -1,59 +1,70 @@
 import { createMockModule, HandlerParam } from './tests-resources';
 import { Injectable } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
 
 // Ejemplo de clase de servicio inyectable
+
 @Injectable()
-class HelloService {
-  sayHello(): string {
-    return 'Hello';
+class WorldService {
+  say(): string {
+    return 'World';
   }
 }
 
 @Injectable()
-class WorldService {
-  sayWorld(): string {
+class HelloService {
+  say(): string {
     return 'Hello';
+  }
+}
+@Injectable()
+class GreetingService {
+  constructor(
+    private readonly worldService: WorldService,
+    private readonly helloService: HelloService
+  ) {}
+  greet(): string {
+    return this.helloService.say() + ' ' + this.worldService.say();
   }
 }
 
 describe('createMockModule', () => {
-  it('should create a mock module with handlers', async () => {
+  it('should create a mock module using both styles of handlers', async () => {
     const options = {
-      providers: [HelloService, WorldService],
+      providers: [GreetingService],
     };
 
     const handlers: HandlerParam[] = [
       {
         condition: (token) => token === HelloService,
-        callback: () => {
-          console.log('entre');
-          return { sayHello: jest.fn().mockReturnValue('Mocked Hello') };
-        },
+        callback: () => ({ say: jest.fn().mockReturnValue('Mocked Hello') }),
       },
       {
         token: WorldService,
-        callback: () => ({ sayWorld: jest.fn().mockReturnValue('Mocked World') }),
+        callback: () => ({ say: jest.fn().mockReturnValue('Mocked World') }),
+      },
+    ];
+
+    const moduleMock = await createMockModule(options, handlers).compile();
+    const moduleMocked = moduleMock.get<GreetingService>(GreetingService);
+
+    expect(moduleMocked.greet()).toBe('Mocked Hello Mocked World');
+  });
+
+  it('should create a mock module only with composed condition handler', async () => {
+    const options = {
+      providers: [GreetingService],
+    };
+
+    const handlers: HandlerParam[] = [
+      {
+        condition: (token) => token === HelloService || token === WorldService,
+        callback: () => ({ say: jest.fn().mockReturnValue('Mocked') }),
       },
     ];
 
     const moduleMock = await createMockModule(options, handlers).compile();
 
-    const moduleWithoutMock = await Test.createTestingModule({
-      ...options,
-    }).compile();
-
-    const helloMocked = moduleMock.get<HelloService>(HelloService);
-    const helloNoMocked = moduleWithoutMock.get<HelloService>(HelloService);
-
-    const worldMocked = moduleMock.get(WorldService);
-    const worldNoMocked = moduleWithoutMock.get(WorldService);
-
-    console.log(helloMocked.sayHello());
-
-    expect(helloNoMocked.sayHello()).toBe('Hello');
-    expect(helloMocked.sayHello()).toBe('Mocked Hello');
-    expect(worldNoMocked.sayWorld()).toBe('World');
-    expect(worldMocked.sayWorld()).toBe('Mocked World');
+    const moduleMocked = moduleMock.get<GreetingService>(GreetingService);
+    expect(moduleMocked.greet()).toBe('Mocked Mocked');
   });
 });

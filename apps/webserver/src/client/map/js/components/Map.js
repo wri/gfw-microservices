@@ -944,7 +944,7 @@ export default class Map extends Component {
       className: 'map-popup-analyze',
       visible: false,
     };
-    store.dispatch(showMapLoader(true));
+
     this.addProLayers(view);
     this.addCustomBasemaps(view);
     this.view = view;

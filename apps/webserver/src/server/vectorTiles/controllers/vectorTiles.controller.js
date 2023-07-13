@@ -105,11 +105,12 @@ exports.getListMbtileInfo = async (req, res) => {
     new MBTiles(`${localMbtileFilePath}?mode=ro`, (err, mbtiles) => {
       mbtiles.getInfo((err, data) => {
         if (data?.filesize === 0) {
+          console.log({ localMbtileFilePath, err, data });
           res.status(204).json({
+            bounds: [],
             success: false,
             message: 'Check if file exists',
           });
-
           return; // don't send more data to client
         }
 

@@ -43,7 +43,7 @@ export class ConnectionDataMapper extends GenericMapper {
       params.push({
         field: field,
         type: field === 'status' ? sql.NVarChar(50) : sql.Int(),
-        value: null || value,
+        value: value ?? null,
       });
     });
 

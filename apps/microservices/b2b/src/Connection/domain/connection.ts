@@ -15,6 +15,8 @@ export class Connection {
   editedDate: Date;
   status: ConnectionStatus;
   description: string;
+  idSourceOrganization: number;
+  idTargetOrganization: number;
 }
 
 export class ConnectionInvitation {
@@ -22,4 +24,5 @@ export class ConnectionInvitation {
   targetEmail: string;
   sourceOrganization: number;
   targetOrganization: number;
+  status: string = ConnectionStatus.pending;
 }

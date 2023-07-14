@@ -1,10 +1,7 @@
-export class User {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-}
+import { UserInfo } from '@wri-monorepos/sql';
+
+// Preserve domain model
+export class User extends UserInfo {}
 
 export class UserOrganization {
   id: number;

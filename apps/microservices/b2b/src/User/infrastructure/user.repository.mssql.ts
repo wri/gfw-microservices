@@ -5,6 +5,7 @@ import { UserRepository } from '../domain/user.repository';
 import { User, UserOrganization } from '../domain/user';
 import { UserMapper } from '../application/user.mapper';
 import { ConnectionAdminOrganizationDbDto } from '../../Connection/application/dtos/connection-admin-organizations.dto';
+import { getQueryStr } from '@wri-monorepos/sql';
 
 export class UserRepositoryMysql
   extends RepositoryMssqlSP
@@ -16,17 +17,17 @@ export class UserRepositoryMysql
     super();
     this.mapper = new UserMapper();
   }
+  //TODO: This function need to use the Code from Gustavo.
   async getUserAdminOrg(email: string): ResultPromise<UserOrganization[]> {
     const params = this.mapper.createStoreProcedureStringParam([
       ['email', email],
     ]);
     const getUserAdminOrganizations = this.storeProcedureFactory.create(
-      'uspGetUserAdminOrganizations',
+      getQueryStr(true, 'getUserAdminOrganizations'),
       params,
     );
-    const userAdminOrganizationsRes = await getUserAdminOrganizations.execute<
-      ConnectionAdminOrganizationDbDto[]
-    >();
+    const userAdminOrganizationsRes =
+      await getUserAdminOrganizations.getMany<ConnectionAdminOrganizationDbDto>();
 
     if (userAdminOrganizationsRes.isSuccess) {
       const userAdminOrganizations = userAdminOrganizationsRes.getValue();
@@ -41,10 +42,10 @@ export class UserRepositoryMysql
   async getUserByEmail(email: string, db: string = null): ResultPromise<User> {
     const params = this.mapper.toEmailParam(email);
     const getUserByEmail = this.storeProcedureFactory.create(
-      'uspGetUserInfoByEmail',
+      'getUserInfoByEmail',
       params,
     );
-    console.log(db, getUserByEmail);
+
     const user = await getUserByEmail.execute<User>(db);
     return user;
   }

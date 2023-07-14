@@ -8,4 +8,6 @@ export class ConnectionGetDto {
   editorEmail: string;
   status: string;
   description: string;
+  idSourceOrganization: number;
+  idTargetOrganization: number;
 }

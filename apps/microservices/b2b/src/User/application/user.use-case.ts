@@ -35,8 +35,6 @@ export class UserUseCases {
     db: string,
     orgId,
   ): ResultPromise<boolean> {
-    console.log();
-
     const userPromise = await this.userRepo.getUserByEmail(email, db);
     const userAdminOrgsPromise = await this.userRepo.getUserAdminOrg(email);
     const listPromise = await this.listUseCases.findListById(listId, orgId);

@@ -36,18 +36,15 @@ export class ConnectionDataMapper extends GenericMapper {
     const storeProcedureParams = {
       id: filtersDto.id,
       source_organization: filtersDto.sourceId,
-      target_organization: filtersDto.targetId,
       status: filtersDto.status,
     };
 
     Object.entries(storeProcedureParams).forEach(([field, value]) => {
-      if (value) {
-        params.push({
-          field: field,
-          type: sql.NVarChar(20),
-          value: String(value),
-        });
-      }
+      params.push({
+        field: field,
+        type: field === 'status' ? sql.NVarChar(50) : sql.Int(),
+        value: value ?? null,
+      });
     });
 
     return params;
@@ -64,6 +61,8 @@ export class ConnectionDataMapper extends GenericMapper {
       sourceOrganization: connectionDto.source_organization,
       targetOrganization: connectionDto.target_organization,
       status: connectionDto.status as ConnectionStatus,
+      idSourceOrganization: connectionDto.id_source_organization,
+      idTargetOrganization: connectionDto.id_target_organization,
     };
 
     return plainToInstance(Connection, connection);
@@ -80,6 +79,8 @@ export class ConnectionDataMapper extends GenericMapper {
       sourceOrganizationName: connection.sourceOrganization,
       targetOrganizationName: connection.targetOrganization,
       status: connection.status,
+      idSourceOrganization: connection.idSourceOrganization,
+      idTargetOrganization: connection.idTargetOrganization,
     };
 
     return plainToInstance(ConnectionGetDto, getDto);
@@ -149,6 +150,13 @@ export class ConnectionDataMapper extends GenericMapper {
         field: 'target_organization',
         type: sql.Int(),
         value: connectionInvitation.targetOrganization,
+      },
+      {
+        field: 'status',
+        type: sql.NVarChar(50),
+        value: connectionInvitation.status
+          ? connectionInvitation.status
+          : ConnectionStatus.pending,
       },
     ];
 

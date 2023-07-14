@@ -10,3 +10,7 @@ export * from './getTemplatesDropdown';
 export * from './getUserAuthenticationPreferences';
 export * from './getUsersAuthenticationPreferences';
 export * from './getVerifiedUserRouteInfo';
+export * from './setCreateConnectionRequest';
+export * from './getUserAdminOrganizations';
+export * from './uspChangeConnectionRequestStatus';
+export * from './getConnectionRequest';

@@ -24,14 +24,13 @@ export class ListController {
     @Param('orgId') orgId: number,
   ) {
     const { filters, orders, limit, offset } = searchListDto;
-
+    // TODO: Review why the query param is never used
     const query = new QueryCriteria(
       filters as Array<FilterType>,
       orders as Array<OrderType>,
       limit ? Number(limit) : undefined,
       offset ? Number(offset) : undefined,
     );
-    Logger.log(query);
 
     const listRes = await this.listUseCases.findListsByFilters({}, orgId);
     if (listRes.isSuccess) return listRes.getValue();

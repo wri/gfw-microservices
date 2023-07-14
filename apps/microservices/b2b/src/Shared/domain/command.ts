@@ -1,4 +1,6 @@
+import ResultPromise from './result/result.promise';
+
 export interface Command {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  execute(): Promise<any>;
+  execute();
+  getMany<T>(): ResultPromise<T[]>;
 }

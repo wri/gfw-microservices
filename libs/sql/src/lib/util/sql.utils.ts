@@ -13,12 +13,17 @@ export class SQLUtils {
   }
 
   async connect(database: string = this.config.database): Promise<void> {
-    console.log(database);
     const config = { ...this.config, database };
-    console.log(config);
     this.connection = await get(database, config); //sql.connect(this.config);
   }
 
+  /**
+   * This function runs a raw query against the database.
+   *
+   * @param query
+   * @param parameters
+   * @returns
+   */
   query<T>(query: string, parameters?: ParameterType[]): Promise<T> {
     const request = this.connection.request();
 
@@ -34,6 +39,30 @@ export class SQLUtils {
         .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
           if (Number(result.recordsets.length) > 0) {
             resolve(result.recordsets[0][0]);
+          }
+          resolve(undefined);
+        })
+        .catch((errorMessage) => {
+          reject(errorMessage);
+        });
+    });
+  }
+
+  queryArray<T>(query: string, parameters?: ParameterType[]): Promise<Array<T>> {
+    const request = this.connection.request();
+
+    if (parameters && Array.isArray(parameters)) {
+      parameters.forEach((param) => {
+        request.input(param.field, param.type, param.value);
+      });
+    }
+
+    return new Promise((resolve, reject) => {
+      request
+        .query(query)
+        .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
+          if (Number(result.recordsets.length) > 0) {
+            resolve(result.recordsets[0]);
           }
           resolve(undefined);
         })

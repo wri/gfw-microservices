@@ -12,3 +12,7 @@ export * from './getUsersAuthenticationPreferences';
 export * from './getVerifiedUserRouteInfo';
 export * from './getAnalysisDataCountForGFWList';
 export * from './getPaginatedAnalysisDataForGFWList';
+export * from './setCreateConnectionRequest';
+export * from './getUserAdminOrganizations';
+export * from './uspChangeConnectionRequestStatus';
+export * from './getConnectionRequest';

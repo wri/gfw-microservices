@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ListModule } from '../List/list.module';
 import { UserUseCases } from './application/user.use-case';
 import { UserRepository } from './domain/user.repository';
-import { UserRepositoryMysql } from './infrastructure/user.repository.mysql';
+import { UserRepositoryMysql } from './infrastructure/user.repository.mssql';
 
 @Module({
   imports: [ListModule],

@@ -43,58 +43,6 @@ const getAccounFromQuery = (organizationName, organizationId, accounts) => {
   return selectedAccount || null;
 };
 
-/*
-exports.proManagerListData = (req, res) => {
-  const classes = AccountManager.getClassifications(req);
-  const commoditiesData = UserManager.getCommodities(req);
-  const geographiesData = UserManager.getGeographies(req);
-  const titlesData = UserManager.getTitles(req);
-  const accessData = UserManager.getAccessLevels(req);
-  const statusData = UserManager.getStatuses(req);
-  const {
-    userId: userIdQuery,
-    organizationId: organizationIdQuery,
-    organizationName,
-  } = req.params;
-  console.log(req.params)
-  const userId = parseInt(userIdQuery, 10);
-  const organizationId = parseInt(organizationIdQuery, 10);
-
-  const promises = [
-    ProManager.getAllAccountsList(req),
-    ProManager.getAllUsersList(req),
-    PolicyManager.getPendingPolicyList(req),
-    PolicyManager.getAllPolicyList(req),
-  ];
-
-  Promise.all(promises)
-    .then(([accounts, users, pendingPolicy, allPolicy]) => {
-      const policyList = pendingPolicy.concat(allPolicy);
-
-      const selectedUser = getUserFromQuery(userId, organizationId, accounts, users);
-      const selectedAccount = getAccounFromQuery(organizationName, organizationId, accounts, users);
-
-      res.status(200).json({
-        accounts,
-        users,
-        classes,
-        commoditiesData,
-        geographiesData,
-        titlesData,
-        statusData,
-        accessData,
-        policyList,
-        selectedUser,
-        selectedAccount,
-      });
-    })
-    .catch((error) => {
-      console.log('Pro-manager-list page failed on the server:', error);
-      res.status(500).send(err);
-    });
-};
-*/
-
 exports.proManagerListAccountsData = (req, res) => {
   const classes = AccountManager.getClassifications(req);
   const accessData = UserManager.getAccessLevels(req);

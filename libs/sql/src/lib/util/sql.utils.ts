@@ -59,30 +59,6 @@ export class SQLUtils {
     });
   }
 
-  queryArray<T>(query: string, parameters?: ParameterType[]): Promise<Array<T>> {
-    const request = this.connection.request();
-
-    if (parameters && Array.isArray(parameters)) {
-      parameters.forEach((param) => {
-        request.input(param.field, param.type, param.value);
-      });
-    }
-
-    return new Promise((resolve, reject) => {
-      request
-        .query(query)
-        .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
-          if (Number(result.recordsets.length) > 0) {
-            resolve(result.recordsets[0]);
-          }
-          resolve(undefined);
-        })
-        .catch((errorMessage) => {
-          reject(errorMessage);
-        });
-    });
-  }
-
   executeQuery<T>(query: string, parameters?: ParameterType[]): Promise<T> {
     return new Promise((resolve) => {
       this.executeQueryArray<T>(query, parameters).then((result) => {

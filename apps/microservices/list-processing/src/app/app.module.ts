@@ -13,6 +13,8 @@ import { AppService } from './app.service';
 import { DatabaseService } from '../shared/database/gfw';
 import { LargeListService } from './../services/largelist.service';
 import { GeoService, LocationService } from '@wri-monorepos/geo';
+import { SqlModule } from '@wri-monorepos/sql';
+import { ListService } from '../services/list.service';
 
 config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -21,8 +23,8 @@ config.update({
 });
 
 @Module({
-  imports: [envModule, TypeOrmModule.forRootAsync({ useClass: DatabaseService })],
+  imports: [envModule, TypeOrmModule.forRootAsync({ useClass: DatabaseService }), SqlModule],
   controllers: [AppController],
-  providers: [AppService, LargeListService, LocationService, GeoService],
+  providers: [AppService, LargeListService, LocationService, GeoService, ListService],
 })
 export class AppModule {}

@@ -72,3 +72,33 @@ export interface CopyOrMoveLargeListRequest {
   filters: ListFilters;
   srcListAnalysisTable: string;
 }
+
+export interface getPaginatedListDataRequest {
+  listID: number;
+  organizationDatabase: string;
+  analysisAreaMax?: number;
+  analysisAreaMin?: number;
+  country?: string;
+  geometry?: number;
+  orderType?: string;
+  page?: 0;
+  rowsPerPage?: 1000;
+  sortByAttribute?: string;
+  state?: string;
+  subState?: string;
+  locationLogic?: string;
+  locationIds?: string;
+  locationStatement?: string;
+  combinedColumns?: string;
+  searchString?: string;
+}
+
+export interface getNumberOfPagesPaginatedListDataRequest {
+  listID: number;
+  organizationDatabase: string;
+  subState?: string;
+  rowsPerPage: 1000;
+  analysisAreaMin?: number;
+  analysisAreaMax?: number;
+  searchString?: string;
+}

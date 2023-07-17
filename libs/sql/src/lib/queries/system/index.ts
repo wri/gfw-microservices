@@ -11,6 +11,8 @@ export * from './getUserAuthenticationPreferences';
 export * from './getUsersAuthenticationPreferences';
 export * from './getVerifiedUserRouteInfo';
 export * from './setOrganizationSubscriptionStatus';
+export * from './getAnalysisDataCountForGFWList';
+export * from './getPaginatedAnalysisDataForGFWList';
 export * from './setCreateConnectionRequest';
 export * from './getUserAdminOrganizations';
 export * from './uspChangeConnectionRequestStatus';

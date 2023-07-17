@@ -8,7 +8,7 @@ function AccountsListsTable({
   sortAcctTable,
 }) {
   return (
-    <div className="profile-body">
+    <div>
       <section>
         <div className="flex-grid space-between align-center">
           <h2 className="section-title-normal">Account Profiles</h2>

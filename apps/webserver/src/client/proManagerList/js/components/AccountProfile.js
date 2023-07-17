@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import Select from 'react-select';
 import Dialog from 'material-ui/Dialog';
 import UserProfileManager from './UserProfileManager';
-import { fieldValidations } from '../../../../profile/js/utils/validations';
-import GfwButton from '../../../../common/js/components/GfwButton';
-import Button from '../../../../common/js/components/Button';
-import { profilePage } from '../../../../common/js/config';
-import '../../../../profile/css/profile.scss';
+import { fieldValidations } from '../../../profile/js/utils/validations';
+import GfwButton from '../../../common/js/components/GfwButton';
+import Button from '../../../common/js/components/Button';
+import { profilePage } from '../../../common/js/config';
+import '../../../profile/css/profile.scss';
 
 export default class AccountProfile extends Component {
   constructor(props) {
@@ -55,7 +55,7 @@ export default class AccountProfile extends Component {
   };
 
   back = () => {
-    window.location.href = '/pro-manager-list&tab=accounts';
+    window.location.href = '/pro-manager-list?tab=accounts';
   };
 
   updateName = (evt) => {

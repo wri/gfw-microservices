@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import Select from 'react-select';
 import qr from 'qrcode';
-import { profilePage } from '../../../../common/js/config';
-import Button from '../../../../common/js/components/Button';
-import { fieldValidations } from '../../../../profile/js/utils/validations';
-import GfwButton from '../../../../common/js/components/GfwButton';
-import '../../../css/profile.scss';
+import { profilePage } from '../../../common/js/config';
+import Button from '../../../common/js/components/Button';
+import { fieldValidations } from '../../../profile/js/utils/validations';
+import GfwButton from '../../../common/js/components/GfwButton';
+import '../../css/profile.scss';
 
 export default class UserProfile extends Component {
   constructor(props) {
@@ -218,7 +218,7 @@ export default class UserProfile extends Component {
   };
 
   back = () => {
-    window.location.href = '/pro-manager-list&tab=users';
+    window.location.href = '/pro-manager-list?tab=users';
   };
 
   // createClassOptions = (option, i) => {
@@ -472,7 +472,6 @@ export default class UserProfile extends Component {
       this.createGranChacoOption
     );
 
-    // const options = this.props.classificationsData.map(this.createClassOptions);
     const commOptions = this.props.commoditiesData.map(this.createCommOptions);
     const geogOptions = this.props.geographiesData.map(this.createGeogOptions);
     const titleOptions = this.props.titlesData.map(this.createTitleOptions);

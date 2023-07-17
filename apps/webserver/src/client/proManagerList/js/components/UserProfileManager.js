@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { profilePage } from '../../../../common/js/config';
+import { profilePage } from '../../../common/js/config';
 
 export default class UserProfileManager extends Component {
   constructor(props) {

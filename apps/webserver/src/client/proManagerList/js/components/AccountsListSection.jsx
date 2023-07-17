@@ -2,16 +2,18 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import AccountProfile from './AccountProfile';
 import AccountsListsTable from './AccountsListsTable';
-import '../../../css/proManagerList.scss';
+import '../../css/proManagerList.scss';
 
-function AccountsListSection({ isLoading, setIsLoading }) {
+function AccountsListSection({ isLoading, setIsLoading, organizationId, organizationName }) {
   const [promanagerData, setPromanagerData] = useState({});
   const [acctFilterStr, setAcctFilterStr] = useState('');
   const [accountSortingCategory, setAccountSortingCategory] = useState('organization_name');
   const [accountDir, setAccountDir] = useState('des');
 
   useEffect(() => {
-    fetch('/pro-manager-list-data', {
+    const accountDetailQuery =
+      organizationId && organizationName ? `/${organizationId}/${organizationName}` : '';
+    fetch(`/pro-manager-list/accounts${accountDetailQuery}`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {
@@ -29,18 +31,8 @@ function AccountsListSection({ isLoading, setIsLoading }) {
       });
   }, []);
 
-  const {
-    accounts,
-    users,
-    classes,
-    commoditiesData,
-    geographiesData,
-    titlesData,
-    statusData,
-    accessData,
-    policyList,
-    selectedAccount, // ??
-  } = promanagerData;
+  const { accounts, users, classes, statusData, accessData, policyList, selectedAccount } =
+    promanagerData;
 
   console.log(promanagerData);
 

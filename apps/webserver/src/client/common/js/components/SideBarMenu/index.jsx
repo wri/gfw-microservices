@@ -6,19 +6,25 @@ import ListItemText from '@mui/material/ListItemText';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Icon from '@material-ui/core/Icon';
-import './Profile.scss';
+import './SideBarMenu.scss';
 
-function ProfileSideBar({ selectedTab, setSelectedTab, userAccessLevel, tabOptions }) {
+function ProfileSideBar({
+  menuTitle = '',
+  selectedTab,
+  setSelectedTab,
+  userAccessLevel,
+  tabOptions,
+}) {
   const filteredTabsByPermission = Object.values(tabOptions).filter((item) =>
     item.userAccessLevel.includes(userAccessLevel)
   );
 
   return (
-    <div className="profile__side-bar">
+    <div className="side-bar-menu">
       <Card variant="outlined">
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} disablePadding>
           <ListItem sx={{ background: '#f7f7f7' }}>
-            <ListItemText primary="Profile" />
+            <ListItemText primary={menuTitle} />
           </ListItem>
           {filteredTabsByPermission.map(({ id, icon, title }) => {
             const labelId = `checkbox-list-label-${id}`;

@@ -2,16 +2,17 @@ import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import UserProfile from './UserProfile';
 import UsersListTable from './UsersListTable';
-import '../../../css/proManagerList.scss';
+import '../../css/proManagerList.scss';
 
-function UsersListSection({ isLoading, setIsLoading }) {
+function UsersListSection({ isLoading, setIsLoading, organizationId, userId }) {
   const [userFilterStr, setUserFilterStr] = useState('');
   const [userSortingCategory, setUserSortingCategory] = useState('first_name');
   const [userDir, setUserDir] = useState('des');
   const [promanagerData, setPromanagerData] = useState({});
 
   useEffect(() => {
-    fetch('/pro-manager-list-data', {
+    const userDetailQuery = organizationId && userId ? `/${organizationId}/${userId}` : '';
+    fetch(`/pro-manager-list/users${userDetailQuery}`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {
@@ -30,7 +31,6 @@ function UsersListSection({ isLoading, setIsLoading }) {
   }, []);
 
   const {
-    allAccountsList,
     users,
     classes,
     commoditiesData,
@@ -38,8 +38,7 @@ function UsersListSection({ isLoading, setIsLoading }) {
     titlesData,
     statusData,
     accessData,
-    policyList,
-    selectedUser, // ??
+    selectedUser,
   } = promanagerData;
 
   const getStatusString = (user) => {

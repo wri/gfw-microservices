@@ -43,6 +43,7 @@ const getAccounFromQuery = (organizationName, organizationId, accounts) => {
   return selectedAccount || null;
 };
 
+/*
 exports.proManagerListData = (req, res) => {
   const classes = AccountManager.getClassifications(req);
   const commoditiesData = UserManager.getCommodities(req);
@@ -54,9 +55,8 @@ exports.proManagerListData = (req, res) => {
     userId: userIdQuery,
     organizationId: organizationIdQuery,
     organizationName,
-    tab = null,
-  } = req.query;
-
+  } = req.params;
+  console.log(req.params)
   const userId = parseInt(userIdQuery, 10);
   const organizationId = parseInt(organizationIdQuery, 10);
 
@@ -86,7 +86,79 @@ exports.proManagerListData = (req, res) => {
         policyList,
         selectedUser,
         selectedAccount,
-        tab,
+      });
+    })
+    .catch((error) => {
+      console.log('Pro-manager-list page failed on the server:', error);
+      res.status(500).send(err);
+    });
+};
+*/
+
+exports.proManagerListAccountsData = (req, res) => {
+  const classes = AccountManager.getClassifications(req);
+  const accessData = UserManager.getAccessLevels(req);
+  const statusData = UserManager.getStatuses(req);
+  const { organizationId: organizationIdParam, organizationName } = req.params;
+
+  const organizationId = parseInt(organizationIdParam, 10);
+
+  const promises = [
+    ProManager.getAllAccountsList(req),
+    ProManager.getAllUsersList(req),
+    PolicyManager.getPendingPolicyList(req),
+    PolicyManager.getAllPolicyList(req),
+  ];
+
+  Promise.all(promises)
+    .then(([accounts, users, pendingPolicy, allPolicy]) => {
+      const policyList = pendingPolicy.concat(allPolicy);
+
+      const selectedAccount = getAccounFromQuery(organizationName, organizationId, accounts, users);
+
+      res.status(200).json({
+        accounts,
+        users,
+        classes,
+        statusData,
+        accessData,
+        policyList,
+        selectedAccount,
+      });
+    })
+    .catch((error) => {
+      console.log('Pro-manager-list page failed on the server:', error);
+      res.status(500).send(err);
+    });
+};
+
+exports.proManagerListUsersData = (req, res) => {
+  const classes = AccountManager.getClassifications(req);
+  const commoditiesData = UserManager.getCommodities(req);
+  const geographiesData = UserManager.getGeographies(req);
+  const titlesData = UserManager.getTitles(req);
+  const accessData = UserManager.getAccessLevels(req);
+  const statusData = UserManager.getStatuses(req);
+  const { userId: userIdQuery, organizationId: organizationIdQuery } = req.params;
+
+  const userId = parseInt(userIdQuery, 10);
+  const organizationId = parseInt(organizationIdQuery, 10);
+
+  const promises = [ProManager.getAllAccountsList(req), ProManager.getAllUsersList(req)];
+
+  Promise.all(promises)
+    .then(([accounts, users]) => {
+      const selectedUser = getUserFromQuery(userId, organizationId, accounts, users);
+
+      res.status(200).json({
+        users,
+        classes,
+        commoditiesData,
+        geographiesData,
+        titlesData,
+        statusData,
+        accessData,
+        selectedUser,
       });
     })
     .catch((error) => {

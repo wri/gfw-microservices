@@ -2,7 +2,7 @@ import React from 'react';
 
 function UsersTable({ userSortingCategory, userDir, usersList, sortUserTable, searchUsers }) {
   return (
-    <div className="profile-body">
+    <div>
       <section className="section-container">
         <h2 className="section-title-normal">User Profiles</h2>
         <input className="space-element" onChange={searchUsers} placeholder="Search for user" />

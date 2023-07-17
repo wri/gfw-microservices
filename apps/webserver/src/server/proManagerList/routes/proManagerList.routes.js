@@ -37,21 +37,15 @@ module.exports = (app, limiter) => {
   );
 
   app.get(
-    '/pro-manager-list-data',
-    middlewares.checkProManagerAuthentication,
-    controller.proManagerListData
-  );
-
-  app.get(
     '/pro-manager-list/accounts/:organizationId?/:organizationName?',
     middlewares.checkProManagerAuthentication,
-    controller.proManagerListData
+    controller.proManagerListAccountsData
   );
 
   app.get(
     '/pro-manager-list/users/:organizationId?/:userId?',
     middlewares.checkProManagerAuthentication,
-    controller.proManagerListData
+    controller.proManagerListUsersData
   );
 
   app.post('/pro-manager/activateProAccount', (req, res) => {

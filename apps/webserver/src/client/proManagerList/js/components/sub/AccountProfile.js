@@ -32,6 +32,7 @@ export default class AccountProfile extends Component {
       organization_website: this.props.currentAccount.organization_website,
       classifications: classesArray,
       organization_status_id: this.props.currentAccount.organization_status_id,
+      subscription_status_id: this.props.currentAccount.subscription_status_id,
       policyList: this.props.policyList,
       policyUploadList: [],
       policyNames: [],
@@ -72,6 +73,10 @@ export default class AccountProfile extends Component {
 
   updateWebsite = (evt) => {
     this.setState({ organization_website: evt.target.value });
+  };
+
+  subscriptionStatusOnChange = (evt) => {
+    this.setState({ subscription_status_id: evt.target.value });
   };
 
   updateSubsidary = (evt) => {
@@ -235,9 +240,21 @@ export default class AccountProfile extends Component {
       xmlhttp.onreadystatechange = () => {
         if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
           const res = JSON.parse(xmlhttp.responseText);
-          if (res.redirect) {
-            window.location = res.redirect;
+          if (res.status === 'success') {
+            this.setState({
+              dialogOpen: true,
+              dialogTitle: 'Account Profile',
+              dialogMessage: 'Updated successfully',
+              activating: false,
+            });
           }
+        } else if (xmlhttp.status === 500) {
+          this.setState({
+            dialogOpen: true,
+            dialogTitle: 'Something went wrong',
+            dialogMessage: 'Please try again',
+            activating: false,
+          });
         }
       };
       xmlhttp.setRequestHeader('Content-Type', 'application/json');
@@ -252,6 +269,7 @@ export default class AccountProfile extends Component {
           arr_org_classification_ids: this.state.classifications.map((c) => c.value),
           policyUploadList: this.state.policyUploadList,
           policyNames: this.state.policyNames,
+          subscription_status_id: this.state.subscription_status_id,
         })
       );
     } else if (errors.length > 0 && missing.length > 0) {
@@ -463,21 +481,6 @@ export default class AccountProfile extends Component {
                   />
                 </div>
               </div>
-            </div>
-            <div className="col">
-              <div className="flex-grid-column">
-                <div className="col flex-grid-column">
-                  <span className="profile-label">Parent Organization</span>
-                  <input
-                    value={this.state.organization_parent}
-                    disabled={this.props.disable}
-                    required={this.state.organization_is_subsidiary === true}
-                    name="organization_parent"
-                    onChange={this.updateParent}
-                    className="account-info-input"
-                  />
-                </div>
-              </div>
               <div className="flex-grid-column">
                 <div className="col flex-grid-column">
                   <span className="profile-label">Organization Policy</span>
@@ -499,8 +502,39 @@ export default class AccountProfile extends Component {
                   </form>
                 </div>
               </div>
+            </div>
+            <div className="col">
               <div className="flex-grid-column">
-                <div className="col flex-grid-column space-element">
+                <div className="col flex-grid-column">
+                  <span className="profile-label">Parent Organization</span>
+                  <input
+                    value={this.state.organization_parent}
+                    disabled={this.props.disable}
+                    required={this.state.organization_is_subsidiary === true}
+                    name="organization_parent"
+                    onChange={this.updateParent}
+                    className="account-info-input"
+                  />
+                </div>
+              </div>
+              <div className="flex-grid-column">
+                <div className="col flex-grid-column">
+                  <span className="profile-label">Subscription Status</span>
+                  <select
+                    value={this.state.subscription_status_id}
+                    disabled={this.props.disable}
+                    required
+                    name="subscription_status_id"
+                    ref="titleSelect"
+                    onChange={this.subscriptionStatusOnChange}
+                  >
+                    <option value={1}>Standard</option>
+                    <option value={2}>Premium</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex-grid-column">
+                <div className="col flex-grid-column space-element mt-0">
                   <span className="profile-label">Current Account Status</span>
                   <select
                     value={this.state.organization_status_id}

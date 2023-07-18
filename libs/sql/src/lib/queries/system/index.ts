@@ -17,3 +17,4 @@ export * from './setCreateConnectionRequest';
 export * from './getUserAdminOrganizations';
 export * from './uspChangeConnectionRequestStatus';
 export * from './getConnectionRequest';
+export * from './setOrganizationSubscriptionStatus';

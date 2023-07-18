@@ -3,6 +3,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { ConnectionController } from '../infraestructure/connection.controller';
 import { ConnectionUseCases } from '../application/connection.use-case';
+import Result from '../../Shared/domain/result';
 
 describe('ConnectionController (e2e)', () => {
   let app: INestApplication;
@@ -18,9 +19,8 @@ describe('ConnectionController (e2e)', () => {
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
 
-    connectionUseCases = moduleFixture.get<ConnectionUseCases>(
-      ConnectionUseCases,
-    );
+    connectionUseCases =
+      moduleFixture.get<ConnectionUseCases>(ConnectionUseCases);
   });
 
   afterAll(async () => {
@@ -33,7 +33,7 @@ describe('ConnectionController (e2e)', () => {
 
     jest
       .spyOn(connectionUseCases, 'acceptConnection')
-      .mockResolvedValueOnce({ isSuccess: true });
+      .mockResolvedValueOnce(Result.ok(true));
 
     const response = await request(app.getHttpServer())
       .post(`/connections/${connectionId}/accept`)
@@ -49,7 +49,7 @@ describe('ConnectionController (e2e)', () => {
 
     jest
       .spyOn(connectionUseCases, 'rejectConnection')
-      .mockResolvedValueOnce({ isSuccess: true });
+      .mockResolvedValueOnce(Result.ok(true));
 
     const response = await request(app.getHttpServer())
       .post(`/connections/${connectionId}/reject`)
@@ -65,7 +65,7 @@ describe('ConnectionController (e2e)', () => {
 
     jest
       .spyOn(connectionUseCases, 'cancelConnection')
-      .mockResolvedValueOnce({ isSuccess: true });
+      .mockResolvedValueOnce(Result.ok(true));
 
     const response = await request(app.getHttpServer())
       .post(`/connections/${connectionId}/cancel`)
@@ -81,7 +81,7 @@ describe('ConnectionController (e2e)', () => {
 
     jest
       .spyOn(connectionUseCases, 'getConnections')
-      .mockResolvedValueOnce({ isSuccess: true, getValue: () => mockResult });
+      .mockResolvedValueOnce(Result.ok(mockResult));
 
     const response = await request(app.getHttpServer())
       .get(`/connections/organization/${orgId}`)
@@ -97,13 +97,16 @@ describe('ConnectionController (e2e)', () => {
 
     jest
       .spyOn(connectionUseCases, 'search')
-      .mockResolvedValueOnce({ isSuccess: true, getValue: () => mockResult });
+      .mockResolvedValueOnce(
+        Result.ok({ count: 1, items: mockResult, offset: 0, limit: 10 }),
+      );
 
     const response = await request(app.getHttpServer())
-      .get(`/connections/search?limit=${searchDto.limit}&offset=${searchDto.offset}&orgId=${orgId}`)
+      .get(
+        `/connections/search?limit=${searchDto.limit}&offset=${searchDto.offset}&orgId=${orgId}`,
+      )
       .expect(200);
 
     expect(response.body).toEqual(mockResult);
   });
-
 });

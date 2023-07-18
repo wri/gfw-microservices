@@ -3,6 +3,7 @@ import { INestApplication, HttpException } from '@nestjs/common';
 import * as request from 'supertest';
 import { ListController } from '../infrastructure/list.controller';
 import { ListUseCases } from '../application/list.use-case';
+import Result from '../../Shared/domain/result';
 
 describe('ListController (e2e)', () => {
   let app: INestApplication;
@@ -27,14 +28,11 @@ describe('ListController (e2e)', () => {
   it('should get lists by filter', async () => {
     const orgId = 1;
     const searchListDto = { filters: [], orders: [], limit: 10, offset: 0 };
-    const mockLists = [
-      { id: 1, name: 'List 1' },
-      { id: 2, name: 'List 2' },
-    ];
+    const mockLists = [];
 
     jest
       .spyOn(listUseCases, 'findListsByFilters')
-      .mockResolvedValueOnce({ isSuccess: true, getValue: () => mockLists });
+      .mockResolvedValueOnce(Result.ok(mockLists));
 
     const response = await request(app.getHttpServer())
       .get(

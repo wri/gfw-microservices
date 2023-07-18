@@ -12,6 +12,7 @@ import {
   QueryCriteria,
 } from '../../Shared/domain/criteria/query';
 import { CreateSharedListDto } from '../application/dtos/create-shared-list.dto';
+import Result from '../../Shared/domain/result';
 
 describe('SharedListController (e2e)', () => {
   let app: INestApplication;
@@ -39,7 +40,7 @@ describe('SharedListController (e2e)', () => {
     const createSharedListDto: CreateSharedListDto = {
       listId: 0,
       userEmail: '',
-      orgTargetId: 0
+      orgTargetId: 0,
     };
     const mockSharedList: SharedList = {
       id: 0,
@@ -47,13 +48,12 @@ describe('SharedListController (e2e)', () => {
       idList: 0,
       editedDate: undefined,
       sharedWithGeometry: false,
-      enabled: false
+      enabled: false,
     };
 
-    jest.spyOn(sharedListUseCases, 'createSharedList').mockResolvedValueOnce({
-      isSuccess: true,
-      getValue: () => mockSharedList,
-    });
+    jest
+      .spyOn(sharedListUseCases, 'createSharedList')
+      .mockResolvedValueOnce(Result.ok(mockSharedList));
 
     const response = await request(app.getHttpServer())
       .post(`/organizations/${orgId}/shared-lists`)
@@ -64,6 +64,7 @@ describe('SharedListController (e2e)', () => {
   });
 
   it('should search for shared lists', async () => {
+    const orgId = 1;
     const searchDto: SearchDto = {
       filters: [],
       orders: [],
@@ -71,15 +72,15 @@ describe('SharedListController (e2e)', () => {
       offset: 0,
     };
     const mockSharedLists: SearchResult<SharedList> = {
-      data: [
-      ],
-      total: 2,
+      count: 0,
+      offset: 0,
+      limit: 0,
+      items: [],
     };
 
-    jest.spyOn(sharedListUseCases, 'search').mockResolvedValueOnce({
-      isSuccess: true,
-      getValue: () => mockSharedLists,
-    });
+    jest
+      .spyOn(sharedListUseCases, 'search')
+      .mockResolvedValueOnce(Result.ok(mockSharedLists));
 
     const response = await request(app.getHttpServer())
       .get(

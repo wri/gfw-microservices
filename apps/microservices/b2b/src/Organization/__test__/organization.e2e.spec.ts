@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { OrganizationController } from '../infrastructure/organization.controller';
 import { OrganizationUseCases } from '../application/organization.use-case';
 import { Organization } from '../domain/organization.entity';
+import Result from '../../Shared/domain/result';
 
 describe('OrganizationController (e2e)', () => {
   let app: INestApplication;
@@ -34,13 +35,12 @@ describe('OrganizationController (e2e)', () => {
       organizationDb: '',
       organizationStatusId: 0,
       organizationActivatedTime: undefined,
-      subscriptionStatusId: 0
+      subscriptionStatusId: 0,
     };
 
-    jest.spyOn(organizationUseCases, 'findById').mockResolvedValueOnce({
-      isSuccess: true,
-      getValue: () => mockOrganization,
-    });
+    jest
+      .spyOn(organizationUseCases, 'findById')
+      .mockResolvedValueOnce(Result.ok(mockOrganization));
 
     const response = await request(app.getHttpServer())
       .get(`/organizations/${organizationId}`)
@@ -50,13 +50,11 @@ describe('OrganizationController (e2e)', () => {
   });
 
   it('should get all organizations', async () => {
-    const mockOrganizations: Organization[] = [
-    ];
+    const mockOrganizations: Organization[] = [];
 
-    jest.spyOn(organizationUseCases, 'getAll').mockResolvedValueOnce({
-      isSuccess: true,
-      getValue: () => mockOrganizations,
-    });
+    jest
+      .spyOn(organizationUseCases, 'getAll')
+      .mockResolvedValueOnce(Result.ok(mockOrganizations));
 
     const response = await request(app.getHttpServer())
       .get('/organizations')
@@ -64,6 +62,4 @@ describe('OrganizationController (e2e)', () => {
 
     expect(response.body).toEqual(mockOrganizations);
   });
-
-  // Resto de las pruebas...
 });

@@ -25,6 +25,7 @@ exports.proManagerList = (req, res) => {
     ProManager.getAllUsersList(req),
     PolicyManager.getPendingPolicyList(req),
     PolicyManager.getAllPolicyList(req),
+    ProManager.getSystemSubscriptionStatuses(req),
   ];
 
   Promise.all(promises)
@@ -43,6 +44,7 @@ exports.proManagerList = (req, res) => {
         policyList: policyList,
         proManagerListjs: compiledAssets.js.proManagerList,
         proManagerListcss: compiledAssets.css.proManagerList,
+        subscriptionStatuses: results[4]
       });
     })
     .catch((error) => {

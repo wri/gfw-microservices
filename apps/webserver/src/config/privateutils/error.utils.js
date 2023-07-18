@@ -29,6 +29,8 @@ const ERROR_CODES = {
   //
   failedToAuthenticate: 109,
   failedToSendEmail: 110,
+  // Subscription Status
+  failedToRetrieveSubscriptionStatusList: 111,
   // Accounts
   failedToRequestAccount: 300,
   failedToActivateAccount: 301,

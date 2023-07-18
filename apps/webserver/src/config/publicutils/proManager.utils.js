@@ -688,6 +688,28 @@ const updateAccountSubscriptionStatus = async (
   });
 };
 
+/** @function {getSystemSubscriptionStatuses}
+ * @returns {Promise<Array<{id: string; status_name: string}>, errorObject>}
+ */
+const getSystemSubscriptionStatuses = (req) => {
+  return new Promise((resolve, reject) => {
+    sqlUtils
+      .executeSystemStoredProcedure(req, 'uspGetSystemSubscriptionStatuses')
+      .then((result) => {
+        resolve(result);
+      })
+      .catch((error) => {
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToRetrieveSubscriptionStatusList,
+          `Failed to retrieve subscription status list`,
+          error
+        );
+        reject(errorObject);
+      });
+  });
+}
+
 module.exports = {
   getAllAccountsList,
   getAllUsersList,
@@ -702,4 +724,5 @@ module.exports = {
   reactivateAccount,
   getAccountSubscriptionStatus,
   updateAccountSubscriptionStatus,
+  getSystemSubscriptionStatuses,
 };

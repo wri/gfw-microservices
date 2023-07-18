@@ -15,24 +15,12 @@ exports.getUserOrganizations = async (req, res, next) => {
 };
 
 exports.getConnections = async (req, res, next) => {
-  const { id, status } = req.query;
   const [org] = await AuthManager.getOrganizations(req);
   const { organization_id: organizationId } = org;
 
-  const queryObject = Object.entries({ id, status, sourceId: organizationId }).reduce(
-    (accumulator, [key, value]) => {
-      if (value) {
-        accumulator[key] = value;
-      }
-      return accumulator;
-    },
-    {}
-  );
-  const queryParams = querystring.stringify(queryObject);
-
   next({
     method: 'GET',
-    url: `/connection?${queryParams}`,
+    url: `/connections/organization/${organizationId}`,
   });
 };
 
@@ -43,7 +31,7 @@ exports.acceptConnection = async (req, res, next) => {
 
   next({
     method: 'POST',
-    url: `/connection/accept/${id}`,
+    url: `/connections/${id}/accept`,
     data: {
       editEmail: userEmail,
     },
@@ -56,7 +44,7 @@ exports.rejectConnection = async (req, res, next) => {
 
   next({
     method: 'POST',
-    url: `/connection/reject/${id}`,
+    url: `/connections/${id}/reject`,
     data: {
       editEmail: userEmail,
     },
@@ -70,7 +58,7 @@ exports.cancelConnection = async (req, res, next) => {
 
   next({
     method: 'POST',
-    url: `/connection/cancel/${id}`,
+    url: `/connections/${id}/cancel`,
     data: {
       editEmail: userEmail,
     },

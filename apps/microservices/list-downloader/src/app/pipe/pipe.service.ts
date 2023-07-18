@@ -7,9 +7,9 @@ import {
   SQLUtils,
   ListNameSchema,
   GenerationFileRequest,
-  UspGetPaginatedAnalysisDataForUserList,
-  UspGetAnalysisDataCountForUserList,
   UspGetListAnalysis,
+  AnalysisDataCountReturnType,
+  AnalysisDataType,
 } from '@wri-monorepos/sql';
 
 import { InputService } from '../files/input.service';
@@ -17,15 +17,21 @@ import { ResultService } from '../files/result.service';
 import { ShapefileService } from '../files/shapefile.service';
 import { DashboardService } from './dashboard.service';
 import { IPipeService } from './IPipeService';
+import fetch from 'node-fetch';
 
 @Injectable()
 export class PipeService {
   private MAX_NUMBER_OF_ROWS_PER_PAGE = 5000;
   private POOL_SIZE = 5;
 
+  private OPTIONS = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+
   constructor(
-    private uspGetPaginatedAnalysisDataForUserList: UspGetPaginatedAnalysisDataForUserList,
-    private uspGetAnalysisDataCountForUserList: UspGetAnalysisDataCountForUserList,
     private inputService: InputService,
     private shapefileService: ShapefileService,
     private dashboardService: DashboardService,
@@ -52,10 +58,7 @@ export class PipeService {
       parameters
     );
 
-    const numberOfPages = await this.uspGetAnalysisDataCountForUserList.run(
-      organizationDatabase,
-      filters
-    );
+    const numberOfPages = await this.getNumberOfPages(filters);
     this.logger.log(`(${listID}) - Number of pages: ${numberOfPages}`);
 
     let arrayOfPages = Array.from(Array(numberOfPages).keys());
@@ -95,10 +98,9 @@ export class PipeService {
 
     const composeResults = async (i: number) => {
       const newFilters = { ...filters, page: i };
-      const analysisData = await this.uspGetPaginatedAnalysisDataForUserList.run(
-        organizationDatabase,
-        newFilters
-      );
+
+      const analysisData = await this.getAnalysisData(newFilters);
+
       service.process(analysisData, newFilters);
       return i;
     };
@@ -123,21 +125,67 @@ export class PipeService {
   }
 
   private async getListOfFields(filters: GenerationFileRequest) {
-    const { organizationDatabase } = filters;
-    const analysisData = await this.uspGetPaginatedAnalysisDataForUserList.run(
-      organizationDatabase,
-      {
-        ...filters,
-        page: 1,
-        rowsPerPage: 1,
-      }
-    );
+    const newFilters = {
+      ...filters,
+      page: 1,
+      rowsPerPage: 1,
+    };
 
+    const analysisData = await this.getAnalysisData(newFilters);
     const [element] = analysisData;
 
     return {
       fields: Object.keys(element),
       templateId: element.template_id,
     };
+  }
+
+  private async getAnalysisData(filter): Promise<AnalysisDataType[]> {
+    const queryString = this.convertToQueryFields(filter);
+    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
+    const response = await fetch(encodeURIComponent(url), this.OPTIONS);
+    const analysisData = (await response.json()) as AnalysisDataType[];
+    return analysisData;
+  }
+
+  private async getNumberOfPages(filters: GenerationFileRequest): Promise<number> {
+    const queryString = this.convertToQueryFields(filters);
+    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
+    const response = await fetch(encodeURIComponent(url), this.OPTIONS);
+    const { numberOfPages } = (await response.json()) as AnalysisDataCountReturnType;
+    return numberOfPages;
+  }
+
+  private convertToQueryFields(filters: GenerationFileRequest): string {
+    const fields = [
+      'listID',
+      'organizationDatabase',
+      'analysisAreaMax',
+      'analysisAreaMin',
+      'country',
+      'geometry',
+      'orderType',
+      'page',
+      'rowsPerPage',
+      'sortByAttribute',
+      'state',
+      'subState',
+      'locationLogic',
+      'locationIds',
+      'locationStatement',
+      'combinedColumns',
+      'searchString',
+    ];
+
+    const res = fields.reduce((result, fieldName) => {
+      const value = filters[fieldName];
+      if (value != undefined || value != null) {
+        result += `${fieldName}=${value}&`;
+      }
+      return result;
+    }, '');
+
+    const removeLastCharacter = res.substring(0, res.length - 1);
+    return removeLastCharacter;
   }
 }

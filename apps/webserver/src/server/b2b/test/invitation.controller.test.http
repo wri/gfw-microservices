@@ -15,4 +15,9 @@ POST https://localhost:8443/b2b/invitation/75
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
+### get the invitations sent by the actual user
+GET https://localhost:8443/b2b/invitation/me
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
 

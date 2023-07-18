@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UserRepository } from '../User/domain/user.repository';
-import { UserRepositoryMysql } from '../User/infrastructure/user.repository.mysql';
+import { UserRepositoryMysql } from '../User/infrastructure/user.repository.mssql';
 import { UserModule } from '../User/user.module';
 import { ActivityLogDataMapper } from './application/activity-log.mapper';
 import { ActivityLogUseCases } from './application/activity-log.use-case';

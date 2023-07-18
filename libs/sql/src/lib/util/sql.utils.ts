@@ -13,13 +13,29 @@ export class SQLUtils {
   }
 
   async connect(database: string = this.config.database): Promise<void> {
-    console.log(database);
     const config = { ...this.config, database };
-    console.log(config);
     this.connection = await get(database, config); //sql.connect(this.config);
   }
 
+  /**
+   * This function runs a raw query against the database.
+   *
+   * @param query
+   * @param parameters
+   * @returns
+   */
   query<T>(query: string, parameters?: ParameterType[]): Promise<T> {
+    return new Promise((resolve) => {
+      this.queryArray<T>(query, parameters).then((result) => {
+        if (result && Array.isArray(result) && result.length > 0) {
+          resolve(result[0]);
+        }
+        resolve(undefined);
+      });
+    });
+  }
+
+  queryArray<T>(query: string, parameters?: ParameterType[]): Promise<Array<T>> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {
@@ -33,7 +49,7 @@ export class SQLUtils {
         .query(query)
         .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
           if (Number(result.recordsets.length) > 0) {
-            resolve(result.recordsets[0][0]);
+            resolve(result.recordsets[0]);
           }
           resolve(undefined);
         })
@@ -44,29 +60,13 @@ export class SQLUtils {
   }
 
   executeQuery<T>(query: string, parameters?: ParameterType[]): Promise<T> {
-    const request = this.connection.request();
-
-    if (parameters && Array.isArray(parameters)) {
-      parameters.forEach((param) => {
-        request.input(param.field, param.type, param.value);
+    return new Promise((resolve) => {
+      this.executeQueryArray<T>(query, parameters).then((result) => {
+        if (Number(result.length) > 1) {
+          resolve(result as T);
+        }
+        resolve(result[0] as T);
       });
-    }
-
-    return new Promise((resolve, reject) => {
-      request
-        .execute(query)
-        .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
-          if (Number(result.recordsets.length) > 0) {
-            if (Number(result.recordsets[0].length) > 1) {
-              resolve(result.recordsets[0] as T);
-            }
-            resolve(result.recordsets[0][0] as T);
-          }
-          resolve(undefined);
-        })
-        .catch((errorMessage) => {
-          reject(errorMessage);
-        });
     });
   }
 
@@ -116,5 +116,9 @@ export class SQLUtils {
       connection.disconnect();
       throw new Error(error);
     }
+  }
+
+  static isSystemDatabase(databaseName: string): boolean {
+    return databaseName === SQL_CONFIG.database;
   }
 }

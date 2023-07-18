@@ -311,6 +311,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
 };
 
 /**
+ * @DEPRECATED in favor of {publicutils/accountManager.utils.js}
  * @function updatePendingAccount
  * @summary Creates a request for a new account in the database.
  * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
@@ -627,6 +628,66 @@ const deactivateAccount = (request, organization_id) => {
   });
 };
 
+/** @function {getAccountSubscriptionStatus}
+ * @summary Get account subscription status
+ * @param {Object} request
+ * @param {Number} organizationId
+ * @returns {Promise<number | errorObject>}
+ * @var errorObject {
+ *   errorCode: error_code,
+ *   userMessage: user_msg,
+ *   systemMessage: system_msg,
+ * }
+ */
+const getAccountSubscriptionStatus = (request, organizationId) => {
+  return new Promise((resolve, reject) => {
+    const parameters = [{ field: 'organizationId', type: sql.Int, value: organizationId }];
+    sqlUtils
+      .executeSystemStoredProcedure(request, 'uspGetOrganizationStatus', parameters)
+      .then((result) => resolve(result))
+      .catch((error) => {
+        const errorObject = errorUtils.createErrorMessage(
+          request,
+          errorUtils.errorCodes.failedToGetAccountSubscriptionStatus,
+          `Failed to retreive account subscription status`,
+          error
+        );
+        reject(errorObject);
+      });
+  });
+};
+
+/** @function {updateAccountSubscriptionStatus}
+ * @param {Object} req
+ * @param {Number} organizationId
+ * @param {Number} newSubscriptionStatusId
+ * @returns {Promise<boolean, errorObject>}
+ */
+const updateAccountSubscriptionStatus = async (
+  request,
+  organizationId,
+  newSubscriptionStatusId
+) => {
+  return new Promise((resolve, reject) => {
+    const parameters = [
+      { field: 'organizationId', type: sql.Int, value: organizationId },
+      { field: 'subscriptionStatusId', type: sql.Int, value: newSubscriptionStatusId },
+    ];
+    sqlUtils
+      .executeSystemStoredProcedure(request, 'uspSetOrganizationSubscriptionStatus', parameters)
+      .then(() => resolve(true))
+      .catch((error) => {
+        const errorObject = errorUtils.createErrorMessage(
+          request,
+          errorUtils.errorCodes.failedToUpdateAccountSubscriptionStatus,
+          `Failed to update account subscription status`,
+          error
+        );
+        reject(errorObject);
+      });
+  });
+};
+
 module.exports = {
   getAllAccountsList,
   getAllUsersList,
@@ -639,4 +700,6 @@ module.exports = {
   deactivateAccount,
   deletePendingAccount,
   reactivateAccount,
+  getAccountSubscriptionStatus,
+  updateAccountSubscriptionStatus,
 };

@@ -5,6 +5,7 @@ const controller = require('../controllers/proManagerList.controller');
 
 const ProManager = require(path.resolve('./config/publicutils/proManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
+const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
@@ -90,6 +91,7 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/pro-manager/updateProAccount', (req, res) => {
+    console.log('POST /pro-manager/updateProAccount');
     const {
       id,
       org_name,
@@ -100,27 +102,32 @@ module.exports = (app, limiter) => {
       arr_org_classification_ids,
       policyUploadList,
       policyName,
+      subscription_status_id,
     } = req.body;
 
-    ProManager.updatePendingAccount(
-      req,
-      id,
-      org_name,
-      org_address,
-      org_website,
-      parent_org_name,
-      is_subsidiary,
-      arr_org_classification_ids,
-      policyUploadList,
-      policyName
-    )
+    Promise.all([
+      AccountManager.updatePendingAccount(
+        req,
+        id,
+        org_name,
+        org_address,
+        org_website,
+        parent_org_name,
+        is_subsidiary,
+        arr_org_classification_ids,
+        policyUploadList,
+        policyName
+      ),
+      PolicyManager.uploadPendingPolicies(req, id, policyUploadList, policyName),
+      ProManager.updateAccountSubscriptionStatus(req, id, subscription_status_id),
+    ])
       .then((result) => {
-        console.log('UpdateAccount: Success', result);
-        res.send({ redirect: '/pro-manager-list' });
+        console.log('Success /pro-manager/updateProAccount', result);
+        res.send({ status: 'success' });
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.send(err);
+        res.status(500).send(err);
       });
   });
 

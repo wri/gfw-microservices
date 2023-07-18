@@ -22,6 +22,7 @@ function App() {
           statusData={statusData}
           accessData={accessData}
           policyList={policyList}
+          subscriptionStatuses={subscriptionStatuses}
         />
       </BrowserRouter>
     </MuiThemeProvider>

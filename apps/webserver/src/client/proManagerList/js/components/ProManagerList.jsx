@@ -125,11 +125,23 @@ class proManagerList extends Component {
     return classArray;
   };
 
+  findSubsciptionStatus = (account) => {
+    const { subscriptionStatuses } = this.props;
+    if (account.subscription_status_id) {
+      const subscriptionStatus = subscriptionStatuses.find(
+        ({ id }) => id === account.subscription_status_id
+      );
+      return subscriptionStatus.status_name;
+    }
+    return '';
+  };
+
   createAccountsList = (account) => {
     const accountRows = [];
     const pendingDateString = this.findPendingDateString(account);
     const activeDateString = this.findActiveDateString(account);
     const statusString = this.findStatusString(account);
+    const subscriptionStatus = this.findSubsciptionStatus(account);
     const classString = this.findClassString(account);
     if (account.organization_website.indexOf('http') === -1) {
       // eslint-disable-next-line no-param-reassign
@@ -154,6 +166,7 @@ class proManagerList extends Component {
         </td>
         <td>{classString}</td>
         <td>{statusString}</td>
+        <td>{subscriptionStatus}</td>
         <td>{pendingDateString}</td>
         <td>{activeDateString}</td>
       </tr>
@@ -602,6 +615,7 @@ class proManagerList extends Component {
             accessData={accessData}
             disable={selectedAccount.organization_status_id !== 1}
             policyList={policyList}
+            subscriptionStatuses={this.props.subscriptionStatuses}
           />
         )}
 

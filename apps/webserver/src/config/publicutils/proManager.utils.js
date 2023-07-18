@@ -708,7 +708,7 @@ const getSystemSubscriptionStatuses = (req) => {
         reject(errorObject);
       });
   });
-}
+};
 
 module.exports = {
   getAllAccountsList,

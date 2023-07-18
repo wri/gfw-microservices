@@ -377,6 +377,8 @@ export default class AccountProfile extends Component {
           </div>,
         ];
 
+    const { subscriptionStatuses: subscriptionStatusesOptions } = this.props;
+
     return (
       <div className="profile-body">
         <Dialog
@@ -528,8 +530,11 @@ export default class AccountProfile extends Component {
                     ref="titleSelect"
                     onChange={this.subscriptionStatusOnChange}
                   >
-                    <option value={1}>Standard</option>
-                    <option value={2}>Premium</option>
+                    {subscriptionStatusesOptions.map((subscriptionOption) => (
+                      <option value={subscriptionOption.id}>
+                        {subscriptionOption.status_name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

@@ -44,7 +44,7 @@ exports.proManagerList = (req, res) => {
         policyList: policyList,
         proManagerListjs: compiledAssets.js.proManagerList,
         proManagerListcss: compiledAssets.css.proManagerList,
-        subscriptionStatuses: results[4]
+        subscriptionStatuses: results[4],
       });
     })
     .catch((error) => {

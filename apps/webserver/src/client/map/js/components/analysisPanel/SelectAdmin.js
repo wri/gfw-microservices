@@ -1,5 +1,5 @@
-import QueryTask from 'esri/tasks/QueryTask';
-import Query from 'esri/tasks/support/Query';
+import { executeQueryJSON } from '@arcgis/core/rest/query';
+import Query from '@arcgis/core/rest/support/Query';
 import React, { Component } from 'react';
 import { updateAdminSelections } from '../../actions/mapActions';
 import * as analysisActions from '../../actions/analysisActions';
@@ -21,16 +21,15 @@ export default class SelectAdmin extends Component {
 
   // When the component mounts - query all countries to populate country level dropdown
   componentDidMount() {
-    const queryTask = new QueryTask({
-      url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/6',
-    });
+    const queryUrl =
+      'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/6';
 
     const query = new Query();
     query.where = '1=1';
     query.returnGeometry = false;
     query.outFields = ['name_0', 'iso'];
     query.returnDistinctValues = true;
-    queryTask.execute(query).then((res) => {
+    executeQueryJSON(queryUrl, query).then((res) => {
       const uniqueCountries = [];
       res.features.map((feature) => uniqueCountries.push(feature.attributes.name_0));
       const uniqueAttributes = [...new Set(res.features.map((item) => item.attributes))];
@@ -45,9 +44,8 @@ export default class SelectAdmin extends Component {
   // If a country was chosen (and different) - query to determine it's sub-admin area to populate sub-level dropdown
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.adminSelections.country !== this.props.adminSelections.country) {
-      const queryTask = new QueryTask({
-        url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/5',
-      });
+      const queryUrl =
+        'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/5';
       const query = new Query();
       // we need to add an extra single quote to scape country names with apostrophes (Côte d'Ivoire)
       const scapedCountryName = this.props.adminSelections.country.replace(/'/g, "''");
@@ -55,7 +53,7 @@ export default class SelectAdmin extends Component {
       query.returnGeometry = false;
       query.outFields = ['name_1', 'id_1']; // 'gadmid'
       query.returnDistinctValues = true;
-      queryTask.execute(query).then((res) => {
+      executeQueryJSON(queryUrl, query).then((res) => {
         const uniqueSubs = [
           ...new Set(
             res.features
@@ -144,9 +142,7 @@ export default class SelectAdmin extends Component {
     const adminServiceURL = getGadmService();
     const { adminSelections } = this.props;
 
-    const queryTask = new QueryTask({
-      url: adminServiceURL,
-    });
+    const queryUrl = adminServiceURL;
 
     const query = new Query();
     query.where =
@@ -157,7 +153,7 @@ export default class SelectAdmin extends Component {
     query.returnGeometry = false;
     query.outFields = ['gadmid']; // ['name_0', 'name_1', 'name_2', 'gadmid'];// 'gadmid'
 
-    queryTask.execute(query).then((res) => {
+    executeQueryJSON(queryUrl, query).then((res) => {
       let gadmId =
         res && res.features && res.features.length > 0 ? res.features[0].attributes.gadmid : '';
       if (gadmId !== '') {

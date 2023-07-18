@@ -65,10 +65,16 @@ describe('UserUseCases', () => {
 
     user = {
       id: 1,
-      firstName: 'test',
-      lastName: 'test',
+      first_name: 'test',
+      last_name: 'test',
       email: 'test@example.com',
       phone: '111111',
+      middle_initial: '',
+      title_id: 1,
+      other_title: '',
+      access_level_id: 1,
+      status_id: 1,
+      email_subscription: true,
     };
 
     const module: TestingModule = await createMockModule({

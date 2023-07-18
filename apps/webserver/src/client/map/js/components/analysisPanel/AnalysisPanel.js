@@ -10,8 +10,8 @@ import {
   updateLandsatYear,
 } from '../../actions/mapActions';
 import * as analysisActions from '../../actions/analysisActions';
-import QueryTask from 'esri/tasks/QueryTask';
-import Query from 'esri/tasks/support/Query';
+import { executeQueryJSON } from '@arcgis/core/rest/query';
+import Query from '@arcgis/core/rest/support/Query';
 import { mapPage, proLayers } from '../../../../common/js/config';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import FlatButton from 'material-ui/FlatButton';
@@ -293,9 +293,7 @@ export default class AnalysisPanel extends Component {
       'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer';
     const { adminSelections } = this.props;
 
-    const queryTask = new QueryTask({
-      url: adminSelections.smallerRegion ? `${prefix}/5` : `${prefix}/6`,
-    });
+    const queryUrl = adminSelections.smallerRegion ? `${prefix}/5` : `${prefix}/6`;
 
     const query = new Query();
     query.where = adminSelections.smallerRegion
@@ -304,7 +302,7 @@ export default class AnalysisPanel extends Component {
     query.returnGeometry = false;
     query.outFields = ['gadmid']; //['name_0', 'name_1', 'name_2', 'gadmid'];// 'gadmid'
 
-    queryTask.execute(query).then((res) => {
+    executeQueryJSON(queryUrl, query).then((res) => {
       const gadmId =
         res && res.features && res.features.length > 0 ? res.features[0].attributes.gadmid : '';
       this.subscribeAdmin({

@@ -10,8 +10,8 @@ const B2BConnectionListTable = (props) => {
 
   const handleOpenDetailsModal = (row) => {
     setDisplayModal(true);
-    setConnectionModalData(row)
-  }
+    setConnectionModalData(row);
+  };
 
   const columns = [
     {
@@ -23,7 +23,7 @@ const B2BConnectionListTable = (props) => {
           type="button"
           className="new-b2b-connection-modal__action-button"
           onClick={() => {
-            handleOpenDetailsModal(params.row)
+            handleOpenDetailsModal(params.row);
           }}
         >
           {params.row.organizationName}

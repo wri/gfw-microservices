@@ -688,7 +688,7 @@ const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
     selectedOverallValues,
     selectedMillPriority,
     LocationStatement = null,
-    geometry = 0
+    geometry = 0,
   } = filters;
 
   if (LocationIds) {

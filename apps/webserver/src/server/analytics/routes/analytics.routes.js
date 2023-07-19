@@ -1,8 +1,11 @@
+const express = require('express');
 const path = require('path');
 const controller = require('../controllers/analytics.controller');
 
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
+
+const analyticsRouter = express.Router();
 
 /**
  * @name exports
@@ -28,7 +31,9 @@ module.exports = (app, limiter) => {
     routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));
   }
 
-  app.use('/analytics', routeMiddlewares);
+  app.use('/analytics', [...routeMiddlewares, analyticsRouter]);
 
   app.get('/analytics', controller.analytics);
+
+  analyticsRouter.get('/usage', controller.getOrganizationAnalysisUsage);
 };

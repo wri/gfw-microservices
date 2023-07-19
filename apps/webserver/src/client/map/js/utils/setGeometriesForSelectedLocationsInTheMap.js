@@ -1,7 +1,7 @@
 import Graphic from 'esri/Graphic';
 import Polygon from 'esri/geometry/Polygon';
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
-import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
+import { generateCentroidGraphic } from './esri.utils';
 import { USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID } from '../config/map.config';
 import { centroidSymbol } from '../../../common/js/map.config';
 

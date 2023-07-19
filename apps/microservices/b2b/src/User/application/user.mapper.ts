@@ -2,7 +2,8 @@ import { ParamStoreProcedure } from '../../Shared/infraestructure/mysql/store-pr
 import * as sql from 'mssql';
 import { GenericMapper } from '../../Shared/domain/mapper';
 import { ConnectionAdminOrganizationDbDto } from '../../Connection/application/dtos/connection-admin-organizations.dto';
-import { UserOrganization } from '../domain/user';
+import { User, UserOrganization } from '../domain/user';
+import { UserInfo } from '@wri-monorepos/sql';
 
 export class UserMapper extends GenericMapper {
   toEmailParam(email: string): ParamStoreProcedure[] {
@@ -13,6 +14,16 @@ export class UserMapper extends GenericMapper {
         value: email,
       },
     ];
+  }
+
+  toUserDetails(dbDto: UserInfo): User {
+    return {
+      id: dbDto.id,
+      email: dbDto.email,
+      firstName: dbDto.first_name,
+      lastName: dbDto.last_name,
+      phone: dbDto.phone,
+    };
   }
 
   toUserOrganization(

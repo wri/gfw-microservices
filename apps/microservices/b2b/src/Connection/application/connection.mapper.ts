@@ -52,7 +52,7 @@ export class ConnectionDataMapper extends GenericMapper {
 
   dbDtotoConnection(connectionDto: ConnectionDbDto): Connection {
     const connection: Connection = {
-      id: connectionDto.id,
+      id: Number(connectionDto.id),
       createDate: new Date(connectionDto.create_date),
       editedDate: new Date(connectionDto.edited_date),
       description: connectionDto.description,
@@ -70,7 +70,7 @@ export class ConnectionDataMapper extends GenericMapper {
 
   connectionToGetDto(connection: Connection): ConnectionGetDto {
     const getDto: ConnectionGetDto = {
-      id: connection.id,
+      id: Number(connection.id),
       createDate: connection.createDate.toDateString(),
       editedDate: connection.editedDate.toDateString(),
       description: connection.description,

@@ -1,5 +1,5 @@
 export class ConnectionDbDto {
-  id: string;
+  id: number;
   create_date: string;
   id_source_organization: number;
   id_target_organization: number;

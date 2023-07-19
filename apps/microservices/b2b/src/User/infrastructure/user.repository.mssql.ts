@@ -5,7 +5,7 @@ import { UserRepository } from '../domain/user.repository';
 import { User, UserOrganization } from '../domain/user';
 import { UserMapper } from '../application/user.mapper';
 import { ConnectionAdminOrganizationDbDto } from '../../Connection/application/dtos/connection-admin-organizations.dto';
-import { getQueryStr } from '@wri-monorepos/sql';
+import { UserInfo, getQueryStr } from '@wri-monorepos/sql';
 
 export class UserRepositoryMysql
   extends RepositoryMssqlSP
@@ -46,7 +46,13 @@ export class UserRepositoryMysql
       params,
     );
 
-    const user = await getUserByEmail.execute<User>(db);
-    return user;
+    const userInfoRes = await getUserByEmail.execute<UserInfo>(db);
+    if (userInfoRes.isSuccess) {
+      const userInfo = userInfoRes.getValue();
+      const user = this.mapper.toUserDetails(userInfo);
+      return Result.ok(user);
+    }
+
+    return Result.fail(userInfoRes.getError());
   }
 }

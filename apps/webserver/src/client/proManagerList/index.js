@@ -4,25 +4,23 @@ import { render } from 'react-dom';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import ProManagerList from './js/components/ProManagerList';
+import ProManagerPanel from './js/components/ProManagerPanel';
+import Page from '../common/js/components/Page';
 
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
+const pageOptions = {
+  links: {
+    logout: true,
+  },
+};
 
 function App() {
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
       <BrowserRouter basename="/pro-manager-list">
-        <ProManagerList
-          allAccountsList={allAccountsList}
-          allUsersList={allUsersList}
-          classes={classes}
-          commoditiesData={commoditiesData}
-          geographiesData={geographiesData}
-          titlesData={titlesData}
-          statusData={statusData}
-          accessData={accessData}
-          policyList={policyList}
-        />
+        <Page links={pageOptions.links} active="pro-manager">
+          <ProManagerPanel />
+        </Page>
       </BrowserRouter>
     </MuiThemeProvider>
   );

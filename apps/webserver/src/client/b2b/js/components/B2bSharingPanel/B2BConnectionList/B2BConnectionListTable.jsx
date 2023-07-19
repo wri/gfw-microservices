@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import B2BConnectionListStatus from './B2BConnectionListStatus';
-import ConnectionDetailsButton from '../ConnectionDetailsButton';
+import B2bConnectionDetailsModal from '../ConnectionDetailsButton/B2bConnectionDetailsModal';
 
 const B2BConnectionListTable = (props) => {
   const [showConfirm, setShowConfirm] = useState(false);
+  const [displayModal, setDisplayModal] = useState(false);
+  const [connectionModalData, setConnectionModalData] = useState(false);
+
+  const handleOpenDetailsModal = (row) => {
+    setDisplayModal(true);
+    setConnectionModalData(row)
+  }
 
   const columns = [
     {
@@ -12,15 +19,15 @@ const B2BConnectionListTable = (props) => {
       headerName: 'Organization Name',
       flex: 1,
       renderCell: (params) => (
-        <ConnectionDetailsButton
-          connectionData={{
-            organizationName: params.row.organizationName,
-            status: params.row.status,
-            name: params.row.name,
-            email: params.row.email,
-            id: params.row.id,
+        <button
+          type="button"
+          className="new-b2b-connection-modal__action-button"
+          onClick={() => {
+            handleOpenDetailsModal(params.row)
           }}
-        />
+        >
+          {params.row.organizationName}
+        </button>
       ),
     },
     { field: 'email', headerName: 'Email', flex: 1 },
@@ -41,17 +48,25 @@ const B2BConnectionListTable = (props) => {
 
   const { rows } = props;
   return (
-    <DataGrid
-      rows={rows}
-      columns={columns}
-      initialState={{
-        pagination: { paginationModel: { pageSize: 5 } },
-      }}
-      pageSizeOptions={[5, 10, 25]}
-      checkboxSelection
-      disableSelectionOnClick
-      autoHeight
-    />
+    <>
+      <DataGrid
+        rows={rows}
+        columns={columns}
+        initialState={{
+          pagination: { paginationModel: { pageSize: 5 } },
+        }}
+        pageSizeOptions={[5, 10, 25]}
+        checkboxSelection
+        disableRowSelectionOnClick
+        autoHeight
+      />
+      {displayModal && (
+        <B2bConnectionDetailsModal
+          onCloseModal={() => setDisplayModal(false)}
+          connectionData={connectionModalData}
+        />
+      )}
+    </>
   );
 };
 

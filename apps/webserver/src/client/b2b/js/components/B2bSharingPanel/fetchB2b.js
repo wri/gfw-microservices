@@ -1,4 +1,5 @@
 import httpRequest from '../../../../common/js/utils/httpRequest';
+import { b2bConnectionsMock } from './b2bConnectionsMock';
 
 async function getOrgsList(email) {
   return httpRequest

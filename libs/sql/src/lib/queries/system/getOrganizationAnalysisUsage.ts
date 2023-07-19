@@ -67,7 +67,7 @@ BEGIN
     SET @SQL = REPLACE('DROP TABLE {TABLE}', '{TABLE}', @TABLE)
     EXEC sp_executesql @SQL;
 END;
-`
+`;
 
 export interface OrganizationAnalysisUsage {
   total_area_analysis: number;

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ERRORS } from '../../Shared/domain/constants';
 import Result from '../../Shared/domain/result';
 import ResultPromise from '../../Shared/domain/result/result.promise';
 import { MultiConnectRepository } from '../../Shared/infraestructure/typeorm/multi-connect.repository';
@@ -31,7 +32,15 @@ export class OrganizationRepositoryMssql
   }
 
   async findById(id: number): ResultPromise<Organization | undefined> {
-    const organization = await this.repository.findOneBy({ id });
-    return Result.ok(organization);
+    try {
+      const organization = await this.repository.findOneBy({ id });
+      if (!organization) {
+        return Result.fail(ERRORS.NOT_ELEMENTS_FOUND);
+      } else {
+        return Result.ok(organization);
+      }
+    } catch (error) {
+      return Result.fail(error);
+    }
   }
 }

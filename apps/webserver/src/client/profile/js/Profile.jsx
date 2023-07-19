@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import MyProfile from './components/MyProfile';
 import UserProfileManager from './components/sub/UserProfileManager';
-import ProfileSideBar from './ProfileSideBar';
+import SideBarMenu from '../../common/js/components/SideBarMenu';
 import { profileTabs } from './profileTabs';
 import './Profile.scss';
 
@@ -19,7 +19,9 @@ function Profile({
   return (
     <div className="profile">
       <div className="profile__container">
-        <ProfileSideBar
+        <SideBarMenu
+          menuTitle="Profile"
+          tabOptions={profileTabs}
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
           userAccessLevel={userInfo.access_level_id}

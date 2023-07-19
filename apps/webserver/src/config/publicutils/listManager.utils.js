@@ -687,6 +687,8 @@ const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
     selectedOverallThreats,
     selectedOverallValues,
     selectedMillPriority,
+    LocationStatement = null,
+    geometry = 0
   } = filters;
 
   if (LocationIds) {
@@ -701,7 +703,7 @@ const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
       { field: 'listID', type: sql.Int, value: listID },
       { field: 'PageNumber', type: sql.Int, value: page || null },
       { field: 'RowsOfPage', type: sql.Int, value: pageSize || null },
-      { field: 'OrderByColumn', type: sql.NVarChar, value: sortByAttribute || null },
+      { field: 'OrderByColumn', type: sql.NVarChar(255), value: sortByAttribute || null },
       { field: 'Order', type: sql.NVarChar, value: orderType || null },
       { field: 'SearchString', type: sql.NVarChar, value: searchString || null },
       { field: 'Country', type: sql.NVarChar, value: country || null },
@@ -712,6 +714,8 @@ const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
       { field: 'ColumnsToReturn', type: sql.NVarChar, value: columnsToReturn },
       { field: 'LocationIds', type: sql.NVarChar, value: LocationIds },
       { field: 'LocationLogic', type: sql.NVarChar, value: LocationLogic },
+      { field: 'LocationStatement', type: sql.NVarChar, value: LocationStatement || null },
+      { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
       // commodity risk filters
       { field: 'selectedSupplier', type: sql.NVarChar, value: selectedSupplier || null },
       {

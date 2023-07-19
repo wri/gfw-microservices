@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  HttpException,
-  Param,
-  Logger,
-} from '@nestjs/common';
+import { Controller, Get, Query, HttpException, Param } from '@nestjs/common';
 import {
   FilterType,
   OrderType,
@@ -25,7 +18,7 @@ export class ListController {
   ) {
     const { filters, orders, limit, offset } = searchListDto;
     // TODO: Review why the query param is never used
-    const query = new QueryCriteria(
+    new QueryCriteria(
       filters as Array<FilterType>,
       orders as Array<OrderType>,
       limit ? Number(limit) : undefined,

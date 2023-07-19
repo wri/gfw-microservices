@@ -8,10 +8,7 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { ConnectionUseCases } from '../application/connection.use-case';
-import {
-  ConnectionFiltersDto,
-  FullConnectionFiltersDto,
-} from '../application/dtos/connection-filters.dto';
+import { FullConnectionFiltersDto } from '../application/dtos/connection-filters.dto';
 import { IdNumericDto } from '../../Shared/application/dtos/id-numeric.dto';
 import { ConnectionUpdateStatusHttpDto } from '../application/dtos/connection-status.dto';
 import { IdStringDto } from '../../Shared/application/dtos/id-string.dto';

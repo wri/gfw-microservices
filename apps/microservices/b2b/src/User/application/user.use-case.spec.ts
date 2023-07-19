@@ -71,7 +71,7 @@ describe('UserUseCases', () => {
       phone: '111111',
     };
 
-    const module: TestingModule = await createMockModule({
+    const module = await createMockModule({
       providers: [
         UserUseCases,
         ListUseCases,

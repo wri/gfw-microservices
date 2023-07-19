@@ -39,6 +39,8 @@ describe('ConnectionUseCases', () => {
       sourceOrganization: 'DevCo',
       targetOrganization: 'DevCo2',
       status: ConnectionStatus.pending,
+      idSourceOrganization: 1,
+      idTargetOrganization: 2,
     },
     {
       id: 88,
@@ -51,6 +53,8 @@ describe('ConnectionUseCases', () => {
         "TIMTelefónica_Telefónica-Telefónica'Telefónica L.T.D",
       targetOrganization: 'DevCo',
       status: ConnectionStatus.expired,
+      idSourceOrganization: 1,
+      idTargetOrganization: 2,
     },
   ];
 
@@ -121,6 +125,8 @@ describe('ConnectionUseCases', () => {
           sourceOrganizationName: 'DevCo',
           targetOrganizationName: 'DevCo2',
           status: 'pending',
+          idSourceOrganization: 1,
+          idTargetOrganization: 2,
         },
         {
           id: 88,
@@ -133,6 +139,8 @@ describe('ConnectionUseCases', () => {
             "TIMTelefónica_Telefónica-Telefónica'Telefónica L.T.D",
           targetOrganizationName: 'DevCo',
           status: 'expired',
+          idSourceOrganization: 1,
+          idTargetOrganization: 2,
         },
       ];
 
@@ -163,6 +171,8 @@ describe('ConnectionUseCases', () => {
             sourceOrganizationName: 'DevCo',
             targetOrganizationName: 'DevCo2',
             status: 'pending',
+            idSourceOrganization: 1,
+            idTargetOrganization: 2,
           },
         ];
 
@@ -198,6 +208,8 @@ describe('ConnectionUseCases', () => {
             sourceOrganizationName: 'DevCo',
             targetOrganizationName: 'DevCo2',
             status: 'pending',
+            idSourceOrganization: 1,
+            idTargetOrganization: 2,
           },
         ];
 
@@ -239,6 +251,7 @@ describe('ConnectionUseCases', () => {
         targetEmail: 'jose.quiroz.5@wriconsultant.org',
         sourceOrganization: 1,
         targetOrganization: 17,
+        status: 'pending',
       };
 
       const expectedResult = Result.ok(true);
@@ -282,7 +295,9 @@ describe('ConnectionUseCases', () => {
 
       jest
         .spyOn(mockRepositorySP, 'updateStatusConnection')
-        .mockResolvedValue(new Promise((resolve) => resolve(Result.ok(1))));
+        .mockResolvedValue(
+          new Promise((resolve) => resolve(Result.ok({ id }))),
+        );
 
       const expectedResult = Result.ok(true);
 
@@ -305,7 +320,9 @@ describe('ConnectionUseCases', () => {
 
       jest
         .spyOn(mockRepositorySP, 'updateStatusConnection')
-        .mockResolvedValue(new Promise((resolve) => resolve(Result.ok(1))));
+        .mockResolvedValue(
+          new Promise((resolve) => resolve(Result.ok({ id }))),
+        );
 
       const expectedResult = Result.ok(true);
 
@@ -328,7 +345,9 @@ describe('ConnectionUseCases', () => {
 
       jest
         .spyOn(mockRepositorySP, 'updateStatusConnection')
-        .mockResolvedValue(new Promise((resolve) => resolve(Result.ok(1))));
+        .mockResolvedValue(
+          new Promise((resolve) => resolve(Result.ok({ id }))),
+        );
 
       const expectedResult = Result.ok(true);
 

@@ -8,7 +8,7 @@ DECLARE @PARAM NVARCHAR(255);
 DECLARE @TABLE NVARCHAR(80);
 
 BEGIN
-    IF @listLevel = 1
+    IF @countForEachList = 1
         BEGIN
             create table #TotArea_list (total_area_analysis INT,  max_analyzed_location INT, total_list INT, organization_id INT, list_id INT);
         END
@@ -30,8 +30,8 @@ BEGIN
 
     SET @SQL = 'INSERT INTO {TABLE} SELECT {PARAM} FROM [{DB_NAME}].[dbo].[ListsProcessing] lp WHERE analysis_end_time > ''{START_DATE}''  AND analysis_end_time < ''{END_DATE}'' ';
     SET @TABLE = '#TotArea_org'
-    SET @PARAM = 'SUM(area_analyzed_list_ha) as total_area_analysis, MAX(area_analyzed_locations_ha) as max_analyzed_location, COUNT(Distinct list_id) as total_list, {organization} as organization_id';
-    IF @listLevel = 1
+    SET @PARAM = 'SUM(area_analyzed_list_ha) as total_area_analyzed, MAX(area_analyzed_locations_ha) as max_area_analyzed, COUNT(Distinct list_id) as number_of_lists_analyzed, {organization} as organization_id';
+    IF @countForEachList = 1
         BEGIN
             SET @SQL = @SQL + ' GROUP BY list_id;'
             SET @PARAM =  @PARAM + ', list_id'
@@ -70,9 +70,9 @@ END;
 `;
 
 export interface OrganizationAnalysisUsage {
-  total_area_analysis: number;
-  max_analyzed_location: number;
-  total_list: number;
+  total_area_analyzed: number;
+  max_area_analyzed: number;
+  number_of_lists_analyzed: number;
   organization_id: number;
   list_id?: number;
 }

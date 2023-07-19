@@ -25,6 +25,7 @@ module.exports = (app, limiter) => {
     middlewares.checkAuthentication,
     middlewares.checkActive,
     middlewares.checkInactivity,
+    // middlewares.checkProManagerAuthentication,
   ];
 
   if (rateLimiterUtil.useRateLimiter()) {

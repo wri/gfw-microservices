@@ -30,7 +30,7 @@ const checkStartBeforeEnd = (startDate, endDate) => {
 };
 
 exports.getOrganizationAnalysisUsage = async (req, res) => {
-  let { startDate, endDate, orgId, listLevel } = req.query;
+  let { startDate, endDate, organizationId, countForEachList } = req.query;
 
   if (!isValidDate(startDate) || !isValidDate(endDate)) {
     res.status(400).send({ error: 'Invalid date' });
@@ -40,15 +40,15 @@ exports.getOrganizationAnalysisUsage = async (req, res) => {
     res.status(400).send({ error: 'Start date must be before end date' });
   }
 
-  if (listLevel === 0 || listLevel === 1) {
-    listLevel = parseInt(listLevel ?? 0);
+  if (countForEachList === 0 || countForEachList === 1) {
+    countForEachList = parseInt(countForEachList ?? 0);
   }
 
   const result = await getOrganizationAnalysisUsage({
     startDate,
     endDate,
-    orgId,
-    listLevel,
+    organizationId,
+    countForEachList,
   });
 
   res.status(200).send(result);

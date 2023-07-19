@@ -34,7 +34,7 @@
   ],
   "rules": {
     "no-unused-vars": "error",
-    "unused-imports/no-unused-imports": "error",
+    "no-unused-imports": "error",
     "max-len": [
       "error",
       {

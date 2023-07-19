@@ -6,7 +6,7 @@ export enum ConnectionStatus {
   expired = 'expired',
 }
 export class Connection {
-  id: string;
+  id: number;
   createDate: Date;
   sourceOrganization: string;
   targetOrganization: string;

@@ -87,7 +87,7 @@ export class ConnectionRepositoryMssqlSP
       params,
     );
 
-    const result = await createInvitation.execute<ConnectionDbDto>();
+    const result = await createInvitation.getMany<ConnectionDbDto>();
     if (result.isSuccess) {
       const connectionsDbDto = result.getValue();
 

@@ -2,7 +2,6 @@ import Graphic from 'esri/Graphic';
 import Extent from 'esri/geometry/Extent';
 import PopupTemplate from 'esri/PopupTemplate';
 import VectorTileLayer from 'esri/layers/VectorTileLayer';
-import * as watchUtils from 'esri/core/watchUtils';
 
 // Utils
 import geojsonUtil from '../../utils/arcgis-to-geojson';

@@ -2,10 +2,8 @@ import _isEmpty from 'lodash/isEmpty';
 
 // Utils
 import { isGfwList } from '../../../common/js/utils/gfw.utils';
-import {
-  getCurrentlySelectedList,
-  getSelectedPopupFeatureEsriGraphic,
-} from '../../../common/js/userListLocations/utils/userListLocations.util';
+import { getCurrentlySelectedList } from '../../../common/js/userListLocations/utils/userListLocations.util';
+import { getSelectedPopupFeatureEsriGraphic } from '../userListLocations/utils/listLayer.util';
 
 /**
  * Get location Geometry from the selected feature

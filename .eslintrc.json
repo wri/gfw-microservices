@@ -24,10 +24,7 @@
     {
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nrwl/nx/typescript"],
-      "rules": {
-        "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": "error"
-      }
+      "rules": {}
     },
     {
       "files": ["*.js", "*.jsx"],
@@ -36,8 +33,6 @@
     }
   ],
   "rules": {
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": "error",
     "max-len": [
       "error",
       {

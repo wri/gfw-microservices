@@ -2,11 +2,8 @@
   &__container {
     display: flex;
   }
-  &__side-bar {
-    padding-right: 25px;
-    width: 25%;
-  }
   &__content {
+    padding: 1.5rem;
     width: 75%;
   }
 }

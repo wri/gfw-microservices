@@ -36,6 +36,18 @@ module.exports = (app, limiter) => {
     controller.proManagerList
   );
 
+  app.get(
+    '/pro-manager-list/accounts/:organizationId?/:organizationName?',
+    middlewares.checkProManagerAuthentication,
+    controller.proManagerListAccountsData
+  );
+
+  app.get(
+    '/pro-manager-list/users/:organizationId?/:userId?',
+    middlewares.checkProManagerAuthentication,
+    controller.proManagerListUsersData
+  );
+
   app.post('/pro-manager/activateProAccount', (req, res) => {
     console.log('POST /pro-manager/activateProAccount');
     const { id } = req.body;

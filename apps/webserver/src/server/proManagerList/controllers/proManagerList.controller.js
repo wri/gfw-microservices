@@ -81,12 +81,31 @@ exports.proManagerListAccountsData = (req, res) => {
 };
 
 exports.proManagerListUsersData = (req, res) => {
+  const accessData = UserManager.getAccessLevels(req);
+  const statusData = UserManager.getStatuses(req);
+
+  const promises = [ProManager.getAllUsersList(req)];
+
+  Promise.all(promises)
+    .then(([users]) => {
+
+      res.status(200).json({
+        users,
+        statusData,
+        accessData,
+      });
+    })
+    .catch((error) => {
+      console.log('Pro-manager-list page failed on the server:', error);
+      res.status(500).send(err);
+    });
+};
+
+exports.proManagerListUserDetailData = (req, res) => {
   const classes = AccountManager.getClassifications(req);
   const commoditiesData = UserManager.getCommodities(req);
   const geographiesData = UserManager.getGeographies(req);
   const titlesData = UserManager.getTitles(req);
-  const accessData = UserManager.getAccessLevels(req);
-  const statusData = UserManager.getStatuses(req);
   const { userId: userIdQuery, organizationId: organizationIdQuery } = req.params;
 
   const userId = parseInt(userIdQuery, 10);
@@ -99,13 +118,10 @@ exports.proManagerListUsersData = (req, res) => {
       const selectedUser = getUserFromQuery(userId, organizationId, accounts, users);
 
       res.status(200).json({
-        users,
         classes,
         commoditiesData,
         geographiesData,
         titlesData,
-        statusData,
-        accessData,
         selectedUser,
       });
     })

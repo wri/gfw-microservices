@@ -4,15 +4,14 @@ import UserProfile from './UserProfile';
 import UsersListTable from './UsersListTable';
 import '../../css/proManagerList.scss';
 
-function UsersListSection({ isLoading, setIsLoading, organizationId, userId }) {
+function UsersListSection({ isLoading, setIsLoading}) {
   const [userFilterStr, setUserFilterStr] = useState('');
   const [userSortingCategory, setUserSortingCategory] = useState('first_name');
   const [userDir, setUserDir] = useState('des');
   const [promanagerData, setPromanagerData] = useState({});
 
   useEffect(() => {
-    const userDetailQuery = organizationId && userId ? `/${organizationId}/${userId}` : '';
-    fetch(`/pro-manager-list/users${userDetailQuery}`, {
+    fetch('/pro-manager-list/users', {
       method: 'GET',
       credentials: 'same-origin',
       headers: {
@@ -22,7 +21,6 @@ function UsersListSection({ isLoading, setIsLoading, organizationId, userId }) {
       .then((res) => res.json())
       .then((data) => {
         setPromanagerData(data);
-        console.log(data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -32,13 +30,8 @@ function UsersListSection({ isLoading, setIsLoading, organizationId, userId }) {
 
   const {
     users,
-    classes,
-    commoditiesData,
-    geographiesData,
-    titlesData,
     statusData,
     accessData,
-    selectedUser,
   } = promanagerData;
 
   const getStatusString = (user) => {
@@ -188,25 +181,13 @@ function UsersListSection({ isLoading, setIsLoading, organizationId, userId }) {
   };
   return (
     <>
-      {!selectedUser && !isLoading && (
+      {!isLoading && (
         <UsersListTable
           userSortingCategory={userSortingCategory}
           userDir={userDir}
           usersList={getUserLists()}
           sortUserTable={sortUserTable}
           searchUsers={searchUsers}
-        />
-      )}
-
-      {selectedUser && !isLoading && (
-        <UserProfile
-          userOnly
-          classificationsData={classes}
-          commoditiesData={commoditiesData}
-          geographiesData={geographiesData}
-          titlesData={titlesData}
-          currentUser={selectedUser}
-          disable={selectedUser.org_status !== 1}
         />
       )}
     </>

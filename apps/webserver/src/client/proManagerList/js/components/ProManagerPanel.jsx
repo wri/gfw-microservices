@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import UsersListSection from './UsersListSection';
+import UserDetailSection from './UserDetailSection';
 import AccountsListSection from './AccountsListSection';
 import SideBarMenu from '../../../common/js/components/SideBarMenu';
 import { proManagerPanelTabs } from './proManagerPanelTabs';
@@ -15,6 +16,8 @@ function ProManagerPanel({ location }) {
   const organizationId = parseInt(new URLSearchParams(location.search).get('organizationId'), 10);
   const userId = parseInt(new URLSearchParams(location.search).get('userId'), 10);
   const organizationName = new URLSearchParams(location.search).get('organizationName');
+
+  const userDetail = userId && organizationId;
 
   const setSelectedTab = (tab) => {
     window.location.href = `/pro-manager-list?tab=${tab}`;
@@ -52,12 +55,18 @@ function ProManagerPanel({ location }) {
               organizationName={organizationName}
             />
           )}
-          {selectedTab === proManagerPanelTabs.userProfiles.id && (
-            <UsersListSection
+          {selectedTab === proManagerPanelTabs.userProfiles.id && userDetail && (
+            <UserDetailSection
               isLoading={isLoading}
               setIsLoading={setIsLoading}
               organizationId={organizationId}
               userId={userId}
+            />
+          )}
+          {selectedTab === proManagerPanelTabs.userProfiles.id && !userDetail && (
+            <UsersListSection
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
             />
           )}
         </div>

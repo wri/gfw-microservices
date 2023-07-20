@@ -4,7 +4,7 @@ import UserProfile from './UserProfile';
 import UsersListTable from './UsersListTable';
 import '../../css/proManagerList.scss';
 
-function UsersListSection({ isLoading, setIsLoading}) {
+function UsersListSection({ isLoading, setIsLoading }) {
   const [userFilterStr, setUserFilterStr] = useState('');
   const [userSortingCategory, setUserSortingCategory] = useState('first_name');
   const [userDir, setUserDir] = useState('des');
@@ -28,11 +28,7 @@ function UsersListSection({ isLoading, setIsLoading}) {
       });
   }, []);
 
-  const {
-    users,
-    statusData,
-    accessData,
-  } = promanagerData;
+  const { users, statusData, accessData } = promanagerData;
 
   const getStatusString = (user) => {
     let statusString = 'Pending';

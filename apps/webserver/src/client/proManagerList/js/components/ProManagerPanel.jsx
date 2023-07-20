@@ -4,6 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import UsersListSection from './UsersListSection';
 import UserDetailSection from './UserDetailSection';
 import AccountsListSection from './AccountsListSection';
+import AccountDetailSection from './AccountDetailSection';
 import SideBarMenu from '../../../common/js/components/SideBarMenu';
 import { proManagerPanelTabs } from './proManagerPanelTabs';
 import './ProManagerPanel.scss';
@@ -18,6 +19,7 @@ function ProManagerPanel({ location }) {
   const organizationName = new URLSearchParams(location.search).get('organizationName');
 
   const userDetail = userId && organizationId;
+  const accountDetail = organizationName && organizationId;
 
   const setSelectedTab = (tab) => {
     window.location.href = `/pro-manager-list?tab=${tab}`;
@@ -47,13 +49,16 @@ function ProManagerPanel({ location }) {
               <CircularProgress color="success" />
             </div>
           )}
-          {selectedTab === proManagerPanelTabs.accountProfiles.id && (
-            <AccountsListSection
+          {selectedTab === proManagerPanelTabs.accountProfiles.id && accountDetail && (
+            <AccountDetailSection
               isLoading={isLoading}
               setIsLoading={setIsLoading}
               organizationId={organizationId}
               organizationName={organizationName}
             />
+          )}
+          {selectedTab === proManagerPanelTabs.accountProfiles.id && !accountDetail && (
+            <AccountsListSection isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
           {selectedTab === proManagerPanelTabs.userProfiles.id && userDetail && (
             <UserDetailSection
@@ -64,10 +69,7 @@ function ProManagerPanel({ location }) {
             />
           )}
           {selectedTab === proManagerPanelTabs.userProfiles.id && !userDetail && (
-            <UsersListSection
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
+            <UsersListSection isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
         </div>
       </div>

@@ -15,7 +15,6 @@ function UserDetailSection({ isLoading, setIsLoading, organizationId, userId }) 
       .then((res) => res.json())
       .then((data) => {
         setPromanagerData(data);
-        console.log(data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -23,13 +22,7 @@ function UserDetailSection({ isLoading, setIsLoading, organizationId, userId }) 
       });
   }, []);
 
-  const {
-    classes,
-    commoditiesData,
-    geographiesData,
-    titlesData,
-    selectedUser,
-  } = promanagerData;
+  const { classes, commoditiesData, geographiesData, titlesData, selectedUser } = promanagerData;
 
   return (
     <>
@@ -44,7 +37,7 @@ function UserDetailSection({ isLoading, setIsLoading, organizationId, userId }) 
           disable={selectedUser.org_status !== 1}
         />
       )}
-   </>
+    </>
   );
 }
 

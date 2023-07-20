@@ -4,13 +4,27 @@ import * as request from 'supertest';
 import { ListController } from '../infrastructure/list.controller';
 import { ListUseCases } from '../application/list.use-case';
 import Result from '../../Shared/domain/result';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { createMockModule } from '@wri-monorepos/shared';
+import { List } from '../domain/list.entity';
+import { ListModule } from '../list.module';
 
 describe('ListController (e2e)', () => {
   let app: INestApplication;
   let listUseCases: ListUseCases;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+    const moduleFixture = await createMockModule({
+      imports: [
+        TypeOrmModule.forRoot({
+          type: 'better-sqlite3',
+          database: ':memory:',
+          dropSchema: true,
+          entities: [List],
+          synchronize: true,
+        }),
+        ListModule,
+      ],
       controllers: [ListController],
       providers: [ListUseCases],
     }).compile();

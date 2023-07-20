@@ -1,18 +1,33 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { ConnectionController } from '../infraestructure/connection.controller';
 import { ConnectionUseCases } from '../application/connection.use-case';
 import Result from '../../Shared/domain/result';
+import { ConnectionModule } from '../connection.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConnectionRequest } from '../domain/connection.entity';
+import { createMockModule } from '@wri-monorepos/shared';
+import { ConstantsConfig, ConstantsConfigIds } from '@wri-monorepos/constants';
 
 describe('ConnectionController (e2e)', () => {
-  let app: INestApplication;
+  let app;
   let connectionUseCases: ConnectionUseCases;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+    const moduleFixture = await createMockModule({
+      imports: [
+        TypeOrmModule.forRoot({
+          type: 'better-sqlite3',
+          database: ':memory:',
+          dropSchema: true,
+          entities: [ConnectionRequest],
+          synchronize: true,
+        }),
+        ConnectionModule,
+      ],
       controllers: [ConnectionController],
-      providers: [ConnectionUseCases],
+      providers: [ConnectionUseCases, ConstantsConfig[ConstantsConfigIds.B2B_STATUS]],
     }).compile();
 
     app = moduleFixture.createNestApplication();

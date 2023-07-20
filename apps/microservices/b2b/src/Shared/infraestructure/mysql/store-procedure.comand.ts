@@ -59,7 +59,7 @@ export class StoredProcedureCommand implements Command {
     try {
       await this.connectToDatabase(database);
 
-      const result = await this.connection.queryArray<T>(
+      const result = await this.connection.executeQueryArray<T>(
         this.sql,
         this.parameters,
       );

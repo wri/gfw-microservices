@@ -12,13 +12,44 @@ const PolicyManager = require(path.resolve('./config/publicutils/policyManager.u
  * @param {Express.Request} req - Express request object
  * @param {Express.Response} res - Express response object
  */
+
 exports.proManagerList = (req, res) => {
+  res.render('proManagerList', {
+    common: compiledAssets.js.common,
+    proManagerListjs: compiledAssets.js.proManagerList,
+    proManagerListcss: compiledAssets.css.proManagerList,
+  });
+};
+
+const getUserFromQuery = (userId, organizationId, accounts, users) => {
+  const selectedUser = users.find(
+    (user) => user.user_id === userId && user.organization_id === organizationId
+  );
+  if (selectedUser) {
+    const selectedOrganization = accounts.find(
+      (account) => account.organization_id === organizationId
+    );
+    selectedUser.org_status = selectedOrganization.organization_status_id;
+  }
+
+  return selectedUser || null;
+};
+
+const getAccounFromQuery = (organizationName, organizationId, accounts) => {
+  const selectedAccount = accounts.find(
+    (account) =>
+      account.organization_id === organizationId && account.organization_name === organizationName
+  );
+  return selectedAccount || null;
+};
+
+exports.proManagerListAccountsData = (req, res) => {
   const classes = AccountManager.getClassifications(req);
-  const commoditiesData = UserManager.getCommodities(req);
-  const geographiesData = UserManager.getGeographies(req);
-  const titlesData = UserManager.getTitles(req);
   const accessData = UserManager.getAccessLevels(req);
   const statusData = UserManager.getStatuses(req);
+  const { organizationId: organizationIdParam, organizationName } = req.params;
+
+  const organizationId = parseInt(organizationIdParam, 10);
 
   const promises = [
     ProManager.getAllAccountsList(req),
@@ -28,28 +59,58 @@ exports.proManagerList = (req, res) => {
   ];
 
   Promise.all(promises)
-    .then((results) => {
-      const policyList = results[2].concat(results[3]);
-      res.render('proManagerList', {
-        common: compiledAssets.js.common,
-        accounts: results[0],
-        users: results[1],
-        classes: classes,
-        commoditiesData: commoditiesData,
-        geographiesData: geographiesData,
-        titlesData: titlesData,
-        statusData: statusData,
-        accessData: accessData,
-        policyList: policyList,
-        proManagerListjs: compiledAssets.js.proManagerList,
-        proManagerListcss: compiledAssets.css.proManagerList,
+    .then(([accounts, users, pendingPolicy, allPolicy]) => {
+      const policyList = pendingPolicy.concat(allPolicy);
+
+      const selectedAccount = getAccounFromQuery(organizationName, organizationId, accounts, users);
+
+      res.status(200).json({
+        accounts,
+        users,
+        classes,
+        statusData,
+        accessData,
+        policyList,
+        selectedAccount,
       });
     })
     .catch((error) => {
       console.log('Pro-manager-list page failed on the server:', error);
-      res.render('admin', {
-        common: compiledAssets.js.common,
-        adminjs: compiledAssets.js.admin,
+      res.status(500).send(err);
+    });
+};
+
+exports.proManagerListUsersData = (req, res) => {
+  const classes = AccountManager.getClassifications(req);
+  const commoditiesData = UserManager.getCommodities(req);
+  const geographiesData = UserManager.getGeographies(req);
+  const titlesData = UserManager.getTitles(req);
+  const accessData = UserManager.getAccessLevels(req);
+  const statusData = UserManager.getStatuses(req);
+  const { userId: userIdQuery, organizationId: organizationIdQuery } = req.params;
+
+  const userId = parseInt(userIdQuery, 10);
+  const organizationId = parseInt(organizationIdQuery, 10);
+
+  const promises = [ProManager.getAllAccountsList(req), ProManager.getAllUsersList(req)];
+
+  Promise.all(promises)
+    .then(([accounts, users]) => {
+      const selectedUser = getUserFromQuery(userId, organizationId, accounts, users);
+
+      res.status(200).json({
+        users,
+        classes,
+        commoditiesData,
+        geographiesData,
+        titlesData,
+        statusData,
+        accessData,
+        selectedUser,
       });
+    })
+    .catch((error) => {
+      console.log('Pro-manager-list page failed on the server:', error);
+      res.status(500).send(err);
     });
 };

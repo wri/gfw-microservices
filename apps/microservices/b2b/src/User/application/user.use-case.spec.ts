@@ -1,4 +1,3 @@
-import { TestingModule } from '@nestjs/testing';
 import { UserUseCases } from './user.use-case';
 import { ListUseCases } from '../../List/application/list.use-case';
 import { UserRepository } from '../domain/user.repository';
@@ -71,7 +70,7 @@ describe('UserUseCases', () => {
       phone: '111111',
     };
 
-    const module: TestingModule = await createMockModule({
+    const module = await createMockModule({
       providers: [
         UserUseCases,
         ListUseCases,

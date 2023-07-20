@@ -1,3 +1,12 @@
+/**
+ * This SP is used to get the analysis usage for an organization or a list
+ * The command requires the following parameters:
+ * @organization INT,
+ * @countForEachList INT,
+ * @startDate DATETIME,
+ * @endDate DATETIME
+ */
+
 export const getOrganizationAnalysisUsage = `
 DECLARE @MyCursor CURSOR;
 DECLARE @DBName NVARCHAR(255);

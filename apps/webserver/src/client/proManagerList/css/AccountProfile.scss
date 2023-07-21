@@ -1,0 +1,57 @@
+.account-page-header {
+  margin-bottom: 1.5rem;
+}
+.profile-setting-section {
+  width: 100%;
+  display: flex;
+  border-top: solid 1px #dad6d6;
+  padding: 1rem;
+  
+  .left-column {
+    width: 40%;
+
+    h2 {
+      font-size: 18px;
+      font-weight: 500;
+      margin: 5px 0 0 0;
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 300;
+      margin-top: 5px;
+    }
+  }
+  
+  .right-column {
+    width: 100%;
+
+    .container {
+      display: flex;
+      justify-content: stretch;
+    }
+
+    .col {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: .5rem;
+    }
+
+    .col-content {
+      width: 100%;
+    }
+  }
+
+  .field-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    span.label {
+      margin-bottom: 0.5rem;
+    }
+    .field-block {
+      width: 100%;
+    }
+  }
+}

@@ -5,6 +5,7 @@ import UsersListSection from './UsersListSection';
 import UserDetailSection from './UserDetailSection';
 import AccountsListSection from './AccountsListSection';
 import AccountDetailSection from './AccountDetailSection';
+import AccountUsage from './AccountUsage';
 import SideBarMenu from '../../../common/js/components/SideBarMenu';
 import { proManagerPanelTabs } from './proManagerPanelTabs';
 import './ProManagerPanel.scss';
@@ -36,6 +37,7 @@ function ProManagerPanel({ location }) {
           userAccessLevel={1}
         />
         <div className="pro-manager-panel__content">
+          <AccountUsage organizationId={1} />
           {isLoading && (
             <div
               style={{

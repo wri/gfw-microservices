@@ -1,5 +1,8 @@
 .account-page-header {
   margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  
 }
 .profile-setting-section {
   width: 100%;
@@ -8,12 +11,13 @@
   padding: 1rem;
   
   .left-column {
-    width: 40%;
+    width: 25%;
+    min-width: 180px;
 
     h2 {
       font-size: 18px;
       font-weight: 500;
-      margin: 5px 0 0 0;
+      margin: 7px 0 0 0;
     }
 
     p {
@@ -53,5 +57,17 @@
     .field-block {
       width: 100%;
     }
+  }
+
+  .users-table-design-control {
+    padding: .5rem;
+    h2.section-title-normal {
+      display: none;
+    }
+  }
+
+  /* wierd fix for the input[type="checkbox"] */
+  input[type='radio'], input[type='checkbox'] {
+    z-index: 0;
   }
 }

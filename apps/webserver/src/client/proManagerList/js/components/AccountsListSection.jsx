@@ -15,16 +15,14 @@ function getCookie(name) {
   return cookie[name];
 }
 
-function AccountsListSection({ isLoading, setIsLoading, organizationId, organizationName }) {
+function AccountsListSection({ isLoading, setIsLoading }) {
   const [promanagerData, setPromanagerData] = useState({});
   const [acctFilterStr, setAcctFilterStr] = useState('');
   const [accountSortingCategory, setAccountSortingCategory] = useState('organization_name');
   const [accountDir, setAccountDir] = useState('des');
 
   useEffect(() => {
-    const accountDetailQuery =
-      organizationId && organizationName ? `/${organizationId}/${organizationName}` : '';
-    fetch(`/pro-manager-list/accounts${accountDetailQuery}`, {
+    fetch(`/pro-manager-list/accounts`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {
@@ -34,7 +32,6 @@ function AccountsListSection({ isLoading, setIsLoading, organizationId, organiza
       .then((res) => res.json())
       .then((data) => {
         setPromanagerData(data);
-        console.log(data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -42,10 +39,7 @@ function AccountsListSection({ isLoading, setIsLoading, organizationId, organiza
       });
   }, []);
 
-  const { accounts, users, classes, statusData, accessData, policyList, selectedAccount } =
-    promanagerData;
-
-  console.log(promanagerData);
+  const { accounts, classes, statusData } = promanagerData;
 
   const findPendingDateString = (account) => {
     let dateString = null;
@@ -262,7 +256,7 @@ function AccountsListSection({ isLoading, setIsLoading, organizationId, organiza
   };
   return (
     <>
-      {!selectedAccount && !isLoading && (
+      {!isLoading && (
         <AccountsListsTable
           accountSortingCategory={accountSortingCategory}
           accountDir={accountDir}
@@ -283,15 +277,15 @@ function AccountsListSection({ isLoading, setIsLoading, organizationId, organiza
             disable={selectedAccount.organization_status_id !== 1}
             policyList={policyList}
         /> : <AccountProfile
-          users={users}
-          currentAccount={selectedAccount}
-          classificationsData={classes}
-          statusData={statusData}
-          accessData={accessData}
-          disable={selectedAccount.organization_status_id !== 1}
-          policyList={policyList}
-        />}
-      </>
+            users={users}
+            currentAccount={selectedAccount}
+            classificationsData={classes}
+            statusData={statusData}
+            accessData={accessData}
+            disable={selectedAccount.organization_status_id !== 1}
+            policyList={policyList}
+          />}
+        </>
       )}
     </>
   );

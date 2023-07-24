@@ -1,4 +1,3 @@
-import { TestingModule } from '@nestjs/testing';
 import { UserUseCases } from './user.use-case';
 import { ListUseCases } from '../../List/application/list.use-case';
 import { UserRepository } from '../domain/user.repository';

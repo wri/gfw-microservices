@@ -38,15 +38,27 @@ module.exports = (app, limiter) => {
   );
 
   app.get(
-    '/pro-manager-list/accounts/:organizationId?/:organizationName?',
+    '/pro-manager-list/accounts/',
     middlewares.checkProManagerAuthentication,
     controller.proManagerListAccountsData
   );
 
   app.get(
-    '/pro-manager-list/users/:organizationId?/:userId?',
+    '/pro-manager-list/accounts/:organizationId/:organizationName',
+    middlewares.checkProManagerAuthentication,
+    controller.proManagerListAccountDetailData
+  );
+
+  app.get(
+    '/pro-manager-list/users',
     middlewares.checkProManagerAuthentication,
     controller.proManagerListUsersData
+  );
+
+  app.get(
+    '/pro-manager-list/users/:organizationId/:userId',
+    middlewares.checkProManagerAuthentication,
+    controller.proManagerListUserDetailData
   );
 
   app.post('/pro-manager/activateProAccount', (req, res) => {

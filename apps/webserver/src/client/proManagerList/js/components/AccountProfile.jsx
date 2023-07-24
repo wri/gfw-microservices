@@ -44,7 +44,7 @@ export default function AccountProfile({
       </SettingSection>
         <SettingSection
           heading="Users">
-          <div className="users-table-design-control">
+          <div className="account-page--users-table-design-control">
             <UserProfileManager
               users={users.filter((user) => (
                 user.organization_id === currentAccount.organization_id
@@ -66,7 +66,7 @@ export default function AccountProfile({
  */
 function AccountProfileHeader({ children }) {
   return (
-    <div className='account-page-header'>
+    <div className='account-page__header'>
       {children}
     </div>
   );
@@ -81,15 +81,15 @@ function AccountProfileHeader({ children }) {
  */
 function SettingSection({ heading, subHeading, children }) {
   return (
-    <div className="profile-setting-section">
-      <div className={`left-column ${
+    <div className="account-page__section">
+      <div className={`section-column__left ${
         !heading && !subHeading 
           ? 'hidden' 
           : ''}`}>
         {heading && <h2>{heading}</h2>}
         {subHeading && <p>{subHeading}</p>}
       </div>
-      <div className="right-column">{children}</div>
+      <div className="section-column__right">{children}</div>
     </div>
   );
 }

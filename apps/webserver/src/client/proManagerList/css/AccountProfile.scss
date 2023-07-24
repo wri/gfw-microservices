@@ -1,52 +1,49 @@
-.account-page-header {
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  
-}
-.profile-setting-section {
-  width: 100%;
-  display: flex;
-  border-top: solid 1px #dad6d6;
-  padding: 1rem;
-  
-  .left-column {
-    width: 25%;
-    min-width: 180px;
-
-    h2 {
-      font-size: 18px;
-      font-weight: 500;
-      margin: 7px 0 0 0;
-    }
-
-    p {
-      font-size: 14px;
-      font-weight: 300;
-      margin-top: 5px;
-    }
+.account-page {
+  &__header {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between; 
   }
-  
-  .right-column {
+  &__section {
     width: 100%;
+    display: flex;
+    border-top: solid 1px #dad6d6;
+    padding: 1rem;
 
-    .container {
-      display: flex;
-      justify-content: stretch;
+    .section-column__left {
+      width: 25%;
+      min-width: 180px;
+
+      h2 {
+        font-size: 18px;
+        font-weight: 500;
+        margin: 7px 0 0 0;
+      }
+
+      p {
+        font-size: 14px;
+        font-weight: 300;
+        margin-top: 5px;
+      }
     }
-
-    .col {
+    .section-column__right {
       width: 100%;
-      display: flex;
-      align-items: center;
-      padding: .5rem;
-    }
 
-    .col-content {
-      width: 100%;
+      .container {
+        display: flex;
+        justify-content: stretch;
+      }
+      .col {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding: .5rem;
+      }
+      .col-content {
+        width: 100%;
+      }
     }
   }
-
   .field-wrapper {
     display: flex;
     flex-direction: column;
@@ -58,14 +55,13 @@
       width: 100%;
     }
   }
-
-  .users-table-design-control {
+  /* remove the table title */
+  &--users-table-design-control {
     padding: .5rem;
     h2.section-title-normal {
       display: none;
     }
   }
-
   /* wierd fix for the input[type="checkbox"] */
   input[type='radio'], input[type='checkbox'] {
     z-index: 0;

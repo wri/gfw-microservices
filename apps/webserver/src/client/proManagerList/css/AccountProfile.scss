@@ -2,7 +2,7 @@
   &__header {
     margin-bottom: 1.5rem;
     display: flex;
-    justify-content: space-between; 
+    justify-content: space-between;
   }
   &__section {
     width: 100%;
@@ -37,7 +37,7 @@
         width: 100%;
         display: flex;
         align-items: center;
-        padding: .5rem;
+        padding: 0.5rem;
       }
       .col-content {
         width: 100%;
@@ -57,13 +57,14 @@
   }
   /* remove the table title */
   &--users-table-design-control {
-    padding: .5rem;
+    padding: 0.5rem;
     h2.section-title-normal {
       display: none;
     }
   }
   /* wierd fix for the input[type="checkbox"] */
-  input[type='radio'], input[type='checkbox'] {
+  input[type='radio'],
+  input[type='checkbox'] {
     z-index: 0;
   }
 }

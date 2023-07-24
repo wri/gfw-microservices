@@ -8,16 +8,16 @@ import { useDialog } from './Dialog';
 
 /**
  * Displays and Manage Account Profile Form
- * @param {Object} accountData 
+ * @param {Object} accountData
  * @param {Boolean} isNotPending organization_status_id !== 1
  * @param {Array} classificationsData
  * @param {Array} policyList
  */
-export function AccountProfileForm({ 
-  accountData, 
-  isNotPending:isEditingDisabled,
+export function AccountProfileForm({
+  accountData,
+  isNotPending: isEditingDisabled,
   classificationsData,
-  policyList
+  policyList,
 }) {
   const dialog = useDialog();
   const getClassificationsValuesFromArrId = (orgClassificationsArrId) => {
@@ -32,7 +32,7 @@ export function AccountProfileForm({
   const [accountFormData, setAccountFormData] = useState({
     id: accountData.organization_id,
     org_name: accountData.organization_name,
-    org_address: accountData.organization_address, 
+    org_address: accountData.organization_address,
     org_website: accountData.organization_website,
     parent_org_name: accountData.organization_parent,
     is_subsidiary: accountData.organization_is_subsidiary,
@@ -44,29 +44,29 @@ export function AccountProfileForm({
   const [accountClassificationsFieldValue, setAccountClassicationsFieldValue] = useState(
     getClassificationsValuesFromArrId(accountFormData.arr_org_classification_ids)
   );
-  const classificationFieldOptions = classificationsData.map(({classification_name, id}) => ({
+  const classificationFieldOptions = classificationsData.map(({ classification_name, id }) => ({
     label: classification_name,
-    value: id
+    value: id,
   }));
   const [accountPolicySelectedList, setAccountPoliciesFieldValue] = useState([]);
   const policyFieldOptions = policyList
     .filter((policy) => policy.organization_id === accountData.organization_id)
-    .map(({document_name}) => ({
+    .map(({ document_name }) => ({
       label: document_name,
       value: document_name,
     }));
 
   const onChangeUpdateField = (field, values) => {
-    setAccountFormData(prevData => ({
+    setAccountFormData((prevData) => ({
       ...prevData,
-      [field]: values
+      [field]: values,
     }));
   };
 
   useEffect(() => {
     onChangeUpdateField(
-      'arr_org_classification_ids', 
-      accountClassificationsFieldValue.map(c => Number(c.value))
+      'arr_org_classification_ids',
+      accountClassificationsFieldValue.map((c) => Number(c.value))
     );
   }, [accountClassificationsFieldValue]);
 
@@ -90,12 +90,6 @@ export function AccountProfileForm({
     } else {
       /**
        * @TODO IMPLEMENT DIALOG SERVICE
-
-        this.setState({
-          dialogOpen: true,
-          dialogTitle: errorTitle,
-          dialogMessage: errors,
-        });
        */
     }
   };
@@ -140,16 +134,10 @@ export function AccountProfileForm({
       }
     });
 
-    if (
-      data.is_subsidiary &&
-      data.parent_org_name.trim().length === 0
-    ) {
+    if (data.is_subsidiary && data.parent_org_name.trim().length === 0) {
       errors.push('You must provide a parent organization if your organization is a subsidy.');
     }
-    if (
-      !data.is_subsidiary &&
-      data.parent_org_name.trim().length !== 0
-    ) {
+    if (!data.is_subsidiary && data.parent_org_name.trim().length !== 0) {
       errors.push('You must check the subsidiary box if a parent organization is supplied.');
     }
     fieldValidations.organization_address.validations.forEach((validation) => {
@@ -175,10 +163,10 @@ export function AccountProfileForm({
     });
 
     return {
-      isFormDataValid: () => (errors.length === 0 && missing.length === 0),
+      isFormDataValid: () => errors.length === 0 && missing.length === 0,
       errors,
-      missing
-    }
+      missing,
+    };
   };
 
   const updateProAccount = (payload) => {
@@ -188,24 +176,26 @@ export function AccountProfileForm({
     if (isFormDataValid()) {
       return fetch('/pro-manager/updateProAccount', {
         method: 'POST',
-        credentials: "same-origin",
+        credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
-      }).then((response) => response.json())
-      .then((data) => {
-        if (data.status === 'success') {
-          dialog.setDialogTitle('Account Information Saved');
-          dialog.setDialogMessage('Organization profile updated successfully');
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === 'success') {
+            dialog.setDialogTitle('Account Information Saved');
+            dialog.setDialogMessage('Organization profile updated successfully');
+            dialog.disableDialogAction(false);
+          }
+        })
+        .catch(() => {
+          dialog.setDialogTitle('Oops! Something went wrong');
+          dialog.setDialogMessage('Please try again.');
           dialog.disableDialogAction(false);
-        }
-      }).catch(() => {
-        dialog.setDialogTitle('Oops! Something went wrong');
-        dialog.setDialogMessage('Please try again.');
-        dialog.disableDialogAction(false);
-      });
-    } 
+        });
+    }
     // get back to the user with error messages
     let dialogTitle;
     let dialogMessage;
@@ -219,16 +209,10 @@ export function AccountProfileForm({
       ];
     } else if (errors.length > 0) {
       dialogTitle = 'Invalid field entries';
-      dialogMessage = [
-        'Please review for invalid characters: ',
-        ...errors,
-      ];
+      dialogMessage = ['Please review for invalid characters: ', ...errors];
     } else {
       dialogTitle = 'Mandatory fields missing';
-      dialogMessage = [
-        'Please enter: ',
-        ...missing,
-      ];
+      dialogMessage = ['Please enter: ', ...missing];
     }
     dialog.setDialogTitle(dialogTitle);
     dialog.setDialogMessage(dialogMessage);
@@ -255,7 +239,7 @@ export function AccountProfileForm({
         <div className="col">
           <div className="col-content">
             <div className="field-wrapper">
-            <span className="label required-param">Organization Website</span>
+              <span className="label required-param">Organization Website</span>
               <input
                 value={accountFormData.org_website}
                 disabled={isEditingDisabled}
@@ -288,20 +272,16 @@ export function AccountProfileForm({
       <div className="container">
         <div className="col">
           <div className="col-content">
-            <div className="field-wrapper" style={{'alignSelf': 'center'}}>
+            <div className="field-wrapper" style={{ alignSelf: 'center' }}>
               <input
                 checked={Boolean(accountFormData.is_subsidiary)}
                 disabled={isEditingDisabled}
                 name="is_subsidiary"
                 type="checkbox"
-                onChange={(event) => onChangeUpdateField(
-                  'is_subsidiary', event.target.checked
-                )}
+                onChange={(event) => onChangeUpdateField('is_subsidiary', event.target.checked)}
                 className="account-info-input"
               />
-              <label
-                htmlFor="is_subsidiary"
-                className="profile-label profile-checkbox__label">
+              <label htmlFor="is_subsidiary" className="profile-label profile-checkbox__label">
                 Is Subsidiary ?
               </label>
             </div>
@@ -310,19 +290,23 @@ export function AccountProfileForm({
         <div className="col">
           <div className="col-content">
             <div className="field-wrapper">
-              <span className={`label ${
+              <span
+                className={`label ${
                   accountFormData.is_subsidiary ? 'label--block required-param' : ''
-                }`}>
+                }`}
+              >
                 Parent Organization
               </span>
               <input
                 value={accountFormData.parent_org_name}
-                disabled={isEditingDisabled || (!accountFormData.is_subsidiary && isEditingDisabled)}
+                disabled={
+                  isEditingDisabled || (!accountFormData.is_subsidiary && isEditingDisabled)
+                }
                 required={accountFormData.is_subsidiary === true}
                 name="parent_org_name"
                 onChange={(e) => onChangeUpdateField('parent_org_name', e.target.value)}
                 className="account-info-input"
-                />
+              />
             </div>
           </div>
         </div>
@@ -331,9 +315,7 @@ export function AccountProfileForm({
         <div className="col">
           <div className="col-content">
             <div className="field-wrapper">
-              <span className="label label--block required-param">
-                Account Classifications
-              </span>
+              <span className="label label--block required-param">Account Classifications</span>
               <Select
                 required
                 disabled={isEditingDisabled}
@@ -377,24 +359,23 @@ export function AccountProfileForm({
       </div>
       <div className="container">
         <div className="col">
-        <div className="col-content">
-          <div className="field-wrapper">
-            <span className="label">Subscription Status</span>
-            <select
-              value={accountFormData.subscription_status_id}
-              disabled={isEditingDisabled}
-              required
-              name="subscription_status_id"
-              onChange={(event) => onChangeUpdateField(
-                'subscription_status_id', 
-                event.target.value
-              )}
-            >
-              <option value={1}>Standard</option>
-              <option value={2}>Premium</option>
-            </select>
+          <div className="col-content">
+            <div className="field-wrapper">
+              <span className="label">Subscription Status</span>
+              <select
+                value={accountFormData.subscription_status_id}
+                disabled={isEditingDisabled}
+                required
+                name="subscription_status_id"
+                onChange={(event) =>
+                  onChangeUpdateField('subscription_status_id', event.target.value)
+                }
+              >
+                <option value={1}>Standard</option>
+                <option value={2}>Premium</option>
+              </select>
+            </div>
           </div>
-        </div>
         </div>
       </div>
       <div className="container">
@@ -405,11 +386,11 @@ export function AccountProfileForm({
               onClick={() => updateProAccount(accountFormData)}
               value="Save"
             />
-            </div>
+          </div>
         </div>
       </div>
     </Fragment>
-  )
+  );
 }
 
 /**
@@ -420,9 +401,9 @@ export function AccountProfileForm({
 export function AccountStatusSetting({ organization_id, organization_status_id }) {
   const dialog = useDialog();
   const ACCOUNT_STATUSES = {
-    'PENDING': 1,
-    'ACTIVE': 2,
-    'INACTIVE': 3,
+    PENDING: 1,
+    ACTIVE: 2,
+    INACTIVE: 3,
   };
 
   const activateAccount = () => {
@@ -442,26 +423,26 @@ export function AccountStatusSetting({ organization_id, organization_status_id }
         id: organization_id,
       }),
     })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.redirect) {
-        dialog.setDialogTitle('Success');
-        dialog.setDialogMessage('Redirecting...');
-        dialog.closeDialog(() => {
-          window.location = data.redirect;
-        });
-      }
-      if (data.hasOwnProperty('errorCode')) {
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.redirect) {
+          dialog.setDialogTitle('Success');
+          dialog.setDialogMessage('Redirecting...');
+          dialog.closeDialog(() => {
+            window.location = data.redirect;
+          });
+        }
+        if (data.hasOwnProperty('errorCode')) {
+          dialog.setDialogTitle('Error Activating Account');
+          dialog.setDialogMessage(data.systemMessage.userMessage || data.systemMessage.message);
+        }
+      })
+      .catch((error) => {
+        console.error('Error activating account', error);
         dialog.setDialogTitle('Error Activating Account');
-        dialog.setDialogMessage(data.systemMessage.userMessage || data.systemMessage.message);
-      }
-    })
-    .catch((error) => {
-      console.error('Error activating account', error);
-      dialog.setDialogTitle('Error Activating Account');
-      dialog.setDialogMessage('Please reload the page and try again');
-      dialog.disableDialogAction(true);
-    });
+        dialog.setDialogMessage('Please reload the page and try again');
+        dialog.disableDialogAction(true);
+      });
   };
 
   const deactivateAccount = () => {
@@ -477,20 +458,20 @@ export function AccountStatusSetting({ organization_id, organization_status_id }
         status: organization_status_id,
       }),
     })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.redirect) {
-        dialog.setDialogTitle('Account Deactivated');
-        dialog.setDialogMessage('Redirecting...');
-        window.location = data.redirect;
-      }
-    })
-    .catch((error) => {
-      console.error('Error deactivating account', error);
-      dialog.setDialogTitle('Error deactivating account');
-      dialog.setDialogMessage('Please reload the page and try again');
-      dialog.disableDialogAction(true);
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.redirect) {
+          dialog.setDialogTitle('Account Deactivated');
+          dialog.setDialogMessage('Redirecting...');
+          window.location = data.redirect;
+        }
+      })
+      .catch((error) => {
+        console.error('Error deactivating account', error);
+        dialog.setDialogTitle('Error deactivating account');
+        dialog.setDialogMessage('Please reload the page and try again');
+        dialog.disableDialogAction(true);
+      });
   };
 
   const deleteAccountRequest = () => {
@@ -505,25 +486,25 @@ export function AccountStatusSetting({ organization_id, organization_status_id }
         },
         body: JSON.stringify({ id: organization_id }),
       })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.redirect) {
-          dialog.setDialogTitle('Account Deleted');
-          dialog.setDialogMessage('Redirecting...');
-          window.location = res.redirect;
-        }
-        if (data.hasOwnProperty('errorCode')) {
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.redirect) {
+            dialog.setDialogTitle('Account Deleted');
+            dialog.setDialogMessage('Redirecting...');
+            window.location = res.redirect;
+          }
+          if (data.hasOwnProperty('errorCode')) {
+            dialog.setDialogTitle('Error deleting account');
+            dialog.setDialogMessage(data.systemMessage.userMessage);
+            dialog.disableDialogAction(true);
+          }
+        })
+        .catch((error) => {
+          console.error('Error deleting account', error);
           dialog.setDialogTitle('Error deleting account');
-          dialog.setDialogMessage(data.systemMessage.userMessage);
+          dialog.setDialogMessage('');
           dialog.disableDialogAction(true);
-        }
-      }).catch((error) => {
-        console.error('Error deleting account', error);
-        dialog.setDialogTitle('Error deleting account');
-        dialog.setDialogMessage('');
-        dialog.disableDialogAction(true);
-      });
-
+        });
     }
   };
 
@@ -543,19 +524,19 @@ export function AccountStatusSetting({ organization_id, organization_status_id }
               <option value={2}>Active</option>
               <option value={3}>Inactive</option>
             </select>
-          </div>      
+          </div>
         </div>
       </div>
       <div className="col">
         <div className="col-content">
           <GfwButton
             classNames={`btn-green ${
-                organization_status_id === ACCOUNT_STATUSES['ACTIVE'] ? 'button-disabled' : ''
-              }`}
-              disabled={organization_status_id === ACCOUNT_STATUSES['ACTIVE']}
-              onClick={activateAccount}
-              value="Activate"
-            />
+              organization_status_id === ACCOUNT_STATUSES['ACTIVE'] ? 'button-disabled' : ''
+            }`}
+            disabled={organization_status_id === ACCOUNT_STATUSES['ACTIVE']}
+            onClick={activateAccount}
+            value="Activate"
+          />
           {organization_status_id === ACCOUNT_STATUSES['PENDING'] ? null : (
             <GfwButton
               classNames={`btn-green ${

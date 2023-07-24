@@ -31,36 +31,37 @@ export default function DialogProvider({ children }) {
   };
 
   return (
-    <DialogContext.Provider value={{
-      isDialogOpen,
-      openDialog,
-      closeDialog,
-      disableDialogAction,
-      setDialogTitle,
-      setDialogMessage
-    }}>
+    <DialogContext.Provider
+      value={{
+        isDialogOpen,
+        openDialog,
+        closeDialog,
+        disableDialogAction,
+        setDialogTitle,
+        setDialogMessage,
+      }}
+    >
       <Dialog
         paperClassName="dialog-paper"
         open={isDialogOpen}
         title={dialogTitle}
         actions={[
           <div>
-            <Button label="Close" 
-              disabled={isDialogActionDisabled} 
-              keyboardFocused onClick={() => {
-              setIsDialogOpen(false);
-            }} />
+            <Button
+              label="Close"
+              disabled={isDialogActionDisabled}
+              keyboardFocused
+              onClick={() => {
+                setIsDialogOpen(false);
+              }}
+            />
           </div>,
         ]}
         onRequestClose={() => setIsDialogOpen(false)}
       >
-        {Array.isArray(dialogMessage) ? (
-          dialogMessage.map((str, indx) => (
-            <p key={`dialog-message-${indx}`}>{str}</p>
-          ))
-        ) : (
-          dialogMessage
-        )}
+        {Array.isArray(dialogMessage)
+          ? dialogMessage.map((str, indx) => <p key={`dialog-message-${indx}`}>{str}</p>)
+          : dialogMessage}
       </Dialog>
       {children}
     </DialogContext.Provider>

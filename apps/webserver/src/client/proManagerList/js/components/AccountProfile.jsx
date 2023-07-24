@@ -23,10 +23,10 @@ export default function AccountProfile({
 
   return (
     <DialogProvider>
-      <AccountProfileHeader>
+      <div className='account-page__header'>
         <div /* purposefully */ />
         <GfwButton classNames="btn-green" onClick={back} value="Back to Profile Manager" />
-      </AccountProfileHeader>
+      </div>
       <SettingSection heading="Account Profile">
         <AccountProfileForm 
           isNotPending={isNotPending}
@@ -55,20 +55,6 @@ export default function AccountProfile({
           </div>
         </SettingSection>
     </DialogProvider>
-  );
-}
-
-
-/**
- * Header Control
- * @param {ReactNode} children
- * @returns {ReactElement}
- */
-function AccountProfileHeader({ children }) {
-  return (
-    <div className='account-page__header'>
-      {children}
-    </div>
   );
 }
 

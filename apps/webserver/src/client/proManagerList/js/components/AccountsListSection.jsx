@@ -5,16 +5,6 @@ import AccountProfile from './AccountProfile';
 import AccountsListsTable from './AccountsListsTable';
 import '../../css/proManagerList.scss';
 
-// deleteme after test
-function getCookie(name) {
-  let cookie = {};
-  document.cookie.split(';').forEach(function (el) {
-    let [k, v] = el.split('=');
-    cookie[k.trim()] = v;
-  });
-  return cookie[name];
-}
-
 function AccountsListSection({ isLoading, setIsLoading }) {
   const [promanagerData, setPromanagerData] = useState({});
   const [acctFilterStr, setAcctFilterStr] = useState('');
@@ -264,32 +254,6 @@ function AccountsListSection({ isLoading, setIsLoading }) {
           searchAccts={searchAccts}
           sortAcctTable={sortAcctTable}
         />
-      )}
-
-      {selectedAccount && !isLoading && (
-        <>
-          {getCookie('version') == 1 ? (
-            <AccountProfile_DEPRECATED
-              users={users}
-              currentAccount={selectedAccount}
-              classificationsData={classes}
-              statusData={statusData}
-              accessData={accessData}
-              disable={selectedAccount.organization_status_id !== 1}
-              policyList={policyList}
-            />
-          ) : (
-            <AccountProfile
-              users={users}
-              currentAccount={selectedAccount}
-              classificationsData={classes}
-              statusData={statusData}
-              accessData={accessData}
-              disable={selectedAccount.organization_status_id !== 1}
-              policyList={policyList}
-            />
-          )}
-        </>
       )}
     </>
   );

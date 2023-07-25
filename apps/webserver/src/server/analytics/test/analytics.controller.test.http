@@ -1,13 +1,27 @@
 ### filter by orgId.
 GET https://localhost:8443/analytics/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=0&organizationId=1
 Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+Cookie: gfwpro.globalforestwatch.org=s%3Ae0346af0-2a61-11ee-8286-7d4257adca7d.KGqbX2f7C62URkhtJfSLhil1WeIQx34CX5ulCz9RpIg
 
 ### return analysis usage in the list level.
 GET https://localhost:8443/analytics/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=1
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+Cookie: gfwpro.globalforestwatch.org=s%3Ae0346af0-2a61-11ee-8286-7d4257adca7d.KGqbX2f7C62URkhtJfSLhil1WeIQx34CX5ulCz9RpIg
 
 ### return analysis usage in the organization level
 GET https://localhost:8443/analytics/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=0
 Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+Cookie: gfwpro.globalforestwatch.org=s%3Ae0346af0-2a61-11ee-8286-7d4257adca7d.KGqbX2f7C62URkhtJfSLhil1WeIQx34CX5ulCz9RpIg
+
+### return analysis usage in the list level.
+GET https://localhost:8443/analytics/myorg/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=0
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org=s%3Ae0346af0-2a61-11ee-8286-7d4257adca7d.KGqbX2f7C62URkhtJfSLhil1WeIQx34CX5ulCz9RpIg
+
+### return analysis usage in the list level.
+GET https://localhost:8443/analytics/myorg/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=1
+Cookie: gfwpro.globalforestwatch.org=s%3Ae0346af0-2a61-11ee-8286-7d4257adca7d.KGqbX2f7C62URkhtJfSLhil1WeIQx34CX5ulCz9RpIg
+
+### return analysis usage in the organization level
+GET https://localhost:8443/analytics/myorg/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=0
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org=s%3Ae0346af0-2a61-11ee-8286-7d4257adca7d.KGqbX2f7C62URkhtJfSLhil1WeIQx34CX5ulCz9RpIg

@@ -6,7 +6,7 @@ const Slack = require('@slack/bolt');
  *
  * @param {string} text - Title of notification / error
  * @param {Object} data - Data to be logged
- * @param {Object} userInfo - optional user info to be logged
+ * @param {string} userInfo - optional user info to be logged
  * @return {null}
  */
 
@@ -40,7 +40,7 @@ const sendNotification = async (text, data, userInfo) => {
         "type": "section",
         "text": {
           "type": "mrkdwn",
-          "text": `data: \`\`\` ${data} \`\`\``
+          "text": `data: \`\`\` ${JSON.stringify(data, null, "\t")} \`\`\``
         }
       }
     ]

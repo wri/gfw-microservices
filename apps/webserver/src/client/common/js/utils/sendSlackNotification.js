@@ -20,7 +20,7 @@ const sendSlackNotification = (text, data) => {
   httpRequest
   .fetchJSON('/slack-notification', {
     text,
-    data: JSON.stringify(data, null, "\t"),
+    data,
     userInfo: userData,
   })
 }

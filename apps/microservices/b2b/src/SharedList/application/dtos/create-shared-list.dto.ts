@@ -1,13 +1,5 @@
 import { Transform } from 'class-transformer';
-import {
-  IsArray,
-  IsEmail,
-  IsNotEmpty,
-  IsNotEmptyObject,
-  IsNumber,
-  IsOptional,
-} from 'class-validator';
-import { FilterType, OrderType } from '../../../Shared/domain/criteria/query';
+import { IsEmail, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateSharedListDto {
   @IsNotEmpty()

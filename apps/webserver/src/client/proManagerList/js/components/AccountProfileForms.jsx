@@ -1,6 +1,5 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import GfwButton from '../../../common/js/components/GfwButton';
-import '../../css/AccountProfile.scss';
 import { profilePage } from '../../../common/js/config';
 import Select from 'react-select';
 import { fieldValidations } from '../../../profile/js/utils/validations';

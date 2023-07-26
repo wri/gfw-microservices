@@ -1,6 +1,5 @@
 import React from 'react';
 import GfwButton from '../../../common/js/components/GfwButton';
-import '../../css/AccountProfile.scss';
 import DialogProvider from './Dialog';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -49,9 +48,7 @@ export default function AccountProfile({
           }}
         >
           <UserProfileManager
-            users={users.filter(
-              (user) => user.organization_id === currentAccount.organization_id
-            )}
+            users={users.filter((user) => user.organization_id === currentAccount.organization_id)}
             statusData={statusData}
             accessData={accessData}
           />

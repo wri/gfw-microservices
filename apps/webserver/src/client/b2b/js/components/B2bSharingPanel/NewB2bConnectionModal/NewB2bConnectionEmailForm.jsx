@@ -4,32 +4,31 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@mui/material/CardActions';
 import { validEmail } from '../../../../../locations/js/utils/validations';
 import { profilePage } from '../../../../../common/js/config';
-import { sendInvitation } from '../fetchB2b';
+import { sendInvitation, checkUserBelongsToOrgAndIsAdmin } from '../fetchB2b';
 
 function NewB2bConnectionEmailForm({ setApiResponse }) {
   const [email, setEmail] = useState('');
   const [organizationName, setOrganizationName] = useState('');
   const [emailAndOrgNotMatchingError, setEmailAndOrgNotMatchingError] = useState(false);
 
-  const handleSubmit = () => {
-    setEmailAndOrgNotMatchingError(false);
-
-    if (Math.random() < 0.5) {
-      setEmailAndOrgNotMatchingError(true);
-    }
-    /*
-    TODO: front end - backend integration
-    sendInvitation(email)
-      .then(() => {
+  const handleSubmit = async () => {
+    //    setEmailAndOrgNotMatchingError(false);
+    const res = await checkUserBelongsToOrgAndIsAdmin(email, organizationName)
+    if (res.status === 200 || res.status === 201) {
+      const jsonResponse = await res.json();
+      const sendInvitationRes = await sendInvitation(email, jsonResponse.organizationId);
+      if ((sendInvitationRes && sendInvitationRes.status === 200) || sendInvitationRes.status === 201) {
         setApiResponse('success');
-      })
-      .catch((err) => {
-        if (err === 401) {
-          return setApiResponse('emailNotFound');
-        }
-        setApiResponse('connectionAlreadyExists');
-      });
-    */
+        return;
+      }
+    }
+
+    if (res.status === 404) {
+      setEmailAndOrgNotMatchingError(true);
+      return;
+    }
+
+    setApiResponse('connectionAlreadyExists');
   };
   const isSubmitDisabled = !email || !validEmail(email) || !organizationName;
 

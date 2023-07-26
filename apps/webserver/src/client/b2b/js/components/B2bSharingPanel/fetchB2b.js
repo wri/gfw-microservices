@@ -15,7 +15,7 @@ async function getOrgsList(email) {
 
 async function getConnections() {
   return httpRequest
-    .fetchJSON('/connection', {})
+    .fetchGet('/b2b/connection')
     .then((response) => {
       return JSON.parse(response);
     })
@@ -25,16 +25,24 @@ async function getConnections() {
     });
 }
 
-async function sendInvitation(email) {
-  return httpRequest
-    .fetchForm('/invitation', { email })
-    .then((response) => {
-      return JSON.parse(response);
-    })
-    .catch((err) => {
-      console.log(err);
-      return [];
-    });
+async function sendInvitation(email, organization) {
+  return fetch('/b2b/invitation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, organization }),
+  });
+}
+
+async function checkUserBelongsToOrgAndIsAdmin(email, organizationName) {
+  return fetch('/b2b/connection/check-user', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, organizationName }),
+  });
 }
 
 async function resendInvitation(id) {
@@ -50,39 +58,30 @@ async function resendInvitation(id) {
 }
 
 async function acceptConnection(id) {
-  return httpRequest
-    .fetchForm(`/connection/accept/${id}`, {})
-    .then((response) => {
-      return JSON.parse(response);
-    })
-    .catch((err) => {
-      console.log(err);
-      return [];
-    });
+  return fetch(`/b2b/connection/accept/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
 }
 
 async function rejectConnection(id) {
-  return httpRequest
-    .fetchForm(`/connection/reject/${id}`, {})
-    .then((response) => {
-      return JSON.parse(response);
-    })
-    .catch((err) => {
-      console.log(err);
-      return [];
-    });
+  return fetch(`/b2b/connection/reject/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
 }
 
 async function cancelConnection(id) {
-  return httpRequest
-    .fetchForm(`/connection/cancel/${id}`, {})
-    .then((response) => {
-      return JSON.parse(response);
-    })
-    .catch((err) => {
-      console.log(err);
-      return [];
-    });
+  return fetch(`/b2b/connection/cancel/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  });
 }
 
 export {
@@ -93,4 +92,5 @@ export {
   rejectConnection,
   resendInvitation,
   getOrgsList,
+  checkUserBelongsToOrgAndIsAdmin,
 };

@@ -20,6 +20,7 @@ import {
 } from '../../Shared/domain/criteria/query';
 import { CreateConnectionDto } from '../application/dtos/connection.dto';
 import { ApiOperation } from '@nestjs/swagger';
+import { CheckUserBelongToOrgDTO } from '../application/dtos/connection-check.dto';
 
 @Controller('/connections')
 export class ConnectionController {
@@ -149,5 +150,24 @@ export class ConnectionController {
   @Post(':id/resend')
   resendInvitation(@Param('id') invitationId: number) {
     return this.connectionUseCases.resendConnection(invitationId);
+  }
+
+  @ApiOperation({
+    summary:
+      'Check if a user is admin for a organization using the email and organization name.',
+  })
+  @Post('/check')
+  async checkUserIsAdminForOrgName(@Body() body: CheckUserBelongToOrgDTO) {
+    const result =
+      await this.connectionUseCases.checkUserBelongsToOrgAndIsAdmin(
+        body.email,
+        body.organizationName,
+      );
+    if (result.isSuccess) {
+      return result.getValue();
+    }
+
+    const error = result.getError();
+    throw new HttpException(error, 404);
   }
 }

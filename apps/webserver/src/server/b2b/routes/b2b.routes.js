@@ -49,8 +49,11 @@ module.exports = (app, limiter) => {
   };
 
   const runB2BRequest = async (requestData, request, response, next) => {
-    const { method, url, data } = requestData;
+    const { method, url, data, mapper } = requestData;
     const newUrl = `${getB2BUrl()}${url}`;
+    const [org] = await AuthManager.getOrganizations(request);
+    const { organization_id: organizationId } = org;
+
     try {
       const { data: result } = await axios({
         url: newUrl,
@@ -60,6 +63,9 @@ module.exports = (app, limiter) => {
         },
         data,
       });
+      if (mapper) {
+        return response.status(200).send(mapper(result, organizationId));
+      }
       return response.status(200).send(result);
     } catch (err) {
       const { status: statusCode, data: error } = err.response;
@@ -108,4 +114,6 @@ module.exports = (app, limiter) => {
   b2bRoutes.put('/connection/accept/:id', connectionController.acceptConnection);
   b2bRoutes.put('/connection/reject/:id', connectionController.rejectConnection);
   b2bRoutes.put('/connection/cancel/:id', connectionController.cancelConnection);
+
+  b2bRoutes.post('/connection/check-user', connectionController.checkUserBelongsToOrgAndIsAdmin);
 };

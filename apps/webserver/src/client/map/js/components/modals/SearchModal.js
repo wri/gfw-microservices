@@ -67,7 +67,6 @@ export default class SearchModal extends Component {
       .layerConfig.body.url;
     const landRightsURL = mapLayers.filter((layer) => layer.id === proLayers.landRights)[0]
       .layerConfig.body.url;
-    // const AZESitesURL = mapLayers.filter(layer => layer.id === AZESites)[0].layerConfig.body.url;
 
     this.searchWidget = new Search({
       view: this.props.mapView,
@@ -226,17 +225,6 @@ export default class SearchModal extends Component {
           name: 'Land Rights',
           placeholder: 'Search Land Rights',
         },
-        // this is a carto table, leaving out of the sources for now
-        // {
-        //   featureLayer: new FeatureLayer({
-        //     url: AZESitesURL
-        //   }),
-        //   searchFields: ['sitenamefi', 'species'],
-        //   suggestionTemplate: 'Name: {sitenamefi}, Species: {species}',
-        //   outFields: ['sitenamefi', 'species'],
-        //   name: 'Alliance for Zero Extinction Sites',
-        //   placeholder: 'Search Alliance for Zero Extinction Sites'
-        // }
       ],
     });
 

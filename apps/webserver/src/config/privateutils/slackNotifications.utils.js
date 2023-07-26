@@ -28,6 +28,13 @@ const sendNotification = async (text, data, userInfo) => {
           text: `:warning: *${text}*`,
         },
       },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `NODE_ENV: *${process.env.NODE_ENV }*`,
+        },
+      },
       ...(userInfo
         ? [
             {

@@ -1111,7 +1111,7 @@ export default class Map extends Component {
     allLayers.forEach((layer) => {
       if (layer.visible) {
         const layerConfig = utils.getObject(mapPage.layers, 'id', layer.id);
-        if (layerConfig && layerConfig.popupTemplate && !layerConfig.cartoFields) {
+        if (layerConfig && layerConfig.popupTemplate) {
           deferreds.push(identifyPoints(layer, evt, this.view));
         }
       }

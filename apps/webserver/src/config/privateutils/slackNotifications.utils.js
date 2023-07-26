@@ -32,7 +32,7 @@ const sendNotification = async (text, data, userInfo) => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `NODE_ENV: *${process.env.NODE_ENV }*`,
+          text: `NODE_ENV: *${process.env.NODE_ENV}*`,
         },
       },
       ...(userInfo

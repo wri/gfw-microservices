@@ -316,13 +316,6 @@ export default class Map extends Component {
             this.view.map.add(mapLayer);
             mapLayer.visible = true;
             this.sortMapArray(mapLayer);
-          } else if (configLayer?.cartoFields) {
-            const cartoLayer = this.state.mapLayers.find((layer) => layer.id === nowVisibleLayer);
-            this.getCartoGraphics(cartoLayer).then((layer) => {
-              this.view.map.add(layer);
-              layer.visible = true;
-              this.sortMapArray(layer);
-            });
           } else if (nowVisibleLayer === formaAlertsID) {
             this.getFormaLayer(this.state.mapLayers).then((formaLayer) => {
               this.getFormaLayerCallback(configLayer, formaLayer);

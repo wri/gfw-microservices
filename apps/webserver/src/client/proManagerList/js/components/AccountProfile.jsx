@@ -2,6 +2,9 @@ import React from 'react';
 import GfwButton from '../../../common/js/components/GfwButton';
 import '../../css/AccountProfile.scss';
 import DialogProvider from './Dialog';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import SettingSection from './SettingSection';
 import { AccountProfileForm, AccountStatusSetting } from './AccountProfileForms';
 import UserProfileManager from './UserProfileManager';
 
@@ -20,10 +23,9 @@ export default function AccountProfile({
 
   return (
     <DialogProvider>
-      <div className="account-page__header">
-        <div /* purposefully */ />
+      <Grid container justifyContent="end" sx={{ marginBottom: '1.5rem' }}>
         <GfwButton classNames="btn-green" onClick={back} value="Back to Profile Manager" />
-      </div>
+      </Grid>
       <SettingSection heading="Account Profile">
         <AccountProfileForm
           isNotPending={isNotPending}
@@ -39,33 +41,22 @@ export default function AccountProfile({
         />
       </SettingSection>
       <SettingSection heading="Users">
-        <div className="account-page--users-table-design-control">
+        <Box
+          sx={{
+            'h2.section-title-normal': {
+              display: 'none',
+            },
+          }}
+        >
           <UserProfileManager
-            users={users.filter((user) => user.organization_id === currentAccount.organization_id)}
+            users={users.filter(
+              (user) => user.organization_id === currentAccount.organization_id
+            )}
             statusData={statusData}
             accessData={accessData}
           />
-        </div>
+        </Box>
       </SettingSection>
     </DialogProvider>
-  );
-}
-
-/**
- * Setting Section Control
- * @param {string} heading
- * @param {string} subHeading
- * @param {ReactNode} children
- * @returns {ReactElement}
- */
-function SettingSection({ heading, subHeading, children }) {
-  return (
-    <div className="account-page__section">
-      <div className={`section-column__left ${!heading && !subHeading ? 'hidden' : ''}`}>
-        {heading && <h2>{heading}</h2>}
-        {subHeading && <p>{subHeading}</p>}
-      </div>
-      <div className="section-column__right">{children}</div>
-    </div>
   );
 }

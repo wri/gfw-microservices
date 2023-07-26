@@ -5,6 +5,38 @@ import { profilePage } from '../../../common/js/config';
 import Select from 'react-select';
 import { fieldValidations } from '../../../profile/js/utils/validations';
 import { useDialog } from './Dialog';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import SelectField from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+
+const FieldLabel = styled(InputLabel)({
+  fontFamily: 'Fira Sans, sans-serif',
+  textTransform: 'uppercase',
+  color: '#555555',
+  fontWeight: 500,
+  lineHeight: '1.2',
+  fontSize: '14px',
+  marginBottom: '5px',
+});
+
+const disabledStyles = {
+  '&.Mui-disabled': {
+    backgroundColor: 'rgb(0 0 0 / 4%)',
+    cursor: 'not-allowed',
+  },
+};
+
+const ACCOUNT_STATUSES = {
+  PENDING: 1,
+  ACTIVE: 2,
+  INACTIVE: 3,
+};
 
 /**
  * Displays and Manage Account Profile Form
@@ -62,6 +94,10 @@ export function AccountProfileForm({
       [field]: values,
     }));
   };
+  const subscriptionStatusOptions = [
+    { label: 'Standard', value: 1 },
+    { label: 'Premium', value: 2 },
+  ];
 
   useEffect(() => {
     onChangeUpdateField(
@@ -150,7 +186,6 @@ export function AccountProfileForm({
         missing.push(fieldValidations.organization_address.text);
       }
     });
-
     fieldValidations.organization_website.validations.forEach((validation) => {
       if (validation(data.org_website.trim()) === false) {
         errors.push(fieldValidations.organization_website.text);
@@ -174,7 +209,7 @@ export function AccountProfileForm({
     dialog.openDialog('Updating Account', 'Please wait...', true);
 
     if (isFormDataValid()) {
-      return fetch('/pro-manager/updateProAccount', {
+      fetch('/pro-manager/updateProAccount', {
         method: 'POST',
         credentials: 'same-origin',
         headers: {
@@ -195,6 +230,7 @@ export function AccountProfileForm({
           dialog.setDialogMessage('Please try again.');
           dialog.disableDialogAction(false);
         });
+      return void 0;
     }
     // get back to the user with error messages
     let dialogTitle;
@@ -220,166 +256,190 @@ export function AccountProfileForm({
 
   return (
     <Fragment>
-      <div className="container">
-        <div className="col">
-          <div className="col-content">
-            <div className="field-wrapper">
-              <span className="label required-param">Organization Name</span>
-              <input
-                value={accountFormData.org_name}
-                disabled={isEditingDisabled}
-                required
-                name="org_name"
-                onChange={(e) => onChangeUpdateField('org_name', e.target.value)}
-                className="account-info-input"
-              />
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="col-content">
-            <div className="field-wrapper">
-              <span className="label required-param">Organization Website</span>
-              <input
-                value={accountFormData.org_website}
-                disabled={isEditingDisabled}
-                required
-                name="org_website"
-                onChange={(e) => onChangeUpdateField('org_website', e.target.value)}
-                className="account-info-input"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="container">
-        <div className="col">
-          <div className="col-content">
-            <div className="field-wrapper">
-              <span className="label required-param">Organization Address</span>
-              <input
-                value={accountFormData.org_address}
-                disabled={isEditingDisabled}
-                required
-                name="org_address"
-                onChange={(e) => onChangeUpdateField('org_address', e.target.value)}
-                className="account-info-input"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="container">
-        <div className="col">
-          <div className="col-content">
-            <div className="field-wrapper" style={{ alignSelf: 'center' }}>
-              <input
-                checked={Boolean(accountFormData.is_subsidiary)}
-                disabled={isEditingDisabled}
-                name="is_subsidiary"
-                type="checkbox"
-                onChange={(event) => onChangeUpdateField('is_subsidiary', event.target.checked)}
-                className="account-info-input"
-              />
-              <label htmlFor="is_subsidiary" className="profile-label profile-checkbox__label">
-                Is Subsidiary ?
-              </label>
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="col-content">
-            <div className="field-wrapper">
-              <span
-                className={`label ${
-                  accountFormData.is_subsidiary ? 'label--block required-param' : ''
-                }`}
-              >
-                Parent Organization
-              </span>
-              <input
-                value={accountFormData.parent_org_name}
-                disabled={
-                  isEditingDisabled || (!accountFormData.is_subsidiary && isEditingDisabled)
-                }
-                required={accountFormData.is_subsidiary === true}
-                name="parent_org_name"
-                onChange={(e) => onChangeUpdateField('parent_org_name', e.target.value)}
-                className="account-info-input"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="container">
-        <div className="col">
-          <div className="col-content">
-            <div className="field-wrapper">
-              <span className="label label--block required-param">Account Classifications</span>
-              <Select
-                required
-                disabled={isEditingDisabled}
-                placeholder={profilePage.profileManager.multiselectPrompt}
-                isMulti
-                isSearchable
-                maxMenuHeight={150}
-                options={classificationFieldOptions}
-                onChange={setAccountClassicationsFieldValue}
-                value={accountClassificationsFieldValue}
-              />
-              {/* <div className='policies-delete-download'>
-                <GfwButton 
-                  classNames={`btn-green ${accountData.organization_status_id === 2 ? '' : 'hidden'}`} 
-                  onClick={downloadPolicies} 
-                  value='Download' 
+      <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
+        <Grid item sm={6} xs={12}>
+          <Grid container direction="column">
+            <FieldLabel required aria-label="Organization Name">
+              Organization Name
+            </FieldLabel>
+            <TextField
+              name="org_name"
+              id="org_name"
+              onChange={(e) => onChangeUpdateField('org_name', e.target.value)}
+              value={accountFormData.org_name}
+              disabled={isEditingDisabled}
+              required
+              size="small"
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+        <Grid item sm={6} xs={12}>
+          <Grid container direction="column">
+            <FieldLabel required aria-label="Organization Website">
+              Organization Website
+            </FieldLabel>
+            <TextField
+              name="org_website"
+              id="org_website"
+              onChange={(e) => onChangeUpdateField('org_website', e.target.value)}
+              value={accountFormData.org_website}
+              disabled={isEditingDisabled}
+              required
+              size="small"
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
+        <Grid item xs>
+          <Grid container direction="column">
+            <FieldLabel required aria-label="Organization Address">
+              Organization Address
+            </FieldLabel>
+            <TextField
+              name="org_address"
+              id="org_address"
+              onChange={(e) => onChangeUpdateField('org_address', e.target.value)}
+              value={accountFormData.org_address}
+              disabled={isEditingDisabled}
+              required
+              size="small"
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
+        <Grid item sm={6} xs={12} alignSelf="center">
+          <Grid container>
+            <FormControlLabel
+              label={
+                <FieldLabel
+                  htmlFor="is_subsidiary"
+                  disabled={isEditingDisabled}
+                  aria-label="Is Subsidiary ?"
+                  sx={{ marginBottom: 0 }}
+                >
+                  Is Subsidiary ?
+                </FieldLabel>
+              }
+              labelPlacement="end"
+              control={
+                <Checkbox
+                  checked={Boolean(accountFormData.is_subsidiary)}
+                  disabled={isEditingDisabled}
+                  inputProps={{
+                    disabled: isEditingDisabled,
+                  }}
+                  name="is_subsidiary"
+                  id="is_subsidiary"
+                  onChange={(event) => onChangeUpdateField('is_subsidiary', event.target.checked)}
                 />
-              </div> */}
-              {/* // ADD BACK IN IF WE NEED TO HAVE PRO MANAGER UPLOAD POLICIES!
-                // <input name='org_policy' type='file' onChange={updatePolicy} className='account-info-input' multiple/> */}
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="col-content">
-            <div className="field-wrapper">
-              <span className="label">Organization Policy</span>
-              <Select
-                required
-                disabled={isEditingDisabled}
-                isMulti
-                isSearchable
-                maxMenuHeight={150}
-                options={policyFieldOptions}
-                onChange={(results) => setAccountPoliciesFieldValue(results)}
-                value={accountPolicySelectedList}
+              }
+            />
+          </Grid>
+        </Grid>
+        <Grid item sm={6} xs={12}>
+          <Grid container direction="column">
+            <FieldLabel required={accountFormData.is_subsidiary} aria-label="Parent Organization">
+              Parent Organization
+            </FieldLabel>
+            <TextField
+              name="parent_org_name"
+              id="parent_org_name"
+              onChange={(e) => onChangeUpdateField('parent_org_name', e.target.value)}
+              value={accountFormData.parent_org_name}
+              disabled={!accountFormData.is_subsidiary && isEditingDisabled}
+              required={accountFormData.is_subsidiary}
+              size="small"
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
+        <Grid item sm={6} xs={12}>
+          <Grid container direction="column">
+            <FieldLabel aria-label="Account Classifications" htmlFor="classificationFieldOptions">
+              Account Classifications
+            </FieldLabel>
+            <Select
+              id="classificationFieldOptions"
+              required
+              disabled={isEditingDisabled}
+              placeholder={profilePage.profileManager.multiselectPrompt}
+              isMulti
+              isSearchable
+              maxMenuHeight={150}
+              options={classificationFieldOptions}
+              onChange={setAccountClassicationsFieldValue}
+              value={accountClassificationsFieldValue}
+            />
+            {/* <div className='policies-delete-download'>
+              <GfwButton 
+                classNames={`btn-green ${accountData.organization_status_id === 2 ? '' : 'hidden'}`} 
+                onClick={downloadPolicies} 
+                value='Download' 
               />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="container">
-        <div className="col">
-          <div className="col-content">
-            <div className="field-wrapper">
-              <span className="label">Subscription Status</span>
-              <select
-                value={accountFormData.subscription_status_id}
-                disabled={isEditingDisabled}
+            </div> */}
+            {/* // ADD BACK IN IF WE NEED TO HAVE PRO MANAGER UPLOAD POLICIES!
+              // <input name='org_policy' type='file' onChange={updatePolicy} className='account-info-input' multiple/> */}
+          </Grid>
+        </Grid>
+        <Grid item sm={6} xs={12}>
+          <Grid container direction="column">
+            <FieldLabel aria-label="Organization Policy" htmlFor="classificationFieldOptions">
+              Organization Policy
+            </FieldLabel>
+            <Select
+              required
+              disabled={isEditingDisabled}
+              isMulti
+              isSearchable
+              maxMenuHeight={150}
+              options={policyFieldOptions}
+              onChange={(results) => setAccountPoliciesFieldValue(results)}
+              value={accountPolicySelectedList}
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
+        <Grid item sm={6} xs={12}>
+          <Grid container direction="column">
+            <FieldLabel aria-label="Subscription Status">Subscription Status</FieldLabel>
+            <FormControl fullWidth>
+              <SelectField
+                size="small"
+                disabled={accountData.organization_status_id === ACCOUNT_STATUSES['PENDING']}
                 required
+                value={
+                  accountFormData.subscription_status_id !== null
+                    ? accountFormData.subscription_status_id
+                    : 1
+                }
                 name="subscription_status_id"
                 onChange={(event) =>
                   onChangeUpdateField('subscription_status_id', event.target.value)
                 }
+                sx={{
+                  ...disabledStyles,
+                }}
               >
-                <option value={1}>Standard</option>
-                <option value={2}>Premium</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="container">
-        <div className="col">
+                {subscriptionStatusOptions.map((subsOptions, index) => (
+                  <MenuItem key={`status-${index}`} value={subsOptions.value}>
+                    {subsOptions.label}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} rowSpacing={2}>
+        <Grid item sm={6} xs={12}>
           <div className="account-profile-submit-button-container">
             <GfwButton
               classNames={`btn-green ${isEditingDisabled ? 'hide' : ''}`}
@@ -387,8 +447,8 @@ export function AccountProfileForm({
               value="Save"
             />
           </div>
-        </div>
-      </div>
+        </Grid>
+      </Grid>
     </Fragment>
   );
 }
@@ -400,11 +460,6 @@ export function AccountProfileForm({
  */
 export function AccountStatusSetting({ organization_id, organization_status_id }) {
   const dialog = useDialog();
-  const ACCOUNT_STATUSES = {
-    PENDING: 1,
-    ACTIVE: 2,
-    INACTIVE: 3,
-  };
 
   const activateAccount = () => {
     const route =
@@ -509,53 +564,52 @@ export function AccountStatusSetting({ organization_id, organization_status_id }
   };
 
   return (
-    <div className="container">
-      <div className="col">
-        <div className="col-content">
-          <div className="field-wrapper">
-            <select
-              className="field-block"
-              value={organization_status_id}
-              disabled
-              required
-              name="organization_status_id"
-            >
-              <option value={1}>Pending</option>
-              <option value={2}>Active</option>
-              <option value={3}>Inactive</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div className="col">
-        <div className="col-content">
+    <Grid container spacing={2} rowSpacing={2}>
+      <Grid item sm={6} xs={12}>
+        <FormControl fullWidth>
+          <SelectField
+            size="small"
+            disabled
+            required
+            value={organization_status_id}
+            name="organization_status_id"
+            sx={{
+              ...disabledStyles,
+            }}
+          >
+            <MenuItem value={1}>Pending</MenuItem>
+            <MenuItem value={2}>Active</MenuItem>
+            <MenuItem value={3}>Inactive</MenuItem>
+          </SelectField>
+        </FormControl>
+      </Grid>
+      <Grid item sm={6} xs={12}>
+        <GfwButton
+          classNames={`btn-green ${
+            organization_status_id === ACCOUNT_STATUSES['ACTIVE'] ? 'button-disabled' : ''
+          }`}
+          disabled={organization_status_id === ACCOUNT_STATUSES['ACTIVE']}
+          onClick={activateAccount}
+          value="Activate"
+        />
+        {organization_status_id === ACCOUNT_STATUSES['PENDING'] ? null : (
           <GfwButton
             classNames={`btn-green ${
-              organization_status_id === ACCOUNT_STATUSES['ACTIVE'] ? 'button-disabled' : ''
+              organization_status_id === ACCOUNT_STATUSES['INACTIVE'] ? 'button-disabled' : ''
             }`}
-            disabled={organization_status_id === ACCOUNT_STATUSES['ACTIVE']}
-            onClick={activateAccount}
-            value="Activate"
+            disabled={organization_status_id === ACCOUNT_STATUSES['INACTIVE']}
+            onClick={deactivateAccount}
+            value="Deactivate"
           />
-          {organization_status_id === ACCOUNT_STATUSES['PENDING'] ? null : (
-            <GfwButton
-              classNames={`btn-green ${
-                organization_status_id === ACCOUNT_STATUSES['INACTIVE'] ? 'button-disabled' : ''
-              }`}
-              disabled={organization_status_id === ACCOUNT_STATUSES['INACTIVE']}
-              onClick={deactivateAccount}
-              value="Deactivate"
-            />
-          )}
-          {organization_status_id === ACCOUNT_STATUSES['PENDING'] && (
-            <GfwButton
-              classNames={`btn-green ${organization_status_id === 1 ? '' : 'hidden'}`}
-              onClick={deleteAccountRequest}
-              value="Delete"
-            />
-          )}
-        </div>
-      </div>
-    </div>
+        )}
+        {organization_status_id === ACCOUNT_STATUSES['PENDING'] && (
+          <GfwButton
+            classNames={`btn-green ${organization_status_id === 1 ? '' : 'hidden'}`}
+            onClick={deleteAccountRequest}
+            value="Delete"
+          />
+        )}
+      </Grid>
+    </Grid>
   );
 }

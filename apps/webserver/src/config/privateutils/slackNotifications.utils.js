@@ -11,7 +11,6 @@ const Slack = require('@slack/bolt');
  */
 
 const sendNotification = async (text, data, userInfo) => {
-
   const slackApp = new Slack.App({
     signingSecret: process.env.SLACK_SIGNING_SECRET,
     token: process.env.SLACK_BOT_TOKEN,
@@ -23,30 +22,34 @@ const sendNotification = async (text, data, userInfo) => {
     text,
     blocks: [
       {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": `:warning: *${text}*`
-        }
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `:warning: *${text}*`,
+        },
       },
-      ...(userInfo ? [{
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": `user info: \`\`\` ${userInfo} \`\`\``
-        }
-      }]: []),
+      ...(userInfo
+        ? [
+            {
+              type: 'section',
+              text: {
+                type: 'mrkdwn',
+                text: `user info: \`\`\` ${userInfo} \`\`\``,
+              },
+            },
+          ]
+        : []),
       {
-        "type": "section",
-        "text": {
-          "type": "mrkdwn",
-          "text": `data: \`\`\` ${JSON.stringify(data, null, "\t")} \`\`\``
-        }
-      }
-    ]
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `data: \`\`\` ${JSON.stringify(data, null, '\t')} \`\`\``,
+        },
+      },
+    ],
   });
 };
 
 module.exports = {
-  sendNotification
+  sendNotification,
 };

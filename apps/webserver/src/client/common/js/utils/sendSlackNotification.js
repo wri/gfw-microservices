@@ -9,21 +9,16 @@ import httpRequest from './httpRequest';
  */
 
 const sendSlackNotification = (text, data) => {
-
-  const userData =
-  ` id: ${userInfo.id}
+  const userData = ` id: ${userInfo.id}
   first_name: ${userInfo.first_name}
   email: ${userInfo.email}
   organizationId: ${organizationId}`;
 
-
-  httpRequest
-  .fetchJSON('/slack-notification', {
+  httpRequest.fetchJSON('/slack-notification', {
     text,
     data,
     userInfo: userData,
-  })
-}
-
+  });
+};
 
 export default sendSlackNotification;

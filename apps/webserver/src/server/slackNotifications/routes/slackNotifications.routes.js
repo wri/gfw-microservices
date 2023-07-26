@@ -4,7 +4,6 @@ const slackNotifications = require(path.resolve('./config/privateutils/slackNoti
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
 module.exports = (app, limiter) => {
-
   const routeMiddlewares = [
     middlewares.checkOrganization,
     middlewares.checkAuthentication,

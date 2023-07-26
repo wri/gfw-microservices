@@ -58,7 +58,7 @@
     @extend %flex-grid-column;
 
     > .col {
-      min-height: 70px;
+      min-height: 80px;
     }
   }
 
@@ -116,6 +116,9 @@
   }
   .space-element {
     margin: 1rem 0;
+  }
+  .mt-0 {
+    margin-top: 0;
   }
   #last_name {
     color: $gfw-green;

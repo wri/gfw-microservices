@@ -83,6 +83,6 @@ export interface OrganizationAnalysisUsage {
   max_area_analyzed: number;
   number_of_lists_analyzed: number;
   organization_id: number;
-  organization_name?: string;
+  organization_name: string;
   list_id?: number;
 }

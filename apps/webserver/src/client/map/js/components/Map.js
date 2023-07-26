@@ -25,7 +25,6 @@ import {
   geographicToWebMercator,
   webMercatorToGeographic,
 } from 'esri/geometry/support/webMercatorUtils';
-import { open } from 'esri/core/workers';
 
 import store from '../store';
 import {
@@ -905,12 +904,6 @@ export default class Map extends Component {
     //   }
     //   return ioArgs;
     // });
-
-    esriConfig.workers.loaderConfig = {
-      paths: {
-        workerScripts: window.location.href.replace(/\/[^/]+$/, '/workerScripts'),
-      },
-    };
   };
 
   showLayerModal = (layerInfo) => {

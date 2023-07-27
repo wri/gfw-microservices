@@ -1,46 +1,64 @@
 .b2b-connection-details-modal {
+  color: rgba(0, 0, 0, 0.73);
   display: grid;
   align-items: center;
   top: 50%;
   left: 50%;
   position: absolute;
-  padding: 10px 20px;
-  width: 580px;
+  padding: 24px;
+  width: 500px;
   transform: translate(-50%, -50%);
   line-height: 35px;
 
+  .MuiCardContent-root {
+    padding: 0;
+  }
   &__header {
-    font-size: 19px;
-    padding: 16px;
+    padding: 0;
+    font-size: 18px;
     font-weight: 500;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 16px;
   }
   &__title {
-    padding-top: 20px;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 500;
+    margin: 24px 0;
+    line-height: 1;
   }
   &__label {
-    color: gray;
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 12px;
+    line-height: 1;
   }
   &__status {
     color: white;
     background-color: #ff8a00;
-    border-radius: 30px;
-    padding: 0px 10px;
+    border-radius: 10px;
+    padding: 0px 8px;
     display: inline-block;
+    font-size: 10px;
+    line-height: 20px;
   }
   &__manager-info {
     display: flex;
+    margin-bottom: 24px;
     div {
-      flex-grow: 1;
+      flex: 1;
+    }
+    a {
+      color: rgba(0, 0, 0, 0.54);
     }
   }
   &__action-button {
     all: unset;
+    text-transform: uppercase;
     cursor: pointer;
-    color: rgba(0, 0, 0, 0.87);
+    color: #6E6E6E;
+    font-size: 14px;
+    letter-spacing: 1.25px;
   }
 }
+

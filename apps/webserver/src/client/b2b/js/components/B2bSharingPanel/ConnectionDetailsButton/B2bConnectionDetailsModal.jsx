@@ -67,7 +67,7 @@ function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
 
                 <Button
                   variant="primary"
-                  style={{ textTransform: 'unset', margin: '10px' }}
+                  style={{ textTransform: 'unset', margin: '0 26px' }}
                   onClick={() => onCloseModal()}
                   label={profilePage.profileManager.b2bSection.close}
                 />
@@ -88,7 +88,7 @@ function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
                 </button>
                 <Button
                   variant="primary"
-                  style={{ textTransform: 'unset', margin: '10px' }}
+                  style={{ textTransform: 'unset', margin: '0 26px' }}
                   onClick={async () => {
                     await acceptConnection(id);
                     onCloseModal();

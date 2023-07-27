@@ -9,9 +9,7 @@ const B2BConnectionListStatus = (props) => {
 
   const { status, email } = props;
 
-  return (
-    <span className={`tag tag--small ${tagClassName[status]}`}>{status}</span>
-  );
+  return <span className={`tag tag--small ${tagClassName[status]}`}>{status}</span>;
 };
 
 export default B2BConnectionListStatus;

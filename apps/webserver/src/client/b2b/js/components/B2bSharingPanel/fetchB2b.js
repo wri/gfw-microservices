@@ -62,7 +62,7 @@ async function acceptConnection(id) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-    }
+    },
   });
 }
 
@@ -71,7 +71,7 @@ async function rejectConnection(id) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-    }
+    },
   });
 }
 
@@ -80,7 +80,7 @@ async function cancelConnection(id) {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-    }
+    },
   });
 }
 

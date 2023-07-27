@@ -71,12 +71,9 @@ const B2bConnectionsList = () => {
       </Grid>
       {b2bConnections && <B2BConnectionListTable rows={b2bConnections} />}
 
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={loading}
-      >
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
         <CircularProgress color="inherit" />
-      </Backdrop >
+      </Backdrop>
     </Container>
   );
 };

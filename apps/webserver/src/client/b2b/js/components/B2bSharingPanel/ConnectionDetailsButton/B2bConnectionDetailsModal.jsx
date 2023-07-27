@@ -13,7 +13,8 @@ import './B2bConnectionDetailsModal.scss';
 import CircularProgress from '@mui/material/CircularProgress';
 
 function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
-  const { targetOrganizationName, status, name, editorEmail, id, isCurrentOrganization } = connectionData;
+  const { targetOrganizationName, status, name, editorEmail, id, isCurrentOrganization } =
+    connectionData;
   const [isCancelling, cancelConnection] = useCancel();
   const [isAccepting, acceptConnection] = useAccept();
   const [isRejecting, rejectConnection] = useReject();
@@ -51,54 +52,61 @@ function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
             </div>
           </CardContent>
           <CardActions style={{ justifyContent: 'right' }}>
-            {isCurrentOrganization &&
-
-              (
-                <>
-                  <button
-                    type="button"
-                    className="b2b-connection-details-modal__action-button"
-                    onClick={async () => { await cancelConnection(id); onCloseModal() }}
-                  >
-                    {profilePage.profileManager.b2bSection.cancelConnection}
-                  </button>
-
-                  <Button
-                    variant="primary"
-                    style={{ textTransform: 'unset', margin: '10px' }}
-                    onClick={() => onCloseModal()}
-                    label={profilePage.profileManager.b2bSection.close}
-                  />
-                </>
-              )
-            }
-
-            {!isCurrentOrganization &&
+            {isCurrentOrganization && (
               <>
                 <button
                   type="button"
                   className="b2b-connection-details-modal__action-button"
-                  onClick={async () => { await rejectConnection(id); onCloseModal() }}
+                  onClick={async () => {
+                    await cancelConnection(id);
+                    onCloseModal();
+                  }}
+                >
+                  {profilePage.profileManager.b2bSection.cancelConnection}
+                </button>
+
+                <Button
+                  variant="primary"
+                  style={{ textTransform: 'unset', margin: '10px' }}
+                  onClick={() => onCloseModal()}
+                  label={profilePage.profileManager.b2bSection.close}
+                />
+              </>
+            )}
+
+            {!isCurrentOrganization && (
+              <>
+                <button
+                  type="button"
+                  className="b2b-connection-details-modal__action-button"
+                  onClick={async () => {
+                    await rejectConnection(id);
+                    onCloseModal();
+                  }}
                 >
                   {profilePage.profileManager.b2bSection.reject}
                 </button>
                 <Button
                   variant="primary"
                   style={{ textTransform: 'unset', margin: '10px' }}
-                  onClick={async () => { await acceptConnection(id); onCloseModal() }}
+                  onClick={async () => {
+                    await acceptConnection(id);
+                    onCloseModal();
+                  }}
                   label={profilePage.profileManager.b2bSection.accept}
                 />
-              </>}
+              </>
+            )}
           </CardActions>
         </Card>
       </Backdrop>
 
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={(isCancelling || isAccepting || isRejecting)}
+        open={isCancelling || isAccepting || isRejecting}
       >
         <CircularProgress color="inherit" />
-      </Backdrop >
+      </Backdrop>
     </>
   );
 }

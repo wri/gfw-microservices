@@ -13,11 +13,14 @@ function NewB2bConnectionEmailForm({ setApiResponse }) {
 
   const handleSubmit = async () => {
     //    setEmailAndOrgNotMatchingError(false);
-    const res = await checkUserBelongsToOrgAndIsAdmin(email, organizationName)
+    const res = await checkUserBelongsToOrgAndIsAdmin(email, organizationName);
     if (res.status === 200 || res.status === 201) {
       const jsonResponse = await res.json();
       const sendInvitationRes = await sendInvitation(email, jsonResponse.organizationId);
-      if ((sendInvitationRes && sendInvitationRes.status === 200) || sendInvitationRes.status === 201) {
+      if (
+        (sendInvitationRes && sendInvitationRes.status === 200) ||
+        sendInvitationRes.status === 201
+      ) {
         setApiResponse('success');
         return;
       }

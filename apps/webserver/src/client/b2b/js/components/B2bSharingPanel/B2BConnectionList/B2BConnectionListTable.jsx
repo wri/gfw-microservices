@@ -77,14 +77,12 @@ const B2BConnectionListTable = (props) => {
         disableRowSelectionOnClick
         autoHeight
       />
-      {
-        displayModal && (
-          <B2bConnectionDetailsModal
-            onCloseModal={() => setDisplayModal(false)}
-            connectionData={connectionModalData}
-          />
-        )
-      }
+      {displayModal && (
+        <B2bConnectionDetailsModal
+          onCloseModal={() => setDisplayModal(false)}
+          connectionData={connectionModalData}
+        />
+      )}
     </>
   );
 };

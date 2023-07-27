@@ -7,4 +7,4 @@ exports.invitationMapper = (data, currentOrganizationId) => {
   });
 
   return mappedData;
-}
+};

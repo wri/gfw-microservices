@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import B2BConnectionListStatus from './B2BConnectionListStatus';
 import B2bConnectionDetailsModal from '../ConnectionDetailsButton/B2bConnectionDetailsModal';
+import { profilePage } from '../../../../../common/js/config';
 
 const B2BConnectionListTable = (props) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -26,11 +27,11 @@ const B2BConnectionListTable = (props) => {
             handleOpenDetailsModal(params.row);
           }}
         >
-          {params.row.organizationName}
+          {params.row.targetOrganizationName}
         </button>
       ),
     },
-    { field: 'email', headerName: 'Email', flex: 1 },
+    { field: 'editorEmail', headerName: 'Email', flex: 1 },
     {
       field: 'status',
       headerName: 'Status',
@@ -41,6 +42,22 @@ const B2BConnectionListTable = (props) => {
           setShowConfirm={setShowConfirm}
           id={params.row.id}
         />
+      ),
+      flex: 1,
+    },
+    {
+      field: 'details',
+      headerName: ' ',
+      renderCell: (params) => (
+        <button
+          type="button"
+          className="new-b2b-connection-modal__action-button"
+          onClick={() => {
+            handleOpenDetailsModal(params.row);
+          }}
+        >
+          {profilePage.profileManager.b2bSection.details}
+        </button>
       ),
       flex: 1,
     },

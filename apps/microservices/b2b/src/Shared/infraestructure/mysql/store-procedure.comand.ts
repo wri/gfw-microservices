@@ -16,18 +16,6 @@ export class StoredProcedureCommand implements Command {
     private readonly parameters: ParamStoreProcedure[],
   ) {}
 
-  private async connectToDatabase(database: string | null): Promise<void> {
-    if (database) {
-      await this.connection.connect(database);
-    } else {
-      await this.connection.connect();
-    }
-  }
-
-  private async disconnectFromDatabase(): Promise<void> {
-    await this.connection.disconnect();
-  }
-
   private handleError(
     error: Error,
     queryOrSP: string,
@@ -57,14 +45,11 @@ export class StoredProcedureCommand implements Command {
     database: string | null = null,
   ): ResultPromise<T[] | undefined> {
     try {
-      await this.connectToDatabase(database);
-
-      const result = await this.connection.executeQueryArray<T>(
+      const result = await SQLUtils.queryDBArray<T[]>(
+        database ? database : this.connection.config.database,
         this.sql,
         this.parameters,
       );
-
-      await this.disconnectFromDatabase();
       return Result.ok(result);
     } catch (error) {
       return Result.fail(this.handleError(error, this.sql, database));

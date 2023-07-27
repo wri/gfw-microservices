@@ -37,7 +37,7 @@ const disabledStyles = {
 /**
  * Displays and Manage Account Profile Form Settings
  * @param {Object} accountData
- * @param {Boolean} isAccountStatusNotPending 
+ * @param {Boolean} isAccountStatusNotPending
  * @param {Array} classificationsData
  * @param {Array} policyList
  */
@@ -339,7 +339,10 @@ export default function AccountProfileFormSetting({
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel required={accountFormData.is_subsidiary} aria-label={accountProfileStrings.accountFormLabels.parent_org_name}>
+            <FieldLabel
+              required={accountFormData.is_subsidiary}
+              aria-label={accountProfileStrings.accountFormLabels.parent_org_name}
+            >
               {accountProfileStrings.accountFormLabels.parent_org_name}
             </FieldLabel>
             <TextField
@@ -358,7 +361,10 @@ export default function AccountProfileFormSetting({
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label={accountProfileStrings.accountFormLabels.arr_org_classification} htmlFor="classificationFieldOptions">
+            <FieldLabel
+              aria-label={accountProfileStrings.accountFormLabels.arr_org_classification}
+              htmlFor="classificationFieldOptions"
+            >
               {accountProfileStrings.accountFormLabels.arr_org_classification}
             </FieldLabel>
             <Select
@@ -386,7 +392,10 @@ export default function AccountProfileFormSetting({
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label={accountProfileStrings.accountFormLabels.arr_org_policy} htmlFor="classificationFieldOptions">
+            <FieldLabel
+              aria-label={accountProfileStrings.accountFormLabels.arr_org_policy}
+              htmlFor="classificationFieldOptions"
+            >
               {accountProfileStrings.accountFormLabels.arr_org_policy}
             </FieldLabel>
             <Select
@@ -405,7 +414,9 @@ export default function AccountProfileFormSetting({
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label={accountProfileStrings.accountFormLabels.subscription_status_id}>{accountProfileStrings.accountFormLabels.subscription_status_id}</FieldLabel>
+            <FieldLabel aria-label={accountProfileStrings.accountFormLabels.subscription_status_id}>
+              {accountProfileStrings.accountFormLabels.subscription_status_id}
+            </FieldLabel>
             <FormControl fullWidth>
               <SelectField
                 size="small"

@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import AccountProfile from './AccountProfile';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 
-function AccountDetailSection({ isLoading, setIsLoading, organizationId, organizationName }) {
+export default function AccountDetailSection({
+  isLoading,
+  setIsLoading,
+  organizationId,
+  organizationName,
+}) {
   const [promanagerData, setPromanagerData] = useState({});
 
   useEffect(() => {
@@ -24,21 +30,15 @@ function AccountDetailSection({ isLoading, setIsLoading, organizationId, organiz
 
   const { users, classes, statusData, accessData, policyList, selectedAccount } = promanagerData;
 
-  return (
-    <>
-      {selectedAccount && !isLoading && (
-        <AccountProfile
-          users={users}
-          currentAccount={selectedAccount}
-          classificationsData={classes}
-          statusData={statusData}
-          accessData={accessData}
-          disable={selectedAccount.organization_status_id !== 1}
-          policyList={policyList}
-        />
-      )}
-    </>
-  );
+  return selectedAccount && !isLoading ? (
+    <AccountProfile
+      users={users}
+      currentAccount={selectedAccount}
+      classificationsData={classes}
+      statusData={statusData}
+      accessData={accessData}
+      disable={selectedAccount.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING']}
+      policyList={policyList}
+    />
+  ) : null;
 }
-
-export default AccountDetailSection;

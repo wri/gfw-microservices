@@ -3929,3 +3929,21 @@ export const draftTooltipMessages = {
   nonOwner:
     'This list contains unanalyzed locations. The list owner will need to submit the list for analysis. Once submitted, this list will not be accessible until analysis is complete.',
 };
+
+export const accountProfileStrings = {
+  sectionTitles: {
+    profileForm: 'Account Profile',
+    statusSetting: 'Account Status',
+    accountUsers: 'Users',
+  },
+  accountFormLabels: {
+    org_name: 'Organization Name',
+    org_address: 'Organization Website',
+    org_website: 'Organization Address',
+    parent_org_name: 'Parent Organization',
+    is_subsidiary: 'Is Subsidiary ?',
+    arr_org_classification: 'Account Classifications',
+    arr_org_policy: 'Organization Policy',
+    subscription_status_id: 'Subscription Status',
+  },
+};

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import AccountProfile from './AccountProfile';
 import AccountsListsTable from './AccountsListsTable';
 import '../../css/proManagerList.scss';
 

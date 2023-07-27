@@ -18,7 +18,6 @@ module.exports = (app, limiter) => {
   app.use('/slack-notification', routeMiddlewares);
 
   app.post('/slack-notification', (req, res) => {
-    console.log('POST /slack-notification');
     const { text, data, userInfo } = req.body;
     slackNotifications.sendNotification(text, data, userInfo);
     res.sendStatus(200);

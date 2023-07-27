@@ -15,7 +15,7 @@ const sendNotification = async (text, data, userInfo) => {
     signingSecret: process.env.SLACK_SIGNING_SECRET,
     token: process.env.SLACK_BOT_TOKEN,
   });
-
+  console.log(text, data, userInfo);
   await slackApp.client.chat.postMessage({
     token: process.env.SLACK_BOT_TOKEN,
     channel: process.env.SLACK_LOG_CHANNEL,
@@ -50,7 +50,7 @@ const sendNotification = async (text, data, userInfo) => {
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `data: \`\`\` ${JSON.stringify(data, null, '\t')} \`\`\``,
+          text: `data: \`\`\` ${JSON.stringify(data, null, '\t').slice(0, 1000)} \`\`\``,
         },
       },
     ],

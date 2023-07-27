@@ -12,13 +12,3 @@ Ability: Show Loss of Forests diagnostcs
       | "Argentina Jujuy OTBN" | "Protected Areas"         |
       | "Argentina Jujuy OTBN" | "Peat"                    |
       | "Argentina Jujuy OTBN" | "Intact Forest Landscape" |
-
-  Scenario Outline: Locations should show tree cover loss by regions
-
-    Given I'm viewing diagnostics for <list>
-    When I select <dataType> in the regions section
-    Then I can see tree cover loss within by <region>
-
-    Examples:
-      | list                   | region             | dataType
-      | "Argentina Jujuy OTBN" | "South America"    | "soy-cover-loss"

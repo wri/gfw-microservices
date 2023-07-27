@@ -2006,6 +2006,7 @@ export default class Lists extends Component {
         : [];
     const flagOptions = columns.flags.map(this.createFlagList);
     const listName = selectedList ? selectedList.list_name : '';
+    console.log(selectedList, "selectedList");
     const isGfwList = gfwListNames.includes(listName);
     // user lists are paginated in the backend, gfw lists search works in the front end
     const filteredLists = isGfwList

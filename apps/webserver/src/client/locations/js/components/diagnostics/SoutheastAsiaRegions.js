@@ -715,6 +715,7 @@ export default class SoutheastAsiaRegions extends Component {
     let legendColor;
     let indent;
     let disabled = false;
+    let dataCy = '';
 
     const filteredLocations = getFilteredLocations();
     const indonesiaPresence = filteredLocations.some(
@@ -731,6 +732,7 @@ export default class SoutheastAsiaRegions extends Component {
         case 'totalTCL':
           label = 'Tree Cover Loss';
           legendColor = 'rgb(255,127,179)';
+          dataCy = 'tree-cover-loss';
           checked = tclChecked;
           onChange = () => {
             this.setState({
@@ -747,6 +749,7 @@ export default class SoutheastAsiaRegions extends Component {
         case 'sea':
           label = 'Southeast Asia Landcover';
           legendColor = undefined;
+          dataCy = 'southeast-asia-landcover';
           checked = seaChecked;
           onChange = () => {
             this.setState({
@@ -768,6 +771,7 @@ export default class SoutheastAsiaRegions extends Component {
           label = 'Indonesia Landcover';
           legendColor = undefined;
           checked = idnChecked;
+          dataCy = 'indonesia-landcover';
           onChange = () => {
             this.setState({
               seaChecked: false,
@@ -788,6 +792,7 @@ export default class SoutheastAsiaRegions extends Component {
           label = 'Indonesia Legal Classification';
           legendColor = undefined;
           checked = idnLegalChecked;
+          dataCy = 'indonesia-legal-classification';
           onChange = () => {
             this.setState({
               seaChecked: false,
@@ -808,6 +813,7 @@ export default class SoutheastAsiaRegions extends Component {
           label = 'Indonesia Forest Moratorium';
           legendColor = 'rgb(129,129,129)';
           checked = idnMoratoriumChecked;
+          dataCy = 'indonesia-forest-moratorium';
           onChange = () => {
             this.setState({
               seaChecked: false,
@@ -851,7 +857,7 @@ export default class SoutheastAsiaRegions extends Component {
           key={`asia-${key}`}
           className={`locations-diagnostics-table__row ${key === 'totalTCL' ? 'parent' : 'child'}`}
         >
-          <th className={`locations-diagnostics-table__column ${indent ? 'indent' : ''}`}>
+          <th className={`locations-diagnostics-table__column ${indent ? 'indent' : ''}`} data-cy={dataCy}>
             <input
               type="checkbox"
               id={`asia-${key}-check`}

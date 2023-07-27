@@ -1,11 +1,11 @@
-import { datatCyIdFromSensitiveAreaName, datatCyIdFromRegionsName } from './ListLabels';
+import { datatCyIdFromSensitiveAreaName, datatCyIdFromRegionsOptionsName } from './ListLabels';
 
 const viewTreeCoverLossForSensitiveArea = (name: string) => {
   cy.get(`[data-cy="${datatCyIdFromSensitiveAreaName[name]}"]`).click();
 };
 
 const viewTreeCoverLossForRegions = (name: string) => {
-  cy.get(`[data-cy="${datatCyIdFromRegionsName[name]}"]`).click();
+  cy.get(`[data-cy="${datatCyIdFromRegionsOptionsName[name]}"] label`).click();
 };
 
 export { viewTreeCoverLossForSensitiveArea, viewTreeCoverLossForRegions };

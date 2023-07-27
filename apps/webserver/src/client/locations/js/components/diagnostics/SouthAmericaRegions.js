@@ -747,7 +747,7 @@ export default class SouthAmericaRegions extends Component {
           legendColor = checked = soyChecked;
           child = false;
           disabled = !value;
-          dataCy = 'soy-cover-loss';
+          dataCy= 'soy-cover-loss'
           onChange = () => {
             this.setState({
               soyChecked: !this.state.soyChecked,
@@ -773,6 +773,7 @@ export default class SouthAmericaRegions extends Component {
           checked = prodesChecked;
           child = true;
           disabled = !brazilianBiomes;
+          dataCy = 'prodes';
           onChange = () => {
             this.setState({
               soyChecked: false,
@@ -796,6 +797,7 @@ export default class SouthAmericaRegions extends Component {
           checked = paChecked;
           child = true;
           disabled = !(legalAmazon && value !== 0);
+          dataCy = 'protected-areas';
           onChange = () => {
             this.handleProtectedAreaCheck();
             gtag('event', 'South America Asia checkbox clicked', {
@@ -824,6 +826,7 @@ export default class SouthAmericaRegions extends Component {
           checked = saTCLChecked;
           child = true;
           disabled = false;
+          dataCy = 'tree-cover-loss';
           onChange = () => {
             this.setState({
               soyChecked: false,
@@ -844,6 +847,7 @@ export default class SouthAmericaRegions extends Component {
           break;
         case 'otbnArgentina':
           label = 'Tree Cover Loss on Argentina OTBN';
+          dataCy = 'tree-cover-loss-OTBN';
           legendColor = 'rgb(255,127,179)';
           checked = otbnArgentinaChecked;
           child = true;
@@ -873,6 +877,7 @@ export default class SouthAmericaRegions extends Component {
           checked = biomesChecked;
           child = true;
           disabled = !brazilianBiomes;
+          dataCy = 'brazil-biomes';
           onChange = () => {
             this.setState({
               soyChecked: false,
@@ -900,7 +905,7 @@ export default class SouthAmericaRegions extends Component {
             key={`south-america__${category}`}
             className={`locations-diagnostics-table__row ${child ? 'child' : 'parent'}`}
           >
-            <th className="locations-diagnostics-table__column">
+            <th className="locations-diagnostics-table__column" data-cy={dataCy}>
               <input
                 id={`${category}-checkbox`}
                 className={child ? 'grey' : 'pink'}
@@ -908,7 +913,6 @@ export default class SouthAmericaRegions extends Component {
                 checked={checked}
                 onChange={onChange}
                 disabled={disabled}
-                data-cy={dataCy}
               />
               <label
                 htmlFor={`${category}-checkbox`}
@@ -1280,7 +1284,6 @@ export default class SouthAmericaRegions extends Component {
         className={`locations-diagnostics-section ${
           regionObject.count > 0 && this.props.listView === 'forest_change' ? '' : 'hidden'
         }`}
-        data-cy="south-america-regions"
       >
         <div className="locations-diagnostics-section-title">South America</div>
 

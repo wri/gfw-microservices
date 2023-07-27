@@ -3,7 +3,7 @@ import { b2bConnectionsMock } from './b2bConnectionsMock';
 
 async function getOrgsList(email) {
   return httpRequest
-    .fetchJSON(`/connection/${email}`, {})
+    .fetchJSON(`/b2b/connection/${email}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
@@ -47,7 +47,7 @@ async function checkUserBelongsToOrgAndIsAdmin(email, organizationName) {
 
 async function resendInvitation(id) {
   return httpRequest
-    .fetchForm(`/invitation/${id}`, {})
+    .fetchForm(`/b2b/invitation/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
     })

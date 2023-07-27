@@ -65,8 +65,7 @@ module.exports = (app, limiter) => {
     console.log('POST /pro-manager/activateProAccount');
     const { id } = req.body;
     ProManager.activatePendingAccount(req, id)
-      .then((result) => {
-        console.log('ActivateAccount: Success', result);
+      .then(() => {
         res.send({ redirect: '/pro-manager-list' });
       })
       .catch((err) => {
@@ -102,11 +101,11 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/pro-manager/deleteProAccountRequest', (req, res) => {
+    console.log('POST /pro-manager/deleteProAccountRequest');
     const { id } = req.body;
 
     ProManager.deletePendingAccount(req, id)
-      .then((result) => {
-        console.log('POST /pro-manager/deleteProAccountRequest', result);
+      .then(() => {
         res.send({ redirect: '/pro-manager-list' });
       })
       .catch((err) => {
@@ -145,8 +144,7 @@ module.exports = (app, limiter) => {
       PolicyManager.uploadPendingPolicies(req, id, policyUploadList, policyName),
       ProManager.updateAccountSubscriptionStatus(req, id, subscription_status_id),
     ])
-      .then((result) => {
-        console.log('Success /pro-manager/updateProAccount', result);
+      .then(() => {
         res.send({ status: 'success' });
       })
       .catch((err) => {

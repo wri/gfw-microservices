@@ -10,22 +10,35 @@ import {
 } from './../../js/components/B2bSharingPanel/fetchB2b';
 
 const email = 'test@example.com';
-const mockedResponse = { result: 'mocked response' };
+const mockedResponse = [];
 const id = 10;
+const updateBody = {
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+};
+
+global.fetch = jest.fn(() => Promise.resolve([]));
 
 jest.mock('./../../../common/js/utils/httpRequest', () => ({
   fetchJSON: jest.fn(() => Promise.resolve(mockedResponse)),
   fetchForm: jest.fn(() => Promise.resolve(mockedResponse)),
+  fetchGet: jest.fn(() => Promise.resolve(mockedResponse)),
 }));
 
 const runfetchTests = ({ action, param, path, httpMethod, body }) => {
   it('should call fetchJSON with the correct URL', async () => {
     await action(param);
-    expect(httpMethod).toHaveBeenCalledWith(path, body);
+    if (body) {
+      expect(httpMethod).toHaveBeenCalledWith(path, body);
+    } else {
+      expect(httpMethod).toHaveBeenCalledWith(path);
+    }
   });
 
   it('should return parsed JSON response', async () => {
-    httpMethod.mockResolvedValueOnce(JSON.stringify(mockedResponse));
+    httpMethod.mockResolvedValueOnce(mockedResponse);
     const result = await action(param);
     expect(mockedResponse).toEqual(result);
   });
@@ -41,7 +54,7 @@ describe('fetchB2b', () => {
     runfetchTests({
       action: getOrgsList,
       param: email,
-      path: `/connection/${email}`,
+      path: `/b2b/connection/${email}`,
       httpMethod: httpRequest.fetchJSON,
       body: {},
     });
@@ -50,10 +63,10 @@ describe('fetchB2b', () => {
   describe('getConnections', () => {
     runfetchTests({
       action: getConnections,
-      param: email,
-      path: '/connection',
-      httpMethod: httpRequest.fetchJSON,
-      body: {},
+      param: undefined,
+      path: '/b2b/connection',
+      httpMethod: httpRequest.fetchGet,
+      body: undefined,
     });
   });
 
@@ -61,19 +74,13 @@ describe('fetchB2b', () => {
     runfetchTests({
       action: sendInvitation,
       param: email,
-      path: '/invitation',
-      httpMethod: httpRequest.fetchForm,
-      body: { email },
-    });
-  });
-
-  describe('resendInvitation', () => {
-    runfetchTests({
-      action: resendInvitation,
-      param: id,
-      path: `/invitation/${id}`,
-      httpMethod: httpRequest.fetchForm,
-      body: {},
+      path: '/b2b/invitation',
+      httpMethod: fetch,
+      body: {
+        body: JSON.stringify({ email }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      },
     });
   });
 
@@ -81,9 +88,9 @@ describe('fetchB2b', () => {
     runfetchTests({
       action: acceptConnection,
       param: id,
-      path: `/connection/accept/${id}`,
-      httpMethod: httpRequest.fetchForm,
-      body: {},
+      path: `/b2b/connection/accept/${id}`,
+      httpMethod: fetch,
+      body: updateBody,
     });
   });
 
@@ -91,9 +98,9 @@ describe('fetchB2b', () => {
     runfetchTests({
       action: rejectConnection,
       param: id,
-      path: `/connection/reject/${id}`,
-      httpMethod: httpRequest.fetchForm,
-      body: {},
+      path: `/b2b/connection/reject/${id}`,
+      httpMethod: fetch,
+      body: updateBody,
     });
   });
 
@@ -101,9 +108,9 @@ describe('fetchB2b', () => {
     runfetchTests({
       action: cancelConnection,
       param: id,
-      path: `/connection/cancel/${id}`,
-      httpMethod: httpRequest.fetchForm,
-      body: {},
+      path: `/b2b/connection/cancel/${id}`,
+      httpMethod: fetch,
+      body: updateBody,
     });
   });
 });

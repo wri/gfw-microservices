@@ -5,7 +5,7 @@ import { UserRepository } from '../domain/user.repository';
 import { User, UserOrganization } from '../domain/user';
 import { UserMapper } from '../application/user.mapper';
 import { ConnectionAdminOrganizationDbDto } from '../../Connection/application/dtos/connection-admin-organizations.dto';
-import { UserInfo, getQueryStr } from '@wri-monorepos/sql';
+import { UserInfo } from '@wri-monorepos/sql';
 
 export class UserRepositoryMysql
   extends RepositoryMssqlSP
@@ -17,13 +17,13 @@ export class UserRepositoryMysql
     super();
     this.mapper = new UserMapper();
   }
-  //TODO: This function need to use the Code from Gustavo.
+
   async getUserAdminOrg(email: string): ResultPromise<UserOrganization[]> {
     const params = this.mapper.createStoreProcedureStringParam([
       ['email', email],
     ]);
     const getUserAdminOrganizations = this.storeProcedureFactory.create(
-      getQueryStr(true, 'getUserAdminOrganizations'),
+      'getUserAdminOrganizations',
       params,
     );
     const userAdminOrganizationsRes =

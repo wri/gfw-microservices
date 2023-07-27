@@ -1,3 +1,9 @@
+/**
+ * This query is used to get all the organizations where the user is administrator.
+ * The command requires the following parameters:
+ * @email AS NVARCHAR(250),
+ */
+
 export const getUserAdminOrganizations = `DECLARE @ORG_LIST AS nvarchar(max);
 DECLARE @SQL AS nvarchar(max);
 DECLARE @POS INT

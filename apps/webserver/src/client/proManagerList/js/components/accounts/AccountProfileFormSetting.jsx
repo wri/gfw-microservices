@@ -1,9 +1,10 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import GfwButton from '../../../common/js/components/GfwButton';
-import { profilePage } from '../../../common/js/config';
+import React from 'react';
+import { Fragment, useState, useEffect } from 'react';
+import GfwButton from '../../../../common/js/components/GfwButton';
+import { profilePage } from '../../../../common/js/config';
 import Select from 'react-select';
-import { fieldValidations } from '../../../profile/js/utils/validations';
-import { useDialog } from './Dialog';
+import { fieldValidations } from '../../../../profile/js/utils/validations';
+import { useDialog } from '../../../../common/js/components/Dialog';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
@@ -13,6 +14,8 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import SelectField from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import { accountProfileStrings } from '../../../../common/js/config';
 
 const FieldLabel = styled(InputLabel)({
   fontFamily: 'Fira Sans, sans-serif',
@@ -31,22 +34,16 @@ const disabledStyles = {
   },
 };
 
-const ACCOUNT_STATUSES = {
-  PENDING: 1,
-  ACTIVE: 2,
-  INACTIVE: 3,
-};
-
 /**
- * Displays and Manage Account Profile Form
+ * Displays and Manage Account Profile Form Settings
  * @param {Object} accountData
- * @param {Boolean} isNotPending organization_status_id !== 1
+ * @param {Boolean} isAccountStatusNotPending 
  * @param {Array} classificationsData
  * @param {Array} policyList
  */
-export function AccountProfileForm({
+export default function AccountProfileFormSetting({
   accountData,
-  isNotPending: isEditingDisabled,
+  isAccountStatusNotPending: isEditingDisabled,
   classificationsData,
   policyList,
 }) {
@@ -258,8 +255,8 @@ export function AccountProfileForm({
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel required aria-label="Organization Name">
-              Organization Name
+            <FieldLabel required aria-label={accountProfileStrings.accountFormLabels.org_name}>
+              {accountProfileStrings.accountFormLabels.org_name}
             </FieldLabel>
             <TextField
               name="org_name"
@@ -275,8 +272,8 @@ export function AccountProfileForm({
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel required aria-label="Organization Website">
-              Organization Website
+            <FieldLabel required aria-label={accountProfileStrings.accountFormLabels.org_website}>
+              {accountProfileStrings.accountFormLabels.org_website}
             </FieldLabel>
             <TextField
               name="org_website"
@@ -294,8 +291,8 @@ export function AccountProfileForm({
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item xs>
           <Grid container direction="column">
-            <FieldLabel required aria-label="Organization Address">
-              Organization Address
+            <FieldLabel required aria-label={accountProfileStrings.accountFormLabels.org_address}>
+              {accountProfileStrings.accountFormLabels.org_address}
             </FieldLabel>
             <TextField
               name="org_address"
@@ -318,10 +315,10 @@ export function AccountProfileForm({
                 <FieldLabel
                   htmlFor="is_subsidiary"
                   disabled={isEditingDisabled}
-                  aria-label="Is Subsidiary ?"
+                  aria-label={accountProfileStrings.accountFormLabels.is_subsidiary}
                   sx={{ marginBottom: 0 }}
                 >
-                  Is Subsidiary ?
+                  {accountProfileStrings.accountFormLabels.is_subsidiary}
                 </FieldLabel>
               }
               labelPlacement="end"
@@ -342,8 +339,8 @@ export function AccountProfileForm({
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel required={accountFormData.is_subsidiary} aria-label="Parent Organization">
-              Parent Organization
+            <FieldLabel required={accountFormData.is_subsidiary} aria-label={accountProfileStrings.accountFormLabels.parent_org_name}>
+              {accountProfileStrings.accountFormLabels.parent_org_name}
             </FieldLabel>
             <TextField
               name="parent_org_name"
@@ -361,8 +358,8 @@ export function AccountProfileForm({
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label="Account Classifications" htmlFor="classificationFieldOptions">
-              Account Classifications
+            <FieldLabel aria-label={accountProfileStrings.accountFormLabels.arr_org_classification} htmlFor="classificationFieldOptions">
+              {accountProfileStrings.accountFormLabels.arr_org_classification}
             </FieldLabel>
             <Select
               id="classificationFieldOptions"
@@ -389,8 +386,8 @@ export function AccountProfileForm({
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label="Organization Policy" htmlFor="classificationFieldOptions">
-              Organization Policy
+            <FieldLabel aria-label={accountProfileStrings.accountFormLabels.arr_org_policy} htmlFor="classificationFieldOptions">
+              {accountProfileStrings.accountFormLabels.arr_org_policy}
             </FieldLabel>
             <Select
               required
@@ -408,11 +405,11 @@ export function AccountProfileForm({
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label="Subscription Status">Subscription Status</FieldLabel>
+            <FieldLabel aria-label={accountProfileStrings.accountFormLabels.subscription_status_id}>{accountProfileStrings.accountFormLabels.subscription_status_id}</FieldLabel>
             <FormControl fullWidth>
               <SelectField
                 size="small"
-                disabled={accountData.organization_status_id === ACCOUNT_STATUSES['PENDING']}
+                disabled={accountData.organization_status_id === ACCOUNT_ORG_STATUSES['PENDING']}
                 required
                 value={
                   accountFormData.subscription_status_id !== null
@@ -449,166 +446,5 @@ export function AccountProfileForm({
         </Grid>
       </Grid>
     </Fragment>
-  );
-}
-
-/**
- * Displays and Manage Application Status States
- * @param {Number} organization_id Org ID
- * @param {Number} organization_status_id Org Status ID
- */
-export function AccountStatusSetting({ organization_id, organization_status_id }) {
-  const dialog = useDialog();
-
-  const activateAccount = () => {
-    const route =
-      organization_status_id === ACCOUNT_STATUSES['PENDING']
-        ? '/pro-manager/activateProAccount'
-        : '/pro-manager/activateProActiveAccount';
-
-    dialog.openDialog('Please wait', 'Activating Account...', true);
-    fetch(route, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: organization_id,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.redirect) {
-          dialog.setDialogTitle('Success');
-          dialog.setDialogMessage('Redirecting...');
-          dialog.closeDialog(() => {
-            window.location = data.redirect;
-          });
-        }
-        if (data.hasOwnProperty('errorCode')) {
-          dialog.setDialogTitle('Error Activating Account');
-          dialog.setDialogMessage(data.systemMessage.userMessage || data.systemMessage.message);
-        }
-      })
-      .catch((error) => {
-        console.error('Error activating account', error);
-        dialog.setDialogTitle('Error Activating Account');
-        dialog.setDialogMessage('Please reload the page and try again');
-        dialog.disableDialogAction(true);
-      });
-  };
-
-  const deactivateAccount = () => {
-    dialog.openDialog('Please wait', 'Deactivating...', true);
-    fetch('/pro-manager/deactivateProAccount', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: organization_id,
-        status: organization_status_id,
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.redirect) {
-          dialog.setDialogTitle('Account Deactivated');
-          dialog.setDialogMessage('Redirecting...');
-          window.location = data.redirect;
-        }
-      })
-      .catch((error) => {
-        console.error('Error deactivating account', error);
-        dialog.setDialogTitle('Error deactivating account');
-        dialog.setDialogMessage('Please reload the page and try again');
-        dialog.disableDialogAction(true);
-      });
-  };
-
-  const deleteAccountRequest = () => {
-    // Ensure the account is in pending state before deletetion
-    if (organization_status_id === ACCOUNT_STATUSES['PENDING']) {
-      dialog.openDialog('Please wait', 'Deleting account...', true);
-      fetch('/pro-manager/deleteProAccountRequest', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: organization_id }),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.redirect) {
-            dialog.setDialogTitle('Account Deleted');
-            dialog.setDialogMessage('Redirecting...');
-            window.location = res.redirect;
-          }
-          if (data.hasOwnProperty('errorCode')) {
-            dialog.setDialogTitle('Error deleting account');
-            dialog.setDialogMessage(data.systemMessage.userMessage);
-            dialog.disableDialogAction(true);
-          }
-        })
-        .catch((error) => {
-          console.error('Error deleting account', error);
-          dialog.setDialogTitle('Error deleting account');
-          dialog.setDialogMessage('');
-          dialog.disableDialogAction(true);
-        });
-    }
-  };
-
-  return (
-    <Grid container spacing={2} rowSpacing={2}>
-      <Grid item sm={6} xs={12}>
-        <FormControl fullWidth>
-          <SelectField
-            size="small"
-            disabled
-            required
-            value={organization_status_id}
-            name="organization_status_id"
-            sx={{
-              ...disabledStyles,
-            }}
-          >
-            <MenuItem value={1}>Pending</MenuItem>
-            <MenuItem value={2}>Active</MenuItem>
-            <MenuItem value={3}>Inactive</MenuItem>
-          </SelectField>
-        </FormControl>
-      </Grid>
-      <Grid item sm={6} xs={12}>
-        <GfwButton
-          classNames={`btn-green ${
-            organization_status_id === ACCOUNT_STATUSES['ACTIVE'] ? 'button-disabled' : ''
-          }`}
-          disabled={organization_status_id === ACCOUNT_STATUSES['ACTIVE']}
-          onClick={activateAccount}
-          value="Activate"
-        />
-        {organization_status_id === ACCOUNT_STATUSES['PENDING'] ? null : (
-          <GfwButton
-            classNames={`btn-green ${
-              organization_status_id === ACCOUNT_STATUSES['INACTIVE'] ? 'button-disabled' : ''
-            }`}
-            disabled={organization_status_id === ACCOUNT_STATUSES['INACTIVE']}
-            onClick={deactivateAccount}
-            value="Deactivate"
-          />
-        )}
-        {organization_status_id === ACCOUNT_STATUSES['PENDING'] && (
-          <GfwButton
-            classNames={`btn-green ${organization_status_id === 1 ? '' : 'hidden'}`}
-            onClick={deleteAccountRequest}
-            value="Delete"
-          />
-        )}
-      </Grid>
-    </Grid>
   );
 }

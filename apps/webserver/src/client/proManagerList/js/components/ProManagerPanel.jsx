@@ -4,7 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import UsersListSection from './UsersListSection';
 import UserDetailSection from './UserDetailSection';
 import AccountsListSection from './AccountsListSection';
-import AccountDetailSection from './AccountDetailSection';
+import AccountDetailSection from './accounts/AccountDetailSection';
 import SideBarMenu from '../../../common/js/components/SideBarMenu';
 import { proManagerPanelTabs } from './proManagerPanelTabs';
 import './ProManagerPanel.scss';

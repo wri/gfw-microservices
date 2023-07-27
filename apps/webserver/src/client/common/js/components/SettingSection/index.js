@@ -26,7 +26,7 @@ export default function SettingSection({
           sm={3}
           sx={{
             marginBottom: {
-              sm: '1.5rem',
+              xs: '1.5rem',
             },
           }}
         >

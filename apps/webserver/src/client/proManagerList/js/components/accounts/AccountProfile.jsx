@@ -1,11 +1,13 @@
 import React from 'react';
-import GfwButton from '../../../common/js/components/GfwButton';
-import DialogProvider from './Dialog';
+import GfwButton from '../../../../common/js/components/GfwButton';
+import DialogProvider from '../../../../common/js/components/Dialog';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import SettingSection from './SettingSection';
-import { AccountProfileForm, AccountStatusSetting } from './AccountProfileForms';
-import UserProfileManager from './UserProfileManager';
+import SettingSection from '../../../../common/js/components/SettingSection';
+import AccountProfileFormSetting from './AccountProfileFormSetting';
+import AccountStatusSetting from './AccountStatusSetting';
+import UserProfileManager from '../users/UserProfileManager';
+import { accountProfileStrings } from '../../../../common/js/config';
 
 export default function AccountProfile({
   users,
@@ -13,7 +15,7 @@ export default function AccountProfile({
   classificationsData,
   statusData,
   accessData,
-  disable: isNotPending /* organization_status_id !== 1 */,
+  disable: isAccountStatusNotPending /* Only pending accounts can modify certain information */,
   policyList,
 }) {
   const back = () => {
@@ -25,21 +27,21 @@ export default function AccountProfile({
       <Grid container justifyContent="end" sx={{ marginBottom: '1.5rem' }}>
         <GfwButton classNames="btn-green" onClick={back} value="Back to Profile Manager" />
       </Grid>
-      <SettingSection heading="Account Profile">
-        <AccountProfileForm
-          isNotPending={isNotPending}
+      <SettingSection heading={accountProfileStrings.sectionTitles.profileForm}>
+        <AccountProfileFormSetting
+          isAccountStatusNotPending={isAccountStatusNotPending}
           accountData={currentAccount}
           classificationsData={classificationsData}
           policyList={policyList}
         />
       </SettingSection>
-      <SettingSection heading="Account Status">
+      <SettingSection heading={accountProfileStrings.sectionTitles.statusSetting}>
         <AccountStatusSetting
           organization_id={currentAccount.organization_id}
           organization_status_id={currentAccount.organization_status_id}
         />
       </SettingSection>
-      <SettingSection heading="Users">
+      <SettingSection heading={accountProfileStrings.sectionTitles.accountUsers}>
         <Box
           sx={{
             'h2.section-title-normal': {

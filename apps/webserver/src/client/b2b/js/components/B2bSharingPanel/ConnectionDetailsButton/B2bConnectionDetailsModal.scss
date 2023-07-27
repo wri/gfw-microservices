@@ -1,11 +1,12 @@
 .b2b-connection-details-modal {
+  font-family: Fira Sans;
   color: rgba(0, 0, 0, 0.73);
   display: grid;
   align-items: center;
   top: 50%;
   left: 50%;
   position: absolute;
-  padding: 24px;
+  padding: 18px 24px 24px;
   width: 500px;
   transform: translate(-50%, -50%);
   line-height: 35px;
@@ -20,18 +21,21 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
   }
   &__title {
     font-size: 16px;
     font-weight: 500;
-    margin: 24px 0;
+    margin: 8px 0 24px;
     line-height: 1;
+    letter-spacing: 0.4px;
   }
   &__label {
     color: rgba(0, 0, 0, 0.54);
     font-size: 12px;
     line-height: 1;
+    margin-bottom: 4px;
+    font-weight: bold;
   }
   &__status {
     color: white;
@@ -41,10 +45,12 @@
     display: inline-block;
     font-size: 10px;
     line-height: 20px;
+    vertical-align: top;
   }
   &__manager-info {
     display: flex;
-    margin-bottom: 24px;
+    margin-bottom: 40px;
+    line-height: 1;
     div {
       flex: 1;
     }
@@ -59,6 +65,12 @@
     color: #6E6E6E;
     font-size: 14px;
     letter-spacing: 1.25px;
+  }
+
+  .icon-button {
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
   }
 }
 

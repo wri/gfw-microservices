@@ -24,7 +24,7 @@ function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
         <Card className="b2b-connection-details-modal" variant="outlined">
           <div className="b2b-connection-details-modal__header">
             <div>{targetOrganizationName}</div>
-            <IconButton icon={<IconTimes />} onClick={onCloseModal} size="large" />
+            <IconButton icon={<IconTimes />} onClick={onCloseModal} size="" />
           </div>
           <CardContent>
             <div className="b2b-connection-details-modal__label">

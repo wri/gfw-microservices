@@ -76,7 +76,11 @@ describe('fetchB2b', () => {
       param: email,
       path: '/b2b/invitation',
       httpMethod: fetch,
-      body: { body: JSON.stringify({ email }), headers: { "Content-Type": "application/json" }, method: "POST" },
+      body: {
+        body: JSON.stringify({ email }),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      },
     });
   });
 
@@ -86,7 +90,7 @@ describe('fetchB2b', () => {
       param: id,
       path: `/b2b/connection/accept/${id}`,
       httpMethod: fetch,
-      body: updateBody
+      body: updateBody,
     });
   });
 
@@ -96,7 +100,7 @@ describe('fetchB2b', () => {
       param: id,
       path: `/b2b/connection/reject/${id}`,
       httpMethod: fetch,
-      body: updateBody
+      body: updateBody,
     });
   });
 
@@ -106,7 +110,7 @@ describe('fetchB2b', () => {
       param: id,
       path: `/b2b/connection/cancel/${id}`,
       httpMethod: fetch,
-      body: updateBody
+      body: updateBody,
     });
   });
 });

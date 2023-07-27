@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
-import UsersListSection from './UsersListSection';
-import UserDetailSection from './UserDetailSection';
-import AccountsListSection from './AccountsListSection';
+import UsersListSection from './users/UsersListSection';
+import UserDetailSection from './users/UserDetailSection';
+import AccountsListSection from './accounts/AccountsListSection';
 import AccountDetailSection from './accounts/AccountDetailSection';
 import SideBarMenu from '../../../common/js/components/SideBarMenu';
 import { proManagerPanelTabs } from './proManagerPanelTabs';

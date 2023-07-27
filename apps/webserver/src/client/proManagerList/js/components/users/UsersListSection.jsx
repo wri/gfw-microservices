@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
-import UserProfile from './UserProfile';
 import UsersListTable from './UsersListTable';
-import '../../css/proManagerList.scss';
+import '../../../css/proManagerList.scss';
 
 function UsersListSection({ isLoading, setIsLoading }) {
   const [userFilterStr, setUserFilterStr] = useState('');

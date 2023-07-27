@@ -1,10 +1,6 @@
 import React from 'react';
 import { Fragment, useState, useEffect } from 'react';
-import GfwButton from '../../../../common/js/components/GfwButton';
-import { profilePage } from '../../../../common/js/config';
 import Select from 'react-select';
-import { fieldValidations } from '../../../../profile/js/utils/validations';
-import { useDialog } from '../../../../common/js/components/Dialog';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
@@ -14,6 +10,10 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import SelectField from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import GfwButton from '../../../../common/js/components/GfwButton';
+import { profilePage } from '../../../../common/js/config';
+import { fieldValidations } from '../../../../profile/js/utils/validations';
+import { useDialog } from '../../../../common/js/components/Dialog';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 import { accountProfileStrings } from '../../../../common/js/config';
 
@@ -380,10 +380,10 @@ export default function AccountProfileFormSetting({
               value={accountClassificationsFieldValue}
             />
             {/* <div className='policies-delete-download'>
-              <GfwButton 
-                classNames={`btn-green ${accountData.organization_status_id === 2 ? '' : 'hidden'}`} 
-                onClick={downloadPolicies} 
-                value='Download' 
+              <GfwButton
+                classNames={`btn-green ${accountData.organization_status_id === 2 ? '' : 'hidden'}`}
+                onClick={downloadPolicies}
+                value='Download'
               />
             </div> */}
             {/* // ADD BACK IN IF WE NEED TO HAVE PRO MANAGER UPLOAD POLICIES!

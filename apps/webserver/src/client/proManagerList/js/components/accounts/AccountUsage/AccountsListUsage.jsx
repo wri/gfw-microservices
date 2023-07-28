@@ -37,10 +37,19 @@ function AccountsListUsage() {
 
   const handleStartDateChange = (event) => {
     setStartDate(event.target.value);
+    // Check if the selected endDate is before the new startDate
+    if (event.target.value > endDate) {
+      setEndDate(event.target.value);
+    }
   };
 
   const handleEndDateChange = (event) => {
-    setEndDate(event.target.value);
+    // Check if the selected endDate is before the startDate
+    if (event.target.value < startDate) {
+      setEndDate(startDate);
+    } else {
+      setEndDate(event.target.value);
+    }
   };
 
   return (
@@ -59,7 +68,13 @@ function AccountsListUsage() {
       </div>
       <div>
         <label htmlFor="endDatePicker">Select end date:</label>
-        <input type="date" id="endDatePicker" value={endDate} onChange={handleEndDateChange} />
+        <input
+          type="date"
+          id="endDatePicker"
+          value={endDate}
+          onChange={handleEndDateChange}
+          min={startDate}
+        />
       </div>
       {isLoading && <CircularProgress color="success" />}
       {!isLoading && (

@@ -12,7 +12,7 @@ export const datatCyIdFromRegionsName = {
 
 export const datatCyIdFromRegionsOptionsName = {
   'Soy on Tree Cover Loss': 'soy-cover-loss',
-  'PRODES': 'prodes',
+  PRODES: 'prodes',
   'Protected Areas': 'protected-areas',
   'Primary Forest': 'primary-forest',
   'Tree Cover Loss': 'tree-cover-loss',

@@ -4,11 +4,11 @@ import { datatCyIdFromRegionsOptionsName } from '../../../app-api/ListLabels';
 
 const getAllDataFromGraph = (barElements) => {
   return barElements.map((index, element) => Cypress.$(element).attr('height')).get();
-}
+};
 
 When('I select {string} in the regions section', (dataType: string) => {
   cy.get('[data-cy="diagnotcs-regions"] .chart-container .highcharts-point').then((barElements) => {
-    const divValues = getAllDataFromGraph(barElements)
+    const divValues = getAllDataFromGraph(barElements);
     cy.wrap(divValues).as('initialValues');
   });
 
@@ -17,19 +17,21 @@ When('I select {string} in the regions section', (dataType: string) => {
 
 When('I select a year range', () => {
   cy.get('[data-cy="diagnotcs-regions"] .highcharts-point').then((barElement) => {
-    const initialNumberCollums = barElement.length
-    cy.wrap(initialNumberCollums).as('initialNumberCollums')
-  })
+    const initialNumberCollums = barElement.length;
+    cy.wrap(initialNumberCollums).as('initialNumberCollums');
+  });
 
   cy.get('[data-cy="diagnotcs-regions"] .irs-slider.from').click({ multiple: true, force: true });
-  cy.get('[data-cy="diagnotcs-regions"] .irs-slider.from').type("{rightarrow}{rightarrow}");
+  cy.get('[data-cy="diagnotcs-regions"] .irs-slider.from').type('{rightarrow}{rightarrow}');
 
-  cy.get('[data-cy="diagnotcs-regions"] .highcharts-point').its('length').as('updatedNumberCollums');
+  cy.get('[data-cy="diagnotcs-regions"] .highcharts-point')
+    .its('length')
+    .as('updatedNumberCollums');
 });
 
 Then('I can see that the graph value changes', () => {
   cy.get(`[data-cy="diagnotcs-regions"] .chart-container .highcharts-point`).then((barElements) => {
-    const updatedDivValues = getAllDataFromGraph(barElements)
+    const updatedDivValues = getAllDataFromGraph(barElements);
     cy.wrap(updatedDivValues).as('updatedValues');
   });
 
@@ -45,6 +47,11 @@ Then('I can see the graph bar values change', () => {
 });
 
 Then('I can see that {string} is enabled', (dataType: string) => {
-  cy.get(`[data-cy="${datatCyIdFromRegionsOptionsName[dataType]}"] label`).invoke('text').should('not.eq', '0');
-  cy.get(`[data-cy="${datatCyIdFromRegionsOptionsName[dataType]}"] input`).should('not.have.attr', 'disabled');
+  cy.get(`[data-cy="${datatCyIdFromRegionsOptionsName[dataType]}"] label`)
+    .invoke('text')
+    .should('not.eq', '0');
+  cy.get(`[data-cy="${datatCyIdFromRegionsOptionsName[dataType]}"] input`).should(
+    'not.have.attr',
+    'disabled'
+  );
 });

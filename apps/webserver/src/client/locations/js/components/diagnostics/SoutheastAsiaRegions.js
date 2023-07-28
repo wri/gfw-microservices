@@ -857,7 +857,10 @@ export default class SoutheastAsiaRegions extends Component {
           key={`asia-${key}`}
           className={`locations-diagnostics-table__row ${key === 'totalTCL' ? 'parent' : 'child'}`}
         >
-          <th className={`locations-diagnostics-table__column ${indent ? 'indent' : ''}`} data-cy={dataCy}>
+          <th
+            className={`locations-diagnostics-table__column ${indent ? 'indent' : ''}`}
+            data-cy={dataCy}
+          >
             <input
               type="checkbox"
               id={`asia-${key}-check`}

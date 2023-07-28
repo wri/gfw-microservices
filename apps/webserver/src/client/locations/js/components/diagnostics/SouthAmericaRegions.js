@@ -747,7 +747,7 @@ export default class SouthAmericaRegions extends Component {
           legendColor = checked = soyChecked;
           child = false;
           disabled = !value;
-          dataCy= 'soy-cover-loss'
+          dataCy = 'soy-cover-loss';
           onChange = () => {
             this.setState({
               soyChecked: !this.state.soyChecked,

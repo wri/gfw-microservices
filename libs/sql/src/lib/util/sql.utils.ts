@@ -47,9 +47,9 @@ export class SQLUtils {
     return new Promise((resolve, reject) => {
       request
         .query(query)
-        .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
+        .then((result: sql.IResult<T>) => {
           if (Number(result.recordsets.length) > 0) {
-            resolve(result.recordsets[0]);
+            resolve(result.recordsets[0] as Array<T>);
           }
           resolve(undefined);
         })
@@ -110,6 +110,27 @@ export class SQLUtils {
       const isSystemQuery = databaseName === SQL_CONFIG.database;
       const queryStr = getQueryStr(isSystemQuery, queryName);
       const recordsets = await connection.query<T>(queryStr, parameters);
+      connection.disconnect();
+      return recordsets as T;
+    } catch (error) {
+      connection.disconnect();
+      throw new Error(error);
+    }
+  }
+
+  // This function is temporal, que queryDBArray always return the first recordset,
+  // Need to discuss if we need to return all recordsets in the previous function or we need to have this function
+  static async queryDBArray<T>(
+    databaseName: string,
+    queryName: string,
+    parameters?: ParameterType[]
+  ): Promise<T> {
+    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
+    await connection.connect();
+    try {
+      const isSystemQuery = databaseName === SQL_CONFIG.database;
+      const queryStr = getQueryStr(isSystemQuery, queryName);
+      const recordsets = await connection.queryArray<T>(queryStr, parameters);
       connection.disconnect();
       return recordsets as T;
     } catch (error) {

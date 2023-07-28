@@ -152,6 +152,7 @@
     "@commitlint/cli": "17.5.1",
     "@commitlint/config-conventional": "17.4.4",
     "@commitlint/config-nx-scopes": "17.4.3",
+    "@cypress/webpack-preprocessor": "^5.17.1",
     "@nestjs/schematics": "^9.0.3",
     "@nestjs/testing": "^9.1.6",
     "@nrwl/cli": "15.0.1",

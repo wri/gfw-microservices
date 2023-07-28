@@ -39,6 +39,9 @@ const ERROR_CODES = {
   failedToUpdatePendingAccountUser: 306,
   failedToGetAllAccountsList: 308,
   failedToDeletePendingAccountRequest: 309,
+  failedToGetAccountSubscriptionStatus: 310,
+  failedToUpdateAccountSubscriptionStatus: 311,
+
   // User
   failedToUpdateUser: 400,
   failedToGetUsersList: 401,

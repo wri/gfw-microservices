@@ -1,0 +1,23 @@
+############################################################################################################
+### Update Account Information
+POST https://localhost:8443/pro-manager/updateProAccount
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+# =======================================
+# NODE_ENV=development  
+# dbo.Organizations
+# id=86
+# =======================================
+
+{
+  "id": 86,
+  "org_name": "WRICONSULTANT",
+  "org_address": "Ethereal St",
+  "org_website": "https://wriconsultant.org",
+  "parent_org_name": "",
+  "is_subsidiary": false,
+  "arr_org_classification_ids": [4],
+  "policyUploadList": [],
+  "policyName": [],
+  "subscription_status_id": 1
+}

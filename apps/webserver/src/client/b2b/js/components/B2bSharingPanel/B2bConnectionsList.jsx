@@ -3,20 +3,23 @@ import React, { useState, useEffect } from 'react';
 import { Container, Grid } from '@mui/material';
 import B2BConnectionListTable from './B2BConnectionList/B2BConnectionListTable';
 import NewConnectionButton from './NewConnectionButton';
-import ConnectionDetailsButton from './ConnectionDetailsButton';
-
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 import { getConnections } from './fetchB2b';
 import './NewB2bConnectionModal/NewB2bConnectionModal.scss';
 
 const B2bConnectionsList = () => {
   const [b2bConnections, setB2bConnections] = useState([]);
   const [filter, setfilter] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     getConnections().then((res) => {
       setB2bConnections(res);
+      setLoading(false);
     });
-  });
+  }, []);
 
   const filterPerStatus = (status) => {
     if (status === filter) {
@@ -67,6 +70,10 @@ const B2bConnectionsList = () => {
         <NewConnectionButton />
       </Grid>
       {b2bConnections && <B2BConnectionListTable rows={b2bConnections} />}
+
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Container>
   );
 };

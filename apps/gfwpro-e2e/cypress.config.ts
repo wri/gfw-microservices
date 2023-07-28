@@ -54,7 +54,7 @@ export default defineConfig({
     supportFile: 'cypress/support/e2e.ts',
     baseUrl: 'https://localhost:8443',
     specPattern: '**/*.feature',
-    defaultCommandTimeout: 10000,
+    defaultCommandTimeout: parseInt(process.env['CYPRESS_TIMEOUT']) || 20000,
     scrollBehavior: 'center',
   },
 });

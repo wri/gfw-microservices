@@ -2920,12 +2920,14 @@ export const profilePage = {
         'You will be notified when the company accepts your B2B connection request.',
       email: 'E-mail',
       organizationName: 'Organization Name',
-      name: 'name',
+      name: 'Name',
       accountManagerInformation: 'Account Manager Information',
-      status: 'status',
+      status: 'Status',
       sendInvitation: 'Send',
       ok: 'Ok',
       cancel: 'Cancel',
+      cancelConnection: 'Cancel Connection',
+      close: 'Close',
       searchB2BConnections: 'Search B2B Connections',
       searchDescription: 'Search by organization name, country or address...',
       createNewB2bConnection: 'New Connection',
@@ -2950,6 +2952,7 @@ export const profilePage = {
       multipleAccountsMessage: 'Select one account',
       multipleAccountsDescription: 'This email has more than 1 account. Select one below.',
       emailAndOrgNotMatchingError: 'Your e-mail or organization name does not match. Try again.',
+      details: 'DETAILS',
     },
   },
 };
@@ -3928,4 +3931,22 @@ export const draftTooltipMessages = {
     'This list contains unanalyzed locations. Please click the submit button to run analysis. Once submitted, your list will not be accessible until analysis is complete.',
   nonOwner:
     'This list contains unanalyzed locations. The list owner will need to submit the list for analysis. Once submitted, this list will not be accessible until analysis is complete.',
+};
+
+export const accountProfileStrings = {
+  sectionTitles: {
+    profileForm: 'Account Profile',
+    statusSetting: 'Account Status',
+    accountUsers: 'Users',
+  },
+  accountFormLabels: {
+    org_name: 'Organization Name',
+    org_address: 'Organization Website',
+    org_website: 'Organization Address',
+    parent_org_name: 'Parent Organization',
+    is_subsidiary: 'Is Subsidiary ?',
+    arr_org_classification: 'Account Classifications',
+    arr_org_policy: 'Organization Policy',
+    subscription_status_id: 'Subscription Status',
+  },
 };

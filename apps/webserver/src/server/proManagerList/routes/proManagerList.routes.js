@@ -5,6 +5,7 @@ const controller = require('../controllers/proManagerList.controller');
 
 const ProManager = require(path.resolve('./config/publicutils/proManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
+const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
@@ -37,23 +38,34 @@ module.exports = (app, limiter) => {
   );
 
   app.get(
-    '/pro-manager-list/accounts/:organizationId?/:organizationName?',
+    '/pro-manager-list/accounts/',
     middlewares.checkProManagerAuthentication,
     controller.proManagerListAccountsData
   );
 
   app.get(
-    '/pro-manager-list/users/:organizationId?/:userId?',
+    '/pro-manager-list/accounts/:organizationId/:organizationName',
+    middlewares.checkProManagerAuthentication,
+    controller.proManagerListAccountDetailData
+  );
+
+  app.get(
+    '/pro-manager-list/users',
     middlewares.checkProManagerAuthentication,
     controller.proManagerListUsersData
+  );
+
+  app.get(
+    '/pro-manager-list/users/:organizationId/:userId',
+    middlewares.checkProManagerAuthentication,
+    controller.proManagerListUserDetailData
   );
 
   app.post('/pro-manager/activateProAccount', (req, res) => {
     console.log('POST /pro-manager/activateProAccount');
     const { id } = req.body;
     ProManager.activatePendingAccount(req, id)
-      .then((result) => {
-        console.log('ActivateAccount: Success', result);
+      .then(() => {
         res.send({ redirect: '/pro-manager-list' });
       })
       .catch((err) => {
@@ -89,11 +101,11 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/pro-manager/deleteProAccountRequest', (req, res) => {
+    console.log('POST /pro-manager/deleteProAccountRequest');
     const { id } = req.body;
 
     ProManager.deletePendingAccount(req, id)
-      .then((result) => {
-        console.log('POST /pro-manager/deleteProAccountRequest', result);
+      .then(() => {
         res.send({ redirect: '/pro-manager-list' });
       })
       .catch((err) => {
@@ -102,6 +114,7 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/pro-manager/updateProAccount', (req, res) => {
+    console.log('POST /pro-manager/updateProAccount');
     const {
       id,
       org_name,
@@ -112,27 +125,31 @@ module.exports = (app, limiter) => {
       arr_org_classification_ids,
       policyUploadList,
       policyName,
+      subscription_status_id,
     } = req.body;
 
-    ProManager.updatePendingAccount(
-      req,
-      id,
-      org_name,
-      org_address,
-      org_website,
-      parent_org_name,
-      is_subsidiary,
-      arr_org_classification_ids,
-      policyUploadList,
-      policyName
-    )
-      .then((result) => {
-        console.log('UpdateAccount: Success', result);
-        res.send({ redirect: '/pro-manager-list' });
+    Promise.all([
+      AccountManager.updatePendingAccount(
+        req,
+        id,
+        org_name,
+        org_address,
+        org_website,
+        parent_org_name,
+        is_subsidiary,
+        arr_org_classification_ids,
+        policyUploadList,
+        policyName
+      ),
+      PolicyManager.uploadPendingPolicies(req, id, policyUploadList, policyName),
+      ProManager.updateAccountSubscriptionStatus(req, id, subscription_status_id),
+    ])
+      .then(() => {
+        res.send({ status: 'success' });
       })
       .catch((err) => {
         console.log('Reject', err);
-        res.send(err);
+        res.status(500).send(err);
       });
   });
 

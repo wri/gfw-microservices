@@ -2,7 +2,7 @@ const path = require('path');
 
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
-
+const mapper = require('../mappers/invitation-mapper');
 const querystring = require('node:querystring');
 
 exports.getUserOrganizations = async (req, res, next) => {
@@ -21,6 +21,7 @@ exports.getConnections = async (req, res, next) => {
   next({
     method: 'GET',
     url: `/connections/organization/${organizationId}`,
+    mapper: mapper.invitationMapper,
   });
 };
 
@@ -61,6 +62,19 @@ exports.cancelConnection = async (req, res, next) => {
     url: `/connections/${id}/cancel`,
     data: {
       editEmail: userEmail,
+    },
+  });
+};
+
+exports.checkUserBelongsToOrgAndIsAdmin = async (req, res, next) => {
+  const { email, organizationName } = req.body;
+
+  next({
+    method: 'POST',
+    url: `/connections/check`,
+    data: {
+      email: email,
+      organizationName: organizationName,
     },
   });
 };

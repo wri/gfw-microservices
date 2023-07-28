@@ -37,6 +37,7 @@
     "@portabletext/react": "^1.0.6",
     "@sanity/client": "^3.3.0",
     "@sanity/image-url": "^1.0.1",
+    "@slack/bolt": "^3.13.2",
     "@turf/turf": "^6.5.0",
     "@types/jest": "^29.2.6",
     "@types/node": "^18.11.18",

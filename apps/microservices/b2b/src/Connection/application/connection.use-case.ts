@@ -163,6 +163,23 @@ export class ConnectionUseCases {
     return this.connectionRepo.getConnectionRequestID(orgId1, orgId2);
   }
 
+  async checkUserBelongsToOrgAndIsAdmin(
+    email: string,
+    organizationName: string,
+  ) {
+    const result = await this.connectionRepoSp.getUserAdminOrganization(email);
+    const userOrganizations = result.getValue();
+    if (userOrganizations && userOrganizations.length > 0) {
+      const org = userOrganizations.find(
+        (org) => org.organizationName === organizationName,
+      );
+      if (org) {
+        return Result.ok(org);
+      }
+    }
+    return Result.fail('User does not belong to organization or is not admin');
+  }
+
   //TODO: move to user service
   async getOrganizationsByUser(
     email: string,

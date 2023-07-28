@@ -1,46 +1,75 @@
 .b2b-connection-details-modal {
+  font-family: Fira Sans;
+  color: rgba(0, 0, 0, 0.73);
   display: grid;
   align-items: center;
   top: 50%;
   left: 50%;
   position: absolute;
-  padding: 10px 20px;
-  width: 580px;
+  padding: 18px 24px 24px;
+  width: 500px;
   transform: translate(-50%, -50%);
   line-height: 35px;
 
+  .MuiCardContent-root {
+    padding: 0;
+  }
   &__header {
-    font-size: 19px;
-    padding: 16px;
+    padding: 0;
+    font-size: 18px;
     font-weight: 500;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 18px;
   }
   &__title {
-    padding-top: 20px;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 500;
+    margin: 8px 0 24px;
+    line-height: 1;
+    letter-spacing: 0.4px;
   }
   &__label {
-    color: gray;
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 12px;
+    line-height: 1;
+    margin-bottom: 4px;
+    font-weight: bold;
   }
   &__status {
     color: white;
     background-color: #ff8a00;
-    border-radius: 30px;
-    padding: 0px 10px;
+    border-radius: 10px;
+    padding: 0px 8px;
     display: inline-block;
+    font-size: 10px;
+    line-height: 20px;
+    vertical-align: top;
   }
   &__manager-info {
     display: flex;
+    margin-bottom: 40px;
+    line-height: 1;
     div {
-      flex-grow: 1;
+      flex: 1;
+    }
+    a {
+      color: rgba(0, 0, 0, 0.54);
     }
   }
   &__action-button {
     all: unset;
+    text-transform: uppercase;
     cursor: pointer;
-    color: rgba(0, 0, 0, 0.87);
+    color: #6e6e6e;
+    font-size: 14px;
+    letter-spacing: 1.25px;
+  }
+
+  .icon-button {
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
   }
 }

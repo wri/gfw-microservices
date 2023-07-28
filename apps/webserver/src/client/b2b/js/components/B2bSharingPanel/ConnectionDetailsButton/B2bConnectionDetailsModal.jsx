@@ -24,7 +24,7 @@ function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
         <Card className="b2b-connection-details-modal" variant="outlined">
           <div className="b2b-connection-details-modal__header">
             <div>{targetOrganizationName}</div>
-            <IconButton icon={<IconTimes />} onClick={onCloseModal} size="large" />
+            <IconButton icon={<IconTimes />} onClick={onCloseModal} size="" />
           </div>
           <CardContent>
             <div className="b2b-connection-details-modal__label">
@@ -67,7 +67,7 @@ function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
 
                 <Button
                   variant="primary"
-                  style={{ textTransform: 'unset', margin: '10px' }}
+                  style={{ textTransform: 'unset', margin: '0 26px' }}
                   onClick={() => onCloseModal()}
                   label={profilePage.profileManager.b2bSection.close}
                 />
@@ -88,7 +88,7 @@ function B2bConnectionDetailsModal({ onCloseModal, connectionData }) {
                 </button>
                 <Button
                   variant="primary"
-                  style={{ textTransform: 'unset', margin: '10px' }}
+                  style={{ textTransform: 'unset', margin: '0 26px' }}
                   onClick={async () => {
                     await acceptConnection(id);
                     onCloseModal();

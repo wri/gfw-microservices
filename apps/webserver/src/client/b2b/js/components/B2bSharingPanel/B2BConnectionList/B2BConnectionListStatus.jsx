@@ -7,14 +7,15 @@ const CONNECTION_STATUS_COLORS = {
   pending: '#2096f3',
 };
 
-export default ({status}) => {
+export default function B2BConnectionListStatus({ status }) {
   return (
-    <Chip 
+    <Chip
       label={status}
       sx={{
         backgroundColor: CONNECTION_STATUS_COLORS[status],
         color: 'white',
         textTransform: 'capitalize',
-      }} 
+      }}
     />
-)};
+  );
+}

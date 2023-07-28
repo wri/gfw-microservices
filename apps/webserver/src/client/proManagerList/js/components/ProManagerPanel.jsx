@@ -72,9 +72,7 @@ function ProManagerPanel({ location }) {
           {selectedTab === proManagerPanelTabs.userProfiles.id && !userDetail && (
             <UsersListSection isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
-          {selectedTab === proManagerPanelTabs.accountUsage.id && (
-            <AccountsListUsage />
-          )}
+          {selectedTab === proManagerPanelTabs.accountUsage.id && <AccountsListUsage />}
         </div>
       </div>
     </div>

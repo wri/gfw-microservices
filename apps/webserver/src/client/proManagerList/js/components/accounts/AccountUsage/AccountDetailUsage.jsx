@@ -10,12 +10,23 @@ function AccountDetailUsage({ organizationId }) {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
   const [endDate, setEndDate] = useState(todayDate);
 
+  // Function to handle start date change
   const handleStartDateChange = (event) => {
     setStartDate(event.target.value);
+    // Check if the selected endDate is before the new startDate
+    if (event.target.value > endDate) {
+      setEndDate(event.target.value);
+    }
   };
 
+  // Function to handle end date change
   const handleEndDateChange = (event) => {
-    setEndDate(event.target.value);
+    // Check if the selected endDate is before the startDate
+    if (event.target.value < startDate) {
+      setEndDate(startDate);
+    } else {
+      setEndDate(event.target.value);
+    }
   };
 
   useEffect(() => {
@@ -44,9 +55,6 @@ function AccountDetailUsage({ organizationId }) {
   return (
     <section>
       <div>
-        <h2>Account usage</h2>
-      </div>
-      <div>
         <label htmlFor="startDatePicker">Select start date:</label>
         <input
           type="date"
@@ -57,7 +65,13 @@ function AccountDetailUsage({ organizationId }) {
       </div>
       <div>
         <label htmlFor="endDatePicker">Select end date:</label>
-        <input type="date" id="endDatePicker" value={endDate} onChange={handleEndDateChange} />
+        <input
+          type="date"
+          id="endDatePicker"
+          value={endDate}
+          onChange={handleEndDateChange}
+          min={startDate}
+        />
       </div>
       {isLoading && <CircularProgress color="success" />}
       {!isLoading && (

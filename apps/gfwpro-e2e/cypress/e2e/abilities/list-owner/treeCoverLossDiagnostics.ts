@@ -1,12 +1,5 @@
-import { When, Then, Given } from '@badeball/cypress-cucumber-preprocessor';
-import * as User from '../../../app-api/User';
-import * as List from '../../../app-api/List';
+import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import * as ListDiagnostic from '../../../app-api/ListDiagnostic';
-
-Given("I'm viewing diagnostics for {string}", (listName: string) => {
-  User.login();
-  List.withName(listName).viewDiagnostics();
-});
 
 When('I select {string} in the sensitive areas section', (sensitiveArea: string) => {
   ListDiagnostic.viewTreeCoverLossForSensitiveArea(sensitiveArea);

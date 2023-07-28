@@ -71,7 +71,7 @@ BEGIN
     CLOSE @MyCursor ;
     DEALLOCATE @MyCursor;
 
-    SET @SQL = REPLACE('SELECT * FROM {TABLE}', '{TABLE}', @TABLE)
+    SET @SQL = REPLACE('SELECT a.*, o.organization_name FROM {TABLE} a JOIN [dbo].[Organizations] o ON o.id = a.organization_id ', '{TABLE}', @TABLE)
     EXEC sp_executesql @SQL;
     SET @SQL = REPLACE('DROP TABLE {TABLE}', '{TABLE}', @TABLE)
     EXEC sp_executesql @SQL;
@@ -83,5 +83,6 @@ export interface OrganizationAnalysisUsage {
   max_area_analyzed: number;
   number_of_lists_analyzed: number;
   organization_id: number;
+  organization_name: string;
   list_id?: number;
 }

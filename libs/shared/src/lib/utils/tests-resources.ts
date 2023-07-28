@@ -34,7 +34,6 @@ class Handler {
 
   public handleRequest(token: InjectionToken): unknown {
     if (this.condition(token)) {
-      console.log(String(token));
       return this.callbackToken(token);
     } else if (this.nextHandler) {
       return this.nextHandler.handleRequest(token);

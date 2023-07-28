@@ -1,16 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { ConnectionModule } from '../../src/Connection/connection.module';
+import { Test } from '@nestjs/testing';
 import { ConnectionRequest } from '../../src/Connection/domain/connection.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { createMockModule } from '@wri-monorepos/shared';
-import { getConnection } from 'typeorm';
+import { INestApplication } from '@nestjs/common';
+import { ConnectionModule } from '../../src/Connection/connection.module';
+import { ConnectionController } from '../../src/Connection/infraestructure/connection.controller';
 
 describe('Connections (e2e)', () => {
-  let app;
+  let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
+    /*
     const module = await createMockModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -21,7 +22,23 @@ describe('Connections (e2e)', () => {
           synchronize: true,
         }),
         TypeOrmModule.forFeature([ConnectionRequest]),
+        ConnectionModule,
       ],
+      controllers: [ConnectionController],
+    }).compile();
+    */
+    const module = await createMockModule({
+      imports: [
+        TypeOrmModule.forRoot({
+          type: 'better-sqlite3',
+          database: ':memory:',
+          dropSchema: true,
+          entities: [ConnectionRequest],
+          synchronize: true,
+        }),
+        ConnectionModule,
+      ],
+      controllers: [ConnectionController],
     }).compile();
 
     app = module.createNestApplication();
@@ -29,6 +46,8 @@ describe('Connections (e2e)', () => {
   });
 
   it('/ (GET)', async () => {
-    return request(app.getHttpServer()).post('/api/connections').expect(200);
+    return request(app.getHttpServer())
+      .get('/connections/organization/1')
+      .expect(200);
   });
 });

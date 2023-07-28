@@ -1,16 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, HttpException } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { SharedListController } from '../infrastructure/shared-list.controller';
 import { SharedListUseCases } from '../application/shared-list.use-case';
 import { SharedList } from '../domain/shared-list.entity';
 import { SearchDto } from '../../Shared/application/dtos/search.dto';
 import { SearchResult } from '../../Shared/domain/types';
-import {
-  FilterType,
-  OrderType,
-  QueryCriteria,
-} from '../../Shared/domain/criteria/query';
 import { CreateSharedListDto } from '../application/dtos/create-shared-list.dto';
 import Result from '../../Shared/domain/result';
 
@@ -23,6 +18,7 @@ describe('SharedListController (e2e)', () => {
       controllers: [SharedListController],
       providers: [SharedListUseCases],
     }).compile();
+    
 
     app = moduleFixture.createNestApplication();
     await app.init();

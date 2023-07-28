@@ -5,6 +5,7 @@ import UsersListSection from './users/UsersListSection';
 import UserDetailSection from './users/UserDetailSection';
 import AccountsListSection from './accounts/AccountsListSection';
 import AccountDetailSection from './accounts/AccountDetailSection';
+import AccountsListUsage from './accounts/AccountUsage/AccountsListUsage';
 import SideBarMenu from '../../../common/js/components/SideBarMenu';
 import { proManagerPanelTabs } from './proManagerPanelTabs';
 import './ProManagerPanel.scss';
@@ -70,6 +71,9 @@ function ProManagerPanel({ location }) {
           )}
           {selectedTab === proManagerPanelTabs.userProfiles.id && !userDetail && (
             <UsersListSection isLoading={isLoading} setIsLoading={setIsLoading} />
+          )}
+          {selectedTab === proManagerPanelTabs.accountUsage.id && (
+            <AccountsListUsage />
           )}
         </div>
       </div>

@@ -29,27 +29,74 @@ const checkStartBeforeEnd = (startDate, endDate) => {
   return start < end;
 };
 
+const getAnalysisUsageData = async ({ startDate, endDate, organizationId, countForEachList }) => {
+  const { countForEachList: newCountForEachList, error } = validateQueryParams({
+    startDate,
+    endDate,
+    countForEachList,
+  });
+  if (error) {
+    return {
+      status: 400,
+      message: {
+        error,
+        success: false,
+      },
+    };
+  }
+  const result = await getOrganizationAnalysisUsage({
+    startDate,
+    endDate,
+    organizationId,
+    countForEachList: newCountForEachList,
+  });
+
+  return {
+    status: 200,
+    message: result,
+  };
+};
+
 exports.getOrganizationAnalysisUsage = async (req, res) => {
   let { startDate, endDate, organizationId, countForEachList } = req.query;
 
-  if (!isValidDate(startDate) || !isValidDate(endDate)) {
-    res.status(400).send({ error: 'Invalid date' });
-  }
-
-  if (!checkStartBeforeEnd(startDate, endDate)) {
-    res.status(400).send({ error: 'Start date must be before end date' });
-  }
-
-  if (countForEachList === 0 || countForEachList === 1) {
-    countForEachList = parseInt(countForEachList ?? 0);
-  }
-
-  const result = await getOrganizationAnalysisUsage({
+  const { status, message } = await getAnalysisUsageData({
     startDate,
     endDate,
     organizationId,
     countForEachList,
   });
 
-  res.status(200).send(result);
+  res.status(status).send(message);
+};
+
+exports.getMyOrganizationAnalysisUsage = async (req, res) => {
+  let { startDate, endDate, countForEachList } = req.query;
+
+  const { status, message } = await getAnalysisUsageData({
+    startDate,
+    endDate,
+    organizationId: req.session.organization_id,
+    countForEachList,
+  });
+
+  res.status(status).send(message);
+};
+
+const validateQueryParams = ({ startDate, endDate, countForEachList }) => {
+  if (!isValidDate(startDate) || !isValidDate(endDate)) {
+    return { error: 'Invalid date' };
+  }
+
+  if (!checkStartBeforeEnd(startDate, endDate)) {
+    return { error: 'Start date must be before end date' };
+  }
+
+  if (countForEachList === 0 || countForEachList === 1) {
+    countForEachList = parseInt(countForEachList ?? 0);
+  }
+
+  return {
+    countForEachList,
+  };
 };

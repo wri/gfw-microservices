@@ -20,3 +20,37 @@
     color: #000000ba;
   }
 }
+
+.table {
+  &__filter {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+
+    &__link {
+      color: #404041;
+      font-size: 20px;
+
+      svg {
+        vertical-align: bottom;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  &__action-button {
+    all: unset;
+    color: rgba(151, 189, 61, 0.73);
+    font-family: Fira Sans;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-right: 10px;
+
+    &--red {
+      color: #f24e1e;
+    }
+  }
+}

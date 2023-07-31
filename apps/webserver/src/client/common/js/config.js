@@ -57,7 +57,7 @@ export const proLayers = {
   brazilTreeBySpeciesID: 'brazil-tree-plantations-by-species', // does not exist
   landCoverSEAsiaID: 'Land Cover Southeast Asia',
   indonesiaForestMoratorium: 'Indonesia Forest Moratorium',
-  indonesiaLegalClass: 'Indonesia Legal Classifications',
+  indonesiaLegalClass: 'Indonesia Forest Area',
   indonesiaOilPalmClass: 'Indonesia Oil Palm Concessions',
   indonesiaPeatLands: 'Indonesia Peat Lands',
   indonesiaPrimaryForest: 'Indonesia Primary Forests',

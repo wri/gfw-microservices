@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import DateRangeSelector from './DateRangeSelector';
 import { getOneMonthAgoDate, getTodayDate } from './AccountUsage.utils';
+import { accountProfileStrings } from '../../../../../common/js/config';
 
 function AccountDetailUsage({ organizationId }) {
   const todayDate = getTodayDate();
@@ -46,9 +47,15 @@ function AccountDetailUsage({ organizationId }) {
       {isLoading && <CircularProgress color="success" />}
       {!isLoading && (
         <div>
-          <div>{`Number of lists: ${number_of_lists_analyzed}`}</div>
-          <div>{`Max area of list: ${max_area_analyzed}`}</div>
-          <div>{`Total area Analyzed: ${total_area_analyzed}`} </div>
+          <div>
+            {`${accountProfileStrings.accountUsageLabels.numberOfLists} ${number_of_lists_analyzed}`}
+          </div>
+          <div>
+            {`${accountProfileStrings.accountUsageLabels.maxAreaPerList} ${max_area_analyzed}`}
+          </div>
+          <div>
+            {`${accountProfileStrings.accountUsageLabels.totalAreaAnalyzed} ${total_area_analyzed}`}
+          </div>
         </div>
       )}
     </section>

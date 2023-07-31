@@ -1,11 +1,12 @@
 import { SQLUtils } from '@wri-monorepos/sql';
+import { DataSource } from 'typeorm';
 import { StoredProcedureCommand } from './store-procedure.comand';
 import { ParamStoreProcedure } from './store-procedure.params';
 
 export class StoredProcedureCommandFactory {
-  private readonly connection: SQLUtils;
+  private readonly connection: SQLUtils | DataSource;
 
-  constructor(connection: SQLUtils) {
+  constructor(connection: SQLUtils | DataSource) {
     this.connection = connection;
   }
 

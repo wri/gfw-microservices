@@ -6,6 +6,7 @@ import { User, UserOrganization } from '../domain/user';
 import { UserMapper } from '../application/user.mapper';
 import { ConnectionAdminOrganizationDbDto } from '../../Connection/application/dtos/connection-admin-organizations.dto';
 import { UserInfo } from '@wri-monorepos/sql';
+import { DataSource } from 'typeorm';
 
 export class UserRepositoryMysql
   extends RepositoryMssqlSP
@@ -13,8 +14,8 @@ export class UserRepositoryMysql
 {
   private mapper: UserMapper;
 
-  constructor() {
-    super();
+  constructor(dataSoruce: DataSource = null) {
+    super(dataSoruce);
     this.mapper = new UserMapper();
   }
 

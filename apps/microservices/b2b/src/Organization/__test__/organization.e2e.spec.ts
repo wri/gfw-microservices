@@ -5,22 +5,88 @@ import { OrganizationController } from '../infrastructure/organization.controlle
 import { OrganizationUseCases } from '../application/organization.use-case';
 import { Organization } from '../domain/organization.entity';
 import Result from '../../Shared/domain/result';
+import {
+  getDataSourceName,
+  getDataSourceToken,
+  getEntityManagerToken,
+  getRepositoryToken,
+  TypeOrmModule,
+} from '@nestjs/typeorm';
+import { createMockModule, createTables } from '@wri-monorepos/shared';
+import { ConnectionModule } from '../../Connection/connection.module';
+import { ConnectionRequest } from '../../Connection/domain/connection.entity';
+import { ConnectionController } from '../../Connection/infraestructure/connection.controller';
+import { OrganizationModule } from '../organization.module';
+import {
+  DataSource,
+  EntityManager,
+  getConnection,
+  getManager,
+  Repository,
+} from 'typeorm';
+import { getegid } from 'process';
 
 describe('OrganizationController (e2e)', () => {
   let app: INestApplication;
   let organizationUseCases: OrganizationUseCases;
+  let AppDataSource: DataSource;
+  let repository: Repository<Organization>;
+  let mockOrganization1: Organization;
+  let mockOrganization2: Organization;
+  let mockCollection: Organization[];
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      controllers: [OrganizationController],
-      providers: [OrganizationUseCases],
-    }).compile();
+    AppDataSource = new DataSource({
+      type: 'better-sqlite3',
+      database: ':memory:',
+      dropSchema: true,
+      entities: [Organization],
+      synchronize: true,
+    });
+    AppDataSource = await AppDataSource.initialize();
+    
+    repository = AppDataSource.getRepository(Organization);
 
-    app = moduleFixture.createNestApplication();
+    const module = await createMockModule({
+      imports: [OrganizationModule],
+      controllers: [OrganizationController],
+    })
+      .overrideProvider(getRepositoryToken(Organization))
+      .useValue(repository)
+      .compile();
+
+    app = module.createNestApplication();
     await app.init();
 
     organizationUseCases =
-      moduleFixture.get<OrganizationUseCases>(OrganizationUseCases);
+      module.get<OrganizationUseCases>(OrganizationUseCases);
+  });
+
+  beforeEach(async () => {
+    mockOrganization1 = {
+      id: 1,
+      organizationName: 'test1',
+      organizationDb: 'test1',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date('2018-10-02 18:56:00'),
+      subscriptionStatusId: 1,
+    };
+
+    mockOrganization2 = {
+      id: 2,
+      organizationName: 'test2',
+      organizationDb: 'test2',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date('2019-11-10 19:00:00'),
+      subscriptionStatusId: 1,
+    };
+
+    mockCollection = [mockOrganization1, mockOrganization2];
+
+    await Promise.all([
+      repository.save(mockOrganization1),
+      repository.save(mockOrganization2),
+    ]);
   });
 
   afterAll(async () => {
@@ -29,37 +95,32 @@ describe('OrganizationController (e2e)', () => {
 
   it('should find an organization by id', async () => {
     const organizationId = 1;
-    const mockOrganization: Organization = {
-      id: 0,
-      organizationName: '',
-      organizationDb: '',
-      organizationStatusId: 0,
-      organizationActivatedTime: undefined,
-      subscriptionStatusId: 0,
-    };
-
-    jest
-      .spyOn(organizationUseCases, 'findById')
-      .mockResolvedValueOnce(Result.ok(mockOrganization));
+    jest.spyOn(organizationUseCases, 'findById');
 
     const response = await request(app.getHttpServer())
       .get(`/organizations/${organizationId}`)
       .expect(200);
+    const compareObj = {
+      ...mockOrganization1,
+      organizationActivatedTime:
+        mockOrganization1.organizationActivatedTime.toISOString(),
+    };
 
-    expect(response.body).toEqual(mockOrganization);
+    expect(response.body).toEqual(compareObj);
   });
 
   it('should get all organizations', async () => {
-    const mockOrganizations: Organization[] = [];
-
-    jest
-      .spyOn(organizationUseCases, 'getAll')
-      .mockResolvedValueOnce(Result.ok(mockOrganizations));
+    jest.spyOn(organizationUseCases, 'getAll');
 
     const response = await request(app.getHttpServer())
       .get('/organizations')
       .expect(200);
 
-    expect(response.body).toEqual(mockOrganizations);
+    const compareCollection = mockCollection.map((item) => ({
+      ...item,
+      organizationActivatedTime: item.organizationActivatedTime.toISOString(),
+    }));
+
+    expect(response.body).toEqual(compareCollection);
   });
 });

@@ -8,35 +8,79 @@ import { SearchDto } from '../../Shared/application/dtos/search.dto';
 import { SearchResult } from '../../Shared/domain/types';
 import { CreateSharedListDto } from '../application/dtos/create-shared-list.dto';
 import Result from '../../Shared/domain/result';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { createMockModule } from '@wri-monorepos/shared';
+import { DataSource, Repository } from 'typeorm';
+import { Organization } from '../../Organization/domain/organization.entity';
+import { SharedListModule } from '../shared-list.module';
+import { User } from '../../User/domain/user';
+import { UserRepositoryMysql } from '../../User/infrastructure/user.repository.mssql';
+import { RepositoryMssqlSP } from '../../Shared/infraestructure/mysql/repository.mysql';
+import { UserRepository } from '../../User/domain/user.repository';
+import { List } from '../../List/domain/list.entity';
 
 describe('SharedListController (e2e)', () => {
   let app: INestApplication;
   let sharedListUseCases: SharedListUseCases;
+  let AppDataSource: DataSource;
+  let mockOrganization1: Organization;
+  let mockOrganization2: Organization;
+  let mockCollection: Organization[];
+
+  let repoSharedList: Repository<SharedList>;
+  let repoUser: RepositoryMssqlSP;
+  let repoOrganization: Repository<Organization>;
+  let repoList: Repository<List>;
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      controllers: [SharedListController],
-      providers: [SharedListUseCases],
-    }).compile();
-    
+    AppDataSource = new DataSource({
+      type: 'better-sqlite3',
+      database: ':memory:',
+      dropSchema: true,
+      entities: [SharedList],
+      synchronize: true,
+    });
+    AppDataSource = await AppDataSource.initialize();
 
-    app = moduleFixture.createNestApplication();
+    repoSharedList = AppDataSource.getRepository(SharedList);
+    repoOrganization = AppDataSource.getRepository(Organization);
+    repoList = AppDataSource.getRepository(List);
+    repoUser = new UserRepositoryMysql(AppDataSource);
+
+    const module = await createMockModule({
+      imports: [SharedListModule],
+      controllers: [SharedListController],
+    })
+      .overrideProvider(getRepositoryToken(SharedList))
+      .useValue(repoSharedList)
+      .overrideProvider(UserRepository)
+      .useValue(repoUser)
+      .overrideProvider(getRepositoryToken(List))
+      .useValue(repoList)
+      .overrideProvider(getRepositoryToken(Organization))
+      .useValue(repoOrganization)
+      .compile();
+
+    app = module.createNestApplication();
     await app.init();
 
-    sharedListUseCases =
-      moduleFixture.get<SharedListUseCases>(SharedListUseCases);
+    sharedListUseCases = module.get<SharedListUseCases>(SharedListUseCases);
   });
 
   afterAll(async () => {
     await app.close();
   });
 
+  beforeEach(async () => {
+    
+  });
+
   it('should create a shared list', async () => {
     const orgId = 1;
     const createSharedListDto: CreateSharedListDto = {
-      listId: 0,
-      userEmail: '',
-      orgTargetId: 0,
+      listId: 1,
+      userEmail: 'test@example.com',
+      orgTargetId: 1,
     };
     const mockSharedList: SharedList = {
       id: 0,

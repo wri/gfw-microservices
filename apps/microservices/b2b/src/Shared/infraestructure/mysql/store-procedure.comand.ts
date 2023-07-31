@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
-import { SQLUtils } from '@wri-monorepos/sql';
+import { sqliteQuery, SQLUtils } from '@wri-monorepos/sql';
+import { DataSource, Driver } from 'typeorm';
 import { Command } from '../../domain/command';
 import Result from '../../domain/result';
 import ResultError from '../../domain/result/result.error';
@@ -11,7 +12,7 @@ type Error = {
 };
 export class StoredProcedureCommand implements Command {
   constructor(
-    private readonly connection: SQLUtils,
+    private readonly connection: SQLUtils | DataSource,
     private readonly sql: string,
     private readonly parameters: ParamStoreProcedure[],
   ) {}
@@ -30,12 +31,14 @@ export class StoredProcedureCommand implements Command {
 
   async execute<T>(database: string | null = null) {
     try {
-      const result = await SQLUtils.queryDB<T>(
-        database ? database : this.connection.config.database,
-        this.sql,
-        this.parameters,
-      );
-      return Result.ok(result);
+      if (this.connection instanceof SQLUtils) {
+        const result = await SQLUtils.queryDB<T>(
+          database ? database : this.connection.config.database,
+          this.sql,
+          this.parameters,
+        );
+        return Result.ok(result);
+      }
     } catch (error) {
       return Result.fail(this.handleError(error, this.sql, database));
     }
@@ -45,11 +48,20 @@ export class StoredProcedureCommand implements Command {
     database: string | null = null,
   ): ResultPromise<T[] | undefined> {
     try {
-      const result = await SQLUtils.queryDBArray<T[]>(
-        database ? database : this.connection.config.database,
-        this.sql,
-        this.parameters,
-      );
+      let result: T[];
+      if (this.connection instanceof SQLUtils) {
+        result = await SQLUtils.queryDBArray<T[]>(
+          database ? database : this.connection.config.database,
+          this.sql,
+          this.parameters,
+        );
+      } else if (process.env.NODE_ENV === 'test') {
+        result = await sqliteQuery<T[]>(
+          this.connection.query,
+          this.sql,
+          this.parameters,
+        );
+      }
       return Result.ok(result);
     } catch (error) {
       return Result.fail(this.handleError(error, this.sql, database));

@@ -21,7 +21,7 @@ async function getConnections() {
     })
     .catch((err) => {
       console.log(err);
-      return b2bConnectionsMock;
+      return [];
     });
 }
 

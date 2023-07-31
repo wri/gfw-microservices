@@ -1,6 +1,9 @@
 const path = require('path');
 const { compiledAssets } = require(path.resolve('./config/config'));
-const { getOrganizationAnalysisUsage } = require('../service/analytics.service');
+const {
+  getOrganizationAnalysisUsage,
+  getAnalysisLimitData,
+} = require('../service/analytics.service');
 
 /**
  * @function analytics
@@ -81,6 +84,17 @@ exports.getMyOrganizationAnalysisUsage = async (req, res) => {
   });
 
   res.status(status).send(message);
+};
+
+exports.getOrganizationAnalysisLimit = async (req, res) => {
+  const { organizationId, organizationType } = req.query;
+
+  const response = await getAnalysisLimitData({
+    organizationId,
+    organizationType,
+  });
+
+  res.status(200).send(response);
 };
 
 const validateQueryParams = ({ startDate, endDate, countForEachList }) => {

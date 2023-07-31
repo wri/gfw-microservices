@@ -3,14 +3,20 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@mui/material/CardActions';
 import { profilePage } from '../../../../../common/js/config';
 
-function invitationSentSuccessfullyMessage({ onCloseModal, resetForm }) {
+function invitationSentSuccessfullyMessage({ onCloseModal, resetForm, apiResponse }) {
+  const { receiverEmail, receiverCompanyName } = apiResponse;
   return (
     <>
       <CardContent>
         <div className="new-b2b-connection-modal__response-title">
           {profilePage.profileManager.b2bSection.invitationSent}
         </div>
-        <div>{profilePage.profileManager.b2bSection.invitationSentDescription}</div>
+        <div>
+          {profilePage.profileManager.b2bSection.invitationSentDescription(
+            receiverEmail,
+            receiverCompanyName
+          )}
+        </div>
 
         <button type="submit" className="new-b2b-connection-modal__action-text" onClick={resetForm}>
           {profilePage.profileManager.b2bSection.createANewConnection}

@@ -11,13 +11,14 @@ function invitationSentSuccessfullyMessage({ onCloseModal, resetForm, apiRespons
         <div className="new-b2b-connection-modal__response-title">
           {profilePage.profileManager.b2bSection.invitationSent}
         </div>
-        <div>
-          {profilePage.profileManager.b2bSection.invitationSentDescription(
-            receiverEmail,
-            receiverCompanyName
-          )}
-        </div>
-
+        <div
+          dangerouslySetInnerHTML={{
+            __html: profilePage.profileManager.b2bSection.invitationSentDescription(
+              receiverEmail,
+              receiverCompanyName
+            ),
+          }}
+        />
         <button type="submit" className="new-b2b-connection-modal__action-text" onClick={resetForm}>
           {profilePage.profileManager.b2bSection.createANewConnection}
         </button>

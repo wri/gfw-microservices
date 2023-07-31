@@ -2917,7 +2917,7 @@ export const profilePage = {
       invitationSent: 'Invitation sent!',
       createANewConnection: 'Create a new connection',
       invitationSentDescription: (receiverEmail, receiverCompanyName) =>
-        `You have successfully sent a connection request to <b>${receiverEmail}</b> from ${receiverCompanyName}. You will be notified when this organization accepts your B2B connection request.`,
+        `You have successfully sent a connection request to <b>${receiverEmail}</b> from <b>${receiverCompanyName}</b>. You will be notified when this organization accepts your B2B connection request.`,
       email: 'E-mail',
       organizationName: 'Organization Name',
       name: 'Name',

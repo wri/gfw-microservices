@@ -9,6 +9,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import DateRangeSelector from './DateRangeSelector';
 import { getOneMonthAgoDate, getTodayDate } from './AccountUsage.utils';
+import { accountProfileStrings } from '../../../../../common/js/config';
 
 function AccountsListUsage({ isLoading, setIsLoading }) {
   const todayDate = getTodayDate();
@@ -39,7 +40,7 @@ function AccountsListUsage({ isLoading, setIsLoading }) {
   return (
     <section>
       <div>
-        <h2>Account usage</h2>
+        <h2>{accountProfileStrings.sectionTitles.accountUsage}</h2>
       </div>
       <DateRangeSelector
         startDate={startDate}
@@ -54,10 +55,16 @@ function AccountsListUsage({ isLoading, setIsLoading }) {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Organization Name</TableCell>
-                  <TableCell align="right">Number of lists</TableCell>
-                  <TableCell align="right"> Max area per list</TableCell>
-                  <TableCell align="right">Total area analyzed</TableCell>
+                  <TableCell>{accountProfileStrings.accountUsageLabels.organizationName}</TableCell>
+                  <TableCell align="right">
+                    {accountProfileStrings.accountUsageLabels.numberOfLists}
+                  </TableCell>
+                  <TableCell align="right">
+                    {accountProfileStrings.accountUsageLabels.maxAreaPerList}
+                  </TableCell>
+                  <TableCell align="right">
+                    {accountProfileStrings.accountUsageLabels.totalAreaAnalyzed}
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

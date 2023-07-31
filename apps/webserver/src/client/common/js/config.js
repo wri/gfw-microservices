@@ -3938,6 +3938,13 @@ export const accountProfileStrings = {
     profileForm: 'Account Profile',
     statusSetting: 'Account Status',
     accountUsers: 'Users',
+    accountUsage: 'Account Usage',
+  },
+  accountUsageLabels: {
+    organizationName: 'Organization Name',
+    numberOfLists: 'Number of lists',
+    maxAreaPerList: 'Max area per list',
+    totalAreaAnalyzed: 'Total area analyzed',
   },
   accountFormLabels: {
     org_name: 'Organization Name',

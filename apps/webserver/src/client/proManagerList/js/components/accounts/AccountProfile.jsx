@@ -42,7 +42,7 @@ export default function AccountProfile({
           organization_status_id={currentAccount.organization_status_id}
         />
       </SettingSection>
-      <SettingSection heading={accountProfileStrings.sectionTitles.statusSetting}>
+      <SettingSection heading={accountProfileStrings.sectionTitles.accountUsage}>
         <AccountDetailUsage organizationId={currentAccount.organization_id} />
       </SettingSection>
       <SettingSection heading={accountProfileStrings.sectionTitles.accountUsers}>

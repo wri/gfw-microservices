@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
 import { Container, Grid } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import B2BConnectionListTable from './B2BConnectionList/B2BConnectionListTable';
 import NewConnectionButton from './NewConnectionButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
 import { getConnections } from './fetchB2b';
 import './NewB2bConnectionModal/NewB2bConnectionModal.scss';
+import './B2BConnectionList/B2BConnectionList.scss';
 
 const B2bConnectionsList = () => {
+  const [b2bSelectedConnections, setB2bSelectedConnections] = useState([]);
   const [b2bConnections, setB2bConnections] = useState([]);
   const [filter, setfilter] = useState('');
   const [loading, setLoading] = useState(true);
@@ -43,33 +46,49 @@ const B2bConnectionsList = () => {
 
   return (
     <Container>
-      <Grid container direction="row" justifyContent="space-between" alignItems="center">
-        <div>
-          <button
-            type="button"
-            onClick={() => filterPerStatus('pending')}
-            className={`tag ${activeFilter('pending')}`}
-          >
-            Pending
-          </button>
-          <button
-            type="button"
-            onClick={() => filterPerStatus('expired')}
-            className={`tag ${activeFilter('expired')}`}
-          >
-            Expired
-          </button>
-          <button
-            type="button"
-            onClick={() => filterPerStatus('connected')}
-            className={`tag ${activeFilter('connected')}`}
-          >
-            Connected
-          </button>
-        </div>
+      <div className="table__filter">
+        {b2bSelectedConnections.length > 0 ? (
+          <div>
+            <button className="table__action-button table__action-button--red">Reject all</button>
+            <button className="table__action-button">Accept all</button>
+          </div>
+        ) : (
+          <>
+            <a className="table__filter__link" href="/locations">
+              <ArrowBackIcon />
+              B2B connections
+            </a>
+
+            <div>
+              <button
+                type="button"
+                onClick={() => filterPerStatus('pending')}
+                className={`tag ${activeFilter('pending')}`}
+              >
+                Pending
+              </button>
+              <button
+                type="button"
+                onClick={() => filterPerStatus('expired')}
+                className={`tag ${activeFilter('expired')}`}
+              >
+                Expired
+              </button>
+              <button
+                type="button"
+                onClick={() => filterPerStatus('connected')}
+                className={`tag ${activeFilter('connected')}`}
+              >
+                Connected
+              </button>
+            </div>
+          </>
+        )}
         <NewConnectionButton />
-      </Grid>
-      {b2bConnections && <B2BConnectionListTable rows={b2bConnections} />}
+      </div>
+      {b2bConnections && (
+        <B2BConnectionListTable rows={b2bConnections} handleSelectRow={setB2bSelectedConnections} />
+      )}
 
       <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
         <CircularProgress color="inherit" />

@@ -4,6 +4,7 @@ const MBTiles = require('@mapbox/mbtiles');
 
 // Logger
 const logger = require('../../../config/lib/winston');
+const slackNotifications = require('../../../config/privateutils/slackNotifications.utils');
 
 // Utils
 const { generateAndStoreVectorTiles } = require('../utils/vectorTileGenerate.utils');
@@ -100,27 +101,25 @@ exports.getListMbtileInfo = async (req, res) => {
     if (!fs.existsSync(localMbtileFilePath)) {
       await getMBTileFromS3Bucket(listVectorTileS3Path);
     }
-
-    // eslint-disable-next-line no-new
     new MBTiles(`${localMbtileFilePath}?mode=ro`, (err, mbtiles) => {
-      mbtiles.getInfo((err, data) => {
+      mbtiles.getInfo((getInfoError, data) => {
         if (data?.filesize === 0) {
-          console.log({ localMbtileFilePath, err, data });
-          res.status(204).json({
-            bounds: [],
-            success: false,
-            message: 'Check if file exists',
+          slackNotifications.sendNotification('getListMbtileInfo error', {
+            listID,
+            err,
+            mbtilesFilename: mbtiles?.filename,
+            getInfoError,
+            data,
           });
-          return; // don't send more data to client
         }
 
         res.status(200).json({
-          bounds: data?.bounds,
-          maxZoom: data?.maxzoom,
-          minZoom: data?.minzoom,
+          bounds: data?.bounds || [],
+          maxZoom: data?.maxzoom || 0,
+          minZoom: data?.minzoom || 0,
           listMbtileFileName: mbtileFileName,
           listMbtileFileNameOnly: mbtileFileNameOnly,
-          success: true,
+          success: data?.filesize,
         });
       });
     });

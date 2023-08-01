@@ -31,10 +31,7 @@ const FieldLabel = styled(InputLabel)({
  * @param {boolean} isLoading
  * @param {function} setIsLoading
  */
-function AccountLimits({
-  isLoading, 
-  setIsLoading 
-}) {
+function AccountLimits({ isLoading, setIsLoading }) {
   const dialog = useDialog();
   const [accountLimitsData, setAccountLimitsData] = useState({
     standard_area_per_list: 0,
@@ -63,18 +60,18 @@ function AccountLimits({
       },
       body: JSON.stringify(payload),
     })
-    .then((response) => response.json())
-    .then((data) => {
-      if (data.status === 'success') {
-        dialog.setDialogTitle('Account Limits Updated');
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === 'success') {
+          dialog.setDialogTitle('Account Limits Updated');
+          dialog.disableDialogAction(false);
+        }
+      })
+      .catch(() => {
+        dialog.setDialogTitle('Oops! Something went wrong');
+        dialog.setDialogMessage('Please try again.');
         dialog.disableDialogAction(false);
-      }
-    })
-    .catch(() => {
-      dialog.setDialogTitle('Oops! Something went wrong');
-      dialog.setDialogMessage('Please try again.');
-      dialog.disableDialogAction(false);
-    });
+      });
   };
 
   useEffect(() => {
@@ -86,14 +83,14 @@ function AccountLimits({
         'Content-type': 'application/json',
       },
     })
-    .then((res) => res.json())
-    .then(([data]) => {
-      setAccountLimitsData(data);
-      setIsLoading(false);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then((res) => res.json())
+      .then(([data]) => {
+        setAccountLimitsData(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   return (
@@ -189,4 +186,4 @@ export default (props) => (
   <DialogProvider>
     <AccountLimits {...props} />
   </DialogProvider>
-)
+);

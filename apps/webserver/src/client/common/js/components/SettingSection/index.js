@@ -30,7 +30,7 @@ export default function SettingSection({
           }}
         >
           {heading && (
-            <Typography sx={{...fontStyles, fontWeight: 500}} variant="subtitle1">
+            <Typography sx={{ ...fontStyles, fontWeight: 500 }} variant="subtitle1">
               {heading}
             </Typography>
           )}

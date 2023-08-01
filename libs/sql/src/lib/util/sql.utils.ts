@@ -25,16 +25,19 @@ export class SQLUtils {
    * @returns
    */
   query<T>(query: string, parameters?: ParameterType[]): Promise<T> {
-    return new Promise((resolve) => {
-      this.queryArray<T>(query, parameters).then((result) => {
-        if (result && Array.isArray(result) && result.length > 0) {
-          resolve(result[0]);
-        }
-        resolve(undefined);
-      });
+    return new Promise((resolve, reject) => {
+      this.queryArray<T>(query, parameters)
+        .then((result) => {
+          if (result && Array.isArray(result) && result.length > 0) {
+            resolve(result[0]);
+          }
+          resolve(undefined);
+        })
+        .catch((error) => {
+          reject(error);
+        });
     });
   }
-
   queryArray<T>(query: string, parameters?: ParameterType[]): Promise<Array<T>> {
     const request = this.connection.request();
 
@@ -60,13 +63,17 @@ export class SQLUtils {
   }
 
   executeQuery<T>(query: string, parameters?: ParameterType[]): Promise<T> {
-    return new Promise((resolve) => {
-      this.executeQueryArray<T>(query, parameters).then((result) => {
-        if (Number(result.length) > 1) {
-          resolve(result as T);
-        }
-        resolve(result[0] as T);
-      });
+    return new Promise((resolve, reject) => {
+      this.executeQueryArray<T>(query, parameters)
+        .then((result) => {
+          if (Number(result.length) > 1) {
+            resolve(result as T);
+          }
+          resolve(result[0] as T);
+        })
+        .catch((error) => {
+          reject(error);
+        });
     });
   }
 

@@ -3938,6 +3938,13 @@ export const accountProfileStrings = {
     profileForm: 'Account Profile',
     statusSetting: 'Account Status',
     accountUsers: 'Users',
+    accountUsage: 'Account Usage',
+  },
+  accountUsageLabels: {
+    organizationName: 'Organization Name',
+    numberOfLists: 'Number of lists',
+    maxAreaPerList: 'Max area per list',
+    totalAreaAnalyzed: 'Total area analyzed',
   },
   accountFormLabels: {
     org_name: 'Organization Name',
@@ -3948,5 +3955,9 @@ export const accountProfileStrings = {
     arr_org_classification: 'Account Classifications',
     arr_org_policy: 'Organization Policy',
     subscription_status_id: 'Subscription Status',
+  },
+  dateRangeSelector: {
+    selectStartDate: 'Select start date:',
+    selectEndDate: 'Select end date:',
   },
 };

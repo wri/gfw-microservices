@@ -7,7 +7,6 @@ const fontStyles = {
   fontFamily: 'Fira Sans, sans-serif',
   textTransform: 'uppercase',
   color: '#555555',
-  fontWeight: 500,
 };
 
 export default function SettingSection({
@@ -31,7 +30,7 @@ export default function SettingSection({
           }}
         >
           {heading && (
-            <Typography sx={fontStyles} variant="subtitle1">
+            <Typography sx={{...fontStyles, fontWeight: 500}} variant="subtitle1">
               {heading}
             </Typography>
           )}

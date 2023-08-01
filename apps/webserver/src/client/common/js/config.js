@@ -3941,12 +3941,20 @@ export const accountProfileStrings = {
   },
   accountFormLabels: {
     org_name: 'Organization Name',
-    org_address: 'Organization Website',
-    org_website: 'Organization Address',
+    org_address: 'Organization Address',
+    org_website: 'Organization Website',
     parent_org_name: 'Parent Organization',
     is_subsidiary: 'Is Subsidiary ?',
     arr_org_classification: 'Account Classifications',
     arr_org_policy: 'Organization Policy',
     subscription_status_id: 'Subscription Status',
   },
+};
+
+export const accountLimitsStrings = {
+  pageHeading: 'Account Limits',
+  stantardSubscriptionSection: 'Standard Subscription',
+  premiumSubscriptionSection: 'Premium Subscription',
+  areaPerList: 'Area Per List',
+  areaPerYear: 'Area Per Year',
 };

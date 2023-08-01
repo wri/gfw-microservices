@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import DateRangeSelector from './DateRangeSelector';
-import { getOneMonthAgoDate, getTodayDate } from './AccountUsage.utils';
+import { oneMonthAgoDate, todaysDate } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 
 function AccountDetailUsage({ organizationId }) {
-  const todayDate = getTodayDate();
-  const oneMonthAgoDate = getOneMonthAgoDate();
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
-  const [endDate, setEndDate] = useState(todayDate);
+  const [endDate, setEndDate] = useState(todaysDate);
   const [isLoading, setIsLoading] = useState(true);
   const [usageData, setUsageData] = useState({});
+
+  const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = usageData;
 
   useEffect(() => {
     setIsLoading(true);
@@ -33,8 +33,6 @@ function AccountDetailUsage({ organizationId }) {
         console.log(error);
       });
   }, [startDate, endDate]);
-
-  const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = usageData;
 
   return (
     <section>

@@ -1,28 +1,23 @@
 import React from 'react';
-import { todayString } from './AccountUsage.utils';
+import {
+  getOneDayAfterStartDate,
+  getOneDayBeforeEndDate,
+  todaysDateISOString,
+} from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 
 function DateRangeSelector({ startDate, setStartDate, endDate, setEndDate }) {
-  const oneDayBeforeEndDate = new Date(endDate);
-  // maximum start date is one day before the end date
-  oneDayBeforeEndDate.setDate(oneDayBeforeEndDate.getDate() - 1);
-  const oneDayBeforeEndDateString = oneDayBeforeEndDate.toISOString().slice(0, 10);
-
-  // mimimum end date is one day after the start date
-  const oneDayAfterStartDate = new Date(startDate);
-  oneDayAfterStartDate.setDate(oneDayAfterStartDate.getDate() + 1);
-  const oneDayAfterStartDateString = oneDayAfterStartDate.toISOString().slice(0, 10);
+  const oneDayAfterStartDateISOString = getOneDayAfterStartDate(startDate);
+  const oneDayBeforeEndDateISOString = getOneDayBeforeEndDate(endDate);
 
   // Function to handle start date change
   const handleStartDateChange = (event) => {
     setStartDate(event.target.value);
-    setEndDate(event.target.value);
   };
 
   // Function to handle end date change
   const handleEndDateChange = (event) => {
-    const selectedEndDate = event.target.value;
-    setEndDate(selectedEndDate);
+    setEndDate(event.target.value);
   };
 
   return (
@@ -36,7 +31,7 @@ function DateRangeSelector({ startDate, setStartDate, endDate, setEndDate }) {
           id="startDatePicker"
           value={startDate}
           onChange={handleStartDateChange}
-          max={oneDayBeforeEndDateString}
+          max={oneDayBeforeEndDateISOString}
         />
       </div>
       <div>
@@ -48,8 +43,8 @@ function DateRangeSelector({ startDate, setStartDate, endDate, setEndDate }) {
           id="endDatePicker"
           value={endDate}
           onChange={handleEndDateChange}
-          min={oneDayAfterStartDateString}
-          max={todayString} // Set the maximum selectable date to be today
+          min={oneDayAfterStartDateISOString}
+          max={todaysDateISOString} // Set the maximum selectable date to be today
         />
       </div>
     </>

@@ -1,17 +1,19 @@
-export const getOneMonthAgoDate = () => {
-  const today = new Date();
-  const oneMonthAgo = new Date(today);
-  oneMonthAgo.setMonth(today.getMonth() - 1);
-  return oneMonthAgo.toISOString().split('T')[0];
+import moment from 'moment';
+
+export const oneMonthAgoDate = moment().subtract(1, 'months').format('YYYY-MM-DD');
+
+export const todaysDate = moment().format('YYYY-MM-DD');
+
+export const todaysDateISOString = new Date().toISOString().slice(0, 10);
+
+export const getOneDayBeforeEndDate = (endDate) => {
+  const oneDayBeforeEndDate = new Date(endDate);
+  oneDayBeforeEndDate.setDate(oneDayBeforeEndDate.getDate() - 1);
+  return oneDayBeforeEndDate.toISOString().slice(0, 10);
 };
 
-// Function to get today's date in the format yyyy-mm-dd
-export const getTodayDate = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+export const getOneDayAfterStartDate = (startDate) => {
+  const oneDayAfterStartDate = new Date(startDate);
+  oneDayAfterStartDate.setDate(oneDayAfterStartDate.getDate() + 1);
+  return oneDayAfterStartDate.toISOString().slice(0, 10);
 };
-
-export const todayString = new Date().toISOString().slice(0, 10);

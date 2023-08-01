@@ -8,14 +8,12 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import DateRangeSelector from './DateRangeSelector';
-import { getOneMonthAgoDate, getTodayDate } from './AccountUsage.utils';
+import { oneMonthAgoDate, todaysDate } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 
 function AccountsListUsage({ isLoading, setIsLoading }) {
-  const todayDate = getTodayDate();
-  const oneMonthAgoDate = getOneMonthAgoDate();
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
-  const [endDate, setEndDate] = useState(todayDate);
+  const [endDate, setEndDate] = useState(todaysDate);
   const [usageData, setUsageData] = useState({});
 
   useEffect(() => {

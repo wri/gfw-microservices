@@ -3937,6 +3937,7 @@ export const accountProfileStrings = {
   sectionTitles: {
     profileForm: 'Account Profile',
     statusSetting: 'Account Status',
+    limitsSetting: 'Account Limits',
     accountUsers: 'Users',
   },
   accountFormLabels: {
@@ -3949,6 +3950,10 @@ export const accountProfileStrings = {
     arr_org_policy: 'Organization Policy',
     subscription_status_id: 'Subscription Status',
   },
+  accountLimitsSetting: {
+    areaPerList: 'Area Per List',
+    areaPerYear: 'Area Per Year',
+  }
 };
 
 export const accountLimitsStrings = {

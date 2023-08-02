@@ -8,6 +8,7 @@ import AccountProfileFormSetting from './AccountProfileFormSetting';
 import AccountStatusSetting from './AccountStatusSetting';
 import UserProfileManager from '../users/UserProfileManager';
 import { accountProfileStrings } from '../../../../common/js/config';
+import AccountProfileLimitsSetting from './AccountProfileLimitsSetting';
 
 export default function AccountProfile({
   users,
@@ -38,6 +39,18 @@ export default function AccountProfile({
       <SettingSection heading={accountProfileStrings.sectionTitles.statusSetting}>
         <AccountStatusSetting
           organization_id={currentAccount.organization_id}
+          organization_status_id={currentAccount.organization_status_id}
+        />
+      </SettingSection>
+      <SettingSection heading={accountProfileStrings.sectionTitles.limitsSetting}>
+        <AccountProfileLimitsSetting
+          accountLimitsData={{
+            account_limits_per_list: 1,
+            account_limits_per_year: 1
+          }}
+          isAccountStatusNotPending={isAccountStatusNotPending}
+          organizationType={currentAccount.subscription_status_id}
+          organizationId={currentAccount.organization_id}
           organization_status_id={currentAccount.organization_status_id}
         />
       </SettingSection>

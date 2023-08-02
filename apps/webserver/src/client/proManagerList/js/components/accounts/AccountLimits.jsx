@@ -27,11 +27,11 @@ const FieldLabel = styled(InputLabel)({
 });
 
 /**
- * Manage accounts limits based on subscriptions
+ * Manage global accounts limits based on subscriptions
  * @param {boolean} isLoading
  * @param {function} setIsLoading
  */
-function AccountLimits({ isLoading, setIsLoading }) {
+function AccountLimitsGlobal({ isLoading, setIsLoading }) {
   const dialog = useDialog();
   const [accountLimitsData, setAccountLimitsData] = useState({
     standard_area_per_list: 0,
@@ -52,7 +52,7 @@ function AccountLimits({ isLoading, setIsLoading }) {
   };
 
   const updateAccountLimits = (payload) => {
-    fetch('/analytics/accountLimits', {
+    fetch('/pro-manager/accountLimits', {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
@@ -76,7 +76,7 @@ function AccountLimits({ isLoading, setIsLoading }) {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch('/analytics/accountLimits', {
+    fetch('/pro-manager/accountLimits', {
       method: 'GET',
       credentials: 'same-origin',
       headers: {
@@ -84,7 +84,7 @@ function AccountLimits({ isLoading, setIsLoading }) {
       },
     })
       .then((res) => res.json())
-      .then(([data]) => {
+      .then((data) => {
         setAccountLimitsData(data);
         setIsLoading(false);
       })
@@ -184,6 +184,6 @@ function AccountLimits({ isLoading, setIsLoading }) {
 
 export default (props) => (
   <DialogProvider>
-    <AccountLimits {...props} />
+    <AccountLimitsGlobal {...props} />
   </DialogProvider>
 );

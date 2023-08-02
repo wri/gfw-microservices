@@ -226,4 +226,39 @@ module.exports = (app, limiter) => {
         res.send(err);
       });
   });
+
+  /**
+   * START-WIP: Account Limits Global Page
+   */
+  app.get('/pro-manager/accountLimits', (req, res) => {
+    res.send({
+      standard_area_per_list: 1,
+      standard_area_per_year: 1,
+      premium_area_list: 1,
+      premium_area_per_year: 1,
+    });
+  });
+
+  app.post('/pro-manager/accountLimits', (req, res) => {
+    const {
+      standard_area_per_list,
+      standard_area_per_year,
+      premium_area_list,
+      premium_area_per_year,
+    } = req.body;
+
+    // A ProManager function for global values
+    res.send({
+      status: 'success',
+      data: {
+        standard_area_per_list,
+        standard_area_per_year,
+        premium_area_list,
+        premium_area_per_year,
+      }
+    });
+  });
+  /**
+   * ENDOF-WIP: Account Limits Global Page
+   */
 };

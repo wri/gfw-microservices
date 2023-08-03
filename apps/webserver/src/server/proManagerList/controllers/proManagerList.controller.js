@@ -66,7 +66,7 @@ exports.proManagerListAccountsData = (req, res) => {
 
 exports.proManagerListAccountDetailData = async (req, res) => {
   const { organizationId: organizationIdParam, organizationName } = req.params;
-  
+
   const organizationId = parseInt(organizationIdParam, 10);
   const classes = AccountManager.getClassifications(req);
   const accessData = UserManager.getAccessLevels(req);
@@ -77,18 +77,12 @@ exports.proManagerListAccountDetailData = async (req, res) => {
     ProManager.getAllUsersList(req),
     PolicyManager.getPendingPolicyList(req),
     PolicyManager.getAllPolicyList(req),
-    AnalysisLimitsService.getAnalysisLimitData({})
+    AnalysisLimitsService.getAnalysisLimitData({}),
   ];
 
   try {
-    const [
-      accounts,
-      users,
-      pendingPolicy,
-      allPolicy,
-      accountsLimits
-    ] = await Promise.all(promises);
-  
+    const [accounts, users, pendingPolicy, allPolicy, accountsLimits] = await Promise.all(promises);
+
     const policyList = pendingPolicy.concat(allPolicy);
     let selectedAccount = getAccounFromQuery(organizationName, organizationId, accounts, users);
 
@@ -98,10 +92,10 @@ exports.proManagerListAccountDetailData = async (req, res) => {
      * Otherwise the object should be null.
      * @see GPV-1950
      */
-    selectedAccount.analysis_limits = 
+    selectedAccount.analysis_limits =
       selectedAccount.organization_status_id !== 1
-        ? accountsLimits.find(limit => limit.OrgID === selectedAccount.organization_id)
-          || accountsLimits.find(limit => limit.OrgType === selectedAccount.subscription_status_id)
+        ? accountsLimits.find((limit) => limit.OrgID === selectedAccount.organization_id) ||
+          accountsLimits.find((limit) => limit.OrgType === selectedAccount.subscription_status_id)
         : null;
 
     res.status(200).json({

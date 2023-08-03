@@ -54,15 +54,15 @@ export default function AccountProfileLimitsSetting({
     }));
   };
   const getButtonLabel = () => {
-    return accountLimitsData.OrgID === null ? "Set Custom Limits" : "Update Limits";
-  }
+    return accountLimitsData.OrgID === null ? 'Set Custom Limits' : 'Update Limits';
+  };
   /**
-   * @todo create fetch POST function 
+   * @todo create fetch POST function
    * @todo handle response
-   * @param {Object} payload 
+   * @param {Object} payload
    */
   const updateAccountProfileLimits = (payload) => {
-    console.log('updating with', payload)
+    console.log('updating with', payload);
   };
 
   return (

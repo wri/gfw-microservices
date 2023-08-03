@@ -229,14 +229,10 @@ module.exports = (app, limiter) => {
 
   /** WIP Start: Account Global Limits */
   app.post('/pro-manager/updateGlobalAccountLimits', (req, res) => {
-    const {
-      MaxAreaPerList,
-      MaxAreaAnalyzeablePerYear,
-      OrgType,
-    } = req.body;
+    const { MaxAreaPerList, MaxAreaAnalyzeablePerYear, OrgType } = req.body;
 
     /**
-     * @todo new request endpoint at global page level 
+     * @todo new request endpoint at global page level
      */
 
     // A ProManager function for global values
@@ -253,14 +249,10 @@ module.exports = (app, limiter) => {
 
   /** WIP Start: Account Limits Profile Setting */
   app.post('/pro-manager/updateAccountLimits', (req, res) => {
-    const {
-      MaxAreaPerList,
-      MaxAreaAnalyzeablePerYear,
-      OrgID,
-    } = req.body;
+    const { MaxAreaPerList, MaxAreaAnalyzeablePerYear, OrgID } = req.body;
 
     /**
-     * @todo new request endpoint at account profile level 
+     * @todo new request endpoint at account profile level
      */
 
     // A ProManager function for global values

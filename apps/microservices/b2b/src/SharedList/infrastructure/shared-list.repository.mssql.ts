@@ -37,6 +37,7 @@ export class SharedListRepositoryMssql
 
   async search(query: QueryCriteria): ResultPromise<SearchResult<SharedList>> {
     const result = await this.searchByCriteriaFind(query);
+    console.log(await this.repository.find({ select: { id: true } }));
     if (result.isSuccess) return Result.ok(result.getValue());
     return Result.fail(result.getError());
   }

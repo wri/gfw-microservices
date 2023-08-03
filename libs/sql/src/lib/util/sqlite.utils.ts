@@ -1,4 +1,6 @@
-import logger from 'winston';
+import { DataSource } from 'typeorm';
+import { SQL_CONFIG } from '../config/config';
+import { getQueryStr } from '../queries';
 
 /**
  * Replace the given regex (with a capture pattern) in given inputStr and optionally
@@ -46,16 +48,21 @@ const sqliteApplyParams = (baseQuery, params = []) => {
   return queryStr;
 };
 
-export const sqliteQuery = async <T>(queryRunner, mssqlQuery, params) => {
-  let queryStr;
+export const sqliteQuery = async <T>(queryRunner: DataSource, mssqlQuery, params, databaseName) => {
+  let queryToExecute
   try {
-    const baseQuery = mssql2sqliteQuery(mssqlQuery);
-    queryStr = sqliteApplyParams(baseQuery, params);
-    console.log('sqlite query string', queryStr);
-    const result = await queryRunner(queryStr);
+    const isSystemQuery = databaseName === SQL_CONFIG.database || databaseName === null;
+    const storedProcedureQuery = getQueryStr(isSystemQuery, mssqlQuery);
+    const baseQuery = mssql2sqliteQuery(storedProcedureQuery);
+    queryToExecute = sqliteApplyParams(baseQuery, params);
+    
+
+    const result = await queryRunner.query(queryToExecute);
+    console.log(result)
     return [result] as T;
   } catch (err) {
-    logger.error('sqliteQuery failed', queryStr || mssqlQuery, err);
+    console.log(queryToExecute)
+    console.error('sqliteQuery failed', queryToExecute || mssqlQuery, err);
     throw err;
   }
 };

@@ -14,6 +14,7 @@ import {
 } from '../application/dtos/connection-admin-organizations.dto';
 
 import { ConnectionRequestStatus } from '@wri-monorepos/sql';
+import { DataSource } from 'typeorm';
 @Injectable()
 export class ConnectionRepositoryMssqlSP
   extends RepositoryMssqlSP
@@ -21,8 +22,11 @@ export class ConnectionRepositoryMssqlSP
 {
   public readonly logger = new Logger(ConnectionRepositoryMssqlSP.name);
 
-  constructor(private mapper: ConnectionDataMapper) {
-    super();
+  constructor(
+    private mapper: ConnectionDataMapper,
+    private dataSource: DataSource = null,
+  ) {
+    super(dataSource);
   }
 
   async resendConnection(id: number): ResultPromise<void> {

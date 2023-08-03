@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { sqliteQuery, SQLUtils } from '@wri-monorepos/sql';
-import { DataSource, Driver } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { Command } from '../../domain/command';
 import Result from '../../domain/result';
 import ResultError from '../../domain/result/result.error';
@@ -31,14 +31,24 @@ export class StoredProcedureCommand implements Command {
 
   async execute<T>(database: string | null = null) {
     try {
+      let result: T;
       if (this.connection instanceof SQLUtils) {
-        const result = await SQLUtils.queryDB<T>(
+        result = await SQLUtils.queryDB<T>(
           database ? database : this.connection.config.database,
           this.sql,
           this.parameters,
         );
         return Result.ok(result);
+      } else if (process.env.NODE_ENV === 'test') {
+        result = await sqliteQuery<T>(
+          this.connection,
+          this.sql,
+          this.parameters,
+          database,
+        );
       }
+      console.log(result);
+      return Result.ok(result);
     } catch (error) {
       return Result.fail(this.handleError(error, this.sql, database));
     }
@@ -57,9 +67,10 @@ export class StoredProcedureCommand implements Command {
         );
       } else if (process.env.NODE_ENV === 'test') {
         result = await sqliteQuery<T[]>(
-          this.connection.query,
+          this.connection,
           this.sql,
           this.parameters,
+          database,
         );
       }
       return Result.ok(result);

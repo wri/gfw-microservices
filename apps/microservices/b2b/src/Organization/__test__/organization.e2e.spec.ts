@@ -63,6 +63,7 @@ describe('OrganizationController (e2e)', () => {
   });
 
   beforeEach(async () => {
+    await AppDataSource.synchronize(true);
     mockOrganization1 = {
       id: 1,
       organizationName: 'test1',

@@ -4,6 +4,7 @@ const AccountManager = require(path.resolve('./config/publicutils/accountManager
 const ProManager = require(path.resolve('./config/publicutils/proManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
+const AnalysisLimitsService = require(path.resolve('./server/analytics/service/analytics.service'));
 /**
  * @function proManagerList
  * @summary
@@ -59,44 +60,62 @@ exports.proManagerListAccountsData = (req, res) => {
     })
     .catch((error) => {
       console.log('Pro-manager-list page failed on the server:', error);
-      res.status(500).send(err);
+      res.status(500).send(error);
     });
 };
 
-exports.proManagerListAccountDetailData = (req, res) => {
+exports.proManagerListAccountDetailData = async (req, res) => {
+  const { organizationId: organizationIdParam, organizationName } = req.params;
+  
+  const organizationId = parseInt(organizationIdParam, 10);
   const classes = AccountManager.getClassifications(req);
   const accessData = UserManager.getAccessLevels(req);
   const statusData = UserManager.getStatuses(req);
-  const { organizationId: organizationIdParam, organizationName } = req.params;
-
-  const organizationId = parseInt(organizationIdParam, 10);
 
   const promises = [
     ProManager.getAllAccountsList(req),
     ProManager.getAllUsersList(req),
     PolicyManager.getPendingPolicyList(req),
     PolicyManager.getAllPolicyList(req),
+    AnalysisLimitsService.getAnalysisLimitData({})
   ];
 
-  Promise.all(promises)
-    .then(([accounts, users, pendingPolicy, allPolicy]) => {
-      const policyList = pendingPolicy.concat(allPolicy);
+  try {
+    const [
+      accounts,
+      users,
+      pendingPolicy,
+      allPolicy,
+      accountsLimits
+    ] = await Promise.all(promises);
+  
+    const policyList = pendingPolicy.concat(allPolicy);
+    let selectedAccount = getAccounFromQuery(organizationName, organizationId, accounts, users);
 
-      const selectedAccount = getAccounFromQuery(organizationName, organizationId, accounts, users);
+    /**
+     * @note
+     * If the account is not PENDING(=1), attach an analysis_limits property based on the OrgID or OrgType (subscription_status)
+     * Otherwise the object should be null.
+     * @see GPV-1950
+     */
+    selectedAccount.analysis_limits = 
+      selectedAccount.organization_status_id !== 1
+        ? accountsLimits.find(limit => limit.OrgID === selectedAccount.organization_id)
+          || accountsLimits.find(limit => limit.OrgType === selectedAccount.subscription_status_id)
+        : null;
 
-      res.status(200).json({
-        users,
-        classes,
-        statusData,
-        accessData,
-        policyList,
-        selectedAccount,
-      });
-    })
-    .catch((error) => {
-      console.log('Pro-manager-list page failed on the server:', error);
-      res.status(500).send(err);
+    res.status(200).json({
+      users,
+      classes,
+      statusData,
+      accessData,
+      policyList,
+      selectedAccount,
     });
+  } catch (error) {
+    console.log('Pro-manager-list account-detail page failed on the server:', error);
+    res.status(500).send(error);
+  }
 };
 
 exports.proManagerListUsersData = (req, res) => {
@@ -115,7 +134,7 @@ exports.proManagerListUsersData = (req, res) => {
     })
     .catch((error) => {
       console.log('Pro-manager-list page failed on the server:', error);
-      res.status(500).send(err);
+      res.status(500).send(error);
     });
 };
 
@@ -145,6 +164,6 @@ exports.proManagerListUserDetailData = (req, res) => {
     })
     .catch((error) => {
       console.log('Pro-manager-list page failed on the server:', error);
-      res.status(500).send(err);
+      res.status(500).send(error);
     });
 };

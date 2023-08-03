@@ -6,8 +6,9 @@ import Box from '@mui/material/Box';
 import SettingSection from '../../../../common/js/components/SettingSection';
 import AccountProfileFormSetting from './AccountProfileFormSetting';
 import AccountStatusSetting from './AccountStatusSetting';
+import AccountDetailUsage from './AccountUsage/AccountDetailUsage.jsx';
 import UserProfileManager from '../users/UserProfileManager';
-import { accountProfileStrings } from '../../../../common/js/config';
+import { accountProfileStrings, subscriptionStatusOptions } from '../../../../common/js/config';
 import AccountProfileLimitsSetting from './AccountProfileLimitsSetting';
 
 export default function AccountProfile({
@@ -22,6 +23,16 @@ export default function AccountProfile({
   const back = () => {
     window.location.href = '/pro-manager-list?tab=accounts';
   };
+
+  const getAccountLimitsTypeLabel = (isOrgPresent, orgSubscriptionStatus) => {
+    const analysisLimitBySubscriptionLabel = subscriptionStatusOptions.find(
+      subscription => subscription.value === orgSubscriptionStatus
+    ).label;
+
+    return isOrgPresent 
+      ? accountProfileStrings.accountLimitsSetting.subHeadingCustomLimits
+      : analysisLimitBySubscriptionLabel + accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits;
+  }
 
   return (
     <DialogProvider>
@@ -42,17 +53,26 @@ export default function AccountProfile({
           organization_status_id={currentAccount.organization_status_id}
         />
       </SettingSection>
-      <SettingSection heading={accountProfileStrings.sectionTitles.limitsSetting}>
+      <SettingSection 
+        heading={accountProfileStrings.sectionTitles.limitsSetting}
+        {...(currentAccount.analysis_limits !== null 
+          ? {
+            subHeading: getAccountLimitsTypeLabel(
+              currentAccount.analysis_limits.OrgID,
+              currentAccount.analysis_limits.OrgType
+            )
+          } : {})
+        }>
         <AccountProfileLimitsSetting
-          accountLimitsData={{
-            account_limits_per_list: 1,
-            account_limits_per_year: 1
-          }}
+          accountLimitsData={currentAccount.analysis_limits}
           isAccountStatusNotPending={isAccountStatusNotPending}
           organizationType={currentAccount.subscription_status_id}
           organizationId={currentAccount.organization_id}
           organization_status_id={currentAccount.organization_status_id}
         />
+      </SettingSection>
+      <SettingSection heading={accountProfileStrings.sectionTitles.accountUsage}>
+        <AccountDetailUsage organizationId={currentAccount.organization_id} />
       </SettingSection>
       <SettingSection heading={accountProfileStrings.sectionTitles.accountUsers}>
         <Box

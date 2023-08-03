@@ -42,3 +42,10 @@ exports.getAnalysisLimitData = async ({ organizationId, organizationType }) => {
 
   return response;
 };
+
+/**
+ * @todo new service function at analysis service file
+ */
+exports.setAnalysisLimitsForOrganization = async ({}) => {
+  return "response";
+}

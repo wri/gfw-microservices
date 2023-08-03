@@ -9,7 +9,15 @@ export default function AccountDetailSection({
   organizationName,
 }) {
   const [promanagerData, setPromanagerData] = useState({});
-
+  const { 
+    users, 
+    classes, 
+    statusData, 
+    accessData, 
+    policyList, 
+    selectedAccount,
+  } = promanagerData;
+  
   useEffect(() => {
     fetch(`/pro-manager-list/accounts/${organizationId}/${organizationName}`, {
       method: 'GET',
@@ -27,8 +35,6 @@ export default function AccountDetailSection({
         console.log(error);
       });
   }, []);
-
-  const { users, classes, statusData, accessData, policyList, selectedAccount } = promanagerData;
 
   return selectedAccount && !isLoading ? (
     <AccountProfile

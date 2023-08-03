@@ -20,6 +20,12 @@ export const proManagerPanelTabs = {
     title: 'User Profiles',
     userAccessLevel: [ADMIN, EDITOR, VIEWER],
   },
+  accountUsage: {
+    id: 'account-usage',
+    icon: 'query_stats',
+    title: 'Account Usage',
+    userAccessLevel: [ADMIN, EDITOR, VIEWER],
+  },
   accounLimits: {
     id: 'account-limits',
     icon: 'running_with_errors',

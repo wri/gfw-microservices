@@ -227,38 +227,51 @@ module.exports = (app, limiter) => {
       });
   });
 
-  /**
-   * START-WIP: Account Limits Global Page
-   */
-  app.get('/pro-manager/accountLimits', (req, res) => {
-    res.send({
-      standard_area_per_list: 1,
-      standard_area_per_year: 1,
-      premium_area_list: 1,
-      premium_area_per_year: 1,
-    });
-  });
-
-  app.post('/pro-manager/accountLimits', (req, res) => {
+  /** WIP Start: Account Global Limits */
+  app.post('/pro-manager/updateGlobalAccountLimits', (req, res) => {
     const {
-      standard_area_per_list,
-      standard_area_per_year,
-      premium_area_list,
-      premium_area_per_year,
+      MaxAreaPerList,
+      MaxAreaAnalyzeablePerYear,
+      OrgType,
     } = req.body;
+
+    /**
+     * @todo new request endpoint at global page level 
+     */
 
     // A ProManager function for global values
     res.send({
       status: 'success',
       data: {
-        standard_area_per_list,
-        standard_area_per_year,
-        premium_area_list,
-        premium_area_per_year,
-      }
+        MaxAreaPerList,
+        MaxAreaAnalyzeablePerYear,
+        OrgType,
+      },
     });
   });
-  /**
-   * ENDOF-WIP: Account Limits Global Page
-   */
+  /** WIP End: Account Global Limits */
+
+  /** WIP Start: Account Limits Profile Setting */
+  app.post('/pro-manager/updateAccountLimits', (req, res) => {
+    const {
+      MaxAreaPerList,
+      MaxAreaAnalyzeablePerYear,
+      OrgID,
+    } = req.body;
+
+    /**
+     * @todo new request endpoint at account profile level 
+     */
+
+    // A ProManager function for global values
+    res.send({
+      status: 'success',
+      data: {
+        MaxAreaPerList,
+        MaxAreaAnalyzeablePerYear,
+        OrgID,
+      },
+    });
+  });
+  /** WIP End: Account Limits Profile Setting */
 };

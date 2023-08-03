@@ -28,6 +28,7 @@ const FieldLabel = styled(InputLabel)({
 });
 
 /**
+ * WIP
  * Displays and Manage Account Profile Limits Form Setting
  * @param {Object} accountLimitsData,
  * @param {Boolean} isAccountStatusNotPending
@@ -42,21 +43,27 @@ export default function AccountProfileLimitsSetting({
 }) {
   const dialog = useDialog();
   const [accountLimitsFormData, setAccountLimitsFormData] = useState({
-    account_limits_per_list: accountLimitsData.account_limits_per_list,
-    account_limits_per_year: accountLimitsData.account_limits_per_year,
+    MaxAreaPerList: accountLimitsData.MaxAreaPerList,
+    MaxAreaAnalyzeablePerYear: accountLimitsData.MaxAreaAnalyzeablePerYear,
+    OrgID: accountLimitsData.OrgID,
   });
-
   const onChangeUpdateField = (field, values) => {
     setAccountLimitsFormData((prevData) => ({
       ...prevData,
       [field]: values,
     }));
   };
-//   analyticsRouter.get('/limit', controller.getOrganizationAnalysisLimit);
-// orgId and/or orgType=subscription_status_id
-  const updateAccountProfileLimits = (payload) => {
-    // 
+  const getButtonLabel = () => {
+    return accountLimitsData.OrgID === null ? "Set Custom Limits" : "Update Limits";
   }
+  /**
+   * @todo create fetch POST function 
+   * @todo handle response
+   * @param {Object} payload 
+   */
+  const updateAccountProfileLimits = (payload) => {
+    console.log('updating with', payload)
+  };
 
   return (
     <Fragment>
@@ -67,11 +74,11 @@ export default function AccountProfileLimitsSetting({
               {accountProfileStrings.accountLimitsSetting.areaPerList}
             </FieldLabel>
             <TextField
-              name="account_limits_per_list"
-              id="account_limits_per_list"
-              onChange={(e) => onChangeUpdateField('account_limits_per_list', e.target.value)}
-              value={accountLimitsFormData.account_limits_per_list}
-              disabled={isEditingDisabled}
+              name="MaxAreaPerList"
+              id="MaxAreaPerList"
+              onChange={(e) => onChangeUpdateField('MaxAreaPerList', e.target.value)}
+              value={accountLimitsFormData.MaxAreaPerList}
+              disabled={!isEditingDisabled}
               size="small"
               variant="outlined"
             />
@@ -83,11 +90,11 @@ export default function AccountProfileLimitsSetting({
               {accountProfileStrings.accountLimitsSetting.areaPerYear}
             </FieldLabel>
             <TextField
-              name="account_limits_per_year"
-              id="account_limits_per_year"
-              onChange={(e) => onChangeUpdateField('account_limits_per_year', e.target.value)}
-              value={accountLimitsFormData.account_limits_per_year}
-              disabled={isEditingDisabled}
+              name="MaxAreaAnalyzeablePerYear"
+              id="MaxAreaAnalyzeablePerYear"
+              onChange={(e) => onChangeUpdateField('MaxAreaAnalyzeablePerYear', e.target.value)}
+              value={accountLimitsFormData.MaxAreaAnalyzeablePerYear}
+              disabled={!isEditingDisabled}
               size="small"
               variant="outlined"
             />
@@ -97,10 +104,10 @@ export default function AccountProfileLimitsSetting({
       <Grid container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12}>
           <GfwButton
-            classNames={`btn-green ${isEditingDisabled ? 'button-disabled' : ''}`}
-            disabled={isEditingDisabled}
+            classNames={`btn-green ${!isEditingDisabled ? 'button-disabled' : ''}`}
+            disabled={!isEditingDisabled}
             onClick={() => updateAccountProfileLimits(accountLimitsFormData)}
-            value="Update Limits"
+            value={getButtonLabel()}
           />
         </Grid>
       </Grid>

@@ -1,4 +1,5 @@
-export const uspChangeConnectionRequestStatus = `DECLARE @ID_STATUS INT
+export const uspChangeConnectionRequestStatus = `
+DECLARE @ID_STATUS INT
 DECLARE @NOW DATETIME
 DECLARE @ACCESS_LEVEL INT
 DECLARE @ORGANIZATION_ID INT
@@ -9,18 +10,21 @@ DECLARE @ID INT
     SET @NOW = getdate();
     SET @ID = -1;
 
-    SELECT @ORGANIZATION_ID = cr.id_target_organization FROM Connection_Request cr WHERE cr.id = @id_connection_request
-
-    EXEC uspGetAccessLevelUserAndOrganization @email=@edit_email, @organization_id=@ORGANIZATION_ID, @access_level=@ACCESS_LEVEL OUTPUT;
-
-    IF @id_status IS NULL
+    IF @ID_STATUS IS NULL
     BEGIN
     	THROW 500400, 'the informed status do not exist', 16;
     END
 
-    IF @ACCESS_LEVEL != 1
+    IF @ID_STATUS = 4
+      SELECT @ORGANIZATION_ID = cr.id_source_organization FROM Connection_Request cr WHERE cr.id = @id_connection_request
+    ELSE
+      SELECT @ORGANIZATION_ID = cr.id_target_organization FROM Connection_Request cr WHERE cr.id = @id_connection_request
+
+    EXEC uspGetAccessLevelUserAndOrganization @email=@edit_email, @organization_id=@ORGANIZATION_ID, @access_level=@ACCESS_LEVEL OUTPUT;
+
+    IF @ACCESS_LEVEL != 1 OR @ACCESS_LEVEL IS NULL
     BEGIN
-    	THROW 500400, 'user is not administrator', 16;
+    	THROW 500400, 'user is not administrator or not exist inside this organization.', 16;
     END
 
     SELECT @CURRENT_STATUS = cs.id_status FROM (
@@ -42,7 +46,8 @@ DECLARE @ID INT
     BEGIN CATCH
         THROW 500400, 'Could not change the connection status', 16;
     END CATCH
-    SELECT @ID as "id";`;
+    SELECT @ID as "id";
+`;
 
 export class ConnectionRequestStatus {
   id: number;

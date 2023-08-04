@@ -19,3 +19,5 @@ export * from './getVerifiedUserRouteInfo';
 export * from './setCreateConnectionRequest';
 export * from './setOrganizationSubscriptionStatus';
 export * from './uspChangeConnectionRequestStatus';
+export * from './setGlobalAnalysisLimit';
+export * from './setOrganizationCustomAnalysisLimits';

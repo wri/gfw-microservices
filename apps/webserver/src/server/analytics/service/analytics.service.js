@@ -4,7 +4,6 @@ const sql = require('mssql');
 const { getOrganizationAnalysisUsage } = require(path.resolve(
   './queries/system/getOrganizationAnalysisUsage'
 ));
-
 const { getAnalysisLimits } = require(path.resolve('./queries/system/getAnalysisLimits'));
 
 exports.getOrganizationAnalysisUsage = async ({
@@ -41,11 +40,4 @@ exports.getAnalysisLimitData = async ({ organizationId, organizationType }) => {
   const [response] = await sqlUtils.executeSystemQuery(getAnalysisLimits, params);
 
   return response;
-};
-
-/**
- * @todo new service function at analysis service file
- */
-exports.setAnalysisLimitsForOrganization = async ({}) => {
-  return 'response';
 };

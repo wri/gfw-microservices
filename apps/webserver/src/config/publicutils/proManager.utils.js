@@ -14,6 +14,9 @@
  *   @function {updatePendingAccountUser}
  *   @function {deletePendingAccountRequest}
  *   @function {deactivateAccount}
+ *   @function {updateAccountSubscriptionStatus}
+ *   @function {updateGlobalAnalysisLimits}
+ *   @function {updateAccountAnalysisLimits}
  *
  ******************************************************************* */
 // Imports required for this module.
@@ -33,7 +36,10 @@ const UserManager = require(path.resolve('./config/publicutils/userManager.utils
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
-
+const { setOrganizationCustomAnalysisLimits } = require(path.resolve(
+  './queries/system/setOrganizationCustomAnalysisLimits'
+));
+const { setGlobalAnalysisLimit } = require(path.resolve('./queries/system/setGlobalAnalysisLimit'));
 /**
  * @function getAllAccountsList
  * @summary Gets an array of All Accounts.
@@ -657,7 +663,8 @@ const getAccountSubscriptionStatus = (request, organizationId) => {
   });
 };
 
-/** @function {updateAccountSubscriptionStatus}
+/**
+ * @function {updateAccountSubscriptionStatus}
  * @param {Object} req
  * @param {Number} organizationId
  * @param {Number} newSubscriptionStatusId
@@ -688,6 +695,66 @@ const updateAccountSubscriptionStatus = async (
   });
 };
 
+/**
+ * @function {updateGlobalAnalysisLimits}
+ * @summary Updates AnalysisLimits where OrgType = @subscriptionStatusId
+ * @param {Object} requet for error util
+ * @param {Object} payload params to insert
+ * @returns {Promise<payload, errorObject>}
+ */
+const updateGlobalAnalysisLimits = async (request, payload) => {
+  const { subscriptionStatusId, MaxAreaPerList, MaxAreaAnalyzeablePerYear } = payload;
+  const params = [
+    { field: 'subscriptionStatusId', type: sql.Int, value: subscriptionStatusId },
+    { field: 'MaxAreaPerList', type: sql.Decimal, value: MaxAreaPerList },
+    { field: 'MaxAreaAnalyzeablePerYear', type: sql.Decimal, value: MaxAreaAnalyzeablePerYear },
+  ];
+
+  try {
+    await sqlUtils.executeSystemQuery(setGlobalAnalysisLimit, params);
+
+    return payload;
+  } catch (error) {
+    const errorObject = errorUtils.createErrorMessage(
+      request,
+      errorUtils.errorCodes.failedToUpdateGlobalAnalysisLimit,
+      `Failed to update global analysis limit`,
+      error
+    );
+    return errorObject;
+  }
+};
+
+/**
+ * @function {updateAccountAnalysisLimits}
+ * @summary Performs an INSERT or UPDATE on Org Limits
+ * @param {Object} requet for error util
+ * @param {Object} payload params to insert
+ * @returns {Promise<payload, errorObject>}
+ */
+const updateAccountAnalysisLimits = async (request, payload) => {
+  const { organizationId, MaxAreaPerList, MaxAreaAnalyzeablePerYear } = payload;
+  const params = [
+    { field: 'OrgID', type: sql.Int, value: organizationId },
+    { field: 'MaxAreaPerList', type: sql.Decimal, value: MaxAreaPerList },
+    { field: 'MaxAreaAnalyzeablePerYear', type: sql.Decimal, value: MaxAreaAnalyzeablePerYear },
+  ];
+
+  try {
+    await sqlUtils.executeSystemQuery(setOrganizationCustomAnalysisLimits, params);
+
+    return payload;
+  } catch (error) {
+    const errorObject = errorUtils.createErrorMessage(
+      request,
+      errorUtils.errorCodes.failedToUpdateAccountCustomAnalysisLimits,
+      `Failed to update account custom analysis limits`,
+      error
+    );
+    return errorObject;
+  }
+};
+
 module.exports = {
   getAllAccountsList,
   getAllUsersList,
@@ -702,4 +769,6 @@ module.exports = {
   reactivateAccount,
   getAccountSubscriptionStatus,
   updateAccountSubscriptionStatus,
+  updateGlobalAnalysisLimits,
+  updateAccountAnalysisLimits,
 };

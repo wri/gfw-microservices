@@ -227,43 +227,43 @@ module.exports = (app, limiter) => {
       });
   });
 
-  /** WIP Start: Account Global Limits */
-  app.post('/pro-manager/updateGlobalAccountLimits', (req, res) => {
-    const { MaxAreaPerList, MaxAreaAnalyzeablePerYear, OrgType } = req.body;
+  app.post('/pro-manager/updateGlobalAnalysisLimits', async (req, res) => {
+    console.log('POST /pro-manager/updateGlobalAnalysisLimits');
+    const { MaxAreaPerList, MaxAreaAnalyzeablePerYear, subscriptionStatusId } = req.body;
 
-    /**
-     * @todo new request endpoint at global page level
-     */
-
-    // A ProManager function for global values
-    res.send({
-      status: 'success',
-      data: {
+    try {
+      const response = await ProManager.updateGlobalAnalysisLimits(req, {
+        subscriptionStatusId,
         MaxAreaPerList,
         MaxAreaAnalyzeablePerYear,
-        OrgType,
-      },
-    });
+      });
+
+      res.send({
+        status: 'success',
+        data: response,
+      });
+    } catch (error) {
+      res.status(500).send(error);
+    }
   });
-  /** WIP End: Account Global Limits */
 
-  /** WIP Start: Account Limits Profile Setting */
-  app.post('/pro-manager/updateAccountLimits', (req, res) => {
-    const { MaxAreaPerList, MaxAreaAnalyzeablePerYear, OrgID } = req.body;
+  app.post('/pro-manager/updateAccountAnalysisLimits', async (req, res) => {
+    console.log('POST /pro-manager/updateAccountAnalysisLimits');
+    const { MaxAreaPerList, MaxAreaAnalyzeablePerYear, organizationId } = req.body;
 
-    /**
-     * @todo new request endpoint at account profile level
-     */
-
-    // A ProManager function for global values
-    res.send({
-      status: 'success',
-      data: {
+    try {
+      const response = await ProManager.updateAccountAnalysisLimits(req, {
+        organizationId,
         MaxAreaPerList,
         MaxAreaAnalyzeablePerYear,
-        OrgID,
-      },
-    });
+      });
+
+      res.send({
+        status: 'success',
+        data: response,
+      });
+    } catch (error) {
+      res.status(500).send(error);
+    }
   });
-  /** WIP End: Account Limits Profile Setting */
 };

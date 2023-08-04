@@ -26,6 +26,9 @@ const FieldLabel = styled(InputLabel)({
   marginBottom: '5px',
 });
 
+const STANDARD_SUBSCRIPTION = 1;
+const PREMIUM_SUBSCRIPTION = 2;
+
 /**
  * Manage global accounts limits based on subscriptions
  * @param {boolean} isLoading
@@ -33,63 +36,114 @@ const FieldLabel = styled(InputLabel)({
  */
 function AccountLimitsGlobal({ isLoading, setIsLoading }) {
   const dialog = useDialog();
-  const [accountLimitsData, setAccountLimitsData] = useState({
-    standard_area_per_list: 0,
-    standard_area_per_year: 0,
-    premium_area_list: 0,
-    premium_area_per_year: 0,
+  const [globalLimitsFormData, setGlobalLimitsFormData] = useState({
+    [STANDARD_SUBSCRIPTION]: {
+      MaxAreaPerList: 0,
+      MaxAreaAnalyzeablePerYear: 0,
+      subscriptionStatusId: STANDARD_SUBSCRIPTION,
+    },
+    [PREMIUM_SUBSCRIPTION]: {
+      MaxAreaPerList: 0,
+      MaxAreaAnalyzeablePerYear: 0,
+      subscriptionStatusId: PREMIUM_SUBSCRIPTION,
+    },
   });
+  const [formHasChanges, setFormHasChanges] = useState(false);
 
-  const onChangeUpdateField = (field, values) => {
-    setAccountLimitsData((prevData) => ({
-      ...prevData,
-      [field]: values,
-    }));
+  const onChangeUpdateField = (orgType, fieldName, value) => {
+    setGlobalLimitsFormData((prevData) => {
+      setFormHasChanges(prevData[orgType][fieldName] !== value);
+      return {
+        ...prevData,
+        [orgType]: {
+          ...prevData[orgType],
+          [fieldName]: value,
+          changed: prevData[orgType][fieldName] !== value,
+        },
+      };
+    });
   };
 
   const back = () => {
     window.location.href = '/pro-manager-list';
   };
 
-  const updateAccountLimits = (payload) => {
-    fetch('/pro-manager/accountLimits', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === 'success') {
-          dialog.setDialogTitle('Account Limits Updated');
-          dialog.disableDialogAction(false);
+  const updateGlobalAnalysisLimits = (payload) => {
+    // Minimize requests and only update changed fields
+    let requests = Object.keys(payload)
+      .map((globalLimitType) => {
+        if (payload[globalLimitType].changed) {
+          return fetch('/pro-manager/updateGlobalAnalysisLimits', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              subscriptionStatusId: globalLimitType,
+              ...payload[globalLimitType],
+            }),
+          }).then((res) => res.json());
         }
+        return null;
       })
-      .catch(() => {
-        dialog.setDialogTitle('Oops! Something went wrong');
-        dialog.setDialogMessage('Please try again.');
-        dialog.disableDialogAction(false);
-      });
+      .filter((request) => request !== null);
+
+    if (requests.length > 0) {
+      // Process all requests together
+      dialog.openDialog('Updating Limits', 'Please wait...', true);
+      Promise.all(requests)
+        .then((data) => {
+          const allSuccessful = data.every((response) => response.status === 'success');
+          dialog.openDialog();
+          if (allSuccessful) {
+            dialog.setDialogTitle('Global Limits Updated');
+          } else {
+            dialog.setDialogTitle('Some Updates Failed');
+          }
+          dialog.disableDialogAction(false);
+          setFormHasChanges(false);
+        })
+        .catch(() => {
+          dialog.setDialogTitle('Oops! Something went wrong');
+          dialog.setDialogMessage('Please try again.');
+          dialog.disableDialogAction(false);
+        });
+    }
   };
 
   useEffect(() => {
     setIsLoading(true);
-    fetch('/pro-manager/accountLimits', {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setAccountLimitsData(data);
+    const analysisLimitsByOrgType = Object.keys(globalLimitsFormData);
+
+    const fetchPromises = analysisLimitsByOrgType.map((globalLimitOrgType) => {
+      return fetch(`/analytics/limit?organizationType=${globalLimitOrgType}`, {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }).then((res) => res.json());
+    });
+
+    Promise.all(fetchPromises)
+      .then((responses) => {
+        const updatedFormData = {};
+
+        responses.forEach((data, index) => {
+          updatedFormData[analysisLimitsByOrgType[index]] = { ...data.pop() };
+        });
+        setGlobalLimitsFormData((prevGlobalValues) => ({
+          ...prevGlobalValues,
+          ...updatedFormData,
+        }));
         setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
+        dialog.openDialog('Oops! Something went wrong', 'Please try again.');
+        dialog.disableDialogAction(false);
+        setIsLoading(false);
       });
   }, []);
 
@@ -109,10 +163,12 @@ function AccountLimitsGlobal({ isLoading, setIsLoading }) {
                 {accountLimitsStrings.areaPerList}
               </FieldLabel>
               <TextField
-                name="standard_area_per_list"
-                id="standard_area_per_list"
-                onChange={(e) => onChangeUpdateField('standard_area_per_list', e.target.value)}
-                value={accountLimitsData.standard_area_per_list}
+                name="MaxAreaPerList"
+                id="STANDARD_SUBSCRIPTION-MaxAreaPerList"
+                onChange={({ target }) =>
+                  onChangeUpdateField(STANDARD_SUBSCRIPTION, target.name, target.value)
+                }
+                value={globalLimitsFormData[STANDARD_SUBSCRIPTION]?.MaxAreaPerList || 0}
                 size="small"
                 variant="outlined"
               />
@@ -124,10 +180,12 @@ function AccountLimitsGlobal({ isLoading, setIsLoading }) {
                 {accountLimitsStrings.areaPerYear}
               </FieldLabel>
               <TextField
-                name="standard_area_per_year"
-                id="standard_area_per_year"
-                onChange={(e) => onChangeUpdateField('standard_area_per_year', e.target.value)}
-                value={accountLimitsData.standard_area_per_year}
+                name="MaxAreaAnalyzeablePerYear"
+                id="STANDARD_SUBSCRIPTION-MaxAreaAnalyzeablePerYear"
+                onChange={({ target }) =>
+                  onChangeUpdateField(STANDARD_SUBSCRIPTION, target.name, target.value)
+                }
+                value={globalLimitsFormData[STANDARD_SUBSCRIPTION]?.MaxAreaAnalyzeablePerYear || 0}
                 size="small"
                 variant="outlined"
               />
@@ -143,10 +201,12 @@ function AccountLimitsGlobal({ isLoading, setIsLoading }) {
                 {accountLimitsStrings.areaPerList}
               </FieldLabel>
               <TextField
-                name="premium_area_list"
-                id="premium_area_list"
-                onChange={(e) => onChangeUpdateField('premium_area_list', e.target.value)}
-                value={accountLimitsData.premium_area_list}
+                name="MaxAreaPerList"
+                id="PREMIUM_SUBSCRIPTION-MaxAreaPerList"
+                onChange={({ target }) =>
+                  onChangeUpdateField(PREMIUM_SUBSCRIPTION, target.name, target.value)
+                }
+                value={globalLimitsFormData[PREMIUM_SUBSCRIPTION]?.MaxAreaPerList || 0}
                 size="small"
                 variant="outlined"
               />
@@ -158,10 +218,12 @@ function AccountLimitsGlobal({ isLoading, setIsLoading }) {
                 {accountLimitsStrings.areaPerYear}
               </FieldLabel>
               <TextField
-                name="premium_area_per_year"
-                id="premium_area_per_year"
-                onChange={(e) => onChangeUpdateField('premium_area_per_year', e.target.value)}
-                value={accountLimitsData.premium_area_per_year}
+                name="MaxAreaAnalyzeablePerYear"
+                id="PREMIUM_SUBSCRIPTION-MaxAreaAnalyzeablePerYear"
+                onChange={({ target }) =>
+                  onChangeUpdateField(PREMIUM_SUBSCRIPTION, target.name, target.value)
+                }
+                value={globalLimitsFormData[PREMIUM_SUBSCRIPTION]?.MaxAreaAnalyzeablePerYear || 0}
                 size="small"
                 variant="outlined"
               />
@@ -172,7 +234,8 @@ function AccountLimitsGlobal({ isLoading, setIsLoading }) {
           <Grid item sm={6} xs={12}>
             <GfwButton
               classNames={`btn-green`}
-              onClick={() => updateAccountLimits(accountLimitsData)}
+              disabled={!formHasChanges}
+              onClick={() => updateGlobalAnalysisLimits(globalLimitsFormData)}
               value="Update Limits"
             />
           </Grid>

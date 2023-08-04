@@ -210,7 +210,7 @@ export default function AccountProfileFormSetting({
           if (data.status === 'success') {
             dialog.setDialogTitle('Account Information Saved');
             dialog.setDialogMessage('Organization profile updated successfully');
-            dialog.disableDialogAction(false);
+            setTimeout(() => window.location.reload(), 700);
           }
         })
         .catch(() => {

@@ -1,20 +1,10 @@
-import React from 'react';
-import { Fragment, useState, useEffect } from 'react';
-import Select from 'react-select';
+import { Fragment, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import FormControl from '@mui/material/FormControl';
-import SelectField from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import GfwButton from '../../../../common/js/components/GfwButton';
-import { profilePage } from '../../../../common/js/config';
-import { fieldValidations } from '../../../../profile/js/utils/validations';
 import { useDialog } from '../../../../common/js/components/Dialog';
-import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 import { accountProfileStrings } from '../../../../common/js/config';
 
 const FieldLabel = styled(InputLabel)({
@@ -39,13 +29,12 @@ export default function AccountProfileLimitsSetting({
   accountLimitsData,
   isAccountStatusNotPending: isEditingDisabled,
   organizationId,
-  organizationType,
 }) {
   const dialog = useDialog();
   const [accountLimitsFormData, setAccountLimitsFormData] = useState({
     MaxAreaPerList: accountLimitsData.MaxAreaPerList,
     MaxAreaAnalyzeablePerYear: accountLimitsData.MaxAreaAnalyzeablePerYear,
-    OrgID: accountLimitsData.OrgID,
+    organizationId,
   });
   const onChangeUpdateField = (field, values) => {
     setAccountLimitsFormData((prevData) => ({
@@ -56,13 +45,53 @@ export default function AccountProfileLimitsSetting({
   const getButtonLabel = () => {
     return accountLimitsData.OrgID === null ? 'Set Custom Limits' : 'Update Limits';
   };
-  /**
-   * @todo create fetch POST function
-   * @todo handle response
-   * @param {Object} payload
-   */
+  const validateLimitsFormData = (data) => {
+    let errors = [];
+
+    if (!data.MaxAreaPerList) {
+      errors.push('The field "Area Per List" cannot be empty');
+    }
+    if (!data.MaxAreaAnalyzeablePerYear) {
+      errors.push('The field "Area Per Year" cannot be empty');
+    }
+
+    return {
+      isFormDataValid: () => errors.length === 0,
+      errors,
+    };
+  };
   const updateAccountProfileLimits = (payload) => {
-    console.log('updating with', payload);
+    const { isFormDataValid, errors } = validateLimitsFormData(payload);
+    dialog.openDialog('Updating Account', 'Please wait...', true);
+
+    if (isFormDataValid()) {
+      fetch('/pro-manager/updateAccountAnalysisLimits', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === 'success') {
+            dialog.setDialogTitle('Account Limits Saved');
+            dialog.setDialogMessage('Organization custom limits set successfully');
+            setTimeout(() => window.location.reload(), 700);
+          }
+        });
+      return void 0;
+    }
+    // get back to the user with error messages
+    let dialogTitle;
+    let dialogMessage;
+    if (errors.length > 0) {
+      dialogTitle = 'Invalid field entries';
+      dialogMessage = ['Please review for empty fields: ', ...errors];
+    }
+    dialog.setDialogTitle(dialogTitle);
+    dialog.setDialogMessage(dialogMessage);
   };
 
   return (

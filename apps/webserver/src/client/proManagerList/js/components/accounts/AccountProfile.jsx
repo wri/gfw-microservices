@@ -25,14 +25,13 @@ export default function AccountProfile({
   };
 
   const getAccountLimitsTypeLabel = (isOrgPresent, orgSubscriptionStatus) => {
-    const analysisLimitBySubscriptionLabel = subscriptionStatusOptions.find(
-      (subscription) => subscription.value === orgSubscriptionStatus
-    ).label;
-
-    return isOrgPresent
-      ? accountProfileStrings.accountLimitsSetting.subHeadingCustomLimits
-      : analysisLimitBySubscriptionLabel +
-          accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits;
+    if (isOrgPresent) {
+      return accountProfileStrings.accountLimitsSetting.subHeadingCustomLimits;
+    }
+    return (
+      subscriptionStatusOptions.find((subscription) => subscription.value === orgSubscriptionStatus)
+        .label + accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits
+    );
   };
 
   return (
@@ -66,11 +65,10 @@ export default function AccountProfile({
           : {})}
       >
         <AccountProfileLimitsSetting
-          accountLimitsData={currentAccount.analysis_limits}
+          accountLimitsData={currentAccount.analysis_limits || {}}
           isAccountStatusNotPending={isAccountStatusNotPending}
           organizationType={currentAccount.subscription_status_id}
           organizationId={currentAccount.organization_id}
-          organization_status_id={currentAccount.organization_status_id}
         />
       </SettingSection>
       <SettingSection heading={accountProfileStrings.sectionTitles.accountUsage}>

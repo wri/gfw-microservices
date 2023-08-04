@@ -47,7 +47,6 @@ export class ConnectionUseCases {
       const connectionsGetDto: ConnectionGetDto[] = connections.map(
         (connection) => this.mapper.connectionToGetDto(connection),
       );
-      console.log(process.env.NODE_ENV);
       return Result.ok(connectionsGetDto);
     }
     return Result.fail(connectionsRes.getError());

@@ -1,30 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { OrganizationController } from '../infrastructure/organization.controller';
 import { OrganizationUseCases } from '../application/organization.use-case';
 import { Organization } from '../domain/organization.entity';
-import Result from '../../Shared/domain/result';
-import {
-  getDataSourceName,
-  getDataSourceToken,
-  getEntityManagerToken,
-  getRepositoryToken,
-  TypeOrmModule,
-} from '@nestjs/typeorm';
-import { createMockModule, createTables } from '@wri-monorepos/shared';
-import { ConnectionModule } from '../../Connection/connection.module';
-import { ConnectionRequest } from '../../Connection/domain/connection.entity';
-import { ConnectionController } from '../../Connection/infraestructure/connection.controller';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { createMockModule } from '@wri-monorepos/shared';
 import { OrganizationModule } from '../organization.module';
-import {
-  DataSource,
-  EntityManager,
-  getConnection,
-  getManager,
-  Repository,
-} from 'typeorm';
-import { getegid } from 'process';
+import { DataSource, Repository } from 'typeorm';
 
 describe('OrganizationController (e2e)', () => {
   let app: INestApplication;
@@ -44,7 +26,7 @@ describe('OrganizationController (e2e)', () => {
       synchronize: true,
     });
     AppDataSource = await AppDataSource.initialize();
-    
+
     repository = AppDataSource.getRepository(Organization);
 
     const module = await createMockModule({

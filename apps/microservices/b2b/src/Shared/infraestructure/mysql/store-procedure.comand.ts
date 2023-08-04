@@ -47,7 +47,6 @@ export class StoredProcedureCommand implements Command {
           database,
         );
       }
-      console.log(result);
       return Result.ok(result);
     } catch (error) {
       return Result.fail(this.handleError(error, this.sql, database));

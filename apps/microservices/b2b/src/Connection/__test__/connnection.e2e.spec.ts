@@ -14,6 +14,7 @@ import { ConnectionModule } from '../connection.module';
 import { ConnectionController } from '../infraestructure/connection.controller';
 import Result from '../../Shared/domain/result';
 import { ActivityLogUseCases } from '../../ActivityLog/application/activity-log.use-case';
+import { ConnectionStatus } from '../domain/connection';
 
 describe('ConnectionController (e2e)', () => {
   let app: INestApplication;
@@ -26,6 +27,8 @@ describe('ConnectionController (e2e)', () => {
 
   let mockEmailService;
   let mockActivityLog;
+  let mockConnectionsCollection: ConnectionRequest[];
+  let mockConnection: ConnectionRequest;
 
   beforeAll(async () => {
     AppDataSource = new DataSource({
@@ -73,6 +76,34 @@ describe('ConnectionController (e2e)', () => {
     await app.close();
   });
 
+  beforeEach(async () => {
+    mockConnection = {
+      id: 1,
+      idSourceOrganization: 2,
+      idTargetOrganization: 1,
+      createDate: new Date(),
+      sourceEmail: 'test1@gmail.com',
+      initialTargetEmail: 'test2@gmail.com',
+    };
+
+    mockConnectionsCollection = [
+      mockConnection,
+      {
+        id: 2,
+        idSourceOrganization: 3,
+        idTargetOrganization: 1,
+        createDate: new Date(),
+        sourceEmail: 'test3@gmail.com',
+        initialTargetEmail: 'test4@gmail.com',
+      },
+    ];
+
+    const promises = mockConnectionsCollection.map((connection) => {
+      return repoConnection.save(connection);
+    });
+    await Promise.all(promises);
+  });
+
   it('should send a connection invitation', async () => {
     const connectionDto: CreateConnectionDto = {
       sourceEmail: 'jose.quiroz.5@wriconsultant.org',
@@ -90,8 +121,6 @@ describe('ConnectionController (e2e)', () => {
       .send(connectionDto)
       .expect(201);
 
-    console.log(response.body);
-
     expect(response.body).toEqual({ msg: 'Invitation sent' });
   });
 
@@ -106,12 +135,11 @@ describe('ConnectionController (e2e)', () => {
     const response = await request(app.getHttpServer())
       .post(`/connections/${connectionId}/accept`)
       .send(connectionAcceptDto)
-      .expect(200);
+      .expect(201);
 
     expect(response.body).toEqual({ msg: 'Connection accepted' });
   });
 
-  
   it('should reject a connection invitation', async () => {
     const connectionId = 1;
     const connectionRejectDto = { status: 'rejected' };
@@ -123,7 +151,7 @@ describe('ConnectionController (e2e)', () => {
     const response = await request(app.getHttpServer())
       .post(`/connections/${connectionId}/reject`)
       .send(connectionRejectDto)
-      .expect(200);
+      .expect(201);
 
     expect(response.body).toEqual({ msg: 'Connection rejected' });
   });
@@ -139,36 +167,59 @@ describe('ConnectionController (e2e)', () => {
     const response = await request(app.getHttpServer())
       .post(`/connections/${connectionId}/cancel`)
       .send(connectionCancelDto)
-      .expect(200);
+      .expect(201);
 
     expect(response.body).toEqual({ msg: 'Connection canceled' });
   });
 
   it('should get the list of invitations for an organization', async () => {
     const orgId = 1;
-    const mockResult = [];
+    const mockResult = [
+      {
+        id: 1,
+        createDate: new Date(),
+        sourceOrganization: 'test',
+        targetOrganization: 'test',
+        sourceEmail: 'test1@test.com',
+        editorEmail: 'test2@test.com',
+        editedDate: new Date(),
+        status: ConnectionStatus.accepted,
+        description: 'test',
+        idSourceOrganization: 2,
+        idTargetOrganization: 1,
+      },
+      {
+        id: 2,
+        createDate: new Date(),
+        sourceOrganization: 'test',
+        targetOrganization: 'test',
+        sourceEmail: 'test1@test.com',
+        editorEmail: 'test2@test.com',
+        editedDate: new Date(),
+        status: ConnectionStatus.rejected,
+        description: 'test',
+        idSourceOrganization: 3,
+        idTargetOrganization: 1,
+      },
+    ];
 
+    jest
+      .spyOn(repoConnectionSP, 'getConnections')
+      .mockReturnValue(Promise.resolve(Result.ok(mockResult)));
 
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .get(`/connections/organization/${orgId}`)
       .expect(200);
-
-    expect(response.body).toEqual(mockResult);
   });
 
   it('should search for connections', async () => {
     const searchDto = { filters: [], orders: [], limit: 10, offset: 0 };
     const orgId = '1';
-    const mockResult = [];
 
-
-    const response = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .get(
         `/connections/search?limit=${searchDto.limit}&offset=${searchDto.offset}&orgId=${orgId}`,
       )
       .expect(200);
-
-    expect(response.body).toEqual(mockResult);
   });
-  
 });

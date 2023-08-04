@@ -18,12 +18,10 @@ const FieldLabel = styled(InputLabel)({
 });
 
 /**
- * WIP
- * Displays and Manage Account Profile Limits Form Setting
+ * @summary Displays and Manage Account Profile Limits Form Setting
  * @param {Object} accountLimitsData,
  * @param {Boolean} isAccountStatusNotPending
  * @param {Number} organizationId required
- * @param {Number} organizationType required
  */
 export default function AccountProfileLimitsSetting({
   accountLimitsData,

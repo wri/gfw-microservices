@@ -66,6 +66,7 @@ describe('ConnectionUseCases', () => {
     updateStatusConnection: jest.fn(),
     getUserAdminOrganization: jest.fn(),
     resendConnection: jest.fn(),
+    checkAndExpireConnection: jest.fn(),
   };
 
   const mockRepository: ConnectionRequestRepository = {

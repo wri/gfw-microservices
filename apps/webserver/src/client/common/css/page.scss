@@ -8,10 +8,10 @@
 
 .app__body {
   width: 100%;
+  height: calc(100vh - 60px);
   bottom: 0;
   top: 95px;
   left: 0;
-  background: $theme-background;
-  background: #fff;
+  background: rgba(0, 0, 0, 0.03);
   font-size: $font-size-medium;
 }

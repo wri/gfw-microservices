@@ -13,7 +13,7 @@ const fontStyles = {
   fontFamily: 'Fira Sans, sans-serif',
   textTransform: 'uppercase',
   color: '#555555',
-  fontSize: '28px'
+  fontSize: '28px',
 };
 
 const FieldLabel = styled(InputLabel)({

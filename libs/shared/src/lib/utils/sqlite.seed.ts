@@ -110,7 +110,7 @@ export const createUsersRecords = async (connection: DataSource) => {
 };
 
 export const createConnectionTables = async (connection: DataSource) => {
-  await connection.query(`
+    await connection.query(`
         CREATE TABLE "Connection_Status" (
             "id" INTEGER PRIMARY KEY NOT NULL,
             "id_status" INTEGER,
@@ -127,4 +127,5 @@ export const createConnectionTables = async (connection: DataSource) => {
             "description" TEXT
         )
     `);
-};
+}
+

@@ -49,18 +49,19 @@ const sqliteApplyParams = (baseQuery, params = []) => {
 };
 
 export const sqliteQuery = async <T>(queryRunner: DataSource, mssqlQuery, params, databaseName) => {
-  let queryToExecute;
+  let queryToExecute
   try {
     const isSystemQuery = databaseName === SQL_CONFIG.database || databaseName === null;
     const storedProcedureQuery = getQueryStr(isSystemQuery, mssqlQuery);
     const baseQuery = mssql2sqliteQuery(storedProcedureQuery);
     queryToExecute = sqliteApplyParams(baseQuery, params);
+    
 
     const result = await queryRunner.query(queryToExecute);
-    console.log(result);
+    console.log(result)
     return [result] as T;
   } catch (err) {
-    console.log(queryToExecute);
+    console.log(queryToExecute)
     console.error('sqliteQuery failed', queryToExecute || mssqlQuery, err);
     throw err;
   }

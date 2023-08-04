@@ -13,7 +13,7 @@ const fontStyles = {
   fontFamily: 'Fira Sans, sans-serif',
   textTransform: 'uppercase',
   color: '#555555',
-  fontWeight: 500,
+  fontSize: '28px'
 };
 
 const FieldLabel = styled(InputLabel)({
@@ -150,7 +150,7 @@ function AccountLimitsGlobal({ isLoading, setIsLoading }) {
   return (
     <>
       <Grid container justifyContent="space-between" sx={{ marginBottom: '1.5rem' }}>
-        <Typography sx={fontStyles} variant="h6">
+        <Typography sx={fontStyles} variant="h2">
           {accountLimitsStrings.pageHeading}
         </Typography>
         <GfwButton classNames="btn-green" onClick={back} value="Back to Profile Manager" />

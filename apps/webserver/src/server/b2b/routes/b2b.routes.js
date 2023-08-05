@@ -51,8 +51,6 @@ module.exports = (app, limiter) => {
   const runB2BRequest = async (requestData, request, response, next) => {
     const { method, url, data, mapper } = requestData;
     const newUrl = `${getB2BUrl()}${url}`;
-    const [org] = await AuthManager.getOrganizations(request);
-    const { organization_id: organizationId } = org;
 
     try {
       const { data: result } = await axios({
@@ -64,7 +62,7 @@ module.exports = (app, limiter) => {
         data,
       });
       if (mapper) {
-        return response.status(200).send(mapper(result, organizationId));
+        return response.status(200).send(mapper(result, request.session.organization_id));
       }
       return response.status(200).send(result);
     } catch (err) {
@@ -74,23 +72,14 @@ module.exports = (app, limiter) => {
   };
 
   const isPremiumAndAdmin = (req, res, next) => {
-    AuthManager.getOrganizations(req)
-      .then((organizations) => {
-        const [organization] = organizations;
-        const { subscription_status_id: subscriptionStatusId } = organization;
-
-        // If user is premium or admin, allow access
-        if (
-          subscriptionStatusId === PREMIUM_ACCOUNT_CODE &&
-          req.session.user_access_level_id === ADMIN_ACCESS_LEVEL_CODE
-        ) {
-          return next();
-        }
-        return res.status(403).send({ message: 'Forbidden' });
-      })
-      .catch((err) => {
-        return res.status(500).send({ message: err });
-      });
+    // If user is premium or admin, allow access
+    if (
+      req.session.subscription_status_id === PREMIUM_ACCOUNT_CODE &&
+      req.session.user_access_level_id === ADMIN_ACCESS_LEVEL_CODE
+    ) {
+      return next();
+    }
+    return res.status(403).send({ message: 'Forbidden' });
   };
 
   app.use(`${BASE_URL}`, [...routeMiddlewares, isPremiumAndAdmin, b2bRoutes, runB2BRequest]);

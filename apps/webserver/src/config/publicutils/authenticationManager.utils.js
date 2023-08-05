@@ -49,7 +49,7 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const AWSCognito = require(path.resolve('./config/privateutils/cognito.utils'));
 const SpeakEasy = require(path.resolve('./config/privateutils/speakeasy.utils'));
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
-const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
 
 /**
  * Return true only if the given user and secret are for devtest use and
@@ -237,7 +237,7 @@ const login = async (req, username, password, promanager_login = false) => {
         if (recordsets.length === 1) {
           const [routeInfo] = recordsets;
           const { organization_status_id } = routeInfo;
-          if (organization_status_id === listStatus.Inactive) {
+          if (organization_status_id === orgAccountStatus.Inactive) {
             const userMessage = langResources.getResourceString('loginFailed');
             const sysMessage = `UserEmail: ${username} is a user, but not found for the requested site`;
             throw new errorUtils.createErrorMessage(
@@ -439,7 +439,7 @@ const verifyLogin = (req, userToken) => {
           } else if (recordsets.length === 1) {
             // Determine if the only organization is DEACTIVATED
             const organization = recordsets[0];
-            if (organization.organization_status_id === listStatus.Inactive) {
+            if (organization.organization_status_id === orgAccountStatus.Inactive) {
               const userMessage = langResources.getResourceString('AuthenticationFailure');
               const sysMessage = `${organization.organization_name} is deactivated`;
               throw new errorUtils.createErrorMessage(
@@ -483,7 +483,7 @@ const getOrganizations = (req) => {
       .executeSystemStoredProcedure(req, 'uspGetVerifiedUserRouteInfo', parameters)
       .then((recordsets) => {
         const activeOrganizations = recordsets.filter(
-          (record) => record.organization_status_id !== listStatus.Inactive
+          (record) => record.organization_status_id !== orgAccountStatus.Inactive
         );
         resolve(activeOrganizations);
       })

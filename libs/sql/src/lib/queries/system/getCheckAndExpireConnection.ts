@@ -1,3 +1,8 @@
+/**
+ * This query is used to check all connection requests
+ * that have been pending for 7 days, so their status
+ * will be past expired.
+ */
 export const getCheckAndExpireConnection = `
 DECLARE @id_status INT
 

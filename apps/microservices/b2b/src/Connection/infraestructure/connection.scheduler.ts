@@ -8,6 +8,7 @@ export class ConnectionScheduler {
 
   constructor(private connectionUseCases: ConnectionUseCases) {}
 
+  // This function run everyday at 4:00 AM
   @Cron('0 4 * * * *')
   async expireConnections() {
     this.logger.log('Starting to check and expired connections.');

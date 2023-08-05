@@ -10,7 +10,7 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  const port = process.env.PORT || 3333;
+  const port = process.env.PORT || 3335;
 
   const config = new DocumentBuilder()
     .setTitle('B2B API')

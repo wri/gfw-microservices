@@ -1,3 +1,10 @@
+/**
+ * @summary Upsert Query: Updates the row if it finds a match, inserts a new row when it doesn't
+ * @param {Int} OrgID
+ * @param {Decimal} MaxAreaPerList
+ * @param {Decimal} MaxAreaAnalyzeablePerYear
+ *
+ */
 export const setOrganizationCustomAnalysisLimits = `MERGE AnalysisLimits AS target
 USING (VALUES (@OrgID, NULL, @MaxAreaPerList, @MaxAreaAnalyzeablePerYear)) AS source (OrgID, OrgType, MaxAreaPerList, MaxAreaAnalyzeablePerYear)
 ON target.OrgID = source.OrgID

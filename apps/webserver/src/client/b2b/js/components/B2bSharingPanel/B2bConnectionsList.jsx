@@ -54,39 +54,41 @@ const B2bConnectionsList = () => {
             <button className="table__action-button">Accept all</button>
           </div>
         ) : (
-          <a className="table__filter__link" href="/locations">
-            <ArrowBackIcon />
-            B2B connections
-          </a>
-        )}
-
-        { b2bConnections.length > 0 && (
           <>
-            <div>
-              <button
-                type="button"
-                onClick={() => filterPerStatus('pending')}
-                className={`tag ${activeFilter('pending')}`}
-              >
-                Pending
-              </button>
-              <button
-                type="button"
-                onClick={() => filterPerStatus('expired')}
-                className={`tag ${activeFilter('expired')}`}
-              >
-                Expired
-              </button>
-              <button
-                type="button"
-                onClick={() => filterPerStatus('connected')}
-                className={`tag ${activeFilter('connected')}`}
-              >
-                Connected
-              </button>
-            </div>
+            <a className="table__filter__link" href="/locations">
+              <ArrowBackIcon />
+              B2B connections
+            </a>
+          
+            { b2bConnections.length > 0 && (
+              <>
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => filterPerStatus('pending')}
+                    className={`tag ${activeFilter('pending')}`}
+                  >
+                    Pending
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => filterPerStatus('expired')}
+                    className={`tag ${activeFilter('expired')}`}
+                  >
+                    Expired
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => filterPerStatus('connected')}
+                    className={`tag ${activeFilter('connected')}`}
+                  >
+                    Connected
+                  </button>
+                </div>
 
-            <NewConnectionButton />
+                <NewConnectionButton />
+              </>
+            )}
           </>
         )}
       </div>

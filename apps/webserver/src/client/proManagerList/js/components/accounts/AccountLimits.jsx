@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import GfwButton from '../../../../common/js/components/GfwButton';
-import { accountLimitsStrings } from '../../../../common/js/config';
+import { accountLimitsStrings, subscriptionStatusOptions } from '../../../../common/js/config';
 import SettingSection from '../../../../common/js/components/SettingSection';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
@@ -26,28 +26,42 @@ const FieldLabel = styled(InputLabel)({
   marginBottom: '5px',
 });
 
-const STANDARD_SUBSCRIPTION = 1;
-const PREMIUM_SUBSCRIPTION = 2;
+/**
+ * @summary {[subscription_status_id]: defaulFields}
+ */
+const generateGlobalLimitsFormDataObject = (subscriptionOptions) => {
+  let defaultFields = {
+    MaxAreaPerList: 0,
+    MaxAreaAnalyzeablePerYear: 0,
+  };
+
+  for (const option of subscriptionOptions) {
+    defaultFields[option.value] = {
+      ...defaultFields,
+      subscriptionStatusId: option.value,
+    };
+  }
+
+  return defaultFields;
+};
+
+const globalLimitsFormDataObject = generateGlobalLimitsFormDataObject(subscriptionStatusOptions);
+
+const STANDARD_SUBSCRIPTION = subscriptionStatusOptions.find(
+  (sub) => sub.label.toLowerCase() === 'standard'
+).value;
+const PREMIUM_SUBSCRIPTION = subscriptionStatusOptions.find(
+  (sub) => sub.label.toLowerCase() === 'premium'
+).value;
 
 /**
  * Manage global accounts limits based on subscriptions
  * @param {boolean} isLoading
  * @param {function} setIsLoading
  */
-function AccountLimitsGlobal({ isLoading, setIsLoading }) {
+function AccountLimitsGlobal({ setIsLoading }) {
   const dialog = useDialog();
-  const [globalLimitsFormData, setGlobalLimitsFormData] = useState({
-    [STANDARD_SUBSCRIPTION]: {
-      MaxAreaPerList: 0,
-      MaxAreaAnalyzeablePerYear: 0,
-      subscriptionStatusId: STANDARD_SUBSCRIPTION,
-    },
-    [PREMIUM_SUBSCRIPTION]: {
-      MaxAreaPerList: 0,
-      MaxAreaAnalyzeablePerYear: 0,
-      subscriptionStatusId: PREMIUM_SUBSCRIPTION,
-    },
-  });
+  const [globalLimitsFormData, setGlobalLimitsFormData] = useState(globalLimitsFormDataObject);
   const [formHasChanges, setFormHasChanges] = useState(false);
 
   const onChangeUpdateField = (orgType, fieldName, value) => {

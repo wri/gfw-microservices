@@ -127,6 +127,10 @@ export class ConnectionDataMapper extends GenericMapper {
     ];
   }
 
+  toEmptyParam(): ParamStoreProcedure[] {
+    return [];
+  }
+
   toCreateConnectionProcedureParam(
     connectionInvitation: ConnectionInvitation,
   ): ParamStoreProcedure[] {

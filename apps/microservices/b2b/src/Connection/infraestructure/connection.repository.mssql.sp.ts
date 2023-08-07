@@ -13,7 +13,10 @@ import {
   ConnectionAdminOrganizationDto,
 } from '../application/dtos/connection-admin-organizations.dto';
 
-import { ConnectionRequestStatus } from '@wri-monorepos/sql';
+import {
+  ConnectionRequestStatus,
+  CheckAndExpireConnections,
+} from '@wri-monorepos/sql';
 @Injectable()
 export class ConnectionRepositoryMssqlSP
   extends RepositoryMssqlSP
@@ -115,5 +118,14 @@ export class ConnectionRepositoryMssqlSP
       params,
     );
     return await updateStatusConnection.execute<ConnectionRequestStatus>();
+  }
+
+  async checkAndExpireConnection(): ResultPromise<CheckAndExpireConnections> {
+    const params = this.mapper.toEmptyParam();
+    const updateStatusConnection = this.storeProcedureFactory.create(
+      'uspGetCheckAndExpireConnection',
+      params,
+    );
+    return await updateStatusConnection.execute<CheckAndExpireConnections>();
   }
 }

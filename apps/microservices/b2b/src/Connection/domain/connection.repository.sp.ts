@@ -18,4 +18,5 @@ export abstract class ConnectionRepositorySP {
   ): ResultPromise<Connection[]>;
   abstract resendConnection(id: number): ResultPromise<void>;
   abstract createConnection(connectionInvitation: ConnectionInvitation);
+  abstract checkAndExpireConnection();
 }

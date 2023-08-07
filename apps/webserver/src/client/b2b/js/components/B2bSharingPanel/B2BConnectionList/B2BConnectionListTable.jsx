@@ -50,10 +50,7 @@ const B2BConnectionListTable = (props) => {
       field: 'details',
       headerName: ' ',
       renderCell: (params) => (
-        <B2BConnectionListDetails 
-          onclickDetails={handleOpenDetailsModal}
-          row={params.row}
-        />
+        <B2BConnectionListDetails onclickDetails={handleOpenDetailsModal} row={params.row} />
       ),
       flex: 1,
     },

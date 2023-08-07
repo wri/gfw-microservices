@@ -32,7 +32,7 @@ function B2BImageList() {
         <BusinessTwoToneIcon style={{ color: '#97BD3D' }} />
       </div>
     </div>
-  )
+  );
 }
 
 export default B2BImageList;

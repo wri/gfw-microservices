@@ -9,9 +9,7 @@ function B2BImageCard(props) {
         <B2BImageList />
         <h3>{props.title}</h3>
 
-        <div style={{ color: 'gray' }}>
-          {props.children}
-        </div>
+        <div style={{ color: 'gray' }}>{props.children}</div>
       </div>
     </Card>
   );

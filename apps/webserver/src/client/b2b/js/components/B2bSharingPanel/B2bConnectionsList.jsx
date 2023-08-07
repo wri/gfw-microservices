@@ -59,8 +59,8 @@ const B2bConnectionsList = () => {
               <ArrowBackIcon />
               B2B connections
             </a>
-          
-            { b2bConnections.length > 0 && (
+
+            {b2bConnections.length > 0 && (
               <>
                 <div>
                   <button
@@ -97,8 +97,8 @@ const B2bConnectionsList = () => {
       ) : (
         <B2BImageCard title="Connect">
           <p style={{ width: '500px', margin: '0 auto 20px' }}>
-            B2B connections allow you to safely share information
-            with other organizations using GFW Pro.
+            B2B connections allow you to safely share information with other organizations using GFW
+            Pro.
           </p>
           <NewConnectionButton />
         </B2BImageCard>

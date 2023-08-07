@@ -6,10 +6,7 @@ import CachedIcon from '@mui/icons-material/Cached';
 import { useCancel, useReject } from '../hooks';
 
 export default function B2BConnectionListDetails(props) {
-  const { 
-    onclickDetails,
-    row
-  } = props
+  const { onclickDetails, row } = props;
 
   const [isCancelling, cancelConnection] = useCancel();
   const [isRejecting, rejectConnection] = useReject();
@@ -32,8 +29,8 @@ export default function B2BConnectionListDetails(props) {
       onclick: () => onclickDetails(row),
       classeColor: '',
       icon: <CachedIcon />,
-    }
-  }
+    },
+  };
 
   const currentStatus = status[row.status];
   const showStatusButton = row.isCurrentOrganization && row.status !== 'expired';

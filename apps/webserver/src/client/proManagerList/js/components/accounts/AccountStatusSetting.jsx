@@ -16,11 +16,9 @@ const disabledStyles = {
 };
 
 /**
- * Displays and Manage Application Status States
- * @param {Number} organization_id Org ID
- * @param {Number} organization_status_id Org Status ID
+ * @Summary Displays and Manage Application Status States
  */
-export default function AccountStatusSetting({ organization_id, organization_status_id }) {
+export default function AccountStatusSetting() {
   const dialog = useDialog();
   const { currentAccount } = useAccountDetail();
   const { organization_id, organization_status_id } = currentAccount;

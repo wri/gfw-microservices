@@ -29,7 +29,8 @@ export default function AccountProfile() {
     );
   };
 
-  const isAccountStatusActive = accountData.organization_status_id === ACCOUNT_ORG_STATUSES['ACTIVE'];
+  const isAccountStatusActive =
+    accountData.organization_status_id === ACCOUNT_ORG_STATUSES['ACTIVE'];
 
   return (
     <DialogProvider>

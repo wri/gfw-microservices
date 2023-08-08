@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import AccountProfile from './AccountProfile';
-import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 
 export default function AccountDetailSection({
   isLoading,
@@ -33,11 +32,10 @@ export default function AccountDetailSection({
   return selectedAccount && !isLoading ? (
     <AccountProfile
       users={users}
-      currentAccount={selectedAccount}
+      accountData={selectedAccount}
       classificationsData={classes}
       statusData={statusData}
       accessData={accessData}
-      disable={selectedAccount.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING']}
       policyList={policyList}
     />
   ) : null;

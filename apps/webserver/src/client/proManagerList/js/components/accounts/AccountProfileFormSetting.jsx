@@ -37,16 +37,15 @@ const disabledStyles = {
 /**
  * Displays and Manage Account Profile Form Settings
  * @param {Object} accountData
- * @param {Boolean} isAccountStatusNotPending
  * @param {Array} classificationsData
  * @param {Array} policyList
  */
 export default function AccountProfileFormSetting({
   accountData,
-  isAccountStatusNotPending: isEditingDisabled,
   classificationsData,
   policyList,
 }) {
+  const isEditingDisabled = accountData.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
   const dialog = useDialog();
   const getClassificationsValuesFromArrId = (orgClassificationsArrId) => {
     return orgClassificationsArrId.map((classification) => {

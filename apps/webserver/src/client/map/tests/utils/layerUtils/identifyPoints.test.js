@@ -1,3 +1,9 @@
+/*
+ * These tests and disabled and the imports are commented out until we can update the Jest
+ * configurations to handle ESM imports/exports properly.
+ * See JIRA card: GPV-2059
+ * https://gfw.atlassian.net/browse/GPV-2059
+ */
 // import IdentifyTask from 'esri/tasks/IdentifyTask';
 // import IdentifyParameters from 'esri/tasks/support/IdentifyParameters';
 // import { identifyPoints } from '../../../js/utils/LayerUtils';

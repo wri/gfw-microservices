@@ -21,7 +21,11 @@ function NewB2bConnectionEmailForm({ setApiResponse }) {
         (sendInvitationRes && sendInvitationRes.status === 200) ||
         sendInvitationRes.status === 201
       ) {
-        setApiResponse('success');
+        setApiResponse({
+          result: 'success',
+          receiverEmail: email,
+          receiverCompanyName: organizationName,
+        });
         return;
       }
     }
@@ -31,7 +35,7 @@ function NewB2bConnectionEmailForm({ setApiResponse }) {
       return;
     }
 
-    setApiResponse('connectionAlreadyExists');
+    setApiResponse({ result: 'connectionAlreadyExists' });
   };
   const isSubmitDisabled = !email || !validEmail(email) || !organizationName;
 

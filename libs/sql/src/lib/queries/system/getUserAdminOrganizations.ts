@@ -27,51 +27,32 @@ DECLARE @VALUE AS nvarchar(250);
     set @POS = 0
     set @LEN = 0
 
-    IF CHARINDEX(',',@DB) > 0
-	BEGIN
-	    print @DB
-	    WHILE CHARINDEX(',', @DB, @POS+1)>0
-	    BEGIN
-	        set @LEN = CHARINDEX(',', @DB, @POS+1) - @POS
-	        set @value = SUBSTRING(@DB, @POS, @LEN)
-	        SET @SQL_OUTPUT = REPLACE(@SQL, '{DATABASE}', @value)
-	        SET @SQL_OUTPUT = REPLACE(@SQL_OUTPUT, '{USER-EMAIL}', @email)
-	        SET @ACCESS_LEVEL_ID = -1;
+    -- add comma at end so single clientStore follow same loop and last entry in list is processed
+	set @DB = @DB + ','
 
-	        BEGIN TRY
-	            EXEC sp_executesql @SQL_OUTPUT, N'@ACCESS_LEVELOUT INT OUTPUT' , @ACCESS_LEVELOUT=@ACCESS_LEVEL_ID OUTPUT;
-	        END TRY
-	        BEGIN CATCH
-                SET @ACCESS_LEVEL_ID = -1
-            END CATCH
-
-
-	        IF @ACCESS_LEVEL_ID = @ADMIN_ID
-	        BEGIN
-	            insert into @myTableVariable values (@VALUE)
-	        END
-	        SET @POS = CHARINDEX(',', @DB, @POS+@LEN) +1
-	    END
-     END
-	 ELSE
-     BEGIN
-		SET @SQL_OUTPUT = REPLACE(@SQL, '{DATABASE}', @DB)
-	    SET @SQL_OUTPUT = REPLACE(@SQL_OUTPUT, '{USER-EMAIL}', @email)
+    print @DB
+    WHILE CHARINDEX(',', @DB, @POS+1)>0
+    BEGIN
+        set @LEN = CHARINDEX(',', @DB, @POS+1) - @POS
+        set @value = SUBSTRING(@DB, @POS, @LEN)
+        SET @SQL_OUTPUT = REPLACE(@SQL, '{DATABASE}', @value)
+        SET @SQL_OUTPUT = REPLACE(@SQL_OUTPUT, '{USER-EMAIL}', @email)
         SET @ACCESS_LEVEL_ID = -1;
 
-		BEGIN TRY
-	        EXEC sp_executesql @SQL_OUTPUT, N'@ACCESS_LEVELOUT INT OUTPUT' , @ACCESS_LEVELOUT=@ACCESS_LEVEL_ID OUTPUT;
-	        print @ACCESS_LEVEL_ID
+        BEGIN TRY
+            EXEC sp_executesql @SQL_OUTPUT, N'@ACCESS_LEVELOUT INT OUTPUT' , @ACCESS_LEVELOUT=@ACCESS_LEVEL_ID OUTPUT;
         END TRY
         BEGIN CATCH
             SET @ACCESS_LEVEL_ID = -1
         END CATCH
 
+
         IF @ACCESS_LEVEL_ID = @ADMIN_ID
         BEGIN
-            insert into @myTableVariable values (@DB)
+            insert into @myTableVariable values (@VALUE)
         END
-	 END
+        SET @POS = CHARINDEX(',', @DB, @POS+@LEN) +1
+    END
 
     SELECT org.id, org.organization_db, org.organization_status_id, org.organization_name FROM [dbo].[Organizations] org INNER JOIN @myTableVariable t on org.organization_db = t.name`;
 

@@ -1,4 +1,4 @@
-Ability: Show Loss of Forests in Sensitive Areas
+Ability: Show Loss of Forests diagnostcs
 
   Scenario Outline: Locations should show tree cover loss by sensitive area
 

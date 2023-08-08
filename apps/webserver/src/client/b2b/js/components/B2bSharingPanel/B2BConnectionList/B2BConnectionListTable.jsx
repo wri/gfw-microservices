@@ -63,7 +63,7 @@ const B2BConnectionListTable = (props) => {
     },
   ];
 
-  const { rows } = props;
+  const { rows, handleSelectRow } = props;
   return (
     <>
       <DataGrid
@@ -74,8 +74,13 @@ const B2BConnectionListTable = (props) => {
         }}
         pageSizeOptions={[5, 10, 25]}
         checkboxSelection
-        disableRowSelectionOnClick
         autoHeight
+        onRowSelectionModelChange={(ids) => {
+          const selectedIDs = new Set(ids);
+          const selectedRows = rows.filter((row) => selectedIDs.has(row.id));
+
+          handleSelectRow(selectedRows);
+        }}
       />
       {displayModal && (
         <B2bConnectionDetailsModal

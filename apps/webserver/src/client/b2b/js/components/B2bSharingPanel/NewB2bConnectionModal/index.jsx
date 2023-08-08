@@ -48,18 +48,22 @@ const icons = (
 );
 
 function NewB2bConnectionModal({ onCloseModal }) {
-  const [apiResponse, setApiResponse] = useState('');
+  const [apiResponse, setApiResponse] = useState(null);
 
   const resetForm = () => {
-    setApiResponse('');
+    setApiResponse(null);
   };
 
   let content;
 
-  switch (apiResponse) {
+  switch (apiResponse?.result) {
     case 'success':
       content = (
-        <InvitationSentSuccessfullyMessage onCloseModal={onCloseModal} resetForm={resetForm} />
+        <InvitationSentSuccessfullyMessage
+          onCloseModal={onCloseModal}
+          resetForm={resetForm}
+          apiResponse={apiResponse}
+        />
       );
       break;
     case 'connectionAlreadyExists':

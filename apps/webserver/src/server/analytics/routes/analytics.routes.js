@@ -6,6 +6,7 @@ const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
 const analyticsRouter = express.Router();
+const myOrgAnalyticsRouter = express.Router();
 
 /**
  * @name exports
@@ -20,21 +21,29 @@ module.exports = (app, limiter) => {
    */
 
   // All methods must under /analytics must pass through middleware
-  const routeMiddlewares = [
+  const routeMiddlewaresAnalytics = [middlewares.checkProManagerAuthentication];
+
+  const routeMiddlewaresMyOrg = [
     middlewares.checkOrganization,
     middlewares.checkAuthentication,
     middlewares.checkActive,
     middlewares.checkInactivity,
-    middlewares.checkProManagerAuthentication,
   ];
 
   if (rateLimiterUtil.useRateLimiter()) {
-    routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));
+    routeMiddlewaresAnalytics.push(limiter(middlewares.rateLimitAuthenticated));
+    routeMiddlewaresMyOrg.push(limiter(middlewares.rateLimitAuthenticated));
   }
 
-  app.use('/analytics', [...routeMiddlewares, analyticsRouter]);
+  app.use('/analytics/myorg', [...routeMiddlewaresMyOrg, myOrgAnalyticsRouter]);
+
+  app.use('/analytics', [...routeMiddlewaresAnalytics, analyticsRouter]);
 
   app.get('/analytics', controller.analytics);
 
   analyticsRouter.get('/usage', controller.getOrganizationAnalysisUsage);
+
+  analyticsRouter.get('/limit', controller.getOrganizationAnalysisLimit);
+
+  myOrgAnalyticsRouter.get('/usage', controller.getMyOrganizationAnalysisUsage);
 };

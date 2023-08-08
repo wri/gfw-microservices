@@ -57,7 +57,7 @@ export const proLayers = {
   brazilTreeBySpeciesID: 'brazil-tree-plantations-by-species', // does not exist
   landCoverSEAsiaID: 'Land Cover Southeast Asia',
   indonesiaForestMoratorium: 'Indonesia Forest Moratorium',
-  indonesiaLegalClass: 'Indonesia Legal Classifications',
+  indonesiaLegalClass: 'Indonesia Forest Area',
   indonesiaOilPalmClass: 'Indonesia Oil Palm Concessions',
   indonesiaPeatLands: 'Indonesia Peat Lands',
   indonesiaPrimaryForest: 'Indonesia Primary Forests',
@@ -2916,8 +2916,8 @@ export const profilePage = {
         'Insert the e-mail address of the user you would like to connect with below',
       invitationSent: 'Invitation sent!',
       createANewConnection: 'Create a new connection',
-      invitationSentDescription:
-        'You will be notified when the company accepts your B2B connection request.',
+      invitationSentDescription: (receiverEmail, receiverCompanyName) =>
+        `You have successfully sent a connection request to <b>${receiverEmail}</b> from <b>${receiverCompanyName}</b>. You will be notified when this organization accepts your B2B connection request.`,
       email: 'E-mail',
       organizationName: 'Organization Name',
       name: 'Name',
@@ -3938,6 +3938,13 @@ export const accountProfileStrings = {
     profileForm: 'Account Profile',
     statusSetting: 'Account Status',
     accountUsers: 'Users',
+    accountUsage: 'Account Usage',
+  },
+  accountUsageLabels: {
+    organizationName: 'Organization Name',
+    numberOfLists: 'Number of lists',
+    maxAreaPerList: 'Max area per list',
+    totalAreaAnalyzed: 'Total area analyzed',
   },
   accountFormLabels: {
     org_name: 'Organization Name',
@@ -3948,5 +3955,9 @@ export const accountProfileStrings = {
     arr_org_classification: 'Account Classifications',
     arr_org_policy: 'Organization Policy',
     subscription_status_id: 'Subscription Status',
+  },
+  dateRangeSelector: {
+    selectStartDate: 'Select start date:',
+    selectEndDate: 'Select end date:',
   },
 };

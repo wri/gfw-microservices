@@ -11,3 +11,33 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 GET https://localhost:8443/analytics/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=0
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### return analysis usage in the list level.
+GET https://localhost:8443/analytics/myorg/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=0
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### return analysis usage in the list level.
+GET https://localhost:8443/analytics/myorg/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=1
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### return analysis usage in the organization level
+GET https://localhost:8443/analytics/myorg/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=0
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+### return analysis limit for all organizations
+GET https://localhost:8443/analytics/limit
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### return analysis limit for a specific organization
+GET https://localhost:8443/analytics/limit?organizationId=1
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### return analysis limit for a specific organization type
+GET https://localhost:8443/analytics/limit?organizationType=1
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

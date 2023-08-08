@@ -10,9 +10,10 @@
 export const getOrganizationAnalysisUsage = `
 DECLARE @MyCursor CURSOR;
 DECLARE @DBName NVARCHAR(255);
-DECLARE @id_status INT;
+DECLARE @id INT;
 DECLARE @SQL NVARCHAR(max);
 DECLARE @SQLQuery NVARCHAR(max);
+DECLARE @errorQuery NVARCHAR(max);
 DECLARE @PARAM NVARCHAR(255);
 DECLARE @TABLE NVARCHAR(80);
 
@@ -55,15 +56,30 @@ BEGIN
 
     WHILE @@FETCH_STATUS = 0
     BEGIN
-        SELECT @id_status = id FROM [dbo].[Organizations] odb WHERE odb.organization_db = @DBName;
+        SELECT @id = id FROM [dbo].[Organizations] odb WHERE odb.organization_db = @DBName;
 
         SET @SQLQuery = REPLACE(@SQL, '{DB_NAME}', @DBName)
         SET @SQLQuery = REPLACE(@SQLQuery, '{START_DATE}', @startDate)
         SET @SQLQuery = REPLACE(@SQLQuery, '{END_DATE}', @endDate)
-        SET @SQLQuery = REPLACE(@SQLQuery, '{organization}',  @id_status)
+        SET @SQLQuery = REPLACE(@SQLQuery, '{organization}',  @id)
         PRINT @SQLQuery
-        EXEC sp_executesql @SQLQuery
-
+        BEGIN TRY
+          EXEC sp_executesql @SQLQuery
+        END TRY
+        BEGIN CATCH
+          SET @errorQuery = 'INSERT INTO {TABLE} VALUES {VALUES}'
+          IF @countForEachList = 1
+            BEGIN
+              SET @errorQuery = REPLACE(@errorQuery, '{VALUES}', '(0,0,0,{organization},0)')
+            END
+          ELSE
+            BEGIN
+              SET @errorQuery = REPLACE(@errorQuery, '{VALUES}', '(0,0,0,{organization})')
+            END
+          SET @errorQuery = REPLACE(@errorQuery, '{TABLE}', @TABLE)
+          SET @errorQuery = REPLACE(@errorQuery, '{organization}',  @id)
+          EXEC sp_executesql @errorQuery
+        END CATCH
         FETCH NEXT FROM @MyCursor
         INTO @DBName
     END;
@@ -71,7 +87,7 @@ BEGIN
     CLOSE @MyCursor ;
     DEALLOCATE @MyCursor;
 
-    SET @SQL = REPLACE('SELECT * FROM {TABLE}', '{TABLE}', @TABLE)
+    SET @SQL = REPLACE('SELECT a.*, o.organization_name FROM {TABLE} a JOIN [dbo].[Organizations] o ON o.id = a.organization_id ', '{TABLE}', @TABLE)
     EXEC sp_executesql @SQL;
     SET @SQL = REPLACE('DROP TABLE {TABLE}', '{TABLE}', @TABLE)
     EXEC sp_executesql @SQL;
@@ -83,5 +99,6 @@ export interface OrganizationAnalysisUsage {
   max_area_analyzed: number;
   number_of_lists_analyzed: number;
   organization_id: number;
+  organization_name: string;
   list_id?: number;
 }

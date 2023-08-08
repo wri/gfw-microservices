@@ -472,7 +472,7 @@ export default class SensitiveAreas extends Component {
           checked = this.state.tclChecked;
           onChange = this.updateTCL;
           label = 'Tree Cover Loss';
-          dataCy = '';
+          dataCy = 'tree-cover-loss';
           break;
         case 'totalTCLonPF':
           checked = this.state.pfChecked;

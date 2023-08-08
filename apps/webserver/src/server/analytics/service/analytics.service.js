@@ -5,6 +5,8 @@ const { getOrganizationAnalysisUsage } = require(path.resolve(
   './queries/system/getOrganizationAnalysisUsage'
 ));
 
+const { getAnalysisLimits } = require(path.resolve('./queries/system/getAnalysisLimits'));
+
 exports.getOrganizationAnalysisUsage = async ({
   startDate,
   endDate,
@@ -28,4 +30,15 @@ exports.getOrganizationAnalysisUsage = async ({
   }, []);
 
   return result;
+};
+
+exports.getAnalysisLimitData = async ({ organizationId, organizationType }) => {
+  const params = [
+    { field: 'orgID', type: sql.Int, value: organizationId },
+    { field: 'orgType', type: sql.Int, value: organizationType },
+  ];
+
+  const [response] = await sqlUtils.executeSystemQuery(getAnalysisLimits, params);
+
+  return response;
 };

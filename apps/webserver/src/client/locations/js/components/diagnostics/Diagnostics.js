@@ -1158,7 +1158,7 @@ export default class Diagnostics extends Component {
               getCategoricalHighchartSeries={this.getCategoricalHighchartSeries}
             />
           </div>
-          <div className="print-no-break">
+          <div className="print-no-break" data-cy="diagnotcs-regions">
             <h2
               className={`locations-diagnostics__subtitle ${
                 listView === 'forest_change' && (sAmericaPresence || asiaPresence)

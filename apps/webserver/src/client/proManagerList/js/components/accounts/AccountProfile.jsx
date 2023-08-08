@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import SettingSection from '../../../../common/js/components/SettingSection';
 import AccountProfileFormSetting from './AccountProfileFormSetting';
 import AccountStatusSetting from './AccountStatusSetting';
+import AccountDetailUsage from './AccountUsage/AccountDetailUsage.jsx';
 import UserProfileManager from '../users/UserProfileManager';
 import { accountProfileStrings } from '../../../../common/js/config';
 
@@ -40,6 +41,9 @@ export default function AccountProfile({
           organization_id={currentAccount.organization_id}
           organization_status_id={currentAccount.organization_status_id}
         />
+      </SettingSection>
+      <SettingSection heading={accountProfileStrings.sectionTitles.accountUsage}>
+        <AccountDetailUsage organizationId={currentAccount.organization_id} />
       </SettingSection>
       <SettingSection heading={accountProfileStrings.sectionTitles.accountUsers}>
         <Box

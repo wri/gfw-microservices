@@ -1,15 +1,23 @@
 import React from 'react';
+import Chip from '@mui/material/Chip';
 
-const B2BConnectionListStatus = (props) => {
-  const tagClassName = {
-    connected: 'tag--green',
-    expired: 'tag--gray',
-    pending: 'tag--blue',
-  };
-
-  const { status, email } = props;
-
-  return <span className={`tag tag--small ${tagClassName[status]}`}>{status}</span>;
+const CONNECTION_STATUS_COLORS = {
+  accepted: '#4caf50',
+  expired: '#9e9e9e',
+  pending: '#2096f3',
+  cancelled: 'red',
+  rejected: 'red',
 };
 
-export default B2BConnectionListStatus;
+export default function B2BConnectionListStatus({ status }) {
+  return (
+    <Chip
+      label={status}
+      sx={{
+        backgroundColor: CONNECTION_STATUS_COLORS[status],
+        color: 'white',
+        textTransform: 'capitalize',
+      }}
+    />
+  );
+}

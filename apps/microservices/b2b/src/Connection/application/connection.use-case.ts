@@ -179,6 +179,10 @@ export class ConnectionUseCases {
     return Result.fail('User does not belong to organization or is not admin');
   }
 
+  async expireConnections() {
+    await this.connectionRepoSp.checkAndExpireConnection();
+  }
+
   //TODO: move to user service
   async getOrganizationsByUser(
     email: string,

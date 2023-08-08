@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ScheduleModule } from '@nestjs/schedule';
 import { DataServicesModule } from '../Shared/application/data-service/data-service.module';
 import { ConnectionRepositorySP } from './domain/connection.repository.sp';
 import { ConnectionDataMapper } from './application/connection.mapper';
@@ -14,6 +15,7 @@ import { DatabaseModule } from '../Database/database.module';
 import { SharedModule } from '../Shared/shared.module';
 import { ActivityLogModule } from '../ActivityLog/activity-log.module';
 import { ConstantsConfig, ConstantsConfigIds } from '@wri-monorepos/constants';
+import { ConnectionScheduler } from './infraestructure/connection.scheduler';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { ConstantsConfig, ConstantsConfigIds } from '@wri-monorepos/constants';
     DataServicesModule,
     ActivityLogModule,
     SharedModule,
+    ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([ConnectionRequest]),
   ],
   providers: [
@@ -33,6 +36,7 @@ import { ConstantsConfig, ConstantsConfigIds } from '@wri-monorepos/constants';
       useClass: ConnectionRequestRepositoryMssql,
     },
     ConstantsConfig[ConstantsConfigIds.B2B_STATUS],
+    ConnectionScheduler,
   ],
   exports: [ConnectionDataMapper, ConnectionUseCases],
 })

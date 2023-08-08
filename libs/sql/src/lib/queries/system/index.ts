@@ -1,5 +1,6 @@
 export * from './getAdministrativeAreasInfo';
 export * from './getAnalysisDataCountForGFWList';
+export * from './getAnalysisLimits';
 export * from './getConnectionRequest';
 export * from './getGfwLists';
 export * from './getGFWProRootUserInfo';
@@ -15,6 +16,7 @@ export * from './getUserAdminOrganizations';
 export * from './getUserAuthenticationPreferences';
 export * from './getUsersAuthenticationPreferences';
 export * from './getVerifiedUserRouteInfo';
-export * from './setOrganizationSubscriptionStatus';
 export * from './setCreateConnectionRequest';
+export * from './setOrganizationSubscriptionStatus';
 export * from './uspChangeConnectionRequestStatus';
+export * from './getCheckAndExpireConnection';

@@ -98,7 +98,7 @@ export class ConnectionController {
     throw new HttpException(error.message, error.code);
   }
 
-  @Get('search')
+  @Get('search/:orgId')
   async search(@Query() searchDto: SearchDto, @Param('orgId') orgId: string) {
     const { filters, orders, limit, offset } = searchDto;
 

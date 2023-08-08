@@ -23,7 +23,7 @@ DECLARE @Filters NVARCHAR(MAX) = ''
 	  SET @Filters = + @Filters + ' AND cr.id = @id'
 
 	IF @source_organization IS NOT NULL
-	  SET @Filters = + @Filters + ' AND id_source_organization = @source_organization'
+	  SET @Filters = + @Filters + ' AND (id_source_organization = @source_organization OR id_target_organization = @source_organization)'
 
 	SET @SQL = @SQL + @Filters+ ' ORDER BY create_date DESC'
 	print @SQL

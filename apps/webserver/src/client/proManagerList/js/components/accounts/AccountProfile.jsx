@@ -30,7 +30,7 @@ export default function AccountProfile() {
   };
 
   const isAccountStatusActive =
-    accountData.organization_status_id === ACCOUNT_ORG_STATUSES['ACTIVE'];
+    currentAccount.organization_status_id === ACCOUNT_ORG_STATUSES['ACTIVE'];
 
   return (
     <DialogProvider>
@@ -70,7 +70,7 @@ export default function AccountProfile() {
           }}
         >
           <UserProfileManager
-            users={users.filter((user) => user.organization_id === accountData.organization_id)}
+            users={users.filter((user) => user.organization_id === currentAccount.organization_id)}
             statusData={statusData}
             accessData={accessData}
           />

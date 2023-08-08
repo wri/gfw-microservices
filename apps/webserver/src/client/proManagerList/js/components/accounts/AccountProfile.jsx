@@ -11,6 +11,7 @@ import UserProfileManager from '../users/UserProfileManager';
 import { accountProfileStrings, subscriptionStatusOptions } from '../../../../common/js/config';
 import AccountProfileLimitsSetting from './AccountProfileLimitsSetting';
 import { useAccountDetail } from './AccountDetailSection';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 
 export default function AccountProfile() {
   const { users, currentAccount, statusData, accessData } = useAccountDetail();
@@ -18,7 +19,6 @@ export default function AccountProfile() {
   const back = () => {
     window.location.href = '/pro-manager-list?tab=accounts';
   };
-
   const getAccountLimitsTypeLabel = (isOrgPresent, orgSubscriptionStatus) => {
     if (isOrgPresent) {
       return accountProfileStrings.accountLimitsSetting.subHeadingCustomLimits;
@@ -28,6 +28,8 @@ export default function AccountProfile() {
         .label + accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits
     );
   };
+
+  const isAccountStatusActive = accountData.organization_status_id === ACCOUNT_ORG_STATUSES['ACTIVE'];
 
   return (
     <DialogProvider>
@@ -53,9 +55,11 @@ export default function AccountProfile() {
       >
         <AccountProfileLimitsSetting />
       </SettingSection>
-      <SettingSection heading={accountProfileStrings.sectionTitles.accountUsage}>
-        <AccountDetailUsage />
-      </SettingSection>
+      {isAccountStatusActive && (
+        <SettingSection heading={accountProfileStrings.sectionTitles.accountUsage}>
+          <AccountDetailUsage />
+        </SettingSection>
+      )}
       <SettingSection heading={accountProfileStrings.sectionTitles.accountUsers}>
         <Box
           sx={{
@@ -65,7 +69,7 @@ export default function AccountProfile() {
           }}
         >
           <UserProfileManager
-            users={users.filter((user) => user.organization_id === currentAccount.organization_id)}
+            users={users.filter((user) => user.organization_id === accountData.organization_id)}
             statusData={statusData}
             accessData={accessData}
           />

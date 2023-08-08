@@ -3,6 +3,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import B2BConnectionListStatus from './B2BConnectionListStatus';
 import B2bConnectionDetailsModal from '../ConnectionDetailsButton/B2bConnectionDetailsModal';
 import { profilePage } from '../../../../../common/js/config';
+import B2BConnectionListDetails from './B2BConnectionListDetails';
 
 const B2BConnectionListTable = (props) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -49,15 +50,7 @@ const B2BConnectionListTable = (props) => {
       field: 'details',
       headerName: ' ',
       renderCell: (params) => (
-        <button
-          type="button"
-          className="new-b2b-connection-modal__action-button"
-          onClick={() => {
-            handleOpenDetailsModal(params.row);
-          }}
-        >
-          {profilePage.profileManager.b2bSection.details}
-        </button>
+        <B2BConnectionListDetails onclickDetails={handleOpenDetailsModal} row={params.row} />
       ),
       flex: 1,
     },

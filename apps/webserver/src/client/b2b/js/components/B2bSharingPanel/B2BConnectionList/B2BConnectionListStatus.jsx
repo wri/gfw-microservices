@@ -5,8 +5,8 @@ const CONNECTION_STATUS_COLORS = {
   accepted: '#4caf50',
   expired: '#9e9e9e',
   pending: '#2096f3',
-  cancelled: 'red',
-  rejected: 'red',
+  cancelled: '#F24E1E',
+  rejected: '#F24E1E',
 };
 
 export default function B2BConnectionListStatus({ status }) {
@@ -18,6 +18,7 @@ export default function B2BConnectionListStatus({ status }) {
         color: 'white',
         textTransform: 'capitalize',
       }}
+      size="small"
     />
   );
 }

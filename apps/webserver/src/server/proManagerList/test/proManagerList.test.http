@@ -21,3 +21,35 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
   "policyName": [],
   "subscription_status_id": 1
 }
+
+### Update Global Analysis Limits
+POST https://localhost:8443/pro-manager/updateGlobalAnalysisLimits
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+# =======================================
+# NODE_ENV=development  
+# dbo.AnalysisLimits
+# subscriptionStatusId=1
+# =======================================
+
+{
+  "subscriptionStatusId": 1,
+  "MaxAreaAnalyzeablePerYear": 1998,
+  "MaxAreaPerList": 18
+}
+
+### Update Account Analysis Limits
+POST https://localhost:8443/pro-manager/updateAccountAnalysisLimits
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+# =======================================
+# NODE_ENV=development  
+# dbo.AnalysisLimits
+# organizationId=1
+# =======================================
+
+{
+  "organizationId": 1,
+  "MaxAreaAnalyzeablePerYear": 15000,
+  "MaxAreaPerList": 37
+}

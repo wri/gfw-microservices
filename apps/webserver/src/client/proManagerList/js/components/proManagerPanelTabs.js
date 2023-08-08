@@ -2,6 +2,11 @@ import { userAccessLevel } from '../../../common/js/config';
 
 const { ADMIN, EDITOR, VIEWER } = userAccessLevel;
 
+/**
+ * Icons IDs
+ * @see {@link https://fonts.google.com/icons}
+ */
+
 export const proManagerPanelTabs = {
   accountProfiles: {
     id: 'accounts',
@@ -19,6 +24,12 @@ export const proManagerPanelTabs = {
     id: 'account-usage',
     icon: 'query_stats',
     title: 'Account Usage',
+    userAccessLevel: [ADMIN, EDITOR, VIEWER],
+  },
+  accounLimits: {
+    id: 'account-limits',
+    icon: 'running_with_errors',
+    title: 'Account Limits',
     userAccessLevel: [ADMIN, EDITOR, VIEWER],
   },
 };

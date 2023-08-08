@@ -15,11 +15,11 @@
           "**/tsconfig.client.json",
           "apps/webserver/src/vectorTiles/**",
           "apps/webserver/src/client/**",
-          "**/.babelrc",
-          "**/*.png",
-          "**/*.pug",
-          "**/*.key",
-          "**/*.crt"
+          "apps/webserver/**/.babelrc",
+          "apps/webserver/**/*.png",
+          "apps/webserver/**/*.pug",
+          "apps/webserver/**/*.key",
+          "apps/webserver/**/*.crt"
         ]
       }
     },

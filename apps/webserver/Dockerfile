@@ -35,21 +35,14 @@ RUN rm -rf /tmp/tippecanoe-src \
   && apt-get -y remove --purge build-essential && apt-get -y autoremove
 
 # Set the working directory
-WORKDIR /srv/src
+WORKDIR /srv
+
+COPY dist/apps/webserver .
 
 # Copy all required files into the working directory.
-COPY apps/webserver/src/package.json .
-COPY apps/webserver/src/package-lock.json .
-COPY apps/webserver/src/postcss.config.js .
-COPY apps/webserver/src/.babelrc .
-COPY apps/webserver/src/server.js .
-COPY apps/webserver/src/load-env.js .
+COPY package.json .
+COPY package-lock.json .
 COPY apps/webserver/src/run-app.sh .
-COPY apps/webserver/src/client client
-COPY apps/webserver/src/config config
-COPY apps/webserver/src/server server
-COPY apps/webserver/src/queries queries
-COPY apps/webserver/tsconfig.client.json .
 
 # Create Vector tiles directory
 RUN mkdir vectorTiles
@@ -66,4 +59,4 @@ RUN chmod -R 774 run-app.sh
 RUN bash ./run-app.sh
 
 # Start application command.
-CMD ["node", "server.js"]
+CMD ["node", "src/server.js"]

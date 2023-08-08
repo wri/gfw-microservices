@@ -16,6 +16,7 @@ import { fieldValidations } from '../../../../profile/js/utils/validations';
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 import { accountProfileStrings, subscriptionStatusOptions } from '../../../../common/js/config';
+import { useAccountDetail } from './AccountDetailSection';
 
 const FieldLabel = styled(InputLabel)({
   fontFamily: 'Fira Sans, sans-serif',
@@ -35,19 +36,18 @@ const disabledStyles = {
 };
 
 /**
- * Displays and Manage Account Profile Form Settings
- * @param {Object} accountData
- * @param {Boolean} isAccountStatusNotPending
- * @param {Array} classificationsData
- * @param {Array} policyList
+ * @Summary Displays and Manage Account Profile Form Settings
+ * @Note uses AccountDetailContext
  */
-export default function AccountProfileFormSetting({
-  accountData,
-  isAccountStatusNotPending: isEditingDisabled,
-  classificationsData,
-  policyList,
-}) {
+export default function AccountProfileFormSetting() {
   const dialog = useDialog();
+  const {
+    currentAccount: accountData,
+    classificationsData,
+    policyList,
+    refreshAccountData,
+  } = useAccountDetail();
+  const isEditingDisabled = accountData.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
   const getClassificationsValuesFromArrId = (orgClassificationsArrId) => {
     return orgClassificationsArrId.map((classification) => {
       const classId = parseInt(classification, 10);
@@ -210,7 +210,7 @@ export default function AccountProfileFormSetting({
           if (data.status === 'success') {
             dialog.setDialogTitle('Account Information Saved');
             dialog.setDialogMessage('Organization profile updated successfully');
-            setTimeout(() => window.location.reload(), 700);
+            refreshAccountData();
           }
         })
         .catch(() => {
@@ -417,7 +417,7 @@ export default function AccountProfileFormSetting({
                 value={
                   accountFormData.subscription_status_id !== null
                     ? accountFormData.subscription_status_id
-                    : 1
+                    : ACCOUNT_ORG_STATUSES['PENDING']
                 }
                 name="subscription_status_id"
                 onChange={(event) =>

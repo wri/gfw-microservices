@@ -6,6 +6,8 @@ import InputLabel from '@mui/material/InputLabel';
 import GfwButton from '../../../../common/js/components/GfwButton';
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { accountProfileStrings } from '../../../../common/js/config';
+import { useAccountDetail } from './AccountDetailSection';
+import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
 
 const FieldLabel = styled(InputLabel)({
   fontFamily: 'Fira Sans, sans-serif',
@@ -18,17 +20,17 @@ const FieldLabel = styled(InputLabel)({
 });
 
 /**
- * @summary Displays and Manage Account Profile Limits Form Setting
- * @param {Object} accountLimitsData,
- * @param {Boolean} isAccountStatusNotPending
- * @param {Number} organizationId required
+ * @Summary Displays and Manage Account Profile Limits Form Setting
+ * @Note uses AccountDetailContext
  */
-export default function AccountProfileLimitsSetting({
-  accountLimitsData,
-  isAccountStatusNotPending: isEditingDisabled,
-  organizationId,
-}) {
+export default function AccountProfileLimitsSetting() {
   const dialog = useDialog();
+  const { currentAccount, refreshAccountData } = useAccountDetail();
+
+  const { analysis_limits: accountLimitsData = {}, organization_id: organizationId } =
+    currentAccount;
+  const isEditingDisabled =
+    currentAccount.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
   const [accountLimitsFormData, setAccountLimitsFormData] = useState({
     MaxAreaPerList: accountLimitsData.MaxAreaPerList,
     MaxAreaAnalyzeablePerYear: accountLimitsData.MaxAreaAnalyzeablePerYear,
@@ -76,7 +78,7 @@ export default function AccountProfileLimitsSetting({
           if (data.status === 'success') {
             dialog.setDialogTitle('Account Limits Saved');
             dialog.setDialogMessage('Organization custom limits set successfully');
-            setTimeout(() => window.location.reload(), 700);
+            refreshAccountData();
           }
         });
       return void 0;

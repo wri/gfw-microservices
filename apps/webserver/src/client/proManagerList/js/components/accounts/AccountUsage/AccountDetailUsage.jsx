@@ -3,13 +3,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import DateRangeSelector from './DateRangeSelector';
 import { oneMonthAgoDate, todaysDate } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
+import { useAccountDetail } from './AccountDetailSection';
 
-function AccountDetailUsage({ organizationId }) {
+function AccountDetailUsage() {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
   const [endDate, setEndDate] = useState(todaysDate);
   const [isLoading, setIsLoading] = useState(true);
   const [usageData, setUsageData] = useState({});
-
+  const { currentAccount } = useAccountDetail();
+  const { organization_id: organizationId } = currentAccount;
   const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = usageData;
 
   useEffect(() => {

@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import GfwButton from '../../../../common/js/components/GfwButton';
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import { useAccountDetail } from './AccountDetailSection';
 
 const disabledStyles = {
   '&.Mui-disabled': {
@@ -21,6 +22,8 @@ const disabledStyles = {
  */
 export default function AccountStatusSetting({ organization_id, organization_status_id }) {
   const dialog = useDialog();
+  const { currentAccount } = useAccountDetail();
+  const { organization_id, organization_status_id } = currentAccount;
 
   const activateAccount = () => {
     const route =

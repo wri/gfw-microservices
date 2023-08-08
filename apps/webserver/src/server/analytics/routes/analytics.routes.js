@@ -24,8 +24,8 @@ module.exports = (app, limiter) => {
   const routeMiddlewaresAnalytics = [middlewares.checkProManagerAuthentication];
 
   const routeMiddlewaresMyOrg = [
-    middlewares.checkOrganization,
     middlewares.checkAuthentication,
+    middlewares.checkOrganization,
     middlewares.checkActive,
     middlewares.checkInactivity,
   ];

@@ -41,6 +41,7 @@ const ERROR_CODES = {
   failedToDeletePendingAccountRequest: 309,
   failedToGetAccountSubscriptionStatus: 310,
   failedToUpdateAccountSubscriptionStatus: 311,
+  failedToUpdateAccountCustomAnalysisLimits: 312,
 
   // User
   failedToUpdateUser: 400,
@@ -93,6 +94,8 @@ const ERROR_CODES = {
   failedToDeletePolicies: 116,
   failedToMovePolicies: 117,
   SQSError: 901,
+  // Global Limits / Subscription Limits
+  failedToUpdateGlobalAnalysisLimit: 1000,
 };
 
 /**

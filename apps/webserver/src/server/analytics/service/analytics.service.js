@@ -4,7 +4,6 @@ const sql = require('mssql');
 const { getOrganizationAnalysisUsage } = require(path.resolve(
   './queries/system/getOrganizationAnalysisUsage'
 ));
-
 const { getAnalysisLimits } = require(path.resolve('./queries/system/getAnalysisLimits'));
 
 exports.getOrganizationAnalysisUsage = async ({

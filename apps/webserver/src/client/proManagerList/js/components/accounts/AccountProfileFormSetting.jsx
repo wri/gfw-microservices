@@ -15,7 +15,8 @@ import { profilePage } from '../../../../common/js/config';
 import { fieldValidations } from '../../../../profile/js/utils/validations';
 import { useDialog } from '../../../../common/js/components/Dialog';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
-import { accountProfileStrings } from '../../../../common/js/config';
+import { accountProfileStrings, subscriptionStatusOptions } from '../../../../common/js/config';
+import { useAccountDetail } from './AccountDetailSection';
 
 const FieldLabel = styled(InputLabel)({
   fontFamily: 'Fira Sans, sans-serif',
@@ -35,18 +36,18 @@ const disabledStyles = {
 };
 
 /**
- * Displays and Manage Account Profile Form Settings
- * @param {Object} accountData
- * @param {Array} classificationsData
- * @param {Array} policyList
+ * @Summary Displays and Manage Account Profile Form Settings
+ * @Note uses AccountDetailContext
  */
-export default function AccountProfileFormSetting({
-  accountData,
-  classificationsData,
-  policyList,
-}) {
-  const isEditingDisabled = accountData.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
+export default function AccountProfileFormSetting() {
   const dialog = useDialog();
+  const {
+    currentAccount: accountData,
+    classificationsData,
+    policyList,
+    refreshAccountData,
+  } = useAccountDetail();
+  const isEditingDisabled = accountData.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
   const getClassificationsValuesFromArrId = (orgClassificationsArrId) => {
     return orgClassificationsArrId.map((classification) => {
       const classId = parseInt(classification, 10);
@@ -82,17 +83,12 @@ export default function AccountProfileFormSetting({
       label: document_name,
       value: document_name,
     }));
-
   const onChangeUpdateField = (field, values) => {
     setAccountFormData((prevData) => ({
       ...prevData,
       [field]: values,
     }));
   };
-  const subscriptionStatusOptions = [
-    { label: 'Standard', value: 1 },
-    { label: 'Premium', value: 2 },
-  ];
 
   useEffect(() => {
     onChangeUpdateField(
@@ -124,7 +120,6 @@ export default function AccountProfileFormSetting({
        */
     }
   };
-
   /**
    * @deprecated
    * @note figure out the state of affairs for policies management
@@ -149,7 +144,6 @@ export default function AccountProfileFormSetting({
       policyNames: policyNameList,
     }));
   };
-
   const validateAccountFormData = (data) => {
     let errors = [];
     let missing = [];
@@ -198,7 +192,6 @@ export default function AccountProfileFormSetting({
       missing,
     };
   };
-
   const updateProAccount = (payload) => {
     const { isFormDataValid, errors, missing } = validateAccountFormData(payload);
     dialog.openDialog('Updating Account', 'Please wait...', true);
@@ -217,7 +210,7 @@ export default function AccountProfileFormSetting({
           if (data.status === 'success') {
             dialog.setDialogTitle('Account Information Saved');
             dialog.setDialogMessage('Organization profile updated successfully');
-            dialog.disableDialogAction(false);
+            refreshAccountData();
           }
         })
         .catch(() => {
@@ -424,7 +417,7 @@ export default function AccountProfileFormSetting({
                 value={
                   accountFormData.subscription_status_id !== null
                     ? accountFormData.subscription_status_id
-                    : 1
+                    : ACCOUNT_ORG_STATUSES['PENDING']
                 }
                 name="subscription_status_id"
                 onChange={(event) =>

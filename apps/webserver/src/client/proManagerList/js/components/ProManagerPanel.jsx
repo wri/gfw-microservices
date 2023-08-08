@@ -9,6 +9,7 @@ import AccountsListUsage from './accounts/AccountUsage/AccountsListUsage';
 import SideBarMenu from '../../../common/js/components/SideBarMenu';
 import { proManagerPanelTabs } from './proManagerPanelTabs';
 import './ProManagerPanel.scss';
+import AccountLimits from './accounts/AccountLimits';
 
 function ProManagerPanel({ location }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -71,6 +72,9 @@ function ProManagerPanel({ location }) {
           )}
           {selectedTab === proManagerPanelTabs.userProfiles.id && !userDetail && (
             <UsersListSection isLoading={isLoading} setIsLoading={setIsLoading} />
+          )}
+          {selectedTab === proManagerPanelTabs.accounLimits.id && (
+            <AccountLimits isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
           {selectedTab === proManagerPanelTabs.accountUsage.id && (
             <AccountsListUsage isLoading={isLoading} setIsLoading={setIsLoading} />

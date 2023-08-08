@@ -66,6 +66,16 @@
     cursor: pointer;
     color: #97bd3d;
     text-transform: uppercase;
+    font-weight: 600;
+
+    &.red {
+      color: rgba(242, 78, 30, 0.73);
+    }
+
+    svg {
+      vertical-align: middle;
+      width: 0.8em;
+    }
   }
   &__action-button:disabled {
     color: lightgray;

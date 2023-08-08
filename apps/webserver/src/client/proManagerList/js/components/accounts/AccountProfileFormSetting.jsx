@@ -37,7 +37,6 @@ const disabledStyles = {
 /**
  * Displays and Manage Account Profile Form Settings
  * @param {Object} accountData
- * @param {Boolean} accountIsNotInPendingStatus
  * @param {Array} classificationsData
  * @param {Array} policyList
  */

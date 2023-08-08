@@ -3,7 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import DateRangeSelector from './DateRangeSelector';
 import { oneMonthAgoDate, todaysDate } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
-import { useAccountDetail } from './AccountDetailSection';
+import { useAccountDetail } from '../AccountDetailSection';
 
 function AccountDetailUsage() {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);

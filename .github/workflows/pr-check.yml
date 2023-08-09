@@ -110,7 +110,7 @@ jobs:
 
       - uses: ArtiomTr/jest-coverage-report-action@v2.2.4
         with:
-            test-script: npm --prefix ./apps/webserver/src test:afi
+            test-script: npm run --prefix ./apps/webserver/src test:afi
 
   Run-Test:
     runs-on: ubuntu-latest

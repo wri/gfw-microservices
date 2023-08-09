@@ -74,7 +74,8 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         run: |
-          npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries
+          npx nx run sql:makesql
+          npx nx run webserver:build
           docker build --build-arg NODE_ENV=${{ env.NODE_ENV }} -f apps/webserver/Dockerfile  -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT

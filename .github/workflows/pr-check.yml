@@ -103,10 +103,14 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Install dependencies for webserver
+        run: npm --prefix ./apps/webserver/src install --legacy-peer-deps
+
       - uses: actions/checkout@v3
-      - uses: ArtiomTr/jest-coverage-report-action@v2
+
+      - uses: ArtiomTr/jest-coverage-report-action@v2.2.4
         with:
-            test-script: npm test:afi
+            test-script: npm --prefix ./apps/webserver/src test:afi
 
   Run-Test:
     runs-on: ubuntu-latest

@@ -10,6 +10,8 @@ jobs:
             node-version: [16.15.1]
 
         steps:
+            - name: Install dependencies
+              run: npm install --legacy-peer-deps
             - uses: actions/checkout@v3
             - uses: ArtiomTr/jest-coverage-report-action@v2
               with:

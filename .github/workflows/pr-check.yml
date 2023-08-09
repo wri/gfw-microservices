@@ -39,6 +39,39 @@ jobs:
       - name: Check code format
         run: npx nx format:check
 
+  AFI-Coverage:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.15.1]
+
+    steps:
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Install dependencies for webserver
+        run: npm --prefix ./apps/webserver/src install --legacy-peer-deps
+
+      - uses: actions/checkout@v3
+      - uses: ArtiomTr/jest-coverage-report-action@v2
+        with:
+            test-script: npm test:afi
+
   Check-lint:
     runs-on: ubuntu-latest
 

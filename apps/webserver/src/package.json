@@ -15,7 +15,8 @@
     "pretest": "npx tsc ../../../libs/sql/src/lib/queries/index.ts --outDir ./queries; node ./test/prepare-jest; set -e; ",
     "test": "jest --config=./jest.config.json --forceExit --passWithNoTests --coverage",
     "test:coverage": "npm run pretest; npm run test",
-    "mocha": "node config/scripts/mocha"
+    "mocha": "node config/scripts/mocha",
+    "test:afi": "jest --config=./test/afi.jest.config.json --passWithNoTests --coverage"
   },
   "license": "UNLICENSED",
   "dependencies": {

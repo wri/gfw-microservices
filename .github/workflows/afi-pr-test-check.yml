@@ -1,0 +1,16 @@
+name: 'afi-PR-test-check'
+on:
+    pull_request:
+        branches: [main, develop, qa, staging]
+jobs:
+    coverage:
+        runs-on: ubuntu-latest
+        strategy:
+          matrix:
+            node-version: [16.15.1]
+
+        steps:
+            - uses: actions/checkout@v3
+            - uses: ArtiomTr/jest-coverage-report-action@v2
+              with:
+                  test-script: npm test:afi

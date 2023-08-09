@@ -1,0 +1,11 @@
+{
+  "coverageThreshold": {
+    "global": {
+      "lines": 80
+    }
+  },
+  "roots": ["<rootDir>../"],
+  "testMatch": [
+    "<rootDir>../client/eudr/*.test.js"
+  ]
+}

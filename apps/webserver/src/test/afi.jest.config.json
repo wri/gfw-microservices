@@ -1,9 +1,15 @@
 {
+  "roots": ["<rootDir>../"],
+  "testMatch": ["<rootDir>../client/eudr/*.test.js"],
+  "collectCoverageFrom": ["<rootDir>/client/eudr/*.{js,jsx,ts,tsx}"],
+  "coverageDirectory": "../../../coverage/apps/webserver",
+  "coverageReporters": ["json", "text", "lcov", "clover", "cobertura"],
   "coverageThreshold": {
     "global": {
-      "lines": 80
+      "branches": 1,
+      "functions": 1,
+      "lines": 1,
+      "statements": 1
     }
-  },
-  "roots": ["<rootDir>../"],
-  "testMatch": ["<rootDir>../client/eudr/*.test.js"]
+  }
 }

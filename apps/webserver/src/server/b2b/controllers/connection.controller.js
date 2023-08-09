@@ -15,12 +15,9 @@ exports.getUserOrganizations = async (req, res, next) => {
 };
 
 exports.getConnections = async (req, res, next) => {
-  const [org] = await AuthManager.getOrganizations(req);
-  const { organization_id: organizationId } = org;
-
   next({
     method: 'GET',
-    url: `/connections/organization/${organizationId}`,
+    url: `/connections/organization/${req.session.organization_id}`,
     mapper: mapper.invitationMapper,
   });
 };

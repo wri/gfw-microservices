@@ -16,7 +16,7 @@
     "test": "jest --config=./jest.config.json --forceExit --passWithNoTests --coverage",
     "test:coverage": "npm run pretest; npm run test",
     "mocha": "node config/scripts/mocha",
-    "test:afi": "jest --config=./test/afi.jest.config.json --passWithNoTests --coverage"
+    "test:afi": "jest --config=./test/afi.jest.config.js --passWithNoTests --coverage"
   },
   "license": "UNLICENSED",
   "dependencies": {

@@ -1,9 +1,16 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
+// This needs to be at the beginning of the file to ensure that the '.env' file
+// is loaded into process.env before any code reads process.env
+const envModule = ConfigModule.forRoot({
+  isGlobal: true,
+});
+
 import { AppController } from './Shared/infraestructure/app.controller';
 import { AppService } from './Shared/application/app.service';
 import { ConnectionController } from './Connection/infraestructure/connection.controller';
 import { ConnectionModule } from './Connection/connection.module';
-import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './User/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import entities from './Shared/infraestructure/typeorm/entities';
@@ -19,6 +26,7 @@ import { ActivityLogModule } from './ActivityLog/activity-log.module';
 
 @Module({
   imports: [
+    envModule,
     UserModule,
     ConnectionModule,
     OrganizationModule,

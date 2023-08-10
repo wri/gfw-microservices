@@ -3,33 +3,11 @@ import SideBarMenu from '../../common/js/components/SideBarMenu';
 import Grid from '@mui/material/Grid';
 import Container from '@mui/material/Container';
 import { useProfileContext } from './ProfileStateContext';
-import { userAccessLevel } from '../../common/js/config';
+import { profileTabs } from './profileTabs';
 import AccountProfileContainer from './components/AccountProfile';
 import UserProfileManagerContainer from './components/UserProfileManager';
 import AccountUsageContainer from './components/AccountUsage';
 
-const { ADMIN, EDITOR, VIEWER } = userAccessLevel;
-
-const profileTabs = {
-  myOrganization: {
-    id: 'MY_ORGANIZATION',
-    icon: 'corporate_fare',
-    title: 'My Organization',
-    userAccessLevel: [ADMIN, EDITOR, VIEWER],
-  },
-  userManagement: {
-    id: 'USER_MANAGEMENT',
-    icon: 'people',
-    title: 'User Management',
-    userAccessLevel: [ADMIN],
-  },
-  accountUsage: {
-    id: 'account-usage',
-    icon: 'running_with_errors',
-    title: 'Usage',
-    userAccessLevel: [ADMIN],
-  },
-};
 
 export default function Profile() {
   const { userInfo, users } = useProfileContext();

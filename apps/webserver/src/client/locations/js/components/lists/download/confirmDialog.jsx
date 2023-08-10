@@ -15,7 +15,7 @@ export default function ConfirmDialog(props) {
 
   return (
     <Dialog open={open} onRequestClose={() => setDialogOpen(false)}>
-      <div className="dialog__header">
+      <div className="dialog__header" data-cy="download-dialog">
         <h1 className="dialog__title">{transifex(DOWNLOAD_TITLE)}</h1>
         <IconButton icon={<IconTimes />} onClick={() => setDialogOpen(false)} size="large" />
       </div>

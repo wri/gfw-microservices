@@ -2955,6 +2955,11 @@ export const profilePage = {
       details: 'DETAILS',
     },
   },
+  accountUsage: {
+    title: 'Summary',
+    usageAnalyzed: 'Area Analyzed',
+    totalAnalysis: 'Total Area Analyzed',
+  },
 };
 
 export const PLANET_TILE_LAYER_INITIAL = 'planet_medres_normalized_analytic_2020-10_mosaic';

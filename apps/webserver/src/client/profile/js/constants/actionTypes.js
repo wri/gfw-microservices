@@ -1,7 +1,0 @@
-export const ADD_USER = 'ADD_USER';
-export const CURRENT_USER = 'CURRENT_USER';
-export const CURRENT_ACCOUNT = 'CURRENT_ACCOUNT';
-export const SAVE_USERS = 'SAVE_USERS';
-export const UPDATE_USER = 'UPDATE_USER';
-export const UPDATE_CURRENT_USER = 'UPDATE_CURRENT_USER';
-export const UPDATED_USERS = 'UPDATED_USERS';

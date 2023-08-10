@@ -1,49 +1,74 @@
 import React, { useState } from 'react';
-import MyProfile from './components/MyProfile';
-import UserProfileManager from './components/sub/UserProfileManager';
 import SideBarMenu from '../../common/js/components/SideBarMenu';
-import { profileTabs } from './profileTabs';
-import './Profile.scss';
+import Grid from '@mui/material/Grid';
+import Container from '@mui/material/Container';
+import { useProfileContext } from './ProfileStateContext';
+import { userAccessLevel } from '../../common/js/config';
+import AccountProfileContainer from './components/AccountProfile';
+import UserProfileManagerContainer from './components/UserProfileManager';
+import AccountUsageContainer from './components/AccountUsage';
 
-function Profile({
-  organization,
-  userInfo,
-  users,
-  classificationsData,
-  commoditiesData,
-  geographiesData,
-  titlesData,
-  policyList,
-}) {
+const { ADMIN, EDITOR, VIEWER } = userAccessLevel;
+
+const profileTabs = {
+  myOrganization: {
+    id: 'MY_ORGANIZATION',
+    icon: 'corporate_fare',
+    title: 'My Organization',
+    userAccessLevel: [ADMIN, EDITOR, VIEWER],
+  },
+  userManagement: {
+    id: 'USER_MANAGEMENT',
+    icon: 'people',
+    title: 'User Management',
+    userAccessLevel: [ADMIN],
+  },
+  accountUsage: {
+    id: 'account-usage',
+    icon: 'running_with_errors',
+    title: 'Usage',
+    userAccessLevel: [ADMIN],
+  },
+};
+
+export default function Profile() {
+  const { userInfo, users } = useProfileContext();
   const [selectedTab, setSelectedTab] = useState(profileTabs.myOrganization.id);
+
+  /**
+   * Figure out why if there are not users redirect to this page
+   */
+  if (!users?.length) {
+    window.location.href = `/user-profile?user_id=${userInfo.id}`;
+  }
+
   return (
-    <div className="profile">
-      <div className="profile__container">
-        <SideBarMenu
-          menuTitle="Profile"
-          tabOptions={profileTabs}
-          selectedTab={selectedTab}
-          setSelectedTab={setSelectedTab}
-          userAccessLevel={userInfo.access_level_id}
-        />
-        <div className="profile__content">
-          {selectedTab === profileTabs.myOrganization.id && (
-            <MyProfile
-              organization={organization}
-              userInfo={userInfo}
-              users={users}
-              classificationsData={classificationsData}
-              commoditiesData={commoditiesData}
-              geographiesData={geographiesData}
-              titlesData={titlesData}
-              policyList={policyList}
-            />
-          )}
-          {selectedTab === profileTabs.userManagement.id && <UserProfileManager users={users} />}
-        </div>
-      </div>
-    </div>
+    <Container sx={{ paddingTop: '2rem', maxWidth: '1024px' }}>
+      <Grid container spacing={4}>
+        <Grid
+          item
+          xs={12}
+          sm={3}
+          sx={{
+            marginBottom: {
+              xs: '1.5rem',
+            },
+          }}
+        >
+          <SideBarMenu
+            menuTitle="Profile"
+            tabOptions={profileTabs}
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
+            userAccessLevel={userInfo.access_level_id}
+          />
+        </Grid>
+        <Grid item xs={12} sm={9}>
+          {selectedTab === profileTabs.myOrganization.id && <AccountProfileContainer />}
+          {selectedTab === profileTabs.userManagement.id && <UserProfileManagerContainer />}
+          {selectedTab === profileTabs.accountUsage.id && <AccountUsageContainer />}
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
-
-export default Profile;

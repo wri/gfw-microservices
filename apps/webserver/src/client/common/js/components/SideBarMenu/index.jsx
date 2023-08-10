@@ -5,6 +5,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
 import Icon from '@material-ui/core/Icon';
 import './SideBarMenu.scss';
 
@@ -20,7 +21,7 @@ function ProfileSideBar({
   );
 
   return (
-    <div className="side-bar-menu">
+    <Box>
       <Card variant="outlined">
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} disablePadding>
           <ListItem sx={{ background: '#f7f7f7' }}>
@@ -42,7 +43,7 @@ function ProfileSideBar({
           })}
         </List>
       </Card>
-    </div>
+    </Box>
   );
 }
 

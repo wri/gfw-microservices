@@ -8,7 +8,6 @@ import AccountProfileContainer from './components/AccountProfile';
 import UserProfileManagerContainer from './components/UserProfileManager';
 import AccountUsageContainer from './components/AccountUsage';
 
-
 export default function Profile() {
   const { userInfo, users } = useProfileContext();
   const [selectedTab, setSelectedTab] = useState(profileTabs.myOrganization.id);

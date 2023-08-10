@@ -222,10 +222,6 @@ export default class Map extends Component {
     });
 
     this.svm = null;
-
-    require(['esri/core/promiseUtils'], (promiseUtils) => {
-      this.promiseUtils = promiseUtils;
-    });
   }
 
   componentWillUnmount() {

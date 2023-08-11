@@ -25,7 +25,9 @@ export let profileTabs = {
   },
 };
 
-const PREMIUM_SUBSCRIPTION = subscriptionStatusOptions.find(subs => subs.label.toLowerCase() === 'premium').value;
+const PREMIUM_SUBSCRIPTION = subscriptionStatusOptions.find(
+  (subs) => subs.label.toLowerCase() === 'premium'
+).value;
 
 export default function Profile() {
   const { userInfo, users, organization } = useProfileContext();
@@ -34,13 +36,16 @@ export default function Profile() {
   /**
    * As a Premium Account Admin I want to see my account usage
    */
-  if (typeof organization === 'object' && organization.subscription_status_id === PREMIUM_SUBSCRIPTION) {
+  if (
+    typeof organization === 'object' &&
+    organization.subscription_status_id === PREMIUM_SUBSCRIPTION
+  ) {
     profileTabs.accountUsage = {
       id: 'account-usage',
       icon: 'running_with_errors',
       title: 'Usage',
       userAccessLevel: [ADMIN],
-    }
+    };
   }
 
   /**
@@ -74,7 +79,9 @@ export default function Profile() {
         <Grid item xs={12} sm={9}>
           {selectedTab === profileTabs.myOrganization.id && <AccountProfileContainer />}
           {selectedTab === profileTabs.userManagement.id && <UserProfileManagerContainer />}
-          {profileTabs.accountUsage && selectedTab === profileTabs.accountUsage.id && <AccountUsageContainer />}
+          {profileTabs.accountUsage && selectedTab === profileTabs.accountUsage.id && (
+            <AccountUsageContainer />
+          )}
         </Grid>
       </Grid>
     </Container>

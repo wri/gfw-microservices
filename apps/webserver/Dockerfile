@@ -40,8 +40,8 @@ WORKDIR /srv
 COPY dist/apps/webserver .
 
 # Copy all required files into the working directory.
-COPY package.json .
-COPY package-lock.json .
+COPY apps/webserver/src/package.json .
+COPY apps/webserver/src/package-lock.json .
 COPY apps/webserver/src/run-app.sh .
 
 # Create Vector tiles directory

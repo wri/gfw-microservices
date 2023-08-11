@@ -4,7 +4,6 @@ block head
   script(src='https://code.jquery.com/jquery-3.3.1.min.js')
 block content
   div#map-mount
-  //FYI: 4,17 is the last version of ESRI that support IE11 and Edge Legacy
   include ./svg.pug
   script.
     var userLists = !{JSON.stringify(userLists)};
@@ -16,17 +15,5 @@ block content
     var listStatuses = !{JSON.stringify(listStatuses)};
     var CURRENT_ENVIRONMENT = !{JSON.stringify(CURRENT_ENVIRONMENT)};
 
-  script(src='https://js.arcgis.com/4.20/', async)
   script(src='https://dpptfqp76xood.cloudfront.net/js/ionRange.js')
-  script.
-    var dojoConfig = {
-      parseOnLoad: false,
-      async: true,
-      has: {
-        "esri-promise-compatibility": 1
-      },
-      deps: ['dojo/domReady!'],
-      callback: function(){
-        require(['#{mapjs}']);
-      }
-    };
+  script(src=mapjs, async)

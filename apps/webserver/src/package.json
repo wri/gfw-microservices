@@ -9,9 +9,9 @@
   },
   "scripts": {
     "start": "node config/scripts/start",
-    "webpack:build:qa": "webpack --merge --config ./src/config/webpack.config.js --config ./src/config/webpack.qa.config.js",
-    "webpack:build:staging": "webpack --merge --config ./src/config/webpack.config.js --config ./src/config/webpack.staging.config.js",
-    "webpack:build:production": "webpack --merge --config ./src/config/webpack.config.js --config ./src/config/webpack.production.config.js",
+    "webpack:build:qa": "webpack --merge --config ./config/webpack.config.js --config ./config/webpack.qa.config.js",
+    "webpack:build:staging": "webpack --merge --config ./config/webpack.config.js --config ./config/webpack.staging.config.js",
+    "webpack:build:production": "webpack --merge --config ./config/webpack.config.js --config ./config/webpack.production.config.js",
     "pretest": "npx tsc ../../../libs/sql/src/lib/queries/index.ts --outDir ./queries; node ./test/prepare-jest; set -e; ",
     "test": "jest --config=./jest.config.json --forceExit --passWithNoTests --coverage",
     "test:coverage": "npm run pretest; npm run test",

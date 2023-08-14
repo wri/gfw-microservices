@@ -15,32 +15,26 @@ export default function B2BConnectionListDetails(props) {
     pending: {
       label: 'cancel',
       onclick: () => cancelConnection(row.id),
-      classeColor: '',
+      classColor: '',
       icon: <CancelIcon />,
     },
     connected: {
       label: 'remove',
       onclick: () => rejectConnection(row.id),
-      classeColor: 'red',
+      classColor: 'red',
       icon: <CloseIcon />,
-    },
-    expired: {
-      label: 'resend',
-      onclick: () => onclickDetails(row),
-      classeColor: '',
-      icon: <CachedIcon />,
     },
   };
 
   const currentStatus = status[row.status];
-  const showStatusButton = row.isCurrentOrganization && row.status !== 'expired';
+  const showStatusButton = row.isCurrentOrganization && !!currentStatus;
 
   return (
     <>
       {showStatusButton && (
         <button
           type="button"
-          className={`new-b2b-connection-modal__action-button ${currentStatus.classeColor}`}
+          className={`new-b2b-connection-modal__action-button ${currentStatus.classColor}`}
           onClick={() => {
             currentStatus.onclick();
           }}

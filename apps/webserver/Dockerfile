@@ -58,5 +58,8 @@ EXPOSE 80
 RUN chmod -R 774 run-app.sh
 RUN bash ./run-app.sh
 
+# Set the working directory for the application.
+WORKDIR /srv/src
+
 # Start application command.
-CMD ["node", "src/server.js"]
+CMD ["node", "server.js"]

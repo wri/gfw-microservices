@@ -42,7 +42,7 @@ COPY dist/apps/webserver .
 # Copy all required files into the working directory.
 COPY apps/webserver/src/package.json .
 COPY apps/webserver/src/package-lock.json .
-COPY apps/webserver/src/run-app.sh .
+COPY apps/webserver/src/run-app.sh ./src/run-app.sh
 
 # Create Vector tiles directory
 RUN mkdir vectorTiles
@@ -54,12 +54,12 @@ RUN npm --legacy-peer-deps --include=dev ci
 
 EXPOSE 80
 
+# Set the working directory for the application.
+WORKDIR /srv/src
+
 # Change file permissions for run script.
 RUN chmod -R 774 run-app.sh
 RUN bash ./run-app.sh
-
-# Set the working directory for the application.
-WORKDIR /srv/src
 
 # Start application command.
 CMD ["node", "server.js"]

@@ -1,24 +1,5 @@
 import React, { useState, useEffect, createContext, useContext, useCallback } from 'react';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-
-const Loading = () => {
-  const loadingStyles = {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    zIndex: 1,
-  };
-  return (
-    <Box sx={loadingStyles}>
-      <CircularProgress color="success" />
-    </Box>
-  );
-};
+import Loading from '../../common/js/components/Loaders/Loading';
 
 const ProfileStateContext = createContext();
 

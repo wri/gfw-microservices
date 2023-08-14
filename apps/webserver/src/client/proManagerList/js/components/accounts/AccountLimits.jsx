@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import GfwButton from '../../../../common/js/components/GfwButton';
-import { accountLimitsStrings, subscriptionStatusOptions } from '../../../../common/js/config';
+import {
+  accountLimitsStrings,
+  subscriptionStatusOptions,
+  SUBSCRIPTION_STATUSES,
+} from '../../../../common/js/config';
 import SettingSection from '../../../../common/js/components/SettingSection';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
@@ -46,13 +50,7 @@ const generateGlobalLimitsFormDataObject = (subscriptionOptions) => {
 };
 
 const globalLimitsFormDataObject = generateGlobalLimitsFormDataObject(subscriptionStatusOptions);
-
-const STANDARD_SUBSCRIPTION = subscriptionStatusOptions.find(
-  (sub) => sub.label.toLowerCase() === 'standard'
-).value;
-const PREMIUM_SUBSCRIPTION = subscriptionStatusOptions.find(
-  (sub) => sub.label.toLowerCase() === 'premium'
-).value;
+const { STANDARD: STANDARD_SUBSCRIPTION, PREMIUM: PREMIUM_SUBSCRIPTION } = SUBSCRIPTION_STATUSES;
 
 /**
  * Manage global accounts limits based on subscriptions

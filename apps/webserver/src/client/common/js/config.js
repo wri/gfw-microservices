@@ -3938,9 +3938,14 @@ export const draftTooltipMessages = {
     'This list contains unanalyzed locations. The list owner will need to submit the list for analysis. Once submitted, this list will not be accessible until analysis is complete.',
 };
 
+export const SUBSCRIPTION_STATUSES = {
+  STANDARD: 1,
+  PREMIUM: 2,
+};
+
 export const subscriptionStatusOptions = [
-  { label: 'Standard', value: 1 },
-  { label: 'Premium', value: 2 },
+  { label: 'Standard', value: SUBSCRIPTION_STATUSES.STANDARD },
+  { label: 'Premium', value: SUBSCRIPTION_STATUSES.PREMIUM },
 ];
 
 export const accountProfileStrings = {

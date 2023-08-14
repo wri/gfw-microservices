@@ -4,27 +4,20 @@ import Dialog from 'material-ui/Dialog';
 import _isEmpty from 'lodash/isEmpty';
 
 // ESRI Imports
-import EsriMap from 'esri/Map';
-import Extent from 'esri/geometry/Extent';
-import FeatureLayer from 'esri/layers/FeatureLayer';
-import Field from 'esri/layers/support/Field';
-import GeometryEngine from 'esri/geometry/geometryEngine';
-import Graphic from 'esri/Graphic';
-import GraphicsLayer from 'esri/layers/GraphicsLayer';
-import MapView from 'esri/views/MapView';
-import Point from 'esri/geometry/Point';
-import Polygon from 'esri/geometry/Polygon';
-import PopupTemplate from 'esri/PopupTemplate';
-import SimpleFillSymbol from 'esri/symbols/SimpleFillSymbol';
-import SketchViewModal from 'esri/widgets/Sketch/SketchViewModel';
-import TileLayer from 'esri/layers/TileLayer';
-import VectorTileLayer from 'esri/layers/VectorTileLayer';
-import WebTileLayer from 'esri/layers/WebTileLayer';
-import esriConfig from 'esri/config';
-import {
-  geographicToWebMercator,
-  webMercatorToGeographic,
-} from 'esri/geometry/support/webMercatorUtils';
+import EsriMap from '@arcgis/core/Map';
+import Extent from '@arcgis/core/geometry/Extent';
+import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
+import Graphic from '@arcgis/core/Graphic';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
+import MapView from '@arcgis/core/views/MapView';
+import Point from '@arcgis/core/geometry/Point';
+import PopupTemplate from '@arcgis/core/PopupTemplate';
+import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
+import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
+import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
+import esriConfig from '@arcgis/core/config';
+import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 
 import store from '../store';
 import {
@@ -50,7 +43,6 @@ import {
   DATA_API_URL,
   locationsPage,
   mapPage,
-  pro_AWS_base,
   proLayers,
   supportedGeostoreAnalysis,
   vectorEnabledLayers,
@@ -122,8 +114,6 @@ import '../../css/map.scss';
 
 // import all layer names that we will be using directly
 const {
-  aboveGroundBiomassId,
-  primaryForest,
   adminAreas,
   administrativeAreas,
   brazilBiomesID,
@@ -138,16 +128,13 @@ const {
   rspoPalmOilMills,
   soyOnTreeCoverLoss,
   treeBiomassLossID,
-  treeCoverGainID,
   treeCoverID,
   treeCoverLossID,
   treePlantationsSpecies,
   universalMillList,
   userLocations,
   viirsActiveFiresID,
-  landCoverID,
   soyPlantedArea,
-  indonesiaLandCover,
 } = proLayers;
 
 let layersToAdd;
@@ -222,10 +209,6 @@ export default class Map extends Component {
     });
 
     this.svm = null;
-
-    require(['esri/core/promiseUtils'], (promiseUtils) => {
-      this.promiseUtils = promiseUtils;
-    });
   }
 
   componentWillUnmount() {
@@ -1068,7 +1051,7 @@ export default class Map extends Component {
   };
 
   initializeSketchViewModel = (view) => {
-    const svm = new SketchViewModal({
+    const svm = new SketchViewModel({
       view,
       layer: view.graphics,
       polygonSymbol: {

@@ -38,9 +38,7 @@ export default function Profile() {
             selectedTab={selectedTab}
             setSelectedTab={setSelectedTab}
             userAccessLevel={userInfo.access_level_id}
-            accountSubscriptionStatus={
-              typeof organization === 'object' && organization.subscription_status_id
-            }
+            accountSubscriptionStatus={organization?.subscription_status_id}
           />
         </Grid>
         <Grid item xs={12} sm={9}>

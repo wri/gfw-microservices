@@ -22,7 +22,7 @@ function ProfileSideBar({
   );
 
   /* ensure this prop is present */
-  if (accountSubscriptionStatus !== undefined) {
+  if (accountSubscriptionStatus) {
     filteredTabsBySubscriptionStatus = Object.values(tabOptions).filter((item) => {
       item.suscriptionStatus.includes(accountSubscriptionStatus);
     });

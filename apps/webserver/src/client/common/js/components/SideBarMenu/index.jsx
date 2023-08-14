@@ -14,11 +14,19 @@ function ProfileSideBar({
   selectedTab,
   setSelectedTab,
   userAccessLevel,
+  accountSubscriptionStatus,
   tabOptions,
 }) {
-  const filteredTabsByPermission = Object.values(tabOptions).filter((item) =>
+  let filteredTabsByPermission = Object.values(tabOptions).filter((item) =>
     item.userAccessLevel.includes(userAccessLevel)
   );
+
+  /* ensure this prop is present */
+  if (accountSubscriptionStatus !== undefined) {
+    filteredTabsBySubscriptionStatus = Object.values(tabOptions).filter((item) => {
+      item.suscriptionStatus.includes(accountSubscriptionStatus);
+    });
+  }
 
   return (
     <Box>

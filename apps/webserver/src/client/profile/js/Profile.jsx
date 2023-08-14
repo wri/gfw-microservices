@@ -6,47 +6,11 @@ import { useProfileContext } from './ProfileStateContext';
 import AccountProfileContainer from './components/AccountProfile';
 import UserProfileManagerContainer from './components/UserProfileManager';
 import AccountUsageContainer from './components/AccountUsage';
-import { userAccessLevel, subscriptionStatusOptions } from '../../common/js/config';
-
-const { ADMIN, EDITOR, VIEWER } = userAccessLevel;
-
-export let profileTabs = {
-  myOrganization: {
-    id: 'MY_ORGANIZATION',
-    icon: 'corporate_fare',
-    title: 'My Organization',
-    userAccessLevel: [ADMIN, EDITOR, VIEWER],
-  },
-  userManagement: {
-    id: 'USER_MANAGEMENT',
-    icon: 'people',
-    title: 'User Management',
-    userAccessLevel: [ADMIN],
-  },
-};
-
-const PREMIUM_SUBSCRIPTION = subscriptionStatusOptions.find(
-  (subs) => subs.label.toLowerCase() === 'premium'
-).value;
+import profileTabs from './profileTabs';
 
 export default function Profile() {
   const { userInfo, users, organization } = useProfileContext();
   const [selectedTab, setSelectedTab] = useState(profileTabs.myOrganization.id);
-
-  /**
-   * As a Premium Account Admin I want to see my account usage
-   */
-  if (
-    typeof organization === 'object' &&
-    organization.subscription_status_id === PREMIUM_SUBSCRIPTION
-  ) {
-    profileTabs.accountUsage = {
-      id: 'account-usage',
-      icon: 'running_with_errors',
-      title: 'Usage',
-      userAccessLevel: [ADMIN],
-    };
-  }
 
   /**
    * Figure out why if there are not users redirect to this page
@@ -74,14 +38,15 @@ export default function Profile() {
             selectedTab={selectedTab}
             setSelectedTab={setSelectedTab}
             userAccessLevel={userInfo.access_level_id}
+            accountSubscriptionStatus={
+              typeof organization === 'object' && organization.subscription_status_id
+            }
           />
         </Grid>
         <Grid item xs={12} sm={9}>
           {selectedTab === profileTabs.myOrganization.id && <AccountProfileContainer />}
           {selectedTab === profileTabs.userManagement.id && <UserProfileManagerContainer />}
-          {profileTabs.accountUsage && selectedTab === profileTabs.accountUsage.id && (
-            <AccountUsageContainer />
-          )}
+          {selectedTab === profileTabs.accountUsage.id && <AccountUsageContainer />}
         </Grid>
       </Grid>
     </Container>

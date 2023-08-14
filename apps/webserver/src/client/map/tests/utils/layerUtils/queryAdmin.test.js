@@ -1,9 +1,15 @@
-import QueryTask from 'esri/tasks/QueryTask';
-import { queryAdmin } from '../../../js/utils/LayerUtils';
+/*
+ * These tests and disabled and the imports are commented out until we can update the Jest
+ * configurations to handle ESM imports/exports properly.
+ * See JIRA card: GPV-2059
+ * https://gfw.atlassian.net/browse/GPV-2059
+ */
+// import QueryTask from 'esri/tasks/QueryTask';
+// import { queryAdmin } from '../../../js/utils/LayerUtils';
 
-jest.mock('esri/tasks/QueryTask');
+// jest.mock('esri/tasks/QueryTask');
 
-describe('LayerUtils#queryAdmin', () => {
+describe.skip('LayerUtils#queryAdmin', () => {
   describe('Integration: QueryTask#execute', () => {
     const mockAndDontCareAboutResponse = jest.fn(() => Promise.resolve());
     beforeAll(() => {

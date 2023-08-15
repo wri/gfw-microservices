@@ -145,6 +145,7 @@ nx lint microservices-list-downloader
 │   └── sql/    # shared library used to connect to the database and run the Stored Procedure.
 ├── test_files/
 ├── tools/         # contains scripts that act on your code base.
+│   ├── mapLayersBackup/  # backup of all layer and dataset configs from the map layer API
 ├── .editorconfig  # file to standardize our IDE
 ├── .eslintrc.json # lint configuration file
 ├── jest.config.ts # jest configuration file
@@ -155,6 +156,10 @@ nx lint microservices-list-downloader
 ├── tsconfig.base.json # sets up the global TypeScript settings and creates aliases for each library to aid
 └── workspace.json # has the path of all shared libraries and project
 ```
+
+### Map Layers Backup
+
+Currently the datasets and layers used by GFW Pro are updated via Postman calling APIs on GFW (that may be proxying to resourcewatch APIs). Any mistake in this process has the potential to delete or hurt user experience on production immediately, and there is no good way to recover old settings. As a starting point, we decided to store all the settings in this git repository for backup. See https://gfw.atlassian.net/wiki/spaces/GPS/pages/edit-v2/449708059
 
 ### Commit Lint
 

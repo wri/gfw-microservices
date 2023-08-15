@@ -161,7 +161,6 @@ nx lint microservices-list-downloader
 
 Currently the datasets and layers used by GFW Pro are updated via Postman calling APIs on GFW (that may be proxying to resourcewatch APIs). Any mistake in this process has the potential to delete or hurt user experience on production immediately, and there is no good way to recover old settings. As a starting point, we decided to store all the settings in this git repository for backup. See https://gfw.atlassian.net/wiki/spaces/GPS/pages/edit-v2/449708059
 
-
 ### Commit Lint
 
 Our project forces you to use the following pattern to commit on our project:

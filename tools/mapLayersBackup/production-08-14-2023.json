@@ -1,0 +1,3851 @@
+{
+  "data": [
+    {
+      "id": "10750e07-583b-41bb-a46e-ee2f256db7ff",
+      "type": "layer",
+      "attributes": {
+        "name": "Indonesia Forest Area",
+        "slug": "Indonesia-Legal-Classifications_1",
+        "dataset": "74488909-5d8f-45aa-a790-0ba98bc71139",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/10750e07-583b-41bb-a46e-ee2f256db7ff-1691677010565.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/idn_forest_area",
+            "url": "https://tiles.globalforestwatch.org/idn_forest_area/v201709/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "color": "#c6a541",
+              "categories": [
+                {
+                  "color": "#C489FD",
+                  "name": "Sanctuary reserve/nature conservation area"
+                },
+                {
+                  "color": "#FF00FF",
+                  "name": "Marine protected area"
+                },
+                {
+                  "color": "#00FF7B",
+                  "name": "Protected forest"
+                },
+                {
+                  "color": "#C4FBAF",
+                  "name": "Limited production forest"
+                },
+                {
+                  "color": "#FFFEAA",
+                  "name": "Production forest"
+                },
+                {
+                  "color": "#FEA189",
+                  "name": "Convertible production forest"
+                },
+                {
+                  "color": "#D8D8D8",
+                  "name": "Other utilization area"
+                }
+              ],
+              "name": "Indonesia Forest Area"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/idn_forest_area/v201709/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-12-04T21:06:36.597Z",
+        "updatedAt": "2023-08-10T14:16:50.489Z"
+      }
+    },
+    {
+      "id": "d294993d-d504-4af5-b272-b93d16559c79",
+      "type": "layer",
+      "attributes": {
+        "name": "Panama Comarcas lands",
+        "slug": "Panama-Comarcas-lands",
+        "dataset": "bff5efee-d423-4a52-867c-28f637c2d3f5",
+        "description": "Panama Comarcas lands",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/pan_land_rights",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/south_america/MapServer/9"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Panama Comarcas lands",
+              "color": "#4d658f"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.231Z",
+        "updatedAt": "2017-10-12T11:36:55.807Z"
+      }
+    },
+    {
+      "id": "62bd1e7f-3fd7-4622-808c-733730bc25bd",
+      "type": "layer",
+      "attributes": {
+        "name": "PRODES Deforestation Vizz Brazil",
+        "slug": "PRODES-Deforestation-Vizz-Brazil_1",
+        "dataset": "ae3275ec-6334-46b8-8904-4000cec04f50",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/62bd1e7f-3fd7-4622-808c-733730bc25bd-1651767012784.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/prodes",
+            "url": "https://tiles.globalforestwatch.org/inpe_prodes/v202107/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "PRODES deforestation",
+              "source": "(annual, 30m, Brazilian Amazon, INPE)",
+              "color": "#ff6699"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/inpe_amazonia_prodes/latest/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-01-04T14:55:58.412Z",
+        "updatedAt": "2022-05-05T16:10:12.702Z"
+      }
+    },
+    {
+      "id": "b10fa690-8379-475f-abe4-4d44e4d77b17",
+      "type": "layer",
+      "attributes": {
+        "name": "PRODES Deforestation Vizz",
+        "slug": "PRODES-Deforestation-Vizz_1",
+        "dataset": "ae3275ec-6334-46b8-8904-4000cec04f50",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b10fa690-8379-475f-abe4-4d44e4d77b17-1651767039947.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/prodes",
+            "url": "https://tiles.globalforestwatch.org/inpe_prodes/v202107/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "PRODES deforestation",
+              "source": "(annual, 30m, Brazilian Amazon, INPE)",
+              "color": "#ff6699"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/inpe_amazonia_prodes/latest/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-01-04T14:48:36.208Z",
+        "updatedAt": "2022-05-05T16:10:39.865Z"
+      }
+    },
+    {
+      "id": "f16ba7ea-720e-4bc0-904e-fb340316e3c6",
+      "type": "layer",
+      "attributes": {
+        "name": "RSPO Concessions",
+        "slug": "RSPO-Concessions_1",
+        "dataset": "953b91b1-3fb1-42a1-95ac-0518148f4ad9",
+        "description": "RSPO Concessions",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/rspo_oil_palm_2019",
+            "url": "https://tiles.globalforestwatch.org/rspo_oil_palm/v20200114/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "RSPO oil palm concessions",
+              "color": "#e5ea00"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/rspo_oil_palm/latest/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-11-22T01:41:57.357Z",
+        "updatedAt": "2021-03-29T14:44:30.130Z"
+      }
+    },
+    {
+      "id": "de77d217-0194-46c5-bb0b-a8c7f5a32a00",
+      "type": "layer",
+      "attributes": {
+        "name": "Oil Palm Concessions",
+        "slug": "Oil-Palm-Concessions_1",
+        "dataset": "4d75cc46-455e-45e6-97f0-95d56549c15e",
+        "description": "Oil Palm Concessions",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_oil_palm",
+            "url": "https://tiles.globalforestwatch.org/gfw_oil_palm/v20191031/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Oil palm concessions",
+              "color": "#ee9587"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/gfw_oil_palm/v20191031/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-12-04T20:34:36.270Z",
+        "updatedAt": "2021-12-06T21:29:04.286Z"
+      }
+    },
+    {
+      "id": "a9024ee8-17cf-47ef-b588-448a8bca22c5",
+      "type": "layer",
+      "attributes": {
+        "name": "Global Peatlands",
+        "slug": "Global-Peatlands",
+        "dataset": "40d08bd3-bded-4ab7-b188-fb5ebf8f5e83",
+        "description": "Global Peatlands",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/a9024ee8-17cf-47ef-b588-448a8bca22c5-1651240249788.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/gfw_peatlands",
+            "url": "https://tiles.globalforestwatch.org/gfw_peatlands/v20200807/is/{z}/{x}/{y}.png"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Global Peatlands",
+              "color": "#253494"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-01-02T17:54:17.625Z",
+        "updatedAt": "2022-04-29T13:50:49.711Z"
+      }
+    },
+    {
+      "id": "17ae2cc3-1897-4e60-9bdc-2659edbc0e31",
+      "type": "layer",
+      "attributes": {
+        "name": "Soy on tree cover loss",
+        "slug": "Soy-on-tree-cover-loss_1",
+        "dataset": "ca244e10-0b1b-42dc-93d7-a8853493a550",
+        "description": "Soy on tree cover loss",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "interpolation": "RSP_NearestNeighbor",
+            "pixelType": "U8",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/agrosatelite_cerrado_soy_layer_1314",
+            "renderingRule": {
+              "rasterFunction": "{}"
+            },
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/image_services/soy_vizz_service_2019/ImageServer",
+            "rasterFunctions": ["soy31"],
+            "useCors": true
+          },
+          "type": "featureLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#cc9916",
+              "categories": [
+                {
+                  "color": "#b3cdff",
+                  "name": "2001"
+                },
+                {
+                  "color": "#5f9dc0",
+                  "name": "2002"
+                },
+                {
+                  "color": "#aed188",
+                  "name": "2003"
+                },
+                {
+                  "color": "#2e6e00",
+                  "name": "2004"
+                },
+                {
+                  "color": "#f9cebf",
+                  "name": "2005"
+                },
+                {
+                  "color": "#ee0016",
+                  "name": "2006"
+                },
+                {
+                  "color": "#f6d256",
+                  "name": "2007"
+                },
+                {
+                  "color": "#cea300",
+                  "name": "2008"
+                },
+                {
+                  "color": "#aa9cc0",
+                  "name": "2009"
+                },
+                {
+                  "color": "#72278f",
+                  "name": "2010"
+                },
+                {
+                  "color": "#feffbb",
+                  "name": "2011"
+                },
+                {
+                  "color": "#6c3905",
+                  "name": "2012"
+                },
+                {
+                  "color": "#9f0090",
+                  "name": "2013"
+                },
+                {
+                  "color": "#f788cf",
+                  "name": "2014"
+                },
+                {
+                  "color": "#257280",
+                  "name": "2015"
+                },
+                {
+                  "color": "#4fe5ff",
+                  "name": "2016"
+                },
+                {
+                  "color": "#ed0c84",
+                  "name": "2017"
+                },
+                {
+                  "color": "#4bff14",
+                  "name": "2018"
+                },
+                {
+                  "color": "#ff14ff",
+                  "name": "2019"
+                }
+              ],
+              "name": "Soy on tree cover loss"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-01-29T20:31:07.991Z",
+        "updatedAt": "2021-03-29T14:51:06.123Z"
+      }
+    },
+    {
+      "id": "13697853-93e1-41a9-bd51-a585337e25d1",
+      "type": "layer",
+      "attributes": {
+        "name": "Indonesia Forest Moratorium",
+        "slug": "Indonesia-Forest-Moratorium",
+        "dataset": "d2119876-76b8-421b-adcf-e069bab83435",
+        "description": "Primary Forest",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "gee",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/idn_forest_moratorium",
+            "url": "https://tiles.globalforestwatch.org/idn_forest_moratorium/latest/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "Indonesia Forest Moratorium",
+              "source": "",
+              "categories": [
+                {
+                  "name": "Peatland",
+                  "color": "#aaa35d"
+                },
+                {
+                  "name": "Forest Area",
+                  "color": "#aa7c5d"
+                },
+                {
+                  "name": "Primary Forest",
+                  "color": "#aa5d65"
+                }
+              ],
+              "color": "#658434"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-01-04T14:18:26.692Z",
+        "updatedAt": "2021-03-29T14:54:53.492Z"
+      }
+    },
+    {
+      "id": "de6326e0-7006-44cf-a768-8bb4709af364",
+      "type": "layer",
+      "attributes": {
+        "name": "WDPA Esri",
+        "slug": "WDPA-Esri_1",
+        "dataset": "08f7c30b-078c-45c6-9878-32cd587cdbb9",
+        "description": "WDPA Esri",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/de6326e0-7006-44cf-a768-8bb4709af364-1651497495576.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/wdpa_protected_areas",
+            "url": "https://tiles.globalforestwatch.org/wdpa_protected_areas/v202106/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Protected Areas",
+              "categories": [
+                {
+                  "name": "Ia - Strict Nature Reserve",
+                  "color": "#5ca2d1"
+                },
+                {
+                  "name": "Ib - Wilderness Area",
+                  "color": "#3e7bb6"
+                },
+                {
+                  "name": "II - National Park",
+                  "color": "#0f3b82"
+                },
+                {
+                  "name": "III - National Monument or Feature",
+                  "color": "#c9ddff"
+                },
+                {
+                  "name": "IV - Habitat and Species Management Area",
+                  "color": "#b9b2a1"
+                },
+                {
+                  "name": "V - Protected Landscape or Seascape",
+                  "color": "#ae847e"
+                },
+                {
+                  "name": "VI - Protected Area with Sustainable Use of Natural Resources",
+                  "color": "#daa89b"
+                },
+                {
+                  "name": "Not Applicable",
+                  "color": "#eed54c"
+                },
+                {
+                  "name": "Not Assigned",
+                  "color": "#e7ab36"
+                },
+                {
+                  "name": "Not Reported",
+                  "color": "#fa894b"
+                }
+              ],
+              "color": "#6087af"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/wdpa_protected_areas/v202106/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-11-25T20:47:08.196Z",
+        "updatedAt": "2022-05-02T13:18:15.493Z"
+      }
+    },
+    {
+      "id": "df1e5f29-9094-46aa-9eed-71a4b9b95023",
+      "type": "layer",
+      "attributes": {
+        "name": "Aboveground live woody biomass density",
+        "slug": "Aboveground-live-woody-biomass-density",
+        "dataset": "39b1c001-08d5-40bf-8e7b-a6def2484eda",
+        "description": "Aboveground live woody biomass density",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/aboveground_biomass",
+            "url": "http://storage.googleapis.com/earthenginepartners-wri/whrc-hansen-carbon-{thresh}-{z}/{x}/{y}.png",
+            "useCors": true,
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/views/layers/PantropicalLayer.js"
+          },
+          "type": "tileLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#d4c4e9",
+              "source": "(2000)",
+              "name": "Aboveground live woody biomass density",
+              "notes": [
+                "Displaying above ground biomass with {thresh} canopy density",
+                "For more information about this layer {hyperlink}"
+              ]
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-12-06T22:20:34.353Z",
+        "updatedAt": "2021-12-06T22:20:34.354Z"
+      }
+    },
+    {
+      "id": "8b536a28-87bd-4d25-8782-2a43a4f8866b",
+      "type": "layer",
+      "attributes": {
+        "name": "Clark Labs Aquaculture Land Change",
+        "slug": "Clark-Labs-Aquaculture-Land-Change",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Clark Labs Aquaculture Land Change (1999-2018)",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "userId": "62601518cdc846001a7756b5",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/8b536a28-87bd-4d25-8782-2a43a4f8866b-1659054062609.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/clark_labs_tropical_pond_aquaculture_change_1999_2018/v202203/default/{z}/{x}/{y}.png",
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/clark_labs_tropical_pond_aquaculture"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Mangrove Persistence",
+                  "color": "#008040"
+                },
+                {
+                  "name": "Mangrove → Pond",
+                  "color": "#ff0000"
+                },
+                {
+                  "name": "Mangrove → Other",
+                  "color": "#ffff00"
+                },
+                {
+                  "name": "Mangrove → Water",
+                  "color": "#8000ff"
+                },
+                {
+                  "name": "Pond Persistence",
+                  "color": "#8080ff"
+                },
+                {
+                  "name": "Pond → Mangrove",
+                  "color": "#00ff00"
+                },
+                {
+                  "name": "Pond → Other",
+                  "color": "#c0c0c0"
+                },
+                {
+                  "name": "Pond → Water",
+                  "color": "#16002d"
+                },
+                {
+                  "name": "Other → Pond",
+                  "color": "#ff80ff"
+                },
+                {
+                  "name": "Wetland Pond",
+                  "color": "#b3ffb3"
+                },
+                {
+                  "name": "Wetland → Pond",
+                  "color": "#ff8080"
+                },
+                {
+                  "name": "Wetland → Other",
+                  "color": "#ffffbf"
+                },
+                {
+                  "name": "Water Persistence",
+                  "color": "#000080"
+                },
+                {
+                  "name": "Water → Mangrove",
+                  "color": "#808000"
+                },
+                {
+                  "name": "Water → Pond",
+                  "color": "#00ffff"
+                }
+              ],
+              "name": "Tropical Pond Aquaculture and Coastal Wetlands",
+              "source": "(1999, 2014, 2018, 15m, selected regions)"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-06-23T15:30:55.686Z",
+        "updatedAt": "2022-07-29T00:21:02.527Z"
+      }
+    },
+    {
+      "id": "70d5d6b9-5475-4981-a451-5f7ab02b198d",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree biomass loss",
+        "slug": "Tree-biomass-loss",
+        "dataset": "ffcb33cf-ccc6-4eff-9aef-4b00de44abaf",
+        "description": "Tree biomass loss",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "rest",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_biomass_loss",
+            "css-url": "https://github.com/Vizzuality/gfw-climate/blob/develop/app/assets/javascripts/map/views/layers/BiomassLossLayer.js",
+            "url": "http://storage.googleapis.com/earthenginepartners-wri/whrc-hansen-carbon-{thresh}-{z}/{x}/{y}.png",
+            "useCors": true
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#fcf9c2",
+              "name": "Tree biomass loss",
+              "source": "(annual, 30m, pantropical, WHRC-Baccini/Hansen/UMD/Google/USGS/NASA)"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-12-06T18:54:20.431Z",
+        "updatedAt": "2021-12-06T18:54:20.432Z"
+      }
+    },
+    {
+      "id": "e21d81eb-3d82-4808-95f9-75851a316fe2",
+      "type": "layer",
+      "attributes": {
+        "name": "Cameroon agro-industrial zones",
+        "slug": "Cameroon-agro-industrial-zones",
+        "dataset": "c3c3e9f8-cc8a-496d-8639-08b58bdae357",
+        "description": "Cameroon agro-industrial zones",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/cmr_oil_palm",
+            "url": "https://tiles.globalforestwatch.org/wri_cmr_agro_industrial_zones/v2019/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Cameroon agro-industrial zones",
+              "color": "#ee9587"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-12-06T22:08:39.126Z",
+        "updatedAt": "2021-12-14T17:53:22.056Z"
+      }
+    },
+    {
+      "id": "410d7e75-e22d-44a8-a0a3-0bdaf3d0fca2",
+      "type": "layer",
+      "attributes": {
+        "name": "Gran Chaco deforestation Paraguay",
+        "slug": "Gran-Chaco-deforestation-Paraguay",
+        "dataset": "e4e7e02d-0b18-489a-8e29-170e8d60d8ac",
+        "description": "Gran Chaco deforestation Paraguay",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "metadata": "https://gis-gfw.wri.org/metadata/gran_chaco_deforestation",
+            "coverage-options": {
+              "color": "#f69",
+              "opacity": 0.3
+            },
+            "useCors": true,
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/cached/gran_chaco_deforestation/MapServer/0",
+            "options": {
+              "color": "#f265d1",
+              "opacity": 1
+            },
+            "where": "pais = 'Paraguay'"
+          },
+          "type": "featureLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "Gran Chaco Deforestation",
+              "source": "(monthly, 30m, Gran Chaco, Guyra)",
+              "categories": [
+                {
+                  "name": "Recent alerts",
+                  "color": "#f6d200"
+                }
+              ],
+              "color": "#f265d1"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.232Z",
+        "updatedAt": "2017-11-13T15:44:40.770Z"
+      }
+    },
+    {
+      "id": "ff3afd7d-2563-471e-953b-fc5f3e322c3f",
+      "type": "layer",
+      "attributes": {
+        "name": "Universal Mill List",
+        "slug": "Universal-Mill-List_1",
+        "dataset": "38af49b0-fb1b-410f-b49b-a8d0ed0dca8c",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/uml",
+            "url": "https://tiles.globalforestwatch.org/gfw_universal_mill_list/latest/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "color": "#e5ea00",
+              "name": "Universal Mill List"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-01-06T15:11:38.457Z",
+        "updatedAt": "2021-03-29T14:58:45.072Z"
+      }
+    },
+    {
+      "id": "675b5b48-e129-4f2c-ac42-127c35b73654",
+      "type": "layer",
+      "attributes": {
+        "name": "radd-alerts_1",
+        "slug": "radd-alerts_1",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "RADD alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "color": [220, 102, 153]
+            },
+            "coverage-options": {
+              "opacity": 0.3,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/gfw_radd_alerts/latest/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/wur_radd_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Recent alerts",
+                  "color": "#e4c600"
+                },
+                {
+                  "name": "Show only high confidence alerts",
+                  "color": "#d7668f"
+                },
+                {
+                  "name": "Geographic coverage",
+                  "color": "#dc6699"
+                }
+              ],
+              "name": "RADD alerts",
+              "source": "(every 6-12 days, 10m, select countries, WUR)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-04-12T14:36:04.307Z",
+        "updatedAt": "2021-04-12T14:36:04.307Z"
+      }
+    },
+    {
+      "id": "3d096b4b-de3d-4630-a41b-684b10dc02f3",
+      "type": "layer",
+      "attributes": {
+        "name": "VIIRS Global Fires-OLD",
+        "slug": "VIIRS-Global-Fires",
+        "dataset": "cc074b15-d311-43cf-8dba-beec571d2406",
+        "description": "VIIRS Global Fires",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/Fires/FIRMS_Global_VIIRS_7d/MapServer/21",
+            "metadata": "https://gis-gfw.wri.org/metadata/viirs_fires",
+            "useCors": true
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "notes": ["For more information about this layer {hyperlink}"],
+              "source": "(daily, 375m, global, NASA)",
+              "color": "#a5140c",
+              "name": "VIIRS active fires"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-11-16T14:52:10.216Z",
+        "updatedAt": "2020-11-16T14:52:10.218Z"
+      }
+    },
+    {
+      "id": "e9714be5-f044-42eb-8605-953c84b8d2b2",
+      "type": "layer",
+      "attributes": {
+        "name": "RADD alerts",
+        "slug": "RADD-alerts_1",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "RADD alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "color": [220, 102, 153]
+            },
+            "coverage-options": {
+              "opacity": 0.3,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/wur_radd_alerts/latest/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/wur_radd_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Recent alerts",
+                  "color": "#e4c600"
+                },
+                {
+                  "name": "Show only high confidence alerts",
+                  "color": "#d7668f"
+                },
+                {
+                  "name": "Geographic coverage",
+                  "color": "#dc6699"
+                }
+              ],
+              "name": "RADD alerts",
+              "source": "(every 6-12 days, 10m, select countries, WUR)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-04-12T16:49:15.551Z",
+        "updatedAt": "2022-01-11T19:05:16.369Z"
+      }
+    },
+    {
+      "id": "ccb9ff19-058c-479f-80c6-54a6bdd40cc4",
+      "type": "layer",
+      "attributes": {
+        "name": "Indonesia RSPO palm oil mills",
+        "slug": "Indonesia-RSPO-palm-oil-mills",
+        "dataset": "0b6d97f6-071a-41a3-a03b-01af25930048",
+        "description": "Indonesia RSPO palm oil mills",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "where": "certificat = 'RSPO Certified' AND iso = 'IDN'",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/rspo_mills",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/27"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "Indonesia RSPO palm oil mills",
+              "color": "#820091"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.234Z",
+        "updatedAt": "2017-11-03T15:42:33.672Z"
+      }
+    },
+    {
+      "id": "711cee4f-9d8c-44cf-a043-918cee8dcd0c",
+      "type": "layer",
+      "attributes": {
+        "name": "Brazil Biomes",
+        "slug": "Brazil-Biomes",
+        "dataset": "2024cbf5-59f6-4671-b5f4-8c73b6a2abb9",
+        "description": "Brazil Biomes",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/bra_biomes",
+            "url": "https://tiles.globalforestwatch.org/ibge_bra_biomes/v2004/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "categories": [
+                {
+                  "color": "#136400",
+                  "name": "Amazônia"
+                },
+                {
+                  "color": "#49CC4C",
+                  "name": "Caatinga"
+                },
+                {
+                  "color": "#9ECC49",
+                  "name": "Cerrado"
+                },
+                {
+                  "color": "#5CA2D1",
+                  "name": "Mata Atlântica"
+                },
+                {
+                  "color": "#63802E",
+                  "name": "Pampa"
+                },
+                {
+                  "color": "#0F3B82",
+                  "name": "Pantanal"
+                }
+              ],
+              "color": "#bacd3c",
+              "name": "Brazil biomes"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-11-16T11:40:10.925Z",
+        "updatedAt": "2021-12-06T18:00:52.730Z"
+      }
+    },
+    {
+      "id": "7b695e32-fab5-4bd0-b613-5dd0d994d7f8",
+      "type": "layer",
+      "attributes": {
+        "name": "Sarawak oil palm concessions",
+        "slug": "Sarawak-oil-palm-concessions",
+        "dataset": "07eb63e5-a3bb-4368-92e0-89cf77b19a2e",
+        "description": "Sarawak oil palm concessions",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/mys_oil_palm",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/asia/MapServer/7"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Sarawak oil palm concessions",
+              "color": "#ee9587"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.234Z",
+        "updatedAt": "2017-10-12T11:36:57.080Z"
+      }
+    },
+    {
+      "id": "56918142-afad-4f5b-a269-70cc87bfbd7f",
+      "type": "layer",
+      "attributes": {
+        "name": "Gran Chaco deforestation Bolivia",
+        "slug": "Gran-Chaco-deforestation-Bolivia",
+        "dataset": "7ca7ab25-9b40-46c5-a515-769c6dc56776",
+        "description": "Gran Chaco deforestation Bolivia",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "metadata": "https://gis-gfw.wri.org/metadata/gran_chaco_deforestation",
+            "coverage-options": {
+              "color": "#f69",
+              "opacity": 0.3
+            },
+            "useCors": true,
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/cached/gran_chaco_deforestation/MapServer/0",
+            "options": {
+              "color": "#f265d1",
+              "opacity": 1
+            },
+            "where": "pais = 'Bolivia'"
+          },
+          "type": "featureLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "Gran Chaco Deforestation",
+              "source": "(monthly, 30m, Gran Chaco, Guyra)",
+              "categories": [
+                {
+                  "name": "Recent alerts",
+                  "color": "#f6d200"
+                }
+              ],
+              "color": "#f265d1"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.234Z",
+        "updatedAt": "2017-11-13T15:44:42.098Z"
+      }
+    },
+    {
+      "id": "dc6f6dd2-0718-4e41-81d2-109866bb9edd",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree cover 2000",
+        "slug": "tree-cover",
+        "dataset": "044f4af8-be72-4999-b7dd-13434fc4a394",
+        "description": "Tree cover",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "url": "https://earthengine.google.org/static/hansen_2014/gfw_loss_tree_year_{thresh}_2014/{z}/{x}/{y}.png",
+            "format": "image/png",
+            "useCors": true,
+            "maxzoom": 12,
+            "options": {
+              "color": "#97BD3D",
+              "dataMaxZoom": 12,
+              "threshold": 30
+            },
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_cover",
+            "minzoom": 3
+          },
+          "params_config": [],
+          "service": "leaflet",
+          "sql_config": [],
+          "type": "tileLayer",
+          "url": "https://earthengine.google.org/static/hansen_2014/gfw_loss_tree_year_{thresh}_2014/{z}/{x}/{y}.png"
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "notes": ["Displaying tree cover with {thresh} canopy density."],
+              "color": "#97BD3D",
+              "name": "Tree cover",
+              "source": "(2000, Hansen/UMD/Google/USGS/NASA)"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2017-09-14T18:45:21.473Z",
+        "updatedAt": "2018-07-19T08:33:23.226Z"
+      }
+    },
+    {
+      "id": "3b252b4b-0dc4-49eb-8ddb-03a9bdf60746",
+      "type": "layer",
+      "attributes": {
+        "name": "Terra-i alerts",
+        "slug": "terra-i-alerts",
+        "dataset": "bb80312e-b514-48ad-9252-336408603591",
+        "description": "Terra-i alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/terra_i_alerts",
+            "useCors": true,
+            "options": {
+              "color": "#d7668f"
+            },
+            "url": "https://wri-tiles.s3.amazonaws.com/terrai_prod/tiles/{z}/{x}/{y}.png"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "Terra-i alerts",
+              "categories": [
+                {
+                  "name": "Recent alerts",
+                  "color": "#F6D200"
+                }
+              ],
+              "source": "(monthly, 250m, tropics, CIAT)",
+              "color": "#d7668f"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {
+          "default": true,
+          "active": true,
+          "global": true
+        },
+        "staticImageConfig": {},
+        "createdAt": "2017-08-30T22:27:37.409Z",
+        "updatedAt": "2020-01-02T17:37:26.959Z"
+      }
+    },
+    {
+      "id": "0910569c-2c4f-42cd-bef3-7e212b1f1061",
+      "type": "layer",
+      "attributes": {
+        "name": "Land Rights (Esri)",
+        "slug": "Land-Rights-Esri",
+        "dataset": "503f3a73-ceb1-4b5c-b64b-bb3c72c81da1",
+        "description": "Land Rights (Esri)",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "esrivectorservice",
+        "type": "layer",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/landmark_icls_2020",
+            "url": "https://tiles.globalforestwatch.org/landmark_land_rights/v20191111/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Indigenous and Community Lands",
+              "source": "LandMark",
+              "categories": [
+                {
+                  "name": "Indigenous Lands - Acknowledged by Government",
+                  "color": "#bf6938"
+                },
+                {
+                  "name": "Indigenous Lands - Not acknowledged by Government",
+                  "color": "#f3aa72"
+                },
+                {
+                  "name": "Community Lands - Acknowledged by Government",
+                  "color": "#2c5682"
+                },
+                {
+                  "name": "Community Lands - Not acknowledged by Government",
+                  "color": "#407ebe"
+                },
+                {
+                  "name": "Indicative Areas of Indigenous and Community Land Rights",
+                  "color": "#9c9c9c"
+                }
+              ]
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "http://tile.globalforestwatch.org/nasa_viirs_fire_alerts/latest/features?lat={lat}&lng={lng}&z={z}"
+          },
+          "output": [
+            {
+              "column": "name",
+              "format": null,
+              "prefix": "",
+              "property": "Name",
+              "suffix": "",
+              "type": "string"
+            }
+          ]
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-05-19T18:58:43.029Z",
+        "updatedAt": "2020-10-01T16:51:59.065Z"
+      }
+    },
+    {
+      "id": "982f062a-eb2a-4277-9ba7-83198a1e7a04",
+      "type": "layer",
+      "attributes": {
+        "name": "RSPO Concessions (Papua New Guinea)",
+        "slug": "RSPO-Concessions-Papua-New-Guinea",
+        "dataset": "0c2082c3-ae06-490f-ad1a-64b937991be8",
+        "description": "RSPO Concessions (Papua New Guinea)",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "where": "country = 'Papua New Guinea'",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/rspo_oil_palm",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/protected_services/MapServer/0"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Papua New Guinea RSPO oil palm concessions",
+              "color": "#e5ea00"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.235Z",
+        "updatedAt": "2017-10-20T14:18:54.913Z"
+      }
+    },
+    {
+      "id": "de73fd69-d163-46e7-bbea-12fdb1cb1bee",
+      "type": "layer",
+      "attributes": {
+        "name": "Congo Primary Forests",
+        "slug": "Congo-Primary-Forests",
+        "dataset": "42252c56-7a04-43f1-84b7-1912fd32ccbd",
+        "description": "Congo Primary Forests",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/africa/MapServer/23",
+            "options": {
+              "color": "#c1d75c"
+            },
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/cod_primary_forest",
+            "useCors": true
+          },
+          "type": "featureLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#c1d75c",
+              "source": "(2000)",
+              "name": "Democratic Republic of the Congo Primary Forests"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.235Z",
+        "updatedAt": "2017-10-20T14:42:05.859Z"
+      }
+    },
+    {
+      "id": "a8cc4240-9315-4419-b428-14533f2fc126",
+      "type": "layer",
+      "attributes": {
+        "name": "Soy on tree cover loss 2013",
+        "slug": "Soy-on-tree-cover-loss",
+        "dataset": "ca244e10-0b1b-42dc-93d7-a8853493a550",
+        "description": "Soy on tree cover loss",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "interpolation": "RSP_NearestNeighbor",
+            "pixelType": "U8",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/agrosatelite_cerrado_soy_layer_1314",
+            "renderingRule": {
+              "rasterFunction": "{}"
+            },
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/image_services/soy_vizz_service/ImageServer",
+            "rasterFunctions": [
+              "None",
+              "soy11",
+              "soy16",
+              "soy21",
+              "soy26",
+              "soy31",
+              "soy51",
+              "soy76"
+            ],
+            "useCors": true
+          },
+          "type": "featureLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#cc9916",
+              "categories": [
+                {
+                  "color": "#b3cdff",
+                  "name": "2001"
+                },
+                {
+                  "color": "#5f9dc0",
+                  "name": "2002"
+                },
+                {
+                  "color": "#aed188",
+                  "name": "2003"
+                },
+                {
+                  "color": "#2e6e00",
+                  "name": "2004"
+                },
+                {
+                  "color": "#f9cebf",
+                  "name": "2005"
+                },
+                {
+                  "color": "#ee0016",
+                  "name": "2006"
+                },
+                {
+                  "color": "#f6d256",
+                  "name": "2007"
+                },
+                {
+                  "color": "#cea300",
+                  "name": "2008"
+                },
+                {
+                  "color": "#aa9cc0",
+                  "name": "2009"
+                },
+                {
+                  "color": "#72278f",
+                  "name": "2010"
+                },
+                {
+                  "color": "#feffbb",
+                  "name": "2011"
+                },
+                {
+                  "color": "#6c3905",
+                  "name": "2012"
+                },
+                {
+                  "color": "#9f0090",
+                  "name": "2013"
+                }
+              ],
+              "name": "Soy on tree cover loss"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-01-29T20:37:30.628Z",
+        "updatedAt": "2021-01-29T20:37:30.630Z"
+      }
+    },
+    {
+      "id": "43751eb3-3934-4e16-86bb-43bb37002489",
+      "type": "layer",
+      "attributes": {
+        "name": "Soy Planted Area",
+        "slug": "Soy-Planted-Area_1",
+        "dataset": "ca244e10-0b1b-42dc-93d7-a8853493a550",
+        "description": "Soy Planted Area",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/43751eb3-3934-4e16-86bb-43bb37002489-1655214566438.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "color": [220, 102, 153]
+            },
+            "coverage-options": {
+              "opacity": 1,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/umd_soy_planted_area",
+            "url": "https://tiles.globalforestwatch.org/umd_soy_planted_area/v2/{year}/{z}/{x}/{y}.png"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Soy Planted Area",
+                  "color": "#98BD46"
+                }
+              ],
+              "name": "Soy Planted Area",
+              "source": "(2000-2019, S. America, Song et al. 2021)",
+              "color": "#98BD46"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-04-16T10:59:13.147Z",
+        "updatedAt": "2022-06-14T13:49:26.373Z"
+      }
+    },
+    {
+      "id": "b6da7a41-d908-4f07-b52a-5e4c459af2e1",
+      "type": "layer",
+      "attributes": {
+        "name": "Costa Rica indigenous territories",
+        "slug": "Costa-Rica-indigenous-territories",
+        "dataset": "306001c5-f1f0-403f-b3ef-7bffda78f7fc",
+        "description": "Costa Rica indigenous territories",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/cri_land_rights",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/south_america/MapServer/5"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Costa Rica indigenous territories",
+              "color": "#4d658"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.235Z",
+        "updatedAt": "2017-10-12T11:36:56.014Z"
+      }
+    },
+    {
+      "id": "85a11c5d-a8df-4f7b-9224-311891dfe073",
+      "type": "layer",
+      "attributes": {
+        "name": "RSPO Concessions (Malaysia)",
+        "slug": "RSPO-Concessions-Malaysia",
+        "dataset": "54da2e4c-8fb4-486e-b25e-062165bb12a6",
+        "description": "RSPO Concessions (Malaysia)",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "where": "country = 'Malaysia'",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/rspo_oil_palm",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/protected_services/MapServer/0"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Malaysia RSPO oil palm concessions",
+              "color": "#e5ea00"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.235Z",
+        "updatedAt": "2017-10-20T14:18:55.130Z"
+      }
+    },
+    {
+      "id": "7df55603-4ed6-46cf-82d1-30fc42f67a6b",
+      "type": "layer",
+      "attributes": {
+        "name": "FORMA alerts",
+        "slug": "forma-alerts",
+        "dataset": "129f6240-898a-4d26-9a42-fde65d3cbd55",
+        "description": "FORMA alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "gee",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "url": "https://api-dot-forma-250.appspot.com/tiles/latest",
+            "options": {
+              "color": "#f69",
+              "opacity": 0.8
+            },
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/forma_250_alerts"
+          },
+          "type": "tileLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "FORMA alerts",
+              "color": "#f69",
+              "source": "(daily, 250m, tropics, WRI/Google)"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2017-09-14T18:45:20.323Z",
+        "updatedAt": "2017-10-20T14:32:34.201Z"
+      }
+    },
+    {
+      "id": "ed836651-f1a2-4ebc-bdb4-d341b68bd544",
+      "type": "layer",
+      "attributes": {
+        "name": "Land cover",
+        "slug": "land-cover",
+        "dataset": "75b2f1a2-b2e5-40bb-97f8-ec414c58613e",
+        "description": "Land cover",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "gee",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/global_landcover_2015",
+            "useCors": true,
+            "url": "https://s3.amazonaws.com/wri-tiles/global-landcover-2015/{z}/{x}/{y}.png"
+          },
+          "type": "tileLayer"
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Land Cover",
+              "categories": [
+                {
+                  "name": "Agriculture",
+                  "color": "#d2a964"
+                },
+                {
+                  "name": "Forest",
+                  "color": "#377764"
+                },
+                {
+                  "name": "Grassland",
+                  "color": "#ccdb98"
+                },
+                {
+                  "name": "Shrubland",
+                  "color": "#596b2d"
+                },
+                {
+                  "name": "Sparse vegetation",
+                  "color": "#d6ca98"
+                },
+                {
+                  "name": "Wetland",
+                  "color": "#2e89d5"
+                },
+                {
+                  "name": "Settlement",
+                  "color": "#e94633"
+                },
+                {
+                  "name": "Bare",
+                  "color": "#f6f0ea"
+                },
+                {
+                  "name": "Water",
+                  "color": "#a3dcfc"
+                },
+                {
+                  "name": "Permanent snow and ice",
+                  "color": "#ffffff"
+                }
+              ],
+              "source": "(ESA/UCLouvain, 2015)",
+              "color": "#ceaf66"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2017-09-14T18:45:21.130Z",
+        "updatedAt": "2019-02-25T15:55:07.752Z"
+      }
+    },
+    {
+      "id": "965487d2-5ba8-4438-a2dd-d8d3cccfc0a6",
+      "type": "layer",
+      "attributes": {
+        "name": "Soy in Cerrado Biome",
+        "slug": "Soy-in-Cerrado-Biome",
+        "dataset": "f9663317-ebf1-4363-b61d-27a79ae07263",
+        "description": "Soy in Cerrado Biome",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/agrosatelite_cerrado_soy_layer_1314",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/land_use/MapServer/4"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "notes": ["Displaying with {thresh} canopy density"],
+              "source": "(Brazil Cerrado, 2013/2014 crop, 30m, Agrosatélite)",
+              "color": "#ca9024",
+              "name": "Soy in Cerrado Biome"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.236Z",
+        "updatedAt": "2017-11-03T17:12:42.185Z"
+      }
+    },
+    {
+      "id": "77ec24d9-a4d3-4583-bea2-769e45b1c9fb",
+      "type": "layer",
+      "attributes": {
+        "name": "Colombia Land Rights",
+        "slug": "Colombia-Land-Rights",
+        "dataset": "ad734b66-f8a3-42ac-8b6b-4b284801b1f4",
+        "description": "Colombia Land Rights",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/col_land_rights",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/south_america/MapServer/19"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#b2adca",
+              "name": "Colombia land rights"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.236Z",
+        "updatedAt": "2018-05-19T18:41:46.405Z"
+      }
+    },
+    {
+      "id": "24e348df-bdf1-41d6-b6ab-611f31dd77f3",
+      "type": "layer",
+      "attributes": {
+        "name": "Australia Aboriginal Freehold Lands",
+        "slug": "Australia-Aboriginal-Freehold-Lands",
+        "dataset": "5a1a8bab-bc15-436d-9a07-92eadd39a232",
+        "description": "Australia Aboriginal Freehold Lands",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/aus_land_rights",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/australia/MapServer/1"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Australia aboriginal freehold lands",
+              "color": "#4d658f"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.236Z",
+        "updatedAt": "2017-10-12T11:36:47.461Z"
+      }
+    },
+    {
+      "id": "ada6c64c-1da7-44ac-9899-09a62c226afe",
+      "type": "layer",
+      "attributes": {
+        "name": "Mexico Land Rights",
+        "slug": "Mexico-Land-Rights",
+        "dataset": "4d2f936f-ea43-45ce-b6ab-ba021c502e36",
+        "description": "Mexico Land Rights",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/mex_land_rights",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/south_america/MapServer/10"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "color": "#a7aeba",
+                  "name": "Ejido"
+                },
+                {
+                  "color": "#87a5bc",
+                  "name": "Comunidad"
+                }
+              ],
+              "color": "#a7aeba",
+              "name": "Mexico land rights"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.236Z",
+        "updatedAt": "2017-10-13T12:07:04.638Z"
+      }
+    },
+    {
+      "id": "29bd0692-66ff-4bed-ad37-64f96b3f0f41",
+      "type": "layer",
+      "attributes": {
+        "name": "Sarawak Land rights",
+        "slug": "Sarawak-Land-rights",
+        "dataset": "d83a0308-464c-4f65-a870-ca7dd4007b31",
+        "description": "Sarawak Land rights",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/mys_land_rights",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/asia/MapServer/12"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Sarawak land rights",
+              "color": "#b2adca"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.236Z",
+        "updatedAt": "2017-10-12T11:36:53.349Z"
+      }
+    },
+    {
+      "id": "248799ee-81d2-470f-8e27-3c807ea00e97",
+      "type": "layer",
+      "attributes": {
+        "name": "RSPO Concessions (Indonesia)",
+        "slug": "RSPO-Concessions-Indonesia",
+        "dataset": "e4373c0a-5600-43f2-990f-58bce4106a85",
+        "description": "RSPO Concessions (Indonesia)",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "where": "country = 'Indonesia'",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/rspo_oil_palm",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/protected_services/MapServer/0"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Indonesia RSPO oil palm concessions",
+              "color": "#e5ea00"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.236Z",
+        "updatedAt": "2017-10-20T14:18:55.755Z"
+      }
+    },
+    {
+      "id": "7e133f7a-2e2e-49c2-b736-14556eb5ffab",
+      "type": "layer",
+      "attributes": {
+        "name": "Intact Forest Landscapes",
+        "slug": "Intact-Forest-Landscapes",
+        "dataset": "79e15345-5c83-4d41-94b4-03f2b2018b77",
+        "description": "Intact Forest Landscapes",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/intact_forest_landscapes_change",
+            "useCors": true,
+            "url": "https://tiles.globalforestwatch.org/ifl_intact_forest_landscapes/v2018/default/root.json"
+          },
+          "type": "Vector.Layer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "Intact Forest Landscapes",
+              "categories": [
+                {
+                  "name": "Intact Forest Landscapes",
+                  "color": "#5c8c50"
+                },
+                {
+                  "name": "Reduction in extent 2000-2013",
+                  "color": "#969905"
+                },
+                {
+                  "name": "Reduction in extent 2013-2016",
+                  "color": "#635731"
+                }
+              ],
+              "source": "(2000/2016)",
+              "color": "#136400"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-11-16T11:47:37.066Z",
+        "updatedAt": "2021-11-16T11:58:01.740Z"
+      }
+    },
+    {
+      "id": "c3bf6eb4-4d36-441a-8935-67a15d618397",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree cover loss",
+        "slug": "tree-cover-loss",
+        "dataset": "3f3da1e2-0891-4fed-9460-a53c01ba211a",
+        "description": "Tree cover loss 2016",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "gee",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "dataMaxZoom": 12,
+              "color": [220, 108, 154],
+              "threshold": 30
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/3be365eadf2ce0c58a8bb65b5a187abe27482a6e/app/assets/javascripts/map/views/layers/LossLayer.js",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_cover_loss",
+            "url": "https://storage.googleapis.com/wri-public/Hansen_16/tiles/hansen_world/v1/tc{thresh}/{z}/{x}/{y}.png"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "notes": [
+                "Displaying loss with {thresh} canopy density.",
+                "Tree cover loss is not always deforestation."
+              ],
+              "source": "(annual, 30m, global, Hansen/UMD/Google/USGS/NASA)",
+              "name": "Tree cover loss",
+              "color": "#dc6c9a"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2017-09-14T18:45:21.831Z",
+        "updatedAt": "2018-09-12T12:45:24.971Z"
+      }
+    },
+    {
+      "id": "8609db8d-b91d-4a9e-9843-ff9f6ab3e9fb",
+      "type": "layer",
+      "attributes": {
+        "name": "Canada Aboriginal Lands",
+        "slug": "Canada-Aboriginal-Lands",
+        "dataset": "bffce409-f344-4060-b503-2711009ac449",
+        "description": "Canada Aboriginal Lands",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/can_land_rights",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/north_america/MapServer/2"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Canada aboriginal lands",
+              "color": "#4d658f"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.236Z",
+        "updatedAt": "2017-10-12T11:36:47.972Z"
+      }
+    },
+    {
+      "id": "ae398c3b-bdb5-41bc-9d6b-0131b54db62d",
+      "type": "layer",
+      "attributes": {
+        "name": "Brazil indigenous lands",
+        "slug": "Brazil-indigenous-lands",
+        "dataset": "283cc17e-3cfd-44a2-882f-39ecbb24b230",
+        "description": "Brazil indigenous lands",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/bra_land_rights",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/south_america/MapServer/3"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Brazil indigenous lands",
+              "color": "#4d658"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.236Z",
+        "updatedAt": "2017-10-12T11:36:56.419Z"
+      }
+    },
+    {
+      "id": "6eb669af-5839-4c93-8ee1-9032b100b1d0",
+      "type": "layer",
+      "attributes": {
+        "name": "Indonesia Peat Lands",
+        "slug": "Indonesia-Peat-Lands",
+        "dataset": "1471aec4-4790-4634-bec0-4a497fd6e4e8",
+        "description": "Indonesia Peat Lands",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/idn_peat_lands",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/asia/MapServer/10"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Indonesia peat lands",
+              "color": "#253494"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-12-06T22:17:14.455Z",
+        "updatedAt": "2021-12-06T22:17:14.456Z"
+      }
+    },
+    {
+      "id": "021cc649-1ff3-4023-b31d-661c1cf7c011",
+      "type": "layer",
+      "attributes": {
+        "name": "Liberia Oil Palm Concessions",
+        "slug": "liberia-oil-palm-concessions",
+        "dataset": "a7712f7e-5538-4c77-a71e-8764f89911d8",
+        "description": "Liberia Oil Palm Concessions",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "useCors": true,
+            "options": {
+              "line-color": "#ee9587",
+              "color": "#ee9587"
+            },
+            "metadata": "https://gis-gfw.wri.org/metadata/lbr_oil_palm",
+            "url": "https://services6.arcgis.com/bIipaUHHcz1GaAsv/arcgis/rest/services/Oil_palm_concessions/FeatureServer/0"
+          },
+          "type": "featureLayer"
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Liberia oil palm concessions",
+              "color": "#ee9587"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2017-09-14T18:09:51.785Z",
+        "updatedAt": "2017-10-12T11:36:42.643Z"
+      }
+    },
+    {
+      "id": "e966abdc-41cd-4101-96d4-1bd72f92e305",
+      "type": "layer",
+      "attributes": {
+        "name": "Gran Chaco Deforestation",
+        "slug": "Gran-Chaco-Deforestation",
+        "dataset": "b6e78796-8fa6-4f24-9c01-ca4439e6d207",
+        "description": "Gran Chaco Deforestation",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "coverage-options": {
+              "opacity": 0.3,
+              "color": "#f69"
+            },
+            "useCors": true,
+            "options": {
+              "opacity": 1,
+              "color": "#f265d1"
+            },
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/cached/gran_chaco_deforestation/MapServer/0",
+            "metadata": "https://gis-gfw.wri.org/metadata/gran_chaco_deforestation"
+          },
+          "type": "featureLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "Gran Chaco Deforestation",
+              "source": "(monthly, 30m, Gran Chaco, Guyra)",
+              "categories": [
+                {
+                  "name": "Recent alerts",
+                  "color": "#f6d200"
+                },
+                {
+                  "name": "Historical alerts",
+                  "color": "#f05bcb"
+                }
+              ],
+              "color": "#f265d1"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-05-28T17:11:42.548Z",
+        "updatedAt": "2020-05-28T17:11:42.550Z"
+      }
+    },
+    {
+      "id": "bf63e3bf-3fde-47ed-b7a7-d451d4c41dac",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree Plantations by species-OLD",
+        "slug": "Tree-Plantations-by-species",
+        "dataset": "eaf07d6c-ba45-4fb9-afb7-a8cbc7e7fc2c",
+        "description": "Tree Plantations by species",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/gfw_plantations",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/forest_cover/MapServer/8"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "source": "(2013-2014, select countries)",
+              "name": "Tree plantations by species",
+              "categories": [
+                {
+                  "name": "Oil palm",
+                  "color": "#fea4a4"
+                },
+                {
+                  "name": "Wood fiber / timber",
+                  "color": "#4b81c0"
+                },
+                {
+                  "name": "Rubber",
+                  "color": "#9a7aab"
+                },
+                {
+                  "name": "Fruit",
+                  "color": "#b0d8ba"
+                },
+                {
+                  "name": "Other",
+                  "color": "#c8e1b9"
+                },
+                {
+                  "name": "Other mix",
+                  "color": "#dadada"
+                },
+                {
+                  "name": "Wood fiber / timber mix",
+                  "color": "#a1aef6"
+                },
+                {
+                  "name": "Oil palm mix",
+                  "color": "#fecfcf"
+                },
+                {
+                  "name": "Rubber mix",
+                  "color": "#4bd5fe"
+                },
+                {
+                  "name": "Fruit mix",
+                  "color": "#fefe9b"
+                },
+                {
+                  "name": "Unknown",
+                  "color": "#c7c7c7"
+                },
+                {
+                  "name": "Recently cleared",
+                  "color": "#d8a1f6"
+                }
+              ],
+              "color": "#cb8335"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-11-12T19:23:48.659Z",
+        "updatedAt": "2020-11-12T19:23:48.661Z"
+      }
+    },
+    {
+      "id": "1981464f-2bfc-4f37-a936-8435f5e9b4e5",
+      "type": "layer",
+      "attributes": {
+        "name": "Indonesia Primary Forests",
+        "slug": "Indonesia-Primary-Forests",
+        "dataset": "13ab6085-2376-451e-8fab-d2c21b33ae0a",
+        "description": "Indonesia Primary Forests",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/idn_primary_forests",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/8"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Indonesia primary forest",
+              "categories": [
+                {
+                  "name": "Intact",
+                  "color": "#7aa740"
+                },
+                {
+                  "name": "Degraded",
+                  "color": "#8aca3a"
+                }
+              ],
+              "source": "(2000)",
+              "color": "#7aa740"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-12-06T22:14:14.071Z",
+        "updatedAt": "2021-12-06T22:14:14.073Z"
+      }
+    },
+    {
+      "id": "63c9f38a-8ff4-492b-a4a0-80c437afcd2c",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree cover gain",
+        "slug": "tree-cover-gain",
+        "dataset": "ae3a9478-de14-4f24-a9d7-79358ec37e25",
+        "description": "Tree cover gain",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "format": "image/png",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_cover_gain",
+            "useCors": true,
+            "maxzoom": 12,
+            "minzoom": 3
+          },
+          "type": "tileLayer",
+          "service": "leaflet",
+          "url": "http://earthengine.google.org/static/hansen_2013/gain_alpha/{z}/{x}/{y}.png"
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Tree cover gain",
+              "source": "(12 years, 30m, global, Hansen/UMD/Google/USGS/NASA)",
+              "color": "#4600ff"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2017-09-14T18:45:22.951Z",
+        "updatedAt": "2018-08-08T07:26:45.159Z"
+      }
+    },
+    {
+      "id": "3be294cc-cf1a-404e-a2e9-676aadb0344d",
+      "type": "layer",
+      "attributes": {
+        "name": "Indonesia Oil Palm Concessions",
+        "slug": "Indonesia-Oil-Palm-Concessions",
+        "dataset": "bbfebc1b-8d10-4321-8e9b-8c1d6ce27cfc",
+        "description": "Indonesia Oil Palm Concessions",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/asia/MapServer/2",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/idn_oil_palm",
+            "useCors": true
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Indonesia oil palm concessions",
+              "color": "#ee9587"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.237Z",
+        "updatedAt": "2018-04-02T19:32:30.375Z"
+      }
+    },
+    {
+      "id": "bddd8abf-643b-47b2-b6f4-abbeb3e67fe9",
+      "type": "layer",
+      "attributes": {
+        "name": "Brazil RSPO Certified Oil Palm Concessions",
+        "slug": "Brazil-RSPO-Certified-Oil-Palm-Concessions",
+        "dataset": "d92d1a7a-70ec-4ade-bfbb-02f6ca38a4dd",
+        "description": "Brazil RSPO Certified Oil Palm Concessions",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/rspo_oil_palm",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/south_america/MapServer/0"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Brazil RSPO oil palm concessions",
+              "color": "#e5ea00"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.238Z",
+        "updatedAt": "2017-10-20T14:18:53.509Z"
+      }
+    },
+    {
+      "id": "bb856964-994a-4c3a-bf1c-2d3654cf4abb",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree Plantations by type-OLD",
+        "slug": "Tree-Plantations-by-type",
+        "dataset": "c1f35267-39ce-4b7e-8d4c-295bc1888ee6",
+        "description": "Tree Plantations by type",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/gfw_plantations",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/forest_cover/MapServer/5"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "categories": [
+                {
+                  "color": "#ffbebe",
+                  "name": "Large industrial plantation"
+                },
+                {
+                  "color": "#ffbee8",
+                  "name": "Mosaic of medium-sized plantations"
+                },
+                {
+                  "color": "#89cd66",
+                  "name": "Mosaic of small-sized plantations"
+                },
+                {
+                  "color": "#894444",
+                  "name": "Clearing/ very young plantation"
+                }
+              ],
+              "source": "(2013-2014, select countries)",
+              "color": "#cb8335",
+              "name": "Tree plantations by type"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-11-12T19:56:46.421Z",
+        "updatedAt": "2020-11-12T19:56:46.424Z"
+      }
+    },
+    {
+      "id": "11264d8c-b304-43e3-bd44-48b84739078a",
+      "type": "layer",
+      "attributes": {
+        "name": "New Zealand Aboriginal Lands",
+        "slug": "New-Zealand-Aboriginal-Lands",
+        "dataset": "bf5ba682-ce8c-4bbf-8564-a861a4d81760",
+        "description": "New Zealand Aboriginal Lands",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/nzl_land_rights",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/australia/MapServer/0"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "New Zealand aboriginal lands",
+              "color": "#4d658f"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.238Z",
+        "updatedAt": "2017-10-12T11:36:48.524Z"
+      }
+    },
+    {
+      "id": "85488559-69dd-47bc-aa71-e11a9e26fe0d",
+      "type": "layer",
+      "attributes": {
+        "name": "Republic of the Congo Oil Palm Concessions",
+        "slug": "Republic-of-the-Congo-Oil-Palm-Concessions",
+        "dataset": "31d30d79-ba1b-4a50-b52b-cda8ddec3788",
+        "description": "Republic of the Congo Oil Palm Concessions",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://gis-gfw.wri.org/metadata/cog_oil_palm",
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/country_data/africa/MapServer/17"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Republic of the Congo oil palm concessions",
+              "color": "#ee9587"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.238Z",
+        "updatedAt": "2017-10-12T11:36:51.604Z"
+      }
+    },
+    {
+      "id": "aaf205a2-97b3-4f44-9330-080ec8e6f93f",
+      "type": "layer",
+      "attributes": {
+        "name": "Land Cover Southeast Asia",
+        "slug": "Land-Cover-Southeast-Asia",
+        "dataset": "3b85ed4b-16ae-4218-855b-12a6e1652121",
+        "description": "Land Cover Southeast Asia",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "featureLayer",
+          "body": {
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/10",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/se_asia_landcover",
+            "useCors": true
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "color": "#c6a541",
+              "categories": [
+                {
+                  "color": "#d6d549",
+                  "name": "Bare land"
+                },
+                {
+                  "color": "#cfe6ff",
+                  "name": "Coastal fish pond"
+                },
+                {
+                  "color": "#ebc963",
+                  "name": "Rubber plantation"
+                },
+                {
+                  "color": "#ddb400",
+                  "name": "Agriculture"
+                },
+                {
+                  "color": "#ddffac",
+                  "name": "Secondary forest"
+                },
+                {
+                  "color": "#fdffac",
+                  "name": "Grassland / shrub"
+                },
+                {
+                  "color": "#000000",
+                  "name": "Mining"
+                },
+                {
+                  "color": "#ccaa57",
+                  "name": "Mixed tree crops"
+                },
+                {
+                  "color": "#c0b9a6",
+                  "name": "No data"
+                },
+                {
+                  "color": "#b35fc4",
+                  "name": "Oil palm plantation"
+                },
+                {
+                  "color": "#f5babf",
+                  "name": "Settlements"
+                },
+                {
+                  "color": "#7da19b",
+                  "name": "Swamp"
+                },
+                {
+                  "color": "#91773f",
+                  "name": "Timber plantation"
+                },
+                {
+                  "color": "#8abc65",
+                  "name": "Primary forest"
+                },
+                {
+                  "color": "#94b5ff",
+                  "name": "Water bodies"
+                }
+              ],
+              "name": "Land cover Southeast Asia"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.238Z",
+        "updatedAt": "2018-04-02T19:32:32.427Z"
+      }
+    },
+    {
+      "id": "6ea52a89-f659-4c61-8a99-289747f91b5c",
+      "type": "layer",
+      "attributes": {
+        "name": "Gran Chaco deforestation Argentina",
+        "slug": "Gran-Chaco-deforestation-Argentina",
+        "dataset": "fc701e71-73ff-4109-8896-a2661ba57297",
+        "description": "Gran Chaco deforestation Argentina",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "metadata": "https://gis-gfw.wri.org/metadata/gran_chaco_deforestation",
+            "coverage-options": {
+              "color": "#f69",
+              "opacity": 0.3
+            },
+            "useCors": true,
+            "url": "https://gis-gfw.wri.org/arcgis/rest/services/cached/gran_chaco_deforestation/MapServer/0",
+            "options": {
+              "color": "#f265d1",
+              "opacity": 1
+            },
+            "where": "pais = 'Argentina'"
+          },
+          "type": "featureLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "Gran Chaco Deforestation",
+              "source": "(monthly, 30m, Gran Chaco, Guyra)",
+              "categories": [
+                {
+                  "name": "Recent alerts",
+                  "color": "#f6d200"
+                }
+              ],
+              "color": "#f265d1"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.238Z",
+        "updatedAt": "2017-11-13T15:44:40.485Z"
+      }
+    },
+    {
+      "id": "30128f93-4164-47dd-8364-0c099d4aeda6",
+      "type": "layer",
+      "attributes": {
+        "name": "Primary Forest",
+        "slug": "Primary-Forest",
+        "dataset": "edd8b82c-1597-4d81-899b-60ab61808367",
+        "description": "Primary Forest",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "gee",
+        "userId": "596cde70824315350dd0f116",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/regional_primary_forests",
+            "url": "https://production-api.globalforestwatch.org/v1/layer/41086554-5ca5-456c-80dd-f6bee61bc45f/tile/gee/{z}/{x}/{y}"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "Primary forests",
+              "source": "2001, 30m, Pan-Tropical, UMD",
+              "categories": [
+                {
+                  "name": "Primary forest",
+                  "color": "#658434"
+                }
+              ],
+              "color": "#658434"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-01-02T17:41:01.632Z",
+        "updatedAt": "2020-12-17T17:29:49.881Z"
+      }
+    },
+    {
+      "id": "9fd1b7f4-a96a-4e0e-8eba-f55567baddc1",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree cover 2010",
+        "slug": "Tree-cover-2010",
+        "dataset": "044f4af8-be72-4999-b7dd-13434fc4a394",
+        "description": "Tree cover 2010",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "type": "layer",
+        "userId": "57a0aa1071e394dd32ffe137",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "format": "image/png",
+            "maxzoom": 12,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_cover",
+            "minzoom": 3,
+            "options": {
+              "color": "#97BD3D",
+              "dataMaxZoom": 12,
+              "threshold": 30
+            },
+            "useCors": true
+          },
+          "params_config": [],
+          "service": "leaflet",
+          "sql_config": [],
+          "type": "tileLayer",
+          "url": "https://storage.googleapis.com/wri-public/treecover/2010/{thresh}/{z}/{x}/{y}.png"
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "source": "(2000, Hansen/UMD/Google/USGS/NASA)",
+              "notes": ["Displaying tree cover with {thresh} canopy density."],
+              "name": "Tree cover",
+              "color": "#97BD3D"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-14T15:36:04.238Z",
+        "updatedAt": "2018-07-19T08:43:49.261Z"
+      }
+    },
+    {
+      "id": "e13f6610-ee60-42b8-900f-1c814fb937fc",
+      "type": "layer",
+      "attributes": {
+        "name": "GLAD alerts-OLD",
+        "slug": "glad-alerts",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "GLAD alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/e13f6610-ee60-42b8-900f-1c814fb937fc-1668459162451.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/umd_glad_landsat_alerts/latest/default/{z}/{x}/{y}.png"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Recent alerts",
+                  "color": "#e4c600"
+                },
+                {
+                  "name": "Show only confirmed alerts",
+                  "color": "#d7668f"
+                },
+                {
+                  "name": "Geographic coverage",
+                  "color": "#f69"
+                }
+              ],
+              "name": "GLAD alerts",
+              "source": "(weekly, 30m, select countries, UMD/GLAD)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2017-08-30T22:24:30.293Z",
+        "updatedAt": "2022-11-14T20:52:42.376Z"
+      }
+    },
+    {
+      "id": "5484506f-bff1-40e4-a767-23f30dc27154",
+      "type": "layer",
+      "attributes": {
+        "name": "GLAD alerts",
+        "slug": "glad-alerts_1",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "GLAD alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "type": "tilelayer",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/5484506f-bff1-40e4-a767-23f30dc27154-1668460656318.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "color": [220, 102, 153]
+            },
+            "coverage-options": {
+              "opacity": 0.3,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/umd_glad_landsat_alerts/latest/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Recent alerts",
+                  "color": "#e4c600"
+                },
+                {
+                  "name": "Show only confirmed alerts",
+                  "color": "#d7668f"
+                },
+                {
+                  "name": "Geographic coverage",
+                  "color": "#f69"
+                }
+              ],
+              "name": "GLAD alerts",
+              "source": "(weekly, 30m, select countries, UMD/GLAD)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-09-30T13:45:48.156Z",
+        "updatedAt": "2022-11-14T21:17:36.209Z"
+      }
+    },
+    {
+      "id": "7c43084e-3687-4c2d-9705-c566759273ad",
+      "type": "layer",
+      "attributes": {
+        "name": "RADD Coverage",
+        "slug": "RADD-Coverage",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Geographic Coverage",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "color": [252, 204, 220]
+            },
+            "coverage-options": {
+              "opacity": 0.4,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/wur_radd_coverage/v20211016/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/wur_radd_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Geographic Coverage",
+                  "color": "#dc6699"
+                }
+              ],
+              "name": "Geographic Coverage",
+              "source": "(every 6-12 days, 10m, select countries, WUR)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "disabled"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-04-16T08:25:16.353Z",
+        "updatedAt": "2021-12-14T18:24:42.065Z"
+      }
+    },
+    {
+      "id": "d76fc62e-8f13-4a1b-bb51-60aef1ee08b1",
+      "type": "layer",
+      "attributes": {
+        "name": "VIIRS Global Fires",
+        "slug": "VIIRS-Global-Fires_3",
+        "dataset": "cc074b15-d311-43cf-8dba-beec571d2406",
+        "description": "VIIRS Global Fires",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "type": "layer",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/d76fc62e-8f13-4a1b-bb51-60aef1ee08b1-1645634765475.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/nasa_viirs_fire_alerts/latest/dynamic/{start_date}/{end_date}/VectorTileServer",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/viirs_fires",
+            "useCors": true
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "notes": ["For more information about this layer {hyperlink}"],
+              "source": "(daily, 375m, global, NASA)",
+              "color": "#a5140c",
+              "name": "VIIRS active fires"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/nasa_viirs_fire_alerts/v202010/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-01-02T18:10:07.205Z",
+        "updatedAt": "2022-02-23T16:46:05.371Z"
+      }
+    },
+    {
+      "id": "b696ec7a-2852-468a-a907-b2cf4f584b97",
+      "type": "layer",
+      "attributes": {
+        "name": "Indonesia Land Cover",
+        "slug": "Indonesia-Land-Cover",
+        "dataset": "7b5c2316-8f97-41de-a268-06dc735cc8e9",
+        "description": "Indonesia Land Cover",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b696ec7a-2852-468a-a907-b2cf4f584b97-1686786379679.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/idn_land_cover_metadata",
+            "url": "https://tiles.globalforestwatch.org/idn_land_cover_2017/v201807/default/{z}/{x}/{y}.png"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "color": "#c6a541",
+              "categories": [
+                {
+                  "color": "#ddb400",
+                  "name": "Agriculture"
+                },
+                {
+                  "color": "#d6d549",
+                  "name": "Bare land"
+                },
+                {
+                  "color": "#94b5ff",
+                  "name": "Body of water"
+                },
+                {
+                  "color": "#b35fc4",
+                  "name": "Estate crop plantation"
+                },
+                {
+                  "color": "#cfe6ff",
+                  "name": "Fish pond"
+                },
+                {
+                  "color": "#fdffac",
+                  "name": "Grassland/shrub"
+                },
+                {
+                  "color": "#000000",
+                  "name": "Mining"
+                },
+                {
+                  "color": "#d4cfbf",
+                  "name": "No data"
+                },
+                {
+                  "color": "#8abc65",
+                  "name": "Primary forest"
+                },
+                {
+                  "color": "#ddffac",
+                  "name": "Secondary forest"
+                },
+                {
+                  "color": "#f5babf",
+                  "name": "Settlement"
+                },
+                {
+                  "color": "#7da19b",
+                  "name": "Swamp"
+                },
+                {
+                  "color": "#91773f",
+                  "name": "Timber plantation"
+                }
+              ],
+              "name": "Land cover Indonesia"
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-12-06T22:12:06.352Z",
+        "updatedAt": "2023-06-14T23:46:19.625Z"
+      }
+    },
+    {
+      "id": "7b0b2472-d411-4bc2-a603-8922ff48be61",
+      "type": "layer",
+      "attributes": {
+        "name": "Soil Carbon",
+        "slug": "Soil-Carbon_8",
+        "dataset": "ed55befa-fea0-4525-bfa4-35c5cea00204",
+        "description": "this layer provides a global overview of Soil Carbon",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "userId": "596cdc2718042773d747b344",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "type": "webtiled",
+          "id": "SOILCARBON",
+          "url": "https://api.resourcewatch.org/v1/layer/2c4fde29-1627-40eb-96b5-a9e388f7c7b7/tile/gee/{level}/{col}/{row}",
+          "label": {
+            "en": "Soil Carbon"
+          },
+          "sublabel": {
+            "en": "(Sanderman (2019), ISRIC SoilGrids (2017) LC"
+          }
+        },
+        "legendConfig": {
+          "type": "gradient",
+          "name": {
+            "en": "Soil Carbon"
+          },
+          "items": [
+            {
+              "name": {
+                "en": "400 Mg C Hs -1"
+              }
+            }
+          ]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2020-01-14T16:00:12.697Z",
+        "updatedAt": "2020-01-14T16:00:12.697Z"
+      }
+    },
+    {
+      "id": "eaafb83a-d0e5-4a15-a0e5-a5528b71bc74",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree Plantations by species",
+        "slug": "Tree-Plantations-by-species_1",
+        "dataset": "eaf07d6c-ba45-4fb9-afb7-a8cbc7e7fc2c",
+        "description": "Tree Plantations by species",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/gfw_planted_forests/v20201209/default/root.json",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_planted_forests",
+            "useCors": true
+          },
+          "type": "Vector.Layer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#cb8335",
+              "categories": [
+                {
+                  "color": "#98a7c4",
+                  "name": "Wood fiber / timber"
+                },
+                {
+                  "color": "#fdada9",
+                  "name": "Oil Palm"
+                },
+                {
+                  "color": "#a0c746",
+                  "name": "Unknown Mix"
+                },
+                {
+                  "color": "#dcd9d9",
+                  "name": "Unknown"
+                },
+                {
+                  "color": "#a4fdff",
+                  "name": "Rubber Mix"
+                },
+                {
+                  "color": "#fefe97",
+                  "name": "Fruit Mix"
+                },
+                {
+                  "color": "#d1e6ab",
+                  "name": "Other"
+                },
+                {
+                  "color": "#9993A3",
+                  "name": "Rubber"
+                },
+                {
+                  "color": "#dada95",
+                  "name": "Fruit"
+                },
+                {
+                  "color": "#fcc4c1",
+                  "name": "Oil Palm Mix"
+                },
+                {
+                  "color": "#9ebbf2",
+                  "name": "Wood fiber / timber Mix"
+                },
+                {
+                  "color": "#d5a6ea",
+                  "name": "Recently cleared"
+                },
+                {
+                  "color": "#e1efc8",
+                  "name": "Other Mix"
+                }
+              ],
+              "name": "Tree plantations by species",
+              "source": "(2020, select countries)"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2019-09-26T20:41:54.726Z",
+        "updatedAt": "2022-01-11T18:56:52.605Z"
+      }
+    },
+    {
+      "id": "9ed63703-7133-4d1c-9e79-fefd2390c2e4",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree Plantations by type",
+        "slug": "Tree-Plantations-by-type_1",
+        "dataset": "c1f35267-39ce-4b7e-8d4c-295bc1888ee6",
+        "description": "Tree Plantations by type",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "url": "https://gfw.maps.arcgis.com/sharing/rest/content/items/3731fad9ebfb494d9d35e8f5d4d6ec0e/resources/styles/root.json?f=pjson",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_plantations",
+            "useCors": true
+          },
+          "type": "indexedVector"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "Tree plantations by type",
+              "color": "#cb8335",
+              "source": "(2013-2014, select countries)",
+              "categories": [
+                {
+                  "name": "Large industrial plantation",
+                  "color": "#f84f40"
+                },
+                {
+                  "name": "Mosaic of medium-sized plantations",
+                  "color": "#a53ed5"
+                },
+                {
+                  "name": "Mosaic of small-sized plantations",
+                  "color": "#33a02c"
+                },
+                {
+                  "name": "Clearing/ very young plantation",
+                  "color": "#A7652A"
+                },
+                {
+                  "name": "Unknown",
+                  "color": "#dcd9d9"
+                }
+              ]
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2019-09-26T20:37:06.493Z",
+        "updatedAt": "2021-12-06T21:22:10.459Z"
+      }
+    },
+    {
+      "id": "825c9a3d-054f-45f4-b055-f4a95991a036",
+      "type": "layer",
+      "attributes": {
+        "name": "Land Planning Classification of Native Forests",
+        "slug": "Ordenamiento-Territorial-de-los-Bosques-Nativos-OTBN",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Territorial Regulation of Native Forests in Argentina. Ordenamiento Territorial de los Bosques Nativos (OTBN)",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/825c9a3d-054f-45f4-b055-f4a95991a036-1685039529943.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/arg_native_forest_land_plan/v202212/default/{z}/{x}/{y}.png",
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/arg_native_forest_land_plan"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "I",
+                  "color": "#FF0000"
+                },
+                {
+                  "name": "II",
+                  "color": "#FFFF00"
+                },
+                {
+                  "name": "III",
+                  "color": "#008000"
+                }
+              ],
+              "name": "Territorial Planning of Native Forests"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-03-06T16:19:32.380Z",
+        "updatedAt": "2023-05-25T18:32:09.890Z"
+      }
+    },
+    {
+      "id": "c5b2ddeb-8a52-48a2-8f62-bdbe60da971b",
+      "type": "layer",
+      "attributes": {
+        "name": "Clark Labs Aquaculture Land Cover 2018",
+        "slug": "Clark-Labs-Aquaculture-Land-Cover-2018",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Clark Labs Aquaculture Land Cover 2018",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "userId": "62601518cdc846001a7756b5",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/c5b2ddeb-8a52-48a2-8f62-bdbe60da971b-1659054162607.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/clark_labs_tropical_pond_aquaculture_2018/v202203/default/{z}/{x}/{y}.png",
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/clark_labs_tropical_pond_aquaculture"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Mangrove",
+                  "color": "#244e0c"
+                },
+                {
+                  "name": "Coastal Wetland",
+                  "color": "#69b792"
+                },
+                {
+                  "name": "Pond Aquaculutre",
+                  "color": "#de5a20"
+                },
+                {
+                  "name": "Water",
+                  "color": "#7d7dff"
+                },
+                {
+                  "name": "Other Landcover",
+                  "color": "#f5e483"
+                },
+                {
+                  "name": "Missing",
+                  "color": "#c0c0c0"
+                }
+              ],
+              "name": "Tropical Pond Aquaculture and Coastal Wetlands",
+              "source": "(1999, 2014, 2018, 15m, selected regions)"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-06-07T14:11:35.440Z",
+        "updatedAt": "2022-07-29T00:22:42.547Z"
+      }
+    }
+  ],
+  "links": {
+    "self": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=production&page[number]=1&page[size]=5000",
+    "first": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=production&page[number]=1&page[size]=5000",
+    "last": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=production&page[number]=1&page[size]=5000",
+    "prev": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=production&page[number]=1&page[size]=5000",
+    "next": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=production&page[number]=1&page[size]=5000"
+  },
+  "meta": {
+    "total-pages": 1,
+    "total-items": 69,
+    "size": 5000
+  }
+}

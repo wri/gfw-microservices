@@ -34,19 +34,21 @@ const FieldLabel = styled(InputLabel)({
  * @summary {[subscription_status_id]: defaulFields}
  */
 const generateGlobalLimitsFormDataObject = (subscriptionOptions) => {
-  let defaultFields = {
+  const defaultFields = {
     MaxAreaPerList: 0,
     MaxAreaAnalyzeablePerYear: 0,
   };
 
+  let returningObject = {};
+
   for (const option of subscriptionOptions) {
-    defaultFields[option.value] = {
+    returningObject[option.value] = {
       ...defaultFields,
       subscriptionStatusId: option.value,
     };
   }
 
-  return defaultFields;
+  return returningObject;
 };
 
 const globalLimitsFormDataObject = generateGlobalLimitsFormDataObject(subscriptionStatusOptions);

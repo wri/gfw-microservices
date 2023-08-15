@@ -32,8 +32,8 @@ export default function AccountProfileLimitsSetting() {
   const isEditingDisabled =
     currentAccount.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
   const [accountLimitsFormData, setAccountLimitsFormData] = useState({
-    MaxAreaPerList: accountLimitsData.MaxAreaPerList,
-    MaxAreaAnalyzeablePerYear: accountLimitsData.MaxAreaAnalyzeablePerYear,
+    MaxAreaPerList: accountLimitsData?.MaxAreaPerList,
+    MaxAreaAnalyzeablePerYear: accountLimitsData?.MaxAreaAnalyzeablePerYear,
     organizationId,
   });
   const onChangeUpdateField = (field, values) => {
@@ -43,7 +43,7 @@ export default function AccountProfileLimitsSetting() {
     }));
   };
   const getButtonLabel = () => {
-    return accountLimitsData.OrgID === null ? 'Set Custom Limits' : 'Update Limits';
+    return accountLimitsData?.OrgID ? 'Set Custom Limits' : 'Update Limits';
   };
   const validateLimitsFormData = (data) => {
     let errors = [];

@@ -102,7 +102,6 @@ exports.getListMbtileInfo = async (req, res) => {
     }
     new MBTiles(`${localMbtileFilePath}?mode=ro`, (err, mbtiles) => {
       mbtiles.getInfo((getInfoError, data) => {
-        console.warn(getInfoError);
         res.status(200).json({
           bounds: data?.bounds || [],
           maxZoom: data?.maxzoom || 0,

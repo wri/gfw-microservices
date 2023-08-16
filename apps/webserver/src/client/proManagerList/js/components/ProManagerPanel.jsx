@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
-import CircularProgress from '@mui/material/CircularProgress';
 import UsersListSection from './users/UsersListSection';
 import UserDetailSection from './users/UserDetailSection';
 import AccountsListSection from './accounts/AccountsListSection';
@@ -8,8 +7,10 @@ import AccountDetailSection from './accounts/AccountDetailSection';
 import AccountsListUsage from './accounts/AccountUsage/AccountsListUsage';
 import SideBarMenu from '../../../common/js/components/SideBarMenu';
 import { proManagerPanelTabs } from './proManagerPanelTabs';
-import './ProManagerPanel.scss';
 import AccountLimits from './accounts/AccountLimits';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Loading from '../../../common/js/components/Loaders/Loading';
 
 function ProManagerPanel({ location }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,29 +29,24 @@ function ProManagerPanel({ location }) {
   };
 
   return (
-    <div className="pro-manager-panel">
-      <div className="pro-manager-panel__container">
+    <Grid
+      container
+      className="pro-manager-panel"
+      spacing={4}
+      sx={{ padding: '1.5rem', backgroundColor: '#fff' }}
+    >
+      <Grid item xs={12} sm={3}>
         <SideBarMenu
-          menuTitle="Pro Manger"
+          menuTitle="Pro Manager"
           tabOptions={proManagerPanelTabs}
           selectedTab={selectedTab}
           setSelectedTab={setSelectedTab}
           userAccessLevel={1}
         />
-        <div className="pro-manager-panel__content">
-          {isLoading && (
-            <div
-              style={{
-                display: 'flex',
-                width: '100vw',
-                height: '100vh',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <CircularProgress color="success" />
-            </div>
-          )}
+      </Grid>
+      <Grid item xs={12} sm={9}>
+        <Box>
+          {isLoading && <Loading />}
           {selectedTab === proManagerPanelTabs.accountProfiles.id && accountDetail && (
             <AccountDetailSection
               isLoading={isLoading}
@@ -79,9 +75,9 @@ function ProManagerPanel({ location }) {
           {selectedTab === proManagerPanelTabs.accountUsage.id && (
             <AccountsListUsage isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Grid>
+    </Grid>
   );
 }
 

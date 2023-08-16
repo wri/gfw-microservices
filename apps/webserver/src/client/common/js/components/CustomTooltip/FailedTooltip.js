@@ -1,12 +1,13 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, styled } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconBan from '../icon/IconBan';
+import IconLimit from '../icon/IconLimit';
 
 const BORDER = '1px solid #ccc';
 const BACKGROUND_COLOR = '#fcfcfc';
 
-const LightTooltip = withStyles((theme) => ({
+const LightTooltip = withStyles(() => ({
   arrow: {
     '&::before': {
       border: BORDER,
@@ -23,15 +24,38 @@ const LightTooltip = withStyles((theme) => ({
   },
 }))(Tooltip);
 
+const Span = styled('span')({
+  height: 14,
+  color: (props) => props.color ?? 'red',
+  display: 'flex',
+  alignContent: 'center',
+  alignItems: 'center',
+  gap: 5,
+});
+
+const reasonMap = {
+  default: {
+    color: 'red',
+    icon: <IconBan />,
+  },
+  limits: {
+    color: 'orange',
+    icon: <IconLimit />,
+  },
+};
+
 export default function FailedTooltip({
   tooltipMessage,
   placement,
   label,
   onClickAction = undefined,
+  reason = 'default',
 }) {
+  const config = reasonMap[reason];
+
   return (
     <LightTooltip
-      style={{ color: 'red' }}
+      style={{ color: config.color }}
       title={tooltipMessage}
       placement={placement}
       arrow
@@ -41,19 +65,10 @@ export default function FailedTooltip({
         }
       }}
     >
-      <span
-        style={{
-          height: 14,
-          color: 'red',
-          display: 'flex',
-          alignContent: 'center',
-          alignItems: 'center',
-          gap: 5,
-        }}
-      >
-        <IconBan />
+      <Span color={config.color}>
+        {config.icon}
         {label && label}
-      </span>
+      </Span>
     </LightTooltip>
   );
 }

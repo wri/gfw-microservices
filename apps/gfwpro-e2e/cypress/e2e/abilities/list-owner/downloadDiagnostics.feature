@@ -12,7 +12,7 @@ Ability: Download diagnostcs page
   Scenario Outline: Diagnostcs page should download info
 
     Given I'm viewing diagnostics for <list>
-    When I click on download button
+    When I try to download diagnostic for <list>
     Then I can see the download confirmation
 
     Examples:

@@ -3,7 +3,7 @@ Ability: Download diagnostcs page
   Scenario Outline: Diagnostcs page should have download option
 
     Given I'm viewing diagnostics for <list>
-    Then I can see the download button
+    Then I am able to download the list data
 
     Examples:
       | list                   |

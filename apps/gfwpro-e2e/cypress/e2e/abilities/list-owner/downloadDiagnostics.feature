@@ -1,4 +1,4 @@
-Ability: Show diagnostcs page
+Ability: Download diagnostcs page
 
   Scenario Outline: Diagnostcs page should have download option
 
@@ -9,7 +9,7 @@ Ability: Show diagnostcs page
       | list                   |
       | "Argentina Jujuy OTBN" |
 
-  Scenario Outline: Diagnostcs button should request download
+  Scenario Outline: Diagnostcs page should download info
 
     Given I'm viewing diagnostics for <list>
     When I click on download button

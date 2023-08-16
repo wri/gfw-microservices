@@ -14,4 +14,4 @@ const withName = (name: string) => {
   return List;
 };
 
-export { withName, listIdFromListName };
+export { withName };

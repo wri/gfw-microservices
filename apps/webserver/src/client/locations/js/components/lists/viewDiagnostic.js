@@ -153,22 +153,24 @@ const fillListData = async (listID, selectedList) => {
   const page = 0;
   const filters = {};
 
-  const response = await getUserLocationDataFromAPI(filters, listID, filterString, tableSortedBy, tableSortedDesc, page);
-  const {
-    list_analysis,
-    location_analyses,
-  } = response;
+  const response = await getUserLocationDataFromAPI(
+    filters,
+    listID,
+    filterString,
+    tableSortedBy,
+    tableSortedDesc,
+    page
+  );
+  const { list_analysis, location_analyses } = response;
   const listData = {
     list_analysis,
     location_analyses: [location_analyses, location_analyses],
   };
   processListData(listData, selectedList);
-}
+};
 
 const processListData = (listData, selectedList) => {
-
   const { list_analysis, location_analyses } = listData;
-
 
   if (location_analyses) {
     // TODO - Talk to Lucas/Patrick, we should not be deleting data that is needed for Edit Lists workflow
@@ -222,8 +224,7 @@ const setListData = (locationData, analysisData, selectedList) => {
         );
       } else {
         [analysisList] = analysisData.filter(
-          (analysis) =>
-            analysis.location_id === loc.location_id && analysis.list_id === loc.list_id
+          (analysis) => analysis.location_id === loc.location_id && analysis.list_id === loc.list_id
         );
       }
       data.push({ ...loc, ...analysisList });

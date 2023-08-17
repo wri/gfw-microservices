@@ -6,7 +6,9 @@ import store from '../../store';
 import {
   changeView,
   resetList,
-  addList,
+  updateListData,
+  updateFilteredData,
+  updateListLevelAnalysis,
   updateSelectedAndVisibleLocations,
   updateSelectedLocations,
   updateSpatialData,
@@ -14,6 +16,8 @@ import {
 
 // Config
 import { gfwListNames } from '../../../../common/js/constants/lists.constants';
+import getUserLocationDataFromAPI from './getUserLocationDataFromAPI';
+import { dataCleanup } from '../../utils/lists.utils';
 
 /**
  * @description - Get the GFW Pro list request data route
@@ -78,6 +82,7 @@ export const viewDiagnostic = async (
 
   const response = await axios(axiosProps);
   const { data } = response;
+  await fillListData(id, selectedList);
 
   if (!data?.errorCode) {
     if (isGFWList) {
@@ -126,15 +131,103 @@ export const viewDiagnostic = async (
 
     store.dispatch(changeView('diagnostics'));
 
-    history.push('/diagnostics');
-
     gtag('event', 'View Diagnostic click', {
       event_category: 'List View Click',
       event_label: `user viewed ${listView} diagnostics for ${
         isSingleLocation ? 'a single location' : 'an entire list'
       }`,
     });
+
+    history.push('/diagnostics');
   }
 
   return data;
+};
+
+const fillListData = async (listID, selectedList) => {
+  const tableSortedBy = 'Investment Name';
+  const tableSortedDesc = false;
+  const filterString = '';
+  const page = 0;
+  const filters = {};
+
+  const response = await getUserLocationDataFromAPI(filters, listID, filterString, tableSortedBy, tableSortedDesc, page);
+  const {
+    list_analysis,
+    location_analyses,
+  } = response;
+  const listData = {
+    list_analysis,
+    location_analyses: [location_analyses, location_analyses],
+  };
+  processListData(listData, selectedList);
+}
+
+const processListData = (listData, selectedList) => {
+
+  const { list_analysis, location_analyses } = listData;
+
+
+  if (location_analyses) {
+    // TODO - Talk to Lucas/Patrick, we should not be deleting data that is needed for Edit Lists workflow
+    // If you need to hide the column, use a different method then deleting key/value
+    const locationData = location_analyses[0];
+    const analysisData = location_analyses[1];
+    if (locationData.length > 0) {
+      const data = setListData(locationData, analysisData, selectedList);
+
+      const filteredIds = data.map((d) => d.location_id);
+      store.dispatch(updateListData(data));
+      store.dispatch(updateFilteredData(filteredIds));
+      store.dispatch(updateListLevelAnalysis(list_analysis));
+    }
+  }
+};
+
+/**
+ * Set all list data
+ * @param {Array} locationData - All locations for selected list
+ * @param {Array} analysisData - All analysis for selected list
+ * @returns {Array} data - Return data based on selected list
+ */
+const setListData = (locationData, analysisData, selectedList) => {
+  const data = [];
+  locationData.forEach((loc) => {
+    if (selectedList.list_name === 'Administrative Areas') {
+      if (loc['Location Name']) {
+        const splitsies = loc['Location Name'].split('--');
+        if (splitsies.length > 0) {
+          loc['Location Name'] = splitsies[splitsies.length - 1];
+        }
+      }
+      if (loc['Investment Name']) {
+        const splitsies = loc['Investment Name'].split('--');
+        if (splitsies.length > 0) {
+          loc['Investment Name'] = splitsies[splitsies.length - 1];
+        }
+      }
+    }
+
+    if (analysisData.length > 0) {
+      let analysisList = [];
+      if (
+        selectedList.list_name === 'Protected Areas' ||
+        selectedList.list_name === 'Administrative Areas'
+      ) {
+        // for protected areas and admin areas we dont match list_ids, just location ids
+        [analysisList] = analysisData.filter(
+          (analysis) => analysis.location_id === loc.location_id
+        );
+      } else {
+        [analysisList] = analysisData.filter(
+          (analysis) =>
+            analysis.location_id === loc.location_id && analysis.list_id === loc.list_id
+        );
+      }
+      data.push({ ...loc, ...analysisList });
+    } else {
+      data.push({ ...loc });
+    }
+  });
+  return dataCleanup(data);
 };

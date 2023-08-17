@@ -21,8 +21,7 @@ When('I select a year range', () => {
     cy.wrap(initialNumberCollums).as('initialNumberCollums');
   });
 
-  cy.get('[data-cy="diagnotcs-regions"] .irs-slider.from').click({ multiple: true, force: true });
-  cy.get('[data-cy="diagnotcs-regions"] .irs-slider.from').type('{rightarrow}{rightarrow}');
+  ListDiagnostic.changeDateFilter();
 
   cy.get('[data-cy="diagnotcs-regions"] .highcharts-point')
     .its('length')

@@ -13,7 +13,7 @@ Ability: Show Loss of Forests diagnostcs by regions
 
     Given I'm viewing diagnostics for <list>
     When I select <filter> in the regions section
-    Then I can see the graph bar values change
+    Then I can see that the graph value changes
 
     Examples:
       | list                   | filter                   |

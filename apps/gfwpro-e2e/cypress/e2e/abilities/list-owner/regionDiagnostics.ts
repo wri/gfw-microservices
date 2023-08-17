@@ -6,13 +6,13 @@ const getAllDataFromGraph = (barElements) => {
   return barElements.map((index, element) => Cypress.$(element).attr('height')).get();
 };
 
-When('I select {string} in the regions section', (dataType: string) => {
+When('I select {string} in the regions section', (filter: string) => {
   cy.get('[data-cy="diagnotcs-regions"] .chart-container .highcharts-point').then((barElements) => {
     const divValues = getAllDataFromGraph(barElements);
     cy.wrap(divValues).as('initialValues');
   });
 
-  ListDiagnostic.viewTreeCoverLossForRegions(dataType);
+  ListDiagnostic.viewTreeCoverLossForRegions(filter);
 });
 
 When('I select a year range', () => {
@@ -46,11 +46,11 @@ Then('I can see the graph bar values change', () => {
   });
 });
 
-Then('I can see that {string} is enabled', (dataType: string) => {
-  cy.get(`[data-cy="${datatCyIdFromRegionsOptionsName[dataType]}"] label`)
+Then('I can see that {string} is enabled', (filter: string) => {
+  cy.get(`[data-cy="${datatCyIdFromRegionsOptionsName[filter]}"] label`)
     .invoke('text')
     .should('not.eq', '0');
-  cy.get(`[data-cy="${datatCyIdFromRegionsOptionsName[dataType]}"] input`).should(
+  cy.get(`[data-cy="${datatCyIdFromRegionsOptionsName[filter]}"] input`).should(
     'not.have.attr',
     'disabled'
   );

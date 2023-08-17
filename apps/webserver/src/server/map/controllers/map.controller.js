@@ -49,7 +49,6 @@ exports.map = (req, res) => {
         gfwLists,
         userInfo,
         listData,
-        common: compiledAssets.js.common,
         mapjs: compiledAssets.js.map,
         mapcss: compiledAssets.css.map,
         userSharedLists: isAdministrator ? [] : userSharedLists,

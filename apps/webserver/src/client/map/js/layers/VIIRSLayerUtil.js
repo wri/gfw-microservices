@@ -1,4 +1,4 @@
-import VectorTileLayer from 'esri/layers/VectorTileLayer';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 import moment from 'moment';
 
 const maxDateURL =

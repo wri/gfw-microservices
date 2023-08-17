@@ -11,7 +11,7 @@ import Polygon from 'esri/geometry/Polygon';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import esriConfig from 'esri/config';
 
-import TreeCoverLossLayer from '../../../../map/js/layers/TreeCoverLossLayer';
+import TreeCoverLossLayer from '../../layers/TreeCoverLossLayer';
 import store from '../../store';
 import {
   changeListView,
@@ -51,13 +51,10 @@ import {
   getGFWListLocationIDs,
   getGfwListName,
 } from '../../utils/lists.utils';
-import { handleUserListLocationsVectorTileLayer } from '../../../../common/js/userListLocations/utils/userListLocations.util';
+import { handleUserListLocationsVectorTileLayer } from '../../../../common/js/userListLocations/utils/listLayer.util';
 import { generateCentroidGraphic } from '../../../../common/js/utils/esri.utils';
-import {
-  handleGfwProListVectorTileLayer,
-  isGfwList,
-  discernGfwID,
-} from '../../../../common/js/utils/gfw.utils';
+import { isGfwList, discernGfwID } from '../../../../common/js/utils/gfw.utils';
+import { handleGfwProListVectorTileLayer } from '../../../../common/js/utils/vectorTileLayer';
 
 // Configs
 import {

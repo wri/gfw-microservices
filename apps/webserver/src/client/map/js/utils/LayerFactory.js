@@ -1,16 +1,12 @@
 // Put back in error handling when all layers have a type in config
 
-// import DynamicLayer from 'esri/layers/ArcGISDynamicMapServiceLayer';
-// import ImageParameters from 'esri/layers/ImageParameters';
-// import ImageServiceParameters from 'esri/layers/ImageServiceParameters';
-// import RasterFunction from 'esri/layers/RasterFunction';
-import ImageLayer from 'esri/layers/ImageryLayer';
-import GraphicsLayer from 'esri/layers/GraphicsLayer';
-import TiledLayer from 'esri/layers/TileLayer';
-import FeatureLayer from 'esri/layers/FeatureLayer';
-import MapImageLayer from 'esri/layers/MapImageLayer';
-import VectorTileLayer from 'esri/layers/VectorTileLayer';
-import RasterFunction from 'esri/layers/support/RasterFunction';
+import ImageLayer from '@arcgis/core/layers/ImageryLayer';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
+import TiledLayer from '@arcgis/core/layers/TileLayer';
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
+import RasterFunction from '@arcgis/core/layers/support/RasterFunction';
 
 import GladLayer from '../layers/GladLayer';
 import RaddLayer from '../layers/RaddLayer';
@@ -21,7 +17,7 @@ import IndonesiaLandCover from '../layers/IndonesiaLandCover';
 import TreeCoverLayer from '../layers/TreeCoverLayer';
 import TreeBiomassLayer from '../layers/TreeBiomassLayer';
 import LandCoverLayer from '../layers/LandCoverLayer';
-import WebTileLayer from 'esri/layers/WebTileLayer';
+import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import AboveGroundLayer from '../layers/AboveGroundLayer';
 import viirsLayer from '../layers/VIIRSLayerUtil';
 
@@ -102,11 +98,13 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         options.visible = layer.visible || false;
         options.opacity = layer.opacity || 1;
         options.order = layer.order || undefined;
-        layers.push(new TiledLayer(layer.url, options));
+        options.url = layer.url;
+        layers.push(new TiledLayer(options));
         break;
       case 'tileLayer':
         layers.push(
-          new WebTileLayer(layer.layerConfig.body.url, {
+          new WebTileLayer({
+            urlTemplate: layer.layerConfig.body.url,
             id: layer.id,
             visible: false,
             order: layer.order || undefined,
@@ -118,8 +116,8 @@ export const layerFactory = function LayersFactory(layersArray, view) {
       case 'image':
         options.id = layer.id;
         options.visible = layer.visible || false;
-
-        const imageLayer = new ImageLayer(layer.url, options);
+        options.url = layer.url;
+        const imageLayer = new ImageLayer(options);
         imageLayer.order = layer.order || undefined;
         if (layer.renderingRule && layer.renderingRule.rasterFunctionArguments) {
           // const rRule = new RasterFunction();
@@ -181,7 +179,8 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         options.definitionExpression = layer.defaultDefinitionExpression || '';
         options.popupTemplate = layer.popupTemplate;
         options.order = layer.order || undefined;
-        layers.push(new FeatureLayer(layer.url, options));
+        options.url = layer.url;
+        layers.push(new FeatureLayer(options));
         break;
       case 'vector-tile':
         //handle VIIRS layer separately
@@ -257,7 +256,8 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         break;
       case 'primaryForest':
         layers.push(
-          new WebTileLayer(layer.layerConfig.body.url, {
+          new WebTileLayer({
+            urlTemplate: layer.layerConfig.body.url,
             id: layer.id,
             visible: layer.visible || false,
             order: layer.order || undefined,
@@ -280,7 +280,8 @@ export const layerFactory = function LayersFactory(layersArray, view) {
       case 'soy-planted':
         const url = layer.layerConfig.body.url.replace('{year}', `${soyPlantedYearsRange[1]}`);
         layers.push(
-          new WebTileLayer(url, {
+          new WebTileLayer({
+            urlTemplate: url,
             id: layer.id,
             visible: layer.visible || false,
             order: layer.order || undefined,

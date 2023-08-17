@@ -151,7 +151,6 @@ export const constructLayerObject = (visibleLayers, layer) => {
       legendConfig: layer.attributes.legendConfig,
       layerConfig: layer.attributes.layerConfig,
       interactionConfig: layer.attributes.interactionConfig,
-      cartoFields: layerConf.cartoFields ? layerConf.cartoFields : '',
       description: layer.attributes.description,
       group: layerConf.group,
       visible: visibleLayers.indexOf(layerName) > -1,

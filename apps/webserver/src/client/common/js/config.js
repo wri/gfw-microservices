@@ -3297,32 +3297,6 @@ export const mapPage = {
       },
     },
     {
-      id: proLayers.AZESites,
-      group: 'conservation',
-      order: 402,
-      popupTemplate: {
-        title: '{intname}',
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">Country:</p> <p class="popup-text-value">{country}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">Source:</p> <p class="popup-text-value">{source}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">ID:</p> <p class="popup-text-value">{sitrecid}</p></div>',
-      },
-      cartoFields: ['intname', 'country', 'source', 'sitrecid'],
-      // },
-      // People
-      // {
-      //   id: 'land-rights-carto',
-      //   group: 'people',
-      //   order: 500,
-      //   popupTemplate: {
-      //     title: '{name}',
-      //     // PLANTATION TYPE, species, percent plantation coverage, area ha
-      //     content: '<p>COUNTRY: {country}</p>' +
-      //       '<p>LEGAL RECOGNITION: {legal_term}</p>'
-      //   },
-      //   cartoFields: ['name', 'country', 'legal_term']
-    },
-    {
       id: proLayers.landRights,
       group: 'people',
       order: 501,

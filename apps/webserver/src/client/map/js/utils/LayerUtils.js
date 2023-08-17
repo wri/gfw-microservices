@@ -1,7 +1,7 @@
-import IdentifyTask from 'esri/tasks/IdentifyTask';
-import IdentifyParameters from 'esri/tasks/support/IdentifyParameters';
-import QueryTask from 'esri/tasks/QueryTask';
-import Query from 'esri/tasks/support/Query';
+import { executeQueryJSON, executeForExtent } from '@arcgis/core/rest/query';
+import Query from '@arcgis/core/rest/support/Query';
+import IdentifyParameters from '@arcgis/core/rest/support/IdentifyParameters';
+import { identify } from '@arcgis/core/rest/identify';
 
 export const queryAdmin = (location) => {
   return new Promise((resolve) => {
@@ -15,9 +15,6 @@ export const queryAdmin = (location) => {
     };
 
     const adminUrl = adminAreaServices[gadmid.split('.').length - 1];
-    const queryTask = new QueryTask({
-      url: adminUrl,
-    });
 
     const where = `gadmid = '${gadmid}'`;
 
@@ -34,7 +31,7 @@ export const queryAdmin = (location) => {
       query.outFields.push('name_2');
     }
 
-    queryTask.execute(query).then(
+    executeQueryJSON(adminUrl, query).then(
       (res) => {
         if (res?.features?.length > 0) {
           const { geometry, attributes } = res.features[0];
@@ -66,16 +63,12 @@ export const queryAdmin = (location) => {
 
 export const queryExtent = (url, defQuery = '1=1') => {
   return new Promise((resolve) => {
-    const queryTask = new QueryTask({
-      url: url,
-    });
-
     const query = new Query();
     query.where = defQuery;
     query.returnGeometry = true;
     query.outFields = [];
 
-    queryTask.executeForExtent(query).then(
+    executeForExtent(url, query).then(
       (res) => {
         if (res?.extent) {
           resolve(res.extent.expand(1.2));
@@ -113,8 +106,7 @@ export const identifyPoints = (layer, evt, view) => {
     params.mapExtent = view.extent;
     params.returnGeometry = true;
 
-    const identifyTask = new IdentifyTask(layer.url);
-    identifyTask.execute(params).then(
+    identify(layer.url, params).then(
       (response) => {
         resolve({
           response: response,

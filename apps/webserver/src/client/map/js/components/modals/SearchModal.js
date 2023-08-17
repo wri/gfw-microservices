@@ -1,9 +1,8 @@
 import ModalWrapper from './ModalWrapper';
 import { toggleSearch } from '../../actions/mapActions';
 import store from '../../store';
-import Search from 'esri/widgets/Search';
-import FeatureLayer from 'esri/layers/FeatureLayer';
-import Locator from 'esri/tasks/Locator';
+import Search from '@arcgis/core/widgets/Search';
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import React, { Component } from 'react';
 import { proLayers } from '../../../../common/js/config';
 
@@ -68,7 +67,6 @@ export default class SearchModal extends Component {
       .layerConfig.body.url;
     const landRightsURL = mapLayers.filter((layer) => layer.id === proLayers.landRights)[0]
       .layerConfig.body.url;
-    // const AZESitesURL = mapLayers.filter(layer => layer.id === AZESites)[0].layerConfig.body.url;
 
     this.searchWidget = new Search({
       view: this.props.mapView,
@@ -76,9 +74,7 @@ export default class SearchModal extends Component {
       minSuggestCharacters: 3,
       sources: [
         {
-          locator: new Locator({
-            url: 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer',
-          }),
+          url: 'https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer',
           singleLineFieldName: 'SingleLine',
           outFields: ['Addr_type'],
           maxSuggestions: 3,
@@ -229,17 +225,6 @@ export default class SearchModal extends Component {
           name: 'Land Rights',
           placeholder: 'Search Land Rights',
         },
-        // this is a carto table, leaving out of the sources for now
-        // {
-        //   featureLayer: new FeatureLayer({
-        //     url: AZESitesURL
-        //   }),
-        //   searchFields: ['sitenamefi', 'species'],
-        //   suggestionTemplate: 'Name: {sitenamefi}, Species: {species}',
-        //   outFields: ['sitenamefi', 'species'],
-        //   name: 'Alliance for Zero Extinction Sites',
-        //   placeholder: 'Search Alliance for Zero Extinction Sites'
-        // }
       ],
     });
 

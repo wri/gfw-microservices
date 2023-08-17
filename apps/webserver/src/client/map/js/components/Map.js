@@ -4,28 +4,20 @@ import Dialog from 'material-ui/Dialog';
 import _isEmpty from 'lodash/isEmpty';
 
 // ESRI Imports
-import EsriMap from 'esri/Map';
-import Extent from 'esri/geometry/Extent';
-import FeatureLayer from 'esri/layers/FeatureLayer';
-import Field from 'esri/layers/support/Field';
-import GeometryEngine from 'esri/geometry/geometryEngine';
-import Graphic from 'esri/Graphic';
-import GraphicsLayer from 'esri/layers/GraphicsLayer';
-import MapView from 'esri/views/MapView';
-import Point from 'esri/geometry/Point';
-import Polygon from 'esri/geometry/Polygon';
-import PopupTemplate from 'esri/PopupTemplate';
-import SimpleFillSymbol from 'esri/symbols/SimpleFillSymbol';
-import SketchViewModal from 'esri/widgets/Sketch/SketchViewModel';
-import TileLayer from 'esri/layers/TileLayer';
-import VectorTileLayer from 'esri/layers/VectorTileLayer';
-import WebTileLayer from 'esri/layers/WebTileLayer';
-import esriConfig from 'esri/config';
-import {
-  geographicToWebMercator,
-  webMercatorToGeographic,
-} from 'esri/geometry/support/webMercatorUtils';
-import { open } from 'esri/core/workers';
+import EsriMap from '@arcgis/core/Map';
+import Extent from '@arcgis/core/geometry/Extent';
+import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
+import Graphic from '@arcgis/core/Graphic';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
+import MapView from '@arcgis/core/views/MapView';
+import Point from '@arcgis/core/geometry/Point';
+import PopupTemplate from '@arcgis/core/PopupTemplate';
+import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
+import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
+import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
+import esriConfig from '@arcgis/core/config';
+import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 
 import store from '../store';
 import {
@@ -51,7 +43,6 @@ import {
   DATA_API_URL,
   locationsPage,
   mapPage,
-  pro_AWS_base,
   proLayers,
   supportedGeostoreAnalysis,
   vectorEnabledLayers,
@@ -116,15 +107,13 @@ import {
 } from '../config/map.config';
 
 // Services
-import { fetchGfwProLayers } from '../../../common/js/service/gfw.service';
+import { fetchGfwProLayers } from '../service/gfw.service';
 
 // Style
 import '../../css/map.scss';
 
 // import all layer names that we will be using directly
 const {
-  aboveGroundBiomassId,
-  primaryForest,
   adminAreas,
   administrativeAreas,
   brazilBiomesID,
@@ -139,16 +128,13 @@ const {
   rspoPalmOilMills,
   soyOnTreeCoverLoss,
   treeBiomassLossID,
-  treeCoverGainID,
   treeCoverID,
   treeCoverLossID,
   treePlantationsSpecies,
   universalMillList,
   userLocations,
   viirsActiveFiresID,
-  landCoverID,
   soyPlantedArea,
-  indonesiaLandCover,
 } = proLayers;
 
 let layersToAdd;
@@ -223,10 +209,6 @@ export default class Map extends Component {
     });
 
     this.svm = null;
-
-    require(['esri/core/promiseUtils'], (promiseUtils) => {
-      this.promiseUtils = promiseUtils;
-    });
   }
 
   componentWillUnmount() {
@@ -316,13 +298,6 @@ export default class Map extends Component {
             this.view.map.add(mapLayer);
             mapLayer.visible = true;
             this.sortMapArray(mapLayer);
-          } else if (configLayer?.cartoFields) {
-            const cartoLayer = this.state.mapLayers.find((layer) => layer.id === nowVisibleLayer);
-            this.getCartoGraphics(cartoLayer).then((layer) => {
-              this.view.map.add(layer);
-              layer.visible = true;
-              this.sortMapArray(layer);
-            });
           } else if (nowVisibleLayer === formaAlertsID) {
             this.getFormaLayer(this.state.mapLayers).then((formaLayer) => {
               this.getFormaLayerCallback(configLayer, formaLayer);
@@ -912,12 +887,6 @@ export default class Map extends Component {
     //   }
     //   return ioArgs;
     // });
-
-    esriConfig.workers.loaderConfig = {
-      paths: {
-        workerScripts: window.location.href.replace(/\/[^/]+$/, '/workerScripts'),
-      },
-    };
   };
 
   showLayerModal = (layerInfo) => {
@@ -1082,7 +1051,7 @@ export default class Map extends Component {
   };
 
   initializeSketchViewModel = (view) => {
-    const svm = new SketchViewModal({
+    const svm = new SketchViewModel({
       view,
       layer: view.graphics,
       polygonSymbol: {
@@ -1125,7 +1094,7 @@ export default class Map extends Component {
     allLayers.forEach((layer) => {
       if (layer.visible) {
         const layerConfig = utils.getObject(mapPage.layers, 'id', layer.id);
-        if (layerConfig && layerConfig.popupTemplate && !layerConfig.cartoFields) {
+        if (layerConfig && layerConfig.popupTemplate) {
           deferreds.push(identifyPoints(layer, evt, this.view));
         }
       }
@@ -2531,101 +2500,6 @@ export default class Map extends Component {
       event_label: `user turned the ${formaLayer.id} layer on`,
     });
     this.setLayerWatching(configLayer, formaLayer);
-  };
-
-  getCartoGraphics = (cartoLayer) => {
-    return new Promise((resolve) => {
-      let tableName = cartoLayer.url.split('tables/')[1];
-      if (tableName.indexOf('/') > -1) {
-        tableName = tableName.split('/')[0];
-      }
-
-      const request = new XMLHttpRequest();
-      request.onload = () => {
-        const jsonData = JSON.parse(request.responseText);
-        jsonData.cartoLayer = cartoLayer;
-        const workerUrl = `${pro_AWS_base}/js/worker-update.js`;
-
-        open(workerUrl)
-          .then((connection) => {
-            return connection.invoke('magicTwo', {
-              jsonData: jsonData,
-            });
-          })
-          .then((results) => {
-            let popupTemplate;
-            const fields = [
-              new Field({
-                name: 'ObjectID',
-                alias: 'ObjectID',
-                type: 'oid',
-              }),
-            ];
-
-            const fillSymbol = new SimpleFillSymbol({
-              color: cartoLayer.layerConfig.body.options.color,
-              outline: {
-                width: '0px',
-              },
-            }); //TODO: Try a layer renderer (simple, one-symbol) rather than a symbol for each feature!
-
-            const feats = results.data ? results.data : results;
-
-            const geometries = feats.map((result) => {
-              //TODO: Can we do some of this - specifically the geographicToWebMercator - in the worker as well?!
-              return new Graphic({
-                geometry: geographicToWebMercator(
-                  new Polygon({
-                    rings: result.rings,
-                    spatialReference: { wkid: 4326 },
-                  })
-                ),
-                symbol: fillSymbol,
-                attributes: result.attributes,
-              });
-            });
-
-            if (cartoLayer.cartoFields) {
-              popupTemplate = utils.getObject(mapPage.layers, 'id', cartoLayer.id).popupTemplate;
-              cartoLayer.cartoFields.forEach((field) => {
-                fields.push(
-                  new Field({
-                    name: field,
-                    alias: field,
-                    type:
-                      typeof geometries[0].attributes[field] === 'string' ? 'string' : 'integer',
-                  })
-                );
-              });
-            }
-
-            const layer = new FeatureLayer({
-              popupTemplate: popupTemplate,
-              id: cartoLayer.id,
-              source: geometries,
-              fields: fields,
-              objectIdField: 'ObjectID',
-              geometryType: 'polygon',
-              visible: cartoLayer.visible,
-            });
-
-            resolve(layer);
-          });
-      };
-      request.onerror = (err) => {
-        console.log('Request Error:', err);
-        resolve(false);
-      };
-
-      const queryFields = cartoLayer.cartoFields ? cartoLayer.cartoFields.join(',') + ',' : '';
-
-      request.open(
-        'GET',
-        `https://wri-01.carto.com/api/v2/sql?q=SELECT ${queryFields}ST_AsGeoJSON(the_geom) as geometry from ${tableName}`,
-        true
-      );
-      request.send();
-    });
   };
 
   addCustomBasemaps = (view) => {

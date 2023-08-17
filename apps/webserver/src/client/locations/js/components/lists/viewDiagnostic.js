@@ -82,6 +82,8 @@ export const viewDiagnostic = async (
 
   const response = await axios(axiosProps);
   const { data } = response;
+
+  //TODO this should be removed after we realize a refactor on the diagnostic page
   await fillListData(id, selectedList);
 
   if (!data?.errorCode) {

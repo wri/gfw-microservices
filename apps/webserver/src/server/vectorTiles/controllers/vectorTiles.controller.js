@@ -4,7 +4,6 @@ const MBTiles = require('@mapbox/mbtiles');
 
 // Logger
 const logger = require('../../../config/lib/winston');
-const slackNotifications = require('../../../config/privateutils/slackNotifications.utils');
 
 // Utils
 const { generateAndStoreVectorTiles } = require('../utils/vectorTileGenerate.utils');
@@ -103,16 +102,6 @@ exports.getListMbtileInfo = async (req, res) => {
     }
     new MBTiles(`${localMbtileFilePath}?mode=ro`, (err, mbtiles) => {
       mbtiles.getInfo((getInfoError, data) => {
-        if (data?.filesize === 0) {
-          slackNotifications.sendNotification('getListMbtileInfo error', {
-            listID,
-            err,
-            mbtilesFilename: mbtiles?.filename,
-            getInfoError,
-            data,
-          });
-        }
-
         res.status(200).json({
           bounds: data?.bounds || [],
           maxZoom: data?.maxzoom || 0,

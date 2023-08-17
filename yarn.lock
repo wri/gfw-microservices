@@ -42,7 +42,7 @@
     "ora" "5.4.1"
     "rxjs" "7.8.1"
 
-"@arcgis/core@4.20.2":
+"@arcgis/core@~4.20.2":
   "integrity" "sha512-LmHNLhJRBri5UpLfmfSFhQ7B3O/lq0B0Qtwkdy3gJUJ1DOZBfo0c5ezpSfqsHjTTDxTxSyMF5fl8Y1H4+UagZQ=="
   "resolved" "https://registry.npmjs.org/@arcgis/core/-/core-4.20.2.tgz"
   "version" "4.20.2"

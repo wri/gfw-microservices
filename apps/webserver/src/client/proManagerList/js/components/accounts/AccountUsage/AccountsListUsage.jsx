@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import DateRangeSelector from './DateRangeSelector';
 import { oneMonthAgoDate, todaysDate } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
+import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
 
 function AccountsListUsage({ isLoading, setIsLoading }) {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
@@ -72,11 +73,13 @@ function AccountsListUsage({ isLoading, setIsLoading }) {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell component="th" scope="row">
-                      {row.organization_id}
+                      {`${row.organization_id}: ${row.organization_name}`}
                     </TableCell>
-                    <TableCell align="right">{row.number_of_lists_analyzed}</TableCell>
-                    <TableCell align="right">{row.max_area_analyzed}</TableCell>
-                    <TableCell align="right">{row.total_area_analyzed}</TableCell>
+                    <TableCell align="right">
+                      {numberWithCommas(row.number_of_lists_analyzed)}
+                    </TableCell>
+                    <TableCell align="right">{numberWithCommas(row.max_area_analyzed)}</TableCell>
+                    <TableCell align="right">{numberWithCommas(row.total_area_analyzed)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

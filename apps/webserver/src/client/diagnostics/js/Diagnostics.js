@@ -50,7 +50,7 @@ import {
 import { checkValidViewCommodity, getGfwListName } from '../../locations/js/utils/lists.utils';
 import { handleUserListLocationsVectorTileLayer } from '../../common/js/userListLocations/utils/listLayer.util';
 import { generateCentroidGraphic } from '../../common/js/utils/esri.utils';
-import { handleGfwProListVectorTileLayer } from '../../common/js/utils/gfw.utils';
+import { handleGfwProListVectorTileLayer } from '../../common/js/utils/vectorTileLayer';
 
 // Configs
 import {

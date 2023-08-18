@@ -159,7 +159,7 @@ function ActiveList({
                 leftIcon={isLoadingDiagnostic ? <InlineLoader /> : null}
                 onClick={() => {
                   setIsLoadingDiagnostic(true);
-                  viewDiagnostic(list, history, diagnosticFromLandingPage=true);
+                  viewDiagnostic(list, history, {}, false, [], 'forest_change', true);
                 }}
               />
             )}

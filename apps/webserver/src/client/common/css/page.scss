@@ -8,7 +8,8 @@
 
 .app__body {
   width: 100%;
-  height: calc(100vh - 60px);
+  min-height: calc(100vh - 60px);
+  height: auto;
   bottom: 0;
   top: 95px;
   left: 0;

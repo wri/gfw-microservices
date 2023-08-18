@@ -127,6 +127,39 @@ export default class StepFour extends Component {
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
 
         <fieldset className="locations-upload-save">
+          <legend className="locations-upload-save__legend">{locationsPage.upload.analytics}</legend>
+          <div className="locations-upload-save__option-container">
+            <input type='checkbox' name='florest_change_global' id='florest_change_global' />
+            <label htmlFor="florest_change_global">Forest Change Global</label>
+          </div>
+
+          <div className="locations-upload-save__option-container">
+            <input type='checkbox' name='florest_change_south_america' id='florest_change_south_america' />
+            <label htmlFor="florest_change_south_america">Forest Change South America</label>
+          </div>
+
+          <div className="locations-upload-save__option-container">
+            <input type='checkbox' name='florest_change_southeast_asia' id='florest_change_southeast_asia' />
+            <label htmlFor="florest_change_southeast_asia">Forest Change Southeast Asia</label>
+          </div>
+
+          <div className="locations-upload-save__option-container">
+            <input type='checkbox' name='palm_risk' id='palm_risk' />
+            <label htmlFor="palm_risk">Palm Risk (only enabled for palm lists)</label>
+          </div>
+
+          <div className="locations-upload-save__option-container">
+            <input type='checkbox' name='deforestation_reporting' id='deforestation_reporting' />
+            <label htmlFor="deforestation_reporting">Deforestation Reporting (cutoff date 2020)</label>
+          </div>
+
+          <div className="locations-upload-save__option-container">
+            <input type='checkbox' name='near_real_time_alerts' id='near_real_time_alerts' />
+            <label htmlFor="near_real_time_alerts">Near-real time alerts (GLAD, VIIRS)</label>
+          </div>
+        </fieldset>
+
+        <fieldset className="locations-upload-save">
           <legend className="locations-upload-save__legend">{locationsPage.upload.list}</legend>
 
           <div className="locations-upload-save__option-container">

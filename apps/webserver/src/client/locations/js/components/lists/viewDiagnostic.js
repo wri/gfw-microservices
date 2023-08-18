@@ -49,7 +49,8 @@ export const viewDiagnostic = async (
   filters = {},
   isSingleLocation = false,
   selectedLocations = [],
-  listView = 'forest_change'
+  listView = 'forest_change',
+  diagnosticFromLandingPage = false
 ) => {
   const { id, list_name, list_locations_count } = selectedList;
   const isGFWList = gfwListNames.includes(list_name);
@@ -83,8 +84,10 @@ export const viewDiagnostic = async (
   const response = await axios(axiosProps);
   const { data } = response;
 
-  //TODO this should be removed after we realize a refactor on the diagnostic page
-  await fillListData(id, selectedList);
+  if(diagnosticFromLandingPage){
+    //TODO this should be removed after we realize a refactor on the diagnostic page
+    await fillListData(id, selectedList);
+  }
 
   if (!data?.errorCode) {
     if (isGFWList) {

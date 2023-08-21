@@ -4,9 +4,11 @@
 
 Add a short description of the change. If this is related to an issue, please add a reference to the issue.
 
-### CHANGELOG
+#### Testing
 
-- [CHANGED] Describe your change here. Look at CHANGELOG.md to see the format.
+- What manual testing did you do?
+- How should QA/product test this?
+- What's the impact of this PR and any automated tests on code coverage?
 
 #### Demo
 
@@ -15,20 +17,3 @@ Optional. Screenshots, examples, etc.
 #### Notes
 
 Optional. Ancillary topics, caveats, alternative strategies that did not work out, anything else.
-
-#### Testing Instructions
-
-- How to test this PR
-- Prefer bulleted description
-- Start after checking out this branch
-- Include any setup required, such as bundling scripts, restarting services, etc.
-- Include test case, and expected output
-
-### Checklist
-
-- [ ] Did you run `prettier`?
-- [ ] Did you write test for your task ?
-- [ ] Numbers are displayed using `numberWithCommas()` where appropriate
-- [ ] New text strings are included in [config.js](https://github.com/azavea/gfw-pro-fork/blob/release-3.0/src/client/common/js/config.js)
-
-Closes #XXX

@@ -2,7 +2,7 @@ import React from 'react';
 import './DiagnosticsHeaderInfo.scss';
 
 function SingleLocationDiagnosticsHeaderInfo({ selectedLists, filteredLocations }) {
-  const [loc] = filteredLocations;
+  const [loc] = filteredLocations?.length > 0 ? filteredLocations : selectedLists;
   const locationName = loc['Investment Name'] ?? loc['Location Name'];
 
   return (

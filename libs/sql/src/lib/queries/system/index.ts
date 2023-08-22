@@ -22,3 +22,5 @@ export * from './uspChangeConnectionRequestStatus';
 export * from './setGlobalAnalysisLimit';
 export * from './setOrganizationCustomAnalysisLimits';
 export * from './getCheckAndExpireConnection';
+export * from './getAdministrativeAreasDataByLocation';
+export * from './getAnalysisDataForProtectedAreasByLocation';

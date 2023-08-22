@@ -1,41 +1,4 @@
 ### Generate download data for specific list
-GET https://localhost:8443/eudr/download?listId=1
+GET https://localhost:8443/api/eudr/download?listId=1
 Content-Type: application/zip
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
-
-### Get analysis data
-GET https://localhost:8443/eudr/analysis
-Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
-
-### Get analysis data by listId
-GET https://localhost:8443/eudr/analysis?listId=5442
-Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
-
-
-### send an invitation to create a connection between two organizations
-POST https://localhost:8443/eudr/analysis
-Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
-
-{
-  "listId": 5448,
-  "analysisId": "FCD",
-  "status": 2,
-  "errorInfo": "",
-  "updateTime": "2021-06-01T10:00:00.000Z"
-}
-
-### send an invitation to create a connection between two organizations
-PUT https://localhost:8443/eudr/analysis
-Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
-
-{
-  "listId": 5442,
-  "analysisId": "FCD",
-  "status": 3,
-  "errorInfo": "",
-  "updateTime": "2021-06-01T10:00:00.000Z"
-}
+Cookie: gfwpro.globalforestwatch.org=s%3A56f54b40-40f7-11ee-b0d7-3bc54ac9ea0e.kDwiSe1fq8jjS4Q1k7bJQxUTMelGvjxDUdHB14fq%2BNQ

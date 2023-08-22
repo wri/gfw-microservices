@@ -6,52 +6,6 @@ const AWS = require('aws-sdk');
 
 const eudrRoutes = express.Router();
 
-const baseData = {
-  analysisId: 'FCD',
-  status: 2,
-  errorInfo: '',
-  updateTime: '2021-06-01T10:00:00.000Z',
-};
-
-const analysis = [
-  {
-    ...baseData,
-    listId: 5498,
-  },
-  {
-    ...baseData,
-    listId: 5498,
-    analysisId: 'ALERTS',
-  },
-  {
-    ...baseData,
-    listId: 5440,
-  },
-  {
-    ...baseData,
-    listId: 5440,
-    analysisId: 'ALERTS',
-  },
-  {
-    ...baseData,
-    listId: 5442,
-  },
-  {
-    ...baseData,
-    listId: 5442,
-    analysisId: 'ALERTS',
-  },
-  {
-    ...baseData,
-    listId: 5445,
-  },
-  {
-    ...baseData,
-    listId: 5445,
-    analysisId: 'ALERTS',
-  },
-];
-
 /**
  * @name exports
  * @static
@@ -69,7 +23,7 @@ module.exports = (app, limiter) => {
     routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));
   }
 
-  app.use('/eudr', [...routeMiddlewares, eudrRoutes]);
+  app.use('/api/eudr', [...routeMiddlewares, eudrRoutes]);
 
   eudrRoutes.get('/download', (req, res) => {
     const { listId } = req.query;
@@ -80,7 +34,7 @@ module.exports = (app, limiter) => {
 
     const fileKey = `s3://gfwpro-lpl-dev/19g61lhf2263y-ghana_64k_cocoa_generic.zip`;
     const basename = path.basename(fileKey);
-    const bucket = path.parse(fileKey).dir.replace('S3://', '').replace('s3://', '');
+    const bucket = path.parse(fileKey).dir.replace(/[sS]3:(\/)+/g, '');
     console.log('Trying to download file', fileKey);
     const s3 = new AWS.S3();
     const options = {
@@ -93,15 +47,6 @@ module.exports = (app, limiter) => {
     res.setHeader('Content-Disposition', 'attachment; filename=' + `${basename}.zip`);
     const fileStream = s3.getObject(options).createReadStream();
     fileStream.pipe(res);
-  });
-
-  eudrRoutes.get('/analysis', (req, res) => {
-    const { listId } = req.query;
-    if (!listId) {
-      return res.status(200).send(analysis);
-    }
-    const result = analysis.filter((a) => a.listId === listId);
-    return res.status(200).send(result);
   });
 
   eudrRoutes.put('/analysis', (req, res) => {

@@ -41,3 +41,9 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 GET https://localhost:8443/analytics/limit?organizationType=2
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### Get ListsAnalysisStatus
+GET https://localhost:8443/analytics/myorg/listsAnalysisStatus
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+

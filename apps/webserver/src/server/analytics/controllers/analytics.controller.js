@@ -3,7 +3,10 @@ const { compiledAssets } = require(path.resolve('./config/config'));
 const {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
+  getOrganizationListsAnalysisStatus,
 } = require('../service/analytics.service');
+
+const { analysisTypesMap } = require(path.resolve('./config/env/analysisTypes.constants'));
 
 /**
  * @function analytics
@@ -113,4 +116,28 @@ const validateQueryParams = ({ startDate, endDate, countForEachList }) => {
   return {
     countForEachList,
   };
+};
+
+exports.getListsAnalysisStatus = async (req, res) => {
+  // console.log('GET /analytics/myorg/listsAnalysisStatus');
+
+  try {
+    const response = await getOrganizationListsAnalysisStatus({
+      organizationId: req.session.organization_id,
+    });
+
+    const availableAnalysisStatusStrings = response.map(({ AnalysisID }) => ({
+      [AnalysisID]: analysisTypesMap[AnalysisID],
+    }));
+
+    res.send({
+      status: 'success',
+      data: {
+        listsAnalysisStatus: response,
+        availableAnalysisStatusStrings,
+      },
+    });
+  } catch (error) {
+    res.status(500).send(error);
+  }
 };

@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import { viewDiagnostic } from './viewDiagnostic';
 import Diagnostics from './Diagnostics';
+import { diagnosticsStrings } from '../../common/js/config';
 
 const mapStateToProps = ({ infoBubbleCache, popover }) => ({ infoBubbleCache, popover });
 
@@ -36,7 +37,7 @@ function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
         setData(data);
         const { selectedLists } = data;
         if (!selectedLists) {
-          throw new Error('list not found');
+          throw new Error(diagnosticsStrings.listOrLocationNotFound);
         }
         return viewDiagnostic(selectedLists[0], selectedLocation); // we should move this to the diagnosticsData endpoint
       })
@@ -79,7 +80,7 @@ function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
             justifyContent: 'center',
           }}
         >
-          <h2>List or location not found</h2>
+          <h2>{diagnosticsStrings.listOrLocationNotFound}</h2>
         </div>
       )}
       {!isLoading && selectedLists && (

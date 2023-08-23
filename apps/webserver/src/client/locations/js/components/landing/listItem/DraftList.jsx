@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Chip from '@mui/material/Chip';
 import Popover from 'material-ui/Popover';
 import PublicIcon from '@mui/icons-material/Public';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -116,6 +117,8 @@ function DraftList({
         {showListSharedWithMeIcon && <PublicIcon />}
         {list_name}
         {is_shared && <IconUsers className="locations-list__shared-icon" />}
+
+        <Chip label={ numberWithCommas(locations || 0) } size="small" style={{height: '17px', marginLeft: '10px'}} />
       </div>
 
       {showSharedColumn && (
@@ -138,9 +141,6 @@ function DraftList({
             />
           </span>
         )}
-        <span className="locations-list__count">
-          {numberWithCommas(locations || 0)} {locationsPage.lists.locations.toLowerCase()}
-        </span>
       </div>
 
       <div className="locations-list__menu-container">

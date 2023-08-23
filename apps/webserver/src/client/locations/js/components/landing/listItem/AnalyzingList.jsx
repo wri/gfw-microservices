@@ -1,4 +1,5 @@
 import React from 'react';
+import Chip from '@mui/material/Chip';
 import GroupsIcon from '@mui/icons-material/Groups';
 import PublicIcon from '@mui/icons-material/Public';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
@@ -28,12 +29,6 @@ function AnalyzingList({ list, isAListSharedWithMe, isShared, showSharedColumn }
           {sharedColumnText()}
         </div>
       )}
-      <div className="locations-list__controls">
-        <span className="locations-list__analyzing">
-          <InlineLoader />
-          {locationsPage.lists.analyzing}
-        </span>
-      </div>
 
       <div className="locations-list__menu-container">
         <IconButton icon={<IconMenuDots />} title={''} disabled size="medium" variant="menu" />

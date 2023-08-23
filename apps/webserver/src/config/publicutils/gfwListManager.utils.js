@@ -18,6 +18,7 @@
  *   @function {copyLocations}
  *   @function {getAdministrativeAreasInfo}
  *   @function {getAdministrativeAreasData}
+ * @function {getAdministrativeAreasDataByLocationId}
  *   @function {getProtectedAreasInfo}
  *   @function {getProtectedAreasData}
  *   @function {initialize}
@@ -35,6 +36,9 @@ const snsUtils = require(path.resolve('./config/privateutils/sns.utils.js'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
+const { getAdministrativeAreasDataByLocation } = require(path.resolve(
+  './queries/system/getAdministrativeAreasDataByLocation'
+));
 
 let adminInfo = [];
 let protectedInfo = [];
@@ -285,6 +289,33 @@ const getAdministrativeAreasData = (req, filters) => {
     ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetAdministrativeAreasData', parameters)
+      .then((recordset) => {
+        resolve(recordset);
+      })
+      .catch((errorMessage) => {
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToGetList,
+          'Failed to get Administrative Areas data',
+          errorMessage
+        );
+        reject(errorObject);
+      });
+  });
+};
+
+/** @function {getAdministrativeAreasDataByLocationId}
+ *   @summary Get function to return country, state, and substate.
+ *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param  {Object} locationId - locationId
+ *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+ */
+const getAdministrativeAreasDataByLocationId = (req, locationId) => {
+  return new Promise((resolve, reject) => {
+    const parameters = [{ field: 'location_id', type: sql.Int, value: locationId }];
+
+    sqlUtils
+      .executeSystemQuery(getAdministrativeAreasDataByLocation, parameters)
       .then((recordset) => {
         resolve(recordset);
       })
@@ -632,6 +663,7 @@ module.exports = {
   updateGFWLists,
   getAdministrativeAreasInfo,
   getAdministrativeAreasData,
+  getAdministrativeAreasDataByLocationId,
   getProtectedAreasInfo,
   getProtectedAreasData,
   getGFWListSchema,

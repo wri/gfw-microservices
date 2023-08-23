@@ -37,6 +37,9 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
+const { getAnalysisDataForProtectedAreasByLocation } = require(path.resolve(
+  './queries/system/getAnalysisDataForProtectedAreasByLocation'
+));
 
 /** @function {getAnalysisDataForUserList}
  *   @summary Function to return analysis data for a user list.
@@ -163,6 +166,69 @@ const getAnalysisDataForProtectedAreas = (req, list_id, filters) => {
         });
 
         const protectedLocationResult = recordsets.map((record) => {
+          return _.omit(record, listDataFields);
+        });
+
+        resolve({ listData, protectedLocationResult });
+      })
+      .catch((err) => {
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToGetList,
+          'Failed to get GFW list analysis data',
+          err
+        );
+        reject(errorObject);
+      });
+  });
+};
+
+/**
+ * Get Analysis Data for Protected Areas
+ *
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {number} list_id - ID of the GFW list in the database
+ * @param {Object} locatio_id - Selected location for Protected Areas
+ * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+ */
+const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, location_id) => {
+  return new Promise((resolve, reject) => {
+    const parameters = [
+      { field: 'list_id', type: sql.Int, value: list_id },
+      { field: 'location_id', type: sql.Int, value: location_id },
+    ];
+
+    sqlUtils
+      .executeSystemQuery(getAnalysisDataForProtectedAreasByLocation, parameters)
+      .then((recordsets) => {
+        const listDataFields = [
+          'Country',
+          'Designation',
+          'Designation Type',
+          'IUCN CAT',
+          'Latitude',
+          'Location Classification',
+          'Location Name',
+          'Longitude',
+          'Size',
+          'State',
+          'Sub State',
+          'gadmid',
+          'globalid',
+          'id_in_list',
+          'location_id_in_list',
+        ];
+
+        const listData = recordsets[0].map((record) => {
+          const pick = _.pick(record, listDataFields);
+          return {
+            ...pick,
+            id: record.id_in_list,
+            location_id: record.location_id_in_list,
+          };
+        });
+
+        const protectedLocationResult = recordsets[0].map((record) => {
           return _.omit(record, listDataFields);
         });
 
@@ -396,6 +462,7 @@ module.exports = {
   getAnalysisDataForUserList,
   getAnalysisDataForGFWList,
   getAnalysisDataForProtectedAreas,
+  getAnalysisDataForProtectedAreasByLocationId,
   getGFWListAnalyses,
   getListAnalyses,
   requestAnalysis,

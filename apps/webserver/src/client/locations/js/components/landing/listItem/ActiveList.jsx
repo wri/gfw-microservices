@@ -158,8 +158,7 @@ function ActiveList({
                 primaryText={locationsPage.lists.diagnostic}
                 leftIcon={isLoadingDiagnostic ? <InlineLoader /> : null}
                 onClick={() => {
-                  setIsLoadingDiagnostic(true);
-                  viewDiagnostic(list, history, {}, false, [], 'forest_change', true);
+                  window.location = `/diagnostics?listId=${id}`;
                 }}
               />
             )}

@@ -5,6 +5,7 @@ import { locationsPage } from '../../../../common/js/config';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { filterValidTemplates, filterValidCustom } from '../../utils/moveLocations';
+import { analysisTypes } from '../../../../../config/env/analysisTypes.constants'
 
 export default class StepFour extends Component {
   constructor(props) {
@@ -83,11 +84,10 @@ export default class StepFour extends Component {
     const index = this.state._selectedAnalysis.indexOf(type);
     if (index > -1) {
       this.setState({ _selectedAnalysis: this.state._selectedAnalysis.splice(index, 1) });
-      return console.log(this.state._selectedAnalysis);
+      return;
     }
 
     this.setState({ _selectedAnalysis: [...this.state._selectedAnalysis, type] });
-    return console.log(this.state._selectedAnalysis);
   };
 
   getActive = () => {
@@ -145,63 +145,63 @@ export default class StepFour extends Component {
           <div className="locations-upload-save__option-container">
             <input
               type="checkbox"
-              name="florest_change_global"
-              id="florest_change_global"
-              onChange={() => this.handleAnalyzesSelect('florest_change_global')}
+              name={analysisTypes['FOREST_CHANGE_DIAGNOSTICS']}
+              id={analysisTypes['FOREST_CHANGE_DIAGNOSTICS']}
+              onChange={() => this.handleAnalyzesSelect(analysisTypes['FOREST_CHANGE_DIAGNOSTICS'])}
             />
-            <label htmlFor="florest_change_global">Forest Change Global</label>
+            <label htmlFor={analysisTypes['FOREST_CHANGE_DIAGNOSTICS']}>{locationsPage.upload.analysis.florestChange}</label>
           </div>
 
           <div className="locations-upload-save__option-container">
             <input
               type="checkbox"
-              name="florest_change_south_america"
-              id="florest_change_south_america"
-              onChange={() => this.handleAnalyzesSelect('florest_change_south_america')}
+              name={analysisTypes['FOREST_SOUTH_AMERICA']}
+              id={analysisTypes['FOREST_SOUTH_AMERICA']}
+              onChange={() => this.handleAnalyzesSelect(analysisTypes['FOREST_SOUTH_AMERICA'])}
             />
-            <label htmlFor="florest_change_south_america">Forest Change South America</label>
+            <label htmlFor={analysisTypes['FOREST_SOUTH_AMERICA']}>{locationsPage.upload.analysis.southAmerica}</label>
           </div>
 
           <div className="locations-upload-save__option-container">
             <input
               type="checkbox"
-              name="florest_change_southeast_asia"
-              id="florest_change_southeast_asia"
-              onChange={() => this.handleAnalyzesSelect('florest_change_southeast_asia')}
+              name={analysisTypes['FOREST_SOUTHEAST_ASIA']}
+              id={analysisTypes['FOREST_SOUTHEAST_ASIA']}
+              onChange={() => this.handleAnalyzesSelect(analysisTypes['FOREST_SOUTHEAST_ASIA'])}
             />
-            <label htmlFor="florest_change_southeast_asia">Forest Change Southeast Asia</label>
+            <label htmlFor={analysisTypes['FOREST_SOUTHEAST_ASIA']}>{locationsPage.upload.analysis.southeastAsia}</label>
           </div>
 
           <div className="locations-upload-save__option-container">
             <input
               type="checkbox"
-              name="palm_risk"
-              id="palm_risk"
-              onChange={() => this.handleAnalyzesSelect('palm_risk')}
+              name={analysisTypes['PALM_RISK']}
+              id={analysisTypes['PALM_RISK']}
+              onChange={() => this.handleAnalyzesSelect(analysisTypes['PALM_RISK'])}
             />
-            <label htmlFor="palm_risk">Palm Risk (only enabled for palm lists)</label>
+            <label htmlFor={analysisTypes['PALM_RISK']}>{locationsPage.upload.analysis.palmRisk}</label>
           </div>
 
           <div className="locations-upload-save__option-container">
             <input
               type="checkbox"
-              name="deforestation_reporting"
-              id="deforestation_reporting"
-              onChange={() => this.handleAnalyzesSelect('deforestation_reporting')}
+              name={analysisTypes['DEFORESTATION_KPIS']}
+              id={analysisTypes['DEFORESTATION_KPIS']}
+              onChange={() => this.handleAnalyzesSelect(analysisTypes['DEFORESTATION_KPIS'])}
             />
-            <label htmlFor="deforestation_reporting">
-              Deforestation Reporting (cutoff date 2020)
+            <label htmlFor={analysisTypes['DEFORESTATION_KPIS']}>
+              {locationsPage.upload.analysis.deflorestationReporting}
             </label>
           </div>
 
           <div className="locations-upload-save__option-container">
             <input
               type="checkbox"
-              name="near_real_time_alerts"
-              id="near_real_time_alerts"
-              onChange={() => this.handleAnalyzesSelect('near_real_time_alerts')}
+              name={analysisTypes['DEFORESTATION_ALERTS']}
+              id={analysisTypes['DEFORESTATION_ALERTS']}
+              onChange={() => this.handleAnalyzesSelect(analysisTypes['DEFORESTATION_ALERTS'])}
             />
-            <label htmlFor="near_real_time_alerts">Near-real time alerts (GLAD, VIIRS)</label>
+            <label htmlFor={analysisTypes['DEFORESTATION_ALERTS']}>{locationsPage.upload.analysis.deflorestationAlert}</label>
           </div>
         </fieldset>
 

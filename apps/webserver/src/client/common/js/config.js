@@ -1519,6 +1519,14 @@ export const locationsPage = {
     ],
   },
   upload: {
+    analysis: {
+      florestChange: 'Forest Change Global',
+      deflorestationAlert: 'Near-real time alerts (GLAD, VIIRS)',
+      deflorestationReporting: 'Deforestation Reporting (cutoff date 2020)',
+      southeastAsia: 'Forest Change Southeast Asia',
+      southAmerica: 'Forest Change South America',
+      palmRisk: 'Palm Risk (only enabled for palm lists)',
+    },
     errors: {
       dataRead: 'Data Read Error',
       dataProjection: 'Data Projection Error',

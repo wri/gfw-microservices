@@ -39,9 +39,11 @@ WORKDIR /srv
 
 COPY dist/apps/webserver .
 
-# Copy all required files into the working directory.
-COPY apps/webserver/src/package.json ./src/package.json
-COPY apps/webserver/src/package-lock.json ./src/package-lock.json
+# Copy package*.json (required for npm install below)
+COPY package.json ./src/package.json
+COPY package-lock.json ./src/package-lock.json
+
+# Copy run-app.sh (rqeuired to build webpack)
 COPY apps/webserver/src/run-app.sh ./src/run-app.sh
 
 # Create Vector tiles directory

@@ -12,8 +12,12 @@ const jestConfigPath = path.resolve('./jest.config.json');
 const aliases = {};
 
 // Replace fixed paths with <rootDir> relative paths
-const replacePathWithRootDir = (fixedPath) =>
-  fixedPath.replace(/.*gfw-microservices\/apps\/webserver\/src/, '<rootDir>');
+const replacePathWithRootDir = (fixedPath) => {
+  if (/.*gfw-microservices\/apps\/webserver\/src/.test(fixedPath)) {
+    return fixedPath.replace(/.*gfw-microservices\/apps\/webserver\/src/, '<rootDir>');
+  }
+  return fixedPath.replace(/.*gfw-microservices/, '<rootDir>/../../..');
+};
 
 try {
   // Read in our base jest config

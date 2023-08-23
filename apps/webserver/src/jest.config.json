@@ -28,8 +28,8 @@
   "transformIgnorePatterns": ["/node_modules/"],
   "verbose": false,
   "moduleNameMapper": {
-    "^axios$": "<rootDir>/node_modules/axios/dist/node/axios.cjs",
-    "^mapshaper$": "<rootDir>/node_modules/mapshaper/mapshaper.js",
+    "^axios$": "<rootDir>/../../../node_modules/axios/dist/node/axios.cjs",
+    "^mapshaper$": "<rootDir>/../../../node_modules/mapshaper/mapshaper.js",
     "\\.(css|scss)$": "<rootDir>/test/__mocks__/object.js",
     "\\.(jpe?g|png|gif|svg)$": "<rootDir>/test/__mocks__/object.js",
     "src/client/map/js/layers(.*)$": "<rootDir>/test/__mocks__/constructor.js",
@@ -53,6 +53,7 @@
     "^changeExist(.*)$": "<rootDir>/client/changeExist$1",
     "^common(.*)$": "<rootDir>/client/common$1",
     "^dashboard(.*)$": "<rootDir>/client/dashboard$1",
+    "^diagnostics(.*)$": "<rootDir>/client/diagnostics$1",
     "^forgot(.*)$": "<rootDir>/client/forgot$1",
     "^locations(.*)$": "<rootDir>/client/locations$1",
     "^login(.*)$": "<rootDir>/client/login$1",

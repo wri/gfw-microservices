@@ -1,11 +1,11 @@
 #!/bin/bash
 
 if [ "$NODE_ENV" == "production" ] || [ "$NODE_ENV" == "ProdV2" ]; then
-  npm run webpack:build:production
+  node node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.js --config ./config/webpack.production.config.js
 elif [ "$NODE_ENV" == "staging" ]; then
-  npm run webpack:build:staging
+  node node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.js --config ./config/webpack.staging.config.js
 elif [ "$NODE_ENV" == "qa" ]; then
-  npm run webpack:build:qa
+  node node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.js --config ./config/webpack.qa.config.js
 #else
   #  For development run with npm.
   #  npm run webpack:build:dev

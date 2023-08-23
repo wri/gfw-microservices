@@ -29,10 +29,28 @@
         "buildTarget": "webserver:build"
       }
     },
+    "testweb": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/webserver"],
+      "options": {
+        "jestConfig": "apps/webserver/src/jest.config.json",
+        "forceExit": true,
+        "passWithNoTests": true
+      }
+    },
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npm --prefix ./apps/webserver/src run test"
+        "cwd": "apps/webserver/src",
+        "commands": [
+          "node ./test/prepare-jest",
+          {
+            "command": "npx tsc ../../../libs/sql/src/lib/queries/index.ts --outDir ./queries",
+            "forwardAllArgs": false
+          },
+          "nx run webserver:testweb"
+        ],
+        "parallel": false
       }
     }
   },

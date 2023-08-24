@@ -52,6 +52,12 @@
         ],
         "parallel": false
       }
+    },
+    "test-fitness": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm --prefix ./apps/webserver/src run test:fitness"
+      }
     }
   },
   "tags": []

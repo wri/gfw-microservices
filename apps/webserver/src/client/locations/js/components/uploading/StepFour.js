@@ -132,12 +132,12 @@ export default class StepFour extends Component {
         return filterValidCustom(template, customFields);
       });
     }
-
+    const { DEFORESTATION_KPIS, FOREST_CHANGE_DIAGNOSTICS, DEFORESTATION_ALERTS } = analysisTypes;
     const dropdownOptionsInvestmentCommodity = buildDropdownOptions(validLists, 'list_name');
     return (
       <div className={'locations-upload-step'}>
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
-
+      
         <fieldset className="locations-upload-save">
           <legend className="locations-upload-save__legend">
             {locationsPage.upload.analytics}
@@ -145,51 +145,21 @@ export default class StepFour extends Component {
           <div className="locations-upload-save__option-container">
             <input
               type="checkbox"
-              name={analysisTypes['FOREST_CHANGE_DIAGNOSTICS']}
-              id={analysisTypes['FOREST_CHANGE_DIAGNOSTICS']}
-              onChange={() => this.handleAnalyzesSelect(analysisTypes['FOREST_CHANGE_DIAGNOSTICS'])}
+              name={FOREST_CHANGE_DIAGNOSTICS}
+              id={FOREST_CHANGE_DIAGNOSTICS}
+              onChange={() => this.handleAnalyzesSelect(FOREST_CHANGE_DIAGNOSTICS)}
             />
-            <label htmlFor={analysisTypes['FOREST_CHANGE_DIAGNOSTICS']}>{locationsPage.upload.analysis.florestChange}</label>
+            <label htmlFor={FOREST_CHANGE_DIAGNOSTICS}>{locationsPage.upload.analysis.florestChange}</label>
           </div>
 
           <div className="locations-upload-save__option-container">
             <input
               type="checkbox"
-              name={analysisTypes['FOREST_SOUTH_AMERICA']}
-              id={analysisTypes['FOREST_SOUTH_AMERICA']}
-              onChange={() => this.handleAnalyzesSelect(analysisTypes['FOREST_SOUTH_AMERICA'])}
+              name={DEFORESTATION_KPIS}
+              id={DEFORESTATION_KPIS}
+              onChange={() => this.handleAnalyzesSelect(DEFORESTATION_KPIS)}
             />
-            <label htmlFor={analysisTypes['FOREST_SOUTH_AMERICA']}>{locationsPage.upload.analysis.southAmerica}</label>
-          </div>
-
-          <div className="locations-upload-save__option-container">
-            <input
-              type="checkbox"
-              name={analysisTypes['FOREST_SOUTHEAST_ASIA']}
-              id={analysisTypes['FOREST_SOUTHEAST_ASIA']}
-              onChange={() => this.handleAnalyzesSelect(analysisTypes['FOREST_SOUTHEAST_ASIA'])}
-            />
-            <label htmlFor={analysisTypes['FOREST_SOUTHEAST_ASIA']}>{locationsPage.upload.analysis.southeastAsia}</label>
-          </div>
-
-          <div className="locations-upload-save__option-container">
-            <input
-              type="checkbox"
-              name={analysisTypes['PALM_RISK']}
-              id={analysisTypes['PALM_RISK']}
-              onChange={() => this.handleAnalyzesSelect(analysisTypes['PALM_RISK'])}
-            />
-            <label htmlFor={analysisTypes['PALM_RISK']}>{locationsPage.upload.analysis.palmRisk}</label>
-          </div>
-
-          <div className="locations-upload-save__option-container">
-            <input
-              type="checkbox"
-              name={analysisTypes['DEFORESTATION_KPIS']}
-              id={analysisTypes['DEFORESTATION_KPIS']}
-              onChange={() => this.handleAnalyzesSelect(analysisTypes['DEFORESTATION_KPIS'])}
-            />
-            <label htmlFor={analysisTypes['DEFORESTATION_KPIS']}>
+            <label htmlFor={DEFORESTATION_KPIS}>
               {locationsPage.upload.analysis.deflorestationReporting}
             </label>
           </div>
@@ -197,11 +167,11 @@ export default class StepFour extends Component {
           <div className="locations-upload-save__option-container">
             <input
               type="checkbox"
-              name={analysisTypes['DEFORESTATION_ALERTS']}
-              id={analysisTypes['DEFORESTATION_ALERTS']}
-              onChange={() => this.handleAnalyzesSelect(analysisTypes['DEFORESTATION_ALERTS'])}
+              name={DEFORESTATION_ALERTS}
+              id={DEFORESTATION_ALERTS}
+              onChange={() => this.handleAnalyzesSelect(DEFORESTATION_ALERTS)}
             />
-            <label htmlFor={analysisTypes['DEFORESTATION_ALERTS']}>{locationsPage.upload.analysis.deflorestationAlert}</label>
+            <label htmlFor={DEFORESTATION_ALERTS}>{locationsPage.upload.analysis.deflorestationAlert}</label>
           </div>
         </fieldset>
 

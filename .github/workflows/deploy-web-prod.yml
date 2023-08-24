@@ -76,7 +76,8 @@ jobs:
         run: |
           npx nx run sql:makesql
           npx nx run webserver:build
-          docker build --build-arg NODE_ENV=${{ env.NODE_ENV }} -f apps/webserver/Dockerfile  -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          SHORT_SHA_COMMIT=$(git rev-parse --short HEAD)
+          docker build --build-arg NODE_ENV=${{ env.NODE_ENV }} --build-arg LATEST_COMMIT=$SHORT_SHA_COMMIT -f apps/webserver/Dockerfile  -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"

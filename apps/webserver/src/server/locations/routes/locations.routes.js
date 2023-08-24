@@ -134,6 +134,7 @@ module.exports = (app, limiter) => {
       gfw_list_id,
       selected_location_ids: src_location_ids,
       original_gfw_list,
+      selected_analysis = [],
     } = req.body;
 
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
@@ -149,7 +150,8 @@ module.exports = (app, limiter) => {
       custom_attributes,
       finalGeojson,
       gfw_list_id,
-      false
+      false,
+      selected_analysis,
     )
       .then(async ({ resultGeoJSON }) => {
         const dest_list = await ListManager.getListByListName(req, list_name);
@@ -194,6 +196,7 @@ module.exports = (app, limiter) => {
       gfw_list_id,
       selected_location_ids: src_location_ids,
       original_gfw_list,
+      selected_analysis = [],
     } = req.body;
 
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
@@ -207,7 +210,8 @@ module.exports = (app, limiter) => {
       location_classification,
       custom_attributes,
       finalGeojson,
-      gfw_list_id
+      gfw_list_id,
+      selected_analysis
     )
       .then(async ({ resultGeoJSON }) => {
         if (original_gfw_list) {
@@ -322,6 +326,7 @@ module.exports = (app, limiter) => {
       list_analysis_table_name,
       original_gfw_list,
       list_status_id,
+      selected_analysis = [],
     } = req.body;
 
     // 1. Change list status

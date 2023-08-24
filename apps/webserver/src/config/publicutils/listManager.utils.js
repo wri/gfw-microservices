@@ -234,7 +234,8 @@ const saveAsDraftList = (
   location_classification,
   user_id,
   custom_attributes,
-  gfw_list_id
+  gfw_list_id,
+  selected_analysis
 ) => {
   let list_id = null;
   // Tracking Stored Procedure Executions for rollbacks
@@ -930,7 +931,8 @@ const uploadToNewList = (
   custom_attributes,
   geojson,
   gfw_list_id,
-  is_edit = false
+  is_edit = false,
+  selected_analysis
 ) => {
   const user_id = req.session.organization_user_id;
   const list = listUtils.createListNameSchema(list_name);
@@ -992,7 +994,8 @@ const uploadToNewListAndSaveAsDraft = (
   location_classification,
   custom_attributes,
   geojson,
-  gfw_list_id
+  gfw_list_id,
+  selected_analysis
 ) => {
   const { original_gfw_list } = req.body;
   const user_id = req.session.organization_user_id;
@@ -1007,7 +1010,8 @@ const uploadToNewListAndSaveAsDraft = (
       location_classification,
       user_id,
       custom_attributes,
-      gfw_list_id
+      gfw_list_id,
+      selected_analysis
     )
       .then((list_id) => {
         listID = list_id;

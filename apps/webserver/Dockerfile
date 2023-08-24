@@ -8,12 +8,14 @@ LABEL Description="This is the Global Forest Watch Pro web application container
 # if they have not been specified in your docker-compose or ECS
 # environment variables.
 ARG NODE_ENV
+ARG LATEST_COMMIT
 
 # Main Environment Variables.
 # NOTE: NODE_ENV and PM2_CONFIG both need to defined in
 #       the docker-compose file or passed in via arguments (ECS).
 #       Otherwise the defaults below will be utilized.
 ENV NODE_ENV ${NODE_ENV}
+ENV LATEST_COMMIT ${LATEST_COMMIT}
 
 # Update everything that needs to be updated and do a clean.
 RUN apt-get -y update \

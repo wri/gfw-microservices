@@ -151,7 +151,7 @@ module.exports = (app, limiter) => {
       finalGeojson,
       gfw_list_id,
       false,
-      selected_analysis,
+      selected_analysis
     )
       .then(async ({ resultGeoJSON }) => {
         const dest_list = await ListManager.getListByListName(req, list_name);

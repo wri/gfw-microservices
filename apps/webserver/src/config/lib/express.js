@@ -174,7 +174,10 @@ const configureErrorRoutes = (app) => {
       return next();
     }
     // Log the error and respond with 500
-    logger.error('Unexpected server error', err.stack);
+    // If err is empty object, print current stack for debugging
+    const errObjVal =
+      typeof err === 'object' && Object.keys(err).length === 0 ? new Error('fake err').stack : err;
+    logger.error('Unexpected server error', err.stack || errObjVal);
     res
       .status(500)
       .render('500', { status: 500, type: 'server-error', message: 'Unexpected server error' });

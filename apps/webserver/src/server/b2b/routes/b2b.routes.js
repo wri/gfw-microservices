@@ -14,7 +14,8 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
 
 const b2bRoutes = express.Router();
 
-const BASE_URL = '/b2b';
+const BASE_URL = '/b2b'; // Used for rendering the page, mostly for routes that render pug templates
+const API_BASE_URL = `/api${BASE_URL}`; // Used for API calls, mostly for routes that return JSON and call the B2B microservice
 
 const PREMIUM_ACCOUNT_CODE = 2;
 const ADMIN_ACCESS_LEVEL_CODE = 1;
@@ -82,7 +83,7 @@ module.exports = (app, limiter) => {
     return res.status(403).send({ message: 'Forbidden' });
   };
 
-  app.use(`${BASE_URL}`, [...routeMiddlewares, isPremiumAndAdmin, b2bRoutes, runB2BRequest]);
+  app.use(`${API_BASE_URL}`, [...routeMiddlewares, isPremiumAndAdmin, b2bRoutes, runB2BRequest]);
 
   app.get(`${BASE_URL}`, (req, res) => {
     console.log(`GET ${BASE_URL}`);

@@ -1369,28 +1369,10 @@ export default class Lists extends Component {
   };
 
   viewDiagnostic = async (isSingleLocation) => {
-    const { selectedLists, selectedLocations, listView, history, filters } = this.props;
-    const [selectedList] = selectedLists;
-
-    this.setState({
-      isLoading: true,
-    });
-
-    const response = await viewDiagnostic(
-      selectedList,
-      history,
-      filters,
-      isSingleLocation,
-      selectedLocations,
-      listView
-    );
-
-    if (response?.errorCode === 604) {
-      this.setState({
-        isLoading: false,
-        listNotAccessible: true,
-      });
-    }
+    const { selectedLists, selectedLocations } = this.props;
+    const gfwList = !isUserList(selectedLists[0]) ? '&gfw=true' : '';
+    const locationId = isSingleLocation ? `&locationId=${selectedLocations[0]}` : '';
+    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationId}`;
   };
 
   viewMap = ({ showFullListMap }) => {
@@ -2006,7 +1988,6 @@ export default class Lists extends Component {
         : [];
     const flagOptions = columns.flags.map(this.createFlagList);
     const listName = selectedList ? selectedList.list_name : '';
-    console.log(selectedList, 'selectedList');
     const isGfwList = gfwListNames.includes(listName);
     // user lists are paginated in the backend, gfw lists search works in the front end
     const filteredLists = isGfwList

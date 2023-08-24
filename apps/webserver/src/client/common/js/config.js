@@ -555,6 +555,10 @@ export const highchartColorsIndonesiaLegalClassification2020 = {
   'Sanctuary Reserves/Nature Conservation Area': '#c489fd',
 };
 
+export const diagnosticsStrings = {
+  listOrLocationNotFound: 'List or location not found',
+};
+
 export const locationsPage = {
   templateDownloadSidebar: {
     initialPrompt: `<span>Download <a id="toggleUpload" href="" onclick="return false;">location upload templates</a>. For help, see our <a target="_blank" href=${GFW_PRO_USER_GUIDE}>how-to guide.</a></span>`,

@@ -1,9 +1,9 @@
 import httpRequest from '../../../../common/js/utils/httpRequest';
-import { b2bConnectionsMock } from './b2bConnectionsMock';
+const API_BASE_URL = '/api/b2b';
 
 async function getOrgsList(email) {
   return httpRequest
-    .fetchJSON(`/b2b/connection/${email}`, {})
+    .fetchJSON(`${API_BASE_URL}/connection/${email}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
@@ -15,7 +15,7 @@ async function getOrgsList(email) {
 
 async function getConnections() {
   return httpRequest
-    .fetchGet('/b2b/connection')
+    .fetchGet(`${API_BASE_URL}/connection`)
     .then((response) => {
       return JSON.parse(response);
     })
@@ -26,7 +26,7 @@ async function getConnections() {
 }
 
 async function sendInvitation(email, organization) {
-  return fetch('/b2b/invitation', {
+  return fetch(`${API_BASE_URL}/invitation`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ async function sendInvitation(email, organization) {
 }
 
 async function checkUserBelongsToOrgAndIsAdmin(email, organizationName) {
-  return fetch('/b2b/connection/check-user', {
+  return fetch(`${API_BASE_URL}/connection/check-user`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ async function checkUserBelongsToOrgAndIsAdmin(email, organizationName) {
 
 async function resendInvitation(id) {
   return httpRequest
-    .fetchForm(`/b2b/invitation/${id}`, {})
+    .fetchForm(`${API_BASE_URL}/invitation/${id}`, {})
     .then((response) => {
       return JSON.parse(response);
     })
@@ -58,7 +58,7 @@ async function resendInvitation(id) {
 }
 
 async function acceptConnection(id) {
-  return fetch(`/b2b/connection/accept/${id}`, {
+  return fetch(`${API_BASE_URL}/connection/accept/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ async function acceptConnection(id) {
 }
 
 async function rejectConnection(id) {
-  return fetch(`/b2b/connection/reject/${id}`, {
+  return fetch(`${API_BASE_URL}/connection/reject/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ async function rejectConnection(id) {
 }
 
 async function cancelConnection(id) {
-  return fetch(`/b2b/connection/cancel/${id}`, {
+  return fetch(`${API_BASE_URL}/connection/cancel/${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

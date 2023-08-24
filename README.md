@@ -35,10 +35,19 @@ Inside each microservice app there is an `example.env` file where you can find `
 If you consider having one .env is more convenient, here is a simple command to gather all the example.env files and create the .env file at the root of the repo:
 
 ```sh
-cat apps/microservices/**/*.env | sort | uniq > .env
+cat apps/*/*/*.env | sort | uniq > .env
 ```
 
 Here is the loading order of environment files: https://nx.dev/recipes/environment-variables/define-environment-variables
+
+Once everything is setup (see pre-requisites below), run the webserver with the following command.
+This will start the typescript compilation for the backend, run the backend, start webpack build
+for the frontend, and serve it up on default 8443 port. This command also watches the filesystem
+for changes to any code files and will automatically rebuild and re-serve the webserver.
+
+```sh
+nx serve webserver
+```
 
 #### List-Downloader
 
@@ -86,19 +95,37 @@ LISTS_MICROSERVICE_URL=http://host.docker.internal:3333/api
 
 #### Pre-requisites
 
-> run the following command to create the database queries inside the webserver project
+#### Docker Command to Build/Run
+
+Docker is used to run a redis container for development builds
+
+```sh
+docker-compose -f docker-compose.website.dev.yml build
+docker-compose -f docker-compose.website.dev.yml up -d
+```
+
+You will need to set REDIS_HOST value in the .env file to point to the localhost or
+another host if your redis confguration requires a different IP address.
+
+```sh
+REDIS_HOST=127.0.0.1
+```
+
+#### Stored procedures
+
+This step was previously necessary because the webserver component didn't support typescript,
+but webserver can use typescript now, so this could be removed soon with some changes on how
+the queries are imported. In the meantime, the following command needs to be run to typescript
+queries into regular javascript code and placed in a directory webserver knows to consume.
+
+> run the following command for a one-time query conversion
 
 ```sh
 npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries
 ```
 
-#### Docker Command to Build/Run
-
-```sh
-docker-compose -f docker-compose.website.dev.yml build
-```
-
-#### Doing changes in stored procedures
+When actively modifying stored procedures, it will be useful to continuously convert the queries
+with the following command
 
 ```sh
 npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries --watch

@@ -1,0 +1,21 @@
+### Get analysis data
+GET https://localhost:8443/api/list/5442/analysis
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### send an invitation to create a connection between two organizations
+POST https://localhost:8443/api/list/5448/analysis
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "analysisIds": ["FCD"]
+}
+
+### send an invitation to create a connection between two organizations
+POST https://localhost:8443/api/list/5442/analysis
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+{
+  "analysisIds": ["FCD"]
+}

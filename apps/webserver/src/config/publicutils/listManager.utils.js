@@ -54,6 +54,7 @@ const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+const analyticsService =  require(path.resolve('./server/analytics/service/analytics.service'));
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -70,7 +71,6 @@ const createList = (
   req,
   list_name,
   template_id,
-  commodity,
   location_classification,
   user_id,
   custom_attributes,
@@ -499,6 +499,35 @@ const getAllLists = (req) => {
       });
   });
 };
+
+
+const getAllListsWithAnalysisId = (req) => {
+  return new Promise((resolve, reject) => {
+    const promises = [
+      getAllLists(req),
+      analyticsService.getAllListsAnalysisStatus(req)
+    ]
+
+    Promise.all(promises)
+      .then((results) => {
+        const [orgLists , analysisIdStatus ] = results;
+        orgLists.forEach((list) => {
+          const filter = analysisIdStatus.filter((analysis) => analysis.ListID == list.id)
+          const analysisId = filter.reduce((acc, cur) => {
+            const { AnalysisID, Status, ErrorInfo, UpdateTime } = cur;
+            acc[AnalysisID] = {
+              Status,
+              ErrorInfo,
+              UpdateTime
+            }
+            return acc;
+          }, {});
+          list.AnalysisID = analysisId;
+        });
+        resolve(orgLists)
+      }).catch((error) => reject(error));
+  })
+}
 
 /** @function {getListLocations}
  *   @summary Get function to return geojson of locations for a particular list.
@@ -1980,6 +2009,7 @@ module.exports = {
   getNumberPagesForAnalysisDataUserList,
   getListLocationGeometry,
   deleteListIfEmpty,
+  getAllListsWithAnalysisId,
 };
 
 // Require after modules have been exported so the module can be fully loaded

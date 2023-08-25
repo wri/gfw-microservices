@@ -84,4 +84,24 @@
       color: $gfw-green;
     }
   }
+
+  // Notice for Limits
+  &--notice {
+    background-color: #ffe8cd;
+
+    & .MuiIcon-root {
+      margin-top: 5px;
+      margin-right: 10px;
+      font-size: 1.75rem;
+    }
+
+    & a.notice-cta,
+    & .MuiIcon-root {
+      color: orange;
+    }
+
+    & a.notice-cta {
+      cursor: pointer;
+    }
+  }
 }

@@ -61,7 +61,7 @@ import {
   UserListSidebarItemFailed,
   UserListSidebarItemDraft,
 } from './UserListSidebarItems';
-import Banner from '../../../../common/js/components/Banner';
+import Banner from '../../../../common/js/components/Banners/Banner';
 import {
   checkColumnListCR,
   checkColumnListFC,

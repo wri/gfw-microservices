@@ -32,7 +32,7 @@ import {
 } from '../../utils/upload.utils';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import FileDrop from './FileDrop';
-import Banner from '../../../../common/js/components/Banner';
+import Banner from '../../../../common/js/components/Banners/Banner';
 import Button from '../../../../common/js/components/Button';
 import IconBadgeCheck from '../../../../common/js/components/icon/IconBadgeCheck';
 import IconExclamationTriangle from '../../../../common/js/components/icon/IconExclamationTriangle';

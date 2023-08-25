@@ -127,8 +127,16 @@ export default class LocationList extends Component {
   render() {
     const { isManageListFolderOpen, isDeleteDialogOpen, rerunDialogState, confirmDownloadDialog } =
       this.state;
-    const { folders, locations, list, currentUser, onFolderChange, isAListSharedWithMe, history } =
-      this.props;
+    const {
+      folders,
+      locations,
+      list,
+      currentUser,
+      onFolderChange,
+      isAListSharedWithMe,
+      history,
+      listsFailedByUsageLimits,
+    } = this.props;
 
     const userIsAdmin = currentUser.access_level_id === userAccessLevel.ADMIN;
     const userIsViewer = currentUser.access_level_id === userAccessLevel.VIEWER;
@@ -175,6 +183,7 @@ export default class LocationList extends Component {
             showDelete={showDelete}
             setManageListFolderOpen={() => this.setState({ isManageListFolderOpen: true })}
             setDeleteDialogOpen={() => this.setState({ isDeleteDialogOpen: true })}
+            isFailedByUsageLimits={listsFailedByUsageLimits.includes(list.id)}
           />
         );
       } else if (getIsDiagnosticStatusDraft(list)) {

@@ -24,15 +24,6 @@ const LightTooltip = withStyles(() => ({
   },
 }))(Tooltip);
 
-const Span = styled('span')({
-  height: 14,
-  color: (props) => props.color ?? 'red',
-  display: 'flex',
-  alignContent: 'center',
-  alignItems: 'center',
-  gap: 5,
-});
-
 const reasonMap = {
   default: {
     color: 'red',
@@ -65,10 +56,10 @@ export default function FailedTooltip({
         }
       }}
     >
-      <Span color={config.color}>
+      <span className={`failed-tooltip failed-tooltip--${reason}`}>
         {config.icon}
         {label && label}
-      </Span>
+      </span>
     </LightTooltip>
   );
 }

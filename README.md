@@ -26,6 +26,89 @@ we use Husky to automatically run format, lint and test , but to install it you 
 
 ---
 
+#### Pre-requisites for webserver
+
+##### Docker Command to Build/Run
+
+Docker is used to run a redis container for development builds
+
+```sh
+docker-compose -f docker-compose.website.dev.yml build
+docker-compose -f docker-compose.website.dev.yml up -d
+```
+
+You will need to set REDIS_HOST value in the .env file to point to the localhost or
+another host if your redis confguration requires a different IP address.
+
+```sh
+REDIS_HOST=127.0.0.1
+```
+
+##### Stored procedures
+
+This step was previously necessary because the webserver component didn't support typescript,
+but webserver can use typescript now, so this could be removed soon with some changes on how
+the queries are imported. In the meantime, the following command needs to be run to typescript
+queries into regular javascript code and placed in a directory webserver knows to consume.
+
+> run the following command for a one-time query conversion
+
+```sh
+npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries
+```
+
+When actively modifying stored procedures, it will be useful to continuously convert the queries
+with the following command
+
+```sh
+npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries --watch
+```
+
+##### Tippecanoe
+
+Tippecanoe is a software package that is used to generate mapbox vector tiles for lists.
+To install on MacOS, use the brew.
+
+```sh
+brew install tippecanoe
+```
+
+To install on Ubuntu, use the following commands
+
+```sh
+sudo apt-get update
+sudo apt-get install git build-essential libsqlite3-dev zlib1g-dev
+mkdir -p /tmp/tippecanoe-src
+git clone https://github.com/mapbox/tippecanoe.git /tmp/tippecanoe-src
+cd /tmp/tippecanoe-src
+make
+sudo make install
+rm -rf /tmp/tippecanoe-src
+```
+
+After installation tippecanoe must be in your path.
+NOTE: You may need to start a new terminal window to see the affect of the installtion.
+To check you can run the following command
+
+```sh
+which tippecanoe
+```
+
+That should print out the full path to the tippecanoe binary. If it prints nothing, or an
+error message, the installtion didn't work right.
+
+You can also run the tippecanoe command without any paramaters
+
+```sh
+tippecanoe
+```
+
+It should run the tippecanoe binary and print an error message like the following
+
+```sh
+tippecanoe: must specify -o out.mbtiles or -e directory
+```
+
 ### Run
 
 Before running the microservices, you have to create a `.env` file inside the root of the project.
@@ -40,7 +123,9 @@ cat apps/*/*/*.env | sort | uniq > .env
 
 Here is the loading order of environment files: https://nx.dev/recipes/environment-variables/define-environment-variables
 
-Once everything is setup (see pre-requisites below), run the webserver with the following command.
+#### Webserver
+
+Once everything is setup, run the webserver with the following command.
 This will start the typescript compilation for the backend, run the backend, start webpack build
 for the frontend, and serve it up on default 8443 port. This command also watches the filesystem
 for changes to any code files and will automatically rebuild and re-serve the webserver.
@@ -92,44 +177,6 @@ LISTS_MICROSERVICE_URL=http://host.docker.internal:3333/api
 ### Webserver
 
 > This project contains our front-end and back-end
-
-#### Pre-requisites
-
-#### Docker Command to Build/Run
-
-Docker is used to run a redis container for development builds
-
-```sh
-docker-compose -f docker-compose.website.dev.yml build
-docker-compose -f docker-compose.website.dev.yml up -d
-```
-
-You will need to set REDIS_HOST value in the .env file to point to the localhost or
-another host if your redis confguration requires a different IP address.
-
-```sh
-REDIS_HOST=127.0.0.1
-```
-
-#### Stored procedures
-
-This step was previously necessary because the webserver component didn't support typescript,
-but webserver can use typescript now, so this could be removed soon with some changes on how
-the queries are imported. In the meantime, the following command needs to be run to typescript
-queries into regular javascript code and placed in a directory webserver knows to consume.
-
-> run the following command for a one-time query conversion
-
-```sh
-npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries
-```
-
-When actively modifying stored procedures, it will be useful to continuously convert the queries
-with the following command
-
-```sh
-npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries --watch
-```
 
 ### Test
 

@@ -54,7 +54,7 @@ const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
-const analyticsService =  require(path.resolve('./server/analytics/service/analytics.service'));
+const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -500,34 +500,31 @@ const getAllLists = (req) => {
   });
 };
 
-
 const getAllListsWithAnalysisId = (req) => {
   return new Promise((resolve, reject) => {
-    const promises = [
-      getAllLists(req),
-      analyticsService.getAllListsAnalysisStatus(req)
-    ]
+    const promises = [getAllLists(req), analyticsService.getAllListsAnalysisStatus(req)];
 
     Promise.all(promises)
       .then((results) => {
-        const [orgLists , analysisIdStatus ] = results;
+        const [orgLists, analysisIdStatus] = results;
         orgLists.forEach((list) => {
-          const filter = analysisIdStatus.filter((analysis) => analysis.ListID == list.id)
+          const filter = analysisIdStatus.filter((analysis) => analysis.ListID == list.id);
           const analysisId = filter.reduce((acc, cur) => {
             const { AnalysisID, Status, ErrorInfo, UpdateTime } = cur;
             acc[AnalysisID] = {
               Status,
               ErrorInfo,
-              UpdateTime
-            }
+              UpdateTime,
+            };
             return acc;
           }, {});
           list.AnalysisID = analysisId;
         });
-        resolve(orgLists)
-      }).catch((error) => reject(error));
-  })
-}
+        resolve(orgLists);
+      })
+      .catch((error) => reject(error));
+  });
+};
 
 /** @function {getListLocations}
  *   @summary Get function to return geojson of locations for a particular list.

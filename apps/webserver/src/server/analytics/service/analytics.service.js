@@ -5,7 +5,9 @@ const { getOrganizationAnalysisUsage } = require(path.resolve(
   './queries/system/getOrganizationAnalysisUsage'
 ));
 const { getAnalysisLimits } = require(path.resolve('./queries/system/getAnalysisLimits'));
-const { getAllListsAnalysisStatus } = require(path.resolve('./queries/organization/getAllListsAnalysisStatus'));
+const { getAllListsAnalysisStatus } = require(path.resolve(
+  './queries/organization/getAllListsAnalysisStatus'
+));
 
 exports.getOrganizationAnalysisUsage = async ({
   startDate,

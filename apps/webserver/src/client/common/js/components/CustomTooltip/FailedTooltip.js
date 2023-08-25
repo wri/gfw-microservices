@@ -3,6 +3,7 @@ import { withStyles, styled } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconBan from '../icon/IconBan';
 import IconLimit from '../icon/IconLimit';
+import '../../../css/failed-list-tooltip.scss';
 
 const BORDER = '1px solid #ccc';
 const BACKGROUND_COLOR = '#fcfcfc';

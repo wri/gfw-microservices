@@ -7,7 +7,7 @@ import LinkButton from '../../../../common/js/components/LinkButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import ListsFilter from '../lists/ListsFilter';
 import { locationsPage, folderDetailPage } from '../../../../common/js/config';
-import Banner from '../../../../common/js/components/Banner';
+import Banner from '../../../../common/js/components/Banners/Banner';
 
 import {
   changeView,

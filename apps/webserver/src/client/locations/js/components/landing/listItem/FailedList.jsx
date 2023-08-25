@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PublicIcon from '@mui/icons-material/Public';
 import GroupsIcon from '@mui/icons-material/Groups';
 import Divider from 'material-ui/Divider';
@@ -24,6 +24,7 @@ function FailedList({
   showDelete,
   setManageListFolderOpen,
   setDeleteDialogOpen,
+  isFailedByUsageLimits,
 }) {
   const [openDownloadLargeListFileDialog, setOpenDownloadLargeListFileDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -57,11 +58,16 @@ function FailedList({
           )}
           <span className="locations-list__failed">
             <FailedTooltip
+              reason={isFailedByUsageLimits ? 'limits' : 'default'}
               placement="top"
               label={locationsPage.lists.failed}
-              tooltipMessage={`This list has failed analysis. To receive results, resubmit this list for analysis. ${
-                isLargeList ? 'Click to download the file and fix errors.' : ''
-              }`}
+              tooltipMessage={
+                isFailedByUsageLimits
+                  ? `This list failed due to usage limits.`
+                  : `This list has failed analysis. To receive results, resubmit this list for analysis. ${
+                      isLargeList ? 'Click to download the file and fix errors.' : ''
+                    }`
+              }
               onClickAction={
                 isLargeList
                   ? () => {

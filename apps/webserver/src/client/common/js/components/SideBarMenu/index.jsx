@@ -29,7 +29,7 @@ function ProfileSideBar({
   }
 
   return (
-    <Box>
+    <Box id="sidebar">
       <Card variant="outlined">
         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} disablePadding>
           <ListItem sx={{ background: '#f7f7f7' }}>

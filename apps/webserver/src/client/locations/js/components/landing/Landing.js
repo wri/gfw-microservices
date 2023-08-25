@@ -2,7 +2,8 @@
 import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import { withRouter } from 'react-router-dom';
-import Banner from '../../../../common/js/components/Banner';
+import Banner from '../../../../common/js/components/Banners/Banner';
+import UsageLimitBanner from '../../../../common/js/components/Banners/UsageLimitBanner';
 import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
@@ -41,6 +42,8 @@ import {
   MY_SHARED_LISTS,
   LISTS_SHARED_WITH_ME,
 } from './MyListsTabs/MyListsTabs.constants';
+import getCookie from '../../../../common/js/utils/getCookie';
+import getAnalysisLimitListsStatus from './getAnalysisLimitListsStatus';
 
 class Landing extends Component {
   constructor(props) {
@@ -58,18 +61,16 @@ class Landing extends Component {
       selectedTab: '',
       mySharedLists: [],
       listsSharedWithMe: [],
+      listsFailedByUsageLimits: [],
     };
   }
 
   componentDidMount() {
     this._isMounted = true;
-    // check for landing banner cookie
-    const cookies = document.cookie.split(';').reduce((res, current) => {
-      const [key, val] = current.trim().split('=');
-      return Object.assign(res, { [key]: val });
-    }, {});
-    if (cookies && cookies.LandingBannerContent) {
-      this.setState({ bannerContent: cookies.LandingBannerContent });
+    const landingBannerContentCookie = getCookie('LandingBannerContent');
+
+    if (landingBannerContentCookie) {
+      this.setState({ bannerContent: landingBannerContentCookie });
       // unset cookie
       document.cookie = 'LandingBannerContent=; expires=0; path=/;';
     }
@@ -85,6 +86,12 @@ class Landing extends Component {
         this.setState({ listsSharedWithMe });
       });
     }
+
+    getAnalysisLimitListsStatus().then((data) => {
+      if (data.length) {
+        this.setState({ listsFailedByUsageLimits: data });
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -175,6 +182,7 @@ class Landing extends Component {
           this.loadFolders();
         }}
         isAListSharedWithMe={isAListSharedWithMe}
+        listsFailedByUsageLimits={this.state.listsFailedByUsageLimits}
       />
     );
   };
@@ -227,6 +235,7 @@ class Landing extends Component {
       selectedTab,
       mySharedLists,
       listsSharedWithMe,
+      listsFailedByUsageLimits,
     } = this.state;
     const {
       locationCount: counts,
@@ -287,6 +296,7 @@ class Landing extends Component {
 
     return (
       <div className={`${view === 'landing' ? '' : 'hidden'}`}>
+        {listsFailedByUsageLimits.length > 0 ? <UsageLimitBanner /> : null}
         {bannerContent && (
           <Banner
             className="landing-banner"

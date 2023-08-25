@@ -1,13 +1,13 @@
 .failed-tooltip {
-    height: 14px;
-    display: flex;
-    align-content: center;
-    align-items: center;
-    gap: 5px;
+  height: 14px;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  gap: 5px;
 
-    color: red;
+  color: red;
 
-    &--limits {
-        color: orange;
-    }
+  &--limits {
+    color: orange;
+  }
 }

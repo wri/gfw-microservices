@@ -1523,6 +1523,14 @@ export const locationsPage = {
     ],
   },
   upload: {
+    analysis: {
+      florestChange: 'Forest Change Global',
+      deflorestationAlert: 'Near-real time alerts (GLAD, VIIRS)',
+      deflorestationReporting: 'Deforestation Reporting (cutoff date 2020)',
+      southeastAsia: 'Forest Change Southeast Asia',
+      southAmerica: 'Forest Change South America',
+      palmRisk: 'Palm Risk (only enabled for palm lists)',
+    },
     errors: {
       dataRead: 'Data Read Error',
       dataProjection: 'Data Projection Error',
@@ -1598,6 +1606,7 @@ export const locationsPage = {
     successBanner:
       'New locations have been added. You will receive an email once analysis of the locations is complete, and can reload the page to access the data.',
     list: 'List',
+    analytics: 'Analytics',
     addToExisting: 'Add to existing',
     createNew: 'Create new',
     browse: 'Browse',

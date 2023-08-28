@@ -5,6 +5,8 @@ import { locationsPage } from '../../../../common/js/config';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { filterValidTemplates, filterValidCustom } from '../../utils/moveLocations';
+import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
+import { isEudrAvailable } from '../../../../../utils/general.utils';
 
 export default class StepFour extends Component {
   constructor(props) {
@@ -62,6 +64,7 @@ export default class StepFour extends Component {
       // Internal-only values to repopulate interface when toggling between options.
       _newListName: locationClassification,
       _selectedExistingList: { name: '', value: '' },
+      _selectedAnalysis: [],
     };
   }
 
@@ -77,6 +80,16 @@ export default class StepFour extends Component {
   checkExistingList(locationClassification) {
     return this.props.orgLists.some((list) => list.list_name === locationClassification);
   }
+
+  handleAnalyzesSelect = (type) => {
+    const index = this.state._selectedAnalysis.indexOf(type);
+    if (index > -1) {
+      this.setState({ _selectedAnalysis: this.state._selectedAnalysis.splice(index, 1) });
+      return;
+    }
+
+    this.setState({ _selectedAnalysis: [...this.state._selectedAnalysis, type] });
+  };
 
   getActive = () => {
     const template_name = deduceActiveName(this.props.activeTemplate);
@@ -120,11 +133,50 @@ export default class StepFour extends Component {
         return filterValidCustom(template, customFields);
       });
     }
-
+    const { DEFORESTATION_KPIS, FOREST_CHANGE_DIAGNOSTICS, DEFORESTATION_ALERTS } = analysisTypes;
     const dropdownOptionsInvestmentCommodity = buildDropdownOptions(validLists, 'list_name');
     return (
       <div className={'locations-upload-step'}>
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
+        
+        {isEudrAvailable && (
+          <fieldset className="locations-upload-save">
+            <legend className="locations-upload-save__legend">
+              {locationsPage.upload.analytics}
+            </legend>
+            <div className="locations-upload-save__option-container">
+              <input
+                type="checkbox"
+                name={FOREST_CHANGE_DIAGNOSTICS}
+                id={FOREST_CHANGE_DIAGNOSTICS}
+                onChange={() => this.handleAnalyzesSelect(FOREST_CHANGE_DIAGNOSTICS)}
+              />
+              <label htmlFor={FOREST_CHANGE_DIAGNOSTICS}>{locationsPage.upload.analysis.florestChange}</label>
+            </div>
+
+            <div className="locations-upload-save__option-container">
+              <input
+                type="checkbox"
+                name={DEFORESTATION_KPIS}
+                id={DEFORESTATION_KPIS}
+                onChange={() => this.handleAnalyzesSelect(DEFORESTATION_KPIS)}
+              />
+              <label htmlFor={DEFORESTATION_KPIS}>
+                {locationsPage.upload.analysis.deflorestationReporting}
+              </label>
+            </div>
+
+            <div className="locations-upload-save__option-container">
+              <input
+                type="checkbox"
+                name={DEFORESTATION_ALERTS}
+                id={DEFORESTATION_ALERTS}
+                onChange={() => this.handleAnalyzesSelect(DEFORESTATION_ALERTS)}
+              />
+              <label htmlFor={DEFORESTATION_ALERTS}>{locationsPage.upload.analysis.deflorestationAlert}</label>
+            </div>
+          </fieldset>
+        )}
 
         <fieldset className="locations-upload-save">
           <legend className="locations-upload-save__legend">{locationsPage.upload.list}</legend>

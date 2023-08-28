@@ -213,6 +213,9 @@
     "webpack-hot-middleware": "^2.25.1",
     "xhr-mock": "2.5.1"
   },
+  "engines": {
+    "node": "20.5.1"
+  },
   "lint-staged": {
     "{apps,libs,tools}/**/*.{ts, js, jsx}": [
       "nx affected --target lint --uncommitted --fix true",

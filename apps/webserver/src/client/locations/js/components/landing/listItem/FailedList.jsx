@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import PublicIcon from '@mui/icons-material/Public';
 import GroupsIcon from '@mui/icons-material/Groups';
+import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import Menu from 'material-ui/Menu';
@@ -104,6 +106,7 @@ function FailedList({
                 primaryText={
                   isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
                 }
+                leftIcon={<FolderIcon />}
                 onClick={() => {
                   setManageListFolderOpen();
                   setIsMenuOpen(false);
@@ -115,6 +118,7 @@ function FailedList({
                   <MenuItem
                     primaryText={locationsPage.lists.delete}
                     className="MenuItem--danger"
+                    leftIcon={<DeleteIcon />}
                     onClick={() => {
                       setDeleteDialogOpen();
                       setIsMenuOpen(false);

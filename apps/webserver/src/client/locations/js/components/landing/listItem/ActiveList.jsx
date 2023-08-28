@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import Popover from 'material-ui/Popover';
 import PublicIcon from '@mui/icons-material/Public';
 import GroupsIcon from '@mui/icons-material/Groups';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import PlaceIcon from '@mui/icons-material/Place';
+import ShareIcon from '@mui/icons-material/Share';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import FolderIcon from '@mui/icons-material/Folder';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from 'material-ui/Divider';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
@@ -13,9 +20,10 @@ import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots'
 import sharedColumnText from './sharedColumnText';
 import redirectToPage from '../../../../../common/js/utils/redirect';
 import LandingDownload from '../../lists/download/LandingDownload';
-import { viewDiagnostic } from '../../lists/viewDiagnostic';
 import { numberWithCommas } from '../../../utils/locationsTableUtils';
+import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 import { locationsPage, nav, treeCoverLossID } from '../../../../../common/js/config';
+import featureFlags from '../../../../../../utils/general.utils';
 
 function ActiveList({
   list,
@@ -38,7 +46,9 @@ function ActiveList({
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoadingDiagnostic, setIsLoadingDiagnostic] = useState(false);
+  const [isChangeTypeOfAnalysisModalOpen, setIsChangeTypeOfAnalysisModalOpen] = useState(false);
 
+  const { isEudrAvailable } = featureFlags;
   const {
     list_name,
     id,
@@ -100,122 +110,150 @@ function ActiveList({
   };
 
   return (
-    <li
-      className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
-      onClick={clickLocationRow}
-    >
-      <div className="locations-list__title">
-        {showListSharedWithMeIcon && <PublicIcon />}
-        {list_name}
-        {is_shared && <IconUsers className="locations-list__shared-icon" />}
-      </div>
-
-      {showSharedColumn && (
-        <div className="locations-list__shared">
-          <GroupsIcon />
-          {sharedColumnText()}
+    <>
+      <ChangeTypeOfAnalysisModal
+        setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
+        isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
+      />
+      <li
+        className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
+        onClick={clickLocationRow}
+      >
+        <div className="locations-list__title">
+          {showListSharedWithMeIcon && <PublicIcon />}
+          {list_name}
+          {is_shared && <IconUsers className="locations-list__shared-icon" />}
         </div>
-      )}
 
-      <div className="locations-list__controls">
-        {showRerun && (
-          <Button
-            className="locations-list__update-button"
-            onClick={handleRerunDialogState}
-            label={locationsPage.lists.update}
-            size="small"
-            variant="secondary"
-          />
+        {showSharedColumn && (
+          <div className="locations-list__shared">
+            <GroupsIcon />
+            {sharedColumnText()}
+          </div>
         )}
-        <span className="locations-list__count">
-          {numberWithCommas(locations || 0)} {locationsPage.lists.locations.toLowerCase()}
-        </span>
-      </div>
 
-      <div className="locations-list__menu-container">
-        <IconButton
-          icon={<IconMenuDots />}
-          title={nav.more}
-          size="medium"
-          variant="menu"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setMenuAnchorEl(e.currentTarget);
-            setIsMenuOpen(!isMenuOpen);
-          }}
-        />
-        <Popover
-          anchorEl={menuAnchorEl}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          open={isMenuOpen}
-          onRequestClose={() => setIsMenuOpen(false)}
-          targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-        >
-          <Menu className="context-menu">
-            {showDiagnosticOpt && (
-              <MenuItem
-                primaryText={locationsPage.lists.diagnostic}
-                leftIcon={isLoadingDiagnostic ? <InlineLoader /> : null}
-                onClick={() => {
-                  window.location = `/diagnostics?listId=${id}`;
-                }}
-              />
-            )}
-            {showMapOpt && <MenuItem primaryText={locationsPage.lists.map} onClick={viewMap} />}
-            {showDownloadOpt && (
-              <LandingDownload
-                locations={locations || 0}
-                listID={id}
-                isLargeList={isLargeList}
-                hasErrorFile={hasErrorFile}
-                downloadRequestedFromFolder={!!folder}
-                closeMenu={() => setIsMenuOpen(false)}
-                setConfirmDialog={() => showConfirmDownloadDialog()}
-                error_file_storage_path={error_file_storage_path}
-              />
-            )}
-            {userIsAdmin && (
-              <MenuItem
-                primaryText={locationsPage.lists.share}
-                onClick={(e) => shareList(e, list)}
-              />
-            )}
-            {showRerunOpt && (
-              <MenuItem
-                primaryText={locationsPage.lists.update}
-                onClick={(e) => {
-                  setIsMenuOpen(false);
-                  handleRerunDialogState(e);
-                }}
-              />
-            )}
-
-            <Divider />
-            <MenuItem
-              primaryText={!!folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
-              onClick={() => {
-                setManageListFolderOpen();
-                setIsMenuOpen(false);
-              }}
+        <div className="locations-list__controls">
+          {showRerun && (
+            <Button
+              className="locations-list__update-button"
+              onClick={handleRerunDialogState}
+              label={locationsPage.lists.update}
+              size="small"
+              variant="secondary"
             />
-            {showDelete && (
-              <>
-                <Divider />
+          )}
+          <span className="locations-list__count">
+            {numberWithCommas(locations || 0)} {locationsPage.lists.locations.toLowerCase()}
+          </span>
+        </div>
+
+        <div className="locations-list__menu-container">
+          <IconButton
+            icon={<IconMenuDots />}
+            title={nav.more}
+            size="medium"
+            variant="menu"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setMenuAnchorEl(e.currentTarget);
+              setIsMenuOpen(!isMenuOpen);
+            }}
+          />
+          <Popover
+            anchorEl={menuAnchorEl}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            open={isMenuOpen}
+            onRequestClose={() => setIsMenuOpen(false)}
+            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            <Menu className="context-menu">
+              {showDiagnosticOpt && (
                 <MenuItem
-                  primaryText={locationsPage.lists.delete}
-                  className="MenuItem--danger"
+                  primaryText={locationsPage.lists.diagnostic}
+                  leftIcon={isLoadingDiagnostic ? <InlineLoader /> : <QueryStatsIcon />}
                   onClick={() => {
-                    setDeleteDialogOpen();
+                    window.location = `/diagnostics?listId=${id}`;
+                  }}
+                />
+              )}
+              {showMapOpt && (
+                <MenuItem
+                  primaryText={locationsPage.lists.map}
+                  leftIcon={<PlaceIcon />}
+                  onClick={viewMap}
+                />
+              )}
+              {showDownloadOpt && (
+                <LandingDownload
+                  locations={locations || 0}
+                  listID={id}
+                  isLargeList={isLargeList}
+                  hasErrorFile={hasErrorFile}
+                  downloadRequestedFromFolder={!!folder}
+                  closeMenu={() => setIsMenuOpen(false)}
+                  setConfirmDialog={() => showConfirmDownloadDialog()}
+                  error_file_storage_path={error_file_storage_path}
+                />
+              )}
+              {userIsAdmin && (
+                <MenuItem
+                  primaryText={locationsPage.lists.share}
+                  leftIcon={<ShareIcon />}
+                  onClick={(e) => shareList(e, list)}
+                />
+              )}
+              {showRerunOpt && (
+                <MenuItem
+                  primaryText={locationsPage.lists.update}
+                  leftIcon={<RefreshIcon />}
+                  onClick={(e) => {
+                    setIsMenuOpen(false);
+                    handleRerunDialogState(e);
+                  }}
+                />
+              )}
+
+              <Divider />
+              <MenuItem
+                primaryText={
+                  !!folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
+                }
+                leftIcon={<FolderIcon />}
+                onClick={() => {
+                  setManageListFolderOpen();
+                  setIsMenuOpen(false);
+                }}
+              />
+              {isEudrAvailable && (
+                <MenuItem
+                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
+                  leftIcon={<SettingsIcon />}
+                  onClick={() => {
+                    setIsChangeTypeOfAnalysisModalOpen(true);
                     setIsMenuOpen(false);
                   }}
                 />
-              </>
-            )}
-          </Menu>
-        </Popover>
-      </div>
-    </li>
+              )}
+              {showDelete && (
+                <>
+                  <Divider />
+                  <MenuItem
+                    primaryText={locationsPage.lists.delete}
+                    leftIcon={<DeleteIcon />}
+                    className="MenuItem--danger"
+                    onClick={() => {
+                      setDeleteDialogOpen();
+                      setIsMenuOpen(false);
+                    }}
+                  />
+                </>
+              )}
+            </Menu>
+          </Popover>
+        </div>
+      </li>
+    </>
   );
 }
 

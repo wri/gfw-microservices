@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { locationsPage } from '../../../../common/js/config';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
+import { AnalysisTypesSelector } from './AnalysisTypesSelector';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { filterValidTemplates, filterValidCustom } from '../../utils/moveLocations';
-import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 import { isEudrAvailable } from '../../../../../utils/general.utils';
 
 export default class StepFour extends Component {
@@ -133,50 +132,13 @@ export default class StepFour extends Component {
         return filterValidCustom(template, customFields);
       });
     }
-    const { DEFORESTATION_KPIS, FOREST_CHANGE_DIAGNOSTICS, DEFORESTATION_ALERTS } = analysisTypes;
+
     const dropdownOptionsInvestmentCommodity = buildDropdownOptions(validLists, 'list_name');
     return (
       <div className={'locations-upload-step'}>
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
-        
-        {isEudrAvailable && (
-          <fieldset className="locations-upload-save">
-            <legend className="locations-upload-save__legend">
-              {locationsPage.upload.analytics}
-            </legend>
-            <div className="locations-upload-save__option-container">
-              <input
-                type="checkbox"
-                name={FOREST_CHANGE_DIAGNOSTICS}
-                id={FOREST_CHANGE_DIAGNOSTICS}
-                onChange={() => this.handleAnalyzesSelect(FOREST_CHANGE_DIAGNOSTICS)}
-              />
-              <label htmlFor={FOREST_CHANGE_DIAGNOSTICS}>{locationsPage.upload.analysis.florestChange}</label>
-            </div>
 
-            <div className="locations-upload-save__option-container">
-              <input
-                type="checkbox"
-                name={DEFORESTATION_KPIS}
-                id={DEFORESTATION_KPIS}
-                onChange={() => this.handleAnalyzesSelect(DEFORESTATION_KPIS)}
-              />
-              <label htmlFor={DEFORESTATION_KPIS}>
-                {locationsPage.upload.analysis.deflorestationReporting}
-              </label>
-            </div>
-
-            <div className="locations-upload-save__option-container">
-              <input
-                type="checkbox"
-                name={DEFORESTATION_ALERTS}
-                id={DEFORESTATION_ALERTS}
-                onChange={() => this.handleAnalyzesSelect(DEFORESTATION_ALERTS)}
-              />
-              <label htmlFor={DEFORESTATION_ALERTS}>{locationsPage.upload.analysis.deflorestationAlert}</label>
-            </div>
-          </fieldset>
-        )}
+        {isEudrAvailable && <AnalysisTypesSelector handleAnalyzesSelect={handleAnalyzesSelect} />}
 
         <fieldset className="locations-upload-save">
           <legend className="locations-upload-save__legend">{locationsPage.upload.list}</legend>

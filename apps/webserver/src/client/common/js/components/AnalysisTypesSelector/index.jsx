@@ -8,7 +8,7 @@ function AnalysisTypesSelector({ handleAnalyzesSelection }) {
   const analysisTypesSwitch = (type) => {
     let selection;
     if (selectedAnalysis.includes(type)) {
-      selection = selectedAnalysis.filter((e) => e !== type);
+      selection = selectedAnalysis.filter((selectedType) => selectedType !== type);
     } else {
       selection = [...selectedAnalysis, type];
     }

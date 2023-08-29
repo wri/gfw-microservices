@@ -18,9 +18,10 @@ const downloadListData = (list: string) => {
       body: '',
       headers: {},
     });
-  }).then(() => {
-    cy.get('[data-cy="download-diagnostics"]').click();
-  });
+  }).as('download');
+
+  cy.get('[data-cy="download-diagnostics"]').click();
+  cy.wait('@download');
 };
 
 const changeDateFilter = () => {

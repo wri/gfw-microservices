@@ -67,6 +67,7 @@ const B2BConnectionListTable = (props) => {
         }}
         pageSizeOptions={[5, 10, 25]}
         checkboxSelection
+        disableRowSelectionOnClick
         autoHeight
         onRowSelectionModelChange={(ids) => {
           const selectedIDs = new Set(ids);

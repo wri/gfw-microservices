@@ -80,14 +80,8 @@ export default class StepFour extends Component {
     return this.props.orgLists.some((list) => list.list_name === locationClassification);
   }
 
-  handleAnalyzesSelect = (type) => {
-    const index = this.state._selectedAnalysis.indexOf(type);
-    if (index > -1) {
-      this.setState({ _selectedAnalysis: this.state._selectedAnalysis.splice(index, 1) });
-      return;
-    }
-
-    this.setState({ _selectedAnalysis: [...this.state._selectedAnalysis, type] });
+  handleAnalyzesSelection = (selectedAnalysis) => {
+    this.setState({ _selectedAnalysis: selectedAnalysis });
   };
 
   getActive = () => {
@@ -138,7 +132,7 @@ export default class StepFour extends Component {
       <div className={'locations-upload-step'}>
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
 
-        {isEudrAvailable && <AnalysisTypesSelector handleAnalyzesSelect={handleAnalyzesSelect} />}
+        {isEudrAvailable && <AnalysisTypesSelector handleAnalyzesSelection={handleAnalyzesSelection} />}
 
         <fieldset className="locations-upload-save">
           <legend className="locations-upload-save__legend">{locationsPage.upload.list}</legend>

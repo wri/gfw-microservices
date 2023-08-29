@@ -112,6 +112,7 @@ function ActiveList({
   return (
     <>
       <ChangeTypeOfAnalysisModal
+        id={id}
         setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
         isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
       />

@@ -2,7 +2,7 @@ import React from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Modal from '@mui/material/Modal';
-import AnalysisTypesSelector from '../../uploading/AnalysisTypesSelector';
+import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
 import './ChangeTypeOfAnalysisModal.scss';
 
 function ChangeTypeOfAnalysisModal({

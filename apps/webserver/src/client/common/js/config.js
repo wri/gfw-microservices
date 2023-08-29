@@ -1524,11 +1524,6 @@ export const locationsPage = {
     ],
   },
   upload: {
-    analysis: {
-      forestChange: 'Forest Change Global',
-      deforestationAlert: 'Near-real time alerts (GLAD, VIIRS)',
-      deforestationReporting: 'Deforestation Reporting (cutoff date 2020)',
-    },
     errors: {
       dataRead: 'Data Read Error',
       dataProjection: 'Data Projection Error',

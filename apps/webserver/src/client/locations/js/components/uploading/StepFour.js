@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { locationsPage } from '../../../../common/js/config';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
-import { AnalysisTypesSelector } from './AnalysisTypesSelector';
+import { AnalysisTypesSelector } from '../../../../common/js/components/AnalysisTypesSelector';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { filterValidTemplates, filterValidCustom } from '../../utils/moveLocations';
 import { isEudrAvailable } from '../../../../../utils/general.utils';

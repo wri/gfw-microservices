@@ -132,7 +132,9 @@ export default class StepFour extends Component {
       <div className={'locations-upload-step'}>
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
 
-        {isEudrAvailable && <AnalysisTypesSelector handleAnalyzesSelection={handleAnalyzesSelection} />}
+        {isEudrAvailable && (
+          <AnalysisTypesSelector handleAnalyzesSelection={handleAnalyzesSelection} />
+        )}
 
         <fieldset className="locations-upload-save">
           <legend className="locations-upload-save__legend">{locationsPage.upload.list}</legend>

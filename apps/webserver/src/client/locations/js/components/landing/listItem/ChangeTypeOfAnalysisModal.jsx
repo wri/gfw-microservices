@@ -13,8 +13,8 @@ function ChangeTypeOfAnalysisModal({
 }) {
   const [selectedAnalysis, setSelectedAnalysis] = useState([]);
   const updateSelectedAnalysis = () => {
-    console.log({ id, selectedAnalysis })
-  }
+    console.log({ id, selectedAnalysis });
+  };
   return (
     <Modal
       open={isChangeTypeOfAnalysisModalOpen}
@@ -24,13 +24,9 @@ function ChangeTypeOfAnalysisModal({
     >
       <Card sx={{ minWidth: 275 }} className="change-type-of-analysis-modal">
         <CardContent>
-          <AnalysisTypesSelector handleAnalyzesSelection={setSelectedAnalysis}/>
+          <AnalysisTypesSelector handleAnalyzesSelection={setSelectedAnalysis} />
           <br />
-          <Button
-            variant="primary"
-            onClick={updateSelectedAnalysis}
-            label="Submit"
-          />
+          <Button variant="primary" onClick={updateSelectedAnalysis} label="Submit" />
         </CardContent>
       </Card>
     </Modal>

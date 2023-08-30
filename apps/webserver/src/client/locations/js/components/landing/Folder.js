@@ -5,7 +5,8 @@ import Divider from 'material-ui/Divider';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Popover from 'material-ui/Popover';
-
+import DeleteIcon from '@mui/icons-material/Delete';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import { locationsPage, nav } from '../../../../common/js/config';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import DeleteFolderDialog from './DeleteFolderDialog';
@@ -71,6 +72,7 @@ export default class Folder extends Component {
             >
               <Menu>
                 <MenuItem
+                  leftIcon={<DriveFileRenameOutlineIcon />}
                   primaryText={'Rename'}
                   onClick={() => {
                     this.setState({ isRenameDialogOpen: true });
@@ -83,6 +85,7 @@ export default class Folder extends Component {
                   <>
                     <Divider />
                     <MenuItem
+                      leftIcon={<DeleteIcon />}
                       primaryText={'Delete'}
                       className="MenuItem--danger"
                       onClick={() => {

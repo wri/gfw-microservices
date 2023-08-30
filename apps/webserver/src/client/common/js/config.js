@@ -822,6 +822,7 @@ export const locationsPage = {
     share: 'Share',
     addToFolder: 'Add to folder',
     manage: 'Manage',
+    changeTypeOfAnalysis: 'Change Type of analysis',
     deleteFolderTitle: 'Delete folder',
     deleteFolderPrompt: 'Are you sure you want to delete ',
     deleteFolderSuccessFragment: ' was deleted.',
@@ -1523,14 +1524,6 @@ export const locationsPage = {
     ],
   },
   upload: {
-    analysis: {
-      florestChange: 'Forest Change Global',
-      deflorestationAlert: 'Near-real time alerts (GLAD, VIIRS)',
-      deflorestationReporting: 'Deforestation Reporting (cutoff date 2020)',
-      southeastAsia: 'Forest Change Southeast Asia',
-      southAmerica: 'Forest Change South America',
-      palmRisk: 'Palm Risk (only enabled for palm lists)',
-    },
     errors: {
       dataRead: 'Data Read Error',
       dataProjection: 'Data Projection Error',

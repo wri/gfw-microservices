@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
-
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { locationsPage } from '../../../../common/js/config';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
+import { AnalysisTypesSelector } from '../../../../common/js/components/AnalysisTypesSelector';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { filterValidTemplates, filterValidCustom } from '../../utils/moveLocations';
+import { isEudrAvailable } from '../../../../../utils/general.utils';
 
 export default class StepFour extends Component {
   constructor(props) {
@@ -62,6 +63,7 @@ export default class StepFour extends Component {
       // Internal-only values to repopulate interface when toggling between options.
       _newListName: locationClassification,
       _selectedExistingList: { name: '', value: '' },
+      _selectedAnalysis: [],
     };
   }
 
@@ -77,6 +79,10 @@ export default class StepFour extends Component {
   checkExistingList(locationClassification) {
     return this.props.orgLists.some((list) => list.list_name === locationClassification);
   }
+
+  handleAnalyzesSelection = (selectedAnalysis) => {
+    this.setState({ _selectedAnalysis: selectedAnalysis });
+  };
 
   getActive = () => {
     const template_name = deduceActiveName(this.props.activeTemplate);
@@ -125,6 +131,10 @@ export default class StepFour extends Component {
     return (
       <div className={'locations-upload-step'}>
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
+
+        {isEudrAvailable && (
+          <AnalysisTypesSelector handleAnalyzesSelection={handleAnalyzesSelection} />
+        )}
 
         <fieldset className="locations-upload-save">
           <legend className="locations-upload-save__legend">{locationsPage.upload.list}</legend>

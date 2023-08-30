@@ -52,7 +52,7 @@ exports.locations = (req, res, data) => {
     ListManager.getUserLists(req),
     AuthManager.getUserInfo(req),
     ListManager.getLocationsCount(req),
-    ListManager.getAllLists(req),
+    ListManager.getAllListsWithAnalysisId(req),
     GFWlistManager.getGFWLists(req),
     AccountManager.getUsersList(req),
     ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),

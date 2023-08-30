@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import Popover from 'material-ui/Popover';
 import PublicIcon from '@mui/icons-material/Public';
 import GroupsIcon from '@mui/icons-material/Groups';
+import PlaceIcon from '@mui/icons-material/Place';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import ShareIcon from '@mui/icons-material/Share';
+import FolderIcon from '@mui/icons-material/Folder';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Divider from 'material-ui/Divider';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import ListDiagnosticStatusDraft from '../components/ListDiagnosticStatusDraft/ListDiagnosticStatusDraft';
 import CustomTooltip from '../../../../../common/js/components/CustomTooltip/CustomTooltip';
-import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
 import sharedColumnText from './sharedColumnText';
@@ -161,7 +165,11 @@ function DraftList({
         >
           <Menu className="context-menu">
             {showMapOpt && (
-              <MenuItem primaryText={locationsPage.lists.map} onClick={() => viewMap()} />
+              <MenuItem
+                leftIcon={<PlaceIcon />}
+                primaryText={locationsPage.lists.map}
+                onClick={() => viewMap()}
+              />
             )}
             {showDownloadOpt && (
               <LandingDownload
@@ -178,12 +186,14 @@ function DraftList({
             {userIsAdmin && (
               <MenuItem
                 primaryText={locationsPage.lists.share}
+                leftIcon={<ShareIcon />}
                 onClick={(e) => shareList(e, list)}
               />
             )}
 
             {showRerunOpt && (
               <MenuItem
+                leftIcon={<KeyboardArrowUpIcon />}
                 primaryText="Submit"
                 onClick={() => {
                   setIsMenuOpen(false);
@@ -196,6 +206,7 @@ function DraftList({
               primaryText={
                 isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
               }
+              leftIcon={<FolderIcon />}
               onClick={() => {
                 setManageListFolderOpen();
                 setIsMenuOpen(false);
@@ -207,6 +218,7 @@ function DraftList({
                 <MenuItem
                   primaryText={locationsPage.lists.delete}
                   className="MenuItem--danger"
+                  leftIcon={<DeleteIcon />}
                   onClick={() => {
                     setDeleteDialogOpen();
                     setIsMenuOpen(false);

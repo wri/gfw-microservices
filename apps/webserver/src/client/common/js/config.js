@@ -822,6 +822,7 @@ export const locationsPage = {
     share: 'Share',
     addToFolder: 'Add to folder',
     manage: 'Manage',
+    changeTypeOfAnalysis: 'Change Type of analysis',
     deleteFolderTitle: 'Delete folder',
     deleteFolderPrompt: 'Are you sure you want to delete ',
     deleteFolderSuccessFragment: ' was deleted.',
@@ -1598,6 +1599,7 @@ export const locationsPage = {
     successBanner:
       'New locations have been added. You will receive an email once analysis of the locations is complete, and can reload the page to access the data.',
     list: 'List',
+    analytics: 'Analytics',
     addToExisting: 'Add to existing',
     createNew: 'Create new',
     browse: 'Browse',

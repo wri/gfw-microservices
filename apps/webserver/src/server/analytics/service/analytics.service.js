@@ -5,6 +5,9 @@ const { getOrganizationAnalysisUsage } = require(path.resolve(
   './queries/system/getOrganizationAnalysisUsage'
 ));
 const { getAnalysisLimits } = require(path.resolve('./queries/system/getAnalysisLimits'));
+const { getAllListsAnalysisStatus } = require(path.resolve(
+  './queries/organization/getAllListsAnalysisStatus'
+));
 
 exports.getOrganizationAnalysisUsage = async ({
   startDate,
@@ -39,5 +42,10 @@ exports.getAnalysisLimitData = async ({ organizationId, organizationType }) => {
 
   const [response] = await sqlUtils.executeSystemQuery(getAnalysisLimits, params);
 
+  return response;
+};
+
+exports.getAllListsAnalysisStatus = async (req) => {
+  const [response] = await sqlUtils.executeOrganizationQuery(req, getAllListsAnalysisStatus);
   return response;
 };

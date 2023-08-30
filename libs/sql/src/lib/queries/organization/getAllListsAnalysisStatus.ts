@@ -1,4 +1,4 @@
-export const getListsAnalysisStatus = `
+export const getAllListsAnalysisStatus = `
 SELECT
     las.ListID,
     las.AnalysisID,

@@ -134,6 +134,7 @@ module.exports = (app, limiter) => {
       gfw_list_id,
       selected_location_ids: src_location_ids,
       original_gfw_list,
+      analysisIds,
     } = req.body;
 
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
@@ -149,7 +150,8 @@ module.exports = (app, limiter) => {
       custom_attributes,
       finalGeojson,
       gfw_list_id,
-      false
+      false,
+      analysisIds
     )
       .then(async ({ resultGeoJSON }) => {
         const dest_list = await ListManager.getListByListName(req, list_name);

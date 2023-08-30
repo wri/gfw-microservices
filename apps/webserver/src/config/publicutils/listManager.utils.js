@@ -75,7 +75,8 @@ const createList = (
   user_id,
   custom_attributes,
   gfw_list_id,
-  is_edit = false
+  is_edit = false,
+  analysisIds
 ) => {
   let list_id = null;
   // Tracking Stored Procedure Executions for rollbacks
@@ -179,6 +180,23 @@ const createList = (
         return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateAnalysisTable', params);
       })
       .then(() => {
+        analysisIds.forEach((analysisId) => {
+          const params = [
+            {
+              field: 'ListId',
+              type: sql.Int,
+              value: list_id,
+            },
+            {
+              field: 'AnalysisId',
+              type: sql.NVarChar(150),
+              value: analysisId,
+            },
+          ];
+          sqlUtils.executeOrganizationQuery(req, 'uspCreateListAnalysisStatus', params);
+        });
+      })
+      .then(() => {
         // Previous Stored Procedure executed
         uspCreateAnalysisTableExecuted = true;
         logger.logActivity(
@@ -188,6 +206,7 @@ const createList = (
         );
         resolve(list_id);
       })
+
       .catch((errorMessage) => {
         // Call appropriate rollbacks
         if (uspCreateListExecuted) {
@@ -930,7 +949,8 @@ const uploadToNewList = (
   custom_attributes,
   geojson,
   gfw_list_id,
-  is_edit = false
+  is_edit = false,
+  uploadToNewList
 ) => {
   const user_id = req.session.organization_user_id;
   const list = listUtils.createListNameSchema(list_name);
@@ -946,7 +966,8 @@ const uploadToNewList = (
       user_id,
       custom_attributes,
       gfw_list_id,
-      is_edit
+      is_edit,
+      uploadToNewList
     )
       .then((list_id) => {
         newListID = list_id;

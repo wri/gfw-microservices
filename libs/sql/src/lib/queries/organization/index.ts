@@ -1,6 +1,6 @@
 export * from './getActivityLog';
 export * from './getAllFolderItems';
-export * from './getAllListAnalysisStatus';
+export * from './getAllListsAnalysisStatus';
 export * from './getAllLists';
 export * from './getAnalysisDataCountForUserList';
 export * from './getFolders';

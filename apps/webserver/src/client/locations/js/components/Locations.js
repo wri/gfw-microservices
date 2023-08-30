@@ -13,7 +13,6 @@ import AddLocation from './adding/AddLocation';
 import UploadLocations from './uploading/UploadLocations';
 import EditList from './edit/EditList';
 import AddGFW from './addGFW/AddGFW';
-import Diagnostics from './diagnostics/Diagnostics';
 import onListFromViewToList from '../utils/redirect';
 
 // Store
@@ -317,7 +316,6 @@ class Locations extends Component {
       userListInfoFromMap,
       drawnGeom,
       popover: { displayPopover, bubbleData, popoverLoading, anchorEl },
-      diagnosticView,
       isLoading,
       shareView,
       adminArea,
@@ -427,28 +425,6 @@ class Locations extends Component {
                   : selectedLocations
               }
               filteredData={filteredData}
-            />
-          </Route>
-          <Route path="/diagnostics">
-            <Diagnostics
-              history={history}
-              diagnosticView={diagnosticView}
-              organizationId={organizationId}
-              currentUser={userInfo}
-              view={view}
-              listView={listView}
-              activeTemplate={activeTemplate}
-              selectedLists={selectedLists}
-              listData={listData}
-              filteredData={filteredData}
-              listLevelAnalysis={listLevelAnalysis}
-              spatialData={spatialData}
-              selectedLocations={selectedLocations}
-              infoBubbleCache={infoBubbleCache}
-              displayPopover={displayPopover}
-              bubbleData={bubbleData}
-              popoverLoading={popoverLoading}
-              anchorEl={anchorEl}
             />
           </Route>
           <Route path="/folders">

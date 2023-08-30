@@ -44,6 +44,6 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
 
 ### return analysis limit for a specific organization type
-GET https://localhost:8443/analytics/myorg/option
+GET https://localhost:8443/analytics/myorg/options
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

@@ -5,7 +5,7 @@ import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownO
 import { AnalysisTypesSelector } from '../../../../common/js/components/AnalysisTypesSelector';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { filterValidTemplates, filterValidCustom } from '../../utils/moveLocations';
-import { isEudrAvailable } from '../../../../../utils/general.utils';
+import isEudrAvailable from '../../../../../utils/general.utils';
 
 export default class StepFour extends Component {
   constructor(props) {

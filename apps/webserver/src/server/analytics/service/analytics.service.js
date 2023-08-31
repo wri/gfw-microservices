@@ -1,12 +1,12 @@
 const path = require('path');
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const sql = require('mssql');
-const { getOrganizationAnalysisUsage } = require(path.resolve(
+const { getOrganizationAnalysisUsage: getOrganizationAnalysisUsageQuery } = require(path.resolve(
   './queries/system/getOrganizationAnalysisUsage'
 ));
 const { getAnalysisLimits } = require(path.resolve('./queries/system/getAnalysisLimits'));
 
-exports.getOrganizationAnalysisUsage = async ({
+const getOrganizationAnalysisUsage = async ({
   startDate,
   endDate,
   organizationId,
@@ -19,7 +19,7 @@ exports.getOrganizationAnalysisUsage = async ({
     { field: 'countForEachList', type: sql.Int, value: countForEachList },
   ];
 
-  const [response] = await sqlUtils.executeSystemQuery(getOrganizationAnalysisUsage, params);
+  const [response] = await sqlUtils.executeSystemQuery(getOrganizationAnalysisUsageQuery, params);
 
   const result = response.reduce((acc, value) => {
     value.total_area_analyzed = value.total_area_analyzed ?? 0;
@@ -31,7 +31,7 @@ exports.getOrganizationAnalysisUsage = async ({
   return result;
 };
 
-exports.getAnalysisLimitData = async ({ organizationId, organizationType }) => {
+const getAnalysisLimitData = async ({ organizationId, organizationType }) => {
   const params = [
     { field: 'orgID', type: sql.Int, value: organizationId },
     { field: 'orgType', type: sql.Int, value: organizationType },
@@ -40,4 +40,18 @@ exports.getAnalysisLimitData = async ({ organizationId, organizationType }) => {
   const [response] = await sqlUtils.executeSystemQuery(getAnalysisLimits, params);
 
   return response;
+};
+
+const getAccountLimits = async (organizationId, organizationType) => {
+  const [limitsByOrgID] = await getAnalysisLimitData({ organizationId });
+  const [limitsByOrgType] = await getAnalysisLimitData({ organizationType });
+
+  // If no custom limit found return the fallback by subscription_id
+  return limitsByOrgID || limitsByOrgType;
+};
+
+module.exports = {
+  getOrganizationAnalysisUsage,
+  getAnalysisLimitData,
+  getAccountLimits,
 };

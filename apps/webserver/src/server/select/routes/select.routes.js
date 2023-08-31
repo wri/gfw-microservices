@@ -26,13 +26,21 @@ module.exports = (app, limiter) => {
   app.get('/select', controller.select);
 
   app.post('/select/org', (req, res) => {
-    const { org_id, org_db, org_user_id, org_status_id, subscription_status_id } = req.body;
+    const {
+      org_id,
+      org_db,
+      org_user_id,
+      org_status_id,
+      subscription_status_id,
+      org_activated_time,
+    } = req.body;
     const organization = {
       organization_id: org_id,
       organization_db: org_db,
       organization_user_id: org_user_id,
       organization_status_id: org_status_id,
       subscription_status_id: subscription_status_id,
+      organization_activated_time: org_activated_time,
     };
     AuthManager.setOrgSessions(req, organization)
       .then(() => {

@@ -17,10 +17,6 @@ export const getQueryStr = (isSystemQuery: boolean, storedProcedureName: string)
   let cleanQueryName = storedProcedureName.replace('usp', '');
   cleanQueryName = cleanQueryName.charAt(0).toLowerCase() + cleanQueryName.slice(1);
 
-  if (cleanQueryName.includes('createListAnalysisStatus')) {
-    console.log(orgQueries[cleanQueryName]);
-  }
-
   if (
     isSystemQuery &&
     systemQueries[cleanQueryName] &&

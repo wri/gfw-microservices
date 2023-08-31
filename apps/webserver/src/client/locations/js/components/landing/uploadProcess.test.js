@@ -39,7 +39,7 @@ describe('upload-process', () => {
     mock
       .onPost('/locations/create-large-list', {
         listName: 'llp gfw pro 205806022023',
-        analysisIds: ['FCD', 'ALERTS']
+        analysisIds: ['FCD', 'ALERTS'],
       })
       .reply(200, {
         user_id: 10033,

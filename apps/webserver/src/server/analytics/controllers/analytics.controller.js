@@ -4,6 +4,7 @@ const {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
 } = require('../service/analytics.service');
+const { analysisTypes } = require(path.resolve('./config/env/analysisTypes.constants'));
 
 /**
  * @function analytics
@@ -95,6 +96,10 @@ exports.getOrganizationAnalysisLimit = async (req, res) => {
   });
 
   res.status(200).send(response);
+};
+
+exports.getMyOrganizationAnalysisOptions = (req, res) => {
+  res.status(200).send(Object.values(analysisTypes));
 };
 
 const validateQueryParams = ({ startDate, endDate, countForEachList }) => {

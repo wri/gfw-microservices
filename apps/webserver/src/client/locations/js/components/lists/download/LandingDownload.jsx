@@ -3,6 +3,7 @@ import MenuItem from 'material-ui/MenuItem';
 import ArrowRightIcon from 'material-ui/svg-icons/navigation/chevron-right';
 import { locationsPage } from 'common/js/config';
 import downloadRequest from './downloadRequest';
+import DownloadIcon from '@mui/icons-material/Download';
 
 function LandingDownload({
   downloadRequestedFromFolder,
@@ -45,12 +46,14 @@ function LandingDownload({
     if (locations > 0) {
       newMenuItem.push(
         <MenuItem
+          leftIcon={<DownloadIcon />}
           primaryText={locationsPage.lists.csv}
           onClick={() => localHandleDownload({ format: 'csv', type: 'input' })}
         />
       );
       newMenuItem.push(
         <MenuItem
+          leftIcon={<DownloadIcon />}
           primaryText={locationsPage.lists.shapefile}
           onClick={() => localHandleDownload({ format: 'shapefile', type: 'input' })}
         />
@@ -60,6 +63,7 @@ function LandingDownload({
     if (isLargeList && hasErrorFile) {
       newMenuItem.push(
         <MenuItem
+          leftIcon={<DownloadIcon />}
           primaryText="Download Error File"
           href={`/locations/downloadErrorFile?fileKey=${error_file_storage_path}`}
           target="_blank"
@@ -74,6 +78,7 @@ function LandingDownload({
   return (
     <>
       <MenuItem
+        leftIcon={<DownloadIcon />}
         primaryText={locationsPage.lists.download}
         menuItems={menuItems}
         rightIcon={<ArrowRightIcon />}

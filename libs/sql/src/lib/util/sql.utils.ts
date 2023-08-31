@@ -66,6 +66,10 @@ export class SQLUtils {
     return new Promise((resolve, reject) => {
       this.executeQueryArray<T>(query, parameters)
         .then((result) => {
+          if (result === undefined) {
+            resolve(undefined);
+          }
+
           if (Number(result.length) > 1) {
             resolve(result as T);
           }

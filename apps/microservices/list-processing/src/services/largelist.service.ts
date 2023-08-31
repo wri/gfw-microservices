@@ -47,7 +47,8 @@ export class LargeListService {
   async createNewLargeListProcess(
     list_name: string,
     user_id: number,
-    clientDatabase: string
+    clientDatabase: string,
+    analysisIds: Array<string>
   ): Promise<CreateListResult> {
     //const user_id = 1999999;
     //const list_name = `My Template Name ${templateUniq}`;
@@ -165,6 +166,21 @@ export class LargeListService {
           value: list.analysis_table,
         },
       ]);
+
+      analysisIds.forEach(async (analysisId) => {
+        await SQLUtils.queryDB(clientDatabase, 'uspCreateListAnalysisStatus', [
+          {
+            field: 'ListID',
+            type: sql.Int,
+            value: createListResult.list_id,
+          },
+          {
+            field: 'AnalysisID',
+            type: sql.NVarChar(150),
+            value: analysisId,
+          },
+        ]);
+      });
 
       return createListResult;
     } catch (error) {

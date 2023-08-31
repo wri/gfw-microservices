@@ -47,6 +47,7 @@ export interface RequestTriggerProcessLargeList {
   list_name: string;
   user_id: number;
   client_database: string;
+  analysisIds: Array<string>;
 }
 
 export interface CopyOrMoveLargeListRequest {

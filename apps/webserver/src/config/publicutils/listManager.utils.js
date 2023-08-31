@@ -55,6 +55,7 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
+const { createListAnalysisStatus } = require(path.resolve('./queries/organization'));
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -71,12 +72,13 @@ const createList = (
   req,
   list_name,
   template_id,
+  commodity,
   location_classification,
   user_id,
   custom_attributes,
   gfw_list_id,
   is_edit = false,
-  analysisIds
+  analysisIds = []
 ) => {
   let list_id = null;
   // Tracking Stored Procedure Executions for rollbacks
@@ -183,17 +185,17 @@ const createList = (
         analysisIds.forEach((analysisId) => {
           const params = [
             {
-              field: 'ListId',
+              field: 'ListID',
               type: sql.Int,
               value: list_id,
             },
             {
-              field: 'AnalysisId',
+              field: 'AnalysisID',
               type: sql.NVarChar(150),
               value: analysisId,
             },
           ];
-          sqlUtils.executeOrganizationQuery(req, 'uspCreateListAnalysisStatus', params);
+          sqlUtils.executeOrganizationQuery(req, createListAnalysisStatus, params);
         });
       })
       .then(() => {
@@ -976,7 +978,7 @@ const uploadToNewList = (
   geojson,
   gfw_list_id,
   is_edit = false,
-  uploadToNewList
+  analysisIds
 ) => {
   const user_id = req.session.organization_user_id;
   const list = listUtils.createListNameSchema(list_name);
@@ -993,7 +995,7 @@ const uploadToNewList = (
       custom_attributes,
       gfw_list_id,
       is_edit,
-      uploadToNewList
+      analysisIds
     )
       .then((list_id) => {
         newListID = list_id;

@@ -1188,7 +1188,7 @@ module.exports = (app, limiter) => {
    * Save list to being processed in database and queue for processing
    */
   app.post('/locations/create-large-list', (req, res) => {
-    const { listName } = req.body;
+    const { listName, analysisIds } = req.body;
     const userId = req.session.organization_user_id;
     const { LISTS_MICROSERVICE_URL } = process.env;
     axios
@@ -1196,6 +1196,7 @@ module.exports = (app, limiter) => {
         user_id: userId,
         list_name: listName,
         client_database: req.session.organization_database,
+        analysisIds,
       })
       .then((response) => {
         res.send({ user_id: userId, list_id: response.data.list_id });

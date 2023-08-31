@@ -102,12 +102,12 @@ export const convertURL = 'https://production-api.globalforestwatch.org/v2/ogr/c
 
 export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
-export const latestTreeCoverLossYearFC = 2021; // Forest Change
-export const latestTreeCoverLossYearCR = 2021; // Commodity Risk
-export const latestTreeCoverLossYearSensitiveAreas = 2021; // Sensitive Areas
+export const latestTreeCoverLossYearFC = 2022; // Forest Change
+export const latestTreeCoverLossYearCR = 2022; // Commodity Risk
+export const latestTreeCoverLossYearSensitiveAreas = 2022; // Sensitive Areas
 export const latest_CommodityRisk__TrendsInDeforestation = latestTreeCoverLossYearCR; // Trends in Deforestation
 
-export const soyPlantedYearsRange = [2001, 2021];
+export const soyPlantedYearsRange = [2001, 2022];
 
 export const treeCoverLossTilesUrl =
   'https://tiles.globalforestwatch.org/umd_tree_cover_loss/v1.9/tcd_{thresh}/{z}/{x}/{y}.png';

@@ -39,6 +39,7 @@ describe('upload-process', () => {
     mock
       .onPost('/locations/create-large-list', {
         listName: 'llp gfw pro 205806022023',
+        analysisIds: ['FCD', 'ALERTS']
       })
       .reply(200, {
         user_id: 10033,
@@ -80,7 +81,8 @@ describe('upload-process', () => {
         name: 'input_cocoageneric_random_10_r25.csv',
         type: 'text/csv',
       },
-      false
+      false,
+      ['FCD', 'ALERTS']
     );
 
     expect(mock.history.post.length).toEqual(4);
@@ -132,7 +134,8 @@ describe('upload-process', () => {
         name: 'input_cocoageneric_random_10_r25.csv',
         type: 'text/csv',
       },
-      true
+      true,
+      ['FCD', 'ALERTS']
     );
 
     const reqList = mock.history.post.map((req) => req.url);

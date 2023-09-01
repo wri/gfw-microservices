@@ -109,7 +109,6 @@ import {
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from './getListFilterValues';
 import getAllColumnNames from './getAllColumnNames';
-import { viewDiagnostic } from './viewDiagnostic';
 
 // STYLE
 import '../../../css/lists.scss';

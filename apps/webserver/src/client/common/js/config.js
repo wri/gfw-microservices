@@ -10,6 +10,8 @@ import { PLANET_BASEMAP } from '../../map/js/config/map.config';
 // We are using names in the api to map out the layers
 // key is universal id we use within the app, values is layer NAME in the API
 export const proLayers = {
+  sBTNNaturalForest: 'SBTN Natural Forest',
+  negligibleRisk: 'Negligible Risk',
   otbn: 'Land Planning Classification of Native Forests',
   clarkLabsAquacultureLandCover: 'Clark Labs Aquaculture Land Cover 2018',
   clarkLabsAquacultureLandChange: 'Clark Labs Aquaculture Land Change',
@@ -3074,10 +3076,16 @@ export const mapPage = {
       propsToWatch: ['threshold', 'maxYear', 'minYear', 'minRange', 'maxRange'],
     },
     {
+      id: proLayers.negligibleRisk,
+      group: 'forest-change',
+      subGroup: 'tree-cover-change',
+      order: 105,
+    },
+    {
       id: proLayers.gladAlertsID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
-      order: 105,
+      order: 106,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
       // }, {
       //   id: formaAlertsID,
@@ -3090,7 +3098,7 @@ export const mapPage = {
       id: proLayers.raddAlertsID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
-      order: 106,
+      order: 107,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
@@ -3098,13 +3106,13 @@ export const mapPage = {
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
       ignored: true,
-      order: 107,
+      order: 108,
     },
     {
       id: proLayers.viirsActiveFiresID,
       group: 'forest-change',
       subGroup: 'fire-alerts',
-      order: 108,
+      order: 109,
       popupTemplate: {
         title: null,
         // LATITUDE, LONGITUDE, BRIGHTNESS, CONFIDENCE, ACQ_DATE, ACQ_TIME
@@ -3211,7 +3219,7 @@ export const mapPage = {
       id: proLayers.oilPalmConcessions,
       group: 'land-use',
       subGroup: 'concessions',
-      order: 300,
+      order: 210,
       popupTemplate: {
         title: '{name}',
         // company, country, area ha
@@ -3221,6 +3229,11 @@ export const mapPage = {
           '<div class="popup-text-container"><p class="popup-text-key">Area:</p> <p class="popup-text-value">{area_ha}</p></div>',
       },
       fields: [],
+    },
+    {
+      id: proLayers.sBTNNaturalForest,
+      group: 'land-cover',
+      order: 211,
     },
     // Land-Use
     {

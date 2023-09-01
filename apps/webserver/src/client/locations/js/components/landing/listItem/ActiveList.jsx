@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Chip from '@mui/material/Chip';
 import Popover from 'material-ui/Popover';
 import PublicIcon from '@mui/icons-material/Public';
 import GroupsIcon from '@mui/icons-material/Groups';
@@ -57,6 +58,7 @@ function ActiveList({
     list_locations_count,
     error_file_storage_path,
     large_list_id,
+    selectedAnalysis,
   } = list;
   const isLargeList = !!large_list_id;
   const hasErrorFile = !!error_file_storage_path;
@@ -124,6 +126,11 @@ function ActiveList({
           {showListSharedWithMeIcon && <PublicIcon />}
           {list_name}
           {is_shared && <IconUsers className="locations-list__shared-icon" />}
+          <Chip
+            label={numberWithCommas(locations || 0)}
+            size="small"
+            style={{ height: '17px', marginLeft: '10px' }}
+          />
         </div>
 
         {showSharedColumn && (
@@ -134,6 +141,15 @@ function ActiveList({
         )}
 
         <div className="locations-list__controls">
+          {selectedAnalysis?.map((analysis) => {
+            <Chip
+              label={analysis.name}
+              color={analysis.status}
+              size="small"
+              style={{ height: '17px', marginLeft: '10px' }}
+            />;
+          })}
+
           {showRerun && (
             <Button
               className="locations-list__update-button"

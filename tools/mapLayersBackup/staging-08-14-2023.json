@@ -1,7 +1,168 @@
 {
   "data": [
-    {},
-    {},
+    {
+      "id": "17608416-556e-4555-b36f-45c789ff9e79",
+      "type": "layer",
+      "attributes": {
+        "name": "Indonesia Forest Area",
+        "slug": "Indonesia-Legal-Classifications_2",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/17608416-556e-4555-b36f-45c789ff9e79-1690838146777.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/idn_forest_area",
+            "url": "https://tiles.globalforestwatch.org/idn_forest_area/v201709/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "color": "#c6a541",
+              "categories": [
+                {
+                  "color": "#C489FD",
+                  "name": "Sanctuary reserve/nature conservation area"
+                },
+                {
+                  "color": "#FF00FF",
+                  "name": "Marine protected area"
+                },
+                {
+                  "color": "#00FF7B",
+                  "name": "Protected forest"
+                },
+                {
+                  "color": "#C4FBAF",
+                  "name": "Limited production forest"
+                },
+                {
+                  "color": "#FFFEAA",
+                  "name": "Production forest"
+                },
+                {
+                  "color": "#FEA189",
+                  "name": "Convertible production forest"
+                },
+                {
+                  "color": "#D8D8D8",
+                  "name": "Other utilization area"
+                }
+              ],
+              "name": "Indonesia Forest Area"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/idn_forest_area/v201709/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-05-02T22:34:24.453Z",
+        "updatedAt": "2023-07-31T21:15:46.731Z"
+      }
+    },
+    {
+      "id": "21375165-a520-4d35-8b39-8c94c939c173",
+      "type": "layer",
+      "attributes": {
+        "name": "WDPA Esri",
+        "slug": "WDPA-Esri_2",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "WDPA Esri",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/21375165-a520-4d35-8b39-8c94c939c173-1651495700453.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/wdpa_protected_areas",
+            "url": "https://tiles.globalforestwatch.org/wdpa_protected_areas/v202106/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Protected Areas",
+              "categories": [
+                {
+                  "name": "Ia - Strict Nature Reserve",
+                  "color": "#5ca2d1"
+                },
+                {
+                  "name": "Ib - Wilderness Area",
+                  "color": "#3e7bb6"
+                },
+                {
+                  "name": "II - National Park",
+                  "color": "#0f3b82"
+                },
+                {
+                  "name": "III - National Monument or Feature",
+                  "color": "#c9ddff"
+                },
+                {
+                  "name": "IV - Habitat and Species Management Area",
+                  "color": "#b9b2a1"
+                },
+                {
+                  "name": "V - Protected Landscape or Seascape",
+                  "color": "#ae847e"
+                },
+                {
+                  "name": "VI - Protected Area with Sustainable Use of Natural Resources",
+                  "color": "#daa89b"
+                },
+                {
+                  "name": "Not Applicable",
+                  "color": "#eed54c"
+                },
+                {
+                  "name": "Not Assigned",
+                  "color": "#e7ab36"
+                },
+                {
+                  "name": "Not Reported",
+                  "color": "#fa894b"
+                }
+              ],
+              "color": "#6087af"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/wdpa_protected_areas/v202106/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-05-02T12:45:28.885Z",
+        "updatedAt": "2022-05-02T12:48:20.288Z"
+      }
+    },
     {
       "id": "8f05e385-7fd1-4e70-aad2-8db43758d8ab",
       "type": "layer",
@@ -419,6 +580,122 @@
       }
     },
     {
+      "id": "b212748b-bf7b-4a90-85c6-010aaac5cc38",
+      "type": "layer",
+      "attributes": {
+        "name": "Negligible Risk",
+        "slug": "Negligible-Risk",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Negligible Risk",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "62601518cdc846001a7756b5",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b212748b-bf7b-4a90-85c6-010aaac5cc38-1693511009552.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "url": "https://tiles.globalforestwatch.org/gfwpro_negligible_risk_analysis/v20230726/default/root.json",
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/gfwpro_negligible_risk_analysis"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "NO",
+                  "color": "#a40018 "
+                },
+                {
+                  "name": "YES",
+                  "color": "#de8500"
+                },
+                {
+                  "name": "No Forest",
+                  "color": "#fffa59"
+                },
+                {
+                  "name": "Not Applicable",
+                  "color": "#b2b2b2"
+                }
+              ],
+              "name": "Negligible Risk"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-31T14:52:31.903Z",
+        "updatedAt": "2023-08-31T19:43:29.484Z"
+      }
+    },
+    {
+      "id": "aafb62d4-2040-4a07-9d4d-f6e17270243d",
+      "type": "layer",
+      "attributes": {
+        "name": "SBTN Natural Forest",
+        "slug": "SBTN-Natural-Forest",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Science Based Targets Network Natural Forest",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/aafb62d4-2040-4a07-9d4d-f6e17270243d-1693511138901.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "useCors": true,
+            "url": "https://tiles.globalforestwatch.org/sbtn_natural_forests_map/v202305/default/{z}/{x}/{y}.png",
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/sbtn_natural_forests_map"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "NO",
+                  "color": "#a40018 "
+                },
+                {
+                  "name": "YES",
+                  "color": "#de8500"
+                },
+                {
+                  "name": "No Forest",
+                  "color": "#fffa59"
+                },
+                {
+                  "name": "Not Applicable",
+                  "color": "#b2b2b2"
+                }
+              ],
+              "source": "Science Based Targets Network",
+              "name": "SBTN Natural Forest"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-08-31T17:07:01.060Z",
+        "updatedAt": "2023-08-31T19:45:38.821Z"
+      }
+    },
+    {
       "id": "5c2bff75-e5b8-404d-8b6d-05e13f017bbf",
       "type": "layer",
       "attributes": {
@@ -738,15 +1015,15 @@
     }
   ],
   "links": {
-    "self": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=5000",
-    "first": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=5000",
-    "last": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=5000",
-    "prev": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=5000",
-    "next": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=5000"
+    "self": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
+    "first": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
+    "last": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
+    "prev": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
+    "next": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000"
   },
   "meta": {
     "total-pages": 1,
-    "total-items": 14,
-    "size": 5000
+    "total-items": 16,
+    "size": 1000
   }
 }

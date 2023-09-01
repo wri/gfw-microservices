@@ -126,7 +126,11 @@ function ActiveList({
           {showListSharedWithMeIcon && <PublicIcon />}
           {list_name}
           {is_shared && <IconUsers className="locations-list__shared-icon" />}
-          <Chip label={ numberWithCommas(locations || 0) } size="small" style={{height: '17px', marginLeft: '10px'}} />
+          <Chip
+            label={numberWithCommas(locations || 0)}
+            size="small"
+            style={{ height: '17px', marginLeft: '10px' }}
+          />
         </div>
 
         {showSharedColumn && (
@@ -138,7 +142,12 @@ function ActiveList({
 
         <div className="locations-list__controls">
           {selectedAnalysis?.map((analysis) => {
-            <Chip label={ analysis.name } color={analysis.status} size="small" style={{height: '17px', marginLeft: '10px'}} />
+            <Chip
+              label={analysis.name}
+              color={analysis.status}
+              size="small"
+              style={{ height: '17px', marginLeft: '10px' }}
+            />;
           })}
 
           {showRerun && (

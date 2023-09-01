@@ -118,7 +118,11 @@ function DraftList({
         {list_name}
         {is_shared && <IconUsers className="locations-list__shared-icon" />}
 
-        <Chip label={ numberWithCommas(locations || 0) } size="small" style={{height: '17px', marginLeft: '10px'}} />
+        <Chip
+          label={numberWithCommas(locations || 0)}
+          size="small"
+          style={{ height: '17px', marginLeft: '10px' }}
+        />
       </div>
 
       {showSharedColumn && (

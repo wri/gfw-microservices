@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { locationsPage } from '../../../../common/js/config';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
-import { AnalysisTypesSelector } from '../../../../common/js/components/AnalysisTypesSelector';
+import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { filterValidTemplates, filterValidCustom } from '../../utils/moveLocations';
-import isEudrAvailable from '../../../../../utils/general.utils';
+import featureFlags from '../../../../../utils/general.utils';
 
 export default class StepFour extends Component {
   constructor(props) {
@@ -132,8 +132,8 @@ export default class StepFour extends Component {
       <div className={'locations-upload-step'}>
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
 
-        {isEudrAvailable && (
-          <AnalysisTypesSelector handleAnalyzesSelection={handleAnalyzesSelection} />
+        {featureFlags.isEudrAvailable && (
+          <AnalysisTypesSelector handleAnalyzesSelection={this.handleAnalyzesSelection} />
         )}
 
         <fieldset className="locations-upload-save">

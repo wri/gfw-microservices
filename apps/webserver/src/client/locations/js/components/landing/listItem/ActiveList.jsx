@@ -137,11 +137,10 @@ function ActiveList({
         )}
 
         <div className="locations-list__controls">
-          {!!selectedAnalysis &&
-            selectedAnalysis.map((analysis) => {
-              <Chip label={ analysis.name } color={analysis.status} size="small" style={{height: '17px', marginLeft: '10px'}} />
-            })
-          }
+          {selectedAnalysis?.map((analysis) => {
+            <Chip label={ analysis.name } color={analysis.status} size="small" style={{height: '17px', marginLeft: '10px'}} />
+          })}
+
           {showRerun && (
             <Button
               className="locations-list__update-button"

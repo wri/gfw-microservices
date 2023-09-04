@@ -1,0 +1,64 @@
+{
+  "name": "microservices-sustainit",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/microservices/sustainit/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/microservices/sustainit",
+        "main": "apps/microservices/sustainit/src/main.ts",
+        "tsConfig": "apps/microservices/sustainit/tsconfig.app.json",
+        "assets": ["apps/microservices/sustainit/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/microservices/sustainit/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "microservices-sustainit:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "microservices-sustainit:build:development"
+        },
+        "production": {
+          "buildTarget": "microservices-sustainit:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/microservices/sustainit/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/microservices/sustainit/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

@@ -5,8 +5,8 @@ import axios from 'axios';
  * remove the x from xit to run the test
  */
 
-describe('GET /api/HealthCheck', () => {
-  it('should return a message', async () => {
+xdescribe('GET /api/HealthCheck', () => {
+  xit('should return a message', async () => {
     const res = await axios.get(`/api/HealthCheck`);
 
     expect(res.status).toBe(200);

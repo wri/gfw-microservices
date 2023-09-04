@@ -1,4 +1,5 @@
 import { SQLUtils } from '@wri-monorepos/sql';
+import { Logger } from '@nestjs/common';
 import { Injectable, Inject } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../models';
 import fetch from 'node-fetch';
@@ -200,7 +201,18 @@ export class LargeListService {
         },
       ]);
 
-      console.log(error);
+      const { list_id: listID } = createListResult;
+      if (listID) {
+        await connection.executeQuery('dropListAnalysisStatusByListId', [
+          {
+            field: 'ListID',
+            type: sql.Int,
+            value: listID,
+          },
+        ]);
+      }
+
+      Logger.error(error);
       return error;
     }
   }

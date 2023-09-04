@@ -14,7 +14,7 @@ import * as orgQueries from './organization';
 export const getQueryStr = (isSystemQuery: boolean, storedProcedureName: string) => {
   // Removing prefixes for stored procedures and lowercasing first letter
 
-  let cleanQueryName = storedProcedureName.replace('usp', '');
+  let cleanQueryName = storedProcedureName.replace(/^usp/, '');
   cleanQueryName = cleanQueryName.charAt(0).toLowerCase() + cleanQueryName.slice(1);
 
   if (

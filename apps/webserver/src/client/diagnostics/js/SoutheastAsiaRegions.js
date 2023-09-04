@@ -51,43 +51,15 @@ export default class SoutheastAsiaRegions extends Component {
         prettify: (value) => value,
       });
     }
-    const { view } = this.props;
-    if (view === 'diagnostics') {
-      this.renderBarChart(this.refs.southeastAsiaChart);
-      this.renderPieChart(this.refs.southEastAsiaPie);
-    }
+    this.renderBarChart(this.refs.southeastAsiaChart);
+    this.renderPieChart(this.refs.southEastAsiaPie);
   }
 
   componentWillUnmount() {
     isMounted = false;
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.view === 'diagnostics' && this.props.view !== 'diagnostics' && isMounted) {
-      this.setState(
-        {
-          startYear: 2001,
-          endYear: latestTreeCoverLossYearFC,
-          tclChecked: true,
-          seaChecked: false,
-          idnChecked: false,
-          idnLegalChecked: false,
-          idnMoratoriumChecked: false,
-          idnPrimaryForestChecked: false,
-        },
-        () => {
-          const slider = $('#southeast-asia-slider').data('ionRangeSlider');
-          slider.update({
-            from: 0,
-            to: latestTreeCoverLossYearFC - 2001,
-          });
-        }
-      );
-    }
-  }
-
   componentDidUpdate(prevProps, prevState) {
-    const { view } = this.props;
     const {
       startYear,
       endYear,
@@ -99,7 +71,6 @@ export default class SoutheastAsiaRegions extends Component {
       idnPrimaryForestChecked,
     } = this.state;
     if (
-      (prevProps.view !== 'diagnostics' && view === 'diagnostics') ||
       prevState.startYear !== startYear ||
       prevState.endYear !== endYear ||
       prevState.tclChecked !== tclChecked ||

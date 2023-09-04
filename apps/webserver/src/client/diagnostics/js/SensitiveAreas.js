@@ -57,46 +57,7 @@ export default class SensitiveAreas extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.view === 'diagnostics' && this.props.view !== 'diagnostics') {
-      const { getFilteredLocations } = this.props;
-      const indonesiaPresence = getFilteredLocations()
-        .map((l) => JSON.parse(l.indonesia_presence))
-        .some((l) => l === true);
-      if (indonesiaPresence) {
-        this.setState({
-          peatEnabled: true,
-        });
-      } else {
-        this.setState({
-          peatEnabled: false,
-          peatChecked: false,
-        });
-      }
-      this.setState(
-        {
-          startYear: START_YEAR,
-          endYear: END_YEAR,
-          tclChecked: true,
-          pfChecked: false,
-          paChecked: false,
-          peatChecked: false,
-          iflChecked: false,
-          peatEnabled: true,
-        },
-        () => {
-          const slider = $('#tree-cover-percent-slider').data('ionRangeSlider');
-          slider.update({
-            from: 0,
-            to: END_YEAR - START_YEAR,
-          });
-        }
-      );
-    }
-  }
-
   componentDidUpdate(prevProps, prevState) {
-    const { view } = this.props;
     const {
       tclChecked,
       pfChecked,
@@ -109,7 +70,6 @@ export default class SensitiveAreas extends Component {
     } = this.state;
 
     if (
-      (prevProps.view !== 'diagnostics' && view === 'diagnostics') ||
       prevState.tclChecked !== tclChecked ||
       prevState.pfChecked !== pfChecked ||
       prevState.paChecked !== paChecked ||

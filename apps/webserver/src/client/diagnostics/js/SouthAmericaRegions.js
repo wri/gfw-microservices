@@ -145,102 +145,12 @@ export default class SouthAmericaRegions extends Component {
       this.setState(newState);
     }
 
-    const { view } = this.props;
-    if (view === 'diagnostics') {
-      this.renderChart(this.refs.soyChart);
-      this.renderPie(this.refs.southAmericanPie);
-    }
+    this.renderChart(this.refs.soyChart);
+    this.renderPie(this.refs.southAmericanPie);
   }
 
   componentWillUnmount() {
     isMounted = false;
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.view === 'diagnostics' && this.props.view !== 'diagnostics') {
-      let shouldSet = false;
-      const newState = {};
-      const filteredLocations = this.props.getFilteredLocations();
-      const inLegalAmazon = filteredLocations
-        .map((l) => JSON.parse(l.legal_amazon_presence))
-        .some((l) => l === true);
-      const inCerradoBiome = filteredLocations
-        .map((l) => JSON.parse(l.cerrado_biome_presence))
-        .some((l) => l === true);
-      const inBrazilianBiomes = filteredLocations
-        .map((l) => JSON.parse(l.brazil_biomes_presence))
-        .some((l) => l === true);
-
-      if (this.state.legalAmazon !== inLegalAmazon) {
-        newState.legalAmazon = inLegalAmazon;
-      }
-      if (this.state.cerradoBiome !== inCerradoBiome) {
-        newState.cerradoBiome = inCerradoBiome;
-      }
-      if (this.state.brazilianBiomes !== inBrazilianBiomes) {
-        newState.brazilianBiomes = inBrazilianBiomes;
-      }
-
-      if (inCerradoBiome) {
-        newState.soyChecked = true;
-        newState.prodesChecked = false;
-        newState.paChecked = false;
-        newState.pfChecked = false;
-        newState.biomesChecked = false;
-        newState.saTCLChecked = false;
-      } else if (inLegalAmazon) {
-        newState.prodesChecked = true;
-        newState.soyChecked = false;
-        newState.biomesChecked = false;
-        newState.saTCLChecked = false;
-      } else if (inBrazilianBiomes) {
-        // ?
-        newState.biomesChecked = true;
-        newState.soyChecked = false;
-        newState.prodesChecked = false;
-        newState.paChecked = false;
-        newState.pfChecked = false;
-        newState.saTCLChecked = false;
-      } else {
-        newState.saTCLChecked = true;
-        newState.soyChecked = false;
-        newState.prodesChecked = false;
-        newState.paChecked = false;
-        newState.pfChecked = false;
-        newState.biomesChecked = false;
-      }
-
-      Object.keys(newState).forEach((stateProp) => {
-        if (newState[stateProp] !== this.state[stateProp]) {
-          shouldSet = true;
-        }
-      });
-      if (shouldSet && isMounted) {
-        this.setState(newState);
-      }
-
-      if (isMounted) {
-        this.setState(
-          {
-            startYear: START_YEAR,
-            endYear: END_YEAR,
-            soyChecked: true,
-            prodesChecked: false,
-            paChecked: false,
-            pfChecked: false,
-            saTCLChecked: false,
-            biomesChecked: false,
-          },
-          () => {
-            const slider = $('#south-american-slider').data('ionRangeSlider');
-            slider.update({
-              from: 0,
-              to: END_YEAR - START_YEAR,
-            });
-          }
-        );
-      }
-    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -262,7 +172,6 @@ export default class SouthAmericaRegions extends Component {
       brazilianBiomes,
     } = this.state;
     if (
-      (prevProps.view !== 'diagnostics' && this.props.view === 'diagnostics') ||
       prevState.soyChecked !== soyChecked ||
       prevState.prodesChecked !== prodesChecked ||
       prevState.paChecked !== paChecked ||

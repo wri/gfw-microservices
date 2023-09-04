@@ -696,7 +696,6 @@ export default class Diagnostics extends Component {
 
   render() {
     const {
-      view,
       selectedLists,
       selectedLocations,
       listData,
@@ -1089,7 +1088,6 @@ export default class Diagnostics extends Component {
               peat={peat}
               ifl={ifl}
               listView={listView}
-              view={view}
               fireDownload={this.fireDownload}
               filteredData={filteredLocationData}
               getYearlyData={this.getYearlyData}
@@ -1115,7 +1113,6 @@ export default class Diagnostics extends Component {
               <SouthAmericaRegions
                 diagnosticView={diagnosticView}
                 listView={listView}
-                view={view}
                 fireDownload={this.fireDownload}
                 filteredData={filteredLocationData}
                 togglePopover={this.togglePopover}
@@ -1133,7 +1130,6 @@ export default class Diagnostics extends Component {
               <SoutheastAsiaRegions
                 diagnosticView={diagnosticView}
                 listView={listView}
-                view={view}
                 fireDownload={this.fireDownload}
                 filteredData={filteredLocationData}
                 togglePopover={this.togglePopover}
@@ -1152,7 +1148,6 @@ export default class Diagnostics extends Component {
             {listView === 'commodity_risk' ? (
               <MillPrioritySummary
                 listView={listView}
-                view={view}
                 fireDownload={this.fireDownload}
                 filteredData={filteredLocationData}
                 togglePopover={this.togglePopover}
@@ -1168,7 +1163,6 @@ export default class Diagnostics extends Component {
             {listView === 'commodity_risk' ? (
               <PalmRiskAnalysis
                 listView={listView}
-                view={view}
                 fireDownload={this.fireDownload}
                 filteredData={filteredLocationData}
                 togglePopover={this.togglePopover}
@@ -1184,7 +1178,6 @@ export default class Diagnostics extends Component {
             {listView === 'commodity_risk' ? (
               <DeforestationTrends
                 listView={listView}
-                view={view}
                 fireDownload={this.fireDownload}
                 filteredData={filteredLocationData}
                 togglePopover={this.togglePopover}
@@ -1205,7 +1198,6 @@ export default class Diagnostics extends Component {
             {listView === 'commodity_risk' ? (
               <PalmRiskList
                 listView={listView}
-                view={view}
                 fireDownload={this.fireDownload}
                 filteredData={filteredLocationData}
                 togglePopover={this.togglePopover}

@@ -2964,7 +2964,7 @@ export const profilePage = {
   accountUsage: {
     title: 'Summary',
     usageAnalyzed: 'Area Analyzed',
-    totalAnalysis: 'Total Area Analyzed',
+    totalAnalysis: 'Total Area Limit',
   },
 };
 

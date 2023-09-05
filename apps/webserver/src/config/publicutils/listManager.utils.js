@@ -55,6 +55,7 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
+const { statusFromWorseToBetter } = require(path.resolve('./config/env/analysisTypes.constants'));
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -509,6 +510,8 @@ const getAllListsWithAnalysisId = (req) => {
         const [orgLists, analysisIdStatus] = results;
         orgLists.forEach((list) => {
           const filter = analysisIdStatus.filter((analysis) => analysis.ListID == list.id);
+          const worstStatus = getWorstStatusId(filter);
+
           const analysisId = filter.reduce((acc, cur) => {
             const { AnalysisID, Status, ErrorInfo, UpdateTime } = cur;
             acc[AnalysisID] = {
@@ -519,11 +522,24 @@ const getAllListsWithAnalysisId = (req) => {
             return acc;
           }, {});
           list.AnalysisID = analysisId;
+          list.list_status_id = worstStatus ?? list.list_status_id;
         });
         resolve(orgLists);
       })
       .catch((error) => reject(error));
   });
+};
+
+const getWorstStatusId = (analysisIds) => {
+  const analysisStatus = analysisIds.map((analysisId) => analysisId.Status);
+
+  for (const status of statusFromWorseToBetter) {
+    const { code } = status;
+    if (analysisStatus.includes(code)) {
+      return code;
+    }
+  }
+  return undefined;
 };
 
 /** @function {getListLocations}
@@ -2007,6 +2023,7 @@ module.exports = {
   getListLocationGeometry,
   deleteListIfEmpty,
   getAllListsWithAnalysisId,
+  getWorstStatusId,
 };
 
 // Require after modules have been exported so the module can be fully loaded

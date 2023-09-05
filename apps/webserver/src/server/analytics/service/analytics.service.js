@@ -1,4 +1,5 @@
 const path = require('path');
+const moment = require('moment');
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const sql = require('mssql');
 const { getOrganizationAnalysisUsage: getOrganizationAnalysisUsageQuery } = require(path.resolve(
@@ -8,6 +9,7 @@ const { getAnalysisLimits } = require(path.resolve('./queries/system/getAnalysis
 const { getAllListsAnalysisStatus: getAllListsAnalysisStatusQuery } = require(path.resolve(
   './queries/organization/getAllListsAnalysisStatus'
 ));
+const { calculateProcessingLimit } = require(path.resolve('./config/privateutils/limits.utils'));
 
 const getOrganizationAnalysisUsage = async ({
   startDate,
@@ -53,6 +55,29 @@ const getAccountLimits = async (organizationId, organizationType) => {
   return limitsByOrgID || limitsByOrgType;
 };
 
+const getAccountListProccesingLimit = async ({
+  organization_id,
+  subscription_status_id,
+  OrganizationActivatedTime,
+}) => {
+  const endDate = moment();
+  const accountActivationDate = moment(OrganizationActivatedTime);
+  const startDate = endDate.subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+  const [accountUsage] = await getOrganizationAnalysisUsage({
+    startDate: startDate.format('YYYY-MM-DD'),
+    endDate: endDate.format('YYYY-MM-DD'),
+    organizationId: organization_id,
+    countForEachList: 0,
+  });
+  const accountLimits = await getAccountLimits(organization_id, subscription_status_id);
+
+  // Calculate Processing limit either left for the year or max limit per list
+  const processingLimit = calculateProcessingLimit(accountLimits, accountUsage);
+
+  return processingLimit;
+};
+
 const getAllListsAnalysisStatus = async (req) => {
   const [response] = await sqlUtils.executeOrganizationQuery(req, getAllListsAnalysisStatusQuery);
   return response;
@@ -63,4 +88,5 @@ module.exports = {
   getAnalysisLimitData,
   getAccountLimits,
   getAllListsAnalysisStatus,
+  getAccountListProccesingLimit,
 };

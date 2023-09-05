@@ -566,6 +566,7 @@ const getOrganizationActivatedTime = async (organizationId) => {
       error
     );
     console.error(errorObject);
+    throw new Error(errorObject);
   }
 };
 

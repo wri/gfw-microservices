@@ -16,8 +16,9 @@ const {
 const { getOrganizationAnalysisUsage, getAccountLimits } = require(path.resolve(
   './server/analytics/service/analytics.service'
 ));
-const { calculateAccountUsageStartDate } = require(path.resolve(
-  './config/privateutils/limits.utils'
+const { calculateProcessingLimit } = require(path.resolve('./config/privateutils/limits.utils'));
+const { getOrganizationActivatedTime } = require(path.resolve(
+  './config/publicutils/accountManager.utils'
 ));
 
 /**
@@ -28,12 +29,7 @@ const { calculateAccountUsageStartDate } = require(path.resolve(
  * @return {Promise} - request Promise
  */
 exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
-  const {
-    organization_user_id,
-    organization_id,
-    subscription_status_id,
-    organization_activated_time,
-  } = req.session;
+  const { organization_user_id, organization_id, subscription_status_id } = req.session;
   const { reanalyze = false } = req.body;
   const { id: listID, list_name } = list;
 
@@ -51,9 +47,10 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   const accountLimits = await getAccountLimits(organization_id, subscription_status_id);
 
   // get organization usage
+  const { OrganizationActivatedTime } = await getOrganizationActivatedTime(organization_id);
   const endDate = moment();
-  const accountActivationDate = moment(organization_activated_time); // newly added account activated_time
-  const startDate = calculateAccountUsageStartDate(accountActivationDate, endDate);
+  const accountActivationDate = moment(OrganizationActivatedTime);
+  const startDate = endDate.subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
 
   const [accountUsage] = await getOrganizationAnalysisUsage({
     startDate: startDate.format('YYYY-MM-DD'),

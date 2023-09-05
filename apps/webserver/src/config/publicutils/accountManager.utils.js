@@ -15,6 +15,7 @@
  *   @function {initialize}
  *   @function {updatePendingAccount}
  *   @function {updatePendingAccountUser}
+ *   @function {getOrganizationActivatedTime}
  *
  ******************************************************************* */
 // Imports required for this module
@@ -543,6 +544,31 @@ const updatePendingAccountUser = (
   });
 };
 
+/**
+ * @function {getOrganizationActivatedTime}
+ * @param {Number} organizationId
+ * @return {Object} OrganizationActivatedTime
+ */
+const getOrganizationActivatedTime = async (organizationId) => {
+  try {
+    const params = [{ field: 'orgId', type: sql.Int, value: organizationId }];
+    const [resultset] = await sqlUtils.executeSystemStoredProcedure(
+      undefined,
+      'uspGetOrganizationActivatedTime',
+      params
+    );
+    return resultset;
+  } catch (error) {
+    const errorObject = errorUtils.createErrorMessage(
+      {},
+      errorUtils.errorCodes.failedToGetAccountActivatedTime,
+      `Failed to get organization activated time.`,
+      error
+    );
+    console.error(errorObject);
+  }
+};
+
 /** @function {initialize}
  * @summary Initializes the Account Manager module. Loads all the lists needed for the application.
  */
@@ -566,4 +592,5 @@ module.exports = {
   initialize,
   updatePendingAccount,
   updatePendingAccountUser,
+  getOrganizationActivatedTime,
 };

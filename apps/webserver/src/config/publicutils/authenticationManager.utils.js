@@ -35,7 +35,6 @@
  *   req.session.organization_status_id
  *   req.session.user_first_name
  *   req.session.user_last_name
- *   req.session.organization_activated_time
  *
  ******************************************************************* */
 // Imports required for this module
@@ -313,10 +312,6 @@ const setOrgSessions = (req, org) => {
     req.session.organization_status_id = parseInt(org.organization_status_id, 10);
     // Save Organization Subscription Status ID.
     req.session.subscription_status_id = parseInt(org.subscription_status_id, 10);
-    // Make the org activated time available in the session
-    if (org.organization_activated_time) {
-      req.session.organization_activated_time = org.organization_activated_time;
-    }
     // Call Organization Db to get additional User Information.
     const params = [{ field: 'userID', type: sql.Int, value: req.session.organization_user_id }];
     sqlUtils

@@ -88,7 +88,7 @@ export default class Select extends Component {
     request.open('POST', '/select/org', true);
     request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     request.send(
-      `org_id=${organization.organization_id}&org_db=${organization.organization_db}&org_user_id=${organization.organization_user_id}&org_status_id=${organization.organization_status_id}&subscription_status_id=${organization.subscription_status_id}&org_activated_time=${organization.organization_activated_time}`
+      `org_id=${organization.organization_id}&org_db=${organization.organization_db}&org_user_id=${organization.organization_user_id}&org_status_id=${organization.organization_status_id}&subscription_status_id=${organization.subscription_status_id}`
     );
   };
 
@@ -108,7 +108,7 @@ export default class Select extends Component {
     request.open('POST', '/select/org', true);
     request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     request.send(
-      `org_id=${this.state.organization.organization_id}&org_db=${this.state.organization.organization_db}&org_user_id=${this.state.organization.organization_user_id}&org_status_id=${this.state.organization.organization_status_id}&subscription_status_id=${this.state.organization.subscription_status_id}&org_activated_time=${this.state.organization.organization_activated_time}`
+      `org_id=${this.state.organization.organization_id}&org_db=${this.state.organization.organization_db}&org_user_id=${this.state.organization.organization_user_id}&org_status_id=${this.state.organization.organization_status_id}&subscription_status_id=${this.state.organization.subscription_status_id}`
     );
   };
 

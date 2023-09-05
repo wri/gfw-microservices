@@ -139,9 +139,6 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Install dependencies for webserver
-        run: npm --prefix ./apps/webserver/src install --legacy-peer-deps
-
       - name: Run Test
         env:
           NODE_OPTIONS: '--max_old_space_size=6144'

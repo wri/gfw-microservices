@@ -29,6 +29,12 @@ const { removeExistingVectorTileFromS3 } = require('../../vectorTiles/utils/vect
 const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+const { getOrganizationActivatedTime } = require(path.resolve(
+  './config/publicutils/accountManager.utils'
+));
+const { getAccountListProccesingLimit } = require(path.resolve(
+  './server/analytics/service/analytics.service'
+));
 
 /**
  * @name exports
@@ -1212,26 +1218,38 @@ module.exports = (app, limiter) => {
     const { organization_user_id, organization_id } = req.session;
 
     const { LISTS_MICROSERVICE_URL } = process.env;
-    axios
-      .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
-        organization_id,
-        list_id,
-        path: pathLocal,
-        template_type,
-        user_id: organization_user_id,
-        startAnalysis,
+
+    getOrganizationActivatedTime(organization_id)
+      .then(({ OrganizationActivatedTime }) => {
+        // calculate list processing limit
+        return getAccountListProccesingLimit({
+          ...req.session,
+          OrganizationActivatedTime,
+        });
       })
-      .then((response) => {
-        console.log(response.data);
-        // Send email to user that list is submitted to be analysed
-        return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName);
-      })
-      .then((response) => {
-        console.log(response);
-        res.send(response);
-      })
-      .catch((err) => {
-        res.send(500, err);
+      .then((processingLimit) => {
+        axios
+          .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
+            organization_id,
+            list_id,
+            path: pathLocal,
+            template_type,
+            user_id: organization_user_id,
+            startAnalysis,
+            processing_limit: processingLimit,
+          })
+          .then((response) => {
+            console.log(response.data);
+            // Send email to user that list is submitted to be analysed
+            return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName);
+          })
+          .then((response) => {
+            console.log(response);
+            res.send(response);
+          })
+          .catch((err) => {
+            res.send(500, err);
+          });
       });
   });
 

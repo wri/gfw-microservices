@@ -60,13 +60,13 @@ const getAccountListProccesingLimit = async ({
   subscription_status_id,
   OrganizationActivatedTime,
 }) => {
-  const endDate = moment();
+  const todayAsEndDay = moment();
   const accountActivationDate = moment(OrganizationActivatedTime);
-  const startDate = endDate.subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+  const accountLatestYearStartDate = todayAsEndDay.subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
 
   const [accountUsage] = await getOrganizationAnalysisUsage({
-    startDate: startDate.format('YYYY-MM-DD'),
-    endDate: endDate.format('YYYY-MM-DD'),
+    startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
+    endDate: todayAsEndDay.format('YYYY-MM-DD'),
     organizationId: organization_id,
     countForEachList: 0,
   });

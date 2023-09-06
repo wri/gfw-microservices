@@ -53,6 +53,7 @@ try {
     `<rootDir>/${assets.clientJest}`,
     `<rootDir>/${assets.serverJest}`,
     `<rootDir>/${assets.configJest}`,
+    `<rootDir>/test/fitness/**/*.test.js`,
   ]; // Write the file back out to jestConfig
   fs.writeFileSync(jestConfigPath, JSON.stringify(jestConfig, null, 2), 'utf-8');
 } catch (err) {

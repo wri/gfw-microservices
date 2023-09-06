@@ -26,6 +26,8 @@ import CircularProgressWithLabel from './CircularProgressWithLabel';
 import ExistingListSelector from './ExistingListSelector';
 import { deduceActiveId } from '../../../../common/js/utils/templateUtils';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
+import featureFlags from '../../../../../utils/general.utils';
+import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 
 export const CHOICES = {
   SINGLE: 'single',
@@ -51,6 +53,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
   const [listName, setListName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [existingListName, setExistingListName] = useState();
+  const [selectedAnalysis, setSelectedAnalysis] = useState();
   const fileInputRef = useRef(null);
 
   const chooser = locationsPage.landing.addLocationChooser;
@@ -355,6 +358,10 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
               </div>
             </div>
           </section>
+
+          {featureFlags.isEudrAvailable && (
+            <AnalysisTypesSelector handleAnalyzesSelection={setSelectedAnalysis} />
+          )}
           {/* Temporary removed: GPV-1233
           <hr className="section-divisor" />
           <section className="add-location-chooser__general-section">

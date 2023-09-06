@@ -31,6 +31,7 @@ import SaveAsDraftButtonWithDialog from '../../../../common/js/components/SaveAs
 
 import { resetScroll } from '../../utils/scroll.utils';
 import { locationsPage, proLayers } from '../../../../common/js/config';
+import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 
 // REDUX - Store
 import store from '../../store';
@@ -43,6 +44,7 @@ import {
   saveAsDraftListConfig,
   saveListConfig,
 } from '../../../../../config/config/locations.config';
+import featureFlags from '../../../../../utils/general.utils';
 
 import '../../../css/addLocation.scss';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
@@ -256,6 +258,7 @@ export default class AddLocation extends Component {
       lng: '',
       overrideOnClose: false,
       isLoading: false,
+      selectedAnalysis:[],
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
@@ -1764,6 +1767,10 @@ export default class AddLocation extends Component {
     });
   };
 
+  handleAnalyzesSelection = (selectedAnalysis) => {
+    this.setState({ selectedAnalysis: selectedAnalysis });
+  };
+
   clearTimeframeDropdown = () => {
     this.setState({
       startDate: null,
@@ -2269,7 +2276,13 @@ export default class AddLocation extends Component {
         ) : (
           <></>
         )}
+        {featureFlags.isEudrAvailable && (
+          <AddLocationCard>
+            <h2 className="add-location-card__title">Analysis</h2>
 
+            <AnalysisTypesSelector handleAnalyzesSelection={this.handleAnalyzesSelection} />
+          </AddLocationCard>
+        )}
         <SaveAsDraftNote />
 
         <section className="add-single-location__footer">

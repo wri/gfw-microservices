@@ -565,7 +565,7 @@ const getOrganizationActivatedTime = async (organizationId) => {
       `Failed to get organization activated time.`,
       error
     );
-    console.error(errorObject);
+    logger.error(errorObject);
     throw new Error(errorObject);
   }
 };

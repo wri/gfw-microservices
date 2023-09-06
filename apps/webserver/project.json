@@ -65,7 +65,7 @@
             "forwardAllArgs": false
           },
           {
-            "command": "node node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.js --config ./config/webpack.production.config.js",
+            "command": "node ../../../node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.js --config ./config/webpack.production.config.js",
             "forwardAllArgs": false
           },
           "node ./test/prepare-jest"

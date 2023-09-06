@@ -45,7 +45,7 @@ module.exports = () => {
   rules.push({
     test: /\.(js|jsx)$/,
     loader: 'babel-loader',
-    exclude: /(node_modules|build)/,
+    exclude: /node_modules/,
   });
 
   rules.push({

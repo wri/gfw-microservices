@@ -55,6 +55,7 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
+const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -509,6 +510,10 @@ const getAllListsWithAnalysisId = (req) => {
         const [orgLists, analysisIdStatus] = results;
         orgLists.forEach((list) => {
           const filter = analysisIdStatus.filter((analysis) => analysis.ListID == list.id);
+
+          // get the worst status from the list analysis status to replace list level status
+          const worstStatus = getWorstStatusId(filter);
+
           const analysisId = filter.reduce((acc, cur) => {
             const { AnalysisID, Status, ErrorInfo, UpdateTime } = cur;
             acc[AnalysisID] = {
@@ -519,11 +524,29 @@ const getAllListsWithAnalysisId = (req) => {
             return acc;
           }, {});
           list.AnalysisID = analysisId;
+          // replace the list level status with the worst from the list analysis status,
+          // or continue with the one that already had.
+          list.list_status_id = worstStatus ?? list.list_status_id;
         });
         resolve(orgLists);
       })
       .catch((error) => reject(error));
   });
+};
+
+const getWorstStatusId = (analysisIds) => {
+
+  // get all status from the analysis list
+  const analysisStatus = analysisIds.map((analysisId) => analysisId.Status);
+
+  // iterate over status ordered by worse to better and return
+  // the fist that exist inside the analysis list
+  for (const status of listStatusOrderByWorse) {
+    if (analysisStatus.includes(status)) {
+      return status;
+    }
+  }
+  return undefined;
 };
 
 /** @function {getListLocations}
@@ -2007,6 +2030,7 @@ module.exports = {
   getListLocationGeometry,
   deleteListIfEmpty,
   getAllListsWithAnalysisId,
+  getWorstStatusId,
 };
 
 // Require after modules have been exported so the module can be fully loaded

@@ -2,6 +2,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable import/no-dynamic-require */
 const axios = require('axios');
+const axiosRetry = require('axios-retry');
 const path = require('path');
 const getPresignedUrl = require('../utils/dataApi.utils');
 
@@ -17,6 +18,9 @@ const {
 const HEADERS_API_KEY = {
   'x-api-key': process.env.GFW_DATA_API_KEY,
 };
+
+// two retries for all axios calls
+axiosRetry(axios, { retries: 2 });
 
 /**
  * @description - Get the data from the GFW API for the given info Bubble ID

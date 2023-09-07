@@ -1118,7 +1118,7 @@ class UploadLocations extends Component {
     this.geocodeMills(features, requiresGeocode);
   };
 
-  geocodeMills = (mills, requiresGeocode) => {
+  geocodeMills = async (mills, requiresGeocode) => {
     const totalFeatures = mills.length;
     const queryTask = new QueryTask(locationsPage.updatedPalmOilMillUrl);
     let anyValidId = false;
@@ -1130,71 +1130,41 @@ class UploadLocations extends Component {
       uploadingData: [],
     });
 
-    mills.forEach((feature, idx) => {
-      const isLast = idx === totalFeatures - 1;
-      if (requiresGeocode) {
-        const query = new Query();
+    if (requiresGeocode) {
+      const requestConfig = {
+        method: 'POST',
+        url: `${DATA_API_URL}/dataApi/getPalmOilMillLatLong`,
+        data: {
+          palmOilMillIDs: mills.map((mill) => mill.ID),
+        },
+      };
+
+      const { data: response = {} } = await axios(requestConfig).catch((err) => {
+        console.log('Error getPalmOilMillLatLong:', err);
+        return [];
+      });
+      const { data: millsLatLong = [] } = response;
+      mills.forEach((feature, idx) => {
         const mill = { ...feature };
-
-        query.where = `id = '${feature.ID}'`;
-        query.returnGeometry = true;
-        query.outFields = [];
-        queryTask.execute(query).then(async (result) => {
-          if (result.features && result.features.length > 0) {
-            mill.Latitude = result.features[0].geometry.latitude;
-            mill.Longitude = result.features[0].geometry.longitude;
-
-            result.features.forEach((feat) => {
-              if (feat.Latitude !== 0 && feat.Longitude !== 0) {
-                anyValidId = true;
-              }
-            });
-
-            // On the last geocode to complete, check if any valid IDs were found
-            if (isLast) {
-              if (!anyValidId) {
-                this.setState({
-                  canGoNext: false,
-                  features: [],
-                  featureResults: [],
-                  dialogOpen: true,
-                  dialogTitle: locationsPage.upload.noValidDoNotChangeThis, // 'No valid WRI_IDs',
-                  dialogMessage: locationsPage.upload.noValidDialogMessage,
-                });
-              }
-            }
-          } else {
-            const requestConfig = {
-              method: 'POST',
-              url: `${DATA_API_URL}/dataApi/getPalmOilMillLatLong/?PalmOilMillID=${feature.ID}`,
-            };
-
-            const { data } = await axios(requestConfig).catch((err) => {
-              console.log('getPalmOilMillLatLong:', err);
-              return [];
-            });
-
-            if (data?.data[0]) {
-              const { latitude, longitude } = data.data[0];
-
-              if (latitude && longitude && data.status === 200) {
-                mill.Latitude = latitude;
-                mill.Longitude = longitude;
-                mill.invalidWriId = false;
-              }
-            } else {
-              mill.Latitude = 0;
-              mill.Longitude = 0;
-              mill.invalidWriId = true;
-            }
-          }
-
-          this.deduceAdmin(mill, isLast, idx);
-        });
-      } else {
+        const isLast = idx === totalFeatures - 1;
+        const mathcingLatLong = millsLatLong.find((millLatLong) => millLatLong.uml_id === mill.ID);
+        if (mathcingLatLong) {
+          mill.Latitude = mathcingLatLong.latitude;
+          mill.Longitude = mathcingLatLong.longitude;
+          mill.invalidWriId = false;
+        } else {
+          mill.Latitude = 0;
+          mill.Longitude = 0;
+          mill.invalidWriId = true;
+        }
+        this.deduceAdmin(mill, isLast, idx);
+      });
+    } else {
+      mills.forEach((feature, idx) => {
+        const isLast = idx === totalFeatures - 1;
         this.deduceAdmin(feature, isLast, idx);
-      }
-    });
+      });
+    }
   };
 
   deduceAdmin = (feature, isLast, idx) => {

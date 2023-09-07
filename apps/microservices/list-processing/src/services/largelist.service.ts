@@ -201,7 +201,7 @@ export class LargeListService {
         },
       ]);
 
-      const { list_id: listID } = createListResult;
+      const { list_id: listID } = createListResult ?? {};
       if (listID) {
         await connection.executeQuery('dropListAnalysisStatusByListId', [
           {

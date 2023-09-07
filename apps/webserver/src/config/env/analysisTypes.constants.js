@@ -14,17 +14,7 @@ const analysisTypesOptions = [
   },
 ];
 
-const statusFromWorseToBetter = [
-  { code: 4, status: 'Draft' },
-  { code: 3, status: 'Inactive' },
-  { code: 1, status: 'Pending' },
-  { code: 5, status: 'Analyzing Diagnostic' },
-  { code: 6, status: 'Analyzing Dashboard' },
-  { code: 2, status: 'Active' },
-];
-
 module.exports = {
   analysisTypes,
   analysisTypesOptions,
-  statusFromWorseToBetter,
 };

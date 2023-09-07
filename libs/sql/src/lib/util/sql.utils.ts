@@ -69,7 +69,6 @@ export class SQLUtils {
           if (result === undefined) {
             resolve(undefined);
           }
-
           if (Number(result.length) > 1) {
             resolve(result as T);
           }

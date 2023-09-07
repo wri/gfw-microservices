@@ -62,7 +62,8 @@ export class AppController {
     return this.largeListService.createNewLargeListProcess(
       request.list_name,
       request.user_id,
-      request.client_database
+      request.client_database,
+      request.analysisIds
     );
   }
 

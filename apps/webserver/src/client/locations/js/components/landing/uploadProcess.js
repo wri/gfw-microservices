@@ -30,9 +30,9 @@ const uploadFileStep = async (param) => {
 };
 
 const createLargeListStep = async (param) => {
-  const { listName } = param;
+  const { listName, analysisIds = [] } = param;
   try {
-    const { data } = await axios.post('/locations/create-large-list', { listName });
+    const { data } = await axios.post('/locations/create-large-list', { listName, analysisIds });
     return { ...param, ...data };
   } catch (error) {
     throw new Error(error);
@@ -83,8 +83,8 @@ const promiseCompose =
       .call(this, ...initialArgs);
   };
 
-function uploadProcess(list, uploadFileToS3, largeListFile, isExistingList) {
-  let newList = { ...list };
+function uploadProcess(list, uploadFileToS3, largeListFile, isExistingList, analysisIds) {
+  let newList = { ...list, analysisIds };
   const createProcess = promiseCompose(
     processListStep,
     saveListToProcessStep,

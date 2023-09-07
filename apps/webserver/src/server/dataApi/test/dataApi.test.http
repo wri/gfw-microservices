@@ -134,16 +134,20 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 ### Analysis Admin/Region
 GET https://production-api.globalforestwatch.org/v2/geostore/admin/AFG/1?thresh=0.05
 
-### Get Lat/Long for specific PalmOilMill ID
+### analysisAdminRegion
 POST https://localhost:8443/dataApi/analysisAdminRegion/AFG/1?thresh=0.05
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
 ############################################################################################################
-### Get Lat/Long for specific PalmOilMill ID
-POST https://localhost:8443/dataApi/getPalmOilMillLatLong/?PalmOilMillID=PO1000011171
+### Get Lat/Long for specific PalmOilMill IDs
+POST https://localhost:8443/dataApi/getPalmOilMillLatLong
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "palmOilMillIDs": ["PO1000011171", "PO1000004269"]
+}
 
 ############################################################################################################
 ### Get Geostore IDs

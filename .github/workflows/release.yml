@@ -34,7 +34,7 @@ jobs:
         shell: bash
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           ssh-key: '${{ secrets.DEPLOY_KEY }}'
@@ -88,13 +88,13 @@ jobs:
             NEW_TAG=$(echo $label-V$INCREMENTAL_NUMERIC_VERSION)
             echo "NEW TAG TO CREATE: $NEW_TAG"
 
-            if [[ "${{ github.event.act }}" == false || -z "${{ github.event.act }}" ]]; then               
+            if [[ "${{ github.event.act }}" == false || -z "${{ github.event.act }}" ]]; then
               git tag -a $NEW_TAG -m "Release $NEW_TAG"
               git push origin $NEW_TAG
             else
               echo "Exit from the workflow, act is enabled, no more execution needed."
             fi
-            
+
             matching_tags+="$label "
           done
 

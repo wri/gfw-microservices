@@ -21,7 +21,6 @@ function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
   const isGfwList = JSON.parse(new URLSearchParams(location.search).get('gfw'));
   const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
   const diagnosticView = locationId ? 'LOCATION' : 'LIST';
-  const view = 'diagnostics'; // or 'list'
 
   useEffect(() => {
     fetch(`/diagnosticsData`, {
@@ -89,7 +88,6 @@ function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
           isSharedList={isSharedList}
           isGfwList={isGfwList}
           diagnosticView={diagnosticView}
-          view={view}
           selectedLists={selectedLists}
           listData={processedListData}
           listLevelAnalysis={listLevelAnalysis}

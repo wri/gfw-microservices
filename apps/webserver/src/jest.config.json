@@ -19,7 +19,8 @@
   "testMatch": [
     "<rootDir>/client/**/*.test.js",
     "<rootDir>/server/**/*.spec.js",
-    "<rootDir>/config/**/*.spec.js"
+    "<rootDir>/config/**/*.spec.js",
+    "<rootDir>/test/fitness/**/*.test.js"
   ],
   "transform": {
     ".+\\.(css|css!|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",

@@ -140,6 +140,7 @@ module.exports = (app, limiter) => {
       gfw_list_id,
       selected_location_ids: src_location_ids,
       original_gfw_list,
+      analysisIds,
     } = req.body;
 
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
@@ -155,7 +156,8 @@ module.exports = (app, limiter) => {
       custom_attributes,
       finalGeojson,
       gfw_list_id,
-      false
+      false,
+      analysisIds
     )
       .then(async ({ resultGeoJSON }) => {
         const dest_list = await ListManager.getListByListName(req, list_name);
@@ -1192,7 +1194,7 @@ module.exports = (app, limiter) => {
    * Save list to being processed in database and queue for processing
    */
   app.post('/locations/create-large-list', (req, res) => {
-    const { listName } = req.body;
+    const { listName, analysisIds } = req.body;
     const userId = req.session.organization_user_id;
     const { LISTS_MICROSERVICE_URL } = process.env;
     axios
@@ -1200,6 +1202,7 @@ module.exports = (app, limiter) => {
         user_id: userId,
         list_name: listName,
         client_database: req.session.organization_database,
+        analysisIds,
       })
       .then((response) => {
         res.send({ user_id: userId, list_id: response.data.list_id });

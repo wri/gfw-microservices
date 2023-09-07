@@ -11,8 +11,6 @@
 import React, { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import Dialog from 'material-ui/Dialog';
-import QueryTask from 'esri/tasks/QueryTask';
-import Query from 'esri/tasks/support/Query';
 import Point from 'esri/geometry/Point';
 import Polygon from 'esri/geometry/Polygon';
 import GeometryEngine from 'esri/geometry/geometryEngine';
@@ -1120,8 +1118,6 @@ class UploadLocations extends Component {
 
   geocodeMills = async (mills, requiresGeocode) => {
     const totalFeatures = mills.length;
-    const queryTask = new QueryTask(locationsPage.updatedPalmOilMillUrl);
-    let anyValidId = false;
 
     this.setState({
       canGoNext: false,
@@ -1147,10 +1143,10 @@ class UploadLocations extends Component {
       mills.forEach((feature, idx) => {
         const mill = { ...feature };
         const isLast = idx === totalFeatures - 1;
-        const mathcingLatLong = millsLatLong.find((millLatLong) => millLatLong.uml_id === mill.ID);
-        if (mathcingLatLong) {
-          mill.Latitude = mathcingLatLong.latitude;
-          mill.Longitude = mathcingLatLong.longitude;
+        const matchingLatLong = millsLatLong.find((millLatLong) => millLatLong.uml_id === mill.ID);
+        if (matchingLatLong) {
+          mill.Latitude = matchingLatLong.latitude;
+          mill.Longitude = matchingLatLong.longitude;
           mill.invalidWriId = false;
         } else {
           mill.Latitude = 0;

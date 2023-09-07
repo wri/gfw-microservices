@@ -1,11 +1,11 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Deploy SIT-QA
+name: Deploy EAPI-QA
 
 on:
   push:
     tags:
-      - 'SIT-QA-V*'
+      - 'EAPI-QA-V*'
 
 permissions:
   id-token: write
@@ -15,15 +15,15 @@ env:
   AWS_REGION: us-east-1 # set this to your preferred AWS region, e.g. us-west-1
   AWS_ROLE_TO_ASSUME: arn:aws:iam::617001639586:role/github_ecr_access # set the role ARN for AWS authentication
   AWS_ROLE_SESSION_NAME: fargate_CICD # set the role session name used for AWS logging
-  ECR_REPOSITORY: microservices-sustainit-qa # set this to your Amazon ECR repository name
+  ECR_REPOSITORY: microservices-externalapi-qa # set this to your Amazon ECR repository name
   ECR_REGISTRY: 617001639586.dkr.ecr.us-east-1.amazonaws.com # set this to your Amazon ECR registry name
-  ECS_SERVICE: microservices-sustainit-qa # set this to your Amazon ECS service name
+  ECS_SERVICE: microservices-externalapi-qa # set this to your Amazon ECS service name
   ECS_CLUSTER: gfwpro-microservices # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION:
-    .aws/task-definition-microservices-sustainit-qa.json # set this to the path to your Amazon ECS task definition
+    .aws/task-definition-microservices-externalapi-qa.json # set this to the path to your Amazon ECS task definition
     # file, e.g. .aws/task-definition.json
   CONTAINER_NAME:
-    microservices-sustainit-qa # set this to the name of the container in the
+    microservices-externalapi-qa # set this to the name of the container in the
     # containerDefinitions section of your task definition
   IMAGE_TAG: ${{ github.sha }} # set the tag name for the docker image
   NODE_ENV: qa # set the environment passed to the docker build argument (staging, qa, prodv2)
@@ -52,8 +52,8 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         run: |
-          echo "${{secrets.MICROSERVICES_SUSTAINIT_QA_ENV}}" > ./apps/microservices/sustainit/.env
-          docker build -f apps/microservices/sustainit/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "${{secrets.MICROSERVICES_externalapi_QA_ENV}}" > ./apps/microservices/externalapi/.env
+          docker build -f apps/microservices/externalapi/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"

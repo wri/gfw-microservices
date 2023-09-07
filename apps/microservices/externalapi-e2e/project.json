@@ -1,13 +1,13 @@
 {
-  "name": "sustainit-e2e",
+  "name": "externalapi-e2e",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "implicitDependencies": ["microservices-sustainit"],
+  "implicitDependencies": ["microservices-externalapi"],
   "targets": {
     "e2e": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
       "options": {
-        "jestConfig": "apps/microservices/sustainit-e2e/jest.config.ts",
+        "jestConfig": "apps/microservices/externalapi-e2e/jest.config.ts",
         "passWithNoTests": true
       }
     },
@@ -15,7 +15,7 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/microservices/sustainit-e2e/**/*.{js,ts}"]
+        "lintFilePatterns": ["apps/microservices/externalapi-e2e/**/*.{js,ts}"]
       }
     }
   }

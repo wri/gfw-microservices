@@ -31,7 +31,7 @@
       }
     },
     "testweb": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/webserver"],
       "options": {
         "jestConfig": "apps/webserver/src/jest.config.json",

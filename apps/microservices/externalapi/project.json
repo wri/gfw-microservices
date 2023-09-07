@@ -1,7 +1,7 @@
 {
-  "name": "microservices-sustainit",
+  "name": "microservices-externalapi",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/microservices/sustainit/src",
+  "sourceRoot": "apps/microservices/externalapi/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -11,12 +11,12 @@
       "options": {
         "target": "node",
         "compiler": "tsc",
-        "outputPath": "dist/apps/microservices/sustainit",
-        "main": "apps/microservices/sustainit/src/main.ts",
-        "tsConfig": "apps/microservices/sustainit/tsconfig.app.json",
-        "assets": ["apps/microservices/sustainit/src/assets"],
+        "outputPath": "dist/apps/microservices/externalapi",
+        "main": "apps/microservices/externalapi/src/main.ts",
+        "tsConfig": "apps/microservices/externalapi/tsconfig.app.json",
+        "assets": ["apps/microservices/externalapi/src/assets"],
         "isolatedConfig": true,
-        "webpackConfig": "apps/microservices/sustainit/webpack.config.js"
+        "webpackConfig": "apps/microservices/externalapi/webpack.config.js"
       },
       "configurations": {
         "development": {},
@@ -27,14 +27,14 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "microservices-sustainit:build"
+        "buildTarget": "microservices-externalapi:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "microservices-sustainit:build:development"
+          "buildTarget": "microservices-externalapi:build:development"
         },
         "production": {
-          "buildTarget": "microservices-sustainit:build:production"
+          "buildTarget": "microservices-externalapi:build:production"
         }
       }
     },
@@ -42,14 +42,14 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["apps/microservices/sustainit/**/*.ts"]
+        "lintFilePatterns": ["apps/microservices/externalapi/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/microservices/sustainit/jest.config.ts",
+        "jestConfig": "apps/microservices/externalapi/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {

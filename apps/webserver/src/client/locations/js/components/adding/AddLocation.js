@@ -258,7 +258,7 @@ export default class AddLocation extends Component {
       lng: '',
       overrideOnClose: false,
       isLoading: false,
-      selectedAnalysis:[],
+      selectedAnalysis: [],
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {

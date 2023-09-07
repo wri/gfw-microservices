@@ -3,6 +3,7 @@ jest.mock('axios', () => async () => ({
   data: { data: 'whatever' },
   status: 200,
 }));
+jest.mock('axios-retry', () => () => null);
 import signedURL from '../utils/dataApi.utils';
 import dataApiCtrl from '../controllers/dataApi.controller';
 

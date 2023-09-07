@@ -19,5 +19,4 @@ export class Organization {
 
   @Column({ name: 'subscription_status_id' })
   subscriptionStatusId: number;
-
 }

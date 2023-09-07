@@ -58,7 +58,6 @@ const analyticsService = require(path.resolve('./server/analytics/service/analyt
 const { createListAnalysisStatus } = require(path.resolve('./queries/organization'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 
-
 /** @function {createList}
  *   @summary Create a new list within Organization DB
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
@@ -557,7 +556,6 @@ const getAllListsWithAnalysisId = (req) => {
 };
 
 const getWorstStatusId = (analysisIds) => {
-
   // get all status from the analysis list
   const analysisStatus = analysisIds.map((analysisId) => analysisId.Status);
 

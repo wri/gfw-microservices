@@ -1,4 +1,3 @@
-
 // src/user/user.module.ts
 
 import { Module } from '@nestjs/common';
@@ -18,6 +17,6 @@ import { ConfigModule } from '@nestjs/config';
   ],
   providers: [TokenService, AuthService],
   exports: [TokenService, AuthService],
-  controllers: [TokenController]
+  controllers: [TokenController],
 })
-export class TokenModule { }
+export class TokenModule {}

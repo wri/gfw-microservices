@@ -13,22 +13,25 @@ describe('Test Token Module', () => {
 
   beforeAll(async () => {
     const app = await Test.createTestingModule({
-      imports: [TypeOrmModule.forRoot({
-        "name": "default",
-        "type": "sqlite",
-        "database": "db.default.sqlite",
-        "synchronize": true,
-        "logging": true,
-        "entities": [Token]
-      }),
-      TypeOrmModule.forRoot({
-        "name": "client",
-        "type": "sqlite",
-        "database": "db.sqlite",
-        "synchronize": true,
-        "logging": true,
-        "entities": [Token]
-      }), TokenModule],
+      imports: [
+        TypeOrmModule.forRoot({
+          name: 'default',
+          type: 'sqlite',
+          database: 'db.default.sqlite',
+          synchronize: true,
+          logging: true,
+          entities: [Token],
+        }),
+        TypeOrmModule.forRoot({
+          name: 'client',
+          type: 'sqlite',
+          database: 'db.sqlite',
+          synchronize: true,
+          logging: true,
+          entities: [Token],
+        }),
+        TokenModule,
+      ],
       providers: [AppService],
     }).compile();
 
@@ -57,7 +60,5 @@ describe('Test Token Module', () => {
       const token = await tokenService.createToken(1558, 1);
       expect(token.tokenValue.length).toEqual(50);
     });
-
   });
-
 });

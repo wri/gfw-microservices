@@ -10,14 +10,14 @@ import { ConfigService } from '@nestjs/config';
 export class TokenService {
   private readonly apiGateway: APIGateway;
 
-  constructor (
+  constructor(
     @InjectRepository(Token, 'client')
     private tokenRepository: Repository<Token>,
 
     @InjectRepository(Organization, 'default')
     private organizationRepository: Repository<Organization>,
 
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {
     this.apiGateway = new APIGateway({ region: 'us-east-1' });
   }
@@ -34,7 +34,7 @@ export class TokenService {
       keyId: apiKey.id,
       usagePlanId: '3q5uj0',
       keyType: 'API_KEY',
-    }
+    };
 
     await this.apiGateway.createUsagePlanKey(usagePlanParams).promise();
 
@@ -42,11 +42,12 @@ export class TokenService {
   }
 
   async createToken(organizationId: number, userId: number): Promise<Token> {
-
     // compose token name
     const actualDate = new Date();
     const formatDate = `${actualDate.getFullYear()}-${actualDate.getMonth()}-${actualDate.getDay()}`;
-    const tokenName = `APITOKEN-${this.configService.get("NODE_ENV")}-ORG${organizationId}-${formatDate}`;
+    const tokenName = `APITOKEN-${this.configService.get(
+      'NODE_ENV'
+    )}-ORG${organizationId}-${formatDate}`;
 
     const awsToken = await this.generateGatewayAPIToken(tokenName);
 
@@ -75,25 +76,20 @@ export class TokenService {
     return this.generateString(tokenLength);
   }
 
-  getChar = a => String.fromCharCode(a)
+  getChar = (a) => String.fromCharCode(a);
 
-  randomNumber = x => Math.floor(Math.random() * x)
+  randomNumber = (x) => Math.floor(Math.random() * x);
 
-  getRandomElement = xs => xs.at(this.randomNumber(xs.length))
+  getRandomElement = (xs) => xs.at(this.randomNumber(xs.length));
 
-  charsRange = x => y =>
-    x > y
-      ? []
-      : [x, ...this.charsRange(x + 1)(y)]
+  charsRange = (x) => (y) => x > y ? [] : [x, ...this.charsRange(x + 1)(y)];
 
-  randomString = chars => len =>
-    len <= 0
-      ? ""
-      : this.getChar(this.getRandomElement(chars)) + this.randomString(chars)(len - 1)
+  randomString = (chars) => (len) =>
+    len <= 0 ? '' : this.getChar(this.getRandomElement(chars)) + this.randomString(chars)(len - 1);
 
   generateString = this.randomString([
-    ...this.charsRange(48)(57),   // include 0-9
-    ...this.charsRange(65)(90),   // include A-Z
-    ...this.charsRange(97)(122),  // include a-z
-  ])
+    ...this.charsRange(48)(57), // include 0-9
+    ...this.charsRange(65)(90), // include A-Z
+    ...this.charsRange(97)(122), // include a-z
+  ]);
 }

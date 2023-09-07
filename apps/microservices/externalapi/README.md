@@ -3,6 +3,7 @@
 ## Example response for create API key and add to plan request.
 
 Create API key response body:
+
 ```
 {
   id: 'd3grev7wa4',
@@ -16,6 +17,7 @@ Create API key response body:
 ```
 
 Add API key to plan response body:
+
 ```
 {
   id: 'd3grev7wa4',

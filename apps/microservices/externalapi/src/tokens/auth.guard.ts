@@ -6,13 +6,13 @@ const TOKEN_HEADER_NAME = 'x-api-key';
 
 @Injectable()
 export class ApiKeyGuard extends AuthGuard('header') {
-  constructor (/*private readonly usersService: UsersService*/) {
+  constructor(/*private readonly usersService: UsersService*/) {
     super();
   }
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    console.log(request.headers)
+    console.log(request.headers);
     const token = request.headers[TOKEN_HEADER_NAME];
 
     if (!token) {
@@ -27,11 +27,11 @@ export class ApiKeyGuard extends AuthGuard('header') {
 
   async validateToken(token: string) {
     // Implement your database validation logic here
-    console.log(token)
+    console.log(token);
     return {
       username: 'admin',
       password: 'admin',
-    }
+    };
     //await this.usersService.findUserByApiToken(token);
   }
 }

@@ -108,7 +108,7 @@ jobs:
         run: npx nx affected --target=test --parallel=3 --configuration=ci --coverage
 
   Run-Webserver-Fitness-Test:
-    needs: [Check-Format, Check-lint, Run-Test, Run-Build]
+    needs: [Check-Format, Check-lint, Run-Test]
     runs-on: ubuntu-latest
 
     strategy:
@@ -143,32 +143,3 @@ jobs:
         env:
           NODE_OPTIONS: '--max_old_space_size=6144'
         run: npx nx run webserver:test-fitness --configuration=ci
-#  Run-e2e:
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      matrix:
-#        node-version: [20.5.1]
-#
-#    steps:
-#      - uses: actions/checkout@v3
-#        with:
-#          fetch-depth: 0
-#      - uses: nrwl/nx-set-shas@v3
-#
-#      - name: Use Node.js ${{ matrix.node-version }}
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: ${{ matrix.node-version }}
-#
-#      - name: Install dependencies
-#        run: npm install --legacy-peer-deps
-#
-#      - name: Start containers
-#        run: docker compose -f "./apps/webserver/docker-compose.yml" up -d --build
-#
-#      - name: Run e2e
-#        run: nx e2e gfwpro-e2e
-#
-#      - name: Stop containers
-#        run: docker-compose -f "./apps/webserver/docker-compose.yml" down

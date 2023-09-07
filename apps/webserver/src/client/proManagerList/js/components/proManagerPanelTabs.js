@@ -32,4 +32,10 @@ export const proManagerPanelTabs = {
     title: 'Account Limits',
     userAccessLevel: [ADMIN, EDITOR, VIEWER],
   },
+  latestCommits: {
+    id: 'latest-commits',
+    icon: 'commit',
+    title: 'Latest Commits',
+    userAccessLevel: [ADMIN, EDITOR, VIEWER],
+  },
 };

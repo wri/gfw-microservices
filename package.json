@@ -87,7 +87,6 @@
     "mssql": "^4.3.9",
     "multistream": "^4.1.0",
     "node-fetch": "^2.6.7",
-    "node-sass": "6.0.1",
     "papaparse": "5.3.2",
     "passport": "0.5.2",
     "passport-local": "^1.0.0",
@@ -213,6 +212,8 @@
     "nx-cloud": "16.3.0",
     "prettier": "^2.7.1",
     "react-test-renderer": "16.14.0",
+    "sass": "1.66.1",
+    "sass-loader": "13.3.2",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
@@ -222,6 +223,9 @@
     "webpack-dev-middleware": "^5.3.1",
     "webpack-hot-middleware": "^2.25.1",
     "xhr-mock": "2.5.1"
+  },
+  "engines": {
+    "node": "20.5.1"
   },
   "lint-staged": {
     "{apps,libs,tools}/**/*.{ts, js, jsx}": [

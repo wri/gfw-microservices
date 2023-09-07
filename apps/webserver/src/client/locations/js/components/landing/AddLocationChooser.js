@@ -25,6 +25,7 @@ import { formatBytes } from '../../utils/upload.utils';
 import CircularProgressWithLabel from './CircularProgressWithLabel';
 import ExistingListSelector from './ExistingListSelector';
 import { deduceActiveId } from '../../../../common/js/utils/templateUtils';
+import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 
 export const CHOICES = {
   SINGLE: 'single',
@@ -115,7 +116,13 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
 
     setIsSaving(true);
 
-    uploadProcess(nameOfListToUploadLocationsTo, uploadFileToS3, largeListFile, isExistingList)
+    uploadProcess(
+      nameOfListToUploadLocationsTo,
+      uploadFileToS3,
+      largeListFile,
+      isExistingList,
+      Object.values(analysisTypes)
+    )
       .then(() => {
         setDialogTitle('Locations Added');
         const action = isExistingList ? 'appended' : 'created';

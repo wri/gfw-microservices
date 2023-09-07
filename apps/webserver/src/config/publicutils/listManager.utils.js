@@ -55,6 +55,9 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
+const { createListAnalysisStatus } = require(path.resolve('./queries/organization'));
+const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
+
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -71,11 +74,13 @@ const createList = (
   req,
   list_name,
   template_id,
+  commodity,
   location_classification,
   user_id,
   custom_attributes,
   gfw_list_id,
-  is_edit = false
+  is_edit = false,
+  analysisIds = []
 ) => {
   let list_id = null;
   // Tracking Stored Procedure Executions for rollbacks
@@ -179,6 +184,23 @@ const createList = (
         return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateAnalysisTable', params);
       })
       .then(() => {
+        analysisIds.forEach((analysisId) => {
+          const params = [
+            {
+              field: 'ListID',
+              type: sql.Int,
+              value: list_id,
+            },
+            {
+              field: 'AnalysisID',
+              type: sql.NVarChar(150),
+              value: analysisId,
+            },
+          ];
+          sqlUtils.executeOrganizationQuery(req, createListAnalysisStatus, params);
+        });
+      })
+      .then(() => {
         // Previous Stored Procedure executed
         uspCreateAnalysisTableExecuted = true;
         logger.logActivity(
@@ -188,6 +210,7 @@ const createList = (
         );
         resolve(list_id);
       })
+
       .catch((errorMessage) => {
         // Call appropriate rollbacks
         if (uspCreateListExecuted) {
@@ -509,6 +532,10 @@ const getAllListsWithAnalysisId = (req) => {
         const [orgLists, analysisIdStatus] = results;
         orgLists.forEach((list) => {
           const filter = analysisIdStatus.filter((analysis) => analysis.ListID == list.id);
+
+          // get the worst status from the list analysis status to replace list level status
+          const worstStatus = getWorstStatusId(filter);
+
           const analysisId = filter.reduce((acc, cur) => {
             const { AnalysisID, Status, ErrorInfo, UpdateTime } = cur;
             acc[AnalysisID] = {
@@ -519,11 +546,29 @@ const getAllListsWithAnalysisId = (req) => {
             return acc;
           }, {});
           list.AnalysisID = analysisId;
+          // replace the list level status with the worst from the list analysis status,
+          // or continue with the one that already had.
+          list.list_status_id = worstStatus ?? list.list_status_id;
         });
         resolve(orgLists);
       })
       .catch((error) => reject(error));
   });
+};
+
+const getWorstStatusId = (analysisIds) => {
+
+  // get all status from the analysis list
+  const analysisStatus = analysisIds.map((analysisId) => analysisId.Status);
+
+  // iterate over status ordered by worse to better and return
+  // the fist that exist inside the analysis list
+  for (const status of listStatusOrderByWorse) {
+    if (analysisStatus.includes(status)) {
+      return status;
+    }
+  }
+  return undefined;
 };
 
 /** @function {getListLocations}
@@ -956,7 +1001,8 @@ const uploadToNewList = (
   custom_attributes,
   geojson,
   gfw_list_id,
-  is_edit = false
+  is_edit = false,
+  analysisIds
 ) => {
   const user_id = req.session.organization_user_id;
   const list = listUtils.createListNameSchema(list_name);
@@ -972,7 +1018,8 @@ const uploadToNewList = (
       user_id,
       custom_attributes,
       gfw_list_id,
-      is_edit
+      is_edit,
+      analysisIds
     )
       .then((list_id) => {
         newListID = list_id;
@@ -2007,6 +2054,7 @@ module.exports = {
   getListLocationGeometry,
   deleteListIfEmpty,
   getAllListsWithAnalysisId,
+  getWorstStatusId,
 };
 
 // Require after modules have been exported so the module can be fully loaded

@@ -62,7 +62,6 @@ const initialLocationState = {
     bubbleData: {},
     anchorEl: null,
   },
-  diagnosticView: 'LOCATION',
 };
 
 // initialize infoBubleCache keys from config
@@ -219,14 +218,6 @@ export function updatePopoverState(state = initialLocationState.popover, action)
     default:
       return state;
   }
-}
-
-/* diagnosticView is only added here to avoid console error message of
-  "Unexpected key diagnosticView found in previous state received by the reducer."
-  updateDiagnosticViewState is not dispatched anywhere,updating the state of diagnosticView is handled by crossSlideReducer in appReducer.js */
-
-export function updateDiagnosticViewState(state = initialLocationState.diagnosticView, action) {
-  return action.type !== UPDATE_DIAGNOSTIC_VIEW ? state : action.data;
 }
 
 export function setLanguage(state = initialLocationState.language, action) {

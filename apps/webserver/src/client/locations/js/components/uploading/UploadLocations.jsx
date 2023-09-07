@@ -59,7 +59,7 @@ import {
   saveListConfig,
 } from '../../../../../config/config/locations.config';
 import { defaultCustomAttributeHeaders } from '../edit/table/MultiGridTable.config';
-
+import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 // Style
 import '../../../css/locations.scss';
 
@@ -867,6 +867,7 @@ class UploadLocations extends Component {
                   location_classification:
                     locationClassifications.length === 0 ? '' : locationClassifications[0],
                   list_status_id: getListStatusId(isSaveAsDraft),
+                  analysisIds: Object.values(analysisTypes),
                 };
 
                 if (isSaveAsDraft) {

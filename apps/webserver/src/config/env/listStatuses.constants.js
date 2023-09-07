@@ -7,6 +7,15 @@ const listStatus = {
   AnalyzingDashboard: 6,
 };
 
+const listStatusOrderByWorse = [
+  listStatus.Draft,
+  listStatus.Inactive,
+  listStatus.Pending,
+  listStatus.AnalyzingDiagnostic,
+  listStatus.AnalyzingDashboard,
+  listStatus.Active,
+];
+
 const listStatusDescriptions = [
   {
     id: listStatus.Pending,
@@ -43,6 +52,7 @@ const listStatusDescriptions = [
 ];
 
 module.exports = {
+  listStatusOrderByWorse,
   listStatusDescriptions,
   listStatus,
 };

@@ -29,6 +29,12 @@ const { removeExistingVectorTileFromS3 } = require('../../vectorTiles/utils/vect
 const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+const { getOrganizationActivatedTime } = require(path.resolve(
+  './config/publicutils/accountManager.utils'
+));
+const { getAccountListProccesingLimit } = require(path.resolve(
+  './server/analytics/service/analytics.service'
+));
 
 /**
  * @name exports
@@ -134,6 +140,7 @@ module.exports = (app, limiter) => {
       gfw_list_id,
       selected_location_ids: src_location_ids,
       original_gfw_list,
+      analysisIds,
     } = req.body;
 
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
@@ -149,7 +156,8 @@ module.exports = (app, limiter) => {
       custom_attributes,
       finalGeojson,
       gfw_list_id,
-      false
+      false,
+      analysisIds
     )
       .then(async ({ resultGeoJSON }) => {
         const dest_list = await ListManager.getListByListName(req, list_name);
@@ -1186,7 +1194,7 @@ module.exports = (app, limiter) => {
    * Save list to being processed in database and queue for processing
    */
   app.post('/locations/create-large-list', (req, res) => {
-    const { listName } = req.body;
+    const { listName, analysisIds } = req.body;
     const userId = req.session.organization_user_id;
     const { LISTS_MICROSERVICE_URL } = process.env;
     axios
@@ -1194,6 +1202,7 @@ module.exports = (app, limiter) => {
         user_id: userId,
         list_name: listName,
         client_database: req.session.organization_database,
+        analysisIds,
       })
       .then((response) => {
         res.send({ user_id: userId, list_id: response.data.list_id });
@@ -1212,26 +1221,38 @@ module.exports = (app, limiter) => {
     const { organization_user_id, organization_id } = req.session;
 
     const { LISTS_MICROSERVICE_URL } = process.env;
-    axios
-      .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
-        organization_id,
-        list_id,
-        path: pathLocal,
-        template_type,
-        user_id: organization_user_id,
-        startAnalysis,
+
+    getOrganizationActivatedTime(organization_id)
+      .then(({ OrganizationActivatedTime }) => {
+        // calculate list processing limit
+        return getAccountListProccesingLimit({
+          ...req.session,
+          OrganizationActivatedTime,
+        });
       })
-      .then((response) => {
-        console.log(response.data);
-        // Send email to user that list is submitted to be analysed
-        return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName);
-      })
-      .then((response) => {
-        console.log(response);
-        res.send(response);
-      })
-      .catch((err) => {
-        res.send(500, err);
+      .then((processingLimit) => {
+        axios
+          .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
+            organization_id,
+            list_id,
+            path: pathLocal,
+            template_type,
+            user_id: organization_user_id,
+            startAnalysis,
+            processing_limit: processingLimit,
+          })
+          .then((response) => {
+            console.log(response.data);
+            // Send email to user that list is submitted to be analysed
+            return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName);
+          })
+          .then((response) => {
+            console.log(response);
+            res.send(response);
+          })
+          .catch((err) => {
+            res.send(500, err);
+          });
       });
   });
 

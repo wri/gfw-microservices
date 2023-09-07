@@ -10,21 +10,21 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.15.1]
+        node-version: [20.5.1]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v3
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
@@ -44,21 +44,21 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.15.1]
+        node-version: [20.5.1]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - uses: nrwl/nx-set-shas@v3
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: node_modules
           key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
@@ -78,7 +78,42 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.15.1]
+        node-version: [20.5.1]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: nrwl/nx-set-shas@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run Test
+        run: npx nx affected --target=test --parallel=3 --configuration=ci --coverage
+
+  Run-Webserver-Fitness-Test:
+    needs: [Check-Format, Check-lint, Run-Test]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.5.1]
 
     steps:
       - uses: actions/checkout@v2
@@ -105,33 +140,6 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Run Test
-        run: npx nx affected --target=test --parallel=3 --configuration=ci --coverage
-#  Run-e2e:
-#    runs-on: ubuntu-latest
-#
-#    strategy:
-#      matrix:
-#        node-version: [16.15.1]
-#
-#    steps:
-#      - uses: actions/checkout@v2
-#        with:
-#          fetch-depth: 0
-#      - uses: nrwl/nx-set-shas@v3
-#
-#      - name: Use Node.js ${{ matrix.node-version }}
-#        uses: actions/setup-node@v2
-#        with:
-#          node-version: ${{ matrix.node-version }}
-#
-#      - name: Install dependencies
-#        run: npm install --legacy-peer-deps
-#
-#      - name: Start containers
-#        run: docker compose -f "./apps/webserver/docker-compose.yml" up -d --build
-#
-#      - name: Run e2e
-#        run: nx e2e gfwpro-e2e
-#
-#      - name: Stop containers
-#        run: docker-compose -f "./apps/webserver/docker-compose.yml" down
+        env:
+          NODE_OPTIONS: '--max_old_space_size=6144'
+        run: npx nx run webserver:test-fitness --configuration=ci

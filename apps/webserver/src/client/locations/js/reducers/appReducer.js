@@ -20,9 +20,7 @@ import {
   updateSelectedAndVisibleLocations,
   updateInfoBubbleCache,
   updatePopoverState,
-  updateDiagnosticViewState,
 } from './locationReducer';
-import diagnosticReducer from './diagnosticReducer';
 import { combineReducers } from 'redux';
 
 const appReducer = combineReducers({
@@ -46,16 +44,11 @@ const appReducer = combineReducers({
   selectedAndVisibleLocations: updateSelectedAndVisibleLocations,
   infoBubbleCache: updateInfoBubbleCache,
   popover: updatePopoverState,
-  diagnosticView: updateDiagnosticViewState,
-  /* diagnosticView is only added here to avoid console error message of
-  "Unexpected key diagnosticView found in previous state received by the reducer."
-  updateDiagnosticViewState is not dispatched anywhere,updating the state of diagnosticView is handled by crossSlideReducer function below.*/
 });
 
 function crossSliceReducer(intermediateState, previousState, action) {
   return {
     ...intermediateState,
-    diagnosticView: diagnosticReducer(intermediateState, previousState, action),
   };
 }
 

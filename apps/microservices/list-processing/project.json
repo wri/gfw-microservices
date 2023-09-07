@@ -1,12 +1,16 @@
 {
+  "name": "microservices-list-processing",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/microservices/list-processing/src",
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
+        "target": "node",
+        "compiler": "tsc",
         "outputPath": "dist/apps/microservices/list-processing",
         "main": "apps/microservices/list-processing/src/main.ts",
         "tsConfig": "apps/microservices/list-processing/tsconfig.app.json",
@@ -26,7 +30,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "microservices-list-processing:build"
       }

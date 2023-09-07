@@ -1,0 +1,64 @@
+{
+  "name": "microservices-externalapi",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/microservices/externalapi/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/microservices/externalapi",
+        "main": "apps/microservices/externalapi/src/main.ts",
+        "tsConfig": "apps/microservices/externalapi/tsconfig.app.json",
+        "assets": ["apps/microservices/externalapi/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/microservices/externalapi/webpack.config.js"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "microservices-externalapi:build"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "microservices-externalapi:build:development"
+        },
+        "production": {
+          "buildTarget": "microservices-externalapi:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/microservices/externalapi/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/microservices/externalapi/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    }
+  },
+  "tags": []
+}

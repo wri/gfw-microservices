@@ -5,11 +5,12 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "options": {
         "outputPath": "dist/apps/webserver",
         "rootDir": "apps/webserver",
         "main": "apps/webserver/src/server.js",
+        "outputFileName": "src/server.js",
         "tsConfig": "apps/webserver/tsconfig.app.json",
         "assets": [
           "**/tsconfig.client.json",
@@ -24,13 +25,13 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "webserver:build"
       }
     },
     "testweb": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/webserver"],
       "options": {
         "jestConfig": "apps/webserver/src/jest.config.json",

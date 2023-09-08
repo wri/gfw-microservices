@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const path = require('path')
+const path = require('path');
 
 const ListManager = require('../../../config/publicutils/listManager.utils');
 const LocationManager = require('../../../config/publicutils/locationManager.utils');
@@ -7,7 +7,10 @@ const AnalysisManager = require('../../../config/publicutils/analysisManager.uti
 const logger = require('../../../config/lib/winston');
 
 const { getListDataFiltered } = require('../utils/listData.utils');
-const { getListAnalysisStatusById, createOrUpdateListAnalysis } = require('../service/listData.service');
+const {
+  getListAnalysisStatusById,
+  createOrUpdateListAnalysis,
+} = require('../service/listData.service');
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
 /**
  * @description - Get the data from the GFW API for the given info Bubble ID
@@ -130,29 +133,27 @@ exports.listDataCustom = async (req, res) => {
  */
 exports.listAnalysis = async (req, res) => {
   const { listId } = req.params;
-  const response  = await getListAnalysisStatusById(req, listId)
+  const response = await getListAnalysisStatusById(req, listId);
   return res.status(200).json(response);
 };
-
 
 exports.createOrUpdateListAnalysis = async (req, res) => {
   const { listId } = req.params;
 
   const { analysisIds } = req.body;
 
-  if(analysisIds === undefined || analysisIds === null || analysisIds.length === 0){
-    return res.status(400).json({message: 'analysisIds is required'});
+  if (analysisIds === undefined || analysisIds === null || analysisIds.length === 0) {
+    return res.status(400).json({ message: 'analysisIds is required' });
   }
 
-  try{
+  try {
     await listUtils.getListNameSchema(req, listId);
   } catch (err) {
-    return res.status(400).json({message: 'listId is not valid'});
+    return res.status(400).json({ message: 'listId is not valid' });
   }
 
-  await createOrUpdateListAnalysis(req, listId, analysisIds)
+  await createOrUpdateListAnalysis(req, listId, analysisIds);
   return res.status(201).json({
     message: 'List analysis created successfully',
   });
-
 };

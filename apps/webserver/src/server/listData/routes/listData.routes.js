@@ -3,7 +3,6 @@ const rateLimiterUtil = require('../../../config/lib/limiter-util');
 const express = require('express');
 const controller = require('../controllers/listData.controller');
 
-
 const listRoutes = express.Router();
 
 module.exports = (app, limiter) => {

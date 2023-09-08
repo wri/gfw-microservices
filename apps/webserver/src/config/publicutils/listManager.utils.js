@@ -55,9 +55,10 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
-const { createListAnalysisStatus } = require(path.resolve('./queries/organization/createListAnalysisStatus'));
+const { createListAnalysisStatus } = require(path.resolve(
+  './queries/organization/createListAnalysisStatus'
+));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
-
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -557,7 +558,6 @@ const getAllListsWithAnalysisId = (req) => {
 };
 
 const getWorstStatusId = (analysisIds) => {
-
   // get all status from the analysis list
   const analysisStatus = analysisIds.map((analysisId) => analysisId.Status);
 

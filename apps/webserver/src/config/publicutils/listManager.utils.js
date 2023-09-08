@@ -55,7 +55,7 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
-const { createListAnalysisStatus } = require(path.resolve('./queries/organization'));
+const { createListAnalysisStatus } = require(path.resolve('./queries/organization/createListAnalysisStatus'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 
 

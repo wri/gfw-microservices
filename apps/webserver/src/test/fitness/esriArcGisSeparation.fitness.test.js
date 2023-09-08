@@ -21,6 +21,12 @@ describe('Proper ArcGIS Module Use', () => {
         expect(content).toDependOnArcGISModules();
         expect(content).toUseEsmArcGISModules();
       });
+
+      test('[locations] bundle', () => {
+        const content = loadedBundleContentFor('locations');
+        expect(content).toDependOnArcGISModules();
+        expect(content).toUseEsmArcGISModules();
+      });
     });
 
     describe('Loading Via AMD', () => {
@@ -32,12 +38,6 @@ describe('Proper ArcGIS Module Use', () => {
 
       test('[diagnostics] bundle', () => {
         const content = loadedBundleContentFor('diagnostics');
-        expect(content).toDependOnArcGISModules();
-        expect(content).toUseAmdArcGISModules();
-      });
-
-      test('[locations] bundle', () => {
-        const content = loadedBundleContentFor('locations');
         expect(content).toDependOnArcGISModules();
         expect(content).toUseAmdArcGISModules();
       });

@@ -1,5 +1,6 @@
 export * from './createListAnalysisStatus';
 export * from './dropListAnalysisStatusByListId';
+export * from './dropListAnalysisStatusByListIdAndAnalysisId';
 export * from './getActivityLog';
 export * from './getAllFolderItems';
 export * from './getAllLists';

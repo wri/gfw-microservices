@@ -110,7 +110,7 @@ export const latest_CommodityRisk__TrendsInDeforestation = latestTreeCoverLossYe
 export const soyPlantedYearsRange = [2001, 2022];
 
 export const treeCoverLossTilesUrl =
-  'https://tiles.globalforestwatch.org/umd_tree_cover_loss/v1.9/tcd_{thresh}/{z}/{x}/{y}.png';
+  'https://tiles.globalforestwatch.org/umd_tree_cover_loss/v1.10/tcd_{thresh}/{z}/{x}/{y}.png';
 
 export const GFW_PRO_USER_GUIDE = 'https://www.globalforestwatch.org/help/gfw-pro/';
 export const GFW_PRO_HELP_CENTER__LINK = 'https://www.globalforestwatch.org/help/pro-login/';

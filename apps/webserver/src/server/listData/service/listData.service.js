@@ -11,8 +11,8 @@ const { getListAnalysisStatusById: getListAnalysisStatusByIdQuery } = require(pa
 ));
 
 const {
-  dropListAnalysisStatusByListId: dropListAnalysisStatusByListIdQuery,
-} = require(path.resolve('./queries/organization/dropListAnalysisStatusByListId'));
+  dropListAnalysisStatusByListIdAndAnalysisId: dropListAnalysisStatusByListIdAndAnalysisIdQuery,
+} = require(path.resolve('./queries/organization/dropListAnalysisStatusByListIdAndAnalysisId'));
 
 const getListAnalysisStatusById = async (req, listId) => {
   const parameters = [{ field: 'listID', type: sql.Int, value: listId }];
@@ -25,12 +25,12 @@ const getListAnalysisStatusById = async (req, listId) => {
 };
 
 const createOrUpdateListAnalysis = async (req, listId, analysisData) => {
-  const response = getListAnalysisStatusById(req, listId);
+  const response = await getListAnalysisStatusById(req, listId);
 
   if (response === undefined || response === null || response.length === 0) {
     createListAnalysis(req, listId, analysisData);
   } else {
-    updateListAnalysis(req, listId, analysisData);
+    updateListAnalysis(req, listId, analysisData, response);
   }
 };
 
@@ -52,19 +52,35 @@ const createListAnalysis = async (req, listId, analysisData) => {
   }
 };
 
-const deleteListAnalysis = async (req, listId) => {
-  await sqlUtils.executeOrganizationQuery(req, dropListAnalysisStatusByListIdQuery, [
+const deleteListAnalysis = async (req, listId, analysisID) => {
+  await sqlUtils.executeOrganizationQuery(req, dropListAnalysisStatusByListIdAndAnalysisIdQuery, [
     {
       field: 'ListID',
       type: sql.Int,
       value: listId,
     },
+    {
+      field: 'AnalysisID',
+      type: sql.NVarChar(150),
+      value: analysisID,
+    }
   ]);
 };
 
-const updateListAnalysis = async (req, listId, analysisData) => {
-  await deleteListAnalysis(req, listId);
-  await createListAnalysis(req, listId, analysisData);
+const updateListAnalysis = async (req, listId, analysisData, currentAnalysis) => {
+  const analysisDataIds = currentAnalysis.map((analysis) => analysis.AnalysisID);
+
+  for (const element of analysisDataIds) {
+    if(!analysisData.includes(element)){
+      deleteListAnalysis(req, listId, element);
+    }
+  }
+
+  for (const element of analysisData) {
+    if(!analysisDataIds.includes(element)){
+      createListAnalysis(req, listId, [element]);
+    }
+  }
 };
 
 export { createOrUpdateListAnalysis, getListAnalysisStatusById };

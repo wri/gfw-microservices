@@ -12,6 +12,7 @@ const {
   createOrUpdateListAnalysis,
 } = require('../service/listData.service');
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
+const { analysisTypes } = require(path.resolve('./config/env/analysisTypes.constants'));
 /**
  * @description - Get the data from the GFW API for the given info Bubble ID
  *
@@ -133,8 +134,14 @@ exports.listDataCustom = async (req, res) => {
  */
 exports.listAnalysis = async (req, res) => {
   const { listId } = req.params;
-  const response = await getListAnalysisStatusById(req, listId);
-  return res.status(200).json(response);
+  try {
+    await listUtils.getListNameSchema(req, listId);
+    const response = await getListAnalysisStatusById(req, listId);
+    return res.status(200).json(response);
+  } catch (err) {
+    logger.error(`Getting list analysis failed: Error message ${err}`)
+    return res.status(400).json({ message: 'listId is not valid' });
+  }
 };
 
 exports.createOrUpdateListAnalysis = async (req, res) => {
@@ -146,14 +153,19 @@ exports.createOrUpdateListAnalysis = async (req, res) => {
     return res.status(400).json({ message: 'analysisIds is required' });
   }
 
-  try {
-    await listUtils.getListNameSchema(req, listId);
-  } catch (err) {
-    return res.status(400).json({ message: 'listId is not valid' });
+  if (analysisIds.some((analysisId) => !Object.values(analysisTypes).includes(analysisId))) {
+    return res.status(400).json({ message: 'analysisIds is not valid' });
   }
 
-  await createOrUpdateListAnalysis(req, listId, analysisIds);
-  return res.status(201).json({
-    message: 'List analysis created successfully',
-  });
+  try {
+    await listUtils.getListNameSchema(req, listId);
+
+    await createOrUpdateListAnalysis(req, listId, analysisIds);
+    return res.status(201).json({
+      message: 'List analysis created successfully',
+    });
+  } catch (err) {
+    logger.error(`Create list analysis failed: Error message ${err}`)
+    return res.status(400).json({ message: 'create list analysis failed' });
+  }
 };

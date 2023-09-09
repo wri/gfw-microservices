@@ -139,7 +139,7 @@ exports.listAnalysis = async (req, res) => {
     const response = await getListAnalysisStatusById(req, listId);
     return res.status(200).json(response);
   } catch (err) {
-    logger.error(`Getting list analysis failed: Error message ${err}`)
+    logger.error(`Getting list analysis failed: Error message ${err}`);
     return res.status(400).json({ message: 'listId is not valid' });
   }
 };
@@ -165,7 +165,7 @@ exports.createOrUpdateListAnalysis = async (req, res) => {
       message: 'List analysis created successfully',
     });
   } catch (err) {
-    logger.error(`Create list analysis failed: Error message ${err}`)
+    logger.error(`Create list analysis failed: Error message ${err}`);
     return res.status(400).json({ message: 'create list analysis failed' });
   }
 };

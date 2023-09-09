@@ -63,7 +63,7 @@ const deleteListAnalysis = async (req, listId, analysisID) => {
       field: 'AnalysisID',
       type: sql.NVarChar(150),
       value: analysisID,
-    }
+    },
   ]);
 };
 
@@ -71,13 +71,13 @@ const updateListAnalysis = async (req, listId, analysisData, currentAnalysis) =>
   const analysisDataIds = currentAnalysis.map((analysis) => analysis.AnalysisID);
 
   for (const element of analysisDataIds) {
-    if(!analysisData.includes(element)){
+    if (!analysisData.includes(element)) {
       deleteListAnalysis(req, listId, element);
     }
   }
 
   for (const element of analysisData) {
-    if(!analysisDataIds.includes(element)){
+    if (!analysisDataIds.includes(element)) {
       createListAnalysis(req, listId, [element]);
     }
   }

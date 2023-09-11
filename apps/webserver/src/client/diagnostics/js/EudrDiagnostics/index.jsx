@@ -41,13 +41,38 @@ const chartMockData = [
   },
 ];
 
-function EudrDiagnostics({ selectedList }) {
+function EudrDiagnostics() {
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState({});
   const [chartData, setChartData] = useState({});
 
   const listId = parseInt(new URLSearchParams(location.search).get('listId'), 10);
   const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
+
+  const [data, setData] = useState({});
+
+  useEffect(() => {
+    fetch(`/diagnosticsData`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ listId, isSharedList }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.warn(error);
+      });
+  }, []);
+
+  const { selectedLists } = data;
+  const selectedList = selectedLists?.[0];
 
   useEffect(() => {
     setTableData(mockTableData);
@@ -73,7 +98,7 @@ function EudrDiagnostics({ selectedList }) {
       });
   };
 
-  const { list_name } = selectedList;
+  const { list_name } = selectedList || {};
 
   return (
     <>
@@ -98,7 +123,9 @@ function EudrDiagnostics({ selectedList }) {
             downloadDiagnostics={downloadDiagnostics}
           />
           <div className="diagnostics-container">
-            <DiagnosticsBreadCrums selectedList={selectedList} diagnosticName={'EUDR'} />
+            {selectedList && (
+              <DiagnosticsBreadCrums selectedList={selectedList} diagnosticName={'EUDR'} />
+            )}
             <div className="locations-diagnostics__body">
               <h2 className="locations-diagnostics__subtitle">{list_name}</h2>
               <EudrDiagnosticsTable data={tableData} />

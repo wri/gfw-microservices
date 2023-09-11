@@ -6,7 +6,6 @@ block head
 block content
   div#locations-mount
   //- script(src=locationsjs, async)
-  link(rel='stylesheet', href='https://js.arcgis.com/4.15/esri/css/main.css')
   include ./svg.pug
   script.
     var templateData = !{JSON.stringify(templateData)};
@@ -31,7 +30,7 @@ block content
     // Set the user ID using signed-in user_id.
     gtag('set', { 'user_id': userInfo.email });
 
-  script(src='https://js.arcgis.com/4.15/', async)
+  script(src='https://js.arcgis.com/4.20/', async)
   script(src='https://dpptfqp76xood.cloudfront.net/js/ionRange.js')
   script.
     var makePath = function(base, path) {

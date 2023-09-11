@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { render } from 'react-dom';
@@ -6,7 +6,7 @@ import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Page from '../common/js/components/Page';
-import DiagnosticsContainer from './js/DiagnosticsContainer';
+import Diagnostics from './js/Diagnostics';
 import store from '../locations/js/store';
 import './css/diagnostics.scss';
 
@@ -23,7 +23,7 @@ function App() {
       <Provider store={store}>
         <BrowserRouter basename="/diagnostics">
           <Page links={pageOptions.links} active="locations">
-            <DiagnosticsContainer />
+            <Diagnostics />
           </Page>
         </BrowserRouter>
       </Provider>

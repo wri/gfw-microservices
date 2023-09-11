@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { gfwListNames } from '../../common/js/constants/lists.constants';
+import { gfwListNames } from '../../../common/js/constants/lists.constants';
 
 /**
  * @description - Get the GFW Pro list request data route

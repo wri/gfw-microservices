@@ -3,7 +3,7 @@ import Highcharts from 'highcharts';
 import _range from 'lodash/range';
 import { v1 as uuidv1 } from 'uuid';
 import ProdesLegend from './SouthAmericaRegions/ProdesLegend';
-import IconButtonWrapper from '../../locations/js/components/IconButtonWrapper';
+import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 import OtbnAreaChart from './OtbnCharts/OtbnAreaChart';
 import { otbnChartsColors } from './OtbnCharts/OtbnChartsColors.constants';
 import getTreeCoverLossArgOtbnYearlyData from './OtbnCharts/TreeCoverLossArgentinaOtbnYearly/getTreeCoverLossArgOtbnYearlyData';
@@ -12,11 +12,11 @@ import {
   formatPct,
   prettifyNum,
   validatePct,
-} from '../../locations/js/utils/diagnostics.utils';
-import { latestTreeCoverLossYearFC, locationsPage } from '../../common/js/config';
+} from '../../../locations/js/utils/diagnostics.utils';
+import { latestTreeCoverLossYearFC, locationsPage } from '../../../common/js/config';
 import { PRODES_HIGHCHARTS_BAR_CONFIGS } from './SouthAmericaRegions/SouthAmericaRegions.config';
-import '../../common/css/_irsBase.scss';
-import '../../common/css/_irsStyle.scss';
+import '../../../common/css/_irsBase.scss';
+import '../../../common/css/_irsStyle.scss';
 import './OtbnCharts/OtbnAreaChart/OtbnTable.scss';
 
 const PRIMARY_FOREST_COLOR = '#818181';

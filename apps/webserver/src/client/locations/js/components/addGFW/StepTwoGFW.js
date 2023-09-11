@@ -1,14 +1,8 @@
 /* eslint-disable no-loop-func */
-// import {changeAddType} from 'locations/js/actions/locationActions';
 import { fieldValidations } from '../../utils/validations';
 import { locationsPage } from '../../../../common/js/config';
 import downloaders from '../../../../common/js/utils/downloaders';
-// import store from '../../../../locations/js/store';
 import React, { Component } from 'react';
-import QueryTask from 'esri/tasks/QueryTask';
-import Query from 'esri/tasks/support/Query';
-import all from 'dojo/promise/all';
-import Deferred from 'dojo/Deferred';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { GFWLists } from '../../config/listNames';
 import MultiGridTable from '../edit/table/MultiGridTable';

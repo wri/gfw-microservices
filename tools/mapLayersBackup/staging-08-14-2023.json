@@ -666,20 +666,8 @@
             {
               "categories": [
                 {
-                  "name": "NO",
-                  "color": "#a40018 "
-                },
-                {
-                  "name": "YES",
-                  "color": "#de8500"
-                },
-                {
-                  "name": "No Forest",
-                  "color": "#fffa59"
-                },
-                {
-                  "name": "Not Applicable",
-                  "color": "#b2b2b2"
+                  "name": "Science Based Targets Network Natural Forest",
+                  "color": "#3c643d"
                 }
               ],
               "source": "Science Based Targets Network",

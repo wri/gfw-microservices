@@ -651,7 +651,7 @@
         "default": true,
         "protected": false,
         "published": true,
-        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/aafb62d4-2040-4a07-9d4d-f6e17270243d-1693511138901.png",
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/aafb62d4-2040-4a07-9d4d-f6e17270243d-1694455621112.png",
         "env": "staging",
         "layerConfig": {
           "type": "tileLayer",
@@ -680,7 +680,7 @@
         "applicationConfig": {},
         "staticImageConfig": {},
         "createdAt": "2023-08-31T17:07:01.060Z",
-        "updatedAt": "2023-08-31T19:45:38.821Z"
+        "updatedAt": "2023-09-11T18:07:01.057Z"
       }
     },
     {
@@ -1003,15 +1003,15 @@
     }
   ],
   "links": {
-    "self": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
-    "first": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
-    "last": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
-    "prev": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
-    "next": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000"
+    "self": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=5000",
+    "first": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=5000",
+    "last": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=5000",
+    "prev": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=5000",
+    "next": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=5000"
   },
   "meta": {
     "total-pages": 1,
     "total-items": 16,
-    "size": 1000
+    "size": 5000
   }
 }

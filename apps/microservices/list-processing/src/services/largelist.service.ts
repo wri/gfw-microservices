@@ -1,4 +1,5 @@
 import { SQLUtils } from '@wri-monorepos/sql';
+import { Logger } from '@nestjs/common';
 import { Injectable, Inject } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../models';
 import fetch from 'node-fetch';
@@ -47,7 +48,8 @@ export class LargeListService {
   async createNewLargeListProcess(
     list_name: string,
     user_id: number,
-    clientDatabase: string
+    clientDatabase: string,
+    analysisIds: Array<string>
   ): Promise<CreateListResult> {
     //const user_id = 1999999;
     //const list_name = `My Template Name ${templateUniq}`;
@@ -166,6 +168,21 @@ export class LargeListService {
         },
       ]);
 
+      analysisIds.forEach(async (analysisId) => {
+        await SQLUtils.queryDB(clientDatabase, 'uspCreateListAnalysisStatus', [
+          {
+            field: 'ListID',
+            type: sql.Int,
+            value: createListResult.list_id,
+          },
+          {
+            field: 'AnalysisID',
+            type: sql.NVarChar(150),
+            value: analysisId,
+          },
+        ]);
+      });
+
       return createListResult;
     } catch (error) {
       await connection.executeQuery('uspDropOrganizationTable', [
@@ -184,7 +201,18 @@ export class LargeListService {
         },
       ]);
 
-      console.log(error);
+      const { list_id: listID } = createListResult ?? {};
+      if (listID) {
+        await connection.executeQuery('dropListAnalysisStatusByListId', [
+          {
+            field: 'ListID',
+            type: sql.Int,
+            value: listID,
+          },
+        ]);
+      }
+
+      Logger.error(error);
       return error;
     }
   }

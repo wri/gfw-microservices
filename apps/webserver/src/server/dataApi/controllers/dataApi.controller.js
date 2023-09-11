@@ -2,6 +2,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable import/no-dynamic-require */
 const axios = require('axios');
+const axiosRetry = require('axios-retry');
 const path = require('path');
 const getPresignedUrl = require('../utils/dataApi.utils');
 
@@ -17,6 +18,9 @@ const {
 const HEADERS_API_KEY = {
   'x-api-key': process.env.GFW_DATA_API_KEY,
 };
+
+// two retries for all axios calls
+axiosRetry(axios, { retries: 2 });
 
 /**
  * @description - Get the data from the GFW API for the given info Bubble ID
@@ -523,52 +527,75 @@ exports.analysisAdminRegion = (req, res) => {
     });
 };
 
-/**
- * @description - Get Palm Oil Mill Lat/Long
- *
- * @param {Object} req - Express request
- * @param {Object} res - Express response
- * @return {Promise} - request Promise
- */
-exports.getPalmOilMillLatLong = (req, res) => {
-  const { PalmOilMillID } = req.query;
-  logger.info(`/dataApi/getPalmOilMillLatLong/ - Request => QUERY: ${JSON.stringify(req.query)}`);
-
+// Helper function to get Palm Oil Mill Lat/Long for a chunk of the list of UML_ID
+const getPalmOilMillLatLongChunk = async (millsChunk) => {
+  const millSqlList = millsChunk.map((millId) => "'" + millId + "'").join(', ');
   const config = {
     method: 'get',
     url: `${GFW_API_URL__DATASET}/gfw_universal_mill_list/latest/query`,
     headers: HEADERS_API_KEY,
     params: {
-      sql: `select latitude, longitude from data where uml_id in ('${PalmOilMillID}')`,
+      sql: `select uml_id, latitude, longitude from data where uml_id in (${millSqlList})`,
     },
   };
 
-  axios(config)
-    .then((response) => {
-      const responseSuccess = {
-        data: response.data.data,
-        status: response.status,
-      };
+  try {
+    const response = await axios(config);
+    return {
+      data: response.data.data,
+      status: 200,
+    };
+  } catch (error) {
+    const errorStatus = error?.response?.status || 422;
+    return {
+      detail: error?.message,
+      status: errorStatus,
+    };
+  }
+};
 
-      logger.info('/dataApi/getPalmOilMillLatLong/ - Request Success');
-      res.status(200).json(responseSuccess);
-    })
-    .catch((error) => {
-      const errorStatus = error?.response?.status || 422;
-      const responseError = {
-        errors: [
-          {
-            detail: error?.message,
-            status: errorStatus,
-          },
-        ],
-      };
+/**
+ * @description - Get Palm Oil Mill Lat/Long for entire list of UML_ID
+ *
+ * @param {Object} req - Express request
+ * @param {Object} res - Express response
+ * @return {Promise} - request Promise
+ */
+exports.getPalmOilMillLatLong = async (req, res) => {
+  const { palmOilMillIDs } = req.body;
+  logger.info(`getPalmOilMillLatLong - total ${palmOilMillIDs?.length} locations`);
 
-      logger.error(
-        `/dataApi/getPalmOilMillLatLong/ - Request Error => ${JSON.stringify(responseError)}`
-      );
-      res.status(errorStatus).json(responseError);
+  if (!palmOilMillIDs || !palmOilMillIDs.length) {
+    logger.error(`Error /getPalmOilMillLatLong/ - No mills`);
+    return res.status(400).json('Bad input');
+  }
+  let fullResult = [];
+  const chunkSize = 100;
+  for (let index = 0; index < palmOilMillIDs.length; index += chunkSize) {
+    const chunkMax = Math.min(palmOilMillIDs.length, index + chunkSize);
+    logger.info(`getPalmOilMillLatLong - chunk ${index} to ${chunkMax}`);
+    const millsChunk = palmOilMillIDs.slice(index, chunkMax);
+    const chunkResp = await getPalmOilMillLatLongChunk(millsChunk);
+    if (chunkResp.status === 200) {
+      fullResult = fullResult.concat(chunkResp.data);
+    } else {
+      fullResult = chunkResp;
+      break;
+    }
+  }
+  if (fullResult.length) {
+    logger.info(`getPalmOilMillLatLong - Request Success ${fullResult.length} locations`);
+    res.status(200).json({
+      data: fullResult,
+      status: 200,
     });
+  } else {
+    logger.error(`getPalmOilMillLatLong - Request Error => ${JSON.stringify(fullResult)}`);
+    res.status(fullResult.status).json({
+      status: fullResult.status,
+      detail: fullResult.detail,
+    });
+  }
 };
 
 /**

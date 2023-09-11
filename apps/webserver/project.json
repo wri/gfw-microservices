@@ -5,11 +5,12 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "options": {
         "outputPath": "dist/apps/webserver",
         "rootDir": "apps/webserver",
         "main": "apps/webserver/src/server.js",
+        "outputFileName": "src/server.js",
         "tsConfig": "apps/webserver/tsconfig.app.json",
         "assets": [
           "**/tsconfig.client.json",
@@ -24,18 +25,19 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "webserver:build"
       }
     },
     "testweb": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/webserver"],
       "options": {
         "jestConfig": "apps/webserver/src/jest.config.json",
         "forceExit": true,
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "testPathIgnorePatterns": ["test/fitness"]
       }
     },
     "test": {
@@ -50,6 +52,45 @@
           },
           "nx run webserver:testweb"
         ],
+        "parallel": false
+      }
+    },
+    "test-fitness-prep": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/webserver/src",
+        "commands": [
+          "rm -rf public/*",
+          {
+            "command": "npx tsc ../../../libs/sql/src/lib/queries/index.ts --outDir ./queries",
+            "forwardAllArgs": false
+          },
+          {
+            "command": "node ../../../node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.js --config ./config/webpack.production.config.js",
+            "forwardAllArgs": false
+          },
+          "node ./test/prepare-jest"
+        ],
+        "parallel": false
+      }
+    },
+    "test-fitness-runner": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/webserver"],
+      "options": {
+        "jestConfig": "apps/webserver/src/jest.config.json",
+        "forceExit": true,
+        "passWithNoTests": true,
+        "testPathPattern": ["test/fitness"],
+        "verbose": true,
+        "color": true
+      }
+    },
+    "test-fitness": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/webserver/src",
+        "commands": ["nx run test-fitness-prep", "nx run test-fitness-runner"],
         "parallel": false
       }
     }

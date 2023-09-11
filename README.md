@@ -4,7 +4,7 @@ This is a monorepo project that contains all `GFW-PRO` microservices.
 
 ### Install
 
-First, we have to install and use node version `16.15.1`
+First, we have to install and use node version `20.5.1`
 
 Second you have to install the `nx` as global:
 

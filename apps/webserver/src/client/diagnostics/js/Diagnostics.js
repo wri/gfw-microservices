@@ -7,8 +7,7 @@ import Graphic from 'esri/Graphic';
 import Polygon from 'esri/geometry/Polygon';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import esriConfig from 'esri/config';
-
-import TreeCoverLossLayer from '../../map/js/layers/TreeCoverLossLayer';
+import TreeCoverLossLayer from '../../locations/js/layers/TreeCoverLossLayer';
 import store from '../../locations/js/store';
 import {
   changeView,

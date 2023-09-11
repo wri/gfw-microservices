@@ -42,6 +42,7 @@ const ERROR_CODES = {
   failedToGetAccountSubscriptionStatus: 310,
   failedToUpdateAccountSubscriptionStatus: 311,
   failedToUpdateAccountCustomAnalysisLimits: 312,
+  failedToGetAccountActivatedTime: 313,
 
   // User
   failedToUpdateUser: 400,

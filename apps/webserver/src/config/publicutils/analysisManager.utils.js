@@ -7,6 +7,7 @@
  *   @function {getAnalysisDataForGFWList}
  *   @function {getGFWListAnalyses}
  *   @function {requestAnalysis}
+ *   @function {getAFIAnalysisForListId}
  *
  ********************************************************************/
 const developmentEnv = process.env.NODE_ENV === 'development';
@@ -273,6 +274,33 @@ const getGFWListAnalyses = (req, list_id) => {
   });
 };
 
+/**
+ * @function {getAFIAnalysisForListId}
+ * @summary Function to return the EUDRAnalysis
+ * @param {Object} request – Request express object to extract organization information from
+ * @param {Integer} listId – List ID input
+ * @returns {Promise<Object>}
+ */
+const getAFIAnalysisForListId = (req, listId) => {
+  return new Promise((resolve, reject) => {
+    const queryParams = [{ field: 'listId', type: sql.Int, value: listId }];
+    sqlUtils
+      .executeOrganizationStoredProcedure(req, 'uspGetAFIAnalysisForListId', queryParams)
+      .then((recordsets) => {
+        resolve(recordsets);
+      })
+      .catch((error) => {
+        const errorMessage = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToGetAFIAnalysisForListId,
+          `Failed to get afi analysis for list id = ${listId}`,
+          error
+        );
+        reject(errorMessage);
+      });
+  });
+};
+
 /** @function {getListAnalyses}
  *   @summary Function to return list analysis.
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
@@ -467,6 +495,7 @@ module.exports = {
   getListAnalyses,
   requestAnalysis,
   requestDashboardAnalysis,
+  getAFIAnalysisForListId,
 };
 
 // Require after modules have been exported so the module can be fully loaded

@@ -69,6 +69,7 @@ const ERROR_CODES = {
   failedToUpdateLists: 608,
   failedToMoveLocations: 609,
   failedToGetLockStatus: 610,
+  failedToGetAFIAnalysisForListId: 611,
   // Data
   failedToGetData: 700,
   // Sharing

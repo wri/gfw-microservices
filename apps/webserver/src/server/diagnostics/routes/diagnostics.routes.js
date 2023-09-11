@@ -21,4 +21,6 @@ module.exports = (app, limiter) => {
   app.get('/diagnostics', renderController.diagnosticsRenderer);
 
   app.post('/diagnosticsData', dataController.diagnosticsDataController);
+
+  app.get('/AFIDiagnostics/:listId', dataController.AFIDeforestationKPIsController);
 };

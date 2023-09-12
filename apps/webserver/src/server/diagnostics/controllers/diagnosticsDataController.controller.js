@@ -15,7 +15,6 @@ const {
 } = require('../../../config/publicutils/shareManager.utils');
 const { GFW_LISTS_NUMBER_CONSTANTS } = require(path.resolve('./config/env/gfwLists.constants'));
 
-
 exports.diagnosticsDataController = async (req, res) => {
   const { listId, isGfwList, isSharedList, locationId } = req.body;
 
@@ -75,4 +74,3 @@ exports.diagnosticsDataController = async (req, res) => {
       console.log('diagnostics failed on the server:', err);
     });
 };
-

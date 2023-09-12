@@ -1,4 +1,3 @@
-
 const path = require('path');
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const { getAFIAnalysisForListId } = require(path.resolve(
@@ -47,4 +46,4 @@ module.exports = async (req, res) => {
   } catch (error) {
     console.error('AFI Deforestation KPIs failed on server', error);
   }
-}
+};

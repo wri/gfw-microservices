@@ -10,7 +10,7 @@ import FileDrop from '../uploading/FileDrop';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import { discernProjection, maxLocations, maxFileSizeMB } from '../../utils/upload.utils';
 import Papa from 'papaparse';
-import ExcelParse from 'xlsx';
+import * as XLSX from 'xlsx';
 import React, { Component } from 'react';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import SpatialReference from 'esri/geometry/SpatialReference';
@@ -171,8 +171,8 @@ export default class Upload extends Component {
     const reader = new FileReader();
     reader.onload = (e) => {
       const data = !e ? reader.content : e.target.result;
-      const workbook = ExcelParse.read(data, { type: 'binary' });
-      const jsonVar = ExcelParse.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+      const workbook = XLSX.read(data, { type: 'binary' });
+      const jsonVar = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
       const feature = jsonVar[0];
 
       if (this.props.activeTemplate === 'palmMill' || (feature.ID && !feature.Latitude)) {

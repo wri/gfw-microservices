@@ -18,7 +18,7 @@ function Table({ data }) {
           />
           <label htmlFor={category}>{category}</label>
         </td>
-        <td>{formatPct(coverage)}</td>
+<td>{formatPct(coverage || 0)}</td>
         <td>{prettifyNum(formatNum(totalAreaHA))}</td>
       </tr>
     );

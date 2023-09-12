@@ -7,40 +7,6 @@ import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
 import '../common/DiagnosticsContainer.scss';
 
-const mockTableData = [
-  {
-    id: 1,
-    country: 'Ghana',
-    subState: 'Acra',
-    coverageHA: 500,
-    naturalForestLossHA: 100,
-    negligibleRisk: true,
-  },
-  {
-    id: 2,
-    country: 'Cote d´Ivoire',
-    subState: 'Abidjan',
-    coverageHA: 350,
-    naturalForestLossHA: 20,
-    negligibleRisk: false,
-  },
-];
-
-const chartMockData = [
-  {
-    id: 'negligibleRisk',
-    category: 'Negligible Risk',
-    coverage: 69.76,
-    totalAreaHA: 1073,
-  },
-  {
-    id: 'nonNegligibleRisk',
-    category: 'Non Negligible Risk',
-    coverage: 30.26,
-    totalAreaHA: 654,
-  },
-];
-
 function EudrDiagnostics() {
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState({});
@@ -75,14 +41,28 @@ function EudrDiagnostics() {
   const selectedList = selectedLists?.[0];
 
   useEffect(() => {
-    setTableData(mockTableData);
-    setChartData(chartMockData);
-    setIsLoading(false);
+    fetch(`/api/afi/analysis/${listId}`, {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then(({ regionalInfo, negligibleRiskStats }) => {
+        setTableData(regionalInfo);
+        setChartData(negligibleRiskStats);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.warn(error);
+      });
   }, []);
 
   const downloadDiagnostics = () => {
     setIsLoading(true);
-    fetch(`/api/eudr/download?listId=${listId}`, {
+    fetch(`/api/afi/download?listId=${listId}`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {

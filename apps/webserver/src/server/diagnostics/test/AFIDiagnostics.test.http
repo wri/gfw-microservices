@@ -1,4 +1,4 @@
-### Generate download data for specific list
+### Get AFI Analysis For List
 GET https://localhost:8443/AFIDiagnostics/5500
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

@@ -45,5 +45,6 @@ module.exports = async (req, res) => {
     });
   } catch (error) {
     console.error('AFI Deforestation KPIs failed on server', error);
+    res.status(500).send(error);
   }
 };

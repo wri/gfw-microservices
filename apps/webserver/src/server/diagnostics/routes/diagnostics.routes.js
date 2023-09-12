@@ -19,8 +19,5 @@ module.exports = (app, limiter) => {
   app.use('/diagnostics', routeMiddlewares);
 
   app.get('/diagnostics', renderController.diagnosticsRenderer);
-
   app.post('/diagnosticsData', dataController.diagnosticsDataController);
-
-  app.get('/AFIDiagnostics/:listId', dataController.AFIDeforestationKPIsController);
 };

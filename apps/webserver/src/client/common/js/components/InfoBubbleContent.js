@@ -1,7 +1,7 @@
 // import {locationsPage} from 'common/js/config';
 import React, { Component } from 'react';
 
-import marked from 'marked';
+import { marked } from 'marked';
 
 import '../../../locations/css/diagnosticsBubble.scss';
 

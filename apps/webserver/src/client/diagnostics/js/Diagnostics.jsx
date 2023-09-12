@@ -10,18 +10,12 @@ function Diagnostics({ location }) {
   const analysisType =
     new URLSearchParams(location.search).get('type') ?? FOREST_CHANGE_DIAGNOSTICS;
 
-  const renderDiagnostics = () => {
-    switch (analysisType) {
-      case FOREST_CHANGE_DIAGNOSTICS:
-        return <ForestChangeDiagnostics />;
-      case DEFORESTATION_KPIS:
-        return <EudrDiagnostics />;
-      default:
-        return <ForestChangeDiagnostics />;
-    }
+  const diagnosticsComponents = {
+    [FOREST_CHANGE_DIAGNOSTICS]: <ForestChangeDiagnostics />,
+    [DEFORESTATION_KPIS]: <EudrDiagnostics />,
   };
 
-  return renderDiagnostics();
+  return diagnosticsComponents[analysisType];
 }
 
 export default withRouter(Diagnostics);

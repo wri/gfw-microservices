@@ -21,7 +21,7 @@ const { getAFIAnalysisForListId } = require(path.resolve(
 const {
   calculateNegligibleRiskStats,
   determineNegligibleRiskForLocation,
-  AFIAnalysisFilters,
+  afiAnalysisFilters,
 } = require('../utils/AFIFunctions');
 
 exports.diagnosticsDataController = async (req, res) => {
@@ -92,7 +92,7 @@ exports.AFIDeforestationKPIsController = async (req, res) => {
     const locationColumns = `Country,State,Sub State,location_id`;
     const listLocations = await ListManager.getListLocationsNoGeom(req, listId, locationColumns);
 
-    const regionalInfo = AFIAnalysisForCurrentList.filter(AFIAnalysisFilters).map((record) => {
+    const regionalInfo = AFIAnalysisForCurrentList.filter(afiAnalysisFilters).map((record) => {
       const location = listLocations.find((loc) => loc.location_id === record.location_id);
 
       return {

@@ -47,7 +47,7 @@ const determineNegligibleRiskForLocation = (negligibleRiskValue) => {
   return null;
 };
 
-const AFIAnalysisFilters = (record) => {
+const afiAnalysisFilters = (record) => {
   // filter positive locations until confirmation that location_id with negative values are valid
   if (record.location_id < 1) {
     return false;
@@ -62,5 +62,5 @@ const AFIAnalysisFilters = (record) => {
 module.exports = {
   calculateNegligibleRiskStats,
   determineNegligibleRiskForLocation,
-  AFIAnalysisFilters,
+  afiAnalysisFilters,
 };

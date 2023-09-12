@@ -10,7 +10,7 @@
 /* eslint-disable no-underscore-dangle */
 import React, { Component } from 'react';
 import Papa from 'papaparse';
-import * as ExcelParse from 'xlsx/xlsx';
+import * as XLSX from 'xlsx';
 import Dialog from 'material-ui/Dialog';
 import _every from 'lodash/every';
 import _maxBy from 'lodash/maxBy';
@@ -830,12 +830,12 @@ export default class StepThree extends Component {
       const data = !e ? reader.content : e.target.result;
 
       /* if binary string, read with type 'binary' */
-      const workbook = ExcelParse.read(data, {
+      const workbook = XLSX.read(data, {
         type: 'binary',
         cellDates: true,
         dateNF: 'mm/dd/yyyy',
       });
-      const jsonVar = ExcelParse.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {
+      const jsonVar = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], {
         header: 1,
       });
 

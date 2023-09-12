@@ -6125,6 +6125,11 @@
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.195.tgz"
   integrity sha512-Hwx9EUgdwf2GLarOjQp5ZH8ZmblzcbTBC2wtQWNKARBSxM9ezRIAUpeDTgoQRAFB0+8CNWXVA9+MaSOzOF3nPg==
 
+"@types/marked@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.npmjs.org/@types/marked/-/marked-5.0.1.tgz"
+  integrity sha512-Y3pAUzHKh605fN6fvASsz5FDSWbZcs/65Q6xYRmnIP9ZIYz27T4IOmXfH9gWJV1dpi7f1e7z7nBGUTx/a0ptpA==
+
 "@types/mime@*":
   version "3.0.1"
   resolved "https://registry.npmjs.org/@types/mime/-/mime-3.0.1.tgz"
@@ -14033,10 +14038,10 @@ mapshaper@0.6.42:
     sync-request "5.0.0"
     tinyqueue "^2.0.3"
 
-marked@0.8.2:
-  version "0.8.2"
-  resolved "https://registry.npmjs.org/marked/-/marked-0.8.2.tgz"
-  integrity sha512-EGwzEeCcLniFX51DhTpmTom+dSA/MG/OBUDjnWtHbEnjAH180VzUeAw+oE4+Zv+CoYBWyRlYOTR0N8SO9R1PVw==
+marked@9.0.0:
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/marked/-/marked-9.0.0.tgz"
+  integrity sha512-37yoTpjU+TSXb9OBYY5n78z/CqXh76KiQj9xsKxEdztzU9fRLmbWO5YqKxgCVGKlNdexppnbKTkwB3RipVri8w==
 
 material-ui@0.20.2:
   version "0.20.2"

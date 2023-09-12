@@ -276,7 +276,7 @@ const getGFWListAnalyses = (req, list_id) => {
 
 /**
  * @function {getAFIAnalysisForListId}
- * @summary Function to return the EUDRAnalysis
+ * @summary Function to return the AFIAnalysis
  * @param {Object} request – Request express object to extract organization information from
  * @param {Integer} listId – List ID input
  * @returns {Promise<Object>}

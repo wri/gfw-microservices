@@ -2,7 +2,7 @@ import React from 'react';
 import { v1 as uuidv1 } from 'uuid';
 import _sum from 'lodash/sum';
 
-import { formatNum, prettifyNum } from '../../../locations/js/utils/diagnostics.utils';
+import { formatNum, prettifyNum } from '../../../../locations/js/utils/diagnostics.utils';
 import { PRODES_HIGHCHARTS_BAR_CONFIGS } from './SouthAmericaRegions.config';
 
 const ProdesLegend = ({ data }) => {

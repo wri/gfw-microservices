@@ -2,18 +2,18 @@ import React, { Component } from 'react';
 import Highcharts from 'highcharts';
 import _range from 'lodash/range';
 
-import IconButtonWrapper from '../../locations/js/components/IconButtonWrapper';
+import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 
 import {
   formatNum,
   formatPct,
   prettifyNum,
   validatePct,
-} from '../../locations/js/utils/diagnostics.utils';
-import { locationsPage, latestTreeCoverLossYearSensitiveAreas } from '../../common/js/config';
+} from '../../../locations/js/utils/diagnostics.utils';
+import { locationsPage, latestTreeCoverLossYearSensitiveAreas } from '../../../common/js/config';
 
-import '../../common/css/_irsBase.scss';
-import '../../common/css/_irsStyle.scss';
+import '../../../common/css/_irsBase.scss';
+import '../../../common/css/_irsStyle.scss';
 
 const START_YEAR = 2001;
 const END_YEAR = latestTreeCoverLossYearSensitiveAreas; // Assembla ticket: 2057 - Update FC Diagnostic Charts and CSVs to show 2019 data

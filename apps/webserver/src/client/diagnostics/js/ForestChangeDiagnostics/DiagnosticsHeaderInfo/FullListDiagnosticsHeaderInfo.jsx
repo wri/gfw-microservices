@@ -1,5 +1,5 @@
 import React from 'react';
-import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
+import { numberWithCommas } from '../../../../locations/js/utils/locationsTableUtils';
 import MultipleCountriesLabel from './MultipleCountriesLabel';
 import './DiagnosticsHeaderInfo.scss';
 

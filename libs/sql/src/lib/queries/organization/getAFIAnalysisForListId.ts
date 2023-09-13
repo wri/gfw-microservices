@@ -1,5 +1,6 @@
 export const getAFIAnalysisForListId = `
-  SELECT AF.list_id as listId,
+  SELECT TOP 100 
+    AF.list_id as listId,
     AF.gadm_id AS gadmId,
     AF.natural_land_area AS coverageHA,
     AF.natural_land_deforested_area AS naturalForestLossHA,
@@ -17,7 +18,8 @@ export const getAFIAnalysisForListId = `
   WHERE AF.location_id = -1
   AND AF.gadm_id IS NOT NULL
   AND (AF.negligible_risk < 0.5 OR AF.negligible_risk > 99.5)
-  AND AF.list_id = @listId;`;
+  AND AF.list_id = @listId
+  ORDER BY negligibleRisk ASC, naturalForestLossHA DESC;`;
 
 export interface AFIAnalysisRow {
   listId: number;

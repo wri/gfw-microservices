@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { locationsPage, latestTreeCoverLossYearCR } from '../../common/js/config';
-import IconButtonWrapper from '../../locations/js/components/IconButtonWrapper';
+import { locationsPage, latestTreeCoverLossYearCR } from '../../../common/js/config';
+import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 
 const lastYear = locationsPage.diagnostics.lastDataYear;
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import Chart from './Chart';
 import Table from './Table';
-import IconButtonWrapper from '../../../../locations/js/components/IconButtonWrapper';
-import { locationsPage } from '../../../../common/js/config';
+import IconButtonWrapper from '../../../../../locations/js/components/IconButtonWrapper';
+import { locationsPage } from '../../../../../common/js/config';
 import './OtbnChartContainer.scss';
 
 function OtbnAreaChart({ data }) {

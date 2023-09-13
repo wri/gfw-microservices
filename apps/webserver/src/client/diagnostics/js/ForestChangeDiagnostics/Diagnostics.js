@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import Popover from 'material-ui/Popover';
 import Deferred from 'dojo/Deferred';
 import EsriMap from 'esri/Map';
@@ -687,6 +689,11 @@ export default class Diagnostics extends Component {
 
     const availableDiagnostics = getAvailableDiagnostics(listData, selectedLists);
 
+    const showListViewTabs = availableDiagnostics.length > 1;
+    const listViewOptions = availableDiagnostics.map(({ label, value }) => (
+      <Tab label={<span style={{ color: 'white' }}>{label}</span>} value={value} />
+    ));
+
     return (
       <div className="landing-diagnostics">
         <Popover
@@ -708,6 +715,16 @@ export default class Diagnostics extends Component {
                     selectedList={selectedLists[0]}
                     diagnosticName={locationsPage.lists.diagnostic}
                   />
+                )}
+                {showListViewTabs && (
+                  <Tabs
+                    value={listView}
+                    onChange={this.changeListView}
+                    style={{ marginBottom: '1.7rem' }}
+                    TabIndicatorProps={{ style: { background: '#97bd3d' } }}
+                  >
+                    {listViewOptions}
+                  </Tabs>
                 )}
 
                 {isSingleLocation ? (

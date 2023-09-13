@@ -4,11 +4,11 @@ import { withRouter } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import { viewDiagnostic } from './viewDiagnostic';
 import Diagnostics from './Diagnostics';
-import { diagnosticsStrings } from '../../common/js/config';
+import { diagnosticsStrings } from '../../../common/js/config';
 
 const mapStateToProps = ({ infoBubbleCache, popover }) => ({ infoBubbleCache, popover });
 
-function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
+function ForestChangeDiagnostics({ location, popover, infoBubbleCache }) {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState({});
   const [spatialData, setSpatialData] = useState();
@@ -83,25 +83,27 @@ function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
         </div>
       )}
       {!isLoading && selectedLists && (
-        <Diagnostics
-          listId={listId}
-          isSharedList={isSharedList}
-          isGfwList={isGfwList}
-          diagnosticView={diagnosticView}
-          selectedLists={selectedLists}
-          listData={processedListData}
-          listLevelAnalysis={listLevelAnalysis}
-          spatialData={spatialData}
-          selectedLocations={locationIds}
-          infoBubbleCache={infoBubbleCache}
-          displayPopover={displayPopover}
-          bubbleData={bubbleData}
-          popoverLoading={popoverLoading}
-          anchorEl={anchorEl}
-        />
+        <>
+          <Diagnostics
+            listId={listId}
+            isSharedList={isSharedList}
+            isGfwList={isGfwList}
+            diagnosticView={diagnosticView}
+            selectedLists={selectedLists}
+            listData={processedListData}
+            listLevelAnalysis={listLevelAnalysis}
+            spatialData={spatialData}
+            selectedLocations={locationIds}
+            infoBubbleCache={infoBubbleCache}
+            displayPopover={displayPopover}
+            bubbleData={bubbleData}
+            popoverLoading={popoverLoading}
+            anchorEl={anchorEl}
+          />
+        </>
       )}
     </>
   );
 }
 
-export default withRouter(connect(mapStateToProps)(DiagnosticsContainer));
+export default withRouter(connect(mapStateToProps)(ForestChangeDiagnostics));

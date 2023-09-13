@@ -6,13 +6,13 @@ import {
   formatPct,
   prettifyNum,
   validatePct,
-} from '../../locations/js/utils/diagnostics.utils';
-import { locationsPage, mapPage, latestTreeCoverLossYearFC } from '../../common/js/config';
-import IconButtonWrapper from '../../locations/js/components/IconButtonWrapper';
-import '../css/locations.scss';
+} from '../../../locations/js/utils/diagnostics.utils';
+import { locationsPage, mapPage, latestTreeCoverLossYearFC } from '../../../common/js/config';
+import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import '../../css/locations.scss';
 
-import '../../common/css/_irsBase.scss';
-import '../../common/css/_irsStyle.scss';
+import '../../../common/css/_irsBase.scss';
+import '../../../common/css/_irsStyle.scss';
 
 let isMounted = false;
 

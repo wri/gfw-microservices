@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import Highcharts from 'highcharts';
-import { formatNum, prettifyNum } from '../../locations/js/utils/diagnostics.utils';
-import IconButtonWrapper from '../../locations/js/components/IconButtonWrapper';
-import { locationsPage, latest_CommodityRisk__TrendsInDeforestation } from '../../common/js/config';
+import { formatNum, prettifyNum } from '../../../locations/js/utils/diagnostics.utils';
+import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import {
+  locationsPage,
+  latest_CommodityRisk__TrendsInDeforestation,
+} from '../../../common/js/config';
 
 export default class DeforestationTrends extends Component {
   componentDidMount() {

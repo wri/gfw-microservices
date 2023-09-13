@@ -26,7 +26,6 @@ import {
   UPDATE_LOADING_ICON_ID,
   UPDATE_BUBBLE_DATA,
   UPDATE_POPOVER_ANCHOR,
-  UPDATE_DIAGNOSTIC_VIEW,
 } from '../constants/actionTypes';
 import { locationsPage } from '../../../common/js/config';
 import cloneDeep from 'lodash/cloneDeep';

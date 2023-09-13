@@ -38,29 +38,6 @@ const calculateNegligibleRiskStats = (regionalInfo) => {
   return negligibleRiskStats;
 };
 
-const determineNegligibleRiskForLocation = (negligibleRiskValue) => {
-  if (negligibleRiskValue > 99.5) {
-    return true;
-  } else if (negligibleRiskValue < 0.5) {
-    return false;
-  }
-  return null;
-};
-
-const afiAnalysisFilters = (record) => {
-  // filter positive locations until confirmation that location_id with negative values are valid
-  if (record.location_id < 1) {
-    return false;
-  }
-  // only locations with valid gadm_id should report
-  if (!record.gadm_id) {
-    return false;
-  }
-  return true;
-};
-
 module.exports = {
   calculateNegligibleRiskStats,
-  determineNegligibleRiskForLocation,
-  afiAnalysisFilters,
 };

@@ -7,3 +7,86 @@ Cookie: gfwpro.globalforestwatch.org=s%3A56f54b40-40f7-11ee-b0d7-3bc54ac9ea0e.kD
 GET https://localhost:8443/api/afi/analysis/5498
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+
+### Response Example:
+### ============================================================
+### HTTP/1.1 200 OK
+### X-DNS-Prefetch-Control: off
+### X-Frame-Options: SAMEORIGIN
+### Strict-Transport-Security: max-age=15552000; includeSubDomains
+### X-Download-Options: noopen
+### X-Content-Type-Options: nosniff
+### X-XSS-Protection: 1; mode=block
+### Content-Type: application/json; charset=utf-8
+### ETag: W/"9d5-1jqdFIDg6WKWaNhCXI7/dMqKUi0"
+### Vary: Accept-Encoding
+### Content-Encoding: gzip
+### Date: Wed, 13 Sep 2023 20:49:15 GMT
+### Connection: close
+### Transfer-Encoding: chunked
+### 
+### {
+### 
+###   "regionalInfo": [
+###     {
+###       "listId": 5498,
+###       "gadmId": "BRA.20.119",
+###       "coverageHA": 174.66599671407553,
+###       "naturalForestLossHA": 0,
+###       "totalAreaHa": 3313.0573826247705,
+###       "negligibleRisk": false,
+###       "Country": "Brazil",
+###       "State": "Rio Grande do Norte",
+###       "Sub State": "Rio do Fogo"
+###     },
+###     {
+###       "listId": 5498,
+###       "gadmId": "BRA.4.21",
+###       "coverageHA": 975.4938955990614,
+###       "naturalForestLossHA": 1.6890305452734375,
+###       "totalAreaHa": 994.2266859558996,
+###       "negligibleRisk": true,
+###       "Country": "Brazil",
+###       "State": "Amazonas",
+###       "Sub State": "Codajás"
+###     },
+###     {
+###       "listId": 5498,
+###       "gadmId": "BRA.20.160",
+###       "coverageHA": 118.82407084339889,
+###       "naturalForestLossHA": 0,
+###       "totalAreaHa": 1384.181122584023,
+###       "negligibleRisk": true,
+###       "Country": "Brazil",
+###       "State": "Rio Grande do Norte",
+###       "Sub State": "Touros"
+###     },
+###     {
+###       "listId": 5498,
+###       "gadmId": "ARG.11.14",
+###       "coverageHA": 971.3082338717752,
+###       "naturalForestLossHA": 0,
+###       "totalAreaHa": 994.6377580410324,
+###       "negligibleRisk": false,
+###       "Country": "Argentina",
+###       "State": "La Pampa",
+###       "Sub State": "Loventué"
+###     },
+###   ],
+###   "negligibleRiskStats": [
+###     {
+###       "id": "negligibleRisk",
+###       "category": "Negligible Risk",
+###       "coverage": 63.71375863108869,
+###       "totalAreaHA": 7379.2697353109525
+###     },
+###     {
+###       "id": "nonNegligibleRisk",
+###       "category": "Non Negligible Risk",
+###       "coverage": 36.286241368911305,
+###       "totalAreaHA": 4307.695140665803
+###     }
+###   ]
+### }
+### 

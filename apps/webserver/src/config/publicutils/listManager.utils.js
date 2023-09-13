@@ -437,6 +437,44 @@ const getUserLists = (req) => {
   });
 };
 
+const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
+  lists.forEach((list) => {
+    const analysesForList = listAnalysisStatuses.filter((analysis) => analysis.ListID == list.id);
+
+    // get the worst status from the list analysis status to replace list level status
+    const worstStatus = getWorstStatusId(analysesForList);
+
+    // convert analysesForList to a map for client side
+    const analysesForListMap = analysesForList.reduce((acc, cur) => {
+      const { AnalysisID, Status, ErrorInfo, UpdateTime } = cur;
+      acc[AnalysisID] = {
+        Status,
+        ErrorInfo,
+        UpdateTime,
+      };
+      return acc;
+    }, {});
+    list.AnalysisID = analysesForListMap;
+    // replace the list level status with the worst from the list analysis status,
+    // or continue with the one that already had.
+    list.list_status_id = worstStatus ?? list.list_status_id;
+  });
+};
+
+const getUserListsWithAnalysisId = (req) => {
+  return new Promise((resolve, reject) => {
+    const promises = [getUserLists(req), analyticsService.getAllListsAnalysisStatus(req)];
+
+    Promise.all(promises)
+      .then((results) => {
+        const [userLists, listAnalysisStatuses] = results;
+        mergeListsWithAnalysisId(userLists, listAnalysisStatuses);
+        resolve(userLists);
+      })
+      .catch((error) => reject(error));
+  });
+};
+
 /**
  * @summary Creates location analyses messages
  * @param {Integer} locationId
@@ -530,27 +568,8 @@ const getAllListsWithAnalysisId = (req) => {
 
     Promise.all(promises)
       .then((results) => {
-        const [orgLists, analysisIdStatus] = results;
-        orgLists.forEach((list) => {
-          const filter = analysisIdStatus.filter((analysis) => analysis.ListID == list.id);
-
-          // get the worst status from the list analysis status to replace list level status
-          const worstStatus = getWorstStatusId(filter);
-
-          const analysisId = filter.reduce((acc, cur) => {
-            const { AnalysisID, Status, ErrorInfo, UpdateTime } = cur;
-            acc[AnalysisID] = {
-              Status,
-              ErrorInfo,
-              UpdateTime,
-            };
-            return acc;
-          }, {});
-          list.AnalysisID = analysisId;
-          // replace the list level status with the worst from the list analysis status,
-          // or continue with the one that already had.
-          list.list_status_id = worstStatus ?? list.list_status_id;
-        });
+        const [orgLists, listAnalysisStatuses] = results;
+        mergeListsWithAnalysisId(orgLists, listAnalysisStatuses);
         resolve(orgLists);
       })
       .catch((error) => reject(error));
@@ -2023,6 +2042,7 @@ module.exports = {
   createList,
   saveAsDraftList,
   getUserLists,
+  getUserListsWithAnalysisId,
   rerunExistingList,
   getAllLists,
   getListLocations,

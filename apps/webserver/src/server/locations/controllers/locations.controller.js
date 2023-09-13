@@ -49,7 +49,7 @@ exports.locations = (req, res, data) => {
   const promises = [
     LocationManager.getAllTemplateData(req),
     LocationManager.getAllTemplateDropdowns(req),
-    ListManager.getUserLists(req),
+    ListManager.getUserListsWithAnalysisId(req),
     AuthManager.getUserInfo(req),
     ListManager.getLocationsCount(req),
     ListManager.getAllListsWithAnalysisId(req),

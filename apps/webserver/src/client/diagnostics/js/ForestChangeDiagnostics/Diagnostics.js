@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import Popover from 'material-ui/Popover';
 import Deferred from 'dojo/Deferred';
 import EsriMap from 'esri/Map';
@@ -7,13 +9,10 @@ import Graphic from 'esri/Graphic';
 import Polygon from 'esri/geometry/Polygon';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import esriConfig from 'esri/config';
-import TreeCoverLossLayer from '../../locations/js/layers/TreeCoverLossLayer';
-import store from '../../locations/js/store';
-import {
-  changeView,
-  selectFolder,
-  updateInfoBubbleCache,
-} from '../../locations/js/actions/locationActions';
+
+import TreeCoverLossLayer from '../../../locations/js/layers/TreeCoverLossLayer';
+import store from '../../../locations/js/store';
+import { updateInfoBubbleCache } from '../../../locations/js/actions/locationActions';
 import SensitiveAreas from './SensitiveAreas';
 import SouthAmericaRegions from './SouthAmericaRegions';
 import SoutheastAsiaRegions from './SoutheastAsiaRegions';
@@ -21,35 +20,32 @@ import DeforestationTrends from './DeforestationTrends';
 import MillPrioritySummary from './MillPrioritySummary';
 import PalmRiskAnalysis from './PalmRiskAnalysis';
 import PalmRiskList from './PalmRiskList';
-import InfoBubbleContent from '../../common/js/components/InfoBubbleContent';
-import IconButtonWrapper from '../../locations/js/components/IconButtonWrapper';
-import ModalLoader from '../../common/js/components/Loaders/ModalLoader';
-import Breadcrumbs from '../../common/js/components/Breadcrumbs';
-import Button from '../../common/js/components/Button';
-import LinkButton from '../../common/js/components/LinkButton';
-import IconReport from '../../common/js/components/icon/IconReport';
-import IconDownload from '../../common/js/components/icon/IconDownload';
-import GfwSelect from '../../common/js/components/GfwSelect';
+import InfoBubbleContent from '../../../common/js/components/InfoBubbleContent';
+import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import SingleLocationDiagnosticsHeaderInfo from './DiagnosticsHeaderInfo/SingleLocationDiagnosticsHeaderInfo';
 import FullListDiagnosticsHeaderInfo from './DiagnosticsHeaderInfo/FullListDiagnosticsHeaderInfo';
-import ConfirmDialog from '../../locations/js/components/lists/download/confirmDialog';
-import downloadRequest from '../../locations/js/components/lists/download/downloadRequest';
+import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
+import downloadRequest from '../../../locations/js/components/lists/download/downloadRequest';
+import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
+import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 
 // Utils
-import geojsonUtil from '../../common/js/utils/arcgis-to-geojson';
-import httpRequest from '../../common/js/utils/httpRequest';
-import redirectToPage from '../../common/js/utils/redirect';
-import { closePopover } from '../../locations/js/utils/togglePopover';
+import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
+import httpRequest from '../../../common/js/utils/httpRequest';
+import redirectToPage from '../../../common/js/utils/redirect';
+import { closePopover } from '../../../locations/js/utils/togglePopover';
 import {
   formatNum,
   formatPct,
   prettifyNum,
   validatePct,
-} from '../../locations/js/utils/diagnostics.utils';
-import { checkValidViewCommodity, getGfwListName } from '../../locations/js/utils/lists.utils';
-import { handleUserListLocationsVectorTileLayer } from '../../common/js/userListLocations/utils/listLayer.util';
-import { generateCentroidGraphic } from '../../common/js/utils/esri.utils';
-import { handleGfwProListVectorTileLayer } from '../../common/js/utils/vectorTileLayer';
+} from '../../../locations/js/utils/diagnostics.utils';
+import { getGfwListName } from '../../../locations/js/utils/lists.utils';
+import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userListLocations/utils/listLayer.util';
+import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
+import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/vectorTileLayer';
+import getAvailableDiagnostics from './getAvailableDiagnostics';
 
 // Configs
 import {
@@ -58,10 +54,11 @@ import {
   locationsPage,
   proLayers,
   treeCoverLossTilesUrl,
-} from '../../common/js/config';
-import { centroidSymbol, fillSymbolDefault } from '../../common/js/map.config';
+} from '../../../common/js/config';
+import { centroidSymbol, fillSymbolDefault } from '../../../common/js/map.config';
 
-import '../css/locations.scss';
+import '../../css/locations.scss';
+import '../common/DiagnosticsContainer.scss';
 
 const mapStyle = {
   width: '100%',
@@ -452,33 +449,6 @@ export default class Diagnostics extends Component {
     window.location = '/locations';
   };
 
-  backToLists = () => {
-    const { listView } = this.state;
-    const { listId, isSharedList, isGfwList } = this.props;
-    if (listView === 'forest_change') {
-      gtag('event', 'Back to list link clicked', {
-        event_category: 'Forest Change Diagnostics Click',
-        event_label: 'user returned to the list view',
-      });
-    }
-    if (listView === 'commodity_risk') {
-      gtag('event', 'Back to list link clicked', {
-        event_category: 'Commodity Risk Diagnostics Click',
-        event_label: 'user returned to the list view',
-      });
-    }
-    window.location = `/locations?id=${listId}${isSharedList ? '&shared=true' : ''}${
-      isGfwList ? '&gfw=true' : ''
-    }`;
-  };
-
-  changeFolderView = (folder) => {
-    const { history } = this.props;
-    history.push('/folders');
-    store.dispatch(selectFolder(folder));
-    store.dispatch(changeView('folders'));
-  };
-
   changeListView = (evt, listView) => {
     const { listView: currentView } = this.state;
     this.setState({
@@ -488,27 +458,6 @@ export default class Diagnostics extends Component {
       event_category: 'Diagnostic Click',
       event_label: `user switched to ${listView} diagnostics from ${currentView}`,
     });
-  };
-
-  fireReport = () => {
-    const { listView } = this.state;
-    window.print(); // TODO: Update print css -header is too tall, highcharts too wide
-    if (listView === 'forest_change') {
-      gtag('event', 'Report button clicked', {
-        event_category: 'Forest Change Diagnostics Print',
-        event_label: 'user printed forest change diagnostics report',
-      });
-    } else if (listView === 'commodity_risk') {
-      gtag('event', 'Report button clicked', {
-        event_category: 'Commodity Risk Diagnostics Print',
-        event_label: 'user printed commodity risk diagnostics report',
-      });
-    } else {
-      gtag('event', 'Report button clicked', {
-        event_category: 'Diagnostics Print',
-        event_label: 'user printed diagnostics report',
-      });
-    }
   };
 
   getYearlyData = (property, startYear, endYear, allowNullValues) => {
@@ -730,11 +679,6 @@ export default class Diagnostics extends Component {
       listView,
     } = this.state;
 
-    const filteredLocationData = listData;
-
-    const forestChangeDisabled = filteredLocationData.length === 0;
-    const commodityRiskDisabled = !checkValidViewCommodity(selectedLists, listData);
-
     const filteredLocations = this.getFilteredLocations();
     const asiaPresence = filteredLocations.some(
       (location) => location.southeast_asia_presence === 'true'
@@ -743,15 +687,12 @@ export default class Diagnostics extends Component {
       (location) => location.south_america_presence === 'true'
     );
 
-    const listViewOptions = [];
+    const availableDiagnostics = getAvailableDiagnostics(listData, selectedLists);
 
-    if (!forestChangeDisabled) {
-      listViewOptions.push({ value: 'forest_change', label: 'Forest change' });
-    }
-
-    if (!commodityRiskDisabled) {
-      listViewOptions.push({ value: 'commodity_risk', label: 'Commodity risk' });
-    }
+    const showListViewTabs = availableDiagnostics.length > 1;
+    const listViewOptions = availableDiagnostics.map(({ label, value }) => (
+      <Tab label={<span style={{ color: 'white' }}>{label}</span>} value={value} />
+    ));
 
     return (
       <div className="landing-diagnostics">
@@ -769,22 +710,22 @@ export default class Diagnostics extends Component {
           <div className="locations-diagnostics__header-container">
             <div className="locations-diagnostics__header-data">
               <div className="header-container">
-                {selectedLists.length > 0 ? (
-                  <Breadcrumbs>
-                    <LinkButton
-                      label={locationsPage.lists.locations}
-                      onClick={this.changeToLocationView}
-                    />
-                    {selectedLists[0].folder && (
-                      <LinkButton
-                        label={selectedLists[0].folder.name}
-                        onClick={() => this.changeFolderView(selectedLists[0].folder)}
-                      />
-                    )}
-                    <LinkButton label={selectedLists[0].list_name} onClick={this.backToLists} />
-                    <span>{locationsPage.lists.diagnostic}</span>
-                  </Breadcrumbs>
-                ) : null}
+                {selectedLists.length > 0 && (
+                  <DiagnosticsBreadCrums
+                    selectedList={selectedLists[0]}
+                    diagnosticName={locationsPage.lists.diagnostic}
+                  />
+                )}
+                {showListViewTabs && (
+                  <Tabs
+                    value={listView}
+                    onChange={this.changeListView}
+                    style={{ marginBottom: '1.7rem' }}
+                    TabIndicatorProps={{ style: { background: '#97bd3d' } }}
+                  >
+                    {listViewOptions}
+                  </Tabs>
+                )}
                 {/* this fixes the issue related to diagnostics failing, should be removed with https://gfw.atlassian.net/browse/GPV-2187 */}
                 {isSingleLocation ? (
                   <SingleLocationDiagnosticsHeaderInfo
@@ -1052,36 +993,14 @@ export default class Diagnostics extends Component {
             </div>
           </div>
         </div>
-        <div className="locations-diagnostics__action-bar-container">
-          <div className="locations-diagnostics__action-bar">
-            <div className="locations-diagnostics__actions-group">
-              <label htmlFor="viewToggle">Diagnostic</label>
-              <GfwSelect
-                id="viewToggle"
-                name="viewToggleName"
-                onChange={(evt) => this.changeListView(evt, evt.value)}
-                value={{ value: listView }}
-                options={listViewOptions}
-              />
-            </div>
-            <div className="locations-diagnostics__actions-group">
-              <Button
-                variant="secondary"
-                label="Report"
-                onClick={this.fireReport}
-                icon={<IconReport height="18" />}
-              />
-              <Button
-                variant="secondary"
-                label="Download"
-                onClick={() => this.fireDownload('everything')}
-                icon={<IconDownload height="18" />}
-              />
-            </div>
-          </div>
-        </div>
 
-        <div className="locations-diagnostics__body">
+        <DiagnosticsMenuBar
+          listId={selectedLists[0]?.id}
+          selectedDiagnostics={'FCD'}
+          downloadDiagnostics={() => this.fireDownload('everything')}
+          availableDiagnostics={availableDiagnostics}
+        />
+        <div className="diagnostics-container">
           <div className="print-no-break">
             <SensitiveAreas
               primaryForest={primaryForest}
@@ -1090,7 +1009,7 @@ export default class Diagnostics extends Component {
               ifl={ifl}
               listView={listView}
               fireDownload={this.fireDownload}
-              filteredData={filteredLocationData}
+              filteredData={listData}
               getYearlyData={this.getYearlyData}
               parseYearlyData={this.parseYearlyData}
               getFilteredLocations={this.getFilteredLocations}
@@ -1115,7 +1034,7 @@ export default class Diagnostics extends Component {
                 diagnosticView={diagnosticView}
                 listView={listView}
                 fireDownload={this.fireDownload}
-                filteredData={filteredLocationData}
+                filteredData={listData}
                 togglePopover={this.togglePopover}
                 popoverLoading={popoverLoading}
                 getYearlyData={this.getYearlyData}
@@ -1132,7 +1051,7 @@ export default class Diagnostics extends Component {
                 diagnosticView={diagnosticView}
                 listView={listView}
                 fireDownload={this.fireDownload}
-                filteredData={filteredLocationData}
+                filteredData={listData}
                 togglePopover={this.togglePopover}
                 popoverLoading={popoverLoading}
                 getYearlyData={this.getYearlyData}
@@ -1150,7 +1069,7 @@ export default class Diagnostics extends Component {
               <MillPrioritySummary
                 listView={listView}
                 fireDownload={this.fireDownload}
-                filteredData={filteredLocationData}
+                filteredData={listData}
                 togglePopover={this.togglePopover}
                 popoverLoading={popoverLoading}
                 getYearlyData={this.getYearlyData}
@@ -1165,7 +1084,7 @@ export default class Diagnostics extends Component {
               <PalmRiskAnalysis
                 listView={listView}
                 fireDownload={this.fireDownload}
-                filteredData={filteredLocationData}
+                filteredData={listData}
                 togglePopover={this.togglePopover}
                 popoverLoading={popoverLoading}
                 getYearlyData={this.getYearlyData}
@@ -1180,7 +1099,7 @@ export default class Diagnostics extends Component {
               <DeforestationTrends
                 listView={listView}
                 fireDownload={this.fireDownload}
-                filteredData={filteredLocationData}
+                filteredData={listData}
                 togglePopover={this.togglePopover}
                 popoverLoading={popoverLoading}
                 getYearlyData={this.getYearlyData}
@@ -1200,7 +1119,7 @@ export default class Diagnostics extends Component {
               <PalmRiskList
                 listView={listView}
                 fireDownload={this.fireDownload}
-                filteredData={filteredLocationData}
+                filteredData={listData}
                 togglePopover={this.togglePopover}
                 popoverLoading={popoverLoading}
                 selectedLocations={selectedLocations}

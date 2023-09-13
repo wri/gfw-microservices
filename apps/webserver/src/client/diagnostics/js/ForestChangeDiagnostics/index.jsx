@@ -4,11 +4,11 @@ import { withRouter } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
 import { viewDiagnostic } from './viewDiagnostic';
 import Diagnostics from './Diagnostics';
-import { diagnosticsStrings } from '../../common/js/config';
+import { diagnosticsStrings } from '../../../common/js/config';
 
 const mapStateToProps = ({ infoBubbleCache, popover }) => ({ infoBubbleCache, popover });
 
-function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
+function ForestChangeDiagnostics({ location, popover, infoBubbleCache }) {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState({});
   const [spatialData, setSpatialData] = useState();
@@ -34,7 +34,6 @@ function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
       .then((res) => res.json())
       .then((data) => {
         setData(data);
-        console.log('🚀 ~ file: DiagnosticsContainer.jsx:37 ~ .then ~ data:', data);
         const { selectedLists } = data;
         if (!selectedLists) {
           throw new Error(diagnosticsStrings.listOrLocationNotFound);
@@ -106,4 +105,4 @@ function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
   );
 }
 
-export default withRouter(connect(mapStateToProps)(DiagnosticsContainer));
+export default withRouter(connect(mapStateToProps)(ForestChangeDiagnostics));

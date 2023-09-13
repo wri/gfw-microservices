@@ -320,11 +320,6 @@ $print-width: 95%;
     flex-direction: column;
     align-items: center;
 
-    .locations-diagnostics__body {
-      width: 75%;
-      max-width: 1200px;
-    }
-
     .locations-diagnostics-table th {
       padding: 0.5em 0.25em !important;
     }
@@ -1730,7 +1725,6 @@ $print-width: 95%;
     }
   }
 
-  .locations-diagnostics__body,
   hr {
     page-break-before: always;
   }

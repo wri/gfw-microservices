@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { User } from './user.entity';
 
-@Entity()
+@Entity({ name: 'ExternalApiKey' })
 export class Token {
   @PrimaryColumn()
   id: string;
@@ -9,20 +10,23 @@ export class Token {
   organizationId: number;
 
   @Column()
-  userId: number;
+  creatorUserId: number;
 
   @Column()
-  name: string;
+  apiKey: string;
 
   @Column()
-  tokenValue: string;
+  apiGroup: string;
 
   @Column()
-  createdAt: Date;
+  createdDateTime: Date;
 
   @Column({ nullable: true })
-  updatedAt?: Date;
+  updateDateTime?: Date;
 
   @Column({ nullable: true })
-  deletedAt?: Date;
+  deletedDateTime?: Date;
+
+  @ManyToOne(() => User, (user) => user.tokens, { eager: true })
+  user: User;
 }

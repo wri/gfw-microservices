@@ -1,22 +1,26 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 
 import { TokenService } from './token.service';
 
-@Controller('/token')
+@Controller('/api-keys')
 export class TokenController {
-  constructor(private readonly tokenService: TokenService) {}
+  constructor (private readonly tokenService: TokenService) { }
 
-  @Get('/organization/:organizationId')
-  getTokens(@Param('organizationId') organizationId: number) {
-    console.log(organizationId);
-    return false;
+  @Get('/:organizationId')
+  async getTokens(@Param('organizationId') organizationId: number) {
+    return await this.tokenService.findTokenByOrganizationId(organizationId);
   }
 
-  @Post('/create/:organizationId')
-  token(@Param('organizationId') organizationId: number, @Body('userId') userId: number) {
-    // This endpoint is protected by the token middleware
-    console.log(organizationId, userId);
+  // Create a new Token
+  @Post()
+  token(@Body('organizationId') organizationId: number, @Body('userId') userId: number) {
     return this.tokenService.createToken(organizationId, userId);
+  }
+
+  // WIP 
+  @Delete('/delete/:organizationId')
+  deleteToken(@Param('organizationId') organizationId: number, @Body('tokenId') tokenId: string) {
+    return this.tokenService.deleteToken(organizationId, tokenId);
   }
 
   @Patch('/update/:organizationId/:tokenValue')
@@ -24,14 +28,12 @@ export class TokenController {
     @Param('organizationId') organizationId: number,
     @Param('tokenValue') tokenValue: string
   ) {
-    // This endpoint is protected by the token middleware
     console.log(organizationId, tokenValue);
     return false;
   }
 
   @Get('/getorgs')
   async getOrgs() {
-    return await this.tokenService.createToken(45, 56);
     return await this.tokenService.getOrgs();
   }
 }

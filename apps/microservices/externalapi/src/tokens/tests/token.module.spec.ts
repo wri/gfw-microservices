@@ -7,6 +7,7 @@ import { TokenService } from '../token.service';
 import { Organization } from '../organization.entity';
 import { TokenMockRepository } from './token.mock.service';
 import { ConfigModule } from '@nestjs/config';
+import { User } from '../user.entity';
 
 const TEST_NEW_ORGANIZATION_ID = 10;
 const TEST_ORGANIZATION_ID = 9;
@@ -18,7 +19,6 @@ describe('Test Token Module', () => {
   let tokenService: TokenService;
 
   beforeAll(async () => {
-
     const app = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -35,19 +35,20 @@ describe('Test Token Module', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Token],
+          entities: [Token, User],
         }),
         TypeOrmModule.forFeature([Organization], 'default'),
-        TypeOrmModule.forFeature([Token], 'client'),
+        TypeOrmModule.forFeature([Token, User], 'client'),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,
         }),
       ],
       providers: [
-        AppService, {
+        AppService,
+        {
           provide: getRepositoryToken(Token, 'client'),
-          useClass: TokenMockRepository
+          useClass: TokenMockRepository,
         },
         TokenService,
       ],
@@ -85,7 +86,6 @@ describe('Test Token Module', () => {
     });
 
     it('Should create a token and delete the created token', async () => {
-
       const token = await tokenService.createToken(TEST_MOCK_ORG, TEST_USER_ID);
       expect(token).toBeDefined();
       expect(token.apiKey.length).toBe(40);
@@ -96,5 +96,4 @@ describe('Test Token Module', () => {
       expect(result).toBe(true);
     });
   });
-
 });

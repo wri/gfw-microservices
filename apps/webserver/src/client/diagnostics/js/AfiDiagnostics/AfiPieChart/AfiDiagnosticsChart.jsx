@@ -1,13 +1,13 @@
 import React from 'react';
 import Highcharts from 'highcharts';
 import useHookWithRefCallback from '../../ForestChangeDiagnostics/OtbnCharts/OtbnAreaChart/useHookWithRefCallback';
-import { eudrDiagnosticsChartsColors } from '../eudrDiagnosticsChartsColors.constants';
+import { afiDiagnosticsChartsColors } from '../afiDiagnosticsChartsColors.constants';
 
-function EudrDiagnosticsChart({ data }) {
+function AfiDiagnosticsChart({ data }) {
   const formattedData = data.map(({ id, category, coverage }) => ({
     name: category,
     y: coverage,
-    color: eudrDiagnosticsChartsColors[id],
+    color: afiDiagnosticsChartsColors[id],
   }));
   const renderChart = (divRef) => {
     Highcharts.chart({
@@ -52,4 +52,4 @@ function EudrDiagnosticsChart({ data }) {
   return <div ref={ref} />;
 }
 
-export default EudrDiagnosticsChart;
+export default AfiDiagnosticsChart;

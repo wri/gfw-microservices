@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import ForestChangeDiagnostics from './ForestChangeDiagnostics';
-import EudrDiagnostics from './EudrDiagnostics';
+import AfiDiagnostics from './AfiDiagnostics';
 import { analysisTypes } from '../../../config/env/analysisTypes.constants';
 
 function Diagnostics({ location }) {
@@ -12,7 +12,7 @@ function Diagnostics({ location }) {
 
   const diagnosticsComponents = {
     [FOREST_CHANGE_DIAGNOSTICS]: <ForestChangeDiagnostics />,
-    [DEFORESTATION_KPIS]: <EudrDiagnostics />,
+    [DEFORESTATION_KPIS]: <AfiDiagnostics />,
   };
 
   return diagnosticsComponents[analysisType];

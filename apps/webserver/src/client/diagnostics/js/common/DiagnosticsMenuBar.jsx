@@ -15,7 +15,7 @@ function DiagnosticsMenuBar({
 }) {
   const diagnosticOptions = [
     { value: 'FCD', label: 'Forest change' },
-    { value: 'AFI', label: 'EUDR' },
+    { value: 'AFI', label: 'AFI' },
     // ...availableDiagnostics
   ];
 

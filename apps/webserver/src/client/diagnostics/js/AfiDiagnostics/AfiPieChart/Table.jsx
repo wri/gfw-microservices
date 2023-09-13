@@ -1,5 +1,5 @@
 import React from 'react';
-import { eudrDiagnosticsChartsColors } from '../eudrDiagnosticsChartsColors.constants';
+import { afiDiagnosticsChartsColors } from '../afiDiagnosticsChartsColors.constants';
 import {
   prettifyNum,
   formatNum,
@@ -14,7 +14,7 @@ function Table({ data }) {
         <td>
           <span
             className="category-checkbox"
-            style={{ background: eudrDiagnosticsChartsColors[id] }}
+            style={{ background: afiDiagnosticsChartsColors[id] }}
           />
           <label htmlFor={category}>{category}</label>
         </td>

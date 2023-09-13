@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
-import EudrDiagnosticsTable from './EudrDiagnosticsTable';
-import EudrPieChart from './EudrPieChart';
+import AfiDiagnosticsTable from './AfiDiagnosticsTable';
+import AfiPieChart from './AfiPieChart';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
 import '../common/DiagnosticsContainer.scss';
 
-function EudrDiagnostics() {
+function AfiDiagnostics() {
   const [isLoading, setIsLoading] = useState(true);
   const [tableData, setTableData] = useState({});
   const [chartData, setChartData] = useState({});
@@ -104,14 +104,14 @@ function EudrDiagnostics() {
           />
           <div className="diagnostics-container">
             {selectedList && (
-              <DiagnosticsBreadCrums selectedList={selectedList} diagnosticName={'EUDR'} />
+              <DiagnosticsBreadCrums selectedList={selectedList} diagnosticName={'Afi'} />
             )}
             <div className="locations-diagnostics__body">
               <h2 className="locations-diagnostics__subtitle">{list_name}</h2>
-              <EudrDiagnosticsTable data={tableData} />
+              <AfiDiagnosticsTable data={tableData} />
               <h2 className="locations-diagnostics__subtitle">Administrative Areas Overlap</h2>
               <Paper elevation={3}>
-                <EudrPieChart data={chartData} />
+                <AfiPieChart data={chartData} />
               </Paper>
             </div>
           </div>
@@ -121,4 +121,4 @@ function EudrDiagnostics() {
   );
 }
 
-export default EudrDiagnostics;
+export default AfiDiagnostics;

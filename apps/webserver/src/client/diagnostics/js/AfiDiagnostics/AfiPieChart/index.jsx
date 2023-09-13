@@ -1,17 +1,17 @@
 import React from 'react';
 import Table from './Table';
-import EudrDiagnosticsChart from './EudrDiagnosticsChart';
+import AfiDiagnosticsChart from './AfiDiagnosticsChart';
 import './ChartContainer.scss';
 
-function EudrPieChart({ data }) {
+function AfiPieChart({ data }) {
   return (
     <div className="chart-container">
       <div className="chart-container__pie-chart">
-        <EudrDiagnosticsChart data={data} />
+        <AfiDiagnosticsChart data={data} />
       </div>
       <Table data={data} />
     </div>
   );
 }
 
-export default EudrPieChart;
+export default AfiPieChart;

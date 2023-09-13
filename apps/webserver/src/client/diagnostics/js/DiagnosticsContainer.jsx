@@ -34,6 +34,7 @@ function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
       .then((res) => res.json())
       .then((data) => {
         setData(data);
+        console.log('🚀 ~ file: DiagnosticsContainer.jsx:37 ~ .then ~ data:', data);
         const { selectedLists } = data;
         if (!selectedLists) {
           throw new Error(diagnosticsStrings.listOrLocationNotFound);
@@ -51,7 +52,7 @@ function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
       });
   }, []);
 
-  const { selectedLists, listLevelAnalysis, processedListData } = data;
+  const { selectedLists, listLevelAnalysis, processedListData, selectedLocationData } = data;
   const { displayPopover, bubbleData, popoverLoading, anchorEl } = popover;
 
   return (
@@ -98,6 +99,7 @@ function DiagnosticsContainer({ location, popover, infoBubbleCache }) {
           bubbleData={bubbleData}
           popoverLoading={popoverLoading}
           anchorEl={anchorEl}
+          selectedLocationData={selectedLocationData}
         />
       )}
     </>

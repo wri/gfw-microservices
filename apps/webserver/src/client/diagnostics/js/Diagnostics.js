@@ -698,7 +698,7 @@ export default class Diagnostics extends Component {
       selectedLists,
       selectedLocations,
       listData,
-
+      selectedLocationData,
       displayPopover,
       bubbleData,
       popoverLoading,
@@ -785,11 +785,13 @@ export default class Diagnostics extends Component {
                     <span>{locationsPage.lists.diagnostic}</span>
                   </Breadcrumbs>
                 ) : null}
-
+                {/* this fixes the issue related to diagnostics failing, should be removed with https://gfw.atlassian.net/browse/GPV-2187 */}
                 {isSingleLocation ? (
                   <SingleLocationDiagnosticsHeaderInfo
                     selectedLists={selectedLists}
-                    filteredLocations={filteredLocations}
+                    filteredLocations={
+                      filteredLocations.length > 0 ? filteredLocations : [selectedLocationData]
+                    }
                   />
                 ) : (
                   <FullListDiagnosticsHeaderInfo selectedLists={selectedLists} />

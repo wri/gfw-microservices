@@ -4,7 +4,7 @@ const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 const downloadController = require('../controllers/downloadController');
 const analysisController = require('../controllers/afiAnalysisController');
-const eudrRoutes = express.Router();
+const afiRoutes = express.Router();
 
 /**
  * @name exports
@@ -23,8 +23,8 @@ module.exports = (app, limiter) => {
     routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));
   }
 
-  app.use('/api/afi', [...routeMiddlewares, eudrRoutes]);
+  app.use('/api/afi', [...routeMiddlewares, afiRoutes]);
 
-  eudrRoutes.get('/download', downloadController);
-  eudrRoutes.get('/analysis/:listId', analysisController);
+  afiRoutes.get('/download', downloadController);
+  afiRoutes.get('/analysis/:listId', analysisController);
 };

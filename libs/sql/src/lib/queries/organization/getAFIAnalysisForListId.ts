@@ -14,8 +14,6 @@ export const getAFIAnalysisForListId = `
     AA.[Sub State]
   FROM [AFIAnalysis] AF
   LEFT JOIN gfwpro.dbo.[list-administrativeAreas] AA ON AA.gadmid = AF.gadm_id
-  LEFT JOIN (SELECT * FROM gfwpro.dbo.[list-administrativeAreas] WHERE [Sub State] IS NULL) S ON S.Country = AA.Country AND S.State = AA.State
-  LEFT JOIN (SELECT * FROM gfwpro.dbo.[list-administrativeAreas] WHERE State IS NULL) C ON C.Country = AA.Country	
   WHERE AF.location_id = -1
   AND AF.gadm_id IS NOT NULL
   AND (AF.negligible_risk < 0.5 OR AF.negligible_risk > 99.5)

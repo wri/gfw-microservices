@@ -4,7 +4,7 @@ import { Token } from './token.entity';
 @Entity({ name: 'Users' })
 export class User {
   @PrimaryColumn()
-  id: string;
+  id: number;
 
   @Column({ name: 'first_name' })
   firstName: string;
@@ -17,5 +17,4 @@ export class User {
 
   @OneToMany(() => Token, (token) => token.user)
   tokens: Token[];
-
 }

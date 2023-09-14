@@ -6,80 +6,80 @@ import { FindManyOptions, QueryFailedError } from 'typeorm';
 export class TokenMockRepository {
   private readonly data: Token[] = [
     {
-      "id": "789",
-      "creatorUserId": 1,
-      "organizationId": 9,
-      "apiKey": "789",
-      "apiGroup": "FCD",
-      "createdDateTime": new Date(),
-      "user": {
-        "id": "123",
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "test@test.com",
-        "tokens": []
-      }
+      id: '789',
+      creatorUserId: 1,
+      organizationId: 9,
+      apiKey: '789',
+      apiGroup: 'FCD',
+      createdDateTime: new Date(),
+      user: {
+        id: 123,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'test@test.com',
+        tokens: [],
+      },
     },
     {
-      "id": "101112",
-      "creatorUserId": 1,
-      "organizationId": 9,
-      "apiKey": "101112",
-      "apiGroup": "FCD",
-      "createdDateTime": new Date(),
-      "user": {
-        "id": "123",
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "test@test.com",
-        "tokens": []
-      }
+      id: '101112',
+      creatorUserId: 1,
+      organizationId: 9,
+      apiKey: '101112',
+      apiGroup: 'FCD',
+      createdDateTime: new Date(),
+      user: {
+        id: 123,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'test@test.com',
+        tokens: [],
+      },
     },
     {
-      "id": "131415",
-      "creatorUserId": 1,
-      "organizationId": 9,
-      "apiKey": "131415",
-      "apiGroup": "FCD",
-      "createdDateTime": new Date(),
-      "user": {
-        "id": "123",
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "test@test.com",
-        "tokens": []
-      }
+      id: '131415',
+      creatorUserId: 1,
+      organizationId: 9,
+      apiKey: '131415',
+      apiGroup: 'FCD',
+      createdDateTime: new Date(),
+      user: {
+        id: 123,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'test@test.com',
+        tokens: [],
+      },
     },
     {
-      "id": "161718",
-      "creatorUserId": 1,
-      "organizationId": 9,
-      "apiKey": "161718",
-      "apiGroup": "FCD",
-      "createdDateTime": new Date(),
-      "user": {
-        "id": "123",
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "test@test.com",
-        "tokens": []
-      }
+      id: '161718',
+      creatorUserId: 1,
+      organizationId: 9,
+      apiKey: '161718',
+      apiGroup: 'FCD',
+      createdDateTime: new Date(),
+      user: {
+        id: 123,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'test@test.com',
+        tokens: [],
+      },
     },
     {
-      "id": "192021",
-      "creatorUserId": 1,
-      "organizationId": 9,
-      "apiKey": "192021",
-      "apiGroup": "FCD",
-      "createdDateTime": new Date(),
-      "user": {
-        "id": "123",
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "test@test.com",
-        "tokens": []
-      }
-    }
+      id: '192021',
+      creatorUserId: 1,
+      organizationId: 9,
+      apiKey: '192021',
+      apiGroup: 'FCD',
+      createdDateTime: new Date(),
+      user: {
+        id: 123,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'test@test.com',
+        tokens: [],
+      },
+    },
   ];
   async find(options?: FindManyOptions<Token>) {
     const [{ where }] = Array.isArray(options) ? options : [options];
@@ -104,10 +104,18 @@ export class TokenMockRepository {
   }
 
   async save(token: Token): Promise<Token> {
-    console.log(token);
     if (token.organizationId === 999) {
-      throw new QueryFailedError("query", [], []);
+      throw new QueryFailedError('query', [], []);
     }
+
+    token.user = {
+      id: 123,
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'test@test.com',
+      tokens: [],
+    };
+
     this.data.push(token);
     return token;
   }

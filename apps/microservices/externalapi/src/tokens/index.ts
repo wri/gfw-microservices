@@ -20,4 +20,4 @@ import { User } from './user.entity';
   exports: [TokenService, AuthService],
   controllers: [TokenController],
 })
-export class TokenModule { }
+export class TokenModule {}

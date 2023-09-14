@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity({ name: 'ExternalApiKey' })
@@ -28,5 +28,6 @@ export class Token {
   deletedDateTime?: Date;
 
   @ManyToOne(() => User, (user) => user.tokens, { eager: true })
+  @JoinColumn({ name: 'creatorUserId', referencedColumnName: 'id' }) // Specify the foreign key column
   user: User;
 }

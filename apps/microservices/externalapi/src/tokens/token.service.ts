@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Token } from './token.entity';
@@ -8,13 +13,17 @@ import { ConfigService } from '@nestjs/config';
 const DEFAULT_API_GROUP = 'FCD';
 const DEFAULT_KEY_TYPE = 'API_KEY';
 import * as AWS from 'aws-sdk';
+import { ViewApiKeyResponse, transformApiKey, transformApiKeys } from './transformers';
+import { User } from './user.entity';
 @Injectable()
 export class TokenService {
   private readonly apiGateway: APIGateway;
 
-  constructor (
+  constructor(
     @InjectRepository(Token, 'client')
     private tokenRepository: Repository<Token>,
+    @InjectRepository(User, 'client')
+    private userRepository: Repository<User>,
     @InjectRepository(Organization, 'default')
     private organizationRepository: Repository<Organization>,
     private readonly configService: ConfigService
@@ -30,7 +39,6 @@ export class TokenService {
   }
 
   async generateAWSGatewayAPIToken(tokenName: string) {
-
     try {
       const params: APIGateway.CreateApiKeyRequest = {
         name: tokenName,
@@ -60,12 +68,11 @@ export class TokenService {
       }
 
       // Catch-all
-      throw new InternalServerErrorException('Failed to upload file to S3.');
+      throw new InternalServerErrorException('An internal error has occurred.');
     }
   }
 
-  async createToken(organizationId: number, userId: number): Promise<Token> {
-
+  async createToken(organizationId: number, userId: number): Promise<ViewApiKeyResponse> {
     const actualDate = new Date();
     const formatDate = `${actualDate.getFullYear()}-${actualDate.getMonth()}-${actualDate.getDay()}`;
     const tokenName = `APITOKEN-${this.configService.get(
@@ -74,6 +81,8 @@ export class TokenService {
 
     const awsToken = await this.generateAWSGatewayAPIToken(tokenName);
 
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
     const token = new Token();
     token.id = awsToken.id;
     token.creatorUserId = userId;
@@ -81,11 +90,13 @@ export class TokenService {
     token.createdDateTime = new Date();
     token.apiKey = awsToken.value;
     token.apiGroup = DEFAULT_API_GROUP;
+    token.user = user;
 
     try {
-      return await this.tokenRepository.save(token);
+      const newToken = await this.tokenRepository.save(token);
+      return transformApiKey(newToken);
     } catch (error) {
-      throw new InternalServerErrorException('Failed to store token in database.');
+      throw new InternalServerErrorException(`Failed to store token in database. ${error.message}`);
     }
   }
 
@@ -93,8 +104,11 @@ export class TokenService {
     return this.tokenRepository.findOne({ where: { creatorUserId } });
   }
 
-  async findTokenByOrganizationId(organizationId: number): Promise<Token[] | undefined> {
-    return this.tokenRepository.find({ where: { organizationId } });
+  async findTokenByOrganizationId(
+    organizationId: number
+  ): Promise<ViewApiKeyResponse[] | undefined> {
+    const tokens = await this.tokenRepository.find({ where: { organizationId } });
+    return transformApiKeys(tokens);
   }
 
   async getOrgs(): Promise<Organization[]> {
@@ -110,8 +124,8 @@ export class TokenService {
     try {
       await this.tokenRepository.delete(token.id);
       const apiGatewayDeleteParams: APIGateway.DeleteApiKeyRequest = {
-        apiKey: tokenId
-      }
+        apiKey: tokenId,
+      };
       await this.apiGateway.deleteApiKey(apiGatewayDeleteParams).promise();
       return true;
     } catch (error) {
@@ -122,5 +136,4 @@ export class TokenService {
       throw new InternalServerErrorException(error.message);
     }
   }
-
 }

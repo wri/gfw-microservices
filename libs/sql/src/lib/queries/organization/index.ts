@@ -16,4 +16,5 @@ export * from './getUserInternalShareLists';
 export * from './getUsersList';
 export * from './getUserStatus';
 export * from './setActivityLog';
-export * from './getAFIAnalysisForListId';
+export * from './getAfiAnalysisForListId';
+export * from './getAfiNegligibleRiskStatsForListId';

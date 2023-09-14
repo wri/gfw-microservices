@@ -1,8 +1,8 @@
 const path = require('path');
-const { getAFIAnalysisForListId } = require(path.resolve(
+const { getAFIAnalysisForListId, getAFINegligibleStatsForListId } = require(path.resolve(
   './config/publicutils/analysisManager.utils'
 ));
-const { calculateNegligibleRiskStats } = require('../utils/afiFunctions');
+const { formatNegligibleRiskStatForChart } = require('../utils/afiFunctions');
 
 /**
  * @summary handles afi analysis endpoint
@@ -14,7 +14,8 @@ module.exports = async (req, res) => {
 
   try {
     const afiAnalysisForCurrentList = await getAFIAnalysisForListId(req, listId);
-    const negligibleRiskStats = calculateNegligibleRiskStats(afiAnalysisForCurrentList);
+    const afiNegligibleStatsForCurrentList = await getAFINegligibleStatsForListId(req, listId);
+    const negligibleRiskStats = formatNegligibleRiskStatForChart(afiNegligibleStatsForCurrentList);
 
     return res.status(200).send({
       regionalInfo: afiAnalysisForCurrentList,

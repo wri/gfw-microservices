@@ -1,4 +1,4 @@
-export const getAFIAnalysisForListId = `
+export const getAfiAnalysisForListId = `
   SELECT TOP 100 
     AF.list_id as listId,
     AF.gadm_id AS gadmId,
@@ -21,7 +21,7 @@ export const getAFIAnalysisForListId = `
   AND AF.list_id = @listId
   ORDER BY negligibleRisk ASC, naturalForestLossHA DESC;`;
 
-export interface AFIAnalysisRow {
+export interface AfiAnalysisRowForList {
   listId: number;
   gadmId: string;
   coverageHA: number;
@@ -33,4 +33,4 @@ export interface AFIAnalysisRow {
   'Sub State': string;
 }
 
-export type AFIAnalysisData = AFIAnalysisRow[];
+export type AfiAnalysisDataForList = AfiAnalysisRowForList[];

@@ -4,6 +4,7 @@ import Button from '../../../common/js/components/Button';
 import IconReport from '../../../common/js/components/icon/IconReport';
 import IconDownload from '../../../common/js/components/icon/IconDownload';
 import printDiagnosticsReport from './printDiagnosticsReport';
+import featureFlags from '../../../../utils/general.utils';
 import './DiagnosticsMenuBar.scss';
 
 function DiagnosticsMenuBar({
@@ -13,11 +14,13 @@ function DiagnosticsMenuBar({
   selectedDiagnostics = 'FCD',
   availableDiagnostics = [],
 }) {
-  const diagnosticOptions = [
-    { value: 'FCD', label: 'Forest change' },
-    { value: 'AFI', label: 'AFI' },
-    // ...availableDiagnostics
-  ];
+  const { isEudrAvailable } = featureFlags;
+
+  const diagnosticOptions = [{ value: 'FCD', label: 'Forest change' }];
+
+  if (isEudrAvailable) {
+    diagnosticOptions.push({ value: 'AFI', label: 'AFI' });
+  }
 
   const redirectToSelectedDiagnostics = (diagnostics) => {
     window.location.href = `/diagnostics?listId=${listId}&type=${diagnostics}${

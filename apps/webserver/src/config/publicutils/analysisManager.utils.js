@@ -7,6 +7,7 @@
  *   @function {getAnalysisDataForGFWList}
  *   @function {getGFWListAnalyses}
  *   @function {requestAnalysis}
+ *   @function {getAFIAnalysisForListId}
  *
  ********************************************************************/
 const developmentEnv = process.env.NODE_ENV === 'development';
@@ -32,7 +33,6 @@ if (process.env.NODE_ENV !== 'test') {
 
 const s3Utils = require(path.resolve('./config/privateutils/s3.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-const listUtils = require(path.resolve('./config/privateutils/list.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
@@ -273,6 +273,60 @@ const getGFWListAnalyses = (req, list_id) => {
   });
 };
 
+/**
+ * @function {getAFIAnalysisForListId}
+ * @summary Function to return the AFIAnalysis
+ * @param {Object} request – Request express object to extract organization information from
+ * @param {Integer} listId – List ID input
+ * @returns {Promise<Object>}
+ */
+const getAFIAnalysisForListId = (req, listId) => {
+  return new Promise((resolve, reject) => {
+    const queryParams = [{ field: 'listId', type: sql.Int, value: listId }];
+    sqlUtils
+      .executeOrganizationStoredProcedure(req, 'uspGetAfiAnalysisForListId', queryParams)
+      .then((recordsets) => {
+        resolve(recordsets);
+      })
+      .catch((error) => {
+        const errorMessage = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToGetAFIAnalysisForListId,
+          `Failed to get afi analysis for list id = ${listId}`,
+          error
+        );
+        reject(errorMessage);
+      });
+  });
+};
+
+/**
+ * @function {getAFINegligibleStatsForListId}
+ * @summary Function to return the AFIAnalysis Negligible Stats
+ * @param {Object} request – Request express object to extract organization information from
+ * @param {Integer} listId – List ID input
+ * @returns {Promise<Object>}
+ */
+const getAFINegligibleStatsForListId = (req, listId) => {
+  return new Promise((resolve, reject) => {
+    const queryParams = [{ field: 'listId', type: sql.Int, value: listId }];
+    sqlUtils
+      .executeOrganizationStoredProcedure(req, 'uspGetAfiNegligibleRiskStatsForListId', queryParams)
+      .then((recordsets) => {
+        resolve(recordsets[0]);
+      })
+      .catch((error) => {
+        const errorMessage = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToGetAFINegligibleStatsForListId,
+          `Failed to get afi negligible stats for list id = ${listId}`,
+          error
+        );
+        reject(errorMessage);
+      });
+  });
+};
+
 /** @function {getListAnalyses}
  *   @summary Function to return list analysis.
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
@@ -467,6 +521,8 @@ module.exports = {
   getListAnalyses,
   requestAnalysis,
   requestDashboardAnalysis,
+  getAFIAnalysisForListId,
+  getAFINegligibleStatsForListId,
 };
 
 // Require after modules have been exported so the module can be fully loaded

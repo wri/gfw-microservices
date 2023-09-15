@@ -204,22 +204,21 @@ const assembleGfwListGeojson = (featProps, geometries) => {
 };
 
 const getGFWListLocationGeom = (list_id, location_ids) => {
-  const deferred = new Deferred();
-  httpRequest
-    .fetchForm(
-      '/locations/getGFWListLocationGeom',
-      `list_id=${list_id}&location_ids=${location_ids}`
-    )
-    .then((response) => {
-      const geometries = JSON.parse(response);
-      deferred.resolve(geometries);
-    })
-    .catch((err) => {
-      console.warn('error with grabbing gfw location data', err);
-      deferred.reject(err);
-    });
-
-  return deferred;
+  return new Promise((resolve, reject) => {
+    httpRequest
+      .fetchForm(
+        '/locations/getGFWListLocationGeom',
+        `list_id=${list_id}&location_ids=${location_ids}`
+      )
+      .then((response) => {
+        const geometries = JSON.parse(response);
+        resolve(geometries);
+      })
+      .catch((err) => {
+        console.warn('error with grabbing gfw location data', err);
+        reject(err);
+      });
+  });
 };
 
 const addGfwStepTwoFields = (feature, columnsToAdd, sourceListName, addType) => {

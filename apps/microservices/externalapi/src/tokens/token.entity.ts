@@ -4,7 +4,7 @@ import { User } from './user.entity';
 @Entity({ name: 'ExternalApiKey' })
 export class Token {
   @PrimaryColumn()
-  id: string;
+  awsId: string;
 
   @Column()
   organizationId: number;
@@ -18,14 +18,8 @@ export class Token {
   @Column()
   apiGroup: string;
 
-  @Column()
-  createdDateTime: Date;
-
   @Column({ nullable: true })
-  updateDateTime?: Date;
-
-  @Column({ nullable: true })
-  deletedDateTime?: Date;
+  updateDateTime: Date;
 
   @ManyToOne(() => User, (user) => user.tokens, { eager: true })
   @JoinColumn({ name: 'creatorUserId', referencedColumnName: 'id' }) // Specify the foreign key column

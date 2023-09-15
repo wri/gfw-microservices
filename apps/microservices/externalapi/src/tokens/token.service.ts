@@ -84,10 +84,10 @@ export class TokenService {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
     const token = new Token();
-    token.id = awsToken.id;
+    token.awsId = awsToken.id;
     token.creatorUserId = userId;
     token.organizationId = organizationId;
-    token.createdDateTime = new Date();
+    token.updateDateTime = new Date();
     token.apiKey = awsToken.value;
     token.apiGroup = DEFAULT_API_GROUP;
     token.user = user;
@@ -99,11 +99,6 @@ export class TokenService {
       throw new InternalServerErrorException(`Failed to store token in database. ${error.message}`);
     }
   }
-
-  async findTokenByUserId(creatorUserId: number): Promise<Token | undefined> {
-    return this.tokenRepository.findOne({ where: { creatorUserId } });
-  }
-
   async findTokenByOrganizationId(
     organizationId: number
   ): Promise<ViewApiKeyResponse[] | undefined> {
@@ -111,18 +106,14 @@ export class TokenService {
     return transformApiKeys(tokens);
   }
 
-  async getOrgs(): Promise<Organization[]> {
-    return await this.organizationRepository.find({});
-  }
-
   async deleteToken(organizationId: number, tokenId: string): Promise<boolean> {
-    const token = await this.tokenRepository.findOne({ where: { organizationId, id: tokenId } });
+    const token = await this.tokenRepository.findOne({ where: { organizationId, awsId: tokenId } });
     if (!token) {
       throw new NotFoundException('Token not found.');
     }
 
     try {
-      await this.tokenRepository.delete(token.id);
+      await this.tokenRepository.delete(token.awsId);
       const apiGatewayDeleteParams: APIGateway.DeleteApiKeyRequest = {
         apiKey: tokenId,
       };

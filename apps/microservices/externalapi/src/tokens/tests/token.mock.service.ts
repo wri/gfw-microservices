@@ -6,12 +6,12 @@ import { FindManyOptions, QueryFailedError } from 'typeorm';
 export class TokenMockRepository {
   private readonly data: Token[] = [
     {
-      id: '789',
+      awsId: '789',
       creatorUserId: 1,
       organizationId: 9,
       apiKey: '789',
       apiGroup: 'FCD',
-      createdDateTime: new Date(),
+      updateDateTime: new Date(),
       user: {
         id: 123,
         firstName: 'John',
@@ -21,12 +21,12 @@ export class TokenMockRepository {
       },
     },
     {
-      id: '101112',
+      awsId: '101112',
       creatorUserId: 1,
       organizationId: 9,
       apiKey: '101112',
       apiGroup: 'FCD',
-      createdDateTime: new Date(),
+      updateDateTime: new Date(),
       user: {
         id: 123,
         firstName: 'John',
@@ -36,12 +36,12 @@ export class TokenMockRepository {
       },
     },
     {
-      id: '131415',
+      awsId: '131415',
       creatorUserId: 1,
       organizationId: 9,
       apiKey: '131415',
       apiGroup: 'FCD',
-      createdDateTime: new Date(),
+      updateDateTime: new Date(),
       user: {
         id: 123,
         firstName: 'John',
@@ -51,12 +51,12 @@ export class TokenMockRepository {
       },
     },
     {
-      id: '161718',
+      awsId: '161718',
       creatorUserId: 1,
       organizationId: 9,
       apiKey: '161718',
       apiGroup: 'FCD',
-      createdDateTime: new Date(),
+      updateDateTime: new Date(),
       user: {
         id: 123,
         firstName: 'John',
@@ -66,12 +66,12 @@ export class TokenMockRepository {
       },
     },
     {
-      id: '192021',
+      awsId: '192021',
       creatorUserId: 1,
       organizationId: 9,
       apiKey: '192021',
       apiGroup: 'FCD',
-      createdDateTime: new Date(),
+      updateDateTime: new Date(),
       user: {
         id: 123,
         firstName: 'John',
@@ -121,7 +121,7 @@ export class TokenMockRepository {
   }
 
   async delete(token: Token): Promise<void> {
-    const index = this.data.findIndex((t) => t.id === token.id);
+    const index = this.data.findIndex((t) => t.awsId === token.awsId);
     if (index !== -1) {
       this.data.splice(index, 1);
     }

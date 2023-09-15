@@ -11,12 +11,12 @@ export interface ViewApiKeyResponse {
 
 export function transformApiKey(apiKey: Token): ViewApiKeyResponse {
   return {
-    id: apiKey.id,
+    id: apiKey.awsId,
     apiKey: apiKey.apiKey,
     apiGroup: apiKey.apiGroup,
     creatorUserEmail: apiKey.user.email,
     organizationId: apiKey.organizationId,
-    creationDate: apiKey.createdDateTime,
+    creationDate: apiKey.updateDateTime,
   };
 }
 

@@ -58,7 +58,7 @@ function ActiveList({
     list_locations_count,
     error_file_storage_path,
     large_list_id,
-    selectedAnalysis,
+    AnalysisID,
   } = list;
   const isLargeList = !!large_list_id;
   const hasErrorFile = !!error_file_storage_path;
@@ -141,10 +141,10 @@ function ActiveList({
         )}
 
         <div className="locations-list__controls">
-          {selectedAnalysis?.map((analysis) => {
+          {Object.keys(AnalysisID).map((analysis) => {
             <Chip
-              label={analysis.name}
-              color={analysis.status}
+              label={analysis}
+              color={AnalysisID[analysis].status}
               size="small"
               style={{ height: '17px', marginLeft: '10px' }}
             />;

@@ -13,7 +13,7 @@ module.exports = (app, limiter) => {
   ];
 
   if (rateLimiterUtil.useRateLimiter()) {
-    routeMiddlewaresAnalytics.push(limiter(middlewares.rateLimitAuthenticated));
+    routeMiddlewaresForOrgs.push(limiter(middlewares.rateLimitAuthenticated));
   }
   app.use(GEO_TRELLIS_ANALYZE_LIST.route, routeMiddlewaresForOrgs);
   app.post(GEO_TRELLIS_ANALYZE_LIST.route, controller.geoTrellisAnalyzeListController);

@@ -7,6 +7,7 @@ import AccountDetailSection from './accounts/AccountDetailSection';
 import AccountsListUsage from './accounts/AccountUsage/AccountsListUsage';
 import SideBarMenu from '../../../common/js/components/SideBarMenu';
 import { proManagerPanelTabs } from './proManagerPanelTabs';
+import LatestCommits from './LatestCommits';
 import AccountLimits from './accounts/AccountLimits';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -74,6 +75,9 @@ function ProManagerPanel({ location }) {
           )}
           {selectedTab === proManagerPanelTabs.accountUsage.id && (
             <AccountsListUsage isLoading={isLoading} setIsLoading={setIsLoading} />
+          )}
+          {selectedTab === proManagerPanelTabs.latestCommits.id && (
+            <LatestCommits isLoading={isLoading} setIsLoading={setIsLoading} />
           )}
         </Box>
       </Grid>

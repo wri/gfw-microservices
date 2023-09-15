@@ -388,6 +388,21 @@ const isLocationDataNotAvailable = (list) => {
   return isFailed || isBeingAnalized || hasLockStatus;
 };
 
+const isListFailedByAnalysisStatusLimit = (list) => {
+  if (list.AnalysisID) {
+    for (const analysisIDKey in list.AnalysisID) {
+      const analysis = list.AnalysisID[analysisIDKey];
+      if (
+        analysis.Status === listStatus.Inactive &&
+        analysis.ErrorInfo === 'Exceeded Analysis Limit'
+      ) {
+        return true; // Return true as soon as a matching item is found
+      }
+    }
+  }
+  return false;
+};
+
 module.exports = {
   checkValidView,
   checkValidViewCommodity,
@@ -414,4 +429,5 @@ module.exports = {
   isAnalyzingStatus,
   isFailedList,
   isLocationDataNotAvailable,
+  isListFailedByAnalysisStatusLimit,
 };

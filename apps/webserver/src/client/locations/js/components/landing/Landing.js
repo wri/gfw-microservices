@@ -33,7 +33,6 @@ import NoResultsIllustration from '../../../images/illustration-locations-empty-
 import { getFolders } from './foldersApi';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import AddLocationsPrompt from './components/AddLocationsPrompt';
-import { getIsDiagnosticStatusDraft } from '../../utils/draft.utils';
 import { normalizeShaledLists, nameContainsText } from '../../utils/shareList.utils';
 import MyListsTabs from './MyListsTabs';
 import { getMySharedLists, getListsSharedWithMe } from './getSharedLists';
@@ -43,7 +42,6 @@ import {
   LISTS_SHARED_WITH_ME,
 } from './MyListsTabs/MyListsTabs.constants';
 import getCookie from '../../../../common/js/utils/getCookie';
-import getAnalysisLimitListsStatus from './getAnalysisLimitListsStatus';
 
 class Landing extends Component {
   constructor(props) {
@@ -61,7 +59,7 @@ class Landing extends Component {
       selectedTab: '',
       mySharedLists: [],
       listsSharedWithMe: [],
-      listsFailedByUsageLimits: [],
+      listsFailedByUsageLimits: false,
     };
   }
 
@@ -86,12 +84,6 @@ class Landing extends Component {
         this.setState({ listsSharedWithMe });
       });
     }
-
-    getAnalysisLimitListsStatus().then((data) => {
-      if (data.length) {
-        this.setState({ listsFailedByUsageLimits: data });
-      }
-    });
   }
 
   componentWillUnmount() {
@@ -156,6 +148,10 @@ class Landing extends Component {
     });
   };
 
+  handleBannerForFailedListsByUsageLimits = () => {
+    this.setState({ listsFailedByUsageLimits: true });
+  };
+
   createGfwLocationsFromList = (list, i) => {
     return <GfwLocationList list={list} key={i} changeList={this.changeList} />;
   };
@@ -182,7 +178,7 @@ class Landing extends Component {
           this.loadFolders();
         }}
         isAListSharedWithMe={isAListSharedWithMe}
-        listsFailedByUsageLimits={this.state.listsFailedByUsageLimits}
+        handleBannerForFailedListsByUsageLimits={this.handleBannerForFailedListsByUsageLimits}
       />
     );
   };
@@ -296,7 +292,7 @@ class Landing extends Component {
 
     return (
       <div className={`${view === 'landing' ? '' : 'hidden'}`}>
-        {listsFailedByUsageLimits.length > 0 ? <UsageLimitBanner /> : null}
+        {listsFailedByUsageLimits ? <UsageLimitBanner /> : null}
         {bannerContent && (
           <Banner
             className="landing-banner"

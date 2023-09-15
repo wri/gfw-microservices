@@ -2,7 +2,8 @@ import React from 'react';
 
 function LatestCommits({ setIsLoading }) {
   setIsLoading(false);
-  return <h3>{process.env.LATEST_COMMIT}</h3>;
+  const latestCommitMessage = process.env.LATEST_COMMIT || 'can not show the latest commit'
+  return <h3>{latestCommitMessage}</h3>;
 }
 
 export default LatestCommits;

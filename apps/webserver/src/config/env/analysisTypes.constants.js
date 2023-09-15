@@ -11,11 +11,11 @@ const analysisTypesLabels = {
 const analysisTypesOptions = [
   {
     id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
-    label: 'Forest Change Global',
+    label: analysisTypesLabels['FCD'],
   },
   {
     id: analysisTypes.DEFORESTATION_KPIS,
-    label: 'Deforestation Reporting (cutoff date 2020)',
+    label: analysisTypesLabels['AFI'],
   },
 ];
 

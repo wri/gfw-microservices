@@ -1,5 +1,4 @@
 import React from 'react';
-import Chip from '@mui/material/Chip';
 import GroupsIcon from '@mui/icons-material/Groups';
 import PublicIcon from '@mui/icons-material/Public';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
@@ -8,10 +7,11 @@ import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
 import sharedColumnText from './sharedColumnText';
 import { locationsPage } from '../../../../../common/js/config';
+import AnalysisListChips from './AnalysisListChips';
 
 // returns 'anaylizing' (also called 'pending') list items
 function AnalyzingList({ list, isAListSharedWithMe, isShared, showSharedColumn }) {
-  const { list_name, is_shared } = list;
+  const { list_name, is_shared, AnalysisID } = list;
 
   return (
     <li
@@ -23,6 +23,7 @@ function AnalyzingList({ list, isAListSharedWithMe, isShared, showSharedColumn }
         {list_name}
         {is_shared && <IconUsers className="locations-list__shared-icon" />}
       </div>
+
       {showSharedColumn && (
         <div className="locations-list__shared">
           <GroupsIcon />
@@ -31,6 +32,8 @@ function AnalyzingList({ list, isAListSharedWithMe, isShared, showSharedColumn }
       )}
 
       <div className="locations-list__menu-container">
+        <AnalysisListChips AnalysisID={AnalysisID} />
+
         <IconButton icon={<IconMenuDots />} title={''} disabled size="medium" variant="menu" />
       </div>
     </li>

@@ -237,6 +237,19 @@
     }
   }
 
+  .MuiChip-label {
+    font-size: 10px;
+  }
+
+  .MuiChip-colorSuccess {
+    color: #97BD3D;
+    background-color: #97BD3D40;
+  }
+
+  .MuiChip-icon {
+    color: #97BD3D;
+  }
+
   &__controls {
     display: flex;
     justify-content: space-between;

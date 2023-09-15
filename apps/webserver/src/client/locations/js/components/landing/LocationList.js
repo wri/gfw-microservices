@@ -14,6 +14,7 @@ import {
   isDownloadDisabledForThisList,
   isAnalyzingStatus,
   isFailedList,
+  isListFailedByAnalysisStatusLimit,
 } from '../../utils/lists.utils';
 import DeleteListDialog from './DeleteListDialog';
 import ConfirmDialog from '../lists/download/confirmDialog';
@@ -26,7 +27,7 @@ import { listStatus } from '../../../../../config/env/listStatuses.constants';
 export default class LocationList extends Component {
   constructor(props) {
     super(props);
-    const { B2BsharedListEnabled } = this.props;
+    const { B2BsharedListEnabled, list, handleBannerForFailedListsByUsageLimits } = this.props;
     this.state = {
       isManageListFolderOpen: false,
       isDeleteDialogOpen: false,
@@ -35,6 +36,10 @@ export default class LocationList extends Component {
       confirmDownloadDialog: false,
       B2BsharedListEnabled,
     };
+
+    if (isListFailedByAnalysisStatusLimit(list)) {
+      handleBannerForFailedListsByUsageLimits();
+    }
   }
 
   rerunList = () => {
@@ -127,16 +132,8 @@ export default class LocationList extends Component {
   render() {
     const { isManageListFolderOpen, isDeleteDialogOpen, rerunDialogState, confirmDownloadDialog } =
       this.state;
-    const {
-      folders,
-      locations,
-      list,
-      currentUser,
-      onFolderChange,
-      isAListSharedWithMe,
-      history,
-      listsFailedByUsageLimits,
-    } = this.props;
+    const { folders, locations, list, currentUser, onFolderChange, isAListSharedWithMe, history } =
+      this.props;
 
     const userIsAdmin = currentUser.access_level_id === userAccessLevel.ADMIN;
     const userIsViewer = currentUser.access_level_id === userAccessLevel.VIEWER;
@@ -183,7 +180,7 @@ export default class LocationList extends Component {
             showDelete={showDelete}
             setManageListFolderOpen={() => this.setState({ isManageListFolderOpen: true })}
             setDeleteDialogOpen={() => this.setState({ isDeleteDialogOpen: true })}
-            isFailedByUsageLimits={listsFailedByUsageLimits.includes(list.id)}
+            isFailedByUsageLimits={isListFailedByAnalysisStatusLimit(list)}
           />
         );
       } else if (getIsDiagnosticStatusDraft(list)) {

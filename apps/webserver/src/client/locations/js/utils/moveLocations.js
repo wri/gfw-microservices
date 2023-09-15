@@ -124,38 +124,38 @@ const discernPropValue = (feature, prop) => {
 };
 
 const assembleGeojson = (featProps, uploadingData, listId) => {
-  const deferred = new Deferred();
-  const geojson = {
-    type: 'FeatureCollection',
-    features: [],
-  };
+  return new Promise((resolve, reject) => {
+    const geojson = {
+      type: 'FeatureCollection',
+      features: [],
+    };
 
-  const route = '/locations/getUserListLocationSpatialData';
-  const body = {
-    list_ids: [listId],
-  };
+    const route = '/locations/getUserListLocationSpatialData';
+    const body = {
+      list_ids: [listId],
+    };
 
-  return httpRequest.fetchJSON(route, body).then((response) => {
-    const selectedLocationsIDs = uploadingData.map((location) => location.location_id);
-    const selectedListData = JSON.parse(response);
-    if (selectedListData.errorCode === 604) {
-      deferred.reject('listNotAccessible');
-    } else {
-      const feats = selectedListData[0].features;
-      const filteredLocations = feats.filter((location) => {
-        return selectedLocationsIDs.indexOf(location.properties.location_id) > -1;
-      });
-
-      filteredLocations.forEach((location, j) => {
-        geojson.features.push({
-          type: 'Feature',
-          properties: featProps[j],
-          geometry: location.geometry,
+    httpRequest.fetchJSON(route, body).then((response) => {
+      const selectedLocationsIDs = uploadingData.map((location) => location.location_id);
+      const selectedListData = JSON.parse(response);
+      if (selectedListData.errorCode === 604) {
+        reject('listNotAccessible');
+      } else {
+        const feats = selectedListData[0].features;
+        const filteredLocations = feats.filter((location) => {
+          return selectedLocationsIDs.indexOf(location.properties.location_id) > -1;
         });
-      });
-      deferred.resolve(geojson);
-    }
-    return deferred;
+
+        filteredLocations.forEach((location, j) => {
+          geojson.features.push({
+            type: 'Feature',
+            properties: featProps[j],
+            geometry: location.geometry,
+          });
+        });
+        resolve(geojson);
+      }
+    });
   });
 };
 

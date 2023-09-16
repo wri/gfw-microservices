@@ -143,7 +143,7 @@ export class PipeService {
   private async getAnalysisData(filter): Promise<AnalysisDataType[]> {
     const queryString = this.convertToQueryFields(filter);
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
-    const response = await fetch(encodeURIComponent(url), this.OPTIONS);
+    const response = await fetch(encodeURI(url), this.OPTIONS);
     const analysisData = (await response.json()) as AnalysisDataType[];
     return analysisData;
   }
@@ -151,7 +151,7 @@ export class PipeService {
   private async getNumberOfPages(filters: GenerationFileRequest): Promise<number> {
     const queryString = this.convertToQueryFields(filters);
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
-    const response = await fetch(encodeURIComponent(url), this.OPTIONS);
+    const response = await fetch(encodeURI(url), this.OPTIONS);
     const { numberOfPages } = (await response.json()) as AnalysisDataCountReturnType;
     return numberOfPages;
   }

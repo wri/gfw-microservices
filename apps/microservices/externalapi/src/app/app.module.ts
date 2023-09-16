@@ -7,16 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Token } from '../tokens/token.entity';
 import { Organization } from '../tokens/organization.entity';
 import { ConfigModule } from '@nestjs/config';
-import * as AWS from 'aws-sdk';
 import { User } from '../tokens/user.entity';
 
-const awsConfig = {
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-};
-
-AWS.config.update(awsConfig);
 @Module({
   imports: [
     ConfigModule.forRoot({

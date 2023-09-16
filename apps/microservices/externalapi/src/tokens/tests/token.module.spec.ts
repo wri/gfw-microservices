@@ -95,5 +95,11 @@ describe('Test Token Module', () => {
       expect(result).toBeDefined();
       expect(result).toBe(true);
     });
+
+    it('Should trigger an error when token does not exists', async () => {
+      expect(async () => {
+        await tokenService.deleteToken(TEST_MOCK_ORG, '123');
+      }).rejects.toThrowError();
+    });
   });
 });

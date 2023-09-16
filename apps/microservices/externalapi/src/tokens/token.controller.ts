@@ -18,7 +18,7 @@ export class TokenController {
     return this.tokenService.createToken(organizationId, userId);
   }
 
-  // WIP
+  // Delete a token for a organization
   @Delete('/:organizationId/:tokenId')
   deleteToken(@Param('organizationId') organizationId: number, @Param('tokenId') tokenId: string) {
     return this.tokenService.deleteToken(organizationId, tokenId);

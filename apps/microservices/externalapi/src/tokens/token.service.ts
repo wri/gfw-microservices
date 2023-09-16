@@ -7,14 +7,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Token } from './token.entity';
-import { Organization } from './organization.entity';
 import { APIGateway } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
-const DEFAULT_API_GROUP = 'FCD';
-const DEFAULT_KEY_TYPE = 'API_KEY';
-import * as AWS from 'aws-sdk';
 import { ViewApiKeyResponse, transformApiKey, transformApiKeys } from './transformers';
 import { User } from './user.entity';
+const DEFAULT_API_GROUP = 'FCD';
+const DEFAULT_KEY_TYPE = 'API_KEY';
 @Injectable()
 export class TokenService {
   private readonly apiGateway: APIGateway;
@@ -24,18 +22,13 @@ export class TokenService {
     private tokenRepository: Repository<Token>,
     @InjectRepository(User, 'client')
     private userRepository: Repository<User>,
-    @InjectRepository(Organization, 'default')
-    private organizationRepository: Repository<Organization>,
     private readonly configService: ConfigService
   ) {
-    const awsConfig = {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      region: process.env.AWS_REGION,
-    };
-
-    AWS.config.update(awsConfig);
-    this.apiGateway = new APIGateway({ region: 'us-east-1' });
+    this.apiGateway = new APIGateway({
+      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      region: this.configService.get('AWS_REGION'),
+    });
   }
 
   async generateAWSGatewayAPIToken(tokenName: string) {

@@ -61,6 +61,9 @@ function ChangeTypeOfAnalysisModal({
       setIsChangeTypeOfAnalysisModalOpen(false);
     });
   };
+  // if there is no listId, the analyses selection is for the creation of a new list
+  const showButtonToUpdateSelectedAnalyses = !!listId;
+
   return (
     <Modal
       open={isChangeTypeOfAnalysisModalOpen}
@@ -77,7 +80,9 @@ function ChangeTypeOfAnalysisModal({
             />
           )}
           <br />
-          {listId && <Button variant="primary" onClick={updateSelectedAnalysis} label="Submit" />}
+          {showButtonToUpdateSelectedAnalyses && (
+            <Button variant="primary" onClick={updateSelectedAnalysis} label="Submit" />
+          )}
         </CardContent>
       </Card>
     </Modal>

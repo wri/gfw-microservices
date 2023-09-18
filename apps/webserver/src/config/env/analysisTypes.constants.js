@@ -1,6 +1,7 @@
 const analysisTypes = {
   FOREST_CHANGE_DIAGNOSTICS: 'FCD',
   DEFORESTATION_KPIS: 'AFI',
+  ALERTS: 'ALERTS',
 };
 
 const analysisTypesOptions = [
@@ -11,6 +12,10 @@ const analysisTypesOptions = [
   {
     id: analysisTypes.DEFORESTATION_KPIS,
     label: 'Deforestation Reporting (cutoff date 2020)',
+  },
+  {
+    id: analysisTypes.ALERTS,
+    label: 'Alerts',
   },
 ];
 

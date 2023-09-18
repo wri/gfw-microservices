@@ -867,7 +867,6 @@ class UploadLocations extends Component {
                   list_status_id: getListStatusId(isSaveAsDraft),
                   analysisIds: Object.values(analysisTypes),
                 };
-
                 if (isSaveAsDraft) {
                   gtag('event', 'Upload List', {
                     event_category: 'Submit',

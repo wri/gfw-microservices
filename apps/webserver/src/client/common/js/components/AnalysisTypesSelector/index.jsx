@@ -1,31 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { locationsPage } from '../../config';
 import { analysisTypesOptions } from '../../../../../config/env/analysisTypes.constants';
+import './AnalysisTypesSelector.scss';
 
-function AnalysisTypesSelector({ handleAnalyzesSelection }) {
-  const [selectedAnalysis, setSelectedAnalysis] = useState([]);
-
-  const analysisTypesSwitch = (type) => {
-    let selection;
-    if (selectedAnalysis.includes(type)) {
-      selection = selectedAnalysis.filter((selectedType) => selectedType !== type);
-    } else {
-      selection = [...selectedAnalysis, type];
-    }
-    setSelectedAnalysis(selection);
-    handleAnalyzesSelection(selection);
-  };
-
+function AnalysisTypesSelector({ selectedAnalysis, handleAnalyzesSelection }) {
   return (
-    <fieldset style={{ border: 'none' }}>
-      <legend className="locations-upload-save__legend">{locationsPage.upload.analytics}</legend>
+    <FormGroup className="analysis-types-selector">
+      <legend>{locationsPage.upload.analysis}</legend>
+      <br />
       {analysisTypesOptions.map(({ id, label }) => (
-        <div key={id} className="locations-upload-save__option-container">
-          <input type="checkbox" name={id} id={id} onChange={() => analysisTypesSwitch(id)} />
-          <label htmlFor={id}>{label}</label>
+        <div key={id}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={selectedAnalysis?.includes(id)}
+                onChange={() => handleAnalyzesSelection(id)}
+              />
+            }
+            label={label}
+          />
         </div>
       ))}
-    </fieldset>
+    </FormGroup>
   );
 }
 

@@ -21,7 +21,7 @@ function AfiDiagnosticsTable({ data }) {
         </TableHead>
         <TableBody>
           {data?.map((row) => (
-            <TableRow key={row.id}>
+            <TableRow key={row.subState}>
               <TableCell align="right">{row.country}</TableCell>
               <TableCell align="right">{row.subState}</TableCell>
               <TableCell align="right">{row.coverageHA}</TableCell>

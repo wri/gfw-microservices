@@ -1601,7 +1601,7 @@ export const locationsPage = {
     successBanner:
       'New locations have been added. You will receive an email once analysis of the locations is complete, and can reload the page to access the data.',
     list: 'List',
-    analytics: 'Analytics',
+    analysis: 'List Analyses',
     addToExisting: 'Add to existing',
     createNew: 'Create new',
     browse: 'Browse',

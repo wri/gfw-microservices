@@ -10,9 +10,9 @@ export const getAfiAnalysisForListId = `
       WHEN AF.negligible_risk > 99.5 THEN CAST(1 AS BIT)  -- true
       ELSE NULL  -- anything else means is errored
     END AS negligibleRisk,
-    AA.[Country],
-    AA.[State],
-    AA.[Sub State]
+    AA.[Country] as country,
+    AA.[State] as state,
+    AA.[Sub State] as subState
   FROM [AFIAnalysis] AF
   LEFT JOIN gfwpro.dbo.[list-administrativeAreas] AA ON AA.gadmid = AF.gadm_id
   WHERE AF.location_id = -1
@@ -28,9 +28,9 @@ export interface AfiAnalysisRowForList {
   naturalForestLossHA: number;
   totalAreaHa: number;
   negligibleRisk: boolean;
-  Country: string;
-  State: string;
-  'Sub State': string;
+  country: string;
+  state: string;
+  subState: string;
 }
 
 export type AfiAnalysisDataForList = AfiAnalysisRowForList[];

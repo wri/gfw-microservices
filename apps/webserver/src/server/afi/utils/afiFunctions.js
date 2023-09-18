@@ -16,7 +16,7 @@ const formatNegligibleRiskStatForChart = (data) => {
       id: 'nonNegligibleRisk',
       category: 'Non Negligible Risk',
       coverage: nonNegligibleRiskCoverage,
-      totalAreaHA: (totalAreaHa * nonNegligbleRisk) / 100,
+      totalAreaHA: (totalAreaHa * nonNegligibleRiskCoverage) / 100,
     },
   ];
 

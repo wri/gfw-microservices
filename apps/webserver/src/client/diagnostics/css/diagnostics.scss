@@ -48,10 +48,6 @@ $print-width: 95%;
     &.subsection-historic-area {
       flex-direction: column;
     }
-
-    .subsection-chart {
-      width: calc(100% - #{$subsection-width});
-    }
   }
 }
 

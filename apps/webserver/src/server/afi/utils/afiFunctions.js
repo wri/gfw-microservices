@@ -1,5 +1,5 @@
 const formatNegligibleRiskStatForChart = (data) => {
-  const { negligibleRisk, totalAreaHa } = data;
+  const { negligibleRisk, totalAreaHa } = data || {};
 
   // Calculate the non-negligible risk coverage
   const nonNegligibleRiskCoverage = 100 - negligibleRisk;

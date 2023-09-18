@@ -1,5 +1,3 @@
-import Deferred from 'dojo/Deferred';
-
 import { locationsPage } from '../../../common/js/config';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import { deduceActiveId } from '../../../common/js/utils/templateUtils';
@@ -641,259 +639,261 @@ const moveLocations = (
   locationData,
   isSaveAsDraft
 ) => {
-  const deferred = new Deferred();
+  return new Promise((resolve, reject) => {
+    const listName = selectedNewOrExisting === 'new' ? newListName : moveToList.list_name;
+    const lowerListName = listName ? listName.toLowerCase() : listName;
+    const checkListExists = userListNames.find((name) => name === lowerListName);
+    const checkForPunctuation = lowerListName ? containsPunctuation(lowerListName) : false;
 
-  const listName = selectedNewOrExisting === 'new' ? newListName : moveToList.list_name;
-  const lowerListName = listName ? listName.toLowerCase() : listName;
-  const checkListExists = userListNames.find((name) => name === lowerListName);
-  const checkForPunctuation = lowerListName ? containsPunctuation(lowerListName) : false;
-
-  if (!listName) {
-    deferred.reject('missingListName');
-    return deferred;
-  } else if (checkListExists && selectedNewOrExisting === 'new') {
-    deferred.reject('listNameAlreadyExists');
-    return deferred;
-  } else if (checkForPunctuation && selectedNewOrExisting === 'new') {
-    deferred.reject('invalidListName');
-    return deferred;
-  }
-
-  const featProps = [];
-  let templateId;
-  const customAttributes = [];
-
-  if (addType === 'commodity') {
-    let active = activeTemplate;
-    if (active === 'investment') {
-      if (commodityType === 'palmOil') {
-        active = 'palmGeneric';
-      } else if (commodityType === 'soy') {
-        active = 'soyGeneric';
-      } else if (commodityType === 'cattle') {
-        active = 'cattleGeneric';
-      } else if (commodityType === 'cocoa') {
-        active = 'cocoaGeneric';
-      }
+    if (!listName) {
+      reject('missingListName');
+      return;
+    } else if (checkListExists && selectedNewOrExisting === 'new') {
+      reject('listNameAlreadyExists');
+      return;
+    } else if (checkForPunctuation && selectedNewOrExisting === 'new') {
+      reject('invalidListName');
+      return;
     }
 
-    const customAttributeNames =
-      selectedList.custom_attribute_names.length > 0
-        ? selectedList.custom_attribute_names.split(',')
-        : [];
-    const genericFields = [];
-    templateData.forEach((template) => {
-      // Only specify custom attributes if the field name has been changed.
-      if (
-        template.template_datum_field_name_updated &&
-        template.template_datum_field_name_updated !== template.template_datum_field_name
-      ) {
-        customAttributeNames.push(template.template_datum_field_name_updated);
-      } else {
-        genericFields.push(template.template_datum_field_name);
+    const featProps = [];
+    let templateId;
+    const customAttributes = [];
+
+    if (addType === 'commodity') {
+      let active = activeTemplate;
+      if (active === 'investment') {
+        if (commodityType === 'palmOil') {
+          active = 'palmGeneric';
+        } else if (commodityType === 'soy') {
+          active = 'soyGeneric';
+        } else if (commodityType === 'cattle') {
+          active = 'cattleGeneric';
+        } else if (commodityType === 'cocoa') {
+          active = 'cocoaGeneric';
+        }
       }
-    });
 
-    customAttributeNames.forEach((customAtt) => {
-      customAttributes.push({
-        column_name: customAtt,
-        column_type: 'Text',
-      });
-    });
-
-    templateId = templateData ? templateData[0].template_id : -1;
-    locationData.forEach((feature) => {
-      const properties = {};
-      Object.keys(feature).forEach((prop) => {
+      const customAttributeNames =
+        selectedList.custom_attribute_names.length > 0
+          ? selectedList.custom_attribute_names.split(',')
+          : [];
+      const genericFields = [];
+      templateData.forEach((template) => {
+        // Only specify custom attributes if the field name has been changed.
         if (
-          prop !== 'checked' &&
-          prop !== 'valid' &&
-          prop !== 'Attribute1' &&
-          prop !== 'Attribute2' &&
-          prop !== 'Attribute3' &&
-          prop !== 'invalidFields' &&
-          prop !== 'type' &&
-          prop !== 'geometry'
+          template.template_datum_field_name_updated &&
+          template.template_datum_field_name_updated !== template.template_datum_field_name
         ) {
-          if (customAttributeNames.indexOf(prop) > -1) {
-            //it is a custom attribute
-            properties[prop] = feature[prop];
-          } else if (genericFields.indexOf(prop) > -1) {
-            //it is a normal, expected attribute of this template
+          customAttributeNames.push(template.template_datum_field_name_updated);
+        } else {
+          genericFields.push(template.template_datum_field_name);
+        }
+      });
+
+      customAttributeNames.forEach((customAtt) => {
+        customAttributes.push({
+          column_name: customAtt,
+          column_type: 'Text',
+        });
+      });
+
+      templateId = templateData ? templateData[0].template_id : -1;
+      locationData.forEach((feature) => {
+        const properties = {};
+        Object.keys(feature).forEach((prop) => {
+          if (
+            prop !== 'checked' &&
+            prop !== 'valid' &&
+            prop !== 'Attribute1' &&
+            prop !== 'Attribute2' &&
+            prop !== 'Attribute3' &&
+            prop !== 'invalidFields' &&
+            prop !== 'type' &&
+            prop !== 'geometry'
+          ) {
+            if (customAttributeNames.indexOf(prop) > -1) {
+              //it is a custom attribute
+              properties[prop] = feature[prop];
+            } else if (genericFields.indexOf(prop) > -1) {
+              //it is a normal, expected attribute of this template
+              properties[prop] = discernPropValue(feature, prop);
+            }
+          }
+        });
+
+        if (!properties['Start Date']) {
+          properties['Start Date'] = '';
+        }
+        if (!properties['End Date']) {
+          properties['End Date'] = '';
+        }
+
+        properties['Wind Barrier'] = '';
+        properties['Riparian Buffers'] = '';
+        properties['Buffer Zones'] = '';
+        properties.Latitude = feature.Latitude;
+        properties.Longitude = feature.Longitude;
+
+        if (!properties['Accuracy Rating of Location Entered']) {
+          properties['Accuracy Rating of Location Entered'] = "Don't Know";
+        }
+
+        featProps.push(properties);
+      });
+    } else {
+      templateId = templateData ? templateData[0].template_id : -1;
+
+      locationData.forEach((feature) => {
+        const properties = {};
+
+        Object.keys(feature).forEach((prop) => {
+          if (
+            prop !== 'checked' &&
+            prop !== 'valid' &&
+            prop !== 'invalidFields' &&
+            prop !== 'type' &&
+            prop !== 'geometry'
+          ) {
             properties[prop] = discernPropValue(feature, prop);
           }
+        });
+
+        if (!properties['Start Date']) {
+          properties['Start Date'] = '';
         }
+        if (!properties['End Date']) {
+          properties['End Date'] = '';
+        }
+
+        properties['Wind Barrier'] = '';
+        properties['Riparian Buffers'] = '';
+        properties['Buffer Zones'] = '';
+        properties.Latitude = feature.Latitude;
+        properties.Longitude = feature.Longitude;
+
+        if (!properties['Accuracy Rating of Location Entered']) {
+          properties['Accuracy Rating of Location Entered'] = "Don't Know";
+        }
+        if (!properties['Investment Name']) {
+          properties['Investment Name'] = feature['Location Name'];
+        }
+
+        featProps.push(properties);
       });
-
-      if (!properties['Start Date']) {
-        properties['Start Date'] = '';
-      }
-      if (!properties['End Date']) {
-        properties['End Date'] = '';
-      }
-
-      properties['Wind Barrier'] = '';
-      properties['Riparian Buffers'] = '';
-      properties['Buffer Zones'] = '';
-      properties.Latitude = feature.Latitude;
-      properties.Longitude = feature.Longitude;
-
-      if (!properties['Accuracy Rating of Location Entered']) {
-        properties['Accuracy Rating of Location Entered'] = "Don't Know";
-      }
-
-      featProps.push(properties);
-    });
-  } else {
-    templateId = templateData ? templateData[0].template_id : -1;
-
-    locationData.forEach((feature) => {
-      const properties = {};
-
-      Object.keys(feature).forEach((prop) => {
-        if (
-          prop !== 'checked' &&
-          prop !== 'valid' &&
-          prop !== 'invalidFields' &&
-          prop !== 'type' &&
-          prop !== 'geometry'
-        ) {
-          properties[prop] = discernPropValue(feature, prop);
-        }
-      });
-
-      if (!properties['Start Date']) {
-        properties['Start Date'] = '';
-      }
-      if (!properties['End Date']) {
-        properties['End Date'] = '';
-      }
-
-      properties['Wind Barrier'] = '';
-      properties['Riparian Buffers'] = '';
-      properties['Buffer Zones'] = '';
-      properties.Latitude = feature.Latitude;
-      properties.Longitude = feature.Longitude;
-
-      if (!properties['Accuracy Rating of Location Entered']) {
-        properties['Accuracy Rating of Location Entered'] = "Don't Know";
-      }
-      if (!properties['Investment Name']) {
-        properties['Investment Name'] = feature['Location Name'];
-      }
-
-      featProps.push(properties);
-    });
-  }
-
-  const serverResponses = Object.keys(locationsPage.lists.copyMoveMessages);
-  assembleGeojson(featProps, locationData, selectedList.id).then(
-    (geojson) => {
-      const request = new XMLHttpRequest();
-      request.onload = () => {
-        const responseText = request.responseText;
-        if (responseText.includes('isLocked')) {
-          deferred.resolve('listIsLocked');
-        } else if (serverResponses.find((r) => r === responseText)) {
-          deferred.resolve(responseText);
-        } else {
-          console.warn('geojson request returned unrecognized response', responseText);
-          deferred.reject('serverError');
-        }
-      };
-
-      request.onerror = (serverError) => {
-        console.error(serverError);
-        if (serverError === 'listNotAccessible') {
-          deferred.reject('listNotAccessible');
-        } else {
-          deferred.reject('serverError');
-        }
-      };
-
-      let bigObj;
-
-      geojson.features.forEach((feature) => {
-        delete feature.properties.list_id;
-        delete feature.properties.location_id;
-        delete feature.properties.flag_forma;
-        delete feature.properties.flag_general;
-        delete feature.properties.flag_glad;
-        delete feature.properties.flag_gran_chaco;
-        delete feature.properties.flag_terrai;
-        delete feature.properties.flag_viirs;
-      });
-
-      const { associated_gfwlist } = moveToList ? moveToList : selectedList;
-      const gfw_list_id =
-        associated_gfwlist === 'null' || !associated_gfwlist ? 0 : associated_gfwlist;
-      if (selectedNewOrExisting === 'new') {
-        request.open(
-          'POST',
-          isSaveAsDraft ? saveAsDraftListConfig.route : '/locations/addToNewListEdit',
-          true
-        );
-        const list_id = selectedList.id;
-        const list_table_name = selectedList.list_table_name;
-        const location_classification = selectedList.location_classification;
-        bigObj = {
-          list_id: list_id,
-          list_name: listName,
-          template_id: templateId,
-          geojson: geojson,
-          custom_attributes: customAttributes,
-          location_classification,
-          list_table_name: list_table_name,
-          gfw_list_id: gfw_list_id,
-          list_status_id: getListStatusId(isSaveAsDraft),
-        };
-      } else if (selectedMoveOrCopy === 'copy') {
-        request.open('POST', '/locations/copyLocations', true);
-
-        if (moveToList && moveToList.list_locations_count + geojson.features.length > 1500) {
-          deferred.reject('ListTooLarge');
-        }
-
-        const src_location_ids = locationData.map((v) => v.location_id);
-        bigObj = {
-          src_list_id: selectedList.id,
-          src_location_ids: src_location_ids,
-          dest_list_id: moveToList.id,
-          geojson: geojson,
-          gfw_list_id: gfw_list_id,
-          list_status_id: getListStatusId(isSaveAsDraft),
-        };
-      } else if (selectedNewOrExisting === 'existing') {
-        request.open('POST', '/locations/moveLocations', true);
-        if (moveToList.list_locations_count + geojson.features.length > 1500) {
-          deferred.reject('ListTooLarge');
-        }
-
-        const src_location_ids = locationData.map((v) => v.location_id);
-        const delete_src_list = selectedList.list_locations_count === selectedLocations.length;
-        bigObj = {
-          src_list_id: selectedList.id,
-          src_location_ids: src_location_ids,
-          dest_list_id: moveToList.id,
-          geojson: geojson,
-          gfw_list_id: gfw_list_id,
-          delete_src_list: delete_src_list,
-          list_status_id: getListStatusId(isSaveAsDraft),
-        };
-      } else {
-        console.warn('did not recognize condition for ', selectedMoveOrCopy, selectedNewOrExisting);
-      }
-
-      request.setRequestHeader('Content-Type', 'application/json');
-      request.send(JSON.stringify(bigObj));
-    },
-    (geojsonError) => {
-      console.warn('failed to assemble geojson:', geojsonError);
-      deferred.reject('serverError');
     }
-  );
 
-  return deferred;
+    const serverResponses = Object.keys(locationsPage.lists.copyMoveMessages);
+    assembleGeojson(featProps, locationData, selectedList.id).then(
+      (geojson) => {
+        const request = new XMLHttpRequest();
+        request.onload = () => {
+          const responseText = request.responseText;
+          if (responseText.includes('isLocked')) {
+            resolve('listIsLocked');
+          } else if (serverResponses.find((r) => r === responseText)) {
+            resolve(responseText);
+          } else {
+            console.warn('geojson request returned unrecognized response', responseText);
+            reject('serverError');
+          }
+        };
+
+        request.onerror = (serverError) => {
+          console.error(serverError);
+          if (serverError === 'listNotAccessible') {
+            reject('listNotAccessible');
+          } else {
+            reject('serverError');
+          }
+        };
+
+        let bigObj;
+
+        geojson.features.forEach((feature) => {
+          delete feature.properties.list_id;
+          delete feature.properties.location_id;
+          delete feature.properties.flag_forma;
+          delete feature.properties.flag_general;
+          delete feature.properties.flag_glad;
+          delete feature.properties.flag_gran_chaco;
+          delete feature.properties.flag_terrai;
+          delete feature.properties.flag_viirs;
+        });
+
+        const { associated_gfwlist } = moveToList ? moveToList : selectedList;
+        const gfw_list_id =
+          associated_gfwlist === 'null' || !associated_gfwlist ? 0 : associated_gfwlist;
+        if (selectedNewOrExisting === 'new') {
+          request.open(
+            'POST',
+            isSaveAsDraft ? saveAsDraftListConfig.route : '/locations/addToNewListEdit',
+            true
+          );
+          const list_id = selectedList.id;
+          const list_table_name = selectedList.list_table_name;
+          const location_classification = selectedList.location_classification;
+          bigObj = {
+            list_id: list_id,
+            list_name: listName,
+            template_id: templateId,
+            geojson: geojson,
+            custom_attributes: customAttributes,
+            location_classification,
+            list_table_name: list_table_name,
+            gfw_list_id: gfw_list_id,
+            list_status_id: getListStatusId(isSaveAsDraft),
+          };
+        } else if (selectedMoveOrCopy === 'copy') {
+          request.open('POST', '/locations/copyLocations', true);
+
+          if (moveToList && moveToList.list_locations_count + geojson.features.length > 1500) {
+            reject('ListTooLarge');
+          }
+
+          const src_location_ids = locationData.map((v) => v.location_id);
+          bigObj = {
+            src_list_id: selectedList.id,
+            src_location_ids: src_location_ids,
+            dest_list_id: moveToList.id,
+            geojson: geojson,
+            gfw_list_id: gfw_list_id,
+            list_status_id: getListStatusId(isSaveAsDraft),
+          };
+        } else if (selectedNewOrExisting === 'existing') {
+          request.open('POST', '/locations/moveLocations', true);
+          if (moveToList.list_locations_count + geojson.features.length > 1500) {
+            reject('ListTooLarge');
+          }
+
+          const src_location_ids = locationData.map((v) => v.location_id);
+          const delete_src_list = selectedList.list_locations_count === selectedLocations.length;
+          bigObj = {
+            src_list_id: selectedList.id,
+            src_location_ids: src_location_ids,
+            dest_list_id: moveToList.id,
+            geojson: geojson,
+            gfw_list_id: gfw_list_id,
+            delete_src_list: delete_src_list,
+            list_status_id: getListStatusId(isSaveAsDraft),
+          };
+        } else {
+          console.warn(
+            'did not recognize condition for ',
+            selectedMoveOrCopy,
+            selectedNewOrExisting
+          );
+        }
+
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(JSON.stringify(bigObj));
+      },
+      (geojsonError) => {
+        console.warn('failed to assemble geojson:', geojsonError);
+        reject('serverError');
+      }
+    );
+  });
 };
 
 module.exports = {

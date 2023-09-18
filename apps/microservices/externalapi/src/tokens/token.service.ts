@@ -61,7 +61,7 @@ export class TokenService {
       }
 
       // Catch-all
-      throw new InternalServerErrorException('An internal error has occurred.');
+      throw new InternalServerErrorException('An internal error has occurred.' + error.message);
     }
   }
 
@@ -116,7 +116,6 @@ export class TokenService {
       if (error.code === 'NotFoundException') {
         throw new NotFoundException(error.message);
       }
-
       throw new InternalServerErrorException(error.message);
     }
   }

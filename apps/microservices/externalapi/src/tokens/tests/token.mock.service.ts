@@ -80,7 +80,23 @@ export class TokenMockRepository {
         tokens: [],
       },
     },
+    {
+      awsId: 'TOTESTDELETE',
+      creatorUserId: 1,
+      organizationId: 999,
+      apiKey: 'T0D3L3T3',
+      apiGroup: 'FCD',
+      updateDateTime: new Date(),
+      user: {
+        id: 123,
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'test@test.com',
+        tokens: [],
+      },
+    },
   ];
+
   async find(options?: FindManyOptions<Token>) {
     const [{ where }] = Array.isArray(options) ? options : [options];
 
@@ -100,7 +116,11 @@ export class TokenMockRepository {
   async findOne(options?: FindManyOptions<Token>): Promise<Token | undefined> {
     const [{ where }] = Array.isArray(options) ? options : [options];
 
-    return this.data.find((token) => token.organizationId === where.organizationId);
+    return this.data.find(
+      (token) =>
+        token.organizationId === where.organizationId &&
+        (where.awsId ? token.awsId === where.awsId : true)
+    );
   }
 
   async save(token: Token): Promise<Token> {

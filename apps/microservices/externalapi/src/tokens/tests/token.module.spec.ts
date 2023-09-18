@@ -1,5 +1,5 @@
 import { Token } from './../token.entity';
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AppService } from '../../app/app.service';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
@@ -8,6 +8,9 @@ import { Organization } from '../organization.entity';
 import { TokenMockRepository } from './token.mock.service';
 import { ConfigModule } from '@nestjs/config';
 import { User } from '../user.entity';
+import sinon from 'sinon';
+import { NotFoundException } from '@nestjs/common';
+import { AWSError } from 'aws-sdk';
 
 const TEST_NEW_ORGANIZATION_ID = 10;
 const TEST_ORGANIZATION_ID = 9;
@@ -17,9 +20,11 @@ const TEST_MOCK_ORG = 777;
 jest.setTimeout(30000);
 describe('Test Token Module', () => {
   let tokenService: TokenService;
+  const sandbox = sinon.createSandbox();
+  let app: TestingModule;
 
   beforeAll(async () => {
-    const app = await Test.createTestingModule({
+    app = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
           name: 'default',
@@ -64,6 +69,102 @@ describe('Test Token Module', () => {
 
     //service = app.get<AppService>(AppService);
     tokenService = app.get<TokenService>(TokenService);
+
+    // Mock the AWS.APIGateway constructor
+    const apiGatewayInstance = {
+      createApiKey: sandbox.stub().returns({
+        promise: sandbox.stub().resolves({
+          /* Mock response for createApiKey */
+        }),
+      }),
+      createUsagePlanKey: sandbox.stub().returns({
+        promise: sandbox.stub().resolves({
+          /* Mock response for createUsagePlanKey */
+        }),
+      }),
+      // You can add other methods and their responses as needed
+    };
+
+    // Redefine AWS.APIGateway.prototype to return the instance with the stubbed methods
+    Object.defineProperty(AWS.APIGateway.prototype, 'createApiKey', {
+      value: apiGatewayInstance.createApiKey,
+    });
+
+    Object.defineProperty(AWS.APIGateway.prototype, 'createUsagePlanKey', {
+      value: apiGatewayInstance.createUsagePlanKey,
+    });
+
+    //sandbox.stub(AWS, 'APIGateway').returns(new AWS.APIGateway());
+    const dummyGateway = new AWS.APIGateway();
+    sandbox.stub(dummyGateway.constructor.prototype, 'createApiKey').returns({
+      promise: () => {
+        return {
+          id: 'd3grev7wa4',
+          value: 'HkIXacIxu73fo9T3EfRaP9OnUryUCLOV8WO87oIL',
+          name: 'externalapi',
+          enabled: true,
+          createdDate: new Date(),
+          lastUpdatedDate: new Date(),
+          stageKeys: [],
+        };
+      },
+    });
+
+    sandbox.stub(dummyGateway.constructor.prototype, 'createUsagePlanKey').returns({
+      promise: () => {
+        return {
+          /**
+           * The Id of a usage plan key.
+           */
+          id: 'string',
+          /**
+           * The type of a usage plan key. Currently, the valid key type is API_KEY.
+           */
+          type: 'API_KEY',
+          /**
+           * The value of a usage plan key.
+           */
+          value: 'string',
+          /**
+           * The name of a usage plan key.
+           */
+          name: 'string',
+        };
+      },
+    });
+
+    const stub = sandbox.stub(dummyGateway.constructor.prototype, 'deleteApiKey');
+
+    stub.withArgs({ apiKey: 'd3grev7wa4' }).returns({
+      promise: () => {
+        return {};
+      },
+    });
+
+    stub.withArgs({ apiKey: '123' }).returns({
+      promise: () => {
+        return Promise.reject('Error deleting token');
+      },
+    });
+
+    stub.withArgs({ apiKey: 'TOTESTDELETE' }).returns({
+      promise: () => {
+        const awsError: AWSError = {
+          code: 'NotFoundException',
+          message: 'Key not found.',
+          retryable: false,
+          statusCode: 404,
+          time: new Date(),
+          hostname: 'localhost',
+          region: 'us-east-1',
+          requestId: '123',
+          extendedRequestId: '123',
+          cfId: '123',
+          name: 'NotFoundException',
+        };
+        return Promise.reject(awsError);
+      },
+    });
   });
 
   describe('Test token creation for premium organzation', () => {
@@ -96,10 +197,21 @@ describe('Test Token Module', () => {
       expect(result).toBe(true);
     });
 
-    it('Should trigger an error when token does not exists', async () => {
+    it('Should trigger an error when token does not exists in database', async () => {
       expect(async () => {
         await tokenService.deleteToken(TEST_MOCK_ORG, '123');
-      }).rejects.toThrowError();
+      }).rejects.toThrow(NotFoundException);
     });
+
+    it('Should trigger an error when token does not exists in database', async () => {
+      expect(async () => {
+        await tokenService.deleteToken(TEST_INVALID_ORGANIZATION_ID, 'TOTESTDELETE');
+      }).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  afterAll(async () => {
+    sandbox.restore();
+    await app.close();
   });
 });

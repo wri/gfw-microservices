@@ -362,7 +362,8 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
           {featureFlags.isEudrAvailable && (
             <AnalysisTypesSelector
               selectedAnalyses={selectedAnalysis}
-              setSelectedAnalyses={setSelectedAnalysis} />
+              setSelectedAnalyses={setSelectedAnalysis}
+            />
           )}
           {/* Temporary removed: GPV-1233
           <hr className="section-divisor" />

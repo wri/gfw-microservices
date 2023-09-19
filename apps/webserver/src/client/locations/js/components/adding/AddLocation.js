@@ -1877,7 +1877,7 @@ export default class AddLocation extends Component {
       measurementUnit,
       selectedLocationClassification,
       isLoading,
-      selectedAnalysis
+      selectedAnalysis,
     } = this.state;
     const { view, addMethod, addType, locationType, activeTemplate, userLists, templateDropdowns } =
       this.props;
@@ -2281,9 +2281,10 @@ export default class AddLocation extends Component {
           <AddLocationCard>
             <h2 className="add-location-card__title">Analysis</h2>
 
-            <AnalysisTypesSelector 
+            <AnalysisTypesSelector
               selectedAnalyses={this.selectedAnalysis}
-              setSelectedAnalyses={this.handleAnalyzesSelection} />
+              setSelectedAnalyses={this.handleAnalyzesSelection}
+            />
           </AddLocationCard>
         )}
         <SaveAsDraftNote />

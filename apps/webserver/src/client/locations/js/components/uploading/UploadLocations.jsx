@@ -57,7 +57,6 @@ import {
   saveListConfig,
 } from '../../../../../config/config/locations.config';
 import { defaultCustomAttributeHeaders } from '../edit/table/MultiGridTable.config';
-import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 // Style
 import '../../../css/locations.scss';
 
@@ -89,6 +88,7 @@ class UploadLocations extends Component {
       canGoNext: true,
       isUploading: false,
       isSaving: false,
+      selectedAnalyses: []
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
@@ -466,8 +466,10 @@ class UploadLocations extends Component {
       commodityType,
       customAttributeHeaders,
       uploadingData,
+      selectedAnalyses,
     } = this.state;
     const { activeTemplate, userLists, templateData } = this.props;
+
     this.setState(
       {
         isSaving: true,
@@ -865,7 +867,7 @@ class UploadLocations extends Component {
                   location_classification:
                     locationClassifications.length === 0 ? '' : locationClassifications[0],
                   list_status_id: getListStatusId(isSaveAsDraft),
-                  analysisIds: Object.values(analysisTypes),
+                  analysisIds: selectedAnalyses,
                 };
                 if (isSaveAsDraft) {
                   gtag('event', 'Upload List', {
@@ -1307,6 +1309,7 @@ class UploadLocations extends Component {
       step,
       customAttributeHeaders,
       showError,
+      selectedAnalyses,
     } = this.state;
 
     const dialogContent =
@@ -1445,6 +1448,8 @@ class UploadLocations extends Component {
                   commodityType={commodityType}
                   otherCommodityType={otherCommodityType}
                   orgLists={orgLists}
+                  setSelectedAnalyses={(selection) => { this.setState({ selectedAnalyses: selection}) }}
+                  selectedAnalyses={selectedAnalyses}
                 />
               </Route>
             </Switch>
@@ -1489,8 +1494,7 @@ class UploadLocations extends Component {
                     <Button
                       className={`locations-multiupload-footer__primary ${
                         step === 4 ? '' : 'hidden'
-                      }
-                    }`}
+                      }`}
                       variant="primary"
                       onClick={isSaving ? null : this.saveLocations}
                       disabled={!canGoNext}

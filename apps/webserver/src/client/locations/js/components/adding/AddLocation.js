@@ -2282,7 +2282,7 @@ export default class AddLocation extends Component {
             <h2 className="add-location-card__title">Analysis</h2>
 
             <AnalysisTypesSelector
-              selectedAnalyses={this.selectedAnalysis}
+              selectedAnalyses={selectedAnalysis}
               setSelectedAnalyses={this.handleAnalyzesSelection}
             />
           </AddLocationCard>

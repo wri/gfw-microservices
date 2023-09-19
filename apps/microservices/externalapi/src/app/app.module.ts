@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Token } from '../tokens/token.entity';
 import { Organization } from '../tokens/organization.entity';
 import { ConfigModule } from '@nestjs/config';
+import { User } from '../tokens/user.entity';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { ConfigModule } from '@nestjs/config';
       database: 'db.sqlite',
       synchronize: true,
       logging: true,
-      entities: [Token],
+      entities: [Token, User],
     }),
     TokenModule,
   ],

@@ -1,28 +1,27 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from './user.entity';
 
-@Entity()
+@Entity({ name: 'ExternalApiKey' })
 export class Token {
   @PrimaryColumn()
-  id: string;
+  awsId: string;
 
   @Column()
   organizationId: number;
 
   @Column()
-  userId: number;
+  creatorUserId: number;
 
   @Column()
-  name: string;
+  apiKey: string;
 
   @Column()
-  tokenValue: string;
-
-  @Column()
-  createdAt: Date;
+  apiGroup: string;
 
   @Column({ nullable: true })
-  updatedAt?: Date;
+  updateDateTime: Date;
 
-  @Column({ nullable: true })
-  deletedAt?: Date;
+  @ManyToOne(() => User, (user) => user.tokens, { eager: true })
+  @JoinColumn({ name: 'creatorUserId', referencedColumnName: 'id' }) // Specify the foreign key column
+  user: User;
 }

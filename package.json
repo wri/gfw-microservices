@@ -215,6 +215,7 @@
     "react-test-renderer": "16.14.0",
     "sass": "1.66.1",
     "sass-loader": "13.3.2",
+    "sinon": "^16.0.0",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",

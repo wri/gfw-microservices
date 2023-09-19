@@ -21,7 +21,6 @@ async function bootstrap() {
   // To prevent issues in the future, I want to add a test to ensure that the necessary variables are set in the environment and are not null or undefined.
   // This is a good practice to follow in general, but it is especially important when working with microservices.
   // If you forget to set an environment variable, you will not get an error until you try to use it. This can be very frustrating to debug, so it is best to catch these issues early.
-  console.log(process.env);
 }
 
 bootstrap();

@@ -128,12 +128,18 @@ export default class StepFour extends Component {
     }
 
     const dropdownOptionsInvestmentCommodity = buildDropdownOptions(validLists, 'list_name');
+
+    const { _selectedAnalysis, _selectedExistingList, createNewList, _newListName } = this.state;
+
     return (
       <div className={'locations-upload-step'}>
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
 
         {featureFlags.isEudrAvailable && (
-          <AnalysisTypesSelector handleAnalyzesSelection={this.handleAnalyzesSelection} />
+          <AnalysisTypesSelector
+            selectedAnalyses={_selectedAnalysis}
+            setSelectedAnalyses={this.handleAnalyzesSelection}
+          />
         )}
 
         <fieldset className="locations-upload-save">
@@ -144,11 +150,11 @@ export default class StepFour extends Component {
               type="radio"
               name="addToNewOrExistingList"
               id="addToExistingList"
-              checked={!this.state.createNewList}
+              checked={!createNewList}
               onChange={(evt) => {
                 if (evt.target.checked) {
                   this.setState({ createNewList: false });
-                  this.props.updateSelected(this.state._selectedExistingList);
+                  this.props.updateSelected(_selectedExistingList);
                 }
               }}
             />
@@ -174,7 +180,7 @@ export default class StepFour extends Component {
               type="radio"
               name="addToNewOrExistingList"
               id="addToNewList"
-              checked={this.state.createNewList}
+              checked={createNewList}
               onChange={(evt) => {
                 if (evt.target.checked) {
                   this.setState({ createNewList: true });
@@ -184,7 +190,7 @@ export default class StepFour extends Component {
                   // is triggered by the dropdown's onChange event, so we mimic that when we
                   // call it manually.
                   this.props.updateSelected({ value: '' });
-                  this.props.updateCustomList(this.state._newListName);
+                  this.props.updateCustomList(_newListName);
                 }
               }}
             />
@@ -192,7 +198,7 @@ export default class StepFour extends Component {
               {locationsPage.upload.createNew}
             </label>
 
-            {this.state.createNewList && (
+            {createNewList && (
               <div className="locations-upload-save__optl-input">
                 <input
                   value={this.props.customList}

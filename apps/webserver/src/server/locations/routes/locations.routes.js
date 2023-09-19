@@ -142,7 +142,6 @@ module.exports = (app, limiter) => {
       original_gfw_list,
       analysisIds,
     } = req.body;
-
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
     const custom_attributes = req.body.custom_attributes ? req.body.custom_attributes : [];
 

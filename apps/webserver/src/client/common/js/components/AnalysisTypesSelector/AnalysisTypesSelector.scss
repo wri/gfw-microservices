@@ -1,0 +1,7 @@
+@import '../../../css/colorsGFW.scss';
+
+.analysis-types-selector {
+  .MuiCheckbox-colorPrimary.Mui-checked {
+    color: $gfw-green !important;
+  }
+}

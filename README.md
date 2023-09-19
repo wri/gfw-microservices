@@ -277,3 +277,5 @@ Run nx g @nrwl/nest:lib my-lib to generate a library.
 #### Development server
 
 Run `nx serve my-app` for a dev server. Navigate to http://localhost:3333/. The app will automatically reload if you change any of the source files.
+
+#### Test

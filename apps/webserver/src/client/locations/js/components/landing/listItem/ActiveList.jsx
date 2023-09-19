@@ -62,8 +62,6 @@ function ActiveList({
     AnalysisID,
   } = list;
 
-  console.log(Object.keys(AnalysisID));
-
   const isLargeList = !!large_list_id;
   const hasErrorFile = !!error_file_storage_path;
   const showDiagnosticOpt = !is_shared && locations > 0;

@@ -124,7 +124,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
       uploadFileToS3,
       largeListFile,
       isExistingList,
-      Object.values(analysisTypes)
+      selectedAnalysis
     )
       .then(() => {
         setDialogTitle('Locations Added');

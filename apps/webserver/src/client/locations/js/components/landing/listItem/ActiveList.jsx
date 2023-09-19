@@ -113,11 +113,13 @@ function ActiveList({
 
   return (
     <>
-      <ChangeTypeOfAnalysisModal
-        listId={id}
-        setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
-        isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
-      />
+      {isEudrAvailable && (
+        <ChangeTypeOfAnalysisModal
+          listId={id}
+          setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
+          isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
+        />
+      )}
       <li
         className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
         onClick={clickLocationRow}

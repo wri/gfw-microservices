@@ -17,7 +17,7 @@ function ChangeTypeOfAnalysisModal({
 
   useEffect(() => {
     if (listId) {
-      fetch(`/api/list/5619/selectedAnalyses`, {
+      fetch(`/api/list/${listId}/selectedAnalyses`, {
         method: 'GET',
         credentials: 'same-origin',
         headers: {
@@ -40,16 +40,6 @@ function ChangeTypeOfAnalysisModal({
       setIsLoading(false);
     }
   }, []);
-
-  const handleAnalyzesSelection = (type) => {
-    let selection;
-    if (selectedAnalysis.includes(type)) {
-      selection = selectedAnalysis.filter((selectedType) => selectedType !== type);
-    } else {
-      selection = [...selectedAnalysis, type];
-    }
-    setSelectedAnalysis(selection);
-  };
 
   const updateSelectedAnalysis = () => {
     fetch(`/api/list/${listId.toString()}/selectedAnalyses`, {
@@ -75,8 +65,8 @@ function ChangeTypeOfAnalysisModal({
         <CardContent>
           {!isLoading && (
             <AnalysisTypesSelector
-              selectedAnalysis={selectedAnalysis}
-              handleAnalyzesSelection={handleAnalyzesSelection}
+              selectedAnalyses={selectedAnalysis}
+              setSelectedAnalyses={setSelectedAnalysis}
             />
           )}
           <br />

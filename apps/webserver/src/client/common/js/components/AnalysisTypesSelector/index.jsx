@@ -6,7 +6,17 @@ import { locationsPage } from '../../config';
 import { analysisTypesOptions } from '../../../../../config/env/analysisTypes.constants';
 import './AnalysisTypesSelector.scss';
 
-function AnalysisTypesSelector({ selectedAnalysis, handleAnalyzesSelection }) {
+function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
+  const handleAnalyzesSelection = (selectedAnalysisId) => {
+    let selection;
+    if (selectedAnalyses.includes(selectedAnalysisId)) {
+      selection = selectedAnalyses.filter((selectedType) => selectedType !== selectedAnalysisId);
+    } else {
+      selection = [...selectedAnalyses, selectedAnalysisId];
+    }
+    setSelectedAnalyses(selection);
+  };
+
   return (
     <FormGroup className="analysis-types-selector">
       <legend>{locationsPage.upload.analysis}</legend>
@@ -16,7 +26,7 @@ function AnalysisTypesSelector({ selectedAnalysis, handleAnalyzesSelection }) {
           <FormControlLabel
             control={
               <Checkbox
-                checked={selectedAnalysis?.includes(id)}
+                checked={selectedAnalyses.includes(id)}
                 onChange={() => handleAnalyzesSelection(id)}
               />
             }

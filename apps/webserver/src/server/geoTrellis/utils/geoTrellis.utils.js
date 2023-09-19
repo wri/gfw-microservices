@@ -12,13 +12,16 @@ const {
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } = require('../config/geoTrellis.config');
 
-const { getAccountListProccesingLimit } = require(path.resolve(
+const { getAccountListProccesingLimit, getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
 ));
 
 const { getOrganizationActivatedTime } = require(path.resolve(
   './config/publicutils/accountManager.utils'
 ));
+
+const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extractAnalysisTypes'));
 
 /**
  * Submitting Analyze List request to step function for list to be processed by GeoTrellis
@@ -51,12 +54,16 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
     OrganizationActivatedTime,
   });
 
+  const listAnalysisStatusData = await getListAnalysisStatusByListId(req, listID);
+  const analysisTypes = extractAnalysisTypes(listAnalysisStatusData, listStatus.Active);
+
   const data = {
     list_id: listID,
     user_id: organization_user_id,
     organization_id: parseInt(organization_id),
     reanalyze,
     processing_limit: processingLimit,
+    analysis_types: analysisTypes,
   };
 
   return await axios({

@@ -1,6 +1,7 @@
 import {
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
@@ -49,6 +50,7 @@ export class TokenService {
 
       return apiKey;
     } catch (error) {
+      Logger.error(error);
       if (error.code === 'UnrecognizedClientException') {
         throw new InternalServerErrorException('Error with AWS credentials.');
       }
@@ -113,6 +115,7 @@ export class TokenService {
       await this.apiGateway.deleteApiKey(apiGatewayDeleteParams).promise();
       return true;
     } catch (error) {
+      Logger.error(error);
       if (error.code === 'NotFoundException') {
         throw new NotFoundException(error.message);
       }

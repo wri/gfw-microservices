@@ -42,7 +42,7 @@ function ChangeTypeOfAnalysisModal({
   }, []);
 
   const updateSelectedAnalysis = () => {
-    fetch(`/api/list/${listId.toString()}/selectedAnalyses`, {
+    fetch(`/api/list/${listId}/selectedAnalyses`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },

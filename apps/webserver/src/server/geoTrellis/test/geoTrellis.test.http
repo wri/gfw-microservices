@@ -1,0 +1,10 @@
+### Request a list to run analysis
+POST https://localhost:8443/geoTrellisAnalyzeList
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "list": {
+    "id": 5498
+  }
+}

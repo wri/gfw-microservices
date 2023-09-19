@@ -9,6 +9,9 @@ const { getAnalysisLimits } = require(path.resolve('./queries/system/getAnalysis
 const { getAllListsAnalysisStatus: getAllListsAnalysisStatusQuery } = require(path.resolve(
   './queries/organization/getAllListsAnalysisStatus'
 ));
+const { getListAnalysisStatusById } = require(path.resolve(
+  './queries/organization/getListAnalysisStatusById'
+));
 const { calculateProcessingLimit } = require(path.resolve('./config/privateutils/limits.utils'));
 
 const getOrganizationAnalysisUsage = async ({
@@ -86,10 +89,21 @@ const getAllListsAnalysisStatus = async (req) => {
   return response;
 };
 
+const getListAnalysisStatusByListId = async (req, listId) => {
+  const params = [{ field: 'ListID', type: sql.Int, value: listId }];
+  const [response] = await sqlUtils.executeOrganizationQuery(
+    req,
+    getListAnalysisStatusById,
+    params
+  );
+  return response;
+};
+
 module.exports = {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
   getAccountLimits,
   getAllListsAnalysisStatus,
   getAccountListProccesingLimit,
+  getListAnalysisStatusByListId,
 };

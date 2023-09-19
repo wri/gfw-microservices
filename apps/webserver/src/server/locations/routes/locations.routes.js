@@ -32,10 +32,10 @@ const { listStatus } = require(path.resolve('./config/env/listStatuses.constants
 const { getOrganizationActivatedTime } = require(path.resolve(
   './config/publicutils/accountManager.utils'
 ));
-const { getAccountListProccesingLimit } = require(path.resolve(
+const { getAccountListProccesingLimit, getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
 ));
-
+const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extractAnalysisTypes'));
 /**
  * @name exports
  * @static
@@ -1225,12 +1225,17 @@ module.exports = (app, limiter) => {
     getOrganizationActivatedTime(organization_id)
       .then(({ OrganizationActivatedTime }) => {
         // calculate list processing limit
-        return getAccountListProccesingLimit({
-          ...req.session,
-          OrganizationActivatedTime,
-        });
+        return Promise.all([
+          getAccountListProccesingLimit({
+            ...req.session,
+            OrganizationActivatedTime,
+          }),
+          getListAnalysisStatusByListId(req, list_id),
+        ]);
       })
-      .then((processingLimit) => {
+      .then(([processingLimit, listAnalysisStatusData]) => {
+        const analysisTypes = extractAnalysisTypes(listAnalysisStatusData, listStatus.Active);
+
         axios
           .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
             organization_id,
@@ -1240,6 +1245,7 @@ module.exports = (app, limiter) => {
             user_id: organization_user_id,
             startAnalysis,
             processing_limit: processingLimit,
+            analysis_types: analysisTypes,
           })
           .then((response) => {
             console.log(response.data);

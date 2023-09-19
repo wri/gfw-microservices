@@ -4,7 +4,7 @@ import useHookWithRefCallback from '../../ForestChangeDiagnostics/OtbnCharts/Otb
 import { afiDiagnosticsChartsColors } from '../afiDiagnosticsChartsColors.constants';
 
 function AfiDiagnosticsChart({ data }) {
-  const formattedData = data.map(({ id, category, coverage }) => ({
+  const formattedData = data?.map(({ id, category, coverage }) => ({
     name: category,
     y: coverage,
     color: afiDiagnosticsChartsColors[id],

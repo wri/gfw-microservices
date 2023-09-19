@@ -7,10 +7,7 @@ const AnalysisManager = require('../../../config/publicutils/analysisManager.uti
 const logger = require('../../../config/lib/winston');
 
 const { getListDataFiltered } = require('../utils/listData.utils');
-const {
-  getListAnalysisStatusById,
-  createOrUpdateListAnalysis,
-} = require('../service/listData.service');
+const { getListAnalysisStatusById, setSelectedAnalyses } = require('../service/listData.service');
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
 const { analysisTypes } = require(path.resolve('./config/env/analysisTypes.constants'));
 /**
@@ -132,7 +129,7 @@ exports.listDataCustom = async (req, res) => {
  * @param {Object} res - Express response
  * @return {Promise} - request Promise
  */
-exports.listAnalysis = async (req, res) => {
+exports.getSelectedAnalyses = async (req, res) => {
   const { listId } = req.params;
   try {
     await listUtils.getListNameSchema(req, listId);
@@ -144,7 +141,7 @@ exports.listAnalysis = async (req, res) => {
   }
 };
 
-exports.createOrUpdateListAnalysis = async (req, res) => {
+exports.setSelectedAnalyses = async (req, res) => {
   const { listId } = req.params;
 
   const { analysisIds } = req.body;
@@ -160,12 +157,12 @@ exports.createOrUpdateListAnalysis = async (req, res) => {
   try {
     await listUtils.getListNameSchema(req, listId);
 
-    await createOrUpdateListAnalysis(req, listId, analysisIds);
+    await setSelectedAnalyses(req, listId, analysisIds);
     return res.status(201).json({
-      message: 'List analysis created successfully',
+      message: 'List analysis selection created successfully',
     });
   } catch (err) {
-    logger.error(`Create list analysis failed: Error message ${err}`);
+    logger.error(`List analysis selection error: ${err}`);
     return res.status(400).json({ message: 'create list analysis failed' });
   }
 };

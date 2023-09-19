@@ -33,7 +33,7 @@ module.exports = (app, limiter) => {
 
   app.use('/api/list', [...routeMiddlewares, listRoutes]);
 
-  listRoutes.get('/:listId/analysis', controller.listAnalysis);
+  listRoutes.get('/:listId/selectedAnalyses', controller.getSelectedAnalyses);
 
-  listRoutes.post('/:listId/analysis', controller.createOrUpdateListAnalysis);
+  listRoutes.post('/:listId/selectedAnalyses', controller.setSelectedAnalyses);
 };

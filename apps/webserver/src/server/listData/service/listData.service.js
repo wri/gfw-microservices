@@ -24,7 +24,7 @@ const getListAnalysisStatusById = async (req, listId) => {
   return response;
 };
 
-const createOrUpdateListAnalysis = async (req, listId, analysisData) => {
+const setSelectedAnalyses = async (req, listId, analysisData) => {
   const response = await getListAnalysisStatusById(req, listId);
 
   if (response === undefined || response === null || response.length === 0) {
@@ -83,4 +83,4 @@ const updateListAnalysis = async (req, listId, analysisData, currentAnalysis) =>
   }
 };
 
-export { createOrUpdateListAnalysis, getListAnalysisStatusById };
+export { setSelectedAnalyses, getListAnalysisStatusById };

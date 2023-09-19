@@ -63,7 +63,6 @@ export default class StepFour extends Component {
       // Internal-only values to repopulate interface when toggling between options.
       _newListName: locationClassification,
       _selectedExistingList: { name: '', value: '' },
-      _selectedAnalysis: [],
     };
   }
 
@@ -79,10 +78,6 @@ export default class StepFour extends Component {
   checkExistingList(locationClassification) {
     return this.props.orgLists.some((list) => list.list_name === locationClassification);
   }
-
-  handleAnalyzesSelection = (selectedAnalysis) => {
-    this.setState({ _selectedAnalysis: selectedAnalysis });
-  };
 
   getActive = () => {
     const template_name = deduceActiveName(this.props.activeTemplate);
@@ -128,8 +123,8 @@ export default class StepFour extends Component {
     }
 
     const dropdownOptionsInvestmentCommodity = buildDropdownOptions(validLists, 'list_name');
-
-    const { _selectedAnalysis, _selectedExistingList, createNewList, _newListName } = this.state;
+    const { selectedAnalyses, setSelectedAnalyses } = this.props;
+    const { _selectedExistingList, createNewList, _newListName } = this.state;
 
     return (
       <div className={'locations-upload-step'}>
@@ -137,8 +132,8 @@ export default class StepFour extends Component {
 
         {featureFlags.isEudrAvailable && (
           <AnalysisTypesSelector
-            selectedAnalyses={_selectedAnalysis}
-            setSelectedAnalyses={this.handleAnalyzesSelection}
+            selectedAnalyses={selectedAnalyses}
+            setSelectedAnalyses={setSelectedAnalyses}
           />
         )}
 

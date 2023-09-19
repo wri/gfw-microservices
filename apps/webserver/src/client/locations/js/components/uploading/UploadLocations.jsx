@@ -88,7 +88,7 @@ class UploadLocations extends Component {
       canGoNext: true,
       isUploading: false,
       isSaving: false,
-      selectedAnalyses: []
+      selectedAnalyses: [],
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
@@ -1448,7 +1448,9 @@ class UploadLocations extends Component {
                   commodityType={commodityType}
                   otherCommodityType={otherCommodityType}
                   orgLists={orgLists}
-                  setSelectedAnalyses={(selection) => { this.setState({ selectedAnalyses: selection}) }}
+                  setSelectedAnalyses={(selection) => {
+                    this.setState({ selectedAnalyses: selection });
+                  }}
                   selectedAnalyses={selectedAnalyses}
                 />
               </Route>

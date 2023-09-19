@@ -12,7 +12,6 @@ export class ApiKeyGuard extends AuthGuard('header') {
 
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    console.log(request.headers);
     const token = request.headers[TOKEN_HEADER_NAME];
 
     if (!token) {

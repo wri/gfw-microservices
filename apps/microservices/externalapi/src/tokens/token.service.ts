@@ -1,11 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Token } from './token.entity';
-import { Organization } from './organization.entity';
 import { APIGateway } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
-
+import { ViewApiKeyResponse, transformApiKey, transformApiKeys } from './transformers';
+import { User } from './user.entity';
+const DEFAULT_API_GROUP = 'FCD';
+const DEFAULT_KEY_TYPE = 'API_KEY';
 @Injectable()
 export class TokenService {
   private readonly apiGateway: APIGateway;
@@ -13,83 +21,105 @@ export class TokenService {
   constructor(
     @InjectRepository(Token, 'client')
     private tokenRepository: Repository<Token>,
-
-    @InjectRepository(Organization, 'default')
-    private organizationRepository: Repository<Organization>,
-
+    @InjectRepository(User, 'client')
+    private userRepository: Repository<User>,
     private readonly configService: ConfigService
   ) {
-    this.apiGateway = new APIGateway({ region: 'us-east-1' });
+    this.apiGateway = new APIGateway({
+      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      region: this.configService.get('AWS_REGION'),
+    });
   }
 
-  async generateGatewayAPIToken(tokenName: string) {
-    const params: APIGateway.CreateApiKeyRequest = {
-      name: tokenName,
-      enabled: true,
-    };
+  async generateAWSGatewayAPIToken(tokenName: string) {
+    try {
+      const params: APIGateway.CreateApiKeyRequest = {
+        name: tokenName,
+        enabled: true,
+      };
 
-    const apiKey = await this.apiGateway.createApiKey(params).promise();
+      const apiKey = await this.apiGateway.createApiKey(params).promise();
+      const usagePlanParams: APIGateway.CreateUsagePlanKeyRequest = {
+        keyId: apiKey.id,
+        usagePlanId: this.configService.get('AWS_API_USAGE_PLAN_ID'),
+        keyType: DEFAULT_KEY_TYPE,
+      };
 
-    const usagePlanParams: APIGateway.CreateUsagePlanKeyRequest = {
-      keyId: apiKey.id,
-      usagePlanId: '3q5uj0',
-      keyType: 'API_KEY',
-    };
+      await this.apiGateway.createUsagePlanKey(usagePlanParams).promise();
 
-    await this.apiGateway.createUsagePlanKey(usagePlanParams).promise();
+      return apiKey;
+    } catch (error) {
+      Logger.error(error);
+      if (error.code === 'UnrecognizedClientException') {
+        throw new InternalServerErrorException('Error with AWS credentials.');
+      }
+      if (error.code === 'ServiceUnavailable') {
+        throw new ServiceUnavailableException('AWS service is currently unavailable.');
+      }
 
-    return apiKey;
+      if (error.code === 'NotFoundException') {
+        throw new NotFoundException(error.message);
+      }
+
+      // Catch-all
+      throw new InternalServerErrorException('An internal error has occurred.' + error.message);
+    }
   }
 
-  async createToken(organizationId: number, userId: number): Promise<Token> {
-    // compose token name
+  async createToken(organizationId: number, userId: number): Promise<ViewApiKeyResponse> {
     const actualDate = new Date();
     const formatDate = `${actualDate.getFullYear()}-${actualDate.getMonth()}-${actualDate.getDay()}`;
     const tokenName = `APITOKEN-${this.configService.get(
       'NODE_ENV'
     )}-ORG${organizationId}-${formatDate}`;
 
-    const awsToken = await this.generateGatewayAPIToken(tokenName);
+    const awsToken = await this.generateAWSGatewayAPIToken(tokenName);
+
+    const user = await this.userRepository.findOne({ where: { id: userId } });
 
     const token = new Token();
-    token.id = awsToken.id;
-    token.userId = userId;
-    token.name = tokenName;
+    token.awsId = awsToken.id;
+    token.creatorUserId = userId;
     token.organizationId = organizationId;
-    token.createdAt = new Date();
-    token.tokenValue = this.generateAPIToken();
+    token.updateDateTime = new Date();
+    token.apiKey = awsToken.value;
+    token.apiGroup = DEFAULT_API_GROUP;
+    token.user = user;
 
-    return await this.tokenRepository.save(token);
+    try {
+      const newToken = await this.tokenRepository.save(token);
+      return transformApiKey(newToken);
+    } catch (error) {
+      throw new InternalServerErrorException(`Failed to store token in database. ${error.message}`);
+    }
+  }
+  async findTokenByOrganizationId(
+    organizationId: number
+  ): Promise<ViewApiKeyResponse[] | undefined> {
+    const tokens = await this.tokenRepository.find({ where: { organizationId } });
+    return transformApiKeys(tokens);
   }
 
-  async findTokenByUserId(userId: number): Promise<Token | undefined> {
-    return this.tokenRepository.findOne({ where: { userId } });
+  async deleteToken(organizationId: number, tokenId: string): Promise<boolean> {
+    const token = await this.tokenRepository.findOne({ where: { organizationId, awsId: tokenId } });
+    if (!token) {
+      throw new NotFoundException('Token not found.');
+    }
+
+    try {
+      await this.tokenRepository.delete(token.awsId);
+      const apiGatewayDeleteParams: APIGateway.DeleteApiKeyRequest = {
+        apiKey: tokenId,
+      };
+      await this.apiGateway.deleteApiKey(apiGatewayDeleteParams).promise();
+      return true;
+    } catch (error) {
+      Logger.error(error);
+      if (error.code === 'NotFoundException') {
+        throw new NotFoundException(error.message);
+      }
+      throw new InternalServerErrorException(error.message);
+    }
   }
-
-  async getOrgs(): Promise<Organization[]> {
-    return await this.organizationRepository.find({});
-  }
-
-  generateAPIToken(): string {
-    // Generate a random API token with the desired length
-    const tokenLength = 50;
-    return this.generateString(tokenLength);
-  }
-
-  getChar = (a) => String.fromCharCode(a);
-
-  randomNumber = (x) => Math.floor(Math.random() * x);
-
-  getRandomElement = (xs) => xs.at(this.randomNumber(xs.length));
-
-  charsRange = (x) => (y) => x > y ? [] : [x, ...this.charsRange(x + 1)(y)];
-
-  randomString = (chars) => (len) =>
-    len <= 0 ? '' : this.getChar(this.getRandomElement(chars)) + this.randomString(chars)(len - 1);
-
-  generateString = this.randomString([
-    ...this.charsRange(48)(57), // include 0-9
-    ...this.charsRange(65)(90), // include A-Z
-    ...this.charsRange(97)(122), // include a-z
-  ]);
 }

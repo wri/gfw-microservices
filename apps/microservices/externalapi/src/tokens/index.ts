@@ -9,10 +9,20 @@ import { AuthService } from './auth.service';
 import { TokenController } from './token.controller';
 import { Organization } from './organization.entity';
 import { ConfigModule } from '@nestjs/config';
+import { User } from './user.entity';
+import * as AWS from 'aws-sdk';
+const awsConfig = {
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+};
+
+AWS.config.update(awsConfig);
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Organization], 'default'),
-    TypeOrmModule.forFeature([Token], 'client'),
+    TypeOrmModule.forFeature([Token, User], 'client'),
     ConfigModule,
   ],
   providers: [TokenService, AuthService],

@@ -50,7 +50,7 @@ function ChangeTypeOfAnalysisModal({
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ analysisIds: selectedAnalysis }),
-    }).then((response) => {
+    }).then(() => {
       setIsChangeTypeOfAnalysisModalOpen(false);
     });
   };

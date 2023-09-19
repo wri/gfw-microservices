@@ -13,8 +13,8 @@ export class TokenController {
   }
 
   // Create a new Token
-  @Post()
-  token(@Body('organizationId') organizationId: number, @Body('userId') userId: number) {
+  @Post('/:organizationId')
+  token(@Param('organizationId') organizationId: number, @Body('userId') userId: number) {
     return this.tokenService.createToken(organizationId, userId);
   }
 

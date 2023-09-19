@@ -15,8 +15,11 @@ function ChangeTypeOfAnalysisModal({
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState([]);
 
+  // if there is no listId, the analyses selection is for the creation of a new list
+  const selectingAnalysesForNewList = !listId;
+
   useEffect(() => {
-    if (listId) {
+    if (selectingAnalysesForNewList) {
       fetch(`/api/list/${listId}/selectedAnalyses`, {
         method: 'GET',
         credentials: 'same-origin',
@@ -51,8 +54,6 @@ function ChangeTypeOfAnalysisModal({
       setIsChangeTypeOfAnalysisModalOpen(false);
     });
   };
-  // if there is no listId, the analyses selection is for the creation of a new list
-  const showButtonToUpdateSelectedAnalyses = !!listId;
 
   return (
     <Modal
@@ -70,7 +71,7 @@ function ChangeTypeOfAnalysisModal({
             />
           )}
           <br />
-          {showButtonToUpdateSelectedAnalyses && (
+          {selectingAnalysesForNewList && (
             <Button variant="primary" onClick={updateSelectedAnalysis} label="Submit" />
           )}
         </CardContent>

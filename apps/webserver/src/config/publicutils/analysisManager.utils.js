@@ -498,6 +498,6 @@ module.exports = {
   getAFIAnalysisForListId,
 };
 
-// Require after modules have been exported so the module can be fully loaded
+// Require after modules have been exported so the module can be fully loaded2
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));

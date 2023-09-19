@@ -1476,7 +1476,7 @@ export default class AddLocation extends Component {
               location_classification: this.state.selectedLocationClassification,
               gfw_list_id: this.props.adminArea.gfwListID,
               list_status_id: getListStatusId(isSaveAsDraft),
-              analysisIds: selectedAnalysis,
+              analysisIds: this.state.selectedAnalysis,
             };
 
             request.open(

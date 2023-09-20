@@ -59,7 +59,7 @@ function ActiveList({
     list_locations_count,
     error_file_storage_path,
     large_list_id,
-    AnalysisID,
+    listAnalysesStatus,
   } = list;
 
   const isLargeList = !!large_list_id;
@@ -118,6 +118,7 @@ function ActiveList({
       {isEudrAvailable && (
         <ChangeTypeOfAnalysisModal
           listId={id}
+          listAnalysesStatus={listAnalysesStatus}
           setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
           isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
         />
@@ -145,7 +146,7 @@ function ActiveList({
         )}
 
         <div className="locations-list__controls">
-          <AnalysisListChips AnalysisID={AnalysisID} />
+          <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
           {showRerun && (
             <Button

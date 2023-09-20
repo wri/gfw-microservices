@@ -11,8 +11,8 @@ function ChangeTypeOfAnalysisModal({
   listId,
   setIsChangeTypeOfAnalysisModalOpen,
   isChangeTypeOfAnalysisModalOpen,
+  listAnalysesStatus,
 }) {
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState([]);
 
   // if there is no listId, the analyses selection is for the creation of a new list
@@ -20,29 +20,12 @@ function ChangeTypeOfAnalysisModal({
 
   useEffect(() => {
     if (updatingAnalysesSelectionForExistingList) {
-      fetch(`/api/list/${listId}/selectedAnalyses`, {
-        method: 'GET',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-        },
-      })
-        .then((res) => res.json())
-        .then((selectedAnalyses) => {
-          const selectedAnalysesIds = selectedAnalyses
-            .filter(({ Status }) => Status === listStatus.Active)
-            .map(({ AnalysisID }) => AnalysisID);
-          setSelectedAnalysis(selectedAnalysesIds);
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          setIsLoading(false);
-          console.warn(error);
-        });
-    } else {
-      setIsLoading(false);
+      const selectedAnalysesIds = listAnalysesStatus
+        .filter(({ Status }) => Status === listStatus.Active)
+        .map(({ AnalysisID }) => AnalysisID);
+      setSelectedAnalysis(selectedAnalysesIds);
     }
-  }, []);
+  }, [listAnalysesStatus, listId]);
 
   const updateSelectedAnalysis = () => {
     fetch(`/api/list/${listId}/selectedAnalyses`, {
@@ -51,7 +34,7 @@ function ChangeTypeOfAnalysisModal({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ analysisIds: selectedAnalysis }),
     }).then(() => {
-      setIsChangeTypeOfAnalysisModalOpen(false);
+      window.location.reload();
     });
   };
 
@@ -64,12 +47,11 @@ function ChangeTypeOfAnalysisModal({
     >
       <Card sx={{ minWidth: 275 }} className="change-type-of-analysis-modal">
         <CardContent>
-          {!isLoading && (
-            <AnalysisTypesSelector
-              selectedAnalyses={selectedAnalysis}
-              setSelectedAnalyses={setSelectedAnalysis}
-            />
-          )}
+          <AnalysisTypesSelector
+            selectedAnalyses={selectedAnalysis}
+            setSelectedAnalyses={setSelectedAnalysis}
+          />
+
           <br />
           {updatingAnalysesSelectionForExistingList && (
             <Button

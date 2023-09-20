@@ -33,7 +33,7 @@ function FailedList({
   const [openDownloadLargeListFileDialog, setOpenDownloadLargeListFileDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { list_name, large_list_id, folder, is_shared, AnalysisID } = list;
+  const { list_name, large_list_id, folder, is_shared, listAnalysesStatus } = list;
   const isLargeList = !!large_list_id;
   const isInFolder = !!folder;
   return (
@@ -51,7 +51,7 @@ function FailedList({
           </div>
         )}
         <div className="locations-list__controls">
-          <AnalysisListChips AnalysisID={AnalysisID} />
+          <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
           {showRerun && (
             <Button

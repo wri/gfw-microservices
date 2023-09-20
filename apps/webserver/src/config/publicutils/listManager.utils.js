@@ -439,22 +439,14 @@ const getUserLists = (req) => {
 
 const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
   lists.forEach((list) => {
-    const analysesForList = listAnalysisStatuses.filter((analysis) => analysis.ListID == list.id);
+    const listAnalysesStatus = listAnalysisStatuses.filter(
+      (analysis) => analysis.ListID == list.id
+    );
 
     // get the worst status from the list analysis status to replace list level status
-    const worstStatus = getWorstStatusId(analysesForList);
-
-    // convert analysesForList to a map for client side
-    const analysesForListMap = analysesForList.reduce((acc, cur) => {
-      const { AnalysisID, Status, ErrorInfo, UpdateTime } = cur;
-      acc[AnalysisID] = {
-        Status,
-        ErrorInfo,
-        UpdateTime,
-      };
-      return acc;
-    }, {});
-    list.AnalysisID = analysesForListMap;
+    const worstStatus = getWorstStatusId(listAnalysesStatus);
+    console.log(listAnalysesStatus);
+    list.listAnalysesStatus = listAnalysesStatus;
     // replace the list level status with the worst from the list analysis status,
     // or continue with the one that already had.
     list.list_status_id = worstStatus ?? list.list_status_id;

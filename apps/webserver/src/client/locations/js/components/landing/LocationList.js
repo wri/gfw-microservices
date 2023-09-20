@@ -38,8 +38,6 @@ export default class LocationList extends Component {
     };
 
     if (isListFailedByAnalysisStatusLimit(list)) {
-      console.log("--isListFailedByAnalysisStatusLimit---")
-      console.log(list)
       handleBannerForFailedListsByUsageLimits();
     }
   }

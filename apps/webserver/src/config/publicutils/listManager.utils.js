@@ -445,7 +445,7 @@ const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
 
     // get the worst status from the list analysis status to replace list level status
     const worstStatus = getWorstStatusId(listAnalysesStatus);
-    console.log(listAnalysesStatus);
+
     list.listAnalysesStatus = listAnalysesStatus;
     // replace the list level status with the worst from the list analysis status,
     // or continue with the one that already had.

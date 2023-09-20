@@ -389,10 +389,11 @@ const isLocationDataNotAvailable = (list) => {
 };
 
 const isListFailedByAnalysisStatusLimit = ({ listAnalysesStatus }) => {
-  return !!listAnalysesStatus.some(
-    ({ Status, ErrorInfo }) =>
-      Status === listStatus.Inactive && ErrorInfo === 'Exceeded Analysis Limit'
-  ).length;
+  return listAnalysesStatus.some(
+    ({ Status, ErrorInfo }) => {
+      return Status === listStatus.Inactive && ErrorInfo === 'Exceeded Analysis Limit';
+    }
+  );
 };
 
 module.exports = {

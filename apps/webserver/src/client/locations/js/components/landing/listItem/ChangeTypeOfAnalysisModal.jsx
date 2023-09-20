@@ -72,7 +72,12 @@ function ChangeTypeOfAnalysisModal({
           )}
           <br />
           {updatingAnalysesSelectionForExistingList && (
-            <Button variant="primary" onClick={updateSelectedAnalysis} label="Submit" />
+            <Button
+              variant="primary"
+              disabled={!selectedAnalysis.length}
+              onClick={updateSelectedAnalysis}
+              label="Submit"
+            />
           )}
         </CardContent>
       </Card>

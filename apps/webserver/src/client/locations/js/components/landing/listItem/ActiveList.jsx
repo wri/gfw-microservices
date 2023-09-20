@@ -23,6 +23,7 @@ import redirectToPage from '../../../../../common/js/utils/redirect';
 import LandingDownload from '../../lists/download/LandingDownload';
 import { numberWithCommas } from '../../../utils/locationsTableUtils';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
+import AnalysisListChips from './AnalysisListChips';
 import { locationsPage, nav, treeCoverLossID } from '../../../../../common/js/config';
 import featureFlags from '../../../../../../utils/general.utils';
 
@@ -58,8 +59,9 @@ function ActiveList({
     list_locations_count,
     error_file_storage_path,
     large_list_id,
-    selectedAnalysis,
+    AnalysisID,
   } = list;
+
   const isLargeList = !!large_list_id;
   const hasErrorFile = !!error_file_storage_path;
   const showDiagnosticOpt = !is_shared && locations > 0;
@@ -143,14 +145,7 @@ function ActiveList({
         )}
 
         <div className="locations-list__controls">
-          {selectedAnalysis?.map((analysis) => {
-            <Chip
-              label={analysis.name}
-              color={analysis.status}
-              size="small"
-              style={{ height: '17px', marginLeft: '10px' }}
-            />;
-          })}
+          <AnalysisListChips AnalysisID={AnalysisID} />
 
           {showRerun && (
             <Button
@@ -161,9 +156,6 @@ function ActiveList({
               variant="secondary"
             />
           )}
-          <span className="locations-list__count">
-            {numberWithCommas(locations || 0)} {locationsPage.lists.locations.toLowerCase()}
-          </span>
         </div>
 
         <div className="locations-list__menu-container">

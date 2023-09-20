@@ -17,6 +17,7 @@ import Button from '../../../../../common/js/components/Button';
 import sharedColumnText from './sharedColumnText';
 import FailedTooltip from '../../../../../common/js/components/CustomTooltip/FailedTooltip';
 import { locationsPage, nav } from '../../../../../common/js/config';
+import AnalysisListChips from './AnalysisListChips';
 
 function FailedList({
   list,
@@ -32,7 +33,7 @@ function FailedList({
   const [openDownloadLargeListFileDialog, setOpenDownloadLargeListFileDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { list_name, large_list_id, folder, is_shared } = list;
+  const { list_name, large_list_id, folder, is_shared, AnalysisID } = list;
   const isLargeList = !!large_list_id;
   const isInFolder = !!folder;
   return (
@@ -50,6 +51,8 @@ function FailedList({
           </div>
         )}
         <div className="locations-list__controls">
+          <AnalysisListChips AnalysisID={AnalysisID} />
+
           {showRerun && (
             <Button
               className="locations-list__update-button"

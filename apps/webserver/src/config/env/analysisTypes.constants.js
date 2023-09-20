@@ -20,10 +20,6 @@ const analysisTypesOptions = [
     label: 'Near-real time alerts',
     shortLabel: 'Alerts',
   },
-  {
-    id: analysisTypes.ALERTS,
-    label: 'Alerts',
-  },
 ];
 
 module.exports = {

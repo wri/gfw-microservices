@@ -2964,7 +2964,7 @@ export const profilePage = {
     },
   },
   accountUsage: {
-    title: 'Analytics usage for subscription year {subscriptionYearStart}/{subscriptionYearEnd}',
+    title: 'Analytics usage for subscription year ({subscriptionYearStart} to {subscriptionYearEnd})',
     usageAnalyzed: 'Largest list (in area) sent to be analyzed',
     totalAnalysis: 'Area across all lists sent to be analyzed',
   },

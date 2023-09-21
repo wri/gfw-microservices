@@ -23,7 +23,7 @@ describe('GetLatestValue', () => {
     });
   });
 
-  test('Should return the last value', () => {
+  test('Should return the sum of all values', () => {
     const total = new SumValue(['yearly']);
     total._transform(
       {
@@ -36,7 +36,7 @@ describe('GetLatestValue', () => {
     );
   });
 
-  test('Should return the most recent value', () => {
+  test('Should return the sum of all values', () => {
     const total = new SumValue(['yearly']);
     total._transform(
       {

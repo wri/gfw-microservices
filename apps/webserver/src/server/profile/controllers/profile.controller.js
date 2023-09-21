@@ -32,13 +32,16 @@ exports.profileInfo = (req, res) => {
       AccountManager.getUsersList(req),
       PolicyManager.getPolicyList(req),
       AuthManager.getUserInfo(req),
+      AccountManager.getOrganizationActivatedTime(req.session.organization_id),
     ];
 
     Promise.all(promises)
       .then((results) => {
-        const [accountProfile, usersList, policyList, userInfo] = results;
+        const [accountProfile, usersList, policyList, userInfo, { OrganizationActivatedTime }] =
+          results;
         res.status(200).json({
           organization: accountProfile,
+          accountActivatedTime: OrganizationActivatedTime,
           users: usersList,
           userInfo, // TODO: use getAccountProfile..or should this be called accountInfo ?
           classifications: classes,

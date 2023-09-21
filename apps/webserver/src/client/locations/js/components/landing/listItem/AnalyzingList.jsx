@@ -11,7 +11,7 @@ import AnalysisListChips from './AnalysisListChips';
 
 // returns 'anaylizing' (also called 'pending') list items
 function AnalyzingList({ list, isAListSharedWithMe, isShared, showSharedColumn }) {
-  const { list_name, is_shared, AnalysisID } = list;
+  const { list_name, is_shared, listAnalysesStatus } = list;
 
   return (
     <li
@@ -32,7 +32,7 @@ function AnalyzingList({ list, isAListSharedWithMe, isShared, showSharedColumn }
       )}
 
       <div className="locations-list__menu-container">
-        <AnalysisListChips AnalysisID={AnalysisID} />
+        <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
         <IconButton icon={<IconMenuDots />} title={''} disabled size="medium" variant="menu" />
       </div>

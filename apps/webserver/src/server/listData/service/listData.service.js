@@ -26,7 +26,6 @@ const getListAnalysisStatusById = async (req, listId) => {
 
 const setSelectedAnalyses = async (req, listId, analysisData) => {
   const response = await getListAnalysisStatusById(req, listId);
-
   if (response === undefined || response === null || response.length === 0) {
     createListAnalysis(req, listId, analysisData);
   } else {
@@ -52,7 +51,7 @@ const createListAnalysis = async (req, listId, analysisData) => {
   }
 };
 
-const deleteListAnalysis = async (req, listId, analysisID) => {
+const deleteListAnalysis = async (req, listId, analysisId) => {
   await sqlUtils.executeOrganizationQuery(req, dropListAnalysisStatusByListIdAndAnalysisIdQuery, [
     {
       field: 'ListID',
@@ -62,14 +61,13 @@ const deleteListAnalysis = async (req, listId, analysisID) => {
     {
       field: 'AnalysisID',
       type: sql.NVarChar(150),
-      value: analysisID,
+      value: analysisId,
     },
   ]);
 };
 
 const updateListAnalysis = async (req, listId, analysisData, currentAnalysis) => {
-  const analysisDataIds = currentAnalysis.map((analysis) => analysis.AnalysisID);
-
+  const analysisDataIds = currentAnalysis.map((analysis) => analysis.analysisId);
   for (const element of analysisDataIds) {
     if (!analysisData.includes(element)) {
       deleteListAnalysis(req, listId, element);

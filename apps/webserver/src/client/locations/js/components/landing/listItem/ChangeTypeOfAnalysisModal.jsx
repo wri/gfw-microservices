@@ -21,8 +21,8 @@ function ChangeTypeOfAnalysisModal({
   useEffect(() => {
     if (updatingAnalysesSelectionForExistingList) {
       const selectedAnalysesIds = listAnalysesStatus
-        .filter(({ Status }) => Status === listStatus.Active)
-        .map(({ AnalysisID }) => AnalysisID);
+        .filter(({ status }) => status === listStatus.Active)
+        .map(({ analysisId }) => analysisId);
       setSelectedAnalysis(selectedAnalysesIds);
     }
   }, [listAnalysesStatus, listId]);
@@ -34,6 +34,7 @@ function ChangeTypeOfAnalysisModal({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ analysisIds: selectedAnalysis }),
     }).then(() => {
+      // we don't have a way to reload the list of lists so we reload the page
       window.location.reload();
     });
   };

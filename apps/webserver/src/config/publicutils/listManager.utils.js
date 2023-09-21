@@ -440,7 +440,7 @@ const getUserLists = (req) => {
 const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
   lists.forEach((list) => {
     const listAnalysesStatus = listAnalysisStatuses.filter(
-      (analysis) => analysis.ListID == list.id
+      (analysis) => analysis.listId == list.id
     );
 
     // get the worst status from the list analysis status to replace list level status
@@ -570,7 +570,7 @@ const getAllListsWithAnalysisId = (req) => {
 
 const getWorstStatusId = (analysisIds) => {
   // get all status from the analysis list
-  const analysisStatus = analysisIds.map((analysisId) => analysisId.Status);
+  const analysisStatus = analysisIds.map((analysisId) => analysisId.status);
 
   // iterate over status ordered by worse to better and return
   // the fist that exist inside the analysis list

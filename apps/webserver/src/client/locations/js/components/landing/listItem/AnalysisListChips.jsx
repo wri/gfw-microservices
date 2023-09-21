@@ -13,17 +13,17 @@ function AnalysisListChips({ listAnalysesStatus }) {
   return (
     <>
       {featureFlags.isEudrAvailable &&
-        listAnalysesStatus.map(({ AnalysisID, Status }) => {
-          const analysis_status = Status;
+        listAnalysesStatus.map(({ analysisId, status }) => {
+          const analysis_status = status;
           const icon = analysis_status === listStatus.Pending ? <RefreshIcon /> : null;
           let color = analysis_status === listStatus.Active ? 'success' : 'default';
           color = analysis_status === listStatus.Inactive ? 'error' : color;
 
           return (
             <Chip
-              key={AnalysisID}
+              key={analysisId}
               icon={icon}
-              label={analysisTypesLabels(AnalysisID)}
+              label={analysisTypesLabels(analysisId)}
               color={color}
               size="small"
               style={{ height: '17px', marginRight: '10px' }}

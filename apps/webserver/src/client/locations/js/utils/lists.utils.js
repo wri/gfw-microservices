@@ -388,19 +388,10 @@ const isLocationDataNotAvailable = (list) => {
   return isFailed || isBeingAnalized || hasLockStatus;
 };
 
-const isListFailedByAnalysisStatusLimit = (list) => {
-  if (list.AnalysisID) {
-    for (const analysisIDKey in list.AnalysisID) {
-      const analysis = list.AnalysisID[analysisIDKey];
-      if (
-        analysis.Status === listStatus.Inactive &&
-        analysis.ErrorInfo === 'Exceeded Analysis Limit'
-      ) {
-        return true; // Return true as soon as a matching item is found
-      }
-    }
-  }
-  return false;
+const isListFailedByAnalysisStatusLimit = ({ listAnalysesStatus }) => {
+  return listAnalysesStatus.some(({ status, errorInfo }) => {
+    return status === listStatus.Inactive && errorInfo === 'Exceeded Analysis Limit';
+  });
 };
 
 module.exports = {

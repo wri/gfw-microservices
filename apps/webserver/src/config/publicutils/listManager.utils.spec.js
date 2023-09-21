@@ -9,9 +9,9 @@ describe('Test getWorstStatusId function', () => {
   test('When receiving 1 and 2 it should return 1 as the worst status', () => {
     const code = getWorstStatusId([
       {
-        Status: 1,
+        status: 1,
       },
-      { Status: 2 },
+      { status: 2 },
     ]);
     expect(code).toBe(1);
   });
@@ -19,9 +19,9 @@ describe('Test getWorstStatusId function', () => {
   test('When receiving 1 and 4 it should return 4 as the worst status', () => {
     const code = getWorstStatusId([
       {
-        Status: 1,
+        status: 1,
       },
-      { Status: 4 },
+      { status: 4 },
     ]);
     expect(code).toBe(4);
   });
@@ -29,9 +29,9 @@ describe('Test getWorstStatusId function', () => {
   test('when both analyzes have the same status, this value must be the same as the list status.', () => {
     const code = getWorstStatusId([
       {
-        Status: 2,
+        status: 2,
       },
-      { Status: 2 },
+      { status: 2 },
     ]);
     expect(code).toBe(2);
   });

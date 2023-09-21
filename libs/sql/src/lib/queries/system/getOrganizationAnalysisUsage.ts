@@ -40,7 +40,7 @@ BEGIN
 
     SET @SQL = 'INSERT INTO {TABLE} SELECT {PARAM} FROM [{DB_NAME}].[dbo].[ListsProcessing] lp WHERE analysis_end_time > ''{START_DATE}''  AND analysis_end_time < ''{END_DATE}'' ';
     SET @TABLE = '#TotArea_org'
-    SET @PARAM = 'SUM(area_analyzed_list_ha) as total_area_analyzed, MAX(area_analyzed_locations_ha) as max_area_analyzed, COUNT(Distinct list_id) as number_of_lists_analyzed, {organization} as organization_id';
+    SET @PARAM = 'SUM(area_analyzed_locations_ha) as total_area_analyzed, MAX(area_analyzed_locations_ha) as max_area_analyzed, COUNT(Distinct list_id) as number_of_lists_analyzed, {organization} as organization_id';
     IF @countForEachList = 1
         BEGIN
             SET @SQL = @SQL + ' GROUP BY list_id;'

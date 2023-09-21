@@ -2964,9 +2964,9 @@ export const profilePage = {
     },
   },
   accountUsage: {
-    title: 'Summary',
-    usageAnalyzed: 'Area Analyzed',
-    totalAnalysis: 'Total Area Limit',
+    title: 'Analytics usage for subscription year {subscriptionYearStart}/{subscriptionYearEnd}',
+    usageAnalyzed: 'Largest list (in area) sent to be analyzed',
+    totalAnalysis: 'Area across all lists sent to be analyzed',
   },
 };
 

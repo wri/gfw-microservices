@@ -12,13 +12,24 @@ import { profilePage } from '../../../../common/js/config';
  * @param {Object} props
  * @returns ReactNode
  */
-export default function AccountProfile({ total_area_analyzed, max_area_analyzed }) {
+export default function AccountProfile({
+  total_area_analyzed,
+  max_area_analyzed,
+  subscriptionYearStart,
+  subscriptionYearEnd,
+}) {
+  const accountActivationYearLabel = profilePage.accountUsage.title
+    .replace('{subscriptionYearStart}', subscriptionYearStart)
+    .replace('{subscriptionYearEnd}', subscriptionYearEnd);
   return (
     <Fragment>
       <Grid container>
         <Grid item xs={12}>
-          <Typography sx={{ marginBottom: '1rem' }} variant="subtitle1">
-            {profilePage.accountUsage.title}
+          <Typography
+            sx={{ marginBottom: '1rem', textTransform: 'capitalize' }}
+            variant="subtitle1"
+          >
+            {accountActivationYearLabel}
           </Typography>
         </Grid>
       </Grid>

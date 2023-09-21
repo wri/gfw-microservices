@@ -36,13 +36,13 @@ export default function AccountUsageContainer() {
       });
   }, []);
 
-  return usageData === null && limitsData === null ? (
+  return usageData === null ? (
     <InlineLoader />
   ) : (
     <AccountUsage
       {...usageData}
-      subscriptionYearStart={accountLatestYearStartDate.year()}
-      subscriptionYearEnd={accountLatestYearStartDate.clone().add(1, 'years').year()}
+      subscriptionYearStart={accountLatestYearStartDate.format('LL')}
+      subscriptionYearEnd={accountLatestYearStartDate.clone().add(1, 'years').format('LL')}
     />
   );
 }

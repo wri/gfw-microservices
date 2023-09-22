@@ -6,18 +6,16 @@ const getFeatureFlags = async () => {
     method: 'GET',
     headers: {
       'Content-type': 'application/json',
-    }
+    },
   })
     .then((res) => res.json())
     .then((response) => {
       sessionStorage.setItem('featureFlags', JSON.stringify(response));
       return response;
     })
-  .catch((err) => {
-    console.warn(err);
-  });
+    .catch((err) => {
+      console.warn(err);
+    });
 };
-
-
 
 export default getFeatureFlags;

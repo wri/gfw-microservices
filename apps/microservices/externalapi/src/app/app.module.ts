@@ -8,6 +8,7 @@ import { Token } from '../tokens/token.entity';
 import { Organization } from '../tokens/organization.entity';
 import { ConfigModule } from '@nestjs/config';
 import { User } from '../tokens/user.entity';
+import { ListsAnalysisModule } from '../list-analysis';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { User } from '../tokens/user.entity';
       entities: [Token, User],
     }),
     TokenModule,
+    ListsAnalysisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

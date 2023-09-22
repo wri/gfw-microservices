@@ -5,9 +5,9 @@
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
-
+const SWAGGER_DISABLED_ENVS = ['staging', 'production'];
 const DEFAULT_APP_PORT = 3336;
 
 async function bootstrap() {
@@ -15,6 +15,19 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
   const port = process.env.PORT || DEFAULT_APP_PORT;
+
+  if (!SWAGGER_DISABLED_ENVS.includes(process.env.NODE_ENV)) {
+    const config = new DocumentBuilder()
+      .setTitle('External API')
+      .setDescription('V1 for external API')
+      .setVersion('1.0')
+      .addTag('v1')
+      .build();
+
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+  }
+
   await app.listen(port);
   Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
 

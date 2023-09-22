@@ -6,7 +6,7 @@ import {
   ListUploadNewErrorResponse,
 } from './list-upload-new.dto';
 
-@Controller('api/v1/list-upload')
+@Controller('/v1/list-upload')
 export class ListUploadController {
   @Post()
   async uploadNewList(

@@ -1,5 +1,3 @@
-// src/user/user.module.ts
-
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as AWS from 'aws-sdk';

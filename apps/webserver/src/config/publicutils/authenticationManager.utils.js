@@ -277,6 +277,7 @@ const login = async (req, username, password, promanager_login = false) => {
         resolve(authenticatedInformation);
       })
       .catch((err) => {
+        logger.error('Error in login', err);
         // Check if a temporary password needs to be sent
         AWSCognito.resendTemporaryPassword(req, normalizeUsername, err)
           .then(() => {
@@ -285,7 +286,8 @@ const login = async (req, username, password, promanager_login = false) => {
             resolve(authenticatedInformation);
           })
           .catch((resendTemporaryPasswordErr) => {
-            reject(resendTemporaryPasswordErr);
+            logger.error('Error in login.AWSCognito.getUserInfo catch', resendTemporaryPasswordErr);
+            // don't propagate/re-throw err because there's nobody to catch it
           });
       });
   });

@@ -8,7 +8,7 @@ import { EXCEL_TEMPLATES } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
 import { FilterSelection } from '../transform/filter.selection';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
-import { GetLatestValue } from '../transform/get.latest.value';
+import { SumValue } from '../transform/sum.value';
 import { IPipeService } from '../pipe/IPipeService';
 
 @Injectable()
@@ -62,7 +62,7 @@ export class ResultService extends IPipeService {
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
-      .pipe(new GetLatestValue(columnGetLastValue))
+      .pipe(new SumValue(columnGetLastValue))
       .pipe(
         csvWriter({
           sendHeaders: false,

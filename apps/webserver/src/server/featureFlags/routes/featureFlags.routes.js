@@ -15,9 +15,9 @@ module.exports = (app, limiter) => {
     routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));
   }
 
-  app.use('/feature-flags', routeMiddlewares);
+  app.use('/api/feature-flags', routeMiddlewares);
 
-  app.get('/feature-flags', (req, res) => {
+  app.get('/api/feature-flags', (req, res) => {
     res.status(200).json({
       isAfiAvailable: isAfiAvailable(req.session.organization_id),
     });

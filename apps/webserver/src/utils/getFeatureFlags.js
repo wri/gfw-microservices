@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const getFeatureFlags = async () => {
   return await axios({
-    url: '/feature-flags',
+    url: '/api/feature-flags',
     method: 'GET',
     headers: {
       'Content-type': 'application/json',

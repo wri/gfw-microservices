@@ -26,31 +26,23 @@ exports.helpCenter = (req, res) => {
     });
 
     const cognitoUser = new CognitoUser(userData);
-    cognitoUser
-      .authenticateUser(authenticationDetails, {
-        onSuccess: (result) => {
-          logger.info(`Authentication succeeded.`);
-          res.json({
-            success: true,
-            token: result.getAccessToken().getJwtToken(),
-          });
-        },
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: (result) => {
+        logger.info(`Authentication succeeded.`);
+        res.json({
+          success: true,
+          token: result.getAccessToken().getJwtToken(),
+        });
+      },
 
-        onFailure: (err) => {
-          logger.error(`Authentication failed: ${JSON.stringify(err)}`);
-          res.status(403).json({
-            success: false,
-            message: 'Username or password is not correct',
-          });
-        },
-      })
-      .catch((err) => {
-        logger.error('Error in helpCenter.cognitoUser.authenticateUser', err);
-        res.status(403).json({
+      onFailure: (err) => {
+        logger.error(`Authentication failed: ${JSON.stringify(err)}`);
+        res.json({
           success: false,
           message: 'Username or password is not correct',
         });
-      });
+      },
+    });
   } catch (e) {
     logger.error(`Authentication failed: ${JSON.stringify(e)}`);
     res.json({

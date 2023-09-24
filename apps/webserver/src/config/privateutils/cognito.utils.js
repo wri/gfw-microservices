@@ -379,54 +379,48 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
     };
     // Cognito User
     const cognitoUser = new AWSCognito.CognitoUser(userData);
-    cognitoUser
-      .authenticateUser(authenticationDetails, {
-        onSuccess: (result) => {
-          authResult.authenticationStatus = config.platformVars.authenticationStatus.Authenticated;
-          authResult.token = result.getAccessToken().getJwtToken();
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: (result) => {
+        authResult.authenticationStatus = config.platformVars.authenticationStatus.Authenticated;
+        authResult.token = result.getAccessToken().getJwtToken();
+        resolve(authResult);
+      },
+      onFailure: (err) => {
+        // In case the account is in RESET_REQUIRED and has failed to login successfully multiple times...
+        if (
+          err.code === 'PasswordResetRequiredException' &&
+          failCountAttribute.Value >= config.platformVars.maxUserLoginRetries
+        ) {
+          authResult.authenticationStatus = config.platformVars.authenticationStatus.ForceReset;
           resolve(authResult);
-        },
-        onFailure: (err) => {
-          // In case the account is in RESET_REQUIRED and has failed to login successfully multiple times...
-          if (
-            err.code === 'PasswordResetRequiredException' &&
-            failCountAttribute.Value >= config.platformVars.maxUserLoginRetries
-          ) {
-            authResult.authenticationStatus = config.platformVars.authenticationStatus.ForceReset;
-            resolve(authResult);
-          } else if (err.code === 'PasswordResetRequiredException') {
-            authResult.authenticationStatus =
-              config.platformVars.authenticationStatus.ResetRequired;
-            resolve(authResult);
-          } else {
-            handleLoginFailure(req, email).catch((err) => {
-              logger.error('Error in cognitoUser.authenticateUser.handleLoginFailure', err);
-              reject(err);
-            });
-            const userMessage = langResources.getResourceString('failedToAuthenticate');
-            const sysMessage = [
-              'Error User Authentication: ' + err,
-              'Username: ' + authenticationData.Username,
-            ];
-            const errObj = errorUtils.createErrorMessage(
-              req,
-              errorUtils.errorCodes.failedToAuthenticate,
-              userMessage,
-              sysMessage
-            );
-            reject(errObj);
-          }
-        },
-        newPasswordRequired: () => {
-          authResult.authenticationStatus =
-            config.platformVars.authenticationStatus.RequireNewPassword;
+        } else if (err.code === 'PasswordResetRequiredException') {
+          authResult.authenticationStatus = config.platformVars.authenticationStatus.ResetRequired;
           resolve(authResult);
-        },
-      })
-      .catch((err) => {
-        logger.error('Error in authenticateUser', err);
-        reject(err);
-      });
+        } else {
+          handleLoginFailure(req, email).catch((err) => {
+            logger.error('Error in cognitoUser.authenticateUser.handleLoginFailure', err);
+            reject(err);
+          });
+          const userMessage = langResources.getResourceString('failedToAuthenticate');
+          const sysMessage = [
+            'Error User Authentication: ' + err,
+            'Username: ' + authenticationData.Username,
+          ];
+          const errObj = errorUtils.createErrorMessage(
+            req,
+            errorUtils.errorCodes.failedToAuthenticate,
+            userMessage,
+            sysMessage
+          );
+          reject(errObj);
+        }
+      },
+      newPasswordRequired: () => {
+        authResult.authenticationStatus =
+          config.platformVars.authenticationStatus.RequireNewPassword;
+        resolve(authResult);
+      },
+    });
   });
   return promise;
 };
@@ -499,8 +493,8 @@ const completeNewPasswordChallenge = (req, old_password, new_password) => {
     };
     // Cognito User
     const cognitoUser = new AWSCognito.CognitoUser(userData);
-    cognitoUser
-      .authenticateUser(authenticationDetails, {
+    try {
+      cognitoUser.authenticateUser(authenticationDetails, {
         onSuccess: () => {
           const userMessage = langResources.getResourceString('criticalError');
           const sysMessage = langResources.getResourceString('invaidInitialPasswordChange');
@@ -537,18 +531,18 @@ const completeNewPasswordChallenge = (req, old_password, new_password) => {
             }
           );
         },
-      })
-      .catch((e) => {
-        const userMessage = langResources.getResourceString('loginFailed');
-        const sysMessage = e;
-        const errObj = errorUtils.createErrorMessage(
-          req,
-          errorUtils.errorCodes.userNotAuthenticated,
-          userMessage,
-          sysMessage
-        );
-        reject(errObj);
       });
+    } catch (e) {
+      const userMessage = langResources.getResourceString('loginFailed');
+      const sysMessage = e;
+      const errObj = errorUtils.createErrorMessage(
+        req,
+        errorUtils.errorCodes.userNotAuthenticated,
+        userMessage,
+        sysMessage
+      );
+      reject(errObj);
+    }
   });
   return promise;
 };

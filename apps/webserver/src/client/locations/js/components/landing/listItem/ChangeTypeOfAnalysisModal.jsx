@@ -4,6 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import Modal from '@mui/material/Modal';
 import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
+import { requestGeoTrellisAnalyzeList } from '../../../utils/request.utils';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import './ChangeTypeOfAnalysisModal.scss';
 
@@ -33,10 +34,23 @@ function ChangeTypeOfAnalysisModal({
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ analysisIds: selectedAnalysis }),
-    }).then(() => {
-      // we don't have a way to reload the list of lists so we reload the page
-      window.location.reload();
-    });
+    })
+      .then(() => {
+        setIsChangeTypeOfAnalysisModalOpen(false);
+        return requestGeoTrellisAnalyzeList({ id: listId }, true);
+      })
+      .then(() => {
+        gtag('event', 'User submits a list by changing selected analyses from landing page', {
+          event_category: 'Submit List',
+        });
+      })
+      .catch((error) => {
+        console.warn(error);
+      })
+      .finally(() => {
+        // we don't have a way to reload the list of lists so we reload the page
+        window.location.reload();
+      });
   };
 
   return (

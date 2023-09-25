@@ -17,20 +17,6 @@ function AfiDiagnostics() {
 
   const [selectedList, setSelectedList] = useState({});
 
-  useEffect(() => {
-    fetch(`/api/afi/analysis/${listId}`, {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then(({ regionalInfo, negligibleRiskStats }) => {
-        setTableData(regionalInfo);
-        setChartData(negligibleRiskStats);
- const [selectedList, setSelectedList] = useState({});
-
   const getAfiAnalysisForListId = () => {
     return fetch(`/api/afi/analysis/${listId}`, {
       method: 'GET',
@@ -53,10 +39,7 @@ function AfiDiagnostics() {
   };
 
   useEffect(() => {
-    Promise.all([
-      getAfiAnalysisForListId(),
-      getDiagnosticsData(),
-    ])
+    Promise.all([getAfiAnalysisForListId(), getDiagnosticsData()])
       .then((afiAnalysisData, diagnosticsData) => {
         const { regionalInfo, negligibleRiskStats } = afiAnalysisData;
         const { selectedLists } = diagnosticsData;
@@ -72,30 +55,8 @@ function AfiDiagnostics() {
         console.warn(error);
       });
   }, []);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.warn(error);
-      });
-  }, []);
 
-  const downloadDiagnostics = () => {
-    setIsLoading(true);
-    fetch(`/api/afi/download?listId=${listId}`, {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/zip',
-      },
-    })
-      .then((result) => {
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.warn(error);
-      });
-const downloadDiagnostics = useCallback(() => {
+  const downloadDiagnostics = useCallback(() => {
     setIsLoading(true);
     fetch(`/api/afi/download?listId=${listId}`, {
       method: 'GET',

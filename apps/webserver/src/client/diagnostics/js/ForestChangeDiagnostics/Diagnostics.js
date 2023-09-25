@@ -716,10 +716,9 @@ export default class Diagnostics extends Component {
                     selectedList={selectedLists[0]}
                     diagnosticName={locationsPage.lists.diagnostic}
                   />
-                  
                 )}
 
-                <div style={{marginBottom: '2rem'}}>
+                <div style={{ marginBottom: '2rem' }}>
                   <AnalysisListChips listAnalysesStatus={selectedLists[0].listAnalysesStatus} />
                 </div>
 

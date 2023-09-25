@@ -2225,7 +2225,7 @@ export default class Lists extends Component {
         <ModalLoader open={isLoading} />
         <section className="locations-body list-detail-page">
           {selectedList && (
-            <div className='flex-grid'>
+            <div className="flex-grid">
               <Breadcrumbs>
                 <LinkButton
                   label={locationsPage.lists.locations}
@@ -2244,8 +2244,8 @@ export default class Lists extends Component {
                 )}
                 {shareView && <span>{locationsPage.lists.share}</span>}
               </Breadcrumbs>
-              
-              <div style={{marginLeft: 'auto'}}>
+
+              <div style={{ marginLeft: 'auto' }}>
                 <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
               </div>
             </div>

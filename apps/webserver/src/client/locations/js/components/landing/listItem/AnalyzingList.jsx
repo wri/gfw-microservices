@@ -30,7 +30,7 @@ function AnalyzingList({ list, isAListSharedWithMe, isShared, showSharedColumn }
           {sharedColumnText()}
         </div>
       )}
-      <div className='locations-list__controls'>
+      <div className="locations-list__controls">
         <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
       </div>
 

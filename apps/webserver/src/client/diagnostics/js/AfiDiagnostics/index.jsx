@@ -40,7 +40,8 @@ function AfiDiagnostics() {
 
   useEffect(() => {
     Promise.all([getAfiAnalysisForListId(), getDiagnosticsData()])
-      .then((afiAnalysisData, diagnosticsData) => {
+      .then(([afiAnalysisData, diagnosticsData]) => {
+
         const { regionalInfo, negligibleRiskStats } = afiAnalysisData;
         const { selectedLists } = diagnosticsData;
         const selectedList = selectedLists?.[0] || {};

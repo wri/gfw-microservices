@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TokenModule } from '../tokens';
+import { TokenModule } from '../api-keys';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Token } from '../tokens/token.entity';
-import { Organization } from '../tokens/organization.entity';
+import { Token } from '../api-keys/external-api-key.entity';
+import { Organization } from '../api-keys/organization.entity';
 import { ConfigModule } from '@nestjs/config';
-import { User } from '../tokens/user.entity';
+import { User } from '../api-keys/user.entity';
 import { ListsAnalysisModule } from '../list-analysis';
 
 @Module({

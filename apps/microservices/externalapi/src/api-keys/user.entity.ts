@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
-import { Token } from './token.entity';
+import { ExternalAPIKey } from './external-api-key.entity';
 
 @Entity({ name: 'Users' })
 export class User {
@@ -15,6 +15,6 @@ export class User {
   @Column({ name: 'email' })
   email: string;
 
-  @OneToMany(() => Token, (token) => token.user)
-  tokens: Token[];
+  @OneToMany(() => ExternalAPIKey, (token) => token.user)
+  tokens: ExternalAPIKey[];
 }

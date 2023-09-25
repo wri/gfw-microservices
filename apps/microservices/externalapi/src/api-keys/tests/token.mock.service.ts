@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Token } from '../token.entity';
+import { ExternalAPIKey } from '../external-api-key.entity';
 import { FindManyOptions, QueryFailedError } from 'typeorm';
 
 @Injectable()
 export class TokenMockRepository {
-  private readonly data: Token[] = [
+  private readonly data: ExternalAPIKey[] = [
     {
       awsId: '789',
       creatorUserId: 1,
@@ -97,7 +97,7 @@ export class TokenMockRepository {
     },
   ];
 
-  async find(options?: FindManyOptions<Token>) {
+  async find(options?: FindManyOptions<ExternalAPIKey>) {
     const [{ where }] = Array.isArray(options) ? options : [options];
 
     return this.data.filter((token) => token.organizationId === where.organizationId);
@@ -113,7 +113,7 @@ export class TokenMockRepository {
   }
 
   // Implement other repository methods as needed
-  async findOne(options?: FindManyOptions<Token>): Promise<Token | undefined> {
+  async findOne(options?: FindManyOptions<ExternalAPIKey>): Promise<ExternalAPIKey | undefined> {
     const [{ where }] = Array.isArray(options) ? options : [options];
 
     return this.data.find(
@@ -123,7 +123,7 @@ export class TokenMockRepository {
     );
   }
 
-  async save(token: Token): Promise<Token> {
+  async save(token: ExternalAPIKey): Promise<ExternalAPIKey> {
     if (token.organizationId === 999) {
       throw new QueryFailedError('query', [], []);
     }
@@ -140,7 +140,7 @@ export class TokenMockRepository {
     return token;
   }
 
-  async delete(token: Token): Promise<void> {
+  async delete(token: ExternalAPIKey): Promise<void> {
     const index = this.data.findIndex((t) => t.awsId === token.awsId);
     if (index !== -1) {
       this.data.splice(index, 1);

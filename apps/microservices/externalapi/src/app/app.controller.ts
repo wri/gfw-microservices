@@ -1,8 +1,8 @@
 import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 
 import { AppService } from './app.service';
-import { ApiKeyGuard } from '../tokens/auth.guard';
-import { TokenService } from '../tokens/token.service';
+import { ApiKeyGuard } from '../api-keys/auth.guard';
+import { TokenService } from '../api-keys/token.service';
 
 @Controller()
 export class AppController {

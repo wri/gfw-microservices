@@ -15,30 +15,7 @@ function AfiDiagnostics() {
   const listId = parseInt(new URLSearchParams(location.search).get('listId'), 10);
   const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
 
-  const [data, setData] = useState({});
-
-  useEffect(() => {
-    fetch(`/diagnosticsData`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ listId, isSharedList }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.warn(error);
-      });
-  }, []);
-
-  const { selectedLists } = data;
-  const selectedList = selectedLists?.[0];
+  const [selectedList, setSelectedList] = useState({});
 
   useEffect(() => {
     fetch(`/api/afi/analysis/${listId}`, {
@@ -52,6 +29,20 @@ function AfiDiagnostics() {
       .then(({ regionalInfo, negligibleRiskStats }) => {
         setTableData(regionalInfo);
         setChartData(negligibleRiskStats);
+
+        return fetch(`/diagnosticsData`, {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          body: JSON.stringify({ listId, isSharedList }),
+        });
+      })
+      .then((res) => res.json())
+      .then(({ selectedLists }) => {
+        const selectedList = selectedLists?.[0] || {};
+        setSelectedList(selectedList);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -71,14 +62,13 @@ function AfiDiagnostics() {
     })
       .then((result) => {
         setIsLoading(false);
-        console.log(result);
       })
       .catch((error) => {
         console.warn(error);
       });
   };
 
-  const { list_name } = selectedList || {};
+  const { list_name } = selectedList;
 
   return (
     <>

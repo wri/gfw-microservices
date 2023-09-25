@@ -29,20 +29,49 @@ function AfiDiagnostics() {
       .then(({ regionalInfo, negligibleRiskStats }) => {
         setTableData(regionalInfo);
         setChartData(negligibleRiskStats);
+ const [selectedList, setSelectedList] = useState({});
 
-        return fetch(`/diagnosticsData`, {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: {
-            'Content-type': 'application/json',
-          },
-          body: JSON.stringify({ listId, isSharedList }),
-        });
-      })
-      .then((res) => res.json())
-      .then(({ selectedLists }) => {
+  const getAfiAnalysisForListId = () => {
+    return fetch(`/api/afi/analysis/${listId}`, {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
+    }).then((res) => res.json());
+  };
+
+  const getDiagnosticsData = () => {
+    return fetch(`/diagnosticsData`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ listId, isSharedList }),
+    }).then((res) => res.json());
+  };
+
+  useEffect(() => {
+    Promise.all([
+      getAfiAnalysisForListId(),
+      getDiagnosticsData(),
+    ])
+      .then((afiAnalysisData, diagnosticsData) => {
+        const { regionalInfo, negligibleRiskStats } = afiAnalysisData;
+        const { selectedLists } = diagnosticsData;
         const selectedList = selectedLists?.[0] || {};
+
+        setTableData(regionalInfo);
+        setChartData(negligibleRiskStats);
         setSelectedList(selectedList);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.warn(error);
+      });
+  }, []);
         setIsLoading(false);
       })
       .catch((error) => {

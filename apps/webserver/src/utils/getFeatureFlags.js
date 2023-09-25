@@ -9,7 +9,7 @@ const getFeatureFlags = async () => {
     },
   })
     .then(({ data }) => {
-      sessionStorage.setItem('featureFlags', JSON.stringify(data));
+      localStorage.setItem('featureFlags', JSON.stringify(data));
       return data;
     })
     .catch((err) => {

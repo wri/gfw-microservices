@@ -8,10 +8,9 @@ const getFeatureFlags = async () => {
       'Content-type': 'application/json',
     },
   })
-    .then((res) => res.json())
-    .then((response) => {
-      sessionStorage.setItem('featureFlags', JSON.stringify(response));
-      return response;
+    .then(({ data }) => {
+      sessionStorage.setItem('featureFlags', JSON.stringify(data));
+      return data;
     })
     .catch((err) => {
       console.warn(err);

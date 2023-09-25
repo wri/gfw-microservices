@@ -130,7 +130,7 @@ export default class StepFour extends Component {
       <div className={'locations-upload-step'}>
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
 
-        {featureFlags.isEudrAvailable && (
+        {featureFlags.isAfiAvailable && (
           <AnalysisTypesSelector
             selectedAnalyses={selectedAnalyses}
             setSelectedAnalyses={setSelectedAnalyses}

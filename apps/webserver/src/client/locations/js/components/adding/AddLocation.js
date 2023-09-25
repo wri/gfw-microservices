@@ -2278,7 +2278,7 @@ export default class AddLocation extends Component {
         ) : (
           <></>
         )}
-        {featureFlags.isEudrAvailable && (
+        {featureFlags.isAfiAvailable && (
           <AddLocationCard>
             <h2 className="add-location-card__title">Analysis</h2>
 

@@ -66,7 +66,22 @@ function AfiDiagnostics() {
       .catch((error) => {
         console.warn(error);
       });
-  };
+const downloadDiagnostics = useCallback(() => {
+    setIsLoading(true);
+    fetch(`/api/afi/download?listId=${listId}`, {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/zip',
+      },
+    })
+      .then((result) => {
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.warn(error);
+      });
+  }, [listId]);
 
   const { list_name } = selectedList;
 

@@ -359,7 +359,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
             </div>
           </section>
 
-          {featureFlags.isEudrAvailable && (
+          {featureFlags.isAfiAvailable && (
             <AnalysisTypesSelector
               selectedAnalyses={selectedAnalysis}
               setSelectedAnalyses={setSelectedAnalysis}

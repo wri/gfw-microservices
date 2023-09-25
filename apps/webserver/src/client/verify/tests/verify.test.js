@@ -1,8 +1,6 @@
-/* eslint-disable react/jsx-filename-extension */
-/* eslint-disable import/no-unresolved */
+import React from 'react';
 import { render, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import Verify from '../js/components/Verify';
-import React from 'react';
 import mock from 'xhr-mock';
 
 describe('Test Verify Component', () => {
@@ -57,7 +55,6 @@ describe('Test Verify Component', () => {
     mock.post('/auth/verifyLogin', { status: 200, body: 'User' });
 
     await getAndClickVerifyButton();
-
     await waitFor(() => expect(window.location.href).toEqual('/locations'));
   });
 

@@ -12,7 +12,7 @@ function AnalysisListChips({ listAnalysesStatus }) {
 
   return (
     <>
-      {featureFlags.isEudrAvailable &&
+      {featureFlags.isAfiAvailable &&
         listAnalysesStatus.map(({ analysisId, status }) => {
           const analysis_status = status;
           const icon = analysis_status === listStatus.Pending ? <RefreshIcon /> : null;

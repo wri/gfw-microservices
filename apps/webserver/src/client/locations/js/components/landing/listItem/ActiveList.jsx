@@ -50,7 +50,8 @@ function ActiveList({
   const [isLoadingDiagnostic, setIsLoadingDiagnostic] = useState(false);
   const [isChangeTypeOfAnalysisModalOpen, setIsChangeTypeOfAnalysisModalOpen] = useState(false);
 
-  const { isEudrAvailable } = featureFlags;
+  const { isAfiAvailable } = featureFlags;
+
   const {
     list_name,
     id,
@@ -115,7 +116,7 @@ function ActiveList({
 
   return (
     <>
-      {isEudrAvailable && (
+      {isAfiAvailable && (
         <ChangeTypeOfAnalysisModal
           listId={id}
           listAnalysesStatus={listAnalysesStatus}
@@ -237,7 +238,7 @@ function ActiveList({
                   setIsMenuOpen(false);
                 }}
               />
-              {isEudrAvailable && (
+              {isAfiAvailable && (
                 <MenuItem
                   primaryText={locationsPage.lists.changeTypeOfAnalysis}
                   leftIcon={<SettingsIcon />}

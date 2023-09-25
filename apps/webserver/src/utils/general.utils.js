@@ -1,5 +1,3 @@
-const featureFlags = {
-  isEudrAvailable: process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'staging',
-};
+const featureFlags = JSON.parse(sessionStorage.getItem('featureFlags'));
 
 export default featureFlags;

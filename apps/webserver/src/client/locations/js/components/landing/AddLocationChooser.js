@@ -53,7 +53,9 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
   const [listName, setListName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [existingListName, setExistingListName] = useState();
-  const [selectedAnalysis, setSelectedAnalysis] = useState([analysisTypes.FOREST_CHANGE_DIAGNOSTICS]);
+  const [selectedAnalysis, setSelectedAnalysis] = useState([
+    analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+  ]);
   const fileInputRef = useRef(null);
 
   const chooser = locationsPage.landing.addLocationChooser;

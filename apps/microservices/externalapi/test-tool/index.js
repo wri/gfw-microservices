@@ -1,7 +1,22 @@
 const axios = require('axios');
 
-// Define the base URL of your API
-const baseUrl = 'http://localhost:3336';
+// Define default values for parameters
+const defaultBaseUrl = 'http://localhost:3336';
+let baseUrl = defaultBaseUrl;
+
+// Parse command-line arguments for custom parameters
+// The following fragment will handle more params in the future, for the moment we just accept BASEURL
+// usage: node index.js --BASEURL=http://otherurl:3336
+for (let i = 2; i < process.argv.length; i++) {
+  const arg = process.argv[i];
+  if (arg.startsWith('--')) {
+    const [paramName, paramValue] = arg.slice(2).split('=');
+    if (paramName === 'BASEURL' && paramValue) {
+      baseUrl = paramValue;
+    }
+    // Add more conditions for other parameters as needed
+  }
+}
 
 const TEST_CREATE_ORGANIZATION_ID = 123; // Replace with your organization ID
 const TEST_CREATE_USER_ID = 456; // Replace with your user ID

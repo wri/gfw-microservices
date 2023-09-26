@@ -4,7 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TokenModule } from '../api-keys';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Token } from '../api-keys/external-api-key.entity';
+import { ExternalAPIKey } from '../api-keys/external-api-key.entity';
 import { Organization } from '../api-keys/organization.entity';
 import { ConfigModule } from '@nestjs/config';
 import { User } from '../api-keys/user.entity';
@@ -30,7 +30,7 @@ import { ListsAnalysisModule } from '../list-analysis';
       database: 'db.sqlite',
       synchronize: true,
       logging: true,
-      entities: [Token, User],
+      entities: [ExternalAPIKey, User],
     }),
     TokenModule,
     ListsAnalysisModule,

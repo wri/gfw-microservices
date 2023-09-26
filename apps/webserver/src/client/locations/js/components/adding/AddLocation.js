@@ -32,7 +32,7 @@ import SaveAsDraftButtonWithDialog from '../../../../common/js/components/SaveAs
 import { resetScroll } from '../../utils/scroll.utils';
 import { locationsPage, proLayers } from '../../../../common/js/config';
 import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
-
+import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 // REDUX - Store
 import store from '../../store';
 import { changeAddMethod, changeAddType, changeTemplate } from '../../actions/locationActions';
@@ -258,7 +258,7 @@ export default class AddLocation extends Component {
       lng: '',
       overrideOnClose: false,
       isLoading: false,
-      selectedAnalysis: ['FCD'],
+      selectedAnalysis: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS],
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {

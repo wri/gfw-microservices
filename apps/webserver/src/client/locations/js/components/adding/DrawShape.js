@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
-import EsriMap from 'esri/Map';
-import Graphic from 'esri/Graphic';
-import GeometryEngine from 'esri/geometry/geometryEngine';
-import Polygon from 'esri/geometry/Polygon';
-import SimpleFillSymbol from 'esri/symbols/SimpleFillSymbol';
-import MapView from 'esri/views/MapView';
-import SketchViewModel from 'esri/widgets/Sketch/SketchViewModel';
+import EsriMap from '@arcgis/core/Map';
+import Graphic from '@arcgis/core/Graphic';
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
+import MapView from '@arcgis/core/views/MapView';
+import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 
 import { locationsPage } from '../../../../common/js/config';
 import Button from '../../../../common/js/components/Button';
@@ -120,7 +120,7 @@ export default class DrawShape extends Component {
     this.sketchViewModel.delete();
 
     // create a new polygon with the passed geometry to preserve the spatial reference
-    const polygon = GeometryEngine.simplify(new Polygon(geom));
+    const polygon = geometryEngine.simplify(new Polygon(geom));
 
     const fillSymbol = new SimpleFillSymbol({
       color: [151, 189, 61, 0.65],
@@ -180,8 +180,8 @@ export default class DrawShape extends Component {
         userMessage = locationsPage.add.draw.help;
         break;
       case DrawShapeMode.Complete: {
-        const areaKm = geometry ? GeometryEngine.geodesicArea(geometry, 'square-kilometers') : 0;
-        const areaHa = geometry ? GeometryEngine.geodesicArea(geometry, 'hectares') : 0;
+        const areaKm = geometry ? geometryEngine.geodesicArea(geometry, 'square-kilometers') : 0;
+        const areaHa = geometry ? geometryEngine.geodesicArea(geometry, 'hectares') : 0;
         userMessage = `Area: ${numberWithCommas(
           parseInt(areaKm.toFixed(0))
         )} km (${numberWithCommas(parseInt(areaHa.toFixed(0)))} ha)`;

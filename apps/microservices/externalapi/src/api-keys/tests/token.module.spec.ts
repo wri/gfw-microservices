@@ -1,4 +1,4 @@
-import { Token } from './../token.entity';
+import { ExternalAPIKey } from '../external-api-key.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppService } from '../../app/app.service';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
@@ -40,10 +40,10 @@ describe('Test Token Module', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Token, User],
+          entities: [ExternalAPIKey, User],
         }),
         TypeOrmModule.forFeature([Organization], 'default'),
-        TypeOrmModule.forFeature([Token, User], 'client'),
+        TypeOrmModule.forFeature([ExternalAPIKey, User], 'client'),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,
@@ -52,7 +52,7 @@ describe('Test Token Module', () => {
       providers: [
         AppService,
         {
-          provide: getRepositoryToken(Token, 'client'),
+          provide: getRepositoryToken(ExternalAPIKey, 'client'),
           useClass: TokenMockRepository,
         },
         TokenService,

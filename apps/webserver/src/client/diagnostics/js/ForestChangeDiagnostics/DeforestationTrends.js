@@ -4,7 +4,8 @@ import { formatNum, prettifyNum } from '../../../locations/js/utils/diagnostics.
 import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 import {
   locationsPage,
-  latest_CommodityRisk__TrendsInDeforestation,
+  earliestTreeCoverLossYearCommodityRisk,
+  latestTreeCoverLossYearCommodityRisk,
 } from '../../../common/js/config';
 
 export default class DeforestationTrends extends Component {
@@ -21,8 +22,8 @@ export default class DeforestationTrends extends Component {
       data: getYearlyHighchartSeries(
         getYearlyData(
           'commodity_threat_deforestation',
-          2002,
-          latest_CommodityRisk__TrendsInDeforestation
+          earliestTreeCoverLossYearCommodityRisk,
+          latestTreeCoverLossYearCommodityRisk
         )
       ),
       color: '#ef669a',

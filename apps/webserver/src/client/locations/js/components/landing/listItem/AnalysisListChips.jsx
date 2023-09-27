@@ -13,7 +13,7 @@ function AnalysisListChips({ listAnalysesStatus }) {
 
   return (
     <>
-      {featureFlags.isEudrAvailable && (
+      {featureFlags.isAfiAvailable && (
         <div className="analysis-chips">
           {listAnalysesStatus.map(({ analysisId, status }) => {
             const analysis_status = status;

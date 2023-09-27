@@ -1,8 +1,6 @@
 import { locationsPage, convertURL } from '../../../../common/js/config';
-// import store from '../../../../locations/js/store';
 import Point from 'esri/geometry/Point';
 import Polygon from 'esri/geometry/Polygon';
-import Deferred from 'dojo/Deferred';
 import QueryTask from 'esri/tasks/QueryTask';
 import Query from 'esri/tasks/support/Query';
 import GeometryEngine from 'esri/geometry/geometryEngine';
@@ -36,24 +34,22 @@ export default class Upload extends Component {
   }
 
   geocodeMill = (mill) => {
-    console.log('millll', mill);
-    const deferred = new Deferred();
-    const queryTask = new QueryTask(locationsPage.updatedPalmOilMillUrl);
+    return new Promise((resolve) => {
+      const queryTask = new QueryTask(locationsPage.updatedPalmOilMillUrl);
+      const query = new Query();
 
-    const query = new Query();
+      query.where = "id = '" + mill.ID + "'";
+      query.returnGeometry = true;
+      query.outFields = [];
 
-    query.where = "id = '" + mill.ID + "'";
-    query.returnGeometry = true;
-    query.outFields = [];
-    queryTask.execute(query).then((result) => {
-      if (result.features && result.features.length > 0) {
-        deferred.resolve(result.features[0]);
-      } else {
-        deferred.resolve(false);
-      }
+      queryTask.execute(query).then((result) => {
+        if (result.features && result.features.length > 0) {
+          resolve(result.features[0]);
+        } else {
+          resolve(false);
+        }
+      });
     });
-
-    return deferred;
   };
 
   parseZip = (file) => {

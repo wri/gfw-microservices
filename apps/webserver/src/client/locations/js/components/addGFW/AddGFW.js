@@ -7,7 +7,6 @@ import StepThreeGFW from './StepThreeGFW';
 import GfwAccuracy from '../adding/GfwAccuracy';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import Polygon from 'esri/geometry/Polygon';
-import Deferred from 'dojo/Deferred';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import React, { Component } from 'react';
 import store from '../../store';
@@ -182,30 +181,29 @@ export default class AddGFW extends Component {
   };
 
   getGFWListLocationGeom = (list_id, location_ids) => {
-    const deferred = new Deferred();
-    httpRequest
-      .fetchForm(
-        '/locations/getGFWListLocationGeom',
-        `list_id=${list_id}&location_ids=${location_ids}`
-      )
-      .then((response) => {
-        const geometries = JSON.parse(response);
-        deferred.resolve(geometries);
-      })
-      .catch((err) => {
-        console.log('error with grabbing gfw location data', err);
-        this.setState({
-          dialogOpen: true,
-          dialogTitle: 'Error in Geometry Retrieval',
-          dialogMessage:
-            'This account request has failed on the server. Please try again at another time.',
-          isSaving: false,
-          refreshPage: true,
+    return new Promise((resolve) => {
+      httpRequest
+        .fetchForm(
+          '/locations/getGFWListLocationGeom',
+          `list_id=${list_id}&location_ids=${location_ids}`
+        )
+        .then((response) => {
+          const geometries = JSON.parse(response);
+          resolve(geometries);
+        })
+        .catch((err) => {
+          console.log('error with grabbing gfw location data', err);
+          this.setState({
+            dialogOpen: true,
+            dialogTitle: 'Error in Geometry Retrieval',
+            dialogMessage:
+              'This account request has failed on the server. Please try again at another time.',
+            isSaving: false,
+            refreshPage: true,
+          });
+          resolve(false);
         });
-        deferred.resolve(false);
-      });
-
-    return deferred;
+    });
   };
 
   saveLocations = () => {

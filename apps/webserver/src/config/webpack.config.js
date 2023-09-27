@@ -114,7 +114,7 @@ module.exports = () => {
       __dirname: true,
     },
     output: {
-      publicPath: '',
+      publicPath: '/',
       library: {
         name: 'GFWProWebpack', // Example name
         type: 'umd',

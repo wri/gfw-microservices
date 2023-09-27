@@ -1,21 +1,25 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 
 import { TokenService } from './token.service';
+import { ApiResponse } from '@nestjs/swagger';
+import { CreateApiKeyRequest, ViewApiKeyResponse } from './dtos';
 
 @Controller('/api-keys')
-export class TokenController {
+export class APIKeyController {
   constructor(private readonly tokenService: TokenService) {}
 
   //Get all tokens for one organization
+  @ApiResponse({ status: 200, type: [ViewApiKeyResponse] })
   @Get('/:organizationId')
-  async getTokens(@Param('organizationId') organizationId: number) {
+  async getTokens(@Param('organizationId') organizationId: number): Promise<ViewApiKeyResponse[]> {
     return await this.tokenService.findTokenByOrganizationId(organizationId);
   }
 
   // Create a new Token
-  @Post('/:organizationId')
-  token(@Param('organizationId') organizationId: number, @Body('userId') userId: number) {
-    return this.tokenService.createToken(organizationId, userId);
+  @ApiResponse({ status: 200, type: ViewApiKeyResponse })
+  @Post()
+  token(@Body() apiKeyRequest: CreateApiKeyRequest) {
+    return this.tokenService.createToken(apiKeyRequest.organizationId, apiKeyRequest.userId);
   }
 
   // Delete a token for a organization

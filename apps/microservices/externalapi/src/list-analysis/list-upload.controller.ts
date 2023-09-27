@@ -5,9 +5,11 @@ import {
   ListUploadNewResponse,
   ListUploadNewErrorResponse,
 } from './list-upload-new.dto';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('/v1/list-upload')
 export class ListUploadController {
+  @ApiResponse({ status: 200, type: ListUploadNewResponse })
   @Post()
   async uploadNewList(
     @Body() request: ListUploadNewRequest

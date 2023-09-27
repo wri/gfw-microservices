@@ -2,11 +2,11 @@
 
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Token } from './token.entity';
+import { ExternalAPIKey } from './external-api-key.entity';
 import { TokenService } from './token.service';
 
 import { AuthService } from './auth.service';
-import { TokenController } from './token.controller';
+import { APIKeyController } from './api-key.controller';
 import { Organization } from './organization.entity';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './user.entity';
@@ -22,11 +22,11 @@ AWS.config.update(awsConfig);
 @Module({
   imports: [
     TypeOrmModule.forFeature([Organization], 'default'),
-    TypeOrmModule.forFeature([Token, User], 'client'),
+    TypeOrmModule.forFeature([ExternalAPIKey, User], 'client'),
     ConfigModule,
   ],
   providers: [TokenService, AuthService],
   exports: [TokenService, AuthService],
-  controllers: [TokenController],
+  controllers: [APIKeyController],
 })
 export class TokenModule {}

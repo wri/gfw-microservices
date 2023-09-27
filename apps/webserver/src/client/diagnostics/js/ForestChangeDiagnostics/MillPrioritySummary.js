@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { locationsPage, latestTreeCoverLossYearCR } from '../../../common/js/config';
+import { locationsPage, earliestTreeCoverLossYearCommodityRisk, latestTreeCoverLossYearCommodityRisk } from '../../../common/js/config';
 import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 
 const lastYear = locationsPage.diagnostics.lastDataYear;
@@ -9,8 +9,8 @@ export default class MillPrioritySummary extends Component {
     const { getYearlyData } = this.props;
     const data = getYearlyData(
       'commodity_mill_priority_level',
-      2001,
-      latestTreeCoverLossYearCR,
+      earliestTreeCoverLossYearCommodityRisk,
+      latestTreeCoverLossYearCommodityRisk,
       true
     );
 

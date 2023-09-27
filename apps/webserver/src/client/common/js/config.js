@@ -105,9 +105,9 @@ export const convertURL = 'https://production-api.globalforestwatch.org/v2/ogr/c
 export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
 export const latestTreeCoverLossYearFC = 2022; // Forest Change
-export const latestTreeCoverLossYearCR = 2022; // Commodity Risk
+export const latestTreeCoverLossYearCommodityRisk = 2020;
+export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearSensitiveAreas = 2022; // Sensitive Areas
-export const latest_CommodityRisk__TrendsInDeforestation = latestTreeCoverLossYearCR; // Trends in Deforestation
 
 export const soyPlantedYearsRange = [2001, 2022];
 
@@ -3045,7 +3045,6 @@ export const mapPage = {
   ],
   // treeCoverLossYears: [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
   treeCoverLossYearsFC: fillYears(2001, latestTreeCoverLossYearFC),
-  treeCoverLossYearsCR: fillYears(2001, latestTreeCoverLossYearCR),
   granChacoLossYears: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018],
   prodesLossYears: _range(2001, 2020 + 1),
   layers: [

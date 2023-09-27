@@ -56,6 +56,7 @@ import {
   treeCoverLossTilesUrl,
 } from '../../../common/js/config';
 import { centroidSymbol, fillSymbolDefault } from '../../../common/js/map.config';
+import AnalysisListChips from '../../../locations/js/components/landing/listItem/AnalysisListChips';
 
 import '../../css/locations.scss';
 import '../common/DiagnosticsContainer.scss';
@@ -716,6 +717,11 @@ export default class Diagnostics extends Component {
                     diagnosticName={locationsPage.lists.diagnostic}
                   />
                 )}
+
+                <div style={{ marginBottom: '2rem' }}>
+                  <AnalysisListChips listAnalysesStatus={selectedLists[0].listAnalysesStatus} />
+                </div>
+
                 {showListViewTabs && (
                   <Tabs
                     value={listView}

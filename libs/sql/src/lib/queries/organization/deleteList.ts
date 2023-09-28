@@ -7,8 +7,7 @@ BEGIN
   DECLARE @analysis_table NVARCHAR(150)
 
   -- Selecting the list table and list analysis tables
-  SELECT @list_table = list_table_name FROM [Lists] WHERE id = @list_id
-	SELECT @analysis_table = list_analysis_table_name FROM [Lists] WHERE id = @list_id
+  SELECT @list_table = list_table_name, @analysis_table = list_analysis_table_name FROM [Lists] WHERE id = @list_id
 
   PRINT @list_table
 	PRINT @analysis_table

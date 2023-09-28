@@ -719,7 +719,7 @@ export default class Diagnostics extends Component {
                 )}
 
                 <div style={{ marginBottom: '2rem' }}>
-                  <AnalysisListChips listAnalysesStatus={selectedLists[0].listAnalysesStatus} />
+                  <AnalysisListChips listAnalysesStatus={selectedLists[0]?.listAnalysesStatus} />
                 </div>
 
                 {showListViewTabs && (

@@ -5,21 +5,33 @@ import IconReport from '../../../common/js/components/icon/IconReport';
 import IconDownload from '../../../common/js/components/icon/IconDownload';
 import printDiagnosticsReport from './printDiagnosticsReport';
 import featureFlags from '../../../../utils/general.utils';
+import {
+  analysisTypes,
+  analysisTypesOptions,
+} from '../../../../config/env/analysisTypes.constants';
 import './DiagnosticsMenuBar.scss';
 
 function DiagnosticsMenuBar({
   listId,
   isSharedList,
   downloadDiagnostics,
-  selectedDiagnostics = 'FCD',
-  availableDiagnostics = [],
+  selectedDiagnostics = analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
 }) {
   const { isAfiAvailable } = featureFlags;
+  const { FOREST_CHANGE_DIAGNOSTICS, DEFORESTATION_KPIS } = analysisTypes;
 
-  const diagnosticOptions = [{ value: 'FCD', label: 'Forest change' }];
+  const diagnosticOptions = [
+    {
+      value: FOREST_CHANGE_DIAGNOSTICS,
+      label: analysisTypesOptions.find((i) => i.id === FOREST_CHANGE_DIAGNOSTICS).label,
+    },
+  ];
 
   if (isAfiAvailable) {
-    diagnosticOptions.push({ value: 'AFI', label: 'AFI' });
+    diagnosticOptions.push({
+      value: DEFORESTATION_KPIS,
+      label: analysisTypesOptions.find((i) => i.id === DEFORESTATION_KPIS).label,
+    });
   }
 
   const redirectToSelectedDiagnostics = (diagnostics) => {

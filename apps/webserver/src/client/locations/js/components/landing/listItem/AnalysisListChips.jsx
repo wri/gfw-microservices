@@ -6,7 +6,7 @@ import { listStatus } from '../../../../../../config/env/listStatuses.constants'
 import featureFlags from '../../../../../../utils/general.utils';
 import '../../../../css/analysisChips.scss';
 
-function AnalysisListChips({ listAnalysesStatus }) {
+function AnalysisListChips({ listAnalysesStatus = [] }) {
   const analysisTypesLabels = (analysis) => {
     return analysisTypesOptions.filter((option) => option.id === analysis)[0].shortLabel;
   };

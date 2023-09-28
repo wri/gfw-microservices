@@ -90,7 +90,7 @@ class UploadLocations extends Component {
       canGoNext: true,
       isUploading: false,
       isSaving: false,
-      selectedAnalyses: [],
+      selectedAnalyses: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS, analysisTypes.ALERTS],
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {

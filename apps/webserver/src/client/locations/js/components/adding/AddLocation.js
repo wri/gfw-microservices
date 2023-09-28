@@ -258,7 +258,7 @@ export default class AddLocation extends Component {
       lng: '',
       overrideOnClose: false,
       isLoading: false,
-      selectedAnalysis: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS],
+      selectedAnalysis: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS, analysisTypes.ALERTS],
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {

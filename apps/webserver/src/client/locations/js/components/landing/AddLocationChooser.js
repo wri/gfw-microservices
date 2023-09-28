@@ -55,6 +55,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
   const [existingListName, setExistingListName] = useState();
   const [selectedAnalysis, setSelectedAnalysis] = useState([
     analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+    analysisTypes.ALERTS,
   ]);
   const fileInputRef = useRef(null);
 

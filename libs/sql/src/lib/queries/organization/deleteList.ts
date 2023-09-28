@@ -10,7 +10,7 @@ BEGIN
   SELECT @list_table = list_table_name, @analysis_table = list_analysis_table_name FROM [Lists] WHERE id = @list_id
 
   PRINT @list_table
-	PRINT @analysis_table
+  PRINT @analysis_table
 
   -- Deleting folder items first
   SET @FOLDER_SQL = 'DELETE FROM [FolderItems] WHERE list_id = {LIST_ID}'

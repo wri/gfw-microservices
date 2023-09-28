@@ -99,7 +99,11 @@ exports.getOrganizationAnalysisLimit = async (req, res) => {
 };
 
 exports.getMyOrganizationAnalysisOptions = (req, res) => {
-  res.status(200).send(Object.values(analysisTypes));
+  const orgAnalysisOptions = Object.values(analysisTypes).map((analysisType) => ({
+    id: analysisType,
+    selectedByDefault: analysisType === analysisTypes.FOREST_CHANGE_DIAGNOSTICS ? true : false,
+  }));
+  res.status(200).send(Object.values(orgAnalysisOptions));
 };
 
 const validateQueryParams = ({ startDate, endDate, countForEachList }) => {

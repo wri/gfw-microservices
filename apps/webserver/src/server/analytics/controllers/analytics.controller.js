@@ -4,7 +4,9 @@ const {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
 } = require('../service/analytics.service');
-const { analysisTypes } = require(path.resolve('./config/env/analysisTypes.constants'));
+const { analysisTypes, selectedAnalysesByDefault } = require(path.resolve(
+  './config/env/analysisTypes.constants'
+));
 
 /**
  * @function analytics
@@ -101,7 +103,7 @@ exports.getOrganizationAnalysisLimit = async (req, res) => {
 exports.getMyOrganizationAnalysisOptions = (req, res) => {
   const orgAnalysisOptions = Object.values(analysisTypes).map((analysisType) => ({
     id: analysisType,
-    selectedByDefault: analysisType === analysisTypes.FOREST_CHANGE_DIAGNOSTICS ? true : false,
+    selectedByDefault: selectedAnalysesByDefault.includes(analysisType),
   }));
   res.status(200).send(Object.values(orgAnalysisOptions));
 };

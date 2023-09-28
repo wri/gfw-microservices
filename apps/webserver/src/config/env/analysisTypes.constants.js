@@ -4,6 +4,8 @@ const analysisTypes = {
   ALERTS: 'ALERTS',
 };
 
+const selectedAnalysesByDefault = [analysisTypes.FOREST_CHANGE_DIAGNOSTICS];
+
 const analysisTypesOptions = [
   {
     id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
@@ -24,5 +26,6 @@ const analysisTypesOptions = [
 
 module.exports = {
   analysisTypes,
+  selectedAnalysesByDefault,
   analysisTypesOptions,
 };

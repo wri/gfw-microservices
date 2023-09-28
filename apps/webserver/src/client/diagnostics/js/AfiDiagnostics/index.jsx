@@ -39,6 +39,9 @@ function AfiDiagnostics() {
   };
 
   useEffect(() => {
+    gtag('event', 'User accesses Deforestation Reporting KPIs diagnostics view', {
+      event_category: 'Deforestation Reporting KPIs',
+    });
     Promise.all([getAfiAnalysisForListId(), getDiagnosticsData()])
       .then(([afiAnalysisData, diagnosticsData]) => {
         const { regionalInfo, negligibleRiskStats } = afiAnalysisData;
@@ -58,6 +61,9 @@ function AfiDiagnostics() {
 
   const downloadDiagnostics = useCallback(() => {
     setIsLoading(true);
+    gtag('event', 'User downloads Deforestation Reporting KPIs diagnostics', {
+      event_category: 'Deforestation Reporting KPIs',
+    });
     fetch(`/api/afi/download?listId=${listId}`, {
       method: 'GET',
       credentials: 'same-origin',

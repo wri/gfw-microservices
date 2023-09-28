@@ -45,10 +45,10 @@ import {
   saveListConfig,
 } from '../../../../../config/config/locations.config';
 import featureFlags from '../../../../../utils/general.utils';
-
-import '../../../css/addLocation.scss';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
+
+import '../../../css/addLocation.scss';
 
 const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } =
   proLayers;
@@ -849,6 +849,11 @@ export default class AddLocation extends Component {
   };
 
   saveItem = ({ isSaveAsDraft }) => {
+    if (this.state.selectedAnalysis.includes(analysisTypes.DEFORESTATION_KPIS)) {
+      gtag('event', 'User saved a list with Deforestation Reporting KPIs analysis selected', {
+        event_category: 'Deforestation Reporting KPIs',
+      });
+    }
     const errorTitle = 'Mandatory fields missing';
     const errorMessages = [];
     const isANewList = this.state.selectedList === 'Create New List';

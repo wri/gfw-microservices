@@ -129,6 +129,11 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
       selectedAnalysis
     )
       .then(() => {
+        if (selectedAnalysis.includes(analysisTypes.DEFORESTATION_KPIS)) {
+          gtag('event', 'User uploads a list with Deforestation Reporting KPIs analysis selected', {
+            event_category: 'Deforestation Reporting KPIs',
+          });
+        }
         setDialogTitle('Locations Added');
         const action = isExistingList ? 'appended' : 'created';
         setDialogMessage(

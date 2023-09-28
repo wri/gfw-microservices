@@ -22,7 +22,7 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {Object} src_list - Result of listUtils.createNameSchema
  *   @param  {Object} dest_list - Result of listUtils.createNameSchema
- *   @param  {Number} src_location_id - location_id of targetted <location></location>
+ *   @param  {Number} src_location_id - location_id of targetted location
  *   @param {Number} dest_location_id - location_id of destination location
  *   @param {String} statement - SQL Statement
  *   @return {Promise} Returns true if successful, else error object

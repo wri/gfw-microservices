@@ -18,7 +18,7 @@ jobs:
           labels='${{ toJson(github.event.pull_request.labels) }}'
           echo '${{ toJson(github.event.pull_request.labels) }}'
           matched_labels=""
-          for label in "WEB-QA" "LD-QA" "LP-QA"; do
+          for label in "WEB-QA" "LD-QA" "LP-QA" "EAPI-QA"; do
             if echo "$labels" | grep -q "\"name\": \"$label\""; then
               matched_labels+="$label "
             fi
@@ -28,7 +28,7 @@ jobs:
             echo "Labels '${matched_labels}' found on the closed pull request."
             echo "::set-output name=labels::${matched_labels}"
           else
-            echo "None of the labels 'WEB-QA', 'LD-QA', or 'LP-QA' found on the closed pull request."
+            echo "None of the labels 'WEB-QA', 'LD-QA', 'LP-QA' or 'EAPI-QA' found on the closed pull request."
             exit 0
           fi
         shell: bash

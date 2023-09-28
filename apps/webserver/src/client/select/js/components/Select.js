@@ -1,7 +1,8 @@
-import Page from '../../../common/js/components/Page';
 import React, { Component } from 'react';
+import Page from '../../../common/js/components/Page';
 import SubHeader from '../../../common/js/components/SubHeader';
 import GfwButton from '../../../common/js/components/GfwButton';
+import getFeatureFlags from '../../../../utils/getFeatureFlags';
 import '../../css/select.scss';
 
 const pageOptions = {
@@ -20,7 +21,7 @@ export default class Select extends Component {
 
     if (props.organizations.length === 1) {
       const [organization] = props.organizations;
-      this.autoSubmit(organization);
+      this.submit(organization);
     }
   }
 
@@ -72,11 +73,12 @@ export default class Select extends Component {
     }
   };
 
-  autoSubmit = (organization) => {
+  submit = (organization) => {
     const request = new XMLHttpRequest();
-    request.onload = () => {
+    request.onload = async () => {
       console.log('request', request);
       if (request.responseText === 'Locations') {
+        await getFeatureFlags();
         window.location.href = '/locations';
       } else {
         console.log('Wrong route');
@@ -92,28 +94,9 @@ export default class Select extends Component {
     );
   };
 
-  submit = () => {
-    const request = new XMLHttpRequest();
-    request.onload = () => {
-      console.log('request', request);
-      if (request.responseText === 'Locations') {
-        window.location.href = '/locations';
-      } else {
-        console.log('Wrong route');
-      }
-    };
-    request.onerror = (err) => {
-      console.log(`Error: ${err}`);
-    };
-    request.open('POST', '/select/org', true);
-    request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    request.send(
-      `org_id=${this.state.organization.organization_id}&org_db=${this.state.organization.organization_db}&org_user_id=${this.state.organization.organization_user_id}&org_status_id=${this.state.organization.organization_status_id}&subscription_status_id=${this.state.organization.subscription_status_id}`
-    );
-  };
-
   render() {
     const accountsList = this.props.organizations.map(this.createAccountsList);
+    const { organization } = this.state;
 
     return (
       <Page links={pageOptions.links} active="select">
@@ -129,7 +112,11 @@ export default class Select extends Component {
             <tbody>{accountsList}</tbody>
           </table>
           <div className="buttons-container">
-            <GfwButton classNames="btn-green" onClick={this.submit} value="Submit" />
+            <GfwButton
+              classNames="btn-green"
+              onClick={() => this.submit(organization)}
+              value="Submit"
+            />
           </div>
         </div>
       </Page>

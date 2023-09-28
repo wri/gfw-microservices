@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import Paper from '@mui/material/Paper';
 import AfiDiagnosticsTable from './AfiDiagnosticsTable';
@@ -15,43 +15,39 @@ function AfiDiagnostics() {
   const listId = parseInt(new URLSearchParams(location.search).get('listId'), 10);
   const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
 
-  const [data, setData] = useState({});
+  const [selectedList, setSelectedList] = useState({});
 
-  useEffect(() => {
-    fetch(`/diagnosticsData`, {
+  const getAfiAnalysisForListId = () => {
+    return fetch(`/api/afi/analysis/${listId}`, {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
+    }).then((res) => res.json());
+  };
+
+  const getDiagnosticsData = () => {
+    return fetch(`/diagnosticsData`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({ listId, isSharedList }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        console.warn(error);
-      });
-  }, []);
-
-  const { selectedLists } = data;
-  const selectedList = selectedLists?.[0];
+    }).then((res) => res.json());
+  };
 
   useEffect(() => {
-    fetch(`/api/afi/analysis/${listId}`, {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-    })
-      .then((res) => res.json())
-      .then(({ regionalInfo, negligibleRiskStats }) => {
+    Promise.all([getAfiAnalysisForListId(), getDiagnosticsData()])
+      .then(([afiAnalysisData, diagnosticsData]) => {
+        const { regionalInfo, negligibleRiskStats } = afiAnalysisData;
+        const { selectedLists } = diagnosticsData;
+        const selectedList = selectedLists?.[0] || {};
+
         setTableData(regionalInfo);
         setChartData(negligibleRiskStats);
+        setSelectedList(selectedList);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -60,7 +56,7 @@ function AfiDiagnostics() {
       });
   }, []);
 
-  const downloadDiagnostics = () => {
+  const downloadDiagnostics = useCallback(() => {
     setIsLoading(true);
     fetch(`/api/afi/download?listId=${listId}`, {
       method: 'GET',
@@ -71,14 +67,13 @@ function AfiDiagnostics() {
     })
       .then((result) => {
         setIsLoading(false);
-        console.log(result);
       })
       .catch((error) => {
         console.warn(error);
       });
-  };
+  }, [listId]);
 
-  const { list_name } = selectedList || {};
+  const { list_name } = selectedList;
 
   return (
     <>

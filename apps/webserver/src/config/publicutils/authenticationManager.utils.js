@@ -277,6 +277,7 @@ const login = async (req, username, password, promanager_login = false) => {
         resolve(authenticatedInformation);
       })
       .catch((err) => {
+        logger.error('Error in login', err);
         // Check if a temporary password needs to be sent
         AWSCognito.resendTemporaryPassword(req, normalizeUsername, err)
           .then(() => {
@@ -285,6 +286,7 @@ const login = async (req, username, password, promanager_login = false) => {
             resolve(authenticatedInformation);
           })
           .catch((resendTemporaryPasswordErr) => {
+            logger.error('Error in login.AWSCognito.getUserInfo catch', resendTemporaryPasswordErr);
             reject(resendTemporaryPasswordErr);
           });
       });
@@ -534,16 +536,17 @@ const setInitialPassword = (req, old_password, new_password) => {
  *   @return {Promise} A promise object that returns true if successful, otherwise error object
  */
 const requestPasswordReset = (req, user_email) => {
+  const normalizeUsername = user_email.toLocaleLowerCase();
   return new Promise((resolve, reject) => {
     const checkUserEmailParameters = [
-      { field: 'email', type: sql.NVarChar(50), value: user_email },
+      { field: 'email', type: sql.NVarChar(50), value: normalizeUsername },
     ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspCheckUserEmail', checkUserEmailParameters)
       .then((recordsets) => {
         if (recordsets.length === 0) {
           const userMessage = langResources.getResourceString('invalidEmail');
-          const sysMessage = `CRITICAL ERROR: User not found - ${user_email}`;
+          const sysMessage = `CRITICAL ERROR: User not found - ${normalizeUsername}`;
           errorUtils.createErrorMessage(
             req,
             errorUtils.errorCodes.userNotFound,
@@ -553,7 +556,7 @@ const requestPasswordReset = (req, user_email) => {
           throw new Error('User does not exist');
         }
         // Cognito reset password
-        return AWSCognito.requestToResetPassword(req, user_email);
+        return AWSCognito.requestToResetPassword(req, normalizeUsername);
       })
       .then((result) => {
         if (result) {
@@ -622,10 +625,11 @@ const adminResetUserPassword = (req, user_email) => {
  *   @return {Promise} A promise object that returns true if successful, otherwise error object
  */
 const confirmPasswordReset = async (req, verification_code, new_password, user_email) => {
+  const normalizeUsername = user_email.toLocaleLowerCase();
   return new Promise((resolve, reject) => {
-    AWSCognito.confirmForgotPassword(req, verification_code, new_password, user_email)
+    AWSCognito.confirmForgotPassword(req, verification_code, new_password, normalizeUsername)
       .then((result) => {
-        AWSCognito.resetLoginAttributes(user_email, config.AWSVars.cognito.userpoolId)
+        AWSCognito.resetLoginAttributes(normalizeUsername, config.AWSVars.cognito.userpoolId)
           .then(() => {
             resolve(result);
           })

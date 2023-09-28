@@ -27,6 +27,7 @@ const PasswordGenerator = require('generate-password');
 const AWSCognito = require('amazon-cognito-identity-js');
 const langResources = require(path.resolve('./config/langResources'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
+const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AmazonCognitoIdentity = new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' });
 
 // Local variable for Cognito Service Provider.
@@ -396,7 +397,10 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
           authResult.authenticationStatus = config.platformVars.authenticationStatus.ResetRequired;
           resolve(authResult);
         } else {
-          handleLoginFailure(req, email);
+          handleLoginFailure(req, email).catch((err) => {
+            logger.error('Error in cognitoUser.authenticateUser.handleLoginFailure', err);
+            reject(err);
+          });
           const userMessage = langResources.getResourceString('failedToAuthenticate');
           const sysMessage = [
             'Error User Authentication: ' + err,
@@ -428,7 +432,7 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
  *  @param {String} email - The username of the cognito user (should be there email)
  *  @param {String} password - The password given by User
  *  @param {String} newPassword - Optional parameter on new Password challenge
- *  @return {Promise} Returns a promise detailing success or failure of authenticateUser
+ *  @return {Promise} Returns a promise detailing success or failure of setPassword
  */
 const setPassword = (req, email, verificationCode, newPassword) => {
   const promise = new Promise((resolve, reject) => {
@@ -772,7 +776,6 @@ function initialize() {
 }
 
 module.exports = {
-  handleLoginFailure,
   resetLoginAttributes,
   requestToResetPassword,
   setPassword,

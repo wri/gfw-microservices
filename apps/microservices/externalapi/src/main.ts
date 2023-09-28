@@ -21,7 +21,6 @@ async function bootstrap() {
       .setTitle('External API')
       .setDescription('V1 for external API')
       .setVersion('1.0')
-      .addTag('v1')
       .build();
 
     const document = SwaggerModule.createDocument(app, config);

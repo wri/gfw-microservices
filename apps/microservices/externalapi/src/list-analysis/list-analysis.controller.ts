@@ -1,11 +1,13 @@
 import { Controller, Get, Param, Req } from '@nestjs/common';
 import { ListAnalysisResponse } from './list-analysis.dto';
 import { ListAnalysisService } from './list-analysis.service';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('/v1/list')
 export class ListAnalysisController {
   constructor(private readonly listAnalysisService: ListAnalysisService) {}
 
+  @ApiResponse({ status: 200, type: ListAnalysisResponse })
   @Get(':listID/analysis/FCD/status')
   async getAnalysisStatus(
     @Param('listID') listID: string,

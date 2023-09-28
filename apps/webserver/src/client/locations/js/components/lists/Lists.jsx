@@ -101,6 +101,7 @@ import columns from '../../config/columns';
 import { isUserList } from '../../../../common/js/utils/gfw.utils';
 import { CommodityRiskFilterDrawer, ForestChangeFilterDrawer } from './Filters';
 import LocationDataNotAvailableMessage from './LocationDataNotAvailableMessage';
+import AnalysisListChips from '../landing/listItem/AnalysisListChips';
 // CONSTANTS
 import {
   gfwListNames,
@@ -1987,6 +1988,7 @@ export default class Lists extends Component {
         : [];
     const flagOptions = columns.flags.map(this.createFlagList);
     const listName = selectedList ? selectedList.list_name : '';
+    const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : '';
     const isGfwList = gfwListNames.includes(listName);
     // user lists are paginated in the backend, gfw lists search works in the front end
     const filteredLists = isGfwList
@@ -2223,24 +2225,30 @@ export default class Lists extends Component {
         <ModalLoader open={isLoading} />
         <section className="locations-body list-detail-page">
           {selectedList && (
-            <Breadcrumbs>
-              <LinkButton
-                label={locationsPage.lists.locations}
-                onClick={() => this.changeToLocationView()}
-              />
-              {currentFolder && (
+            <div className="flex-grid">
+              <Breadcrumbs>
                 <LinkButton
-                  label={currentFolder.name}
-                  onClick={() => this.changeFolderView(currentFolder)}
+                  label={locationsPage.lists.locations}
+                  onClick={() => this.changeToLocationView()}
                 />
-              )}
-              {shareView ? (
-                <LinkButton label={listName} onClick={() => showShareList(false)} />
-              ) : (
-                <span>{listName}</span>
-              )}
-              {shareView && <span>{locationsPage.lists.share}</span>}
-            </Breadcrumbs>
+                {currentFolder && (
+                  <LinkButton
+                    label={currentFolder.name}
+                    onClick={() => this.changeFolderView(currentFolder)}
+                  />
+                )}
+                {shareView ? (
+                  <LinkButton label={listName} onClick={() => showShareList(false)} />
+                ) : (
+                  <span>{listName}</span>
+                )}
+                {shareView && <span>{locationsPage.lists.share}</span>}
+              </Breadcrumbs>
+
+              <div style={{ marginLeft: 'auto' }}>
+                <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
+              </div>
+            </div>
           )}
           <div className="flex-grid">
             <aside className="col list-side-panel">

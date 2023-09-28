@@ -2,7 +2,7 @@ import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity({ name: 'ExternalApiKey' })
-export class Token {
+export class ExternalAPIKey {
   @PrimaryColumn()
   awsId: string;
 

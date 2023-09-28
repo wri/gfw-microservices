@@ -7,6 +7,7 @@ import IconArrowLeft from '../../../common/js/components/icon/IconArrowLeft';
 import LinkButton from '../../../common/js/components/LinkButton';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
+import getFeatureFlags from '../../../../utils/getFeatureFlags';
 import '../../css/verify.scss';
 
 const pageOptions = {
@@ -77,11 +78,11 @@ export default class Verify extends Component {
     request.send(`tokenID=${token}`);
   };
 
-  handleVerify = (req) => {
-    console.log(req.responseText);
+  handleVerify = async (req) => {
     if (req.responseText === 'User') {
       // IF this user is a member of MORE THAN ONE organization, route him to somewhere else
       // somewhere he must choose which company to display
+      await getFeatureFlags();
       window.location.href = '/locations';
     } else if (req.responseText === 'Manager') {
       window.location.href = '/pro-manager-list';

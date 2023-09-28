@@ -43,14 +43,13 @@ function ActiveList({
   setDeleteDialogOpen,
   userIsAdmin,
   handleRerunDialogState,
-  history,
 }) {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoadingDiagnostic, setIsLoadingDiagnostic] = useState(false);
   const [isChangeTypeOfAnalysisModalOpen, setIsChangeTypeOfAnalysisModalOpen] = useState(false);
 
-  const { isEudrAvailable } = featureFlags;
+  const { isAfiAvailable } = featureFlags;
+
   const {
     list_name,
     id,
@@ -115,7 +114,7 @@ function ActiveList({
 
   return (
     <>
-      {isEudrAvailable && (
+      {isAfiAvailable && (
         <ChangeTypeOfAnalysisModal
           listId={id}
           listAnalysesStatus={listAnalysesStatus}
@@ -183,7 +182,7 @@ function ActiveList({
               {showDiagnosticOpt && (
                 <MenuItem
                   primaryText={locationsPage.lists.diagnostic}
-                  leftIcon={isLoadingDiagnostic ? <InlineLoader /> : <QueryStatsIcon />}
+                  leftIcon={<QueryStatsIcon />}
                   onClick={() => {
                     window.location = `/diagnostics?listId=${id}`;
                   }}
@@ -237,7 +236,7 @@ function ActiveList({
                   setIsMenuOpen(false);
                 }}
               />
-              {isEudrAvailable && (
+              {isAfiAvailable && (
                 <MenuItem
                   primaryText={locationsPage.lists.changeTypeOfAnalysis}
                   leftIcon={<SettingsIcon />}

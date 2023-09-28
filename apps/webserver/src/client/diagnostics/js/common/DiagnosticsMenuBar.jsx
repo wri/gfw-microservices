@@ -14,11 +14,11 @@ function DiagnosticsMenuBar({
   selectedDiagnostics = 'FCD',
   availableDiagnostics = [],
 }) {
-  const { isEudrAvailable } = featureFlags;
+  const { isAfiAvailable } = featureFlags;
 
   const diagnosticOptions = [{ value: 'FCD', label: 'Forest change' }];
 
-  if (isEudrAvailable) {
+  if (isAfiAvailable) {
     diagnosticOptions.push({ value: 'AFI', label: 'AFI' });
   }
 

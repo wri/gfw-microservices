@@ -4,6 +4,8 @@ import CardContent from '@mui/material/CardContent';
 import Modal from '@mui/material/Modal';
 import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
+import { requestGeoTrellisAnalyzeList } from '../../../utils/request.utils';
+import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import './ChangeTypeOfAnalysisModal.scss';
 
@@ -14,7 +16,7 @@ function ChangeTypeOfAnalysisModal({
   listAnalysesStatus,
 }) {
   const [selectedAnalysis, setSelectedAnalysis] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
   // if there is no listId, the analyses selection is for the creation of a new list
   const updatingAnalysesSelectionForExistingList = !!listId;
 
@@ -28,15 +30,30 @@ function ChangeTypeOfAnalysisModal({
   }, [listAnalysesStatus, listId]);
 
   const updateSelectedAnalysis = () => {
+    setIsLoading(true);
     fetch(`/api/list/${listId}/selectedAnalyses`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ analysisIds: selectedAnalysis }),
-    }).then(() => {
-      // we don't have a way to reload the list of lists so we reload the page
-      window.location.reload();
-    });
+    })
+      .then(() => {
+        return requestGeoTrellisAnalyzeList({ id: listId }, true);
+      })
+      .then(() => {
+        gtag('event', 'User submits a list by changing selected analyses from landing page', {
+          event_category: 'Submit List',
+        });
+      })
+      .catch((error) => {
+        console.warn(error);
+        setIsLoading(false);
+      })
+      .finally(() => {
+        setIsChangeTypeOfAnalysisModalOpen(false);
+        // we don't have a way to reload the list of lists so we reload the page
+        window.location.href = '/locations';
+      });
   };
 
   return (
@@ -52,9 +69,10 @@ function ChangeTypeOfAnalysisModal({
             selectedAnalyses={selectedAnalysis}
             setSelectedAnalyses={setSelectedAnalysis}
           />
-
           <br />
-          {updatingAnalysesSelectionForExistingList && (
+
+          {updatingAnalysesSelectionForExistingList && isLoading && <InlineLoader />}
+          {updatingAnalysesSelectionForExistingList && !isLoading && (
             <Button
               variant="primary"
               disabled={!selectedAnalysis.length}

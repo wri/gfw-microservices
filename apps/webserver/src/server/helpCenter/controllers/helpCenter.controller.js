@@ -37,7 +37,7 @@ exports.helpCenter = (req, res) => {
 
       onFailure: (err) => {
         logger.error(`Authentication failed: ${JSON.stringify(err)}`);
-        res.json({
+        res.status(403).json({
           success: false,
           message: 'Username or password is not correct',
         });

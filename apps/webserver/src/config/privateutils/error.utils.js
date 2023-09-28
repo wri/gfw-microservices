@@ -118,7 +118,7 @@ function createErrorMessage(req, error_code, user_msg, system_msg) {
     systemMessage: system_msg,
   };
   // log error
-  logger.log(req, 0, objError);
+  logger.error('createErrorMessage', objError);
   return objError;
 }
 

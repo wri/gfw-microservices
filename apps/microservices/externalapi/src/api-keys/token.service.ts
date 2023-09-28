@@ -7,11 +7,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Token } from './token.entity';
+import { ExternalAPIKey } from './external-api-key.entity';
 import { APIGateway } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
-import { ViewApiKeyResponse, transformApiKey, transformApiKeys } from './transformers';
+import { transformApiKey, transformApiKeys } from './transformers';
 import { User } from './user.entity';
+import { ViewApiKeyResponse } from './dtos';
 const DEFAULT_API_GROUP = 'FCD';
 const DEFAULT_KEY_TYPE = 'API_KEY';
 @Injectable()
@@ -19,8 +20,8 @@ export class TokenService {
   private readonly apiGateway: APIGateway;
 
   constructor(
-    @InjectRepository(Token, 'client')
-    private tokenRepository: Repository<Token>,
+    @InjectRepository(ExternalAPIKey, 'client')
+    private tokenRepository: Repository<ExternalAPIKey>,
     @InjectRepository(User, 'client')
     private userRepository: Repository<User>,
     private readonly configService: ConfigService
@@ -78,7 +79,7 @@ export class TokenService {
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
-    const token = new Token();
+    const token = new ExternalAPIKey();
     token.awsId = awsToken.id;
     token.creatorUserId = userId;
     token.organizationId = organizationId;
@@ -94,9 +95,7 @@ export class TokenService {
       throw new InternalServerErrorException(`Failed to store token in database. ${error.message}`);
     }
   }
-  async findTokenByOrganizationId(
-    organizationId: number
-  ): Promise<ViewApiKeyResponse[] | undefined> {
+  async findTokenByOrganizationId(organizationId: number): Promise<ViewApiKeyResponse[]> {
     const tokens = await this.tokenRepository.find({ where: { organizationId } });
     return transformApiKeys(tokens);
   }

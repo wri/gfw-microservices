@@ -30,10 +30,11 @@ function AnalyzingList({ list, isAListSharedWithMe, isShared, showSharedColumn }
           {sharedColumnText()}
         </div>
       )}
+      <div className="locations-list__controls">
+        <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
+      </div>
 
       <div className="locations-list__menu-container">
-        <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
-
         <IconButton icon={<IconMenuDots />} title={''} disabled size="medium" variant="menu" />
       </div>
     </li>

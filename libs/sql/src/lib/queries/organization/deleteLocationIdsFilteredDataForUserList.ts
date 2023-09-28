@@ -35,7 +35,7 @@ BEGIN
 			SET @Filters = + @Filters + ' AND [Analysis Area] ' + @AnalysisAreaOperator + ' @AnalysisAreaFilter '
 		END
 
-	-- Return data from both tables and store Locations iDs into temp table
+	-- Return data from both tables and store locations ids into temp table
 	SET @SQL = @SQL + ' WHERE 1=1 '+@Filters + ')
 							INSERT INTO @KeyValuesHoldingTable SELECT * FROM DeleteTableIds
 						';
@@ -58,11 +58,12 @@ BEGIN
 
 	-- Delete locations from the AFIAnalysis
 	SET @TEMPLATE = 'DELETE FROM [AFIAnalysis] WHERE list_id = {LIST_ID} 
-					AND location_id  IN (SELECT * FROM @KeyValuesHoldingTable)
+					AND (location_id = -1 OR location_id IN (SELECT * FROM @KeyValuesHoldingTable))
 					'
 	SET @SQL = @SQL + REPLACE(@TEMPLATE, '{LIST_ID}',  @listID)
+	SET @SQL = REPLACE(@SQL, '{LOCATION_TABLE}', @listLocationTableName);
 
 	EXEC sp_executesql @SQL, 
-  	N'@Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaFilter FLOAT, @AnalysisAreaOperator VARCHAR(10), @listID INT OUTPUT, @isListEmpty BIT OUTPUT',
-  	@Country = @Country, @State = @State, @SubState = @SubState, @AnalysisAreaFilter = @AnalysisAreaFilter, @AnalysisAreaOperator = @AnalysisAreaOperator, @listID = @listID OUTPUT, @isListEmpty = @isListEmpty OUTPUT;
+  	N'@Country NVARCHAR(150), @State NVARCHAR(150), @SubState NVARCHAR(150), @AnalysisAreaFilter FLOAT, @AnalysisAreaOperator VARCHAR(10), @listID INT OUTPUT',
+  	@Country = @Country, @State = @State, @SubState = @SubState, @AnalysisAreaFilter = @AnalysisAreaFilter, @AnalysisAreaOperator = @AnalysisAreaOperator, @listID = @listID OUTPUT;
 END`;

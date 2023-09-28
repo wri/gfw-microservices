@@ -7,6 +7,7 @@ import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisT
 import { requestGeoTrellisAnalyzeList } from '../../../utils/request.utils';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
+import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import './ChangeTypeOfAnalysisModal.scss';
 
 function ChangeTypeOfAnalysisModal({
@@ -41,9 +42,11 @@ function ChangeTypeOfAnalysisModal({
         return requestGeoTrellisAnalyzeList({ id: listId }, true);
       })
       .then(() => {
-        gtag('event', 'User submits a list by changing selected analyses from landing page', {
-          event_category: 'Submit List',
-        });
+        if (selectedAnalysis.includes(analysisTypes.DEFORESTATION_KPIS)) {
+          gtag('event', 'User changes the selected analyses from landing page', {
+            event_category: 'Deforestation Reporting KPIs',
+          });
+        }
       })
       .catch((error) => {
         console.warn(error);

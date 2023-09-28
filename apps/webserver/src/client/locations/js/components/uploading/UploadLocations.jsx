@@ -57,6 +57,8 @@ import {
   saveListConfig,
 } from '../../../../../config/config/locations.config';
 import { defaultCustomAttributeHeaders } from '../edit/table/MultiGridTable.config';
+import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
+
 // Style
 import '../../../css/locations.scss';
 
@@ -841,17 +843,11 @@ class UploadLocations extends Component {
                   list_status_id: getListStatusIdByStatusName('Draft'),
                 };
 
-                if (isSaveAsDraft) {
-                  gtag('event', 'Upload List', {
-                    event_category: 'Submit',
-                    event_label: 'User uploads a list with multiple locations as a draft',
-                  });
-                } else {
-                  gtag('event', 'Upload List', {
-                    event_category: 'Submit',
-                    event_label: 'User uploads a list with multiple locations and submits',
-                  });
-                }
+                gtag('event', 'Upload List', {
+                  event_category: 'Submit',
+                  event_label: 'User uploads a list with multiple locations as a draft',
+                });
+
                 gtag('event', 'upload locations save as draft button clicked', {
                   event_category: 'Locations Click',
                   event_label: `user saved as draft a list with a newly uploaded ${addType} location with a commodity type of ${activeTemplate}`,
@@ -869,17 +865,12 @@ class UploadLocations extends Component {
                   list_status_id: getListStatusId(isSaveAsDraft),
                   analysisIds: selectedAnalyses,
                 };
-                if (isSaveAsDraft) {
-                  gtag('event', 'Upload List', {
-                    event_category: 'Submit',
-                    event_label: 'User uploads a list with multiple locations as a draft',
-                  });
-                } else {
-                  gtag('event', 'Upload List', {
-                    event_category: 'Submit',
-                    event_label: 'User uploads a list with multiple locations and submits',
-                  });
-                }
+
+                gtag('event', 'Upload List', {
+                  event_category: 'Submit',
+                  event_label: 'User uploads a list with multiple locations and submits',
+                });
+
                 gtag('event', 'upload locations save button clicked', {
                   event_category: 'Locations Click',
                   event_label: `user created a list with a newly uploaded ${addType} location with a commodity type of ${activeTemplate}`,
@@ -920,6 +911,15 @@ class UploadLocations extends Component {
               }
               request.setRequestHeader('Content-Type', 'application/json');
               request.send(JSON.stringify(bigObj));
+              if (this.state.selectedAnalyses.includes(analysisTypes.DEFORESTATION_KPIS)) {
+                gtag(
+                  'event',
+                  'User uploads a list with Deforestation Reporting KPIs analysis selected',
+                  {
+                    event_category: 'Deforestation Reporting KPIs',
+                  }
+                );
+              }
             }
           });
         });

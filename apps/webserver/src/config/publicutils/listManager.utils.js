@@ -64,9 +64,7 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
-const { createListAnalysisStatus } = require(path.resolve(
-  './queries/organization/createListAnalysisStatus'
-));
+const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 
 /** @function {createList}
@@ -194,25 +192,11 @@ const createList = (
         return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateAnalysisTable', params);
       })
       .then(() => {
-        analysisIds.forEach((analysisId) => {
-          const params = [
-            {
-              field: 'ListID',
-              type: sql.Int,
-              value: list_id,
-            },
-            {
-              field: 'AnalysisID',
-              type: sql.NVarChar(150),
-              value: analysisId,
-            },
-          ];
-          sqlUtils.executeOrganizationQuery(req, createListAnalysisStatus, params);
-        });
-      })
-      .then(() => {
         // Previous Stored Procedure executed
         uspCreateAnalysisTableExecuted = true;
+        return listDataService.setSelectedAnalyses(req, list_id, analysisIds);
+      })
+      .then(() => {
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListCreated,
@@ -234,6 +218,7 @@ const createList = (
         }
         if (uspCreateAnalysisTableExecuted) {
           rollbackUtils.dropOrganizationTable(req, list.analysis_table);
+          rollbackUtils.deleteOrganizationTableRow(req, 'ListsAnalysisStatus', list_id, 'ListID');
         }
 
         // Create Error Object and reject the error
@@ -267,7 +252,8 @@ const saveAsDraftList = (
   location_classification,
   user_id,
   custom_attributes,
-  gfw_list_id
+  gfw_list_id,
+  analysisIds = []
 ) => {
   let list_id = null;
   // Tracking Stored Procedure Executions for rollbacks
@@ -373,6 +359,9 @@ const saveAsDraftList = (
       .then(() => {
         // Previous Stored Procedure executed
         uspCreateAnalysisTableExecuted = true;
+        return listDataService.setSelectedAnalyses(req, list_id, analysisIds);
+      })
+      .then(() => {
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListCreated,
@@ -393,6 +382,7 @@ const saveAsDraftList = (
         }
         if (uspCreateAnalysisTableExecuted) {
           rollbackUtils.dropOrganizationTable(req, list.analysis_table);
+          rollbackUtils.deleteOrganizationTableRow(req, 'ListsAnalysisStatus', list_id, 'ListID');
         }
 
         // Create Error Object and reject the error
@@ -1085,7 +1075,8 @@ const uploadToNewListAndSaveAsDraft = (
   location_classification,
   custom_attributes,
   geojson,
-  gfw_list_id
+  gfw_list_id,
+  analysisIds
 ) => {
   const { original_gfw_list } = req.body;
   const user_id = req.session.organization_user_id;
@@ -1100,7 +1091,8 @@ const uploadToNewListAndSaveAsDraft = (
       location_classification,
       user_id,
       custom_attributes,
-      gfw_list_id
+      gfw_list_id,
+      analysisIds
     )
       .then((list_id) => {
         listID = list_id;
@@ -2050,8 +2042,6 @@ function deleteListIfEmpty(req, listID) {
 }
 
 module.exports = {
-  createList,
-  saveAsDraftList,
   getUserLists,
   getUserListsWithAnalysisId,
   rerunExistingList,

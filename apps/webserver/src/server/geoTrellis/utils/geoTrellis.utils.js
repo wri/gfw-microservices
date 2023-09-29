@@ -55,7 +55,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   });
 
   const listAnalysisStatusData = await getListAnalysisStatusByListId(req, listID);
-  const analysisTypes = extractAnalysisTypes(listAnalysisStatusData, listStatus.Active);
+  const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
 
   const data = {
     list_id: listID,

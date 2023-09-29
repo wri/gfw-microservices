@@ -3,11 +3,16 @@
  *   @name: analysisManager.utils.js
  *   @description : Manager file to control analysis and run each microservice
  *
- *   @function {getAnalysisDataForUserList}
- *   @function {getAnalysisDataForGFWList}
- *   @function {getGFWListAnalyses}
- *   @function {requestAnalysis}
- *   @function {getAFIAnalysisForListId}
+ * @function {getAnalysisDataForUserList}
+ * @function {getAnalysisDataForGFWList}
+ * @function {getAnalysisDataForProtectedAreas}
+ * @function {getAnalysisDataForProtectedAreasByLocationId}
+ * @function {getGFWListAnalyses}
+ * @function {getListAnalyses}
+ * @function {requestAnalysis}
+ * @function {requestDashboardAnalysis}
+ * @function {getAFIAnalysisForListId}
+ * @function {getAFINegligibleStatsForListId}
  *
  ********************************************************************/
 const developmentEnv = process.env.NODE_ENV === 'development';

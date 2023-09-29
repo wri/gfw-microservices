@@ -72,6 +72,7 @@ const ERROR_CODES = {
   failedToGetLockStatus: 610,
   failedToGetAFIAnalysisForListId: 611,
   failedToGetAFINegligibleStatsForListId: 612,
+  failedToDeleteListIsNotEmpty: 613,
   // Data
   failedToGetData: 700,
   // Sharing

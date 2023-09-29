@@ -27,6 +27,7 @@ import ExistingListSelector from './ExistingListSelector';
 import { deduceActiveId } from '../../../../common/js/utils/templateUtils';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 import featureFlags from '../../../../../utils/general.utils';
+import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 
 export const CHOICES = {
@@ -53,10 +54,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
   const [listName, setListName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [existingListName, setExistingListName] = useState();
-  const [selectedAnalysis, setSelectedAnalysis] = useState([
-    analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
-    analysisTypes.ALERTS,
-  ]);
+  const [selectedAnalysis, setSelectedAnalysis] = useState(getAnalysesSelectedByDefault());
   const fileInputRef = useRef(null);
 
   const chooser = locationsPage.landing.addLocationChooser;

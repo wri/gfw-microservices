@@ -49,6 +49,7 @@ import { resetScroll } from '../../utils/scroll.utils';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
 import { getListStatusIdByStatusName } from '../../utils/draft.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
+import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 
 // Configs
 import {
@@ -90,7 +91,7 @@ class UploadLocations extends Component {
       canGoNext: true,
       isUploading: false,
       isSaving: false,
-      selectedAnalyses: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS, analysisTypes.ALERTS],
+      selectedAnalyses: getAnalysesSelectedByDefault(),
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
@@ -1367,7 +1368,6 @@ class UploadLocations extends Component {
               />
             </div>,
           ];
-
     return (
       <div className={`locations-body ${view === 'upload' ? '' : 'hidden'}`}>
         <Dialog

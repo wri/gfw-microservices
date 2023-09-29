@@ -45,6 +45,7 @@ import {
   saveListConfig,
 } from '../../../../../config/config/locations.config';
 import featureFlags from '../../../../../utils/general.utils';
+import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
 
@@ -258,7 +259,7 @@ export default class AddLocation extends Component {
       lng: '',
       overrideOnClose: false,
       isLoading: false,
-      selectedAnalysis: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS, analysisTypes.ALERTS],
+      selectedAnalysis: getAnalysesSelectedByDefault(),
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {

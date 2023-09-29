@@ -7,6 +7,7 @@ import { SQL_CONFIG } from '../config/config';
 export class SQLUtils {
   config: sql.config;
   connection: sql.ConnectionPool;
+  databaseName: string;
 
   constructor(config: sql.config) {
     this.config = config;
@@ -14,6 +15,7 @@ export class SQLUtils {
 
   async connect(database: string = this.config.database): Promise<void> {
     const config = { ...this.config, database };
+    this.databaseName = database;
     this.connection = await get(database, config); //sql.connect(this.config);
   }
 
@@ -38,7 +40,7 @@ export class SQLUtils {
         });
     });
   }
-  queryArray<T>(query: string, parameters?: ParameterType[]): Promise<Array<T>> {
+  queryArray<T>(queryNameOrString: string, parameters?: ParameterType[]): Promise<Array<T>> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {
@@ -48,8 +50,11 @@ export class SQLUtils {
     }
 
     return new Promise((resolve, reject) => {
-      request
-        .query(query)
+      const isSystemQuery = this.databaseName === SQL_CONFIG.database;
+      const queryStr = getQueryStr(isSystemQuery, queryNameOrString);
+      const dbPromise = queryStr ? request.query(queryStr) : request.execute(queryNameOrString);
+
+      dbPromise
         .then((result: sql.IResult<T>) => {
           if (Number(result.recordsets.length) > 0) {
             resolve(result.recordsets[0] as Array<T>);
@@ -62,9 +67,9 @@ export class SQLUtils {
     });
   }
 
-  executeQuery<T>(query: string, parameters?: ParameterType[]): Promise<T> {
+  executeQuery<T>(queryName: string, parameters?: ParameterType[]): Promise<T> {
     return new Promise((resolve, reject) => {
-      this.executeQueryArray<T>(query, parameters)
+      this.executeQueryArray<T>(queryName, parameters)
         .then((result) => {
           if (result === undefined) {
             resolve(undefined);
@@ -80,28 +85,8 @@ export class SQLUtils {
     });
   }
 
-  executeQueryArray<T>(query: string, parameters?: ParameterType[]): Promise<Array<T>> {
-    const request = this.connection.request();
-
-    if (parameters && Array.isArray(parameters)) {
-      parameters.forEach((param) => {
-        request.input(param.field, param.type, param.value);
-      });
-    }
-
-    return new Promise((resolve, reject) => {
-      request
-        .execute(query)
-        .then((result: sql.IProcedureResult<sql.IRecordSet<T>>) => {
-          if (Number(result.recordsets.length) > 0) {
-            resolve(result.recordsets[0]);
-          }
-          resolve(undefined);
-        })
-        .catch((errorMessage) => {
-          reject(errorMessage);
-        });
-    });
+  executeQueryArray<T>(queryName: string, parameters?: ParameterType[]): Promise<Array<T>> {
+    return this.queryArray<T>(queryName, parameters);
   }
 
   disconnect() {

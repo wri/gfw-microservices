@@ -201,6 +201,7 @@ module.exports = (app, limiter) => {
       gfw_list_id,
       selected_location_ids: src_location_ids,
       original_gfw_list,
+      analysisIds,
     } = req.body;
 
     const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
@@ -214,7 +215,8 @@ module.exports = (app, limiter) => {
       location_classification,
       custom_attributes,
       finalGeojson,
-      gfw_list_id
+      gfw_list_id,
+      analysisIds
     )
       .then(async ({ resultGeoJSON }) => {
         if (original_gfw_list) {
@@ -379,7 +381,7 @@ module.exports = (app, limiter) => {
       .catch((err) => {
         console.log('Error /locations/updateExistingList', err);
         // Set the list back to being active
-        ListManager.setListStatus(req, list_id, 2);
+        ListManager.setListStatus(req, list_id, listStatus.Active);
         ListManager.setListUnlocked(req, list_id);
         res.send('Location add failed');
       });
@@ -1233,7 +1235,7 @@ module.exports = (app, limiter) => {
         ]);
       })
       .then(([processingLimit, listAnalysisStatusData]) => {
-        const analysisTypes = extractAnalysisTypes(listAnalysisStatusData, listStatus.Active);
+        const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
 
         axios
           .post(`${LISTS_MICROSERVICE_URL}/process-list`, {

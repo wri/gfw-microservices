@@ -31,7 +31,8 @@ BEGIN
 	EXEC sp_executesql @SQL
 
 	-- Delete locations from AFIAnalysis 
-  SET @TEMPLATE = 'DELETE FROM dbo.[AFIAnalysis] WHERE list_id = {LIST_ID} AND location_id = {LOCATION_ID}'
+  SET @TEMPLATE = 'DELETE FROM dbo.[AFIAnalysis] WHERE list_id = {LIST_ID} 
+					AND (location_id = -1 OR location_id = {LOCATION_ID})'
   SET @SQL = REPLACE(@TEMPLATE, '{LIST_ID}',  @list_id)
 	SET @SQL = REPLACE(@SQL, '{LOCATION_ID}', @location_id)
 	EXEC sp_executesql @SQL

@@ -58,8 +58,8 @@ BEGIN
 
 	-- Delete locations from the AFIAnalysis
 	SET @TEMPLATE = 'DELETE FROM [AFIAnalysis] WHERE list_id = {LIST_ID} 
-					AND (location_id = -1 OR location_id IN (SELECT * FROM @KeyValuesHoldingTable))
-					'
+						AND (location_id = -1 OR location_id IN (SELECT * FROM @KeyValuesHoldingTable))
+						'
 	SET @SQL = @SQL + REPLACE(@TEMPLATE, '{LIST_ID}',  @listID)
 	SET @SQL = REPLACE(@SQL, '{LOCATION_TABLE}', @listLocationTableName);
 

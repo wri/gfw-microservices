@@ -7,6 +7,7 @@ import CustomTooltip from '../CustomTooltip/CustomTooltip';
 import FailedTooltip from '../CustomTooltip/FailedTooltip';
 import InlineLoader from '../Loaders/InlineLoader';
 import { getIsDiagnosticStatusDraft } from '../../../../locations/js/utils/draft.utils';
+import { listStatus } from '../../../../../config/env/listStatuses.constants';
 
 function selectTooltipMessage(currentUser, list, listDraftStatus, listContext) {
   const userIsOwner = currentUser.id === list.user_id;
@@ -77,10 +78,10 @@ function ListPanel({
     const IS_LOCK_STATUS = !!(list.lock_status && list.lock_user_id);
 
     let className = '';
-    if (list.list_status_id === 1 || IS_LOCK_STATUS) {
+    if (list.list_status_id === listStatus.Pending || IS_LOCK_STATUS) {
       // Pending
       className = 'locations-list-name__inactive';
-    } else if (list.list_status_id === 3) {
+    } else if (list.list_status_id === listStatus.Inactive) {
       // Inactive
       className = 'locations-list-name__failed';
     } else if (listDraftStatus && listContext === 'map') {
@@ -93,7 +94,7 @@ function ListPanel({
     const onClickHandler = () => {
       togglePanel();
       if (
-        list.list_status_id === 2 ||
+        list.list_status_id === listStatus.Active ||
         (getIsDiagnosticStatusDraft(list) && listContext === 'map')
       ) {
         handleSelectedList(list);
@@ -124,7 +125,7 @@ function ListPanel({
               iconHeight={14}
             />
           )}
-          {list.list_status_id === 3 && (
+          {list.list_status_id === listStatus.Inactive && (
             <span className="my-lists-summary__icon-container" style={{ color: '#EB0026' }}>
               <FailedTooltip
                 placement="top"
@@ -133,7 +134,7 @@ function ListPanel({
               />
             </span>
           )}
-          {(list.list_status_id === 1 || IS_LOCK_STATUS) && (
+          {(list.list_status_id === listStatus.Pending || IS_LOCK_STATUS) && (
             <span className="my-lists-summary__icon-container">
               <InlineLoader />
             </span>

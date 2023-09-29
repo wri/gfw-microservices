@@ -74,7 +74,6 @@ const analyzeLocation = (req, organization_database, list, geojson) => {
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {String} organization_database - The organization DB
  * @param {Object} list - Object containg all info about a list (schema)
- * @param {Boolean} isEdit - A boolean used to determine if we are running a list edit (either a move or copy location)
  */
 const analyzeList = async (req, organization_database, list) => {
   const { user_email } = req.session;
@@ -106,69 +105,7 @@ const analyzeList = async (req, organization_database, list) => {
   }
 };
 
-/**
- * @function rerunList
- * @summary Sends
- * @param  {Object}     req - Manadatory first parameter to pass the request object into the function in case session info is required.
- * @param  {String}     organization_database - The organization DB
- * @param  {Object}     list - Object containg all info about a list (schema)
- */
-const rerunList = (req, organization_database, list) => {
-  const { organization_user_id, user_first_name, user_last_name, user_email } = req.session;
-  // 1. Log the action
-  logger.logActivity(
-    req,
-    logger.listActivityTypes.List.ListAnalyzing,
-    `Rerun process has started for ${list.list_name}`
-  );
-  // 2. Send SQS message for analysis (for location_id and queue_url, using the defaults.)
-  sqsUtils
-    .sendMessage(
-      organization_user_id,
-      user_first_name,
-      user_last_name,
-      user_email,
-      organization_database,
-      list.list_name,
-      list.list_table,
-      list.analysis_table
-    )
-    .then(() => {
-      const content = { list_name: list.list_name };
-      const subject = `Diagnostics and List Views rerun process for the GFW Pro list ${list.list_name} has started`;
-      const msg = AWSSES.createBodyContent(
-        req,
-        config.platformVars.emailType.LIST_ANALYSIS_RERUN_SUCCESS,
-        content
-      );
-      logger.logActivity(
-        req,
-        logger.listActivityTypes.List.ListAnalyzing,
-        `(${list.list_name}) sent to queue.`
-      );
-      return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
-    })
-    .catch((err) => {
-      console.log('Error sending rerun list to queue', err);
-      const subject = 'Error Submitting Analysis for rerun';
-      const msg = AWSSES.createBodyContent(
-        req,
-        config.platformVars.emailType.LIST_ANALYSIS_ERROR,
-        'error'
-      );
-      // logger.logActivity(req, logger.listActivityTypes.List.ListAnalyzing, `Error sending ${list.list_name} to queue`);
-      errorUtils.createErrorMessage(
-        req,
-        errorUtils.errorCodes.SQSError,
-        `Failed to send list ${list.list_name} to queue for rerun`,
-        err
-      );
-      return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
-    });
-};
-
 module.exports = {
   analyzeLocation,
   analyzeList,
-  rerunList,
 };

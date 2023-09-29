@@ -180,6 +180,11 @@ export class LargeListService {
             type: sql.NVarChar(150),
             value: analysisId,
           },
+          {
+            field: 'Status',
+            type: sql.Int,
+            value: list_status_id,
+          },
         ]);
       });
 

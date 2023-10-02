@@ -842,6 +842,7 @@ class UploadLocations extends Component {
                   location_classification:
                     locationClassifications.length === 0 ? '' : locationClassifications[0],
                   list_status_id: getListStatusIdByStatusName('Draft'),
+                  analysisIds: selectedAnalyses,
                 };
 
                 gtag('event', 'Upload List', {
@@ -900,6 +901,7 @@ class UploadLocations extends Component {
                   appendLocations: true,
                   list_analysis_table_name: activeList[0].list_analysis_table_name,
                   list_status_id: getListStatusId(isSaveAsDraft),
+                  analysisIds: selectedAnalyses,
                 };
                 gtag('event', 'Upload List', {
                   event_category: 'Submit',

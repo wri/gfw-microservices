@@ -14,17 +14,3 @@ export function getIsDiagnosticStatusDraft(list) {
 
   return false;
 }
-
-/**
- * Get List Status ID by status name
- *
- * @param {string} statusName - List Status ID (eg. ['Pending', 'Active', 'Inactive', 'Draft'])
- * @return {number} - List Status ID (eg. [1, 2, 3, 4])
- */
-export function getListStatusIdByStatusName(statusName) {
-  return listStatusDescriptions
-    ? listStatusDescriptions.find(
-        (status) => status.status_name.toLowerCase() === statusName.toLowerCase()
-      ).id
-    : undefined;
-}

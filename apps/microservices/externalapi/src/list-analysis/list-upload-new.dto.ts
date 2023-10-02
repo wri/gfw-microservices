@@ -27,3 +27,8 @@ export class ListUploadNewErrorResponse {
   @ApiProperty()
   errorDetails: string;
 }
+
+export class PrepareUploadRequest {
+  @ApiProperty()
+  userEmail: string;
+}

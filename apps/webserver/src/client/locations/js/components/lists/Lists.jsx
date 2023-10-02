@@ -4,6 +4,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Dialog from 'material-ui/Dialog';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 // Configs
 import { getFolders } from 'locations/js/components/landing/foldersApi';
@@ -102,6 +103,8 @@ import { isUserList } from '../../../../common/js/utils/gfw.utils';
 import { CommodityRiskFilterDrawer, ForestChangeFilterDrawer } from './Filters';
 import LocationDataNotAvailableMessage from './LocationDataNotAvailableMessage';
 import AnalysisListChips from '../landing/listItem/AnalysisListChips';
+import ChangeTypeOfAnalysisModal from '../landing/listItem/ChangeTypeOfAnalysisModal';
+
 // CONSTANTS
 import {
   gfwListNames,
@@ -110,6 +113,7 @@ import {
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from './getListFilterValues';
 import getAllColumnNames from './getAllColumnNames';
+import featureFlags from '../../../../../utils/general.utils';
 
 // STYLE
 import '../../../css/lists.scss';
@@ -167,6 +171,7 @@ export default class Lists extends Component {
       numberOfResults: undefined,
       displayLargeListEditingModal: false,
       visibleColumns: [],
+      isChangeTypeOfAnalysisModalOpen: false,
     };
   }
 
@@ -1988,7 +1993,7 @@ export default class Lists extends Component {
         : [];
     const flagOptions = columns.flags.map(this.createFlagList);
     const listName = selectedList ? selectedList.list_name : '';
-    const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : '';
+    const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
     const isGfwList = gfwListNames.includes(listName);
     // user lists are paginated in the backend, gfw lists search works in the front end
     const filteredLists = isGfwList
@@ -2136,646 +2141,666 @@ export default class Lists extends Component {
     ];
 
     return (
-      <div className={`${view === 'lists' ? '' : 'hidden'}`}>
-        {bannerContent && (
-          <Banner
-            className="lists-banner"
-            intent="positive"
-            onBannerClose={() => this.setState({ bannerContent: '' })}
-          >
-            <span>{bannerContent}</span>
-          </Banner>
-        )}
-        <Popover
-          open={displayPopover}
-          anchorEl={anchorEl}
-          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={closePopover}
-        >
-          <InfoBubbleContent bubbleData={bubbleData} closeBubble={closePopover} />
-        </Popover>
-
-        {dialogOpen && (
-          <Dialog
-            paperClassName="dialog-paper"
-            title={dialogTitle}
-            actions={allDialogActions}
-            modal={false}
-            open
-            contentStyle={{ padding: '0 24px' }}
-            onRequestClose={() => this.handleDialogClose(refreshPage)}
-          >
-            {dialogChildren ? (
-              <CopyMoveModal
-                isGfwList={isGfwList}
-                newListName={newListName}
-                isNewListNameDuplicate={isNewListNameDuplicate}
-                selectedLists={selectedLists}
-                locationsCount={allLocationsSelected ? numberOfResults : selectedLocations.length}
-                selectedMoveOrCopy={selectedMoveOrCopy}
-                selectedNewOrExisting={selectedNewOrExisting}
-                setMoveOrCopy={this.setMoveOrCopy}
-                setNewOrExisting={this.setNewOrExisting}
-                updateNewListName={this.updateNewListName}
-                updateSelectedMove={this.updateSelectedMove}
-                validLists={validLists}
-              />
-            ) : (
-              <div
-                className="dialog-content-email"
-                dangerouslySetInnerHTML={{ __html: dialogContent }}
-              />
-            )}
-          </Dialog>
-        )}
-
-        {showSubmitModal && (
-          <CustomDraftDialog
-            open
-            closeAction={() => this.setState({ showSubmitModal: false })}
-            dialogTitle="Confirm Submission"
-            dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
-            dialogActionConfirm={() => {
-              this.moveSelectedLocations();
-            }}
-          />
-        )}
-
-        {listNotAccessible && (
-          <FailedPopupDialog
-            open={listNotAccessible}
-            title={`${listName} diagnostic failed to load.`}
-            message={
-              <p>
-                Please select the list to try loading the diagnostic again. If diagnostic continue
-                to fail, email{' '}
-                <a className="popup__link" href="mailto:GFWPROsupport@wri.org">
-                  GFWPROsupport@wri.org
-                </a>{' '}
-                for assistance.
-              </p>
+      <>
+        {featureFlags?.isAfiAvailable && (
+          <ChangeTypeOfAnalysisModal
+            listId={listID}
+            listAnalysesStatus={listAnalysesStatus}
+            setIsChangeTypeOfAnalysisModalOpen={(open) =>
+              this.setState({ isChangeTypeOfAnalysisModalOpen: open })
             }
-            onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}
-            // eslint-disable-next-line no-return-assign
-            onOkButtonPress={() => (window.location = '/locations')}
+            isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
           />
         )}
 
-        <ModalLoader open={isLoading} />
-        <section className="locations-body list-detail-page">
-          {selectedList && (
-            <div className="flex-grid">
-              <Breadcrumbs>
-                <LinkButton
-                  label={locationsPage.lists.locations}
-                  onClick={() => this.changeToLocationView()}
-                />
-                {currentFolder && (
-                  <LinkButton
-                    label={currentFolder.name}
-                    onClick={() => this.changeFolderView(currentFolder)}
-                  />
-                )}
-                {shareView ? (
-                  <LinkButton label={listName} onClick={() => showShareList(false)} />
-                ) : (
-                  <span>{listName}</span>
-                )}
-                {shareView && <span>{locationsPage.lists.share}</span>}
-              </Breadcrumbs>
-
-              <div style={{ marginLeft: 'auto' }}>
-                <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
-              </div>
-            </div>
+        <div className={`${view === 'lists' ? '' : 'hidden'}`}>
+          {bannerContent && (
+            <Banner
+              className="lists-banner"
+              intent="positive"
+              onBannerClose={() => this.setState({ bannerContent: '' })}
+            >
+              <span>{bannerContent}</span>
+            </Banner>
           )}
-          <div className="flex-grid">
-            <aside className="col list-side-panel">
-              {!shareView && <SharingList history={history} locationCount={locationCount} />}
+          <Popover
+            open={displayPopover}
+            anchorEl={anchorEl}
+            anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+            targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+            onRequestClose={closePopover}
+          >
+            <InfoBubbleContent bubbleData={bubbleData} closeBubble={closePopover} />
+          </Popover>
 
-              {!shareView && (
-                <div className="gfw-lists-summary">
-                  <h3 className="gfw-lists-summary__title">{locationsPage.lists.gfwLists}</h3>
-                  {gfwLists}
-                </div>
-              )}
-
-              {currentUser.access_level_id !== userAccessLevel.ADMIN && !shareView && (
-                <div className="shared-lists-summary">
-                  <div className="shared-lists-summary__title">
-                    {locationsPage.lists.sharedLists}
-                  </div>
-                  {sharedLists}
-                </div>
-              )}
-
-              <div
-                className={`my-lists-summary ${
-                  currentUser.access_level_id === userAccessLevel.VIEWER ? 'hidden' : ''
-                }`}
-              >
-                <h3 className="my-lists-summary__title">{locationsPage.lists.myLists}</h3>
-                <ListsFilter
-                  value={myListsSearchFilterSidebarString}
-                  onChange={(value) => {
-                    if (value !== '' && userListFilterText === '') {
-                      gtag('event', 'User enters search', {
-                        event_category: 'Lists Click',
-                      });
-                    }
-                    if (value === '' && userListFilterText !== '') {
-                      gtag('event', 'User clears search', {
-                        event_category: 'Lists Click',
-                      });
-                    }
-                    this.setState({ myListsSearchFilterSidebarString: value });
-                  }}
+          {dialogOpen && (
+            <Dialog
+              paperClassName="dialog-paper"
+              title={dialogTitle}
+              actions={allDialogActions}
+              modal={false}
+              open
+              contentStyle={{ padding: '0 24px' }}
+              onRequestClose={() => this.handleDialogClose(refreshPage)}
+            >
+              {dialogChildren ? (
+                <CopyMoveModal
+                  isGfwList={isGfwList}
+                  newListName={newListName}
+                  isNewListNameDuplicate={isNewListNameDuplicate}
+                  selectedLists={selectedLists}
+                  locationsCount={allLocationsSelected ? numberOfResults : selectedLocations.length}
+                  selectedMoveOrCopy={selectedMoveOrCopy}
+                  selectedNewOrExisting={selectedNewOrExisting}
+                  setMoveOrCopy={this.setMoveOrCopy}
+                  setNewOrExisting={this.setNewOrExisting}
+                  updateNewListName={this.updateNewListName}
+                  updateSelectedMove={this.updateSelectedMove}
+                  validLists={validLists}
                 />
-                <div className="my-lists-summary__lists">
-                  {userLists.length ? (
-                    userLists
-                  ) : (
-                    <div className="my-lists-summary__no-results">
-                      <p className="my-lists-summary__no-results-prompt">
-                        {locationsPage.lists.listsFilterNoMatch}
-                      </p>
-                      <LinkButton
-                        className="my-lists-summary__no-results-clear"
-                        label={locationsPage.lists.listsFilterClear}
-                        onClick={() => this.setState({ myListsSearchFilterSidebarString: '' })}
-                      />
-                    </div>
+              ) : (
+                <div
+                  className="dialog-content-email"
+                  dangerouslySetInnerHTML={{ __html: dialogContent }}
+                />
+              )}
+            </Dialog>
+          )}
+
+          {showSubmitModal && (
+            <CustomDraftDialog
+              open
+              closeAction={() => this.setState({ showSubmitModal: false })}
+              dialogTitle="Confirm Submission"
+              dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
+              dialogActionConfirm={() => {
+                this.moveSelectedLocations();
+              }}
+            />
+          )}
+
+          {listNotAccessible && (
+            <FailedPopupDialog
+              open={listNotAccessible}
+              title={`${listName} diagnostic failed to load.`}
+              message={
+                <p>
+                  Please select the list to try loading the diagnostic again. If diagnostic continue
+                  to fail, email{' '}
+                  <a className="popup__link" href="mailto:GFWPROsupport@wri.org">
+                    GFWPROsupport@wri.org
+                  </a>{' '}
+                  for assistance.
+                </p>
+              }
+              onRequestClose={() => this.setState({ listNotAccessible: !listNotAccessible })}
+              // eslint-disable-next-line no-return-assign
+              onOkButtonPress={() => (window.location = '/locations')}
+            />
+          )}
+
+          <ModalLoader open={isLoading} />
+          <section className="locations-body list-detail-page">
+            {selectedList && (
+              <div className="flex-grid">
+                <Breadcrumbs>
+                  <LinkButton
+                    label={locationsPage.lists.locations}
+                    onClick={() => this.changeToLocationView()}
+                  />
+                  {currentFolder && (
+                    <LinkButton
+                      label={currentFolder.name}
+                      onClick={() => this.changeFolderView(currentFolder)}
+                    />
                   )}
+                  {shareView ? (
+                    <LinkButton label={listName} onClick={() => showShareList(false)} />
+                  ) : (
+                    <span>{listName}</span>
+                  )}
+                  {shareView && <span>{locationsPage.lists.share}</span>}
+                </Breadcrumbs>
+
+                <div style={{ marginLeft: 'auto', display: 'flex' }}>
+                  <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
+                  <Button
+                    icon={<SettingsIcon fontSize='17px' />}
+                    style={ { height: '17px', width: '40px', minWidth: '0px'}}
+                    onClick={() => {
+                      this.setState({ isChangeTypeOfAnalysisModalOpen: true });
+                    }}
+                  />
                 </div>
               </div>
-            </aside>
-            <section className="main-panel">
-              {/* Shared lists view */}
-              {shareView ? (
-                <>
-                  <div className="list-detail-header">
-                    <ListTitle
-                      anchorElCountries={anchorElCountries}
-                      closeCountriesPopover={this.closeCountriesPopover}
-                      countries={countries}
-                      currentUser={currentUser}
-                      filteredLists={filteredLists}
-                      filterValues={filterValues}
-                      listLocationsCount={numberOfResults}
-                      listName={listName}
-                      openCountriesPopover={openCountriesPopover}
-                      selectedList={selectedList}
-                      shareView={shareView}
-                      showShareList={showShareList}
-                      toggleCountriesPopover={this.toggleCountriesPopover}
-                    />
+            )}
+            <div className="flex-grid">
+              <aside className="col list-side-panel">
+                {!shareView && <SharingList history={history} locationCount={locationCount} />}
+
+                {!shareView && (
+                  <div className="gfw-lists-summary">
+                    <h3 className="gfw-lists-summary__title">{locationsPage.lists.gfwLists}</h3>
+                    {gfwLists}
                   </div>
-                  {!locationDataIsNotAvailable && (
-                    <div className="section-container">
-                      <ShareList
-                        key={selectedList.id}
-                        usersList={usersList}
-                        currentUser={currentUser}
-                        selectedList={selectedList}
-                      />
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div className="list-detail-header">
-                    <ListTitle
-                      anchorElCountries={anchorElCountries}
-                      closeCountriesPopover={this.closeCountriesPopover}
-                      countries={countries}
-                      currentUser={currentUser}
-                      filteredLists={filteredLists}
-                      filterValues={filterValues}
-                      listLocationsCount={numberOfResults}
-                      listName={listName}
-                      openCountriesPopover={openCountriesPopover}
-                      selectedList={selectedList}
-                      shareView={shareView}
-                      showShareList={showShareList}
-                      toggleCountriesPopover={this.toggleCountriesPopover}
-                    />
-                    <div className="list-actions-container">
-                      {selectedList && !selectedList.globalForestWatchList && (
-                        <div>
-                          <Button
-                            label={
-                              isInFolder
-                                ? locationsPage.lists.manage
-                                : locationsPage.lists.addToFolder
-                            }
-                            onClick={() => {
-                              this.setState({ isManageListFolderOpen: true });
-                            }}
-                          />
-                          <ManageListFolderDialog
-                            isOpen={isManageListFolderOpen}
-                            folders={folders}
-                            list={selectedList}
-                            onCancel={() => this.setState({ isManageListFolderOpen: false })}
-                            onComplete={(msg) => {
-                              getFolders().then((foldersLocal) => {
-                                store.dispatch(updateFolders(foldersLocal));
-                                const currentFolderLocal =
-                                  folders && folders.length > 0
-                                    ? folders.find((folder) =>
-                                        folder.lists && folder.lists.length > 0
-                                          ? folder.lists.find(
-                                              (listId) => listId === selectedList.id
-                                            )
-                                          : null
-                                      )
-                                    : null;
-                                this.setState({
-                                  bannerContent: msg,
-                                  isManageListFolderOpen: false,
-                                  currentFolder: currentFolderLocal,
-                                });
-                              });
-                            }}
-                          />
-                        </div>
-                      )}
-                      {(currentUser.access_level_id === userAccessLevel.ADMIN ||
-                        (selectedList &&
-                          currentUser.id === selectedList.user_id &&
-                          currentUser.access_level_id !== userAccessLevel.VIEWER)) &&
-                      selectedList &&
-                      selectedList.list_status_id !== 1 &&
-                      !getIsDiagnosticStatusDraft(selectedList) &&
-                      !selectedList.globalForestWatchList ? (
-                        <div id="RerunList" className="selected-rerun-list">
-                          <Button
-                            className="RerunList__button"
-                            onClick={this.handleRerunDialogState}
-                            icon={<IconRerun height="14px" />}
-                            label="Update"
-                          />
-                          <Dialog
-                            title={locationsPage.lists.confirmListUpdate}
-                            actions={
-                              <div className="RerunList__dialog-buttons">
-                                <Button
-                                  variant="primary"
-                                  className="RerunList__button"
-                                  label="OK"
-                                  onClick={this.rerunList}
-                                />
-                                <LinkButton
-                                  className="RerunList__button"
-                                  label="Cancel"
-                                  onClick={this.handleRerunDialogState}
-                                />
-                              </div>
-                            }
-                            modal={false}
-                            open={rerunDialogState}
-                            onRequestClose={this.handleRerunDialogState}
-                            bodyClassName="dialog__body"
-                            contentClassName="dialog__content"
-                          >
-                            {rerunListDialog}
-                          </Dialog>
-                        </div>
-                      ) : null}
+                )}
 
-                      {currentUser.access_level_id === userAccessLevel.ADMIN &&
-                      selectedList &&
-                      selectedList.list_status_id !== 1 &&
-                      !selectedList.globalForestWatchList ? (
-                        <div id="ShareList">
-                          <Button
-                            className="ShareList__button"
-                            onClick={() => {
-                              showShareList(true);
-                            }}
-                            icon={<IconShare height="14px" />}
-                            label="Share"
-                          />
-                        </div>
-                      ) : null}
-                      {(currentUser.access_level_id === userAccessLevel.ADMIN ||
-                        (currentUser.access_level_id !== userAccessLevel.ADMIN && userIsOwner)) &&
-                      selectedList &&
-                      selectedList.list_status_id !== 1 &&
-                      getIsDiagnosticStatusDraft(selectedList) &&
-                      !selectedList.globalForestWatchList ? (
-                        <div id="ShareList">
-                          <Button
-                            variant="primary"
-                            className="ShareList__button"
-                            onClick={(e) => this.handleDraftSubmit(e)}
-                            label="Submit"
-                          />
-                        </div>
-                      ) : null}
-
-                      <CustomDraftDialog
-                        open={draftSubmitDialogOpen}
-                        closeAction={() => {
-                          this.setState({ draftSubmitDialogOpen: false });
-                        }}
-                        dialogTitle={locationsPage.lists.confirmListSubmission}
-                        dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
-                        dialogActionConfirm={() => {
-                          requestGeoTrellisAnalyzeList(selectedList)
-                            .then(() => {
-                              gtag('event', 'Submit List', {
-                                event_category: 'Submit',
-                                event_label: 'User submits a list for analysis',
-                              });
-                              gtag('event', 'Submit List', {
-                                event_category: 'Submit',
-                                event_label: 'User submits a list from listview page',
-                              });
-                              // TODO: Get details what to do after list is submitted
-                              window.location.reload();
-                            })
-                            .catch((error) => {
-                              // TODO: Get details what to do after list submission fails
-                              console.log(error);
-                            })
-                            .finally(() => {
-                              this.setState({ draftSubmitDialogOpen: false });
-                            });
-                        }}
-                      />
+                {currentUser.access_level_id !== userAccessLevel.ADMIN && !shareView && (
+                  <div className="shared-lists-summary">
+                    <div className="shared-lists-summary__title">
+                      {locationsPage.lists.sharedLists}
                     </div>
+                    {sharedLists}
                   </div>
-                  {!locationDataIsNotAvailable && (
-                    <>
-                      <div className="list-detail-filters">
-                        <div className="list-detail-filters__view">
-                          {listViewOptions.length > 1 && (
-                            // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists
-                            <>
-                              <label htmlFor="viewToggle">
-                                {locationsPage.lists.viewToggleLabel}
-                              </label>
-                              <GfwSelect
-                                id="viewToggle"
-                                name="viewToggle"
-                                onChange={(e) => this.changeListView(e.value)}
-                                value={{ value: listView }}
-                                options={listViewOptions}
-                              />
-                            </>
-                          )}
-                        </div>
+                )}
 
-                        <div className="list-detail-filters__content-filters">
-                          {!shareView && (
-                            <ListsFilter
-                              placeholder={
-                                isGfwList ? '' : locationsPage.lists.searchStringInputPlaceholder
-                              }
-                              value={filterStringInputValue}
-                              onChange={this.myListsSearchFilter}
-                              onkeydown={this.setSearchString}
-                            />
-                          )}
-                          {filterCount === 0 ? (
-                            <Button
-                              disabled={!selectedList}
-                              onClick={this.toggleCanopyModal}
-                              label={transifex(locationsPage.lists.selectFilters)}
-                            />
-                          ) : (
-                            <div className="compound-button">
-                              <Button
-                                variant="primary"
-                                className="compound-button__action-button"
-                                disabled={!selectedList}
-                                onClick={this.toggleCanopyModal}
-                                label={`${filterCount} ${
-                                  filterCount === 1
-                                    ? transifex(locationsPage.lists.filter)
-                                    : transifex(locationsPage.lists.filters)
-                                }`}
-                                title={
-                                  filterCount > 0
-                                    ? // Display a comma-separated list of active filter values.
-                                      Object.entries(filters)
-                                        .filter(this.isFilterValueDifferentThanDefault)
-                                        // eslint-disable-next-line array-callback-return
-                                        .map(([key, val]) => {
-                                          if (val !== undefined && val !== null && val !== '') {
-                                            const strValue = String(val)
-                                              .split(',')
-                                              .map((x) =>
-                                                transifex(x.charAt(0).toUpperCase() + x.slice(1))
-                                              )
-                                              .join(',');
-                                            return `${transifex(
-                                              locationsPage.lists[key]
-                                            )}: ${strValue}`;
-                                          }
-                                        })
-                                        .join(' - ')
-                                    : ''
-                                }
-                              />
-                              <IconButton
-                                variant="primary"
-                                className="compound-button__clear"
-                                onClick={this.clearFilters}
-                                icon={<IconTimes height="15" />}
-                                size="large"
-                                title={locationsPage.lists.clearFilters}
-                              />
-                            </div>
-                          )}
-                          <LocationsTableColumnSelector
-                            listColumns={listColumns}
-                            setListColumns={(newVisibleColumns) =>
-                              this.setState({
-                                visibleColumns: newVisibleColumns,
-                              })
-                            }
-                            disabled={!selectedList}
-                          />
-                        </div>
+                <div
+                  className={`my-lists-summary ${
+                    currentUser.access_level_id === userAccessLevel.VIEWER ? 'hidden' : ''
+                  }`}
+                >
+                  <h3 className="my-lists-summary__title">{locationsPage.lists.myLists}</h3>
+                  <ListsFilter
+                    value={myListsSearchFilterSidebarString}
+                    onChange={(value) => {
+                      if (value !== '' && userListFilterText === '') {
+                        gtag('event', 'User enters search', {
+                          event_category: 'Lists Click',
+                        });
+                      }
+                      if (value === '' && userListFilterText !== '') {
+                        gtag('event', 'User clears search', {
+                          event_category: 'Lists Click',
+                        });
+                      }
+                      this.setState({ myListsSearchFilterSidebarString: value });
+                    }}
+                  />
+                  <div className="my-lists-summary__lists">
+                    {userLists.length ? (
+                      userLists
+                    ) : (
+                      <div className="my-lists-summary__no-results">
+                        <p className="my-lists-summary__no-results-prompt">
+                          {locationsPage.lists.listsFilterNoMatch}
+                        </p>
+                        <LinkButton
+                          className="my-lists-summary__no-results-clear"
+                          label={locationsPage.lists.listsFilterClear}
+                          onClick={() => this.setState({ myListsSearchFilterSidebarString: '' })}
+                        />
                       </div>
-                      <div className="list-detail-action-bar">
-                        {!getIsDiagnosticStatusDraft(selectedList) &&
-                          listName !== 'Administrative Areas' &&
-                          listName !== 'Protected Areas' && (
+                    )}
+                  </div>
+                </div>
+              </aside>
+              <section className="main-panel">
+                {/* Shared lists view */}
+                {shareView ? (
+                  <>
+                    <div className="list-detail-header">
+                      <ListTitle
+                        anchorElCountries={anchorElCountries}
+                        closeCountriesPopover={this.closeCountriesPopover}
+                        countries={countries}
+                        currentUser={currentUser}
+                        filteredLists={filteredLists}
+                        filterValues={filterValues}
+                        listLocationsCount={numberOfResults}
+                        listName={listName}
+                        openCountriesPopover={openCountriesPopover}
+                        selectedList={selectedList}
+                        shareView={shareView}
+                        showShareList={showShareList}
+                        toggleCountriesPopover={this.toggleCountriesPopover}
+                      />
+                    </div>
+                    {!locationDataIsNotAvailable && (
+                      <div className="section-container">
+                        <ShareList
+                          key={selectedList.id}
+                          usersList={usersList}
+                          currentUser={currentUser}
+                          selectedList={selectedList}
+                        />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="list-detail-header">
+                      <ListTitle
+                        anchorElCountries={anchorElCountries}
+                        closeCountriesPopover={this.closeCountriesPopover}
+                        countries={countries}
+                        currentUser={currentUser}
+                        filteredLists={filteredLists}
+                        filterValues={filterValues}
+                        listLocationsCount={numberOfResults}
+                        listName={listName}
+                        openCountriesPopover={openCountriesPopover}
+                        selectedList={selectedList}
+                        shareView={shareView}
+                        showShareList={showShareList}
+                        toggleCountriesPopover={this.toggleCountriesPopover}
+                      />
+                      <div className="list-actions-container">
+                        {selectedList && !selectedList.globalForestWatchList && (
+                          <div>
+                            <Button
+                              label={
+                                isInFolder
+                                  ? locationsPage.lists.manage
+                                  : locationsPage.lists.addToFolder
+                              }
+                              onClick={() => {
+                                this.setState({ isManageListFolderOpen: true });
+                              }}
+                            />
+                            <ManageListFolderDialog
+                              isOpen={isManageListFolderOpen}
+                              folders={folders}
+                              list={selectedList}
+                              onCancel={() => this.setState({ isManageListFolderOpen: false })}
+                              onComplete={(msg) => {
+                                getFolders().then((foldersLocal) => {
+                                  store.dispatch(updateFolders(foldersLocal));
+                                  const currentFolderLocal =
+                                    folders && folders.length > 0
+                                      ? folders.find((folder) =>
+                                          folder.lists && folder.lists.length > 0
+                                            ? folder.lists.find(
+                                                (listId) => listId === selectedList.id
+                                              )
+                                            : null
+                                        )
+                                      : null;
+                                  this.setState({
+                                    bannerContent: msg,
+                                    isManageListFolderOpen: false,
+                                    currentFolder: currentFolderLocal,
+                                  });
+                                });
+                              }}
+                            />
+                          </div>
+                        )}
+                        {(currentUser.access_level_id === userAccessLevel.ADMIN ||
+                          (selectedList &&
+                            currentUser.id === selectedList.user_id &&
+                            currentUser.access_level_id !== userAccessLevel.VIEWER)) &&
+                        selectedList &&
+                        selectedList.list_status_id !== 1 &&
+                        !getIsDiagnosticStatusDraft(selectedList) &&
+                        !selectedList.globalForestWatchList ? (
+                          <div id="RerunList" className="selected-rerun-list">
+                            <Button
+                              className="RerunList__button"
+                              onClick={this.handleRerunDialogState}
+                              icon={<IconRerun height="14px" />}
+                              label="Update"
+                            />
+                            <Dialog
+                              title={locationsPage.lists.confirmListUpdate}
+                              actions={
+                                <div className="RerunList__dialog-buttons">
+                                  <Button
+                                    variant="primary"
+                                    className="RerunList__button"
+                                    label="OK"
+                                    onClick={this.rerunList}
+                                  />
+                                  <LinkButton
+                                    className="RerunList__button"
+                                    label="Cancel"
+                                    onClick={this.handleRerunDialogState}
+                                  />
+                                </div>
+                              }
+                              modal={false}
+                              open={rerunDialogState}
+                              onRequestClose={this.handleRerunDialogState}
+                              bodyClassName="dialog__body"
+                              contentClassName="dialog__content"
+                            >
+                              {rerunListDialog}
+                            </Dialog>
+                          </div>
+                        ) : null}
+
+                        {currentUser.access_level_id === userAccessLevel.ADMIN &&
+                        selectedList &&
+                        selectedList.list_status_id !== 1 &&
+                        !selectedList.globalForestWatchList ? (
+                          <div id="ShareList">
+                            <Button
+                              className="ShareList__button"
+                              onClick={() => {
+                                showShareList(true);
+                              }}
+                              icon={<IconShare height="14px" />}
+                              label="Share"
+                            />
+                          </div>
+                        ) : null}
+                        {(currentUser.access_level_id === userAccessLevel.ADMIN ||
+                          (currentUser.access_level_id !== userAccessLevel.ADMIN && userIsOwner)) &&
+                        selectedList &&
+                        selectedList.list_status_id !== 1 &&
+                        getIsDiagnosticStatusDraft(selectedList) &&
+                        !selectedList.globalForestWatchList ? (
+                          <div id="ShareList">
                             <Button
                               variant="primary"
-                              data-cy="list-diagnostics"
+                              className="ShareList__button"
+                              onClick={(e) => this.handleDraftSubmit(e)}
+                              label="Submit"
+                            />
+                          </div>
+                        ) : null}
+
+                        <CustomDraftDialog
+                          open={draftSubmitDialogOpen}
+                          closeAction={() => {
+                            this.setState({ draftSubmitDialogOpen: false });
+                          }}
+                          dialogTitle={locationsPage.lists.confirmListSubmission}
+                          dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
+                          dialogActionConfirm={() => {
+                            requestGeoTrellisAnalyzeList(selectedList)
+                              .then(() => {
+                                gtag('event', 'Submit List', {
+                                  event_category: 'Submit',
+                                  event_label: 'User submits a list for analysis',
+                                });
+                                gtag('event', 'Submit List', {
+                                  event_category: 'Submit',
+                                  event_label: 'User submits a list from listview page',
+                                });
+                                // TODO: Get details what to do after list is submitted
+                                window.location.reload();
+                              })
+                              .catch((error) => {
+                                // TODO: Get details what to do after list submission fails
+                                console.log(error);
+                              })
+                              .finally(() => {
+                                this.setState({ draftSubmitDialogOpen: false });
+                              });
+                          }}
+                        />
+                      </div>
+                    </div>
+                    {!locationDataIsNotAvailable && (
+                      <>
+                        <div className="list-detail-filters">
+                          <div className="list-detail-filters__view">
+                            {listViewOptions.length > 1 && (
+                              // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists
+                              <>
+                                <label htmlFor="viewToggle">
+                                  {locationsPage.lists.viewToggleLabel}
+                                </label>
+                                <GfwSelect
+                                  id="viewToggle"
+                                  name="viewToggle"
+                                  onChange={(e) => this.changeListView(e.value)}
+                                  value={{ value: listView }}
+                                  options={listViewOptions}
+                                />
+                              </>
+                            )}
+                          </div>
+
+                          <div className="list-detail-filters__content-filters">
+                            {!shareView && (
+                              <ListsFilter
+                                placeholder={
+                                  isGfwList ? '' : locationsPage.lists.searchStringInputPlaceholder
+                                }
+                                value={filterStringInputValue}
+                                onChange={this.myListsSearchFilter}
+                                onkeydown={this.setSearchString}
+                              />
+                            )}
+                            {filterCount === 0 ? (
+                              <Button
+                                disabled={!selectedList}
+                                onClick={this.toggleCanopyModal}
+                                label={transifex(locationsPage.lists.selectFilters)}
+                              />
+                            ) : (
+                              <div className="compound-button">
+                                <Button
+                                  variant="primary"
+                                  className="compound-button__action-button"
+                                  disabled={!selectedList}
+                                  onClick={this.toggleCanopyModal}
+                                  label={`${filterCount} ${
+                                    filterCount === 1
+                                      ? transifex(locationsPage.lists.filter)
+                                      : transifex(locationsPage.lists.filters)
+                                  }`}
+                                  title={
+                                    filterCount > 0
+                                      ? // Display a comma-separated list of active filter values.
+                                        Object.entries(filters)
+                                          .filter(this.isFilterValueDifferentThanDefault)
+                                          // eslint-disable-next-line array-callback-return
+                                          .map(([key, val]) => {
+                                            if (val !== undefined && val !== null && val !== '') {
+                                              const strValue = String(val)
+                                                .split(',')
+                                                .map((x) =>
+                                                  transifex(x.charAt(0).toUpperCase() + x.slice(1))
+                                                )
+                                                .join(',');
+                                              return `${transifex(
+                                                locationsPage.lists[key]
+                                              )}: ${strValue}`;
+                                            }
+                                          })
+                                          .join(' - ')
+                                      : ''
+                                  }
+                                />
+                                <IconButton
+                                  variant="primary"
+                                  className="compound-button__clear"
+                                  onClick={this.clearFilters}
+                                  icon={<IconTimes height="15" />}
+                                  size="large"
+                                  title={locationsPage.lists.clearFilters}
+                                />
+                              </div>
+                            )}
+                            <LocationsTableColumnSelector
+                              listColumns={listColumns}
+                              setListColumns={(newVisibleColumns) =>
+                                this.setState({
+                                  visibleColumns: newVisibleColumns,
+                                })
+                              }
+                              disabled={!selectedList}
+                            />
+                          </div>
+                        </div>
+                        <div className="list-detail-action-bar">
+                          {!getIsDiagnosticStatusDraft(selectedList) &&
+                            listName !== 'Administrative Areas' &&
+                            listName !== 'Protected Areas' && (
+                              <Button
+                                variant="primary"
+                                data-cy="list-diagnostics"
+                                className="list-detail-action-bar__diagnostic-button"
+                                onClick={() => this.viewDiagnostic(false)}
+                                label="List diagnostic"
+                                icon={<IconListAlt />}
+                              />
+                            )}
+                          <Button
+                            className="list-detail-action-bar__map-button"
+                            onClick={() => this.viewMap({ showFullListMap: true })}
+                            label="Full List Map"
+                            icon={<IconGlobeAmericas />}
+                          />
+                        </div>
+                        <div className="list-detail-action-bar">
+                          {selectedLocations.length === 1 && (
+                            <Button
+                              variant="primary"
                               className="list-detail-action-bar__diagnostic-button"
-                              onClick={() => this.viewDiagnostic(false)}
-                              label="List diagnostic"
+                              disabled={!this.listDiagnosticAccess(selectedList)}
+                              onClick={() => this.viewDiagnostic(true)}
+                              label="Location diagnostic"
                               icon={<IconListAlt />}
                             />
                           )}
-                        <Button
-                          className="list-detail-action-bar__map-button"
-                          onClick={() => this.viewMap({ showFullListMap: true })}
-                          label="Full List Map"
-                          icon={<IconGlobeAmericas />}
-                        />
-                      </div>
-                      <div className="list-detail-action-bar">
-                        {selectedLocations.length === 1 && (
-                          <Button
-                            variant="primary"
-                            className="list-detail-action-bar__diagnostic-button"
-                            disabled={!this.listDiagnosticAccess(selectedList)}
-                            onClick={() => this.viewDiagnostic(true)}
-                            label="Location diagnostic"
-                            icon={<IconListAlt />}
-                          />
-                        )}
-                        {selectedList && selectedLocations.length > 0 && (
-                          <Button
-                            className="list-detail-action-bar__map-button"
-                            onClick={() => this.viewMap({ showFullListMap: false })}
-                            label="Location(s) Map"
-                            icon={<IconGlobeAmericas />}
-                          />
-                        )}
-                        {selectedList &&
-                          selectedLocations.length > 0 &&
-                          !isGfwList &&
-                          !selectedListIsShared && (
-                            <EditList
-                              editList={this.editList}
-                              currentUser={currentUser}
-                              selectedLocations={selectedLocations}
+                          {selectedList && selectedLocations.length > 0 && (
+                            <Button
+                              className="list-detail-action-bar__map-button"
+                              onClick={() => this.viewMap({ showFullListMap: false })}
+                              label="Location(s) Map"
+                              icon={<IconGlobeAmericas />}
                             />
                           )}
-                        {canMove && (
-                          <Button
-                            variant="tertiary"
-                            onClick={this.promptMoveSelectedLocations}
-                            label={locationsPage.lists.move}
-                          />
-                        )}
-                        {selectedList && selectedLocations.length > 0 && listData.length > 0 && (
-                          <ListDownload
-                            listID={listID}
-                            listName={listName}
-                            filters={filters}
-                            listFilterStr={filterString}
-                            tableSortedBy={tableSortedBy}
-                            tableSortedDesc={tableSortedDesc}
-                            selectedList={selectedList}
-                            combinedColumns={visibleColumns}
-                            selectedLocations={selectedLocations}
-                            currentUser={currentUser}
-                            allLocationsSelected={allLocationsSelected}
-                            listView={listView}
-                            isLoading={(loading) => {
-                              this.setState({ isLoading: loading });
-                            }}
-                          />
-                        )}
-                        {canDelete && (
-                          <Button
-                            className="list-detail-action-bar__delete-button"
-                            variant="danger"
-                            onClick={this.promptDeleteSelectedLocations}
-                            label={locationsPage.lists.delete}
-                          />
-                        )}
-                      </div>
-                      <section className="section-container table-container">
-                        {filteredLists.length > 0 &&
-                        listView !== '' &&
-                        filteredLocationData.length > 0 ? (
-                          <ReactTable
-                            className={`-striped -highlight notranslate lists-react-table table__${listView}`}
-                            {...reactTableOptions}
-                          />
-                        ) : null}
-                      </section>
-                    </>
-                  )}
-                </>
-              )}
-              <LocationDataNotAvailableMessage list={selectedList} />
-            </section>
-          </div>
-        </section>
-        <Popover
-          open={openFlagMenu}
-          anchorEl={anchorElFlag}
-          anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={this.closeFlagMenu}
-        >
-          <Menu>
-            <div>
-              {flagOptions}
-              <Button variant="primary" onClick={this.updateFlag} label="Save" />
+                          {selectedList &&
+                            selectedLocations.length > 0 &&
+                            !isGfwList &&
+                            !selectedListIsShared && (
+                              <EditList
+                                editList={this.editList}
+                                currentUser={currentUser}
+                                selectedLocations={selectedLocations}
+                              />
+                            )}
+                          {canMove && (
+                            <Button
+                              variant="tertiary"
+                              onClick={this.promptMoveSelectedLocations}
+                              label={locationsPage.lists.move}
+                            />
+                          )}
+                          {selectedList && selectedLocations.length > 0 && listData.length > 0 && (
+                            <ListDownload
+                              listID={listID}
+                              listName={listName}
+                              filters={filters}
+                              listFilterStr={filterString}
+                              tableSortedBy={tableSortedBy}
+                              tableSortedDesc={tableSortedDesc}
+                              selectedList={selectedList}
+                              combinedColumns={visibleColumns}
+                              selectedLocations={selectedLocations}
+                              currentUser={currentUser}
+                              allLocationsSelected={allLocationsSelected}
+                              listView={listView}
+                              isLoading={(loading) => {
+                                this.setState({ isLoading: loading });
+                              }}
+                            />
+                          )}
+                          {canDelete && (
+                            <Button
+                              className="list-detail-action-bar__delete-button"
+                              variant="danger"
+                              onClick={this.promptDeleteSelectedLocations}
+                              label={locationsPage.lists.delete}
+                            />
+                          )}
+                        </div>
+                        <section className="section-container table-container">
+                          {filteredLists.length > 0 &&
+                          listView !== '' &&
+                          filteredLocationData.length > 0 ? (
+                            <ReactTable
+                              className={`-striped -highlight notranslate lists-react-table table__${listView}`}
+                              {...reactTableOptions}
+                            />
+                          ) : null}
+                        </section>
+                      </>
+                    )}
+                  </>
+                )}
+                <LocationDataNotAvailableMessage list={selectedList} />
+              </section>
             </div>
-          </Menu>
-        </Popover>
-        <div
-          className={`layer-modal-container modal-wrapper ${canopyModalVisible ? '' : 'hidden'}`}
-        >
-          {(() => {
-            if (listView === 'commodity_risk') {
-              return (
-                <CommodityRiskFilterDrawer
-                  listName={listName}
-                  listData={listData}
-                  filterCount={filterCount}
-                  listView={listView}
-                  clearFilters={this.clearFilters}
-                />
-              );
-            }
-            if (listView === 'forest_change') {
-              return (
-                <ForestChangeFilterDrawer
-                  listName={listName}
-                  listData={listData}
-                  filterCount={filterCount}
-                  listView={listView}
-                  adminAreas={currentAdminAreas}
-                  history={history}
-                  protectedAreas={pAreas}
-                  filterValues={filterValues}
-                  maximumAnalysisAreaInTheList={maximumAnalysisAreaInTheList}
-                  clearFilters={this.clearFilters}
-                />
-              );
-            }
-            return null;
-          })()}
-        </div>
-        {displayLargeListEditingModal && (
-          <LargeListEditing
-            addType={addType}
-            activeTemplate={activeTemplate}
-            commodityType={commodityType}
-            templateData={templateData}
-            customAttributeNames={customAttributeNames}
-            listID={listID}
-            listName={listName}
-            filters={filters}
-            tableSortedBy={tableSortedBy}
-            tableSortedDesc={tableSortedDesc}
-            selectedLocations={selectedLocations}
-            onClose={(refreshTable) => {
-              this.setState({ displayLargeListEditingModal: false });
-              if (refreshTable) {
-                this.getUserLocationData(listID);
+          </section>
+          <Popover
+            open={openFlagMenu}
+            anchorEl={anchorElFlag}
+            anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
+            targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+            onRequestClose={this.closeFlagMenu}
+          >
+            <Menu>
+              <div>
+                {flagOptions}
+                <Button variant="primary" onClick={this.updateFlag} label="Save" />
+              </div>
+            </Menu>
+          </Popover>
+          <div
+            className={`layer-modal-container modal-wrapper ${canopyModalVisible ? '' : 'hidden'}`}
+          >
+            {(() => {
+              if (listView === 'commodity_risk') {
+                return (
+                  <CommodityRiskFilterDrawer
+                    listName={listName}
+                    listData={listData}
+                    filterCount={filterCount}
+                    listView={listView}
+                    clearFilters={this.clearFilters}
+                  />
+                );
               }
-            }}
-            isLoading={(loading) => {
-              this.setState({ isLoading: loading });
-            }}
-          />
-        )}
-      </div>
+              if (listView === 'forest_change') {
+                return (
+                  <ForestChangeFilterDrawer
+                    listName={listName}
+                    listData={listData}
+                    filterCount={filterCount}
+                    listView={listView}
+                    adminAreas={currentAdminAreas}
+                    history={history}
+                    protectedAreas={pAreas}
+                    filterValues={filterValues}
+                    maximumAnalysisAreaInTheList={maximumAnalysisAreaInTheList}
+                    clearFilters={this.clearFilters}
+                  />
+                );
+              }
+              return null;
+            })()}
+          </div>
+          {displayLargeListEditingModal && (
+            <LargeListEditing
+              addType={addType}
+              activeTemplate={activeTemplate}
+              commodityType={commodityType}
+              templateData={templateData}
+              customAttributeNames={customAttributeNames}
+              listID={listID}
+              listName={listName}
+              filters={filters}
+              tableSortedBy={tableSortedBy}
+              tableSortedDesc={tableSortedDesc}
+              selectedLocations={selectedLocations}
+              onClose={(refreshTable) => {
+                this.setState({ displayLargeListEditingModal: false });
+                if (refreshTable) {
+                  this.getUserLocationData(listID);
+                }
+              }}
+              isLoading={(loading) => {
+                this.setState({ isLoading: loading });
+              }}
+            />
+          )}
+        </div>
+      </>
     );
   }
 }

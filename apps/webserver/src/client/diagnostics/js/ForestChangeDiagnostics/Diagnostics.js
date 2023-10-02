@@ -1002,7 +1002,6 @@ export default class Diagnostics extends Component {
           listId={selectedLists[0]?.id}
           selectedDiagnostics={'FCD'}
           downloadDiagnostics={() => this.fireDownload('everything')}
-          availableDiagnostics={availableDiagnostics}
         />
         <div className="diagnostics-container">
           <div className="print-no-break">

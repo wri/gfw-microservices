@@ -9,9 +9,9 @@ FROM dbo.[ListsAnalysisStatus] las
 `;
 
 export interface ListsAnalysisStatus {
-  listID: number;
-  analysisId: number;
-  status: string;
+  listId: number;
+  analysisId: string;
+  status: number;
   errorInfo: string | null; // Assuming ErrorInfo can be null
   updateTime: string;
 }

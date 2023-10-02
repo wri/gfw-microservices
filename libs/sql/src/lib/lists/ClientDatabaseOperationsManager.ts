@@ -46,6 +46,7 @@ export const CreateNewUserList = (
   userId: number,
   customAttributes: string[],
   clientDatabase: string,
+  analysisIds: string[] = [],
   gfwListId?: number,
   saveAsDraft?: boolean
 ): Promise<CreateListResult> => {
@@ -57,6 +58,7 @@ export const CreateNewUserList = (
     userId,
     customAttributes,
     clientDatabase,
+    analysisIds,
     gfwListId,
     saveAsDraft
   );

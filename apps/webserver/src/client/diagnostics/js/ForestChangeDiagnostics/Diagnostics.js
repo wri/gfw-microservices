@@ -57,6 +57,7 @@ import {
 } from '../../../common/js/config';
 import { centroidSymbol, fillSymbolDefault } from '../../../common/js/map.config';
 import AnalysisListChips from '../../../locations/js/components/landing/listItem/AnalysisListChips';
+import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 
 import '../../css/locations.scss';
 import '../common/DiagnosticsContainer.scss';
@@ -1000,7 +1001,7 @@ export default class Diagnostics extends Component {
 
         <DiagnosticsMenuBar
           listId={selectedLists[0]?.id}
-          selectedDiagnostics={'FCD'}
+          selectedDiagnostics={analysisTypes.FOREST_CHANGE_DIAGNOSTICS}
           downloadDiagnostics={() => this.fireDownload('everything')}
         />
         <div className="diagnostics-container">

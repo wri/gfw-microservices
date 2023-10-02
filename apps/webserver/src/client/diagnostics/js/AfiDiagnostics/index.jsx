@@ -5,6 +5,7 @@ import AfiDiagnosticsTable from './AfiDiagnosticsTable';
 import AfiPieChart from './AfiPieChart';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
+import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 import '../common/DiagnosticsContainer.scss';
 
 function AfiDiagnostics() {
@@ -100,7 +101,7 @@ function AfiDiagnostics() {
         <>
           <DiagnosticsMenuBar
             listId={listId}
-            selectedDiagnostics={'AFI'}
+            selectedDiagnostics={analysisTypes.DEFORESTATION_KPIS}
             downloadDiagnostics={downloadDiagnostics}
           />
           <div className="diagnostics-container">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import Button from '../../../common/js/components/Button';
 import IconReport from '../../../common/js/components/icon/IconReport';
@@ -9,6 +9,7 @@ import {
   analysisTypes,
   analysisTypesOptions,
 } from '../../../../config/env/analysisTypes.constants';
+import { listStatus } from '../../../../config/env/listStatuses.constants';
 import './DiagnosticsMenuBar.scss';
 
 function DiagnosticsMenuBar({
@@ -17,22 +18,46 @@ function DiagnosticsMenuBar({
   downloadDiagnostics,
   selectedDiagnostics = analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
 }) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeAnalysesIds, setActiveAnalysesIds] = useState([]);
   const { isAfiAvailable } = featureFlags;
-  const { FOREST_CHANGE_DIAGNOSTICS, DEFORESTATION_KPIS } = analysisTypes;
+  const { DEFORESTATION_KPIS, ALERTS } = analysisTypes;
 
-  const diagnosticOptions = [
-    {
-      value: FOREST_CHANGE_DIAGNOSTICS,
-      label: analysisTypesOptions.find((i) => i.id === FOREST_CHANGE_DIAGNOSTICS).label,
-    },
-  ];
+  useEffect(() => {
+    fetch(`/api/list/${listId}/selectedAnalyses`, {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        let activeAnalysesIds = response
+          .filter(({ status }) => status === listStatus.Active)
+          .map(({ analysisId }) => analysisId);
 
-  if (isAfiAvailable) {
-    diagnosticOptions.push({
-      value: DEFORESTATION_KPIS,
-      label: analysisTypesOptions.find((i) => i.id === DEFORESTATION_KPIS).label,
-    });
-  }
+        // removing Alerts from this menu because that analysis is not linked from here
+        activeAnalysesIds = activeAnalysesIds.filter((analysisId) => analysisId !== ALERTS);
+
+        if (!isAfiAvailable) {
+          // remove AFI option if feature flag is off
+          activeAnalysesIds = activeAnalysesIds.filter(
+            (analysisId) => analysisId !== DEFORESTATION_KPIS
+          );
+        }
+
+        setActiveAnalysesIds(activeAnalysesIds);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.warn(error);
+        setIsLoading(false);
+      });
+  }, []);
+
+  const diagnosticOptions = activeAnalysesIds.map((analysisId) => ({
+    value: analysisId,
+    label: analysisTypesOptions.find(({ id }) => id === analysisId).label,
+  }));
 
   const redirectToSelectedDiagnostics = (diagnostics) => {
     window.location.href = `/diagnostics?listId=${listId}&type=${diagnostics}${
@@ -44,14 +69,18 @@ function DiagnosticsMenuBar({
     <div className="diagnostics-menu-bar">
       <div className="diagnostics-menu-bar__action-bar">
         <div className="diagnostics-menu-bar__actions-group">
-          <label htmlFor="viewToggle">Diagnostic</label>
-          <GfwSelect
-            id="viewToggle"
-            name="viewToggleName"
-            onChange={(evt) => redirectToSelectedDiagnostics(evt.value)}
-            value={{ value: selectedDiagnostics }}
-            options={diagnosticOptions}
-          />
+          {!isLoading && (
+            <>
+              <label htmlFor="viewToggle">Diagnostic</label>
+              <GfwSelect
+                id="viewToggle"
+                name="viewToggleName"
+                onChange={(evt) => redirectToSelectedDiagnostics(evt.value)}
+                value={{ value: selectedDiagnostics }}
+                options={diagnosticOptions}
+              />
+            </>
+          )}
         </div>
         <div className="diagnostics-menu-bar__actions-group">
           <Button

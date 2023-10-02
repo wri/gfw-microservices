@@ -32,7 +32,7 @@ export class ListAnalysisService {
     return analysisStatus;
   }
 
-  async uploadNew(userEmail) {
+  async prepareUpload(userEmail) {
     const user = await this.userService.findUser(userEmail);
     if (!user) {
       throw new NotFoundException(`User with ${userEmail} not found`);

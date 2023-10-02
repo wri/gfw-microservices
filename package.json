@@ -11,6 +11,7 @@
   "private": true,
   "dependencies": {
     "@arcgis/core": "~4.20.2",
+    "@aws-sdk/client-s3": "^3.421.0",
     "@babel/runtime-corejs2": "7.17.9",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",

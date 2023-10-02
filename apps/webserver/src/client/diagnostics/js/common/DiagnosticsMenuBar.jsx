@@ -24,7 +24,6 @@ function DiagnosticsMenuBar({
   const { DEFORESTATION_KPIS, ALERTS } = analysisTypes;
 
   useEffect(() => {
-    setIsLoading(true);
     fetch(`/api/list/${listId}/selectedAnalyses`, {
       method: 'GET',
       credentials: 'same-origin',

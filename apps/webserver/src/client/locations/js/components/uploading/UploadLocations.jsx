@@ -890,7 +890,7 @@ class UploadLocations extends Component {
                   geojson: sequencedGeoJSON,
                   appendLocations: true,
                   list_analysis_table_name: activeList[0].list_analysis_table_name,
-                  list_status_id: listStatus.Draft,
+                  list_status_id: isSaveAsDraft ? listStatus.Draft : listStatus.Pending,
                   analysisIds: selectedAnalyses,
                 };
                 gtag('event', 'Upload List', {

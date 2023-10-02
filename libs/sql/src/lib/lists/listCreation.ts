@@ -22,6 +22,7 @@ export class SPSListCreation {
     user_id: number,
     custom_attributes: string[],
     clientDatabase: string,
+    analysisIds: string[],
     gfw_list_id?: number,
     saveAsDraft?: boolean
   ): Promise<CreateListResult> {
@@ -206,6 +207,28 @@ export class SPSListCreation {
         },
       ]);
 
+      await Promise.all(
+        analysisIds.map(
+          async (analysisId) =>
+            await clientConnection.executeQuery('createListAnalysisStatus', [
+              {
+                field: 'ListID',
+                type: sql.Int,
+                value: createListResult.list_id,
+              },
+              {
+                field: 'AnalysisID',
+                type: sql.NVarChar(150),
+                value: analysisId,
+              },
+              {
+                field: 'Status',
+                type: sql.Int,
+                value: list_status_id,
+              },
+            ])
+        )
+      );
       //await clientConnection.disconnect();
       //await mainConnection.disconnect();
       return createListResult;

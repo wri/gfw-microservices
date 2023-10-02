@@ -9,6 +9,8 @@ import {
   UnlockLists,
   PerformCopyAnalysis,
   PerformLocationsBulkCopy,
+  getListAnalysisStatus,
+  getAnalysisTypesFromIds,
 } from '../utils/list.utils';
 import {
   CreateNewUserList,
@@ -141,6 +143,8 @@ export class LocationService {
     const location_classification = selectedListLocationClasification;
     const gfw_list_id = 0;
     const template_id = templateId;
+    const listAnalyses = await getListAnalysisStatus(clientDatabase, selectedListId);
+    const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
 
     Logger.log('Creating final GEO JSON for database insertion');
     const finalGeojson = getFinalGeojson(gfw_list_id, geojson);
@@ -160,6 +164,7 @@ export class LocationService {
         userId,
         EMPTY_CUSTOM_ATTRIBUTES,
         clientDatabase,
+        analysisIds,
         null,
         isSaveAsDraft
       );
@@ -197,6 +202,9 @@ export class LocationService {
           user_id: userId,
           organization_id: organizationId,
           reanalyze: false,
+          // TODO: https://gfw.atlassian.net/browse/GPV-2275: Add processing limit
+          // processing_limit: processingLimit,
+          analysis_types: getAnalysisTypesFromIds(analysisIds),
         };
         const analysisRequestResponse = await requestAnalysisProcess(postData);
         const jsonResponse = await analysisRequestResponse.json();
@@ -244,6 +252,9 @@ export class LocationService {
           user_id: userId,
           organization_id: organizationId,
           reanalyze: false,
+          // TODO: https://gfw.atlassian.net/browse/GPV-2275: Add processing limit
+          // processing_limit: processingLimit,
+          analysis_types: getAnalysisTypesFromIds(analysisIds),
         };
         const analysisRequestResponse = await requestAnalysisProcess(postData);
         const jsonResponse = await analysisRequestResponse.json();

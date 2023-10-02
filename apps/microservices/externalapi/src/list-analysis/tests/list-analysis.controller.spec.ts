@@ -3,14 +3,45 @@ import { ListAnalysisController } from '../list-analysis.controller';
 import { ListAnalysisService } from '../list-analysis.service';
 import { createRequest } from 'node-mocks-http'; // Import the necessary library
 import { Request } from 'node-fetch';
+import { UserService } from '../user.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Organization } from '../../api-keys/organization.entity';
+import { User } from '../../api-keys/user.entity';
+import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
+import { ConfigModule } from '@nestjs/config';
+import { ExternalUpload } from '../external-upload.entity';
 
 describe('ListAnalysisController', () => {
   let controller: ListAnalysisController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forRoot({
+          name: 'default',
+          type: 'sqlite',
+          database: ':memory:',
+          synchronize: true,
+          logging: true,
+          entities: [Organization],
+        }),
+        TypeOrmModule.forRoot({
+          name: 'client',
+          type: 'sqlite',
+          database: ':memory:',
+          synchronize: true,
+          logging: true,
+          entities: [ExternalAPIKey, User],
+        }),
+        TypeOrmModule.forFeature([Organization], 'default'),
+        TypeOrmModule.forFeature([ExternalAPIKey, User, ExternalUpload], 'client'),
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
       controllers: [ListAnalysisController],
-      providers: [ListAnalysisService],
+      providers: [ListAnalysisService, UserService],
     }).compile();
 
     controller = module.get<ListAnalysisController>(ListAnalysisController);

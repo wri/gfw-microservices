@@ -23,11 +23,11 @@ exports.uploadMBTileToS3Bucket = async (mbtileFileName, mbtileOutputFilePath) =>
     const mbtileFileContent = fs.readFileSync(mbtileOutputFilePath);
     const s3 = new AWS.S3();
 
-    const S3_OBJECT_KEY = path.join(MBTILE_S3_BUCKET_PATH, mbtileFileName);
+    const s3ObjectKeyPath = path.join(MBTILE_S3_BUCKET_PATH, mbtileFileName);
 
     const params = {
       Bucket: MBTILE_S3_BUCKET_NAME,
-      Key: S3_OBJECT_KEY,
+      Key: s3ObjectKeyPath,
       Body: mbtileFileContent,
       ContentType: 'application/x-sqlite3',
     };
@@ -57,11 +57,11 @@ exports.deletingMBTileFromS3Bucket = async (listVectorTileS3Path) => {
     const s3 = new AWS.S3();
 
     const mbtileFileName = path.basename(listVectorTileS3Path);
-    const S3_OBJECT_KEY = path.join(MBTILE_S3_BUCKET_PATH, mbtileFileName);
+    const s3ObjectKeyPath = path.join(MBTILE_S3_BUCKET_PATH, mbtileFileName);
 
     const params = {
       Bucket: MBTILE_S3_BUCKET_NAME,
-      Key: S3_OBJECT_KEY,
+      Key: s3ObjectKeyPath,
     };
 
     s3.deleteObject(params, (err, data) => {
@@ -88,11 +88,11 @@ exports.getMBTileFromS3Bucket = async (listVectorTileS3Path) => {
     const s3 = new AWS.S3();
 
     const mbtileFileName = path.basename(listVectorTileS3Path);
-    const S3_OBJECT_KEY = path.join(MBTILE_S3_BUCKET_PATH, mbtileFileName);
+    const s3ObjectKeyPath = path.join(MBTILE_S3_BUCKET_PATH, mbtileFileName);
 
     const params = {
       Bucket: MBTILE_S3_BUCKET_NAME,
-      Key: S3_OBJECT_KEY,
+      Key: s3ObjectKeyPath,
     };
 
     s3.getObject(params, async (err, data) => {

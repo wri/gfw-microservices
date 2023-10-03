@@ -91,7 +91,7 @@ class Landing extends Component {
 
       this.setState({
         /* if the account has reached over 90% of usage limit, show the usage limit notice banner */
-        isReachingAccountUsageLimit: accountUsagePercentage >= 90,
+        isReachingAccountUsageLimit: (accountUsagePercentage >= 90),
       });
     });
   }

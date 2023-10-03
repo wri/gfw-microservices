@@ -62,7 +62,7 @@ describe('Check build sqs message function', () => {
       },
       list: {
         DataType: 'String',
-        StringValue: '{}',
+        StringValue: '{"listID":2073}',
       },
       organizationDatabase: {
         DataType: 'String',

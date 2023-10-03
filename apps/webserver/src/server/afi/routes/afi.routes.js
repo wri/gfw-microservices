@@ -26,5 +26,5 @@ module.exports = (app, limiter) => {
   app.use('/api/afi', [...routeMiddlewares, afiRoutes]);
 
   afiRoutes.get('/download', downloadController);
-  afiRoutes.get('/analysis/:listID', analysisController);
+  afiRoutes.get('/analysis/:listId', analysisController);
 };

@@ -9,13 +9,17 @@ const { rest } = require('lodash');
  */
 
 module.exports = async (req, res) => {
-  const { listID } = req.query;
+  const { listId } = req.query;
 
-  if (!listID) {
+  if (!listId) {
     return res.status(400).send('Missing listId');
   }
 
-  const msg = await sendMessageToQueue(req);
-
-  return res.status(200).send(msg);
+  try {
+    const msg = await sendMessageToQueue(req);
+    return res.status(200).send(msg);
+  } catch (error) {
+    console.error('AFI Deforestation KPIs download failed on server', error);
+    res.status(500).send(error);
+  }
 };

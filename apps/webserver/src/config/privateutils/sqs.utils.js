@@ -123,5 +123,6 @@ const sendMessageBatch = (entries, queue_url) => {
 
 module.exports = {
   sendMessage,
+  uniqueIdGenerator,
   sendMessageBatch,
 };

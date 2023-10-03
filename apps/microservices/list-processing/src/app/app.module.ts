@@ -15,6 +15,8 @@ import { LargeListService } from './../services/largelist.service';
 import { GeoService, LocationService } from '@wri-monorepos/geo';
 import { SqlModule } from '@wri-monorepos/sql';
 import { ListService } from '../services/list.service';
+import { AfiController } from './afi.controller';
+import { AfiService } from '../services/afi.service';
 
 config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -24,7 +26,7 @@ config.update({
 
 @Module({
   imports: [envModule, TypeOrmModule.forRootAsync({ useClass: DatabaseService }), SqlModule],
-  controllers: [AppController],
-  providers: [AppService, LargeListService, LocationService, GeoService, ListService],
+  controllers: [AppController, AfiController],
+  providers: [AppService, LargeListService, LocationService, GeoService, ListService, AfiService],
 })
 export class AppModule {}

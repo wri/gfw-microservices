@@ -22,3 +22,5 @@ export * from './deleteLocation';
 export * from './deleteList';
 export * from './checkIfListIsEmpty';
 export * from './deleteLocationIdsFilteredDataForUserList';
+export * from './getCountAfiAnalysisByListId';
+export * from './getPaginatedAfiAnalysisByListId';

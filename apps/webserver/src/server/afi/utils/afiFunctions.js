@@ -1,5 +1,5 @@
 const formatNegligibleRiskStatForChart = (data) => {
-  const { negligibleRisk, totalAreaHa } = data || {};
+  const { negligibleRisk = 0, totalAreaHa = 0 } = data || {};
 
   // Calculate the non-negligible risk coverage
   const nonNegligibleRiskCoverage = 100 - negligibleRisk;
@@ -10,17 +10,21 @@ const formatNegligibleRiskStatForChart = (data) => {
       id: 'negligibleRisk',
       category: 'Negligible Risk',
       coverage: negligibleRisk,
-      totalAreaHA: (totalAreaHa * negligibleRisk) / 100,
+      totalAreaHA: totalAreaCalculation(totalAreaHa, negligibleRisk),
     },
     {
       id: 'nonNegligibleRisk',
       category: 'Non Negligible Risk',
       coverage: nonNegligibleRiskCoverage,
-      totalAreaHA: (totalAreaHa * nonNegligibleRiskCoverage) / 100,
+      totalAreaHA: totalAreaCalculation(totalAreaHa, nonNegligibleRiskCoverage),
     },
   ];
-
   return result;
+};
+
+const totalAreaCalculation = (totalAreaHa, coverage) => {
+  const result = (totalAreaHa * coverage) / 100;
+  return isNaN(result) ? 0 : result;
 };
 
 module.exports = {

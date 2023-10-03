@@ -24,6 +24,9 @@ import { SouthAmericaBiomesService } from '../files/south.america.biomes.service
 import { SouthAmericaLossService } from '../files/south.america.loss.service';
 import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.service';
 import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
+import { ListService } from './list.service';
+import { AfiService } from './afi.service';
+import { AfiFileService } from '../files/afi.file.service';
 
 @Module({
   imports: [envModule, AwsModule, SqlModule],
@@ -45,6 +48,9 @@ import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
     SouthAmericaLossService,
     SouthEastAsiaOverlapService,
     SouthEastAsiaTCLService,
+    ListService,
+    AfiService,
+    AfiFileService,
   ],
   exports: [PipeService],
 })

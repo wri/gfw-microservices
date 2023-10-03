@@ -37,7 +37,7 @@ const messageSQSTemplate = {
 };
 
 const buildSQSMessage = (request) => {
-  const { listID } = request.query;
+  const { listId } = request.query;
   const { user_email: userEmail, organization_database: organizationDatabase } = request.session;
 
   const tmpobj = tmp.fileSync();
@@ -46,7 +46,7 @@ const buildSQSMessage = (request) => {
   const filters = {
     userEmail,
     organizationDatabase,
-    list: JSON.stringify({ listID }),
+    list: JSON.stringify({ listID: listId }),
     file: JSON.stringify({ type: 'afi', key: fileName }),
   };
 

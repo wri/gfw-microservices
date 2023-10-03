@@ -1,4 +1,13 @@
+import path from 'path';
+const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
+const tmp = require('tmp');
+
+import { expect, jest, it } from '@jest/globals';
 const { buildSQSMessage } = require('./locations.utils');
+
+jest.spyOn(path, 'resolve').mockReturnValueOnce('./config/privateutils/sqs.utils');
+sqsUtils.uniqueIdGenerator = jest.fn().mockReturnValue('1234567890');
+tmp.fileSync = jest.fn().mockReturnValue({ name: '/tmp/1234567890' });
 
 describe('Check build sqs message function', () => {
   it('Sending all parameters and messageAttributes should have less than 10 objects', () => {

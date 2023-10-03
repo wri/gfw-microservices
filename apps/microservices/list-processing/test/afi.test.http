@@ -1,0 +1,8 @@
+### Get AFI Diagnostics Analysis For List
+GET http://localhost:3334/api/afi/5642/number-of-pages?rowsPerPage=10&clientDatabase=clientstore-DevCo&isListLevel=1
+Content-Type: application/json
+
+
+### Get AFI Diagnostics  Data Analysis For List
+GET http://localhost:3334/api/afi/5642/data-per-page?rowsPerPage=10&pageNumber=0&clientDatabase=clientstore-DevCo&isListLevel=1
+Content-Type: application/json

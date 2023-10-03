@@ -42,6 +42,7 @@ import {
   LISTS_SHARED_WITH_ME,
 } from './MyListsTabs/MyListsTabs.constants';
 import getCookie from '../../../../common/js/utils/getCookie';
+import getAccountUsagePercentage from './getAccountUsagePercentage';
 
 class Landing extends Component {
   constructor(props) {
@@ -59,7 +60,7 @@ class Landing extends Component {
       selectedTab: '',
       mySharedLists: [],
       listsSharedWithMe: [],
-      listsFailedByUsageLimits: false,
+      isReachingAccountUsageLimit: false,
     };
   }
 
@@ -84,6 +85,15 @@ class Landing extends Component {
         this.setState({ listsSharedWithMe });
       });
     }
+
+    getAccountUsagePercentage().then((accountUsagePercentageResponse) => {
+      const { accountUsagePercentage } = accountUsagePercentageResponse;
+
+      this.setState({
+        /* if the account has reached over 90% of usage limit, show the usage limit notice banner */
+        isReachingAccountUsageLimit: Boolean(accountUsagePercentage >= 90),
+      });
+    });
   }
 
   componentWillUnmount() {
@@ -148,10 +158,6 @@ class Landing extends Component {
     });
   };
 
-  handleBannerForFailedListsByUsageLimits = () => {
-    this.setState({ listsFailedByUsageLimits: true });
-  };
-
   createGfwLocationsFromList = (list, i) => {
     return <GfwLocationList list={list} key={i} changeList={this.changeList} />;
   };
@@ -178,7 +184,6 @@ class Landing extends Component {
           this.loadFolders();
         }}
         isAListSharedWithMe={isAListSharedWithMe}
-        handleBannerForFailedListsByUsageLimits={this.handleBannerForFailedListsByUsageLimits}
       />
     );
   };
@@ -231,7 +236,7 @@ class Landing extends Component {
       selectedTab,
       mySharedLists,
       listsSharedWithMe,
-      listsFailedByUsageLimits,
+      isReachingAccountUsageLimit,
     } = this.state;
     const {
       locationCount: counts,
@@ -292,7 +297,15 @@ class Landing extends Component {
 
     return (
       <div className={`${view === 'landing' ? '' : 'hidden'}`}>
-        {listsFailedByUsageLimits ? <UsageLimitBanner /> : null}
+        {isReachingAccountUsageLimit ? (
+          <UsageLimitBanner
+            onBannerClose={() =>
+              this.setState((prevState) => ({
+                isReachingAccountUsageLimit: !prevState.isReachingAccountUsageLimit,
+              }))
+            }
+          />
+        ) : null}
         {bannerContent && (
           <Banner
             className="landing-banner"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
 import AccountUsage from './AccountUsage';
 import moment from 'moment';

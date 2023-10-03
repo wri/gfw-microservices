@@ -2683,6 +2683,9 @@ export const locationsPage = {
     tooltipMessage:
       'This location has failed analysis. To receive results, resubmit this list for analysis.',
   },
+  accountIsReachingLimitBanner: 'You have reached over 90% of your usage limits.',
+  accountReachingLimitBannerText:
+    'To continue parsing your lists, you need to increase the usage limit.',
 };
 
 export const folderDetailPage = {

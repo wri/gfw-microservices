@@ -1,5 +1,6 @@
 import React from 'react';
 import Banner from './Banner';
+import { locationsPage } from '../../../../common/js/config';
 
 export default function UsageLimitBanner({ onBannerClose, onCtaClick = () => void 0 }) {
   const cta = (
@@ -12,9 +13,11 @@ export default function UsageLimitBanner({ onBannerClose, onCtaClick = () => voi
     <Banner className="landing-banner" intent="notice" onBannerClose={() => onBannerClose()}>
       <>
         <div>
-          <strong>You have reached your usage limit</strong>
+          <strong>{locationsPage.accountIsReachingLimitBanner}</strong>
         </div>
-        <div>To continue parsing your lists, you need to increase the usage limit. {cta}.</div>
+        <div>
+          {locationsPage.accountReachingLimitBannerText} {cta}.
+        </div>
       </>
     </Banner>
   );

@@ -47,5 +47,7 @@ module.exports = (app, limiter) => {
 
   myOrgAnalyticsRouter.get('/usage', controller.getMyOrganizationAnalysisUsage);
 
+  myOrgAnalyticsRouter.get('/usagePercentage', controller.getMyOrganizationAnalysisUsagePercentage);
+
   myOrgAnalyticsRouter.get('/options', controller.getMyOrganizationAnalysisOptions);
 };

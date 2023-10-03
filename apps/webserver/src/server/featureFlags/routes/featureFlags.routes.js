@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
-const { isAfiAvailable, isArgentinaAvailable } = require(path.resolve(
+const { isAfiAvailable, isArgentinaComplianceAvailable } = require(path.resolve(
   './server/featureFlags/utils/isFeatureAvailable'
 ));
 const featureFlagRoutes = express.Router();
@@ -25,7 +25,7 @@ module.exports = (app, limiter) => {
     const { organization_id = '' } = req.session;
     res.status(200).json({
       isAfiAvailable: isAfiAvailable(organization_id),
-      isArgentinaAvailable: isArgentinaAvailable(organization_id),
+      isArgentinaComplianceAvailable: isArgentinaComplianceAvailable(organization_id),
     });
   });
 };

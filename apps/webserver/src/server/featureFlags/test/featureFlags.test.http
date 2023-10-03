@@ -1,0 +1,5 @@
+### Check is feature flag is enabled
+GET https://localhost:8443/api/feature-flags
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+

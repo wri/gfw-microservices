@@ -1,5 +1,5 @@
 ### Generate download data for specific list
-GET https://localhost:8443/api/afi/download?listID=5642
+GET https://localhost:8443/api/afi/download?listId=5642
 Content-Type: application/zip
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 

@@ -52,7 +52,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         run: |
-          echo "${{secrets.MICROSERVICES_externalapi_STG_ENV}}" > ./apps/microservices/externalapi/.env
+          echo "${{secrets.MICROSERVICES_EXTERNALAPI_STG_ENV}}" > ./apps/microservices/externalapi/.env
           docker build -f apps/microservices/externalapi/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT

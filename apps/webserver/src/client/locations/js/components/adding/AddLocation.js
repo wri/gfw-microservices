@@ -2300,11 +2300,12 @@ export default class AddLocation extends Component {
           <div className="add-single-location__action-buttons">
             <SaveAsDraftButtonWithDialog
               saveLocations={() => this.saveItem({ isSaveAsDraft: true })}
-              disabled={selectedAnalysis.length > 0}
+              disabled={selectedAnalysis.length <= 0}
             />
             <Button
               onClick={this.saveAndAddAnother}
               label={locationsPage.add.submit}
+              disabled={selectedAnalysis.length <= 0}
               variant="primary"
             />
           </div>

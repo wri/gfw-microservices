@@ -1,9 +1,16 @@
 const fs = require('fs');
 const path = require('path');
+const { writeFile } = require('node:fs/promises');
 const AWS = require('aws-sdk');
+const { S3 } = require('@aws-sdk/client-s3');
 
 const logger = require('../../../config/lib/winston');
-const { VECTOR_TILES_LOCATION, MBTILE_S3_BUCKET } = require('../config/vectorTiles.config');
+const {
+  VECTOR_TILES_LOCATION,
+  MBTILE_S3_BUCKET,
+  MBTILE_S3_BUCKET_NAME,
+  MBTILE_S3_BUCKET_PATH,
+} = require('../config/vectorTiles.config');
 
 /**
  * @description - Upload MBTile to S3 Bucket
@@ -75,15 +82,17 @@ exports.deletingMBTileFromS3Bucket = async (listVectorTileS3Path) => {
  */
 exports.getMBTileFromS3Bucket = async (listVectorTileS3Path) => {
   return new Promise((resolve, reject) => {
-    const s3 = new AWS.S3();
+    const s3 = new S3();
 
     const mbtileFileName = path.basename(listVectorTileS3Path);
+    const S3_OBJECT_KEY = path.join(MBTILE_S3_BUCKET_PATH, mbtileFileName);
+
     const params = {
-      Bucket: MBTILE_S3_BUCKET,
-      Key: mbtileFileName,
+      Bucket: MBTILE_S3_BUCKET_NAME,
+      Key: S3_OBJECT_KEY,
     };
 
-    s3.getObject(params, (err, data) => {
+    s3.getObject(params, async (err, data) => {
       if (err) {
         const errorMessage = `Getting MBTile Vector Tiles from S3 bucket failed !!! ${JSON.stringify(
           err
@@ -95,7 +104,7 @@ exports.getMBTileFromS3Bucket = async (listVectorTileS3Path) => {
         const mbtileFilePath = path.join(VECTOR_TILES_LOCATION, mbtileFileName);
 
         try {
-          fs.writeFileSync(mbtileFilePath, data.Body);
+          await writeFile(mbtileFilePath, data.Body);
           resolve({
             message: 'MBTile retrieved from S3 bucket',
             mbtileFilePath,

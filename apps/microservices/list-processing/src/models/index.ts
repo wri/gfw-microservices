@@ -103,3 +103,10 @@ export interface getNumberOfPagesPaginatedListDataRequest {
   analysisAreaMax?: number;
   searchString?: string;
 }
+
+export interface getAfiAnalysisDataRequest {
+  clientDatabase: string;
+  isListLevel: 0;
+  rowsPerPage?: number;
+  pageNumber?: number;
+}

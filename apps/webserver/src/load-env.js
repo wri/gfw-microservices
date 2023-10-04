@@ -7,7 +7,7 @@
  *
  ********************************************************************/
 // Import neccesary modules.
-const AWS = require('aws-sdk');
+const AWS = require('@aws-sdk/client-s3');
 const dotenv = require('dotenv');
 
 //Setup S3 Constants.
@@ -64,12 +64,13 @@ const getDataFromS3 = (node_environment) => {
         Bucket: `${ENV_BUCKET}`,
         Key: `${node_environment}.env`,
       };
-      s3.getObject(params, function (err, data) {
+
+      s3.getObject(params, async function (err, data) {
         if (err) {
           console.log(err, err.stack);
           reject(err);
         } else {
-          const s3Data = data.Body.toString();
+          const s3Data = await data.Body.transformToString();
           resolve(s3Data);
         }
       });

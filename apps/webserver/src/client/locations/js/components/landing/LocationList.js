@@ -27,7 +27,7 @@ import { listStatus } from '../../../../../config/env/listStatuses.constants';
 export default class LocationList extends Component {
   constructor(props) {
     super(props);
-    const { B2BsharedListEnabled, list, handleBannerForFailedListsByUsageLimits } = this.props;
+    const { B2BsharedListEnabled } = this.props;
     this.state = {
       isManageListFolderOpen: false,
       isDeleteDialogOpen: false,
@@ -36,10 +36,6 @@ export default class LocationList extends Component {
       confirmDownloadDialog: false,
       B2BsharedListEnabled,
     };
-
-    if (isListFailedByAnalysisStatusLimit(list)) {
-      handleBannerForFailedListsByUsageLimits();
-    }
   }
 
   rerunList = () => {

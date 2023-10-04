@@ -21,9 +21,9 @@ exports.diagnosticsDataController = async (req, res) => {
   const { ADMINISTRATIVE_AREAS, PROTECTED_AREAS } = GFW_LISTS_NUMBER_CONSTANTS;
 
   const promises = [
-    ListManager.getAllLists(req),
+    ListManager.getAllListsWithAnalysisId(req),
     GFWListManager.getGFWLists(req),
-    ListManager.getUserLists(req),
+    ListManager.getUserListsWithAnalysisId(req),
     ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
   ];
 

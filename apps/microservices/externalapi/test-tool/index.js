@@ -69,8 +69,8 @@ const endpointsToTest = [
     httpHeaders: {
       headers: {
         'x-api-key': process.env.API_TOKEN,
-      }
-    }
+      },
+    },
   },
   {
     path: '/api/v1/list-upload',
@@ -84,8 +84,8 @@ const endpointsToTest = [
     httpHeaders: {
       headers: {
         'x-api-key': process.env.API_TOKEN,
-      }
-    }
+      },
+    },
   },
   // Add more endpoints in the future
 ];

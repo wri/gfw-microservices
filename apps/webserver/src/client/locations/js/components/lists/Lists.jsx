@@ -2262,13 +2262,15 @@ export default class Lists extends Component {
 
               <div style={{ marginLeft: 'auto', display: 'flex' }}>
                 <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
-                <Button
-                  icon={<SettingsIcon fontSize="17px" />}
-                  style={{ height: '17px', width: '40px', minWidth: '0px' }}
-                  onClick={() => {
-                    this.setState({ isChangeTypeOfAnalysisModalOpen: true });
-                  }}
-                />
+                {featureFlags?.isAfiAvailable && (
+                  <Button
+                    icon={<SettingsIcon fontSize="17px" />}
+                    style={{ height: '17px', width: '40px', minWidth: '0px' }}
+                    onClick={() => {
+                      this.setState({ isChangeTypeOfAnalysisModalOpen: true });
+                    }}
+                  />
+                )}
               </div>
             </div>
           )}

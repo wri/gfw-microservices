@@ -26,7 +26,6 @@ GET https://localhost:8443/analytics/myorg/usage?startDate=2023-07-01&endDate=20
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
-
 ### return analysis limit for all organizations
 GET https://localhost:8443/analytics/limit
 Content-Type: application/json
@@ -42,8 +41,12 @@ GET https://localhost:8443/analytics/limit?organizationType=2
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
-
 ### return analysis limit for a specific organization type
 GET https://localhost:8443/analytics/myorg/options
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### return analysis limit for current account organizations
+GET https://localhost:8443/analytics/myorg/usagePercentage
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

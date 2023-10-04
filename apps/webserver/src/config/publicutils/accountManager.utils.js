@@ -546,21 +546,23 @@ const updatePendingAccountUser = (
 
 /**
  * @function {getOrganizationActivatedTime}
+ * @param {Req} Express
  * @param {Number} organizationId
- * @return {Object} OrganizationActivatedTime
+ * @return {String} OrganizationActivatedTime
  */
-const getOrganizationActivatedTime = async (organizationId) => {
+const getOrganizationActivatedTime = async (req, organizationId) => {
   try {
     const params = [{ field: 'orgId', type: sql.Int, value: organizationId }];
     const [resultset] = await sqlUtils.executeSystemStoredProcedure(
-      undefined,
+      req,
       'uspGetOrganizationActivatedTime',
       params
     );
-    return resultset;
+    const { OrganizationActivatedTime } = resultset;
+    return OrganizationActivatedTime;
   } catch (error) {
     const errorObject = errorUtils.createErrorMessage(
-      {},
+      req,
       errorUtils.errorCodes.failedToGetAccountActivatedTime,
       `Failed to get organization activated time.`,
       error

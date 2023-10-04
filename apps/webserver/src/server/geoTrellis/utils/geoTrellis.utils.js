@@ -20,7 +20,6 @@ const { getOrganizationActivatedTime } = require(path.resolve(
   './config/publicutils/accountManager.utils'
 ));
 
-const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extractAnalysisTypes'));
 
 /**
@@ -46,7 +45,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
 
   // get org activated time
-  const { OrganizationActivatedTime } = await getOrganizationActivatedTime(organization_id);
+  const OrganizationActivatedTime = await getOrganizationActivatedTime(req, organization_id);
 
   // calculate list processing limit
   const processingLimit = await getAccountListProccesingLimit({

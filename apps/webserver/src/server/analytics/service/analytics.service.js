@@ -12,7 +12,9 @@ const { getAllListsAnalysisStatus: getAllListsAnalysisStatusQuery } = require(pa
 const { getListAnalysisStatusById } = require(path.resolve(
   './queries/organization/getListAnalysisStatusById'
 ));
-const { calculateProcessingLimit } = require(path.resolve('./config/privateutils/limits.utils'));
+const { calculateProcessingLimit, calculateAccountUsagePercentage } = require(path.resolve(
+  './config/privateutils/limits.utils'
+));
 
 const getOrganizationAnalysisUsage = async ({
   startDate,
@@ -99,6 +101,33 @@ const getListAnalysisStatusByListId = async (req, listId) => {
   return response;
 };
 
+const getOrganizationUsagePercentage = async ({
+  organizationId,
+  organizationType,
+  organizationActivatedTime,
+}) => {
+  const todayAsEndDay = moment();
+  const accountActivationDate = moment(organizationActivatedTime);
+  const accountLatestYearStartDate = todayAsEndDay.subtract(
+    moment().diff(accountActivationDate, 'days') % 365,
+    'days'
+  );
+  const [accountUsage] = await getOrganizationAnalysisUsage({
+    startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
+    endDate: todayAsEndDay.format('YYYY-MM-DD'),
+    organizationId,
+    countForEachList: 0,
+  });
+  const accountLimits = await getAccountLimits(organizationId, organizationType);
+
+  const usagePercentage = calculateAccountUsagePercentage(
+    accountUsage.total_area_analyzed,
+    accountLimits.MaxAreaAnalyzeablePerYear
+  );
+
+  return usagePercentage;
+};
+
 module.exports = {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
@@ -106,4 +135,5 @@ module.exports = {
   getAllListsAnalysisStatus,
   getAccountListProccesingLimit,
   getListAnalysisStatusByListId,
+  getOrganizationUsagePercentage,
 };

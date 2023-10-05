@@ -2,8 +2,9 @@ import {
   SQLUtils,
   getCountAfiAnalysisByListId,
   CountAfiAnalysisByListId,
-  getPaginatedAfiAnalysisByListId,
-  GetPaginatedAfiAnalysisByListId,
+  getPaginatedAfiAnalysisListLevel,
+  getPaginatedAfiAnalysisLocationLevel,
+  AfiAnalysisByListId,
 } from '@wri-monorepos/sql';
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -62,14 +63,13 @@ export class AfiService {
     return createListResult;
   }
 
-  async getAfiDataPerPage(listID: string, queryParam) {
+  async getAfiDataPerPage(listId: string, queryParam) {
     const { clientDatabase, isListLevel, rowsPerPage, pageNumber } = queryParam;
 
     const parameters = [
-      { field: 'listID', type: sql.Int, value: listID },
-      { field: 'isListLevel', type: sql.Int, value: isListLevel },
-      { field: 'RowsOfPage', type: sql.Int, value: rowsPerPage },
-      { field: 'PageNumber', type: sql.Int, value: pageNumber },
+      { field: 'listId', type: sql.Int, value: listId },
+      { field: 'rowsOfPage', type: sql.Int, value: rowsPerPage },
+      { field: 'pageNumber', type: sql.Int, value: pageNumber },
     ];
 
     const connection = new SQLUtils({
@@ -78,13 +78,13 @@ export class AfiService {
     });
 
     await connection.connect();
+    const query =
+      Number(isListLevel) === 1
+        ? getPaginatedAfiAnalysisListLevel
+        : getPaginatedAfiAnalysisLocationLevel;
 
     this.logger.debug('Get data AFI Analysis');
-    this.logger.log(getPaginatedAfiAnalysisByListId);
-    const createListResult = await connection.queryArray<GetPaginatedAfiAnalysisByListId>(
-      getPaginatedAfiAnalysisByListId,
-      parameters
-    );
+    const createListResult = await connection.queryArray<AfiAnalysisByListId>(query, parameters);
 
     connection.disconnect();
 

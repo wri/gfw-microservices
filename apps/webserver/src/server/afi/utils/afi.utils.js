@@ -46,7 +46,7 @@ const buildSQSMessage = (request) => {
   const filters = {
     userEmail,
     organizationDatabase,
-    list: JSON.stringify({ listID: listId }),
+    list: JSON.stringify({ listId }),
     file: JSON.stringify({ type: 'afi', key: fileName }),
   };
 

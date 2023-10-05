@@ -21,9 +21,9 @@ export class DashboardHandleDownload extends IPipeService {
   private writeStream: PassThrough;
 
   start(filters: GenerationFileRequest, table: string, fileSuffix: string) {
-    const { listID, key } = filters;
+    const { listId, key } = filters;
     this.logger.log(
-      `(${listID}) - Starting Dashboard download for ${table} stream to process data`
+      `(${listId}) - Starting Dashboard download for ${table} stream to process data`
     );
     this.writeStream = new PassThrough({
       objectMode: true,
@@ -52,11 +52,11 @@ export class DashboardHandleDownload extends IPipeService {
     table: string,
     fileSuffix: string
   ) {
-    const { key, listID, selectedLocationsList, listLevelAnalysis } = filters;
+    const { key, listId, selectedLocationsList, listLevelAnalysis } = filters;
     this.writeStream.removeAllListeners();
 
     this.writeStream.on('error', (err) => {
-      this.logger.error(`(${listID}) - Error on stream: ${err}`);
+      this.logger.error(`(${listId}) - Error on stream: ${err}`);
       this.errorEmail(filters);
     });
 

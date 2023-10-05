@@ -1466,16 +1466,22 @@ export const DATA_LAYER = {
 };
 
 export const AFI_HEADER_AGGREGATE = {
-  coverageHA: 'Coverage (ha)',
-  naturalForestLossHA: 'Natural Forest Loss (ha)',
-  totalAreaHa: 'Total Area (ha)',
-  negligibleRisk: 'Negligible Risk',
+  listName: 'List Name',
   country: 'Country',
   state: 'State',
   subState: 'Sub State',
+  coverageHA: 'Coverage (ha)',
+  naturalForestLossHA: 'Natural Forest Loss (ha)',
+  negligibleRisk: 'Negligible Risk',
 };
 
 export const AFI_HEADER = {
-  ...AFI_HEADER_AGGREGATE,
-  location_id: 'Location Id',
+  listName: 'List Name',
+  locationName: 'Location Name',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub State',
+  coverageHA: 'Coverage (ha)',
+  naturalForestLossHA: 'Natural Forest Loss (ha)',
+  negligibleRisk: 'Negligible Risk (%)',
 };

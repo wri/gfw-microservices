@@ -51,9 +51,9 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
 
   start(filters: GenerationFileRequest) {
     if (this.isForestChangeDiagnosticListSummaryFile(filters)) {
-      const { listID } = filters;
+      const { listId } = filters;
       this.logger.log(
-        `(${listID}) - Starting Dashboard download for ForestChangeDiagnosticListSummary stream to process data`
+        `(${listId}) - Starting Dashboard download for ForestChangeDiagnosticListSummary stream to process data`
       );
 
       this.countryAggregator = new CountryAggregator();
@@ -74,11 +74,11 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   }
 
   private organizeStream(filters: GenerationFileRequest) {
-    const { listID, selectedLocationsList } = filters;
+    const { listId, selectedLocationsList } = filters;
     this.writeStream.removeAllListeners();
 
     this.writeStream.on('error', (err) => {
-      this.logger.error(`(${listID}) - Error on stream: ${err}`);
+      this.logger.error(`(${listId}) - Error on stream: ${err}`);
       this.errorEmail(filters);
     });
 

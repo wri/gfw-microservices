@@ -24,8 +24,8 @@ module.exports = (app, limiter) => {
   featureFlagRoutes.get('', (req, res) => {
     const { organization_id = '' } = req.session;
     res.status(200).json({
-      isAfiAvailable: isAfiAvailable(organization_id),
-      isArgentinaComplianceAvailable: isArgentinaComplianceAvailable(organization_id),
+      isAfiAvailable: isAfiAvailable(organization_id) ?? false,
+      isArgentinaComplianceAvailable: isArgentinaComplianceAvailable(organization_id) ?? false,
     });
   });
 };

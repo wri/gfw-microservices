@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Define default values for parameters
-const defaultBaseUrl = 'http://localhost:3336';
+const defaultBaseUrl = 'http://localhost:3337';
 let baseUrl = process.env.API_BASEURL ? process.env.API_BASEURL : defaultBaseUrl;
 
 process.on('exit', function (code) {
@@ -15,7 +15,7 @@ if (!process.env.API_TOKEN) {
 }
 // Parse command-line arguments for custom parameters
 // The following fragment will handle more params in the future, for the moment we just accept BASEURL
-// usage: node index.js --BASEURL=http://otherurl:3336
+// usage: node index.js --BASEURL=http://otherurl:3337
 for (let i = 2; i < process.argv.length; i++) {
   const arg = process.argv[i];
   if (arg.startsWith('--')) {

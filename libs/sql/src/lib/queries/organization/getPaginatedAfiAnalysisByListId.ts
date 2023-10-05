@@ -5,7 +5,7 @@
  * @rowsOfPage AS INT
  * @pageNumber AS INT
  */
-const getPaginatedAfiAnalysisListLevel = `
+export const getPaginatedAfiAnalysisListLevel = `
 DECLARE @listName  NVARCHAR(150)
 DECLARE @SQL NVARCHAR(MAX)
 
@@ -48,7 +48,7 @@ EXEC sp_executesql @SQL,
  * @rowsOfPage AS INT
  * @pageNumber AS INT
  */
-const getPaginatedAfiAnalysisLocationLevel = `
+export const getPaginatedAfiAnalysisLocationLevel = `
 DECLARE @list_table NVARCHAR(150)
 DECLARE @listName  NVARCHAR(150)
 DECLARE @SQL NVARCHAR(MAX)
@@ -83,7 +83,7 @@ EXEC sp_executesql @SQL,
      @listId=@listId, @listName=@listName,@rowsOfPage=@rowsOfPage, @pageNumber=@pageNumber;
 `;
 
-class AfiAnalysisByListId {
+export class AfiAnalysisByListId {
   listId: number;
   listName: string;
   locationId: number;
@@ -99,9 +99,3 @@ class AfiAnalysisByListId {
   state: string;
   subState: string;
 }
-
-export {
-  getPaginatedAfiAnalysisListLevel,
-  getPaginatedAfiAnalysisLocationLevel,
-  AfiAnalysisByListId,
-};

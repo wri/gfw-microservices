@@ -32,7 +32,7 @@ SET @SQL = @SQL + ' AND  afi.location_id < 0  AND afi.gadm_id IS NOT NULL';
 
 IF @rowsOfPage > 0 AND @pageNumber > 0
 BEGIN
-    SET @SQL = @SQL + 'ORDER BY  afi.negligible_risk OFFSET (@pageNumber-1)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
+    SET @SQL = @SQL + 'ORDER BY  afi.natural_land_deforested_area, afi.negligible_risk DESC OFFSET (@pageNumber-1)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
 END
 
 PRINT @SQL
@@ -66,16 +66,16 @@ SET @SQL = 'SELECT  ' +
             ' afi.negligible_risk AS negligibleRisk ,'+
             ' afi.status_code as statusCode, '+
             ' afi.location_error as locationError, '+
-            ' kg.[Location Name] as locationName, ' +
-            ' Kg.Country as country ,' +
-            ' kg.State as state,' +
-            ' kg.[Sub State] as subState ' +
-            'FROM AFIAnalysis afi JOIN dbo.['+@list_table+'] kg ON kg.location_id = afi.location_id WHERE afi.location_id > 0 AND afi.list_id = @listId';
+            ' lt.[Location Name] as locationName, ' +
+            ' lt.Country as country ,' +
+            ' lt.State as state,' +
+            ' lt.[Sub State] as subState ' +
+            'FROM AFIAnalysis afi JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id WHERE afi.location_id > 0 AND afi.list_id = @listId';
 
 
 IF @rowsOfPage > 0 AND @pageNumber > 0
 BEGIN
-    SET @SQL = @SQL + 'ORDER BY  afi.negligible_risk OFFSET (@pageNumber-1)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
+    SET @SQL = @SQL + 'ORDER BY  afi.natural_land_deforested_area,afi.negligible_risk DESC OFFSET (@pageNumber-1)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
 END
 
 EXEC sp_executesql @SQL,

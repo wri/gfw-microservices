@@ -17,14 +17,11 @@ export class AfiFileService extends IPipeService {
   start(filters: GenerationFileRequest, suffix = 'afi') {
     this.startEmail(filters);
 
-    let header = AFI_HEADER_AGGREGATE;
-    if (!suffix.includes('aggregated')) {
-      header = AFI_HEADER;
-    }
-
     const { listId, key } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
+
+    const header = suffix.includes('aggregated') ? AFI_HEADER_AGGREGATE : AFI_HEADER;
 
     this.organizeStream(filters, Object.keys(header), suffix);
     fs.writeFileSync(`/tmp/${key}_${suffix}.csv`, `${Object.values(header).join(',')}\n`);
@@ -43,9 +40,7 @@ export class AfiFileService extends IPipeService {
       this.errorEmail(filters);
     });
 
-    this.inputStream;
-
-    if (!suffix.includes('aggregated')) {
+    if (suffix.includes('aggregated')) {
       this.inputStream
         .pipe(new FilterObject(allFields))
         .pipe(new NegligibleRiskDiscretize())
@@ -65,6 +60,8 @@ export class AfiFileService extends IPipeService {
         )
         .pipe(fs.createWriteStream(`/tmp/${key}_${suffix}.csv`, { flags: 'a' }));
     }
+
+    this.inputStream;
 
     return this.inputStream;
   }

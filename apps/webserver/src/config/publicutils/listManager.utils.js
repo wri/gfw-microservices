@@ -49,7 +49,6 @@ const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const dynamoUtils = require(path.resolve('./config/privateutils/dynamodb.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));

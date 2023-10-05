@@ -106,7 +106,7 @@ const messageSQSTemplate = {
 };
 
 const buildSQSMessage = (request, file) => {
-  const { id: listID } = request.params;
+  const { id: listId } = request.params;
   const { user_email: userEmail, organization_database: organizationDatabase } = request.session;
 
   const {
@@ -142,7 +142,7 @@ const buildSQSMessage = (request, file) => {
       order,
       sortByAttribute: sortByAttribute?.replaceAll('"', ''),
     }),
-    list: JSON.stringify({ listID, listFilterStr, listView, selectedLocations }),
+    list: JSON.stringify({ listId, listFilterStr, listView, selectedLocations }),
   };
   const filtersClean = _.pickBy(filters, _.identity);
 

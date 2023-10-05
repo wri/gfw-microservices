@@ -19,7 +19,7 @@ export class UspGetPaginatedAnalysisDataForUserList {
       combinedColumns,
       country,
       geometry,
-      listID,
+      listId,
       locationIds,
       locationLogic,
       locationStatement,
@@ -40,7 +40,7 @@ export class UspGetPaginatedAnalysisDataForUserList {
     } = filters;
 
     const parameters = [
-      { field: 'listID', type: sql.Int, value: listID },
+      { field: 'listID', type: sql.Int, value: listId },
       { field: 'PageNumber', type: sql.Int, value: page || 0 },
       { field: 'RowsOfPage', type: sql.Int, value: rowsPerPage || 0 },
       {

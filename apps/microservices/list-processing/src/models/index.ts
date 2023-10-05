@@ -75,7 +75,7 @@ export interface CopyOrMoveLargeListRequest {
 }
 
 export interface getPaginatedListDataRequest {
-  listID: number;
+  listId: number;
   organizationDatabase: string;
   analysisAreaMax?: number;
   analysisAreaMin?: number;
@@ -95,7 +95,7 @@ export interface getPaginatedListDataRequest {
 }
 
 export interface getNumberOfPagesPaginatedListDataRequest {
-  listID: number;
+  listId: number;
   organizationDatabase: string;
   subState?: string;
   rowsPerPage: 1000;

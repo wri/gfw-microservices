@@ -18,8 +18,8 @@ export class ResultService extends IPipeService {
   private filters: GenerationFileRequest;
 
   start(filters: GenerationFileRequest) {
-    const { listID, key, listView } = filters;
-    this.logger.log(`(${listID}) - Starting result stream to process data`);
+    const { listId, key, listView } = filters;
+    this.logger.log(`(${listId}) - Starting result stream to process data`);
 
     this.inputStream = new PassThrough({
       objectMode: true,
@@ -51,11 +51,11 @@ export class ResultService extends IPipeService {
     allFields: string[],
     columnGetLastValue: string[] = []
   ) {
-    const { listID, selectedLocationsList, key } = filters;
+    const { listId, selectedLocationsList, key } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', (err) => {
-      this.logger.error(`(${listID}) - Error on stream: ${err}`);
+      this.logger.error(`(${listId}) - Error on stream: ${err}`);
       this.errorEmail(filters);
     });
 
@@ -82,7 +82,7 @@ export class ResultService extends IPipeService {
       archive.finalize();
 
       output.on('close', async () => {
-        this.logger.log(`(${listID}) - Data has been zipped`);
+        this.logger.log(`(${listId}) - Data has been zipped`);
         await this.uploadToS3(filters);
       });
     });
@@ -91,8 +91,8 @@ export class ResultService extends IPipeService {
   }
 
   async finish(filters: GenerationFileRequest) {
-    const { listID } = filters;
-    this.logger.log(`(${listID}) - Finished to process result data`);
+    const { listId } = filters;
+    this.logger.log(`(${listId}) - Finished to process result data`);
     this.waitFinishedProcess(this.inputStream);
   }
 }

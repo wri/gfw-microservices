@@ -1,6 +1,6 @@
 import { AfiFileService } from './../files/afi.file.service';
 import { Logger, Injectable } from '@nestjs/common';
-import { GenerationFileRequest, GetPaginatedAfiAnalysisByListId } from '@wri-monorepos/sql';
+import { GenerationFileRequest, AfiAnalysisByListId } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
 import { getAllFilesAndZip } from '../shared/file.utils';
 
@@ -32,11 +32,10 @@ export class AfiService {
     suffix = 'afi'
   ) {
     const numberOfPages = await this.getNumberOfPages(filters, isListLevel);
-    const { listID } = filters;
-    this.logger.log(`(${listID}) - Number of pages: ${numberOfPages}`);
+    const { listId } = filters;
+    this.logger.log(`(${listId}) - Number of pages: ${numberOfPages}`);
 
-    let arrayOfPages = Array.from(Array(numberOfPages).keys());
-    arrayOfPages = arrayOfPages.map((value) => value + 1);
+    const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
     this.afiFileService.start(filters, suffix);
 
@@ -48,29 +47,27 @@ export class AfiService {
     };
 
     for await (const localPage of asyncPool(this.POOL_SIZE, arrayOfPages, composeResults)) {
-      this.logger.log(`(${listID}) - Get page of number ${localPage} from database`);
+      this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 
     await this.afiFileService.finish(filters);
   }
 
-  private async getAnalysisData(
-    filter,
-    isListLevel = 0
-  ): Promise<GetPaginatedAfiAnalysisByListId[]> {
-    const { organizationDatabase, rowsPerPage, pageNumber, listID } = filter;
+  private async getAnalysisData(filter, isListLevel = 0): Promise<AfiAnalysisByListId[]> {
+    const { organizationDatabase, rowsPerPage, pageNumber, listId } = filter;
     const queryString = `rowsPerPage=${rowsPerPage}&pageNumber=${pageNumber}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
-    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listID}/data-per-page?${queryString}`;
+    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/data-per-page?${queryString}`;
+    console.log(url);
     const response = await fetch(encodeURI(url), this.OPTIONS);
-    const analysisData = (await response.json()) as GetPaginatedAfiAnalysisByListId[];
+    const analysisData = (await response.json()) as AfiAnalysisByListId[];
     return analysisData;
   }
 
   private async getNumberOfPages(filters: GenerationFileRequest, isListLevel = 0): Promise<number> {
-    const { organizationDatabase, listID, rowsPerPage } = filters;
+    const { organizationDatabase, listId, rowsPerPage } = filters;
 
     const queryString = `rowsPerPage=${rowsPerPage}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
-    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listID}/number-of-pages?${queryString}`;
+    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/number-of-pages?${queryString}`;
     const response = await fetch(encodeURI(url), this.OPTIONS);
     const { pages } = (await response.json()) as { pages: number };
     return pages;

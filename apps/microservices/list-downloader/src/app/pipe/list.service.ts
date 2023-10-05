@@ -38,10 +38,10 @@ export class ListService {
   private readonly logger = new Logger(ListService.name);
 
   public async makeFile(filters: GenerationFileRequest) {
-    const { organizationDatabase, listID, combinedColumns, selectedLocations, file } = filters;
+    const { organizationDatabase, listId, combinedColumns, selectedLocations, file } = filters;
 
     const numberOfPages = await this.getNumberOfPages(filters);
-    this.logger.log(`(${listID}) - Number of pages: ${numberOfPages}`);
+    this.logger.log(`(${listId}) - Number of pages: ${numberOfPages}`);
 
     let arrayOfPages = Array.from(Array(numberOfPages).keys());
     arrayOfPages = arrayOfPages.map((value) => value + 1);
@@ -59,7 +59,7 @@ export class ListService {
       : selectedLocations.split(',').map((x) => parseInt(x, 10));
 
     const [listLevelAnalysis] = await this.uspGetListAnalysis.run(organizationDatabase, {
-      listId: listID,
+      listId: listId,
     });
 
     filters = {
@@ -87,7 +87,7 @@ export class ListService {
     };
 
     for await (const localPage of asyncPool(this.POOL_SIZE, arrayOfPages, composeResults)) {
-      this.logger.log(`(${listID}) - Get page of number ${localPage} from database`);
+      this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 
     service.finish(filters);
@@ -139,7 +139,7 @@ export class ListService {
 
   private convertToQueryFields(filters: GenerationFileRequest): string {
     const fields = [
-      'listID',
+      'listId',
       'organizationDatabase',
       'analysisAreaMax',
       'analysisAreaMin',

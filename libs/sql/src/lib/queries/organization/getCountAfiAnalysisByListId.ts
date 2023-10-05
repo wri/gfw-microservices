@@ -10,14 +10,12 @@ DECLARE @SQL NVARCHAR(MAX) = '';
 
 IF  @isListLevel = 1
 BEGIN
-    SET @filter = 'AND af.location_id IN (-1, -2)';
+    SET @filter = 'AND af.location_id < 0';
 END
 ELSE
 BEGIN
-    SET @filter = 'AND af.location_id NOT IN (-1, -2)';
+    SET @filter = 'AND af.location_id > 0';
 END
-
-SET @filter = +@filter + '  AND (af.negligible_risk < 0.5 OR af.negligible_risk > 99.5);';
 
 SET @SQL = 'SELECT COUNT(*) as quantity, @listId as id FROM [dbo].[AFIAnalysis] af WHERE af.list_id = @listID ';
 SET @SQL = @SQL + @filter;

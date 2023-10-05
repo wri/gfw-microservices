@@ -18,8 +18,8 @@ export class InputService extends IPipeService {
   private inputStream: PassThrough;
 
   start(filters: GenerationFileRequest) {
-    const { listID, key, templateId, combinedColumnsSplitted } = filters;
-    this.logger.log(`(${listID}) - Starting stream to process data`);
+    const { listId, key, templateId, combinedColumnsSplitted } = filters;
+    this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
     const fields =
@@ -37,17 +37,17 @@ export class InputService extends IPipeService {
   }
 
   async finish(filters: GenerationFileRequest) {
-    const { listID } = filters;
-    this.logger.log(`(${listID}) - Finished to process input data`);
+    const { listId } = filters;
+    this.logger.log(`(${listId}) - Finished to process input data`);
     this.waitFinishedProcess(this.inputStream);
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
-    const { key, selectedLocationsList, listID } = filters;
+    const { key, selectedLocationsList, listId } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', (err) => {
-      this.logger.error(`(${listID}) - Error on stream: ${err}`);
+      this.logger.error(`(${listId}) - Error on stream: ${err}`);
       this.errorEmail(filters);
     });
 
@@ -73,7 +73,7 @@ export class InputService extends IPipeService {
       archive.finalize();
 
       output.on('close', async () => {
-        this.logger.log(`(${listID}) - Data has been zipped`);
+        this.logger.log(`(${listId}) - Data has been zipped`);
         await this.uploadToS3(filters);
       });
     });

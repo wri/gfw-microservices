@@ -104,6 +104,7 @@ import { CommodityRiskFilterDrawer, ForestChangeFilterDrawer } from './Filters';
 import LocationDataNotAvailableMessage from './LocationDataNotAvailableMessage';
 import AnalysisListChips from '../landing/listItem/AnalysisListChips';
 import ChangeTypeOfAnalysisModal from '../landing/listItem/ChangeTypeOfAnalysisModal';
+import getActiveAnalysisType from '../../../../../utils/getActiveAnalysisType';
 
 // CONSTANTS
 import {
@@ -1377,7 +1378,8 @@ export default class Lists extends Component {
     const { selectedLists, selectedLocations } = this.props;
     const gfwList = !isUserList(selectedLists[0]) ? '&gfw=true' : '';
     const locationId = isSingleLocation ? `&locationId=${selectedLocations[0]}` : '';
-    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationId}`;
+    const diagnosticsType = getActiveAnalysisType(selectedLists[0].listAnalysesStatus);
+    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationId}&type=${diagnosticsType}`;
   };
 
   viewMap = ({ showFullListMap }) => {
@@ -2142,7 +2144,7 @@ export default class Lists extends Component {
 
     return (
       <div className={`${view === 'lists' ? '' : 'hidden'}`}>
-        {featureFlags?.isAfiAvailable && (
+        {featureFlags?.isAfiAvailable && !isGfwList && (
           <ChangeTypeOfAnalysisModal
             listId={listID}
             listAnalysesStatus={listAnalysesStatus}
@@ -2262,7 +2264,7 @@ export default class Lists extends Component {
 
               <div style={{ marginLeft: 'auto', display: 'flex' }}>
                 <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
-                {featureFlags?.isAfiAvailable && (
+                {featureFlags?.isAfiAvailable && !isGfwList && (
                   <Button
                     icon={<SettingsIcon fontSize="17px" />}
                     style={{ height: '17px', width: '40px', minWidth: '0px' }}
@@ -2628,7 +2630,8 @@ export default class Lists extends Component {
                       <div className="list-detail-action-bar">
                         {!getIsDiagnosticStatusDraft(selectedList) &&
                           listName !== 'Administrative Areas' &&
-                          listName !== 'Protected Areas' && (
+                          listName !== 'Protected Areas' &&
+                          (isGfwList || getActiveAnalysisType(listAnalysesStatus)) && (
                             <Button
                               variant="primary"
                               data-cy="list-diagnostics"
@@ -2646,16 +2649,17 @@ export default class Lists extends Component {
                         />
                       </div>
                       <div className="list-detail-action-bar">
-                        {selectedLocations.length === 1 && (
-                          <Button
-                            variant="primary"
-                            className="list-detail-action-bar__diagnostic-button"
-                            disabled={!this.listDiagnosticAccess(selectedList)}
-                            onClick={() => this.viewDiagnostic(true)}
-                            label="Location diagnostic"
-                            icon={<IconListAlt />}
-                          />
-                        )}
+                        {selectedLocations.length === 1 &&
+                          (isGfwList || getActiveAnalysisType(listAnalysesStatus)) && (
+                            <Button
+                              variant="primary"
+                              className="list-detail-action-bar__diagnostic-button"
+                              disabled={!this.listDiagnosticAccess(selectedList)}
+                              onClick={() => this.viewDiagnostic(true)}
+                              label="Location diagnostic"
+                              icon={<IconListAlt />}
+                            />
+                          )}
                         {selectedList && selectedLocations.length > 0 && (
                           <Button
                             className="list-detail-action-bar__map-button"

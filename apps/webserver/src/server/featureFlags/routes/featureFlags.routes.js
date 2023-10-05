@@ -19,7 +19,8 @@ module.exports = (app, limiter) => {
 
   app.get('/api/feature-flags', (req, res) => {
     res.status(200).json({
-      isAfiAvailable: isAfiAvailable(req.session.organization_id),
+      isAfiAvailable: isAfiAvailable(organization_id) ?? false,
+      isArgentinaComplianceAvailable: isArgentinaComplianceAvailable(organization_id) ?? false,
     });
   });
 };

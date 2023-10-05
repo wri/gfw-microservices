@@ -7,7 +7,7 @@
 *   @function {sendMessage}
 
 ********************************************************************/
-const AWS = require('aws-sdk');
+const AWS = require('@aws-sdk/client-sqs');
 const config = require('../config');
 
 const sqs = new AWS.SQS({
@@ -97,7 +97,7 @@ const sendMessage = (
     MessageGroupId: uniqueIdGenerator(),
     MessageAttributes: {},
   };
-  return sqs.sendMessage(parameters).promise();
+  return sqs.sendMessage(parameters);
 };
 
 const sendMessageBatch = (entries, queue_url) => {
@@ -116,7 +116,7 @@ const sendMessageBatch = (entries, queue_url) => {
         }),
         QueueUrl: queue_url,
       };
-      return sqs.sendMessageBatch(parameters).promise();
+      return sqs.sendMessageBatch(parameters);
     })
   );
 };

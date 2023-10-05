@@ -32,7 +32,7 @@ SET @SQL = @SQL + ' AND  afi.location_id < 0  AND afi.gadm_id IS NOT NULL';
 
 IF @rowsOfPage > 0 AND @pageNumber > 0
 BEGIN
-    SET @SQL = @SQL + 'ORDER BY  afi.natural_land_deforested_area, afi.negligible_risk DESC OFFSET (@pageNumber-1)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
+    SET @SQL = @SQL + 'ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC OFFSET (@pageNumber-1)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
 END
 
 PRINT @SQL
@@ -75,7 +75,7 @@ SET @SQL = 'SELECT  ' +
 
 IF @rowsOfPage > 0 AND @pageNumber > 0
 BEGIN
-    SET @SQL = @SQL + 'ORDER BY  afi.natural_land_deforested_area,afi.negligible_risk DESC OFFSET (@pageNumber-1)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
+    SET @SQL = @SQL + 'ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC OFFSET (@pageNumber-1)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
 END
 
 EXEC sp_executesql @SQL,

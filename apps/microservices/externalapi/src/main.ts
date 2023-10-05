@@ -8,7 +8,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 const SWAGGER_DISABLED_ENVS = ['staging', 'production'];
-const DEFAULT_APP_PORT = 3336;
+const DEFAULT_APP_PORT = 3337;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

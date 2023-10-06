@@ -7,8 +7,11 @@ import { analysisTypes } from '../../../config/env/analysisTypes.constants';
 function Diagnostics({ location }) {
   const { FOREST_CHANGE_DIAGNOSTICS, DEFORESTATION_KPIS } = analysisTypes;
 
-  const analysisType =
-    new URLSearchParams(location.search).get('type') ?? FOREST_CHANGE_DIAGNOSTICS;
+  const analysisTypeParam = new URLSearchParams(location.search).get('type');
+
+  const analysisType = Object.values(analysisTypes).includes(analysisTypeParam)
+    ? analysisTypeParam
+    : FOREST_CHANGE_DIAGNOSTICS;
 
   const diagnosticsComponents = {
     [FOREST_CHANGE_DIAGNOSTICS]: <ForestChangeDiagnostics />,

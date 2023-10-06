@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import { AFI_HEADER, AFI_HEADER_AGGREGATE } from '../shared/constants';
 
 import { FilterObject } from '../transform/filter.object';
+import { NegligibleRiskDiscretize } from '../transform/negligible.risk.discretize';
 
 @Injectable()
 export class AfiFileService extends IPipeService {
@@ -16,14 +17,11 @@ export class AfiFileService extends IPipeService {
   start(filters: GenerationFileRequest, suffix = 'afi') {
     this.startEmail(filters);
 
-    let header = AFI_HEADER_AGGREGATE;
-    if (!suffix.includes('aggregated')) {
-      header = AFI_HEADER;
-    }
-
-    const { listID, key } = filters;
-    this.logger.log(`(${listID}) - Starting stream to process data`);
+    const { listId, key } = filters;
+    this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
+
+    const header = suffix.includes('aggregated') ? AFI_HEADER_AGGREGATE : AFI_HEADER;
 
     this.organizeStream(filters, Object.keys(header), suffix);
     fs.writeFileSync(`/tmp/${key}_${suffix}.csv`, `${Object.values(header).join(',')}\n`);
@@ -34,29 +32,43 @@ export class AfiFileService extends IPipeService {
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[], suffix: string) {
-    const { listID, key } = filters;
+    const { listId, key } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', (err) => {
-      this.logger.error(`(${listID}) - Error on stream: ${err}`);
+      this.logger.error(`(${listId}) - Error on stream: ${err}`);
       this.errorEmail(filters);
     });
 
-    this.inputStream
-      .pipe(new FilterObject(allFields))
-      .pipe(
-        csvWriter({
-          sendHeaders: false,
-        })
-      )
-      .pipe(fs.createWriteStream(`/tmp/${key}_${suffix}.csv`, { flags: 'a' }));
+    if (suffix.includes('aggregated')) {
+      this.inputStream
+        .pipe(new FilterObject(allFields))
+        .pipe(new NegligibleRiskDiscretize())
+        .pipe(
+          csvWriter({
+            sendHeaders: false,
+          })
+        )
+        .pipe(fs.createWriteStream(`/tmp/${key}_${suffix}.csv`, { flags: 'a' }));
+    } else {
+      this.inputStream
+        .pipe(new FilterObject(allFields))
+        .pipe(
+          csvWriter({
+            sendHeaders: false,
+          })
+        )
+        .pipe(fs.createWriteStream(`/tmp/${key}_${suffix}.csv`, { flags: 'a' }));
+    }
+
+    this.inputStream;
 
     return this.inputStream;
   }
 
   async finish(filters: GenerationFileRequest) {
-    const { listID } = filters;
-    this.logger.log(`(${listID}) - Finished to process result data`);
+    const { listId } = filters;
+    this.logger.log(`(${listId}) - Finished to process result data`);
     this.waitFinishedProcess(this.inputStream);
   }
 }

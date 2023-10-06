@@ -22,7 +22,7 @@ describe('reorganizeFilters', () => {
         list: {
           DataType: 'String',
           StringValue:
-            '{"listID":"1069","listFilterStr":"","listView":"forest_change","selectedLocations":""}',
+            '{"listId":"1069","listFilterStr":"","listView":"forest_change","selectedLocations":""}',
         },
       }),
     });
@@ -33,7 +33,7 @@ describe('reorganizeFilters', () => {
       file: 'csv',
       key: 'tmp-20-WhpxMYru54jx',
       listFilterStr: '',
-      listID: '1069',
+      listId: '1069',
       listView: 'forest_change',
       order: 'asc',
       organizationDatabase: 'clientstore-QACO',

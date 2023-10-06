@@ -2,7 +2,7 @@
 
 import axios from 'axios';
 const APP_HOST = process.env.HOST ?? 'localhost';
-const APP_PORT = process.env.PORT ?? 3336;
+const APP_PORT = process.env.PORT ?? 3337;
 
 module.exports = async function () {
   // Configure axios for tests to use.

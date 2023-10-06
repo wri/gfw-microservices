@@ -130,7 +130,7 @@ describe('Check build sqs message function', () => {
     expect(StringValue).toContain('"key":');
   });
 
-  it('Should group listID, listFilterStr, listView, selectedLocations inside list', () => {
+  it('Should group listId, listFilterStr, listView, selectedLocations inside list', () => {
     const { message } = buildSQSMessage(
       {
         params: {
@@ -153,7 +153,7 @@ describe('Check build sqs message function', () => {
     const { list } = MessageAttributes;
     const { StringValue } = list;
 
-    expect(StringValue).toContain('"listID":2073');
+    expect(StringValue).toContain('"listId":2073');
     expect(StringValue).toContain('"listFilterStr":"text"');
     expect(StringValue).toContain('"selectedLocations":"1,2,3,4,5"');
     expect(StringValue).toContain('"listView":"forest_change"');

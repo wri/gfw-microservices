@@ -14,11 +14,11 @@ export class PipeService {
   constructor(private readonly afiService: AfiService, private readonly listService: ListService) {}
 
   public async makeFile(filters: GenerationFileRequest) {
-    const { type, organizationDatabase, listID } = filters;
+    const { type, organizationDatabase, listId } = filters;
 
-    this.logger.log(`(${listID}) - Receive request to build file for list`);
+    this.logger.log(`(${listId}) - Receive request to build file for list`);
 
-    const parameters = [{ field: 'list_id', type: sql.Int, value: listID }];
+    const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
     const { list_name } = await SQLUtils.queryDB<ListNameSchema>(
       organizationDatabase,
       'uspGetListNameSchema',

@@ -1,12 +1,21 @@
 const axios = require('axios');
+const dotenv = require('dotenv');
+dotenv.config();
 
 // Define default values for parameters
-const defaultBaseUrl = 'http://localhost:3336';
-let baseUrl = defaultBaseUrl;
+const defaultBaseUrl = 'http://localhost:3337';
+let baseUrl = process.env.API_BASEURL ? process.env.API_BASEURL : defaultBaseUrl;
 
+process.on('exit', function (code) {
+  return console.log(`API_TOKEN not found, exited with code ${code}`);
+});
+
+if (!process.env.API_TOKEN) {
+  process.exit(1);
+}
 // Parse command-line arguments for custom parameters
 // The following fragment will handle more params in the future, for the moment we just accept BASEURL
-// usage: node index.js --BASEURL=http://otherurl:3336
+// usage: node index.js --BASEURL=http://otherurl:3337
 for (let i = 2; i < process.argv.length; i++) {
   const arg = process.argv[i];
   if (arg.startsWith('--')) {
@@ -30,11 +39,13 @@ const endpointsToTest = [
     path: '/api/HealthCheck',
     method: 'get',
     requestSchema: null,
+    httpHeaders: null,
   },
   {
     path: '/api/api-keys/123',
     method: 'get',
     requestSchema: null,
+    httpHeaders: null,
   },
   {
     path: '/api/api-keys',
@@ -43,16 +54,23 @@ const endpointsToTest = [
       organizationId: TEST_CREATE_ORGANIZATION_ID, // Replace with your organization ID
       userId: TEST_CREATE_USER_ID, // Replace with your user ID
     },
+    httpHeaders: null,
   },
   {
     path: `/api/api-keys/${TEST_DELETE_ORGANIZATION_ID}/${TEST_DELETE_API_KEY_ID}`,
     method: 'delete',
     requestSchema: null,
+    httpHeaders: null,
   },
   {
     path: `/api/v1/list/${TEST_GET_ANALYSIS_ID}/analysis/FCD/status`,
     method: 'get',
     requestSchema: null,
+    httpHeaders: {
+      headers: {
+        'x-api-key': process.env.API_TOKEN,
+      },
+    },
   },
   {
     path: '/api/v1/list-upload',
@@ -63,21 +81,26 @@ const endpointsToTest = [
       templateId: 'template123', // Replace with your template ID
       analysisIDs: 'analysis123', // Replace with your analysis IDs
     },
+    httpHeaders: {
+      headers: {
+        'x-api-key': process.env.API_TOKEN,
+      },
+    },
   },
   // Add more endpoints in the future
 ];
 
 // Function to make requests to the API endpoints
 async function testEndpoints() {
-  for (const { path, method, requestSchema } of endpointsToTest) {
+  for (const { path, method, requestSchema, httpHeaders } of endpointsToTest) {
     const url = `${baseUrl}${path}`;
 
     try {
       let response;
       if (method === 'post') {
-        response = await axios.post(url, requestSchema);
+        response = await axios.post(url, requestSchema, httpHeaders);
       } else {
-        response = await axios.get(url);
+        response = await axios.get(url, httpHeaders);
       }
 
       console.log(`Endpoint: ${url}`);

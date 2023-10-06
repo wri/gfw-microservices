@@ -120,7 +120,7 @@ export class AppController {
   }
 
   validatePaginatedRequest(queryParam: getPaginatedListDataRequest) {
-    if (queryParam.listID === undefined || queryParam.listID === null || queryParam.listID === 0) {
+    if (queryParam.listId === undefined || queryParam.listId === null || queryParam.listId === 0) {
       throw new BadRequestException('listID is required');
     }
 

@@ -11,7 +11,7 @@ export interface GenerationFileRequest {
   file?: string;
   geometry?: number;
   key?: string;
-  listID: number;
+  listId: number;
   listLevelAnalysis?: unknown;
   listName?: string;
   listView?: string;

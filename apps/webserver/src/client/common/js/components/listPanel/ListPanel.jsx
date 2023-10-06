@@ -6,9 +6,8 @@ import { updateLocationFilter } from '../../../../dashboard/js/actions/dashboard
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
 import FailedTooltip from '../CustomTooltip/FailedTooltip';
 import InlineLoader from '../Loaders/InlineLoader';
-import { getIsDiagnosticStatusDraft } from '../../../../locations/js/utils/draft.utils';
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
-import { analysisTypes } from 'apps/webserver/src/config/env/analysisTypes.constants';
+import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 
 function selectTooltipMessage(currentUser, list, listDraftStatus, listContext) {
   const userIsOwner = currentUser.id === list.user_id;
@@ -74,7 +73,7 @@ function ListPanel({
   };
 
   const createListsRenderer = (list, index) => {
-    const listDraftStatus = getIsDiagnosticStatusDraft(list);
+    const listDraftStatus = list.list_status_id === listStatus.Draft;
     const tooltipMessage = selectTooltipMessage(currentUser, list, listDraftStatus, listContext);
     const IS_LOCK_STATUS = !!(list.lock_status && list.lock_user_id);
 
@@ -100,9 +99,9 @@ function ListPanel({
     const onClickHandler = () => {
       togglePanel();
       if (
-        (hasAlertsAnalysisActive && listContext === 'dashboard') ||
+        (hasAlertsAnalysisActive && !listDraftStatus && listContext === 'dashboard') ||
         (list.list_status_id === listStatus.Active && listContext === 'map') ||
-        (getIsDiagnosticStatusDraft(list) && listContext === 'map')
+        (listDraftStatus && listContext === 'map')
       ) {
         handleSelectedList(list);
       }
@@ -124,7 +123,7 @@ function ListPanel({
           <span style={{ wordBreak: 'break-word' }}>{list.list_name}</span>
         </div>
         <div style={{ display: 'flex', justifyItems: 'right' }}>
-          {getIsDiagnosticStatusDraft(list) && (
+          {list.list_status_id === listStatus.Draft && (
             <CustomTooltip
               placement="top"
               tooltipMessage={tooltipMessage}

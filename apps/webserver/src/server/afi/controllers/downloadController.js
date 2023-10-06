@@ -1,11 +1,12 @@
-const AWS = require('aws-sdk');
+const path = require('path');
+const AWS = require('@aws-sdk/client-s3');
+
 /**
  * @summary handles afi analysis endpoint
  * @param {Object} req Express Request
  * @param {Object} res Express Respond
  */
-
-module.exports = (req, res) => {
+module.exports = async (req, res) => {
   const { listId } = req.query;
 
   if (!listId) {
@@ -25,6 +26,7 @@ module.exports = (req, res) => {
   res.attachment(fileKey);
   res.setHeader('Content-Type', 'application/zip');
   res.setHeader('Content-Disposition', 'attachment; filename=' + `${basename}.zip`);
-  const fileStream = s3.getObject(options).createReadStream();
+  const s3Response = await s3.getObject(options);
+  const fileStream = s3Response.Body;
   fileStream.pipe(res);
 };

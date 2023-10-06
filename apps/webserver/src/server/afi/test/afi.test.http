@@ -1,7 +1,7 @@
 ### Generate download data for specific list
 GET https://localhost:8443/api/afi/download?listId=1
 Content-Type: application/zip
-Cookie: gfwpro.globalforestwatch.org=s%3A56f54b40-40f7-11ee-b0d7-3bc54ac9ea0e.kDwiSe1fq8jjS4Q1k7bJQxUTMelGvjxDUdHB14fq%2BNQ
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
 ### Get AFI Diagnostics Analysis For List
 GET https://localhost:8443/api/afi/analysis/5498

@@ -87,6 +87,7 @@ export class AppController {
       request.userId,
       request.clientDatabase,
       request.organizationId,
+      request.subscriptionStatusId,
       request.gfwListId,
       request.allLocationsSelected,
       request.filters,

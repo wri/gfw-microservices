@@ -26,6 +26,7 @@ import {
 import { Logger, Injectable } from '@nestjs/common';
 import { getFinalGeojson } from '@wri-monorepos/shared';
 import { GeoJson } from './type';
+import { getAccountListProccesingLimit } from '../utils/account.utils';
 
 const EMPTY_CUSTOM_ATTRIBUTES = [];
 
@@ -83,6 +84,7 @@ export class LocationService {
     userId,
     clientDatabase,
     organizationId,
+    subscriptionStatusId,
     gfwListId,
     allLocationsSelected = false,
     filters: ListFilters,
@@ -194,16 +196,20 @@ export class LocationService {
         destLocationIds
       );
 
-      Logger.log(`Copy analysis complete`, 'LocationsService');
+      Logger.log(`Copy analysi s complete`, 'LocationsService');
 
       if (!isSaveAsDraft) {
+        const processingLimit = await getAccountListProccesingLimit({
+          organizationId,
+          organizationType: subscriptionStatusId,
+        });
+
         const postData = {
           list_id: createdListId,
           user_id: userId,
           organization_id: organizationId,
           reanalyze: false,
-          // TODO: https://gfw.atlassian.net/browse/GPV-2275: Add processing limit
-          // processing_limit: processingLimit,
+          processing_limit: processingLimit,
           analysis_types: getAnalysisTypesFromIds(analysisIds),
         };
         const analysisRequestResponse = await requestAnalysisProcess(postData);
@@ -247,13 +253,17 @@ export class LocationService {
       if (isSaveAsDraft) {
         await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
       } else {
+        const processingLimit = await getAccountListProccesingLimit({
+          organizationId,
+          organizationType: subscriptionStatusId,
+        });
+
         const postData = {
           list_id: moveToList.id,
           user_id: userId,
           organization_id: organizationId,
           reanalyze: false,
-          // TODO: https://gfw.atlassian.net/browse/GPV-2275: Add processing limit
-          // processing_limit: processingLimit,
+          processing_limit: processingLimit,
           analysis_types: getAnalysisTypesFromIds(analysisIds),
         };
         const analysisRequestResponse = await requestAnalysisProcess(postData);

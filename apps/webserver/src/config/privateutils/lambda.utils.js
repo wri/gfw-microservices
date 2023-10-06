@@ -6,7 +6,7 @@
  *   @function {invoke}
  ********************************************************************/
 // Imports for this module
-const AWS = require('aws-sdk');
+const AWS = require('@aws-sdk/client-lambda');
 const lambda = new AWS.Lambda({
   apiVersion: '2015-03-31',
   region: 'us-east-1',
@@ -23,7 +23,7 @@ const invoke = (FunctionName, payload = '') => {
   };
   console.log('FunctionName', parameters.FunctionName);
 
-  return lambda.invoke(parameters).promise();
+  return lambda.invoke(parameters);
 };
 
 module.exports = {

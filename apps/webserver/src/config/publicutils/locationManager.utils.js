@@ -87,7 +87,9 @@ const getGADM = (req, geojson) => {
       })
       .then((lambdaResult) => {
         const { Payload } = lambdaResult;
-        const { bucket, key, errorMessage } = JSON.parse(Payload);
+        const payloadString = Payload.transformToString();
+        const payloadJson = JSON.parse(payloadString);
+        const { bucket, key, errorMessage } = payloadJson;
 
         if (errorMessage) {
           console.log(errorMessage);

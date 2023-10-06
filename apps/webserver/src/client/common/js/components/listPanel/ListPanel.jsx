@@ -8,6 +8,7 @@ import FailedTooltip from '../CustomTooltip/FailedTooltip';
 import InlineLoader from '../Loaders/InlineLoader';
 import { getIsDiagnosticStatusDraft } from '../../../../locations/js/utils/draft.utils';
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
+import { analysisTypes } from 'apps/webserver/src/config/env/analysisTypes.constants';
 
 function selectTooltipMessage(currentUser, list, listDraftStatus, listContext) {
   const userIsOwner = currentUser.id === list.user_id;
@@ -77,6 +78,11 @@ function ListPanel({
     const tooltipMessage = selectTooltipMessage(currentUser, list, listDraftStatus, listContext);
     const IS_LOCK_STATUS = !!(list.lock_status && list.lock_user_id);
 
+    const hasAlertsAnalysisActive = list?.listAnalysesStatus?.some(
+      ({ status, analysisId }) =>
+        status === listStatus.Active && analysisId === analysisTypes.ALERTS
+    );
+
     let className = '';
     if (list.list_status_id === listStatus.Pending || IS_LOCK_STATUS) {
       // Pending
@@ -87,14 +93,15 @@ function ListPanel({
     } else if (listDraftStatus && listContext === 'map') {
       // Draft in Map
       className = 'locations-list-name__map_draft';
-    } else if (listDraftStatus && listContext === 'dashboard') {
+    } else if ((!hasAlertsAnalysisActive || listDraftStatus) && listContext === 'dashboard') {
       // Draft in Dashboard
       className = 'locations-list-name__dash_draft';
     }
     const onClickHandler = () => {
       togglePanel();
       if (
-        list.list_status_id === listStatus.Active ||
+        (hasAlertsAnalysisActive && listContext === 'dashboard') ||
+        (list.list_status_id === listStatus.Active && listContext === 'map') ||
         (getIsDiagnosticStatusDraft(list) && listContext === 'map')
       ) {
         handleSelectedList(list);

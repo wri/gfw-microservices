@@ -30,10 +30,7 @@ SET @SQL = ' SELECT afi.list_id as listId, '+
 
 SET @SQL = @SQL + ' AND  afi.location_id < 0  AND afi.gadm_id IS NOT NULL';
 
-IF @rowsOfPage > 0 AND @pageNumber > 0
-BEGIN
-    SET @SQL = @SQL + 'ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC OFFSET (@pageNumber-1)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
-END
+SET @SQL = @SQL + ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC OFFSET (@pageNumber)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
 
 PRINT @SQL
 EXEC sp_executesql @SQL,
@@ -73,10 +70,8 @@ SET @SQL = 'SELECT  ' +
             'FROM AFIAnalysis afi JOIN dbo.['+@list_table+'] lt ON lt.location_id = afi.location_id WHERE afi.location_id > 0 AND afi.list_id = @listId';
 
 
-IF @rowsOfPage > 0 AND @pageNumber > 0
-BEGIN
-    SET @SQL = @SQL + 'ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC OFFSET (@pageNumber-1)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
-END
+SET @SQL = @SQL + ' ORDER BY afi.negligible_risk ASC, afi.natural_land_deforested_area DESC OFFSET (@pageNumber)*@rowsOfPage ROWS FETCH NEXT @rowsOfPage ROWS ONLY';
+
 
 EXEC sp_executesql @SQL,
      N'@listId INT, @listName NVARCHAR(150), @rowsOfPage INT, @pageNumber INT',

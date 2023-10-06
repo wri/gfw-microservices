@@ -44,4 +44,19 @@ describe('NegligibleRiskDiscretize', () => {
       }
     );
   });
+
+  test('Should return negligible risk as no', () => {
+    const negligibleRiskDiscretize = new NegligibleRiskDiscretize();
+    negligibleRiskDiscretize._transform(
+      {
+        negligibleRisk: 0,
+      },
+      '',
+      (err, data) => {
+        expect(data).toEqual({
+          negligibleRisk: 'no',
+        });
+      }
+    );
+  });
 });

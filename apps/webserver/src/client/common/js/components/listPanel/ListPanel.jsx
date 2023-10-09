@@ -123,7 +123,7 @@ function ListPanel({
           <span style={{ wordBreak: 'break-word' }}>{list.list_name}</span>
         </div>
         <div style={{ display: 'flex', justifyItems: 'right' }}>
-          {list.list_status_id === listStatus.Draft && (
+          {listDraftStatus && (
             <CustomTooltip
               placement="top"
               tooltipMessage={tooltipMessage}

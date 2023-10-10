@@ -196,7 +196,7 @@ export class LocationService {
         destLocationIds
       );
 
-      Logger.log(`Copy analysi s complete`, 'LocationsService');
+      Logger.log(`Copy analysis complete`, 'LocationsService');
 
       if (!isSaveAsDraft) {
         const processingLimit = await getAccountListProccesingLimit({

@@ -12,6 +12,7 @@ import './ChangeTypeOfAnalysisModal.scss';
 
 function ChangeTypeOfAnalysisModal({
   listId,
+  listName,
   setIsChangeTypeOfAnalysisModalOpen,
   isChangeTypeOfAnalysisModalOpen,
   listAnalysesStatus,
@@ -39,7 +40,7 @@ function ChangeTypeOfAnalysisModal({
       body: JSON.stringify({ analysisIds: selectedAnalysis }),
     })
       .then(() => {
-        return requestGeoTrellisAnalyzeList({ id: listId }, true);
+        return requestGeoTrellisAnalyzeList({ id: listId, list_name: listName }, true);
       })
       .then(() => {
         if (selectedAnalysis.includes(analysisTypes.DEFORESTATION_KPIS)) {

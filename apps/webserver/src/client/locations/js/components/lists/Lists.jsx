@@ -2148,6 +2148,7 @@ export default class Lists extends Component {
         {featureFlags?.isAfiAvailable && !isGfwList && (
           <ChangeTypeOfAnalysisModal
             listId={listID}
+            listName={listName}
             listAnalysesStatus={listAnalysesStatus}
             setIsChangeTypeOfAnalysisModalOpen={(open) =>
               this.setState({ isChangeTypeOfAnalysisModalOpen: open })

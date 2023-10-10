@@ -649,7 +649,7 @@ export default class Diagnostics extends Component {
       selectedLists,
       selectedLocations,
       listData,
-
+      selectedLocationData,
       displayPopover,
       bubbleData,
       popoverLoading,
@@ -736,8 +736,8 @@ export default class Diagnostics extends Component {
 
                 {isSingleLocation ? (
                   <SingleLocationDiagnosticsHeaderInfo
-                    selectedLists={selectedLists}
-                    filteredLocations={filteredLocations}
+                    selectedListName={selectedLists[0].list_name}
+                    currentLocation={selectedLocationData}
                   />
                 ) : (
                   <FullListDiagnosticsHeaderInfo selectedLists={selectedLists} />

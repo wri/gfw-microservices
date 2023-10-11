@@ -1,7 +1,4 @@
-const AWS = require('aws-sdk');
-
 const { sendMessageToQueue } = require('../utils/afi.utils');
-const { rest } = require('lodash');
 
 /**
  * @summary handles afi analysis endpoint

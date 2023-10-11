@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TokenModule } from '../api-keys';
@@ -7,15 +7,16 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ListsAnalysisModule } from '../list-analysis';
 import { ExternalAPIKey } from '../api-keys/external-api-key.entity';
 import { Organization } from '../api-keys/organization.entity';
-import { User } from '../api-keys/user.entity';
-import { ExternalUpload } from '../list-analysis/external-upload.entity';
+import { UserRoutes } from '../api-keys/user-route.entity';
 import { EntitySchema } from 'typeorm';
-
-const SYSTEM_DATABASE = 'db.default.sqlite';
-const CLIENT_DATABASE = 'db.sqlite';
-const CONNECTION_TYPE_MSSQL = 'mssql';
-const CONNECTION_TYPE_SQLITE = 'sqlite';
-const TEST_ENVIRONMENT = 'test';
+import {
+  TEST_ENVIRONMENT,
+  CONNECTION_TYPE_SQLITE,
+  CONNECTION_TYPE_MSSQL,
+  SYSTEM_DATABASE,
+  CLIENT_DATABASE,
+} from '../config';
+import { ApiKeyMiddleware } from '../middleware/api.middleware';
 
 @Module({
   imports: [
@@ -23,15 +24,25 @@ const TEST_ENVIRONMENT = 'test';
       envFilePath: ['.env', '.env.production'],
       isGlobal: true,
     }),
-    createTypeOrmModule('default', [Organization]),
-    createTypeOrmModule('client', [ExternalAPIKey, User, ExternalUpload]),
+    createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes]),
     TokenModule,
     ListsAnalysisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  // Configure protected routes
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(ApiKeyMiddleware)
+      .forRoutes(
+        '/v1/list/:listID/analysis/FCD/status',
+        '/v1/list/upload_new',
+        '/v1/list/prepare_upload'
+      );
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function createTypeOrmModule(name: string, entities?: Array<Function | string | EntitySchema>) {
@@ -50,6 +61,8 @@ function createTypeOrmModule(name: string, entities?: Array<Function | string | 
               ? SYSTEM_DATABASE
               : CLIENT_DATABASE
             : config.get<string>('MSSQL_DATABASE'),
+        username: config.get<string>('MSSQL_USERNAME'),
+        password: config.get<string>('MSSQL_PASSWORD'),
         synchronize: env === TEST_ENVIRONMENT,
         logging: true,
         entities,

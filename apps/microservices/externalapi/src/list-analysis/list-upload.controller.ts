@@ -4,14 +4,15 @@ import {
   ListUploadNewRequest,
   ListUploadNewResponse,
   ListUploadNewErrorResponse,
-  //PrepareUploadRequest,
+  PrepareUploadRequest,
 } from './list-upload-new.dto';
-import { ApiResponse } from '@nestjs/swagger';
-//import { ListAnalysisService } from './list-analysis.service';
+import { ApiSecurity, ApiResponse } from '@nestjs/swagger';
+import { ListAnalysisService } from './list-analysis.service';
 
+@ApiSecurity('x-api-key')
 @Controller('/v1')
 export class ListUploadController {
-  //constructor (private listAnalysisService: ListAnalysisService) { }
+  constructor(private listAnalysisService: ListAnalysisService) {}
 
   @ApiResponse({ status: 200, type: ListUploadNewResponse })
   @Post('/list/upload_new')
@@ -42,8 +43,8 @@ export class ListUploadController {
     }
   }
 
-  /* @Post('/list/prepare_upload')
+  @Post('/list/prepare_upload')
   async prepareUploadList(@Body() request: PrepareUploadRequest) {
     return await this.listAnalysisService.prepareUpload(request.userEmail);
-  } */
+  }
 }

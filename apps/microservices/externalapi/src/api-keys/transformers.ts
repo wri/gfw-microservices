@@ -5,8 +5,8 @@ export function transformApiKey(apiKey: ExternalAPIKey): ViewApiKeyResponse {
   return {
     id: apiKey.awsId,
     apiKey: apiKey.apiKey,
-    apiGroup: apiKey.apiGroup,
-    creatorUserEmail: apiKey.user.email,
+    apiGroup: apiKey.apiGroups,
+    creatorUserEmail: apiKey.user.user_email,
     organizationId: apiKey.organizationId,
     creationDate: apiKey.updateDateTime,
   };

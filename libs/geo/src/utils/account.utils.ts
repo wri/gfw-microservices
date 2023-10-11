@@ -1,48 +1,18 @@
 import { Logger } from '@nestjs/common';
 import * as moment from 'moment';
 import {
-  UspGetOrganizationActivatedTime,
-  UspGetOrganizationAnalysisUsage,
-  UspGetAnalysisLimits,
   AnalysisLimit,
   OrganizationAnalysisUsage,
+  getAccountAnalysisLimits,
+  getAccountAnalysisUsage,
+  getAccountActivatedTime,
 } from '@wri-monorepos/sql';
 
-interface GetOrganizationAnalysisUsageFn {
-  startDate: string;
-  endDate: string;
-  organizationId: number;
-  countForEachList: number;
-}
-export async function getOrganizationAnalysisUsage({
-  startDate,
-  endDate,
-  organizationId,
-  countForEachList,
-}: GetOrganizationAnalysisUsageFn) {
-  Logger.log('Getting organization analysis usage');
-  const organizationAnalysisUsageConn = new UspGetOrganizationAnalysisUsage();
-  return await organizationAnalysisUsageConn.run(
-    startDate,
-    endDate,
-    organizationId,
-    countForEachList
-  );
-}
+export async function getAccountLimits(organizationId: number, organizationType: number) {
+  const organizationCustomLimits = await getAccountAnalysisLimits({ organizationId });
+  const organizationSubscriptionLimits = await getAccountAnalysisLimits({ organizationType });
 
-export async function getAccountActivatedTime(organizationId: number) {
-  Logger.log('Getting organization activated time');
-  const organizationActivatedTimeConn = new UspGetOrganizationActivatedTime();
-  return await organizationActivatedTimeConn.run(organizationId);
-}
-
-export async function getAccountLimits(organizaitonId: number, organizationType: number) {
-  Logger.log('Getting organization subscription limits');
-  const organizationLimitsConn = new UspGetAnalysisLimits();
-  const organizationCustomLimits = await organizationLimitsConn.run(organizaitonId);
-  const organizationSubscriptionLimits = await organizationLimitsConn.run(organizationType);
-
-  // If no custom limit found return the fallback by subscription_id
+  // If no custom limit found, return the fallback by subscription_id
   return organizationCustomLimits || organizationSubscriptionLimits;
 }
 
@@ -54,6 +24,8 @@ export async function getAccountListProccesingLimit({
   organizationId,
   organizationType /* subscription_status_id */,
 }: GetAccountProcessingLimitFn) {
+  Logger.log('Calculating organization processing limits');
+
   const organizationActivatedTime = await getAccountActivatedTime(organizationId);
 
   const todayAsEndDay = moment();
@@ -63,7 +35,7 @@ export async function getAccountListProccesingLimit({
     'days'
   );
 
-  const [accountUsage] = await getOrganizationAnalysisUsage({
+  const accountUsage = await getAccountAnalysisUsage({
     startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
     endDate: todayAsEndDay.format('YYYY-MM-DD'),
     organizationId,

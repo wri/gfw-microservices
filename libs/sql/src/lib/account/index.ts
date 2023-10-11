@@ -1,3 +1,3 @@
-export * from './uspGetOrganizationActivatedTime';
-export * from './uspGetOrganizationAnalysisUsage';
-export * from './uspGetAnalysisLimits';
+export * from './getAccountActivatedTime';
+export * from './getAccountAnalysisLimits';
+export * from './getAccountAnalysisUsage';

@@ -4,7 +4,6 @@ import intersection from 'lodash/intersection';
 import { proLayers } from '../../../common/js/config';
 import { gfwListsLocationID } from '../components/lists/Lists.config';
 import { GFWLists } from '../config/listNames';
-import { getListStatusIdByStatusName } from './draft.utils';
 import {
   FILTER_STRING_VARIABLES,
   FILTER_ARRAY_VARIABLES,
@@ -313,7 +312,7 @@ const dataCleanup = (data) => {
  * @return {boolean} - Return true/false value for template validity
  */
 const getListValidStatus = (list_status_id) => {
-  return list_status_id === 2 || list_status_id === getListStatusIdByStatusName('Draft');
+  return list_status_id === listStatus.Active || list_status_id === listStatus.Draft;
 };
 
 /**

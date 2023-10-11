@@ -3,11 +3,16 @@
  *   @name: analysisManager.utils.js
  *   @description : Manager file to control analysis and run each microservice
  *
- *   @function {getAnalysisDataForUserList}
- *   @function {getAnalysisDataForGFWList}
- *   @function {getGFWListAnalyses}
- *   @function {requestAnalysis}
- *   @function {getAFIAnalysisForListId}
+ * @function {getAnalysisDataForUserList}
+ * @function {getAnalysisDataForGFWList}
+ * @function {getAnalysisDataForProtectedAreas}
+ * @function {getAnalysisDataForProtectedAreasByLocationId}
+ * @function {getGFWListAnalyses}
+ * @function {getListAnalyses}
+ * @function {requestAnalysis}
+ * @function {requestDashboardAnalysis}
+ * @function {getAFIAnalysisForListId}
+ * @function {getAFINegligibleStatsForListId}
  *
  ********************************************************************/
 const developmentEnv = process.env.NODE_ENV === 'development';
@@ -371,7 +376,7 @@ const requestAnalysis = async (req, list_name, geojson = {}, isEdit = false) => 
   // Determine if we're request location or list analysis
   if (typeof geojson === 'object' && Object.keys(geojson).length === 0) {
     // Perform a list analysis
-    analysisUtils.analyzeList(req, organization_database, list, isEdit);
+    analysisUtils.analyzeList(req, organization_database, list);
   } else if (
     typeof geojson === 'object' &&
     geojson.hasOwnProperty('type') &&

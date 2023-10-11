@@ -45,6 +45,7 @@ import {
   saveListConfig,
 } from '../../../../../config/config/locations.config';
 import featureFlags from '../../../../../utils/general.utils';
+import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
 
@@ -258,7 +259,7 @@ export default class AddLocation extends Component {
       lng: '',
       overrideOnClose: false,
       isLoading: false,
-      selectedAnalysis: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS],
+      selectedAnalysis: getAnalysesSelectedByDefault(),
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
@@ -2299,11 +2300,12 @@ export default class AddLocation extends Component {
           <div className="add-single-location__action-buttons">
             <SaveAsDraftButtonWithDialog
               saveLocations={() => this.saveItem({ isSaveAsDraft: true })}
-              disabled={selectedAnalysis.length > 0}
+              disabled={selectedAnalysis.length <= 0}
             />
             <Button
               onClick={this.saveAndAddAnother}
               label={locationsPage.add.submit}
+              disabled={selectedAnalysis.length <= 0}
               variant="primary"
             />
           </div>

@@ -1,3 +1,10 @@
+/**
+ * Returns the rows of ListsAnalysisStatus matching the given listId
+ * @ListID INT,
+ *
+ * Returns type ListsAnalysisStatus (same as getAllListsAnalysisStatus)
+ */
+
 export const getListAnalysisStatusById = `
 SELECT
   las.ListID AS listId,

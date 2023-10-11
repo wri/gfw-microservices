@@ -11,7 +11,7 @@ const AWS = require('aws-sdk');
 
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const listUtils = require(path.resolve('./config/privateutils/list.utils'));
+const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
 
 const _ = require('lodash');
 
@@ -105,26 +105,8 @@ const messageSQSTemplate = {
   },
 };
 
-const uniqueIdGenerator = () => {
-  let uniqueId = '';
-  const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  // Step 1: Determine the current time in milliseconds (Epoch Time).
-  const milliseconds = new Date().getTime();
-
-  // Step 2: Get a random integer to add to file name to make sure it is unique.
-  const randomSeed = Math.floor(Math.random() * 1000000);
-
-  // Step 3: Generate some random characters
-  for (let i = 0; i < 6; i += 1) {
-    uniqueId += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-
-  return uniqueId + milliseconds + randomSeed;
-};
-
 const buildSQSMessage = (request, file) => {
-  const { id: listID } = request.params;
+  const { id: listId } = request.params;
   const { user_email: userEmail, organization_database: organizationDatabase } = request.session;
 
   const {
@@ -160,7 +142,7 @@ const buildSQSMessage = (request, file) => {
       order,
       sortByAttribute: sortByAttribute?.replaceAll('"', ''),
     }),
-    list: JSON.stringify({ listID, listFilterStr, listView, selectedLocations }),
+    list: JSON.stringify({ listId, listFilterStr, listView, selectedLocations }),
   };
   const filtersClean = _.pickBy(filters, _.identity);
 
@@ -178,8 +160,8 @@ const buildSQSMessage = (request, file) => {
   const sqsOrderData = {
     MessageAttributes: messageSQS,
     MessageBody: JSON.stringify(messageSQS),
-    MessageDeduplicationId: uniqueIdGenerator(),
-    MessageGroupId: uniqueIdGenerator(),
+    MessageDeduplicationId: sqsUtils.uniqueIdGenerator(),
+    MessageGroupId: sqsUtils.uniqueIdGenerator(),
     QueueUrl: process.env.AWS_TMP_QUEUE,
   };
 

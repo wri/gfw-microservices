@@ -26,7 +26,7 @@ import store from '../../store';
 import { changeTemplate } from '../../actions/locationActions';
 import httpRequest from '../../../../common/js/utils/httpRequest';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
-import { containsPunctuation, dataCleanup, getListStatusId } from '../../utils/lists.utils';
+import { containsPunctuation, dataCleanup } from '../../utils/lists.utils';
 import { fieldValidations } from '../../utils/validations';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import { esriQuery } from '../../utils/esriTasks';
@@ -47,8 +47,8 @@ import StepFour from './StepFour';
 import { deduceAdminBackoff } from '../../utils/backoff';
 import { resetScroll } from '../../utils/scroll.utils';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
-import { getListStatusIdByStatusName } from '../../utils/draft.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
+import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 
 // Configs
 import {
@@ -58,6 +58,7 @@ import {
 } from '../../../../../config/config/locations.config';
 import { defaultCustomAttributeHeaders } from '../edit/table/MultiGridTable.config';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
+import { listStatus } from '../../../../../config/env/listStatuses.constants';
 
 // Style
 import '../../../css/locations.scss';
@@ -90,7 +91,7 @@ class UploadLocations extends Component {
       canGoNext: true,
       isUploading: false,
       isSaving: false,
-      selectedAnalyses: [],
+      selectedAnalyses: getAnalysesSelectedByDefault(),
     };
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
@@ -830,18 +831,20 @@ class UploadLocations extends Component {
               };
 
               let bigObj;
+
+              bigObj = {
+                list_name: listName,
+                template_id: templateId,
+                custom_attributes: customAttributes,
+                location_classification:
+                  locationClassifications.length === 0 ? '' : locationClassifications[0],
+                list_status_id: isSaveAsDraft ? listStatus.Draft : listStatus.Pending,
+                analysisIds: selectedAnalyses,
+                geojson: sequencedGeoJSON,
+              };
+
               if (selectedList === '' && isSaveAsDraft) {
                 request.open('POST', saveAsDraftListConfig.route, true);
-
-                bigObj = {
-                  list_name: listName,
-                  template_id: templateId,
-                  geojson: sequencedGeoJSON,
-                  custom_attributes: customAttributes,
-                  location_classification:
-                    locationClassifications.length === 0 ? '' : locationClassifications[0],
-                  list_status_id: getListStatusIdByStatusName('Draft'),
-                };
 
                 gtag('event', 'Upload List', {
                   event_category: 'Submit',
@@ -854,17 +857,6 @@ class UploadLocations extends Component {
                 });
               } else if (selectedList === '') {
                 request.open('POST', '/locations/addToNewList', true);
-
-                bigObj = {
-                  list_name: listName,
-                  template_id: templateId,
-                  geojson: sequencedGeoJSON,
-                  custom_attributes: customAttributes,
-                  location_classification:
-                    locationClassifications.length === 0 ? '' : locationClassifications[0],
-                  list_status_id: getListStatusId(isSaveAsDraft),
-                  analysisIds: selectedAnalyses,
-                };
 
                 gtag('event', 'Upload List', {
                   event_category: 'Submit',
@@ -898,7 +890,8 @@ class UploadLocations extends Component {
                   geojson: sequencedGeoJSON,
                   appendLocations: true,
                   list_analysis_table_name: activeList[0].list_analysis_table_name,
-                  list_status_id: getListStatusId(isSaveAsDraft),
+                  list_status_id: isSaveAsDraft ? listStatus.Draft : listStatus.Pending,
+                  analysisIds: selectedAnalyses,
                 };
                 gtag('event', 'Upload List', {
                   event_category: 'Submit',
@@ -1367,7 +1360,6 @@ class UploadLocations extends Component {
               />
             </div>,
           ];
-
     return (
       <div className={`locations-body ${view === 'upload' ? '' : 'hidden'}`}>
         <Dialog
@@ -1478,7 +1470,7 @@ class UploadLocations extends Component {
 
                     {step === 4 && (
                       <SaveAsDraftButtonWithDialog
-                        disabled={!canGoNext}
+                        disabled={!canGoNext && selectedAnalyses.length <= 0}
                         saveLocations={() => this.saveLocations({ isSaveAsDraft: true })}
                       />
                     )}
@@ -1499,7 +1491,7 @@ class UploadLocations extends Component {
                       }`}
                       variant="primary"
                       onClick={isSaving ? null : this.saveLocations}
-                      disabled={!canGoNext}
+                      disabled={!canGoNext && selectedAnalyses.length <= 0}
                       label={locationsPage.upload.submit}
                     />
                   </div>

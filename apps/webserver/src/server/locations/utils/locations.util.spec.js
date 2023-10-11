@@ -1,4 +1,13 @@
+import path from 'path';
+const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
+const tmp = require('tmp');
+
+import { expect, jest, it } from '@jest/globals';
 const { buildSQSMessage } = require('./locations.utils');
+
+jest.spyOn(path, 'resolve').mockReturnValueOnce('./config/privateutils/sqs.utils');
+sqsUtils.uniqueIdGenerator = jest.fn().mockReturnValue('1234567890');
+tmp.fileSync = jest.fn().mockReturnValue({ name: '/tmp/1234567890' });
 
 describe('Check build sqs message function', () => {
   it('Sending all parameters and messageAttributes should have less than 10 objects', () => {
@@ -121,7 +130,7 @@ describe('Check build sqs message function', () => {
     expect(StringValue).toContain('"key":');
   });
 
-  it('Should group listID, listFilterStr, listView, selectedLocations inside list', () => {
+  it('Should group listId, listFilterStr, listView, selectedLocations inside list', () => {
     const { message } = buildSQSMessage(
       {
         params: {
@@ -144,7 +153,7 @@ describe('Check build sqs message function', () => {
     const { list } = MessageAttributes;
     const { StringValue } = list;
 
-    expect(StringValue).toContain('"listID":2073');
+    expect(StringValue).toContain('"listId":2073');
     expect(StringValue).toContain('"listFilterStr":"text"');
     expect(StringValue).toContain('"selectedLocations":"1,2,3,4,5"');
     expect(StringValue).toContain('"listView":"forest_change"');

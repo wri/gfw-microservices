@@ -16,6 +16,8 @@
   14 Other
 */
 
+export const MAX_NUMBER_OF_ROWS_PER_PAGE = 5000;
+
 export const templateColumns = {
   INVESTMENT: [
     'Investment Name',
@@ -1461,4 +1463,25 @@ export const NESTED_JSON_ATTRIBUTES = [
 export const DATA_LAYER = {
   arg_otbn_area: 'Argentina OTBN',
   brazil_biomes: 'Brazil Biomes',
+};
+
+export const AFI_HEADER_AGGREGATE = {
+  listName: 'List Name',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub State',
+  coverageHA: 'Coverage (ha)',
+  naturalForestLossHA: 'Natural Forest Loss (ha)',
+  negligibleRisk: 'Negligible Risk',
+};
+
+export const AFI_HEADER = {
+  listName: 'List Name',
+  locationName: 'Location Name',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub State',
+  coverageHA: 'Coverage (ha)',
+  naturalForestLossHA: 'Natural Forest Loss (ha)',
+  negligibleRisk: 'Negligible Risk (%)',
 };

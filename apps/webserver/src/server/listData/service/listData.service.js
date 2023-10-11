@@ -1,4 +1,5 @@
 const path = require('path');
+const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 import * as sql from 'mssql';
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 
@@ -45,6 +46,11 @@ const createListAnalysis = async (req, listId, analysisData) => {
         field: 'AnalysisID',
         type: sql.NVarChar(150),
         value: element,
+      },
+      {
+        field: 'Status',
+        type: sql.Int,
+        value: listStatus.Pending,
       },
     ];
     await sqlUtils.executeOrganizationQuery(req, createListAnalysisStatusQuery, params);

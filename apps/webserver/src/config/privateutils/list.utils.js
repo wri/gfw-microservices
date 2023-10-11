@@ -12,7 +12,6 @@
  ********************************************************************/
 const path = require('path');
 const sql = require('mssql');
-const config = require('../config');
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
@@ -111,7 +110,7 @@ const deleteFilteredLocations = (req, list_id, filters) => {
       { field: 'AnalysisAreaMax', type: sql.Int, value: selectedAreaMax ? selectedAreaMax : null },
       { field: 'SearchString', type: sql.NVarChar, value: searchString || null },
     ];
-    console.log(parameters);
+
     sqlUtils
       .executeOrganizationStoredProcedure(
         req,

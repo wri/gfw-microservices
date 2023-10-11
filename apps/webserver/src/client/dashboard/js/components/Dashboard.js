@@ -36,6 +36,7 @@ import { downloadDashboard } from '../utils/csvUtils';
 import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
 import { loaderMessages } from '../../../common/js/config';
 import { gfwListNames } from '../../../common/js/constants/lists.constants';
+import { listStatus } from '../../../../config/env/listStatuses.constants';
 
 //TODO Remove temp file
 // import { data } from './old';
@@ -353,7 +354,7 @@ export default class Dashboard extends Component {
         />
 
         <ModalLoader
-          open={selectedList.list_status_id === 5}
+          open={selectedList.list_status_id === listStatus.AnalyzingDashboard}
           showMessage={true}
           showSpinner={false}
           header={'Dashboard is updating. Please revisit in 15 mins.'}

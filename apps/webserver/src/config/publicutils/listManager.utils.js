@@ -4,33 +4,42 @@
  *   @description : A utility file to allow GFW Pro to obtain/set
  *                 list data.
  *
- *   @function {createList}
- *   @function {saveAsDraftList}
- *   @function {getUserLists}
- *   @function {getAllLists}
- *   @function {getListLocations}
- *   @function {getSimplifiedListLocations}
- *   @function {getDashboardListLocations}
- *   @function {getListLocationsNoGeom}
- *   @function {getLocationsCount}
- *   @function {uploadToExistingList}
- *   @function {uploadToNewList}
- *   @function {uploadToNewListAndSaveAsDraft}
- *   @function {updateIndividualLocationsStatusID}
- *   @function {deleteLocations}
- *   @function {editLocations}
- *   @function {copyLocations}
- *   @function {moveLocations}
- *   @function {getListLockStatus}
- *   @function {getListByListName}
- *   @function {setListLocked}
- *   @function {setListUnlocked}
- *   @function {checkListLockStatus}
- *   @function {deleteList}
- *   @function {resetListStatus}
- *   @function {setListStatus}
- *   @function {rerunExistingList}
- *   @function {getLocationIdsFromGeoJSON}
+ * @function {createList}
+ * @function {saveAsDraftList}
+ * @function {getUserLists}
+ * @function {getUserListsWithAnalysisId}
+ * @function {rerunExistingList}
+ * @function {getAllLists}
+ * @function {getListLocations}
+ * @function {getSimplifiedListLocations}
+ * @function {getDashboardListLocations}
+ * @function {getListLocationsNoGeom}
+ * @function {getLocationsCount}
+ * @function {uploadToExistingList}
+ * @function {uploadToNewList}
+ * @function {uploadToNewListAndSaveAsDraft}
+ * @function {updateIndividualLocationsStatusID}
+ * @function {deleteLocations}
+ * @function {deleteFilteredLocations}
+ * @function {editLocations}
+ * @function {copyLocations}
+ * @function {moveLocations}
+ * @function {getListLockStatus}
+ * @function {getListByListName}
+ * @function {setListLocked}
+ * @function {setListUnlocked}
+ * @function {checkListLockStatus}
+ * @function {deleteList}
+ * @function {resetListStatus}
+ * @function {setListStatus}
+ * @function {getListStatusCommonName}
+ * @function {getLocationIdsFromGeoJSON}
+ * @function {getPaginatedAnalysisDataForUserList}
+ * @function {getNumberPagesForAnalysisDataUserList}
+ * @function {getListLocationGeometry}
+ * @function {deleteListIfEmpty}
+ * @function {getAllListsWithAnalysisId}
+ * @function {getWorstStatusId}
  *
  ******************************************************************* */
 // Imports required for this module.
@@ -54,9 +63,7 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
-const { createListAnalysisStatus } = require(path.resolve(
-  './queries/organization/createListAnalysisStatus'
-));
+const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 
 /** @function {createList}
@@ -184,25 +191,11 @@ const createList = (
         return sqlUtils.executeOrganizationStoredProcedure(req, 'uspCreateAnalysisTable', params);
       })
       .then(() => {
-        analysisIds.forEach((analysisId) => {
-          const params = [
-            {
-              field: 'ListID',
-              type: sql.Int,
-              value: list_id,
-            },
-            {
-              field: 'AnalysisID',
-              type: sql.NVarChar(150),
-              value: analysisId,
-            },
-          ];
-          sqlUtils.executeOrganizationQuery(req, createListAnalysisStatus, params);
-        });
-      })
-      .then(() => {
         // Previous Stored Procedure executed
         uspCreateAnalysisTableExecuted = true;
+        return listDataService.setSelectedAnalyses(req, list_id, analysisIds);
+      })
+      .then(() => {
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListCreated,
@@ -224,6 +217,7 @@ const createList = (
         }
         if (uspCreateAnalysisTableExecuted) {
           rollbackUtils.dropOrganizationTable(req, list.analysis_table);
+          rollbackUtils.deleteOrganizationTableRow(req, 'ListsAnalysisStatus', list_id, 'ListID');
         }
 
         // Create Error Object and reject the error
@@ -257,7 +251,8 @@ const saveAsDraftList = (
   location_classification,
   user_id,
   custom_attributes,
-  gfw_list_id
+  gfw_list_id,
+  analysisIds = []
 ) => {
   let list_id = null;
   // Tracking Stored Procedure Executions for rollbacks
@@ -363,6 +358,9 @@ const saveAsDraftList = (
       .then(() => {
         // Previous Stored Procedure executed
         uspCreateAnalysisTableExecuted = true;
+        return listDataService.setSelectedAnalyses(req, list_id, analysisIds);
+      })
+      .then(() => {
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListCreated,
@@ -383,6 +381,7 @@ const saveAsDraftList = (
         }
         if (uspCreateAnalysisTableExecuted) {
           rollbackUtils.dropOrganizationTable(req, list.analysis_table);
+          rollbackUtils.deleteOrganizationTableRow(req, 'ListsAnalysisStatus', list_id, 'ListID');
         }
 
         // Create Error Object and reject the error
@@ -1075,7 +1074,8 @@ const uploadToNewListAndSaveAsDraft = (
   location_classification,
   custom_attributes,
   geojson,
-  gfw_list_id
+  gfw_list_id,
+  analysisIds
 ) => {
   const { original_gfw_list } = req.body;
   const user_id = req.session.organization_user_id;
@@ -1090,7 +1090,8 @@ const uploadToNewListAndSaveAsDraft = (
       location_classification,
       user_id,
       custom_attributes,
-      gfw_list_id
+      gfw_list_id,
+      analysisIds
     )
       .then((list_id) => {
         listID = list_id;
@@ -1700,13 +1701,13 @@ const checkListLockStatus = (req, list_id, record) => {
           });
         })
         .catch((err) => {
-          const eo = errorUtils.createErrorMessage(
+          const errorMessage = errorUtils.createErrorMessage(
             req,
             errorUtils.errorCodes.failedToGetLockStatus,
             `Failed to set lock list ${list_id}`,
             err
           );
-          reject({ error: true });
+          reject({ error: true, errorMessage });
         });
       // List is locked
     } else {
@@ -1869,11 +1870,8 @@ const deleteList = (req, list_id) => {
         // 1. Get the table schema
         list = result;
         // 2. Remove from Organization's List table
-        const parameters = [
-          { field: 'list_name', type: sql.NVarChar(150), value: list.list_name },
-          { field: 'list_table', type: sql.NVarChar(150), value: list.list_table },
-          { field: 'analysis_table', type: sql.NVarChar(150), value: list.analysis_table },
-        ];
+        const parameters = [{ field: 'list_id', type: sql.Int, value: list.id }];
+
         return sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteList', parameters);
       })
       .then(() => {
@@ -1991,47 +1989,58 @@ function getListLocationGeometry(req) {
 }
 
 /**
- * @description - Delete if the list is empty
- *
+ * @function {deleteListIfEmpty}
+ * @summary - Delete if the list is empty. Checks first if the list is empty, runs deleteList
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {number} listID - List Id to be deleted if empty
  */
 function deleteListIfEmpty(req, listID) {
   return new Promise((resolve, reject) => {
-    const SQLQuery = `
-                DECLARE @listID INT = ${listID};
-                DECLARE @listName NVARCHAR(1000);
-                DECLARE @listLocationTableName NVARCHAR(1000);
-                DECLARE @listAnalysisTableName NVARCHAR(1000);
-                DECLARE @SQL NVARCHAR(1000);
+    const parameters = [{ field: 'list_id', type: sql.Int, value: listID }];
 
-                SELECT @listName=list_name, @listLocationTableName = list_table_name, @listAnalysisTableName = list_analysis_table_name FROM Lists WHERE id = @listID;
-
-
-                DECLARE @TEMPLATE NVARCHAR(1000) = 'DECLARE @DataCount as INT = 0
-                                  SELECT @DataCount = COUNT(*) FROM [{TABLE_NAME}]
-                                  IF @DataCount<=0
-                                    exec uspDeleteList  @listName, @listLocationTableName, @listAnalysisTableName';
-                SET @SQL = REPLACE(@TEMPLATE, '{TABLE_NAME}', @listLocationTableName);
-
-                EXEC sp_executesql @SQL,
-                          N'@listName NVARCHAR(1000), @listLocationTableName NVARCHAR(1000), @listAnalysisTableName NVARCHAR(1000)',
-                          @listName=@listName, @listLocationTableName=@listLocationTableName, @listAnalysisTableName=@listAnalysisTableName;
-                `;
     sqlUtils
-      .executeOrganizationQuery(req, SQLQuery)
-      .then(() => {
-        resolve();
+      .executeOrganizationStoredProcedure(req, 'uspCheckIfListIsEmpty', parameters)
+      .then((records) => {
+        const [resultset] = records;
+        const { isListEmpty } = resultset;
+
+        if (!isListEmpty) {
+          resolve(isListEmpty);
+        } else {
+          sqlUtils
+            .executeOrganizationStoredProcedure(req, 'uspDeleteList', parameters)
+            .then(() => {
+              logger.logActivity(
+                req,
+                logger.listActivityTypes.List.ListDeleted,
+                `Deleted empty list with id (${listID}).`
+              );
+              resolve(isListEmpty);
+            })
+            .catch((error) => {
+              const errorObject = errorUtils.createErrorMessage(
+                req,
+                errorUtils.errorCodes.failedToDeleteList,
+                `Failed to delete list with id (${listID}). List not empty`,
+                error
+              );
+              reject(errorObject);
+            });
+        }
       })
       .catch((error) => {
-        reject(error);
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToDeleteListIsNotEmpty,
+          `Failed to delete list is not empty ${listID}`,
+          error
+        );
+        reject(errorObject);
       });
   });
 }
 
 module.exports = {
-  createList,
-  saveAsDraftList,
   getUserLists,
   getUserListsWithAnalysisId,
   rerunExistingList,

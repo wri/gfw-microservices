@@ -24,7 +24,7 @@ export class UspGetAnalysisDataCountForUserList {
   ): Promise<AnalysisDataCountReturnType> {
     const {
       country,
-      listID,
+      listId,
       state,
       subState,
       rowsPerPage,
@@ -41,7 +41,7 @@ export class UspGetAnalysisDataCountForUserList {
     } = filters;
 
     const parameters = [
-      { field: 'listID', type: sql.Int, value: listID },
+      { field: 'listID', type: sql.Int, value: listId },
       { field: 'Country', type: sql.NVarChar, value: country || null },
       { field: 'State', type: sql.NVarChar, value: state || null },
       { field: 'SubState', type: sql.NVarChar, value: subState || null },

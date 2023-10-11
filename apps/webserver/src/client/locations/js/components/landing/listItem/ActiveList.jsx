@@ -15,7 +15,6 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Button from '../../../../../common/js/components/Button';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
-import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
 import sharedColumnText from './sharedColumnText';
@@ -26,6 +25,7 @@ import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 import AnalysisListChips from './AnalysisListChips';
 import { locationsPage, nav, treeCoverLossID } from '../../../../../common/js/config';
 import featureFlags from '../../../../../../utils/general.utils';
+import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
 
 function ActiveList({
   list,
@@ -63,8 +63,8 @@ function ActiveList({
 
   const isLargeList = !!large_list_id;
   const hasErrorFile = !!error_file_storage_path;
-  const showDiagnosticOpt = !is_shared && locations > 0;
   const isEmptyList = locations === 0;
+  const showDiagnosticOpt = !is_shared && !isEmptyList && getActiveAnalysisType(listAnalysesStatus);
 
   const clickLocationRow = () => {
     if (isEmptyList) {
@@ -117,6 +117,7 @@ function ActiveList({
       {isAfiAvailable && (
         <ChangeTypeOfAnalysisModal
           listId={id}
+          listName={list_name}
           listAnalysesStatus={listAnalysesStatus}
           setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
           isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
@@ -184,7 +185,8 @@ function ActiveList({
                   primaryText={locationsPage.lists.diagnostic}
                   leftIcon={<QueryStatsIcon />}
                   onClick={() => {
-                    window.location = `/diagnostics?listId=${id}`;
+                    const diagnosticsType = getActiveAnalysisType(listAnalysesStatus);
+                    window.location = `/diagnostics?listId=${id}&type=${diagnosticsType}`;
                   }}
                 />
               )}

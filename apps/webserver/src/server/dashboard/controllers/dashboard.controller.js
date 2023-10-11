@@ -23,10 +23,10 @@ exports.dashboard = (req, res, data) => {
   const fromMap = data ? true : false;
 
   const promises = [
-    ListManager.getUserLists(req),
+    ListManager.getUserListsWithAnalysisId(req),
     ListManager.getLocationsCount(req),
     GFWlistManager.getGFWLists(req),
-    ListManager.getAllLists(req),
+    ListManager.getAllListsWithAnalysisId(req),
     ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
     AuthManager.getUserInfo(req),
   ];

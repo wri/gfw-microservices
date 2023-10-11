@@ -4,6 +4,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import Dialog from 'material-ui/Dialog';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 // Configs
 import { getFolders } from 'locations/js/components/landing/foldersApi';
@@ -102,6 +103,9 @@ import { isUserList } from '../../../../common/js/utils/gfw.utils';
 import { CommodityRiskFilterDrawer, ForestChangeFilterDrawer } from './Filters';
 import LocationDataNotAvailableMessage from './LocationDataNotAvailableMessage';
 import AnalysisListChips from '../landing/listItem/AnalysisListChips';
+import ChangeTypeOfAnalysisModal from '../landing/listItem/ChangeTypeOfAnalysisModal';
+import getActiveAnalysisType from '../../../../../utils/getActiveAnalysisType';
+
 // CONSTANTS
 import {
   gfwListNames,
@@ -110,6 +114,7 @@ import {
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from './getListFilterValues';
 import getAllColumnNames from './getAllColumnNames';
+import featureFlags from '../../../../../utils/general.utils';
 
 // STYLE
 import '../../../css/lists.scss';
@@ -167,6 +172,7 @@ export default class Lists extends Component {
       numberOfResults: undefined,
       displayLargeListEditingModal: false,
       visibleColumns: [],
+      isChangeTypeOfAnalysisModalOpen: false,
     };
   }
 
@@ -1372,7 +1378,9 @@ export default class Lists extends Component {
     const { selectedLists, selectedLocations } = this.props;
     const gfwList = !isUserList(selectedLists[0]) ? '&gfw=true' : '';
     const locationId = isSingleLocation ? `&locationId=${selectedLocations[0]}` : '';
-    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationId}`;
+    const diagnosticsType = getActiveAnalysisType(selectedLists[0]?.listAnalysesStatus);
+    const diagnosticsParam = !gfwList && diagnosticsType ? `&type=${diagnosticsType}` : '';
+    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationId}${diagnosticsParam}`;
   };
 
   viewMap = ({ showFullListMap }) => {
@@ -1988,7 +1996,7 @@ export default class Lists extends Component {
         : [];
     const flagOptions = columns.flags.map(this.createFlagList);
     const listName = selectedList ? selectedList.list_name : '';
-    const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : '';
+    const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
     const isGfwList = gfwListNames.includes(listName);
     // user lists are paginated in the backend, gfw lists search works in the front end
     const filteredLists = isGfwList
@@ -2137,6 +2145,17 @@ export default class Lists extends Component {
 
     return (
       <div className={`${view === 'lists' ? '' : 'hidden'}`}>
+        {featureFlags?.isAfiAvailable && !isGfwList && (
+          <ChangeTypeOfAnalysisModal
+            listId={listID}
+            listName={listName}
+            listAnalysesStatus={listAnalysesStatus}
+            setIsChangeTypeOfAnalysisModalOpen={(open) =>
+              this.setState({ isChangeTypeOfAnalysisModalOpen: open })
+            }
+            isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
+          />
+        )}
         {bannerContent && (
           <Banner
             className="lists-banner"
@@ -2245,8 +2264,17 @@ export default class Lists extends Component {
                 {shareView && <span>{locationsPage.lists.share}</span>}
               </Breadcrumbs>
 
-              <div style={{ marginLeft: 'auto' }}>
+              <div style={{ marginLeft: 'auto', display: 'flex' }}>
                 <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
+                {featureFlags?.isAfiAvailable && !isGfwList && (
+                  <Button
+                    icon={<SettingsIcon fontSize="17px" />}
+                    style={{ height: '17px', width: '40px', minWidth: '0px' }}
+                    onClick={() => {
+                      this.setState({ isChangeTypeOfAnalysisModalOpen: true });
+                    }}
+                  />
+                )}
               </div>
             </div>
           )}
@@ -2604,7 +2632,8 @@ export default class Lists extends Component {
                       <div className="list-detail-action-bar">
                         {!getIsDiagnosticStatusDraft(selectedList) &&
                           listName !== 'Administrative Areas' &&
-                          listName !== 'Protected Areas' && (
+                          listName !== 'Protected Areas' &&
+                          (isGfwList || getActiveAnalysisType(listAnalysesStatus)) && (
                             <Button
                               variant="primary"
                               data-cy="list-diagnostics"
@@ -2622,16 +2651,17 @@ export default class Lists extends Component {
                         />
                       </div>
                       <div className="list-detail-action-bar">
-                        {selectedLocations.length === 1 && (
-                          <Button
-                            variant="primary"
-                            className="list-detail-action-bar__diagnostic-button"
-                            disabled={!this.listDiagnosticAccess(selectedList)}
-                            onClick={() => this.viewDiagnostic(true)}
-                            label="Location diagnostic"
-                            icon={<IconListAlt />}
-                          />
-                        )}
+                        {selectedLocations.length === 1 &&
+                          (isGfwList || getActiveAnalysisType(listAnalysesStatus)) && (
+                            <Button
+                              variant="primary"
+                              className="list-detail-action-bar__diagnostic-button"
+                              disabled={!this.listDiagnosticAccess(selectedList)}
+                              onClick={() => this.viewDiagnostic(true)}
+                              label="Location diagnostic"
+                              icon={<IconListAlt />}
+                            />
+                          )}
                         {selectedList && selectedLocations.length > 0 && (
                           <Button
                             className="list-detail-action-bar__map-button"

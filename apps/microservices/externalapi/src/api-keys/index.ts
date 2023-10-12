@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 import { APIKeyController } from './api-key.controller';
 import { Organization } from './organization.entity';
 import { ConfigModule } from '@nestjs/config';
-import { User } from './user.entity';
+import { UserRoutes } from './user-route.entity';
 import * as AWS from 'aws-sdk';
 const awsConfig = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -21,8 +21,7 @@ AWS.config.update(awsConfig);
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Organization], 'default'),
-    TypeOrmModule.forFeature([ExternalAPIKey, User], 'client'),
+    TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
     ConfigModule,
   ],
   providers: [TokenService, AuthService],

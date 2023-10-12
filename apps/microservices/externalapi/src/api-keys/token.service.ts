@@ -11,7 +11,7 @@ import { ExternalAPIKey } from './external-api-key.entity';
 import { APIGateway } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
 import { transformApiKey, transformApiKeys } from './transformers';
-import { User } from './user.entity';
+import { UserRoutes } from './user-route.entity';
 import { ViewApiKeyResponse } from './dtos';
 const DEFAULT_API_GROUP = 'FCD';
 const DEFAULT_KEY_TYPE = 'API_KEY';
@@ -20,10 +20,10 @@ export class TokenService {
   private readonly apiGateway: APIGateway;
 
   constructor(
-    @InjectRepository(ExternalAPIKey, 'client')
+    @InjectRepository(ExternalAPIKey, 'default')
     private tokenRepository: Repository<ExternalAPIKey>,
-    @InjectRepository(User, 'client')
-    private userRepository: Repository<User>,
+    @InjectRepository(UserRoutes, 'default')
+    private userRepository: Repository<UserRoutes>,
     private readonly configService: ConfigService
   ) {
     this.apiGateway = new APIGateway({
@@ -85,7 +85,7 @@ export class TokenService {
     token.organizationId = organizationId;
     token.updateDateTime = new Date();
     token.apiKey = awsToken.value;
-    token.apiGroup = DEFAULT_API_GROUP;
+    token.apiGroups = DEFAULT_API_GROUP;
     token.user = user;
 
     try {

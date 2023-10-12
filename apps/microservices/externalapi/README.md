@@ -26,3 +26,7 @@ Add API key to plan response body:
   name: 'externalapi'
 }
 ```
+
+## Configuration
+
+Check env.example for required environment variables.

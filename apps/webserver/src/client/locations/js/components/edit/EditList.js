@@ -46,10 +46,6 @@ export default class EditList extends Component {
       listNotAccessible: false,
       edited: false,
     };
-
-    require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
-      this.WebMercatorUtils = webMercatorUtils;
-    });
   }
 
   cancelAdd = () => {

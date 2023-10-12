@@ -82,7 +82,7 @@ jobs:
 
   Run-Test:
     runs-on: ubuntu-latest
-    timeout-minutes: 90 # Timeout the workflow
+    timeout-minutes: 30 # Timeout the workflow
 
     strategy:
       matrix:
@@ -118,7 +118,7 @@ jobs:
   Run-Webserver-Fitness-Test:
     needs: [Check-Format, Check-lint, Run-Test]
     runs-on: ubuntu-latest
-    timeout-minutes: 90 # Timeout the workflow
+    timeout-minutes: 30 # Timeout the workflow
 
     strategy:
       matrix:

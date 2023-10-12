@@ -15,7 +15,6 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Button from '../../../../../common/js/components/Button';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
-import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
 import sharedColumnText from './sharedColumnText';
@@ -118,6 +117,7 @@ function ActiveList({
       {isAfiAvailable && (
         <ChangeTypeOfAnalysisModal
           listId={id}
+          listName={list_name}
           listAnalysesStatus={listAnalysesStatus}
           setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
           isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}

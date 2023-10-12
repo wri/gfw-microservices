@@ -1,3 +1,6 @@
+/**
+ * @seen also {@path libs/geo/src/utils/account.utils.ts}
+ * */
 const calculateProcessingLimit = (accountLimits, accountUsage) => {
   const availableAnalyzableAreaRemaining =
     accountLimits.MaxAreaAnalyzeablePerYear - accountUsage.total_area_analyzed;

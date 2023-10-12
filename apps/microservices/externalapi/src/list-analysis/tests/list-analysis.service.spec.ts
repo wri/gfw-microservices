@@ -4,9 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organization } from '../../api-keys/organization.entity';
 import { ConfigModule } from '@nestjs/config';
 import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
-import { User } from '../../api-keys/user.entity';
+import { UserRoutes } from '../../api-keys/user-route.entity';
 import { UserService } from '../user.service';
-import { ExternalUpload } from '../external-upload.entity';
+import { ClientStoreConnection } from '../../shared/client-store-connection';
+import { OrganizationService } from '../organization.service';
 
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
@@ -20,24 +21,15 @@ describe('ListAnalysisService', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization],
+          entities: [Organization, UserRoutes, ExternalAPIKey],
         }),
-        TypeOrmModule.forRoot({
-          name: 'client',
-          type: 'sqlite',
-          database: ':memory:',
-          synchronize: true,
-          logging: true,
-          entities: [ExternalAPIKey, User],
-        }),
-        TypeOrmModule.forFeature([Organization], 'default'),
-        TypeOrmModule.forFeature([ExternalAPIKey, User, ExternalUpload], 'client'),
+        TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,
         }),
       ],
-      providers: [ListAnalysisService, UserService],
+      providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
     }).compile();
 
     service = module.get<ListAnalysisService>(ListAnalysisService);

@@ -21,6 +21,14 @@ async function bootstrap() {
       .setTitle('External API')
       .setDescription('V1 for external API')
       .setVersion('1.0')
+      .addApiKey(
+        {
+          type: 'apiKey',
+          name: 'x-api-key',
+          in: 'header',
+        },
+        'x-api-key'
+      )
       .build();
 
     const document = SwaggerModule.createDocument(app, config);

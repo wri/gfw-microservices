@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-// TODO: Verify the key is valid and extrac the organization data from database
+// TODO: Verify the key is valid and extract the organization data from database
 @Injectable()
 export class ApiKeyMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {

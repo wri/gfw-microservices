@@ -43,7 +43,7 @@ export class ListUploadController {
     }
   }
 
-  @Post('/list/prepare_upload')
+  @Post('/prepare_upload')
   async prepareUploadList(@Body() request: PrepareUploadRequest) {
     return await this.listAnalysisService.prepareUpload(request.userEmail);
   }

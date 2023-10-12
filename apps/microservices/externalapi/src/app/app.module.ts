@@ -39,7 +39,7 @@ export class AppModule {
       .forRoutes(
         '/v1/list/:listID/analysis/FCD/status',
         '/v1/list/upload_new',
-        '/v1/list/prepare_upload'
+        '/v1/prepare_upload'
       );
   }
 }

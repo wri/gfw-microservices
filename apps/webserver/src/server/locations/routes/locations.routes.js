@@ -1319,12 +1319,14 @@ module.exports = (app, limiter) => {
     const { listType, targetList } = req.body;
     let { listName, saveAsDraft } = req.body;
 
-    const { organization_user_id, organization_id, organization_database } = req.session;
+    const { organization_user_id, organization_id, organization_database, subscription_status_id } =
+      req.session;
     const copyOrMoveRequestBody = {
       ...req.body,
       userId: organization_user_id,
       clientDatabase: organization_database,
       organizationId: organization_id,
+      subscriptionStatusId: subscription_status_id,
     };
 
     if (listType === 'existing') {

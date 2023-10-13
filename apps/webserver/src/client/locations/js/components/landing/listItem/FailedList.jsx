@@ -4,6 +4,7 @@ import PublicIcon from '@mui/icons-material/Public';
 import GroupsIcon from '@mui/icons-material/Groups';
 import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import Menu from 'material-ui/Menu';
@@ -18,6 +19,8 @@ import sharedColumnText from './sharedColumnText';
 import FailedTooltip from '../../../../../common/js/components/CustomTooltip/FailedTooltip';
 import { locationsPage, nav } from '../../../../../common/js/config';
 import AnalysisListChips from './AnalysisListChips';
+import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
+import featureFlags from '../../../../../../utils/general.utils';
 
 function FailedList({
   list,
@@ -33,11 +36,23 @@ function FailedList({
   const [openDownloadLargeListFileDialog, setOpenDownloadLargeListFileDialog] = useState(false);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { list_name, large_list_id, folder, is_shared, listAnalysesStatus } = list;
+  const [isChangeTypeOfAnalysisModalOpen, setIsChangeTypeOfAnalysisModalOpen] = useState(false);
+  const { isAfiAvailable } = featureFlags;
+  const { id, list_name, large_list_id, folder, is_shared, listAnalysesStatus } = list;
   const isLargeList = !!large_list_id;
   const isInFolder = !!folder;
   return (
     <>
+      {isAfiAvailable && (
+        <ChangeTypeOfAnalysisModal
+          listId={id}
+          listName={list_name}
+          listAnalysesStatus={listAnalysesStatus}
+          setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
+          isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
+        />
+      )}
+
       <li className="locations-list locations-list--failed">
         <div className="locations-list__title">
           {isAListSharedWithMe && <PublicIcon />}
@@ -106,6 +121,16 @@ function FailedList({
             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <Menu className="context-menu">
+              {isAfiAvailable && (
+                <MenuItem
+                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
+                  leftIcon={<SettingsIcon />}
+                  onClick={() => {
+                    setIsChangeTypeOfAnalysisModalOpen(true);
+                    setIsMenuOpen(false);
+                  }}
+                />
+              )}
               <MenuItem
                 primaryText={
                   isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder

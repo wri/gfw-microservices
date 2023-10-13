@@ -9,7 +9,7 @@
 ******************************************************************* */
 // Imports for this module.
 const path = require('path');
-const AWS = require('@aws-sdk/client-ses');
+const { SES } = require('@aws-sdk/client-ses');
 const moment = require('moment');
 
 const config = require('../config');
@@ -19,7 +19,7 @@ const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const emailUtil = require(path.resolve('./config/emailTemplates'));
 
-const ses = new AWS.SES();
+const ses = new SES();
 
 const defineIcon = (type) => {
   switch (type) {

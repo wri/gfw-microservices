@@ -32,7 +32,7 @@ exports.profileInfo = (req, res) => {
       AccountManager.getUsersList(req),
       PolicyManager.getPolicyList(req),
       AuthManager.getUserInfo(req),
-      AccountManager.getOrganizationActivatedTime(req.session.organization_id),
+      AccountManager.getOrganizationActivatedTime(req, req.session.organization_id),
     ];
 
     Promise.all(promises)
@@ -53,6 +53,7 @@ exports.profileInfo = (req, res) => {
       })
       .catch((err) => {
         console.log('Reject', err);
+        res.status(500).json({ message: 'Error getting profile info' });
       });
   } else {
     AuthManager.getUserInfo(req)

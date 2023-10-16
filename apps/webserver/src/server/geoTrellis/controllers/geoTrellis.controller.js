@@ -1,4 +1,4 @@
-const logger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 const ListManager = require('../../../config/publicutils/listManager.utils');
 const { handleGeoTrellisAnalyzeListRequest } = require('../utils/geoTrellis.utils');
 const { GEO_TRELLIS_ANALYZE_LIST } = require('../../../config/config/locations.config');

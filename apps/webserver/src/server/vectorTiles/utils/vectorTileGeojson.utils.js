@@ -12,7 +12,7 @@ const { getCurrentDateTimeFormatted } = require('./vectorTile.utils');
 const ListManager = require('../../../config/publicutils/listManager.utils');
 
 // Globals
-const logger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 
 /**
  * @description - Getting List Geojson for list ID

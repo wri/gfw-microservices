@@ -1,7 +1,7 @@
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const makeWebpackConfig = require('../webpack.config');
-const logger = require('../lib/winston');
+const logger = require('../privateutils/logger.utils');
 const config = require('../config');
 const webpack = require('webpack');
 

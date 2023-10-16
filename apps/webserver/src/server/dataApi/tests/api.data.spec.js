@@ -1,3 +1,9 @@
+/**
+ * @jest-environment node
+ */
+// The above overrides 'testEnvironment' setting in jest.config.json to allow nodeJS server environment
+// because this code triggers log that requires setImmediate
+
 // setup axios to match what palm oil mill test expects
 jest.mock('axios', () => async () => ({
   data: { data: 'whatever' },

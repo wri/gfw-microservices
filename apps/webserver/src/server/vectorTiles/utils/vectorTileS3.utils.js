@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const AWS = require('aws-sdk');
 
-const logger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 const { VECTOR_TILES_LOCATION, MBTILE_S3_BUCKET } = require('../config/vectorTiles.config');
 
 /**

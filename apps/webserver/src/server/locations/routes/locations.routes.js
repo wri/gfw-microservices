@@ -6,9 +6,8 @@ const archiver = require('archiver');
 const axios = require('axios');
 const _ = require('lodash');
 
-const config = require('../../../config/config');
 const controller = require('../controllers/locations.controller');
-const winstonLogger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
@@ -18,7 +17,6 @@ const AnalysisManager = require(path.resolve('./config/publicutils/analysisManag
 
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 
 const { generateZipShapefile } = require('../../../config/publicutils/locationManager.utils');
@@ -423,7 +421,7 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/locations/editLocations', (req, res) => {
-    winstonLogger.info('POST /locations/editLocations');
+    logger.info('POST /locations/editLocations');
     const { list_id, attributes, activeTemplate } = req.body;
     let { location_ids } = req.body;
 
@@ -479,8 +477,8 @@ module.exports = (app, limiter) => {
           const { error, locationsEditedMessageFailed, locationsEditedMessageSuccessfully } =
             response;
           if (error) {
-            winstonLogger.error(locationsEditedMessageFailed);
-            winstonLogger.error(error);
+            logger.error(locationsEditedMessageFailed);
+            logger.error(error);
             res.status(422).send({
               message: locationsEditedMessageFailed,
               success: false,
@@ -855,16 +853,16 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/locations/getGFWListLocationGeom', (req, res) => {
-    winstonLogger.info('POST /locations/getGFWListLocationGeom');
+    logger.info('POST /locations/getGFWListLocationGeom');
     const { list_id, location_ids } = req.body;
 
     GFWListManager.getGFWListLocationsGeom(req, list_id, location_ids)
       .then((geojson) => {
-        winstonLogger.info(`Returning Geom GFW List Location Data for List ID: ${list_id}`);
+        logger.info(`Returning Geom GFW List Location Data for List ID: ${list_id}`);
         res.send(geojson);
       })
       .catch((e) => {
-        winstonLogger.error('Error /locations/getGFWListLocationGeom', e);
+        logger.error('Error /locations/getGFWListLocationGeom', e);
         res.send(false);
       });
   });
@@ -874,11 +872,11 @@ module.exports = (app, limiter) => {
 
     GFWListManager.getGFWListLocationsNoGeom(req, list_id, location_ids)
       .then((geojson) => {
-        winstonLogger.info(`Returning NoGeom GFW List Location Data for List ID: ${list_id}`);
+        logger.info(`Returning NoGeom GFW List Location Data for List ID: ${list_id}`);
         res.send(geojson);
       })
       .catch((e) => {
-        winstonLogger.error('Error - POST /locations/getGFWListLocationNoGeom', e);
+        logger.error('Error - POST /locations/getGFWListLocationNoGeom', e);
         res.send(false);
       });
   });

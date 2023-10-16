@@ -21,11 +21,10 @@ const { getListDataFilterValues, sendMessageToQueue } = require('../utils/locati
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 
 // Config
-const { error } = require('../../../config/lib/winston');
 const { getGeoJSONGeometry } = require('../../../config/privateutils/location.utils');
 
 // Logging
-const winstonLogger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 
 /**
  * @function locations
@@ -100,7 +99,7 @@ exports.locations = (req, res, data) => {
       });
     })
     .catch((err) => {
-      error(`Locations page failed on the server:, ${err}`);
+      logger.error(`Locations page failed on the server:, ${err}`);
       const markup = compiledAssets.js['login-component']
         ? renderToString(createElement(compiledAssets.js['login-component'].default))
         : '';
@@ -132,7 +131,7 @@ exports.getUserLists = (req, res) => {
       res.status(200).json({ userLists });
     })
     .catch((err) => {
-      error(`Locations page failed on the server:, ${err}`);
+      logger.error(`Locations page failed on the server:, ${err}`);
 
       console.log('Locations page failed on the server:', err);
       res.status(422).send({ error: 'Unkown error' });
@@ -152,7 +151,7 @@ exports.listFilterValues = async (request, response) => {
     const filterValues = await getListDataFilterValues(request, id);
     response.status(200).json(filterValues);
   } catch (err) {
-    error(`Getting list filter data failed: /listData/filters/${id}. Error message ${err}`);
+    logger.error(`Getting list filter data failed: /listData/filters/${id}. Error message ${err}`);
     response.send({});
   }
 };
@@ -163,7 +162,7 @@ const startTaskToCreateFile = async (request, response, file) => {
     const filter = await sendMessageToQueue(request, file);
     response.status(200).json({ status: 200, filter });
   } catch (err) {
-    error(`error to generate csv file to the list ${listID}, Error message ${err}`);
+    logger.error(`error to generate csv file to the list ${listID}, Error message ${err}`);
     response.status(500).json({ status: 500 });
   }
 };
@@ -202,7 +201,7 @@ exports.getListLocationGeometry = (req, res) => {
  * @return {Promise<void>}
  */
 exports.downloadingSelectedLocations = async (request, response) => {
-  winstonLogger.info('POST /locations/downloadingSelectedLocations');
+  logger.info('POST /locations/downloadingSelectedLocations');
   const {
     listID,
     orderType,
@@ -249,7 +248,7 @@ exports.downloadingSelectedLocations = async (request, response) => {
     response.attachment(filename);
     response.status(200).send(csv);
   } catch (err) {
-    winstonLogger.error(`Downloading Selected Locations Failed ${JSON.stringify(err)}`);
+    logger.error(`Downloading Selected Locations Failed ${JSON.stringify(err)}`);
     response.status(422).send({
       error: err,
       success: false,
@@ -264,7 +263,7 @@ exports.downloadingSelectedLocations = async (request, response) => {
  * @return {Promise<void>}
  */
 exports.downloadingSelectedLocationsJson = async (request, response) => {
-  winstonLogger.info('POST /locations/downloadingSelectedLocations/json');
+  logger.info('POST /locations/downloadingSelectedLocations/json');
   const {
     listID,
     orderType,
@@ -300,7 +299,7 @@ exports.downloadingSelectedLocationsJson = async (request, response) => {
     );
     response.status(200).send(selectedLocations);
   } catch (err) {
-    winstonLogger.error(`Downloading Selected Locations Failed ${JSON.stringify(err)}`);
+    logger.error(`Downloading Selected Locations Failed ${JSON.stringify(err)}`);
     response.status(422).send({
       error: err,
       success: false,
@@ -346,12 +345,12 @@ exports.handleEditLocations = async (req, listID, locationIDs, attributes) => {
 
     // Un-Lock selected list
     await ListManager.setListUnlocked(req, listID);
-    winstonLogger.info(locationsEditedMessageSuccessfully);
+    logger.info(locationsEditedMessageSuccessfully);
     return { locationsEditedMessageSuccessfully };
   } catch (editError) {
     const locationsEditedMessageFailed = `Error editing list locations for List ID ${listID}: Failed`;
-    winstonLogger.error(locationsEditedMessageFailed);
-    winstonLogger.error(editError);
+    logger.error(locationsEditedMessageFailed);
+    logger.error(editError);
 
     // Un-Lock selected list
     await ListManager.setListUnlocked(req, listID);

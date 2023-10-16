@@ -1,5 +1,5 @@
 const sql = require('mssql');
-const logger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 const sqlUtils = require('../../../config/privateutils/sql.utils');
 
 /**

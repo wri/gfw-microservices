@@ -2,7 +2,7 @@
 // const mongoose = require('mongoose');
 // const User = mongoose.model('User');
 const path = require('path');
-const logger = require(path.resolve('./config/lib/winston'));
+const logger = require('../../../config/privateutils/logger.utils');
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 const Cognito = require(path.resolve('./config/privateutils/cognito.utils'));
 

@@ -1,5 +1,5 @@
 const listErrorUtils = require('../utils/listError.utils');
-const { info, error } = require('../../../config/lib/winston');
+const { info, error } = require('../../../config/privateutils/logger.utils');
 
 exports.listError = async (request, response) => {
   info(`/listError - Request => PARAMS: ${JSON.stringify(request.params)}`);

@@ -10,10 +10,11 @@
  ******************************************************************* */
 // Import required modules
 const path = require('path');
+const util = require('util');
 const sql = require('mssql');
 const winston = require('winston');
+const Transport = require('winston-transport');
 const config = require('../config');
-require('winston-mssql');
 
 // eslint-disable-next-line import/no-dynamic-require
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
@@ -84,20 +85,72 @@ const tsFormat = () =>
     timeZoneName: 'short',
   });
 
-const logger = new winston.Logger({
-  transports: [
-    new winston.transports.Console(),
-    // Write into database - GFW Pro is running off a cluster of instances - need to centralize logs
-    // eslint-disable-next-line new-cap
-    new winston.transports.mssql({
-      connectionString: `mssql://${config.SQLConnection.username}:${config.SQLConnection.password}@${config.SQLConnection.host}:${config.SQLConnection.port}/${config.SQLConnection.logDatabase}`,
-      table: 'NodeLogs',
-      timestamp: tsFormat,
-      level: 'error',
-      json: false,
-    }),
-  ],
-});
+// Custom transport for winston to log to SQL Server
+class SqlServerTransport extends Transport {
+  constructor(options) {
+    super(options);
+  }
+
+  async log(info, callback) {
+    const parameters = [
+      { field: 'logDate', type: sql.DateTime, value: new Date() },
+      { field: 'level', type: sql.NVarChar(30), value: info.level },
+      { field: 'message', type: sql.NVarChar(sql.MAX), value: info[Symbol.for('message')] },
+    ];
+    try {
+      await sqlUtils.appendLog(config.SQLConnection.logDatabase, 'insertLog', parameters);
+      callback();
+    } catch (err) {
+      callback(err);
+    }
+  }
+}
+
+// format arguments in log messages with util.format so top level objects get expanded
+const formatMeta = (meta) => {
+  const splat = meta[Symbol.for('splat')];
+  if (splat && splat.length) {
+    return splat.length === 1 ? util.format(splat[0]) : util.format(splat);
+  }
+  return '';
+};
+
+// console format into a single line with timestamp and level
+const consoleFormat = winston.format.printf(
+  ({ timestamp, level, message, label = '', ...meta }) =>
+    `${timestamp} ${level}: ${label} ${message} ${formatMeta(meta)}`
+);
+
+// sql format is similar to consoleFormat() but without timestamp and level because
+// they are separate columns in the table
+const sqlFormat = winston.format.printf(
+  ({ message, label = '', ...meta }) => `${label} ${message} ${formatMeta(meta)}`
+);
+
+// transports for winston (initially just console)
+const transports = [
+  new winston.transports.Console({
+    level: 'debug', // debug and higher logs only
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.timestamp(),
+      consoleFormat
+    ),
+  }),
+];
+
+// If logDB is specified, also setup SQL server transport
+if (config.SQLConnection.logDatabase) {
+  transports.push(
+    new SqlServerTransport({
+      level: 'error', // errors only
+      format: sqlFormat,
+    })
+  );
+}
+
+// finally create the logger
+const logger = winston.createLogger({ transports });
 
 /**
  * @function log
@@ -198,12 +251,13 @@ const getActivityLog = (req) => {
 module.exports = {
   listActivityTypes,
   log,
-  silly: logger.silly,
-  debug: logger.debug,
-  verbose: logger.verbose,
-  info: logger.info,
-  warn: logger.warn,
-  error: logger.error,
+  // re-exported logger methods need to be bound to logger to access this/self properties
+  silly: logger.silly.bind(logger),
+  debug: logger.debug.bind(logger),
+  verbose: logger.verbose.bind(logger),
+  info: logger.info.bind(logger),
+  warn: logger.warn.bind(logger),
+  error: logger.error.bind(logger),
   logActivity,
   getActivityLog,
 };

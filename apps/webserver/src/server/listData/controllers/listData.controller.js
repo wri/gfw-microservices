@@ -4,7 +4,7 @@ const path = require('path');
 const ListManager = require('../../../config/publicutils/listManager.utils');
 const LocationManager = require('../../../config/publicutils/locationManager.utils');
 const AnalysisManager = require('../../../config/publicutils/analysisManager.utils');
-const logger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 
 const { getListDataFiltered } = require('../utils/listData.utils');
 const { getListAnalysisStatusById, setSelectedAnalyses } = require('../service/listData.service');

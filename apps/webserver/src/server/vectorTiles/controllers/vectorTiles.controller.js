@@ -3,7 +3,7 @@ const path = require('path');
 const MBTiles = require('@mapbox/mbtiles');
 
 // Logger
-const logger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 
 // Utils
 const { generateAndStoreVectorTiles } = require('../utils/vectorTileGenerate.utils');

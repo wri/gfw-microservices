@@ -18,7 +18,7 @@ const {
 } = require('../config/vectorTiles.config');
 
 // Global
-const logger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 const ListManager = require('../../../config/publicutils/listManager.utils');
 
 /**

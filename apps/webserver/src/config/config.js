@@ -1,8 +1,11 @@
-const logger = require('./lib/winston');
+const winston = require('winston');
 const assets = require('./assets');
 const path = require('path');
 const glob = require('glob');
 const common = require('./env/common');
+
+// basic logger without sql transport
+const logger = winston.createLogger({ transports: [new winston.transports.Console()] });
 
 const getFilePaths = () => ({
   files: {
@@ -95,7 +98,7 @@ const make = () => {
       logger.info('===================');
     } catch (err) {
       logger.warn(
-        `No compiled assets JS and CSS files found matching environment ${process.envExp.NODE_ENV}`
+        `No compiled assets JS and CSS files found matching environment ${process.env.NODE_ENV}`
       );
     }
   }

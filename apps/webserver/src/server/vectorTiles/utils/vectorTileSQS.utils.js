@@ -8,7 +8,7 @@
 const path = require('path');
 const AWS = require('aws-sdk');
 const https = require('https');
-const logger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 const { Consumer } = require('sqs-consumer');
 const tileSqsUrls = require(path.resolve('./server/vectorTiles/config/vectorTilesSqs.config'));
 const { generateAndStoreVectorTiles } = require('./vectorTileGenerate.utils');

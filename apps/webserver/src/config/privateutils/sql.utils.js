@@ -16,9 +16,12 @@
 const sql = require('mssql');
 const sqlite3 = require('sqlite3');
 const sqlite = require('sqlite');
-const logger = require('winston');
+const winston = require('winston');
 const config = require('../config');
 const sqlQueries = require('./sqlQueries.utils');
+
+// basic logger without sql transport
+const logger = winston.createLogger({ transports: [new winston.transports.Console()] });
 
 // Common configuration for creating database connections
 const SQLSYSTEMCONFIG = {
@@ -376,6 +379,11 @@ const executeOrganizationQuery = async (req, sqlQuery, params) => {
   return mssqlExecute(connectConfig, sqlQuery, null, params);
 };
 
+const appendLog = async (logDB, sqlQueryName, params) => {
+  const connectConfig = { ...SQLSYSTEMCONFIG, database: logDB };
+  return await mssqlExecute(connectConfig, null, sqlQueryName, params);
+};
+
 /**
  * @function getDataType
  * @summary Converts text to sql data type object
@@ -440,6 +448,7 @@ module.exports = {
   executeOrganizationStoredProcedure,
   executeSystemStoredProcedureAllRecords,
   executeOrganizationBulkUpload,
+  appendLog,
   getDataType,
   executeSystemQuery,
   executeOrganizationQuery,

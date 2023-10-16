@@ -9,7 +9,7 @@ const { v1: uuidv1 } = require('uuid');
 
 const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
-const logger = require('./winston');
+const logger = require('../privateutils/logger.utils');
 const express = require('express');
 const helmet = require('helmet');
 const path = require('path');

@@ -1,5 +1,5 @@
-import Point from 'esri/geometry/Point';
-import Polygon from 'esri/geometry/Polygon';
+import Point from '@arcgis/core/geometry/Point';
+import Polygon from '@arcgis/core/geometry/Polygon';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 
 /**

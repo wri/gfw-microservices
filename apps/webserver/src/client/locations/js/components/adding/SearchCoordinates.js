@@ -1,4 +1,4 @@
-import Point from 'esri/geometry/Point';
+import Point from '@arcgis/core/geometry/Point';
 import { locationsPage } from '../../../../common/js/config';
 import SetArea from './SetArea';
 import React, { Component } from 'react';

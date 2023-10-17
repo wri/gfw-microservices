@@ -14,7 +14,7 @@
 // Imports for this module.
 const path = require('path');
 const AWS = require('aws-sdk');
-const AWSSES = require('@aws-sdk/client-ses');
+const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const moment = require('moment');
 
 const config = require('../config');
@@ -23,7 +23,7 @@ const langResources = require(path.resolve('./config/langResources'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const emailUtil = require(path.resolve('./config/emailTemplates'));
 
-const ses = new AWSSES.SES();
+const sesClient = new SESClient();
 
 const defineIcon = (type) => {
   switch (type) {
@@ -197,8 +197,9 @@ const sendEmail = (req, sender, receivers, subject, content) => {
       Source: sender,
     };
 
-    ses
-      .sendEmail(parameters)
+    const command = new SendEmailCommand(parameters);
+    sesClient
+      .send(command)
       .then((data) => {
         resolve(data);
       })

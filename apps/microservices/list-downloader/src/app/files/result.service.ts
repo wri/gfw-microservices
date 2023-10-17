@@ -93,6 +93,6 @@ export class ResultService extends IPipeService {
   async finish(filters: GenerationFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process result data`);
-    this.waitFinishedProcess(this.inputStream);
+    await this.waitFinishedProcess(this.inputStream);
   }
 }

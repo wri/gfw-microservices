@@ -51,7 +51,7 @@ export class ShapefileService extends IPipeService {
   async finish(filters: GenerationFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
-    this.waitFinishedProcess(this.inputStream);
+    await this.waitFinishedProcess(this.inputStream);
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {

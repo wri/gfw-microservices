@@ -4,6 +4,7 @@ import * as archiver from 'archiver';
 
 import { Logger, Injectable } from '@nestjs/common';
 import { PassThrough } from 'stream';
+import { finished } from 'stream/promises';
 
 import { IPipeService } from '../pipe/IPipeService';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
@@ -16,6 +17,7 @@ import { FilterObject } from '../transform/filter.object';
 export class InputService extends IPipeService {
   private readonly logger = new Logger(InputService.name);
   private inputStream: PassThrough;
+  private fileStream: fs.WriteStream;
 
   start(filters: GenerationFileRequest) {
     const { listId, key, templateId, combinedColumnsSplitted } = filters;
@@ -33,18 +35,22 @@ export class InputService extends IPipeService {
   }
 
   process(analysisData) {
-    analysisData.forEach((data) => this.inputStream.write(data));
+    analysisData?.forEach((data) => this.inputStream.write(data));
   }
 
   async finish(filters: GenerationFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process input data`);
-    this.waitFinishedProcess(this.inputStream);
+    await this.waitFinishedProcess(this.inputStream);
+    await finished(this.fileStream);
+    this.fileStream.destroy();
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
     const { key, selectedLocationsList, listId } = filters;
     this.inputStream.removeAllListeners();
+
+    this.fileStream = fs.createWriteStream(`/tmp/${key}.csv`, { flags: 'a' });
 
     this.inputStream.on('error', (err) => {
       this.logger.error(`(${listId}) - Error on stream: ${err}`);
@@ -59,7 +65,7 @@ export class InputService extends IPipeService {
           sendHeaders: false,
         })
       )
-      .pipe(fs.createWriteStream(`/tmp/${key}.csv`, { flags: 'a' }));
+      .pipe(this.fileStream);
 
     this.inputStream.on('end', () => {
       const output = fs.createWriteStream(`/tmp/${key}.zip`);

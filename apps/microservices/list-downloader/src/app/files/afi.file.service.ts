@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PassThrough } from 'stream';
+import { finished } from 'stream/promises';
 import { IPipeService } from '../pipe/IPipeService';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import * as csvWriter from 'csv-write-stream';
@@ -13,6 +14,7 @@ import { NegligibleRiskDiscretize } from '../transform/negligible.risk.discretiz
 export class AfiFileService extends IPipeService {
   private readonly logger = new Logger(AfiFileService.name);
   private inputStream: PassThrough;
+  private fileStream: fs.WriteStream;
 
   start(filters: GenerationFileRequest, suffix = 'afi') {
     this.startEmail(filters);
@@ -28,7 +30,7 @@ export class AfiFileService extends IPipeService {
   }
 
   process(analysisData) {
-    analysisData.forEach((data) => this.inputStream.write(data));
+    analysisData?.forEach((data) => this.inputStream.write(data));
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[], suffix: string) {
@@ -40,6 +42,8 @@ export class AfiFileService extends IPipeService {
       this.errorEmail(filters);
     });
 
+    this.fileStream = fs.createWriteStream(`/tmp/${key}_${suffix}.csv`, { flags: 'a' });
+
     if (suffix.includes('aggregated')) {
       this.inputStream
         .pipe(new FilterObject(allFields))
@@ -49,7 +53,7 @@ export class AfiFileService extends IPipeService {
             sendHeaders: false,
           })
         )
-        .pipe(fs.createWriteStream(`/tmp/${key}_${suffix}.csv`, { flags: 'a' }));
+        .pipe(this.fileStream);
     } else {
       this.inputStream
         .pipe(new FilterObject(allFields))
@@ -58,10 +62,8 @@ export class AfiFileService extends IPipeService {
             sendHeaders: false,
           })
         )
-        .pipe(fs.createWriteStream(`/tmp/${key}_${suffix}.csv`, { flags: 'a' }));
+        .pipe(this.fileStream);
     }
-
-    this.inputStream;
 
     return this.inputStream;
   }
@@ -70,5 +72,8 @@ export class AfiFileService extends IPipeService {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process result data`);
     await this.waitFinishedProcess(this.inputStream);
+    await finished(this.fileStream);
+    this.fileStream.removeAllListeners();
+    this.fileStream.destroy();
   }
 }

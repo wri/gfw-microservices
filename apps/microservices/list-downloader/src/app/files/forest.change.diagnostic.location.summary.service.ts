@@ -24,7 +24,7 @@ export class ForestChangeDiagnosticLocationSummaryService extends DashboardHandl
   async finish(filters: GenerationFileRequest) {
     if (this.isForestChangeDiagnosticLocationSummaryFile(filters)) {
       this.logger.log('Forest Change Diagnostic Location Summary Finish');
-      super.finish(filters);
+      await super.finish(filters);
     }
   }
 

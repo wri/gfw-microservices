@@ -14,6 +14,7 @@
 // Imports for this module.
 const path = require('path');
 const AWS = require('aws-sdk');
+const { SES } = require('@aws-sdk/client-ses');
 const moment = require('moment');
 
 const config = require('../config');
@@ -22,7 +23,7 @@ const langResources = require(path.resolve('./config/langResources'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const emailUtil = require(path.resolve('./config/emailTemplates'));
 
-const ses = new AWS.SES({ apiVersion: '2010-12-01' });
+const ses = new SES();
 
 const defineIcon = (type) => {
   switch (type) {
@@ -196,8 +197,12 @@ const sendEmail = (req, sender, receivers, subject, content) => {
       Source: sender,
     };
 
-    ses.sendEmail(parameters, (err, data) => {
-      if (err) {
+    ses
+      .sendEmail(parameters)
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
         console.log('Error sending email', err);
         const userMessage = langResources.getResourceString('failedToSendEmail');
         const sysMessage = `Error Send Email: ${err}`;
@@ -208,10 +213,7 @@ const sendEmail = (req, sender, receivers, subject, content) => {
           sysMessage
         );
         reject(errObj);
-      } else {
-        resolve(data);
-      }
-    });
+      });
   });
   return promise;
 };

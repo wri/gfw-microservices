@@ -1,3 +1,7 @@
+import { Logger } from '@nestjs/common';
+
+const logger = new Logger('Shared Functions');
+
 const cloneRow = (row) => {
   if (Array.isArray(row) === false) return [];
   return [...row];
@@ -79,4 +83,32 @@ const parseListTotals = (property, listLevelAnalysis) => {
   return Math.round(total * 100) / 100;
 };
 
-export { cloneRow, formatPct, prettifyNum, validatePct, parseListData, parseListTotals };
+const fetchRetry = (url, options = {}, retries = 3, interval = 2000) => {
+  return new Promise((resolve, reject) => {
+    fetch(url, options)
+      .then((response) => response.json())
+      .then((json) => resolve(json))
+      .catch((error) => {
+        setTimeout(() => {
+          if (retries === 1) {
+            // reject('maximum retries exceeded');
+            reject(error);
+            return;
+          }
+          // Passing on "reject" is the important part
+          logger.log(`Attempt ${retries} for ${url}`);
+          fetchRetry(url, options, retries - 1, interval).then(resolve, reject);
+        }, interval);
+      });
+  });
+};
+
+export {
+  cloneRow,
+  formatPct,
+  prettifyNum,
+  validatePct,
+  parseListData,
+  parseListTotals,
+  fetchRetry,
+};

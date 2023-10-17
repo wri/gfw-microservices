@@ -3,6 +3,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { GenerationFileRequest, AfiAnalysisByListId } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
 import { getAllFilesAndZip } from '../shared/file.utils';
+import { fetchRetry } from '../shared/functions';
 
 @Injectable()
 export class AfiService {
@@ -57,10 +58,14 @@ export class AfiService {
     const { organizationDatabase, rowsPerPage, pageNumber, listId } = filter;
     const queryString = `rowsPerPage=${rowsPerPage}&pageNumber=${pageNumber}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/data-per-page?${queryString}`;
-    console.log(url);
-    const response = await fetch(encodeURI(url), this.OPTIONS);
-    const analysisData = (await response.json()) as AfiAnalysisByListId[];
-    return analysisData;
+
+    try {
+      const response = (await fetchRetry(encodeURI(url), this.OPTIONS)) as AfiAnalysisByListId[];
+      return response;
+    } catch (error) {
+      this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${error}`);
+      return [];
+    }
   }
 
   private async getNumberOfPages(filters: GenerationFileRequest, isListLevel = 0): Promise<number> {
@@ -68,8 +73,12 @@ export class AfiService {
 
     const queryString = `rowsPerPage=${rowsPerPage}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/number-of-pages?${queryString}`;
-    const response = await fetch(encodeURI(url), this.OPTIONS);
-    const { pages } = (await response.json()) as { pages: number };
-    return pages;
+    try {
+      const { pages } = (await fetchRetry(encodeURI(url), this.OPTIONS)) as { pages: number };
+      return pages;
+    } catch (error) {
+      this.logger.error(`listId: ${listId}, error: ${error}`);
+      return 0;
+    }
   }
 }

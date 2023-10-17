@@ -14,7 +14,7 @@ import { ResultService } from '../files/result.service';
 import { ShapefileService } from '../files/shapefile.service';
 import { DashboardService } from './dashboard.service';
 import { IPipeService } from './IPipeService';
-import fetch from 'node-fetch';
+import { fetchRetry } from '../shared/functions';
 
 @Injectable()
 export class ListService {
@@ -116,25 +116,38 @@ export class ListService {
     const [element] = analysisData;
 
     return {
-      fields: Object.keys(element),
-      templateId: element.template_id,
+      fields: Object.keys(element ?? {}),
+      templateId: element?.template_id,
     };
   }
 
   private async getAnalysisData(filter): Promise<AnalysisDataType[]> {
+    const { listId, pageNumber } = filter;
     const queryString = this.convertToQueryFields(filter);
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
-    const response = await fetch(encodeURI(url), this.OPTIONS);
-    const analysisData = (await response.json()) as AnalysisDataType[];
-    return analysisData;
+    try {
+      const response = (await fetchRetry(encodeURI(url), this.OPTIONS)) as AnalysisDataType[];
+      return response;
+    } catch (error) {
+      this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${error}`);
+      return [];
+    }
   }
 
   private async getNumberOfPages(filters: GenerationFileRequest): Promise<number> {
+    const { listId } = filters;
     const queryString = this.convertToQueryFields(filters);
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
-    const response = await fetch(encodeURI(url), this.OPTIONS);
-    const { numberOfPages } = (await response.json()) as AnalysisDataCountReturnType;
-    return numberOfPages;
+    try {
+      const { numberOfPages } = (await fetchRetry(
+        encodeURI(url),
+        this.OPTIONS
+      )) as AnalysisDataCountReturnType;
+      return numberOfPages;
+    } catch (error) {
+      this.logger.error(`listId: ${listId}, error: ${error}`);
+      return 0;
+    }
   }
 
   private convertToQueryFields(filters: GenerationFileRequest): string {

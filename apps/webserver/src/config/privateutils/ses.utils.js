@@ -1,3 +1,7 @@
+/* eslint-disable consistent-return */
+/* eslint-disable camelcase */
+/* eslint-disable default-case */
+/* eslint-disable import/no-dynamic-require */
 /** ******************************************************************
 *   @name: ses.utils.js
 *   @description : A utility file to allow calling various
@@ -9,7 +13,7 @@
 ******************************************************************* */
 // Imports for this module.
 const path = require('path');
-const AWS = require('@aws-sdk/client-ses');
+const AWS = require('aws-sdk');
 const moment = require('moment');
 
 const config = require('../config');
@@ -18,7 +22,7 @@ const langResources = require(path.resolve('./config/langResources'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const emailUtil = require(path.resolve('./config/emailTemplates'));
 
-const ses = new AWS.SES();
+const ses = new AWS.SES({ apiVersion: '2010-12-01' });
 
 const defineIcon = (type) => {
   switch (type) {
@@ -161,6 +165,16 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
   return emailUtil.createPage(bodyContent);
 };
 
+const initialize = () => {
+  const objTemp = {
+    accessKeyId: config.AWSVars.credentials.accessKey,
+    secretAccessKey: config.AWSVars.credentials.secretKey,
+    region: config.AWSVars.cognito.region,
+  };
+  // Setup the AWS Config with the proper credentials.
+  AWS.config.update(objTemp);
+};
+
 const sendEmail = (req, sender, receivers, subject, content) => {
   const promise = new Promise((resolve, reject) => {
     const parameters = {
@@ -182,12 +196,8 @@ const sendEmail = (req, sender, receivers, subject, content) => {
       Source: sender,
     };
 
-    ses
-      .sendEmail(parameters)
-      .then((data) => {
-        resolve(data);
-      })
-      .catch((err) => {
+    ses.sendEmail(parameters, (err, data) => {
+      if (err) {
         console.log('Error sending email', err);
         const userMessage = langResources.getResourceString('failedToSendEmail');
         const sysMessage = `Error Send Email: ${err}`;
@@ -198,7 +208,10 @@ const sendEmail = (req, sender, receivers, subject, content) => {
           sysMessage
         );
         reject(errObj);
-      });
+      } else {
+        resolve(data);
+      }
+    });
   });
   return promise;
 };
@@ -213,6 +226,7 @@ const sendEmail__ListSubmittedForAnalysis = (req, list_name) => {
 };
 
 module.exports = {
+  initialize,
   sendEmail,
   createBodyContent,
   sendEmail__ListSubmittedForAnalysis,

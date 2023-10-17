@@ -14,7 +14,7 @@ function AfiDiagnosticsTable({ data }) {
           <TableRow>
             <TableCell>Country</TableCell>
             <TableCell align="right">Sub-state</TableCell>
-            <TableCell align="right">Coverage (HA)</TableCell>
+            <TableCell align="right">Natural Forest Coverage (HA)</TableCell>
             <TableCell align="right">Natural Forest Loss (HA)</TableCell>
             <TableCell align="right">Negligible Risk</TableCell>
           </TableRow>

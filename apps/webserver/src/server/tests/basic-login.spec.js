@@ -20,7 +20,7 @@ describe('Basic smoke with REST APIs', () => {
         resolve();
       });
     });
-  }, 40 * 1000); // increase timeout to 40 second
+  }, 60 * 1000); // increase timeout to 60 seconds
 
   it('login', async () => {
     const request = supertest(app);

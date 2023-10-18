@@ -12,7 +12,8 @@ import {
   formatPct,
   prettifyNum,
   validatePct,
-} from '../../../locations/js/utils/diagnostics.utils';
+  withCommas,
+} from '../../../common/js/utils/diagnostics.utils';
 import { latestTreeCoverLossYearFC, locationsPage } from '../../../common/js/config';
 import { PRODES_HIGHCHARTS_BAR_CONFIGS } from './SouthAmericaRegions/SouthAmericaRegions.config';
 import '../../../common/css/_irsBase.scss';
@@ -1100,12 +1101,6 @@ export default class SouthAmericaRegions extends Component {
     };
   };
 
-  withCommas = (num) => {
-    const parts = num.toString().split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return parts.join('.');
-  };
-
   getRegionCountLabel = () => {
     const { diagnosticView, filteredData, getFilteredLocations } = this.props;
     const filteredLocations = getFilteredLocations();
@@ -1113,8 +1108,8 @@ export default class SouthAmericaRegions extends Component {
       diagnosticView === 'LIST'
         ? filteredData.filter((l) => l.south_america_presence).length
         : filteredLocations.filter((l) => l.south_america_presence === 'true').length;
-    const numeratorWithCommas = this.withCommas(numerator);
-    const filteredDataWithCommas = this.withCommas(filteredData.length);
+    const numeratorWithCommas = withCommas(numerator);
+    const filteredDataWithCommas = withCommas(filteredData.length);
     return {
       count: numerator,
       label: `Showing data for ${numeratorWithCommas} out of ${

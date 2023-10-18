@@ -9,7 +9,7 @@ import {
   formatPct,
   prettifyNum,
   validatePct,
-} from '../../../locations/js/utils/diagnostics.utils';
+} from '../../../common/js/utils/diagnostics.utils';
 import { locationsPage, latestTreeCoverLossYearSensitiveAreas } from '../../../common/js/config';
 
 import '../../../common/css/_irsBase.scss';

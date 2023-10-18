@@ -16,7 +16,7 @@ import {
 import store from '../store';
 
 import dictionary from './dictionary';
-import { prettifyNum } from '../../../locations/js/utils/diagnostics.utils';
+import { prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import {
   checkForAlerts,
   checkForNoAlerts,

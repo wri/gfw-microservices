@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Highcharts from 'highcharts';
-import { formatNum, prettifyNum } from '../../../locations/js/utils/diagnostics.utils';
+import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 import {
   locationsPage,

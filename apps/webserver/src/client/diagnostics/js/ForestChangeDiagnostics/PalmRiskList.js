@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { locationsPage } from '../../../common/js/config';
-import { formatNum, prettifyNum } from '../../../locations/js/utils/diagnostics.utils';
+import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import { getLastValue, getLastYear } from '../../../locations/js/utils/locationsTableUtils';
 import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 

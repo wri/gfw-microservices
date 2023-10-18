@@ -1,9 +1,9 @@
 import { locationsPage, convertURL } from '../../../../common/js/config';
-import Point from 'esri/geometry/Point';
-import Polygon from 'esri/geometry/Polygon';
-import QueryTask from 'esri/tasks/QueryTask';
-import Query from 'esri/tasks/support/Query';
-import GeometryEngine from 'esri/geometry/geometryEngine';
+import Point from '@arcgis/core/geometry/Point';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import * as QueryTask from '@arcgis/core/rest/query';
+import Query from '@arcgis/core/rest/support/Query';
+import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
 import FileDrop from '../uploading/FileDrop';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import { discernProjection, maxLocations, maxFileSizeMB } from '../../utils/upload.utils';
@@ -11,7 +11,7 @@ import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import React, { Component } from 'react';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
-import SpatialReference from 'esri/geometry/SpatialReference';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import { parseKMZAndKMLFile } from '../uploading/UploadLocations.util';
 export default class Upload extends Component {
   constructor(props) {
@@ -35,20 +35,21 @@ export default class Upload extends Component {
 
   geocodeMill = (mill) => {
     return new Promise((resolve) => {
-      const queryTask = new QueryTask(locationsPage.updatedPalmOilMillUrl);
-      const query = new Query();
-
-      query.where = "id = '" + mill.ID + "'";
-      query.returnGeometry = true;
-      query.outFields = [];
-
-      queryTask.execute(query).then((result) => {
-        if (result.features && result.features.length > 0) {
-          resolve(result.features[0]);
-        } else {
-          resolve(false);
-        }
+      const queryObject = new Query({
+        where: "id = '" + mill.ID + "'",
+        returnGeometry: true,
+        outFields: [],
       });
+
+      QueryTask.executeQueryJSON(locationsPage.updatedPalmOilMillUrl, queryObject).then(
+        (result) => {
+          if (result.features && result.features.length > 0) {
+            resolve(result.features[0]);
+          } else {
+            resolve(false);
+          }
+        }
+      );
     });
   };
 
@@ -65,8 +66,8 @@ export default class Upload extends Component {
               const response = JSON.parse(xmlhttp.responseText);
               let geom;
               const data = response.data;
-              const oldSpatialRef = new SpatialReference(projDefs[1]);
-              const newSpatialRef = new SpatialReference(4326);
+              const oldSpatialRef = new SpatialReference({ wkid: projDefs[1] });
+              const newSpatialRef = SpatialReference.WGS84;
               if (
                 data &&
                 data.attributes &&

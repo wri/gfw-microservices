@@ -36,6 +36,10 @@ exports.diagnosticsDataController = async (req, res) => {
       const listToSearch = isGfwList ? gfwLists : isSharedList ? userSharedLists : userLists;
       const selectedList = listToSearch?.find((listData) => listData.id === listId);
       const selectedLists = selectedList ? [selectedList] : null;
+      /**
+       * https://gfw.atlassian.net/browse/GPV-2191
+       * @TODO consider filtering using a query vs nodejs
+       */
       const selectedLocationData = listLocations.find(
         (location) => location.location_id === locationId
       );

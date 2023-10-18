@@ -6,7 +6,7 @@ const axiosRetry = require('axios-retry');
 const path = require('path');
 const getPresignedUrl = require('../utils/dataApi.utils');
 
-const logger = require(path.resolve('./config/lib/winston'));
+const logger = require('../../../config/privateutils/logger.utils');
 
 const {
   GFW_API_URL__DATASET,

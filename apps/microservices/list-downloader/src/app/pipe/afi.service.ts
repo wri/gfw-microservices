@@ -57,7 +57,6 @@ export class AfiService {
     const { organizationDatabase, rowsPerPage, pageNumber, listId } = filter;
     const queryString = `rowsPerPage=${rowsPerPage}&pageNumber=${pageNumber}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/data-per-page?${queryString}`;
-    console.log(url);
     const response = await fetch(encodeURI(url), this.OPTIONS);
     const analysisData = (await response.json()) as AfiAnalysisByListId[];
     return analysisData;

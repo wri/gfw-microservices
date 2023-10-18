@@ -1,13 +1,12 @@
 import { ExternalAPIKey } from '../external-api-key.entity';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppService } from '../../app/app.service';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
 import { TokenService } from '../token.service';
 import { Organization } from '../organization.entity';
 import { TokenMockRepository } from './token.mock.service';
 import { ConfigModule } from '@nestjs/config';
-import { User } from '../user.entity';
+import { UserRoutes } from '../user-route.entity';
 import sinon from 'sinon';
 import { NotFoundException } from '@nestjs/common';
 import { AWSError } from 'aws-sdk';
@@ -32,27 +31,17 @@ describe('Test Token Module', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization],
+          entities: [Organization, ExternalAPIKey, UserRoutes],
         }),
-        TypeOrmModule.forRoot({
-          name: 'client',
-          type: 'sqlite',
-          database: ':memory:',
-          synchronize: true,
-          logging: true,
-          entities: [ExternalAPIKey, User],
-        }),
-        TypeOrmModule.forFeature([Organization], 'default'),
-        TypeOrmModule.forFeature([ExternalAPIKey, User], 'client'),
+        TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,
         }),
       ],
       providers: [
-        AppService,
         {
-          provide: getRepositoryToken(ExternalAPIKey, 'client'),
+          provide: getRepositoryToken(ExternalAPIKey, 'default'),
           useClass: TokenMockRepository,
         },
         TokenService,
@@ -67,7 +56,6 @@ describe('Test Token Module', () => {
 
     AWS.config.update(awsConfig);
 
-    //service = app.get<AppService>(AppService);
     tokenService = app.get<TokenService>(TokenService);
 
     // Mock the AWS.APIGateway constructor

@@ -68,6 +68,7 @@ export interface CopyOrMoveLargeListRequest {
   userId: number;
   clientDatabase: string;
   organizationId: number;
+  subscriptionStatusId: number;
   gfwListId: number;
   allLocationsSelected: boolean;
   filters: ListFilters;

@@ -10,7 +10,7 @@ class NegligibleRiskDiscretize extends Transform {
       return next(null, undefined);
     }
 
-    if (!chunk[this.key]) {
+    if (chunk[this.key] == undefined && chunk[this.key] == null) {
       return next(null, chunk);
     }
     chunk[this.key] = chunk[this.key] < 0.5 ? 'no' : 'yes';

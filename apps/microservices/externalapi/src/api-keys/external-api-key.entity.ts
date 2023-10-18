@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { User } from './user.entity';
+import { UserRoutes } from './user-route.entity';
 
-@Entity({ name: 'ExternalApiKey' })
+@Entity({ name: 'ExternalAPIKeys' })
 export class ExternalAPIKey {
   @PrimaryColumn()
   awsId: string;
@@ -16,12 +16,12 @@ export class ExternalAPIKey {
   apiKey: string;
 
   @Column()
-  apiGroup: string;
+  apiGroups: string;
 
   @Column({ nullable: true })
   updateDateTime: Date;
 
-  @ManyToOne(() => User, (user) => user.tokens, { eager: true })
-  @JoinColumn({ name: 'creatorUserId', referencedColumnName: 'id' }) // Specify the foreign key column
-  user: User;
+  @ManyToOne(() => UserRoutes, (user) => user.tokens, { eager: true })
+  @JoinColumn({ name: 'creatorUserId', referencedColumnName: 'organization_user_id' }) // Specify the foreign key column
+  user: UserRoutes;
 }

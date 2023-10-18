@@ -24,3 +24,4 @@ export * from './checkIfListIsEmpty';
 export * from './deleteLocationIdsFilteredDataForUserList';
 export * from './getCountAfiAnalysisByListId';
 export * from './getPaginatedAfiAnalysisByListId';
+export * from './insertLog';

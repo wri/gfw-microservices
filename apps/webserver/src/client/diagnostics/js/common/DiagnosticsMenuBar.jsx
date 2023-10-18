@@ -17,6 +17,7 @@ function DiagnosticsMenuBar({
   isSharedList,
   downloadDiagnostics,
   selectedDiagnostics = analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
+  isGfwList,
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [activeAnalysesIds, setActiveAnalysesIds] = useState([]);
@@ -24,6 +25,10 @@ function DiagnosticsMenuBar({
   const { DEFORESTATION_KPIS, ALERTS } = analysisTypes;
 
   useEffect(() => {
+    if (isGfwList) {
+      setIsLoading(false);
+      return;
+    }
     fetch(`/api/list/${listId}/selectedAnalyses`, {
       method: 'GET',
       credentials: 'same-origin',
@@ -60,7 +65,8 @@ function DiagnosticsMenuBar({
   }));
 
   const redirectToSelectedDiagnostics = (diagnostics) => {
-    window.location.href = `/diagnostics?listId=${listId}&type=${diagnostics}${
+    const diagnosticTypeParam = !isGfwList ? `&type=${diagnostics}` : '';
+    window.location.href = `/diagnostics?listId=${listId}${diagnosticTypeParam}${
       isSharedList ? '&shared=true' : ''
     }`;
   };
@@ -69,7 +75,7 @@ function DiagnosticsMenuBar({
     <div className="diagnostics-menu-bar">
       <div className="diagnostics-menu-bar__action-bar">
         <div className="diagnostics-menu-bar__actions-group">
-          {!isLoading && (
+          {!isLoading && !isGfwList && (
             <>
               <label htmlFor="viewToggle">Diagnostic</label>
               <GfwSelect

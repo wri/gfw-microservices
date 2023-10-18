@@ -5,7 +5,7 @@ const {
   CognitoUserPool,
 } = require('amazon-cognito-identity-js');
 const config = require('../../../config/env/common');
-const logger = require(path.resolve('./config/lib/winston'));
+const logger = require('../../../config/privateutils/logger.utils');
 
 const poolData = {
   UserPoolId: config.AWSVars.cognito.userpoolId, // Your user pool id here

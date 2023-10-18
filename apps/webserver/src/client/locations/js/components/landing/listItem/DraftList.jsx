@@ -8,6 +8,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ShareIcon from '@mui/icons-material/Share';
 import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Divider from 'material-ui/Divider';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
@@ -21,6 +22,9 @@ import redirectToPage from '../../../../../common/js/utils/redirect';
 import LandingDownload from '../../lists/download/LandingDownload';
 import { requestGeoTrellisAnalyzeList } from '../../../utils/request.utils';
 import { numberWithCommas } from '../../../utils/locationsTableUtils';
+import featureFlags from '../../../../../../utils/general.utils';
+import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
+import AnalysisListChips from './AnalysisListChips';
 import {
   locationsPage,
   draftTooltipMessages,
@@ -46,7 +50,8 @@ function DraftList({
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
-
+  const [isChangeTypeOfAnalysisModalOpen, setIsChangeTypeOfAnalysisModalOpen] = useState(false);
+  const { isAfiAvailable } = featureFlags;
   const {
     list_name,
     id,
@@ -55,6 +60,7 @@ function DraftList({
     list_locations_count,
     error_file_storage_path,
     large_list_id,
+    listAnalysesStatus,
   } = list;
   const isLargeList = !!large_list_id;
   const hasErrorFile = !!error_file_storage_path;
@@ -108,163 +114,186 @@ function DraftList({
   };
 
   return (
-    <li
-      className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
-      title={locationsPage.landing.pendingMessage}
-      onClick={clickLocationRow}
-    >
-      <div className="locations-list__title">
-        {showListSharedWithMeIcon && <PublicIcon />}
-        {list_name}
-        {is_shared && <IconUsers className="locations-list__shared-icon" />}
-
-        <Chip
-          label={numberWithCommas(locations || 0)}
-          size="small"
-          style={{ height: '17px', marginLeft: '10px' }}
+    <>
+      {isAfiAvailable && (
+        <ChangeTypeOfAnalysisModal
+          listId={id}
+          listName={list_name}
+          listAnalysesStatus={listAnalysesStatus}
+          setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
+          isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
         />
-      </div>
-
-      {showSharedColumn && (
-        <div className="locations-list__shared">
-          <GroupsIcon />
-          {sharedColumnText()}
-        </div>
       )}
+      <li
+        className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
+        title={locationsPage.landing.pendingMessage}
+        onClick={clickLocationRow}
+      >
+        <div className="locations-list__title">
+          {showListSharedWithMeIcon && <PublicIcon />}
+          {list_name}
+          {is_shared && <IconUsers className="locations-list__shared-icon" />}
 
-      <div className="locations-list__controls">
-        {showRerunOpt && <ListDiagnosticStatusDraft list={list} />}
-        {showNonOwnerDraft && (
-          <span className="DiagnosticStatusDraft__label">
-            <CustomTooltip
-              placement="top"
-              label={'DRAFT'}
-              tooltipMessage={draftTooltipMessages.nonOwner}
-              iconWidth={13}
-              iconHeight={16}
-            />
-          </span>
+          <Chip
+            label={numberWithCommas(locations || 0)}
+            size="small"
+            style={{ height: '17px', marginLeft: '10px' }}
+          />
+        </div>
+
+        {showSharedColumn && (
+          <div className="locations-list__shared">
+            <GroupsIcon />
+            {sharedColumnText()}
+          </div>
         )}
-      </div>
 
-      <div className="locations-list__menu-container">
-        <IconButton
-          icon={<IconMenuDots />}
-          title={nav.more}
-          size="medium"
-          variant="menu"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setMenuAnchorEl(e.currentTarget);
-            setIsMenuOpen(!isMenuOpen);
-          }}
-        />
-        <Popover
-          anchorEl={menuAnchorEl}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          open={isMenuOpen}
-          onRequestClose={() => setIsMenuOpen(false)}
-          targetOrigin={{ vertical: 'top', horizontal: 'right' }}
-        >
-          <Menu className="context-menu">
-            {showMapOpt && (
-              <MenuItem
-                leftIcon={<PlaceIcon />}
-                primaryText={locationsPage.lists.map}
-                onClick={() => viewMap()}
-              />
-            )}
-            {showDownloadOpt && (
-              <LandingDownload
-                locations={locations || 0}
-                listID={id}
-                isLargeList={isLargeList}
-                hasErrorFile={hasErrorFile}
-                downloadRequestedFromFolder={isInFolder}
-                closeMenu={() => setIsMenuOpen(false)}
-                setConfirmDialog={() => showConfirmDownloadDialog()}
-                error_file_storage_path={error_file_storage_path}
-              />
-            )}
-            {userIsAdmin && (
-              <MenuItem
-                primaryText={locationsPage.lists.share}
-                leftIcon={<ShareIcon />}
-                onClick={(e) => shareList(e, list)}
-              />
-            )}
+        <div className="locations-list__controls">
+          <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
-            {showRerunOpt && (
-              <MenuItem
-                leftIcon={<KeyboardArrowUpIcon />}
-                primaryText="Submit"
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  setShowSubmitModal(true);
-                }}
+          {showRerunOpt && <ListDiagnosticStatusDraft list={list} />}
+          {showNonOwnerDraft && (
+            <span className="DiagnosticStatusDraft__label">
+              <CustomTooltip
+                placement="top"
+                label={'DRAFT'}
+                tooltipMessage={draftTooltipMessages.nonOwner}
+                iconWidth={13}
+                iconHeight={16}
               />
-            )}
-            <Divider />
-            <MenuItem
-              primaryText={
-                isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
-              }
-              leftIcon={<FolderIcon />}
-              onClick={() => {
-                setManageListFolderOpen();
-                setIsMenuOpen(false);
-              }}
-            />
-            {showDelete && (
-              <>
-                <Divider />
+            </span>
+          )}
+        </div>
+
+        <div className="locations-list__menu-container">
+          <IconButton
+            icon={<IconMenuDots />}
+            title={nav.more}
+            size="medium"
+            variant="menu"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setMenuAnchorEl(e.currentTarget);
+              setIsMenuOpen(!isMenuOpen);
+            }}
+          />
+          <Popover
+            anchorEl={menuAnchorEl}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            open={isMenuOpen}
+            onRequestClose={() => setIsMenuOpen(false)}
+            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            <Menu className="context-menu">
+              {showMapOpt && (
                 <MenuItem
-                  primaryText={locationsPage.lists.delete}
-                  className="MenuItem--danger"
-                  leftIcon={<DeleteIcon />}
+                  leftIcon={<PlaceIcon />}
+                  primaryText={locationsPage.lists.map}
+                  onClick={() => viewMap()}
+                />
+              )}
+              {showDownloadOpt && (
+                <LandingDownload
+                  locations={locations || 0}
+                  listID={id}
+                  isLargeList={isLargeList}
+                  hasErrorFile={hasErrorFile}
+                  downloadRequestedFromFolder={isInFolder}
+                  closeMenu={() => setIsMenuOpen(false)}
+                  setConfirmDialog={() => showConfirmDownloadDialog()}
+                  error_file_storage_path={error_file_storage_path}
+                />
+              )}
+              {userIsAdmin && (
+                <MenuItem
+                  primaryText={locationsPage.lists.share}
+                  leftIcon={<ShareIcon />}
+                  onClick={(e) => shareList(e, list)}
+                />
+              )}
+
+              {showRerunOpt && (
+                <MenuItem
+                  leftIcon={<KeyboardArrowUpIcon />}
+                  primaryText="Submit"
                   onClick={() => {
-                    setDeleteDialogOpen();
+                    setIsMenuOpen(false);
+                    setShowSubmitModal(true);
+                  }}
+                />
+              )}
+              <Divider />
+              {isAfiAvailable && (
+                <MenuItem
+                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
+                  leftIcon={<SettingsIcon />}
+                  onClick={() => {
+                    setIsChangeTypeOfAnalysisModalOpen(true);
                     setIsMenuOpen(false);
                   }}
                 />
-              </>
-            )}
-          </Menu>
-        </Popover>
-        {showSubmitModal && (
-          <CustomDraftDialog
-            open
-            closeAction={() => {
-              setShowSubmitModal(false);
-            }}
-            dialogTitle="Confirm Submission"
-            dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
-            dialogActionConfirm={() => {
-              requestGeoTrellisAnalyzeList(list)
-                .then((response) => {
-                  gtag('event', 'User submits a list from landing page', {
-                    event_category: 'Submit List',
+              )}
+              <MenuItem
+                primaryText={
+                  isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
+                }
+                leftIcon={<FolderIcon />}
+                onClick={() => {
+                  setManageListFolderOpen();
+                  setIsMenuOpen(false);
+                }}
+              />
+              {showDelete && (
+                <>
+                  <Divider />
+                  <MenuItem
+                    primaryText={locationsPage.lists.delete}
+                    className="MenuItem--danger"
+                    leftIcon={<DeleteIcon />}
+                    onClick={() => {
+                      setDeleteDialogOpen();
+                      setIsMenuOpen(false);
+                    }}
+                  />
+                </>
+              )}
+            </Menu>
+          </Popover>
+          {showSubmitModal && (
+            <CustomDraftDialog
+              open
+              closeAction={() => {
+                setShowSubmitModal(false);
+              }}
+              dialogTitle="Confirm Submission"
+              dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
+              dialogActionConfirm={() => {
+                requestGeoTrellisAnalyzeList(list)
+                  .then((response) => {
+                    gtag('event', 'User submits a list from landing page', {
+                      event_category: 'Submit List',
+                    });
+                    gtag('event', 'Submit List', 'User submits a list from landing page', {
+                      event_category: 'Submit List',
+                    });
+                    // TODO: Get details what to do after list is submitted
+                    console.log(response.data);
+                    window.location.reload();
+                  })
+                  .catch((error) => {
+                    // TODO: Get details what to do after list submission fails
+                    console.log(error);
+                  })
+                  .finally(() => {
+                    setShowSubmitModal(false);
                   });
-                  gtag('event', 'Submit List', 'User submits a list from landing page', {
-                    event_category: 'Submit List',
-                  });
-                  // TODO: Get details what to do after list is submitted
-                  console.log(response.data);
-                  window.location.reload();
-                })
-                .catch((error) => {
-                  // TODO: Get details what to do after list submission fails
-                  console.log(error);
-                })
-                .finally(() => {
-                  setShowSubmitModal(false);
-                });
-            }}
-          />
-        )}
-      </div>
-    </li>
+              }}
+            />
+          )}
+        </div>
+      </li>
+    </>
   );
 }
 

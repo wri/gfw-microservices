@@ -10,12 +10,18 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { Organization } from '../../api-keys/organization.entity';
-import { User } from '../../api-keys/user.entity';
-import { ExternalUpload } from '../external-upload.entity';
+import { UserRoutes } from '../../api-keys/user-route.entity';
 import { UserService } from '../user.service';
+import { ClientStoreConnection } from '../../shared/client-store-connection';
+import { OrganizationService } from '../organization.service';
+import axios from 'axios';
+import AxiosMockAdapter from 'axios-mock-adapter';
 
 describe('ListUploadController', () => {
   let controller: ListUploadController;
+  let axiosMock;
+  let userService: UserService;
+  let organizationService: OrganizationService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -26,28 +32,26 @@ describe('ListUploadController', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization],
+          entities: [Organization, ExternalAPIKey, UserRoutes],
         }),
-        TypeOrmModule.forRoot({
-          name: 'client',
-          type: 'sqlite',
-          database: ':memory:',
-          synchronize: true,
-          logging: true,
-          entities: [ExternalAPIKey, User],
-        }),
-        TypeOrmModule.forFeature([Organization], 'default'),
-        TypeOrmModule.forFeature([ExternalAPIKey, User, ExternalUpload], 'client'),
+        TypeOrmModule.forFeature([ExternalAPIKey, Organization, UserRoutes], 'default'),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,
         }),
       ],
       controllers: [ListUploadController],
-      providers: [ListAnalysisService, UserService],
+      providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
     }).compile();
 
     controller = module.get<ListUploadController>(ListUploadController);
+    userService = module.get<UserService>(UserService);
+    organizationService = module.get<OrganizationService>(OrganizationService);
+    axiosMock = new AxiosMockAdapter(axios);
+  });
+
+  afterEach(() => {
+    axiosMock.restore();
   });
 
   it('should be defined', () => {
@@ -115,5 +119,53 @@ describe('ListUploadController', () => {
       expect(error.response).toEqual(expectedResult);
       expect(error.getStatus()).toBe(400); // Check if the status code is 400 Bad Request
     }
+  });
+
+  it('should return a successful response for prepare upload', async () => {
+    const actualDate = new Date();
+    const axiosMockExpectedResponse = {
+      url: 'mocked_url',
+      keyFile: 'mocked_key',
+      fileS3Route: 'mocked_s3_route',
+    };
+
+    const expectedResult = {
+      uploadKeyFile: 'mocked_key',
+      uploadUrl: 'mocked_url',
+      userId: 123,
+    };
+
+    // Mock user response to let process continue
+    userService.findUser = jest.fn().mockResolvedValue({
+      id: 123,
+      user_email: 'test@test.com',
+      organization_id: 1,
+      organization_user_id: 1,
+      organization_user_status_id: 1,
+      tokens: [],
+    });
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: actualDate,
+      subscriptionStatusId: 1,
+    });
+
+    // Mock the Axios request and specify the response
+    axiosMock = new AxiosMockAdapter(axios);
+    axiosMock.onPost(/\/api\/create-presigned-url/).reply(200, axiosMockExpectedResponse);
+
+    const request = {
+      userEmail: 'test@test.com',
+    };
+
+    const result = await controller.prepareUploadList(request);
+
+    const { uploadKeyFile, uploadUrl, userId } = result;
+
+    expect({ uploadKeyFile, uploadUrl, userId }).toEqual(expectedResult);
   });
 });

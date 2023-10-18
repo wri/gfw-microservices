@@ -6,7 +6,7 @@ const { tippecanoeAsync } = require('tippecanoe');
 const { getCurrentDateTimeFormatted } = require('./vectorTile.utils');
 
 // Configs
-const logger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 const { MBTILE_EXTENSION } = require('../config/vectorTiles.config');
 
 /**

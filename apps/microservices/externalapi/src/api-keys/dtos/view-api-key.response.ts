@@ -5,7 +5,7 @@ export class ViewApiKeyResponse {
   @ApiProperty()
   apiKey: string;
   @ApiProperty()
-  apiGroup: string;
+  apiGroups: string;
   @ApiProperty()
   creatorUserEmail: string;
   @ApiProperty()

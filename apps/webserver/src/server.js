@@ -6,13 +6,16 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const { exit } = require('process');
-const logger = require('./config/lib/winston');
+const winston = require('winston');
 const loadenv = require('./load-env');
 const { PRODUCTION_ENVIRONMENTS } = require('./config/config/environments.config');
 /**
  * @description Files/modules that require the config or environment variables are required to be imported
  *              after `loadenv.loadEnvironmentVars`has successfully completed
  */
+
+// basic logger without sql transport
+const logger = winston.createLogger({ transports: [new winston.transports.Console()] });
 
 logger.info('Starting the application');
 

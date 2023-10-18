@@ -66,6 +66,7 @@
     "^reset(.*)$": "<rootDir>/client/reset$1",
     "^select(.*)$": "<rootDir>/client/select$1",
     "^userProfile(.*)$": "<rootDir>/client/userProfile$1",
-    "^verify(.*)$": "<rootDir>/client/verify$1"
+    "^verify(.*)$": "<rootDir>/client/verify$1",
+    "^uuid$": "uuid"
   }
 }

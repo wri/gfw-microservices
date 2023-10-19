@@ -5,8 +5,8 @@ import {
   formatPct,
   prettifyNum,
   validatePct,
-  withCommas,
 } from '../../../common/js/utils/diagnostics.utils';
+import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
 import { locationsPage, mapPage, latestTreeCoverLossYearFC } from '../../../common/js/config';
 import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 import '../../css/locations.scss';
@@ -102,8 +102,8 @@ export default class SoutheastAsiaRegions extends Component {
       diagnosticView === 'LIST'
         ? filteredData.filter((l) => l.southeast_asia_presence).length
         : filteredLocations.filter((l) => l.southeast_asia_presence === 'true').length;
-    const numeratorWithCommas = withCommas(numerator);
-    const filteredDataWithCommas = withCommas(filteredData.length);
+    const numeratorWithCommas = numberWithCommas(numerator);
+    const filteredDataWithCommas = numberWithCommas(filteredData.length);
     return {
       count: numerator,
       label: `Showing data for ${numeratorWithCommas} out of ${

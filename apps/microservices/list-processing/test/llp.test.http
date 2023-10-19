@@ -1,0 +1,4 @@
+
+### Get Data Analysis For Large List Processing
+GET http://localhost:3334/api/paginated-list-data?listId=5642&rowsPerPage=10&pageNumber=0&organizationDatabase=clientstore-DevCo
+Content-Type: application/json

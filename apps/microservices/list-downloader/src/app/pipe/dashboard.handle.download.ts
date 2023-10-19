@@ -19,6 +19,7 @@ import { ManipulateDataForDashboard } from '../transform/manipulate.data.dashboa
 export class DashboardHandleDownload extends IPipeService {
   public readonly logger = new Logger(DashboardHandleDownload.name);
   private writeStream: PassThrough;
+  private fileStream: fs.WriteStream;
 
   start(filters: GenerationFileRequest, table: string, fileSuffix: string) {
     const { listId, key } = filters;
@@ -43,7 +44,7 @@ export class DashboardHandleDownload extends IPipeService {
   process(analysisData, filters: GenerationFileRequest) {
     const { listName } = filters;
 
-    analysisData.forEach((data) => this.writeStream.write({ list_name: listName, ...data }));
+    analysisData?.forEach((data) => this.writeStream.write({ list_name: listName, ...data }));
   }
 
   private organizeStream(
@@ -60,21 +61,25 @@ export class DashboardHandleDownload extends IPipeService {
       this.errorEmail(filters);
     });
 
+    this.fileStream = fs.createWriteStream(`/tmp/${key}_${fileSuffix}.csv`, { flags: 'a' });
+
     this.writeStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterLocationHaveStatus(2))
       .pipe(new FilterObject(allFields))
       .pipe(new ManipulateDataForDashboard(EXCEL_TEMPLATES[table], listLevelAnalysis))
       .pipe(new ConvertObject2CSV(EXCEL_TEMPLATE_HEADERS[table]))
-      .pipe(fs.createWriteStream(`/tmp/${key}_${fileSuffix}.csv`, { flags: 'a' }));
+      .pipe(this.fileStream);
   }
 
   async finish(filters: GenerationFileRequest) {
     this.logger.log(`(${filters.key}) - Sending end event to stream`);
     this.writeStream.end();
     await finished(this.writeStream);
+    await finished(this.fileStream);
     this.writeStream.removeAllListeners();
     this.writeStream.destroy();
+    this.fileStream.destroy();
   }
 
   mountArrayWithAllFields(templateOperation) {

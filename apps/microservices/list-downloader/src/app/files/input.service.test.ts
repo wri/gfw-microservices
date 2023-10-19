@@ -7,6 +7,14 @@ import * as fs from 'fs';
 describe('Input Service', () => {
   const inputService = new InputService();
 
+  const filters = {
+    listId: 5642,
+    key: 'tmp-input',
+    templateId: 13,
+    combinedColumnsSplitted: [],
+    selectedLocationsList: [],
+  };
+
   beforeAll(() => {
     inputService.startEmail = jest.fn();
     inputService.errorEmail = jest.fn();
@@ -14,26 +22,20 @@ describe('Input Service', () => {
     inputService.uploadToS3 = jest.fn();
   });
 
+  beforeEach(() => {
+    inputService.start(filters);
+  });
+
   afterEach(() => {
-    fs.unlinkSync('/tmp/tmp-input.csv');
+    fs.unlinkSync(`/tmp/${filters.key}.csv`);
   });
 
   test('when data has 3 locations', async () => {
-    const filters = {
-      listId: 5642,
-      key: 'tmp-input',
-      templateId: 13,
-      combinedColumnsSplitted: [],
-      selectedLocationsList: [],
-    };
-
-    inputService.start(filters);
-
     inputService.process(locationListData);
 
     await inputService.finish(filters);
 
-    const csvData = fs.readFileSync('/tmp/tmp-input.csv', 'utf8');
+    const csvData = fs.readFileSync(`/tmp/${filters.key}.csv`, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
@@ -45,21 +47,18 @@ describe('Input Service', () => {
   });
 
   test('when want to generate file for specific location', async () => {
-    const filters = {
-      listId: 5642,
-      key: 'tmp-input',
-      templateId: 13,
-      combinedColumnsSplitted: [],
+    const newFilters = {
+      ...filters,
       selectedLocationsList: [1],
     };
 
-    inputService.start(filters);
+    inputService.start(newFilters);
 
     inputService.process(locationListData);
 
-    await inputService.finish(filters);
+    await inputService.finish(newFilters);
 
-    const csvData = fs.readFileSync('/tmp/tmp-input.csv', 'utf8');
+    const csvData = fs.readFileSync(`/tmp/${newFilters.key}.csv`, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
@@ -69,21 +68,18 @@ describe('Input Service', () => {
   });
 
   test('when want to add more columns', async () => {
-    const filters = {
-      listId: 5642,
-      key: 'tmp-input',
-      templateId: 13,
+    const newFilters = {
+      ...filters,
       combinedColumnsSplitted: ['Country'],
-      selectedLocationsList: [],
     };
 
-    inputService.start(filters);
+    inputService.start(newFilters);
 
     inputService.process(locationListData);
 
-    await inputService.finish(filters);
+    await inputService.finish(newFilters);
 
-    const csvData = fs.readFileSync('/tmp/tmp-input.csv', 'utf8');
+    const csvData = fs.readFileSync(`/tmp/${filters.key}.csv`, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon,Country',
@@ -95,21 +91,11 @@ describe('Input Service', () => {
   });
 
   test('when input is an empty array', async () => {
-    const filters = {
-      listId: 5642,
-      key: 'tmp-input',
-      templateId: 13,
-      combinedColumnsSplitted: [],
-      selectedLocationsList: [],
-    };
-
-    inputService.start(filters);
-
     inputService.process([]);
 
     await inputService.finish(filters);
 
-    const csvData = fs.readFileSync('/tmp/tmp-input.csv', 'utf8');
+    const csvData = fs.readFileSync(`/tmp/${filters.key}.csv`, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
@@ -118,21 +104,11 @@ describe('Input Service', () => {
   });
 
   test('when input is undefined', async () => {
-    const filters = {
-      listId: 5642,
-      key: 'tmp-input',
-      templateId: 13,
-      combinedColumnsSplitted: [],
-      selectedLocationsList: [],
-    };
-
-    inputService.start(filters);
-
     inputService.process(undefined);
 
     await inputService.finish(filters);
 
-    const csvData = fs.readFileSync('/tmp/tmp-input.csv', 'utf8');
+    const csvData = fs.readFileSync(`/tmp/${filters.key}.csv`, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',

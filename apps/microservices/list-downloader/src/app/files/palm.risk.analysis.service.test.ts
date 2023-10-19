@@ -7,6 +7,15 @@ import { PalmRiskAnalysisService } from './palm.risk.analysis.service';
 describe('Palm Risk Analysis Service', () => {
   const palmRiskAnalysisService = new PalmRiskAnalysisService();
 
+  const filters = {
+    listId: 5462,
+    key: 'tmp-key',
+    listView: 'commodity_risk',
+    type: 'palmRiskAnalysis',
+    listName: 'WRI',
+    selectedLocationsList: [],
+  };
+
   beforeAll(() => {
     palmRiskAnalysisService.startEmail = jest.fn();
     palmRiskAnalysisService.errorEmail = jest.fn();
@@ -14,26 +23,17 @@ describe('Palm Risk Analysis Service', () => {
   });
 
   afterEach(() => {
-    fs.unlinkSync('/tmp/tmp-key_palm_risk_analysis.csv');
+    fs.unlinkSync(`/tmp/${filters.key}_palm_risk_analysis.csv`);
   });
 
   test('When input data has 3 locations', async () => {
-    const filters = {
-      listId: 5462,
-      key: 'tmp-key',
-      listView: 'commodity_risk',
-      type: 'palmRiskAnalysis',
-      listName: 'WRI',
-      selectedLocationsList: [],
-    };
-
     palmRiskAnalysisService.start(filters);
 
     palmRiskAnalysisService.process(locationListData, filters);
 
     await palmRiskAnalysisService.finish(filters);
 
-    const csvData = fs.readFileSync('/tmp/tmp-key_palm_risk_analysis.csv', 'utf8');
+    const csvData = fs.readFileSync(`/tmp/${filters.key}_palm_risk_analysis.csv`, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Mill Priority,Mill Priority Score,Overall Threat,Threat Score,Overall Value,Value Score,Deforestation - Threats Amount,Peat - Threats Amount,Protected Areas - Threats Amount,Fires - Threats Amount,Forest - Values Amount,Peat - Values Amount,Protected Areas - Values Amount,Deforestation - Threats Level,Peat - Threats Level,Protected Areas - Threats Level,Fires - Threats Level,Forest - Values Level,Peat - Values Level,Protected Areas - Values Level',

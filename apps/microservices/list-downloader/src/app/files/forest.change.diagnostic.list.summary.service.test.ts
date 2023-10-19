@@ -6,34 +6,36 @@ import { ForestChangeDiagnosticListSummaryService } from './forest.change.diagno
 describe('Forest Change Diagnostic List Summary Service', () => {
   const forestChangeDiagnosticListSummaryService = new ForestChangeDiagnosticListSummaryService();
 
+  const filters = {
+    listId: 5462,
+    key: 'tmp-key',
+    listView: 'forest_change',
+    type: 'forestChangeDiagnosticListSummary',
+    listName: 'WRI',
+    selectedLocationsList: [],
+  };
+
   beforeAll(() => {
     forestChangeDiagnosticListSummaryService.startEmail = jest.fn();
     forestChangeDiagnosticListSummaryService.errorEmail = jest.fn();
     forestChangeDiagnosticListSummaryService.finishedEmail = jest.fn();
   });
 
+  beforeEach(() => {
+    forestChangeDiagnosticListSummaryService.start(filters);
+  });
+
   afterEach(() => {
-    fs.unlinkSync('/tmp/tmp-key_forest_change_diagnostic_list_summary.csv');
+    fs.unlinkSync(`/tmp/${filters.key}_forest_change_diagnostic_list_summary.csv`);
   });
 
   test('When input data has 3 locations', async () => {
-    const filters = {
-      listId: 5462,
-      key: 'tmp-key',
-      listView: 'forest_change',
-      type: 'forestChangeDiagnosticListSummary',
-      listName: 'WRI',
-      selectedLocationsList: [],
-    };
-
-    forestChangeDiagnosticListSummaryService.start(filters);
-
     forestChangeDiagnosticListSummaryService.process(locationListData, filters);
 
     await forestChangeDiagnosticListSummaryService.finish(filters);
 
     const csvData = fs.readFileSync(
-      '/tmp/tmp-key_forest_change_diagnostic_list_summary.csv',
+      `/tmp/${filters.key}_forest_change_diagnostic_list_summary.csv`,
       'utf8'
     );
     const lines = csvData.toString().split('\n');

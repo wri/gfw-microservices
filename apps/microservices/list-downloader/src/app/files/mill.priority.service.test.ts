@@ -7,33 +7,35 @@ import { MillPriorityService } from './mill.priority.service';
 describe('Mill Priority Service', () => {
   const millPriorityService = new MillPriorityService();
 
+  const filters = {
+    listId: 5462,
+    key: 'tmp-key',
+    listView: 'commodity_risk',
+    type: 'everything',
+    listName: 'WRI',
+    selectedLocationsList: [1, 2, 3],
+  };
+
   beforeAll(() => {
     millPriorityService.startEmail = jest.fn();
     millPriorityService.errorEmail = jest.fn();
     millPriorityService.finishedEmail = jest.fn();
   });
 
+  beforeEach(() => {
+    millPriorityService.start(filters);
+  });
+
   afterEach(() => {
-    fs.unlinkSync('/tmp/tmp-key_mill_priority_history.csv');
+    fs.unlinkSync(`/tmp/${filters.key}_mill_priority_history.csv`);
   });
 
   test('When input data has 3 locations', async () => {
-    const filters = {
-      listId: 5462,
-      key: 'tmp-key',
-      listView: 'commodity_risk',
-      type: 'everything',
-      listName: 'WRI',
-      selectedLocationsList: [1, 2, 3],
-    };
-
-    millPriorityService.start(filters);
-
     millPriorityService.process(locationListData, filters);
 
     await millPriorityService.finish(filters);
 
-    const csvData = fs.readFileSync('/tmp/tmp-key_mill_priority_history.csv', 'utf8');
+    const csvData = fs.readFileSync(`/tmp/${filters.key}_mill_priority_history.csv`, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Threat + Value,Year',

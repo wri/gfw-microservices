@@ -3,22 +3,25 @@ import { Logger, Injectable } from '@nestjs/common';
 import { GenerationFileRequest, AfiAnalysisByListId } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
 import { getAllFilesAndZip } from '../shared/file.utils';
-import { fetchRetry } from '../shared/functions';
+
+import axios from 'axios';
+import * as axiosRetry from 'axios-retry';
 
 @Injectable()
 export class AfiService {
   private POOL_SIZE = 5;
 
-  private OPTIONS = {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
   private readonly logger = new Logger(AfiService.name);
 
-  constructor(private readonly afiFileService: AfiFileService) {}
+  constructor(private readonly afiFileService: AfiFileService) {
+    axiosRetry(axios, {
+      retries: 3, // number of retries
+      retryDelay: (retryCount) => {
+        this.logger.log(`retry attempt: ${retryCount}`);
+        return retryCount * 2000; // time interval between retries
+      },
+    });
+  }
 
   public async makeFile(filters: GenerationFileRequest) {
     await this.runAfiFileGeneration(filters);
@@ -60,7 +63,7 @@ export class AfiService {
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/data-per-page?${queryString}`;
 
     try {
-      const response = (await fetchRetry(encodeURI(url), this.OPTIONS)) as AfiAnalysisByListId[];
+      const response = (await axios.get(encodeURI(url))) as AfiAnalysisByListId[];
       return response;
     } catch (error) {
       this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${error}`);
@@ -74,7 +77,7 @@ export class AfiService {
     const queryString = `rowsPerPage=${rowsPerPage}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/number-of-pages?${queryString}`;
     try {
-      const { pages } = (await fetchRetry(encodeURI(url), this.OPTIONS)) as { pages: number };
+      const { pages } = (await axios.get(encodeURI(url))) as { pages: number };
       return pages;
     } catch (error) {
       this.logger.error(`listId: ${listId}, error: ${error}`);

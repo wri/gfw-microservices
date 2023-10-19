@@ -649,7 +649,7 @@ export default class Diagnostics extends Component {
       selectedLists,
       selectedLocations,
       listData,
-
+      selectedLocationData,
       displayPopover,
       bubbleData,
       popoverLoading,
@@ -736,8 +736,8 @@ export default class Diagnostics extends Component {
 
                 {isSingleLocation ? (
                   <SingleLocationDiagnosticsHeaderInfo
-                    selectedLists={selectedLists}
-                    filteredLocations={filteredLocations}
+                    selectedListName={selectedLists[0].list_name}
+                    currentLocation={selectedLocationData}
                   />
                 ) : (
                   <FullListDiagnosticsHeaderInfo selectedLists={selectedLists} />
@@ -1014,7 +1014,6 @@ export default class Diagnostics extends Component {
               ifl={ifl}
               listView={listView}
               fireDownload={this.fireDownload}
-              filteredData={listData}
               getYearlyData={this.getYearlyData}
               parseYearlyData={this.parseYearlyData}
               getFilteredLocations={this.getFilteredLocations}
@@ -1074,7 +1073,6 @@ export default class Diagnostics extends Component {
               <MillPrioritySummary
                 listView={listView}
                 fireDownload={this.fireDownload}
-                filteredData={listData}
                 togglePopover={this.togglePopover}
                 popoverLoading={popoverLoading}
                 getYearlyData={this.getYearlyData}
@@ -1089,7 +1087,6 @@ export default class Diagnostics extends Component {
               <PalmRiskAnalysis
                 listView={listView}
                 fireDownload={this.fireDownload}
-                filteredData={listData}
                 togglePopover={this.togglePopover}
                 popoverLoading={popoverLoading}
                 getYearlyData={this.getYearlyData}
@@ -1104,7 +1101,6 @@ export default class Diagnostics extends Component {
               <DeforestationTrends
                 listView={listView}
                 fireDownload={this.fireDownload}
-                filteredData={listData}
                 togglePopover={this.togglePopover}
                 popoverLoading={popoverLoading}
                 getYearlyData={this.getYearlyData}

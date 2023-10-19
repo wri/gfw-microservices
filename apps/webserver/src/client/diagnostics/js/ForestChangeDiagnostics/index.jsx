@@ -51,7 +51,7 @@ function ForestChangeDiagnostics({ location, popover, infoBubbleCache }) {
       });
   }, []);
 
-  const { selectedLists, listLevelAnalysis, processedListData } = data;
+  const { selectedLists, listLevelAnalysis, processedListData, selectedLocationData } = data;
   const { displayPopover, bubbleData, popoverLoading, anchorEl } = popover;
 
   return (
@@ -99,6 +99,7 @@ function ForestChangeDiagnostics({ location, popover, infoBubbleCache }) {
             bubbleData={bubbleData}
             popoverLoading={popoverLoading}
             anchorEl={anchorEl}
+            selectedLocationData={selectedLocationData}
           />
         </>
       )}

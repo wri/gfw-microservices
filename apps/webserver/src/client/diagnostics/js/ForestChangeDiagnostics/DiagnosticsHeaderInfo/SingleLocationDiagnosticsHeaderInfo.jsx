@@ -1,15 +1,21 @@
 import React from 'react';
 import './DiagnosticsHeaderInfo.scss';
 
-function SingleLocationDiagnosticsHeaderInfo({ selectedLists, filteredLocations }) {
-  const [loc] = filteredLocations;
-  const locationName = loc['Investment Name'] ?? loc['Location Name'];
+function SingleLocationDiagnosticsHeaderInfo({ selectedListName, currentLocation }) {
+  const {
+    ['Investment Name']: investmentNameColumn,
+    ['Location Name']: locationNameColumn,
+    State: state,
+    Country: country,
+  } = currentLocation;
+
+  const locationName = investmentNameColumn ?? locationNameColumn;
 
   return (
     <div className="diagnostics-header-info">
       <div>{locationName}</div>
-      <div className="header-title print-only">{selectedLists[0].list_name}</div>
-      <span className="list-country-name">{`${loc.State}, ${loc.Country}`}</span>
+      <div className="header-title print-only">{selectedListName}</div>
+      <span className="list-country-name">{`${state}, ${country}`}</span>
     </div>
   );
 }

@@ -40,7 +40,7 @@ import {
   formatPct,
   prettifyNum,
   validatePct,
-} from '../../../locations/js/utils/diagnostics.utils';
+} from '../../../common/js/utils/diagnostics.utils';
 import { getGfwListName } from '../../../locations/js/utils/lists.utils';
 import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userListLocations/utils/listLayer.util';
 import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
@@ -1040,7 +1040,6 @@ export default class Diagnostics extends Component {
                 fireDownload={this.fireDownload}
                 filteredData={listData}
                 togglePopover={this.togglePopover}
-                popoverLoading={popoverLoading}
                 getYearlyData={this.getYearlyData}
                 parseYearlyData={this.parseYearlyData}
                 assignHighchartColor={this.assignHighchartColor}

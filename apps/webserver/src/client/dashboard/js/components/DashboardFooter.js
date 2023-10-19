@@ -4,7 +4,7 @@ import isEqual from 'lodash/isEqual';
 import DashboardChart from './DashboardChart';
 
 import { calculateAlerts } from '../utils/dashboard.utils';
-import { prettifyNum, formatPct } from '../../../locations/js/utils/diagnostics.utils';
+import { prettifyNum, formatPct } from '../../../common/js/utils/diagnostics.utils';
 
 import '../../css/_dashboardFooter.scss';
 

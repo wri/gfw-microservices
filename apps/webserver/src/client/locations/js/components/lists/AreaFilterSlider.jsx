@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Slider from '@material-ui/core/Slider';
 import { createTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
-import { prettifyNum } from '../../utils/diagnostics.utils';
+import { prettifyNum } from '../../../../common/js/utils/diagnostics.utils';
 import { defaultMaximumAreaSizeForLocationsFilter } from '../../../../common/js/constants/lists.constants';
 
 const muiTheme = createTheme({

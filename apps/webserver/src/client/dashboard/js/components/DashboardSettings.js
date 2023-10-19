@@ -4,7 +4,7 @@ import store from '../store';
 import mapUtils from '../utils/mapUtils';
 import { calculateAlerts } from '../utils/dashboard.utils';
 import dictionary from '../utils/dictionary';
-import { prettifyNum } from '../../../locations/js/utils/diagnostics.utils';
+import { prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import { selectAlert, selectTimeframe } from '../actions/dashboardActions';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import { proLayers } from '../../../common/js/config';

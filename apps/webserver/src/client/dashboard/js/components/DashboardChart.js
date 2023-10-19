@@ -4,7 +4,7 @@ import Highcharts from 'highcharts';
 import moment from 'moment';
 
 import dictionary from '../utils/dictionary';
-import { prettifyNum } from '../../../locations/js/utils/diagnostics.utils';
+import { prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import {
   getSelectedTimeframeStartEndGroupings,
   isInDaysOfWeek,

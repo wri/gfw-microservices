@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import Highcharts from 'highcharts';
-
 import {
   formatNum,
   formatPct,
   prettifyNum,
   validatePct,
-} from '../../../locations/js/utils/diagnostics.utils';
+} from '../../../common/js/utils/diagnostics.utils';
+import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
 import { locationsPage, mapPage, latestTreeCoverLossYearFC } from '../../../common/js/config';
 import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 import '../../css/locations.scss';
-
 import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
 
@@ -96,12 +95,6 @@ export default class SoutheastAsiaRegions extends Component {
     }
   }
 
-  withCommas = (num) => {
-    const parts = num.toString().split('.');
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return parts.join('.');
-  };
-
   getRegionCountLabel = () => {
     const { diagnosticView, filteredData, getFilteredLocations } = this.props;
     const filteredLocations = getFilteredLocations();
@@ -109,8 +102,8 @@ export default class SoutheastAsiaRegions extends Component {
       diagnosticView === 'LIST'
         ? filteredData.filter((l) => l.southeast_asia_presence).length
         : filteredLocations.filter((l) => l.southeast_asia_presence === 'true').length;
-    const numeratorWithCommas = this.withCommas(numerator);
-    const filteredDataWithCommas = this.withCommas(filteredData.length);
+    const numeratorWithCommas = numberWithCommas(numerator);
+    const filteredDataWithCommas = numberWithCommas(filteredData.length);
     return {
       count: numerator,
       label: `Showing data for ${numeratorWithCommas} out of ${

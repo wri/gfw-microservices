@@ -520,6 +520,8 @@ const requestDashboardAnalysis = async (request, list, isGFWList) => {
 const formatNumber = (data, decimals = 2) => {
   const isFloat = (n) => Number(n) === n && n % 1 !== 0;
 
+  if(data === undefined || data === null) return data;
+
   let newData = {};
   if (Array.isArray(data)) {
     newData = data.map((value) => {

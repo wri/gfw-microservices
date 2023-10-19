@@ -17,40 +17,46 @@ export abstract class IPipeService {
 
   public async startEmail(filters: GenerationFileRequest) {
     const { listName, userEmail } = filters;
-    await this.emailService.sendEmail(
-      process.env.SES_SENDER_EMAIL,
-      [userEmail],
-      `[GFW-PRO] File Generation for list ${listName}`,
-      'start',
-      { listName }
-    );
+    if (userEmail) {
+      await this.emailService.sendEmail(
+        process.env.SES_SENDER_EMAIL,
+        [userEmail],
+        `[GFW-PRO] File Generation for list ${listName}`,
+        'start',
+        { listName }
+      );
+    }
   }
 
   public async finishedEmail(filters: GenerationFileRequest, location: string) {
     const { listName, userEmail } = filters;
-    await this.emailService.sendEmail(
-      process.env.SES_SENDER_EMAIL,
-      [userEmail],
-      `[GFW-PRO] File Generation for list ${listName}`,
-      'finish',
-      {
-        listName,
-        location,
-      }
-    );
+    if (userEmail) {
+      await this.emailService.sendEmail(
+        process.env.SES_SENDER_EMAIL,
+        [userEmail],
+        `[GFW-PRO] File Generation for list ${listName}`,
+        'finish',
+        {
+          listName,
+          location,
+        }
+      );
+    }
   }
 
   public async errorEmail(filters: GenerationFileRequest) {
     const { listName, userEmail } = filters;
-    await this.emailService.sendEmail(
-      process.env.SES_SENDER_EMAIL,
-      [userEmail],
-      `[GFW-PRO] File Generation for list ${listName}`,
-      'error',
-      {
-        listName,
-      }
-    );
+    if (userEmail) {
+      await this.emailService.sendEmail(
+        process.env.SES_SENDER_EMAIL,
+        [userEmail],
+        `[GFW-PRO] File Generation for list ${listName}`,
+        'error',
+        {
+          listName,
+        }
+      );
+    }
   }
 
   public async uploadToS3(filters: GenerationFileRequest) {

@@ -7,6 +7,9 @@ import axios from 'axios';
 import { generateRandomFilename } from '@wri-monorepos/shared';
 import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from './organization.service';
+import { ListsAnalysisStatus } from './list-analysis-status.entity';
+
+const DEFAULT_ANALYSIS = 'FCD';
 @Injectable()
 export class ListAnalysisService {
   constructor(
@@ -16,17 +19,20 @@ export class ListAnalysisService {
     private organizationService: OrganizationService
   ) {}
   // Replace this with actual database or external service calls
-  async getAnalysisStatus(listID: string): Promise<ListAnalysisResponse> {
-    // Implement the logic to fetch analysis status from your data source
-    // You can use a database query or an external API call here
+  async getAnalysisStatus(organizationId: number, listID: number): Promise<ListAnalysisResponse> {
+    const connection = await this.getOrganizationConnection(organizationId);
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+    const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
+      where: { listId: listID, analysisId: DEFAULT_ANALYSIS },
+    });
 
-    // Example response (replace with actual data retrieval logic):
+    // Waiting for changes from Gustavo and Dakota
     const analysisStatus: ListAnalysisResponse = {
-      listId: listID,
+      listId: listAnalysisStatus.listId,
       status: 'Completed',
-      errorsDetails: [],
-      resultUrl: 'https://example.com/results',
-      creationDate: '2023-09-21',
+      errorsDetails: listAnalysisStatus.errorInfo ? [listAnalysisStatus.errorInfo] : [],
+      resultUrl: listAnalysisStatus.listId ? 'https://example.com/results' : null,
+      creationDate: listAnalysisStatus.updateTime,
       expirationDate: '2023-09-28',
     };
 
@@ -48,8 +54,7 @@ export class ListAnalysisService {
     }>(`${LLP_BASE_URL}/api/create-presigned-url`, { key: fileKey, contentType: 'text/csv' });
     const { url, keyFile } = presignedURLResponse.data;
 
-    const organization = await this.organizationService.findOrganizationById(user.organization_id);
-    const connection = await this.clientStoreConnection.getConnection(organization.organizationDb);
+    const connection = await this.getOrganizationConnection(user.organization_id);
     const externalUploadRepository = connection.getRepository(ExternalUpload);
 
     const externalUpload = new ExternalUpload();
@@ -60,5 +65,11 @@ export class ListAnalysisService {
 
     const newExternalUploadObject = await externalUploadRepository.save(externalUpload);
     return newExternalUploadObject;
+  }
+
+  private async getOrganizationConnection(organizationId: number) {
+    const organization = await this.organizationService.findOrganizationById(organizationId);
+    const connection = await this.clientStoreConnection.getConnection(organization.organizationDb);
+    return connection;
   }
 }

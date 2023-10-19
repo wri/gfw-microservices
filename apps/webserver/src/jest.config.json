@@ -67,5 +67,6 @@
     "^select(.*)$": "<rootDir>/client/select$1",
     "^userProfile(.*)$": "<rootDir>/client/userProfile$1",
     "^verify(.*)$": "<rootDir>/client/verify$1"
-  }
+  },
+  "resolver": "<rootDir>/test/common/resolver.js"
 }

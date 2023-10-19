@@ -39,9 +39,9 @@ describe('Input Service', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
-      'L1,-8.9,-67,2,1255.8266657226563,Property,,0,,,,,,,,,,',
-      'L2,-8.7,-66.8,2,1255.8266654785157,Property,,0,,,,,,,,,,',
-      'L3,-9.4,-67.8,2,1255.826666015625,Property,,0,,,,,,,,,,',
+      'L1,-8.9,-67,2,1255.83,Property,,0,,,,,,,,,,',
+      'L2,-8.7,-66.8,2,1255.83,Property,,0,,,,,,,,,,',
+      'L3,-9.4,-67.8,2,1255.83,Property,,0,,,,,,,,,,',
       '',
     ]);
   });
@@ -62,7 +62,7 @@ describe('Input Service', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
-      'L2,-8.7,-66.8,2,1255.8266654785157,Property,,0,,,,,,,,,,',
+      'L2,-8.7,-66.8,2,1255.83,Property,,0,,,,,,,,,,',
       '',
     ]);
   });
@@ -83,9 +83,9 @@ describe('Input Service', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon,Country',
-      'L1,-8.9,-67,2,1255.8266657226563,Property,,0,,,,,,,,,,,Brazil',
-      'L2,-8.7,-66.8,2,1255.8266654785157,Property,,0,,,,,,,,,,,Brazil',
-      'L3,-9.4,-67.8,2,1255.826666015625,Property,,0,,,,,,,,,,,Brazil',
+      'L1,-8.9,-67,2,1255.83,Property,,0,,,,,,,,,,,Brazil',
+      'L2,-8.7,-66.8,2,1255.83,Property,,0,,,,,,,,,,,Brazil',
+      'L3,-9.4,-67.8,2,1255.83,Property,,0,,,,,,,,,,,Brazil',
       '',
     ]);
   });

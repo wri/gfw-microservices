@@ -13,6 +13,7 @@ import { FilterSelection } from '../transform/filter.selection';
 import { ConvertObject2Geojson } from '../transform/convert.object.2.geojson';
 import { ConvertObject2String } from '../transform/convert.object.2.string';
 import { finished } from 'stream/promises';
+import { FormatNumber } from '../transform/format.number';
 
 @Injectable()
 export class ShapefileService extends IPipeService {
@@ -73,6 +74,7 @@ export class ShapefileService extends IPipeService {
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
+      .pipe(new FormatNumber())
       .pipe(new ConvertObject2Geojson())
       .pipe(new ConvertObject2String())
       .pipe(JSONStream.parse(['features', true]))

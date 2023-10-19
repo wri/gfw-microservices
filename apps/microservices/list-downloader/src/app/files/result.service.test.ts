@@ -9,6 +9,7 @@ describe('Result Service', () => {
 
   const filters = {
     listId: 5642,
+    listName: 'WRI',
     key: 'tmp-result',
     listView: 'forest_change',
     templateId: 13,
@@ -39,9 +40,9 @@ describe('Result Service', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Size,Commodity,Country(Countries),State(s),Sub-state(s),Tree Cover Extent,Total,Protected Areas,Primary Forests',
-      ',L1,1256.1647,Cocoa,Brazil,Amazonas,Lábrea,1205.0714,369.8819,0,268.37989999999996',
-      ',L2,1256.2173,Cocoa,Brazil,Amazonas,Lábrea,1193.0049,802.7607999999999,0,750.9584999999998',
-      ',L3,1256.4204,Cocoa,Brazil,Acre,Porto Acre,1230.4542,1059.5466000000001,0,995.5422000000001',
+      'WRI,L1,1256.16,Cocoa,Brazil,Amazonas,Lábrea,1205.07,369.88,0,268.38',
+      'WRI,L2,1256.22,Cocoa,Brazil,Amazonas,Lábrea,1193,802.76,0,750.96',
+      'WRI,L3,1256.42,Cocoa,Brazil,Acre,Porto Acre,1230.45,1059.55,0,995.54',
       '',
     ]);
   });

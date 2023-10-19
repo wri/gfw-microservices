@@ -517,7 +517,32 @@ const requestDashboardAnalysis = async (request, list, isGFWList) => {
   }
 };
 
+const formatNumber = (data, decimals = 2) => {
+  const isFloat = (n) => Number(n) === n && n % 1 !== 0;
+
+  let newData = {};
+  if (Array.isArray(data)) {
+    newData = data.map((value) => {
+      if (isFloat(value)) {
+        return parseFloat(value.toFixed(decimals));
+      }
+      return value;
+    });
+  } else if (typeof data === 'object' && data !== null) {
+    newData = Object.entries(data).reduce((acc, [key, value]) => {
+      if (typeof value === 'number' && isFloat(value)) {
+        acc[key] = parseFloat(value.toFixed(decimals));
+      } else {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+  }
+  return newData;
+};
+
 module.exports = {
+  formatNumber,
   getAnalysisDataForUserList,
   getAnalysisDataForGFWList,
   getAnalysisDataForProtectedAreas,

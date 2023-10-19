@@ -12,6 +12,7 @@ import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterSelection } from '../transform/filter.selection';
 import { FilterObject } from '../transform/filter.object';
+import { FormatNumber } from '../transform/format.number';
 
 @Injectable()
 export class InputService extends IPipeService {
@@ -60,6 +61,7 @@ export class InputService extends IPipeService {
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
+      .pipe(new FormatNumber())
       .pipe(
         csvWriter({
           sendHeaders: false,

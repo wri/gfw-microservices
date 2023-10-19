@@ -51,7 +51,9 @@ const getAnalysisLimitData = async ({ organizationId, organizationType }) => {
 
   return response;
 };
-
+/**
+ * @seen also {@path libs/geo/src/utils/account.utils.ts}
+ * */
 const getAccountLimits = async (organizationId, organizationType) => {
   const [limitsByOrgID] = await getAnalysisLimitData({ organizationId });
   const [limitsByOrgType] = await getAnalysisLimitData({ organizationType });
@@ -59,7 +61,9 @@ const getAccountLimits = async (organizationId, organizationType) => {
   // If no custom limit found return the fallback by subscription_id
   return limitsByOrgID || limitsByOrgType;
 };
-
+/**
+ * @seen also {@path libs/geo/src/utils/account.utils.ts}
+ * */
 const getAccountListProccesingLimit = async ({
   organization_id,
   subscription_status_id,

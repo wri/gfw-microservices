@@ -32,6 +32,7 @@ jobs:
   build:
     name: Build Image
     runs-on: ubuntu-latest
+    timeout-minutes: 60 # Timeout the workflow
 
     strategy:
       matrix:

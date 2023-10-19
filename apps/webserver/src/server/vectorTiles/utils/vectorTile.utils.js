@@ -5,7 +5,7 @@ const { getListVectorTileS3PathDB } = require('./vectorTileDB.utils');
 const { deletingMBTileFromS3Bucket } = require('./vectorTileS3.utils');
 
 // Global
-const logger = require('../../../config/lib/winston');
+const logger = require('../../../config/privateutils/logger.utils');
 
 /**
  * @description - Delete MBTile Vector Tiles from S3 Bucket if exists

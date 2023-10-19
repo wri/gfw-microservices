@@ -1,18 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { generateRandomFilename } from '@wri-monorepos/shared';
+import { ClientStoreConnection } from '../shared/client-store-connection';
+import { OrganizationService } from './organization.service';
 @Injectable()
 export class ListAnalysisService {
   constructor(
     private config: ConfigService,
     private userService: UserService,
-    @InjectRepository(ExternalUpload, 'client') private userRepository: Repository<ExternalUpload>
+    private clientStoreConnection: ClientStoreConnection,
+    private organizationService: OrganizationService
   ) {}
   // Replace this with actual database or external service calls
   async getAnalysisStatus(listID: string): Promise<ListAnalysisResponse> {
@@ -47,13 +48,17 @@ export class ListAnalysisService {
     }>(`${LLP_BASE_URL}/api/create-presigned-url`, { key: fileKey, contentType: 'text/csv' });
     const { url, keyFile } = presignedURLResponse.data;
 
+    const organization = await this.organizationService.findOrganizationById(user.organization_id);
+    const connection = await this.clientStoreConnection.getConnection(organization.organizationDb);
+    const externalUploadRepository = connection.getRepository(ExternalUpload);
+
     const externalUpload = new ExternalUpload();
     externalUpload.userId = user.id;
     externalUpload.uploadKeyFile = keyFile;
     externalUpload.uploadUrl = url;
     externalUpload.updateDateTime = new Date();
 
-    const newExternalUploadObject = await this.userRepository.save(externalUpload);
+    const newExternalUploadObject = await externalUploadRepository.save(externalUpload);
     return newExternalUploadObject;
   }
 }

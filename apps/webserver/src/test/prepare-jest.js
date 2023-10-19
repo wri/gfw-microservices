@@ -3,10 +3,13 @@
 process.env.NODE_ENV = 'test';
 const path = require('path');
 const fs = require('fs');
+const winston = require('winston');
 
-const makeWebpackConfig = require(path.resolve('./config/webpack.config'));
-const logger = require(path.resolve('./config/lib/winston'));
-const assets = require(path.resolve('./config/assets'));
+const makeWebpackConfig = require('../config/webpack.config');
+const assets = require('../config/assets');
+
+// basic logger without sql transport
+const logger = winston.createLogger({ transports: [new winston.transports.Console()] });
 
 const jestConfigPath = path.resolve('./jest.config.json');
 const aliases = {};

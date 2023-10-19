@@ -1,6 +1,6 @@
 const sql = require('mssql');
 const path = require('path');
-const logger = require(path.resolve('./config/lib/winston'));
+const logger = require('../../../config/privateutils/logger.utils');
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const controller = require('../controllers/helpCenter.controller');
 const { PRODUCTION_ENVIRONMENTS } = require('../../../config/config/environments.config');

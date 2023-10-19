@@ -1378,8 +1378,9 @@ export default class Lists extends Component {
     const { selectedLists, selectedLocations } = this.props;
     const gfwList = !isUserList(selectedLists[0]) ? '&gfw=true' : '';
     const locationId = isSingleLocation ? `&locationId=${selectedLocations[0]}` : '';
-    const diagnosticsType = getActiveAnalysisType(selectedLists[0].listAnalysesStatus);
-    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationId}&type=${diagnosticsType}`;
+    const diagnosticsType = getActiveAnalysisType(selectedLists[0]?.listAnalysesStatus);
+    const diagnosticsParam = !gfwList && diagnosticsType ? `&type=${diagnosticsType}` : '';
+    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationId}${diagnosticsParam}`;
   };
 
   viewMap = ({ showFullListMap }) => {
@@ -2147,6 +2148,7 @@ export default class Lists extends Component {
         {featureFlags?.isAfiAvailable && !isGfwList && (
           <ChangeTypeOfAnalysisModal
             listId={listID}
+            listName={listName}
             listAnalysesStatus={listAnalysesStatus}
             setIsChangeTypeOfAnalysisModalOpen={(open) =>
               this.setState({ isChangeTypeOfAnalysisModalOpen: open })

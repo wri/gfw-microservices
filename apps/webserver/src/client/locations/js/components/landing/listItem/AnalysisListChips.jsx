@@ -10,7 +10,6 @@ function AnalysisListChips({ listAnalysesStatus = [] }) {
   const analysisTypesLabels = (analysis) => {
     return analysisTypesOptions.filter((option) => option.id === analysis)[0].shortLabel;
   };
-
   return (
     <>
       {featureFlags.isAfiAvailable && (

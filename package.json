@@ -11,6 +11,12 @@
   "private": true,
   "dependencies": {
     "@arcgis/core": "~4.20.2",
+    "@aws-sdk/client-cognito-identity-provider": "^3.427.0",
+    "@aws-sdk/client-lambda": "^3.427.0",
+    "@aws-sdk/client-s3": "^3.427.0",
+    "@aws-sdk/client-ses": "^3.427.0",
+    "@aws-sdk/client-sns": "^3.427.0",
+    "@aws-sdk/client-sqs": "^3.427.0",
     "@babel/runtime-corejs2": "7.17.9",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
@@ -124,8 +130,7 @@
     "uniqid": "^5.4.0",
     "uuid": "7.0.3",
     "wellknown": "^0.5.0",
-    "winston": "^2.4.5",
-    "winston-mssql": "0.1.1",
+    "winston": "^3.11.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz"
   },
   "overrides": {

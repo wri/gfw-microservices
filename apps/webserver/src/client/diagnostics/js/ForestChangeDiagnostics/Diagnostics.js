@@ -1001,6 +1001,7 @@ export default class Diagnostics extends Component {
 
         <DiagnosticsMenuBar
           listId={selectedLists[0]?.id}
+          isGfwList={this.props.isGfwList}
           selectedDiagnostics={analysisTypes.FOREST_CHANGE_DIAGNOSTICS}
           downloadDiagnostics={() => this.fireDownload('everything')}
         />

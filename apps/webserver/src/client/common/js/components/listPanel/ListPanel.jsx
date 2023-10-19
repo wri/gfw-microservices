@@ -6,8 +6,8 @@ import { updateLocationFilter } from '../../../../dashboard/js/actions/dashboard
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
 import FailedTooltip from '../CustomTooltip/FailedTooltip';
 import InlineLoader from '../Loaders/InlineLoader';
-import { getIsDiagnosticStatusDraft } from '../../../../locations/js/utils/draft.utils';
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
+import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 
 function selectTooltipMessage(currentUser, list, listDraftStatus, listContext) {
   const userIsOwner = currentUser.id === list.user_id;
@@ -73,9 +73,14 @@ function ListPanel({
   };
 
   const createListsRenderer = (list, index) => {
-    const listDraftStatus = getIsDiagnosticStatusDraft(list);
+    const listDraftStatus = list.list_status_id === listStatus.Draft;
     const tooltipMessage = selectTooltipMessage(currentUser, list, listDraftStatus, listContext);
     const IS_LOCK_STATUS = !!(list.lock_status && list.lock_user_id);
+
+    const hasAlertsAnalysisActive = list?.listAnalysesStatus?.some(
+      ({ status, analysisId }) =>
+        status === listStatus.Active && analysisId === analysisTypes.ALERTS
+    );
 
     let className = '';
     if (list.list_status_id === listStatus.Pending || IS_LOCK_STATUS) {
@@ -87,15 +92,16 @@ function ListPanel({
     } else if (listDraftStatus && listContext === 'map') {
       // Draft in Map
       className = 'locations-list-name__map_draft';
-    } else if (listDraftStatus && listContext === 'dashboard') {
+    } else if ((!hasAlertsAnalysisActive || listDraftStatus) && listContext === 'dashboard') {
       // Draft in Dashboard
       className = 'locations-list-name__dash_draft';
     }
     const onClickHandler = () => {
       togglePanel();
       if (
-        list.list_status_id === listStatus.Active ||
-        (getIsDiagnosticStatusDraft(list) && listContext === 'map')
+        (hasAlertsAnalysisActive && !listDraftStatus && listContext === 'dashboard') ||
+        (list.list_status_id === listStatus.Active && listContext === 'map') ||
+        (listDraftStatus && listContext === 'map')
       ) {
         handleSelectedList(list);
       }
@@ -117,7 +123,7 @@ function ListPanel({
           <span style={{ wordBreak: 'break-word' }}>{list.list_name}</span>
         </div>
         <div style={{ display: 'flex', justifyItems: 'right' }}>
-          {getIsDiagnosticStatusDraft(list) && (
+          {listDraftStatus && (
             <CustomTooltip
               placement="top"
               tooltipMessage={tooltipMessage}

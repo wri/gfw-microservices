@@ -70,6 +70,7 @@ export abstract class IPipeService {
   public async waitFinishedProcess(inputStream: PassThrough) {
     inputStream.end();
     await finished(inputStream);
+
     inputStream.removeAllListeners();
     inputStream.destroy();
   }

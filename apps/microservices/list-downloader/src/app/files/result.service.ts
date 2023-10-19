@@ -10,12 +10,15 @@ import { FilterSelection } from '../transform/filter.selection';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { SumValue } from '../transform/sum.value';
 import { IPipeService } from '../pipe/IPipeService';
+import { finished } from 'stream/promises';
 
 @Injectable()
 export class ResultService extends IPipeService {
   private readonly logger = new Logger(ResultService.name);
   private inputStream: PassThrough;
   private filters: GenerationFileRequest;
+  private fileStream: fs.WriteStream;
+  private zipStream: fs.WriteStream;
 
   start(filters: GenerationFileRequest) {
     const { listId, key, listView } = filters;
@@ -59,6 +62,9 @@ export class ResultService extends IPipeService {
       this.errorEmail(filters);
     });
 
+    this.fileStream = fs.createWriteStream(`/tmp/${key}.csv`, { flags: 'a' });
+    this.zipStream = fs.createWriteStream(`/tmp/${key}.zip`);
+
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
@@ -68,23 +74,17 @@ export class ResultService extends IPipeService {
           sendHeaders: false,
         })
       )
-      .pipe(fs.createWriteStream(`/tmp/${key}.csv`, { flags: 'a' }));
+      .pipe(this.fileStream);
 
-    this.inputStream.on('end', () => {
-      const output = fs.createWriteStream(`/tmp/${key}.zip`);
+    this.inputStream.on('end', async () => {
       const archive = archiver('zip', {
         zlib: { level: 9 }, // Sets the compression level.
       });
       archive.append(fs.createReadStream(`/tmp/${key}.csv`), {
         name: `${key}.csv`,
       });
-      archive.pipe(output);
+      archive.pipe(this.zipStream);
       archive.finalize();
-
-      output.on('close', async () => {
-        this.logger.log(`(${listId}) - Data has been zipped`);
-        await this.uploadToS3(filters);
-      });
     });
 
     return this.inputStream;
@@ -93,6 +93,13 @@ export class ResultService extends IPipeService {
   async finish(filters: GenerationFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process result data`);
-    this.waitFinishedProcess(this.inputStream);
+    this.fileStream.end();
+    await finished(this.fileStream);
+    this.logger.log(`(${listId}) - Data has been zipped`);
+    this.zipStream.end();
+    await finished(this.zipStream);
+
+    await this.uploadToS3(filters);
+    await this.waitFinishedProcess(this.inputStream);
   }
 }

@@ -24,7 +24,7 @@ export class CommodityRiskDiagnosticLocationSummaryService extends DashboardHand
   async finish(filters: GenerationFileRequest) {
     if (this.isCommodityRiskDiagnosticLocationSummaryFile(filters)) {
       this.logger.log('Commodity Risk Diagnostic Location Summary Finish');
-      super.finish(filters);
+      await super.finish(filters);
     }
   }
 

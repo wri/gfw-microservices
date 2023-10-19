@@ -68,19 +68,9 @@ export default class Upload extends Component {
               const data = response.data;
               const oldSpatialRef = new SpatialReference({ wkid: projDefs[1] });
               const newSpatialRef = SpatialReference.WGS84;
-              if (
-                data &&
-                data.attributes &&
-                data.attributes.features &&
-                data.attributes.features.length > 0
-              ) {
+              if (data?.attributes?.features?.length > 0) {
                 const feat = data.attributes.features[0];
-                if (
-                  feat.geometry &&
-                  feat.geometry.coordinates &&
-                  feat.geometry.coordinates.length &&
-                  feat.geometry.coordinates[0].constructor === Array
-                ) {
+                if (feat.geometry?.coordinates?.[0] instanceof Array) {
                   const esriJson = geojsonUtil.geojsonToArcGIS(feat.geometry);
                   const oldFeatGeometry = new Polygon({
                     rings: esriJson.rings,
@@ -90,12 +80,7 @@ export default class Upload extends Component {
                         : oldSpatialRef,
                   });
                   geom = this.projection.project(oldFeatGeometry, newSpatialRef);
-                } else if (
-                  feat.geometry &&
-                  feat.geometry.coordinates &&
-                  feat.geometry.coordinates.length &&
-                  typeof feat.geometry.coordinates[0] === 'number'
-                ) {
+                } else if (typeof feat.geometry?.coordinates?.[0] === 'number') {
                   const centerPoint = {
                     type: 'point',
                     x: feat.geometry.coordinates[0],

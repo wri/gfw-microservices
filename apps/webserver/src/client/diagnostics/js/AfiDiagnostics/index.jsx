@@ -6,10 +6,12 @@ import AfiPieChart from './AfiPieChart';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
+import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
 import '../common/DiagnosticsContainer.scss';
 
 function AfiDiagnostics() {
   const [isLoading, setIsLoading] = useState(true);
+  const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
   const [tableData, setTableData] = useState({});
   const [chartData, setChartData] = useState({});
 
@@ -62,6 +64,7 @@ function AfiDiagnostics() {
 
   const downloadDiagnostics = useCallback(() => {
     setIsLoading(true);
+    setOpenDownloadDialog(true);
     gtag('event', 'User downloads Deforestation Reporting KPIs diagnostics', {
       event_category: 'Deforestation Reporting KPIs',
     });
@@ -119,6 +122,7 @@ function AfiDiagnostics() {
           </div>
         </>
       )}
+      <ConfirmDialog open={openDownloadDialog} setDialogOpen={setOpenDownloadDialog} />
     </>
   );
 }

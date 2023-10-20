@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import { locationsPage } from '../../../common/js/config';
 import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import { getLastValue, getLastYear } from '../../../locations/js/utils/locationsTableUtils';
-import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 
 const attributeValues = [
   { attribute: 'location_id', type: 'string' },
@@ -216,100 +217,102 @@ export default class PalmRiskList extends Component {
     const mills = this.getMills();
 
     return (
-      <div
-        className={`locations-diagnostics-section-risk ${
-          listView === 'commodity_risk' ? '' : 'hidden'
-        } ${selectedLocations.length > 1 ? '' : 'hidden'}`}
-      >
-        <div
-          className={`locations-diagnostics-sub-section-risk palm-risk ${
-            selectedLocations.length > 1 ? '' : 'hidden'
-          }`}
-        >
-          <div className="diagnostics-section-title-container subsection-subtitle__container">
-            <h4 className="diagnostics-section-title-risk">Palm Risk Analysis</h4>
-            <IconButtonWrapper id={locationsPage.infoBubbleConfig.crPalmRisk} />
-            <span
-              onClick={() => this.props.fireDownload('palmRiskAnalysis')}
-              className="locations-diagnostics-icon-holder"
+      <Card>
+        <CardContent>
+          <div
+            className={`locations-diagnostics-section-risk ${
+              listView === 'commodity_risk' ? '' : 'hidden'
+            } ${selectedLocations.length > 1 ? '' : 'hidden'}`}
+          >
+            <div
+              className={`locations-diagnostics-sub-section-risk palm-risk ${
+                selectedLocations.length > 1 ? '' : 'hidden'
+              }`}
             >
-              <svg className="svg-icon">
-                <use xlinkHref="#icon-download" />
-              </svg>
-            </span>
-          </div>
-          <div className="diagnostics-section-title-risk">
-            <span className="label">VIEW BY:</span>
-            <div className="diagnostics-section-radio-holder">
-              <input
-                type="radio"
-                id="amount-radio"
-                name="amount"
-                value="amount"
-                checked={viewBy === 'amount'}
-                onChange={this.changeViewBy}
+              <DiagnosticsChartHeader
+                title={'Palm Risk Analysis'}
+                informationBubbleId={locationsPage.infoBubbleConfig.crPalmRisk}
+                fireDownload={this.props.fireDownload}
+                downloadId={'palmRiskAnalysis'}
               />
-              <label htmlFor="amount-radio" className="locations-select-type-label radio-button">
-                Amount
-              </label>
-            </div>
 
-            <div className="diagnostics-section-radio-holder">
-              <input
-                type="radio"
-                id="risk-level-radio"
-                name="riskLevel"
-                value={locationsPage.landing.investment}
-                checked={viewBy === 'riskLevel'}
-                onChange={this.changeViewBy}
-              />
-              <label
-                htmlFor="risk-level-radio"
-                className="locations-select-type-label radio-button"
-              >
-                Risk Level
-              </label>
+              <div className="diagnostics-section-title-risk">
+                <span className="label">VIEW BY:</span>
+                <div className="diagnostics-section-radio-holder">
+                  <input
+                    type="radio"
+                    id="amount-radio"
+                    name="amount"
+                    value="amount"
+                    checked={viewBy === 'amount'}
+                    onChange={this.changeViewBy}
+                  />
+                  <label
+                    htmlFor="amount-radio"
+                    className="locations-select-type-label radio-button"
+                  >
+                    Amount
+                  </label>
+                </div>
+
+                <div className="diagnostics-section-radio-holder">
+                  <input
+                    type="radio"
+                    id="risk-level-radio"
+                    name="riskLevel"
+                    value={locationsPage.landing.investment}
+                    checked={viewBy === 'riskLevel'}
+                    onChange={this.changeViewBy}
+                  />
+                  <label
+                    htmlFor="risk-level-radio"
+                    className="locations-select-type-label radio-button"
+                  >
+                    Risk Level
+                  </label>
+                </div>
+              </div>
+              <div className="diagnostics-palm-risk__table-container">
+                <table className="diagnostics-palm-risk__list-table">
+                  <thead>
+                    <tr>
+                      <th />
+                      <th />
+                      <th className="table-header__border">
+                        <span className="table-header__title">T + V</span>
+                      </th>
+                      <th colSpan="5" className="table-header__border">
+                        <span className="table-header__title">Threats</span>
+                      </th>
+                      <th colSpan="4" className="table-header__border">
+                        <span className="table-header__title">Values</span>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th>Site ID</th>
+                      <th>Mill Name</th>
+                      <th>Mill Priority</th>
+                      <th className="fw-400">Deforest.</th>
+                      <th className="fw-400">Peat</th>
+                      <th className="fw-400">Protected Areas</th>
+                      <th className="fw-400">Fire</th>
+                      <th>Overall</th>
+                      <th className="fw-400">Forest</th>
+                      <th className="fw-400">Peat</th>
+                      <th className="fw-400">Protected Areas</th>
+                      <th>Overall</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mills.map(this.renderAmounts)}
+                    {mills.map(this.renderRisks)}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-          <div className="diagnostics-palm-risk__table-container">
-            <table className="diagnostics-palm-risk__list-table">
-              <thead>
-                <tr>
-                  <th />
-                  <th />
-                  <th className="table-header__border">
-                    <span className="table-header__title">T + V</span>
-                  </th>
-                  <th colSpan="5" className="table-header__border">
-                    <span className="table-header__title">Threats</span>
-                  </th>
-                  <th colSpan="4" className="table-header__border">
-                    <span className="table-header__title">Values</span>
-                  </th>
-                </tr>
-                <tr>
-                  <th>Site ID</th>
-                  <th>Mill Name</th>
-                  <th>Mill Priority</th>
-                  <th className="fw-400">Deforest.</th>
-                  <th className="fw-400">Peat</th>
-                  <th className="fw-400">Protected Areas</th>
-                  <th className="fw-400">Fire</th>
-                  <th>Overall</th>
-                  <th className="fw-400">Forest</th>
-                  <th className="fw-400">Peat</th>
-                  <th className="fw-400">Protected Areas</th>
-                  <th>Overall</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mills.map(this.renderAmounts)}
-                {mills.map(this.renderRisks)}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 }

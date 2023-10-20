@@ -1,10 +1,10 @@
-.otbn-chart-container {
+.diagnostics-chart-container {
+  margin-top: 30px;
   display: flex;
-  padding-top: 30px;
   flex-direction: row;
   justify-content: space-around;
   align-items: flex-start;
-  .otbn-pie-chart {
+  &__chart {
     width: calc(100% - 450px);
   }
   > div {

@@ -1,0 +1,18 @@
+.diagnostics-chart-header {
+  margin-top: 30px;
+  margin-bottom: 20px;
+  &__title {
+    font-family: 'Fira Sans';
+    font-size: 14px;
+    font-weight: 500;
+    color: #555555;
+    line-height: 1em;
+    text-transform: uppercase;
+    display: inline-block;
+  }
+  &__download_icon {
+    color: rgba(0, 0, 0, 0.5);
+    font-size: 15px;
+    cursor: pointer;
+  }
+}

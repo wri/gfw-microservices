@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Highcharts from 'highcharts';
 import {
   formatNum,
@@ -8,7 +10,7 @@ import {
 } from '../../../common/js/utils/diagnostics.utils';
 import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
 import { locationsPage, mapPage, latestTreeCoverLossYearFC } from '../../../common/js/config';
-import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 import '../../css/locations.scss';
 import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
@@ -138,6 +140,18 @@ export default class SoutheastAsiaRegions extends Component {
     // Check to show pie chart
     const displaySEPie = this.displayPie();
 
+    let pieChartinfoBubbleConfig;
+
+    if (seaChecked) {
+      pieChartinfoBubbleConfig = locationsPage.infoBubbleConfig.regionsSeaLcCalc;
+    } else if (idnChecked) {
+      pieChartinfoBubbleConfig = locationsPage.infoBubbleConfig.regionsIdnLcCalc;
+    } else if (idnLegalChecked) {
+      pieChartinfoBubbleConfig = locationsPage.infoBubbleConfig.regionsIdnLegal;
+    } else if (idnMoratoriumChecked) {
+      pieChartinfoBubbleConfig = locationsPage.infoBubbleConfig.regionsIdnForestM;
+    }
+
     return (
       <div
         className={`locations-diagnostics-section ${
@@ -149,93 +163,78 @@ export default class SoutheastAsiaRegions extends Component {
         <div className="locations-diagnostics-section-title">Southeast Asia</div>
 
         {/* TREE COVER LOSS GRAPH */}
-        <div className="locations-diagnostics__subsection section__southeast-asia">
-          <div className="subsection-chart">
-            <div className="locations-diagnostics__subsection-container">
-              <div className="locations-diagnostics__flex-center subsection-subtitle__container">
-                <span className="subsection-subtitle">TREE COVER LOSS</span>
-                <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsSeaAnnual} />
-                <span
-                  onClick={() => this.props.fireDownload('southEastAsiaTCL')}
-                  className="locations-diagnostics-icon-holder"
-                >
-                  <svg className="svg-icon">
-                    <use xlinkHref="#icon-download" />
-                  </svg>
-                </span>
+
+        <DiagnosticsChartHeader
+          title={'TREE COVER LOSS'}
+          informationBubbleId={locationsPage.infoBubbleConfig.regionsSeaAnnual}
+          fireDownload={this.props.fireDownload}
+          downloadId={'southEastAsiaTCL'}
+        />
+
+        <Card>
+          <CardContent>
+            <div className="locations-diagnostics__subsection section__southeast-asia">
+              <div className="subsection-chart">
+                <div className="locations-diagnostics__subsection-container">
+                  <div className="locations-diagnostics-chart__locations-text">
+                    {regionObject.label}
+                  </div>
+                </div>
+
+                <p className="locations-instructional__text">
+                  Select one main category and/or sub-category.
+                </p>
+                <div className="chart-container">
+                  <div ref="southeastAsiaChart" />
+                </div>
               </div>
-              <div className="locations-diagnostics-chart__locations-text">
-                {regionObject.label}
+              <div className="locations-diagnostics-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th />
+                      <th className="label right">TOTAL LOSS (ha)</th>
+                    </tr>
+                  </thead>
+                  <tbody>{yearlyTotalsTable}</tbody>
+                </table>
               </div>
             </div>
-
-            <p className="locations-instructional__text">
-              Select one main category and/or sub-category.
-            </p>
-            <div className="chart-container">
-              <div ref="southeastAsiaChart" />
-            </div>
-          </div>
-          <div className="locations-diagnostics-table">
-            <table>
-              <thead>
-                <tr>
-                  <th />
-                  <th className="label right">TOTAL LOSS (ha)</th>
-                </tr>
-              </thead>
-              <tbody>{yearlyTotalsTable}</tbody>
-            </table>
-          </div>
-        </div>
-
+          </CardContent>
+        </Card>
         {/* SUB-SUB PANEL FOR PIE CHART/TABLE */}
-        <div
-          className={`locations-diagnostics__subsection section__southeast-asia-landcover-percent-overlap locations-diagnostics-table--pie print-no-break ${
-            displaySEPie ? '' : 'hidden'
-          }`}
-        >
-          <div className="subsection-chart">
-            <div className="locations-diagnostics__flex-center subsection-subtitle__container">
-              <h3 className="subsection-subtitle">{pieLabel}</h3>
-              {seaChecked && (
-                <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsSeaLcCalc} />
-              )}
-              {idnChecked && (
-                <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsIdnLcCalc} />
-              )}
-              {idnLegalChecked && (
-                <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsIdnLegal} />
-              )}
-              {idnMoratoriumChecked && (
-                <IconButtonWrapper id={locationsPage.infoBubbleConfig.regionsIdnForestM} />
-              )}
-              <span
-                onClick={() => this.props.fireDownload('southEastAsiaOverlap')}
-                className="locations-diagnostics-icon-holder"
-              >
-                <svg className="svg-icon">
-                  <use xlinkHref="#icon-download" />
-                </svg>
-              </span>
-            </div>
-            <div className="chart-container">
-              <div ref="southEastAsiaPie" />
-            </div>
-          </div>
-          <div className="locations-diagnostics-table">
-            <table>
-              <thead>
-                <tr>
-                  <th className="label">Category</th>
-                  <th className="label right">
-                    <span>Percent (%) Overlap</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>{this.renderSoutheastAsiaTable()}</tbody>
-            </table>
-          </div>
+
+        <div className={displaySEPie ? '' : 'hidden'}>
+          <DiagnosticsChartHeader
+            title={pieLabel}
+            informationBubbleId={pieChartinfoBubbleConfig}
+            fireDownload={this.props.fireDownload}
+            downloadId={'southEastAsiaOverlap'}
+          />
+          <Card>
+            <CardContent>
+              <div className="locations-diagnostics__subsection section__southeast-asia-landcover-percent-overlap locations-diagnostics-table--pie print-no-break">
+                <div className="subsection-chart">
+                  <div className="chart-container">
+                    <div ref="southEastAsiaPie" />
+                  </div>
+                </div>
+                <div className="locations-diagnostics-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th className="label">Category</th>
+                        <th className="label right">
+                          <span>Percent (%) Overlap</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>{this.renderSoutheastAsiaTable()}</tbody>
+                  </table>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* YEAR SLIDER */}

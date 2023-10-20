@@ -3,6 +3,7 @@ import { describe, expect, test } from '@jest/globals';
 import * as fs from 'fs';
 import { locationListData } from '../shared/mock.data';
 import { ForestChangeDiagnosticLocationSummaryService } from './forest.change.diagnostic.location.summary.service';
+import { createDirectory } from '../shared/file.utils';
 
 describe('Forest Change Diagnostic Location Summary Service', () => {
   const forestChangeDiagnosticLocationSummaryService =
@@ -17,10 +18,14 @@ describe('Forest Change Diagnostic Location Summary Service', () => {
     selectedLocationsList: [],
   };
 
+  const dir = `/tmp/wri-${filters.key}`;
+  const filePath = `${dir}/${filters.listName}_forest_change_diagnostic_location_summary.csv`;
+
   beforeAll(() => {
     forestChangeDiagnosticLocationSummaryService.startEmail = jest.fn();
     forestChangeDiagnosticLocationSummaryService.errorEmail = jest.fn();
     forestChangeDiagnosticLocationSummaryService.finishedEmail = jest.fn();
+    createDirectory(dir);
   });
 
   beforeEach(() => {
@@ -28,7 +33,7 @@ describe('Forest Change Diagnostic Location Summary Service', () => {
   });
 
   afterEach(() => {
-    fs.unlinkSync(`/tmp/${filters.key}_forest_change_diagnostic_location_summary.csv`);
+    fs.unlinkSync(filePath);
   });
 
   test('When input data has 3 locations', async () => {
@@ -36,10 +41,7 @@ describe('Forest Change Diagnostic Location Summary Service', () => {
 
     await forestChangeDiagnosticLocationSummaryService.finish(filters);
 
-    const csvData = fs.readFileSync(
-      `/tmp/${filters.key}_forest_change_diagnostic_location_summary.csv`,
-      'utf8'
-    );
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,State(s),Country (Countries),Tree Cover Extent (%) (HISTORIC SITE CHARACTERISTICS),Tree Cover Extent (ha) (HISTORIC SITE CHARACTERISTICS),Primary Forest (%) (HISTORIC SITE CHARACTERISTICS),Primary Forest (ha) (HISTORIC SITE CHARACTERISTICS),Protected Area (%) (HISTORIC SITE CHARACTERISTICS),Protected Area (ha) (HISTORIC SITE CHARACTERISTICS),Peat (%) (HISTORIC SITE CHARACTERISTICS),Peat (ha) (HISTORIC SITE CHARACTERISTICS),Intact Forest Landscape (%) (HISTORIC SITE CHARACTERISTICS),Intact Forest Landscape (ha) (HISTORIC SITE CHARACTERISTICS),Volume,Company ID,Refinery Name,Supplier Name,Second Refinery Name,Second Supplier Name,Total Hectares',

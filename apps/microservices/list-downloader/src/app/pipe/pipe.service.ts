@@ -6,6 +6,7 @@ import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
 import * as sql from 'mssql';
 
 import { SQLUtils, ListNameSchema } from '@wri-monorepos/sql';
+import { createDirectory } from '../shared/file.utils';
 
 @Injectable()
 export class PipeService {
@@ -14,7 +15,7 @@ export class PipeService {
   constructor(private readonly afiService: AfiService, private readonly listService: ListService) {}
 
   public async makeFile(filters: GenerationFileRequest) {
-    const { type, organizationDatabase, listId } = filters;
+    const { type, organizationDatabase, listId, key } = filters;
 
     this.logger.log(`(${listId}) - Receive request to build file for list`);
 
@@ -30,6 +31,10 @@ export class PipeService {
       listName: list_name,
       rowsPerPage: MAX_NUMBER_OF_ROWS_PER_PAGE,
     };
+
+    const dir = `/tmp/wri-${key}`;
+    this.logger.log(`(${listId}) - Create directory: ${dir}`);
+    createDirectory(dir);
 
     if (type == 'afi') {
       this.afiService.makeFile(filters);

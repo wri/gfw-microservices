@@ -25,7 +25,7 @@ export class AfiService {
 
   public async makeFile(filters: GenerationFileRequest) {
     await this.runAfiFileGeneration(filters);
-    await this.runAfiFileGeneration(filters, 1, 'afi_aggregated');
+    await this.runAfiFileGeneration(filters, 1, 'deforestation_kpis_aggregated');
     await getAllFilesAndZip(filters);
     await this.afiFileService.uploadToS3(filters);
   }
@@ -33,7 +33,7 @@ export class AfiService {
   private async runAfiFileGeneration(
     filters: GenerationFileRequest,
     isListLevel = 0,
-    suffix = 'afi'
+    suffix = 'deforestation_kpis'
   ) {
     const numberOfPages = await this.getNumberOfPages(filters, isListLevel);
     const { listId } = filters;
@@ -63,8 +63,8 @@ export class AfiService {
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/data-per-page?${queryString}`;
 
     try {
-      const response = (await axios.get(encodeURI(url))) as AfiAnalysisByListId[];
-      return response;
+      const { data } = await axios.get(encodeURI(url));
+      return data as AfiAnalysisByListId[];
     } catch (error) {
       this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${error}`);
       return [];
@@ -77,8 +77,9 @@ export class AfiService {
     const queryString = `rowsPerPage=${rowsPerPage}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/number-of-pages?${queryString}`;
     try {
-      const { pages } = (await axios.get(encodeURI(url))) as { pages: number };
-      return pages;
+      const { data } = await axios.get(encodeURI(url));
+      const response = data as { pages: number };
+      return response.pages;
     } catch (error) {
       this.logger.error(`listId: ${listId}, error: ${error}`);
       return 0;

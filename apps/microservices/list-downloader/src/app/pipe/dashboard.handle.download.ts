@@ -22,7 +22,7 @@ export class DashboardHandleDownload extends IPipeService {
   private fileStream: fs.WriteStream;
 
   start(filters: GenerationFileRequest, table: string, fileSuffix: string) {
-    const { listId, key } = filters;
+    const { listId, key, listName } = filters;
     this.logger.log(
       `(${listId}) - Starting Dashboard download for ${table} stream to process data`
     );
@@ -35,7 +35,7 @@ export class DashboardHandleDownload extends IPipeService {
     const allFields = this.mountArrayWithAllFields(templateOperation);
 
     fs.writeFileSync(
-      `/tmp/${key}_${fileSuffix}.csv`,
+      `/tmp/wri-${key}/${listName}_${fileSuffix}.csv`,
       `${EXCEL_TEMPLATE_HEADERS[table].join(',')}\n`
     );
     this.organizeStream(filters, allFields, table, fileSuffix);
@@ -53,7 +53,7 @@ export class DashboardHandleDownload extends IPipeService {
     table: string,
     fileSuffix: string
   ) {
-    const { key, listId, selectedLocationsList, listLevelAnalysis } = filters;
+    const { key, listId, selectedLocationsList, listLevelAnalysis, listName } = filters;
     this.writeStream.removeAllListeners();
 
     this.writeStream.on('error', (err) => {
@@ -61,7 +61,9 @@ export class DashboardHandleDownload extends IPipeService {
       this.errorEmail(filters);
     });
 
-    this.fileStream = fs.createWriteStream(`/tmp/${key}_${fileSuffix}.csv`, { flags: 'a' });
+    this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}_${fileSuffix}.csv`, {
+      flags: 'a',
+    });
 
     this.writeStream
       .pipe(new FilterSelection(selectedLocationsList))

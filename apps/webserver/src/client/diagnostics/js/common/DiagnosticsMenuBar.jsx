@@ -99,6 +99,7 @@ function DiagnosticsMenuBar({
             variant="secondary"
             label="Download"
             onClick={downloadDiagnostics}
+            data-cy="download-diagnostics"
             icon={<IconDownload height="18" />}
           />
         </div>

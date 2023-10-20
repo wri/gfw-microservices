@@ -1,19 +1,22 @@
 import { locationsPage } from '../../../../common/js/config';
 import SetArea from './SetArea';
-import Search from 'esri/widgets/Search';
-import Point from 'esri/geometry/Point';
-import EsriMap from 'esri/Map';
-import MapView from 'esri/views/MapView';
+import Search from '@arcgis/core/widgets/Search';
+import Point from '@arcgis/core/geometry/Point';
+import WebMap from '@arcgis/core/WebMap';
+import MapView from '@arcgis/core/views/MapView';
 import React, { Component } from 'react';
 
 export default class SelectAddress extends Component {
   componentDidMount() {
+    const nationalGeographicStyleId = 'f33a34de3a294590ab48f246e99958c9';
     const promise = new MapView({
       container: this.refs.mapView,
       center: [0, 16.53],
       zoom: 3,
-      map: new EsriMap({
-        basemap: 'national-geographic',
+      map: new WebMap({
+        portalItem: {
+          id: nationalGeographicStyleId,
+        },
       }),
     });
 

@@ -6,6 +6,7 @@
   align-items: flex-start;
   &__chart {
     width: calc(100% - 450px);
+    padding-top: 17px;
   }
   > div {
     canvas {

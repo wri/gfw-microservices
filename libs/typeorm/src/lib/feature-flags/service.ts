@@ -12,8 +12,8 @@ export class FeatureFlagsService {
     return this.repository.find();
   }
 
-  async getFeatureFlagById(id: number): Promise<FeatureFlags | undefined> {
-    return this.repository.findOne({ where: { id } });
+  async getFeatureFlagById(flagId: string): Promise<FeatureFlags | undefined> {
+    return this.repository.findOne({ where: { flagId } });
   }
 
   async createFeatureFlag(data: Partial<FeatureFlags>): Promise<FeatureFlags> {

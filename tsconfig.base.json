@@ -18,7 +18,8 @@
       "@wri-monorepos/constants": ["libs/constants/src/index.ts"],
       "@wri-monorepos/geo": ["libs/geo/src/index.ts"],
       "@wri-monorepos/shared": ["libs/shared/src/index.ts"],
-      "@wri-monorepos/sql": ["libs/sql/src/index.ts"]
+      "@wri-monorepos/sql": ["libs/sql/src/index.ts"],
+      "@wri-monorepos/typeorm": ["libs/typeorm/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

@@ -1,22 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity()
+@Entity('FeatureFlags')
 export class FeatureFlags {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
+  @PrimaryColumn('text', { name: 'flag_id' })
   flagId: string;
 
-  @Column({ nullable: true })
+  @Column('number', {
+    name: 'org_id',
+    nullable: true,
+  })
   orgId: number;
 
-  @Column()
+  @Column('boolean', { name: 'flag_state' })
   flagState: boolean;
 
-  @Column()
+  @Column('number', { name: 'modifier_user_id' })
   modifierUserId: number;
 
-  @Column()
+  @Column('date', { name: 'update_date_time' })
   updateDateTime: Date;
 }

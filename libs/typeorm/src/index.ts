@@ -1,1 +1,1 @@
-export * from './lib/typeorm';
+export * from './lib/feature-flags';

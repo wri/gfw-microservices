@@ -5,6 +5,9 @@ const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 const { isAfiAvailable, isArgentinaComplianceAvailable } = require(path.resolve(
   './server/featureFlags/utils/isFeatureAvailable'
 ));
+const createFeatureFlag = require('../controllers/createFeatureFlagRecord');
+const getAllFeatureFlags = require('../controllers/getAllFeatureFlags');
+const getFeatureFlagByFlagId = require('../controllers/getFeatureFlagByFlagId');
 const featureFlagRoutes = express.Router();
 
 module.exports = (app, limiter) => {
@@ -20,7 +23,12 @@ module.exports = (app, limiter) => {
   }
 
   app.use('/api/feature-flags', [...routeMiddlewares, featureFlagRoutes]);
+  featureFlagRoutes.get('/api/feature-flags', getAllFeatureFlags);
+  featureFlagRoutes.get('/api/feature-flag/:flagId', getFeatureFlagByFlagId);
+  featureFlagRoutes.post('/api/feature-flag', createFeatureFlag);
 
+  /**
+   * 
   featureFlagRoutes.get('', (req, res) => {
     const { organization_id = '' } = req.session;
     res.status(200).json({
@@ -28,4 +36,5 @@ module.exports = (app, limiter) => {
       isArgentinaComplianceAvailable: isArgentinaComplianceAvailable(organization_id) ?? false,
     });
   });
+  */
 };

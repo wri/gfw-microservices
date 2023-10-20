@@ -14,18 +14,14 @@ import { ResultService } from '../files/result.service';
 import { ShapefileService } from '../files/shapefile.service';
 import { DashboardService } from './dashboard.service';
 import { IPipeService } from './IPipeService';
-import fetch from 'node-fetch';
+
+import axios from 'axios';
+import * as axiosRetry from 'axios-retry';
 
 @Injectable()
 export class ListService {
   private POOL_SIZE = 5;
-
-  private OPTIONS = {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
+  private readonly logger = new Logger(ListService.name);
 
   constructor(
     private inputService: InputService,
@@ -33,9 +29,15 @@ export class ListService {
     private dashboardService: DashboardService,
     private resultService: ResultService,
     private uspGetListAnalysis: UspGetListAnalysis
-  ) {}
-
-  private readonly logger = new Logger(ListService.name);
+  ) {
+    axiosRetry(axios, {
+      retries: 3, // number of retries
+      retryDelay: (retryCount) => {
+        this.logger.log(`retry attempt: ${retryCount}`);
+        return retryCount * 2000; // time interval between retries
+      },
+    });
+  }
 
   public async makeFile(filters: GenerationFileRequest) {
     const { organizationDatabase, listId, combinedColumns, selectedLocations, file } = filters;
@@ -116,25 +118,36 @@ export class ListService {
     const [element] = analysisData;
 
     return {
-      fields: Object.keys(element),
-      templateId: element.template_id,
+      fields: Object.keys(element ?? {}),
+      templateId: element?.template_id,
     };
   }
 
   private async getAnalysisData(filter): Promise<AnalysisDataType[]> {
+    const { listId, pageNumber } = filter;
     const queryString = this.convertToQueryFields(filter);
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
-    const response = await fetch(encodeURI(url), this.OPTIONS);
-    const analysisData = (await response.json()) as AnalysisDataType[];
-    return analysisData;
+    try {
+      const { data } = await axios.get(encodeURI(url));
+      return data as AnalysisDataType[];
+    } catch (error) {
+      this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${error}`);
+      return [];
+    }
   }
 
   private async getNumberOfPages(filters: GenerationFileRequest): Promise<number> {
+    const { listId } = filters;
     const queryString = this.convertToQueryFields(filters);
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
-    const response = await fetch(encodeURI(url), this.OPTIONS);
-    const { numberOfPages } = (await response.json()) as AnalysisDataCountReturnType;
-    return numberOfPages;
+    try {
+      const { data } = await axios.get(encodeURI(url));
+      const { numberOfPages } = data as AnalysisDataCountReturnType;
+      return numberOfPages;
+    } catch (error) {
+      this.logger.error(`listId: ${listId}, error: ${error}`);
+      return 0;
+    }
   }
 
   private convertToQueryFields(filters: GenerationFileRequest): string {

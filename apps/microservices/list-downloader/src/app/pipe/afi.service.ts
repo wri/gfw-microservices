@@ -4,20 +4,24 @@ import { GenerationFileRequest, AfiAnalysisByListId } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
 import { getAllFilesAndZip } from '../shared/file.utils';
 
+import axios from 'axios';
+import * as axiosRetry from 'axios-retry';
+
 @Injectable()
 export class AfiService {
   private POOL_SIZE = 5;
 
-  private OPTIONS = {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  };
-
   private readonly logger = new Logger(AfiService.name);
 
-  constructor(private readonly afiFileService: AfiFileService) {}
+  constructor(private readonly afiFileService: AfiFileService) {
+    axiosRetry(axios, {
+      retries: 3, // number of retries
+      retryDelay: (retryCount) => {
+        this.logger.log(`retry attempt: ${retryCount}`);
+        return retryCount * 2000; // time interval between retries
+      },
+    });
+  }
 
   public async makeFile(filters: GenerationFileRequest) {
     await this.runAfiFileGeneration(filters);
@@ -57,9 +61,14 @@ export class AfiService {
     const { organizationDatabase, rowsPerPage, pageNumber, listId } = filter;
     const queryString = `rowsPerPage=${rowsPerPage}&pageNumber=${pageNumber}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/data-per-page?${queryString}`;
-    const response = await fetch(encodeURI(url), this.OPTIONS);
-    const analysisData = (await response.json()) as AfiAnalysisByListId[];
-    return analysisData;
+
+    try {
+      const response = (await axios.get(encodeURI(url))) as AfiAnalysisByListId[];
+      return response;
+    } catch (error) {
+      this.logger.error(`listId: ${listId} , pageNumber: ${pageNumber} error: ${error}`);
+      return [];
+    }
   }
 
   private async getNumberOfPages(filters: GenerationFileRequest, isListLevel = 0): Promise<number> {
@@ -67,8 +76,12 @@ export class AfiService {
 
     const queryString = `rowsPerPage=${rowsPerPage}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/number-of-pages?${queryString}`;
-    const response = await fetch(encodeURI(url), this.OPTIONS);
-    const { pages } = (await response.json()) as { pages: number };
-    return pages;
+    try {
+      const { pages } = (await axios.get(encodeURI(url))) as { pages: number };
+      return pages;
+    } catch (error) {
+      this.logger.error(`listId: ${listId}, error: ${error}`);
+      return 0;
+    }
   }
 }

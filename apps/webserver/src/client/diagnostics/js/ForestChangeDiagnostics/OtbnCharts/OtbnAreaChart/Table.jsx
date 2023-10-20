@@ -4,7 +4,7 @@ import {
   prettifyNum,
   formatNum,
   formatPct,
-} from '../../../../../locations/js/utils/diagnostics.utils';
+} from '../../../../../common/js/utils/diagnostics.utils';
 import './OtbnTable.scss';
 
 function Table({ data }) {

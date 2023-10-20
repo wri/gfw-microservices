@@ -12,11 +12,13 @@ import { FilterObject } from '../transform/filter.object';
 import { FilterSelection } from '../transform/filter.selection';
 import { ConvertObject2Geojson } from '../transform/convert.object.2.geojson';
 import { ConvertObject2String } from '../transform/convert.object.2.string';
+import { finished } from 'stream/promises';
 
 @Injectable()
 export class ShapefileService extends IPipeService {
   private readonly logger = new Logger(ShapefileService.name);
   private inputStream: PassThrough;
+  private fileStream: fs.WriteStream;
 
   start(filters: GenerationFileRequest) {
     const { listId, key, templateId, combinedColumnsSplitted } = filters;
@@ -51,7 +53,7 @@ export class ShapefileService extends IPipeService {
   async finish(filters: GenerationFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
-    this.waitFinishedProcess(this.inputStream);
+    await this.waitFinishedProcess(this.inputStream);
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
@@ -66,6 +68,8 @@ export class ShapefileService extends IPipeService {
       this.errorEmail(filters);
     });
 
+    this.fileStream = fs.createWriteStream(`/tmp/${key}.geojson`, { flags: 'r+' });
+
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
@@ -73,9 +77,10 @@ export class ShapefileService extends IPipeService {
       .pipe(new ConvertObject2String())
       .pipe(JSONStream.parse(['features', true]))
       .pipe(JSONStream.stringify(open, '\n,\n', close))
-      .pipe(fs.createWriteStream(`/tmp/${key}.geojson`, { flags: 'r+' }));
+      .pipe(this.fileStream);
 
     this.inputStream.on('end', async () => {
+      await finished(this.fileStream);
       await this.convertGeojsonToSHP(key);
       this.logger.log(`(${listId}) - Data has been zipped`);
       await this.uploadToS3(filters);

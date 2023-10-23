@@ -9,7 +9,7 @@ function Chart({ data }) {
     const { argentinaCompliance } = chartDatasetConfigs;
     const chartData = argentinaCompliance.categories.map(({ name, color }) => ({
       name,
-      y: argentinaOtbnArea['Category I'],
+      y: argentinaOtbnArea[name],
       color,
     }));
 

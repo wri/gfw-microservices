@@ -2,6 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import { CommodityRiskDiagnosticLocationSummaryService } from './commodity.risk.diagnostic.location.summary.service';
 import * as fs from 'fs';
 import { locationListData } from '../shared/mock.data';
+import { createDirectory } from '../shared/file.utils';
 
 describe('Commodity Risk Diagnostic Location Summary Service', () => {
   const commodityRiskDiagnosticLocationSummaryService =
@@ -16,10 +17,14 @@ describe('Commodity Risk Diagnostic Location Summary Service', () => {
     selectedLocationsList: [],
   };
 
+  const dir = `/tmp/wri-${filters.key}`;
+  const filePath = `${dir}/${filters.listName}_commodity_risk_diagnostic_location_summary.csv`;
+
   beforeAll(() => {
     commodityRiskDiagnosticLocationSummaryService.startEmail = jest.fn();
     commodityRiskDiagnosticLocationSummaryService.errorEmail = jest.fn();
     commodityRiskDiagnosticLocationSummaryService.finishedEmail = jest.fn();
+    createDirectory(dir);
   });
 
   beforeEach(() => {
@@ -27,7 +32,7 @@ describe('Commodity Risk Diagnostic Location Summary Service', () => {
   });
 
   afterEach(() => {
-    fs.unlinkSync(`/tmp/${filters.key}_commodity_risk_diagnostic_location_summary.csv`);
+    fs.unlinkSync(filePath);
   });
 
   test('When input data has 3 locations', async () => {
@@ -35,10 +40,7 @@ describe('Commodity Risk Diagnostic Location Summary Service', () => {
 
     await commodityRiskDiagnosticLocationSummaryService.finish(filters);
 
-    const csvData = fs.readFileSync(
-      `/tmp/${filters.key}_commodity_risk_diagnostic_location_summary.csv`,
-      'utf8'
-    );
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,State(s),Country (Countries),Tree Cover Extent (%) (HISTORIC SITE CHARACTERISTICS),Tree Cover Extent (ha) (HISTORIC SITE CHARACTERISTICS),Primary Forest (%) (HISTORIC SITE CHARACTERISTICS),Primary Forest (ha) (HISTORIC SITE CHARACTERISTICS),Protected Area (%) (HISTORIC SITE CHARACTERISTICS),Protected Area (ha) (HISTORIC SITE CHARACTERISTICS),Peat (%) (HISTORIC SITE CHARACTERISTICS),Peat (ha) (HISTORIC SITE CHARACTERISTICS),Intact Forest Landscape (%) (HISTORIC SITE CHARACTERISTICS),Intact Forest Landscape (ha) (HISTORIC SITE CHARACTERISTICS),Volume,Company ID,Refinery Name,Supplier Name,Second Refinery Name,Second Supplier Name,Parent Company,Certification,Total Hectares',
@@ -54,10 +56,7 @@ describe('Commodity Risk Diagnostic Location Summary Service', () => {
 
     await commodityRiskDiagnosticLocationSummaryService.finish(filters);
 
-    const csvData = fs.readFileSync(
-      `/tmp/${filters.key}_commodity_risk_diagnostic_location_summary.csv`,
-      'utf8'
-    );
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,State(s),Country (Countries),Tree Cover Extent (%) (HISTORIC SITE CHARACTERISTICS),Tree Cover Extent (ha) (HISTORIC SITE CHARACTERISTICS),Primary Forest (%) (HISTORIC SITE CHARACTERISTICS),Primary Forest (ha) (HISTORIC SITE CHARACTERISTICS),Protected Area (%) (HISTORIC SITE CHARACTERISTICS),Protected Area (ha) (HISTORIC SITE CHARACTERISTICS),Peat (%) (HISTORIC SITE CHARACTERISTICS),Peat (ha) (HISTORIC SITE CHARACTERISTICS),Intact Forest Landscape (%) (HISTORIC SITE CHARACTERISTICS),Intact Forest Landscape (ha) (HISTORIC SITE CHARACTERISTICS),Volume,Company ID,Refinery Name,Supplier Name,Second Refinery Name,Second Supplier Name,Parent Company,Certification,Total Hectares',
@@ -70,10 +69,7 @@ describe('Commodity Risk Diagnostic Location Summary Service', () => {
 
     await commodityRiskDiagnosticLocationSummaryService.finish(filters);
 
-    const csvData = fs.readFileSync(
-      `/tmp/${filters.key}_commodity_risk_diagnostic_location_summary.csv`,
-      'utf8'
-    );
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,State(s),Country (Countries),Tree Cover Extent (%) (HISTORIC SITE CHARACTERISTICS),Tree Cover Extent (ha) (HISTORIC SITE CHARACTERISTICS),Primary Forest (%) (HISTORIC SITE CHARACTERISTICS),Primary Forest (ha) (HISTORIC SITE CHARACTERISTICS),Protected Area (%) (HISTORIC SITE CHARACTERISTICS),Protected Area (ha) (HISTORIC SITE CHARACTERISTICS),Peat (%) (HISTORIC SITE CHARACTERISTICS),Peat (ha) (HISTORIC SITE CHARACTERISTICS),Intact Forest Landscape (%) (HISTORIC SITE CHARACTERISTICS),Intact Forest Landscape (ha) (HISTORIC SITE CHARACTERISTICS),Volume,Company ID,Refinery Name,Supplier Name,Second Refinery Name,Second Supplier Name,Parent Company,Certification,Total Hectares',
@@ -93,10 +89,7 @@ describe('Commodity Risk Diagnostic Location Summary Service', () => {
 
     await commodityRiskDiagnosticLocationSummaryService.finish(filters);
 
-    const csvData = fs.readFileSync(
-      `/tmp/${filters.key}_commodity_risk_diagnostic_location_summary.csv`,
-      'utf8'
-    );
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,State(s),Country (Countries),Tree Cover Extent (%) (HISTORIC SITE CHARACTERISTICS),Tree Cover Extent (ha) (HISTORIC SITE CHARACTERISTICS),Primary Forest (%) (HISTORIC SITE CHARACTERISTICS),Primary Forest (ha) (HISTORIC SITE CHARACTERISTICS),Protected Area (%) (HISTORIC SITE CHARACTERISTICS),Protected Area (ha) (HISTORIC SITE CHARACTERISTICS),Peat (%) (HISTORIC SITE CHARACTERISTICS),Peat (ha) (HISTORIC SITE CHARACTERISTICS),Intact Forest Landscape (%) (HISTORIC SITE CHARACTERISTICS),Intact Forest Landscape (ha) (HISTORIC SITE CHARACTERISTICS),Volume,Company ID,Refinery Name,Supplier Name,Second Refinery Name,Second Supplier Name,Parent Company,Certification,Total Hectares',

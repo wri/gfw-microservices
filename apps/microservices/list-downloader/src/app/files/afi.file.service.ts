@@ -17,17 +17,20 @@ export class AfiFileService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  start(filters: GenerationFileRequest, suffix = 'afi') {
+  start(filters: GenerationFileRequest, suffix = 'deforestation_kpis') {
     this.startEmail(filters);
 
-    const { listId, key } = filters;
+    const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
     const header = suffix.includes('aggregated') ? AFI_HEADER_AGGREGATE : AFI_HEADER;
 
     this.organizeStream(filters, Object.keys(header), suffix);
-    fs.writeFileSync(`/tmp/${key}_${suffix}.csv`, `${Object.values(header).join(',')}\n`);
+    fs.writeFileSync(
+      `/tmp/wri-${key}/${listName}_${suffix}.csv`,
+      `${Object.values(header).join(',')}\n`
+    );
   }
 
   process(analysisData) {
@@ -35,7 +38,7 @@ export class AfiFileService extends IPipeService {
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[], suffix: string) {
-    const { listId, key } = filters;
+    const { listId, key, listName } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', (err) => {
@@ -43,7 +46,9 @@ export class AfiFileService extends IPipeService {
       this.errorEmail(filters);
     });
 
-    this.fileStream = fs.createWriteStream(`/tmp/${key}_${suffix}.csv`, { flags: 'a' });
+    this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}_${suffix}.csv`, {
+      flags: 'a',
+    });
 
     if (suffix.includes('aggregated')) {
       this.inputStream

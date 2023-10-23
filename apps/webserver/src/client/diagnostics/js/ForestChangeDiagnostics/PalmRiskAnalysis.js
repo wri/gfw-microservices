@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import { locationsPage } from '../../../common/js/config';
 import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
-import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 
 const lastYear = locationsPage.diagnostics.lastDataYear;
 
@@ -70,113 +72,112 @@ export default class PalmRiskAnalysis extends Component {
 
     return (
       <div
-        className={`locations-diagnostics-section-risk ${
-          listView === 'commodity_risk' ? '' : 'hidden'
-        } ${selectedLocations.length === 1 ? '' : 'hidden'}`}
+        className={`${listView === 'commodity_risk' ? '' : 'hidden'} ${
+          selectedLocations.length === 1 ? '' : 'hidden'
+        }`}
       >
-        <div
-          className={`locations-diagnostics-sub-section-risk palm-risk ${
-            selectedLocations.length === 1 ? '' : 'hidden'
-          }`}
-        >
-          <div className="locations-diagnostics__flex-center subsection-subtitle__container">
-            <h4 className="diagnostics-section-title-risk">Palm Risk Analysis</h4>
-            <IconButtonWrapper id={locationsPage.infoBubbleConfig.crPalmRisk} />
-            <span
-              onClick={() => this.props.fireDownload('palmRiskAnalysis')}
-              className="locations-diagnostics-icon-holder"
-            >
-              <svg className="svg-icon">
-                <use xlinkHref="#icon-download" />
-              </svg>
-            </span>
-          </div>
-
-          <table className="diagnostics-palm-risk__table">
-            <thead>
-              <tr>
-                <th />
-                <th className="border-bottom" colSpan="4">
-                  Threats
-                </th>
-                <th />
-                <th className="border-bottom" colSpan="3">
-                  Values
-                </th>
-              </tr>
-              <tr>
-                <th />
-                <th>Deforestation</th>
-                <th>Peat</th>
-                <th>Protected Areas</th>
-                <th>Fires</th>
-                <th />
-                <th>Forest</th>
-                <th>Peat</th>
-                <th>Protected Areas</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-bottom">
-                <td>Amount</td>
-                <td>
-                  <span className="value">{prettifyNum(formatNum(deforestationThreatAmount))}</span>
-                  <span className="unit">ha</span>
-                </td>
-                <td>
-                  <span className="value">{prettifyNum(formatNum(peatThreatAmount))}</span>
-                  <span className="unit">ha</span>
-                </td>
-                <td>
-                  <span className="value">{prettifyNum(formatNum(paThreatAmount))}</span>
-                  <span className="unit">ha</span>
-                </td>
-                <td>
-                  <span className="value">{prettifyNum(formatNum(firesThreatAmount))}</span>
-                  <span className="unit">/yr</span>
-                </td>
-                <td />
-                <td>
-                  <span className="value">{prettifyNum(formatNum(forestValueAmount))}</span>
-                  <span className="unit">ha</span>
-                </td>
-                <td>
-                  <span className="value">{prettifyNum(formatNum(peatValueAmount))}</span>
-                  <span className="unit">ha</span>
-                </td>
-                <td>
-                  <span className="value">{prettifyNum(formatNum(paValueAmount))}</span>
-                  <span className="unit">ha</span>
-                </td>
-              </tr>
-              <tr>
-                <td>Risk Level</td>
-                <td className={`risk ${this.assignRiskPriorityClass(deforestationThreatRisk)}`}>
-                  {this.assignRiskPriority(deforestationThreatRisk)}
-                </td>
-                <td className={`risk ${this.assignRiskPriorityClass(peatThreatRisk)}`}>
-                  {this.assignRiskPriority(peatThreatRisk)}
-                </td>
-                <td className={`risk ${this.assignRiskPriorityClass(paThreatRisk)}`}>
-                  {this.assignRiskPriority(paThreatRisk)}
-                </td>
-                <td className={`risk ${this.assignRiskPriorityClass(firesThreatRisk)}`}>
-                  {this.assignRiskPriority(firesThreatRisk)}
-                </td>
-                <td />
-                <td className={`risk ${this.assignRiskPriorityClass(forestValueThreat)}`}>
-                  {this.assignRiskPriority(forestValueThreat)}
-                </td>
-                <td className={`risk ${this.assignRiskPriorityClass(peatValueThreat)}`}>
-                  {this.assignRiskPriority(peatValueThreat)}
-                </td>
-                <td className={`risk ${this.assignRiskPriorityClass(paValueThreat)}`}>
-                  {this.assignRiskPriority(paValueThreat)}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <DiagnosticsChartHeader
+          title={'Palm Risk Analysis'}
+          informationBubbleId={locationsPage.infoBubbleConfig.crPalmRisk}
+          fireDownload={this.props.fireDownload}
+          downloadId={'palmRiskAnalysis'}
+        />
+        <Card>
+          <CardContent>
+            <div className="locations-diagnostics-section-risk">
+              <div className="locations-diagnostics-sub-section-risk palm-risk">
+                <table className="diagnostics-palm-risk__table">
+                  <thead>
+                    <tr>
+                      <th />
+                      <th className="border-bottom" colSpan="4">
+                        Threats
+                      </th>
+                      <th />
+                      <th className="border-bottom" colSpan="3">
+                        Values
+                      </th>
+                    </tr>
+                    <tr>
+                      <th />
+                      <th>Deforestation</th>
+                      <th>Peat</th>
+                      <th>Protected Areas</th>
+                      <th>Fires</th>
+                      <th />
+                      <th>Forest</th>
+                      <th>Peat</th>
+                      <th>Protected Areas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-bottom">
+                      <td>Amount</td>
+                      <td>
+                        <span className="value">
+                          {prettifyNum(formatNum(deforestationThreatAmount))}
+                        </span>
+                        <span className="unit">ha</span>
+                      </td>
+                      <td>
+                        <span className="value">{prettifyNum(formatNum(peatThreatAmount))}</span>
+                        <span className="unit">ha</span>
+                      </td>
+                      <td>
+                        <span className="value">{prettifyNum(formatNum(paThreatAmount))}</span>
+                        <span className="unit">ha</span>
+                      </td>
+                      <td>
+                        <span className="value">{prettifyNum(formatNum(firesThreatAmount))}</span>
+                        <span className="unit">/yr</span>
+                      </td>
+                      <td />
+                      <td>
+                        <span className="value">{prettifyNum(formatNum(forestValueAmount))}</span>
+                        <span className="unit">ha</span>
+                      </td>
+                      <td>
+                        <span className="value">{prettifyNum(formatNum(peatValueAmount))}</span>
+                        <span className="unit">ha</span>
+                      </td>
+                      <td>
+                        <span className="value">{prettifyNum(formatNum(paValueAmount))}</span>
+                        <span className="unit">ha</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Risk Level</td>
+                      <td
+                        className={`risk ${this.assignRiskPriorityClass(deforestationThreatRisk)}`}
+                      >
+                        {this.assignRiskPriority(deforestationThreatRisk)}
+                      </td>
+                      <td className={`risk ${this.assignRiskPriorityClass(peatThreatRisk)}`}>
+                        {this.assignRiskPriority(peatThreatRisk)}
+                      </td>
+                      <td className={`risk ${this.assignRiskPriorityClass(paThreatRisk)}`}>
+                        {this.assignRiskPriority(paThreatRisk)}
+                      </td>
+                      <td className={`risk ${this.assignRiskPriorityClass(firesThreatRisk)}`}>
+                        {this.assignRiskPriority(firesThreatRisk)}
+                      </td>
+                      <td />
+                      <td className={`risk ${this.assignRiskPriorityClass(forestValueThreat)}`}>
+                        {this.assignRiskPriority(forestValueThreat)}
+                      </td>
+                      <td className={`risk ${this.assignRiskPriorityClass(peatValueThreat)}`}>
+                        {this.assignRiskPriority(peatValueThreat)}
+                      </td>
+                      <td className={`risk ${this.assignRiskPriorityClass(paValueThreat)}`}>
+                        {this.assignRiskPriority(paValueThreat)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

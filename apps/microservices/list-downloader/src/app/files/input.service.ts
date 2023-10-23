@@ -21,7 +21,7 @@ export class InputService extends IPipeService {
   private fileStream: fs.WriteStream;
 
   start(filters: GenerationFileRequest) {
-    const { listId, key, templateId, combinedColumnsSplitted } = filters;
+    const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
@@ -31,7 +31,7 @@ export class InputService extends IPipeService {
     allFields = [...new Set(allFields)];
 
     this.organizeStream(filters, allFields);
-    fs.writeFileSync(`/tmp/${key}.csv`, `${allFields.join(',')}\n`);
+    fs.writeFileSync(`/tmp/wri-${key}/${listName}_input.csv`, `${allFields.join(',')}\n`);
     this.startEmail(filters);
   }
 
@@ -48,10 +48,10 @@ export class InputService extends IPipeService {
   }
 
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
-    const { key, selectedLocationsList, listId } = filters;
+    const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();
 
-    this.fileStream = fs.createWriteStream(`/tmp/${key}.csv`, { flags: 'a' });
+    this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}_input.csv`, { flags: 'a' });
 
     this.inputStream.on('error', (err) => {
       this.logger.error(`(${listId}) - Error on stream: ${err}`);
@@ -74,8 +74,8 @@ export class InputService extends IPipeService {
       const archive = archiver('zip', {
         zlib: { level: 9 }, // Sets the compression level.
       });
-      archive.append(fs.createReadStream(`/tmp/${key}.csv`), {
-        name: `${key}.csv`,
+      archive.append(fs.createReadStream(`/tmp/wri-${key}/${listName}_input.csv`), {
+        name: `${listName}_input.csv`,
       });
       archive.pipe(output);
       archive.finalize();

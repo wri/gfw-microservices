@@ -1,6 +1,6 @@
 import React from 'react';
 import Highcharts from 'highcharts';
-import useHookWithRefCallback from '../../ForestChangeDiagnostics/OtbnCharts/OtbnAreaChart/useHookWithRefCallback';
+import useHookWithRefCallback from '../../common/useHookWithRefCallback';
 import { afiDiagnosticsChartsColors } from '../afiDiagnosticsChartsColors.constants';
 
 function AfiDiagnosticsChart({ data }) {

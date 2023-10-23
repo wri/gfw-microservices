@@ -1,22 +1,30 @@
 import React from 'react';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Chart from './Chart';
 import Table from './Table';
-import IconButtonWrapper from '../../../../../locations/js/components/IconButtonWrapper';
+import DiagnosticsChartHeader from '../../../common/DiagnosticsChartHeader';
 import { locationsPage } from '../../../../../common/js/config';
-import './OtbnChartContainer.scss';
+import '../../../common/DiagnosticsChartContainer.scss';
 
 function OtbnAreaChart({ data }) {
   return (
-    <div className="otbn-chart-container">
-      <div className="otbn-pie-chart">
-        <div className="subsection-subtitle">
-          {locationsPage.diagnosticsTitles.ARGENTINA_OTBN_OVERLAP}
-          <IconButtonWrapper id={locationsPage.infoBubbleConfig.treeCoverLossArgOtbnYearly} />
-        </div>
-        <Chart data={data} />
-      </div>
-      <Table data={data} />
-    </div>
+    <>
+      <DiagnosticsChartHeader
+        title={locationsPage.diagnosticsTitles.ARGENTINA_OTBN_OVERLAP}
+        informationBubbleId={locationsPage.infoBubbleConfig.treeCoverLossArgOtbnYearly}
+      />
+      <Card>
+        <CardContent>
+          <div className="diagnostics-chart-container">
+            <div className="diagnostics-chart-container__chart">
+              <Chart data={data} />
+            </div>
+            <Table data={data} />
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }
 

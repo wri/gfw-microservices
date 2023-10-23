@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Highcharts from 'highcharts';
 import _range from 'lodash/range';
-
+import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 
 import {
@@ -584,82 +586,78 @@ export default class SensitiveAreas extends Component {
       >
         <h2 className="locations-diagnostics__subtitle">Sensitive Areas</h2>
 
-        <div className="locations-diagnostics__subsection section__loss-of-forests">
-          <div className="subsection-chart">
-            <div className="locations-diagnostics__flex-center subsection-subtitle__container">
-              <h3 className="locations-diagnostics-subsection-title">Loss of Forests</h3>
-              <IconButtonWrapper id={locationsPage.infoBubbleConfig.saLossOfForests} />
-              <span
-                onClick={() => this.props.fireDownload('forestLoss')}
-                className="locations-diagnostics-icon-holder"
-              >
-                <svg className="svg-icon">
-                  <use xlinkHref="#icon-download" />
-                </svg>
-              </span>
-            </div>
-            <p className="locations-instructional__text">
-              Select one main category and/or sub-category to adjust the graph and table.
-            </p>
-            <div className="chart-container">
-              <div ref="lossChart" />
-            </div>
-          </div>
+        <DiagnosticsChartHeader
+          title={'Loss of Forests'}
+          informationBubbleId={locationsPage.infoBubbleConfig.saLossOfForests}
+          fireDownload={this.props.fireDownload}
+          downloadId={'forestLoss'}
+        />
+        <Card>
+          <CardContent>
+            <div className="locations-diagnostics__subsection section__loss-of-forests">
+              <div className="subsection-chart">
+                <p className="locations-instructional__text">
+                  Select one main category and/or sub-category to adjust the graph and table.
+                </p>
+                <div className="chart-container">
+                  <div ref="lossChart" />
+                </div>
+              </div>
 
-          <div className="locations-diagnostics-table">
-            <table>
-              <thead>
-                <tr>
-                  <th />
-                  <th className="label loss-label right">
-                    {lossTableLabel}
-                    <IconButtonWrapper id={locationsPage.infoBubbleConfig.lossAllYears} />
-                  </th>
-                  <th className="label percent-loss right">
-                    <span className="percent-loss__label">% of TCL</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>{totalsTable}</tbody>
-            </table>
-          </div>
-        </div>
+              <div className="locations-diagnostics-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th />
+                      <th className="label loss-label right">
+                        {lossTableLabel}
+                        <IconButtonWrapper id={locationsPage.infoBubbleConfig.lossAllYears} />
+                      </th>
+                      <th className="label percent-loss right">
+                        <span className="percent-loss__label">% of TCL</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>{totalsTable}</tbody>
+                </table>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="locations-diagnostics__subsection subsection-historic-area">
-          <div className="table__historic-area">
-            <table>
-              <thead>
-                <tr className="historic-area__title-row">
-                  <th className="historic-area__title-container" colSpan={3}>
-                    <div className="historic-area__title">
-                      <h3 className="locations-diagnostics-subsection-title">
-                        Percentage of Historic Area Lost
-                      </h3>
-                      <IconButtonWrapper id={locationsPage.infoBubbleConfig.saHistoricAreasLoss} />
-                      <span
-                        onClick={() => this.props.fireDownload('historicPercent')}
-                        className="locations-diagnostics-icon-holder"
-                      >
-                        <svg className="svg-icon">
-                          <use xlinkHref="#icon-download" />
-                        </svg>
-                      </span>
-                    </div>
-                    <p className="locations-instructional__text">
-                      Change years displayed in the graphs above and start and end dates for total
-                      loss calculations in the tables at right.
-                    </p>
-                  </th>
-                  <th className="label left">{lossLabel}</th>
-                  <th className="label left">
-                    TREE COVER EXTENT <span className="word-break">2000 (ha)</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>{percentagesTable}</tbody>
-            </table>
-          </div>
-        </div>
+        <DiagnosticsChartHeader
+          title={'Percentage of Historic Area Lost'}
+          informationBubbleId={locationsPage.infoBubbleConfig.saHistoricAreasLoss}
+          fireDownload={this.props.fireDownload}
+          downloadId={'historicPercent'}
+        />
+
+        <Card>
+          <CardContent>
+            <div className="locations-diagnostics__subsection subsection-historic-area">
+              <div className="table__historic-area">
+                <table>
+                  <thead>
+                    <tr className="historic-area__title-row">
+                      <th className="historic-area__title-container" colSpan={3}>
+                        <p className="locations-instructional__text">
+                          Change years displayed in the graphs above and start and end dates for
+                          total loss calculations in the tables at right.
+                        </p>
+                      </th>
+                      <th className="label left">{lossLabel}</th>
+                      <th className="label left">
+                        TREE COVER EXTENT <span className="word-break">2000 (ha)</span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>{percentagesTable}</tbody>
+                </table>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="locations-diagnostics-subsection">
           <div
             className={`sensitive-area-slider__container slider__container ${

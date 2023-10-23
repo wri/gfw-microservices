@@ -7,6 +7,7 @@
  *   @function {formatPct}
  *   @function {prettifyNum}
  *   @function {validatePct}
+ *   @function {getFormatedTooltipForDiagnosticsChart}
  *
  ********************************************************************/
 
@@ -36,9 +37,21 @@ const validatePct = (percentage) => {
   }
 };
 
+function getFormatedTooltipForDiagnosticsChart() {
+  const { color: optionsColor, label, type } = this.options;
+  const { color: seriesColor, name } = this.series;
+  return `<tr>
+<td style="color:${optionsColor || seriesColor};padding:0">${
+    type === 'PRODES' ? `${type} (${label})` : name
+  }: </td>
+<td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(formatNum(this.y || 0))} ha</b></td>
+</tr>`;
+}
+
 module.exports = {
   formatNum,
   formatPct,
   prettifyNum,
   validatePct,
+  getFormatedTooltipForDiagnosticsChart,
 };

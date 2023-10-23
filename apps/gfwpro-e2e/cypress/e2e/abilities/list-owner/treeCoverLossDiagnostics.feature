@@ -9,6 +9,5 @@ Ability: Show Loss of Forests diagnostcs
     Examples:
       | list                   | sensitiveArea             |
       | "Argentina Jujuy OTBN" | "Primary Forest"          |
-      | "Argentina Jujuy OTBN" | "Protected Areas"         |
       | "Argentina Jujuy OTBN" | "Peat"                    |
       | "Argentina Jujuy OTBN" | "Intact Forest Landscape" |

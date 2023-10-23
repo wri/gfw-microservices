@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import Paper from '@mui/material/Paper';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import AfiDiagnosticsTable from './AfiDiagnosticsTable';
 import AfiPieChart from './AfiPieChart';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
@@ -101,7 +102,7 @@ function AfiDiagnostics() {
         </div>
       )}
       {!isLoading && (
-        <>
+        <div style={{ backgroundColor: 'rgb(250, 250, 250)' }}>
           <DiagnosticsMenuBar
             listId={listId}
             selectedDiagnostics={analysisTypes.DEFORESTATION_KPIS}
@@ -115,12 +116,14 @@ function AfiDiagnostics() {
               <h2 className="locations-diagnostics__subtitle">{list_name}</h2>
               <AfiDiagnosticsTable data={tableData} />
               <h2 className="locations-diagnostics__subtitle">Administrative Areas Overlap</h2>
-              <Paper elevation={3}>
-                <AfiPieChart data={chartData} />
-              </Paper>
+              <Card>
+                <CardContent>
+                  <AfiPieChart data={chartData} />
+                </CardContent>
+              </Card>
             </div>
           </div>
-        </>
+        </div>
       )}
       <ConfirmDialog open={openDownloadDialog} setDialogOpen={setOpenDownloadDialog} />
     </>

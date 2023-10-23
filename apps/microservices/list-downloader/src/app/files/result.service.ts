@@ -22,7 +22,7 @@ export class ResultService extends IPipeService {
   private zipStream: fs.WriteStream;
 
   start(filters: GenerationFileRequest) {
-    const { listId, key, listView } = filters;
+    const { listId, key, listView, listName } = filters;
     this.logger.log(`(${listId}) - Starting result stream to process data`);
 
     this.inputStream = new PassThrough({
@@ -36,7 +36,7 @@ export class ResultService extends IPipeService {
     const columnGetLastValue = allFields.filter((x) => x.analysis).map((x) => x.key);
 
     this.organizeStream(filters, headerFilter, columnGetLastValue);
-    fs.writeFileSync(`/tmp/${key}.csv`, `${headerPrint.join(',')}\n`);
+    fs.writeFileSync(`/tmp/wri-${key}/${listName}_result.csv`, `${headerPrint.join(',')}\n`);
     this.startEmail(filters);
   }
 
@@ -55,7 +55,7 @@ export class ResultService extends IPipeService {
     allFields: string[],
     columnGetLastValue: string[] = []
   ) {
-    const { listId, selectedLocationsList, key } = filters;
+    const { listId, selectedLocationsList, key, listName } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', (err) => {
@@ -63,7 +63,9 @@ export class ResultService extends IPipeService {
       this.errorEmail(filters);
     });
 
-    this.fileStream = fs.createWriteStream(`/tmp/${key}.csv`, { flags: 'a' });
+    this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}_result.csv`, {
+      flags: 'a',
+    });
     this.zipStream = fs.createWriteStream(`/tmp/${key}.zip`);
 
     this.inputStream
@@ -78,30 +80,28 @@ export class ResultService extends IPipeService {
       )
       .pipe(this.fileStream);
 
-    this.inputStream.on('end', async () => {
-      const archive = archiver('zip', {
-        zlib: { level: 9 }, // Sets the compression level.
-      });
-      archive.append(fs.createReadStream(`/tmp/${key}.csv`), {
-        name: `${key}.csv`,
-      });
-      archive.pipe(this.zipStream);
-      archive.finalize();
-    });
-
     return this.inputStream;
   }
 
   async finish(filters: GenerationFileRequest) {
-    const { listId } = filters;
+    const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Finished to process result data`);
-    this.fileStream.end();
-    await finished(this.fileStream);
-    this.logger.log(`(${listId}) - Data has been zipped`);
-    this.zipStream.end();
-    await finished(this.zipStream);
 
-    await this.uploadToS3(filters);
     await this.waitFinishedProcess(this.inputStream);
+    await finished(this.fileStream);
+
+    const archive = archiver('zip', {
+      zlib: { level: 9 }, // Sets the compression level.
+    });
+    archive.append(fs.createReadStream(`/tmp/wri-${key}/${listName}_result.csv`), {
+      name: `${listName}_result.csv`,
+    });
+    archive.pipe(this.zipStream);
+
+    await archive.finalize();
+
+    await finished(this.zipStream);
+    this.logger.log(`(${listId}) - Data has been zipped`);
+    await this.uploadToS3(filters);
   }
 }

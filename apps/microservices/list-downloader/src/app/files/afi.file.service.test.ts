@@ -3,19 +3,26 @@ import { AfiFileService } from './afi.file.service';
 import { afiListLevelData, afiLocationLevelData } from '../shared/mock.data';
 
 import * as fs from 'fs';
+import { createDirectory } from '../shared/file.utils';
 
 describe('AFI File Service - [Location level]', () => {
   const afiFileService = new AfiFileService();
 
   const filters = {
     listId: 5642,
+    listName: 'WRI',
     key: 'tmp-key',
   };
+
+  const dir = `/tmp/wri-${filters.key}`;
+  const filePath = `${dir}/${filters.listName}_deforestation_kpis.csv`;
 
   beforeAll(() => {
     afiFileService.startEmail = jest.fn();
     afiFileService.errorEmail = jest.fn();
     afiFileService.finishedEmail = jest.fn();
+
+    createDirectory(dir);
   });
 
   beforeEach(() => {
@@ -23,7 +30,7 @@ describe('AFI File Service - [Location level]', () => {
   });
 
   afterEach(() => {
-    fs.unlinkSync(`/tmp/${filters.key}_afi.csv`);
+    fs.unlinkSync(filePath);
   });
 
   test('When the input data is ok', async () => {
@@ -31,7 +38,7 @@ describe('AFI File Service - [Location level]', () => {
 
     await afiFileService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}_afi.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath);
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss (ha),Negligible Risk (%)',
@@ -47,7 +54,7 @@ describe('AFI File Service - [Location level]', () => {
 
     await afiFileService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}_afi.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss (ha),Negligible Risk (%)',
@@ -60,7 +67,7 @@ describe('AFI File Service - [Location level]', () => {
 
     await afiFileService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}_afi.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss (ha),Negligible Risk (%)',
@@ -82,7 +89,7 @@ describe('AFI File Service - [Location level]', () => {
 
     await afiFileService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}_afi.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss (ha),Negligible Risk (%)',
@@ -98,21 +105,26 @@ describe('AFI File Service - [List level]', () => {
   const afiFileService = new AfiFileService();
   const filters = {
     listId: 5642,
+    listName: 'WRI',
     key: 'tmp-key',
   };
+  const dir = `/tmp/wri-${filters.key}`;
+  const filePath = `${dir}/${filters.listName}_deforestation_kpis_aggregated.csv`;
 
   beforeAll(() => {
     afiFileService.startEmail = jest.fn();
     afiFileService.errorEmail = jest.fn();
     afiFileService.finishedEmail = jest.fn();
+
+    createDirectory(dir);
   });
 
   beforeEach(() => {
-    afiFileService.start(filters, 'afi_aggregated');
+    afiFileService.start(filters, 'deforestation_kpis_aggregated');
   });
 
   afterEach(() => {
-    fs.unlinkSync(`/tmp/${filters.key}_afi_aggregated.csv`);
+    fs.unlinkSync(filePath);
   });
 
   test('When the input data is ok', async () => {
@@ -120,7 +132,7 @@ describe('AFI File Service - [List level]', () => {
 
     await afiFileService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}_afi_aggregated.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss (ha),Negligible Risk',
@@ -136,7 +148,7 @@ describe('AFI File Service - [List level]', () => {
 
     await afiFileService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}_afi_aggregated.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss (ha),Negligible Risk',
@@ -149,7 +161,7 @@ describe('AFI File Service - [List level]', () => {
 
     await afiFileService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}_afi_aggregated.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss (ha),Negligible Risk',
@@ -172,7 +184,7 @@ describe('AFI File Service - [List level]', () => {
 
     await afiFileService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}_afi_aggregated.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss (ha),Negligible Risk',

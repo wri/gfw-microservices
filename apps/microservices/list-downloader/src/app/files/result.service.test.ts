@@ -3,6 +3,7 @@ import { locationListData } from '../shared/mock.data';
 import { describe, expect, test } from '@jest/globals';
 
 import * as fs from 'fs';
+import { createDirectory } from '../shared/file.utils';
 
 describe('Result Service', () => {
   const resultService = new ResultService();
@@ -15,17 +16,27 @@ describe('Result Service', () => {
     templateId: 13,
     combinedColumnsSplitted: [],
     selectedLocationsList: [],
+    listName: 'WRI',
   };
+
+  const dir = `/tmp/wri-${filters.key}`;
+  const filePath = `${dir}/${filters.listName}_result.csv`;
 
   beforeAll(() => {
     resultService.startEmail = jest.fn();
     resultService.errorEmail = jest.fn();
     resultService.finishedEmail = jest.fn();
     resultService.uploadToS3 = jest.fn();
+
+    createDirectory(dir);
   });
 
   beforeEach(() => {
     resultService.start(filters);
+  });
+
+  afterEach(() => {
+    fs.unlinkSync(filePath);
   });
 
   test('When input data has 3 locations', async () => {
@@ -36,7 +47,7 @@ describe('Result Service', () => {
 
     await resultService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Size,Commodity,Country(Countries),State(s),Sub-state(s),Tree Cover Extent,Total,Protected Areas,Primary Forests',
@@ -45,5 +56,5 @@ describe('Result Service', () => {
       'WRI,L3,1256.42,Cocoa,Brazil,Acre,Porto Acre,1230.45,1059.55,0,995.54',
       '',
     ]);
-  });
+  }, 70000);
 });

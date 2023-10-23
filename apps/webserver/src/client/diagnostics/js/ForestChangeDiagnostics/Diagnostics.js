@@ -29,6 +29,7 @@ import ConfirmDialog from '../../../locations/js/components/lists/download/confi
 import downloadRequest from '../../../locations/js/components/lists/download/downloadRequest';
 import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
+import RegionChartsContainer from './SouthAmericaRegions/RegionChartsContainer';
 
 // Utils
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
@@ -58,6 +59,7 @@ import {
 import { centroidSymbol, fillSymbolDefault } from '../../../common/js/map.config';
 import AnalysisListChips from '../../../locations/js/components/landing/listItem/AnalysisListChips';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
+import featureFlags from '../../../../utils/general.utils';
 
 import '../../css/locations.scss';
 import '../common/DiagnosticsContainer.scss';
@@ -693,8 +695,10 @@ export default class Diagnostics extends Component {
 
     const showListViewTabs = availableDiagnostics.length > 1;
     const listViewOptions = availableDiagnostics.map(({ label, value }) => (
-      <Tab label={<span style={{ color: 'white' }}>{label}</span>} value={value} />
+      <Tab key={value} label={<span style={{ color: 'white' }}>{label}</span>} value={value} />
     ));
+
+    const { isArgentinaComplianceAvailable } = featureFlags;
 
     return (
       <div className="landing-diagnostics">
@@ -1023,17 +1027,7 @@ export default class Diagnostics extends Component {
             />
           </div>
           <div className="print-no-break" data-cy="diagnotcs-regions">
-            <h2
-              className={`locations-diagnostics__subtitle ${
-                listView === 'forest_change' && (sAmericaPresence || asiaPresence)
-                  ? 'locations-diagnostics__flex-center'
-                  : 'hidden'
-              }`}
-            >
-              Regions
-            </h2>
-
-            {sAmericaPresence ? (
+            {sAmericaPresence && !isArgentinaComplianceAvailable ? (
               <SouthAmericaRegions
                 diagnosticView={diagnosticView}
                 listView={listView}
@@ -1048,6 +1042,22 @@ export default class Diagnostics extends Component {
                 getCategoricalHighchartSeries={this.getCategoricalHighchartSeries}
               />
             ) : null}
+
+            {sAmericaPresence && isArgentinaComplianceAvailable && listView === 'forest_change' && (
+              <RegionChartsContainer
+                fireDownload={this.fireDownload}
+                data={this.getFilteredLocations()[0]}
+                diagnosticView={diagnosticView}
+                filteredData={listData}
+                togglePopover={this.togglePopover}
+                getYearlyData={this.getYearlyData}
+                parseYearlyData={this.parseYearlyData}
+                assignHighchartColor={this.assignHighchartColor}
+                getFilteredLocations={this.getFilteredLocations}
+                getYearlyHighchartSeries={this.getYearlyHighchartSeries}
+                getCategoricalHighchartSeries={this.getCategoricalHighchartSeries}
+              />
+            )}
 
             {asiaPresence ? (
               <SoutheastAsiaRegions

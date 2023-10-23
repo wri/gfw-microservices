@@ -1,11 +1,17 @@
 import React from 'react';
 import Highcharts from 'highcharts';
-import useHookWithRefCallback from './useHookWithRefCallback';
-import { otbnChartsColors } from '../OtbnChartsColors.constants';
+import useHookWithRefCallback from '../../../common/useHookWithRefCallback';
+import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions.constants';
 
 function Chart({ data }) {
   const renderChart = (divRef) => {
     const argentinaOtbnArea = JSON.parse(data?.arg_otbn_area);
+    const { argentinaCompliance } = chartDatasetConfigs;
+    const chartData = argentinaCompliance.categories.map(({ name, color }) => ({
+      name,
+      y: argentinaOtbnArea['Category I'],
+      color,
+    }));
 
     Highcharts.chart({
       chart: {
@@ -38,23 +44,7 @@ function Chart({ data }) {
       series: [
         {
           colorByPoint: true,
-          data: [
-            {
-              name: 'Category I',
-              y: argentinaOtbnArea['Category I'],
-              color: otbnChartsColors['Category I'],
-            },
-            {
-              name: 'Category II',
-              y: argentinaOtbnArea['Category II'],
-              color: otbnChartsColors['Category II'],
-            },
-            {
-              name: 'Category III',
-              y: argentinaOtbnArea['Category III'],
-              color: otbnChartsColors['Category III'],
-            },
-          ],
+          data: chartData,
         },
       ],
     });

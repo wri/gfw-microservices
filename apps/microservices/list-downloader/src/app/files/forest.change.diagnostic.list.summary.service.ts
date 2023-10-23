@@ -129,7 +129,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
       csvData.push(dataRow);
     });
     const csvString = csvData.map((row) => row.join(',')).join('\n');
-    fs.writeFileSync(`/tmp/${key}_${fileSuffix}.csv`, `${csvString}\n`);
+    fs.writeFileSync(`/tmp/wri-${key}/${listName}_${fileSuffix}.csv`, `${csvString}\n`);
   }
 
   async finish(filters: GenerationFileRequest) {

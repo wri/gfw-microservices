@@ -1,3 +1,4 @@
+import { createDirectory } from '../shared/file.utils';
 import { locationListData } from '../shared/mock.data';
 import { InputService } from './input.service';
 import { describe, expect, test } from '@jest/globals';
@@ -13,13 +14,19 @@ describe('Input Service', () => {
     templateId: 13,
     combinedColumnsSplitted: [],
     selectedLocationsList: [],
+    listName: 'WRI',
   };
+
+  const dir = `/tmp/wri-${filters.key}`;
+  const filePath = `${dir}/${filters.listName}_input.csv`;
 
   beforeAll(() => {
     inputService.startEmail = jest.fn();
     inputService.errorEmail = jest.fn();
     inputService.finishedEmail = jest.fn();
     inputService.uploadToS3 = jest.fn();
+
+    createDirectory(dir);
   });
 
   beforeEach(() => {
@@ -27,7 +34,7 @@ describe('Input Service', () => {
   });
 
   afterEach(() => {
-    fs.unlinkSync(`/tmp/${filters.key}.csv`);
+    fs.unlinkSync(`${dir}/${filters.listName}_input.csv`);
   });
 
   test('when data has 3 locations', async () => {
@@ -35,7 +42,7 @@ describe('Input Service', () => {
 
     await inputService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}.csv`, 'utf8');
+    const csvData = fs.readFileSync(`${dir}/${filters.listName}_input.csv`, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
@@ -58,7 +65,7 @@ describe('Input Service', () => {
 
     await inputService.finish(newFilters);
 
-    const csvData = fs.readFileSync(`/tmp/${newFilters.key}.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
@@ -79,7 +86,7 @@ describe('Input Service', () => {
 
     await inputService.finish(newFilters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon,Country',
@@ -95,7 +102,7 @@ describe('Input Service', () => {
 
     await inputService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',
@@ -108,7 +115,7 @@ describe('Input Service', () => {
 
     await inputService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'Location Name,Latitude,Longitude,Analysis Radius,Analysis Area,Location Classification,Company ID,Volume,Owner Name,Owner ID,Company Name,Supplier Name,Facility Name,Refinery Name,Certification,Start Date,End Date,Time Horizon',

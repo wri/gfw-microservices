@@ -146,3 +146,8 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
     {"list_id": 100, "location_id": 42, "Type of Investment": "new investment"}
   ]
 }
+
+### Get the download error file
+GET https://localhost:8443/locations/downloadErrorFile?fileKey=s3://gfwpro-geotrellis-pre-data/development/failed/20221104051534_iizo1ewdla21ee1s-input_cocoageneric_random_50k_r25.csv
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

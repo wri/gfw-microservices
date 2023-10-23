@@ -1,6 +1,6 @@
 import _range from 'lodash/range';
 import _isEmpty from 'lodash/isEmpty';
-import { otbnCategories, otbnChartsColors } from '../OtbnChartsColors.constants';
+import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions.constants';
 
 const getTreeCoverLossArgOtbnYearlyData = (
   data,
@@ -37,18 +37,18 @@ const getTreeCoverLossArgOtbnYearlyData = (
   const chartData = [];
   let otbnTotalLoss = 0;
   const totalLossByCategory = {};
-
-  otbnCategories.forEach((category) => {
+  const { argentinaCompliance } = chartDatasetConfigs;
+  argentinaCompliance.categories.forEach(({ name, color }) => {
     if (
-      (category === 'Category I' && showCategoryI) ||
-      (category === 'Category II' && showCategoryII) ||
-      (category === 'Category III' && showCategoryIII) ||
+      (name === 'Category I' && showCategoryI) ||
+      (name === 'Category II' && showCategoryII) ||
+      (name === 'Category III' && showCategoryIII) ||
       showTotal
     ) {
       let dataFilteredByYearRange;
       const YEARS_RANGE = _range(startYear, endYear + 1);
 
-      const treeCoverLossArgOtbnYearlyForCategory = treeCoverLossArgOtbnYearly[category];
+      const treeCoverLossArgOtbnYearlyForCategory = treeCoverLossArgOtbnYearly[name];
       const treeCoverLossArgOtbnYearlyForCategoryIsEmpty = _isEmpty(
         treeCoverLossArgOtbnYearlyForCategory
       );
@@ -61,15 +61,15 @@ const getTreeCoverLossArgOtbnYearlyData = (
       const categoryLoss = dataFilteredByYearRange
         .map(([, value]) => value)
         .reduce((x, y) => parseFloat(x) + parseFloat(y));
-      totalLossByCategory[category] = categoryLoss;
+      totalLossByCategory[name] = categoryLoss;
       otbnTotalLoss += categoryLoss;
       chartData.push({
-        name: category,
+        name,
         data: dataFilteredByYearRange,
-        color: otbnChartsColors[category],
+        color,
       });
     } else {
-      totalLossByCategory[category] = 0;
+      totalLossByCategory[name] = 0;
     }
   });
 

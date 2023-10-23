@@ -12,7 +12,7 @@ import {
   formatPct,
   prettifyNum,
   validatePct,
-  getFormatedTooltip,
+  getFormatedTooltipForDiagnosticsChart,
 } from '../../../common/js/utils/diagnostics.utils';
 import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
 import { latestTreeCoverLossYearFC, locationsPage } from '../../../common/js/config';
@@ -563,7 +563,7 @@ export default class SouthAmericaRegions extends Component {
       tooltip: {
         headerFormat: '<table>',
         pointFormatter() {
-          return getFormatedTooltip.call(this);
+          return getFormatedTooltipForDiagnosticsChart.call(this);
         },
         footerFormat: '</table><span style="font-size:10px">in {point.key}</span>',
         shared: true,

@@ -1,7 +1,6 @@
-/* eslint-disable import/no-dynamic-require */
 const path = require('path');
 const Papa = require('papaparse');
-const AWS = require('aws-sdk');
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 const { compiledAssets } = require(path.resolve('./config/config'));
 const { createElement } = require('react');
@@ -307,21 +306,26 @@ exports.downloadingSelectedLocationsJson = async (request, response) => {
   }
 };
 
-exports.downloadErrorFile = (req, res) => {
+exports.downloadErrorFile = async (req, res) => {
   const { fileKey } = req.query;
-  // S3://gfwpro-geotrellis-pre-data/development/failed/20221104051534_iizo1ewdla21ee1s-input_cocoageneric_random_50k_r25.csv
+  // Example of fileKey - `s3://gfwpro-geotrellis-pre-data/development/failed/20221104051534_iizo1ewdla21ee1s-input_cocoageneric_random_50k_r25.csv`
   const basename = path.basename(fileKey);
-  const bucket = path.parse(fileKey).dir.replace('S3://', '').replace('s3://', '');
-  console.log('Trying to download file', fileKey);
-  const s3 = new AWS.S3();
-  const options = {
-    Bucket: bucket,
-    Key: basename,
+  const fileKeyClean = fileKey.replace('S3://', '').replace('s3://', '');
+  const fileKeyCleanChunks = fileKeyClean.split('/');
+  const [bucket, ...keyPathChunks] = fileKeyCleanChunks;
+  const key = keyPathChunks.join('/');
+
+  const parameters = {
+    Bucket: bucket, // (e.g. 'gfwpro-geotrellis-pre-data')
+    Key: key, // (e.g. 'development/failed/20221104051534_iizo1ewdla21ee1s-input_cocoageneric_random_50k_r25.csv')
   };
 
-  res.attachment(fileKey);
-  const fileStream = s3.getObject(options).createReadStream();
+  const s3client = new S3Client();
+  const s3command = new GetObjectCommand(parameters);
+  const s3response = await s3client.send(s3command);
+  const fileStream = s3response.Body;
   fileStream.pipe(res);
+  res.attachment(basename);
 };
 
 /**

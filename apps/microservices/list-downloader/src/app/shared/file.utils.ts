@@ -3,9 +3,15 @@ import * as archiver from 'archiver';
 import * as fs from 'fs';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
+const createDirectory = (dir: string) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+};
+
 const getAllFilesAndZip = async (filter: GenerationFileRequest) => {
   return new Promise((resolve, reject) => {
-    const { key } = filter;
+    const { key, listName } = filter;
     const output = fs.createWriteStream(`/tmp/${key}.zip`);
 
     output.on('finish', async () => {
@@ -18,14 +24,14 @@ const getAllFilesAndZip = async (filter: GenerationFileRequest) => {
       reject(err);
     });
 
-    fs.readdir('/tmp', async (err, filenames) => {
-      const files = filenames.filter((name) => name.includes(`${key}`));
+    fs.readdir(`/tmp/wri-${key}`, async (err, filenames) => {
+      const files = filenames.filter((name) => name.includes(`${listName}`));
 
       new Promise((resolve, reject) => {
         const array = [];
         let count = 1;
         files.forEach((file) => {
-          getSpecificLine(`/tmp/${file}`, 2, (err, line) => {
+          getSpecificLine(`/tmp/wri-${key}/${file}`, 2, (err, line) => {
             if (err) {
               reject(err);
             }
@@ -45,7 +51,7 @@ const getAllFilesAndZip = async (filter: GenerationFileRequest) => {
           zlib: { level: 9 }, // Sets the compression level.
         });
         filesToAppend.forEach((file) => {
-          archive.append(fs.createReadStream(`/tmp/${file}`), {
+          archive.append(fs.createReadStream(`/tmp/wri-${key}/${file}`), {
             name: `${file}`,
           });
         });
@@ -100,4 +106,4 @@ const getSpecificLine = (path, row, callback) => {
   }
 };
 
-export { getAllFilesAndZip };
+export { getAllFilesAndZip, createDirectory };

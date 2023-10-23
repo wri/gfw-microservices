@@ -21,7 +21,7 @@ export class ShapefileService extends IPipeService {
   private fileStream: fs.WriteStream;
 
   start(filters: GenerationFileRequest) {
-    const { listId, key, templateId, combinedColumnsSplitted } = filters;
+    const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
     this.inputStream = new PassThrough({
       objectMode: true,
@@ -30,7 +30,7 @@ export class ShapefileService extends IPipeService {
     filters.combinedColumnsSplitted.push('WKTGeometry');
 
     fs.writeFileSync(
-      `/tmp/${key}.geojson`,
+      `/tmp/wri-${key}/${listName}.geojson`,
       JSON.stringify({
         type: 'FeatureCollection',
         features: [],
@@ -60,7 +60,7 @@ export class ShapefileService extends IPipeService {
     const open = '{"type":"FeatureCollection","features":[';
     const close = ']}';
 
-    const { key, selectedLocationsList, listId } = filters;
+    const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', (err) => {
@@ -68,7 +68,7 @@ export class ShapefileService extends IPipeService {
       this.errorEmail(filters);
     });
 
-    this.fileStream = fs.createWriteStream(`/tmp/${key}.geojson`, { flags: 'r+' });
+    this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}.geojson`, { flags: 'r+' });
 
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
@@ -81,7 +81,7 @@ export class ShapefileService extends IPipeService {
 
     this.inputStream.on('end', async () => {
       await finished(this.fileStream);
-      await this.convertGeojsonToSHP(key);
+      await this.convertGeojsonToSHP(key, listName);
       this.logger.log(`(${listId}) - Data has been zipped`);
       await this.uploadToS3(filters);
     });
@@ -89,11 +89,11 @@ export class ShapefileService extends IPipeService {
     return this.inputStream;
   }
 
-  private async convertGeojsonToSHP(key: string) {
+  private async convertGeojsonToSHP(key: string, listName: string) {
     const options = {
       layer: 'gfw-pro',
       targetCrs: 2154,
     };
-    await convert(`/tmp/${key}.geojson`, `/tmp/${key}.zip`, options);
+    await convert(`/tmp/wri-${key}/${listName}.geojson`, `/tmp/${key}.zip`, options);
   }
 }

@@ -16,6 +16,9 @@ describe('Palm Risk Analysis Service', () => {
     selectedLocationsList: [],
   };
 
+  const dir = `/tmp/wri-${filters.key}`;
+  const filePath = `${dir}/${filters.listName}_palm_risk_analysis.csv`;
+
   beforeAll(() => {
     palmRiskAnalysisService.startEmail = jest.fn();
     palmRiskAnalysisService.errorEmail = jest.fn();
@@ -23,7 +26,7 @@ describe('Palm Risk Analysis Service', () => {
   });
 
   afterEach(() => {
-    fs.unlinkSync(`/tmp/${filters.key}_palm_risk_analysis.csv`);
+    fs.unlinkSync(filePath);
   });
 
   test('When input data has 3 locations', async () => {
@@ -33,7 +36,7 @@ describe('Palm Risk Analysis Service', () => {
 
     await palmRiskAnalysisService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}_palm_risk_analysis.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Mill Priority,Mill Priority Score,Overall Threat,Threat Score,Overall Value,Value Score,Deforestation - Threats Amount,Peat - Threats Amount,Protected Areas - Threats Amount,Fires - Threats Amount,Forest - Values Amount,Peat - Values Amount,Protected Areas - Values Amount,Deforestation - Threats Level,Peat - Threats Level,Protected Areas - Threats Level,Fires - Threats Level,Forest - Values Level,Peat - Values Level,Protected Areas - Values Level',

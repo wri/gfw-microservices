@@ -95,7 +95,8 @@ export class ResultService extends IPipeService {
       name: `${listName}_result.csv`,
     });
     archive.pipe(this.zipStream);
-    archive.finalize();
+
+    await archive.finalize();
 
     await finished(this.zipStream);
     this.logger.log(`(${listId}) - Data has been zipped`);

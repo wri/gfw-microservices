@@ -16,7 +16,6 @@ describe('Result Service', () => {
     templateId: 13,
     combinedColumnsSplitted: [],
     selectedLocationsList: [],
-    listName: 'WRI',
   };
 
   const dir = `/tmp/wri-${filters.key}`;

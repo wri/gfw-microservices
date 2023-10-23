@@ -14,6 +14,7 @@ $print-table__font-size: 10px;
 $print-width: 95%;
 
 .landing-diagnostics {
+  background-color: rgb(250, 250, 250);
   position: relative;
 }
 // ==================================
@@ -1020,7 +1021,7 @@ $print-width: 95%;
 
   .locations-diagnostics-section-title {
     @include heading(400, $color: $gfw-dark-gray);
-    margin-bottom: $space-medium;
+    margin: 30px;
   }
 
   .locations-diagnostics-section-title__container {

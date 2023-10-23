@@ -12,6 +12,7 @@ import {
   formatPct,
   prettifyNum,
   validatePct,
+  getFormatedTooltipForDiagnosticsChart,
 } from '../../../common/js/utils/diagnostics.utils';
 import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
 import { latestTreeCoverLossYearFC, locationsPage } from '../../../common/js/config';
@@ -28,17 +29,6 @@ const END_YEAR = latestTreeCoverLossYearFC;
 const HARVEST_YEAR = END_YEAR - 1;
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
 let isMounted = false;
-
-function getFormatedTooltip() {
-  const { color: optionsColor, label, type } = this.options;
-  const { color: seriesColor, name } = this.series;
-  return `<tr>
-<td style="color:${optionsColor || seriesColor};padding:0">${
-    type === 'PRODES' ? `${type} (${label})` : name
-  }: </td>
-<td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(formatNum(this.y || 0))} ha</b></td>
-</tr>`;
-}
 
 export default class SouthAmericaRegions extends Component {
   constructor(props) {
@@ -573,7 +563,7 @@ export default class SouthAmericaRegions extends Component {
       tooltip: {
         headerFormat: '<table>',
         pointFormatter() {
-          return getFormatedTooltip.call(this);
+          return getFormatedTooltipForDiagnosticsChart.call(this);
         },
         footerFormat: '</table><span style="font-size:10px">in {point.key}</span>',
         shared: true,

@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import Highcharts from 'highcharts';
 import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
-import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 import {
   locationsPage,
   earliestTreeCoverLossYearCommodityRisk,
@@ -102,56 +104,51 @@ export default class DeforestationTrends extends Component {
     const certified = location && location.Certification === 'RSPO' ? 'Yes' : 'No';
 
     return (
-      <div className="locations-diagnostics-section-risk">
-        <div
-          className={`locations-diagnostics-sub-section-risk deforestation__table ${
-            selectedLocations.length === 1 ? '' : 'hidden'
-          }`}
-        >
-          <div className="locations-diagnostics__flex-center subsection-subtitle__container">
-            <h4 className="diagnostics-section-title-risk">Location Details</h4>
-          </div>
+      <Card style={{ marginTop: '30px', marginBottom: '30px' }}>
+        <CardContent>
+          <div className="locations-diagnostics-section-risk">
+            <div
+              className={`locations-diagnostics-sub-section-risk deforestation__table ${
+                selectedLocations.length === 1 ? '' : 'hidden'
+              }`}
+            >
+              <DiagnosticsChartHeader title={'Location Details'} />
+              <table className="diagnostics-deforestation__table">
+                <thead>
+                  <tr>
+                    <th>{supplierName ? supplierName : '--'}</th>
+                    <th>{supplierNameTwo ? supplierNameTwo : '--'}</th>
+                    <th>{parentCompany ? parentCompany : '--'}</th>
+                    <th>{certified}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Supplier Name 1</td>
+                    <td>Supplier Name 2</td>
+                    <td>Parent Company</td>
+                    <td>RSPO Certified</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-          <table className="diagnostics-deforestation__table">
-            <thead>
-              <tr>
-                <th>{supplierName ? supplierName : '--'}</th>
-                <th>{supplierNameTwo ? supplierNameTwo : '--'}</th>
-                <th>{parentCompany ? parentCompany : '--'}</th>
-                <th>{certified}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Supplier Name 1</td>
-                <td>Supplier Name 2</td>
-                <td>Parent Company</td>
-                <td>RSPO Certified</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="locations-diagnostics-sub-section-risk">
-          <div className="locations-diagnostics-section-title__container">
-            <div className="locations-diagnostics__flex-center subsection-subtitle__container">
-              <h4 className="diagnostics-section-title-risk">Trends in Deforestation</h4>
-              <IconButtonWrapper id={locationsPage.infoBubbleConfig.trendsDeforestation} />
-              <span
-                onClick={() => this.props.fireDownload('deforestationTrends')}
-                className="locations-diagnostics-icon-holder"
-              >
-                <svg className="svg-icon">
-                  <use xlinkHref="#icon-download" />
-                </svg>
-              </span>
+            <div className="locations-diagnostics-sub-section-risk">
+              <div className="locations-diagnostics-section-title__container">
+                <DiagnosticsChartHeader
+                  title={'Trends in Deforestation'}
+                  informationBubbleId={locationsPage.infoBubbleConfig.trendsDeforestation}
+                  fireDownload={this.props.fireDownload}
+                  downloadId={'deforestationTrends'}
+                />
+              </div>
+              <div className="locations-diagnostics-chart">
+                <div ref="deforestationChart" />
+              </div>
             </div>
           </div>
-          <div className="locations-diagnostics-chart">
-            <div ref="deforestationChart" />
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     );
   }
 }

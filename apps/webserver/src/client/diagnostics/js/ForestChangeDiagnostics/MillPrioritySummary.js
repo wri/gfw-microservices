@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import {
   locationsPage,
   earliestTreeCoverLossYearCommodityRisk,
   latestTreeCoverLossYearCommodityRisk,
 } from '../../../common/js/config';
-import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 
 const lastYear = locationsPage.diagnostics.lastDataYear;
 
@@ -111,79 +113,74 @@ export default class MillPrioritySummary extends Component {
 
     return (
       <div
-        className={`locations-diagnostics-section-risk ${
-          listView === 'commodity_risk' && selectedLocations.length === 1 ? '' : 'hidden'
-        }`}
+        className={listView === 'commodity_risk' && selectedLocations.length === 1 ? '' : 'hidden'}
       >
-        <div
-          className={`locations-diagnostics-sub-section-risk mill-summary_table ${
-            selectedLocations.length === 1 ? '' : 'hidden'
-          }`}
-        >
-          <div className="subsection-subtitle__container">
-            <h4 className="diagnostics-section-title-risk">Mill Priority Summary</h4>
-            <span
-              onClick={() => this.props.fireDownload('millPriority')}
-              className="locations-diagnostics-icon-holder"
-            >
-              <svg className="svg-icon">
-                <use xlinkHref="#icon-download" />
-              </svg>
-            </span>
-          </div>
+        <DiagnosticsChartHeader
+          title={'Mill Priority Summary'}
+          fireDownload={this.props.fireDownload}
+          downloadId={'millPriority'}
+        />
+        <Card>
+          <CardContent>
+            <div className="locations-diagnostics-section-risk">
+              <div
+                className={`locations-diagnostics-sub-section-risk mill-summary_table ${
+                  selectedLocations.length === 1 ? '' : 'hidden'
+                }`}
+              >
+                <table className="diagnostics-mill__table">
+                  <tbody>
+                    <tr>
+                      <td className="risk">{locationName}</td>
+                      <td className={`risk ${this.assignRiskPriorityClass(millPriority)}`}>
+                        {this.assignRiskPriority(millPriority)}
+                      </td>
+                      <td className={`risk ${this.assignRiskPriorityClass(overallThreat)}`}>
+                        {this.assignRiskPriority(overallThreat)}
+                      </td>
+                      <td className={`risk ${this.assignRiskPriorityClass(overallValue)}`}>
+                        {this.assignRiskPriority(overallValue)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="flex-grid">
+                        <span className="text-primary">Mill Name</span>
+                      </td>
+                      <td>
+                        <span className="text-primary">Mill Priority</span>
+                        <br />
+                        <span className="text-secondary">Threat + Value</span>
+                      </td>
+                      <td>
+                        <span className="text-primary">Threat</span>
+                        <br />
+                        <span className="text-secondary">Overall</span>
+                      </td>
+                      <td>
+                        <span className="text-primary">Value</span>
+                        <br />
+                        <span className="text-secondary">Overall</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
-          <table className="diagnostics-mill__table">
-            <tbody>
-              <tr>
-                <td className="risk">{locationName}</td>
-                <td className={`risk ${this.assignRiskPriorityClass(millPriority)}`}>
-                  {this.assignRiskPriority(millPriority)}
-                </td>
-                <td className={`risk ${this.assignRiskPriorityClass(overallThreat)}`}>
-                  {this.assignRiskPriority(overallThreat)}
-                </td>
-                <td className={`risk ${this.assignRiskPriorityClass(overallValue)}`}>
-                  {this.assignRiskPriority(overallValue)}
-                </td>
-              </tr>
-              <tr>
-                <td className="flex-grid">
-                  <span className="text-primary">Mill Name</span>
-                </td>
-                <td>
-                  <span className="text-primary">Mill Priority</span>
-                  <br />
-                  <span className="text-secondary">Threat + Value</span>
-                </td>
-                <td>
-                  <span className="text-primary">Threat</span>
-                  <br />
-                  <span className="text-secondary">Overall</span>
-                </td>
-                <td>
-                  <span className="text-primary">Value</span>
-                  <br />
-                  <span className="text-secondary">Overall</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div className="locations-diagnostics-sub-section-risk">
-          <div className="locations-diagnostics-section-title__container">
-            <div className="locations-diagnostics__flex-center subsection-subtitle__container">
-              <h4 className="diagnostics-section-title-risk">
-                Mill Priority History
-                <span className="diagnostics-section-subtitle"> Threat + Value</span>
-              </h4>
-              <IconButtonWrapper id={locationsPage.infoBubbleConfig.millPriorityHistory} />
+              <div className="locations-diagnostics-sub-section-risk">
+                <div className="locations-diagnostics-section-title__container">
+                  <DiagnosticsChartHeader
+                    title={'Mill Priority History'}
+                    subtitle={'THREAT + VALUE'}
+                    informationBubbleId={locationsPage.infoBubbleConfig.millPriorityHistory}
+                  />
+                </div>
+                <div className="locations-diagnostics-chart">
+                  <table>{this.renderMillTable()}</table>
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="locations-diagnostics-chart">
-            <table>{this.renderMillTable()}</table>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }

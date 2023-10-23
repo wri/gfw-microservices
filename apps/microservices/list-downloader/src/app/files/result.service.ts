@@ -11,6 +11,7 @@ import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { SumValue } from '../transform/sum.value';
 import { IPipeService } from '../pipe/IPipeService';
 import { finished } from 'stream/promises';
+import { FormatNumber } from '../transform/format.number';
 
 @Injectable()
 export class ResultService extends IPipeService {
@@ -71,6 +72,7 @@ export class ResultService extends IPipeService {
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
       .pipe(new SumValue(columnGetLastValue))
+      .pipe(new FormatNumber())
       .pipe(
         csvWriter({
           sendHeaders: false,

@@ -9,6 +9,7 @@ import { AFI_HEADER, AFI_HEADER_AGGREGATE } from '../shared/constants';
 
 import { FilterObject } from '../transform/filter.object';
 import { NegligibleRiskDiscretize } from '../transform/negligible.risk.discretize';
+import { FormatNumber } from '../transform/format.number';
 
 @Injectable()
 export class AfiFileService extends IPipeService {
@@ -53,6 +54,7 @@ export class AfiFileService extends IPipeService {
       this.inputStream
         .pipe(new FilterObject(allFields))
         .pipe(new NegligibleRiskDiscretize())
+        .pipe(new FormatNumber())
         .pipe(
           csvWriter({
             sendHeaders: false,
@@ -62,6 +64,7 @@ export class AfiFileService extends IPipeService {
     } else {
       this.inputStream
         .pipe(new FilterObject(allFields))
+        .pipe(new FormatNumber())
         .pipe(
           csvWriter({
             sendHeaders: false,

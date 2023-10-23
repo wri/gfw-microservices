@@ -60,7 +60,6 @@ export class AfiFileService extends IPipeService {
       this.inputStream
         .pipe(new FilterObject(allFields))
         .pipe(new FormatNumber())
-        .pipe(new FormatNumber())
         .pipe(
           csvWriter({
             sendHeaders: false,

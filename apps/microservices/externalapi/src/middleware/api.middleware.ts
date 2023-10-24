@@ -8,7 +8,7 @@ export class ApiKeyMiddleware implements NestMiddleware {
     if (!apiKey || apiKey !== 'YOUR_API_KEY_HERE') {
       return res.status(401).json({ message: 'Unauthorized' });
     }
-    // Waiting for Gustavo and Dakota changes to implement auth validation
+    // Work in progress, ticket needs to be created to implement this
     req.user = {
       organizationId: 1,
     };

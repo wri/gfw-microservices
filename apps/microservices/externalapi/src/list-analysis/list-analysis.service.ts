@@ -26,11 +26,11 @@ export class ListAnalysisService {
       where: { listId: listID, analysisId: DEFAULT_ANALYSIS },
     });
 
-    // Waiting for changes from Gustavo and Dakota
+    // Waiting for changes from Gustavo and Dakota on tickets 2353 and 2354
     const analysisStatus: ListAnalysisResponse = {
       listId: listAnalysisStatus.listId,
       status: 'Completed',
-      errorsDetails: listAnalysisStatus.errorInfo ? [listAnalysisStatus.errorInfo] : [],
+      errorsDetails: (listAnalysisStatus.errorInfo || '').split('\n').filter((e) => e),
       resultUrl: listAnalysisStatus.listId ? 'https://example.com/results' : null,
       creationDate: listAnalysisStatus.updateTime,
       expirationDate: '2023-09-28',

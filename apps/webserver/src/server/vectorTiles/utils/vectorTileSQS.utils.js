@@ -1,15 +1,9 @@
-/* eslint-disable camelcase */
-/* eslint-disable no-param-reassign */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-unused-vars */
-/* eslint-disable prefer-promise-reject-errors */
-/* eslint-disable import/no-dynamic-require */
-
 const path = require('path');
-const AWS = require('aws-sdk');
 const https = require('https');
-const logger = require('../../../config/privateutils/logger.utils');
+const AWS = require('@aws-sdk/client-sqs');
 const { Consumer } = require('sqs-consumer');
+
+const logger = require('../../../config/privateutils/logger.utils');
 const tileSqsUrls = require(path.resolve('./server/vectorTiles/config/vectorTilesSqs.config'));
 const { generateAndStoreVectorTiles } = require('./vectorTileGenerate.utils');
 
@@ -30,14 +24,6 @@ const setVectorTileQueueUrl = () => {
 };
 
 function initialize() {
-  const awsConfig = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
-  };
-
-  AWS.config.update(awsConfig);
-
   const queueUrl = setVectorTileQueueUrl();
   logger.info('VECTOR TILE URL', queueUrl);
   const sqsListener = Consumer.create({
@@ -47,6 +33,7 @@ function initialize() {
       const messageBody = JSON.parse(message.Body);
       const { organization_database, organization_id, list_id } = messageBody;
       const messageTimestamp = parseInt(message.Attributes.ApproximateFirstReceiveTimestamp, 10);
+
       logger.info(
         'VECTOR TILE MESSAGE INFO',
         organization_database,
@@ -54,6 +41,7 @@ function initialize() {
         list_id,
         messageTimestamp
       );
+
       const req = {
         messageTimestamp,
         session: {
@@ -62,6 +50,7 @@ function initialize() {
           organization_id,
         },
       };
+
       generateAndStoreVectorTiles(req, list_id)
         .then((response) => {
           logger.info('SUCCESSFUL VECTOR TILE TRIGGER/GENERATION', response.message);

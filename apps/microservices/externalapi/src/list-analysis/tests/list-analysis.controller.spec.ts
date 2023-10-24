@@ -11,10 +11,25 @@ import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { ConfigModule } from '@nestjs/config';
 import { ClientStoreConnection } from '../../shared/client-store-connection';
 import { OrganizationService } from '../organization.service';
+import { DataSource } from 'typeorm';
+import { ListsAnalysisStatus } from '../list-analysis-status.entity';
+import sinon from 'sinon';
+
+class MockRepository {
+  findOne = jest.fn(async () => {
+    return { listId: 123, analysisId: 'FCD', updateTime: new Date(), status: 1 };
+  });
+}
 
 describe('ListAnalysisController', () => {
   let controller: ListAnalysisController;
-
+  let organizationService: OrganizationService;
+  beforeAll(async () => {
+    sinon
+      .stub(DataSource.prototype, 'getRepository')
+      .withArgs(ListsAnalysisStatus)
+      .returns(new MockRepository());
+  });
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -37,6 +52,7 @@ describe('ListAnalysisController', () => {
     }).compile();
 
     controller = module.get<ListAnalysisController>(ListAnalysisController);
+    organizationService = module.get<OrganizationService>(OrganizationService);
   });
 
   it('should be defined', () => {
@@ -44,13 +60,13 @@ describe('ListAnalysisController', () => {
   });
 
   it('should return analysis status', async () => {
-    const listID = '123';
+    const listID = 123;
+    const actualDate = new Date();
     const expectedResult = {
       listId: listID,
       status: 'Completed',
       errorsDetails: [],
       resultUrl: 'https://example.com/results',
-      creationDate: '2023-09-21',
       expirationDate: '2023-09-28',
     };
 
@@ -61,10 +77,24 @@ describe('ListAnalysisController', () => {
       headers: {
         'x-api-key': 'your-api-key',
       },
+      user: {
+        organizationId: 1,
+      },
     }) as Request;
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: actualDate,
+      subscriptionStatusId: 1,
+    });
 
     const result = await controller.getAnalysisStatus(listID, requestMock);
 
-    expect(result).toEqual(expectedResult);
+    const { listId, status, errorsDetails, resultUrl, expirationDate } = result;
+
+    expect({ listId, status, errorsDetails, resultUrl, expirationDate }).toEqual(expectedResult);
   });
 });

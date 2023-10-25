@@ -17,6 +17,8 @@ import { SqlModule } from '@wri-monorepos/sql';
 import { ListService } from '../services/list.service';
 import { AfiController } from './afi.controller';
 import { AfiService } from '../services/afi.service';
+import { WDPAService } from '../services/wdpa.service';
+import { WDPAController } from './wdpa.controller';
 
 config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -26,7 +28,15 @@ config.update({
 
 @Module({
   imports: [envModule, TypeOrmModule.forRootAsync({ useClass: DatabaseService }), SqlModule],
-  controllers: [AppController, AfiController],
-  providers: [AppService, LargeListService, LocationService, GeoService, ListService, AfiService],
+  controllers: [AppController, AfiController, WDPAController],
+  providers: [
+    AppService,
+    LargeListService,
+    LocationService,
+    GeoService,
+    ListService,
+    AfiService,
+    WDPAService,
+  ],
 })
 export class AppModule {}

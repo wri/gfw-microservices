@@ -17,17 +17,19 @@ function ChangeTypeOfAnalysisModal({
   isChangeTypeOfAnalysisModalOpen,
   listAnalysesStatus,
 }) {
-  const [selectedAnalysis, setSelectedAnalysis] = useState([]);
+  const getSelectedAnalysesIds = () => {
+    return listAnalysesStatus
+      .map(({ analysisId }) => analysisId);
+  }
+
+  const [selectedAnalysis, setSelectedAnalysis] = useState(getSelectedAnalysesIds());
   const [isLoading, setIsLoading] = useState(false);
   // if there is no listId, the analyses selection is for the creation of a new list
   const updatingAnalysesSelectionForExistingList = !!listId;
 
   useEffect(() => {
     if (updatingAnalysesSelectionForExistingList) {
-      const selectedAnalysesIds = listAnalysesStatus
-        .filter(({ status }) => status === listStatus.Active)
-        .map(({ analysisId }) => analysisId);
-      setSelectedAnalysis(selectedAnalysesIds);
+      setSelectedAnalysis(getSelectedAnalysesIds());
     }
   }, [listAnalysesStatus, listId]);
 

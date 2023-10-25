@@ -1,8 +1,7 @@
-import QueryTask from 'esri/tasks/QueryTask';
-import Query from 'esri/tasks/support/Query';
+import { executeQueryJSON } from '@arcgis/core/rest/query';
+import Query from '@arcgis/core/rest/support/Query';
 
 exports.esriQuery = (url = '', queryProperties = {}) => {
-  const task = new QueryTask(url);
   const query = new Query(queryProperties);
-  return task.execute(query);
+  return executeQueryJSON(url, query);
 };

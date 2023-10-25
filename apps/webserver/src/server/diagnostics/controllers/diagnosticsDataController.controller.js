@@ -40,16 +40,16 @@ exports.diagnosticsDataController = async (req, res) => {
        * https://gfw.atlassian.net/browse/GPV-2191
        * @TODO consider filtering using a query vs nodejs
        */
-      const selectedLocationData = listLocations.find(
+      const selectedLocationData = locationId ? listLocations.find(
         (location) => location.location_id === locationId
-      );
+      ) : null;
 
       if (!selectedLists) {
         res.status(200).json({
           selectedLists: null,
           listLevelAnalysis: null,
           processedListData: null,
-          selectedLocationData: null,
+          selectedLocationData,
         });
         return;
       }

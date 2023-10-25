@@ -1,26 +1,21 @@
-### Get all feature flags
+### Get all feature flags current organitzation
 GET https://localhost:8443/api/feature-flags
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
-### Get feature flags by flagId
-GET https://localhost:8443/api/feature-flag/feature-flag
+### Get feature flags rules by flagId 
+GET https://localhost:8443/api/feature-flags/self
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
 ### Create a feature flag
-GET https://localhost:8443/api/feature-flag
+POST https://localhost:8443/api/feature-flags
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
-### ------------------------------
-### env: development
-### organization: DevCo
-### modifierUser: 1692
-### ------------------------------
 
 {
-	"flagId": "feature-flag",
-	"orgId": null,
+	"flagId": "self",
+	"orgId": 3,
 	"flagState": true,
 	"modifierUserId": 1692 
 }

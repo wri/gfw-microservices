@@ -7,6 +7,7 @@ module.exports = async function (request, response) {
 
   await dataSource.initialize();
   const newFeatureFlag = await featureFlagService.createFeatureFlag(featureFlagData);
+  await dataSource.destroy();
 
   response.status(200).send({
     success: true,

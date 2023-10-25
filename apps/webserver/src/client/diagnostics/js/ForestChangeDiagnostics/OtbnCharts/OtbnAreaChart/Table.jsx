@@ -1,5 +1,5 @@
 import React from 'react';
-import { otbnChartsColors, otbnCategories } from '../OtbnChartsColors.constants';
+import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions.constants';
 import {
   prettifyNum,
   formatNum,
@@ -8,20 +8,22 @@ import {
 import './OtbnTable.scss';
 
 function Table({ data }) {
+  const { argentinaCompliance } = chartDatasetConfigs;
+
   const argentinaOtbnArea = JSON.parse(data?.arg_otbn_area);
   const categoryIArea = argentinaOtbnArea['Category I'] || 0;
   const categoryIIArea = argentinaOtbnArea['Category II'] || 0;
   const categoryIIIArea = argentinaOtbnArea['Category III'] || 0;
   const totalArea = categoryIArea + categoryIIArea + categoryIIIArea;
 
-  const categoryRows = otbnCategories.map((category) => {
-    const categoryArea = argentinaOtbnArea[category] || 0;
+  const categoryRows = argentinaCompliance.categories.map(({ id, name, color }) => {
+    const categoryArea = argentinaOtbnArea[name] || 0;
     const categoryPercentage = (categoryArea / totalArea) * 100;
     return (
-      <tr key={category}>
+      <tr key={id}>
         <td>
-          <span className="otbn-checkbox" style={{ background: otbnChartsColors[category] }} />
-          <label htmlFor="pie-chart-category-2">{category}</label>
+          <span className="otbn-checkbox" style={{ background: color }} />
+          <label htmlFor="pie-chart-category-2">{name}</label>
         </td>
         <td>{formatPct(categoryPercentage)}</td>
         <td>{prettifyNum(formatNum(categoryArea))}</td>

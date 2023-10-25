@@ -3,6 +3,7 @@ import { describe, expect, test } from '@jest/globals';
 import * as fs from 'fs';
 import { locationListData } from '../shared/mock.data';
 import { MillPriorityService } from './mill.priority.service';
+import { createDirectory } from '../shared/file.utils';
 
 describe('Mill Priority Service', () => {
   const millPriorityService = new MillPriorityService();
@@ -16,10 +17,14 @@ describe('Mill Priority Service', () => {
     selectedLocationsList: [1, 2, 3],
   };
 
+  const dir = `/tmp/wri-${filters.key}`;
+  const filePath = `${dir}/${filters.listName}_mill_priority_history.csv`;
+
   beforeAll(() => {
     millPriorityService.startEmail = jest.fn();
     millPriorityService.errorEmail = jest.fn();
     millPriorityService.finishedEmail = jest.fn();
+    createDirectory(dir);
   });
 
   beforeEach(() => {
@@ -27,7 +32,7 @@ describe('Mill Priority Service', () => {
   });
 
   afterEach(() => {
-    fs.unlinkSync(`/tmp/${filters.key}_mill_priority_history.csv`);
+    fs.unlinkSync(filePath);
   });
 
   test('When input data has 3 locations', async () => {
@@ -35,7 +40,7 @@ describe('Mill Priority Service', () => {
 
     await millPriorityService.finish(filters);
 
-    const csvData = fs.readFileSync(`/tmp/${filters.key}_mill_priority_history.csv`, 'utf8');
+    const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Threat + Value,Year',

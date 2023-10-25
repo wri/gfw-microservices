@@ -92,7 +92,11 @@ function ListPanel({
     } else if (listDraftStatus && listContext === 'map') {
       // Draft in Map
       className = 'locations-list-name__map_draft';
-    } else if ((!hasAlertsAnalysisActive || listDraftStatus) && listContext === 'dashboard') {
+    } else if (
+      !list?.GFWList &&
+      (!hasAlertsAnalysisActive || listDraftStatus) &&
+      listContext === 'dashboard'
+    ) {
       // Draft in Dashboard
       className = 'locations-list-name__dash_draft';
     }
@@ -101,7 +105,8 @@ function ListPanel({
       if (
         (hasAlertsAnalysisActive && !listDraftStatus && listContext === 'dashboard') ||
         (list.list_status_id === listStatus.Active && listContext === 'map') ||
-        (listDraftStatus && listContext === 'map')
+        (listDraftStatus && listContext === 'map') ||
+        list?.GFWList
       ) {
         handleSelectedList(list);
       }

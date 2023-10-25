@@ -1,5 +1,5 @@
 import { BadRequestException, Controller, Get, Param, Query } from '@nestjs/common';
-import { WDPAService } from '../services/wdpa.service';
+import { WDPAService } from '../services/fcd.service';
 import { DatabaseQueryParam } from '../models';
 
 @Controller('fcd')

@@ -1,10 +1,10 @@
 import { BadRequestException, Controller, Get, Param, Query } from '@nestjs/common';
-import { WDPAService } from '../services/fcd.service';
+import { FCDService } from '../services/fcd.service';
 import { DatabaseQueryParam } from '../models';
 
 @Controller('fcd')
-export class WDPAController {
-  constructor(private readonly wdpaService: WDPAService) {}
+export class FCDController {
+  constructor(private readonly fcdService: FCDService) {}
 
   @Get('/:listId/wdpa_overlap_country/:country')
   async getAggregateOverlapByCountry(
@@ -18,7 +18,7 @@ export class WDPAController {
       throw new BadRequestException('clientDatabase is required');
     }
 
-    const result = this.wdpaService.aggregateOverlapByCountry(listId, country, clientDatabase);
+    const result = this.fcdService.aggregateOverlapByCountry(listId, country, clientDatabase);
     return result;
   }
 
@@ -34,7 +34,7 @@ export class WDPAController {
       throw new BadRequestException('clientDatabase is required');
     }
 
-    const result = this.wdpaService.landmarkOverlapCountry(listId, country, clientDatabase);
+    const result = this.fcdService.landmarkOverlapCountry(listId, country, clientDatabase);
     return result;
   }
 }

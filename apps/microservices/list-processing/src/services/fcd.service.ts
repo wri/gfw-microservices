@@ -11,11 +11,11 @@ import { ConfigService } from '@nestjs/config';
 import * as sql from 'mssql';
 
 @Injectable()
-export class WDPAService {
+export class FCDService {
   FULLY_RESTRICTIVE_CATEGORY = ['Ia', 'Ib', 'II', 'III'];
   INDIGENOUS_LAND = 'Not Reported';
 
-  private readonly logger = new Logger(WDPAService.name);
+  private readonly logger = new Logger(FCDService.name);
 
   @Inject(ConfigService)
   private readonly config: ConfigService;

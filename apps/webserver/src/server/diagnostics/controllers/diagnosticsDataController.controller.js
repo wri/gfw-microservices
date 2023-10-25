@@ -37,12 +37,20 @@ exports.diagnosticsDataController = async (req, res) => {
       const selectedList = listToSearch?.find((listData) => listData.id === listId);
       const selectedLists = selectedList ? [selectedList] : null;
       /**
-       * https://gfw.atlassian.net/browse/GPV-2191
-       * @TODO consider filtering using a query vs nodejs
+       * ------------------------------------------------
+       * @TODO https://gfw.atlassian.net/browse/GPV-2191
+       * @TODO consider filtering the selectedLocationData from query vs this nodejs `.find`
+       * ------------------------------------------------
+       * Explanation (@see {@link https://gfw.atlassian.net/browse/GPV-2402})
+       * When accessing the diagnostics page from the lists list page for a list with a single location,
+       * the diagnostics stops working. This is a low effort patch to fix the frontend
+       * @see {@link https://gfw.atlassian.net/browse/GPV-2187} and tickets siblings for refactoring
        */
-      const selectedLocationData = locationId ? listLocations.find(
-        (location) => location.location_id === locationId
-      ) : null;
+      const selectedLocationData = locationId
+        ? listLocations.find((location) => location.location_id === locationId)
+        : listLocations.length === 1
+        ? listLocations[0]
+        : null;
 
       if (!selectedLists) {
         res.status(200).json({

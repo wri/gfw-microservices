@@ -6,11 +6,11 @@ const { LISTS_MICROSERVICE_URL } = process.env;
 const BASE_URL = `${LISTS_MICROSERVICE_URL}/fcd`;
 
 const addData = async (response, { listId, category, country, organizationDatabase }) => {
-  let url = `${BASE_URL}/${listId}}`;
+  let url = `${BASE_URL}/${listId}`;
 
-  if (!category.toLowerCase().includes('wdpa')) {
+  if (category.toLowerCase().includes('wdpa')) {
     url = `${url}/wdpa_overlap_country`;
-  } else if (!category.toLowerCase().includes('landmark')) {
+  } else if (category.toLowerCase().includes('landmark')) {
     url = `${url}/landmark_overlap_country`;
   }
 
@@ -31,28 +31,26 @@ const addData = async (response, { listId, category, country, organizationDataba
   }
 };
 
-module.exports = async (request, response) => {
-  const { listId, category, country } = request.query;
-  const { organization_database: organizationDatabase } = request.session;
-
+const getData = async ({ listId, category, country, organizationDatabase }) => {
   const message = [];
 
   if (!listId) {
-    message.append('Missing listId');
+    message.push('Missing listId');
   }
 
   if (!category || !CATEGORIES.join(',').includes(category.toLowerCase())) {
-    message.append('Missing category');
+    message.push('Missing category');
   }
 
   if (!country) {
-    message.append('Missing country');
+    message.push('Missing country');
   }
 
   if (message.length > 0) {
-    return response.status(400).send({
+    return [400, {
+      message,
       error: true,
-    });
+    }];
   }
 
   try {
@@ -71,11 +69,24 @@ module.exports = async (request, response) => {
       });
     }
 
-    return response.status(200).send(result);
+    return [200, result];
   } catch (error) {
-    return response.status(400).send({
+    return [400, {
       message: [error.message],
       error: true,
-    });
+    }];
   }
+}
+
+ const run = async (request, response) => {
+  const { listId, category, country } = request.query;
+  const { organization_database: organizationDatabase } = request.session;
+  const [statusCode, result] = await getData({listId, category, country, organizationDatabase});
+  response.status(statusCode).send(result)
 };
+
+
+module.exports = {
+  run,
+  getData,
+}

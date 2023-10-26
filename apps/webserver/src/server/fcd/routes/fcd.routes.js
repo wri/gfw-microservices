@@ -24,5 +24,5 @@ module.exports = (app, limiter) => {
 
   app.use('/api/fcd', [...routeMiddlewares, fcdRoutes]);
 
-  fcdRoutes.get('', fcdController);
+  fcdRoutes.get('', fcdController.run);
 };

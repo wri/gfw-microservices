@@ -44,7 +44,7 @@ export class FCDService {
       lessRestricted: 0,
     };
 
-    data.forEach((item) => {
+    data?.forEach((item) => {
       const protectedAreasByCategoryArea = JSON.parse(item.protectedAreasByCategoryArea);
       Object.entries(protectedAreasByCategoryArea).forEach(([key, value]) => {
         if (typeof value === 'number') {
@@ -99,7 +99,7 @@ export class FCDService {
     const data = await this.getLandmarkOverlapCountryData(listId, country, clientDatabase);
     let totalArea = 0;
     let indigenousLand = 0;
-    data.forEach((item) => {
+    data?.forEach((item) => {
       totalArea = item.totalArea;
       const landmarkByCategoryArea = JSON.parse(item.landmarkByCategoryArea);
       Object.entries(landmarkByCategoryArea).forEach(([key, value]) => {

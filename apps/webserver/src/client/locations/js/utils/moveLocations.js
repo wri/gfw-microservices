@@ -9,25 +9,6 @@ import { containsPunctuation, getListStatusId, getListValidStatus } from './list
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
 import { saveAsDraftListConfig } from '../../../../config/config/locations.config';
 
-// Moved over from addGFW/StepTwo.js
-const classificationObj = {
-  palmPlantation: { value: 'Property', commodity: 'Palm Oil' },
-  palmMill: { value: 'Supply Shed', commodity: 'Palm Oil' },
-  investment: { value: 'Supply Shed', commodity: 'Investment' },
-  palmGeneric: { value: 'Supply Shed', commodity: 'Palm Oil' },
-  palmFarm: { value: 'Property', commodity: 'Palm Oil' },
-  cattle: { value: 'Property', commodity: 'Cattle' },
-  cattleGeneric: { value: 'Supply Shed', commodity: 'Cattle' },
-  beef: { value: 'Supply Shed', commodity: 'Cattle' },
-  soyFarm: { value: 'Property', commodity: 'Soy' },
-  soySilo: { value: 'Supply Shed', commodity: 'Soy' },
-  soyGeneric: { value: 'Supply Shed', commodity: 'Soy' },
-  cocoa: { value: 'Property', commodity: 'Cocoa' },
-  // other: {value: 'Supply Shed', commodity: 'Other'},
-  cocoaGeneric: { value: 'Property', commodity: 'Cocoa' },
-  palmOil: { value: 'Supply Shed', commodity: 'Palm Oil' },
-};
-
 const filterValidTemplates = (template, activeTemplate, addType, commodityType) => {
   let templateId = 1;
   const validListStatus = getListValidStatus(template.list_status_id);
@@ -660,19 +641,6 @@ const moveLocations = (
     const customAttributes = [];
 
     if (addType === 'commodity') {
-      let active = activeTemplate;
-      if (active === 'investment') {
-        if (commodityType === 'palmOil') {
-          active = 'palmGeneric';
-        } else if (commodityType === 'soy') {
-          active = 'soyGeneric';
-        } else if (commodityType === 'cattle') {
-          active = 'cattleGeneric';
-        } else if (commodityType === 'cocoa') {
-          active = 'cocoaGeneric';
-        }
-      }
-
       const customAttributeNames =
         selectedList.custom_attribute_names.length > 0
           ? selectedList.custom_attribute_names.split(',')
@@ -800,6 +768,7 @@ const moveLocations = (
 
         request.onerror = (serverError) => {
           console.error(serverError);
+          // TODO: this is a bug. `serverError` is not a string. Will always evaluate to `false`
           if (serverError === 'listNotAccessible') {
             reject('listNotAccessible');
           } else {

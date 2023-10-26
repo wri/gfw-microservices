@@ -1,4 +1,3 @@
-const path = require('path');
 const { dataSource, createFeatureFlagsService } = require('../service/createFeatureFlagsService');
 
 module.exports = async function (request, response) {
@@ -8,7 +7,10 @@ module.exports = async function (request, response) {
     await dataSource.initialize();
 
     const featureFlagService = createFeatureFlagsService(dataSource);
-    const newFeatureFlag = await featureFlagService.createFeatureFlag(featureFlagData);
+    const newFeatureFlag = await featureFlagService.createFeatureFlag({
+      ...featureFlagData,
+      updateDateTime: new Date(),
+    });
 
     response.status(200).send({
       success: true,

@@ -1,7 +1,6 @@
 const path = require('path');
 const { DataSource, EntitySchema } = require('typeorm');
 const config = require(path.resolve('./config/config'));
-
 const CONNECTION_TYPE_MSSQL = 'mssql';
 
 const FeatureFlagsEntity = new EntitySchema({
@@ -27,7 +26,7 @@ const FeatureFlagsEntity = new EntitySchema({
       name: 'modifier_user_id',
     },
     updateDateTime: {
-      type: 'date',
+      type: 'datetime2',
       name: 'update_date_time',
     },
   },
@@ -47,8 +46,7 @@ const dataSource = new DataSource({
   },
 });
 
-async function createFeatureFlagsService(dataSource) {
-  // TODO: use ClientStoreConnection class to handle connection cases
+function createFeatureFlagsService(dataSource) {
   const repository = dataSource.getRepository(FeatureFlagsEntity);
 
   async function getAllFeatureFlags(orgId) {
@@ -62,9 +60,10 @@ async function createFeatureFlagsService(dataSource) {
   async function createFeatureFlag(data) {
     const fieldsWithErrors = validateFeatureFlagFields(data);
 
-    if (fieldsWithErrors.length > 0) {
+    if (fieldsWithErrors.length < 1) {
       const featureFlag = repository.create(data);
-      return repository.insert(featureFlag);
+      await repository.insert(featureFlag);
+      return featureFlag;
     } else {
       throw new Error(
         `Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(
@@ -88,9 +87,6 @@ async function createFeatureFlagsService(dataSource) {
     }
     if (typeof data.modifierUserId !== 'number') {
       missingFields.push('modifierUserId');
-    }
-    if (!(data.updateDateTime instanceof Date)) {
-      missingFields.push('updateDateTime');
     }
 
     return missingFields;

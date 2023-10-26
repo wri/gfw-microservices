@@ -1,13 +1,14 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
-import { AppModule } from './app.module';
 import { FCDService } from '../services/fcd.service';
+import { FCDController } from './fcd.controller';
 
 describe('WDPA Overlap Country', () => {
   it(`/GET - without clientDatabase`, async () => {
     const fcdService = { getProtectedAreasByCategoryAreaData: () => [] };
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      controllers: [FCDController],
+      providers: [FCDService],
     })
       .overrideProvider(FCDService)
       .useValue(fcdService)
@@ -31,7 +32,7 @@ describe('WDPA Overlap Country', () => {
   });
 
   it(`/GET - data coming from service`, async () => {
-    const catsService = {
+    const fcdService = {
       aggregateOverlapByCountry: () => {
         return {
           FullyRestrictive: 123,
@@ -41,10 +42,11 @@ describe('WDPA Overlap Country', () => {
     };
 
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      controllers: [FCDController],
+      providers: [FCDService],
     })
       .overrideProvider(FCDService)
-      .useValue(catsService)
+      .useValue(fcdService)
       .compile();
 
     const app = moduleRef.createNestApplication();
@@ -68,7 +70,8 @@ describe('Landmark Overlap Country', () => {
   it(`/GET - without clientDatabase`, async () => {
     const fcdService = { getProtectedAreasByCategoryAreaData: () => [] };
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      controllers: [FCDController],
+      providers: [FCDService],
     })
       .overrideProvider(FCDService)
       .useValue(fcdService)
@@ -102,7 +105,8 @@ describe('Landmark Overlap Country', () => {
     };
 
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      controllers: [FCDController],
+      providers: [FCDService],
     })
       .overrideProvider(FCDService)
       .useValue(fcdService)

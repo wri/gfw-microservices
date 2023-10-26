@@ -1,13 +1,13 @@
+import Polygon from '@arcgis/core/geometry/Polygon';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
+
 import { locationsPage } from '../../../common/js/config';
 import httpRequest from '../../../common/js/utils/httpRequest';
-import { deduceActiveId } from '../../../common/js/utils/templateUtils';
-import { containsPunctuation } from './lists.utils';
-import Polygon from 'esri/geometry/Polygon';
+import { deduceActiveId, deduceActiveName } from '../../../common/js/utils/templateUtils';
+import { containsPunctuation, getListStatusId, getListValidStatus } from './lists.utils';
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
-import GeometryEngine from 'esri/geometry/geometryEngine';
-import { deduceActiveName } from '../../../common/js/utils/templateUtils';
 import { saveAsDraftListConfig } from '../../../../config/config/locations.config';
-import { getListStatusId, getListValidStatus } from './lists.utils';
 
 // Moved over from addGFW/StepTwo.js
 const classificationObj = {
@@ -186,15 +186,14 @@ const assembleGfwListGeojson = (featProps, geometries) => {
     const esriJson = geojsonUtil.geojsonToArcGIS(feature);
     const esriGeometry = new Polygon({
       rings: esriJson.geometry.rings,
-      spatialReference: {
-        wkid: 4326,
-      },
+      spatialReference: SpatialReference.WGS84,
     });
 
-    const area = GeometryEngine.geodesicArea(esriGeometry, 'hectares');
-    geojson.features[geojson.features.length - 1].properties['Analysis Area'] = area;
-    if (!geojson.features[geojson.features.length - 1].properties['Analysis Radius']) {
-      geojson.features[geojson.features.length - 1].properties['Analysis Radius'] = 0;
+    const area = geometryEngine.geodesicArea(esriGeometry, 'hectares');
+    const lastFeature = geojson.features[geojson.features.length - 1];
+    lastFeature.properties['Analysis Area'] = area;
+    if (!lastFeature.properties['Analysis Radius']) {
+      lastFeature.properties['Analysis Radius'] = 0;
     }
   });
 

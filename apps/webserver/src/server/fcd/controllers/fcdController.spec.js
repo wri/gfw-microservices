@@ -2,6 +2,8 @@ const exp = require('constants');
 const axios = require('axios');
 const { getData } = require('./fcdController');
 
+process.env.LISTS_MICROSERVICE_URL = 'http://192.168.5.192:3334/api';
+
 describe('FCD Controller', () => {
   test('should return 400 when all input parameters is empty', async () => {
     const [status, response] = await getData({});

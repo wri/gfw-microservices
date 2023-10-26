@@ -2,8 +2,6 @@ const exp = require('constants');
 const axios = require('axios');
 const { getData } = require('./fcdController');
 
-process.env.LISTS_MICROSERVICE_URL = 'http://192.168.5.192:3334/api';
-
 describe('FCD Controller', () => {
   test('should return 400 when all input parameters is empty', async () => {
     const [status, response] = await getData({});
@@ -80,7 +78,7 @@ describe('FCD Controller', () => {
     });
 
     expect(axios.get).toHaveBeenCalledWith(
-      'http://192.168.5.192:3334/api/fcd/5692/wdpa_overlap_country/Argentina?clientDatabase=Test-CO'
+      'http://localhost:3333/api/fcd/5692/wdpa_overlap_country/Argentina?clientDatabase=Test-CO'
     );
     expect(status).toBe(200);
     expect(response.error).toBe(false);
@@ -111,7 +109,7 @@ describe('FCD Controller', () => {
     });
 
     expect(axios.get).toHaveBeenCalledWith(
-      'http://192.168.5.192:3334/api/fcd/5692/landmark_overlap_country/Argentina?clientDatabase=Test-CO'
+      'http://localhost:3333/api/fcd/5692/landmark_overlap_country/Argentina?clientDatabase=Test-CO'
     );
     expect(status).toBe(200);
     expect(response.error).toBe(false);

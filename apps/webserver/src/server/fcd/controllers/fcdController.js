@@ -3,7 +3,7 @@ const { forEach } = require('lodash');
 const CATEGORIES = ['wdpa', 'landmark'];
 
 const { LISTS_MICROSERVICE_URL } = process.env;
-const BASE_URL = `${LISTS_MICROSERVICE_URL}/fcd`;
+const BASE_URL = `${LISTS_MICROSERVICE_URL ?? 'http://localhost:3333/api'}/fcd`;
 
 const addData = async (response, { listId, category, country, organizationDatabase }) => {
   let url = `${BASE_URL}/${listId}`;

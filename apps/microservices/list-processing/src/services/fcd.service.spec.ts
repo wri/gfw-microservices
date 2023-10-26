@@ -1,65 +1,67 @@
-import { FCDService } from "./fcd.service";
+import { FCDService } from './fcd.service';
 
 describe('WDPA Overlap Country', () => {
   const data = [
     {
       listId: 5692,
       locationId: 2,
-      protectedAreasByCategoryArea: '{}'
+      protectedAreasByCategoryArea: '{}',
     },
     {
       listId: 5692,
       locationId: 3,
-      protectedAreasByCategoryArea: '{}'
+      protectedAreasByCategoryArea: '{}',
     },
     {
       listId: 5692,
       locationId: 4,
-      protectedAreasByCategoryArea: '{}'
+      protectedAreasByCategoryArea: '{}',
     },
     {
       listId: 5692,
       locationId: 6,
-      protectedAreasByCategoryArea: '{"Category Ia":1620.7222,"Category II":156.9743,"Category VI":0.2748}'
+      protectedAreasByCategoryArea:
+        '{"Category Ia":1620.7222,"Category II":156.9743,"Category VI":0.2748}',
     },
-  ]
+  ];
 
-  it(``, async() => {
+  it(``, async () => {
     const fcdService = new FCDService();
-    jest.spyOn(fcdService, 'getProtectedAreasByCategoryAreaData').mockImplementation(() => Promise.resolve(data));
+    jest
+      .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
+      .mockImplementation(() => Promise.resolve(data));
 
     const result = await fcdService.aggregateOverlapByCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      "fullyRestrictive": 1777.6965,
-      "lessRestricted": 0.2748,
+      fullyRestrictive: 1777.6965,
+      lessRestricted: 0.2748,
     });
-
   });
 
-
-  it(``, async() => {
+  it(``, async () => {
     const fcdService = new FCDService();
-    jest.spyOn(fcdService, 'getProtectedAreasByCategoryAreaData').mockImplementation(() => Promise.resolve(undefined));
+    jest
+      .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
+      .mockImplementation(() => Promise.resolve(undefined));
 
     const result = await fcdService.aggregateOverlapByCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      "fullyRestrictive": 0,
-      "lessRestricted": 0,
+      fullyRestrictive: 0,
+      lessRestricted: 0,
     });
-
   });
 
-
-  it(``, async() => {
+  it(``, async () => {
     const fcdService = new FCDService();
-    jest.spyOn(fcdService, 'getProtectedAreasByCategoryAreaData').mockImplementation(() => Promise.resolve([]));
+    jest
+      .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
+      .mockImplementation(() => Promise.resolve([]));
 
     const result = await fcdService.aggregateOverlapByCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      "fullyRestrictive": 0,
-      "lessRestricted": 0,
+      fullyRestrictive: 0,
+      lessRestricted: 0,
     });
-
   });
 });
 
@@ -68,63 +70,65 @@ describe('Landmark Overlap Country', () => {
     {
       listId: 5692,
       locationId: 2,
-      totalArea: 314.208100,
-      landmarkByCategoryArea: '{}'
+      totalArea: 314.2081,
+      landmarkByCategoryArea: '{}',
     },
     {
       listId: 5692,
       locationId: 3,
-      totalArea: 313.064800,
-      landmarkByCategoryArea: '{"Not Reported":313.0648}'
+      totalArea: 313.0648,
+      landmarkByCategoryArea: '{"Not Reported":313.0648}',
     },
     {
       listId: 5692,
       locationId: 4,
-      totalArea: 5024.190100,
-      landmarkByCategoryArea: '{}'
+      totalArea: 5024.1901,
+      landmarkByCategoryArea: '{}',
     },
     {
       listId: 5692,
       locationId: 6,
-      totalArea: 5025.206700,
-      landmarkByCategoryArea: '{"Not Reported":909.8068}'
+      totalArea: 5025.2067,
+      landmarkByCategoryArea: '{"Not Reported":909.8068}',
     },
-  ]
+  ];
 
-  it(``, async() => {
+  it(``, async () => {
     const fcdService = new FCDService();
-    jest.spyOn(fcdService, 'getLandmarkOverlapCountryData').mockImplementation(() => Promise.resolve(data));
+    jest
+      .spyOn(fcdService, 'getLandmarkOverlapCountryData')
+      .mockImplementation(() => Promise.resolve(data));
 
     const result = await fcdService.landmarkOverlapCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      "indigenous": 1222.8716,
-      "nonIndegenous": 3802.3351,
+      indigenous: 1222.8716,
+      nonIndegenous: 3802.3351,
     });
   });
 
-  it(``, async() => {
+  it(``, async () => {
     const fcdService = new FCDService();
-    jest.spyOn(fcdService, 'getLandmarkOverlapCountryData').mockImplementation(() => Promise.resolve(undefined));
+    jest
+      .spyOn(fcdService, 'getLandmarkOverlapCountryData')
+      .mockImplementation(() => Promise.resolve(undefined));
 
     const result = await fcdService.landmarkOverlapCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      "indigenous": 0,
-      "nonIndegenous": 0
+      indigenous: 0,
+      nonIndegenous: 0,
     });
   });
 
-  it(``, async() => {
+  it(``, async () => {
     const fcdService = new FCDService();
-    jest.spyOn(fcdService, 'getLandmarkOverlapCountryData').mockImplementation(() => Promise.resolve([]));
+    jest
+      .spyOn(fcdService, 'getLandmarkOverlapCountryData')
+      .mockImplementation(() => Promise.resolve([]));
 
     const result = await fcdService.landmarkOverlapCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      "indigenous": 0,
-      "nonIndegenous": 0,
+      indigenous: 0,
+      nonIndegenous: 0,
     });
   });
-
 });
-
-
-

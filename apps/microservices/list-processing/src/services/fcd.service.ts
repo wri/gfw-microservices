@@ -5,8 +5,7 @@ import {
   getLandmarkByCategoryArea,
   getProtectedAreasByCategoryArea,
 } from '@wri-monorepos/sql';
-import { Injectable, Inject, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger } from '@nestjs/common';
 
 import * as sql from 'mssql';
 
@@ -16,9 +15,6 @@ export class FCDService {
   INDIGENOUS_LAND = 'Not Reported';
 
   private readonly logger = new Logger(FCDService.name);
-
-  @Inject(ConfigService)
-  private readonly config: ConfigService;
 
   sqlConfig = {
     user: process.env.MSSQL_USERNAME,

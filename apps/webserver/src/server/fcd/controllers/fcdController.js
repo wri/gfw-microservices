@@ -47,10 +47,13 @@ const getData = async ({ listId, category, country, organizationDatabase }) => {
   }
 
   if (message.length > 0) {
-    return [400, {
-      message,
-      error: true,
-    }];
+    return [
+      400,
+      {
+        message,
+        error: true,
+      },
+    ];
   }
 
   try {
@@ -71,22 +74,24 @@ const getData = async ({ listId, category, country, organizationDatabase }) => {
 
     return [200, result];
   } catch (error) {
-    return [400, {
-      message: [error.message],
-      error: true,
-    }];
+    return [
+      400,
+      {
+        message: [error.message],
+        error: true,
+      },
+    ];
   }
-}
-
- const run = async (request, response) => {
-  const { listId, category, country } = request.query;
-  const { organization_database: organizationDatabase } = request.session;
-  const [statusCode, result] = await getData({listId, category, country, organizationDatabase});
-  response.status(statusCode).send(result)
 };
 
+const run = async (request, response) => {
+  const { listId, category, country } = request.query;
+  const { organization_database: organizationDatabase } = request.session;
+  const [statusCode, result] = await getData({ listId, category, country, organizationDatabase });
+  response.status(statusCode).send(result);
+};
 
 module.exports = {
   run,
   getData,
-}
+};

@@ -2,7 +2,7 @@ const path = require('path');
 const { DataSource, EntitySchema } = require('typeorm');
 const config = require(path.resolve('./config/config'));
 
-export const CONNECTION_TYPE_MSSQL = 'mssql';
+const CONNECTION_TYPE_MSSQL = 'mssql';
 
 const FeatureFlagsEntity = new EntitySchema({
   name: 'FeatureFlags',
@@ -34,7 +34,7 @@ const FeatureFlagsEntity = new EntitySchema({
 });
 
 const dataSource = new DataSource({
-  type: 'mssql',
+  type: CONNECTION_TYPE_MSSQL,
   logging: true,
   host: config.SQLConnection.host,
   port: parseInt(config.SQLConnection.port, 10),
@@ -47,69 +47,12 @@ const dataSource = new DataSource({
   },
 });
 
-class ClientStoreConnection {
-  constructor(config, entities = []) {
-    this.entities = entities;
-    this.config = config;
-    this.connections = new Map();
-  }
-  
-  async getConnection(database) {
-    const connectionId = config.SQLConnection.host + database;
-    const env = process.env.NODE_ENV;
-    
-    if (!this.connections.has(connectionId)) {
-      try {
-        const connectionDb = new DataSource({
-          type: CONNECTION_TYPE_MSSQL,
-          database,
-          synchronize: env === TEST_ENVIRONMENT,
-          logging: true,
-          entities: [this.entities],
-          username: config.SQLConnection.username,
-          password: config.SQLConnection.password,
-          host: config.SQLConnection.host,
-          port: parseInt(config.SQLConnection.port, 10),
-          extra: {
-            trustServerCertificate: true,
-          },
-        });
-
-        this.connections[connectionId] = await connectionDb.initialize();
-
-        this.connections.set(connectionId, {
-          timeout: setTimeout(() => {
-            this.clearCache(connectionId);
-          }, 60000),
-          connection: this.connections[connectionId],
-        });
-
-        console.log(`Data Source ${database} has been initialized`);
-        return this.connections.get(connectionId).connection;
-      } catch (error) {
-        console.error(`Data Source ${database} initialization error on env: ${env}`, error);
-        throw new Error(`Data Source initialization error`);
-      }
-    }
-
-    return this.connections.get(connectionId).connection;
-  }
-
-  clearCache = async (connectionId) => {
-    const cached = this.connections.get(connectionId);
-    if (cached) {
-      this.connections.delete(connectionId);
-      (await cached.connection).destroy();
-    }
-  };
-}
-
 async function createFeatureFlagsService(dataSource) {
   // TODO: use ClientStoreConnection class to handle connection cases
   const repository = dataSource.getRepository(FeatureFlagsEntity);
 
   async function getAllFeatureFlags(orgId) {
-    return repository.find({ where: { orgId }});
+    return repository.find({ where: { orgId } });
   }
 
   async function getFeatureFlagById(flagId) {
@@ -123,7 +66,11 @@ async function createFeatureFlagsService(dataSource) {
       const featureFlag = repository.create(data);
       return repository.insert(featureFlag);
     } else {
-      throw new Error(`Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(', ')}`);
+      throw new Error(
+        `Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(
+          ', '
+        )}`
+      );
     }
   }
 

@@ -3,14 +3,24 @@ const { dataSource, createFeatureFlagsService } = require('../service/createFeat
 
 module.exports = async function (request, response) {
   const { body: featureFlagData } = request;
-  const featureFlagService = createFeatureFlagsService(dataSource);
 
-  await dataSource.initialize();
-  const newFeatureFlag = await featureFlagService.createFeatureFlag(featureFlagData);
-  await dataSource.destroy();
+  try {
+    await dataSource.initialize();
 
-  response.status(200).send({
-    success: true,
-    newFeatureFlag,
-  });
+    const featureFlagService = createFeatureFlagsService(dataSource);
+    const newFeatureFlag = await featureFlagService.createFeatureFlag(featureFlagData);
+
+    response.status(200).send({
+      success: true,
+      newFeatureFlag,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).send({
+      success: false,
+      error: 'An error occurred while processing the createFeatureFlag request.',
+    });
+  } finally {
+    await dataSource.destroy();
+  }
 };

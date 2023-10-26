@@ -15,7 +15,7 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
 {
 	"flagId": "self",
-	"orgId": 3,
+	"orgId": 1,
 	"flagState": true,
 	"modifierUserId": 1692 
 }

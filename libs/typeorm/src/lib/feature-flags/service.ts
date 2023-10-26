@@ -9,7 +9,7 @@ export class FeatureFlagsService {
   }
 
   async getAllFeatureFlags(orgId): Promise<FeatureFlags[]> {
-    return this.repository.find({ where: { orgId }});
+    return this.repository.find({ where: { orgId } });
   }
 
   async getFeatureFlagById(flagId: string): Promise<FeatureFlags | undefined> {
@@ -23,7 +23,11 @@ export class FeatureFlagsService {
       const featureFlag = this.repository.create(data);
       return this.repository.save(featureFlag);
     } else {
-      throw new Error(`Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(', ')}`);
+      throw new Error(
+        `Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(
+          ', '
+        )}`
+      );
     }
   }
 

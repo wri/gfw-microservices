@@ -2,16 +2,25 @@ const path = require('path');
 const { dataSource, createFeatureFlagsService } = require('../service/createFeatureFlagsService');
 
 module.exports = async function (request, response) {
-  console.log("🚀 ~ file: getFeatureFlagByFlagId.js:5 ~ request:", request.params)
   const { flagId } = request.params;
-  const featureFlagService = createFeatureFlagsService(dataSource);
 
-  await dataSource.initialize();
-  const featureFlag = await featureFlagService.getFeatureFlagById(flagId);
-  await dataSource.destroy();
+  try {
+    await dataSource.initialize();
 
-  response.status(200).send({
-    success: true,
-    featureFlag,
-  });
+    const featureFlagService = createFeatureFlagsService(dataSource);
+    const featureFlag = await featureFlagService.getFeatureFlagById(flagId);
+
+    response.status(200).send({
+      success: true,
+      featureFlag,
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).send({
+      success: false,
+      error: 'An error occurred while processing the getFeatureFlagById request.',
+    });
+  } finally {
+    await dataSource.destroy();
+  }
 };

@@ -3,11 +3,12 @@ import Dialog from 'material-ui/Dialog';
 import DatePicker from 'material-ui/DatePicker';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import esriConfig from 'esri/config';
-import Point from 'esri/geometry/Point';
-import GeometryEngine from 'esri/geometry/geometryEngine';
-import GeometryService from 'esri/tasks/GeometryService';
-import AreasAndLengthsParameters from 'esri/tasks/support/AreasAndLengthsParameters';
+import Point from '@arcgis/core/geometry/Point';
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
+import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
+import { areasAndLengths } from '@arcgis/core/rest/geometryService';
+
+import AreasAndLengthsParameters from '@arcgis/core/rest/support/AreasAndLengthsParameters';
 
 import Upload from './Upload';
 import DrawShape from './DrawShape';
@@ -50,6 +51,7 @@ import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.util
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
 
 import '../../../css/addLocation.scss';
+import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 
 const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } =
   proLayers;
@@ -262,15 +264,7 @@ export default class AddLocation extends Component {
       selectedAnalysis: getAnalysesSelectedByDefault(),
     };
 
-    require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
-      this.WebMercatorUtils = webMercatorUtils;
-    });
-
     originalState = this.state;
-
-    esriConfig.request.corsEnabledServers.push('https://gis-gfw.wri.org');
-    esriConfig.request.corsEnabledServers.push('https://production-api.globalforestwatch.org');
-    esriConfig.request.corsEnabledServers.push('production-api.globalforestwatch.org');
   }
 
   // group_comp >>> parent group
@@ -630,7 +624,7 @@ export default class AddLocation extends Component {
     let wgsGeometry = {};
 
     if (geometry.spatialReference.wkid === 102100) {
-      wgsGeometry = this.WebMercatorUtils.webMercatorToGeographic(geometry);
+      wgsGeometry = webMercatorToGeographic(geometry);
     } else {
       wgsGeometry = geometry;
     }
@@ -643,14 +637,12 @@ export default class AddLocation extends Component {
         saved: false,
       });
     } else {
-      const geomService = new GeometryService(
-        'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer'
-      );
+      const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
       const params = new AreasAndLengthsParameters({
         areaUnit: 'hectares',
         polygons: [wgsGeometry],
       });
-      geomService.areasAndLengths(params).then((res) => {
+      areasAndLengths(url, params).then((res) => {
         const area = res.areas && res.areas.length > 0 ? res.areas[0] : 0;
 
         this.setState({
@@ -702,13 +694,13 @@ export default class AddLocation extends Component {
         if (this.state.measurementUnit === 'hectares' && setRadius === '') {
           const hectares_to_kilosSquared = distance / 100;
           const radius_in_KM = Math.sqrt(hectares_to_kilosSquared / Math.PI);
-          buffer = GeometryEngine.geodesicBuffer(
+          buffer = geometryEngine.geodesicBuffer(
             this.state.originalGeometry,
             radius_in_KM.toFixed(2),
             'kilometers'
           );
         } else {
-          buffer = GeometryEngine.geodesicBuffer(
+          buffer = geometryEngine.geodesicBuffer(
             this.state.originalGeometry,
             distance.toFixed(2),
             'kilometers'
@@ -1335,7 +1327,7 @@ export default class AddLocation extends Component {
           : new Point({
               latitude: this.state.geometry.latitude,
               longitude: this.state.geometry.longitude,
-              spatialReference: { wkid: 4326 },
+              spatialReference: SpatialReference.WGS84,
             });
 
       if (geom.latitude) {

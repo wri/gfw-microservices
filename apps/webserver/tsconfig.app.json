@@ -8,6 +8,6 @@
     "module": "commonjs",
     "types": ["node", "express"]
   },
-  "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.test.ts", "src/client/**/*"],
   "include": ["**/*.ts", "**/*.js"]
 }

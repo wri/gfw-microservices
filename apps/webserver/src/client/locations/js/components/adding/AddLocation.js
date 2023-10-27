@@ -51,7 +51,7 @@ import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.util
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
 
 import '../../../css/addLocation.scss';
-import SpatialReference from "@arcgis/core/geometry/SpatialReference";
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 
 const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } =
   proLayers;
@@ -637,7 +637,8 @@ export default class AddLocation extends Component {
         saved: false,
       });
     } else {
-      const url = 'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
+      const url =
+        'https://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer';
       const params = new AreasAndLengthsParameters({
         areaUnit: 'hectares',
         polygons: [wgsGeometry],

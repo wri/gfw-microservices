@@ -5,29 +5,55 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
+      "executor": "@nrwl/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/webserver",
-        "rootDir": "apps/webserver",
         "main": "apps/webserver/src/server.js",
-        "outputFileName": "src/server.js",
+        "outputPath": "dist/apps/webserver",
         "tsConfig": "apps/webserver/tsconfig.app.json",
         "assets": [
-          "**/tsconfig.client.json",
-          "apps/webserver/src/vectorTiles/**",
-          "apps/webserver/src/client/**",
-          "apps/webserver/**/.babelrc",
-          "apps/webserver/**/*.png",
-          "apps/webserver/**/*.pug",
-          "apps/webserver/**/*.key",
-          "apps/webserver/**/*.crt"
-        ]
+          {
+            "glob": "**/*",
+            "input": "apps/webserver/src/client/",
+            "output": "apps/webserver/src/client/"
+          },
+          {
+            "glob": "src/vectorTiles/.gitkeep",
+            "input": "apps/webserver/",
+            "output": "apps/webserver"
+          },
+          {
+            "glob": "tsconfig.client.json",
+            "input": "apps/webserver/",
+            "output": "apps/webserver"
+          },
+          { "glob": "**/.babelrc", "input": "apps/webserver/", "output": "apps/webserver" },
+          { "glob": "**/*.png", "input": "apps/webserver/", "output": "apps/webserver" },
+          { "glob": "**/*.pug", "input": "apps/webserver/", "output": "apps/webserver" },
+          { "glob": "**/*.key", "input": "apps/webserver/", "output": "apps/webserver" },
+          { "glob": "**/*.crt", "input": "apps/webserver/", "output": "apps/webserver" }
+        ],
+        "platform": "node",
+        "format": ["cjs"],
+        "bundle": false,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
       }
     },
     "serve": {
       "executor": "@nx/js:node",
       "options": {
-        "buildTarget": "webserver:build"
+        "buildTarget": "webserver:build",
+        "runtimeArgs": ["--max-old-space-size=4096"]
       }
     },
     "testweb": {

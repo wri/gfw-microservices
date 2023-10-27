@@ -13,6 +13,7 @@ const FeatureFlagsEntity = new EntitySchema({
       name: 'flag_id',
     },
     orgId: {
+      primary: true,
       type: 'int',
       name: 'org_id',
       nullable: true,
@@ -50,27 +51,61 @@ function createFeatureFlagsService(dataSource) {
   const repository = dataSource.getRepository(FeatureFlagsEntity);
 
   async function getAllFeatureFlags(orgId) {
-    return repository.find({ where: { orgId } });
+    let featureFlagsCollection;
+
+    try {
+      await dataSource.initialize();
+      featureFlagsCollection = await repository.find({ where: { orgId } });
+    } catch (error) {
+      throw new Error(error);
+    } finally {
+      await dataSource.destroy();
+    }
+
+    return featureFlagsCollection;
   }
 
-  async function getFeatureFlagById(flagId) {
-    return repository.find({ where: { flagId } });
+  async function getFeatureFlagsByFlagId(flagId) {
+    let featureFlagsCollection;
+
+    try {
+      await dataSource.initialize();
+      featureFlagsCollection = await repository.findBy({
+        flagId: flagId,
+      });
+    } catch (error) {
+      throw new Error(error);
+    } finally {
+      await dataSource.destroy();
+    }
+
+    return featureFlagsCollection;
   }
 
   async function createFeatureFlag(data) {
     const fieldsWithErrors = validateFeatureFlagFields(data);
 
     if (fieldsWithErrors.length < 1) {
-      const featureFlag = repository.create(data);
-      await repository.insert(featureFlag);
+      let featureFlag;
+
+      try {
+        await dataSource.initialize();
+        featureFlag = repository.create(data);
+        await repository.insert(featureFlag);
+      } catch (error) {
+        throw new Error(error);
+      } finally {
+        await dataSource.destroy();
+      }
+
       return featureFlag;
-    } else {
-      throw new Error(
-        `Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(
-          ', '
-        )}`
-      );
     }
+
+    throw new Error(
+      `Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(
+        ', '
+      )}`
+    );
   }
 
   function validateFeatureFlagFields(data) {
@@ -94,7 +129,7 @@ function createFeatureFlagsService(dataSource) {
 
   return {
     getAllFeatureFlags,
-    getFeatureFlagById,
+    getFeatureFlagsByFlagId,
     createFeatureFlag,
   };
 }

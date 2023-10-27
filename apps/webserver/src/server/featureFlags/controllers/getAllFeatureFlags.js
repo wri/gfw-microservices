@@ -2,13 +2,10 @@ const { dataSource, createFeatureFlagsService } = require('../service/createFeat
 
 module.exports = async function (request, response) {
   const { organization_id } = request.session;
+  const { getAllFeatureFlags } = createFeatureFlagsService(dataSource);
 
   try {
-    await dataSource.initialize();
-
-    const featureFlagService = createFeatureFlagsService(dataSource);
-    const featureFlagsCollection = await featureFlagService.getAllFeatureFlags(organization_id);
-
+    const featureFlagsCollection = await getAllFeatureFlags(organization_id);
     response.status(200).send({
       success: true,
       featureFlagsCollection,
@@ -19,7 +16,5 @@ module.exports = async function (request, response) {
       success: false,
       error: 'An error occurred while processing the getAllFeatureFlags request.',
     });
-  } finally {
-    await dataSource.destroy();
   }
 };

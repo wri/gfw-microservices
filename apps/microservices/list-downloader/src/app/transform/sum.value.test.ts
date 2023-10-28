@@ -1,6 +1,6 @@
 import { SumValue } from './sum.value';
 
-describe('GetLatestValue', () => {
+describe('SumValue', () => {
   test('Should return undefined when list to filter de object is undefined', () => {
     const total = new SumValue(undefined);
     total._transform(

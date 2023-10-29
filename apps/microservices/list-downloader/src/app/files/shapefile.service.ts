@@ -14,6 +14,7 @@ import { ConvertObject2Geojson } from '../transform/convert.object.2.geojson';
 import { ConvertObject2String } from '../transform/convert.object.2.string';
 import { finished } from 'stream/promises';
 import { FormatNumber } from '../transform/format.number';
+import { ReplaceSpace2Underscore } from '../transform/replace.space.2.underscore';
 
 @Injectable()
 export class ShapefileService extends IPipeService {
@@ -51,12 +52,6 @@ export class ShapefileService extends IPipeService {
     analysisData.forEach((data) => this.inputStream.write(data));
   }
 
-  async finish(filters: GenerationFileRequest) {
-    const { listId } = filters;
-    this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
-    await this.waitFinishedProcess(this.inputStream);
-  }
-
   private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
     const open = '{"type":"FeatureCollection","features":[';
     const close = ']}';
@@ -74,6 +69,7 @@ export class ShapefileService extends IPipeService {
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
+      .pipe(new ReplaceSpace2Underscore())
       .pipe(new FormatNumber())
       .pipe(new ConvertObject2Geojson())
       .pipe(new ConvertObject2String())
@@ -81,20 +77,23 @@ export class ShapefileService extends IPipeService {
       .pipe(JSONStream.stringify(open, '\n,\n', close))
       .pipe(this.fileStream);
 
-    this.inputStream.on('end', async () => {
-      await finished(this.fileStream);
-      await this.convertGeojsonToSHP(key, listName);
-      this.logger.log(`(${listId}) - Data has been zipped`);
-      await this.uploadToS3(filters);
-    });
-
     return this.inputStream;
+  }
+
+  async finish(filters: GenerationFileRequest) {
+    const { listId, key, listName } = filters;
+    this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
+    await this.waitFinishedProcess(this.inputStream);
+    await finished(this.fileStream);
+    await this.convertGeojsonToSHP(key, listName);
+    this.logger.log(`(${listId}) - Data has been zipped`);
+    await this.uploadToS3(filters);
   }
 
   private async convertGeojsonToSHP(key: string, listName: string) {
     const options = {
       layer: 'gfw-pro',
-      targetCrs: 2154,
+      targetCrs: 4326,
     };
     await convert(`/tmp/wri-${key}/${listName}.geojson`, `/tmp/${key}.zip`, options);
   }

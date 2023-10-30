@@ -25,3 +25,4 @@ export * from './deleteLocationIdsFilteredDataForUserList';
 export * from './getCountAfiAnalysisByListId';
 export * from './getPaginatedAfiAnalysisByListId';
 export * from './insertLog';
+export * from './setS3UrlAndExpirationDate';

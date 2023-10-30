@@ -41,7 +41,7 @@ import { parse, load } from '@loaders.gl/core';
 import { ZipLoader } from '@loaders.gl/zip';
 import { KMLLoader } from '@loaders.gl/kml';
 
-import SpatialReference from 'esri/geometry/SpatialReference';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import MultiGridTable from '../edit/table/MultiGridTable';
 // eslint-disable-next-line camelcase
 import { _getFeatures, prepUploadFeatures_AddLocationID } from '../edit/table/MultiGridTable.util';
@@ -515,7 +515,7 @@ export default class StepThree extends Component {
               }
               projection.load().then(() => {
                 const oldSpatialRef = new SpatialReference(projDefs[1]);
-                const newSpatialRef = new SpatialReference(4326);
+                const newSpatialRef = SpatialReference.WGS84;
                 data.attributes.features.forEach((feat) => {
                   const { properties } = feat;
                   if (properties.Verified_) {
@@ -565,10 +565,7 @@ export default class StepThree extends Component {
                       y: feat.geometry.coordinates[1],
                       spatialReference: oldSpatialRef,
                     };
-                    const projectedCenterPoint = projection.project(
-                      centerPoint,
-                      newSpatialRef
-                    );
+                    const projectedCenterPoint = projection.project(centerPoint, newSpatialRef);
                     if (
                       feat.properties.Analysis_A &&
                       feat.properties.Analysis_A !== ' ' &&

@@ -8,15 +8,15 @@
 // Imports for this module
 const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
 
-const invoke = async (FunctionName, payload = '') => {
-  const client = new LambdaClient({
-    apiVersion: '2015-03-31',
-    region: 'us-east-1',
-    httpOptions: {
-      timeout: 300000,
-    },
-  });
+const client = new LambdaClient({
+  apiVersion: '2015-03-31',
+  region: 'us-east-1',
+  httpOptions: {
+    timeout: 300000,
+  },
+});
 
+const invoke = async (FunctionName, payload = '') => {
   const functionName = `${FunctionName}-${process.env.NODE_ENV}`;
   const payloadString = JSON.stringify(payload);
   const parameters = {

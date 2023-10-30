@@ -14,14 +14,19 @@ import _every from 'lodash/every';
 import _maxBy from 'lodash/maxBy';
 import moment from 'moment';
 
-import { fieldValidations } from '../../utils/validations';
-import { locationsPage, convertURL } from '../../../../common/js/config';
-import downloaders from '../../../../common/js/utils/downloaders';
+import { parse, load } from '@loaders.gl/core';
+import { ZipLoader } from '@loaders.gl/zip';
+import { KMLLoader } from '@loaders.gl/kml';
+
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import * as projection from '@arcgis/core/geometry/projection';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 
+import { fieldValidations } from '../../utils/validations';
+import { locationsPage, convertURL } from '../../../../common/js/config';
+import downloaders from '../../../../common/js/utils/downloaders';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import {
   discernProjection,
@@ -36,17 +41,10 @@ import Button from '../../../../common/js/components/Button';
 import IconBadgeCheck from '../../../../common/js/components/icon/IconBadgeCheck';
 import IconExclamationTriangle from '../../../../common/js/components/icon/IconExclamationTriangle';
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
-
-import { parse, load } from '@loaders.gl/core';
-import { ZipLoader } from '@loaders.gl/zip';
-import { KMLLoader } from '@loaders.gl/kml';
-
-import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import MultiGridTable from '../edit/table/MultiGridTable';
 // eslint-disable-next-line camelcase
 import { _getFeatures, prepUploadFeatures_AddLocationID } from '../edit/table/MultiGridTable.util';
 import { messageIncorrectFileTypeUpload } from './Uploading.config';
-
 import {
   excelLocationClassificationExcluded,
   excelLocationClassificationMandatory,

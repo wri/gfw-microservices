@@ -18,8 +18,8 @@ import { fieldValidations } from '../../utils/validations';
 import { locationsPage, convertURL } from '../../../../common/js/config';
 import downloaders from '../../../../common/js/utils/downloaders';
 import Polygon from '@arcgis/core/geometry/Polygon';
+import Point from '@arcgis/core/geometry/Point';
 
-import Point from 'esri/geometry/Point';
 import GeometryEngine from 'esri/geometry/geometryEngine';
 import * as projection from '@arcgis/core/geometry/projection';
 

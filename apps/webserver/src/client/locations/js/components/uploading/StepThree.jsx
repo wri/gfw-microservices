@@ -914,7 +914,7 @@ export default class StepThree extends Component {
         });
         submittedData.forEach((feature) => {
           const keys = Object.keys(feature);
-          if (!keys.indexOf('Time Horizon') === -1) {
+          if (!(keys.indexOf('Time Horizon') === -1)) {
             feature['Time Horizon'] = '';
           }
           feature['Accuracy Rating of Location Entered'] = accuracy;

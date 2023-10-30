@@ -50,6 +50,21 @@ const dataSource = new DataSource({
 function createFeatureFlagsService(dataSource) {
   const repository = dataSource.getRepository(FeatureFlagsEntity);
 
+  async function getFeatureFlagWhere(where = {}) {
+    let featureFlagsCollection;
+
+    try {
+      await dataSource.initialize();
+      featureFlagsCollection = await repository.find({ where });
+    } catch (error) {
+      throw new Error(error);
+    } finally {
+      await dataSource.destroy();
+    }
+
+    return featureFlagsCollection;
+  }
+
   async function getAllFeatureFlags(orgId) {
     let featureFlagsCollection;
 
@@ -59,7 +74,6 @@ function createFeatureFlagsService(dataSource) {
     } catch (error) {
       throw new Error(error);
     } finally {
-      await dataSource.destroy();
     }
 
     return featureFlagsCollection;
@@ -70,7 +84,7 @@ function createFeatureFlagsService(dataSource) {
 
     try {
       await dataSource.initialize();
-      featureFlagsCollection = await repository.findBy({
+      featureFlagsCollection = await repository.find({
         flagId: flagId,
       });
     } catch (error) {
@@ -128,6 +142,7 @@ function createFeatureFlagsService(dataSource) {
   }
 
   return {
+    getFeatureFlagWhere,
     getAllFeatureFlags,
     getFeatureFlagsByFlagId,
     createFeatureFlag,

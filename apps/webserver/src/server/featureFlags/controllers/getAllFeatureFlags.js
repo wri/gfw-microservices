@@ -2,10 +2,13 @@ const { dataSource, createFeatureFlagsService } = require('../service/createFeat
 
 module.exports = async function (request, response) {
   const { organization_id } = request.session;
-  const { getAllFeatureFlags } = createFeatureFlagsService(dataSource);
+  const { getFeatureFlagWhere } = createFeatureFlagsService(dataSource);
 
   try {
-    const featureFlagsCollection = await getAllFeatureFlags(organization_id);
+    const featureFlagsCollection = await getFeatureFlagWhere([
+      { orgId: organization_id },
+      { orgId: null },
+    ]);
     response.status(200).send({
       success: true,
       featureFlagsCollection,

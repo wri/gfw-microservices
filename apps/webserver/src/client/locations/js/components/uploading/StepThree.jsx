@@ -19,8 +19,7 @@ import { locationsPage, convertURL } from '../../../../common/js/config';
 import downloaders from '../../../../common/js/utils/downloaders';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
-
-import GeometryEngine from 'esri/geometry/geometryEngine';
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import * as projection from '@arcgis/core/geometry/projection';
 
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
@@ -544,7 +543,7 @@ export default class StepThree extends Component {
                     }
 
                     if (!feat.properties.Analysis_A) {
-                      const area = GeometryEngine.geodesicArea(feat.geometry, 'hectares');
+                      const area = geometryEngine.geodesicArea(feat.geometry, 'hectares');
                       feat.properties.Analysis_A = area;
                     }
 
@@ -577,14 +576,14 @@ export default class StepThree extends Component {
                       feat.properties.Analysis_R !== ' '
                     ) {
                       feat.properties.Analysis_A = '';
-                      feat.geometry = GeometryEngine.geodesicBuffer(
+                      feat.geometry = geometryEngine.geodesicBuffer(
                         projectedCenterPoint,
                         parseFloat(feat.properties.Analysis_R),
                         'kilometers'
                       );
                     } else if (feat.properties.Analysis_R && feat.properties.Analysis_R !== ' ') {
                       feat.properties.Analysis_A = '';
-                      feat.geometry = GeometryEngine.geodesicBuffer(
+                      feat.geometry = geometryEngine.geodesicBuffer(
                         projectedCenterPoint,
                         parseFloat(feat.properties.Analysis_R),
                         'kilometers'
@@ -594,7 +593,7 @@ export default class StepThree extends Component {
                         parseFloat(feat.properties.Analysis_A) / Math.PI
                       );
                       feat.properties.Analysis_A = '';
-                      feat.geometry = GeometryEngine.geodesicBuffer(
+                      feat.geometry = geometryEngine.geodesicBuffer(
                         projectedCenterPoint,
                         parseFloat(feat.properties.Analysis_R),
                         'kilometers'
@@ -1115,7 +1114,7 @@ export default class StepThree extends Component {
           }
 
           if (!feat.properties[analysisArea]) {
-            feat.properties[analysisArea] = GeometryEngine.geodesicArea(feat.geometry, 'hectares');
+            feat.properties[analysisArea] = geometryEngine.geodesicArea(feat.geometry, 'hectares');
           }
 
           feat.properties.Latitude =
@@ -1143,14 +1142,14 @@ export default class StepThree extends Component {
             (feat.properties.Analysis_R && feat.properties.Analysis_R !== ' ')
           ) {
             feat.properties.Analysis_A = '';
-            feat.geometry = GeometryEngine.geodesicBuffer(
+            feat.geometry = geometryEngine.geodesicBuffer(
               centerPoint,
               parseFloat(feat.properties.Analysis_R),
               'kilometers'
             );
           } else if (feat.properties.Analysis_A && feat.properties.Analysis_A !== ' ') {
             feat.properties.Analysis_R = Math.sqrt(feat.properties.Analysis_A / Math.PI);
-            feat.geometry = GeometryEngine.geodesicBuffer(
+            feat.geometry = geometryEngine.geodesicBuffer(
               centerPoint,
               parseFloat(feat.properties.Analysis_R),
               'kilometers'

@@ -119,8 +119,7 @@ const getHeaderMapping = (templateHeadersList, propertiesKeys) => {
     const headerMatches = propertiesKeys.filter((key) => {
       const keyNoUnderscores = key.replaceAll('_', ' ');
       const regExp = new RegExp(keyNoUnderscores, 'i');
-      const match = header.match(regExp);
-      return match;
+      return header.match(regExp);
     });
     shortHeaderMapping[header] =
       headerMatches.length > 1 ? findMoreSimilarHeader(header, headerMatches) : headerMatches[0];
@@ -254,19 +253,10 @@ export default class StepThree extends Component {
   };
 
   complete = (results) => {
-    const {
-      activeTemplate,
-      setUploading,
-      addType,
-      commodityType,
-      templateData,
-      accuracy,
-      setFeatures,
-    } = this.props;
+    const { activeTemplate, setUploading, addType, templateData, accuracy, setFeatures } =
+      this.props;
     const { integers, floats } = this.state;
     let headerKey;
-    let active = activeTemplate;
-
     if (results && results.data && results.data.length > 1501) {
       this.setState({
         dialogOpen: true,
@@ -277,17 +267,6 @@ export default class StepThree extends Component {
       return;
     }
 
-    if (addType === 'commodity' && active === 'investment') {
-      if (commodityType === 'palmOil') {
-        active = 'palmGeneric';
-      } else if (commodityType === 'soy') {
-        active = 'soyGeneric';
-      } else if (commodityType === 'cattle') {
-        active = 'cattleGeneric';
-      } else if (commodityType === 'cocoa') {
-        active = 'cocoaGeneric';
-      }
-    }
     locationsPage.tableKeyArray.forEach((object) => {
       if (object.activeTemplate === activeTemplate) {
         headerKey = object.templateDataValue;
@@ -541,8 +520,10 @@ export default class StepThree extends Component {
                     }
 
                     if (!feat.properties.Analysis_A) {
-                      const area = geometryEngine.geodesicArea(feat.geometry, 'hectares');
-                      feat.properties.Analysis_A = area;
+                      feat.properties.Analysis_A = geometryEngine.geodesicArea(
+                        feat.geometry,
+                        'hectares'
+                      );
                     }
 
                     if (!feat.properties['Analysis Area']) {
@@ -710,10 +691,9 @@ export default class StepThree extends Component {
                         } else {
                           const date = new Date(feature.properties[key]);
                           if (!isNaN(date.getUTCFullYear())) {
-                            const dateString = `${
+                            feature[headerArray[k]] = `${
                               date.getUTCMonth() + 1
                             }/${date.getUTCDate()}/${date.getUTCFullYear()}`;
-                            feature[headerArray[k]] = dateString;
                           }
                         }
                       } else {
@@ -986,8 +966,8 @@ export default class StepThree extends Component {
 
         /**
          * Check Location Classification Validity
-         * @param {Array} submittedData - Locations from Excel file
-         * @param {String} templateDescription - Template name
+         * @param {Array} localSubmittedData - Locations from Excel file
+         * @param {String} localTemplateDescription - Template name
          * @return {boolean} - returns true is all Location Classification have value and template is in 'excelLocationClassificationMandatory' list
          */
         const checkLocationClassificationValidity = (

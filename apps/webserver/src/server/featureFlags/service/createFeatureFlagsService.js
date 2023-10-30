@@ -50,69 +50,50 @@ const dataSource = new DataSource({
 function createFeatureFlagsService(dataSource) {
   const repository = dataSource.getRepository(FeatureFlagsEntity);
 
-  async function getFeatureFlagWhere(where = {}) {
-    let featureFlagsCollection;
+  async function initializeExecuteAndCleanUp(callback) {
+    let result;
 
     try {
       await dataSource.initialize();
-      featureFlagsCollection = await repository.find({ where });
+      result = await callback();
     } catch (error) {
       throw new Error(error);
     } finally {
       await dataSource.destroy();
     }
 
-    return featureFlagsCollection;
+    return result;
   }
 
-  async function getAllFeatureFlags(orgId) {
-    let featureFlagsCollection;
+  async function getFeatureFlagWhere(where = {}) {
+    return initializeExecuteAndCleanUp(async () => {
+      return repository.find({ where });
+    });
+  }
 
-    try {
-      await dataSource.initialize();
-      featureFlagsCollection = await repository.find({ where: { orgId } });
-    } catch (error) {
-      throw new Error(error);
-    } finally {
+  async function getFeatureFlagsForCurrentOrg(orgId) {
+    let globalFeatureFlags = await getFeatureFlagWhere({ orgId: null });
+    let currentOrgFeatureFlags = await getFeatureFlagWhere({ orgId });
+
+    if (currentOrgFeatureFlags.length > 0) {
+      return currentOrgFeatureFlags;
     }
-
-    return featureFlagsCollection;
+    return globalFeatureFlags;
   }
 
   async function getFeatureFlagsByFlagId(flagId) {
-    let featureFlagsCollection;
-
-    try {
-      await dataSource.initialize();
-      featureFlagsCollection = await repository.find({
-        flagId: flagId,
-      });
-    } catch (error) {
-      throw new Error(error);
-    } finally {
-      await dataSource.destroy();
-    }
-
-    return featureFlagsCollection;
+    return getFeatureFlagWhere({ flagId });
   }
 
   async function createFeatureFlag(data) {
     const fieldsWithErrors = validateFeatureFlagFields(data);
 
     if (fieldsWithErrors.length < 1) {
-      let featureFlag;
-
-      try {
-        await dataSource.initialize();
-        featureFlag = repository.create(data);
-        await repository.insert(featureFlag);
-      } catch (error) {
-        throw new Error(error);
-      } finally {
-        await dataSource.destroy();
-      }
-
-      return featureFlag;
+      return initializeExecuteAndCleanUp(async () => {
+        let featureFlag = repository.create(data);
+        await repository.save(featureFlag);
+        return featureFlag;
+      });
     }
 
     throw new Error(
@@ -142,8 +123,7 @@ function createFeatureFlagsService(dataSource) {
   }
 
   return {
-    getFeatureFlagWhere,
-    getAllFeatureFlags,
+    getFeatureFlagsForCurrentOrg,
     getFeatureFlagsByFlagId,
     createFeatureFlag,
   };

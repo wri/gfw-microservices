@@ -5,10 +5,7 @@ export class FeatureFlags {
   @PrimaryColumn('text', { name: 'flag_id' })
   flagId: string;
 
-  @PrimaryColumn('number', {
-    name: 'org_id',
-    nullable: false,
-  })
+  @PrimaryColumn('number', { name: 'org_id' })
   orgId: number | null;
 
   @Column('boolean', { name: 'flag_state' })

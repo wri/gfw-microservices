@@ -1,75 +1,64 @@
 import { DataSource, Repository } from 'typeorm';
 import { FeatureFlags } from './entity';
 
-export class FeatureFlagsService {
-  private repository: Repository<FeatureFlags>;
-  private dataSource: DataSource;
+export function createFeatureFlagsService(dataSource: DataSource) {
+  const repository: Repository<FeatureFlags> = dataSource.getRepository(FeatureFlags);
 
-  constructor(dataSource: DataSource) {
-    this.dataSource = dataSource;
-    this.repository = dataSource.getRepository(FeatureFlags);
-  }
-
-  async getAllFeatureFlags(orgId: number): Promise<FeatureFlags[]> {
-    let featureFlagsCollection: FeatureFlags[];
+  async function initializeExecuteAndCleanUp<T>(callback: () => Promise<T>) {
+    let result: T;
 
     try {
-      await this.dataSource.initialize();
-      featureFlagsCollection = await this.repository.find({ where: { orgId } });
+      await dataSource.initialize();
+      result = await callback();
     } catch (error) {
       throw new Error(error);
     } finally {
-      await this.dataSource.destroy();
+      await dataSource.destroy();
     }
 
-    return featureFlagsCollection;
+    return result;
   }
 
-  async getFeatureFlagById(flagId: string): Promise<FeatureFlags[]> {
-    let featureFlagsCollection: FeatureFlags[];
+  async function getFeatureFlagWhere(where = {}) {
+    return initializeExecuteAndCleanUp<FeatureFlags[]>(async () => {
+      return repository.find({ where });
+    });
+  }
 
-    try {
-      await this.dataSource.initialize();
-      featureFlagsCollection = await this.repository.findBy({
-        flagId: flagId,
+  async function getFeatureFlagsForCurrentOrg(orgId: number) {
+    const globalFeatureFlags = await getFeatureFlagWhere({ orgId: null });
+    const currentOrgFeatureFlags = await getFeatureFlagWhere({ orgId });
+
+    if (currentOrgFeatureFlags.length > 0) {
+      return currentOrgFeatureFlags;
+    }
+    return globalFeatureFlags;
+  }
+
+  async function getFeatureFlagsByFlagId(flagId: string) {
+    return getFeatureFlagWhere({ flagId });
+  }
+
+  async function createFeatureFlag(data: Partial<FeatureFlags>) {
+    const fieldsWithErrors = validateFeatureFlagFields(data);
+
+    if (fieldsWithErrors.length < 1) {
+      return initializeExecuteAndCleanUp<FeatureFlags>(async () => {
+        const featureFlag = repository.create(data);
+        await repository.save(featureFlag);
+        return featureFlag;
       });
-    } catch (error) {
-      throw new Error(error);
-    } finally {
-      await this.dataSource.destroy();
     }
 
-    return featureFlagsCollection;
+    throw new Error(
+      `Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(
+        ', '
+      )}`
+    );
   }
 
-  async createFeatureFlag(data: Partial<FeatureFlags>): Promise<FeatureFlags> {
-    const fieldsWithErrors = this.validateFeatureFlagFields(data);
-
-    if (fieldsWithErrors.length > 0) {
-      let featureFlag: FeatureFlags;
-
-      try {
-        await this.dataSource.initialize();
-        featureFlag = this.repository.create(data);
-        await this.repository.insert(featureFlag);
-      } catch (error) {
-        throw new Error(error);
-      } finally {
-        await this.dataSource.destroy();
-      }
-
-      return featureFlag;
-    } else {
-      throw new Error(
-        `Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(
-          ', '
-        )}`
-      );
-    }
-  }
-
-  private validateFeatureFlagFields(data: Partial<FeatureFlags>): string[] {
-    const missingFields: string[] = [];
+  function validateFeatureFlagFields(data: Partial<FeatureFlags>): string[] {
+    const missingFields = [];
 
     if (!data.flagId || typeof data.flagId !== 'string') {
       missingFields.push('flagId');
@@ -86,4 +75,10 @@ export class FeatureFlagsService {
 
     return missingFields;
   }
+
+  return {
+    getFeatureFlagsForCurrentOrg,
+    getFeatureFlagsByFlagId,
+    createFeatureFlag,
+  };
 }

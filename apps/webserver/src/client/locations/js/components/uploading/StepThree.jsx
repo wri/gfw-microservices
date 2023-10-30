@@ -1,7 +1,5 @@
 /* eslint-disable camelcase */
-/* eslint-disable global-require */
 /* eslint-disable guard-for-in */
-/* eslint-disable import/no-dynamic-require */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable no-loop-func */
 /* eslint-disable no-param-reassign */
@@ -495,7 +493,6 @@ export default class StepThree extends Component {
         const formData = new FormData();
         formData.append('file', file);
         const xmlhttp = new XMLHttpRequest();
-
         xmlhttp.open('POST', convertURL);
         xmlhttp.onreadystatechange = () => {
           if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {

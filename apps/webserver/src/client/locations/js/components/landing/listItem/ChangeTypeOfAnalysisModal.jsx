@@ -18,9 +18,8 @@ function ChangeTypeOfAnalysisModal({
   listAnalysesStatus,
 }) {
   const getSelectedAnalysesIds = () => {
-    return listAnalysesStatus
-      .map(({ analysisId }) => analysisId);
-  }
+    return listAnalysesStatus.map(({ analysisId }) => analysisId);
+  };
 
   const [selectedAnalysis, setSelectedAnalysis] = useState(getSelectedAnalysesIds());
   const [isLoading, setIsLoading] = useState(false);

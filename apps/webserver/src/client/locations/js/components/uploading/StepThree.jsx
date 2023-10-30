@@ -19,7 +19,6 @@ import moment from 'moment';
 import { fieldValidations } from '../../utils/validations';
 import { locationsPage, convertURL } from '../../../../common/js/config';
 import downloaders from '../../../../common/js/utils/downloaders';
-import esriConfig from 'esri/config';
 import Polygon from 'esri/geometry/Polygon';
 import Point from 'esri/geometry/Point';
 import GeometryEngine from 'esri/geometry/geometryEngine';
@@ -175,9 +174,6 @@ export default class StepThree extends Component {
       showValidated: 'all',
       totalFeatures: 0,
     };
-
-    esriConfig.request.corsEnabledServers.push(convertURL);
-    esriConfig.request.corsEnabledServers.push('production-api.globalforestwatch.org');
 
     require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
       // eslint-disable-next-line react/no-unused-class-component-methods

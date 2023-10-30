@@ -175,11 +175,6 @@ export default class StepThree extends Component {
       totalFeatures: 0,
     };
 
-    require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
-      // eslint-disable-next-line react/no-unused-class-component-methods
-      this.WebMercatorUtils = webMercatorUtils;
-    });
-
     require(['esri/geometry/projection'], (projection) => {
       projection.load().then(() => {
         this.projection = projection;

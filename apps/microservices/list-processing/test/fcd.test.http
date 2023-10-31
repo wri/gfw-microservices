@@ -1,0 +1,7 @@
+### Get protected areas by category area filter by country
+GET http://localhost:3334/api/fcd/5692/wdpa_overlap_country/Argentina?clientDatabase=clientstore-DevCo
+Content-Type: application/json
+
+### Get landmarks by category area filter by country
+GET http://localhost:3334/api/fcd/5692/landmark_overlap_country/Argentina?clientDatabase=clientstore-DevCo
+Content-Type: application/json

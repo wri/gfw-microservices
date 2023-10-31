@@ -12,8 +12,9 @@ import React, { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import Dialog from 'material-ui/Dialog';
 import Point from '@arcgis/core/geometry/Point';
-import Polygon from 'esri/geometry/Polygon';
-import GeometryEngine from 'esri/geometry/geometryEngine';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils';
 
 import cloneDeep from 'lodash/cloneDeep';
@@ -223,7 +224,7 @@ class UploadLocations extends Component {
             value = Math.sqrt(parseFloat(featProps[i]['Analysis Area'] / 100) / Math.PI);
           }
 
-          const buffer = GeometryEngine.geodesicBuffer(geometry, value.toFixed(3), 'kilometers');
+          const buffer = geometryEngine.geodesicBuffer(geometry, value.toFixed(3), 'kilometers');
 
           // If the geometry's buffer is empty... (happens when a very small radius is given)
           if (!buffer) {
@@ -291,12 +292,10 @@ class UploadLocations extends Component {
       const esriJson = geojsonUtil.geojsonToArcGIS(feature);
       const esriGeometry = new Polygon({
         rings: esriJson.geometry.rings,
-        spatialReference: {
-          wkid: 4326,
-        },
+        spatialReference: SpatialReference.WGS84,
       });
 
-      const area = GeometryEngine.geodesicArea(esriGeometry, 'hectares');
+      const area = geometryEngine.geodesicArea(esriGeometry, 'hectares');
       feature.properties['Analysis Area'] = area;
     });
   };

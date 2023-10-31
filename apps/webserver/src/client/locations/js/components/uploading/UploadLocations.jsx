@@ -11,7 +11,7 @@
 import React, { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import Dialog from 'material-ui/Dialog';
-import Point from 'esri/geometry/Point';
+import Point from '@arcgis/core/geometry/Point';
 import Polygon from 'esri/geometry/Polygon';
 import GeometryEngine from 'esri/geometry/geometryEngine';
 import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils';

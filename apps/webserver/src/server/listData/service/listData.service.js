@@ -25,16 +25,21 @@ const getListAnalysisStatusById = async (req, listId) => {
   return response;
 };
 
-const setSelectedAnalyses = async (req, listId, analysisData) => {
+const setSelectedAnalyses = async (
+  req,
+  listId,
+  analysisData,
+  analysisStatus = listStatus.Pending
+) => {
   const response = await getListAnalysisStatusById(req, listId);
   if (response === undefined || response === null || response.length === 0) {
-    createListAnalysis(req, listId, analysisData);
+    createListAnalysis(req, listId, analysisData, analysisStatus);
   } else {
     updateListAnalysis(req, listId, analysisData, response);
   }
 };
 
-const createListAnalysis = async (req, listId, analysisData) => {
+const createListAnalysis = async (req, listId, analysisData, analysisStatus) => {
   for (const element of analysisData) {
     const params = [
       {
@@ -50,7 +55,7 @@ const createListAnalysis = async (req, listId, analysisData) => {
       {
         field: 'Status',
         type: sql.Int,
-        value: listStatus.Pending,
+        value: analysisStatus,
       },
     ];
     await sqlUtils.executeOrganizationQuery(req, createListAnalysisStatusQuery, params);
@@ -82,7 +87,7 @@ const updateListAnalysis = async (req, listId, analysisData, currentAnalysis) =>
 
   for (const element of analysisData) {
     if (!analysisDataIds.includes(element)) {
-      createListAnalysis(req, listId, [element]);
+      createListAnalysis(req, listId, [element], listStatus.Pending);
     }
   }
 };

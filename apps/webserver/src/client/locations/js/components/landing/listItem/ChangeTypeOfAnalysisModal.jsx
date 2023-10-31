@@ -21,7 +21,7 @@ function ChangeTypeOfAnalysisModal({
     return listAnalysesStatus.map(({ analysisId }) => analysisId);
   };
 
-  const [selectedAnalysis, setSelectedAnalysis] = useState(getSelectedAnalysesIds());
+  const [selectedAnalysis, setSelectedAnalysis] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   // if there is no listId, the analyses selection is for the creation of a new list
   const updatingAnalysesSelectionForExistingList = !!listId;

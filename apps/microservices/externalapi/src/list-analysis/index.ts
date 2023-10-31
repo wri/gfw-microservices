@@ -26,5 +26,6 @@ AWS.config.update(awsConfig);
   ],
   controllers: [ListAnalysisController, ListUploadController],
   providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
+  exports: [OrganizationService],
 })
 export class ListsAnalysisModule {}

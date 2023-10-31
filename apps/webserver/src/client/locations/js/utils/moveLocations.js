@@ -10,6 +10,7 @@ import GeometryEngine from 'esri/geometry/geometryEngine';
 import { deduceActiveName } from '../../../common/js/utils/templateUtils';
 import { saveAsDraftListConfig } from '../../../../config/config/locations.config';
 import { getListStatusId, getListValidStatus } from './lists.utils';
+import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 
 // Moved over from addGFW/StepTwo.js
 const classificationObj = {
@@ -585,6 +586,7 @@ const saveGfwListLocations = (
             selected_location_ids: geoms.features.map((v) => v.properties.location_id),
             original_gfw_list: true,
             list_status_id: getListStatusId(isSaveAsDraft),
+            analysisIds: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS], // GFW lists default to FCD
           };
 
           const requestPath = isSaveAsDraft

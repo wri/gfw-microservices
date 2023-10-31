@@ -14,6 +14,8 @@ import Dialog from 'material-ui/Dialog';
 import Point from 'esri/geometry/Point';
 import Polygon from 'esri/geometry/Polygon';
 import GeometryEngine from 'esri/geometry/geometryEngine';
+import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils';
+
 import cloneDeep from 'lodash/cloneDeep';
 import axios from 'axios';
 
@@ -93,10 +95,6 @@ class UploadLocations extends Component {
       isSaving: false,
       selectedAnalyses: getAnalysesSelectedByDefault(),
     };
-
-    require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
-      this.WebMercatorUtils = webMercatorUtils;
-    });
   }
 
   componentDidMount() {
@@ -233,7 +231,7 @@ class UploadLocations extends Component {
           }
 
           if (buffer.spatialReference.wkid === 102100) {
-            wgsGeometry = this.WebMercatorUtils.webMercatorToGeographic(buffer);
+            wgsGeometry = webMercatorUtils.webMercatorToGeographic(buffer);
           } else {
             wgsGeometry = buffer;
           }

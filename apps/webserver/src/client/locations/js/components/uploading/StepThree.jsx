@@ -18,11 +18,11 @@ import { parse, load } from '@loaders.gl/core';
 import { ZipLoader } from '@loaders.gl/zip';
 import { KMLLoader } from '@loaders.gl/kml';
 
-import Polygon from '@arcgis/core/geometry/Polygon';
 import Point from '@arcgis/core/geometry/Point';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import * as projection from '@arcgis/core/geometry/projection';
-import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 
 import { fieldValidations } from '../../utils/validations';
 import { locationsPage, convertURL } from '../../../../common/js/config';

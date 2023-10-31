@@ -11,14 +11,14 @@
 import React, { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import Dialog from 'material-ui/Dialog';
+import cloneDeep from 'lodash/cloneDeep';
+import axios from 'axios';
+
 import Point from '@arcgis/core/geometry/Point';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import * as webMercatorUtils from '@arcgis/core/geometry/support/webMercatorUtils';
-
-import cloneDeep from 'lodash/cloneDeep';
-import axios from 'axios';
 
 import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
@@ -43,8 +43,6 @@ import StepOne from './StepOne';
 import StepTwo from './StepTwo';
 import StepThree from './StepThree';
 import StepFour from './StepFour';
-
-// REDUX - Store
 
 // Utils
 import { deduceAdminBackoff } from '../../utils/backoff';

@@ -139,6 +139,7 @@ export const loaderMessages = {
 };
 
 export const nav = {
+  newsAndEnvents: 'News & Events',
   about: 'About',
   blog: 'Blog',
   selectLangageSpanish: 'Español',

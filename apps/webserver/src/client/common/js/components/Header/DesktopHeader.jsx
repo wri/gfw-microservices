@@ -33,6 +33,7 @@ function DesktopHeader({ isLoggedIn, active }) {
 
         {!isLoggedIn && (
           <>
+            <HeaderNavLink active={active} link="https://pro-news.globalforestwatch.org/" label={nav.newsAndEnvents} />
             <HeaderNavLink active={active} link="/about" label="About" />
             <HeaderNavLink
               active={active}

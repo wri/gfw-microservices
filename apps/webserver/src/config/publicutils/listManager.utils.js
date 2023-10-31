@@ -359,7 +359,7 @@ const saveAsDraftList = (
       .then(() => {
         // Previous Stored Procedure executed
         uspCreateAnalysisTableExecuted = true;
-        return listDataService.setSelectedAnalyses(req, list_id, analysisIds);
+        return listDataService.setSelectedAnalyses(req, list_id, analysisIds, listStatus.Draft);
       })
       .then(() => {
         logger.logActivity(

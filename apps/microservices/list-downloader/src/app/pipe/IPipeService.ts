@@ -1,15 +1,22 @@
 import { Inject, Logger } from '@nestjs/common';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
-import { GenerationFileRequest, setS3UrlAndExpirationDate } from '@wri-monorepos/sql';
+import { ConfigService } from '@nestjs/config';
+import {
+  GenerationFileRequest,
+  setS3UrlAndExpirationDate,
+  toSqlParameter,
+} from '@wri-monorepos/sql';
 import { PassThrough } from 'stream';
 import { finished } from 'stream/promises';
 import * as moment from 'moment';
 
 import { SQLUtils } from '@wri-monorepos/sql';
 
-import * as sql from 'mssql';
 export abstract class IPipeService {
   private readonly loggerPipe = new Logger(IPipeService.name);
+
+  @Inject(ConfigService)
+  private readonly config: ConfigService;
 
   @Inject(EmailService)
   private readonly emailService: EmailService;
@@ -67,43 +74,36 @@ export abstract class IPipeService {
 
   public async uploadToS3(filters: GenerationFileRequest) {
     const { key } = filters;
-    this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
-    this.s3Service
-      .getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET)
-      .then(async (location) => {
-        await this.finishedEmail(filters, location);
-        await this.saveS3UrlAtDatabase(filters, location);
-      });
+    await this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
+    const location = await this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET);
+    await this.finishedEmail(filters, location);
+    await this.saveS3UrlAtDatabase(filters, location);
   }
 
   async saveS3UrlAtDatabase(filters: GenerationFileRequest, location: string) {
     const { listId, organizationDatabase, type } = filters;
 
-    const parameters = [
-      { field: 'location', type: sql.VarChar(255), value: location },
-      {
-        field: 'expirationDate',
-        type: sql.DateTime,
-        value: moment(new Date()).add(5, 'days').toDate(),
-      },
-      { field: 'listId', type: sql.Int, value: listId },
-      { field: 'analysisId', type: sql.VarChar(10), value: type == 'afi' ? 'AFI' : 'FCD' },
-    ];
-
     const connection = new SQLUtils({
-      user: process.env.MSSQL_USERNAME,
-      password: process.env.MSSQL_PASSWORD,
+      user: this.config.get<string>('MSSQL_USERNAME'),
+      password: this.config.get<string>('MSSQL_PASSWORD'),
       database: organizationDatabase,
-      server: process.env.MSSQL_HOSTNAME,
+      server: this.config.get<string>('MSSQL_HOSTNAME'),
       pool: {
         max: 10,
         min: 0,
         idleTimeoutMillis: 30000,
       },
-      port: parseInt(process.env.MSSQL_PORT),
+      port: parseInt(this.config.get<string>('MSSQL_PORT')),
       options: {
         trustServerCertificate: true,
       },
+    });
+
+    const parameters = toSqlParameter({
+      location,
+      expirationDate: moment(new Date()).add(5, 'days').toDate(),
+      listId,
+      analysisId: type == 'afi' ? 'AFI' : 'FCD',
     });
 
     await connection.connect();
@@ -124,7 +124,6 @@ export abstract class IPipeService {
   public async waitFinishedProcess(inputStream: PassThrough) {
     inputStream.end();
     await finished(inputStream);
-
     inputStream.removeAllListeners();
     inputStream.destroy();
   }

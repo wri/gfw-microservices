@@ -29,10 +29,9 @@ if (process.env.NODE_ENV === null || process.env.NODE_ENV === undefined) {
   logger.warn('NODE_ENV is not set, setting to "development"');
   process.env.NODE_ENV = 'development';
 }
-if (process.env.NODE_ENV === 'development') {
-  // chdir needed because several require() calls use paths relative to webserver/src
-  process.chdir(__dirname);
-}
+
+// chdir needed because several require() calls use paths relative to webserver/src
+process.chdir(__dirname);
 
 const app = express();
 // Load all the neccesary environment variables.

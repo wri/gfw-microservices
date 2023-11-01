@@ -8,7 +8,6 @@ import { deduceActiveId, deduceActiveName } from '../../../common/js/utils/templ
 import { containsPunctuation, getListStatusId, getListValidStatus } from './lists.utils';
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
 import { saveAsDraftListConfig } from '../../../../config/config/locations.config';
-import { getListStatusId, getListValidStatus } from './lists.utils';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 
 const filterValidTemplates = (template, activeTemplate, addType, commodityType) => {

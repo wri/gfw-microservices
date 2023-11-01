@@ -85,6 +85,8 @@ export class AppService {
       },
     };
 
+    console.log('sqlConfig', sqlConfig);
+
     try {
       const connection = new SQLUtils(sqlConfig);
       await connection.connect();

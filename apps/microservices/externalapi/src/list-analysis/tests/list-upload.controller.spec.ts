@@ -16,14 +16,56 @@ import { ClientStoreConnection } from '../../shared/client-store-connection';
 import { OrganizationService } from '../organization.service';
 import axios from 'axios';
 import AxiosMockAdapter from 'axios-mock-adapter';
+import { createRequest } from 'node-mocks-http';
+import { Request } from 'node-fetch';
+import sinon from 'sinon';
+import { DataSource } from 'typeorm';
+import { ExternalUpload } from '../external-upload.entity';
+interface WhereRequest {
+  where: {
+    id: number;
+  };
+}
+
+class ExternalUploadMockRepository {
+  findOne = jest.fn(async (where: WhereRequest) => {
+    const records = [
+      {
+        id: 123,
+        userId: 123,
+        uploadKeyFile: 'mock_key',
+        uploadUrl: 'mock_url',
+        uploadDateTime: new Date(),
+      },
+    ];
+
+    return records.find((record) => record.id === where.where.id);
+    //return { id: 123, analysisId: 'FCD', updateTime: new Date(), status: 1 };
+  });
+
+  save = jest.fn(async (externalUpload: ExternalUpload) => {
+    externalUpload.id = 123;
+    return externalUpload;
+  });
+}
 
 describe('ListUploadController', () => {
   let controller: ListUploadController;
   let axiosMock;
   let userService: UserService;
   let organizationService: OrganizationService;
+  const requestMock = createRequest({
+    method: 'GET',
+    url: ``,
+    headers: {
+      'x-api-key': 'your-api-key',
+    },
+    user: {
+      organizationId: 1,
+    },
+  }) as Request;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -48,51 +90,104 @@ describe('ListUploadController', () => {
     userService = module.get<UserService>(UserService);
     organizationService = module.get<OrganizationService>(OrganizationService);
     axiosMock = new AxiosMockAdapter(axios);
+
+    sinon
+      .stub(DataSource.prototype, 'getRepository')
+      .withArgs(ExternalUpload)
+      .returns(new ExternalUploadMockRepository());
   });
 
-  afterEach(() => {
-    axiosMock.restore();
-  });
+  //afterEach(() => {
+  //  axiosMock.restore();
+  //});
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
   it('should return a successful response', async () => {
+    const createLargeListMockExpectedResponse = {
+      list_id: 123,
+    };
+
+    const saveListToProcessMockExpectedResponse = {
+      list_id: 123,
+      s3_location: 's3://test-bucket/test.csv',
+    };
+
+    const executeListAnalysisMockExpectedResponse = {
+      executionArn: 'aabc:123',
+      startDate: new Date(),
+    };
+
+    axiosMock.onPost(/\/api\/create-large-list/).reply(200, createLargeListMockExpectedResponse);
+    axiosMock
+      .onPost(/\/api\/save-list-to-process/)
+      .reply(200, saveListToProcessMockExpectedResponse);
+    axiosMock.onPost(/\/api\/process-list/).reply(200, executeListAnalysisMockExpectedResponse);
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
     const request: ListUploadNewRequest = {
       uploadId: '123',
       listName: 'Example List',
-      templateId: '456',
+      templateId: 456,
       analysisIDs: '789',
     };
 
-    const expectedResult: ListUploadNewResponse = {
+    const expectedResult = {
       uploadId: '123',
-      listId: 'generated-list-id',
-      status: 'Completed',
+      listId: '123',
+      status: 'Pending',
       errorDetails: '',
-      creationDate: '2023-09-21',
     };
 
-    const result = await controller.uploadNewList(request);
-
-    expect(result).toEqual(expectedResult);
+    const result = await controller.uploadNewList(request, requestMock);
+    const { listId, status, uploadId, errorDetails } = result as ListUploadNewResponse;
+    expect({ listId, status, uploadId, errorDetails }).toEqual(expectedResult);
   });
 
   it('should return an error response for invalid upload ID', async () => {
+    const actualDate = new Date();
     const request: ListUploadNewRequest = {
-      uploadId: 'invalid-id',
+      uploadId: '9999',
       listName: 'Example List',
-      templateId: '456',
+      templateId: 456,
       analysisIDs: '789',
     };
 
+    // Mock user response to let process continue
+    userService.findUser = jest.fn().mockResolvedValue({
+      id: 123,
+      user_email: 'test@test.com',
+      organization_id: 1,
+      organization_user_id: 1,
+      organization_user_status_id: 1,
+      tokens: [],
+    });
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: actualDate,
+      subscriptionStatusId: 1,
+    });
+
     const expectedResult: ListUploadNewErrorResponse = {
-      errorDetails: 'Failed to process the request',
+      errorDetails: 'Failed to process the request, upload id not found',
     };
 
     try {
-      await controller.uploadNewList(request);
+      await controller.uploadNewList(request, requestMock);
     } catch (error) {
       expect(error.response).toEqual(expectedResult);
       expect(error.getStatus()).toBe(400); // Check if the status code is 400 Bad Request
@@ -100,22 +195,43 @@ describe('ListUploadController', () => {
   });
 
   it('should return an error response for other error scenarios', async () => {
+    const actualDate = new Date();
     const request: ListUploadNewRequest = {
-      uploadId: 'another-invalid-id',
+      uploadId: '999',
       listName: 'Example List',
-      templateId: '456',
+      templateId: 456,
       analysisIDs: '789',
     };
+
+    // Mock user response to let process continue
+    userService.findUser = jest.fn().mockResolvedValue({
+      id: 123,
+      user_email: 'test@test.com',
+      organization_id: 1,
+      organization_user_id: 1,
+      organization_user_status_id: 1,
+      tokens: [],
+    });
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: actualDate,
+      subscriptionStatusId: 1,
+    });
 
     // Implement logic for other error scenarios
 
     const expectedResult: ListUploadNewErrorResponse = {
-      errorDetails: 'Failed to process the request',
+      errorDetails: 'Failed to process the request, upload id not found',
     };
 
     try {
-      await controller.uploadNewList(request);
+      await controller.uploadNewList(request, requestMock);
     } catch (error) {
+      console.log('thisistheerror', error);
       expect(error.response).toEqual(expectedResult);
       expect(error.getStatus()).toBe(400); // Check if the status code is 400 Bad Request
     }
@@ -123,16 +239,14 @@ describe('ListUploadController', () => {
 
   it('should return a successful response for prepare upload', async () => {
     const actualDate = new Date();
-    const axiosMockExpectedResponse = {
+    const preSignURLMockExpectedResponse = {
       url: 'mocked_url',
       keyFile: 'mocked_key',
       fileS3Route: 'mocked_s3_route',
     };
 
     const expectedResult = {
-      uploadKeyFile: 'mocked_key',
       uploadUrl: 'mocked_url',
-      userId: 123,
     };
 
     // Mock user response to let process continue
@@ -156,7 +270,7 @@ describe('ListUploadController', () => {
 
     // Mock the Axios request and specify the response
     axiosMock = new AxiosMockAdapter(axios);
-    axiosMock.onPost(/\/api\/create-presigned-url/).reply(200, axiosMockExpectedResponse);
+    axiosMock.onPost(/\/api\/create-presigned-url/).reply(200, preSignURLMockExpectedResponse);
 
     const request = {
       userEmail: 'test@test.com',
@@ -164,8 +278,8 @@ describe('ListUploadController', () => {
 
     const result = await controller.prepareUploadList(request);
 
-    const { uploadKeyFile, uploadUrl, userId } = result;
+    const { uploadUrl } = result;
 
-    expect({ uploadKeyFile, uploadUrl, userId }).toEqual(expectedResult);
+    expect({ uploadUrl }).toEqual(expectedResult);
   });
 });

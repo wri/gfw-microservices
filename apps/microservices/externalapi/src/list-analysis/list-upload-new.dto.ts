@@ -5,7 +5,7 @@ export class ListUploadNewRequest {
   @ApiProperty()
   listName: string;
   @ApiProperty()
-  templateId: string;
+  templateId: number;
   @ApiProperty()
   analysisIDs: string;
 }
@@ -16,11 +16,11 @@ export class ListUploadNewResponse {
   @ApiProperty()
   listId: string;
   @ApiProperty()
-  status: 'Processing' | 'Completed' | 'Failed';
+  status: 'Pending' | 'Processing' | 'Completed' | 'Failed';
   @ApiProperty()
   errorDetails: string;
   @ApiProperty()
-  creationDate: string;
+  creationDate: Date;
 }
 
 export class ListUploadNewErrorResponse {

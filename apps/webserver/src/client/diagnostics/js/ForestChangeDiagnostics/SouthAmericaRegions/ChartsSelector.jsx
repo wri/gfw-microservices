@@ -21,8 +21,8 @@ function ChartsSelector({
           </tr>
         </thead>
         <tbody>
-          <tr className="">
-            <th className="" data-cy={dataCy}>
+          <tr>
+            <th data-cy={dataCy}>
               <label htmlFor={`${id}-checkbox`} className="legend-square-label">
                 {chartsSelectorTitle}
               </label>
@@ -32,8 +32,8 @@ function ChartsSelector({
           </tr>
 
           {checkedChartLabels.map(({ id, legend, color, checked }) => (
-            <tr key={id} className="">
-              <td className="">
+            <tr key={id}>
+              <td>
                 <input
                   id={id}
                   type="checkbox"

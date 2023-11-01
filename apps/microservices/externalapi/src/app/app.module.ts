@@ -17,6 +17,7 @@ import {
   CLIENT_DATABASE,
 } from '../config';
 import { ApiKeyMiddleware } from '../middleware/api.middleware';
+import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
 
 @Module({
   imports: [
@@ -48,7 +49,7 @@ export class AppModule {
 function createTypeOrmModule(name: string, entities?: Array<Function | string | EntitySchema>) {
   return TypeOrmModule.forRootAsync({
     name,
-    imports: [ConfigModule],
+    imports: [ConfigModule, ListAnalysisMessageModule],
     inject: [ConfigService],
     useFactory: async (config: ConfigService) => {
       const env = config.get<string>('NODE_ENV');

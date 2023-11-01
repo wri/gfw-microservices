@@ -36,6 +36,7 @@ describe('Result Service', () => {
 
   afterEach(() => {
     fs.unlinkSync(filePath);
+    fs.rmdirSync(dir);
   });
 
   test('When input data has 3 locations', async () => {

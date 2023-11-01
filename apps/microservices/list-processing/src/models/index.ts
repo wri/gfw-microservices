@@ -111,3 +111,7 @@ export interface getAfiAnalysisDataRequest {
   rowsPerPage?: number;
   pageNumber?: number;
 }
+
+export interface DatabaseQueryParam {
+  clientDatabase: string;
+}

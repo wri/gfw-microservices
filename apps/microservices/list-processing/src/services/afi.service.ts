@@ -6,8 +6,7 @@ import {
   getPaginatedAfiAnalysisLocationLevel,
   AfiAnalysisByListId,
 } from '@wri-monorepos/sql';
-import { Injectable, Inject, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 import * as sql from 'mssql';
@@ -31,9 +30,6 @@ export class AfiService {
       trustServerCertificate: true,
     },
   };
-
-  @Inject(ConfigService)
-  private readonly config: ConfigService;
 
   constructor(private dataSource: DataSource) {}
 

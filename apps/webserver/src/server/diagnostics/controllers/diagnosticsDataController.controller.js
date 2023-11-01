@@ -47,8 +47,8 @@ exports.diagnosticsDataController = async (req, res) => {
        * @see {@link https://gfw.atlassian.net/browse/GPV-2187} and tickets siblings for refactoring
        */
       const selectedLocationData = locationId
-        ? listLocations.find((location) => location.location_id === locationId)
-        : listLocations.length === 1
+        ? listLocations?.find((location) => location.location_id === locationId)
+        : listLocations?.length === 1
         ? listLocations[0]
         : null;
 

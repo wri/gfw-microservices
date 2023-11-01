@@ -416,7 +416,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
           <Button
             className="dialog__primary-action"
             disabled={!listName && !existingListName && selectedAnalysis.length <= 0}
-            label={locationsPage.add.continue}
+            label={locationsPage.add.submit}
             onClick={() => createUploadProcess()}
             variant="primary"
           />

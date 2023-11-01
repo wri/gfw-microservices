@@ -92,13 +92,18 @@ module.exports = () => {
     type: 'javascript/auto',
   });
 
+  const progressLog = (percentage, message, ...args) => {
+    // e.g. Output each progress message directly to the console:
+    console.log(`Webpack progress ${Math.round(percentage * 100)}%:`, message, ...args);
+  };
+
   return {
     ...(config.webpack || {}),
     entry: entries,
     module: { rules },
     plugins: [
       ...plugins,
-      new webpack.ProgressPlugin(),
+      new webpack.ProgressPlugin(progressLog),
       new MiniCssExtractPlugin({
         filename: '[name].[contenthash].css',
         chunkFilename: '[id].css',

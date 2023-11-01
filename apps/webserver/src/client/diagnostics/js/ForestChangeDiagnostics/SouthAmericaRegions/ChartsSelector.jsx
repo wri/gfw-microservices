@@ -3,16 +3,16 @@ import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.
 
 function ChartsSelector({
   id,
-  label,
+  chartsSelectorTitle,
   dataCy,
   diagnosticChecked = true,
-  checkedCategories,
-  setCheckedCategories,
+  checkedChartLabels,
+  setCheckedChartLabels,
   totalLossByCategory,
   totalLoss,
 }) {
   return (
-    <div className="locations-diagnostics-table">
+    <div className="chart-legends-table">
       <table>
         <thead>
           <tr>
@@ -21,27 +21,26 @@ function ChartsSelector({
           </tr>
         </thead>
         <tbody>
-          <tr className="locations-diagnostics-table__row parent">
-            <th className="locations-diagnostics-table__column" data-cy={dataCy}>
+          <tr className="">
+            <th className="" data-cy={dataCy}>
               <label htmlFor={`${id}-checkbox`} className="legend-square-label">
-                {label}
+                {chartsSelectorTitle}
               </label>
             </th>
 
             <td className="right">{prettifyNum(formatNum(totalLoss))}</td>
           </tr>
 
-          {checkedCategories.map(({ id, name, color, checked }) => (
-            <tr key={id} className="locations-diagnostics-table__row child">
-              <td className="locations-diagnostics-table__column indent legend-square-label">
+          {checkedChartLabels.map(({ id, legend, color, checked }) => (
+            <tr key={id} className="">
+              <td className="">
                 <input
                   id={id}
                   type="checkbox"
                   checked={checked}
                   onChange={(e) => {
-                    console.log(e);
-                    setCheckedCategories(
-                      checkedCategories.map((item) =>
+                    setCheckedChartLabels(
+                      checkedChartLabels.map((item) =>
                         item.id === id ? { ...item, checked: !item.checked } : item
                       )
                     );
@@ -60,10 +59,10 @@ function ChartsSelector({
                       background: color,
                     }}
                   />
-                  {name}
+                  {legend}
                 </label>
               </td>
-              <td className="right">{prettifyNum(formatNum(totalLossByCategory[name])) || ''}</td>
+              <td className="right">{prettifyNum(formatNum(totalLossByCategory[id])) || ''}</td>
             </tr>
           ))}
         </tbody>

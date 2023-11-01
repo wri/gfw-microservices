@@ -2,10 +2,9 @@
   margin-top: 30px;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  align-items: flex-start;
+  justify-content: start;
   &__chart {
-    width: calc(100% - 450px);
+    width: 50%;
     padding-top: 17px;
   }
   > div {

@@ -37,18 +37,18 @@ const getTreeCoverLossArgOtbnYearlyData = (
   const chartData = [];
   let otbnTotalLoss = 0;
   const totalLossByCategory = {};
-  const { argentinaCompliance } = chartDatasetConfigs;
-  argentinaCompliance.categories.forEach(({ name, color }) => {
+  const { argentinaOtbn } = chartDatasetConfigs;
+  argentinaOtbn.chartLabels.forEach(({ id, color }) => {
     if (
-      (name === 'Category I' && showCategoryI) ||
-      (name === 'Category II' && showCategoryII) ||
-      (name === 'Category III' && showCategoryIII) ||
+      (id === 'Category I' && showCategoryI) ||
+      (id === 'Category II' && showCategoryII) ||
+      (id === 'Category III' && showCategoryIII) ||
       showTotal
     ) {
       let dataFilteredByYearRange;
       const YEARS_RANGE = _range(startYear, endYear + 1);
 
-      const treeCoverLossArgOtbnYearlyForCategory = treeCoverLossArgOtbnYearly[name];
+      const treeCoverLossArgOtbnYearlyForCategory = treeCoverLossArgOtbnYearly[id];
       const treeCoverLossArgOtbnYearlyForCategoryIsEmpty = _isEmpty(
         treeCoverLossArgOtbnYearlyForCategory
       );
@@ -61,15 +61,15 @@ const getTreeCoverLossArgOtbnYearlyData = (
       const categoryLoss = dataFilteredByYearRange
         .map(([, value]) => value)
         .reduce((x, y) => parseFloat(x) + parseFloat(y));
-      totalLossByCategory[name] = categoryLoss;
+      totalLossByCategory[id] = categoryLoss;
       otbnTotalLoss += categoryLoss;
       chartData.push({
-        name,
+        id,
         data: dataFilteredByYearRange,
         color,
       });
     } else {
-      totalLossByCategory[name] = 0;
+      totalLossByCategory[id] = 0;
     }
   });
 

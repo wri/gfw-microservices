@@ -42,28 +42,24 @@ WORKDIR /srv
 COPY dist/apps/webserver .
 
 # Copy package*.json (required for npm install below)
-COPY package.json ./src/package.json
-COPY package-lock.json ./src/package-lock.json
-
-# Copy run-app.sh (rqeuired to build webpack)
-COPY apps/webserver/src/run-app.sh ./src/run-app.sh
-
-# Create Vector tiles directory
-RUN mkdir vectorTiles
-RUN chmod -R 775 vectorTiles
-
-# Set the working directory for the application.
-WORKDIR /srv/src
+COPY package.json .
+COPY package-lock.json .
 
 # Install all dependencies. Expects lockfile version to match.
 # RUN npm --production=false ci
 RUN npm --legacy-peer-deps --include=dev ci
 
-EXPOSE 80
-
-# Change file permissions for run script.
+# Run script to build webpack client bundles
+WORKDIR /srv/apps/webserver/src
+COPY apps/webserver/src/run-app.sh .
 RUN chmod -R 774 run-app.sh
 RUN bash ./run-app.sh
 
+# Ensure correct permissions for Vector tiles directory
+RUN chmod -R 775 ./vectorTiles
+
+EXPOSE 80
+
 # Start application command.
+WORKDIR /srv
 CMD ["node", "server.js"]

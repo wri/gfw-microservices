@@ -1045,6 +1045,7 @@ export default class Diagnostics extends Component {
 
             {sAmericaPresence && isArgentinaComplianceAvailable && listView === 'forest_change' && (
               <RegionChartsContainer
+                listId={selectedLists[0]?.id}
                 fireDownload={this.fireDownload}
                 data={this.getFilteredLocations()[0]}
                 diagnosticView={diagnosticView}

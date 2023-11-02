@@ -151,3 +151,69 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 GET https://localhost:8443/locations/downloadErrorFile?fileKey=s3://gfwpro-geotrellis-pre-data/development/failed/20221104051534_iizo1ewdla21ee1s-input_cocoageneric_random_50k_r25.csv
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### Locations GADM - POST request
+POST https://localhost:8443/locations/gadm
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "geojson": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "Investment Name": "AWSSDK v2 to v3",
+          "Latitude": 38.719169940803184,
+          "Longitude": -8.220111876714705,
+          "Analysis Radius": null,
+          "Analysis Area": 1642.74,
+          "Commodity": "Coffee",
+          "Company Policy Ranking": "",
+          "Risk Level": "",
+          "Counterparty": "",
+          "Parent Company or Group": "",
+          "Type of Investment": "",
+          "Certification": "",
+          "Size of Investment": null,
+          "CCY": "USD",
+          "Start Date": "",
+          "End Date": "",
+          "Time Horizon": "",
+          "Accuracy Rating of Location Entered": 3,
+          "Country": "Portugal",
+          "State": "Évora",
+          "Sub State": "Montemor-o-Novo",
+          "Wind Barrier": "",
+          "Riparian Buffers": "",
+          "Buffer Zones": "",
+          "gadmid": "PRT.8.6"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -8.253825008866897,
+                38.73793797354623
+              ],
+              [
+                -8.205490261314091,
+                38.737302998166115
+              ],
+              [
+                -8.20102035999078,
+                38.682268850827995
+              ],
+              [
+                -8.253825008866897,
+                38.73793797354623
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  }
+}

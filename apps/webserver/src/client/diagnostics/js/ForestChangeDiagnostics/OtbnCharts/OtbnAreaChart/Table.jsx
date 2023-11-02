@@ -8,7 +8,7 @@ import {
 import './OtbnTable.scss';
 
 function Table({ data }) {
-  const { argentinaCompliance } = chartDatasetConfigs;
+  const { argentinaOtbn } = chartDatasetConfigs;
 
   const argentinaOtbnArea = JSON.parse(data?.arg_otbn_area);
   const categoryIArea = argentinaOtbnArea['Category I'] || 0;
@@ -16,14 +16,14 @@ function Table({ data }) {
   const categoryIIIArea = argentinaOtbnArea['Category III'] || 0;
   const totalArea = categoryIArea + categoryIIArea + categoryIIIArea;
 
-  const categoryRows = argentinaCompliance.categories.map(({ id, name, color }) => {
-    const categoryArea = argentinaOtbnArea[name] || 0;
+  const categoryRows = argentinaOtbn.chartLabels.map(({ id, legend, color }) => {
+    const categoryArea = argentinaOtbnArea[legend] || 0;
     const categoryPercentage = (categoryArea / totalArea) * 100;
     return (
       <tr key={id}>
         <td>
           <span className="otbn-checkbox" style={{ background: color }} />
-          <label htmlFor="pie-chart-category-2">{name}</label>
+          <label htmlFor="pie-chart-category-2">{legend}</label>
         </td>
         <td>{formatPct(categoryPercentage)}</td>
         <td>{prettifyNum(formatNum(categoryArea))}</td>

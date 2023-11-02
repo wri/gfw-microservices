@@ -6,10 +6,10 @@ import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions.constants
 function Chart({ data }) {
   const renderChart = (divRef) => {
     const argentinaOtbnArea = JSON.parse(data?.arg_otbn_area);
-    const { argentinaCompliance } = chartDatasetConfigs;
-    const chartData = argentinaCompliance.categories.map(({ name, color }) => ({
-      name,
-      y: argentinaOtbnArea[name],
+    const { argentinaOtbn } = chartDatasetConfigs;
+    const chartData = argentinaOtbn.chartLabels.map(({ legend, color }) => ({
+      legend,
+      y: argentinaOtbnArea[legend],
       color,
     }));
 
@@ -37,7 +37,7 @@ function Chart({ data }) {
           cursor: 'pointer',
           dataLabels: {
             enabled: true,
-            format: '<b>{point.name}</b>:<br>{point.y}<br>{point.percentage:.1f} %',
+            format: '<b>{point.legend}</b>:<br>{point.y}<br>{point.percentage:.1f} %',
           },
         },
       },

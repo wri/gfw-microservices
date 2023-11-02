@@ -6,7 +6,9 @@ import StepTwoGFW from './StepTwoGFW';
 import StepThreeGFW from './StepThreeGFW';
 import GfwAccuracy from '../adding/GfwAccuracy';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import Polygon from 'esri/geometry/Polygon';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
+
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import React, { Component } from 'react';
 import store from '../../store';
@@ -126,9 +128,7 @@ export default class AddGFW extends Component {
       const esriJson = geojsonUtil.geojsonToArcGIS(feature);
       const esriGeometry = new Polygon({
         rings: esriJson.geometry.rings,
-        spatialReference: {
-          wkid: 4326,
-        },
+        spatialReference: SpatialReference.WGS84,
       });
 
       const area = GeometryEngine.geodesicArea(esriGeometry, 'hectares');

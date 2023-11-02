@@ -1,44 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import DateRangeSilder from './DateRangeSlider';
-import BarChart from './BarChart';
-import OtbnAreaChart from '../OtbnCharts/OtbnAreaChart';
+import BarChart from '../../common/BarChart';
+import PieChart from '../../common/PieChart';
 import ChartsSelector from './ChartsSelector';
 import getTreeCoverLossArgOtbnYearlyData from '../OtbnCharts/TreeCoverLossArgentinaOtbnYearly/getTreeCoverLossArgOtbnYearlyData';
 import DiagnosticsChartHeader from '../../common/DiagnosticsChartHeader';
 import { chartDatasetConfigs } from './regions.constants';
 import '../../common/DiagnosticsChartContainer.scss';
 
-function RegionChart({ data, fireDownload }) {
-  const { id, label, dataCy, informationBubbleId, downloadId, categories, startYear, endYear } =
-    chartDatasetConfigs.argentinaCompliance;
+function RegionChart({ listId, data, fireDownload }) {
+  const { argentinaOtbn, wdpaOverlapCountry, landmarkOverlapCountry } = chartDatasetConfigs;
 
-  const checkedCategoriestest = categories.map((category) => ({ ...category, checked: true }));
+  const initialCheckedChartLabels = argentinaOtbn.chartLabels.map((label) => ({
+    ...label,
+    checked: true,
+  }));
 
   const [dateRange, setDateRange] = useState({
-    startYear,
-    endYear,
+    startYear: argentinaOtbn.startYear,
+    endYear: argentinaOtbn.endYear,
   });
-
-  const [checkedCategories, setCheckedCategories] = useState(checkedCategoriestest);
+  const [checkedChartLabels, setCheckedChartLabels] = useState(initialCheckedChartLabels);
+  const [argentinaPieChartsData, setArgentinaPieChartsData] = useState({});
 
   const { totalLossByCategory, otbnTotalLoss, chartData } = getTreeCoverLossArgOtbnYearlyData(
     data,
     dateRange.startYear,
     dateRange.endYear,
-    checkedCategories[0].checked,
-    checkedCategories[1].checked,
-    checkedCategories[2].checked
+    checkedChartLabels[0].checked,
+    checkedChartLabels[1].checked,
+    checkedChartLabels[2].checked
   );
+
+  const argentinaOtbnAreaData = JSON.parse(data?.arg_otbn_area);
+
+  useEffect(() => {
+    fetch(`/api/fcd?listId=${listId}&country=Argentina&category=WDPA,landmark`, {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => res.json())
+      .then((response) => {
+        if (!response.WDPA?.error || !response.landmark?.error) {
+          setArgentinaPieChartsData(response);
+        }
+      })
+      .catch((e) => {
+        console.warn(e);
+      });
+  }, [listId]);
+
+  const { WDPA, landmark } = argentinaPieChartsData;
 
   return (
     <>
       <DiagnosticsChartHeader
-        title={label}
-        informationBubbleId={informationBubbleId}
+        title={argentinaOtbn.label}
+        informationBubbleId={argentinaOtbn.informationBubbleId}
         fireDownload={fireDownload}
-        downloadId={downloadId}
+        downloadId={argentinaOtbn.downloadId}
       />
       <Card>
         <CardContent>
@@ -48,11 +71,11 @@ function RegionChart({ data, fireDownload }) {
             </div>
 
             <ChartsSelector
-              id={id}
-              label={label}
-              dataCy={dataCy}
-              checkedCategories={checkedCategories}
-              setCheckedCategories={setCheckedCategories}
+              id={argentinaOtbn.id}
+              chartsSelectorTitle={argentinaOtbn.chartsSelectorTitle}
+              dataCy={argentinaOtbn.dataCy}
+              checkedChartLabels={checkedChartLabels}
+              setCheckedChartLabels={setCheckedChartLabels}
               totalLossByCategory={totalLossByCategory}
               totalLoss={otbnTotalLoss}
             />
@@ -61,14 +84,36 @@ function RegionChart({ data, fireDownload }) {
       </Card>
 
       <DateRangeSilder
-        id={id}
+        id={argentinaOtbn.id}
         dateRange={dateRange}
         setDateRange={setDateRange}
-        startYear={startYear}
-        endYear={endYear}
+        startYear={argentinaOtbn.startYear}
+        endYear={argentinaOtbn.endYear}
       />
 
-      <OtbnAreaChart data={data} />
+      <PieChart
+        data={argentinaOtbnAreaData}
+        chartLabels={argentinaOtbn.chartLabels}
+        title={argentinaOtbn.diagnosticTitle}
+        informationBubbleId={argentinaOtbn.informationBubbleId}
+      />
+
+      {WDPA && (
+        <PieChart
+          data={WDPA}
+          chartLabels={wdpaOverlapCountry.chartLabels}
+          title={wdpaOverlapCountry.diagnosticTitle}
+          informationBubbleId={argentinaOtbn.informationBubbleId}
+        />
+      )}
+      {landmark && (
+        <PieChart
+          data={landmark}
+          chartLabels={landmarkOverlapCountry.chartLabels}
+          title={landmarkOverlapCountry.diagnosticTitle}
+          informationBubbleId={landmarkOverlapCountry.informationBubbleId}
+        />
+      )}
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import Highcharts from 'highcharts';
-import { getFormatedTooltipForDiagnosticsChart } from '../../../../common/js/utils/diagnostics.utils';
-import useHookWithRefCallback from '../../common/useHookWithRefCallback';
+import { getFormatedTooltipForDiagnosticsChart } from '../../../common/js/utils/diagnostics.utils';
+import useHookWithRefCallback from './useHookWithRefCallback';
 
 function BarChart({ data, plotBands = [], plotLines = [] }) {
   const renderChart = (divRef) => {

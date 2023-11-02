@@ -7,20 +7,28 @@ import DiagnosticsChartHeader from '../DiagnosticsChartHeader';
 import '../DiagnosticsChartContainer.scss';
 
 function PieChart({ data, chartLabels, title, informationBubbleId }) {
+  const sumOfAreasByChartLabel = chartLabels.reduce((sum, { id }) => sum + (data[id] || 0), 0);
   return (
-    <>
-      <DiagnosticsChartHeader title={title} informationBubbleId={informationBubbleId} />
-      <Card>
-        <CardContent>
-          <div className="diagnostics-chart-container">
-            <div className="diagnostics-chart-container__chart">
-              <Chart data={data} chartLabels={chartLabels} />
+    !!sumOfAreasByChartLabel && ( // don't display the chart if the total area is 0
+      <>
+        <DiagnosticsChartHeader title={title} informationBubbleId={informationBubbleId} />
+        <Card>
+          <CardContent>
+            <div className="diagnostics-chart-container">
+              <div className="diagnostics-chart-container__chart">
+                <Chart data={data} chartLabels={chartLabels} />
+              </div>
+              <Table
+                title={title}
+                data={data}
+                chartLabels={chartLabels}
+                sumOfAreasByChartLabel={sumOfAreasByChartLabel}
+              />
             </div>
-            <Table title={title} data={data} chartLabels={chartLabels} />
-          </div>
-        </CardContent>
-      </Card>
-    </>
+          </CardContent>
+        </Card>
+      </>
+    )
   );
 }
 

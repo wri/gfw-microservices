@@ -15,7 +15,7 @@ import store from '../../store';
 import { changeAddType, changeTemplate } from '../../actions/locationActions';
 import Button from '../../../../common/js/components/Button';
 import Dialog from 'material-ui/Dialog';
-import GeometryEngine from 'esri/geometry/geometryEngine';
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import httpRequest from '../../../../common/js/utils/httpRequest';
 import { containsPunctuation } from '../../utils/lists.utils';
 import { defaultCustomAttributeHeaders } from '../edit/table/MultiGridTable.config';
@@ -131,7 +131,7 @@ export default class AddGFW extends Component {
         spatialReference: SpatialReference.WGS84,
       });
 
-      const area = GeometryEngine.geodesicArea(esriGeometry, 'hectares');
+      const area = geometryEngine.geodesicArea(esriGeometry, 'hectares');
       geojson.features[geojson.features.length - 1].properties['Analysis Area'] = area;
       if (!geojson.features[geojson.features.length - 1].properties['Analysis Radius']) {
         geojson.features[geojson.features.length - 1].properties['Analysis Radius'] = 0;

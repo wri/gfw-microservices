@@ -26,13 +26,21 @@ export function createFeatureFlagsService(dataSource: DataSource) {
   }
 
   async function getFeatureFlagsForCurrentOrg(orgId: number) {
+    const mergedFeatureFlags = new Map();
     const globalFeatureFlags = await getFeatureFlagWhere({ orgId: null });
     const currentOrgFeatureFlags = await getFeatureFlagWhere({ orgId });
 
-    if (currentOrgFeatureFlags.length > 0) {
-      return currentOrgFeatureFlags;
+    for (const flag of currentOrgFeatureFlags) {
+      mergedFeatureFlags.set(flag.flagId, flag);
     }
-    return globalFeatureFlags;
+
+    for (const flag of globalFeatureFlags) {
+      if (!mergedFeatureFlags.has(flag.flagId)) {
+        mergedFeatureFlags.set(flag.flagId, flag);
+      }
+    }
+
+    return [...mergedFeatureFlags.values()];
   }
 
   async function getFeatureFlagsByFlagId(flagId: string) {

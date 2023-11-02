@@ -562,8 +562,8 @@ const saveGfwListLocations = (
               selected_location_ids: geoms.features.map((v) => v.properties.location_id),
               original_gfw_list: true,
               list_status_id: getListStatusId(isSaveAsDraft),
-            analysisIds: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS], // GFW lists default to FCD
-          };
+              analysisIds: [analysisTypes.FOREST_CHANGE_DIAGNOSTICS], // GFW lists default to FCD
+            };
 
             const requestPath = isSaveAsDraft
               ? saveAsDraftListConfig.route

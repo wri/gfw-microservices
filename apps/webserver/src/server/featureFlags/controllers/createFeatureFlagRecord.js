@@ -1,4 +1,5 @@
 const { dataSource, createFeatureFlagsService } = require('../service/createFeatureFlagsService');
+const logger = require('../../../config/privateutils/logger.utils');
 
 module.exports = async function (request, response) {
   const { body: featureFlagData } = request;
@@ -15,7 +16,7 @@ module.exports = async function (request, response) {
       newFeatureFlag,
     });
   } catch (error) {
-    console.error(error);
+    logger.error(`POST /api/feature-flags`, error);
     response.status(500).send({
       success: false,
       error: 'An error occurred while processing the createFeatureFlag request.',

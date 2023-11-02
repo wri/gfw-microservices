@@ -1,20 +1,17 @@
-import axios from 'axios';
-
 const getFeatureFlags = async () => {
-  return await axios({
-    url: '/api/feature-flags',
-    method: 'GET',
-    headers: {
-      'Content-type': 'application/json',
-    },
-  })
-    .then(({ data }) => {
-      localStorage.setItem('featureFlags', JSON.stringify(data));
-      return data;
-    })
-    .catch((err) => {
-      console.warn(err);
+  try {
+    const response = await fetch('/api/feature-flags', {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
     });
+    const { data } = await response.json();
+    localStorage.setItem('featureFlags', JSON.stringify(data));
+  } catch (error) {
+    console.warn(error);
+  }
 };
 
 export default getFeatureFlags;

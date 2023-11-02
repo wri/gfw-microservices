@@ -1,3 +1,8 @@
+import React, { Component } from 'react';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
+
 import { locationsPage } from '../../../../common/js/config';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { fieldValidations } from '../../utils/validations';
@@ -6,16 +11,11 @@ import StepTwoGFW from './StepTwoGFW';
 import StepThreeGFW from './StepThreeGFW';
 import GfwAccuracy from '../adding/GfwAccuracy';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import Polygon from '@arcgis/core/geometry/Polygon';
-import SpatialReference from '@arcgis/core/geometry/SpatialReference';
-
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
-import React, { Component } from 'react';
 import store from '../../store';
 import { changeAddType, changeTemplate } from '../../actions/locationActions';
 import Button from '../../../../common/js/components/Button';
 import Dialog from 'material-ui/Dialog';
-import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import httpRequest from '../../../../common/js/utils/httpRequest';
 import { containsPunctuation } from '../../utils/lists.utils';
 import { defaultCustomAttributeHeaders } from '../edit/table/MultiGridTable.config';

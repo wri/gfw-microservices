@@ -73,10 +73,6 @@ export default class AddGFW extends Component {
     };
 
     originalState = this.state;
-
-    require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
-      this.WebMercatorUtils = webMercatorUtils;
-    });
   }
 
   cancelAdd = () => {

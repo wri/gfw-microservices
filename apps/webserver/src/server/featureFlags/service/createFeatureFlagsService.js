@@ -35,7 +35,7 @@ const FeatureFlagsEntity = new EntitySchema({
 
 const dataSource = new DataSource({
   type: CONNECTION_TYPE_MSSQL,
-  logging: true,
+  logging: false,
   host: config.SQLConnection.host,
   port: parseInt(config.SQLConnection.port, 10),
   username: config.SQLConnection.username,

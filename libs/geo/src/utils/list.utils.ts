@@ -9,31 +9,7 @@ import {
   ListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 
-// importing from webserver is not allowed, so copying the constants here for now
-// TODO: https://gfw.atlassian.net/browse/GPV-2274: move the constants to a shared location
-// import * as analysisTypesOptions from '../../../../apps/webserver/src/config/env/analysisTypes.constants';
-const analysisTypes = {
-  FOREST_CHANGE_DIAGNOSTICS: 'FCD',
-  DEFORESTATION_KPIS: 'AFI',
-  ALERTS: 'ALERTS',
-};
-const analysisTypesOptions = [
-  {
-    id: analysisTypes.FOREST_CHANGE_DIAGNOSTICS,
-    label: 'Forest Change Global',
-    shortLabel: 'Forest Change',
-  },
-  {
-    id: analysisTypes.DEFORESTATION_KPIS,
-    label: 'Deforestation Reporting (cutoff date 2020)',
-    shortLabel: 'Reporting',
-  },
-  {
-    id: analysisTypes.ALERTS,
-    label: 'Near-real time alerts (GLAD, VIIRS)',
-    shortLabel: 'Alerts',
-  },
-];
+import { analysisTypesOptions } from '@wri-monorepos/constants';
 
 const LIST_STATUS = {
   LIST_STATUS_PENDING: 1,

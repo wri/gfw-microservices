@@ -11,7 +11,7 @@
       "statements": 1
     }
   },
-  "moduleFileExtensions": ["js", "json", "jsx"],
+  "moduleFileExtensions": ["js", "json", "jsx", "ts", "tsx"],
   "modulePathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/dist/*"],
   "setupFiles": ["@testing-library/react/dont-cleanup-after-each"],
   "setupFilesAfterEnv": ["./test/jest.setup.js", "@testing-library/jest-dom/extend-expect"],
@@ -24,7 +24,8 @@
   ],
   "transform": {
     ".+\\.(css|css!|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
-    "^.+\\.(js|jsx)?$": "babel-jest"
+    "^.+\\.(js|jsx)?$": "babel-jest",
+    "^.+\\.(ts)$": "ts-jest"
   },
   "transformIgnorePatterns": ["/node_modules/"],
   "verbose": false,
@@ -44,6 +45,7 @@
     "^dojo(.*)$": "<rootDir>/test/__mocks__/object.js",
     "^esri(.*)$": "<rootDir>/test/__mocks__/object.js",
     "^dijit(.*)$": "<rootDir>/test/__mocks__/object.js",
+    "@wri-monorepos/constants": "<rootDir>/../../../libs/constants/src/index.ts",
     "^about(.*)$": "<rootDir>/client/about$1",
     "^account(.*)$": "<rootDir>/client/account$1",
     "^activityLog(.*)$": "<rootDir>/client/activityLog$1",

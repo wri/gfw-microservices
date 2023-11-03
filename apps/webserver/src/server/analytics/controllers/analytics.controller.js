@@ -5,7 +5,7 @@ const {
   getAnalysisLimitData,
   getOrganizationUsagePercentage,
 } = require('../service/analytics.service');
-const { analysisTypes } = require(path.resolve('./config/env/analysisTypes.constants'));
+import { analysisTypes } from '@wri-monorepos/constants';
 
 const { getOrganizationActivatedTime } = require(path.resolve(
   './config/publicutils/accountManager.utils'

@@ -1,7 +1,5 @@
 /* eslint-disable camelcase */
-/* eslint-disable global-require */
 /* eslint-disable guard-for-in */
-/* eslint-disable import/no-dynamic-require */
 /* eslint-disable import/no-unresolved */
 /* eslint-disable no-loop-func */
 /* eslint-disable no-param-reassign */
@@ -16,13 +14,19 @@ import _every from 'lodash/every';
 import _maxBy from 'lodash/maxBy';
 import moment from 'moment';
 
+import { parse, load } from '@loaders.gl/core';
+import { ZipLoader } from '@loaders.gl/zip';
+import { KMLLoader } from '@loaders.gl/kml';
+
+import Point from '@arcgis/core/geometry/Point';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
+import * as projection from '@arcgis/core/geometry/projection';
+
 import { fieldValidations } from '../../utils/validations';
 import { locationsPage, convertURL } from '../../../../common/js/config';
 import downloaders from '../../../../common/js/utils/downloaders';
-import esriConfig from 'esri/config';
-import Polygon from 'esri/geometry/Polygon';
-import Point from 'esri/geometry/Point';
-import GeometryEngine from 'esri/geometry/geometryEngine';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import {
   discernProjection,
@@ -37,17 +41,10 @@ import Button from '../../../../common/js/components/Button';
 import IconBadgeCheck from '../../../../common/js/components/icon/IconBadgeCheck';
 import IconExclamationTriangle from '../../../../common/js/components/icon/IconExclamationTriangle';
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
-
-import { parse, load } from '@loaders.gl/core';
-import { ZipLoader } from '@loaders.gl/zip';
-import { KMLLoader } from '@loaders.gl/kml';
-
-import SpatialReference from 'esri/geometry/SpatialReference';
 import MultiGridTable from '../edit/table/MultiGridTable';
 // eslint-disable-next-line camelcase
 import { _getFeatures, prepUploadFeatures_AddLocationID } from '../edit/table/MultiGridTable.util';
 import { messageIncorrectFileTypeUpload } from './Uploading.config';
-
 import {
   excelLocationClassificationExcluded,
   excelLocationClassificationMandatory,
@@ -122,8 +119,7 @@ const getHeaderMapping = (templateHeadersList, propertiesKeys) => {
     const headerMatches = propertiesKeys.filter((key) => {
       const keyNoUnderscores = key.replaceAll('_', ' ');
       const regExp = new RegExp(keyNoUnderscores, 'i');
-      const match = header.match(regExp);
-      return match;
+      return header.match(regExp);
     });
     shortHeaderMapping[header] =
       headerMatches.length > 1 ? findMoreSimilarHeader(header, headerMatches) : headerMatches[0];
@@ -175,20 +171,6 @@ export default class StepThree extends Component {
       showValidated: 'all',
       totalFeatures: 0,
     };
-
-    esriConfig.request.corsEnabledServers.push(convertURL);
-    esriConfig.request.corsEnabledServers.push('production-api.globalforestwatch.org');
-
-    require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
-      // eslint-disable-next-line react/no-unused-class-component-methods
-      this.WebMercatorUtils = webMercatorUtils;
-    });
-
-    require(['esri/geometry/projection'], (projection) => {
-      projection.load().then(() => {
-        this.projection = projection;
-      });
-    });
   }
 
   shouldCloseDialog = () => {
@@ -271,19 +253,10 @@ export default class StepThree extends Component {
   };
 
   complete = (results) => {
-    const {
-      activeTemplate,
-      setUploading,
-      addType,
-      commodityType,
-      templateData,
-      accuracy,
-      setFeatures,
-    } = this.props;
+    const { activeTemplate, setUploading, addType, templateData, accuracy, setFeatures } =
+      this.props;
     const { integers, floats } = this.state;
     let headerKey;
-    let active = activeTemplate;
-
     if (results && results.data && results.data.length > 1501) {
       this.setState({
         dialogOpen: true,
@@ -294,17 +267,6 @@ export default class StepThree extends Component {
       return;
     }
 
-    if (addType === 'commodity' && active === 'investment') {
-      if (commodityType === 'palmOil') {
-        active = 'palmGeneric';
-      } else if (commodityType === 'soy') {
-        active = 'soyGeneric';
-      } else if (commodityType === 'cattle') {
-        active = 'cattleGeneric';
-      } else if (commodityType === 'cocoa') {
-        active = 'cocoaGeneric';
-      }
-    }
     locationsPage.tableKeyArray.forEach((object) => {
       if (object.activeTemplate === activeTemplate) {
         headerKey = object.templateDataValue;
@@ -508,7 +470,6 @@ export default class StepThree extends Component {
         const formData = new FormData();
         formData.append('file', file);
         const xmlhttp = new XMLHttpRequest();
-
         xmlhttp.open('POST', convertURL);
         xmlhttp.onreadystatechange = () => {
           if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
@@ -529,254 +490,257 @@ export default class StepThree extends Component {
                 setUploading(false);
                 return;
               }
-              const oldSpatialRef = new SpatialReference(projDefs[1]);
-              const newSpatialRef = new SpatialReference(4326);
-              data.attributes.features.forEach((feat) => {
-                const { properties } = feat;
-                if (properties.Verified_) {
-                  feat.properties['Verified?'] = properties.Verified_;
-                }
-
-                if (
-                  feat.geometry &&
-                  feat.geometry.coordinates &&
-                  feat.geometry.coordinates.length &&
-                  feat.geometry.coordinates[0].constructor === Array
-                ) {
-                  const esriJson = geojsonUtil.geojsonToArcGIS(feat.geometry);
-                  const oldFeatGeometry = new Polygon({
-                    rings: esriJson.rings,
-                    spatialReference:
-                      esriJson.spatialReference.wkid === newSpatialRef.wkid
-                        ? esriJson.spatialReference
-                        : oldSpatialRef,
-                  });
-                  feat.geometry = this.projection.project(oldFeatGeometry, newSpatialRef);
-                  feat.properties.Analysis_R = '';
-                  if (!feat.properties['Analysis Radius']) {
-                    feat.properties['Analysis Radius'] = '';
+              projection.load().then(() => {
+                const oldSpatialRef = new SpatialReference(projDefs[1]);
+                const newSpatialRef = SpatialReference.WGS84;
+                data.attributes.features.forEach((feat) => {
+                  const { properties } = feat;
+                  if (properties.Verified_) {
+                    feat.properties['Verified?'] = properties.Verified_;
                   }
 
-                  if (!feat.properties.Analysis_A) {
-                    const area = GeometryEngine.geodesicArea(feat.geometry, 'hectares');
-                    feat.properties.Analysis_A = area;
-                  }
-
-                  if (!feat.properties['Analysis Area']) {
-                    feat.properties['Analysis Area'] = feat.properties.Analysis_A;
-                  }
-
-                  feat.properties.Latitude = this.returnLatLong(feat, 'Latitude');
-                  feat.properties.Longitude = this.returnLatLong(feat, 'Longitude');
-                } else if (
-                  feat.geometry &&
-                  feat.geometry.coordinates &&
-                  feat.geometry.coordinates.length &&
-                  typeof feat.geometry.coordinates[0] === 'number'
-                ) {
-                  const centerPoint = {
-                    type: 'point',
-                    x: feat.geometry.coordinates[0],
-                    y: feat.geometry.coordinates[1],
-                    spatialReference: oldSpatialRef,
-                  };
-                  const projectedCenterPoint = this.projection.project(centerPoint, newSpatialRef);
                   if (
-                    feat.properties.Analysis_A &&
-                    feat.properties.Analysis_A !== ' ' &&
-                    feat.properties.Analysis_R &&
-                    feat.properties.Analysis_R !== ' '
+                    feat.geometry &&
+                    feat.geometry.coordinates &&
+                    feat.geometry.coordinates.length &&
+                    feat.geometry.coordinates[0].constructor === Array
                   ) {
-                    feat.properties.Analysis_A = '';
-                    feat.geometry = GeometryEngine.geodesicBuffer(
-                      projectedCenterPoint,
-                      parseFloat(feat.properties.Analysis_R),
-                      'kilometers'
-                    );
-                  } else if (feat.properties.Analysis_R && feat.properties.Analysis_R !== ' ') {
-                    feat.properties.Analysis_A = '';
-                    feat.geometry = GeometryEngine.geodesicBuffer(
-                      projectedCenterPoint,
-                      parseFloat(feat.properties.Analysis_R),
-                      'kilometers'
-                    );
-                  } else if (feat.properties.Analysis_A && feat.properties.Analysis_A !== ' ') {
-                    feat.properties.Analysis_R = Math.sqrt(
-                      parseFloat(feat.properties.Analysis_A) / Math.PI
-                    );
-                    feat.properties.Analysis_A = '';
-                    feat.geometry = GeometryEngine.geodesicBuffer(
-                      projectedCenterPoint,
-                      parseFloat(feat.properties.Analysis_R),
-                      'kilometers'
-                    );
-                  }
+                    const esriJson = geojsonUtil.geojsonToArcGIS(feat.geometry);
+                    const oldFeatGeometry = new Polygon({
+                      rings: esriJson.rings,
+                      spatialReference:
+                        esriJson.spatialReference.wkid === newSpatialRef.wkid
+                          ? esriJson.spatialReference
+                          : oldSpatialRef,
+                    });
+                    feat.geometry = projection.project(oldFeatGeometry, newSpatialRef);
+                    feat.properties.Analysis_R = '';
+                    if (!feat.properties['Analysis Radius']) {
+                      feat.properties['Analysis Radius'] = '';
+                    }
 
-                  if (!feat.properties['Analysis Area']) {
-                    feat.properties['Analysis Area'] = feat.properties.Analysis_A;
-                  }
+                    if (!feat.properties.Analysis_A) {
+                      feat.properties.Analysis_A = geometryEngine.geodesicArea(
+                        feat.geometry,
+                        'hectares'
+                      );
+                    }
 
-                  if (!feat.properties['Analysis Radius']) {
-                    feat.properties['Analysis Radius'] = feat.properties.Analysis_R;
-                  }
+                    if (!feat.properties['Analysis Area']) {
+                      feat.properties['Analysis Area'] = feat.properties.Analysis_A;
+                    }
 
-                  feat.properties.Latitude = projectedCenterPoint.latitude;
-                  feat.properties.Longitude = projectedCenterPoint.longitude;
-                }
-              });
-
-              let headerKey;
-              let active = activeTemplate;
-
-              if (addType === 'commodity' && active === 'investment') {
-                if (commodityType === 'palmOil') {
-                  active = 'palmGeneric';
-                } else if (commodityType === 'soy') {
-                  active = 'soyGeneric';
-                } else if (commodityType === 'cattle') {
-                  active = 'cattleGeneric';
-                } else if (commodityType === 'cocoa') {
-                  active = 'cocoaGeneric';
-                }
-              }
-              locationsPage.tableKeyArray.forEach((object) => {
-                if (object.activeTemplate === active) {
-                  headerKey = object.templateDataValue;
-                }
-              });
-              const headerArray = [];
-              const shortHeaders = [];
-
-              templateData.forEach((template) => {
-                if (template.template_name === headerKey) {
-                  shortHeaders.push(
-                    template.template_datum_field_name.split(' ').join('_').substring(0, 10)
-                  );
-                  headerArray.push(template.template_datum_field_name);
-                }
-              });
-
-              let matchingTemplate = true;
-              const resultsKeys = Object.keys(data.attributes.features[0].properties);
-
-              const missingHeaders = [];
-              shortHeaders.forEach((header, i) => {
-                if (
-                  resultsKeys.indexOf(header) === -1 &&
-                  locationsPage.upload.generatedHeaderFields.indexOf(headerArray[i]) === -1
-                ) {
-                  missingHeaders.push(headerArray[i]);
-                  matchingTemplate = false;
-                  console.log(`Your data is missing a property: ${headerArray[i]} !`);
-                }
-              });
-
-              if (matchingTemplate) {
-                data.attributes.features.forEach((feature) => {
-                  const keys = shortHeaders;
-                  if (headerArray.indexOf('Time Horizon') === -1) {
-                    feature['Time Horizon'] = '';
-                  }
-                  keys.forEach((key, k) => {
-                    if (integers.indexOf(key) > -1) {
-                      if (
-                        (key === 'Analysis Area' && feature[key] !== '') ||
-                        (key === 'Analysis Radius' && feature[key] !== '')
-                      ) {
-                        feature[headerArray[k]] = parseInt(feature.properties[key], 10);
-                        if (isNaN(feature[headerArray[k]])) {
-                          feature[headerArray[k]] = '';
-                        }
-                      } else if (
-                        (key === 'Analysis Area' && feature[key] === '') ||
-                        (key === 'Analysis Radius' && feature[key] === '')
-                      ) {
-                        feature[headerArray[k]] = feature.properties[key];
-                      } else {
-                        feature[headerArray[k]] = parseInt(feature.properties[key], 10);
-                        if (isNaN(feature[headerArray[k]])) {
-                          feature[headerArray[k]] = '';
-                        }
-                      }
-                    } else if (floats.indexOf(key) > -1) {
-                      if (
-                        (key === 'Analysis Area' && feature[key] !== '') ||
-                        (key === 'Analysis Radius' && feature[key] !== '')
-                      ) {
-                        feature[headerArray[k]] = parseFloat(feature.properties[key]);
-                        if (isNaN(feature[headerArray[k]])) {
-                          feature[headerArray[k]] = '';
-                        }
-                      } else if (
-                        (key === 'Analysis Area' && feature[key] === '') ||
-                        (key === 'Analysis Radius' && feature[key] === '')
-                      ) {
-                        feature[headerArray[k]] = feature.properties[key];
-                      } else {
-                        feature[headerArray[k]] = parseFloat(feature.properties[key]);
-                        if (isNaN(feature[headerArray[k]])) {
-                          feature[headerArray[k]] = '';
-                        }
-                      }
-                    } else if (
-                      (feature.properties[key] !== '' && key === 'Start_Date') ||
-                      (feature.properties[key] !== '' && key === 'End_Date')
+                    feat.properties.Latitude = this.returnLatLong(feat, 'Latitude');
+                    feat.properties.Longitude = this.returnLatLong(feat, 'Longitude');
+                  } else if (
+                    feat.geometry &&
+                    feat.geometry.coordinates &&
+                    feat.geometry.coordinates.length &&
+                    typeof feat.geometry.coordinates[0] === 'number'
+                  ) {
+                    const centerPoint = {
+                      type: 'point',
+                      x: feat.geometry.coordinates[0],
+                      y: feat.geometry.coordinates[1],
+                      spatialReference: oldSpatialRef,
+                    };
+                    const projectedCenterPoint = projection.project(centerPoint, newSpatialRef);
+                    if (
+                      feat.properties.Analysis_A &&
+                      feat.properties.Analysis_A !== ' ' &&
+                      feat.properties.Analysis_R &&
+                      feat.properties.Analysis_R !== ' '
                     ) {
-                      if (feature.properties[key] === null) {
-                        feature[headerArray[k]] = '';
-                      } else {
-                        const date = new Date(feature.properties[key]);
-                        if (!isNaN(date.getUTCFullYear())) {
-                          const dateString = `${
-                            date.getUTCMonth() + 1
-                          }/${date.getUTCDate()}/${date.getUTCFullYear()}`;
-                          feature[headerArray[k]] = dateString;
-                        }
-                      }
-                    } else {
-                      feature[headerArray[k]] = feature.properties[key];
+                      feat.properties.Analysis_A = '';
+                      feat.geometry = geometryEngine.geodesicBuffer(
+                        projectedCenterPoint,
+                        parseFloat(feat.properties.Analysis_R),
+                        'kilometers'
+                      );
+                    } else if (feat.properties.Analysis_R && feat.properties.Analysis_R !== ' ') {
+                      feat.properties.Analysis_A = '';
+                      feat.geometry = geometryEngine.geodesicBuffer(
+                        projectedCenterPoint,
+                        parseFloat(feat.properties.Analysis_R),
+                        'kilometers'
+                      );
+                    } else if (feat.properties.Analysis_A && feat.properties.Analysis_A !== ' ') {
+                      feat.properties.Analysis_R = Math.sqrt(
+                        parseFloat(feat.properties.Analysis_A) / Math.PI
+                      );
+                      feat.properties.Analysis_A = '';
+                      feat.geometry = geometryEngine.geodesicBuffer(
+                        projectedCenterPoint,
+                        parseFloat(feat.properties.Analysis_R),
+                        'kilometers'
+                      );
                     }
-                  });
 
-                  Object.keys(feature.properties).forEach((featureProp) => {
-                    const shortenedProp = featureProp.split(' ').join('_').substring(0, 10);
-                    if (keys.indexOf(featureProp) === -1 && keys.indexOf(shortenedProp) === -1) {
-                      feature[featureProp] = feature.properties[featureProp];
+                    if (!feat.properties['Analysis Area']) {
+                      feat.properties['Analysis Area'] = feat.properties.Analysis_A;
                     }
-                  });
 
-                  delete feature.properties;
+                    if (!feat.properties['Analysis Radius']) {
+                      feat.properties['Analysis Radius'] = feat.properties.Analysis_R;
+                    }
 
-                  if (!feature.Attribute1) {
-                    delete feature.Attribute1;
+                    feat.properties.Latitude = projectedCenterPoint.latitude;
+                    feat.properties.Longitude = projectedCenterPoint.longitude;
                   }
-                  if (!feature.Attribute2) {
-                    delete feature.Attribute2;
-                  }
-                  if (!feature.Attribute3) {
-                    delete feature.Attribute3;
-                  }
-                  feature['Accuracy Rating of Location Entered'] = accuracy;
                 });
-                this.setState({ totalFeatures: data.attributes.features.length });
-                setFeatures(data.attributes.features);
-              } else {
-                const templateDescription = locationsPage.messageText[activeTemplate]
-                  ? locationsPage.messageText[activeTemplate].text
-                  : activeTemplate;
-                let text = `The uploaded file format does not match the ${templateDescription} template type. Please make sure the template type selected in Pro matches the uploaded template type.`;
-                if (missingHeaders.length > 0) {
-                  text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(
-                    ', '
-                  )}`;
+
+                let headerKey;
+                let active = activeTemplate;
+
+                if (addType === 'commodity' && active === 'investment') {
+                  if (commodityType === 'palmOil') {
+                    active = 'palmGeneric';
+                  } else if (commodityType === 'soy') {
+                    active = 'soyGeneric';
+                  } else if (commodityType === 'cattle') {
+                    active = 'cattleGeneric';
+                  } else if (commodityType === 'cocoa') {
+                    active = 'cocoaGeneric';
+                  }
                 }
-                this.setState({
-                  dialogOpen: true,
-                  dialogTitle: 'Incorrect template uploaded',
-                  dialogMessage: text,
+                locationsPage.tableKeyArray.forEach((object) => {
+                  if (object.activeTemplate === active) {
+                    headerKey = object.templateDataValue;
+                  }
                 });
-                setUploading(false);
-              }
+                const headerArray = [];
+                const shortHeaders = [];
+
+                templateData.forEach((template) => {
+                  if (template.template_name === headerKey) {
+                    shortHeaders.push(
+                      template.template_datum_field_name.split(' ').join('_').substring(0, 10)
+                    );
+                    headerArray.push(template.template_datum_field_name);
+                  }
+                });
+
+                let matchingTemplate = true;
+                const resultsKeys = Object.keys(data.attributes.features[0].properties);
+
+                const missingHeaders = [];
+                shortHeaders.forEach((header, i) => {
+                  if (
+                    resultsKeys.indexOf(header) === -1 &&
+                    locationsPage.upload.generatedHeaderFields.indexOf(headerArray[i]) === -1
+                  ) {
+                    missingHeaders.push(headerArray[i]);
+                    matchingTemplate = false;
+                    console.log(`Your data is missing a property: ${headerArray[i]} !`);
+                  }
+                });
+
+                if (matchingTemplate) {
+                  data.attributes.features.forEach((feature) => {
+                    const keys = shortHeaders;
+                    if (headerArray.indexOf('Time Horizon') === -1) {
+                      feature['Time Horizon'] = '';
+                    }
+                    keys.forEach((key, k) => {
+                      if (integers.indexOf(key) > -1) {
+                        if (
+                          (key === 'Analysis Area' && feature[key] !== '') ||
+                          (key === 'Analysis Radius' && feature[key] !== '')
+                        ) {
+                          feature[headerArray[k]] = parseInt(feature.properties[key], 10);
+                          if (isNaN(feature[headerArray[k]])) {
+                            feature[headerArray[k]] = '';
+                          }
+                        } else if (
+                          (key === 'Analysis Area' && feature[key] === '') ||
+                          (key === 'Analysis Radius' && feature[key] === '')
+                        ) {
+                          feature[headerArray[k]] = feature.properties[key];
+                        } else {
+                          feature[headerArray[k]] = parseInt(feature.properties[key], 10);
+                          if (isNaN(feature[headerArray[k]])) {
+                            feature[headerArray[k]] = '';
+                          }
+                        }
+                      } else if (floats.indexOf(key) > -1) {
+                        if (
+                          (key === 'Analysis Area' && feature[key] !== '') ||
+                          (key === 'Analysis Radius' && feature[key] !== '')
+                        ) {
+                          feature[headerArray[k]] = parseFloat(feature.properties[key]);
+                          if (isNaN(feature[headerArray[k]])) {
+                            feature[headerArray[k]] = '';
+                          }
+                        } else if (
+                          (key === 'Analysis Area' && feature[key] === '') ||
+                          (key === 'Analysis Radius' && feature[key] === '')
+                        ) {
+                          feature[headerArray[k]] = feature.properties[key];
+                        } else {
+                          feature[headerArray[k]] = parseFloat(feature.properties[key]);
+                          if (isNaN(feature[headerArray[k]])) {
+                            feature[headerArray[k]] = '';
+                          }
+                        }
+                      } else if (
+                        (feature.properties[key] !== '' && key === 'Start_Date') ||
+                        (feature.properties[key] !== '' && key === 'End_Date')
+                      ) {
+                        if (feature.properties[key] === null) {
+                          feature[headerArray[k]] = '';
+                        } else {
+                          const date = new Date(feature.properties[key]);
+                          if (!isNaN(date.getUTCFullYear())) {
+                            feature[headerArray[k]] = `${
+                              date.getUTCMonth() + 1
+                            }/${date.getUTCDate()}/${date.getUTCFullYear()}`;
+                          }
+                        }
+                      } else {
+                        feature[headerArray[k]] = feature.properties[key];
+                      }
+                    });
+
+                    Object.keys(feature.properties).forEach((featureProp) => {
+                      const shortenedProp = featureProp.split(' ').join('_').substring(0, 10);
+                      if (keys.indexOf(featureProp) === -1 && keys.indexOf(shortenedProp) === -1) {
+                        feature[featureProp] = feature.properties[featureProp];
+                      }
+                    });
+
+                    delete feature.properties;
+
+                    if (!feature.Attribute1) {
+                      delete feature.Attribute1;
+                    }
+                    if (!feature.Attribute2) {
+                      delete feature.Attribute2;
+                    }
+                    if (!feature.Attribute3) {
+                      delete feature.Attribute3;
+                    }
+                    feature['Accuracy Rating of Location Entered'] = accuracy;
+                  });
+                  this.setState({ totalFeatures: data.attributes.features.length });
+                  setFeatures(data.attributes.features);
+                } else {
+                  const templateDescription = locationsPage.messageText[activeTemplate]
+                    ? locationsPage.messageText[activeTemplate].text
+                    : activeTemplate;
+                  let text = `The uploaded file format does not match the ${templateDescription} template type. Please make sure the template type selected in Pro matches the uploaded template type.`;
+                  if (missingHeaders.length > 0) {
+                    text += ` If the template type is correct, the following fields are missing: ${missingHeaders.join(
+                      ', '
+                    )}`;
+                  }
+                  this.setState({
+                    dialogOpen: true,
+                    dialogTitle: 'Incorrect template uploaded',
+                    dialogMessage: text,
+                  });
+                  setUploading(false);
+                }
+              });
             }
           } else if (xmlhttp.readyState === 4) {
             setUploading(false);
@@ -950,7 +914,7 @@ export default class StepThree extends Component {
         });
         submittedData.forEach((feature) => {
           const keys = Object.keys(feature);
-          if (!keys.indexOf('Time Horizon') === -1) {
+          if (!(keys.indexOf('Time Horizon') === -1)) {
             feature['Time Horizon'] = '';
           }
           feature['Accuracy Rating of Location Entered'] = accuracy;
@@ -1002,8 +966,8 @@ export default class StepThree extends Component {
 
         /**
          * Check Location Classification Validity
-         * @param {Array} submittedData - Locations from Excel file
-         * @param {String} templateDescription - Template name
+         * @param {Array} localSubmittedData - Locations from Excel file
+         * @param {String} localTemplateDescription - Template name
          * @return {boolean} - returns true is all Location Classification have value and template is in 'excelLocationClassificationMandatory' list
          */
         const checkLocationClassificationValidity = (
@@ -1125,7 +1089,7 @@ export default class StepThree extends Component {
           }
 
           if (!feat.properties[analysisArea]) {
-            feat.properties[analysisArea] = GeometryEngine.geodesicArea(feat.geometry, 'hectares');
+            feat.properties[analysisArea] = geometryEngine.geodesicArea(feat.geometry, 'hectares');
           }
 
           feat.properties.Latitude =
@@ -1153,14 +1117,14 @@ export default class StepThree extends Component {
             (feat.properties.Analysis_R && feat.properties.Analysis_R !== ' ')
           ) {
             feat.properties.Analysis_A = '';
-            feat.geometry = GeometryEngine.geodesicBuffer(
+            feat.geometry = geometryEngine.geodesicBuffer(
               centerPoint,
               parseFloat(feat.properties.Analysis_R),
               'kilometers'
             );
           } else if (feat.properties.Analysis_A && feat.properties.Analysis_A !== ' ') {
             feat.properties.Analysis_R = Math.sqrt(feat.properties.Analysis_A / Math.PI);
-            feat.geometry = GeometryEngine.geodesicBuffer(
+            feat.geometry = geometryEngine.geodesicBuffer(
               centerPoint,
               parseFloat(feat.properties.Analysis_R),
               'kilometers'

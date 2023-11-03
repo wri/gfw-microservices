@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 export class ListAnalysisResponse {
   @ApiProperty()
-  listId: number;
+  listId: string;
   @ApiProperty()
   status: 'Processing' | 'Completed' | 'Failed';
   @ApiProperty()
@@ -11,5 +11,5 @@ export class ListAnalysisResponse {
   @ApiProperty()
   creationDate: Date;
   @ApiProperty()
-  expirationDate: string;
+  expirationDate: Date;
 }

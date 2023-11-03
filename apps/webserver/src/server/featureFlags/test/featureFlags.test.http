@@ -1,5 +1,21 @@
-### Check is feature flag is enabled
+### Get all feature flags current organitzation
 GET https://localhost:8443/api/feature-flags
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
+### Get feature flags rules by flagId 
+GET https://localhost:8443/api/feature-flags/self
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### Create a feature flag
+POST https://localhost:8443/api/feature-flags
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+	"flagId": "self",
+	"orgId": 1,
+	"flagState": true,
+	"modifierUserId": 1692 
+}

@@ -1,6 +1,8 @@
 const path = require('path');
 const { DataSource, EntitySchema } = require('typeorm');
 const config = require(path.resolve('./config/config'));
+const { allFeatureFlags } = require('../utils/featureFlagConstants');
+const DEFAULT_GLOBA_FEATURE_FLAG_STATE = false;
 const CONNECTION_TYPE_MSSQL = 'mssql';
 
 const FeatureFlagsEntity = new EntitySchema({
@@ -35,7 +37,7 @@ const FeatureFlagsEntity = new EntitySchema({
 
 const dataSource = new DataSource({
   type: CONNECTION_TYPE_MSSQL,
-  logging: false,
+  logging: true,
   host: config.SQLConnection.host,
   port: parseInt(config.SQLConnection.port, 10),
   username: config.SQLConnection.username,
@@ -73,17 +75,15 @@ function createFeatureFlagsService(dataSource) {
 
   async function getFeatureFlagsForCurrentOrg(orgId) {
     const mergedFeatureFlags = new Map();
-    const globalFeatureFlags = await getFeatureFlagWhere({ orgId: null });
+    const globalFeatureFlags = allFeatureFlags.map(formatGlobalFeatureFlags);
     const currentOrgFeatureFlags = await getFeatureFlagWhere({ orgId });
 
-    for (const flag of currentOrgFeatureFlags) {
-      mergedFeatureFlags.set(flag.flagId, flag);
-    }
-
     for (const flag of globalFeatureFlags) {
-      if (!mergedFeatureFlags.has(flag.flagId)) {
-        mergedFeatureFlags.set(flag.flagId, flag);
-      }
+      // If there flags enabled for this org set them
+      const flagForOrg = currentOrgFeatureFlags.find(
+        (orgFlag) => orgFlag.flagState !== flag.flagState && orgFlag.flagId === flag.flagId
+      );
+      mergedFeatureFlags.set(flag.flagId, flagForOrg ?? flag);
     }
 
     return [...mergedFeatureFlags.values()];
@@ -93,7 +93,7 @@ function createFeatureFlagsService(dataSource) {
     return getFeatureFlagWhere({ flagId });
   }
 
-  async function createFeatureFlag(data) {
+  async function insertOrSaveFeatureFlag(data) {
     const fieldsWithErrors = validateFeatureFlagFields(data);
 
     if (fieldsWithErrors.length < 1) {
@@ -105,36 +105,52 @@ function createFeatureFlagsService(dataSource) {
     }
 
     throw new Error(
-      `Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(
+      `Could not create FeatureFlag record. The following fields are missing or invalid: ${fieldsWithErrors.join(
         ', '
       )}`
     );
   }
 
-  function validateFeatureFlagFields(data) {
-    const missingFields = [];
+  async function deleteFeatureFlag(where) {
+    return initializeExecuteAndCleanUp(async () => {
+      const featureFlag = await repository.findOne({ where });
+      return repository.remove(featureFlag);
+    });
+  }
 
-    if (!data.flagId || typeof data.flagId !== 'string') {
-      missingFields.push('flagId');
+  function validateFeatureFlagFields(data) {
+    const missingOrInvalidFields = [];
+
+    if (!data.flagId || typeof data.flagId !== 'string' || !allFeatureFlags.includes(data.flagId)) {
+      missingOrInvalidFields.push('flagId');
     }
     if (data.orgId !== null && typeof data.orgId !== 'number') {
-      missingFields.push('orgId');
+      missingOrInvalidFields.push('orgId');
     }
-    if (typeof data.flagState !== 'boolean') {
-      missingFields.push('flagState');
+    if (!data.flagState && typeof data.flagState !== 'boolean') {
+      missingOrInvalidFields.push('flagState');
     }
     if (typeof data.modifierUserId !== 'number') {
-      missingFields.push('modifierUserId');
+      missingOrInvalidFields.push('modifierUserId');
     }
 
-    return missingFields;
+    return missingOrInvalidFields;
+  }
+
+  function formatGlobalFeatureFlags(flag) {
+    return {
+      flagId: flag,
+      flagState: DEFAULT_GLOBA_FEATURE_FLAG_STATE,
+      orgId: null,
+    };
   }
 
   return {
     getFeatureFlagWhere,
     getFeatureFlagsForCurrentOrg,
     getFeatureFlagsByFlagId,
-    createFeatureFlag,
+    insertOrSaveFeatureFlag,
+    deleteFeatureFlag,
   };
 }
 

@@ -15,6 +15,8 @@ import { SQLUtils } from '@wri-monorepos/sql';
 export abstract class IPipeService {
   private readonly loggerPipe = new Logger(IPipeService.name);
 
+  private EXPIRE_IN_FIVE_DAYS: number = 5;
+
   @Inject(ConfigService)
   private readonly config: ConfigService;
 
@@ -83,42 +85,19 @@ export abstract class IPipeService {
   async saveS3UrlAtDatabase(filters: GenerationFileRequest, location: string) {
     const { listId, organizationDatabase, type } = filters;
 
-    const connection = new SQLUtils({
-      user: this.config.get<string>('MSSQL_USERNAME'),
-      password: this.config.get<string>('MSSQL_PASSWORD'),
-      database: organizationDatabase,
-      server: this.config.get<string>('MSSQL_HOSTNAME'),
-      pool: {
-        max: 10,
-        min: 0,
-        idleTimeoutMillis: 30000,
-      },
-      port: parseInt(this.config.get<string>('MSSQL_PORT')),
-      options: {
-        trustServerCertificate: true,
-      },
-    });
-
     const parameters = toSqlParameter({
       location,
-      expirationDate: moment(new Date()).add(5, 'days').toDate(),
+      expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
       listId,
       analysisId: type == 'afi' ? 'AFI' : 'FCD',
     });
 
-    await connection.connect();
-
-    let createListResult = [];
     try {
       this.loggerPipe.log('Saving S3 URL at database for list ' + listId + ' and analysis ' + type);
-      createListResult = await connection.query(setS3UrlAndExpirationDate, parameters);
+      await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDate, parameters);
     } catch (e) {
       this.loggerPipe.log('Error saving S3 URL at database');
     }
-
-    await connection.disconnect();
-
-    return createListResult;
   }
 
   public async waitFinishedProcess(inputStream: PassThrough) {

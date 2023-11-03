@@ -1,5 +1,5 @@
 const path = require('path');
-const { analysisTypesOptions } = require(path.resolve('./config/env/analysisTypes.constants'));
+import { analysisTypes } from '@wri-monorepos/constants';
 
 module.exports = (analysisData) => {
   const extractAnalysisTypes = analysisTypesOptions.reduce((result, analysisTypesOption) => {

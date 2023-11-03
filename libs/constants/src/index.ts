@@ -1,5 +1,6 @@
 import { Provider } from '@nestjs/common';
 export * from './types';
+export * from './lib/analysisTypes.constants';
 
 export const ConstantsConfigIds = {
   ACCOUNT_STATUS: Symbol('ACCOUNT_STATUS'),

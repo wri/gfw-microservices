@@ -89,7 +89,7 @@ export default class AddGFW extends Component {
       .then(() => {
         window.location.reload();
       })
-      .catch((err) => {
+      .catch(() => {
         this.setState({
           dialogOpen: true,
           dialogTitle: 'Error in Locations',
@@ -131,11 +131,9 @@ export default class AddGFW extends Component {
         spatialReference: SpatialReference.WGS84,
       });
 
-      const area = geometryEngine.geodesicArea(esriGeometry, 'hectares');
-      geojson.features[geojson.features.length - 1].properties['Analysis Area'] = area;
-      if (!geojson.features[geojson.features.length - 1].properties['Analysis Radius']) {
-        geojson.features[geojson.features.length - 1].properties['Analysis Radius'] = 0;
-      }
+      const lastFeature = geojson.features[geojson.features.length - 1];
+      lastFeature.properties['Analysis Area'] = geometryEngine.geodesicArea(esriGeometry, 'hectares');
+      lastFeature.properties['Analysis Radius'] = lastFeature.properties['Analysis Radius'] ?? 0;
     });
 
     return geojson;
@@ -636,7 +634,7 @@ export default class AddGFW extends Component {
       });
     } else {
       if (this.state.step === 1) {
-        this.addAdditonalValues();
+        this.addAdditionalValues();
         gtag('event', 'Next button clicked', {
           event_category: 'Add GFW Click',
           event_label: 'user completed step 1 of add from gfw list workflow',
@@ -646,7 +644,7 @@ export default class AddGFW extends Component {
     }
   };
 
-  addAdditonalValues = () => {
+  addAdditionalValues = () => {
     const { filteredData, selectedLocations, listData } = this.props;
     const filteredLocationData = listData.filter(
       (listD) => filteredData.indexOf(listD.location_id) > -1
@@ -845,14 +843,14 @@ export default class AddGFW extends Component {
             <Button
               className={`${this.state.step === 3 ? 'hidden' : ''}`}
               onClick={this.next}
-              disabled={currentUser.access_level_id === 3 ? true : false}
+              disabled={currentUser.access_level_id === 3}
               label={locationsPage.add.next}
             />
             <Button
               variant="primary"
               className={`${this.state.step === 3 ? '' : 'hidden'}`}
               onClick={this.saveLocations}
-              disabled={currentUser.access_level_id === 3 ? true : false}
+              disabled={currentUser.access_level_id === 3}
               label="Save"
             />
           </div>

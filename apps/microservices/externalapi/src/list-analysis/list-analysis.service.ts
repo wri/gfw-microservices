@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
@@ -8,16 +8,29 @@ import { generateRandomFilename } from '@wri-monorepos/shared';
 import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from './organization.service';
 import { ListsAnalysisStatus } from './list-analysis-status.entity';
+import { transformExternalUpload } from './transformers';
+import {
+  ListUploadNewErrorResponse,
+  ListUploadNewRequest,
+  ListUploadNewResponse,
+} from './list-upload-new.dto';
+import { Organization } from '../api-keys/organization.entity';
 
 const DEFAULT_ANALYSIS = 'FCD';
+const LIST_INITIAL_STATUS = 'Pending';
 @Injectable()
 export class ListAnalysisService {
+  private readonly LLP_BASE_URL: string;
+
   constructor(
     private config: ConfigService,
     private userService: UserService,
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService
-  ) {}
+  ) {
+    this.LLP_BASE_URL = this.config.get<string>('LLP_BASE_URL');
+  }
+
   // Replace this with actual database or external service calls
   async getAnalysisStatus(organizationId: number, listID: number): Promise<ListAnalysisResponse> {
     const connection = await this.getOrganizationConnection(organizationId);
@@ -28,12 +41,12 @@ export class ListAnalysisService {
 
     // Waiting for changes from Gustavo and Dakota on tickets 2353 and 2354
     const analysisStatus: ListAnalysisResponse = {
-      listId: listAnalysisStatus.listId,
+      listId: listAnalysisStatus.listId.toString(),
       status: 'Completed',
       errorsDetails: (listAnalysisStatus.errorInfo || '').split('\n').filter((e) => e),
       resultUrl: listAnalysisStatus.listId ? 'https://example.com/results' : null,
       creationDate: listAnalysisStatus.updateTime,
-      expirationDate: '2023-09-28',
+      expirationDate: new Date(), // this should be updated after Gustavo save the data in database
     };
 
     return analysisStatus;
@@ -45,13 +58,12 @@ export class ListAnalysisService {
       throw new NotFoundException(`User with ${userEmail} not found`);
     }
 
-    const LLP_BASE_URL = this.config.get<string>('LLP_BASE_URL');
     const fileKey = generateRandomFilename('csv');
     const presignedURLResponse = await axios.post<{
       url: string;
       keyFile: string;
       fileS3Route: string;
-    }>(`${LLP_BASE_URL}/api/create-presigned-url`, { key: fileKey, contentType: 'text/csv' });
+    }>(`${this.LLP_BASE_URL}/api/create-presigned-url`, { key: fileKey, contentType: 'text/csv' });
     const { url, keyFile } = presignedURLResponse.data;
 
     const connection = await this.getOrganizationConnection(user.organization_id);
@@ -61,15 +73,91 @@ export class ListAnalysisService {
     externalUpload.userId = user.id;
     externalUpload.uploadKeyFile = keyFile;
     externalUpload.uploadUrl = url;
-    externalUpload.updateDateTime = new Date();
+    externalUpload.uploadDateTime = new Date();
 
     const newExternalUploadObject = await externalUploadRepository.save(externalUpload);
-    return newExternalUploadObject;
+    return transformExternalUpload(newExternalUploadObject);
   }
 
   private async getOrganizationConnection(organizationId: number) {
+    const organization = await this.getOrganizationDetails(organizationId);
+    const connection = await this.createOrganizationConnection(organization);
+    return connection;
+  }
+
+  private async getOrganizationDetails(organizationId: number) {
     const organization = await this.organizationService.findOrganizationById(organizationId);
+    return organization;
+  }
+
+  private async createOrganizationConnection(organization: Organization) {
     const connection = await this.clientStoreConnection.getConnection(organization.organizationDb);
     return connection;
+  }
+
+  async uploadNewList(
+    newListDetails: ListUploadNewRequest,
+    organizationId: number
+  ): Promise<ListUploadNewResponse | ListUploadNewErrorResponse> {
+    const organizationDetails = await this.getOrganizationDetails(organizationId);
+    const organizationConnection = await this.createOrganizationConnection(organizationDetails);
+    const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);
+
+    const externalUpload = await externalUploadRepository.findOne({
+      where: { id: parseInt(newListDetails.uploadId) },
+    });
+
+    if (!externalUpload) {
+      const errorDescription = new ListUploadNewErrorResponse();
+      errorDescription.errorDetails = 'Failed to process the request, upload id not found';
+      throw new HttpException(errorDescription, HttpStatus.BAD_REQUEST);
+    }
+
+    // create large list process
+    const largeListCreated = await axios.post<{
+      list_id: number;
+    }>(`${this.LLP_BASE_URL}/api/create-large-list`, {
+      list_name: newListDetails.listName,
+      user_id: externalUpload.userId,
+      client_database: organizationDetails.organizationDb,
+      analysisIds: [],
+    });
+
+    // save list to process
+    const saveListToProcess = await axios.post<{
+      list_id: number;
+      s3_location: string;
+    }>(`${this.LLP_BASE_URL}/api/save-list-to-process`, {
+      userId: externalUpload.userId,
+      list_id: largeListCreated.data.list_id,
+      key: externalUpload.uploadKeyFile,
+      listName: newListDetails.listName,
+      client_database: organizationDetails.organizationDb,
+    });
+
+    // process list
+    const proccessListResponse = await axios.post<{
+      executionArn: string;
+      startDate: string;
+    }>(`${this.LLP_BASE_URL}/api/process-list`, {
+      organization_id: organizationDetails.id,
+      list_id: largeListCreated.data.list_id,
+      path: saveListToProcess.data.s3_location,
+      template_type: newListDetails.templateId,
+      user_id: externalUpload.userId,
+      startAnalysis: true,
+    });
+
+    Logger.log('Event analysis response: ', proccessListResponse.data);
+
+    const response: ListUploadNewResponse = {
+      uploadId: newListDetails.uploadId,
+      listId: largeListCreated.data.list_id.toString(),
+      status: LIST_INITIAL_STATUS,
+      errorDetails: '',
+      creationDate: new Date(proccessListResponse.data.startDate),
+    };
+
+    return response;
   }
 }

@@ -5,6 +5,7 @@ import SouthAmericaRegionsWithoutArgentina from '../SouthAmericaRegionsWithoutAr
 import { regionsTabs, regionIds } from './regions.constants';
 
 function RegionChartsContainer({
+  listId,
   data,
   fireDownload,
   diagnosticView,
@@ -37,7 +38,7 @@ function RegionChartsContainer({
         setSelectedTab={setSelectedTab}
       />
       {selectedTab === regionIds.ARGENTINA && (
-        <RegionChart data={data} fireDownload={fireDownload} />
+        <RegionChart listId={listId} data={data} fireDownload={fireDownload} />
       )}
       {selectedTab === regionIds.REGIONAL && (
         <SouthAmericaRegionsWithoutArgentina

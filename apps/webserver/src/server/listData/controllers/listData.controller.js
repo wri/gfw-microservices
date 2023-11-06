@@ -9,7 +9,8 @@ const logger = require('../../../config/privateutils/logger.utils');
 const { getListDataFiltered } = require('../utils/listData.utils');
 const { getListAnalysisStatusById, setSelectedAnalyses } = require('../service/listData.service');
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
-const { analysisTypes } = require(path.resolve('./config/env/analysisTypes.constants'));
+import { analysisTypes } from '@wri-monorepos/constants';
+
 /**
  * @description - Get the data from the GFW API for the given info Bubble ID
  *

@@ -15,5 +15,5 @@ export class ExternalUpload {
   uploadUrl: string;
 
   @Column()
-  updateDateTime: Date;
+  uploadDateTime: Date;
 }

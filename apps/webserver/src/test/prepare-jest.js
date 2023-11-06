@@ -49,6 +49,7 @@ try {
     '^dojo(.*)$': '<rootDir>/test/__mocks__/object.js',
     '^esri(.*)$': '<rootDir>/test/__mocks__/object.js',
     '^dijit(.*)$': '<rootDir>/test/__mocks__/object.js',
+    '@wri-monorepos/constants': '<rootDir>/../../../libs/constants/src/index.ts',
     ...aliases,
   };
   // Set the test paths

@@ -87,7 +87,7 @@ export class ResultService extends IPipeService {
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Finished to process result data`);
 
-    await this.waitFinishedProcess(this.inputStream);
+    await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
 
     const archive = archiver('zip', {
@@ -102,6 +102,6 @@ export class ResultService extends IPipeService {
 
     await finished(this.zipStream);
     this.logger.log(`(${listId}) - Data has been zipped`);
-    await this.uploadToS3(filters);
+    await this.finishProcess(filters);
   }
 }

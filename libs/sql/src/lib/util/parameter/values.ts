@@ -1,5 +1,12 @@
 import * as sql from 'mssql';
 
+export type InputDataType = {
+  location?: string;
+  expirationDate?: Date;
+  listId?: number;
+  analysisId?: string;
+};
+
 export const parameters = {
   location: { field: 'location', type: sql.VarChar(255), value: '' },
   expirationDate: {

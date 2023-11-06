@@ -15,7 +15,7 @@ describe('Parameter Mapper', () => {
   it(`when the input is object with [location, expirationDate, listId, analysisId]`, () => {
     const input = {
       location: 'http://www.google.com',
-      expirationDate: '2021-01-01',
+      expirationDate: new Date('2021-01-01'),
       listId: 1,
       analysisId: 'AFI',
     };
@@ -28,7 +28,7 @@ describe('Parameter Mapper', () => {
       {
         field: 'expirationDate',
         type: sql.DateTime,
-        value: '2021-01-01',
+        value: new Date('2021-01-01'),
       },
       {
         field: 'listId',
@@ -46,7 +46,7 @@ describe('Parameter Mapper', () => {
   it(`when the input is object with [location, expirationDate, listId, analysisId] and location is null`, () => {
     const input = {
       location: null,
-      expirationDate: '2021-01-01',
+      expirationDate: new Date('2021-01-01'),
       listId: 1,
       analysisId: 'AFI',
     };
@@ -59,7 +59,7 @@ describe('Parameter Mapper', () => {
       {
         field: 'expirationDate',
         type: sql.DateTime,
-        value: '2021-01-01',
+        value: new Date('2021-01-01'),
       },
       {
         field: 'listId',
@@ -72,12 +72,5 @@ describe('Parameter Mapper', () => {
         value: 'AFI',
       },
     ]);
-  });
-
-  it(`when the input is field that don't exist `, () => {
-    const input = {
-      test: 'test',
-    };
-    expect(toSqlParameter(input)).toStrictEqual([]);
   });
 });

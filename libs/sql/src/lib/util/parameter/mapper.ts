@@ -1,7 +1,7 @@
 import { ParameterType } from '../types';
-import { parameters } from './values';
+import { InputDataType, parameters } from './values';
 
-export const toSqlParameter = (json: unknown): Array<ParameterType> => {
+export const toSqlParameter = (json: InputDataType): Array<ParameterType> => {
   if (!json) return [];
 
   return Object?.entries(json).reduce((acc, [key, value]) => {

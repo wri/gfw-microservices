@@ -15,7 +15,7 @@ import { SQLUtils } from '@wri-monorepos/sql';
 export abstract class IPipeService {
   private readonly loggerPipe = new Logger(IPipeService.name);
 
-  private EXPIRE_IN_FIVE_DAYS: number = 5;
+  private EXPIRE_IN_FIVE_DAYS = 5;
 
   @Inject(ConfigService)
   private readonly config: ConfigService;
@@ -77,9 +77,7 @@ export abstract class IPipeService {
   public async uploadToS3(filters: GenerationFileRequest) {
     const { key } = filters;
     await this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
-    const location = await this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET);
-    await this.finishedEmail(filters, location);
-    await this.saveS3UrlAtDatabase(filters, location);
+    return await this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET);
   }
 
   async saveS3UrlAtDatabase(filters: GenerationFileRequest, location: string) {
@@ -100,10 +98,16 @@ export abstract class IPipeService {
     }
   }
 
-  public async waitFinishedProcess(inputStream: PassThrough) {
+  public async writeAllData(inputStream: PassThrough) {
     inputStream.end();
     await finished(inputStream);
     inputStream.removeAllListeners();
     inputStream.destroy();
+  }
+
+  public async finishProcess(filters: GenerationFileRequest) {
+    const location = await this.uploadToS3(filters);
+    await this.finishedEmail(filters, location);
+    await this.saveS3UrlAtDatabase(filters, location);
   }
 }

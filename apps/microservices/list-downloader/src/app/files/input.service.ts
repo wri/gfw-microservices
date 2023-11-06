@@ -42,7 +42,7 @@ export class InputService extends IPipeService {
   async finish(filters: GenerationFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process input data`);
-    await this.waitFinishedProcess(this.inputStream);
+    await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
     this.fileStream.destroy();
   }
@@ -82,7 +82,7 @@ export class InputService extends IPipeService {
 
       output.on('close', async () => {
         this.logger.log(`(${listId}) - Data has been zipped`);
-        await this.uploadToS3(filters);
+        await this.finishProcess(filters);
       });
     });
 

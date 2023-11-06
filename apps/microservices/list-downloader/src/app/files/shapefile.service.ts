@@ -83,7 +83,7 @@ export class ShapefileService extends IPipeService {
   async finish(filters: GenerationFileRequest) {
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
-    await this.waitFinishedProcess(this.inputStream);
+    await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
     await this.convertGeojsonToSHP(key, listName);
     this.logger.log(`(${listId}) - Data has been zipped`);

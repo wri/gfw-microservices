@@ -79,7 +79,7 @@ export class AfiFileService extends IPipeService {
   async finish(filters: GenerationFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process result data`);
-    await this.waitFinishedProcess(this.inputStream);
+    await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
     this.fileStream.removeAllListeners();
     this.fileStream.destroy();

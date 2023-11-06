@@ -2,7 +2,7 @@ const path = require('path');
 const { DataSource, EntitySchema } = require('typeorm');
 const config = require(path.resolve('./config/config'));
 const { allFeatureFlags } = require('../utils/featureFlagConstants');
-const DEFAULT_GLOBA_FEATURE_FLAG_STATE = false;
+const DEFAULT_GLOBAL_FEATURE_FLAG_STATE = false;
 const CONNECTION_TYPE_MSSQL = 'mssql';
 
 const FeatureFlagsEntity = new EntitySchema({
@@ -67,30 +67,33 @@ function createFeatureFlagsService(dataSource) {
     return result;
   }
 
-  async function getFeatureFlagWhere(where = {}) {
+  async function getFeatureFlagsWhere(where = {}) {
     return initializeExecuteAndCleanUp(async () => {
       return repository.find({ where });
     });
   }
 
   async function getFeatureFlagsForCurrentOrg(orgId) {
-    const mergedFeatureFlags = new Map();
-    const globalFeatureFlags = allFeatureFlags.map(formatGlobalFeatureFlags);
-    const currentOrgFeatureFlags = await getFeatureFlagWhere({ orgId });
+    const globalFlagsOverride = await getFeatureFlagsWhere({ orgId: null });
+    const orgFlagsOverride = await getFeatureFlagsWhere({ orgId });
 
-    for (const flag of globalFeatureFlags) {
-      // If there flags enabled for this org set them
-      const flagForOrg = currentOrgFeatureFlags.find(
-        (orgFlag) => orgFlag.flagState !== flag.flagState && orgFlag.flagId === flag.flagId
-      );
-      mergedFeatureFlags.set(flag.flagId, flagForOrg ?? flag);
-    }
+    const orgFeatureFlags = allFeatureFlags.map((flagId) => {
+      const staticGlobalFeatureFlag = formatGlobalFeatureFlags(flagId);
+      const globalFlagOverride = globalFlagsOverride.find((flag) => flag.flagId === flagId) || {};
+      const orgFlagOverride = orgFlagsOverride.find((flag) => flag.flagId === flagId) || {};
 
-    return [...mergedFeatureFlags.values()];
+      return {
+        ...staticGlobalFeatureFlag,
+        ...globalFlagOverride,
+        ...orgFlagOverride,
+      };
+    });
+
+    return orgFeatureFlags;
   }
 
   async function getFeatureFlagsByFlagId(flagId) {
-    return getFeatureFlagWhere({ flagId });
+    return getFeatureFlagsWhere({ flagId });
   }
 
   async function insertOrSaveFeatureFlag(data) {
@@ -112,9 +115,16 @@ function createFeatureFlagsService(dataSource) {
   }
 
   async function deleteFeatureFlag(where) {
+    const { flagId } = where;
+
+    if (!allFeatureFlags.includes(flagId)) {
+      throw new Error('Invalid flagId');
+    }
+
     return initializeExecuteAndCleanUp(async () => {
       const featureFlag = await repository.findOne({ where });
-      return repository.remove(featureFlag);
+      repository.remove(featureFlag);
+      return featureFlag;
     });
   }
 
@@ -140,13 +150,13 @@ function createFeatureFlagsService(dataSource) {
   function formatGlobalFeatureFlags(flag) {
     return {
       flagId: flag,
-      flagState: DEFAULT_GLOBA_FEATURE_FLAG_STATE,
+      flagState: DEFAULT_GLOBAL_FEATURE_FLAG_STATE,
       orgId: null,
     };
   }
 
   return {
-    getFeatureFlagWhere,
+    getFeatureFlagsWhere,
     getFeatureFlagsForCurrentOrg,
     getFeatureFlagsByFlagId,
     insertOrSaveFeatureFlag,

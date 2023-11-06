@@ -2,7 +2,7 @@ const path = require('path');
 const express = require('express');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
-const insertOrSaveFeatureFlag = require('../controllers/insertOrSaveFeatureFlagRecord');
+const insertOrSaveFeatureFlag = require('../controllers/insertOrSaveFeatureFlag');
 const getAllFeatureFlags = require('../controllers/getAllFeatureFlags');
 const getFeatureFlagByFlagId = require('../controllers/getFeatureFlagByFlagId');
 const deleteFeatureFlag = require('../controllers/deleteFeatureFlag');
@@ -25,5 +25,5 @@ module.exports = (app, limiter) => {
   featureFlagRoutes.get('/', getAllFeatureFlags);
   featureFlagRoutes.get('/:flagId', getFeatureFlagByFlagId);
   featureFlagRoutes.post('/', insertOrSaveFeatureFlag);
-  featureFlagRoutes.post('/:flagId/delete', deleteFeatureFlag);
+  featureFlagRoutes.delete('/:flagId', deleteFeatureFlag);
 };

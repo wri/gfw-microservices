@@ -6,14 +6,14 @@ module.exports = async function (request, response) {
   const { insertOrSaveFeatureFlag } = createFeatureFlagsService(dataSource);
 
   try {
-    const newFeatureFlag = await insertOrSaveFeatureFlag({
+    const upsertedFeatureFlag = await insertOrSaveFeatureFlag({
       ...featureFlagData,
       updateDateTime: new Date(),
     });
 
     response.status(200).send({
       success: true,
-      newFeatureFlag,
+      upsertedFeatureFlag,
     });
   } catch (error) {
     logger.error(`POST /api/feature-flags`, error);

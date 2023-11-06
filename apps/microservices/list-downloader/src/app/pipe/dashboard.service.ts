@@ -107,6 +107,6 @@ export class DashboardService extends IPipeService {
 
     this.logger.log(`(${key}) - Zipping files`);
     await getAllFilesAndZip(filters);
-    this.uploadToS3(filters);
+    this.finishProcess(filters);
   }
 }

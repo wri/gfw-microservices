@@ -415,7 +415,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         <div className="dialog__footer add-location-chooser__footer" style={{ right: '0' }}>
           <Button
             className="dialog__primary-action"
-            disabled={!listName && !existingListName && selectedAnalysis.length <= 0}
+            disabled={(!listName && !existingListName) || selectedAnalysis.length <= 0}
             label={locationsPage.add.submit}
             onClick={() => createUploadProcess()}
             variant="primary"

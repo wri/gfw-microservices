@@ -132,7 +132,10 @@ export default class AddGFW extends Component {
       });
 
       const lastFeature = geojson.features[geojson.features.length - 1];
-      lastFeature.properties['Analysis Area'] = geometryEngine.geodesicArea(esriGeometry, 'hectares');
+      lastFeature.properties['Analysis Area'] = geometryEngine.geodesicArea(
+        esriGeometry,
+        'hectares'
+      );
       lastFeature.properties['Analysis Radius'] = lastFeature.properties['Analysis Radius'] ?? 0;
     });
 

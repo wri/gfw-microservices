@@ -17,7 +17,7 @@ describe('FeatureFlagsService', () => {
   let featureFlagsService;
 
   beforeEach(() => {
-    featureFlagsService = createFeatureFlagsService(mockDataSource as any);
+    featureFlagsService = createFeatureFlagsService(mockDataSource as any); // eslint-disable-line @typescript-eslint/no-explicit-any
   });
 
   afterEach(() => {

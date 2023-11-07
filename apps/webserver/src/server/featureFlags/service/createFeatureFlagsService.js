@@ -37,7 +37,7 @@ const FeatureFlagsEntity = new EntitySchema({
 
 const dataSource = new DataSource({
   type: CONNECTION_TYPE_MSSQL,
-  logging: true,
+  logging: false,
   host: config.SQLConnection.host,
   port: parseInt(config.SQLConnection.port, 10),
   username: config.SQLConnection.username,
@@ -123,7 +123,7 @@ function createFeatureFlagsService(dataSource) {
 
     return initializeExecuteAndCleanUp(async () => {
       const featureFlag = await repository.findOne({ where });
-      repository.remove(featureFlag);
+      await repository.remove(featureFlag);
       return featureFlag;
     });
   }

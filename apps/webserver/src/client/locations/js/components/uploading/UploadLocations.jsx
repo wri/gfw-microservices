@@ -1470,7 +1470,7 @@ class UploadLocations extends Component {
 
                     {step === 4 && (
                       <SaveAsDraftButtonWithDialog
-                        disabled={!canGoNext && selectedAnalyses.length <= 0}
+                        disabled={!canGoNext || selectedAnalyses.length <= 0}
                         saveLocations={() => this.saveLocations({ isSaveAsDraft: true })}
                       />
                     )}
@@ -1491,7 +1491,7 @@ class UploadLocations extends Component {
                       }`}
                       variant="primary"
                       onClick={isSaving ? null : this.saveLocations}
-                      disabled={!canGoNext && selectedAnalyses.length <= 0}
+                      disabled={!canGoNext || selectedAnalyses.length <= 0}
                       label={locationsPage.upload.submit}
                     />
                   </div>

@@ -100,6 +100,14 @@ export class TokenService {
     return transformApiKeys(tokens);
   }
 
+  async findToken(token: string): Promise<ViewApiKeyResponse> {
+    const organizationToken = await this.tokenRepository.findOne({ where: { apiKey: token } });
+    if (!organizationToken) {
+      return undefined;
+    }
+    return transformApiKey(organizationToken);
+  }
+
   async deleteToken(organizationId: number, tokenId: string): Promise<boolean> {
     const token = await this.tokenRepository.findOne({ where: { organizationId, awsId: tokenId } });
     if (!token) {

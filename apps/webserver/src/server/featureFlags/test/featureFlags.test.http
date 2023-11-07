@@ -4,18 +4,27 @@ Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
 ### Get feature flags rules by flagId 
-GET https://localhost:8443/api/feature-flags/self
+GET https://localhost:8443/api/feature-flags/argentinacompliance
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
-### Create a feature flag
+### Insert or Save a feature flag
 POST https://localhost:8443/api/feature-flags
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
 {
-	"flagId": "self",
+	"flagId": "Afi",
 	"orgId": 1,
 	"flagState": true,
 	"modifierUserId": 1692 
+}
+
+### Delete feature flag row WHERE param :flagId and request.body.orgId
+DELETE https://localhost:8443/api/feature-flags/Afi
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+	"orgId": 1
 }

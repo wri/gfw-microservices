@@ -3,23 +3,23 @@ const logger = require('../../../config/privateutils/logger.utils');
 
 module.exports = async function (request, response) {
   const { body: featureFlagData } = request;
-  const { createFeatureFlag } = createFeatureFlagsService(dataSource);
+  const { insertOrSaveFeatureFlag } = createFeatureFlagsService(dataSource);
 
   try {
-    const newFeatureFlag = await createFeatureFlag({
+    const upsertedFeatureFlag = await insertOrSaveFeatureFlag({
       ...featureFlagData,
       updateDateTime: new Date(),
     });
 
     response.status(200).send({
       success: true,
-      newFeatureFlag,
+      upsertedFeatureFlag,
     });
   } catch (error) {
     logger.error(`POST /api/feature-flags`, error);
     response.status(500).send({
       success: false,
-      error: 'An error occurred while processing the createFeatureFlag request.',
+      error: 'An error occurred while processing the insertOrSaveFeatureFlag request.',
     });
   }
 };

@@ -26,6 +26,14 @@ const profileTabs = {
     /* As a PREMIUM account admin I want to see my account usage */
     suscriptionStatus: [PREMIUM],
   },
+  apiKeys: {
+    id: 'api-keys',
+    icon: 'api',
+    title: 'Api Keys',
+    userAccessLevel: [ADMIN],
+    /* As a PREMIUM account admin I want to see my account usage */
+    suscriptionStatus: [PREMIUM],
+  },
 };
 
 export default profileTabs;

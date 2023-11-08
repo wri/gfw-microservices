@@ -41,7 +41,7 @@ const timeframeOptions = [
 const alertsShownOptions = [
   {
     value: 'GLAD',
-    label: 'Deforestation (GLAD)',
+    label: 'Deforestation (Integrated Alerts)',
   },
   {
     value: 'VIIRS',
@@ -182,6 +182,7 @@ export default class DashboardSettings extends Component {
           <span className="profile-label dashboard-setting__title">ALERTS SHOWN</span>
           <GfwSelect
             value={{ value: selectedAlert }}
+            style={{ width: '245px' }}
             options={alertsShownOptions}
             onChange={(evt) => store.dispatch(selectAlert(evt.value))}
           />

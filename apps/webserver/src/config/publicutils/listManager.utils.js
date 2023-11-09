@@ -70,9 +70,9 @@ import { listStatus } from '@wri-monorepos/constants';
  *   @summary Create a new list within Organization DB
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {String} list_name
- *   @param  {String} template_id
+ *   @param  {Number} template_id
  *   @param  {String} user_id
- *   @param  {Array{}} custom_attributes
+ *   @param  {Object[]} custom_attributes
  *   @param  {String} gfw_list_id
  *   @param  {Boolean} is_edit
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
@@ -236,13 +236,13 @@ const createList = (
  * Save as Draft List
  *
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {number} list_name - List name (eg. 'Recent Cocoa Generic 35')
+ * @param {string} list_name - List name (eg. 'Recent Cocoa Generic 35')
  * @param {number} template_id - List template ID (eg. 13)
  * @param {string} location_classification - Location Classification (eg. 'property')
  * @param {number} user_id - User ID of user that is creating list (eg. 1)
  * @param {Object[]} custom_attributes - List of objects with custom_attributes (name and type)
  * @param {string} gfw_list_id - The ID of the GFW List that this new list is associated with
- * @return {Promise<unknown>}
+ * @return {Promise<any>}
  */
 const saveAsDraftList = (
   req,
@@ -467,7 +467,7 @@ const getUserListsWithAnalysisId = (req) => {
 
 /**
  * @summary Creates location analyses messages
- * @param {Integer} locationId
+ * @param {Number} locationId
  * @param {Object} req Manadatory first parameter to pass the request object into the function in case session info is required.
  * @param {Object} session
  * @return {Object} Returns an object containing all the info necessary for successfull processing of location based analyses
@@ -583,10 +583,10 @@ const getWorstStatusId = (analysisIds) => {
 /** @function {getListLocations}
  *   @summary Get function to return geojson of locations for a particular list.
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer} list_id - Unique list id of the list.
+ *   @param  {Number} list_id - Unique list id of the list.
  *   @param  {Array} list_id - Unique list of location IDs.
- *   @param  {Integer} location_id - Unique list id of the list.
- *   @param  {Integer} rowsRequested
+ *   @param  {Number} location_id - Unique list id of the list.
+ *   @param  {Number} rowsRequested
  *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
 const getListLocations = (
@@ -633,7 +633,7 @@ const getListLocations = (
 /** @function {getSimplifiedListLocations}
  *   @summary Get function to return simplified geojson of locations for a particular list.
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer} list_id - Unique list id of the list.
+ *   @param  {Number} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
 const getSimplifiedListLocations = (req, list_id) => {
@@ -698,7 +698,7 @@ const getDashboardListLocations = (req, list) => {
  * @function {getListLocationsNoGeom}
  * @summary Get function to return json of location metadata without geometry.
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {Integer} listID - Unique list id of the list.
+ * @param {Number} listID - Unique list id of the list.
  * @param {String} columnsToReturn - Comma separated list of columns to return.
  * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
@@ -744,7 +744,7 @@ const getListLocationsNoGeom = (req, listID, columnsToReturn = null) => {
  * @function {getPaginatedAnalysisDataForUserList}
  * @summary Get function to return json of paginated location metadata with geometry.
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {Integer} listID - Unique list id of the list.
+ * @param {Number} listID - Unique list id of the list.
  * @param {Filters} filters - Array of filters to apply to the query.
  * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
@@ -841,8 +841,7 @@ const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
 /** @function {getNumberPagesForAnalysisDataUserList}
  *   @summary Get function to return the number of pages for the paginated analysis data for a user list.
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer} list_id - Unique list id of the list.
- *   @param  {Integer} rowsPerPage - Number of rows per page.
+ *   @param  {Number} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const getNumberPagesForAnalysisDataUserList = (req, list_id, filters) => {
@@ -992,9 +991,9 @@ const uploadToExistingList = (req, list_id, list_name, geojson, commodity) => {
 /** @function {uploadToNewList}
  *   @summary Creates new list and table, then performs uploadToExistingList
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param {Number} list_id
+ *   @param {String} list_name
  *   @param {Number} template_id
- *   @param {Array{}} custom_attributes - array of objects with custom_attributes (name and type)
+ *   @param {Object[]} custom_attributes - array of objects with custom_attributes (name and type)
  *   @param {Object} geojson
  *   @param {String} gfw_list_id - The ID of the GFW List that this new list is associated with
  *   @param {Boolean} is_edit - Boolean to check if this call has been initiated by an edit list function
@@ -1138,7 +1137,7 @@ const uploadToNewListAndSaveAsDraft = (
  *
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {string} list_analysis_table_name - List analysis table name (eg. "analysis-recentcocoageneric9")
- * @param {string || number || string[] || number[] } location_id - Location status id or ids - (eg. 9 || [8, 9, 10] )
+ * @param {string | number | string[] | number[] } location_id - Location status id or ids - (eg. 9 || [8, 9, 10] )
  * @param {number } location_status_id - Location status ID (eg. 4)
  * @return {Promise}
  */

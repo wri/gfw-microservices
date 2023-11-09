@@ -7,7 +7,7 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 /**
  * @summary Get all folders for a clientstore
  * @param   {Object} req The user request
- * @returns {Array<Object>}  Returns an array of objects containing the folder id, folder name, creation time,
+ * @returns {Promise<any[]>}  Returns an array of objects containing the folder id, folder name, creation time,
  *                           last accessed time and an Array of list ids that are part of the folder.
  */
 const getAllFolders = async (req) => {
@@ -43,8 +43,8 @@ const getAllFolders = async (req) => {
 /**
  * @summary Gets folder details for a given folder
  * @param   {Object}  req The original request
- * @param   {Int}     folder_id The folder ID
- * @returns {Array<Object>}  Returns an array with an object containing all the necessary info for that folder ID:
+ * @param   {Number}     folder_id The folder ID
+ * @returns {Promise<any[]>}  Returns an array with an object containing all the necessary info for that folder ID:
  *                           the folder id, folder name, creation time,  last accessed time and an Array of list ids
  *                           that are part of the folder.
  */
@@ -135,7 +135,7 @@ const createNewFolder = async (req, folder_name) => {
 /**
  * @summary Deletes an existing folder from the clientstore
  * @param {Object} req The original request
- * @param {Int} folder_id The folder ID
+ * @param {Number} folder_id The folder ID
  */
 const deleteFolder = async (req, folder_id) => {
   const parameters = [
@@ -150,7 +150,7 @@ const deleteFolder = async (req, folder_id) => {
     );
     // Checking if at least one row was modified
     if (response[0].affected_rows) {
-      return await getAllFolders(req, folder_id);
+      return await getAllFolders(req);
     } else {
       throw `Error when trying to delete the folder with ID ${folder_id}. Make sure the folder exists.`;
     }
@@ -174,7 +174,7 @@ const deleteFolder = async (req, folder_id) => {
 /**
  * @summary Adds list(s) to a given folder
  * @param {Object} req The original request
- * @param {Int} folder_id The folder ID
+ * @param {Number} folder_id The folder ID
  * @param {Array} list_ids The lists IDs to add to the folder
  */
 const addListToFolder = async (req, folder_id, list_ids) => {
@@ -191,7 +191,7 @@ const addListToFolder = async (req, folder_id, list_ids) => {
     );
     // Checking if at least one row was modified
     if (response[0].affected_rows) {
-      return await getAllFolders(req, folder_id);
+      return await getAllFolders(req);
     } else {
       throw `Error when trying to add list(s) [${list_ids.join(',')}] to folder ID ${folder_id}.`;
     }
@@ -227,7 +227,7 @@ const addListToFolder = async (req, folder_id, list_ids) => {
 /**
  * @summary Removes list(s) from a given folder
  * @param {Object} req The original request
- * @param {Integer} folder_id   The folder ID
+ * @param {Number} folder_id   The folder ID
  * @param {Array}   list_ids    The list IDs to remove from the folder
  */
 const removeListFromFolder = async (req, folder_id, list_ids) => {
@@ -262,7 +262,7 @@ const removeListFromFolder = async (req, folder_id, list_ids) => {
 /**
  * @summary Renames a folder
  * @param {Object} req The original request
- * @param {Integer} folder_id   The folder ID to rename
+ * @param {Number} folder_id   The folder ID to rename
  * @param {String}   folder_name    The updated folder name
  */
 const updateFolderName = async (req, folder_id, folder_name) => {
@@ -293,8 +293,8 @@ const updateFolderName = async (req, folder_id, folder_name) => {
 /**
  * @summary Moves lists from one folder to another
  * @param {Object} req The original request
- * @param {Int} from_folder_id The folder ID to copy lists out of
- * @param {Int} to_folder_id The folder ID to move lists in
+ * @param {Number} from_folder_id The folder ID to copy lists out of
+ * @param {Number} to_folder_id The folder ID to move lists in
  * @param {Array} list_ids The lists IDs to move
  */
 const moveListToFolder = async (req, from_folder_id, to_folder_id, list_ids) => {
@@ -339,7 +339,7 @@ const moveListToFolder = async (req, from_folder_id, to_folder_id, list_ids) => 
 /**
  * @summary Updates the last accessed time for a folder
  * @param {Object} req The original request
- * @param {Int} folder_id The folder ID
+ * @param {Number} folder_id The folder ID
  */
 const updateFolderAccessTime = async (req, folder_id) => {
   const parameters = [

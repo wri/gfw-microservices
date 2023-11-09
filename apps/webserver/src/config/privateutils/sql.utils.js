@@ -264,7 +264,7 @@ const mssqlExecute = async (connectConfig, queryStrParam, storedProcedureName, p
  * @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @param {String} storedProcedureName - name of the stored procedure to execute.
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
- * @return {Array} An array of record sets
+ * @return {Promise<any[]>} An array of record sets
  */
 const executeSystemStoredProcedureAllRecords = async (req, storedProcedureName, params) => {
   return mssqlExecute(SQLSYSTEMCONFIG, null, storedProcedureName, params);
@@ -277,7 +277,7 @@ const executeSystemStoredProcedureAllRecords = async (req, storedProcedureName, 
  * @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @param {String} storedProcedureName - name of the stored procedure to execute.
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
- * @return {Object} First entry of record sets array
+ * @return {Promise<any>} First entry of record sets array
  */
 const executeSystemStoredProcedure = async (req, storedProcedureName, params) => {
   const recordsets = await mssqlExecute(SQLSYSTEMCONFIG, null, storedProcedureName, params);
@@ -291,7 +291,7 @@ const executeSystemStoredProcedure = async (req, storedProcedureName, params) =>
  * @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @param {String} storedProcedureName - name of the stored procedure to execute.
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
- * @return {Object} First entry of record sets array
+ * @return {Promise<any>} First entry of record sets array
  */
 const executeOrganizationStoredProcedure = async (req, storedProcedureName, params) => {
   // Create SQL Connection Config based on session database.
@@ -308,7 +308,6 @@ const executeOrganizationStoredProcedure = async (req, storedProcedureName, para
  * @param {Boolean} createTable - A boolean specifying whether to create the table if it exists or not.
  * @param {Array} columnNames - An array specifying the names of each of the columns in the table.
  * @param {Array} columnTypes - An array specifying the type of each of the columns in the table.
- * @param {Array} data - An array of arrays with each array representing a row of data.
  */
 const executeOrganizationBulkUpload = async (
   req,
@@ -360,7 +359,7 @@ const executeOrganizationBulkUpload = async (
  * @summary Query the systemDB
  * @param {String} sqlQuery - SQL query to be executed on the organization database.
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
- * @return {Object} Result of the SQL query
+ * @return {Promise<any>} Result of the SQL query
  */
 const executeSystemQuery = async (sqlQuery, params) => {
   return mssqlExecute(SQLSYSTEMCONFIG, sqlQuery, null, params);
@@ -372,7 +371,7 @@ const executeSystemQuery = async (sqlQuery, params) => {
  * @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @param {String} sqlQuery - SQL query to be executed on the organization database.
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
- * @return {Object} Result of the SQL query
+ * @return {Promise<any>} Result of the SQL query
  */
 const executeOrganizationQuery = async (req, sqlQuery, params) => {
   const connectConfig = { ...SQLSYSTEMCONFIG, database: req.session.organization_database };

@@ -95,7 +95,7 @@ const deleteSingleLocation = (req, list, location_id) => {
  *   @summary Delete locations from list and analysis tables filtered by query string
  *   @summary Get function to return json of paginated location metadata with geometry.
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer} list_id - Unique list id of the list.
+ *   @param  {Number} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const deleteFilteredLocations = (req, list_id, filters) => {
@@ -141,9 +141,7 @@ const editSingleLocation = (req, list_id, location_id, attributes) => {
       .map((attribute) => {
         const [column, value] = attribute;
         return `[${column}]=${
-          typeof value === 'string' || typeof value === 'boolean'
-            ? `'${value.replace(/'/g, "''")}'`
-            : value
+          typeof value === 'string' ? `'${value.replace(/'/g, "''")}'` : value
         }`;
       })
       .join(',');

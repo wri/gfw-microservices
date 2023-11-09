@@ -63,8 +63,9 @@ const lstClassifications = [
  *   @param  {String}   other_title - Other title for Other user_title_id
  *   @param  {Array}   arr_user_geography_ids - An array of geography Ids that the user is interested in.
  *   @param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
- *   @param  {Array}   policies - A list of policies for the organization.
- *   @return {Boolean} True if successful, false otherwise.
+ *   @param  {Array}   policyList - array of policies to upload
+ *   @param  {Array}   policyNames - array of policy names
+ *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
 const requestNewAccount = (
   req,
@@ -323,7 +324,7 @@ const getAccountProfile = (req) => {
  *   @param  {String} parent_org_name - Name of the parent organization, if there is one.
  *   @param  {Boolean} is_subsidiary - Is the organiation a subsidiary? (If yes, parent name is mandatory)
  *   @param  {Array} arr_org_classification_ids - Classification(s) of the organizations.
- *   @return {Boolean} True if successful, false otherwise.
+ *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
 const updateAccountProfile = (
   req,
@@ -384,7 +385,6 @@ const updateAccountProfile = (
 
 /** @function {getClassifications}
  *   @summary Provides a list of classifications for the organization.
- *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return  An array of strings containing all the Classifications.
  */
 const getClassifications = () => {
@@ -446,7 +446,7 @@ const getUsersList = (req) => {
  * @param  {String}   parent_org_name - Name of the parent organization, if there is one.
  * @param  {Boolean}  is_subsidiary - Is the organiation a subsidiary? (If yes, parent name is mandatory)
  * @param  {Array}    arr_org_classification_ids - Classification(s) of the organizations.
- * @return {Boolean} True if successful, false otherwise.
+ * @return {Promise<Boolean>} True if successful, false otherwise.
  */
 const updatePendingAccount = (
   req,
@@ -501,7 +501,7 @@ const updatePendingAccount = (
  *   @param  {Number}   user_title_id - Title for the manager (Administrative User)
  *   @param  {Array}   arr_user_geography_ids - An array of geography Ids that the user is interested in.
  *   @param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
- *   @return {Boolean} True if successful, false otherwise.
+ *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
 const updatePendingAccountUser = (
   req,
@@ -546,9 +546,9 @@ const updatePendingAccountUser = (
 
 /**
  * @function {getOrganizationActivatedTime}
- * @param {Req} Express
+ * @param {Express.Request} req
  * @param {Number} organizationId
- * @return {String} OrganizationActivatedTime
+ * @return {Promise<String>} OrganizationActivatedTime
  */
 const getOrganizationActivatedTime = async (req, organizationId) => {
   try {

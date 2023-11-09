@@ -814,7 +814,6 @@ const resendVerifyToken = (req) => {
 /** @function {logout}
  *   @summary Removes all session variables, effectively logging out the user
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {None} No returns
  */
 const logout = (req) => {
   if (req.session.ispromanager === false) {

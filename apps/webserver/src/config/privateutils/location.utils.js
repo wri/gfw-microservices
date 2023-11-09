@@ -15,7 +15,7 @@ const wellknown = require('wellknown');
 /** @function {getWKTGeometry}
  *   @summary Converts a Geojson to a MSSQL Geometry type
  *   @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param {Object} geojson - the geojson feature collection
+ *   @param {Object} geojsonGeometry - the geojson feature collection
  *   @return {String} returns array geometry strings
  */
 const getWKTGeometry = (req, geojsonGeometry) => {
@@ -29,7 +29,7 @@ const getWKTGeometry = (req, geojsonGeometry) => {
  *   @return {Object} returns GeoJSON geometry
  */
 const getGeoJSONGeometry = (req, wktGeometry) => {
-  return wellknown(wktGeometry);
+  return wellknown.parse(wktGeometry);
 };
 
 /** @function {createGeoJSON}
@@ -113,7 +113,6 @@ const filterGeojsonByGADM = (geojson) => {
  * @param {Array} fireData Fires data
  * @param {Array} extentData Extent data
  * @param {Array} gladValidateData Validated glad data
- * @param {Boolean} withGeom Boolean indicating the need for the geometry property
  */
 const mergeGeoJSONWithAnalysis = (geojson, gladData, fireData, extentData, gladValidateData) => {
   return new Promise((resolve) =>

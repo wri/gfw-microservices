@@ -27,10 +27,12 @@ const redis = require('redis');
 
 // redis not present or useful for jest unit testing
 if (process.env.NODE_ENV !== 'test') {
+  const redisHost = process.env.REDIS_HOST || 'redis';
+  const redisPort = process.env.REDIS_PORT || 6379;
   const client = redis.createClient({
-    host: process.env.REDIS_HOST || 'redis',
-    port: process.env.REDIS_PORT || 6379,
+    url: `redis://${redisHost}:${redisPort}`,
   });
+  client.connect();
   const { promisify } = require('util');
   getAsync = promisify(client.get).bind(client);
   setAsync = promisify(client.set).bind(client);
@@ -49,7 +51,7 @@ const { getAnalysisDataForProtectedAreasByLocation } = require(path.resolve(
 /** @function {getAnalysisDataForUserList}
  *   @summary Function to return analysis data for a user list.
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer}  list_id - ID of the user list in the database
+ *   @param  {Number}  list_id - ID of the user list in the database
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const getAnalysisDataForUserList = (req, list_id) => {
@@ -75,7 +77,7 @@ const getAnalysisDataForUserList = (req, list_id) => {
 /** @function {getAnalysisDataForGFWList}
  *   @summary Function to return analysis data for a GFW list.
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer}  list_id - ID of the GFW list in the database
+ *   @param  {Number}  list_id - ID of the GFW list in the database
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
@@ -193,7 +195,7 @@ const getAnalysisDataForProtectedAreas = (req, list_id, filters) => {
  *
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {number} list_id - ID of the GFW list in the database
- * @param {Object} locatio_id - Selected location for Protected Areas
+ * @param {Object} location_id - Selected location for Protected Areas
  * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, location_id) => {
@@ -254,7 +256,7 @@ const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, location_id)
 /** @function {getGFWListAnalyses}
  *   @summary Function to return GFW list analysis.
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer}  list_id - ID of list
+ *   @param  {Number}  list_id - ID of list
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const getGFWListAnalyses = (req, list_id) => {
@@ -281,8 +283,8 @@ const getGFWListAnalyses = (req, list_id) => {
 /**
  * @function {getAFIAnalysisForListId}
  * @summary Function to return the AFIAnalysis
- * @param {Object} request – Request express object to extract organization information from
- * @param {Integer} listId – List ID input
+ * @param {Object} req – Request express object to extract organization information from
+ * @param {Number} listId – List ID input
  * @returns {Promise<Object>}
  */
 const getAFIAnalysisForListId = (req, listId) => {
@@ -308,8 +310,8 @@ const getAFIAnalysisForListId = (req, listId) => {
 /**
  * @function {getAFINegligibleStatsForListId}
  * @summary Function to return the AFIAnalysis Negligible Stats
- * @param {Object} request – Request express object to extract organization information from
- * @param {Integer} listId – List ID input
+ * @param {Object} req – Request express object to extract organization information from
+ * @param {Number} listId – List ID input
  * @returns {Promise<Object>}
  */
 const getAFINegligibleStatsForListId = (req, listId) => {
@@ -335,7 +337,7 @@ const getAFINegligibleStatsForListId = (req, listId) => {
 /** @function {getListAnalyses}
  *   @summary Function to return list analysis.
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer}  list_id - ID of list
+ *   @param  {Number}  list_id - ID of list
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const getListAnalyses = (req, list_id) => {
@@ -410,9 +412,9 @@ const createHashFromString = (str) => {
 
 /** @function {requestDashboardAnalysis}
  *   @summary Invokes lambda to retrieve on-the-fly analysis results for Dashboard, returns cached data from Redis if it exists.
- *   @param  {Object}   req - Express request object
+ *   @param  {Object}   request - Express request object
  *   @param  {Object}  list - Object containing target list properties
- *   @param  {Bool}  isGFWList - Boolean to determine whether target list is a gfw list or organization list
+ *   @param  {Boolean}  isGFWList - Boolean to determine whether target list is a gfw list or organization list
  *   @return {Promise} Returns dashboard analysis results
  */
 const requestDashboardAnalysis = async (request, list, isGFWList) => {

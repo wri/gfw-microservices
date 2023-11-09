@@ -55,8 +55,8 @@ const uniqueIdGenerator = () => {
  * @param {String} list_table The list table name to write to
  * @param {String} analysis_table The analysis table to write to
  * @param {String} organization_id The organization id
- * @param {String} isEdit A boolean to determine if we are editing the list
- * @param {String} location_id The location id, which is defaulted to 0 here as we are processing list level analyses
+ * @param {boolean} isEdit A boolean to determine if we are editing the list
+ * @param {number} location_id The location id, which is defaulted to 0 here as we are processing list level analyses
  * @param {String} queue_url The queue URL
  */
 const sendMessage = (

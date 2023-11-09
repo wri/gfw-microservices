@@ -56,6 +56,13 @@
         "runtimeArgs": ["--max-old-space-size=4096"]
       }
     },
+    // "lint": {
+    //   "executor": "@nrwl/linter:eslint",
+    //   "outputs": ["{options.outputFile}"],
+    //   "options": {
+    //     "lintFilePatterns": ["apps/webserver/src/**/*.ts", "apps/webserver/src/**/*.js"]
+    //   }
+    // },
     "testweb": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/webserver"],

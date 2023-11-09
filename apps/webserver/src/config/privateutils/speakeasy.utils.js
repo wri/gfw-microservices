@@ -16,7 +16,6 @@ const qrcode = require('qrcode');
 /**
  * @function createSecret
  * @summary Creates a secret key for User - will be used in future to validate and generate TOTP token
- * @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return {String} Returns base 32 string of the user secret
  */
 const createSecret = () => {
@@ -44,7 +43,6 @@ const createTotp = (req, secret) => {
  * @function getSecret
  * @summary Returns the users secret key
  * @param {String} secret - User's secret key created from createSecret utility function
- * @return {String} Returns a promise detailing success or failure of createSecret
  */
 const getSecret = (secret, email) => {
   const url = (key) =>

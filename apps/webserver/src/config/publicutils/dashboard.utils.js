@@ -6,7 +6,7 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 /** @function {getDashboardData}
  *   @summary Get function to dashboard data from db for a particular list locations
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer} list_id - Unique list id of the list.
+ *   @param  {Number} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
 const getDashboardData = (req, list_id) => {
@@ -52,7 +52,7 @@ const getGFWListDashboardData = (req, list_id) => {
 /** @function {getDashboardTimestamp}
  *   @summary Get Dashboard Timestamp from db for a particular list locations
  *   @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer} list_id - Unique list id of the list.
+ *   @param  {Number} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
 const getDashboardTimestamp = (req, list_id) => {
@@ -81,7 +81,7 @@ const getDashboardTimestamp = (req, list_id) => {
 /** @function {getDashboardTimestamp}
  *   @summary Get Dashboard Timestamp from db for a particular GFW list locations
  *   @param  {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer} list_id - Unique list id of the list.
+ *   @param  {Number} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
 const getGFWDashboardTimestamp = (req, list_id) => {

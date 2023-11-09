@@ -7,13 +7,14 @@
  ********************************************************************/
 // Imports for this module
 const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
 
 const client = new LambdaClient({
   apiVersion: '2015-03-31',
   region: 'us-east-1',
-  httpOptions: {
-    timeout: 300000,
-  },
+  requestHandler: new NodeHttpHandler({
+    requestTimeout: 300000, //number in milliseconds
+  }),
 });
 
 const invoke = async (FunctionName, payload = '') => {

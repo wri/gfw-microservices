@@ -70,7 +70,7 @@ const getGFWLists = (req) => {
 /** @function {getGFWListLocations}
  *   @summary Get function to return geojson of locations for a partiuclar list.
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer} list_id - Unique list id of the list.
+ *   @param  {Number} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
 const getGFWListLocations = (req, list_id) => {
@@ -129,11 +129,13 @@ const getDashboardGFWListLocations = (req, list_id) => {
 /** @function {getGFWListLocationsNoGeom}
  *   @summary Get function to return json of location metadata without geometry.
  *   @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *   @param {Integer} list_id - Unique list id of the list.
+ *   @param {Number} list_id - Unique list id of the list.
  *   @param {[]} location_ids - Array of location ids.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
+  // TODO: Check callsites for type of list_id to see if Number() is necessary
+  const listIdNum = Number(list_id);
   return new Promise((resolve, reject) => {
     const parameters =
       Array.isArray(location_ids) && location_ids.length
@@ -141,7 +143,7 @@ const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
         : [];
 
     let promise;
-    switch (parseInt(list_id, 10)) {
+    switch (listIdNum) {
       case 1:
         promise = sqlUtils.executeSystemStoredProcedure(
           req,
@@ -186,7 +188,7 @@ const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
           errorUtils.errorCodes.failedToGetList,
-          `Failed to get list location (no Geom) for List ${parseInt(list_id, 10)}`,
+          `Failed to get list location (no Geom) for List ${listIdNum}`,
           err
         );
         reject(errorObject);
@@ -254,7 +256,7 @@ const getGFWListLocationsGeom = (req, list_id, location_ids = []) => {
 /** @function {getAdministrativeAreasInfo}
  *   @summary Get function to return country, state, and substate.
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Array} Returns admin info
+ *   @return {Promise<any>} Returns admin info
  */
 const getAdministrativeAreasInfo = (req) => {
   return new Promise((resolve) => resolve(adminInfo));
@@ -263,7 +265,7 @@ const getAdministrativeAreasInfo = (req) => {
 /** @function {getProtectedAreasInfo}
  *   @summary Get function to return country, state, and substate.
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Array} Returns admin info
+ *   @return {Promise<any>} Returns admin info
  */
 const getProtectedAreasInfo = (req) => {
   return new Promise((resolve) => resolve(protectedInfo));

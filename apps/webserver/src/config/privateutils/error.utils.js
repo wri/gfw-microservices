@@ -106,7 +106,7 @@ const ERROR_CODES = {
  * @function createErrorMessage
  * @summary Creates a new standard error message object that can be used across.
  * @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- * @param {int} error_code - Error Code used for identifying the error.
+ * @param {number} error_code - Error Code used for identifying the error.
  * @param {String} user_msg - A message that could be provided to the user if necessary.
  * @param {String} system_msg - The more detailed system message for logging or debugging.
  * @return {Object} An error message object containing the above parameters.

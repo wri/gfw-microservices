@@ -7,7 +7,6 @@ const Slack = require('@slack/bolt');
  * @param {string} text - Title of notification / error
  * @param {Object} data - Data to be logged
  * @param {string} userInfo - optional user info to be logged
- * @return {null}
  */
 
 const sendNotification = async (text, data, userInfo) => {
@@ -19,44 +18,46 @@ const sendNotification = async (text, data, userInfo) => {
   // only first 1000 characters of the data string to comply with slack limits
   const truncatedDataString = JSON.stringify(data, null, '\t').slice(0, 1000);
 
+  const blocks = [
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `:warning: *${text}*`,
+      },
+    },
+    {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `NODE_ENV: *${process.env.NODE_ENV}*`,
+      },
+    },
+  ];
+
+  if (userInfo) {
+    blocks.push({
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: `user info: \`\`\` ${userInfo} \`\`\``,
+      },
+    });
+  }
+
+  blocks.push({
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: `data: \`\`\` ${truncatedDataString} \`\`\``,
+    },
+  });
+
   await slackApp.client.chat.postMessage({
     token: process.env.SLACK_BOT_TOKEN,
     channel: process.env.SLACK_LOG_CHANNEL,
     text,
-    blocks: [
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `:warning: *${text}*`,
-        },
-      },
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `NODE_ENV: *${process.env.NODE_ENV}*`,
-        },
-      },
-      ...(userInfo
-        ? [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: `user info: \`\`\` ${userInfo} \`\`\``,
-              },
-            },
-          ]
-        : []),
-      {
-        type: 'section',
-        text: {
-          type: 'mrkdwn',
-          text: `data: \`\`\` ${truncatedDataString} \`\`\``,
-        },
-      },
-    ],
+    blocks: blocks,
   });
 };
 

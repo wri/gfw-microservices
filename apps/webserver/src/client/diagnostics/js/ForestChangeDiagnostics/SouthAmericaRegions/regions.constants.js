@@ -36,8 +36,8 @@ export const chartDatasetConfigs = {
     informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
     downloadUrl: 'listId=5692&country=Argentina&category=WDPA',
     chartLabels: [
-      { id: 'fullyRestrictive', color: 'rgba(255,64,0,1)', legend: 'Fully Restricted' },
-      { id: 'lessRestricted', color: 'rgba(255,64,0,.6)', legend: 'Less Restricted' },
+      { id: 'fullyRestrictive', color: '#862e13', legend: 'Fully Restricted' },
+      { id: 'lessRestricted', color: '#eb5027', legend: 'Less Restricted' },
     ],
   },
   landmarkOverlapCountry: {

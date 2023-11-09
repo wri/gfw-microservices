@@ -699,7 +699,7 @@ export default class Diagnostics extends Component {
     ));
 
     const { isArgentinaComplianceAvailable } = featureFlags;
-      console.log({isArgentinaComplianceAvailable})
+
     return (
       <div className="landing-diagnostics">
         <Popover
@@ -1043,7 +1043,7 @@ export default class Diagnostics extends Component {
               />
             ) : null}
 
-            {sAmericaPresence && true && listView === 'forest_change' && (
+            {sAmericaPresence && isArgentinaComplianceAvailable && listView === 'forest_change' && (
               <RegionChartsContainer
                 listId={selectedLists[0]?.id}
                 fireDownload={this.fireDownload}

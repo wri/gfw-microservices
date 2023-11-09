@@ -2,12 +2,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
+    // "checkJs": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
     "types": ["node", "express"]
   },
-  "exclude": ["**/*.spec.ts", "**/*.test.ts", "src/client/**/*"],
+  "exclude": ["**/*.spec.js", "**/*.test.js", "**/*.spec.ts", "**/*.test.ts", "src/client/**/*"],
   "include": ["**/*.ts", "**/*.js"]
 }

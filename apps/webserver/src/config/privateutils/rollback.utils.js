@@ -13,7 +13,7 @@
 const path = require('path');
 const sql = require('mssql');
 const logger = require('./logger.utils');
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
+const sqlUtils = require('./sql.utils');
 
 const dropDatabase = (req, pendingaccounts_id) => {
   return new Promise((resolve, reject) => {

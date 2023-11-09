@@ -1,20 +1,20 @@
 const webpackUtils = require('../publicutils/webpack.utils');
 const methodOverride = require('method-override');
 const compression = require('compression');
-const redis = require('redis');
+import { createClient } from 'redis';
 const session = require('express-session');
-const RedisStore = require('connect-redis')(session);
-const FileStore = require('session-file-store')(session);
+import RedisStore from 'connect-redis';
 const { v1: uuidv1 } = require('uuid');
 
 const bodyParser = require('body-parser');
 const favicon = require('serve-favicon');
 const logger = require('../privateutils/logger.utils');
-const express = require('express');
+import * as express from 'express';
+import { Application, Request, Response, NextFunction } from 'express';
 const helmet = require('helmet');
 const path = require('path');
 const rateLimiterUtil = require('./limiter-util');
-const config = require(path.resolve('./config/config'));
+const config = require('../config');
 const { PRODUCTION_ENVIRONMENTS } = require('../config/environments.config');
 
 // skip certain things not useful for jest unit testing
@@ -24,25 +24,28 @@ const unitTestMode = process.env.NODE_ENV === 'test';
 // redisClient is provided to new RedisStore({client:redisClient})
 // redis v2.8.0 -> v3.1.2
 // connect-redis v3.4.2 -> v6.0.0
-let redisClient;
+let redisClient: any;
 if (unitTestMode) {
   redisClient = null;
 } else {
-  redisClient = redis.createClient({
-    host: process.env.REDIS_HOST || 'redis',
-    port: process.env.REDIS_PORT || 6379,
+  const redisHost = process.env.REDIS_HOST || 'redis';
+  const redisPort = process.env.REDIS_PORT || 6379;
+  redisClient = createClient({
+    url: `redis://${redisHost}:${redisPort}`,
   });
-  redisClient.on('error', (info) => {
-    console.log('Express redis error', info);
+  redisClient.connect().then(() => {
+    redisClient.on('error', (info: any) => {
+      console.log('Express redis error', info);
+    });
   });
 }
 
 /**
  * @function configureMiddleware
  * @summary Configure express middleware
- * @param {Express.app} app
+ * @param { Express.Application } app
  */
-const configureMiddleware = (app) => {
+const configureMiddleware = (app: Application) => {
   // Enable stack traces
   app.set('showStackError', true);
   // Enable jsonp via res.jsonp
@@ -71,9 +74,9 @@ const configureMiddleware = (app) => {
 /**
  * @function configureLocalVariables
  * @summary Configure local variables
- * @param {Express.app} app
+ * @param {Express.Application} app
  */
-const configureLocalVariables = (app) => {
+const configureLocalVariables = (app: Application) => {
   app.locals.title = config.app.title;
   app.locals.author = config.app.author;
   app.locals.keywords = config.app.keywords;
@@ -83,9 +86,9 @@ const configureLocalVariables = (app) => {
 /**
  * @function configureViewEngine
  * @summary Configure view engine
- * @param {Express.app} app
+ * @param {Express.Application} app
  */
-const configureViewEngine = (app) => {
+const configureViewEngine = (app: Application) => {
   // Set the engine and the view paths
   app.set('view engine', 'pug');
   app.set('views', config.files.views);
@@ -94,10 +97,10 @@ const configureViewEngine = (app) => {
 /**
  * @function configureSession
  * @summary Configure express session
- * @param {Express.app} app
+ * @param {Express.Application} app
  */
-const configureSession = (app) => {
-  const sessionParams = {
+const configureSession = (app: Application) => {
+  const sessionParams: Record<string, any> = {
     name: 'gfwpro.globalforestwatch.org',
     saveUninitialized: false,
     secret: config.sessionVars.secret,
@@ -107,7 +110,7 @@ const configureSession = (app) => {
         : { secure: true },
     unset: 'destroy',
     resave: false,
-    genid: function (req) {
+    genid: function (req: Request) {
       return uuidv1();
     },
   };
@@ -121,9 +124,9 @@ const configureSession = (app) => {
 /**
  * @function setHelmetHeaders
  * @summary Configure hemlet to secure express headers
- * @param {Express.app} app
+ * @param {Express.Application} app
  */
-const configureHelmetHeaders = (app) => {
+const configureHelmetHeaders = (app: Application) => {
   /**
    * Default middleware used is:
    * dnsPrefetchControl - controls browser DNS prefetching
@@ -148,28 +151,28 @@ const configureHelmetHeaders = (app) => {
 /**
  * @function configureStaticAssetPath
  * @summary Configure static assets
- * @param {Express.app} app
+ * @param {Express.Application} app
  */
-const configureStaticAssetPath = (app) => {
+const configureStaticAssetPath = (app: Application) => {
   app.use(express.static('public'));
 };
 
 /**
  * @function configureServerRoutes
  * @summary Configure valid express server routes
- * @param {Express.app} app
+ * @param {Express.Application} app
  */
-const configureServerRoutes = (app, limiter) => {
-  config.files.routes.forEach((route) => require(path.resolve(route))(app, limiter));
+const configureServerRoutes = (app: Application, limiter: Object) => {
+  config.files.routes.forEach((route: String) => require(path.resolve(route))(app, limiter));
 };
 
 /**
  * @function configureErrorRoutes
  * @summary Configure 500 and 404 error routes
- * @param {Express.app} app
+ * @param {Express.Application} app
  */
-const configureErrorRoutes = (app) => {
-  app.use((err, req, res, next) => {
+const configureErrorRoutes = (app: Application) => {
+  app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (!err) {
       return next();
     }
@@ -197,10 +200,10 @@ const configureErrorRoutes = (app) => {
  * @name initialize
  * @static
  * @summary Initialize express
- * @param {Express.app} app
+ * @param {Express.Application} app
  * @return {Promise}
  */
-module.exports.initialize = (app) =>
+module.exports.initialize = (app: Application) =>
   new Promise((resolve, reject) => {
     logger.info('Initializing express');
     try {

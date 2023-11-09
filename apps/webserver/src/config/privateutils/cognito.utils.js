@@ -26,8 +26,8 @@ const config = require('../config');
 const PasswordGenerator = require('generate-password');
 const AWSCognito = require('amazon-cognito-identity-js');
 const langResources = require(path.resolve('./config/langResources'));
-const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
+const errorUtils = require('./error.utils');
+const logger = require('./logger.utils');
 const AmazonCognitoIdentity = new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' });
 
 // Local variable for Cognito Service Provider.
@@ -154,7 +154,7 @@ const disableUserBasedOnFailCounts = async (email, USER_POOL_ID) => {
  *  @function confirmUserEmail
  *  @summary Admin Cognito action to update verified email state
  *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *  @param {String} email - Cognito Username
+ *  @param {String} username - Cognito Username
  *  @return {Promise} Returns a promise detailing success or failure of confirmUserEmail
  */
 const confirmUserEmail = (req, username) => {
@@ -203,6 +203,7 @@ const createUser = (req, email, resend_temp_password = false, unit_test = false)
       ForceAliasCreation: false,
       TemporaryPassword: randomPassword,
       UserAttributes: [{ Name: 'email', Value: email }],
+      MessageAction: undefined,
     };
 
     // In case we need to send a temporary password to the user
@@ -236,8 +237,8 @@ const createUser = (req, email, resend_temp_password = false, unit_test = false)
  *  @function changePassword
  *  @summary Change password for an authenticated user
  *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *  @param {String} currentPassword
- *  @param {String} newPassword
+ *  @param {String} previousPassword
+ *  @param {String} proposedPassword
  *  @return {Promise} Returns a promise detailing success or failure of changePassword
  */
 const changePassword = (req, previousPassword, proposedPassword) => {
@@ -300,7 +301,7 @@ const handleLoginFailure = async (req, email) => {
   const userFailCount = userInfo.UserAttributes.find(
     (userAttribute) => userAttribute.Name === 'custom:fail_count'
   );
-  let failureCount = userFailCount ? userFailCount.Value : 0;
+  let failureCount = userFailCount ? Number(userFailCount.Value) : 0;
   failureCount++;
   if (failureCount >= config.platformVars.maxUserLoginRetries) {
     try {
@@ -405,7 +406,7 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
           const sysMessage = [
             'Error User Authentication: ' + err,
             'Username: ' + authenticationData.Username,
-          ];
+          ].join('\n');
           const errObj = errorUtils.createErrorMessage(
             req,
             errorUtils.errorCodes.failedToAuthenticate,
@@ -430,7 +431,7 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
  *  @summary Sets Cognito User Password
  *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} email - The username of the cognito user (should be there email)
- *  @param {String} password - The password given by User
+ *  @param {String} verificationCode - verification code given by User
  *  @param {String} newPassword - Optional parameter on new Password challenge
  *  @return {Promise} Returns a promise detailing success or failure of setPassword
  */
@@ -466,8 +467,8 @@ const setPassword = (req, email, verificationCode, newPassword) => {
  *  @function completeNewPasswordChallenge
  *  @summary Allows a user to change their password on initial login.
  *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *  @param {String} password - The user's old password.
- *  @param {String} newPassword - The user's new password.
+ *  @param {String} old_password - The user's old password.
+ *  @param {String} new_password - The user's new password.
  *  @return {Promise} Returns a promise which returns true is success, error object otherwise.
  */
 const completeNewPasswordChallenge = (req, old_password, new_password) => {
@@ -498,7 +499,7 @@ const completeNewPasswordChallenge = (req, old_password, new_password) => {
         onSuccess: () => {
           const userMessage = langResources.getResourceString('criticalError');
           const sysMessage = langResources.getResourceString('invaidInitialPasswordChange');
-          const errObj = new errorUtils.createErrorMessage(
+          const errObj = errorUtils.createErrorMessage(
             req,
             errorUtils.errorCodes.userAlreadyConfirmed,
             userMessage,
@@ -509,7 +510,7 @@ const completeNewPasswordChallenge = (req, old_password, new_password) => {
         onFailure: (err) => {
           const userMessage = langResources.getResourceString('loginFailed');
           const sysMessage = err;
-          const errObj = new errorUtils.createErrorMessage(
+          const errObj = errorUtils.createErrorMessage(
             req,
             errorUtils.errorCodes.userNotAuthenticated,
             userMessage,
@@ -632,7 +633,7 @@ const requestToResetPassword = async (req, email) => {
  *  @summary Resets the user's password in AWS Cognito. User will need to reset their password.
  *  @param  {Object}  req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *  @param  {String}  email - The username of the cognito user (should be there email)
- *  @return {Boolean} Returns if the action has been processed correctly
+ *  @return {Promise<Boolean>} Returns if the action has been processed correctly
  */
 const adminResetUserPassword = (req, email) => {
   return new Promise((resolve, reject) => {
@@ -717,7 +718,9 @@ const userExists = (req, email) => {
  *  @function confirmForgotPassword
  *  @summary API action to confirm forgotten password flow
  *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *  @param {String} email - Cognito Username
+ *  @param {String} confirmationCode - confirmation code sent to user
+ *  @param {String} newPassword - new passowrd
+ *  @param {String} username - Username
  *  @return {Promise} Returns a promise detailing success or failure of confirmForgotPassword
  */
 const confirmForgotPassword = (req, confirmationCode, newPassword, username) => {

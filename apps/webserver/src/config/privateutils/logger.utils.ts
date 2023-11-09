@@ -9,17 +9,18 @@
  *
  ******************************************************************* */
 // Import required modules
-const path = require('path');
 const util = require('util');
 const sql = require('mssql');
 const winston = require('winston');
+import { Request } from 'express';
+// import Transport from 'winston-transport';
+// import Transport = require('winston-transport');
 const Transport = require('winston-transport');
 const config = require('../config');
 
-// eslint-disable-next-line import/no-dynamic-require
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
+const sqlUtils = require('./sql.utils');
 // Important variables
-const listActivityTypes = {
+export const listActivityTypes: Record<string, Record<string, number>> = {
   Account: {
     AccountRequested: 1,
     AccountActivated: 2,
@@ -63,9 +64,9 @@ const listActivityTypes = {
 };
 
 // map from numeric ID to category and activtyType (reverse of listActivityTypes above)
-const listActivityByID = [];
-Object.keys(listActivityTypes).forEach((category) => {
-  Object.keys(listActivityTypes[category]).forEach((activityType) => {
+const listActivityByID: any[] = [];
+Object.keys(listActivityTypes).forEach((category: string) => {
+  Object.keys(listActivityTypes[category]).forEach((activityType: string) => {
     listActivityByID[listActivityTypes[category][activityType]] = { category, activityType };
   });
 });
@@ -78,20 +79,13 @@ listActivityByID[23] = { category: 'List', activityType: 'ListShared' };
 listActivityByID[24] = { category: 'List', activityType: 'ListUnShared' };
 listActivityByID[25] = { category: 'List', activityType: 'ListUnSharedWithAll' };
 
-// Set time format
-const tsFormat = () =>
-  new Date().toLocaleTimeString('en-US', {
-    timeZone: 'America/New_York',
-    timeZoneName: 'short',
-  });
-
 // Custom transport for winston to log to SQL Server
 class SqlServerTransport extends Transport {
-  constructor(options) {
+  constructor(options: any) {
     super(options);
   }
 
-  async log(info, callback) {
+  async log(info: any, callback: (err?: any) => void) {
     const parameters = [
       { field: 'logDate', type: sql.DateTime, value: new Date() },
       { field: 'level', type: sql.NVarChar(30), value: info.level },
@@ -107,7 +101,7 @@ class SqlServerTransport extends Transport {
 }
 
 // format arguments in log messages with util.format so top level objects get expanded
-const formatMeta = (meta) => {
+const formatMeta = (meta: any) => {
   const splat = meta[Symbol.for('splat')];
   if (splat && splat.length) {
     return splat.length === 1 ? util.format(splat[0]) : util.format(splat);
@@ -115,20 +109,27 @@ const formatMeta = (meta) => {
   return '';
 };
 
+interface winstonFormat {
+  timestamp?: Date;
+  level?: string;
+  message: string;
+  label: string;
+  meta: any;
+}
 // console format into a single line with timestamp and level
 const consoleFormat = winston.format.printf(
-  ({ timestamp, level, message, label = '', ...meta }) =>
+  ({ timestamp, level, message, label = '', ...meta }: winstonFormat) =>
     `${timestamp} ${level}: ${label} ${message} ${formatMeta(meta)}`
 );
 
 // sql format is similar to consoleFormat() but without timestamp and level because
 // they are separate columns in the table
 const sqlFormat = winston.format.printf(
-  ({ message, label = '', ...meta }) => `${label} ${message} ${formatMeta(meta)}`
+  ({ message, label = '', ...meta }: winstonFormat) => `${label} ${message} ${formatMeta(meta)}`
 );
 
 // transports for winston (initially just console)
-const transports = [
+const transports: (typeof Transport)[] = [
   new winston.transports.Console({
     level: 'debug', // debug and higher logs only
     format: winston.format.combine(
@@ -152,50 +153,22 @@ if (config.SQLConnection.logDatabase) {
 // finally create the logger
 const logger = winston.createLogger({ transports });
 
-/**
- * @function log
- * @summary log utility function.
- * @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- * @param logger - logger that will be logged to.
- * @param {Integer} level - level of severity for the logger.
- * @param {String} message - message that will be logged.
- */
-const log = (req, level, message) => {
-  // Log the message based on severity level
-  switch (level) {
-    case 0:
-      logger.log('error', message.userMessage);
-      break;
-    case 1:
-      logger.log('warn', message.userMessage);
-      break;
-    case 2:
-      logger.log('info', message.userMessage);
-      break;
-    case 3:
-      logger.log('verbose', message.userMessage);
-      break;
-    case 4:
-      logger.log('debug', message.userMessage);
-      break;
-    case 5:
-      logger.log('silly', message.userMessage);
-      break;
-    default:
-      logger.log('info', message.userMessage);
-      break;
+// add organization_user_id to req.session
+declare module 'express-session' {
+  interface SessionData {
+    organization_user_id: number;
   }
-};
+}
 
 /**
  * @function logActivity
  * @summary Logs user activity to database.
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {Integer} activityTypeId - id of the activity type.
+ * @param {Number} activityTypeId - id of the activity type.
  * @param {String} activityDescription - description of actvity.
  * @return {Boolean} - return true if resolved or throws error.
  */
-const logActivity = (req, activityTypeId, activityDescription) => {
+export const logActivity = (req: Request, activityTypeId: Number, activityDescription: string) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'userID', type: sql.Int, value: req.session.organization_user_id },
@@ -209,7 +182,7 @@ const logActivity = (req, activityTypeId, activityDescription) => {
         logger.info(`Activity logged: ${activityDescription}`);
         resolve(true);
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         logger.error('Activity log error', activityTypeId, err);
         reject(err);
       });
@@ -222,12 +195,12 @@ const logActivity = (req, activityTypeId, activityDescription) => {
  * @param {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return A promise object that returns true if successful, error object otherwise.
  */
-const getActivityLog = (req) => {
+export const getActivityLog = (req: Request) => {
   return new Promise((resolve, reject) => {
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetActivityLog')
-      .then((recordset) => {
-        const newRes = recordset.map((data) => {
+      .then((recordset: any[]) => {
+        const newRes = recordset.map((data: any) => {
           const actInfo = listActivityByID[data.activity_type_id];
           const datetime =
             data.activity_time instanceof Date ? data.activity_time : new Date(data.activity_time);
@@ -242,22 +215,15 @@ const getActivityLog = (req) => {
         });
         resolve(newRes);
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         reject(err);
       });
   });
 };
 
-module.exports = {
-  listActivityTypes,
-  log,
-  // re-exported logger methods need to be bound to logger to access this/self properties
-  silly: logger.silly.bind(logger),
-  debug: logger.debug.bind(logger),
-  verbose: logger.verbose.bind(logger),
-  info: logger.info.bind(logger),
-  warn: logger.warn.bind(logger),
-  error: logger.error.bind(logger),
-  logActivity,
-  getActivityLog,
-};
+export const silly = logger.silly.bind(logger);
+export const debug = logger.debug.bind(logger);
+export const verbose = logger.verbose.bind(logger);
+export const info = logger.info.bind(logger);
+export const warn = logger.warn.bind(logger);
+export const error = logger.error.bind(logger);

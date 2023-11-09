@@ -16,7 +16,8 @@ export default function UsageLimitBanner({ onBannerClose, onCtaClick = () => voi
           <strong>{locationsPage.accountIsReachingLimitBanner}</strong>
         </div>
         <div>
-          {locationsPage.accountReachingLimitBannerText} <div style={{display: 'none'}}>{cta}</div>
+          {locationsPage.accountReachingLimitBannerText}{' '}
+          <div style={{ display: 'none' }}>{cta}</div>
         </div>
       </>
     </Banner>

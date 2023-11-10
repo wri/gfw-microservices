@@ -10,7 +10,7 @@ import Polygon from 'esri/geometry/Polygon';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
 import esriConfig from 'esri/config';
 
-import TreeCoverLossLayer from '../../../locations/js/layers/TreeCoverLossLayer';
+import TreeCoverLossLayer from '../layers/TreeCoverLossLayer';
 import store from '../../../locations/js/store';
 import { updateInfoBubbleCache } from '../../../locations/js/actions/locationActions';
 import SensitiveAreas from './SensitiveAreas';

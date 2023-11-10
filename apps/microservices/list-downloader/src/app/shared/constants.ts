@@ -1226,6 +1226,39 @@ export const EXCEL_TEMPLATES = {
     { name: 'Designation Type', key: 'Designation Type' },
     { name: 'Designation', key: 'Designation' },
   ],
+  argentinaOverlap: [
+    {
+      name: 'list_name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'Location Name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'argentinaLayers',
+      parsed: 'overhead',
+      composites: [
+        {
+          attribute: 'arg_otbn_area',
+          type: 'category',
+          label: 'Argentina OTBN',
+          limit: 4,
+        },
+        {
+          attribute: 'protected_areas_by_category_area',
+          type: 'category',
+          label: 'Argentina Protected Areas',
+        },
+        {
+          attribute: 'landmark_by_category_area',
+          type: 'category',
+          label: 'Argentina Indigenous Territories',
+        },
+      ],
+    },
+  ],
+  argentinaOverlapAggregate: [{ name: 'List Name', key: 'List Name', analysis: false }],
 };
 
 export const EXCEL_TEMPLATE_HEADERS = {
@@ -1435,6 +1468,21 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Parent Company',
     'Certification',
     'Total Hectares',
+  ],
+  argentinaOverlap: [
+    'List Name',
+    'Location Name',
+    'Data Layer',
+    'Sub-Layer',
+    'Overlap with Sub-layer (Ha)',
+    'Overlap with Sub-Layer (%)',
+  ],
+  argentinaOverlapAggregate: [
+    'List Name',
+    'Data Layer',
+    'Sub-Layer',
+    'Overlap with Sub-layer (Ha)',
+    'Overlap with Sub-Layer (%)',
   ],
 };
 

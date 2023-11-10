@@ -4,6 +4,7 @@ import { southEastAsiaOverlapParser } from './south.east.asia.parser';
 import { soyParser } from './soy.parser';
 import { palmRiskAnalysisParser } from './palm.risk.analysis.parser';
 import { diagnosticLocationSummaryParser } from './diagnostic.location.summary.parser';
+import { argentinaLayers } from './argentina.layers.parser';
 
 const overheadParser = ({ operation, listLevelAnalysis, data, dataRow, csvData }) => {
   const parserFunctions = {
@@ -16,6 +17,7 @@ const overheadParser = ({ operation, listLevelAnalysis, data, dataRow, csvData }
     palmRiskAnalysis: palmRiskAnalysisParser,
     forestChangeDiagnosticLocationSummary: diagnosticLocationSummaryParser,
     commodityRiskDiagnosticLocationSummary: diagnosticLocationSummaryParser,
+    argentinaLayers: argentinaLayers,
   };
 
   const { name } = operation;

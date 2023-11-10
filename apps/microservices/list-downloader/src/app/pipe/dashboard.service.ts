@@ -15,6 +15,7 @@ import { SouthAmericaLossService } from '../files/south.america.loss.service';
 import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.service';
 import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 import { getAllFilesAndZip } from '../shared/file.utils';
+import { ArgentinaOverlap } from '../files/argentina.overlap';
 
 @Injectable()
 export class DashboardService extends IPipeService {
@@ -56,6 +57,9 @@ export class DashboardService extends IPipeService {
   @Inject(SouthEastAsiaTCLService)
   private readonly southEastAsiaTCLService: SouthEastAsiaTCLService;
 
+  @Inject(ArgentinaOverlap)
+  private readonly argentinaOverlap: ArgentinaOverlap;
+
   start(filters: GenerationFileRequest) {
     this.startEmail(filters);
 
@@ -71,6 +75,7 @@ export class DashboardService extends IPipeService {
     this.southAmericaLossService.start(filters);
     this.southEastAsiaOverlapService.start(filters);
     this.southEastAsiaTCLService.start(filters);
+    this.argentinaOverlap.start(filters);
   }
 
   process(data, filters: GenerationFileRequest) {
@@ -86,6 +91,7 @@ export class DashboardService extends IPipeService {
     this.southAmericaLossService.process(data, filters);
     this.southEastAsiaOverlapService.process(data, filters);
     this.southEastAsiaTCLService.process(data, filters);
+    this.argentinaOverlap.start(filters);
   }
 
   async finish(filters: GenerationFileRequest) {
@@ -104,6 +110,7 @@ export class DashboardService extends IPipeService {
     await this.southAmericaLossService.finish(filters);
     await this.southEastAsiaOverlapService.finish(filters);
     await this.southEastAsiaTCLService.finish(filters);
+    await this.argentinaOverlap.finish(filters);
 
     this.logger.log(`(${key}) - Zipping files`);
     await getAllFilesAndZip(filters);

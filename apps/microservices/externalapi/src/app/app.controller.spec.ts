@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-xdescribe('AppController', () => {
+describe('AppController', () => {
   let app: TestingModule;
 
   beforeAll(async () => {
@@ -14,7 +14,7 @@ xdescribe('AppController', () => {
   });
 
   describe('getHealthCheck', () => {
-    it('should return "Healty"', () => {
+    it('should return "Healthy"', () => {
       const appController = app.get<AppController>(AppController);
       expect(appController.getHealthCheck()).toEqual('Healthy');
     });

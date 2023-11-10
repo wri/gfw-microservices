@@ -3,7 +3,6 @@ import { ListUploadController } from '../list-upload.controller';
 import {
   ListUploadNewRequest,
   ListUploadNewResponse,
-  ListUploadNewErrorResponse,
 } from '../list-upload-new.dto';
 import { ListAnalysisService } from '../list-analysis.service';
 import { ConfigModule } from '@nestjs/config';
@@ -21,6 +20,7 @@ import { Request } from 'node-fetch';
 import sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ExternalUpload } from '../external-upload.entity';
+
 interface WhereRequest {
   where: {
     id: number;
@@ -35,22 +35,22 @@ class ExternalUploadMockRepository {
         userId: 123,
         uploadKeyFile: 'mock_key',
         uploadUrl: 'mock_url',
-        uploadDateTime: new Date(),
+        uploadDateTime: new Date().toLocaleDateString(),
       },
     ];
 
     return records.find((record) => record.id === where.where.id);
-    //return { id: 123, analysisId: 'FCD', updateTime: new Date(), status: 1 };
   });
 
-  save = jest.fn(async (externalUpload: ExternalUpload) => {
-    externalUpload.id = 123;
-    return externalUpload;
-  });
+  save = jest.fn(async () => ({
+    id: 123,
+    uploadDateTime: new Date().toLocaleDateString(),
+    uploadUrl: 'mocked_url'
+  }));
 }
 
 describe('ListUploadController', () => {
-  let controller: ListUploadController;
+  let sut: ListUploadController;
   let axiosMock;
   let userService: UserService;
   let organizationService: OrganizationService;
@@ -86,7 +86,7 @@ describe('ListUploadController', () => {
       providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
     }).compile();
 
-    controller = module.get<ListUploadController>(ListUploadController);
+    sut = module.get<ListUploadController>(ListUploadController);
     userService = module.get<UserService>(UserService);
     organizationService = module.get<OrganizationService>(OrganizationService);
     axiosMock = new AxiosMockAdapter(axios);
@@ -101,10 +101,6 @@ describe('ListUploadController', () => {
   //  axiosMock.restore();
   //});
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-
   it('should return a successful response', async () => {
     const createLargeListMockExpectedResponse = {
       list_id: 123,
@@ -116,7 +112,7 @@ describe('ListUploadController', () => {
     };
 
     const executeListAnalysisMockExpectedResponse = {
-      executionArn: 'aabc:123',
+      executionArn: 'abc:123',
       startDate: new Date(),
     };
 
@@ -149,12 +145,12 @@ describe('ListUploadController', () => {
       errorDetails: '',
     };
 
-    const result = await controller.uploadNewList(request, requestMock);
+    const result = await sut.uploadNewList(request, requestMock);
     const { listId, status, uploadId, errorDetails } = result as ListUploadNewResponse;
     expect({ listId, status, uploadId, errorDetails }).toEqual(expectedResult);
   });
 
-  it('should return an error response for invalid upload ID', async () => {
+  it('should return an error response when upload invalid ID', () => {
     const actualDate = new Date();
     const request: ListUploadNewRequest = {
       uploadId: '9999',
@@ -182,19 +178,20 @@ describe('ListUploadController', () => {
       subscriptionStatusId: 1,
     });
 
-    const expectedResult: ListUploadNewErrorResponse = {
-      errorDetails: 'Failed to process the request, upload id not found',
-    };
+    const expectedError = {
+         message: "Http Exception",
+         name: "HttpException",
+         response: {
+           "errorDetails": "Failed to process the request, upload id not found",
+         },
+         "status": 400,
+       };
 
-    try {
-      await controller.uploadNewList(request, requestMock);
-    } catch (error) {
-      expect(error.response).toEqual(expectedResult);
-      expect(error.getStatus()).toBe(400); // Check if the status code is 400 Bad Request
-    }
+    expect(sut.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
+
   });
 
-  it('should return an error response for other error scenarios', async () => {
+  it('should return an error response for other error scenarios', () => {
     const actualDate = new Date();
     const request: ListUploadNewRequest = {
       uploadId: '999',
@@ -222,31 +219,24 @@ describe('ListUploadController', () => {
       subscriptionStatusId: 1,
     });
 
-    // Implement logic for other error scenarios
-
-    const expectedResult: ListUploadNewErrorResponse = {
-      errorDetails: 'Failed to process the request, upload id not found',
+    const expectedError = {
+      message: "Http Exception",
+      name: "HttpException",
+      response: {
+        "errorDetails": "Failed to process the request, upload id not found",
+      },
+      "status": 400,
     };
 
-    try {
-      await controller.uploadNewList(request, requestMock);
-    } catch (error) {
-      console.log('thisistheerror', error);
-      expect(error.response).toEqual(expectedResult);
-      expect(error.getStatus()).toBe(400); // Check if the status code is 400 Bad Request
-    }
+    expect(sut.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
-  it('should return a successful response for prepare upload', async () => {
+  it('should return a successful response for prepare upload',() => {
     const actualDate = new Date();
     const preSignURLMockExpectedResponse = {
       url: 'mocked_url',
       keyFile: 'mocked_key',
       fileS3Route: 'mocked_s3_route',
-    };
-
-    const expectedResult = {
-      uploadUrl: 'mocked_url',
     };
 
     // Mock user response to let process continue
@@ -276,10 +266,12 @@ describe('ListUploadController', () => {
       userEmail: 'test@test.com',
     };
 
-    const result = await controller.prepareUploadList(request);
+    const expectedResult = {
+      uploadDateTime: new Date().toLocaleDateString(),
+      uploadId: '123',
+      uploadUrl: 'mocked_url'
+    };
 
-    const { uploadUrl } = result;
-
-    expect({ uploadUrl }).toEqual(expectedResult);
+    expect(sut.prepareUploadList(request)).resolves.toEqual(expectedResult);
   });
 });

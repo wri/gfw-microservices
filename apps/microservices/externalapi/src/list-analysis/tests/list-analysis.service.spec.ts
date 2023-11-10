@@ -19,7 +19,7 @@ class MockRepository {
 }
 
 describe('ListAnalysisService', () => {
-  let service: ListAnalysisService;
+  let sut: ListAnalysisService;
   let organizationService: OrganizationService;
 
   beforeAll(async () => {
@@ -49,15 +49,10 @@ describe('ListAnalysisService', () => {
       providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
     }).compile();
     organizationService = module.get<OrganizationService>(OrganizationService);
-    service = module.get<ListAnalysisService>(ListAnalysisService);
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+    sut = module.get<ListAnalysisService>(ListAnalysisService);
   });
 
   it('should get analysis status', async () => {
-    const actualDate = new Date();
     const listID = 123;
     const organizationId = 1;
     const expectedResult = {
@@ -65,7 +60,8 @@ describe('ListAnalysisService', () => {
       status: 'Completed',
       errorsDetails: [],
       resultUrl: 'https://example.com/results',
-      //expirationDate: '2023-09-28', // expirationDate is not tested, need to find a way to mock it
+      creationDate: new Date().toLocaleDateString(),
+      expirationDate: new Date().toLocaleDateString(),
     };
 
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
@@ -73,13 +69,18 @@ describe('ListAnalysisService', () => {
       organizationName: 'ABC Corp',
       organizationDb: ':memory:',
       organizationStatusId: 1,
-      organizationActivatedTime: actualDate,
+      organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
 
-    const result = await service.getAnalysisStatus(organizationId, listID);
-    const { listId, status, errorsDetails, resultUrl } = result;
+    const result = await sut.getAnalysisStatus(organizationId, listID);
 
-    expect({ listId, status, errorsDetails, resultUrl }).toEqual(expectedResult);
+    const resultWithDatesTransformed = {};
+    for (const prop in result) {
+      const value = result[prop];
+      resultWithDatesTransformed[prop] = value instanceof Date ? value.toLocaleDateString() : value;
+    }
+
+    expect(resultWithDatesTransformed).toEqual(expectedResult);
   });
 });

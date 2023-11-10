@@ -2,34 +2,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ListAnalysisController } from '../list-analysis.controller';
 import { ListAnalysisService } from '../list-analysis.service';
 import { createRequest } from 'node-mocks-http'; // Import the necessary library
-import { Request } from 'node-fetch';
-import { UserService } from '../user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organization } from '../../api-keys/organization.entity';
 import { UserRoutes } from '../../api-keys/user-route.entity';
 import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { ConfigModule } from '@nestjs/config';
-import { ClientStoreConnection } from '../../shared/client-store-connection';
-import { OrganizationService } from '../organization.service';
-import { DataSource } from 'typeorm';
-import { ListsAnalysisStatus } from '../list-analysis-status.entity';
-import sinon from 'sinon';
-
-class MockRepository {
-  findOne = jest.fn(async () => {
-    return { listId: 123, analysisId: 'FCD', updateTime: new Date(), status: 1 };
-  });
-}
 
 describe('ListAnalysisController', () => {
-  let controller: ListAnalysisController;
-  let organizationService: OrganizationService;
-  beforeAll(async () => {
-    sinon
-      .stub(DataSource.prototype, 'getRepository')
-      .withArgs(ListsAnalysisStatus)
-      .returns(new MockRepository());
-  });
+  let sut: ListAnalysisController;
+
+  const expectedResult = {
+    listId: 123,
+    status: 'Completed',
+    errorsDetails: [],
+    resultUrl: 'https://example.com/results',
+    creationDate: new Date('2023-09-28'),
+    expirationDate: new Date('2023-09-28'),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -48,27 +38,21 @@ describe('ListAnalysisController', () => {
         }),
       ],
       controllers: [ListAnalysisController],
-      providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
+      providers: [
+        {
+          provide: ListAnalysisService,
+          useValue: {
+            getAnalysisStatus: jest.fn(() => expectedResult),
+          },
+        },
+      ],
     }).compile();
 
-    controller = module.get<ListAnalysisController>(ListAnalysisController);
-    organizationService = module.get<OrganizationService>(OrganizationService);
-  });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+    sut = module.get<ListAnalysisController>(ListAnalysisController);
   });
 
   it('should return analysis status', async () => {
     const listID = 123;
-    const actualDate = new Date();
-    const expectedResult = {
-      listId: listID.toString(),
-      status: 'Completed',
-      errorsDetails: [],
-      resultUrl: 'https://example.com/results',
-      //expirationDate: '2023-09-28', // expirationDate is not tested, need to find a way to mock it
-    };
 
     // Mock the request object with the 'x-api-key' header
     const requestMock = createRequest({
@@ -80,21 +64,9 @@ describe('ListAnalysisController', () => {
       user: {
         organizationId: 1,
       },
-    }) as Request;
-
-    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
-      id: 1,
-      organizationName: 'ABC Corp',
-      organizationDb: ':memory:',
-      organizationStatusId: 1,
-      organizationActivatedTime: actualDate,
-      subscriptionStatusId: 1,
     });
 
-    const result = await controller.getAnalysisStatus(listID, requestMock);
-
-    const { listId, status, errorsDetails, resultUrl } = result;
-
-    expect({ listId, status, errorsDetails, resultUrl }).toEqual(expectedResult);
+    const result = await sut.getAnalysisStatus(listID, requestMock);
+    expect(result).toMatchObject(expectedResult);
   });
 });

@@ -25,15 +25,17 @@ function AddButton() {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({
-        'flagId': flagName
-      })
-    })
+        flagId: flagName,
+      }),
+    });
     handleClose();
-  }
+  };
 
   return (
     <div>
-      <button className='gfw-button btn-green' onClick={handleOpen}>+ add</button>
+      <button className="gfw-button btn-green" onClick={handleOpen}>
+        + add
+      </button>
 
       <Dialog
         open={open}
@@ -41,9 +43,7 @@ function AddButton() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
         <DialogContent>
           <input placeholder="Search for account" class="space-element" onChange={setFlagName} />
         </DialogContent>

@@ -18,20 +18,20 @@ function FeatureFlags({ setIsLoading }) {
         'Content-type': 'application/json',
       },
     })
-    .then((res) => res.json())
-    .then(([data]) => {
-      setrows(data);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+      .then((res) => res.json())
+      .then(([data]) => {
+        setrows(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
 
   setIsLoading(false);
   return (
     <div>
       <h3>Features</h3>
-      
+
       <AddButton />
       <Table>
         <TableHead>
@@ -41,10 +41,7 @@ function FeatureFlags({ setIsLoading }) {
         </TableHead>
         <TableBody>
           {rows.map((row) => (
-            <TableRow
-              key={row.name}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
+            <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
               <TableCell>{row.name}</TableCell>
             </TableRow>
           ))}

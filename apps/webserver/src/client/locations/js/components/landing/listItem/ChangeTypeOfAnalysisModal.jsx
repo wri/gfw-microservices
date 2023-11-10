@@ -17,6 +17,10 @@ function ChangeTypeOfAnalysisModal({
   isChangeTypeOfAnalysisModalOpen,
   listAnalysesStatus,
 }) {
+  const getSelectedAnalysesIds = () => {
+    return listAnalysesStatus.map(({ analysisId }) => analysisId);
+  };
+
   const [selectedAnalysis, setSelectedAnalysis] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   // if there is no listId, the analyses selection is for the creation of a new list
@@ -24,10 +28,7 @@ function ChangeTypeOfAnalysisModal({
 
   useEffect(() => {
     if (updatingAnalysesSelectionForExistingList) {
-      const selectedAnalysesIds = listAnalysesStatus
-        .filter(({ status }) => status === listStatus.Active)
-        .map(({ analysisId }) => analysisId);
-      setSelectedAnalysis(selectedAnalysesIds);
+      setSelectedAnalysis(getSelectedAnalysesIds());
     }
   }, [listAnalysesStatus, listId]);
 

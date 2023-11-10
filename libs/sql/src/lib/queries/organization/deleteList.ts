@@ -26,6 +26,7 @@ BEGIN
   DELETE from [Analyses] WHERE list_id = @list_id
   DELETE from [Analyses-Dashboard] WHERE list_id = @list_id
   DELETE from [AFIAnalysis] WHERE list_id = @list_id
+  DELETE from [ListsAnalysisStatus] WHERE ListID = @list_id
 
   -- Dropping tables
   EXEC sp_executesql @LIST_SQL

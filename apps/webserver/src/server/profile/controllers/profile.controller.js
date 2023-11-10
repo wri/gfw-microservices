@@ -37,11 +37,10 @@ exports.profileInfo = (req, res) => {
 
     Promise.all(promises)
       .then((results) => {
-        const [accountProfile, usersList, policyList, userInfo, { OrganizationActivatedTime }] =
-          results;
+        const [accountProfile, usersList, policyList, userInfo, accountActivatedTime] = results;
         res.status(200).json({
           organization: accountProfile,
-          accountActivatedTime: OrganizationActivatedTime,
+          accountActivatedTime,
           users: usersList,
           userInfo, // TODO: use getAccountProfile..or should this be called accountInfo ?
           classifications: classes,

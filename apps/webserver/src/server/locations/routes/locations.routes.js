@@ -1222,7 +1222,7 @@ module.exports = (app, limiter) => {
     const { LISTS_MICROSERVICE_URL } = process.env;
 
     getOrganizationActivatedTime(req, organization_id)
-      .then(({ OrganizationActivatedTime }) => {
+      .then((OrganizationActivatedTime) => {
         // calculate list processing limit
         return Promise.all([
           getAccountListProccesingLimit({

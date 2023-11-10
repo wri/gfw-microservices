@@ -1,5 +1,5 @@
 const path = require('path');
-import { analysisTypes } from '@wri-monorepos/constants';
+import { analysisTypesOptions } from '@wri-monorepos/constants';
 
 module.exports = (analysisData) => {
   const extractAnalysisTypes = analysisTypesOptions.reduce((result, analysisTypesOption) => {

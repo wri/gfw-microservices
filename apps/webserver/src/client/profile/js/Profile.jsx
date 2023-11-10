@@ -6,6 +6,7 @@ import { useProfileContext } from './ProfileStateContext';
 import AccountProfileContainer from './components/AccountProfile';
 import UserProfileManagerContainer from './components/UserProfileManager';
 import AccountUsageContainer from './components/AccountUsage';
+import ApiKeys from './components/ApiKeys';
 import profileTabs from './profileTabs';
 
 export default function Profile() {
@@ -45,6 +46,7 @@ export default function Profile() {
           {selectedTab === profileTabs.myOrganization.id && <AccountProfileContainer />}
           {selectedTab === profileTabs.userManagement.id && <UserProfileManagerContainer />}
           {selectedTab === profileTabs.accountUsage.id && <AccountUsageContainer />}
+          {selectedTab === profileTabs.apiKeys.id && <ApiKeys />}
         </Grid>
       </Grid>
     </Container>

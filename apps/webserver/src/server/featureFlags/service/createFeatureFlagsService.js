@@ -1,6 +1,8 @@
 const path = require('path');
 const { DataSource, EntitySchema } = require('typeorm');
 const config = require(path.resolve('./config/config'));
+const { allFeatureFlags } = require('../utils/featureFlagConstants');
+const DEFAULT_GLOBAL_FEATURE_FLAG_STATE = false;
 const CONNECTION_TYPE_MSSQL = 'mssql';
 
 const FeatureFlagsEntity = new EntitySchema({
@@ -35,7 +37,7 @@ const FeatureFlagsEntity = new EntitySchema({
 
 const dataSource = new DataSource({
   type: CONNECTION_TYPE_MSSQL,
-  logging: true,
+  logging: false,
   host: config.SQLConnection.host,
   port: parseInt(config.SQLConnection.port, 10),
   username: config.SQLConnection.username,
@@ -65,35 +67,36 @@ function createFeatureFlagsService(dataSource) {
     return result;
   }
 
-  async function getFeatureFlagWhere(where = {}) {
+  async function getFeatureFlagsWhere(where = {}) {
     return initializeExecuteAndCleanUp(async () => {
       return repository.find({ where });
     });
   }
 
   async function getFeatureFlagsForCurrentOrg(orgId) {
-    const mergedFeatureFlags = new Map();
-    const globalFeatureFlags = await getFeatureFlagWhere({ orgId: null });
-    const currentOrgFeatureFlags = await getFeatureFlagWhere({ orgId });
+    const globalFlagsOverride = await getFeatureFlagsWhere({ orgId: null });
+    const orgFlagsOverride = await getFeatureFlagsWhere({ orgId });
 
-    for (const flag of currentOrgFeatureFlags) {
-      mergedFeatureFlags.set(flag.flagId, flag);
-    }
+    const orgFeatureFlags = allFeatureFlags.map((flagId) => {
+      const staticGlobalFeatureFlag = formatGlobalFeatureFlags(flagId);
+      const globalFlagOverride = globalFlagsOverride.find((flag) => flag.flagId === flagId) || {};
+      const orgFlagOverride = orgFlagsOverride.find((flag) => flag.flagId === flagId) || {};
 
-    for (const flag of globalFeatureFlags) {
-      if (!mergedFeatureFlags.has(flag.flagId)) {
-        mergedFeatureFlags.set(flag.flagId, flag);
-      }
-    }
+      return {
+        ...staticGlobalFeatureFlag,
+        ...globalFlagOverride,
+        ...orgFlagOverride,
+      };
+    });
 
-    return [...mergedFeatureFlags.values()];
+    return orgFeatureFlags;
   }
 
   async function getFeatureFlagsByFlagId(flagId) {
-    return getFeatureFlagWhere({ flagId });
+    return getFeatureFlagsWhere({ flagId });
   }
 
-  async function createFeatureFlag(data) {
+  async function insertOrSaveFeatureFlag(data) {
     const fieldsWithErrors = validateFeatureFlagFields(data);
 
     if (fieldsWithErrors.length < 1) {
@@ -105,36 +108,59 @@ function createFeatureFlagsService(dataSource) {
     }
 
     throw new Error(
-      `Could not create FeatureFlag record. The following fields are missing: ${fieldsWithErrors.join(
+      `Could not create FeatureFlag record. The following fields are missing or invalid: ${fieldsWithErrors.join(
         ', '
       )}`
     );
   }
 
-  function validateFeatureFlagFields(data) {
-    const missingFields = [];
+  async function deleteFeatureFlag(where) {
+    const { flagId } = where;
 
-    if (!data.flagId || typeof data.flagId !== 'string') {
-      missingFields.push('flagId');
+    if (!allFeatureFlags.includes(flagId)) {
+      throw new Error('Invalid flagId');
+    }
+
+    return initializeExecuteAndCleanUp(async () => {
+      const featureFlag = await repository.findOne({ where });
+      await repository.remove(featureFlag);
+      return featureFlag;
+    });
+  }
+
+  function validateFeatureFlagFields(data) {
+    const missingOrInvalidFields = [];
+
+    if (!data.flagId || typeof data.flagId !== 'string' || !allFeatureFlags.includes(data.flagId)) {
+      missingOrInvalidFields.push('flagId');
     }
     if (data.orgId !== null && typeof data.orgId !== 'number') {
-      missingFields.push('orgId');
+      missingOrInvalidFields.push('orgId');
     }
-    if (typeof data.flagState !== 'boolean') {
-      missingFields.push('flagState');
+    if (!data.flagState && typeof data.flagState !== 'boolean') {
+      missingOrInvalidFields.push('flagState');
     }
     if (typeof data.modifierUserId !== 'number') {
-      missingFields.push('modifierUserId');
+      missingOrInvalidFields.push('modifierUserId');
     }
 
-    return missingFields;
+    return missingOrInvalidFields;
+  }
+
+  function formatGlobalFeatureFlags(flag) {
+    return {
+      flagId: flag,
+      flagState: DEFAULT_GLOBAL_FEATURE_FLAG_STATE,
+      orgId: null,
+    };
   }
 
   return {
-    getFeatureFlagWhere,
+    getFeatureFlagsWhere,
     getFeatureFlagsForCurrentOrg,
     getFeatureFlagsByFlagId,
-    createFeatureFlag,
+    insertOrSaveFeatureFlag,
+    deleteFeatureFlag,
   };
 }
 

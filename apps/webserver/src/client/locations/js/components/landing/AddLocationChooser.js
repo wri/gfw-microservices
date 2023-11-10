@@ -54,7 +54,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
   const [listName, setListName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [existingListName, setExistingListName] = useState();
-  const [selectedAnalysis, setSelectedAnalysis] = useState(getAnalysesSelectedByDefault());
+  const [selectedAnalysis, setSelectedAnalysis] = useState([]);
   const fileInputRef = useRef(null);
 
   const chooser = locationsPage.landing.addLocationChooser;
@@ -415,7 +415,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         <div className="dialog__footer add-location-chooser__footer" style={{ right: '0' }}>
           <Button
             className="dialog__primary-action"
-            disabled={!listName && !existingListName && selectedAnalysis.length <= 0}
+            disabled={(!listName && !existingListName) || selectedAnalysis.length <= 0}
             label={locationsPage.add.submit}
             onClick={() => createUploadProcess()}
             variant="primary"

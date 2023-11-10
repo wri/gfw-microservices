@@ -1,9 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ListUploadController } from '../list-upload.controller';
-import {
-  ListUploadNewRequest,
-  ListUploadNewResponse,
-} from '../list-upload-new.dto';
+import { ListUploadNewRequest, ListUploadNewResponse } from '../list-upload-new.dto';
 import { ListAnalysisService } from '../list-analysis.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -45,7 +42,7 @@ class ExternalUploadMockRepository {
   save = jest.fn(async () => ({
     id: 123,
     uploadDateTime: new Date().toLocaleDateString(),
-    uploadUrl: 'mocked_url'
+    uploadUrl: 'mocked_url',
   }));
 }
 
@@ -179,16 +176,15 @@ describe('ListUploadController', () => {
     });
 
     const expectedError = {
-         message: "Http Exception",
-         name: "HttpException",
-         response: {
-           "errorDetails": "Failed to process the request, upload id not found",
-         },
-         "status": 400,
-       };
+      message: 'Http Exception',
+      name: 'HttpException',
+      response: {
+        errorDetails: 'Failed to process the request, upload id not found',
+      },
+      status: 400,
+    };
 
     expect(sut.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
-
   });
 
   it('should return an error response for other error scenarios', () => {
@@ -220,18 +216,18 @@ describe('ListUploadController', () => {
     });
 
     const expectedError = {
-      message: "Http Exception",
-      name: "HttpException",
+      message: 'Http Exception',
+      name: 'HttpException',
       response: {
-        "errorDetails": "Failed to process the request, upload id not found",
+        errorDetails: 'Failed to process the request, upload id not found',
       },
-      "status": 400,
+      status: 400,
     };
 
     expect(sut.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
-  it('should return a successful response for prepare upload',() => {
+  it('should return a successful response for prepare upload', () => {
     const actualDate = new Date();
     const preSignURLMockExpectedResponse = {
       url: 'mocked_url',
@@ -269,7 +265,7 @@ describe('ListUploadController', () => {
     const expectedResult = {
       uploadDateTime: new Date().toLocaleDateString(),
       uploadId: '123',
-      uploadUrl: 'mocked_url'
+      uploadUrl: 'mocked_url',
     };
 
     expect(sut.prepareUploadList(request)).resolves.toEqual(expectedResult);

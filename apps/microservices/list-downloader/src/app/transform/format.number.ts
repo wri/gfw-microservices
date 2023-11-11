@@ -7,14 +7,9 @@ class FormatNumber extends Transform {
 
   isFloat = (n) => Number(n) === n && n % 1 !== 0;
 
-  _transform(chunk, _, next) {
-    if (!chunk) {
-      return next(null, undefined);
-    }
-
-    let newChunk = {};
+  run = (chunk) => {
     if (Array.isArray(chunk)) {
-      newChunk = chunk.map((value) => {
+      const newChunk = chunk.map((value) => {
         if (this.isFloat(value)) {
           return parseFloat(value.toFixed(this.decimals));
         }
@@ -28,8 +23,9 @@ class FormatNumber extends Transform {
         }
         return value;
       });
+      return newChunk;
     } else if (typeof chunk === 'object' && chunk !== null) {
-      newChunk = Object.entries(chunk).reduce((acc, [key, value]) => {
+      const newChunk = Object.entries(chunk).reduce((acc, [key, value]) => {
         if (typeof value === 'number' && this.isFloat(value)) {
           acc[key] = parseFloat(value.toFixed(this.decimals));
         } else {
@@ -37,7 +33,17 @@ class FormatNumber extends Transform {
         }
         return acc;
       }, {});
+      return newChunk;
     }
+    return chunk;
+  };
+
+  _transform(chunk, _, next) {
+    if (!chunk) {
+      return next(null, undefined);
+    }
+
+    const newChunk = this.run(chunk);
 
     next(null, newChunk);
   }

@@ -1258,7 +1258,34 @@ export const EXCEL_TEMPLATES = {
       ],
     },
   ],
-  argentinaOverlapAggregate: [{ name: 'List Name', key: 'List Name', analysis: false }],
+  argentinaOverlapAggregate: [
+    {
+      name: 'list_name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'argentinaLayers',
+      parsed: 'overhead',
+      composites: [
+        {
+          attribute: 'arg_otbn_area',
+          type: 'category',
+          label: 'Argentina OTBN',
+          limit: 4,
+        },
+        {
+          attribute: 'protected_areas_by_category_area',
+          type: 'category',
+          label: 'Argentina Protected Areas',
+        },
+        {
+          attribute: 'landmark_by_category_area',
+          type: 'category',
+          label: 'Argentina Indigenous Territories',
+        },
+      ],
+    },
+  ],
 };
 
 export const EXCEL_TEMPLATE_HEADERS = {

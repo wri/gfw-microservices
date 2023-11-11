@@ -41,8 +41,8 @@ const addOtherCategoryData = (sortedCategory, limit) => {
     return sortedCategory;
   }
 
-  const firstPart = sortedCategory.slice(0, limit);
-  const secondPart = sortedCategory.slice(limit);
+  const firstPart = sortedCategory.slice(0, limit - 1);
+  const secondPart = sortedCategory.slice(limit - 1);
 
   const total = sortedCategory.reduce((acc, { value }) => {
     if (typeof value === 'number') {

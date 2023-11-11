@@ -18,6 +18,14 @@ class FormatNumber extends Transform {
         if (this.isFloat(value)) {
           return parseFloat(value.toFixed(this.decimals));
         }
+        if (Array.isArray(value)) {
+          return value.map((v) => {
+            if (this.isFloat(v)) {
+              return parseFloat(v.toFixed(this.decimals));
+            }
+            return v;
+          });
+        }
         return value;
       });
     } else if (typeof chunk === 'object' && chunk !== null) {
@@ -30,6 +38,7 @@ class FormatNumber extends Transform {
         return acc;
       }, {});
     }
+
     next(null, newChunk);
   }
 }

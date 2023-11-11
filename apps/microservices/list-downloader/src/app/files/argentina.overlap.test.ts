@@ -35,7 +35,7 @@ describe('Argentina Overlap', () => {
     fs.unlinkSync(filePath);
   });
 
-  test('When input data has 3 locations', async () => {
+  test('When input data has 6 locations', async () => {
     argentinaOverlap.process(argentinaLocationData, filters);
 
     await argentinaOverlap.finish(filters);
@@ -44,20 +44,19 @@ describe('Argentina Overlap', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Data Layer,Sub-Layer,Overlap with Sub-layer (Ha),Overlap with Sub-Layer (%)',
-      'WRI,arg3 landmark,Argentina OTBN,Category II,32.8851,100',
-      'WRI,arg3 landmark,Argentina Indigenous Territories,,313.0648,100.00153325241168',
-      'WRI,arg4 wdpa,Argentina OTBN,Category I,1921.3536,100',
-      'WRI,arg4 wdpa,Argentina Protected Areas,Category Ia,1620.7222,91.15570088223583',
-      'WRI,arg4 wdpa,Argentina Protected Areas,Category II,156.9743,8.8288433002265',
-      'WRI,arg4 wdpa,Argentina Protected Areas,Category VI,0.2748,0.015455817537662165',
-      'WRI,arg4 wdpa,Argentina Indigenous Territories,,909.8068,18.10485133954601',
-      'WRI,arg5,Argentina OTBN,Category I,114.319,22.492113328818604',
-      'WRI,arg5,Argentina OTBN,Category II,98.4859,19.37697166779535',
-      'WRI,arg5,Argentina OTBN,Category III,98.4859,19.37697166779535',
-      'WRI,arg5,Argentina OTBN,Category IV,98.4859,19.37697166779535',
-      'WRI,arg5,Argentina OTBN,Other,98.4859,19.37697166779535',
-      'WRI,arg6 otbn,Argentina OTBN,Category I,452.4914,71.05026057491352',
-      'WRI,arg6 otbn,Argentina OTBN,Category II,184.3696,28.94973942508648',
+      'WRI,arg3 landmark,Argentina OTBN,Category II,32.89,100',
+      'WRI,arg3 landmark,Argentina Indigenous Territories,,313.06,100',
+      'WRI,arg4 wdpa,Argentina OTBN,Category I,1921.35,100',
+      'WRI,arg4 wdpa,Argentina Protected Areas,Category Ia,1620.72,91.16',
+      'WRI,arg4 wdpa,Argentina Protected Areas,Category II,156.97,8.83',
+      'WRI,arg4 wdpa,Argentina Protected Areas,Category VI,0.27,0.02',
+      'WRI,arg4 wdpa,Argentina Indigenous Territories,,909.81,18.1',
+      'WRI,arg5,Argentina OTBN,Category I,114.32,22.49',
+      'WRI,arg5,Argentina OTBN,Category II,98.49,19.38',
+      'WRI,arg5,Argentina OTBN,Category III,98.49,19.38',
+      'WRI,arg5,Argentina OTBN,Other,196.97,38.75',
+      'WRI,arg6 otbn,Argentina OTBN,Category I,452.49,71.05',
+      'WRI,arg6 otbn,Argentina OTBN,Category II,184.37,28.95',
       '',
     ]);
   });

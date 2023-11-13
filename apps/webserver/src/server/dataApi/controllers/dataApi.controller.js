@@ -3,8 +3,6 @@
 /* eslint-disable import/no-dynamic-require */
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
-const path = require('path');
-const getPresignedUrl = require('../utils/dataApi.utils');
 
 const logger = require('../../../config/privateutils/logger.utils');
 
@@ -565,7 +563,7 @@ exports.getPalmOilMillLatLong = async (req, res) => {
   const { palmOilMillIDs } = req.body;
   logger.info(`getPalmOilMillLatLong - total ${palmOilMillIDs?.length} locations`);
 
-  if (!palmOilMillIDs || !palmOilMillIDs.length) {
+  if (!palmOilMillIDs?.length) {
     logger.error(`Error /getPalmOilMillLatLong/ - No mills`);
     return res.status(400).json('Bad input');
   }

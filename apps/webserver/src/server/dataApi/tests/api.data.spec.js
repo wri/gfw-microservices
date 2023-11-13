@@ -10,22 +10,7 @@ jest.mock('axios', () => async () => ({
   status: 200,
 }));
 jest.mock('axios-retry', () => () => null);
-import signedURL from '../utils/dataApi.utils';
-import dataApiCtrl from '../controllers/dataApi.controller';
-
-const loadenv = require('../../../load-env');
-
-describe('Testing presignedURL', () => {
-  beforeEach(async () => {
-    await loadenv.loadEnvironmentVars('development');
-  });
-
-  // disabling because process.env.* is not defined in github test environment
-  xit('should return a presigned url', async () => {
-    const url = await signedURL('test.txt', 'text/plain');
-    expect(url).toContain(`https://${process.env.LARGE_PROCESING_LIST_BUCKET}.s3.amazonaws.com`);
-  });
-});
+import dataApiCtrl from "../controllers/dataApi.controller";
 
 describe('DataAPI endpoints', () => {
   it('palm oil mill Id to lat/long', (done) => {

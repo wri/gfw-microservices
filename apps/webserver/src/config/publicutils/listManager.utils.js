@@ -61,10 +61,11 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
-const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+// const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
+import { listStatus } from '@wri-monorepos/constants';
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -434,7 +435,7 @@ const getUserLists = (req) => {
       });
   });
 };
-
+// TODO: (GPV-2429) fix list draft 
 const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
   lists.forEach((list) => {
     const listAnalysesStatus = listAnalysisStatuses.filter(
@@ -459,6 +460,7 @@ const getUserListsWithAnalysisId = (req) => {
       .then((results) => {
         const [userLists, listAnalysisStatuses] = results;
         mergeListsWithAnalysisId(userLists, listAnalysisStatuses);
+        console.log('userList', userLists, userLists.find(l => l.id === 5464));
         resolve(userLists);
       })
       .catch((error) => reject(error));
@@ -1821,6 +1823,11 @@ const resetListStatus = (req, list_id, gfw_list_id, list_status_id = listStatus.
 
     const listStatusCommonName = getListStatusCommonName(list_status_id);
     const { list_name } = await listUtils.getListNameSchema(req, list_id);
+    console.log('Resetting list to Status: ');
+    console.log('list_id', list_id);
+    console.log('gfw_list_id', gfw_list_id);
+    console.log('list_status_id', list_status_id);
+    console.log('listStatusCommonName', listStatusCommonName);
 
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspResetListStatus', parameters)
@@ -1941,11 +1948,10 @@ const setListStatus = (req, list_id, newStatus) => {
  * @return {string} - List status Common Name
  */
 const getListStatusCommonName = (statusId) => {
-  const { status } = config.platformVars;
   let listStatusCommonName;
 
-  for (const item in status) {
-    if (status[item] === statusId) {
+  for (const item in listStatus) {
+    if (listStatus[item] === statusId) {
       listStatusCommonName = item;
     }
   }

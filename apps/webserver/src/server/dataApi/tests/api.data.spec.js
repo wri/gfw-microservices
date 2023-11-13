@@ -10,7 +10,7 @@ jest.mock('axios', () => async () => ({
   status: 200,
 }));
 jest.mock('axios-retry', () => () => null);
-import dataApiCtrl from "../controllers/dataApi.controller";
+import dataApiCtrl from '../controllers/dataApi.controller';
 
 describe('DataAPI endpoints', () => {
   it('palm oil mill Id to lat/long', (done) => {

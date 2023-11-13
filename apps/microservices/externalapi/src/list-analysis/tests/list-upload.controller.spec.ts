@@ -47,7 +47,7 @@ class ExternalUploadMockRepository {
 }
 
 describe('ListUploadController', () => {
-  let sut: ListUploadController;
+  let controller: ListUploadController;
   let axiosMock;
   let userService: UserService;
   let organizationService: OrganizationService;
@@ -83,7 +83,7 @@ describe('ListUploadController', () => {
       providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
     }).compile();
 
-    sut = module.get<ListUploadController>(ListUploadController);
+    controller = module.get<ListUploadController>(ListUploadController);
     userService = module.get<UserService>(UserService);
     organizationService = module.get<OrganizationService>(OrganizationService);
     axiosMock = new AxiosMockAdapter(axios);
@@ -142,7 +142,7 @@ describe('ListUploadController', () => {
       errorDetails: '',
     };
 
-    const result = await sut.uploadNewList(request, requestMock);
+    const result = await controller.uploadNewList(request, requestMock);
     const { listId, status, uploadId, errorDetails } = result as ListUploadNewResponse;
     expect({ listId, status, uploadId, errorDetails }).toEqual(expectedResult);
   });
@@ -184,7 +184,7 @@ describe('ListUploadController', () => {
       status: 400,
     };
 
-    expect(sut.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
+    expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
   it('should return an error response for other error scenarios', () => {
@@ -224,7 +224,7 @@ describe('ListUploadController', () => {
       status: 400,
     };
 
-    expect(sut.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
+    expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
   it('should return a successful response for prepare upload', () => {
@@ -268,6 +268,6 @@ describe('ListUploadController', () => {
       uploadUrl: 'mocked_url',
     };
 
-    expect(sut.prepareUploadList(request)).resolves.toEqual(expectedResult);
+    expect(controller.prepareUploadList(request)).resolves.toEqual(expectedResult);
   });
 });

@@ -9,7 +9,7 @@ import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { ConfigModule } from '@nestjs/config';
 
 describe('ListAnalysisController', () => {
-  let sut: ListAnalysisController;
+  let controller: ListAnalysisController;
 
   const expectedResult = {
     listId: 123,
@@ -48,7 +48,7 @@ describe('ListAnalysisController', () => {
       ],
     }).compile();
 
-    sut = module.get<ListAnalysisController>(ListAnalysisController);
+    controller = module.get<ListAnalysisController>(ListAnalysisController);
   });
 
   it('should return analysis status', async () => {
@@ -66,7 +66,7 @@ describe('ListAnalysisController', () => {
       },
     });
 
-    const result = await sut.getAnalysisStatus(listID, requestMock);
+    const result = await controller.getAnalysisStatus(listID, requestMock);
     expect(result).toMatchObject(expectedResult);
   });
 });

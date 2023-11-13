@@ -19,7 +19,7 @@ class MockRepository {
 }
 
 describe('ListAnalysisService', () => {
-  let sut: ListAnalysisService;
+  let service: ListAnalysisService;
   let organizationService: OrganizationService;
 
   beforeAll(async () => {
@@ -49,7 +49,7 @@ describe('ListAnalysisService', () => {
       providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
     }).compile();
     organizationService = module.get<OrganizationService>(OrganizationService);
-    sut = module.get<ListAnalysisService>(ListAnalysisService);
+    service = module.get<ListAnalysisService>(ListAnalysisService);
   });
 
   it('should get analysis status', async () => {
@@ -73,7 +73,7 @@ describe('ListAnalysisService', () => {
       subscriptionStatusId: 1,
     });
 
-    const result = await sut.getAnalysisStatus(organizationId, listID);
+    const result = await service.getAnalysisStatus(organizationId, listID);
 
     const resultWithDatesTransformed = {};
     for (const prop in result) {

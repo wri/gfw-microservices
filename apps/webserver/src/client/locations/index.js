@@ -105,5 +105,5 @@ const App = () => (
     </Router>
   </MuiThemeProvider>
 );
-console.log('LOCATION/INDEX.JS: => :', userLists);
+
 render(<App />, document.getElementById('locations-mount'));

@@ -10,6 +10,7 @@
 ********************************************************************/
 const AWS = require('@aws-sdk/client-s3');
 const config = require('../config');
+const logger = require('./logger.utils');
 
 const s3 = new AWS.S3();
 
@@ -22,7 +23,7 @@ function get(bucket, key) {
 
     s3.getObject(parameters, async function (err, data) {
       if (err) {
-        console.log(err);
+        logger.error('In s3.utils.js GET function failed to get object from S3', err);
         reject(err);
       } else {
         try {
@@ -30,6 +31,7 @@ function get(bucket, key) {
           const s3DataJson = JSON.parse(s3DataString);
           resolve(s3DataJson);
         } catch (err) {
+          logger.error('In s3.utils.js GET function failed to parse JSON', err);
           reject(err);
         }
       }
@@ -49,7 +51,7 @@ function put(objectName, object) {
 
     s3.putObject(parameters, function (err, data) {
       if (err) {
-        console.log(err);
+        logger.error('In s3.utils.js PUT function failed to put object to S3', err);
         reject(err);
       } else {
         resolve({
@@ -70,7 +72,7 @@ function del(bucket, key) {
 
     s3.deleteObject(parameters, function (err, data) {
       if (err) {
-        console.log(err);
+        logger.error('In s3.utils.js DEL function failed to delete object from S3', err);
         reject(err);
       } else {
         resolve(data);

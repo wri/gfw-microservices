@@ -58,7 +58,7 @@ function RegionChart({ listId, data, fireDownload }) {
   return (
     <>
       <DiagnosticsChartHeader
-        title={argentinaOtbn.label}
+        title={argentinaOtbn.chartsSelectorTitle}
         informationBubbleId={argentinaOtbn.informationBubbleId}
         fireDownload={fireDownload}
         downloadId={argentinaOtbn.downloadId}

@@ -109,7 +109,7 @@ const formatMeta = (meta: any) => {
   return '';
 };
 
-interface winstonFormat {
+interface WinstonFormat {
   timestamp?: Date;
   level?: string;
   message: string;
@@ -118,14 +118,14 @@ interface winstonFormat {
 }
 // console format into a single line with timestamp and level
 const consoleFormat = winston.format.printf(
-  ({ timestamp, level, message, label = '', ...meta }: winstonFormat) =>
+  ({ timestamp, level, message, label = '', ...meta }: WinstonFormat) =>
     `${timestamp} ${level}: ${label} ${message} ${formatMeta(meta)}`
 );
 
 // sql format is similar to consoleFormat() but without timestamp and level because
 // they are separate columns in the table
 const sqlFormat = winston.format.printf(
-  ({ message, label = '', ...meta }: winstonFormat) => `${label} ${message} ${formatMeta(meta)}`
+  ({ message, label = '', ...meta }: WinstonFormat) => `${label} ${message} ${formatMeta(meta)}`
 );
 
 // transports for winston (initially just console)

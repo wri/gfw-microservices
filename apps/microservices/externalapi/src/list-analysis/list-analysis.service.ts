@@ -146,6 +146,7 @@ export class ListAnalysisService {
       template_type: newListDetails.templateId,
       user_id: externalUpload.userId,
       startAnalysis: true,
+      isExternalAPIProcess: true,
     });
 
     Logger.log('Event analysis response: ', proccessListResponse.data);

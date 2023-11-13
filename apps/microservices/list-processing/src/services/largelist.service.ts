@@ -28,7 +28,16 @@ export class LargeListService {
 
     const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
 
-    const payloadBody = { ...request, environment: microserviceEnvironment };
+    const { isExternalAPIProcess, ...llpRequest } = request;
+
+    if (isExternalAPIProcess) {
+      llpRequest.user_id = -9999; // Sending a negative user_id avoid to LLP proccess to send email notifications
+    }
+
+    const payloadBody = {
+      ...llpRequest,
+      environment: microserviceEnvironment,
+    };
 
     const requestBody = JSON.stringify(payloadBody);
     const options = {

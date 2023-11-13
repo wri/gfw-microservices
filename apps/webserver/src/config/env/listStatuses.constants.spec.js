@@ -1,4 +1,8 @@
-import { listStatus, listStatusOrderByWorse, listStatusDescriptions } from '@wri-monorepos/constants';
+import {
+  listStatus,
+  listStatusOrderByWorse,
+  listStatusDescriptions,
+} from '@wri-monorepos/constants';
 import * as webserverConstants from './listStatuses.constants';
 
 describe('Compare webserver and libs listStatus constants', () => {

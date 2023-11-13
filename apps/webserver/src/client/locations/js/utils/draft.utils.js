@@ -4,8 +4,11 @@ import { listStatus } from '../../../../config/env/listStatuses.constants';
  * @param {Object} list - List details
  * @return {boolean} - Is Diagnostic Status Draft (true || false)
  */
-export function getIsDiagnosticStatusDraft(list) {
-  if (list && list.list_status_id === listStatus.Draft) {
+
+export function getIsDiagnosticStatusDraft({ list_status_id }) {
+  const { Draft } = listStatus;
+
+  if (list_status_id && list_status_id === Draft) {
     return true;
   }
 

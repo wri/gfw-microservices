@@ -1,6 +1,7 @@
 const webpackUtils = require('../publicutils/webpack.utils');
 const methodOverride = require('method-override');
 const compression = require('compression');
+import type { RedisClientType } from 'redis';
 import { createClient } from 'redis';
 const session = require('express-session');
 import RedisStore from 'connect-redis';
@@ -24,10 +25,8 @@ const unitTestMode = process.env.NODE_ENV === 'test';
 // redisClient is provided to new RedisStore({client:redisClient})
 // redis v2.8.0 -> v3.1.2
 // connect-redis v3.4.2 -> v6.0.0
-let redisClient: any;
-if (unitTestMode) {
-  redisClient = null;
-} else {
+let redisClient: RedisClientType;
+if (!unitTestMode) {
   const redisHost = process.env.REDIS_HOST || 'redis';
   const redisPort = process.env.REDIS_PORT || 6379;
   redisClient = createClient({

@@ -9,11 +9,13 @@
 const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
 const { NodeHttpHandler } = require('@smithy/node-http-handler');
 
+const LAMBDA_HTTP_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
 const client = new LambdaClient({
   apiVersion: '2015-03-31',
   region: 'us-east-1',
   requestHandler: new NodeHttpHandler({
-    requestTimeout: 300000, //number in milliseconds
+    requestTimeout: LAMBDA_HTTP_TIMEOUT_MS,
   }),
 });
 

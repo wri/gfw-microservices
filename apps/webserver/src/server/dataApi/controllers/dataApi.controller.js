@@ -647,16 +647,3 @@ exports.getBBoxAndGeostoreIDs = (req, res) => {
       res.status(errorStatus).json(responseError);
     });
 };
-
-/**
- * Get pre-signed URL for S3 object
- *
- * @param {Object} req - Express request
- * @param {Object} res - Express response
- * @return {Promise} - request Promise
- */
-exports.getPreSignedUrlForLargeProccessingList = (req, res) => {
-  const { fileName, fileType } = req.body;
-  const presignedURL = getPresignedUrl(fileName, fileType);
-  return res.status(200).json({ presignedURL });
-};

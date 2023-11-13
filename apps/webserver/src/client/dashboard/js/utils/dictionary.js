@@ -56,7 +56,7 @@ const dictionary = {
   },
   // Alerts type - Title Text
   alertType_alertText: {
-    GLAD: 'DEFORESTATION (GLAD)',
+    GLAD: 'Deforestation (Integrated Alerts)',
     VIIRS: 'FIRES (VIIRS)',
   },
   // Timeframe - dateGrouping

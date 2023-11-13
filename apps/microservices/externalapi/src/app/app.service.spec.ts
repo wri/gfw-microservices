@@ -14,7 +14,7 @@ describe('AppService', () => {
   });
 
   describe('getHealthCheck', () => {
-    it('should return "Healty"', () => {
+    it('should return "Healthy"', () => {
       expect(service.getHealthCheck()).toEqual('Healthy');
     });
   });

@@ -52,7 +52,7 @@ export class ListAnalysisService {
     return analysisStatus;
   }
 
-  async prepareUpload(userEmail) {
+  async prepareUpload(userEmail: string) {
     const user = await this.userService.findUser(userEmail);
     if (!user) {
       throw new NotFoundException(`User with ${userEmail} not found`);
@@ -136,7 +136,7 @@ export class ListAnalysisService {
     });
 
     // process list
-    const proccessListResponse = await axios.post<{
+    const processListResponse = await axios.post<{
       executionArn: string;
       startDate: string;
     }>(`${this.LLP_BASE_URL}/api/process-list`, {
@@ -148,14 +148,14 @@ export class ListAnalysisService {
       startAnalysis: true,
     });
 
-    Logger.log('Event analysis response: ', proccessListResponse.data);
+    Logger.log('Event analysis response: ', processListResponse.data);
 
     const response: ListUploadNewResponse = {
       uploadId: newListDetails.uploadId,
       listId: largeListCreated.data.list_id.toString(),
       status: LIST_INITIAL_STATUS,
       errorDetails: '',
-      creationDate: new Date(proccessListResponse.data.startDate),
+      creationDate: new Date(processListResponse.data.startDate),
     };
 
     return response;

@@ -46,7 +46,7 @@ export default function Profile() {
           {selectedTab === profileTabs.myOrganization.id && <AccountProfileContainer />}
           {selectedTab === profileTabs.userManagement.id && <UserProfileManagerContainer />}
           {selectedTab === profileTabs.accountUsage.id && <AccountUsageContainer />}
-          {selectedTab === profileTabs.apiKeys.id && <ApiKeys />}
+          {selectedTab === profileTabs.apiKeys?.id && <ApiKeys />}
         </Grid>
       </Grid>
     </Container>

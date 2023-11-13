@@ -1,3 +1,11 @@
+/**
+ * This file has same contents as libs/constants/src/lib/listStatus.constants.ts
+ * This file is intended for frontend client code, while
+ * libs/constants/src/lib/listStatus.constants.ts is intended for the backend
+ * Test in apps/webserver/src/config/env/analysisTypes.constants.spec.js verifies the contents
+ * of the two files are identical
+ */
+
 const listStatus = {
   Pending: 1,
   Active: 2,

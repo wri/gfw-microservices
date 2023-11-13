@@ -25,7 +25,7 @@ describe('WDPA Overlap Country', () => {
     },
   ];
 
-  it(``, async () => {
+  it(`When the input array has 4 locations`, async () => {
     const fcdService = new FCDService();
     jest
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
@@ -38,7 +38,7 @@ describe('WDPA Overlap Country', () => {
     });
   });
 
-  it(``, async () => {
+  it(`When the input is undefined`, async () => {
     const fcdService = new FCDService();
     jest
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
@@ -51,7 +51,7 @@ describe('WDPA Overlap Country', () => {
     });
   });
 
-  it(``, async () => {
+  it(`When the input array is empty`, async () => {
     const fcdService = new FCDService();
     jest
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
@@ -76,8 +76,8 @@ describe('Landmark Overlap Country', () => {
     {
       listId: 5692,
       locationId: 3,
-      totalArea: 313.0648,
-      landmarkByCategoryArea: '{"Not Reported":313.0648}',
+      totalArea: 45.6463,
+      landmarkByCategoryArea: '{"Not Reported":45.6463}',
     },
     {
       listId: 5692,
@@ -88,12 +88,18 @@ describe('Landmark Overlap Country', () => {
     {
       listId: 5692,
       locationId: 6,
-      totalArea: 5025.2067,
-      landmarkByCategoryArea: '{"Not Reported":909.8068}',
+      totalArea: 299.3889,
+      landmarkByCategoryArea: '{"Not Reported":299.3889}',
+    },
+    {
+      listId: 5692,
+      locationId: 6,
+      totalArea: 20001.9047,
+      landmarkByCategoryArea: '{"Not Reported":10398.914}',
     },
   ];
 
-  it(``, async () => {
+  it(`When have 4 locations as input array`, async () => {
     const fcdService = new FCDService();
     jest
       .spyOn(fcdService, 'getLandmarkOverlapCountryData')
@@ -101,12 +107,12 @@ describe('Landmark Overlap Country', () => {
 
     const result = await fcdService.landmarkOverlapCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      indigenous: 1222.8716,
-      nonIndegenous: 3802.3351,
+      indigenous: 10743.949200000001,
+      nonIndegenous: 14941.3889,
     });
   });
 
-  it(``, async () => {
+  it(`When the input data is undefined`, async () => {
     const fcdService = new FCDService();
     jest
       .spyOn(fcdService, 'getLandmarkOverlapCountryData')
@@ -119,7 +125,7 @@ describe('Landmark Overlap Country', () => {
     });
   });
 
-  it(``, async () => {
+  it(`When the input array is empty`, async () => {
     const fcdService = new FCDService();
     jest
       .spyOn(fcdService, 'getLandmarkOverlapCountryData')

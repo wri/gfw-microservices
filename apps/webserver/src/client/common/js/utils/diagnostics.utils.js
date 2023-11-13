@@ -40,8 +40,7 @@ const validatePct = (percentage) => {
 
 const isFloat = (n) => Number(n) === n && n % 1 !== 0;
 
-const formatDecimals = (chunk, decimals) => {
-  decimals = decimals || 2;
+const formatDecimals = (chunk, decimals = 2) => {
   if (Array.isArray(chunk)) {
     const newChunk = chunk.map((value) => {
       if (isFloat(value)) {

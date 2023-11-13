@@ -61,10 +61,10 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
-const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
+import { listStatus } from '@wri-monorepos/constants';
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -1941,11 +1941,10 @@ const setListStatus = (req, list_id, newStatus) => {
  * @return {string} - List status Common Name
  */
 const getListStatusCommonName = (statusId) => {
-  const { status } = config.platformVars;
   let listStatusCommonName;
 
-  for (const item in status) {
-    if (status[item] === statusId) {
+  for (const item in listStatus) {
+    if (listStatus[item] === statusId) {
       listStatusCommonName = item;
     }
   }

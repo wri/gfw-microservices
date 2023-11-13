@@ -28,3 +28,4 @@ export * from './getUserStatus';
 export * from './insertLog';
 export * from './setActivityLog';
 export * from './setS3UrlAndExpirationDate';
+export * from './resetListStatus';

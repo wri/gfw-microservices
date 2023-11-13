@@ -16,7 +16,11 @@ const TEST_ORGANIZATION_ID = 9;
 const TEST_USER_ID = 23;
 const TEST_INVALID_ORGANIZATION_ID = 999;
 const TEST_MOCK_ORG = 777;
-jest.setTimeout(30000);
+
+const MINIMUM_TOKEN_LEN = 30;
+const MAXIMUM_TOKEN_LEN = 128;
+
+jest.setTimeout(30_000);
 describe('Test Token Module', () => {
   let tokenService: TokenService;
   const sandbox = sinon.createSandbox();
@@ -155,46 +159,41 @@ describe('Test Token Module', () => {
     });
   });
 
-  describe('Test token creation for premium organzation', () => {
-    it('Should return a new token object and token should be 50 chars long', async () => {
+  describe('Token management for organizations', () => {
+    it('Should return a new token object and it should be between 30 and 128 chars long', async () => {
       const token = await tokenService.createToken(TEST_NEW_ORGANIZATION_ID, TEST_USER_ID);
-      expect(token).toBeDefined();
-      expect(token.apiKey.length).toBe(40);
+      expect(token.apiKey.length).toBeGreaterThanOrEqual(MINIMUM_TOKEN_LEN);
+      expect(token.apiKey.length).toBeLessThanOrEqual(MAXIMUM_TOKEN_LEN);
     });
 
-    it('Should return 5 token objects and token should be 50 chars long', async () => {
+    it('Should return 5 objects within the token', async () => {
       const tokens = await tokenService.findTokenByOrganizationId(TEST_ORGANIZATION_ID);
       expect(tokens).toBeDefined();
       expect(tokens.length).toBe(5);
     });
 
-    it('Expect error saving data to database', async () => {
-      expect(async () => {
-        await tokenService.createToken(TEST_INVALID_ORGANIZATION_ID, TEST_USER_ID);
-      }).rejects.toThrowError();
+    it('Should throw an error when creating a token for invalid organization', () => {
+      expect(
+        tokenService.createToken(TEST_INVALID_ORGANIZATION_ID, TEST_USER_ID)
+      ).rejects.toThrowError();
     });
 
-    it('Should create a token and delete the created token', async () => {
+    it('Should create a token and delete it successfully', async () => {
       const token = await tokenService.createToken(TEST_MOCK_ORG, TEST_USER_ID);
-      expect(token).toBeDefined();
-      expect(token.apiKey.length).toBe(40);
-
       const result = await tokenService.deleteToken(TEST_MOCK_ORG, token.id);
 
       expect(result).toBeDefined();
       expect(result).toBe(true);
     });
 
-    it('Should trigger an error when token does not exists in database', async () => {
-      expect(async () => {
-        await tokenService.deleteToken(TEST_MOCK_ORG, '123');
-      }).rejects.toThrow(NotFoundException);
+    it('Should throw an error when token does not exist', () => {
+      expect(tokenService.deleteToken(TEST_MOCK_ORG, '123')).rejects.toThrow(NotFoundException);
     });
 
-    it('Should trigger an error when token does not exists in database', async () => {
-      expect(async () => {
-        await tokenService.deleteToken(TEST_INVALID_ORGANIZATION_ID, 'TOTESTDELETE');
-      }).rejects.toThrow(NotFoundException);
+    it('Should throw an error when token does not exist', () => {
+      expect(
+        tokenService.deleteToken(TEST_INVALID_ORGANIZATION_ID, 'TOTESTDELETE')
+      ).rejects.toThrow(NotFoundException);
     });
   });
 

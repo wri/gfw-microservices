@@ -1,5 +1,3 @@
-import Deferred from 'dojo/Deferred';
-
 // REDUX - Store
 import {
   updateInfoBubbleCache,
@@ -34,7 +32,6 @@ export const togglePopover = (evt, infoBubbleCache) => {
   }
 
   // if the info is not in the cache, go get it
-  const promise = new Deferred();
   const request = new XMLHttpRequest();
 
   request.addEventListener('load', () => {
@@ -47,7 +44,7 @@ export const togglePopover = (evt, infoBubbleCache) => {
   });
 
   request.onerror = () => {
-    promise.resolve(false);
+    console.error(`Error requesting InfoBubble data. InfoBubble ID: ${infoBubbleId}`);
   };
 
   request.open('POST', `${DATA_API_URL}/dataApi/getInfoBubbleData/${infoBubbleId}`);

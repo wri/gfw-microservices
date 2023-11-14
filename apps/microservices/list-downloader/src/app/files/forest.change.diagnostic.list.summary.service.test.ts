@@ -23,7 +23,7 @@ describe('Forest Change Diagnostic List Summary Service', () => {
     forestChangeDiagnosticListSummaryService.startEmail = jest.fn();
     forestChangeDiagnosticListSummaryService.errorEmail = jest.fn();
     forestChangeDiagnosticListSummaryService.finishedEmail = jest.fn();
-    forestChangeDiagnosticListSummaryService.uploadToS3 = jest.fn();
+    forestChangeDiagnosticListSummaryService.uploadFileToS3 = jest.fn();
 
     createDirectory(dir);
   });

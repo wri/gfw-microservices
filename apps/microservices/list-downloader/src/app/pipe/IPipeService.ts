@@ -74,7 +74,7 @@ export abstract class IPipeService {
     }
   }
 
-  public async uploadToS3(filters: GenerationFileRequest) {
+  public async uploadFileToS3(filters: GenerationFileRequest) {
     const { key } = filters;
     await this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
     return await this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET);
@@ -106,7 +106,7 @@ export abstract class IPipeService {
   }
 
   public async finishProcess(filters: GenerationFileRequest) {
-    const location = await this.uploadToS3(filters);
+    const location = await this.uploadFileToS3(filters);
     await this.finishedEmail(filters, location);
     await this.saveS3UrlAtDatabase(filters, location);
   }

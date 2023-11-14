@@ -87,7 +87,7 @@ export class ShapefileService extends IPipeService {
     await finished(this.fileStream);
     await this.convertGeojsonToSHP(key, listName);
     this.logger.log(`(${listId}) - Data has been zipped`);
-    await this.uploadToS3(filters);
+    await this.finishProcess(filters);
   }
 
   private async convertGeojsonToSHP(key: string, listName: string) {

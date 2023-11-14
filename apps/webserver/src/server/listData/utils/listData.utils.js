@@ -16,7 +16,7 @@ const _ = require('lodash');
  *
  * @param {Object} listData - The list data
  * @param {Object} filters - filters the list data
- * @returns {listData<Object>: {list_analysis: []), location_analyses: [locationAttributes[], locationAnalyses[]]}} - Returns the list data filtered locations and list analysis
+ * returns {listData<Object>: {list_analysis: []), location_analyses: [locationAttributes[], locationAnalyses[]]}} - Returns the list data filtered locations and list analysis
  */
 exports.getListDataFiltered = (listData, filters) => {
   const {

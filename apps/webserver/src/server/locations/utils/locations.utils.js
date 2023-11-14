@@ -18,8 +18,6 @@ const _ = require('lodash');
 /**
  * @description - function that uses a procedure to return the values to populate
  * the filters of specific list.
- *
- * @param {Number} listId - the list id
  * */
 const addCountry = (item, listRecord) => {
   const localListRecord = { ...listRecord };

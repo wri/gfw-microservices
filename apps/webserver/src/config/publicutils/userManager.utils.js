@@ -94,7 +94,6 @@ const lstAccessLevels = [
 /**
  * @function getTitles
  * @summary Provides a list of titles for the user to choose from.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return  An array of strings containing all the Titles.
  */
 function getTitles() {
@@ -104,7 +103,6 @@ function getTitles() {
 /**
  * @function getCommodities
  * @summary Provides a list of commodities for the user to choose from.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return  An array of strings containing all the Commodities.
  */
 function getCommodities() {
@@ -114,7 +112,6 @@ function getCommodities() {
 /**
  * @function getGeographies
  * @summary Provides a list of Geographies for the user to choose from.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return  An array of strings containing all the Geographies.
  */
 function getGeographies() {
@@ -124,7 +121,6 @@ function getGeographies() {
 /**
  * @function getAccessLevels
  * @summary Provides a list of Access Levels for the admin to choose from.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return  An array of strings containing all the Access Levels.
  */
 function getAccessLevels() {
@@ -134,7 +130,6 @@ function getAccessLevels() {
 /**
  * @function getStatuses
  * @summary Provides a list of Statuses for the admin to choose from.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return  An array of strings containing all the Statuses.
  */
 function getStatuses() {
@@ -289,7 +284,6 @@ const activateUser = (req, user_id, user_email, first_name, last_name, unit_test
  * @summary Deactivates a User that is active/pending.
  * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @param  {Number}   user_id A number containing the user ID of the user you want to deactivate.
- * @param  {String}   user_email A string containing the user email of the user you want to deactivate.
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
 const deactivateUser = (req, user_id) => {
@@ -641,8 +635,8 @@ const setStatus = (req, status_id) => {
 /**
  * @function getUserSecret
  * @summary Returns base32 image of QR code to scan for Google Authentication
- * @param {req}
- * @return {String} - base32 image to use as <img src=BASE32IMG />
+ * @param {Object} req
+ * @return {Promise<String>} - base32 image to use as <img src=BASE32IMG />
  */
 const getUserSecret = (req, email) => {
   return new Promise((resolve, reject) => {

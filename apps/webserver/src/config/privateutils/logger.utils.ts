@@ -13,8 +13,6 @@ const util = require('util');
 const sql = require('mssql');
 const winston = require('winston');
 import { Request } from 'express';
-// import Transport from 'winston-transport';
-// import Transport = require('winston-transport');
 const Transport = require('winston-transport');
 const config = require('../config');
 

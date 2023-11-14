@@ -1,15 +1,11 @@
-// const passport = require('passport');
-// const mongoose = require('mongoose');
-// const User = mongoose.model('User');
 const path = require('path');
 const logger = require('../../../config/privateutils/logger.utils');
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
-const Cognito = require(path.resolve('./config/privateutils/cognito.utils'));
 
 /**
  * @function login
  * @summary login the user to the request
- * @param {User} user
+ * @param {Object} user
  * @param {Express.Request} req - Express request object
  * @param {Express.Response} res - Express response object
  */

@@ -33,7 +33,7 @@ const s3 = new AWS.S3();
  *   @param  {Array}   policyList - array of policies to upload
  *   @param  {Array}   policyNames - array of policy names
  *   @param  {Boolean}   overwrite - true if files should be overwritten
- *   @return {Array} Return array of policies to ovewrite or an empty array if successful
+ *   @return {Promise<any[]>} Return array of policies to ovewrite or an empty array if successful
  */
 const uploadPolicies = (req, policyList, policyNames, overwrite = false) => {
   return new Promise((resolve, reject) => {
@@ -106,10 +106,10 @@ const uploadPolicies = (req, policyList, policyNames, overwrite = false) => {
 /** @function {uploadPendingPolicies}
  *   @summary upload company policies to S3 and DB in PENDING
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer}   organizationId - organization ID
+ *   @param  {number}   organizationId - organization ID
  *   @param  {Array}   policyList - array of policies to upload
  *   @param  {Array}   policyNames - array of policy names
- *   @return {Boolean} True if successful, false otherwise.
+ *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
 const uploadPendingPolicies = (req, organizationId, policyList, policyNames) => {
   return new Promise((resolve, reject) => {
@@ -160,7 +160,7 @@ const uploadPendingPolicies = (req, organizationId, policyList, policyNames) => 
 /** @function {getPolicyList}
  *   @summary get list of policies in database
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Boolean} True if successful, false otherwise.
+ *   @return {Promise<any[]>} List of policies.
  */
 const getPolicyList = (req) => {
   return new Promise((resolve, reject) => {
@@ -184,7 +184,7 @@ const getPolicyList = (req) => {
 /** @function {getAllPolicyList}
  *   @summary get list of policies in database
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Boolean} True if successful, false otherwise.
+ *   @return {Promise<any[]>} List of policies.
  */
 const getAllPolicyList = (req) => {
   return new Promise((resolve, reject) => {
@@ -219,7 +219,7 @@ const getAllPolicyList = (req) => {
 /** @function {getPendingPolicyList}
  *   @summary get list of policies in database
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Boolean} True if successful, false otherwise.
+ *   @return {Promise<any[]>} List of policies.
  */
 const getPendingPolicyList = (req) => {
   return new Promise((resolve, reject) => {
@@ -245,7 +245,7 @@ const getPendingPolicyList = (req) => {
  *   @summary Download selected policy
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {String} policy - name of policy to download
- *   @return {Stream} Return file stream from s3.
+ *   @return {Promise} Return file stream from s3.
  */
 const downloadPolicy = (req, policy, orgID) => {
   return new Promise((resolve, reject) => {
@@ -275,7 +275,7 @@ const downloadPolicy = (req, policy, orgID) => {
  *   @summary Download selected policy
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {Array}   policyList - list of policies to delete
- *   @return {Boolean} True if successful, false otherwise.
+ *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
 const deletePolicies = (req, policyList) => {
   return new Promise((resolve, reject) => {
@@ -318,9 +318,9 @@ const deletePolicies = (req, policyList) => {
 /** @function {movePolicy}
  *   @summary Download selected policy
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer}   pendingaccount_id - pending organization ID
- *   @param  {Integer}   organizationId - organization ID
- *   @return {Boolean} True if successful, false otherwise.
+ *   @param  {number}   pendingaccount_id - pending organization ID
+ *   @param  {number}   organizationId - organization ID
+ *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
 const movePolicy = (req, pendingaccount_id, organizationId) => {
   return new Promise((resolve, reject) => {

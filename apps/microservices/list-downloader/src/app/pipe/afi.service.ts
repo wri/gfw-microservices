@@ -27,7 +27,7 @@ export class AfiService {
     await this.runAfiFileGeneration(filters);
     await this.runAfiFileGeneration(filters, 1, 'deforestation_kpis_aggregated');
     await getAllFilesAndZip(filters);
-    await this.afiFileService.uploadToS3(filters);
+    await this.afiFileService.uploadFileToS3(filters);
   }
 
   private async runAfiFileGeneration(

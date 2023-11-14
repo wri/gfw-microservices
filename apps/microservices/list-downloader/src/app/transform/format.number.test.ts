@@ -29,6 +29,13 @@ describe('Format Number Array', () => {
     });
   });
 
+  test('when the input is Array of Array', () => {
+    const formatNumber = new FormatNumber();
+    formatNumber._transform([[100.12678], [28.94973942508648]], '', (err, data) => {
+      expect(data).toEqual([[100.13], [28.95]]);
+    });
+  });
+
   test('when the input is string', () => {
     const formatNumber = new FormatNumber();
     formatNumber._transform(['100.12678'], '', (err, data) => {
@@ -70,6 +77,13 @@ describe('Format Number Object', () => {
     const formatNumber = new FormatNumber();
     formatNumber._transform({ test: '100.12678' }, '', (err, data) => {
       expect(data).toEqual({ test: '100.12678' });
+    });
+  });
+
+  test('when the input is undefined', () => {
+    const formatNumber = new FormatNumber();
+    formatNumber._transform(undefined, '', (err, data) => {
+      expect(data).toEqual(undefined);
     });
   });
 

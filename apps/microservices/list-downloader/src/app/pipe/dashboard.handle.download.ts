@@ -70,8 +70,8 @@ export class DashboardHandleDownload extends IPipeService {
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterLocationHaveStatus(2))
       .pipe(new FilterObject(allFields))
-      .pipe(new FormatNumber())
       .pipe(new ManipulateDataForDashboard(EXCEL_TEMPLATES[table], listLevelAnalysis))
+      .pipe(new FormatNumber())
       .pipe(new ConvertObject2CSV(EXCEL_TEMPLATE_HEADERS[table]))
       .pipe(this.fileStream);
   }

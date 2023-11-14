@@ -25,7 +25,7 @@ describe('Result Service', () => {
     resultService.startEmail = jest.fn();
     resultService.errorEmail = jest.fn();
     resultService.finishedEmail = jest.fn();
-    resultService.uploadToS3 = jest.fn();
+    resultService.uploadFileToS3 = jest.fn();
 
     createDirectory(dir);
   });

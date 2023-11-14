@@ -28,8 +28,8 @@ function AddButton() {
         flagId: flagName,
       }),
     })
-    .then((response) => response.json())
-    .then(() => handleClose());
+      .then((response) => response.json())
+      .then(() => handleClose());
   };
 
   return (

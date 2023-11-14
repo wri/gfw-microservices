@@ -1,0 +1,23 @@
+// {{gfwpro_token}}
+
+### Create a new API Key
+POST https://localhost:8443/api/profile/api-keys
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "organizationId": 1,
+  "userId": 3
+}
+
+### Get a list of API Tokens for an organization
+GET https://localhost:8443/api/profile/api-keys/75
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### get the invitations sent by the actual user
+DELETE https://localhost:8443/api/profile/api-keys/1/sadsadsad
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+

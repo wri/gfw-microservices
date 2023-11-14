@@ -4,12 +4,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { createFeatureFlag } from './featureFlags.utils'
+import { createFeatureFlag } from './featureFlags.utils';
 
 function AddButton() {
   const [open, setOpen] = useState(false);
   const [flagName, setFlagName] = useState(false);
-
 
   const handleOpen = () => {
     setOpen(true);

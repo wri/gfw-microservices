@@ -5,7 +5,7 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import AddButton from './addButton';
-import { listFeatureFlags } from './featureFlags.utils'
+import { listFeatureFlags } from './featureFlags.utils';
 
 function FeatureFlags({ setIsLoading }) {
   const [rows, setrows] = useState([]);
@@ -13,7 +13,7 @@ function FeatureFlags({ setIsLoading }) {
   useEffect(() => {
     listFeatureFlags().then((data) => {
       setrows(data);
-    })
+    });
   }, []);
 
   setIsLoading(false);

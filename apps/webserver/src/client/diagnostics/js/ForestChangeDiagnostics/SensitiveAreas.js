@@ -254,10 +254,10 @@ export default class SensitiveAreas extends Component {
       return (
         <tr key={`${extent}`} className="locations-diagnostics-table__row child">
           <td>{label}</td>
-          <th className={`sensitive-areas-bar__text ${percent > 0 ? '#262626' : 'black'}`}>
+          <th className="sensitive-areas-bar__text">
             {extent === 'totalExtPeat' && !this.state.peatEnabled ? '--' : formatPct(percent) + '%'}
           </th>
-          <td>
+          <td style={{ width: '50%' }}>
             <div className="sensitive-areas-bar__container">
               <div className="sensitive-areas-bar__data" style={{ width: `${percent}%` }} />
             </div>
@@ -645,8 +645,8 @@ export default class SensitiveAreas extends Component {
                           total loss calculations in the tables at right.
                         </p>
                       </th>
-                      <th className="label left">{lossLabel}</th>
-                      <th className="label left">
+                      <th className="table__historic-area__label">{lossLabel}</th>
+                      <th className="table__historic-area__label">
                         TREE COVER EXTENT <span className="word-break">2000 (ha)</span>
                       </th>
                     </tr>

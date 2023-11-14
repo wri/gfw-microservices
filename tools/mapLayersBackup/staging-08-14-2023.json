@@ -96,8 +96,8 @@
           "type": "Vector.Layer",
           "body": {
             "useCors": true,
-            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/wdpa_protected_areas",
-            "url": "https://tiles.globalforestwatch.org/wdpa_protected_areas/v202106/default/root.json"
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/wdpa_licensed_protected_areas",
+            "url": "https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202310/default/root.json"
           }
         },
         "legendConfig": {

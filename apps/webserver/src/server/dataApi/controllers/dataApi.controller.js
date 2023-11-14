@@ -3,8 +3,6 @@
 /* eslint-disable import/no-dynamic-require */
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
-const path = require('path');
-const getPresignedUrl = require('../utils/dataApi.utils');
 
 const logger = require('../../../config/privateutils/logger.utils');
 
@@ -565,7 +563,7 @@ exports.getPalmOilMillLatLong = async (req, res) => {
   const { palmOilMillIDs } = req.body;
   logger.info(`getPalmOilMillLatLong - total ${palmOilMillIDs?.length} locations`);
 
-  if (!palmOilMillIDs || !palmOilMillIDs.length) {
+  if (!palmOilMillIDs?.length) {
     logger.error(`Error /getPalmOilMillLatLong/ - No mills`);
     return res.status(400).json('Bad input');
   }
@@ -646,17 +644,4 @@ exports.getBBoxAndGeostoreIDs = (req, res) => {
       );
       res.status(errorStatus).json(responseError);
     });
-};
-
-/**
- * Get pre-signed URL for S3 object
- *
- * @param {Object} req - Express request
- * @param {Object} res - Express response
- * @return {Promise} - request Promise
- */
-exports.getPreSignedUrlForLargeProccessingList = (req, res) => {
-  const { fileName, fileType } = req.body;
-  const presignedURL = getPresignedUrl(fileName, fileType);
-  return res.status(200).json({ presignedURL });
 };

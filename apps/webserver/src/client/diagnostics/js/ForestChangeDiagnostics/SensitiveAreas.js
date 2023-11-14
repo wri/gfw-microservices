@@ -257,7 +257,7 @@ export default class SensitiveAreas extends Component {
           <th className="sensitive-areas-bar__text">
             {extent === 'totalExtPeat' && !this.state.peatEnabled ? '--' : formatPct(percent) + '%'}
           </th>
-          <td style={{ width:'50%'}}>
+          <td style={{ width: '50%' }}>
             <div className="sensitive-areas-bar__container">
               <div className="sensitive-areas-bar__data" style={{ width: `${percent}%` }} />
             </div>

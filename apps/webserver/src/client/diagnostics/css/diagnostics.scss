@@ -195,7 +195,7 @@ $print-width: 95%;
 .table__historic-area {
   width: 100%;
   &__label {
-    font-family: "Fira Sans", sans-serif;
+    font-family: 'Fira Sans', sans-serif;
     color: #404041;
     font-weight: 700;
     font-size: 12px;
@@ -217,7 +217,7 @@ $print-width: 95%;
 
   .historic-area__title-container {
     padding: 0;
-    text-wrap: wrap
+    text-wrap: wrap;
   }
 
   thead {

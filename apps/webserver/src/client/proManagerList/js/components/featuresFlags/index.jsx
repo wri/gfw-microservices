@@ -4,27 +4,16 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { ButtonGroup } from '@mui/material';
 import AddButton from './addButton';
+import { listFeatureFlags } from './featureFlags.utils'
 
 function FeatureFlags({ setIsLoading }) {
   const [rows, setrows] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/feature-flags`, {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
+    listFeatureFlags().then((data) => {
+      setrows(data);
     })
-      .then((response) => response.json())
-      .then(({ data }) => {
-        setrows(data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   }, []);
 
   setIsLoading(false);

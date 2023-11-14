@@ -4,10 +4,12 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import { createFeatureFlag } from './featureFlags.utils'
 
 function AddButton() {
   const [open, setOpen] = useState(false);
   const [flagName, setFlagName] = useState(false);
+
 
   const handleOpen = () => {
     setOpen(true);
@@ -18,18 +20,7 @@ function AddButton() {
   };
 
   const handleAdd = () => {
-    fetch(`/api/feature-flags`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        flagId: flagName,
-      }),
-    })
-      .then((response) => response.json())
-      .then(() => handleClose());
+    createFeatureFlag(flagName).then(() => handleClose());
   };
 
   return (

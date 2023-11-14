@@ -15,7 +15,6 @@ const s3Utils = require(path.resolve('./config/privateutils/s3.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
-const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const ListManager = require('./listManager.utils');
 const ShareManager = require('./shareManager.utils');
 

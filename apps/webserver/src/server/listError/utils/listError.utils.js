@@ -7,7 +7,7 @@ const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 
 /** @function {getListErrorFiles}
  *   @summary Gets list name schema from db
- *   @param  {number} list_id - id of desired list
+ *   @param  {number} listId - id of desired list
  *   @return {Promise} Returns object if successful, error otherwise
  */
 const getListErrorFiles = (req, listId) => {

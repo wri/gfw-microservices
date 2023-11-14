@@ -10,7 +10,7 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
  * @summary
  * @name exports.userProfile
  * @static
- * @param {Express.Request} req - Express request object
+ * @param {Object} req - Express request object
  * @param {Express.Response} res - Express response object
  */
 exports.userProfile = (req, res) => {

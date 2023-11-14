@@ -119,7 +119,7 @@ const getAllUsersList = (req) => {
 /** @function {activatePendingAccount}
  *   @summary Activates a Pending Account
  *   @param  {Object}  req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer}  pendingaccount_id An integer specifying the pending account ID.
+ *   @param  {number}  pendingaccount_id An integer specifying the pending account ID.
  *   @return {Promise} return a promise obect. If successful,
  *                   the promise resolves to true, otherwise, an
  *                   an error object is returned in the reject.
@@ -329,7 +329,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
  * @param  {String}   parent_org_name - Name of the parent organization, if there is one.
  * @param  {Boolean}  is_subsidiary - Is the organiation a subsidiary? (If yes, parent name is mandatory)
  * @param  {Array}    arr_org_classification_ids - Classification(s) of the organizations.
- * @return {Boolean} True if successful, false otherwise.
+ * @return {Promise<Boolean>} True if successful, false otherwise.
  */
 const updatePendingAccount = (
   req,
@@ -392,7 +392,7 @@ const updatePendingAccount = (
  * @param  {String}   other_title - Title for other title
  * @param  {Array}   arr_user_geography_ids - An array of geography Ids that the user is interested in.
  * @param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
- * @return {Boolean} True if successful, false otherwise.
+ * @return {Promise<Boolean>} True if successful, false otherwise.
  */
 const updatePendingAccountUser = (
   req,
@@ -442,7 +442,7 @@ const updatePendingAccountUser = (
 * @function deletePendingAccountRequest
 * @summary Deletes a Pending Account
 * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
-* @param {Integer}  pendingaccount_id An integer specifying the pending account ID.
+* @param {number}  pendingaccount_id An integer specifying the pending account ID.
 * @return {Promise} return a promise obect. If successful,
 
 *                   the promise resolves to true, otherwise, an
@@ -562,8 +562,8 @@ const deleteUser = (req, email) => {
 
 /** @function {deletePendingAccount}
  * @summary Deletes a pending account
- * @param {req}
- * @param {organization_id}
+ * @param {Object} req
+ * @param {number} organization_id
  */
 const deletePendingAccount = (req, organization_id) => {
   const promise = new Promise((resolve, reject) => {
@@ -588,8 +588,8 @@ const deletePendingAccount = (req, organization_id) => {
 
 /** @function {reactivateAccount}
  * @summary Reactivate account
- * @param {req}
- * @param {organization_id}
+ * @param {Object} req
+ * @param {number} organization_id
  */
 const reactivateAccount = (req, organization_id) => {
   return new Promise((resolve, reject) => {
@@ -611,8 +611,8 @@ const reactivateAccount = (req, organization_id) => {
 
 /** @function {deactivateAccount}
  * @summary Deactivates account
- * @param {req}
- * @param {organization_id}
+ * @param {Object} request
+ * @param {number} organization_id
  */
 const deactivateAccount = (request, organization_id) => {
   return new Promise((resolve, reject) => {
@@ -639,12 +639,7 @@ const deactivateAccount = (request, organization_id) => {
  * @summary Get account subscription status
  * @param {Object} request
  * @param {Number} organizationId
- * @returns {Promise<number | errorObject>}
- * @var errorObject {
- *   errorCode: error_code,
- *   userMessage: user_msg,
- *   systemMessage: system_msg,
- * }
+ * @returns {Promise<number>}
  */
 const getAccountSubscriptionStatus = (request, organizationId) => {
   return new Promise((resolve, reject) => {
@@ -666,10 +661,10 @@ const getAccountSubscriptionStatus = (request, organizationId) => {
 
 /**
  * @function {updateAccountSubscriptionStatus}
- * @param {Object} req
+ * @param {Object} request
  * @param {Number} organizationId
  * @param {Number} newSubscriptionStatusId
- * @returns {Promise<boolean, errorObject>}
+ * @returns {Promise<boolean>}
  */
 const updateAccountSubscriptionStatus = async (
   request,
@@ -699,9 +694,9 @@ const updateAccountSubscriptionStatus = async (
 /**
  * @function {updateGlobalAnalysisLimits}
  * @summary Updates AnalysisLimits where OrgType = @subscriptionStatusId
- * @param {Object} requet for error util
+ * @param {Object} request for error util
  * @param {Object} payload params to insert
- * @returns {Promise<payload, errorObject>}
+ * @returns {Promise<payload>}
  */
 const updateGlobalAnalysisLimits = async (request, payload) => {
   const { subscriptionStatusId, MaxAreaPerList, MaxAreaAnalyzeablePerYear } = payload;
@@ -729,9 +724,9 @@ const updateGlobalAnalysisLimits = async (request, payload) => {
 /**
  * @function {updateAccountAnalysisLimits}
  * @summary Performs an INSERT or UPDATE on Org Limits
- * @param {Object} requet for error util
+ * @param {Object} request for error util
  * @param {Object} payload params to insert
- * @returns {Promise<payload, errorObject>}
+ * @returns {Promise<payload>}
  */
 const updateAccountAnalysisLimits = async (request, payload) => {
   const { organizationId, MaxAreaPerList, MaxAreaAnalyzeablePerYear } = payload;

@@ -6,7 +6,7 @@ exports.listError = async (request, response) => {
 
   try {
     const listId = parseInt(request.params.id, 10);
-    const result = await listErrorUtils.getListErrorFiles(request, parseInt(listId, 10));
+    const result = await listErrorUtils.getListErrorFiles(request, listId);
     if (Object.hasOwnProperty.call(request.params, 'id')) {
       const [first] = result;
       first.id = listId;

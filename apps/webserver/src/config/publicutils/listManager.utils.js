@@ -54,7 +54,6 @@ const { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } = require('../config/locations.c
 // Utils
 const Helper = require(path.resolve('./config/publicutils/helper.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const listUtils = require(path.resolve('./config/privateutils/list.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
@@ -2076,4 +2075,4 @@ module.exports = {
 };
 
 // Require after modules have been exported so the module can be fully loaded
-const AnalysisManager = require(path.resolve('./config/publicutils/analysisManager.utils'));
+const AnalysisManager = require('./analysisManager.utils');

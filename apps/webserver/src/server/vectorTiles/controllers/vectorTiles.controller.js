@@ -43,8 +43,8 @@ exports.generateTiles = async (req, res) => {
 /**
  * @description - API returns the appropriate tiles for that list for the selected area and zoom level
  *
- * @param {Object} req - Express request
- * @param {Object} res - Express response
+ * @param {Object} request - Express request
+ * @param {Object} response - Express response
  * @return {Promise} - request Promise
  */
 exports.retrieveTiles = async (request, response) => {
@@ -81,7 +81,6 @@ exports.retrieveTiles = async (request, response) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express request
- * @return {Promise<{mbtileFileName: string}>}
  */
 exports.getListMbtileInfo = async (req, res) => {
   const { listID } = req.body;

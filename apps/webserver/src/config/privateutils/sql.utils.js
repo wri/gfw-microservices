@@ -361,7 +361,7 @@ const executeOrganizationBulkUpload = async (
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
  * @return {Promise<any>} Result of the SQL query
  */
-const executeSystemQuery = async (sqlQuery, params) => {
+const executeSystemQuery = async (sqlQuery, params = []) => {
   return mssqlExecute(SQLSYSTEMCONFIG, sqlQuery, null, params);
 };
 
@@ -373,7 +373,7 @@ const executeSystemQuery = async (sqlQuery, params) => {
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
  * @return {Promise<any>} Result of the SQL query
  */
-const executeOrganizationQuery = async (req, sqlQuery, params) => {
+const executeOrganizationQuery = async (req, sqlQuery, params = []) => {
   const connectConfig = { ...SQLSYSTEMCONFIG, database: req.session.organization_database };
   return mssqlExecute(connectConfig, sqlQuery, null, params);
 };

@@ -26,7 +26,7 @@ const ListManager = require('../../../config/publicutils/listManager.utils');
  *
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {number} listID - List ID
- * @return {Promise<{message: string}>}
+ * @return {Promise<{message: string, path: string, lastUpdatedTime: any}>}
  */
 exports.generateAndStoreVectorTiles = async (req, listID) => {
   const userLists = req.session.isNodeServer

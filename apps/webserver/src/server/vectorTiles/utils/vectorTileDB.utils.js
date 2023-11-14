@@ -52,7 +52,7 @@ exports.updateListVectorTilesStoragePathDB = async (req, listID, mbtileS3FilePat
  * @description - Get List `vector_tiles_storage_path` from DB
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {number} listID - List ID
- * @return {string|null}
+ * @return {Promise<string|null>}
  */
 exports.getListVectorTileS3PathDB = async (req, listID) => {
   const spParams = [{ field: 'list_id', type: sql.Int, value: listID }];

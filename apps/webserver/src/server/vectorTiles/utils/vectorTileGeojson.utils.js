@@ -18,12 +18,12 @@ const logger = require('../../../config/privateutils/logger.utils');
  * @description - Getting List Geojson for list ID
  *
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {string} listID - List ID
+ * @param {number} listID - List ID
  * @param {number} locationID - Start Location ID
- * @return {Object} Geojson
+ * @return {Promise<Object>} Geojson
  */
 const getListGeojson = async (req, listID, locationID = 0) => {
-  const listIDNumber = parseInt(listID, 10);
+  const listIDNumber = Number(listID);
   logger.info(`Getting List Geojson for list ID: ${listIDNumber}`);
   const geojson = await ListManager.getListLocations(req, listID, locationID).catch((err) => {
     const errorMessage = `Getting List Geojson for list ID: ${listID} failed`;
@@ -42,7 +42,7 @@ const getListGeojson = async (req, listID, locationID = 0) => {
  * @param {string} tempFilesPath - Temp files path (e.g. '/tmp/list-1385/')
  * @param {number} listID - List ID (e.g. 1385)
  * @param {number} locationID - Start Location ID
- * @return {Promise<unknown>} - Promise resolved with temp file name and path/rejected with error message
+ * @return {Promise<Object>} - Promise resolved with temp file name and path/rejected with error message
  */
 const createTempGeojsonFile = async (req, uuidString, tempFilesPath, listID, locationID = 0) => {
   const geojson = await getListGeojson(req, listID, locationID);

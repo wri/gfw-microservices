@@ -84,7 +84,7 @@ exports.proManagerListAccountDetailData = async (req, res) => {
     const [accounts, users, pendingPolicy, allPolicy, accountsLimits] = await Promise.all(promises);
 
     const policyList = pendingPolicy.concat(allPolicy);
-    let selectedAccount = getAccounFromQuery(organizationName, organizationId, accounts, users);
+    let selectedAccount = getAccounFromQuery(organizationName, organizationId, accounts);
 
     /**
      * @note

@@ -204,4 +204,36 @@ describe('Argentina Layers Parser', () => {
       ['test', 'wri', 1, 'Argentina OTBN', 'Other', 6, 40],
     ]);
   });
+
+  test('When receive all data equals to 0', () => {
+    const csvData = [];
+
+    argentinaLayers({
+      operation: {
+        name: 'argentinaLayers',
+        parsed: 'overhead',
+        composites: [
+          {
+            attribute: 'arg_otbn_area',
+            type: 'category',
+            label: 'Argentina OTBN',
+            limit: 3,
+          },
+        ],
+      },
+      data: {
+        arg_otbn_area: '{ "cat1": 0, "cat2": 0, "cat3": 0, "cat4": 0, "cat5": 0  }',
+        total_area: 0,
+        protected_areas_by_category_area: '{ "cat1": 1, "cat2": 2 }',
+        landmark_by_category_area: '{ "Not Reported": 0 }',
+      },
+      dataRow: ['wri', 1],
+      csvData,
+    });
+    expect(csvData).toStrictEqual([
+      ['wri', 1, 'Argentina OTBN', 'cat1', 0, 0],
+      ['wri', 1, 'Argentina OTBN', 'cat2', 0, 0],
+      ['wri', 1, 'Argentina OTBN', 'Other', 0, 0],
+    ]);
+  });
 });

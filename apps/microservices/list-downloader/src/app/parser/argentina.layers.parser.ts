@@ -3,7 +3,7 @@ const calculatePercentage = (operation, data, values) => {
 
   let total = data.total_area;
 
-  //markter_by_category area uses total_area to calculate the percentage,
+  //landmark_by_category_area uses total_area to calculate the percentage,
   //rather than the sum of all attribute values
   if (attribute !== 'landmark_by_category_area') {
     total = values.reduce((acc, [, value]) => {
@@ -13,6 +13,8 @@ const calculatePercentage = (operation, data, values) => {
       return acc;
     }, 0);
   }
+
+  total = Math.max(total, 0.01);
 
   const dataArray = values.map(([key, value]) => {
     let percent = 0;
@@ -47,12 +49,14 @@ const addOtherCategoryData = (sortedCategory, limit) => {
   const firstPart = sortedCategory.slice(0, limit - 1);
   const secondPart = sortedCategory.slice(limit - 1);
 
-  const total = sortedCategory.reduce((acc, { value }) => {
+  let total = sortedCategory.reduce((acc, { value }) => {
     if (typeof value === 'number') {
       acc = acc + value;
     }
     return acc;
   }, 0);
+
+  total = Math.max(total, 0.01);
 
   const otherValue = secondPart.reduce((acc, { value }) => {
     return acc + value;

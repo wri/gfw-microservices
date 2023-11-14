@@ -1,7 +1,9 @@
 import { userAccessLevel, SUBSCRIPTION_STATUSES } from '../../common/js/config';
-
 const { ADMIN, EDITOR, VIEWER } = userAccessLevel;
 const { STANDARD, PREMIUM } = SUBSCRIPTION_STATUSES;
+import featureFlags from '../../../utils/general.utils';
+
+const { isPermanentFlagForExternalApiKeysAvailable } = featureFlags;
 
 const profileTabs = {
   myOrganization: {
@@ -26,14 +28,18 @@ const profileTabs = {
     /* As a PREMIUM account admin I want to see my account usage */
     suscriptionStatus: [PREMIUM],
   },
-  apiKeys: {
-    id: 'api-keys',
-    icon: 'api',
-    title: 'Api Keys',
-    userAccessLevel: [ADMIN],
-    /* As a PREMIUM account admin I want to see my account usage */
-    suscriptionStatus: [PREMIUM],
-  },
+  ...(isPermanentFlagForExternalApiKeysAvailable
+    ? {
+        apiKeys: {
+          id: 'api-keys',
+          icon: 'api',
+          title: 'Api Keys',
+          userAccessLevel: [ADMIN],
+          /* As a PREMIUM account admin I want to see my account usage */
+          suscriptionStatus: [PREMIUM],
+        },
+      }
+    : {}),
 };
 
 export default profileTabs;

@@ -1,4 +1,4 @@
-const allFeatureFlags = ['Afi', 'ArgentinaCompliance'];
+const allFeatureFlags = ['Afi', 'ArgentinaCompliance', 'PermanentFlagForExternalApiKeys'];
 
 module.exports = {
   allFeatureFlags,

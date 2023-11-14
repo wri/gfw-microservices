@@ -11,15 +11,15 @@ function FeatureFlags({ setIsLoading }) {
   const [rows, setrows] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/feature-flags/`, {
+    fetch(`/api/feature-flags`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {
         'Content-type': 'application/json',
       },
     })
-      .then((res) => res.json())
-      .then(([data]) => {
+      .then((response) => response.json())
+      .then(({ data }) => {
         setrows(data);
       })
       .catch((error) => {

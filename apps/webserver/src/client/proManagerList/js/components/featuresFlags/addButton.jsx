@@ -18,7 +18,7 @@ function AddButton() {
   };
 
   const handleAdd = () => {
-    fetch(`/api/feature-flags/`, {
+    fetch(`/api/feature-flags`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
@@ -27,8 +27,9 @@ function AddButton() {
       body: JSON.stringify({
         flagId: flagName,
       }),
-    });
-    handleClose();
+    })
+    .then((response) => response.json())
+    .then(() => handleClose());
   };
 
   return (

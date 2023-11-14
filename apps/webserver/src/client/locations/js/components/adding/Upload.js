@@ -1,11 +1,10 @@
 import { locationsPage, convertURL } from '../../../../common/js/config';
-// import store from '../../../../locations/js/store';
-import Point from 'esri/geometry/Point';
-import Polygon from 'esri/geometry/Polygon';
-import Deferred from 'dojo/Deferred';
-import QueryTask from 'esri/tasks/QueryTask';
-import Query from 'esri/tasks/support/Query';
-import GeometryEngine from 'esri/geometry/geometryEngine';
+import Point from '@arcgis/core/geometry/Point';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import * as QueryTask from '@arcgis/core/rest/query';
+import Query from '@arcgis/core/rest/support/Query';
+import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
+import * as projection from '@arcgis/core/geometry/projection.js';
 import FileDrop from '../uploading/FileDrop';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import { discernProjection, maxLocations, maxFileSizeMB } from '../../utils/upload.utils';
@@ -13,8 +12,9 @@ import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import React, { Component } from 'react';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
-import SpatialReference from 'esri/geometry/SpatialReference';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import { parseKMZAndKMLFile } from '../uploading/UploadLocations.util';
+
 export default class Upload extends Component {
   constructor(props) {
     super(props);
@@ -28,32 +28,26 @@ export default class Upload extends Component {
       dialogMessage: '',
       inputKey: 0,
     };
-    require(['esri/geometry/projection'], (projection) => {
-      projection.load().then(() => {
-        this.projection = projection;
-      });
-    });
   }
 
   geocodeMill = (mill) => {
-    console.log('millll', mill);
-    const deferred = new Deferred();
-    const queryTask = new QueryTask(locationsPage.updatedPalmOilMillUrl);
+    return new Promise((resolve) => {
+      const queryObject = new Query({
+        where: "id = '" + mill.ID + "'",
+        returnGeometry: true,
+        outFields: [],
+      });
 
-    const query = new Query();
-
-    query.where = "id = '" + mill.ID + "'";
-    query.returnGeometry = true;
-    query.outFields = [];
-    queryTask.execute(query).then((result) => {
-      if (result.features && result.features.length > 0) {
-        deferred.resolve(result.features[0]);
-      } else {
-        deferred.resolve(false);
-      }
+      QueryTask.executeQueryJSON(locationsPage.updatedPalmOilMillUrl, queryObject).then(
+        (result) => {
+          if (result.features && result.features.length > 0) {
+            resolve(result.features[0]);
+          } else {
+            resolve(false);
+          }
+        }
+      );
     });
-
-    return deferred;
   };
 
   parseZip = (file) => {
@@ -69,71 +63,58 @@ export default class Upload extends Component {
               const response = JSON.parse(xmlhttp.responseText);
               let geom;
               const data = response.data;
-              const oldSpatialRef = new SpatialReference(projDefs[1]);
-              const newSpatialRef = new SpatialReference(4326);
-              if (
-                data &&
-                data.attributes &&
-                data.attributes.features &&
-                data.attributes.features.length > 0
-              ) {
-                const feat = data.attributes.features[0];
-                if (
-                  feat.geometry &&
-                  feat.geometry.coordinates &&
-                  feat.geometry.coordinates.length &&
-                  feat.geometry.coordinates[0].constructor === Array
-                ) {
-                  const esriJson = geojsonUtil.geojsonToArcGIS(feat.geometry);
-                  const oldFeatGeometry = new Polygon({
-                    rings: esriJson.rings,
-                    spatialReference:
-                      esriJson.spatialReference.wkid === newSpatialRef.wkid
-                        ? esriJson.spatialReference
-                        : oldSpatialRef,
-                  });
-                  geom = this.projection.project(oldFeatGeometry, newSpatialRef);
-                } else if (
-                  feat.geometry &&
-                  feat.geometry.coordinates &&
-                  feat.geometry.coordinates.length &&
-                  typeof feat.geometry.coordinates[0] === 'number'
-                ) {
-                  const centerPoint = {
-                    type: 'point',
-                    x: feat.geometry.coordinates[0],
-                    y: feat.geometry.coordinates[1],
-                    spatialReference: oldSpatialRef,
-                  };
-                  const projectedCenterPoint = this.projection.project(centerPoint, newSpatialRef);
-                  //buffer the point into a poly based off of Analysis_R/Analysis_A and setGeometry of that poly!
-                  if (feat.properties.Analysis_R) {
-                    geom = GeometryEngine.geodesicBuffer(
-                      projectedCenterPoint,
-                      parseFloat(feat.properties.Analysis_R),
-                      'kilometers'
-                    );
-                  } else if (feat.properties.Analysis_A) {
-                    const kilosSquared = feat.properties.Analysis_A / 100;
-                    const kilos = Math.sqrt(kilosSquared / Math.PI);
-                    //this line never gets hit
-                    geom = GeometryEngine.geodesicBuffer(
-                      this.state.originalGeometry,
-                      kilos.toFixed(2),
-                      'kilometers'
-                    );
-                  } else {
-                    geom = GeometryEngine.geodesicBuffer(projectedCenterPoint, 4, 'kilometers'); //Medium Buffer
+              const oldSpatialRef = new SpatialReference({ wkid: projDefs[1] });
+              const newSpatialRef = SpatialReference.WGS84;
+              projection.load().then(() => {
+                if (data?.attributes?.features?.length > 0) {
+                  const feat = data.attributes.features[0];
+                  if (feat.geometry?.coordinates?.[0] instanceof Array) {
+                    const esriJson = geojsonUtil.geojsonToArcGIS(feat.geometry);
+                    const oldFeatGeometry = new Polygon({
+                      rings: esriJson.rings,
+                      spatialReference:
+                        esriJson.spatialReference.wkid === newSpatialRef.wkid
+                          ? esriJson.spatialReference
+                          : oldSpatialRef,
+                    });
+                    geom = projection.project(oldFeatGeometry, newSpatialRef);
+                  } else if (typeof feat.geometry?.coordinates?.[0] === 'number') {
+                    const centerPoint = {
+                      type: 'point',
+                      x: feat.geometry.coordinates[0],
+                      y: feat.geometry.coordinates[1],
+                      spatialReference: oldSpatialRef,
+                    };
+                    const projectedCenterPoint = projection.project(centerPoint, newSpatialRef);
+                    //buffer the point into a poly based off of Analysis_R/Analysis_A and setGeometry of that poly!
+                    if (feat.properties.Analysis_R) {
+                      geom = GeometryEngine.geodesicBuffer(
+                        projectedCenterPoint,
+                        parseFloat(feat.properties.Analysis_R),
+                        'kilometers'
+                      );
+                    } else if (feat.properties.Analysis_A) {
+                      const kilosSquared = feat.properties.Analysis_A / 100;
+                      const kilos = Math.sqrt(kilosSquared / Math.PI);
+                      //this line never gets hit
+                      geom = GeometryEngine.geodesicBuffer(
+                        this.state.originalGeometry,
+                        kilos.toFixed(2),
+                        'kilometers'
+                      );
+                    } else {
+                      geom = GeometryEngine.geodesicBuffer(projectedCenterPoint, 4, 'kilometers'); //Medium Buffer
+                    }
                   }
-                }
 
-                this.props.setGeometry(geom);
-                this.setState({ isUploading: false });
-                gtag('event', 'add location upload file', {
-                  event_category: 'Locations File Upload',
-                  event_label: 'user uploaded a zip file',
-                });
-              }
+                  this.props.setGeometry(geom);
+                  this.setState({ isUploading: false });
+                  gtag('event', 'add location upload file', {
+                    event_category: 'Locations File Upload',
+                    event_label: 'user uploaded a zip file',
+                  });
+                }
+              });
             } else if (xmlhttp.readyState === 4) {
               console.log('Error: shapefile not working');
             }

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Deferred from 'dojo/Deferred';
 import Dialog from 'material-ui/Dialog';
 
 import store from '../../store';
@@ -47,10 +46,6 @@ export default class EditList extends Component {
       listNotAccessible: false,
       edited: false,
     };
-
-    require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
-      this.WebMercatorUtils = webMercatorUtils;
-    });
   }
 
   cancelAdd = () => {
@@ -73,46 +68,45 @@ export default class EditList extends Component {
   };
 
   assembleGeojson = (featProps) => {
-    const deferred = new Deferred();
-    const geojson = {
-      type: 'FeatureCollection',
-      features: [],
-    };
+    return new Promise((resolve) => {
+      const geojson = {
+        type: 'FeatureCollection',
+        features: [],
+      };
 
-    const route = '/locations/getUserListLocationSpatialData';
-    const body = {
-      list_ids: [this.props.selectedLists[0].id],
-    };
+      const route = '/locations/getUserListLocationSpatialData';
+      const body = {
+        list_ids: [this.props.selectedLists[0].id],
+      };
 
-    httpRequest.fetchJSON(route, body).then((response) => {
-      const { uploadingData } = this.state;
-      const { selectedLocations } = this.props;
+      httpRequest.fetchJSON(route, body).then((response) => {
+        const { uploadingData } = this.state;
+        const { selectedLocations } = this.props;
 
-      const selectedListData = JSON.parse(response);
-      if (selectedListData.errorCode === 604) {
-        this.setState({
-          isLoading: false,
-          listNotAccessible: true,
-        });
-      } else {
-        const feats = selectedListData[0].features;
-        const filteredLocations = feats.filter((location) => {
-          return selectedLocations.indexOf(location.properties.location_id) > -1;
-        });
-
-        filteredLocations.forEach((location, j) => {
-          geojson.features.push({
-            type: 'Feature',
-            properties: featProps[j],
-            geometry: location.geometry,
+        const selectedListData = JSON.parse(response);
+        if (selectedListData.errorCode === 604) {
+          this.setState({
+            isLoading: false,
+            listNotAccessible: true,
           });
-        });
+        } else {
+          const feats = selectedListData[0].features;
+          const filteredLocations = feats.filter((location) => {
+            return selectedLocations.indexOf(location.properties.location_id) > -1;
+          });
 
-        deferred.resolve(geojson);
-      }
+          filteredLocations.forEach((location, j) => {
+            geojson.features.push({
+              type: 'Feature',
+              properties: featProps[j],
+              geometry: location.geometry,
+            });
+          });
+
+          resolve(geojson);
+        }
+      });
     });
-
-    return deferred;
   };
 
   isValid = () => {

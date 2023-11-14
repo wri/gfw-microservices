@@ -1,3 +1,8 @@
+import React, { Component } from 'react';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
+import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
+
 import { locationsPage } from '../../../../common/js/config';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { fieldValidations } from '../../utils/validations';
@@ -6,15 +11,11 @@ import StepTwoGFW from './StepTwoGFW';
 import StepThreeGFW from './StepThreeGFW';
 import GfwAccuracy from '../adding/GfwAccuracy';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import Polygon from 'esri/geometry/Polygon';
-import Deferred from 'dojo/Deferred';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
-import React, { Component } from 'react';
 import store from '../../store';
 import { changeAddType, changeTemplate } from '../../actions/locationActions';
 import Button from '../../../../common/js/components/Button';
 import Dialog from 'material-ui/Dialog';
-import GeometryEngine from 'esri/geometry/geometryEngine';
 import httpRequest from '../../../../common/js/utils/httpRequest';
 import { containsPunctuation } from '../../utils/lists.utils';
 import { defaultCustomAttributeHeaders } from '../edit/table/MultiGridTable.config';
@@ -74,10 +75,6 @@ export default class AddGFW extends Component {
     };
 
     originalState = this.state;
-
-    require(['esri/geometry/support/webMercatorUtils'], (webMercatorUtils) => {
-      this.WebMercatorUtils = webMercatorUtils;
-    });
   }
 
   cancelAdd = () => {
@@ -92,7 +89,7 @@ export default class AddGFW extends Component {
       .then(() => {
         window.location.reload();
       })
-      .catch((err) => {
+      .catch(() => {
         this.setState({
           dialogOpen: true,
           dialogTitle: 'Error in Locations',
@@ -131,16 +128,15 @@ export default class AddGFW extends Component {
       const esriJson = geojsonUtil.geojsonToArcGIS(feature);
       const esriGeometry = new Polygon({
         rings: esriJson.geometry.rings,
-        spatialReference: {
-          wkid: 4326,
-        },
+        spatialReference: SpatialReference.WGS84,
       });
 
-      const area = GeometryEngine.geodesicArea(esriGeometry, 'hectares');
-      geojson.features[geojson.features.length - 1].properties['Analysis Area'] = area;
-      if (!geojson.features[geojson.features.length - 1].properties['Analysis Radius']) {
-        geojson.features[geojson.features.length - 1].properties['Analysis Radius'] = 0;
-      }
+      const lastFeature = geojson.features[geojson.features.length - 1];
+      lastFeature.properties['Analysis Area'] = geometryEngine.geodesicArea(
+        esriGeometry,
+        'hectares'
+      );
+      lastFeature.properties['Analysis Radius'] = lastFeature.properties['Analysis Radius'] ?? 0;
     });
 
     return geojson;
@@ -182,30 +178,29 @@ export default class AddGFW extends Component {
   };
 
   getGFWListLocationGeom = (list_id, location_ids) => {
-    const deferred = new Deferred();
-    httpRequest
-      .fetchForm(
-        '/locations/getGFWListLocationGeom',
-        `list_id=${list_id}&location_ids=${location_ids}`
-      )
-      .then((response) => {
-        const geometries = JSON.parse(response);
-        deferred.resolve(geometries);
-      })
-      .catch((err) => {
-        console.log('error with grabbing gfw location data', err);
-        this.setState({
-          dialogOpen: true,
-          dialogTitle: 'Error in Geometry Retrieval',
-          dialogMessage:
-            'This account request has failed on the server. Please try again at another time.',
-          isSaving: false,
-          refreshPage: true,
+    return new Promise((resolve) => {
+      httpRequest
+        .fetchForm(
+          '/locations/getGFWListLocationGeom',
+          `list_id=${list_id}&location_ids=${location_ids}`
+        )
+        .then((response) => {
+          const geometries = JSON.parse(response);
+          resolve(geometries);
+        })
+        .catch((err) => {
+          console.log('error with grabbing gfw location data', err);
+          this.setState({
+            dialogOpen: true,
+            dialogTitle: 'Error in Geometry Retrieval',
+            dialogMessage:
+              'This account request has failed on the server. Please try again at another time.',
+            isSaving: false,
+            refreshPage: true,
+          });
+          resolve(false);
         });
-        deferred.resolve(false);
-      });
-
-    return deferred;
+    });
   };
 
   saveLocations = () => {
@@ -642,7 +637,7 @@ export default class AddGFW extends Component {
       });
     } else {
       if (this.state.step === 1) {
-        this.addAdditonalValues();
+        this.addAdditionalValues();
         gtag('event', 'Next button clicked', {
           event_category: 'Add GFW Click',
           event_label: 'user completed step 1 of add from gfw list workflow',
@@ -652,7 +647,7 @@ export default class AddGFW extends Component {
     }
   };
 
-  addAdditonalValues = () => {
+  addAdditionalValues = () => {
     const { filteredData, selectedLocations, listData } = this.props;
     const filteredLocationData = listData.filter(
       (listD) => filteredData.indexOf(listD.location_id) > -1
@@ -851,14 +846,14 @@ export default class AddGFW extends Component {
             <Button
               className={`${this.state.step === 3 ? 'hidden' : ''}`}
               onClick={this.next}
-              disabled={currentUser.access_level_id === 3 ? true : false}
+              disabled={currentUser.access_level_id === 3}
               label={locationsPage.add.next}
             />
             <Button
               variant="primary"
               className={`${this.state.step === 3 ? '' : 'hidden'}`}
               onClick={this.saveLocations}
-              disabled={currentUser.access_level_id === 3 ? true : false}
+              disabled={currentUser.access_level_id === 3}
               label="Save"
             />
           </div>

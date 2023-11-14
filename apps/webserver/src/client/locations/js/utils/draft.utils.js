@@ -8,7 +8,7 @@ import { listStatus } from '../../../../config/env/listStatuses.constants';
 export function getIsDiagnosticStatusDraft(list) {
   const { Draft } = listStatus;
 
-  if (list && list.list_status_id === Draft) {
+  if (list?.list_status_id === Draft) {
     return true;
   }
 

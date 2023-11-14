@@ -14,8 +14,8 @@ const {
  * @summary
  * @name exports.dashboard
  * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
  */
 exports.dashboard = (req, res, data) => {
   const isAdministrator = UserManager.isAdministrator(req);

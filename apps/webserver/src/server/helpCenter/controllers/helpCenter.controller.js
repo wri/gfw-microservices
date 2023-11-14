@@ -22,6 +22,7 @@ exports.helpCenter = (req, res) => {
     };
 
     const authenticationDetails = new AuthenticationDetails({
+      Username: username,
       Password: password,
     });
 

@@ -6,8 +6,8 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
  * @summary
  * @name exports.select
  * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
  */
 exports.select = (req, res) => {
   // Set in the response to not cache the page

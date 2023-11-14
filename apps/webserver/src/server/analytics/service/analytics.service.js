@@ -41,7 +41,7 @@ const getOrganizationAnalysisUsage = async ({
   return result;
 };
 
-const getAnalysisLimitData = async ({ organizationId, organizationType }) => {
+const getAnalysisLimitData = async ({ organizationId = null, organizationType = null }) => {
   const params = [
     { field: 'orgID', type: sql.Int, value: organizationId },
     { field: 'orgType', type: sql.Int, value: organizationType },

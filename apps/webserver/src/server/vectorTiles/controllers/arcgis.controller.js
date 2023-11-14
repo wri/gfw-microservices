@@ -31,7 +31,6 @@ exports.getEsriVectorTileMetadata = (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {*}
  */
 exports.handleVectorTilePbfRequest = async (req, res) => {
   const { mbtile, z, x, y } = req.params;

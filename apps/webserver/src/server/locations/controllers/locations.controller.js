@@ -2,16 +2,16 @@ const path = require('path');
 const Papa = require('papaparse');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
-const { compiledAssets } = require(path.resolve('./config/config'));
+const { compiledAssets } = require('../../../config/config');
 const { createElement } = require('react');
 const { renderToString } = require('react-dom/server');
 
-const LocationManager = require(path.resolve('./config/publicutils/locationManager.utils'));
-const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
-const GFWlistManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
-const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
-const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
-const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
+const LocationManager = require('../../../config/publicutils/locationManager.utils');
+const ListManager = require('../../../config/publicutils/listManager.utils');
+const GFWlistManager = require('../../../config/publicutils/gfwListManager.utils');
+const AuthManager = require('../../../config/publicutils/authenticationManager.utils');
+const AccountManager = require('../../../config/publicutils/accountManager.utils');
+const UserManager = require('../../../config/publicutils/userManager.utils');
 const ShareManager = require('../../../config/publicutils/shareManager.utils');
 const {
   findSharedListsInsideOrganization,
@@ -117,8 +117,8 @@ exports.locations = (req, res, data) => {
  * @summary
  * @name exports.getUserLists
  * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
  */
 exports.getUserLists = (req, res) => {
   const { templateId } = req.query;

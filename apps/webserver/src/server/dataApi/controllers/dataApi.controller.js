@@ -1,6 +1,5 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable camelcase */
-/* eslint-disable import/no-dynamic-require */
 const axios = require('axios');
 const axiosRetry = require('axios-retry');
 
@@ -25,7 +24,6 @@ axiosRetry(axios, { retries: 2 });
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.getInfoBubbleDataController = (req, res) => {
   const { infoBubbleId } = req.params;
@@ -69,7 +67,6 @@ exports.getInfoBubbleDataController = (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.getMetadataTaskData = (req, res) => {
   const { metadataID } = req.params;
@@ -113,7 +110,6 @@ exports.getMetadataTaskData = (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.getAnalysisGLAD = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, group_by, start_date, end_date } = req.query;
@@ -161,7 +157,6 @@ exports.getAnalysisGLAD = (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.getAnalysisVIIRS = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, fireDayStart } = req.query;
@@ -211,7 +206,6 @@ exports.getAnalysisVIIRS = (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.getAnalysisPRODES = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, startYear, endYear } = req.query;
@@ -261,7 +255,6 @@ exports.getAnalysisPRODES = (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.analysisTreeCoverLoss = (req, res) => {
   const {
@@ -322,7 +315,6 @@ exports.analysisTreeCoverLoss = (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.analysisTreeCoverGain = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, sum } = req.query;
@@ -372,7 +364,6 @@ exports.analysisTreeCoverGain = (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.analysisTreeBiomassLoss = (req, res) => {
   const {
@@ -433,7 +424,6 @@ exports.analysisTreeBiomassLoss = (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.analysisTreeBiomassTotal = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, sum } = req.query;
@@ -485,7 +475,6 @@ exports.analysisTreeBiomassTotal = (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.analysisAdminRegion = (req, res) => {
   const { admin, region = '', thresh } = req.query;
@@ -557,7 +546,6 @@ const getPalmOilMillLatLongChunk = async (millsChunk) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.getPalmOilMillLatLong = async (req, res) => {
   const { palmOilMillIDs } = req.body;
@@ -577,23 +565,18 @@ exports.getPalmOilMillLatLong = async (req, res) => {
     if (chunkResp.status === 200) {
       fullResult = fullResult.concat(chunkResp.data);
     } else {
-      fullResult = chunkResp;
-      break;
+      logger.error(`getPalmOilMillLatLong - Request Error => ${JSON.stringify(chunkResp)}`);
+      return res.status(chunkResp.status).json({
+        status: chunkResp.status,
+        detail: chunkResp.detail,
+      });
     }
   }
-  if (fullResult.length) {
-    logger.info(`getPalmOilMillLatLong - Request Success ${fullResult.length} locations`);
-    res.status(200).json({
-      data: fullResult,
-      status: 200,
-    });
-  } else {
-    logger.error(`getPalmOilMillLatLong - Request Error => ${JSON.stringify(fullResult)}`);
-    res.status(fullResult.status).json({
-      status: fullResult.status,
-      detail: fullResult.detail,
-    });
-  }
+  logger.info(`getPalmOilMillLatLong - Request Success ${fullResult.length} locations`);
+  res.status(200).json({
+    data: fullResult,
+    status: 200,
+  });
 };
 
 /**
@@ -601,7 +584,6 @@ exports.getPalmOilMillLatLong = async (req, res) => {
  *
  * @param {Object} req - Express request
  * @param {Object} res - Express response
- * @return {Promise} - request Promise
  */
 exports.getBBoxAndGeostoreIDs = (req, res) => {
   const { GFW_LIST, QUERY_FIELD, IDs, date } = req.query;

@@ -23,9 +23,9 @@ const UserManager = require(path.resolve('./config/publicutils/userManager.utils
 /** @function {shareInternalList}
  *  @summary Adding user to internal shared DB table
  *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *  @param {Integer} admin_id - The sharing admin's id
- *  @param {Integer} user_id - Who the list is being shared to
- *  @param {Integer} list_id - The list of interest
+ *  @param {number} admin_id - The sharing admin's id
+ *  @param {number} user_id - Who the list is being shared to
+ *  @param {number} list_id - The list of interest
  *  return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const shareInternalList = (req, admin_id, user_id, list_id) => {
@@ -89,9 +89,9 @@ const shareInternalList = (req, admin_id, user_id, list_id) => {
 /** @function {activateShareInternalList}
  *   @summary Updates pending status of shared list to active
  *   @param {Object}  req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param {Integer} admin_id - The sharing admin's id
- *   @param {Integer} user_id - Who the list is being shared to
- *   @param {Integer} list_id - The list of interest
+ *   @param {number} admin_id - The sharing admin's id
+ *   @param {number} user_id - Who the list is being shared to
+ *   @param {number} list_id - The list of interest
  *   @param {Date} datetime - Date list was created
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
@@ -151,8 +151,8 @@ const activateShareInternalList = (req, admin_id, user_id, list_id, datetime) =>
 /** @function {deactivateShareInternalList}
  *   @summary Remove user from internal shared DB table
  *   @param  {Object}  req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer} user_id - Who the list is being shared to
- *   @param  {Integer} list_id - The list of interest
+ *   @param  {number} user_id - Who the list is being shared to
+ *   @param  {number} list_id - The list of interest
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const deactivateShareInternalList = (req, user_id, list_id) => {
@@ -212,7 +212,7 @@ const deactivateShareInternalList = (req, user_id, list_id) => {
  *   @summary Remove all Non Admin or List Owner users from internal shared DB table for selected list
  *   @param  {Object}  req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {String} users_id - All Users that list is shared width that are not Admins
- *   @param  {Integer} list_id - The list of interest
+ *   @param  {number} list_id - The list of interest
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const deactivateAllShareInternalList = (req, users_id, list_id) => {
@@ -271,8 +271,8 @@ const deactivateAllShareInternalList = (req, users_id, list_id) => {
 /** @function {getUserInternalShareLists}
  *   @summary Get shared lists for a specific user
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param {Integer} user_id - The sharing user's id
- *   @return {Recordset} Returns list of user shared lists
+ *   @param {number} user_id - The sharing user's id
+ *   @return {Promise<any[]>} Returns list of user shared lists
  */
 const getUserInternalShareLists = (req, user_id) => {
   let hasError = false;
@@ -315,8 +315,8 @@ const getUserInternalShareLists = (req, user_id) => {
 /** @function {getUserPendingInternalShareLists}
  *   @summary Get pending shared lists for a specific user
  *   @param  {Object}  req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @param  {Integer} user_id - The sharing user's id
- *   @return {Recordset} Returns list of user pending shared lists
+ *   @param  {number} user_id - The sharing user's id
+ *   @return {Promise<any[]>} Returns list of user shared lists
  */
 const getUserPendingInternalShareLists = (req, user_id) => {
   let hasError = false;
@@ -359,7 +359,7 @@ const getUserPendingInternalShareLists = (req, user_id) => {
 /** @function {adminInternalLists}
  *   @summary Get all shared lists for organization
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- *   @return {Recordset} Returns list of all shared lists
+ *   @return {Promise<any[]>} Returns list of all shared lists
  */
 const getAdminInternalLists = (req) => {
   let hasError = false;
@@ -394,7 +394,7 @@ const getAdminInternalLists = (req) => {
 /** @function {adminInternalLists}
  *   @summary Get list of all users from internal shared DB table
  *   @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- *   @param {BigInteger} list_id -  The list of interest
+ *   @param {number} list_id -  The list of interest
  *   @return {Promise<any>} Returns all users for shared list
  */
 const getAllUsersForSharedList = (req, list_id) => {

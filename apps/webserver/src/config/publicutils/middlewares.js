@@ -7,10 +7,9 @@ const { listStatus } = require(path.resolve('./config/env/listStatuses.constants
 
 /** @function {checkActive}
  *   @summary Used to check if the user is an active user
- *   @param {Object} req - request
- *   @param {Object} res - response
+ *   @param {Object} request - request
+ *   @param {Object} response - response
  *   @param {Object} next - action
- *   @return {None} No returns
  */
 const checkActive = (request, response, next) => {
   const { method } = request;
@@ -44,10 +43,9 @@ const checkActive = (request, response, next) => {
 
 /** @function {checkAuthentication}
  *   @summary Used to verify if the session is an not authenticated session for the main site.
- *   @param {Object} req - request
- *   @param {Object} res - response
+ *   @param {Object} request - request
+ *   @param {Object} response - response
  *   @param {Object} next - action
- *   @return {None} No returns
  */
 const checkAuthentication = (request, response, next) => {
   const { organization_id } = request.session;
@@ -60,10 +58,9 @@ const checkAuthentication = (request, response, next) => {
 
 /** @function {checkInactivity}
  *   @summary Verify if the user has had activity within the last 30 minutes
- *   @param {Object} req - request
- *   @param {Object} res - response
+ *   @param {Object} request - request
+ *   @param {Object} response - response
  *   @param {Object} next - action
- *   @return {None} No returns
  */
 const checkInactivity = (request, response, next) => {
   const { method, baseUrl } = request;
@@ -162,10 +159,9 @@ const checkProManagerAuthentication = (request, response, next) => {
 
 /** @function {checkRecognized}
  *   @summary Used to check if the user has gone through the first stage of login (but not verified).
- *   @param {Object} req - request
- *   @param {Object} res - response
+ *   @param {Object} request - request
+ *   @param {Object} response - response
  *   @param {Object} next - action
- *   @return {None} No returns
  */
 const checkRecognized = (request, response, next) => {
   const { user_email } = request.session;

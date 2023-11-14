@@ -10,7 +10,7 @@ const { VECTOR_TILES_LOCATION, MBTILE_S3_BUCKET } = require('../config/vectorTil
  *
  * @param {string} mbtileFileName - MBTile file name (e.g. '20221013_103819_64_1385_0d1e3e41_20ba_48fe_adb7_fd5ed166fe72.mbtiles')
  * @param {string} mbtileOutputFilePath - MBTile output file path (e.g. '/tmp/20221013_103819_64_1385_0d1e3e41_20ba_48fe_adb7_fd5ed166fe72.mbtiles')
- * @return {Promise<unknown>} - Promise resolved with { mbtileS3FilePath }/rejected with error message
+ * @return {Promise<{mbtileS3FilePath: string}>} - Promise resolved with { mbtileS3FilePath }/rejected with error message
  */
 exports.uploadMBTileToS3Bucket = async (mbtileFileName, mbtileOutputFilePath) => {
   return new Promise((resolve, reject) => {

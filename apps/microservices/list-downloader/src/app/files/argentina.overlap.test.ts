@@ -39,8 +39,8 @@ describe('Argentina Overlap', () => {
   });
 
   afterEach(() => {
-    //fs.unlinkSync(filePath);
-    //fs.unlinkSync(fileAggregatePath);
+    fs.unlinkSync(filePath);
+    fs.unlinkSync(fileAggregatePath);
   });
 
   test('When input data has 6 locations', async () => {

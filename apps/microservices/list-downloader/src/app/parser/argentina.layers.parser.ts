@@ -2,6 +2,9 @@ const calculatePercentage = (operation, data, values) => {
   const { attribute } = operation;
 
   let total = data.total_area;
+
+  //markter_by_category area uses total_area to calculate the percentage,
+  //rather than the sum of all attribute values
   if (attribute !== 'landmark_by_category_area') {
     total = values.reduce((acc, [, value]) => {
       if (typeof value === 'number') {
@@ -64,18 +67,6 @@ const addOtherCategoryData = (sortedCategory, limit) => {
   return firstPart;
 };
 
-const argentinaLayers = ({ operation, data, dataRow, csvData }) => {
-  const { name, composites } = operation;
-  if (name === 'argentinaLayers' && composites) {
-    composites.forEach((composite) => {
-      const { type } = composite;
-      if (type === 'category') {
-        argentinaCategoryData(composite, data, dataRow, csvData);
-      }
-    });
-  }
-};
-
 const argentinaCategoryData = (operation, data, dataRow, csvData) => {
   const { attribute, limit, label } = operation;
   const strCategoryData = data[attribute];
@@ -87,6 +78,26 @@ const argentinaCategoryData = (operation, data, dataRow, csvData) => {
     const values = Object.values(element);
     csvData.push([...dataRow, label, ...values]);
   });
+};
+
+/**
+ * Calculate the data for each argentina layer.
+ *
+ * @param {Object} operation - object that describe how to calculate the percentage.
+ * @param {Array<>} data - input data that will be used to calculate the percentage.
+ * @param {Array<>} dataRow - array that contains data from other step.
+ * @param {Array<>} csvData - array that contains the final data.
+ */
+const argentinaLayers = ({ operation, data, dataRow, csvData }) => {
+  const { name, composites } = operation;
+  if (name === 'argentinaLayers' && composites) {
+    composites.forEach((composite) => {
+      const { type } = composite;
+      if (type === 'category') {
+        argentinaCategoryData(composite, data, dataRow, csvData);
+      }
+    });
+  }
 };
 
 export { argentinaLayers };

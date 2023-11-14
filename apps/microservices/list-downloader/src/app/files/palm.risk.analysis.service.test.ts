@@ -40,8 +40,8 @@ describe('Palm Risk Analysis Service', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Mill Priority,Mill Priority Score,Overall Threat,Threat Score,Overall Value,Value Score,Deforestation - Threats Amount,Peat - Threats Amount,Protected Areas - Threats Amount,Fires - Threats Amount,Forest - Values Amount,Peat - Values Amount,Protected Areas - Values Amount,Deforestation - Threats Level,Peat - Threats Level,Protected Areas - Threats Level,Fires - Threats Level,Forest - Values Level,Peat - Values Level,Protected Areas - Values Level',
-      'WRI,L2,Medium,3,High,2,Medium,1,55.0759,0,0,4,434.7475,0,0,High,Low,Low,High,High,Low,Low',
-      'WRI,L3,Medium,2.2,High,2,Low,0.2,25.9666,0,0,2.5,250.7064,0,0,High,Low,Low,High,Medium,Low,Low',
+      'WRI,L2,Medium,3,High,2,Medium,1,55.08,0,0,4,434.75,0,0,High,Low,Low,High,High,Low,Low',
+      'WRI,L3,Medium,2.2,High,2,Low,0.2,25.97,0,0,2.5,250.71,0,0,High,Low,Low,High,Medium,Low,Low',
       '',
     ]);
   });

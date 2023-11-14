@@ -7,6 +7,7 @@
  *   @function {formatPct}
  *   @function {prettifyNum}
  *   @function {validatePct}
+ *   @function {formatDecimals}
  *   @function {getFormatedTooltipForDiagnosticsChart}
  *
  ********************************************************************/
@@ -37,6 +38,39 @@ const validatePct = (percentage) => {
   }
 };
 
+const isFloat = (n) => Number(n) === n && n % 1 !== 0;
+
+const formatDecimals = (chunk, decimals = 2) => {
+  if (Array.isArray(chunk)) {
+    const newChunk = chunk.map((value) => {
+      if (isFloat(value)) {
+        return parseFloat(value.toFixed(decimals));
+      }
+      if (Array.isArray(value)) {
+        return value.map((v) => {
+          if (isFloat(v)) {
+            return parseFloat(v.toFixed(decimals));
+          }
+          return v;
+        });
+      }
+      return value;
+    });
+    return newChunk;
+  } else if (typeof chunk === 'object' && chunk !== null) {
+    const newChunk = Object.entries(chunk).reduce((acc, [key, value]) => {
+      if (typeof value === 'number' && isFloat(value)) {
+        acc[key] = parseFloat(value.toFixed(decimals));
+      } else {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+    return newChunk;
+  }
+  return chunk;
+};
+
 function getFormatedTooltipForDiagnosticsChart() {
   const { color: optionsColor, label, type } = this.options;
   const { color: seriesColor, name } = this.series;
@@ -50,6 +84,7 @@ function getFormatedTooltipForDiagnosticsChart() {
 
 module.exports = {
   formatNum,
+  formatDecimals,
   formatPct,
   prettifyNum,
   validatePct,

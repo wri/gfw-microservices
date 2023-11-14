@@ -7,6 +7,7 @@ import PieChart from '../../common/PieChart';
 import ChartsSelector from './ChartsSelector';
 import getTreeCoverLossArgOtbnYearlyData from '../OtbnCharts/TreeCoverLossArgentinaOtbnYearly/getTreeCoverLossArgOtbnYearlyData';
 import DiagnosticsChartHeader from '../../common/DiagnosticsChartHeader';
+import { formatDecimals } from '../../../../common/js/utils/diagnostics.utils';
 import { chartDatasetConfigs } from './regions.constants';
 import '../../common/DiagnosticsChartContainer.scss';
 
@@ -34,7 +35,7 @@ function RegionChart({ listId, data, fireDownload }) {
     checkedChartLabels[2].checked
   );
 
-  const argentinaOtbnAreaData = JSON.parse(data?.arg_otbn_area);
+  const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || {});
 
   useEffect(() => {
     fetch(`/api/fcd?listId=${listId}&country=Argentina&category=WDPA,landmark`, {
@@ -53,7 +54,8 @@ function RegionChart({ listId, data, fireDownload }) {
       });
   }, [listId]);
 
-  const { WDPA, landmark } = argentinaPieChartsData;
+  const WDPA = formatDecimals(argentinaPieChartsData.WDPA);
+  const landmark = formatDecimals(argentinaPieChartsData.landmark);
 
   return (
     <>

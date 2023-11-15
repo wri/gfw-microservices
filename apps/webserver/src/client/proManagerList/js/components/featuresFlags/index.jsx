@@ -6,9 +6,11 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import AddButton from './addButton';
 import { listFeatureFlags } from './featureFlags.utils';
+import FeatureFlag from './featureFlag';
 
 function FeatureFlags({ setIsLoading }) {
   const [rows, setrows] = useState([]);
+  const [selectedFlag, setselectedFlag] = useState(1);
 
   useEffect(() => {
     listFeatureFlags().then((data) => {
@@ -17,26 +19,39 @@ function FeatureFlags({ setIsLoading }) {
   }, []);
 
   setIsLoading(false);
-  return (
-    <div>
-      <h3>Features</h3>
 
-      <AddButton />
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>name</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TableCell>{row.name}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+  return (
+    <>
+      {!selectedFlag && (
+        <div>
+          <h3 style={{ float: 'left' }}>Features</h3>
+
+          <AddButton />
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>name</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow
+                  onClick={() => setselectedFlag(row.flagId)}
+                  key={row.flagId}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell>{row.flagId}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      {!!selectedFlag && (
+        <FeatureFlag fladID={selectedFlag} handleBack={() => setselectedFlag(0)} />
+      )}
+    </>
   );
 }
 

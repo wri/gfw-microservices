@@ -23,8 +23,8 @@ function AddButton() {
   };
 
   return (
-    <div>
-      <button className="gfw-button btn-green" onClick={handleOpen}>
+    <>
+      <button className="gfw-button btn-green" onClick={handleOpen} style={{ float: 'right' }}>
         + add
       </button>
 
@@ -45,7 +45,7 @@ function AddButton() {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </>
   );
 }
 

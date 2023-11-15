@@ -1,5 +1,4 @@
 export const listFeatureFlags = async () => {
-  console.log('bla');
   try {
     const response = await fetch('/api/feature-flags', {
       method: 'GET',
@@ -13,6 +12,7 @@ export const listFeatureFlags = async () => {
     return data;
   } catch (error) {
     console.warn(error);
+    return [];
   }
 };
 
@@ -29,10 +29,15 @@ export const getFeatureFlag = async (id) => {
     return data;
   } catch (error) {
     console.warn(error);
+    return {};
   }
 };
 
-export const createFeatureFlag = async (flagName) => {
+export const createFeatureFlag = async (flagName, orgId = null) => {
+  return updateFeatureFlag(flagName, true, orgId);
+};
+
+export const updateFeatureFlag = async (name, status, orgId = null) => {
   try {
     const response = await fetch(`/api/feature-flags`, {
       method: 'POST',
@@ -41,15 +46,16 @@ export const createFeatureFlag = async (flagName) => {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({
-        flagId: flagName,
-        orgId: selectedOrgId,
-        flagState: true,
-        modifierUserId: 'asdf',
+        flagId: name,
+        flagState: status,
+        modifierUserId: 1234,
+        orgId: orgId,
       }),
     });
     const { data } = await response.json();
     return data;
   } catch (error) {
     console.warn(error);
+    return {};
   }
 };

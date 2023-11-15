@@ -252,7 +252,6 @@ module.exports = (app, limiter) => {
   const runEAPIMicroserviceRequest = async (requestData, request, response, next) => {
     const { method, url, data } = requestData;
     const requestURL = `${getEAPIMicroserviceUrl()}${url}`;
-    console.log('runEAPIMicroserviceRequest', requestURL);
     try {
       const { data: result } = await axios({
         url: requestURL,
@@ -269,14 +268,12 @@ module.exports = (app, limiter) => {
     }
   };
 
-  app.use(`${API_BASE_URL}`, [...routeMiddlewares, eapiRoutes, runEAPIMicroserviceRequest]);
+  app.use(`${API_BASE_URL}/api-keys`, [...routeMiddlewares, eapiRoutes, runEAPIMicroserviceRequest]);
 
-  eapiRoutes.post('/api-keys', (req, res, next) => {
-    // empty body will create a new API key for the current user and organization
-    const { organizationId, userId } = req.body;
-
-    const requestOrganizationId = organizationId || req.session.organization_id;
-    const requestUserId = userId || req.session.organization_user_id;
+  eapiRoutes.post('', (req, res, next) => {
+    // this route is used to create a new api key empty body due to the fact that the request body is not used
+    const requestOrganizationId = req.session.organization_id;
+    const requestUserId = req.session.organization_user_id;
     const request = {
       method: 'POST',
       url: '/api-keys',
@@ -289,7 +286,7 @@ module.exports = (app, limiter) => {
     next(request);
   });
 
-  eapiRoutes.get('/api-keys/:orgId', (req, res, next) => {
+  eapiRoutes.get('/:orgId', (req, res, next) => {
     const { orgId } = req.params;
 
     const request = {
@@ -300,7 +297,7 @@ module.exports = (app, limiter) => {
     next(request);
   });
 
-  eapiRoutes.delete('/api-keys/:orgId/:tokenId', (req, res, next) => {
+  eapiRoutes.delete('/:orgId/:tokenId', (req, res, next) => {
     const { orgId, tokenId } = req.params;
 
     const request = {

@@ -268,7 +268,11 @@ module.exports = (app, limiter) => {
     }
   };
 
-  app.use(`${API_BASE_URL}/api-keys`, [...routeMiddlewares, eapiRoutes, runEAPIMicroserviceRequest]);
+  app.use(`${API_BASE_URL}/api-keys`, [
+    ...routeMiddlewares,
+    eapiRoutes,
+    runEAPIMicroserviceRequest,
+  ]);
 
   eapiRoutes.post('', (req, res, next) => {
     // this route is used to create a new api key empty body due to the fact that the request body is not used

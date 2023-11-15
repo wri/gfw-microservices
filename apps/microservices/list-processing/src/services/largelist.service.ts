@@ -30,13 +30,10 @@ export class LargeListService {
 
     const { isExternalAPIProcess, ...llpRequest } = request;
 
-    if (isExternalAPIProcess) {
-      llpRequest.user_id = -9999; // Sending a negative user_id avoid to LLP proccess to send email notifications
-    }
-
     const payloadBody = {
       ...llpRequest,
       environment: microserviceEnvironment,
+      send_email: isExternalAPIProcess === true ? false : true,
     };
 
     const requestBody = JSON.stringify(payloadBody);

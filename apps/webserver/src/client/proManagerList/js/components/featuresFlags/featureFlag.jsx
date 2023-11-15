@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getFeatureFlag } from './featureFlags.utils';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
+import { updateFeatureFlag } from './featureFlags.utils';
 
 function FeatureFlag({ fladID, handleBack }) {
   const [flag, setflag] = useState({});
@@ -33,7 +34,7 @@ function FeatureFlag({ fladID, handleBack }) {
           </Grid>
           <Grid item xs={6}>
             <label>name</label>
-            <div>{flag.flagId}</div>
+            <div style={{ marginTop: '20px' }}>{flag.flagId}</div>
           </Grid>
         </Grid>
         <Grid container>

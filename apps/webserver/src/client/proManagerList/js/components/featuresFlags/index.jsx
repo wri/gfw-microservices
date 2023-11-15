@@ -7,6 +7,7 @@ import TableRow from '@mui/material/TableRow';
 import AddButton from './addButton';
 import { listFeatureFlags } from './featureFlags.utils';
 import FeatureFlag from './featureFlag';
+import '../../../css/featureFlags.scss';
 
 function FeatureFlags({ setIsLoading }) {
   const [rows, setrows] = useState([]);

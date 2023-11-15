@@ -366,8 +366,8 @@ export default class Dashboard extends Component {
     } = this.state;
 
     const dashboardTitle = isEmpty(selectedList)
-      ? 'Select a list to begin dashboard analysis'
-      : `Dashboard ${numberWithCommas(selectedList.list_locations_count)} Locations`;
+      ? 'Select a list to begin alerts analysis'
+      : `Alerts ${numberWithCommas(selectedList.list_locations_count)} Locations`;
 
     const { userSharedLists } = this.props;
 

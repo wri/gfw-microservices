@@ -37,7 +37,7 @@ describe('Test Header Component', () => {
     expect(container.querySelector('a')).toBeInTheDocument();
     expect(getByText('Locations')).toBeInTheDocument();
     expect(getByText('Map')).toBeInTheDocument();
-    expect(getByText('Dashboard')).toBeInTheDocument();
+    expect(getByText('Alerts')).toBeInTheDocument();
     await waitFor(() => {
       const spanElement = container.querySelector(
         '.new-feature-notifications__unread-notifications'

@@ -1,0 +1,861 @@
+{
+  "data": [
+    {
+      "id": "17608416-556e-4555-b36f-45c789ff9e79",
+      "type": "layer",
+      "attributes": {
+        "name": "Indonesia Forest Area",
+        "slug": "Indonesia-Legal-Classifications_2",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/17608416-556e-4555-b36f-45c789ff9e79-1690838146777.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/idn_forest_area",
+            "url": "https://tiles.globalforestwatch.org/idn_forest_area/v201709/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "color": "#c6a541",
+              "categories": [
+                { "color": "#C489FD", "name": "Sanctuary reserve/nature conservation area" },
+                { "color": "#FF00FF", "name": "Marine protected area" },
+                { "color": "#00FF7B", "name": "Protected forest" },
+                { "color": "#C4FBAF", "name": "Limited production forest" },
+                { "color": "#FFFEAA", "name": "Production forest" },
+                { "color": "#FEA189", "name": "Convertible production forest" },
+                { "color": "#D8D8D8", "name": "Other utilization area" }
+              ],
+              "name": "Indonesia Forest Area"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/idn_forest_area/v201709/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-05-02T22:34:24.453Z",
+        "updatedAt": "2023-07-31T21:15:46.731Z"
+      }
+    },
+    {
+      "id": "9a83a805-6b08-4275-86bb-5ae4b82303a5",
+      "type": "layer",
+      "attributes": {
+        "name": "GLAD alerts",
+        "slug": "glad-alerts_1_1",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "GLAD alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/9a83a805-6b08-4275-86bb-5ae4b82303a5-1655995898151.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": { "color": [220, 102, 153] },
+            "coverage-options": { "opacity": 0.3, "color": "#f69" },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/umd_glad_landsat_alerts/latest/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                { "name": "Recent alerts", "color": "#e4c600" },
+                { "name": "Show only confirmed alerts", "color": "#d7668f" },
+                { "name": "Geographic coverage", "color": "#f69" }
+              ],
+              "name": "GLAD alerts",
+              "source": "(weekly, 30m, select countries, UMD/GLAD)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-06-23T14:24:13.370Z",
+        "updatedAt": "2022-06-23T14:51:38.081Z"
+      }
+    },
+    {
+      "id": "ad3c4fdd-d81d-4a43-92d7-f75c7e7c4008",
+      "type": "layer",
+      "attributes": {
+        "name": "RADD alerts",
+        "slug": "RADD-alerts_3",
+        "dataset": "eaf07d6c-ba45-4fb9-afb7-a8cbc7e7fc2c",
+        "description": "RADD alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": { "color": [220, 102, 153] },
+            "coverage-options": { "opacity": 0.3, "color": "#f69" },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/wur_radd_alerts/latest/default//{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/wur_radd_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                { "name": "Recent alerts", "color": "#e4c600" },
+                { "name": "Show only high confidence alerts", "color": "#d7668f" },
+                { "name": "Geographic coverage", "color": "#dc6699" }
+              ],
+              "name": "RADD alerts",
+              "source": "(every 6-12 days, 10m, select countries, WUR)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-01-06T18:46:23.962Z",
+        "updatedAt": "2022-01-06T18:51:15.351Z"
+      }
+    },
+    {
+      "id": "8709e931-8f06-41ee-8e6b-28abd9bf549a",
+      "type": "layer",
+      "attributes": {
+        "name": "Soy on tree cover loss",
+        "slug": "Soy-on-tree-cover-loss_2",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Soy on tree cover loss",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "62601518cdc846001a7756b5",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/8709e931-8f06-41ee-8e6b-28abd9bf549a-1653317616359.png",
+        "env": "staging",
+        "layerConfig": {
+          "body": {
+            "interpolation": "RSP_NearestNeighbor",
+            "pixelType": "U8",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/agrosatelite_cerrado_soy_layer_1314",
+            "renderingRule": { "rasterFunction": "{}" },
+            "url": "https://tiles.globalforestwatch.org/umd_soy_planted_area/v2019/dynamic/17/64569/62994.png?implementation=default",
+            "rasterFunctions": ["soy31"],
+            "useCors": true
+          },
+          "type": "featureLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#cc9916",
+              "categories": [
+                { "color": "#b3cdff", "name": "2001" },
+                { "color": "#5f9dc0", "name": "2002" },
+                { "color": "#aed188", "name": "2003" },
+                { "color": "#2e6e00", "name": "2004" },
+                { "color": "#f9cebf", "name": "2005" },
+                { "color": "#ee0016", "name": "2006" },
+                { "color": "#f6d256", "name": "2007" },
+                { "color": "#cea300", "name": "2008" },
+                { "color": "#aa9cc0", "name": "2009" },
+                { "color": "#72278f", "name": "2010" },
+                { "color": "#feffbb", "name": "2011" },
+                { "color": "#6c3905", "name": "2012" },
+                { "color": "#9f0090", "name": "2013" },
+                { "color": "#f788cf", "name": "2014" },
+                { "color": "#257280", "name": "2015" },
+                { "color": "#4fe5ff", "name": "2016" },
+                { "color": "#ed0c84", "name": "2017" },
+                { "color": "#4bff14", "name": "2018" },
+                { "color": "#ff14ff", "name": "2019" }
+              ],
+              "name": "Soy on tree cover loss"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-05-23T14:53:36.213Z",
+        "updatedAt": "2022-05-23T14:53:36.213Z"
+      }
+    },
+    {
+      "id": "28d775ac-05ac-4ebc-91c2-59d664c59480",
+      "type": "layer",
+      "attributes": {
+        "name": "Integrated Deforestation Alerts",
+        "slug": "Integrated-Deforestation-Alerts",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Integrated deforestation alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/28d775ac-05ac-4ebc-91c2-59d664c59480-1699899717553.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": { "color": [220, 102, 153] },
+            "coverage-options": { "opacity": 0.3, "color": "#f69" },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/gfw_integrated_alerts/latest/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                { "name": "Recent alerts", "color": "#e4c600" },
+                { "name": "Show only confirmed alerts", "color": "#d7668f" },
+                { "name": "Geographic coverage", "color": "#f69" }
+              ],
+              "name": "Integrated Deforestation Alerts",
+              "source": "(weekly, 30m, select countries, UMD/GLAD)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-11-13T18:21:57.425Z",
+        "updatedAt": "2023-11-13T18:21:57.425Z"
+      }
+    },
+    {
+      "id": "8f05e385-7fd1-4e70-aad2-8db43758d8ab",
+      "type": "layer",
+      "attributes": {
+        "name": "Integrated Deforestation Alerts",
+        "slug": "alliance-for-zero-extinction-sites",
+        "dataset": "6a276d13-a079-4ba4-9c1f-54936b458b33",
+        "description": "Integrated deforestation alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "type": "tilelayer",
+        "userId": "596cde70824315350dd0f116",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/8f05e385-7fd1-4e70-aad2-8db43758d8ab-1699901331074.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": { "color": [220, 102, 153] },
+            "coverage-options": { "opacity": 0.3, "color": "#f69" },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/umd_glad_sentinel2_alerts/v20231112/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                { "name": "Recent alerts", "color": "#e4c600" },
+                { "name": "Show only confirmed alerts", "color": "#d7668f" },
+                { "name": "Geographic coverage", "color": "#f69" }
+              ],
+              "name": "Integrated Deforestation Alerts",
+              "source": "(weekly, 30m, select countries, UMD/GLAD)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2017-09-14T18:04:12.564Z",
+        "updatedAt": "2023-11-13T18:48:51.018Z"
+      }
+    },
+    {
+      "id": "c32c12e5-dd4d-4781-9236-1145e3450032",
+      "type": "layer",
+      "attributes": {
+        "name": "glad-alerts_1",
+        "slug": "glad-alerts_1_2",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Integrated deforestation alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/c32c12e5-dd4d-4781-9236-1145e3450032-1699899543406.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": { "color": [220, 102, 153] },
+            "coverage-options": { "opacity": 0.3, "color": "#f69" },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/glad_prod/tiles/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                { "name": "Recent alerts", "color": "#e4c600" },
+                { "name": "Show only confirmed alerts", "color": "#d7668f" },
+                { "name": "Geographic coverage", "color": "#f69" }
+              ],
+              "name": "GLAD alerts",
+              "source": "(weekly, 30m, select countries, UMD/GLAD)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-11-13T18:19:03.263Z",
+        "updatedAt": "2023-11-13T18:19:03.263Z"
+      }
+    },
+    {
+      "id": "f852d417-19f2-4433-8a4e-09b754d944a1",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree biomass loss",
+        "slug": "Tree-biomass-loss_1",
+        "dataset": "ffcb33cf-ccc6-4eff-9aef-4b00de44abaf",
+        "description": "Tree biomass loss",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "rest",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_biomass_loss",
+            "css-url": "https://github.com/Vizzuality/gfw-climate/blob/develop/app/assets/javascripts/map/views/layers/BiomassLossLayer.js",
+            "url": "http://storage.googleapis.com/earthenginepartners-wri/whrc-hansen-carbon-{thresh}-{z}/{x}/{y}.png",
+            "useCors": true
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#fcf9c2",
+              "name": "Tree biomass loss",
+              "source": "(annual, 30m, pantropical, WHRC-Baccini/Hansen/UMD/Google/USGS/NASA)"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2021-12-06T18:37:27.079Z",
+        "updatedAt": "2021-12-06T18:49:17.990Z"
+      }
+    },
+    {
+      "id": "db8de286-174b-4966-8673-3a50ff993ba8",
+      "type": "layer",
+      "attributes": {
+        "name": "Universal Mill List",
+        "slug": "Universal-Mill-List_2",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/db8de286-174b-4966-8673-3a50ff993ba8-1665590256864.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/uml",
+            "url": "https://tiles.globalforestwatch.org/gfw_universal_mill_list/v20220531/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [{ "color": "#e5ea00", "name": "Universal Mill List" }]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/gfw_universal_mill_list/latest/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-10-12T15:53:39.192Z",
+        "updatedAt": "2022-10-12T15:57:36.819Z"
+      }
+    },
+    {
+      "id": "5c2bff75-e5b8-404d-8b6d-05e13f017bbf",
+      "type": "layer",
+      "attributes": {
+        "name": "Global Peatlands",
+        "slug": "Global-Peatlands_4",
+        "dataset": "40d08bd3-bded-4ab7-b188-fb5ebf8f5e83",
+        "description": "Global Peatlands",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/5c2bff75-e5b8-404d-8b6d-05e13f017bbf-1651170606980.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/gfw_peatlands",
+            "url": "https://tiles.globalforestwatch.org/gfw_peatlands/v20200807/is/{z}/{x}/{y}.png"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [{ "name": "Global Peatlands", "color": "#253494" }]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-04-28T18:30:06.788Z",
+        "updatedAt": "2022-04-28T18:30:06.788Z"
+      }
+    },
+    {
+      "id": "7c543101-eb9e-4b69-9a7e-d0ae46c3f5af",
+      "type": "layer",
+      "attributes": {
+        "name": "Land Rights (Esri)",
+        "slug": "Land-Rights-Esri_1",
+        "dataset": "503f3a73-ceb1-4b5c-b64b-bb3c72c81da1",
+        "description": "Land Rights (Esri)",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "esrivectorservice",
+        "type": "layer",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/7c543101-eb9e-4b69-9a7e-d0ae46c3f5af-1700062263476.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/landmark_icls_2020",
+            "url": "https://tiles.globalforestwatch.org/landmark_indigenous_and_community_lands/v20201215/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Indigenous and Community Lands",
+              "source": "LandMark",
+              "categories": [
+                { "name": "Indigenous Lands - Acknowledged by Government", "color": "#bf6938" },
+                { "name": "Indigenous Lands - Not acknowledged by Government", "color": "#f3aa72" },
+                { "name": "Community Lands - Acknowledged by Government", "color": "#2c5682" },
+                { "name": "Community Lands - Not acknowledged by Government", "color": "#407ebe" },
+                {
+                  "name": "Indicative Areas of Indigenous and Community Land Rights",
+                  "color": "#9c9c9c"
+                }
+              ]
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "http://tile.globalforestwatch.org/nasa_viirs_fire_alerts/latest/features?lat={lat}&lng={lng}&z={z}"
+          },
+          "output": [
+            {
+              "column": "name",
+              "format": null,
+              "prefix": "",
+              "property": "Name",
+              "suffix": "",
+              "type": "string"
+            }
+          ]
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2023-11-15T15:31:03.354Z",
+        "updatedAt": "2023-11-15T15:31:03.354Z"
+      }
+    },
+    {
+      "id": "5dd289f3-acd0-466b-bf35-30fc1e8b7d54",
+      "type": "layer",
+      "attributes": {
+        "name": "PRODES Deforestation Vizz Brazil",
+        "slug": "PRODES-Deforestation-Vizz-Brazil_2",
+        "dataset": "ae3275ec-6334-46b8-8904-4000cec04f50",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/prodes",
+            "url": "https://tiles.globalforestwatch.org/inpe_prodes/v202107/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "PRODES deforestation",
+              "source": "(annual, 30m, Brazilian Amazon, INPE)",
+              "color": "#ff6699"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/inpe_amazonia_prodes/latest/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-05-05T12:42:16.903Z",
+        "updatedAt": "2022-05-05T12:42:16.903Z"
+      }
+    },
+    {
+      "id": "1b3dae53-9130-4911-acc4-72b50806f229",
+      "type": "layer",
+      "attributes": {
+        "name": "PRODES Deforestation Vizz",
+        "slug": "PRODES-Deforestation-Vizz_2",
+        "dataset": "ae3275ec-6334-46b8-8904-4000cec04f50",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/prodes",
+            "url": "https://tiles.globalforestwatch.org/inpe_prodes/v202107/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "PRODES deforestation",
+              "source": "(annual, 30m, Brazilian Amazon, INPE)",
+              "color": "#ff6699"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/inpe_amazonia_prodes/latest/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-05-05T12:44:33.201Z",
+        "updatedAt": "2022-05-05T12:46:22.568Z"
+      }
+    },
+    {
+      "id": "dcc39c25-afae-436b-ab76-9d05105538ab",
+      "type": "layer",
+      "attributes": {
+        "name": "Global Peatlands",
+        "slug": "Global-Peatlands_3",
+        "dataset": "40d08bd3-bded-4ab7-b188-fb5ebf8f5e83",
+        "description": "Global Peatlands",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/dcc39c25-afae-436b-ab76-9d05105538ab-1650465559901.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/gfw_peatlands",
+            "url": "https://tiles.globalforestwatch.org/gfw_peatlands/v20200807/is/{z}/{x}/{y}.png"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [{ "name": "Global Peatlands", "color": "#253494" }]
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-04-20T14:39:19.438Z",
+        "updatedAt": "2022-04-20T14:39:19.438Z"
+      }
+    },
+    {
+      "id": "b98f92cc-08c5-48e4-af71-2366304ee545",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree Plantations by species",
+        "slug": "Tree-Plantations-by-species_2",
+        "dataset": "eaf07d6c-ba45-4fb9-afb7-a8cbc7e7fc2c",
+        "description": "Tree Plantations by species",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "env": "staging",
+        "layerConfig": {
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/gfw_planted_forests/v20201209/default/root.json",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_planted_forests",
+            "useCors": true
+          },
+          "type": "Vector.Layer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#cb8335",
+              "categories": [
+                { "color": "#98a7c4", "name": "Wood fiber / timber" },
+                { "color": "#fdada9", "name": "Oil Palm" },
+                { "color": "#a0c746", "name": "Unknown Mix" },
+                { "color": "#dcd9d9", "name": "Unknown" },
+                { "color": "#a4fdff", "name": "Rubber Mix" },
+                { "color": "#fefe97", "name": "Fruit Mix" },
+                { "color": "#d1e6ab", "name": "Other" },
+                { "color": "#9993A3", "name": "Rubber" },
+                { "color": "#dada95", "name": "Fruit" },
+                { "color": "#fcc4c1", "name": "Oil Palm Mix" },
+                { "color": "#9ebbf2", "name": "Wood fiber / timber Mix" },
+                { "color": "#d5a6ea", "name": "Recently cleared" },
+                { "color": "#e1efc8", "name": "Other Mix" }
+              ],
+              "name": "Tree plantations by species",
+              "source": "(2020, select countries)"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-01-06T17:02:38.418Z",
+        "updatedAt": "2022-01-10T22:24:46.085Z"
+      }
+    },
+    {
+      "id": "6ec35660-ac80-4e08-8f20-c9c6005eec4a",
+      "type": "layer",
+      "attributes": {
+        "name": "VIIRS Global Fires",
+        "slug": "VIIRS-Global-Fires_4",
+        "dataset": "cc074b15-d311-43cf-8dba-beec571d2406",
+        "description": "VIIRS Global Fires",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "type": "layer",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": false,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/6ec35660-ac80-4e08-8f20-c9c6005eec4a-1645634321726.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/nasa_viirs_fire_alerts/latest/dynamic/{start_date}/{end_date}/VectorTileServer",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/viirs_fires",
+            "useCors": true
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "notes": ["For more information about this layer {hyperlink}"],
+              "source": "(daily, 375m, global, NASA)",
+              "color": "#a5140c",
+              "name": "VIIRS active fires"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/nasa_viirs_fire_alerts/v202010/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-02-23T16:32:39.573Z",
+        "updatedAt": "2022-02-23T16:38:41.640Z"
+      }
+    },
+    {
+      "id": "21375165-a520-4d35-8b39-8c94c939c173",
+      "type": "layer",
+      "attributes": {
+        "name": "WDPA Esri",
+        "slug": "WDPA-Esri_2",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "WDPA Esri",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/21375165-a520-4d35-8b39-8c94c939c173-1699551509691.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/wdpa_licensed_protected_areas",
+            "url": "https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202310/default/root.json"
+          }
+        },
+        "legendConfig": {
+          "type": "basic",
+          "items": [
+            {
+              "name": "Protected Areas",
+              "categories": [
+                { "name": "Ia - Strict Nature Reserve", "color": "#5ca2d1" },
+                { "name": "Ib - Wilderness Area", "color": "#3e7bb6" },
+                { "name": "II - National Park", "color": "#0f3b82" },
+                { "name": "III - National Monument or Feature", "color": "#c9ddff" },
+                { "name": "IV - Habitat and Species Management Area", "color": "#b9b2a1" },
+                { "name": "V - Protected Landscape or Seascape", "color": "#ae847e" },
+                {
+                  "name": "VI - Protected Area with Sustainable Use of Natural Resources",
+                  "color": "#daa89b"
+                },
+                { "name": "Not Applicable", "color": "#eed54c" },
+                { "name": "Not Assigned", "color": "#e7ab36" },
+                { "name": "Not Reported", "color": "#fa894b" }
+              ],
+              "color": "#6087af"
+            }
+          ]
+        },
+        "interactionConfig": {
+          "type": "info",
+          "config": {
+            "url": "https://data-api.globalforestwatch.org/dataset/wdpa_protected_areas/v202310/features"
+          }
+        },
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-05-02T12:45:28.885Z",
+        "updatedAt": "2023-11-09T17:38:29.640Z"
+      }
+    }
+  ],
+  "links": {
+    "self": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
+    "first": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
+    "last": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
+    "prev": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000",
+    "next": "http://api.resourcewatch.org/v1/layer?app=gfw-pro&env=staging&page[number]=1&page[size]=1000"
+  },
+  "meta": { "total-pages": 1, "total-items": 17, "size": 1000 }
+}

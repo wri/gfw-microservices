@@ -29,9 +29,15 @@ let redisClient: RedisClientType;
 if (!unitTestMode) {
   const redisHost = process.env.REDIS_HOST || 'redis';
   const redisPort = process.env.REDIS_PORT || 6379;
-  redisClient = createClient({
+  const redisOptions: Record<string, any> = {
     url: `redis://${redisHost}:${redisPort}`,
-  });
+  };
+  if (process.env.REDIS_CONNECT_TIMEOUT) {
+    redisOptions.socket = {
+      connectTimeout: Number(process.env.REDIS_CONNECT_TIMEOUT),
+    };
+  }
+  redisClient = createClient(redisOptions);
   redisClient.connect().then(() => {
     redisClient.on('error', (info: any) => {
       console.log('Express redis error', info);

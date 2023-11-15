@@ -8,7 +8,7 @@ function FeatureFlag({ fladID, handleBack }) {
 
   useEffect(() => {
     getFeatureFlag(fladID).then((data) => {
-      setflag({ flagId: 'B2B Sharing', flagState: true });
+      setflag(data);
     });
   }, []);
 

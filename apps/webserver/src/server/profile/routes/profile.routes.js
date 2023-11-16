@@ -290,23 +290,23 @@ module.exports = (app, limiter) => {
     next(request);
   });
 
-  eapiRoutes.get('/:orgId', (req, res, next) => {
-    const { orgId } = req.params;
+  eapiRoutes.get('', (req, res, next) => {
+    const requestOrganizationId = req.session.organization_id;
 
     const request = {
       method: 'GET',
-      url: `/api-keys/${orgId}`,
+      url: `/api-keys/${requestOrganizationId}`,
     };
 
     next(request);
   });
 
-  eapiRoutes.delete('/:orgId/:tokenId', (req, res, next) => {
-    const { orgId, tokenId } = req.params;
-
+  eapiRoutes.delete('/:tokenId', (req, res, next) => {
+    const { tokenId } = req.params;
+    const requestOrganizationId = req.session.organization_id;
     const request = {
       method: 'DELETE',
-      url: `/api-keys/${orgId}/${tokenId}`,
+      url: `/api-keys/${requestOrganizationId}/${tokenId}`,
     };
 
     next(request);

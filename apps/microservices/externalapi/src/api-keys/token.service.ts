@@ -77,7 +77,9 @@ export class TokenService {
 
     const awsToken = await this.generateAWSGatewayAPIToken(tokenName);
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { organization_id: organizationId, organization_user_id: userId },
+    });
 
     const token = new ExternalAPIKey();
     token.awsId = awsToken.id;

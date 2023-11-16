@@ -1,11 +1,17 @@
 const path = require('path');
 const controller = require('../controllers/profile.controller');
+const express = require('express');
+const axios = require('axios');
 
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
+
+const BASE_URL = '/profile'; // Used to compose API calls to EAPI Microservice
+const API_BASE_URL = `/api${BASE_URL}`; // Used for API calls, mostly for routes that return JSON and call the EAPI microservice
+const eapiRoutes = express.Router();
 
 /**
  * @name exports
@@ -235,5 +241,74 @@ module.exports = (app, limiter) => {
       .catch((err) => {
         console.log('Error getting secret', err);
       });
+  });
+
+  const getEAPIMicroserviceUrl = () => {
+    // URL Should be the full URL to the EAPI Microservice ending with /api
+    const { EAPI_MICROSERVICE_URL } = process.env;
+    return EAPI_MICROSERVICE_URL;
+  };
+
+  const runEAPIMicroserviceRequest = async (requestData, request, response, next) => {
+    const { method, url, data } = requestData;
+    const requestURL = `${getEAPIMicroserviceUrl()}${url}`;
+    try {
+      const { data: result } = await axios({
+        url: requestURL,
+        method,
+        headers: {
+          'Content-type': 'application/json',
+        },
+        data,
+      });
+      return response.status(200).send(result);
+    } catch (err) {
+      const { status: statusCode, data: error } = err.response;
+      return response.status(statusCode).send(error);
+    }
+  };
+
+  app.use(`${API_BASE_URL}/api-keys`, [
+    ...routeMiddlewares,
+    eapiRoutes,
+    runEAPIMicroserviceRequest,
+  ]);
+
+  eapiRoutes.post('', (req, res, next) => {
+    // this route is used to create a new api key empty body due to the fact that the request body is not used
+    const requestOrganizationId = req.session.organization_id;
+    const requestUserId = req.session.organization_user_id;
+    const request = {
+      method: 'POST',
+      url: '/api-keys',
+      data: {
+        organizationId: requestOrganizationId,
+        userId: requestUserId,
+      },
+    };
+
+    next(request);
+  });
+
+  eapiRoutes.get('', (req, res, next) => {
+    const requestOrganizationId = req.session.organization_id;
+
+    const request = {
+      method: 'GET',
+      url: `/api-keys/${requestOrganizationId}`,
+    };
+
+    next(request);
+  });
+
+  eapiRoutes.delete('/:tokenId', (req, res, next) => {
+    const { tokenId } = req.params;
+    const requestOrganizationId = req.session.organization_id;
+    const request = {
+      method: 'DELETE',
+      url: `/api-keys/${requestOrganizationId}/${tokenId}`,
+    };
+
+    next(request);
   });
 };

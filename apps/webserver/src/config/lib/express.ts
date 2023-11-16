@@ -202,7 +202,7 @@ const configureErrorRoutes = (app: Application) => {
  * @param {Express.Application} app
  * @return {Promise}
  */
-const initialize = (app: Application) =>
+export const initialize = (app: Application) =>
   new Promise((resolve, reject) => {
     logger.info('Initializing express');
     try {
@@ -237,7 +237,3 @@ const initialize = (app: Application) =>
       reject(err);
     }
   });
-
-module.exports = {
-  initialize,
-};

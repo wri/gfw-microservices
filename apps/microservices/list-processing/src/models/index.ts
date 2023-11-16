@@ -36,6 +36,7 @@ export interface RequestLargeListProcess {
   template_type: string;
   user_id: number;
   startAnalysis: boolean;
+  isExternalAPIProcess?: boolean;
 }
 
 export interface ResponseLargeListProcess {

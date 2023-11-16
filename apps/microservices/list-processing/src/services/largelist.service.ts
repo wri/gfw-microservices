@@ -28,7 +28,13 @@ export class LargeListService {
 
     const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
 
-    const payloadBody = { ...request, environment: microserviceEnvironment };
+    const { isExternalAPIProcess, ...llpRequest } = request;
+
+    const payloadBody = {
+      ...llpRequest,
+      environment: microserviceEnvironment,
+      send_email: isExternalAPIProcess === true ? false : true,
+    };
 
     const requestBody = JSON.stringify(payloadBody);
     const options = {

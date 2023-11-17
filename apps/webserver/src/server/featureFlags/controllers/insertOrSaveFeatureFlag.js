@@ -10,7 +10,7 @@ module.exports = async function (request, response) {
     const upsertedFeatureFlag = await insertOrSaveFeatureFlag({
       ...featureFlagData,
       updateDateTime: new Date(),
-      modifierUserId: organization_id
+      modifierUserId: organization_id,
     });
 
     response.status(200).send({

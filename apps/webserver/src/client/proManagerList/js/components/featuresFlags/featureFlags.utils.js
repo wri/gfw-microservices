@@ -48,7 +48,6 @@ export const updateFeatureFlag = async (name, status, orgId = null) => {
       body: JSON.stringify({
         flagId: name,
         flagState: status,
-        modifierUserId: 1234,
         orgId: orgId,
       }),
     });

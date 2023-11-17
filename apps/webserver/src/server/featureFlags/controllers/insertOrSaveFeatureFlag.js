@@ -3,14 +3,14 @@ const logger = require('../../../config/privateutils/logger.utils');
 
 module.exports = async function (request, response) {
   const { body: featureFlagData } = request;
-  const { organization_id } = request.session;
+  const { organization_user_id } = request.session;
   const { insertOrSaveFeatureFlag } = createFeatureFlagsService(dataSource);
 
   try {
     const upsertedFeatureFlag = await insertOrSaveFeatureFlag({
       ...featureFlagData,
       updateDateTime: new Date(),
-      modifierUserId: organization_id,
+      modifierUserId: organization_user_id,
     });
 
     response.status(200).send({

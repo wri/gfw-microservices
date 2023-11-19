@@ -17,4 +17,5 @@ module.exports = {
     devtool: 'eval-source-map',
     plugins: [new webpack.HotModuleReplacementPlugin(), new webpack.NoEmitOnErrorsPlugin()],
   },
+  devTestUserAuthSecret: process.env.DT_USER_SECRET,
 };

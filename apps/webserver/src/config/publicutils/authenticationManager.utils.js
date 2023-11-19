@@ -52,8 +52,8 @@ const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
 
 /**
- * Return true only if the given user and secret are for devtest use and
- *  current environment is for devtest as well
+ * Return true only if the given user and secret are for devtest/AAT use and
+ *  current environment is not prod
  * @param {String} email - username
  * @param {String} secret - secret value
  * @returns {boolean}
@@ -61,8 +61,16 @@ const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus
 const isDevTestUser = (email, secret) => {
   return (
     email.startsWith('dt_') &&
-    secret === 'unsafe' &&
-    (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test')
+    config.devTestUserAuthSecret &&
+    secret === config.devTestUserAuthSecret &&
+    // dt_* users are used by AAT testing in dev, QA, and staging environments, but
+    // this hacky way of login bypassing regular checks should not be allowed in prod
+    // For added security the secret value is picked up from the environment and not in code
+    // Extra security, the user must exist in the DB
+    (process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test' ||
+      process.env.NODE_ENV === 'qa' ||
+      process.env.NODE_ENV === 'staging')
   );
 };
 

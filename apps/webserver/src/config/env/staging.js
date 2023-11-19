@@ -25,4 +25,5 @@ module.exports = {
       }),
     ],
   },
+  devTestUserAuthSecret: process.env.DT_USER_SECRET,
 };

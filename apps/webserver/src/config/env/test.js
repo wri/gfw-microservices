@@ -9,4 +9,5 @@ module.exports = {
   sessionVars: {
     secret: 'TheSecretSession',
   },
+  devTestUserAuthSecret: 'unsafe',
 };

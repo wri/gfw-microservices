@@ -7,11 +7,10 @@ import TableRow from '@mui/material/TableRow';
 import AddButton from './addButton';
 import { listFeatureFlags } from './featureFlags.utils';
 import FeatureFlag from './featureFlag';
-import '../../../css/featureFlags.scss';
 
 function FeatureFlags({ setIsLoading }) {
   const [rows, setrows] = useState([]);
-  const [selectedFlag, setselectedFlag] = useState(1);
+  const [selectedFlag, setselectedFlag] = useState(0);
 
   useEffect(() => {
     listFeatureFlags().then((data) => {

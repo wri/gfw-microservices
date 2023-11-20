@@ -28,7 +28,7 @@ function FeatureFlag({ fladID, handleBack }) {
       </button>
 
       <div>
-        <Grid container>
+        <Grid container style={{'padding': '20px 0', 'boxShadow': '0px 1px 0px 0px rgba(0, 0, 0, 0.13) inset'}}>
           <Grid item xs={6}>
             <label>FEATURE DETAILS</label>
           </Grid>

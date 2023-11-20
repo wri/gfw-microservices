@@ -17,6 +17,12 @@ import { Request } from 'node-fetch';
 import sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ExternalUpload } from '../external-upload.entity';
+import { S3 } from 'aws-sdk';
+
+jest.mock('aws-sdk', () => {
+  const mockHeadObject = jest.fn();
+  return { S3: jest.fn(() => ({ headObject: mockHeadObject })) };
+});
 
 interface WhereRequest {
   where: {
@@ -99,6 +105,14 @@ describe('ListUploadController', () => {
   //});
 
   it('should return a successful response', async () => {
+    const s3 = new S3();
+    const mockHeadObjectResponse = {
+      ContentLength: 500,
+    };
+    (s3.headObject as jest.Mock).mockImplementationOnce(() => ({
+      promise: jest.fn().mockResolvedValue(mockHeadObjectResponse),
+    }));
+
     const createLargeListMockExpectedResponse = {
       list_id: 123,
     };

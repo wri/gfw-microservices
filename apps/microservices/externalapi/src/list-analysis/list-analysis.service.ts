@@ -15,9 +15,11 @@ import {
   ListUploadNewResponse,
 } from './list-upload-new.dto';
 import { Organization } from '../api-keys/organization.entity';
+import { S3 } from 'aws-sdk';
 
 const DEFAULT_ANALYSIS = 'FCD';
 const LIST_INITIAL_STATUS = 'Pending';
+const MIN_FILE_SIZE_IN_BYTES = 500;
 @Injectable()
 export class ListAnalysisService {
   private readonly LLP_BASE_URL: string;
@@ -95,6 +97,41 @@ export class ListAnalysisService {
     return connection;
   }
 
+  private async checkIfS3FileExists(fileKey: string) {
+    const s3 = new S3({
+      signatureVersion: 'v4',
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      },
+      region: process.env.AWS_REGION,
+    });
+
+    const bucketName = process.env.LARGE_PROCESING_LIST_BUCKET;
+
+    const params = {
+      Bucket: bucketName,
+      Key: fileKey,
+    };
+
+    let contentLength = 0;
+
+    try {
+      const response = await s3.headObject(params).promise();
+      contentLength = response?.ContentLength;
+    } catch (error) {
+      const errorDescription = new ListUploadNewErrorResponse();
+      errorDescription.errorDetails = 'File not found';
+      throw new HttpException(errorDescription, HttpStatus.FORBIDDEN);
+    }
+
+    if (contentLength < MIN_FILE_SIZE_IN_BYTES) {
+      const errorDescription = new ListUploadNewErrorResponse();
+      errorDescription.errorDetails = 'File is empty';
+      throw new HttpException(errorDescription, HttpStatus.FORBIDDEN);
+    }
+  }
+
   async uploadNewList(
     newListDetails: ListUploadNewRequest,
     organizationId: number
@@ -112,6 +149,8 @@ export class ListAnalysisService {
       errorDescription.errorDetails = 'Failed to process the request, upload id not found';
       throw new HttpException(errorDescription, HttpStatus.BAD_REQUEST);
     }
+
+    await this.checkIfS3FileExists(externalUpload.uploadKeyFile);
 
     // create large list process
     const largeListCreated = await axios.post<{

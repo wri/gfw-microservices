@@ -60,9 +60,6 @@ const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus
  */
 const isDevTestUser = (email, secret) => {
   return (
-    email.startsWith('dt_') &&
-    config.devTestUserAuthSecret &&
-    secret === config.devTestUserAuthSecret &&
     // dt_* users are used by AAT testing in dev, QA, and staging environments, but
     // this hacky way of login bypassing regular checks should not be allowed in prod
     // For added security the secret value is picked up from the environment and not in code
@@ -70,7 +67,10 @@ const isDevTestUser = (email, secret) => {
     (process.env.NODE_ENV === 'development' ||
       process.env.NODE_ENV === 'test' ||
       process.env.NODE_ENV === 'qa' ||
-      process.env.NODE_ENV === 'staging')
+      process.env.NODE_ENV === 'staging') &&
+    email.startsWith('dt_') &&
+    config.devTestUserAuthSecret &&
+    secret === config.devTestUserAuthSecret
   );
 };
 

@@ -38,4 +38,10 @@ export const proManagerPanelTabs = {
     title: 'Latest Commits',
     userAccessLevel: [ADMIN, EDITOR, VIEWER],
   },
+  featureFlags: {
+    id: 'feature-flags',
+    icon: 'settings_input_component',
+    title: 'Features',
+    userAccessLevel: [ADMIN, EDITOR, VIEWER],
+  },
 };

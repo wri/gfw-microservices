@@ -1,7 +1,8 @@
-import Graphic from 'esri/Graphic';
-import Extent from 'esri/geometry/Extent';
-import PopupTemplate from 'esri/PopupTemplate';
-import VectorTileLayer from 'esri/layers/VectorTileLayer';
+import Graphic from '@arcgis/core/Graphic';
+import Extent from '@arcgis/core/geometry/Extent';
+import PopupTemplate from '@arcgis/core/PopupTemplate';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 
 // Utils
 import geojsonUtil from '../../utils/arcgis-to-geojson';
@@ -28,7 +29,7 @@ export function goToUserListLocations(esriMapView, bounds) {
     ymin,
     xmax,
     ymax,
-    spatialReference: 4326,
+    spatialReference: SpatialReference.WGS84,
   });
   esriMapView.goTo(extent, { duration: 1000 });
 }

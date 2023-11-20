@@ -79,7 +79,7 @@ export class DashboardHandleDownload extends IPipeService {
   async finish(filters: GenerationFileRequest) {
     this.logger.log(`(${filters.key}) - Sending end event to stream`);
     this.writeStream.end();
-    await finished(this.writeStream);
+    await this.writeAllData(this.writeStream);
     await finished(this.fileStream);
     this.writeStream.removeAllListeners();
     this.writeStream.destroy();

@@ -16,7 +16,9 @@ export class ArgentinaOverlap extends DashboardHandleDownload {
   }
 
   process(data, filters: GenerationFileRequest) {
+    console.log('isArgentinaOverlapFile', this.isArgentinaOverlapFile(filters));
     if (this.isArgentinaOverlapFile(filters)) {
+      console.log('Argentina Overlap Service process');
       super.process(data, filters);
     }
   }

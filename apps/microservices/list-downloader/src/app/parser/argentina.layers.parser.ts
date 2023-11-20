@@ -102,6 +102,7 @@ const argentinaLayers = ({ operation, data, dataRow, csvData }) => {
       }
     });
   }
+  return csvData;
 };
 
 export { argentinaLayers };

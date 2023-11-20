@@ -4,11 +4,14 @@
   justify-content: space-around;
   align-items: flex-start;
   &__pie-chart {
-    width: calc(100% - 450px);
+    width: 50%;
   }
   > div {
     canvas {
       margin: auto;
     }
+  }
+  table th {
+    text-wrap: wrap;
   }
 }

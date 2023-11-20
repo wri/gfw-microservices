@@ -27,6 +27,7 @@ import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 import { ListService } from './list.service';
 import { AfiService } from './afi.service';
 import { AfiFileService } from '../files/afi.file.service';
+import { ArgentinaOverlap } from '../files/argentina.overlap';
 
 @Module({
   imports: [envModule, AwsModule, SqlModule],
@@ -51,6 +52,7 @@ import { AfiFileService } from '../files/afi.file.service';
     ListService,
     AfiService,
     AfiFileService,
+    ArgentinaOverlap,
   ],
   exports: [PipeService],
 })

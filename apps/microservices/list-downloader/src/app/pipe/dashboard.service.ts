@@ -91,7 +91,7 @@ export class DashboardService extends IPipeService {
     this.southAmericaLossService.process(data, filters);
     this.southEastAsiaOverlapService.process(data, filters);
     this.southEastAsiaTCLService.process(data, filters);
-    this.argentinaOverlap.start(filters);
+    this.argentinaOverlap.process(data, filters);
   }
 
   async finish(filters: GenerationFileRequest) {

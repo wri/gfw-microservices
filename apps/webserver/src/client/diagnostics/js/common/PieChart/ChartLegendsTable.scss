@@ -1,5 +1,6 @@
 .chart-legends-table {
   min-width: 450px;
+  max-width: 50%;
   display: inline-block;
   margin: 0 auto;
   thead {
@@ -13,6 +14,7 @@
       text-transform: uppercase;
       color: #555555;
       font-weight: 600;
+      text-wrap: wrap;
     }
   }
   &__checkbox {

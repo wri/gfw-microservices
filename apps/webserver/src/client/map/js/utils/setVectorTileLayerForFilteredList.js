@@ -1,3 +1,4 @@
+import Extent from '@arcgis/core/geometry/Extent';
 import { handleUserListLocationsVectorTileLayer } from '../userListLocations/utils/listLayer.util';
 import { generateCentroidGraphic } from './esri.utils';
 import { USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID } from '../config/map.config';
@@ -35,7 +36,8 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
     : null;
 
   if (dashboard_map_extent) {
-    view.extent = dashboard_map_extent;
+    const extent = new Extent(dashboard_map_extent);
+    view.goTo(extent);
   }
 };
 

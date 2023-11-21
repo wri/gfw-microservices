@@ -81,7 +81,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
       );
 
       // Send email to user that list is submitted to be analysed
-      await AWSSES.sendEmail__ListSubmittedForAnalysis(req, list_name);
+      await AWSSES.sendEmail__ListSubmittedForAnalysis(req, list_name, analysisTypes);
 
       return result;
     })

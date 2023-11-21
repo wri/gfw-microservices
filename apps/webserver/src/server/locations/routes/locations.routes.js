@@ -1249,7 +1249,7 @@ module.exports = (app, limiter) => {
           .then((response) => {
             console.log(response.data);
             // Send email to user that list is submitted to be analysed
-            return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName);
+            return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
           })
           .then((response) => {
             console.log(response);
@@ -1340,7 +1340,7 @@ module.exports = (app, limiter) => {
         }
 
         // Send email to user that list is submitted to be analysed
-        return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName).then(() => {
+        return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes).then(() => {
           console.log(response.data);
           res.send(response.data);
         });

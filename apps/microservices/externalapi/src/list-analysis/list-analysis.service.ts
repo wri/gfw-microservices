@@ -99,7 +99,7 @@ export class ListAnalysisService {
 
   private async checkIfS3FileExists(fileKey: string) {
     const s3 = new S3({
-      signatureVersion: 'v4',
+      signatureVersion: 'v2',
       credentials: {
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,

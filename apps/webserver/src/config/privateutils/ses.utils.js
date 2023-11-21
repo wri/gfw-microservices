@@ -24,6 +24,7 @@ const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const emailUtil = require(path.resolve('./config/emailTemplates'));
 
 const sesClient = new SESClient();
+import { analysisTypesOptions } from '@wri-monorepos/constants';
 
 const defineIcon = (type) => {
   switch (type) {
@@ -113,9 +114,13 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
       msg =
         '<p>You have been invited to join GFW Pro.</p><p>Please visit pro.globalforestwatch.org to sign in with your existing GFW Pro password.</p>';
       break;
-    case config.platformVars.emailType.LIST_ANALYSIS_SUCCESS:
+    case config.platformVars.emailType.LIST_ANALYSIS_STARTED:
       title = "Now it's up to us";
-      msg = `Diagnostics, List View, and Dashboard calculations are processing for <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.list_name}</span>. Analysis may take up to 24 hours. You will be notified by email when it's complete.`;
+      msg = `${content.analysis_types.join(
+        ', '
+      )} calculations are processing for <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${
+        content.list_name
+      }</span>. Analysis may take up to 24 hours. You will be notified by email when it's complete.`;
       hasClosing = false;
       break;
     case config.platformVars.emailType.LIST_ANALYSIS_RERUN_SUCCESS:
@@ -219,12 +224,19 @@ const sendEmail = (req, sender, receivers, subject, content) => {
   return promise;
 };
 
-const sendEmail__ListSubmittedForAnalysis = (req, list_name) => {
+const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => {
   const { user_email } = req.session;
-
-  const content = { list_name };
-  const subject = `Diagnostic and List View calculations are processing for the GFW Pro list ${list_name}`;
-  const msg = createBodyContent(req, config.platformVars.emailType.LIST_ANALYSIS_SUCCESS, content);
+  const formattedAnalysisTypes = Object.keys(analysis_types).map(
+    (analysisTypeId) => analysisTypesOptions.find(({ id }) => analysisTypeId === id).shortLabel
+  );
+  const content = {
+    list_name,
+    analysis_types: formattedAnalysisTypes,
+  };
+  const subject = `${formattedAnalysisTypes.join(
+    ', '
+  )} calculations are processing for the GFW Pro list ${list_name}`;
+  const msg = createBodyContent(req, config.platformVars.emailType.LIST_ANALYSIS_STARTED, content);
   return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
 };
 

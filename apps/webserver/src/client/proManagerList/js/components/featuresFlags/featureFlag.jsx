@@ -41,7 +41,7 @@ function FeatureFlag({ fladID, handleBack }) {
             <div style={{ marginTop: '20px' }}>{flag.flagId}</div>
           </Grid>
         </Grid>
-        <Grid 
+        <Grid
           container
           style={{ padding: '20px 0', boxShadow: '0px 1px 0px 0px rgba(0, 0, 0, 0.13) inset' }}
         >
@@ -57,7 +57,7 @@ function FeatureFlag({ fladID, handleBack }) {
             />
           </Grid>
         </Grid>
-        <Grid 
+        <Grid
           container
           style={{ padding: '20px 0', boxShadow: '0px 1px 0px 0px rgba(0, 0, 0, 0.13) inset' }}
         >

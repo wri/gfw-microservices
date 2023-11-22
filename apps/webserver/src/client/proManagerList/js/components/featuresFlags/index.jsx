@@ -38,7 +38,7 @@ function FeatureFlags({ setIsLoading }) {
                 <TableRow
                   onClick={() => setselectedFlag(row.flagId)}
                   key={row.flagId}
-                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 }, 'cursor': 'pointer' }}
                 >
                   <TableCell>{row.flagId}</TableCell>
                 </TableRow>

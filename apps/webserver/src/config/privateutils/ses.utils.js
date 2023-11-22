@@ -226,16 +226,14 @@ const sendEmail = (req, sender, receivers, subject, content) => {
 
 const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => {
   const { user_email } = req.session;
-  const formattedAnalysisTypes = Object.keys(analysis_types).map(
-    (analysisTypeId) => analysisTypesOptions.find(({ id }) => analysisTypeId === id).shortLabel
-  );
+  const enabledAnalyses = analysisTypesOptions.filter((analysis) => analysis_types[analysis.id]);
   const content = {
     list_name,
-    analysis_types: formattedAnalysisTypes,
+    analysis_types: enabledAnalyses.map((analysis) => analysis.label).join(', '),
   };
-  const subject = `${formattedAnalysisTypes.join(
-    ', '
-  )} calculations are processing for the GFW Pro list ${list_name}`;
+  const subject = `${enabledAnalyses
+    .map((analysis) => analysis.shortLabel)
+    .join(', ')} calculations are processing for the GFW Pro list ${list_name}`;
   const msg = createBodyContent(req, config.platformVars.emailType.LIST_ANALYSIS_STARTED, content);
   return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
 };

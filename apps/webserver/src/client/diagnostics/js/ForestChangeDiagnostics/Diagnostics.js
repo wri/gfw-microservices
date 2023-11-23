@@ -282,7 +282,6 @@ export default class Diagnostics extends Component {
   };
 
   addTreeCoverLoss = () => {
-    esriConfig.request.corsEnabledServers.push('storage.googleapis.com');
     const tclLayer = new TreeCoverLossLayer({
       id: 'tree-cover-loss',
       visible: true,

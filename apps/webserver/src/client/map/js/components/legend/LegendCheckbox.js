@@ -172,9 +172,6 @@ export default class LegendCheckbox extends Component {
           <p className="layer-legend-message">{'Displaying Soy planted area in'}</p>
           <div className="landsat-dropdown-root">
             <GfwSelect
-              controlClassName="landsat-dropdown-control"
-              menuClassName="landsat-dropdown-menu"
-              arrowClassName="landsat-dropdown-arrow"
               options={years}
               value={soyYear}
               onChange={(evt) => {

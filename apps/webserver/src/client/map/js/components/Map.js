@@ -857,9 +857,6 @@ export default class Map extends Component {
   };
 
   setEsriDefaults = () => {
-    mapPage.corsEnabledServers.forEach((corsEnabledServer) => {
-      esriConfig.request.corsEnabledServers.push(corsEnabledServer);
-    });
 
     esriConfig.request.interceptors.push({
       urls: [locationsPage.add.protectedAreasUrl, locationsPage.add.protectedServicesUrl],

@@ -857,7 +857,6 @@ export default class Map extends Component {
   };
 
   setEsriDefaults = () => {
-
     esriConfig.request.interceptors.push({
       urls: [locationsPage.add.protectedAreasUrl, locationsPage.add.protectedServicesUrl],
       before: (params) => {

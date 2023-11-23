@@ -8,7 +8,6 @@ import MapView from 'esri/views/MapView';
 import Graphic from 'esri/Graphic';
 import Polygon from 'esri/geometry/Polygon';
 import GraphicsLayer from 'esri/layers/GraphicsLayer';
-import esriConfig from 'esri/config';
 
 import TreeCoverLossLayer from '../layers/TreeCoverLossLayer';
 import store from '../../../locations/js/store';

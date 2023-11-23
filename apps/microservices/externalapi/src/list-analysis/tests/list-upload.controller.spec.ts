@@ -17,12 +17,25 @@ import { Request } from 'node-fetch';
 import sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ExternalUpload } from '../external-upload.entity';
-import { S3 } from 'aws-sdk';
+import { S3Client } from '@aws-sdk/client-s3';
 
-jest.mock('aws-sdk', () => {
-  const mockHeadObject = jest.fn();
-  return { S3: jest.fn(() => ({ headObject: mockHeadObject })) };
-});
+// this mock works
+// jest.mock('@aws-sdk/client-s3', () => ({
+//   S3Client: jest.fn().mockImplementation(() => ({
+//     send: jest.fn().mockResolvedValue({
+//       ContentLength: 500,
+//     }),
+//   })),
+//   GetObjectCommand: jest.fn(),
+// }));
+
+// this mock doesnt mock
+jest.mock('@aws-sdk/client-s3', () => ({
+  S3Client: jest.fn().mockImplementation(() => ({
+    send: jest.fn(),
+  })),
+  GetObjectCommand: jest.fn(),
+}));
 
 interface WhereRequest {
   where: {
@@ -100,18 +113,11 @@ describe('ListUploadController', () => {
       .returns(new ExternalUploadMockRepository());
   });
 
-  //afterEach(() => {
-  //  axiosMock.restore();
-  //});
-
   it('should return a successful response', async () => {
-    const s3 = new S3();
-    const mockHeadObjectResponse = {
+    const s3 = new S3Client();
+    (s3.send as jest.Mock).mockResolvedValue({
       ContentLength: 500,
-    };
-    (s3.headObject as jest.Mock).mockImplementationOnce(() => ({
-      promise: jest.fn().mockResolvedValueOnce(mockHeadObjectResponse),
-    }));
+    });
 
     const createLargeListMockExpectedResponse = {
       list_id: 123,
@@ -162,13 +168,10 @@ describe('ListUploadController', () => {
   });
 
   it('should return an error response when bucket file is empty', () => {
-    const s3 = new S3();
-    const mockHeadObjectResponse = {
+    const s3 = new S3Client();
+    (s3.send as jest.Mock).mockResolvedValue({
       ContentLength: 499,
-    };
-    (s3.headObject as jest.Mock).mockImplementationOnce(() => ({
-      promise: jest.fn().mockResolvedValueOnce(mockHeadObjectResponse),
-    }));
+    });
 
     const request: ListUploadNewRequest = {
       uploadId: '123',
@@ -209,11 +212,9 @@ describe('ListUploadController', () => {
   });
 
   it('should return an error response when file does not exist', () => {
-    const s3 = new S3();
+    const s3 = new S3Client();
 
-    (s3.headObject as jest.Mock).mockImplementationOnce(() => ({
-      promise: jest.fn().mockRejectedValueOnce({}),
-    }));
+    (s3.send as jest.Mock).mockImplementationOnce(() => jest.fn().mockRejectedValueOnce({}));
 
     const request: ListUploadNewRequest = {
       uploadId: '123',

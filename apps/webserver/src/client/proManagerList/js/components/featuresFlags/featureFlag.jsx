@@ -3,6 +3,7 @@ import { getFeatureFlag } from './featureFlags.utils';
 import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Grid';
 import { updateFeatureFlag } from './featureFlags.utils';
+import AddCompany from './addCompany';
 
 function FeatureFlag({ fladID, handleBack }) {
   const [flag, setflag] = useState({});
@@ -40,7 +41,10 @@ function FeatureFlag({ fladID, handleBack }) {
             <div style={{ marginTop: '20px' }}>{flag.flagId}</div>
           </Grid>
         </Grid>
-        <Grid container>
+        <Grid
+          container
+          style={{ padding: '20px 0', boxShadow: '0px 1px 0px 0px rgba(0, 0, 0, 0.13) inset' }}
+        >
           <Grid item xs={6}>
             <label>STATUS</label>
           </Grid>
@@ -51,6 +55,17 @@ function FeatureFlag({ fladID, handleBack }) {
               color="default"
               onChange={(event) => handleUpdateStatus(event.target.checked)}
             />
+          </Grid>
+        </Grid>
+        <Grid
+          container
+          style={{ padding: '20px 0', boxShadow: '0px 1px 0px 0px rgba(0, 0, 0, 0.13) inset' }}
+        >
+          <Grid item xs={6}>
+            <label>ACCOUNT</label>
+          </Grid>
+          <Grid item xs={6}>
+            <AddCompany flagName={flag.flagId} />
           </Grid>
         </Grid>
       </div>

@@ -8,9 +8,29 @@
       "executor": "@nrwl/cypress:cypress",
       "options": {
         "cypressConfig": "apps/gfwpro-e2e/cypress.config.ts",
-        "baseUrl": "https://localhost:8443",
         "testingType": "e2e"
-      }
+      },
+      "configurations": {
+        "staging": {
+          "baseUrl": "https://pro-staging.globalforestwatch.org",
+          "env": {
+            "deployment": "staging"
+          }
+        },
+        "qa": {
+          "baseUrl": "https://pro-qa.globalforestwatch.org",
+          "env": {
+            "deployment": "qa"
+          }
+        },
+        "dev": {
+          "baseUrl": "https://localhost:8443",
+          "env": {
+            "deployment": "dev"
+          }
+        }
+      },
+      "defaultConfiguration": "dev"
     },
     "lint": {
       "executor": "@nrwl/linter:eslint",

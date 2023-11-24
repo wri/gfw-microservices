@@ -4,7 +4,9 @@ const login = () => {
     return false;
   });
   cy.visit('/');
-  cy.login('dt_test1@example.com', 'unsafe');
+  const deployment = Cypress.env('deployment');
+  const credentials = Cypress.env(deployment);
+  cy.login(credentials.username, credentials.password, credentials.password);
 };
 
 export { login };

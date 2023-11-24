@@ -37,3 +37,6 @@ tmp/*
 
 # Ignore .sqlite files
 *.sqlite
+
+# cypress environment variables containing login credentials
+cypress.env.json

@@ -7,14 +7,16 @@ When('I login in the landing page', () => {
   });
   cy.visit('/');
 
+  const deployment = Cypress.env('deployment');
+  const credentials = Cypress.env(deployment);
   cy.get('[data-cy="desktopHeader"]').then((desktopHeader) => {
     cy.wrap(desktopHeader).find('[data-cy="loginNav"]').click();
-    cy.wrap(desktopHeader).find('[data-cy="username"]').type('dt_test1@example.com');
-    cy.wrap(desktopHeader).find('[data-cy="password"]').type('unsafe');
+    cy.wrap(desktopHeader).find('[data-cy="username"]').type(credentials.username);
+    cy.wrap(desktopHeader).find('[data-cy="password"]').type(credentials.password);
     cy.wrap(desktopHeader).find('[data-cy="loginButton"]').click();
   });
 
-  cy.get('[data-cy="verifyToken"]').type('unsafe');
+  cy.get('[data-cy="verifyToken"]').type(credentials.password);
   cy.get('[data-cy="verifyButton"]').click();
 });
 

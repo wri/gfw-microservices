@@ -14,7 +14,7 @@ import axios from 'axios';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import { createRequest } from 'node-mocks-http';
 import { Request } from 'node-fetch';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ExternalUpload } from '../external-upload.entity';
 

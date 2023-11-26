@@ -5,6 +5,7 @@ import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { generateRandomFilename } from '@wri-monorepos/shared';
+import { getAnalysisTypesFromIds } from '@wri-monorepos/geo';
 import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from './organization.service';
 import { ListsAnalysisStatus } from './list-analysis-status.entity';
@@ -70,7 +71,7 @@ export class ListAnalysisService {
     const externalUploadRepository = connection.getRepository(ExternalUpload);
 
     const externalUpload = new ExternalUpload();
-    externalUpload.userId = user.id;
+    externalUpload.userId = user.organization_user_id;
     externalUpload.uploadKeyFile = keyFile;
     externalUpload.uploadUrl = url;
     externalUpload.uploadDateTime = new Date();
@@ -112,6 +113,7 @@ export class ListAnalysisService {
       errorDescription.errorDetails = 'Failed to process the request, upload id not found';
       throw new HttpException(errorDescription, HttpStatus.BAD_REQUEST);
     }
+    const analysisIds = newListDetails.analysisIDs.split(',');
 
     // create large list process
     const largeListCreated = await axios.post<{
@@ -120,8 +122,9 @@ export class ListAnalysisService {
       list_name: newListDetails.listName,
       user_id: externalUpload.userId,
       client_database: organizationDetails.organizationDb,
-      analysisIds: [],
+      analysisIds: analysisIds,
     });
+    const listId = largeListCreated.data.list_id;
 
     // save list to process
     const saveListToProcess = await axios.post<{
@@ -129,7 +132,7 @@ export class ListAnalysisService {
       s3_location: string;
     }>(`${this.LLP_BASE_URL}/api/save-list-to-process`, {
       userId: externalUpload.userId,
-      list_id: largeListCreated.data.list_id,
+      list_id: listId,
       key: externalUpload.uploadKeyFile,
       listName: newListDetails.listName,
       client_database: organizationDetails.organizationDb,
@@ -141,11 +144,12 @@ export class ListAnalysisService {
       startDate: string;
     }>(`${this.LLP_BASE_URL}/api/process-list`, {
       organization_id: organizationDetails.id,
-      list_id: largeListCreated.data.list_id,
+      list_id: listId,
       path: saveListToProcess.data.s3_location,
       template_type: newListDetails.templateId,
       user_id: externalUpload.userId,
       startAnalysis: true,
+      analysis_types: getAnalysisTypesFromIds(analysisIds),
       isExternalAPIProcess: true,
     });
 
@@ -153,7 +157,7 @@ export class ListAnalysisService {
 
     const response: ListUploadNewResponse = {
       uploadId: newListDetails.uploadId,
-      listId: largeListCreated.data.list_id.toString(),
+      listId: listId.toString(),
       status: LIST_INITIAL_STATUS,
       errorDetails: '',
       creationDate: new Date(processListResponse.data.startDate),

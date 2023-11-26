@@ -8,7 +8,7 @@ import { UserRoutes } from '../../api-keys/user-route.entity';
 import { UserService } from '../user.service';
 import { ClientStoreConnection } from '../../shared/client-store-connection';
 import { OrganizationService } from '../organization.service';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ListsAnalysisStatus } from '../list-analysis-status.entity';
 

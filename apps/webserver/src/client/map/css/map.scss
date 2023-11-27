@@ -1423,11 +1423,6 @@ $lightGray: rgba(158, 158, 158, 0.3);
   padding: 0px 5px;
 }
 
-.landsat-dropdown-control {
-  height: 25px !important;
-  line-height: 25px !important;
-}
-
 .landsat-dropdown-root {
   display: flex;
   align-items: center;
@@ -1451,16 +1446,7 @@ $lightGray: rgba(158, 158, 158, 0.3);
   }
 }
 
-.landsat-dropdown-menu {
-  top: 25px !important;
-  .Dropdown-option {
-    width: 99px !important;
-    padding: 2px 10px !important;
-  }
-}
-
-.landsat-dropdown-root,
-.landsat-dropdown-menu {
+.landsat-dropdown-root {
   width: 100px !important;
   overflow-y: visible;
 }

@@ -2978,28 +2978,6 @@ export const profilePage = {
 export const PLANET_TILE_LAYER_INITIAL = 'planet_medres_normalized_analytic_2020-10_mosaic';
 
 export const mapPage = {
-  corsEnabledServers: [
-    'tiles.globalforestwatch.org',
-    'https://production-api.globalforestwatch.org/v1',
-    'https://staging-api.globalforestwatch.org/v1',
-    'https://s3.amazonaws.com',
-    'https://wri-tiles.s3.amazonaws.com',
-    'wri-tiles.s3.amazonaws.com',
-    'wri-tiles.s3.amazonaws.com/glad_prod/tiles',
-    'https://s3.amazonaws.com/wri-tiles/global-landcover',
-    's3.amazonaws.com/wri-tiles/global-landcover',
-    'https://s3.amazonaws.com/wri-tiles',
-    's3.amazonaws.com/wri-tiles',
-    'https://storage.googleapis.com/wri-public',
-    'http://earthengine.google.org/static/hansen_2013',
-    'https://earthengine.google.org/static/hansen_2014',
-    'http://storage.googleapis.com/earthenginepartners-wri',
-    'https://wri-tiles.s3.amazonaws.com/glad_prod',
-    'https://s3.amazonaws.com/wri-tiles/global-landcover',
-    'https://gfwpro-gis.globalforestwatch.org',
-    'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/',
-    pro_AWS_base,
-  ],
   drawTitle: 'Draw a Shape',
   countryTitle: 'Country or Region',
   drawInstructions: 'Draw in the map the area you want to analyze or subscribe to',

@@ -149,9 +149,6 @@ export default class AnalysisPanel extends Component {
         {basemap.id === 'landsat' && (
           <div className="landsat-dropdown-root">
             <GfwSelect
-              controlClassName="landsat-dropdown-control"
-              menuClassName="landsat-dropdown-menu"
-              arrowClassName="landsat-dropdown-arrow"
               options={landsatYearOptions}
               value={landsatYear}
               onChange={(evt) => this.handleSelectedLandsatYear(evt, basemap.id)}

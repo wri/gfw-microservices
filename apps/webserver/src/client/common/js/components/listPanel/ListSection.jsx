@@ -34,6 +34,7 @@ function ListSection({
           currentView={listContext}
           selectedLists={selectedLists}
           transitionListData={transitionListData}
+          userSharedLists={userSharedLists}
         />
       </div>
     </div>

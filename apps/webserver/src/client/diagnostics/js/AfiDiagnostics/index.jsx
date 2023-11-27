@@ -110,7 +110,11 @@ function AfiDiagnostics() {
           />
           <div className="diagnostics-container">
             {selectedList && (
-              <DiagnosticsBreadCrums selectedList={selectedList} diagnosticName={'Afi'} />
+              <DiagnosticsBreadCrums
+                selectedList={selectedList}
+                diagnosticName={'Afi'}
+                isSharedList={isSharedList}
+              />
             )}
             <div className="locations-diagnostics__body">
               <h2 className="locations-diagnostics__subtitle">{list_name}</h2>

@@ -6,6 +6,7 @@ function SelectedListDescription({
   transitionListData = {},
   totalNumberOfLocationsInAccount = 0,
   currentView,
+  userSharedLists = {},
 }) {
   // list data comming from previous view (dashboard or list view)
   const { filterCount, name, numLocations } = transitionListData;
@@ -55,7 +56,12 @@ function SelectedListDescription({
   };
 
   const goToList = (id) => {
-    window.location = `/locations?id=${id}`;
+    const selectedListIsShared =
+      transitionListData &&
+      userSharedLists &&
+      userSharedLists.map((userSharedList) => userSharedList.id).includes(transitionListData.id);
+    const addShared = selectedListIsShared ? `&shared=true` : ``;
+    window.location = `/locations?id=${id}${addShared}`;
   };
 
   const handleBack = () => {

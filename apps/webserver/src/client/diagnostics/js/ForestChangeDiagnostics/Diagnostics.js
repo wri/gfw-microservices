@@ -657,6 +657,7 @@ export default class Diagnostics extends Component {
       popoverLoading,
       anchorEl,
       diagnosticView,
+      isSharedList,
     } = this.props;
 
     const {
@@ -720,6 +721,7 @@ export default class Diagnostics extends Component {
                   <DiagnosticsBreadCrums
                     selectedList={selectedLists[0]}
                     diagnosticName={locationsPage.lists.diagnostic}
+                    isSharedList={isSharedList}
                   />
                 )}
 

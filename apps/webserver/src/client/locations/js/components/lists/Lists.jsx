@@ -1375,12 +1375,19 @@ export default class Lists extends Component {
   };
 
   viewDiagnostic = async (isSingleLocation) => {
-    const { selectedLists, selectedLocations } = this.props;
+    const { selectedLists, selectedLocations, userSharedLists } = this.props;
+
+    const selectedListIsShared =
+      selectedLists &&
+      userSharedLists &&
+      userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
+
     const gfwList = !isUserList(selectedLists[0]) ? '&gfw=true' : '';
+    const sharedList = selectedListIsShared ? '&shared=true' : '';
     const locationId = isSingleLocation ? `&locationId=${selectedLocations[0]}` : '';
     const diagnosticsType = getActiveAnalysisType(selectedLists[0]?.listAnalysesStatus);
     const diagnosticsParam = !gfwList && diagnosticsType ? `&type=${diagnosticsType}` : '';
-    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationId}${diagnosticsParam}`;
+    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationId}${diagnosticsParam}${sharedList}`;
   };
 
   viewMap = ({ showFullListMap }) => {

@@ -169,7 +169,7 @@ const configureStaticAssetPath = (app: Application) => {
  * @summary Configure valid express server routes
  * @param {Express.Application} app
  */
-const configureServerRoutes = (app: Application, limiter: Object) => {
+const configureServerRoutes = (app: Application, limiter: any) => {
   config.files.routes.forEach((route: String) => require(path.resolve(route))(app, limiter));
 };
 
@@ -206,6 +206,7 @@ const configureErrorRoutes = (app: Application) => {
 // Redis based limiter suitable for all server routes
 // The passed in limitConfig object specifies the windowMs and max values and is typically
 // either middlewares.rateLimitAuthenticated or middlewares.rateLimitUnauthenticated
+// @ts-ignore:next-line
 const redisBasedLimiter = (limitConfig) => {
   return expressRateLimit.rateLimit({
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers

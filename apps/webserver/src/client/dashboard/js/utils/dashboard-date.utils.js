@@ -39,10 +39,9 @@ export const getDashboardDaysRange = (numberOfDays = 1) => {
  * @return {string[]} - List of Formated Days Range (e.g. ['2021-35', ...])
  */
 export const getDashboardWeeksRange = () => {
-  const todaysDate = moment().format('DD MMM YYYY');
   const isoWeeks = [];
   for (let i = 1; i < 5; i++) {
-    const weekDate = moment(todaysDate).subtract(i, 'week');
+    const weekDate = moment().subtract(i, 'week');
     const isoWeek = weekDate.format('YYYY-WW');
     isoWeeks.push(isoWeek);
   }

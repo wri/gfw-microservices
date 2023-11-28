@@ -1,4 +1,3 @@
-const path = require('path');
 import { analysisTypesOptions } from '@wri-monorepos/constants';
 
 module.exports = (analysisData) => {

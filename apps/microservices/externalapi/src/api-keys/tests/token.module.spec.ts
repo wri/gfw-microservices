@@ -7,7 +7,7 @@ import { Organization } from '../organization.entity';
 import { TokenMockRepository } from './token.mock.service';
 import { ConfigModule } from '@nestjs/config';
 import { UserRoutes } from '../user-route.entity';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import { NotFoundException } from '@nestjs/common';
 import { AWSError } from 'aws-sdk';
 

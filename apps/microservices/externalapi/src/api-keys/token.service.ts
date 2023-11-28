@@ -70,10 +70,9 @@ export class TokenService {
 
   async createToken(organizationId: number, userId: number): Promise<ViewApiKeyResponse> {
     const actualDate = new Date();
-    const formatDate = `${actualDate.getFullYear()}-${actualDate.getMonth()}-${actualDate.getDay()}`;
     const tokenName = `APITOKEN-${this.configService.get(
       'NODE_ENV'
-    )}-ORG${organizationId}-${formatDate}`;
+    )}-ORG${organizationId}-${actualDate.toISOString()}`;
 
     const awsToken = await this.generateAWSGatewayAPIToken(tokenName);
 

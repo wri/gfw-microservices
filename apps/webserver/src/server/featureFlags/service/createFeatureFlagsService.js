@@ -73,6 +73,22 @@ function createFeatureFlagsService(dataSource) {
     });
   }
 
+  async function getAllFeatureFlags() {
+    const flagsOverrides = await getFeatureFlagsWhere();
+
+    const featureFlags = allFeatureFlags.map((flagId) => {
+      const staticGlobalFeatureFlag = formatGlobalFeatureFlags(flagId);
+      const globalFlagOverride = flagsOverrides.find((flag) => flag.flagId === flagId) || {};
+
+      return {
+        ...staticGlobalFeatureFlag,
+        ...globalFlagOverride,
+      };
+    });
+
+    return featureFlags;
+  }
+
   async function getFeatureFlagsForCurrentOrg(orgId) {
     const globalFlagsOverride = await getFeatureFlagsWhere({ orgId: null });
     const orgFlagsOverride = await getFeatureFlagsWhere({ orgId });
@@ -156,6 +172,7 @@ function createFeatureFlagsService(dataSource) {
   }
 
   return {
+    getAllFeatureFlags,
     getFeatureFlagsWhere,
     getFeatureFlagsForCurrentOrg,
     getFeatureFlagsByFlagId,

@@ -1,18 +1,15 @@
 const { dataSource, createFeatureFlagsService } = require('../service/createFeatureFlagsService');
 const logger = require('../../../config/privateutils/logger.utils');
-const transformFlagsToAvailabilityObject = require('../utils/transformFlagsToAvailabilityObject');
 
 module.exports = async function (request, response) {
-  const { organization_id } = request.session;
-  const { getFeatureFlagsForCurrentOrg } = createFeatureFlagsService(dataSource);
+  const { getAllFeatureFlags } = createFeatureFlagsService(dataSource);
 
   try {
-    const featureFlagsForCurrentOrg = await getFeatureFlagsForCurrentOrg(organization_id);
-    const data = transformFlagsToAvailabilityObject(featureFlagsForCurrentOrg);
+    const featureFlags = await getAllFeatureFlags();
 
     response.status(200).send({
       success: true,
-      data,
+      data: featureFlags,
     });
   } catch (error) {
     logger.error('GET /api/feature-flags', error);

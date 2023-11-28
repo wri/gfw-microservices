@@ -14,7 +14,7 @@ module.exports = async function (request, response) {
 
     response.status(200).send({
       success: true,
-      deletedFeatureFlag,
+      data: deletedFeatureFlag,
     });
   } catch (error) {
     logger.error(`POST /api/feature-flags/${flagId}/delete`, error);

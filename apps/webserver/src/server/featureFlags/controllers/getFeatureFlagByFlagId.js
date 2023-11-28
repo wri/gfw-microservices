@@ -10,7 +10,7 @@ module.exports = async function (request, response) {
 
     response.status(200).send({
       success: true,
-      featureFlags,
+      data: featureFlags,
     });
   } catch (error) {
     logger.error(`GET /api/feature-flags/${flagId}`, error);

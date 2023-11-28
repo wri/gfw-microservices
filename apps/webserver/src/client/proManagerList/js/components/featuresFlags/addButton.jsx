@@ -34,15 +34,15 @@ function AddButton() {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Use Google's location service?"}</DialogTitle>
+        <DialogTitle>Feature Name</DialogTitle>
         <DialogContent>
-          <input placeholder="Search for account" class="space-element" onChange={setFlagName} />
+          <input class="space-element" onChange={setFlagName} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>close</Button>
-          <Button onClick={handleAdd} autoFocus>
+          <button className="gfw-button btn-green" onClick={handleAdd}>
             ADD
-          </Button>
+          </button>
         </DialogActions>
       </Dialog>
     </>

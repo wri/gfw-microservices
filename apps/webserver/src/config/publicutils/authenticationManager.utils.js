@@ -214,6 +214,8 @@ const login = async (req, username, password, promanager_login = false) => {
         } else {
           // If there is a record, set the session variables
           [userRecord] = recordsets;
+          // Set User ID
+          req.session.user_id = userRecord.id;
           // Set User Email.
           req.session.user_email = userRecord.user_email;
           // Set Pro Manager Session.

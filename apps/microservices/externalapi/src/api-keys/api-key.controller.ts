@@ -3,6 +3,10 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { TokenService } from './token.service';
 import { ApiResponse } from '@nestjs/swagger';
 import { CreateApiKeyRequest, ViewApiKeyResponse } from './dtos';
+import { z } from 'zod';
+
+const listAnalysisParamOrganizationIdSchema = z.number();
+const listAnalysisParamTokenIdSchema = z.string();
 
 @Controller('/api-keys')
 export class APIKeyController {
@@ -25,6 +29,9 @@ export class APIKeyController {
   // Delete a token for a organization
   @Delete('/:organizationId/:tokenId')
   deleteToken(@Param('organizationId') organizationId: number, @Param('tokenId') tokenId: string) {
+    listAnalysisParamOrganizationIdSchema.parse(organizationId);
+    listAnalysisParamTokenIdSchema.parse(tokenId);
+
     return this.tokenService.deleteToken(organizationId, tokenId);
   }
 }

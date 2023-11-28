@@ -173,27 +173,13 @@ const checkRecognized = (request, response, next) => {
 };
 
 const rateLimitAuthenticated = {
-  total: 5,
-  expire: 1000,
-  lookup: function (req, res, opts, next) {
-    opts.lookup = req.sessionID;
-    return next();
-  },
-  onRateLimited: function (req, res, next) {
-    next({ message: 'Rate limit exceeded', status: 429 });
-  },
+  windowMs: 1000, // 1 second
+  max: 5, // Limit each client to `max` requests per window
 };
 
 const rateLimitUnauthenticated = {
-  total: 1,
-  expire: 1000,
-  lookup: function (req, res, opts, next) {
-    opts.lookup = req.sessionID;
-    return next();
-  },
-  onRateLimited: function (req, res, next) {
-    next({ message: 'Rate limit exceeded', status: 429 });
-  },
+  windowMs: 1000, // 1 second
+  max: 1, // Limit each client to `max` requests per window
 };
 
 module.exports = {

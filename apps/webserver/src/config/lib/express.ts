@@ -17,6 +17,8 @@ const path = require('path');
 const rateLimiterUtil = require('./limiter-util');
 const config = require('../config');
 const { PRODUCTION_ENVIRONMENTS } = require('../config/environments.config');
+import * as expressRateLimit from 'express-rate-limit';
+import * as redisRateLimit from 'rate-limit-redis';
 
 // skip certain things not useful for jest unit testing
 const unitTestMode = process.env.NODE_ENV === 'test';
@@ -201,6 +203,24 @@ const configureErrorRoutes = (app: Application) => {
   });
 };
 
+// Redis based limiter suitable for all server routes
+// The passed in limitConfig object specifies the windowMs and max values and is typically
+// either middlewares.rateLimitAuthenticated or middlewares.rateLimitUnauthenticated
+const redisBasedLimiter = (limitConfig) => {
+  return expressRateLimit.rateLimit({
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+
+    // Redis store configuration
+    store: new redisRateLimit.RedisStore({
+      sendCommand: (...args: string[]) => redisClient.sendCommand(args),
+    }),
+
+    // Configure windowMs and max based on the passed in limitConfig
+    ...limitConfig,
+  });
+};
+
 /**
  * @name initialize
  * @static
@@ -212,12 +232,6 @@ export const initialize = (app: Application) =>
   new Promise((resolve, reject) => {
     logger.info('Initializing express');
     try {
-      // configure rate limiter - pass to subroutes
-      let limiter;
-      if (rateLimiterUtil.useRateLimiter()) {
-        limiter = require('express-limiter')(app, redisClient);
-      }
-
       // Configure middleware
       configureMiddleware(app);
       // Configure locals
@@ -233,6 +247,7 @@ export const initialize = (app: Application) =>
       // Set path for static assets
       configureStaticAssetPath(app);
       // Configure the server routes
+      const limiter = rateLimiterUtil.useRateLimiter() ? redisBasedLimiter : null;
       configureServerRoutes(app, limiter);
       // Configure the error routes
       configureErrorRoutes(app);

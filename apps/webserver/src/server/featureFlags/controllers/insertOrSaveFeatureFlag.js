@@ -5,7 +5,7 @@ module.exports = async function (request, response) {
   const { body: featureFlagData, session } = request;
   const { user_id: modifierUserId } = session;
   const { insertOrSaveFeatureFlag } = createFeatureFlagsService(dataSource);
-  
+
   try {
     const updateDateTime = new Date();
     const upsertedFeatureFlag = await insertOrSaveFeatureFlag({

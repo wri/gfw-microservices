@@ -29,11 +29,14 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
         if (orgId) {
           setFeatureFlagsListByFlagId((prevFeatureFlagListValues) => {
             return prevFeatureFlagListValues.map((flag) => {
-              if (flag.flagId === upsertedFeatureFlag.flagId && orgId === upsertedFeatureFlag.orgId) {
+              if (
+                flag.flagId === upsertedFeatureFlag.flagId &&
+                orgId === upsertedFeatureFlag.orgId
+              ) {
                 return upsertedFeatureFlag;
               }
               return upsertedFeatureFlag;
-            })
+            });
           });
         } else {
           setSelectedFeatureFlag((prevFeatureFlagValue) => ({

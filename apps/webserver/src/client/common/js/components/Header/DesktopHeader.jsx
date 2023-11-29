@@ -25,7 +25,6 @@ function DesktopHeader({ isLoggedIn, active }) {
             <HeaderNavLink active={active} link="/locations" label="Locations" />
             <HeaderNavLink active={active} link="/map" label="Map" />
             <HeaderNavLink active={active} link="/dashboard" label="Alerts" />
-            <HeaderNavLink active={active} link="/b2b" label="B2B" />
             <NewFeatureNotifications />
             <AccountDropDownMenu />
           </>

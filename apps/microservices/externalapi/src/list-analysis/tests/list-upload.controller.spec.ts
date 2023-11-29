@@ -19,20 +19,16 @@ import { DataSource } from 'typeorm';
 import { ExternalUpload } from '../external-upload.entity';
 
 jest.mock('@aws-sdk/client-s3', () => {
-  const mockS3Client = {
-    send: async (command: { Bucket: string; Key: string }) => {
-      if (command.Key === 'mock_key_123') {
-        return {
-          ContentLength: 500,
-        };
-      }
-      if (command.Key === 'mock_key_1234') {
-        return {
-          ContentLength: 499,
-        };
-      }
+  const keyMap: { [key: string]: number } = {
+    mock_key_123: 500,
+    mock_key_1234: 499,
+  };
 
-      throw new Error('File not found');
+  const mockS3Client = {
+    send: async ({ Key }: { Key: string }) => {
+      if (!keyMap[Key]) throw new Error('File not found');
+
+      return { ContentLength: keyMap[Key] };
     },
   };
 

@@ -17,25 +17,33 @@ import { Request } from 'node-fetch';
 import sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ExternalUpload } from '../external-upload.entity';
-import { S3Client } from '@aws-sdk/client-s3';
 
-// this mock works
-// jest.mock('@aws-sdk/client-s3', () => ({
-//   S3Client: jest.fn().mockImplementation(() => ({
-//     send: jest.fn().mockResolvedValue({
-//       ContentLength: 500,
-//     }),
-//   })),
-//   GetObjectCommand: jest.fn(),
-// }));
+jest.mock('@aws-sdk/client-s3', () => {
+  const mockS3Client = {
+    send: async (command: { Bucket: string; Key: string }) => {
+      if (command.Key === 'mock_key_123') {
+        return {
+          ContentLength: 500,
+        };
+      }
+      if (command.Key === 'mock_key_1234') {
+        return {
+          ContentLength: 499,
+        };
+      }
 
-// this mock doesnt mock
-jest.mock('@aws-sdk/client-s3', () => ({
-  S3Client: jest.fn().mockImplementation(() => ({
-    send: jest.fn(),
-  })),
-  GetObjectCommand: jest.fn(),
-}));
+      throw new Error('File not found');
+    },
+  };
+
+  return {
+    S3Client: jest.fn().mockImplementation(() => mockS3Client),
+    GetObjectCommand: jest.fn().mockImplementation((params) => ({
+      Bucket: params.Bucket,
+      Key: params.Key,
+    })),
+  };
+});
 
 interface WhereRequest {
   where: {
@@ -49,7 +57,21 @@ class ExternalUploadMockRepository {
       {
         id: 123,
         userId: 123,
-        uploadKeyFile: 'mock_key',
+        uploadKeyFile: 'mock_key_123',
+        uploadUrl: 'mock_url',
+        uploadDateTime: new Date().toLocaleDateString(),
+      },
+      {
+        id: 1234,
+        userId: 1234,
+        uploadKeyFile: 'mock_key_1234',
+        uploadUrl: 'mock_url',
+        uploadDateTime: new Date().toLocaleDateString(),
+      },
+      {
+        id: 12345,
+        userId: 1234,
+        uploadKeyFile: 'mock_key_12345',
         uploadUrl: 'mock_url',
         uploadDateTime: new Date().toLocaleDateString(),
       },
@@ -114,11 +136,6 @@ describe('ListUploadController', () => {
   });
 
   it('should return a successful response', async () => {
-    const s3 = new S3Client();
-    (s3.send as jest.Mock).mockResolvedValue({
-      ContentLength: 500,
-    });
-
     const createLargeListMockExpectedResponse = {
       list_id: 123,
     };
@@ -168,13 +185,8 @@ describe('ListUploadController', () => {
   });
 
   it('should return an error response when bucket file is empty', () => {
-    const s3 = new S3Client();
-    (s3.send as jest.Mock).mockResolvedValue({
-      ContentLength: 499,
-    });
-
     const request: ListUploadNewRequest = {
-      uploadId: '123',
+      uploadId: '1234',
       listName: 'Example List',
       templateId: 456,
       analysisIDs: '789',
@@ -212,12 +224,8 @@ describe('ListUploadController', () => {
   });
 
   it('should return an error response when file does not exist', () => {
-    const s3 = new S3Client();
-
-    (s3.send as jest.Mock).mockImplementationOnce(() => jest.fn().mockRejectedValueOnce({}));
-
     const request: ListUploadNewRequest = {
-      uploadId: '123',
+      uploadId: '12345',
       listName: 'Example List',
       templateId: 456,
       analysisIDs: '789',

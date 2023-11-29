@@ -81,20 +81,26 @@ export abstract class IPipeService {
   }
 
   async saveS3UrlAtDatabase(filters: GenerationFileRequest, location: string) {
-    const { listId, organizationDatabase, type } = filters;
+    const { listId, organizationDatabase, type, file } = filters;
+
+    const locationWithoutQueryParam = location?.split('?')[0] || '';
 
     const parameters = toSqlParameter({
-      location,
+      location: locationWithoutQueryParam,
       expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
       listId,
       analysisId: type == 'afi' ? 'AFI' : 'FCD',
     });
 
-    try {
-      this.loggerPipe.log('Saving S3 URL at database for list ' + listId + ' and analysis ' + type);
-      await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDate, parameters);
-    } catch (e) {
-      this.loggerPipe.log('Error saving S3 URL at database');
+    if (!['input_csv', 'input_shapefile', 'results_csv'].includes(`${type}_${file}`)) {
+      try {
+        this.loggerPipe.log(
+          'Saving S3 URL at database for list ' + listId + ' and analysis ' + type
+        );
+        await SQLUtils.queryDB(organizationDatabase, setS3UrlAndExpirationDate, parameters);
+      } catch (e) {
+        this.loggerPipe.log('Error saving S3 URL at database');
+      }
     }
   }
 

@@ -26,11 +26,11 @@ export class APIKeyController {
   token(@Body() apiKeyRequest: CreateApiKeyRequest) {
     const apiKeyRequestSchema = z.object({
       organizationId: z.number(),
-      userId: z.number()
-    })
+      userId: z.number(),
+    });
 
-    const { organizationId, userId } = apiKeyRequestSchema.parse(apiKeyRequest)
-    
+    const { organizationId, userId } = apiKeyRequestSchema.parse(apiKeyRequest);
+
     return this.tokenService.createToken(organizationId, userId);
   }
 

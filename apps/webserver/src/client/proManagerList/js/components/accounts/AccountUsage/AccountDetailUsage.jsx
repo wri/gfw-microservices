@@ -27,7 +27,7 @@ function AccountDetailUsage() {
       }
     )
       .then((res) => res.json())
-      .then(({ data }) => {
+      .then(([data]) => {
         setUsageData(data);
         setIsLoading(false);
       })

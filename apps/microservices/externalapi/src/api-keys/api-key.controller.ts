@@ -5,8 +5,7 @@ import { ApiResponse } from '@nestjs/swagger';
 import { CreateApiKeyRequest, ViewApiKeyResponse } from './dtos';
 import { z } from 'zod';
 
-const listAnalysisParamOrganizationIdSchema = z.number();
-const listAnalysisParamTokenIdSchema = z.string();
+const paramOrganizationIdSchema = z.number();
 
 @Controller('/api-keys')
 export class APIKeyController {
@@ -16,6 +15,8 @@ export class APIKeyController {
   @ApiResponse({ status: 200, type: [ViewApiKeyResponse] })
   @Get('/:organizationId')
   async getTokens(@Param('organizationId') organizationId: number): Promise<ViewApiKeyResponse[]> {
+    paramOrganizationIdSchema.parse(organizationId);
+
     return await this.tokenService.findTokenByOrganizationId(organizationId);
   }
 
@@ -23,14 +24,23 @@ export class APIKeyController {
   @ApiResponse({ status: 200, type: ViewApiKeyResponse })
   @Post()
   token(@Body() apiKeyRequest: CreateApiKeyRequest) {
-    return this.tokenService.createToken(apiKeyRequest.organizationId, apiKeyRequest.userId);
+    const apiKeyRequestSchema = z.object({
+      organizationId: z.number(),
+      userId: z.number()
+    })
+
+    const { organizationId, userId } = apiKeyRequestSchema.parse(apiKeyRequest)
+    
+    return this.tokenService.createToken(organizationId, userId);
   }
 
   // Delete a token for a organization
   @Delete('/:organizationId/:tokenId')
   deleteToken(@Param('organizationId') organizationId: number, @Param('tokenId') tokenId: string) {
-    listAnalysisParamOrganizationIdSchema.parse(organizationId);
-    listAnalysisParamTokenIdSchema.parse(tokenId);
+    const paramTokenIdSchema = z.string();
+
+    paramOrganizationIdSchema.parse(organizationId);
+    paramTokenIdSchema.parse(tokenId);
 
     return this.tokenService.deleteToken(organizationId, tokenId);
   }

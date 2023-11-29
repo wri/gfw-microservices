@@ -2,10 +2,11 @@ const { dataSource, createFeatureFlagsService } = require('../service/createFeat
 const logger = require('../../../config/privateutils/logger.utils');
 
 module.exports = async function (request, response) {
+  const { organization_id } = request.session; // undefined for proManagers
   const { getAllFeatureFlags } = createFeatureFlagsService(dataSource);
 
   try {
-    const featureFlags = await getAllFeatureFlags();
+    const featureFlags = await getAllFeatureFlags(organization_id);
 
     response.status(200).send({
       success: true,

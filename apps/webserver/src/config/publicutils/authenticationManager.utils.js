@@ -99,6 +99,8 @@ const unsafeDevOnlyLogin = async (req, username, secret, promanagerLogin) => {
   if (!userRecord) {
     throw new Error('UnsafeDevUser not in DB');
   }
+
+  req.session.user_id = userRecord.id;
   req.session.user_email = username;
   req.session.ispromanager = promanagerLogin;
   req.session.user_secret = userRecord.user_secret;

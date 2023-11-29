@@ -55,28 +55,6 @@ export const upsertFeatureFlag = async ({ flagId, flagState, orgId = null }) => 
   }
 };
 
-export const createFeatureFlag = async (flagName, orgId = null) => {
-  try {
-    const response = await fetch(`/api/feature-flags`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        flagId: flagName,
-        flagState: true,
-        orgId,
-      }),
-    });
-    const { data } = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    return {};
-  }
-};
-
 export const getAccountListData = async () => {
   try {
     const response = await fetch(`/pro-manager-list/accounts`, {

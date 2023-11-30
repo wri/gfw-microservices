@@ -3966,3 +3966,8 @@ export const accountLimitsStrings = {
   areaPerList: 'Area Per List',
   areaPerYear: 'Area Per Year',
 };
+
+export const featureFlagsStrings = {
+  pageHeading: 'Features',
+  addCompanyDialogTitle: 'Select Organization',
+};

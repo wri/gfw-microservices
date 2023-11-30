@@ -1,4 +1,9 @@
-### Get all feature flags current organitzation
+### Get all feature flags for current organitzation
+GET https://localhost:8443/api/feature-flags/myorg
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### Get all feature flags records
 GET https://localhost:8443/api/feature-flags
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
@@ -8,7 +13,7 @@ GET https://localhost:8443/api/feature-flags/Afi
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
-### Insert or Save a feature flag
+### Insert or save a feature flag
 POST https://localhost:8443/api/feature-flags
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
@@ -16,8 +21,7 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 {
 	"flagId": "Afi",
 	"orgId": 1,
-	"flagState": true,
-	"modifierUserId": 1692 
+	"flagState": true
 }
 
 ### Delete feature flag row WHERE param :flagId and request.body.orgId

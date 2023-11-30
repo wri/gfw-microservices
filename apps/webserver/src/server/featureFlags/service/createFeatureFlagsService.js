@@ -73,14 +73,16 @@ function createFeatureFlagsService(dataSource) {
     });
   }
 
-  async function getFeatureFlagsForCurrentOrg(orgId) {
-    const globalFlagsOverride = await getFeatureFlagsWhere({ orgId: null });
+  async function getAllFeatureFlags(orgId = null) {
+    const flagsOverrides = await getFeatureFlagsWhere();
     const orgFlagsOverride = await getFeatureFlagsWhere({ orgId });
 
-    const orgFeatureFlags = allFeatureFlags.map((flagId) => {
+    const featureFlags = allFeatureFlags.map((flagId) => {
       const staticGlobalFeatureFlag = formatGlobalFeatureFlags(flagId);
-      const globalFlagOverride = globalFlagsOverride.find((flag) => flag.flagId === flagId) || {};
-      const orgFlagOverride = orgFlagsOverride.find((flag) => flag.flagId === flagId) || {};
+      const globalFlagOverride = flagsOverrides.find((flag) => flag.flagId === flagId) || {};
+      const orgFlagOverride = orgId
+        ? orgFlagsOverride.find((flag) => flag.flagId === flagId) || {}
+        : {};
 
       return {
         ...staticGlobalFeatureFlag,
@@ -89,7 +91,7 @@ function createFeatureFlagsService(dataSource) {
       };
     });
 
-    return orgFeatureFlags;
+    return featureFlags;
   }
 
   async function getFeatureFlagsByFlagId(flagId) {
@@ -156,8 +158,8 @@ function createFeatureFlagsService(dataSource) {
   }
 
   return {
+    getAllFeatureFlags,
     getFeatureFlagsWhere,
-    getFeatureFlagsForCurrentOrg,
     getFeatureFlagsByFlagId,
     insertOrSaveFeatureFlag,
     deleteFeatureFlag,

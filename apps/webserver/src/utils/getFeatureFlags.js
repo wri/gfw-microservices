@@ -1,6 +1,6 @@
 const getFeatureFlags = async () => {
   try {
-    const response = await fetch('/api/feature-flags', {
+    const response = await fetch('/api/feature-flags/myorg', {
       method: 'GET',
       credentials: 'same-origin',
       headers: {

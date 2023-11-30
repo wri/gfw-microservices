@@ -2,20 +2,21 @@ const { dataSource, createFeatureFlagsService } = require('../service/createFeat
 const logger = require('../../../config/privateutils/logger.utils');
 
 module.exports = async function (request, response) {
-  const { body: featureFlagData } = request;
-  const { organization_user_id } = request.session;
+  const { body: featureFlagData, session } = request;
+  const { user_id: modifierUserId } = session;
   const { insertOrSaveFeatureFlag } = createFeatureFlagsService(dataSource);
 
   try {
+    const updateDateTime = new Date();
     const upsertedFeatureFlag = await insertOrSaveFeatureFlag({
       ...featureFlagData,
-      updateDateTime: new Date(),
-      modifierUserId: organization_user_id,
+      updateDateTime,
+      modifierUserId,
     });
 
     response.status(200).send({
       success: true,
-      upsertedFeatureFlag,
+      data: upsertedFeatureFlag,
     });
   } catch (error) {
     logger.error(`POST /api/feature-flags`, error);

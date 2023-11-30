@@ -1,5 +1,3 @@
-/* eslint-disable import/no-unresolved */
-/* eslint-disable react/jsx-filename-extension */
 import { StateMock } from '@react-mock/state';
 import { render, cleanup } from '@testing-library/react';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -8,7 +6,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import React from 'react';
 
 import { locationsPage } from '../../common/js/config';
-import CommodityRiskFilter from '../js/components/lists/CommodityRiskFilter';
+import CommodityRiskFilter from '../../listDetails/js/components/lists/CommodityRiskFilter';
 
 import { LIST_DATA_BRAZIL } from './test-config';
 

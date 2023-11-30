@@ -2,7 +2,10 @@ import { Controller, Get, Param, Req } from '@nestjs/common';
 import { ListAnalysisResponse } from './list-analysis.dto';
 import { ListAnalysisService } from './list-analysis.service';
 import { ApiResponse, ApiSecurity } from '@nestjs/swagger';
-import { Request } from 'express';
+import { requestSchema, RequestSchema } from '../types/request-schema';
+import { z } from 'zod';
+
+const listAnalysisParamListIdSchema = z.number();
 
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
@@ -13,9 +16,13 @@ export class ListAnalysisController {
   @Get(':listID/analysis/FCD/status')
   async getAnalysisStatus(
     @Param('listID') listID: number,
-    @Req() request: Request
+    @Req() request: RequestSchema
   ): Promise<ListAnalysisResponse> {
-    const organizationId = request.user.organizationId ?? 0;
+    const {
+      user: { organizationId },
+    } = requestSchema.parse(request);
+
+    listAnalysisParamListIdSchema.parse(listID);
 
     const analysisStatus = await this.listAnalysisService.getAnalysisStatus(organizationId, listID);
     return analysisStatus;

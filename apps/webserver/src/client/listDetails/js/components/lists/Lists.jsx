@@ -1846,15 +1846,6 @@ export default class Lists extends Component {
     store.dispatch(changeView('folders'));
   }
 
-  // Change the view back to the locations landing page
-  /*
-  changeToLocationView() {
-    const { history } = this.props;
-    store.dispatch(changeView('landing'));
-    history.push('/');
-  }
-  */
-
   listDiagnosticAccess(list) {
     const { selectedLocations, listData } = this.props;
 

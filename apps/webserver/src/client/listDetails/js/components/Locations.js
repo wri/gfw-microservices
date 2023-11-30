@@ -20,7 +20,6 @@ const pageOptions = {
 };
 
 class Locations extends Component {
-  //unloadHistory = undefined;
 
   constructor(props) {
     super(props);

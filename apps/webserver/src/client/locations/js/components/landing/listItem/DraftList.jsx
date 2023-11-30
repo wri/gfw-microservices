@@ -25,7 +25,7 @@ import { numberWithCommas } from '../../../utils/locationsTableUtils';
 import featureFlags from '../../../../../../utils/general.utils';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 import AnalysisListChips from './AnalysisListChips';
-import CustomDraftDialog from '../../../../../common/js/components/CustomDraftDialog';
+import CustomDraftDialog from '../../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
 import {
   locationsPage,
   draftTooltipMessages,
@@ -47,7 +47,6 @@ function DraftList({
   shareList,
   setDeleteDialogOpen,
   userIsAdmin,
-  B2BsharedListEnabled,
 }) {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -207,7 +206,7 @@ function DraftList({
                   error_file_storage_path={error_file_storage_path}
                 />
               )}
-              {userIsAdmin && B2BsharedListEnabled && (
+              {userIsAdmin && (
                 <MenuItem
                   primaryText={locationsPage.lists.share}
                   leftIcon={<ShareIcon />}

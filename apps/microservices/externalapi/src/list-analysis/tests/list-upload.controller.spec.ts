@@ -18,6 +18,29 @@ import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ExternalUpload } from '../external-upload.entity';
 
+jest.mock('@aws-sdk/client-s3', () => {
+  const keyMap: { [key: string]: number } = {
+    mock_key_123: 500,
+    mock_key_1234: 499,
+  };
+
+  const mockS3Client = {
+    send: async ({ Key }: { Key: string }) => {
+      if (!keyMap[Key]) throw new Error('File not found');
+
+      return { ContentLength: keyMap[Key] };
+    },
+  };
+
+  return {
+    S3Client: jest.fn().mockImplementation(() => mockS3Client),
+    GetObjectCommand: jest.fn().mockImplementation((params) => ({
+      Bucket: params.Bucket,
+      Key: params.Key,
+    })),
+  };
+});
+
 interface WhereRequest {
   where: {
     id: number;
@@ -30,7 +53,21 @@ class ExternalUploadMockRepository {
       {
         id: 123,
         userId: 123,
-        uploadKeyFile: 'mock_key',
+        uploadKeyFile: 'mock_key_123',
+        uploadUrl: 'mock_url',
+        uploadDateTime: new Date().toLocaleDateString(),
+      },
+      {
+        id: 1234,
+        userId: 1234,
+        uploadKeyFile: 'mock_key_1234',
+        uploadUrl: 'mock_url',
+        uploadDateTime: new Date().toLocaleDateString(),
+      },
+      {
+        id: 12345,
+        userId: 1234,
+        uploadKeyFile: 'mock_key_12345',
         uploadUrl: 'mock_url',
         uploadDateTime: new Date().toLocaleDateString(),
       },
@@ -94,10 +131,6 @@ describe('ListUploadController', () => {
       .returns(new ExternalUploadMockRepository());
   });
 
-  //afterEach(() => {
-  //  axiosMock.restore();
-  //});
-
   it('should return a successful response', async () => {
     const createLargeListMockExpectedResponse = {
       list_id: 123,
@@ -145,6 +178,84 @@ describe('ListUploadController', () => {
     const result = await controller.uploadNewList(request, requestMock);
     const { listId, status, uploadId, errorDetails } = result as ListUploadNewResponse;
     expect({ listId, status, uploadId, errorDetails }).toEqual(expectedResult);
+  });
+
+  it('should return an error response when bucket file is empty', () => {
+    const request: ListUploadNewRequest = {
+      uploadId: '1234',
+      listName: 'Example List',
+      templateId: 456,
+      analysisIDs: '789',
+    };
+
+    // Mock user response to let process continue
+    userService.findUser = jest.fn().mockResolvedValue({
+      id: 123,
+      user_email: 'test@test.com',
+      organization_id: 1,
+      organization_user_id: 1,
+      organization_user_status_id: 1,
+      tokens: [],
+    });
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    const expectedError = {
+      message: 'Http Exception',
+      name: 'HttpException',
+      response: {
+        errorDetails: 'File is empty',
+      },
+      status: 403,
+    };
+
+    expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
+  });
+
+  it('should return an error response when file does not exist', () => {
+    const request: ListUploadNewRequest = {
+      uploadId: '12345',
+      listName: 'Example List',
+      templateId: 456,
+      analysisIDs: '789',
+    };
+
+    // Mock user response to let process continue
+    userService.findUser = jest.fn().mockResolvedValue({
+      id: 123,
+      user_email: 'test@test.com',
+      organization_id: 1,
+      organization_user_id: 1,
+      organization_user_status_id: 1,
+      tokens: [],
+    });
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    const expectedError = {
+      message: 'Http Exception',
+      name: 'HttpException',
+      response: {
+        errorDetails: 'File not found',
+      },
+      status: 403,
+    };
+
+    expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
   it('should return an error response when upload invalid ID', () => {

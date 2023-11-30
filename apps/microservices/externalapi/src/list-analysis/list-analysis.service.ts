@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
@@ -16,12 +16,19 @@ import {
   ListUploadNewResponse,
 } from './list-upload-new.dto';
 import { Organization } from '../api-keys/organization.entity';
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 
 const DEFAULT_ANALYSIS = 'FCD';
 const LIST_INITIAL_STATUS = 'Pending';
+const MIN_FILE_SIZE_IN_BYTES = 500;
 @Injectable()
 export class ListAnalysisService {
   private readonly LLP_BASE_URL: string;
+  private readonly AWS_ACCESS_KEY_ID: string;
+  private readonly AWS_REGION: string;
+  private readonly AWS_SECRET_ACCESS_KEY: string;
+  private readonly LARGE_PROCESING_LIST_BUCKET: string;
 
   constructor(
     private config: ConfigService,
@@ -30,6 +37,10 @@ export class ListAnalysisService {
     private organizationService: OrganizationService
   ) {
     this.LLP_BASE_URL = this.config.get<string>('LLP_BASE_URL');
+    this.AWS_ACCESS_KEY_ID = this.config.get<string>('AWS_ACCESS_KEY_ID');
+    this.AWS_REGION = this.config.get<string>('AWS_REGION');
+    this.AWS_SECRET_ACCESS_KEY = this.config.get<string>('AWS_SECRET_ACCESS_KEY');
+    this.LARGE_PROCESING_LIST_BUCKET = this.config.get<string>('LARGE_PROCESING_LIST_BUCKET');
   }
 
   // Replace this with actual database or external service calls
@@ -96,6 +107,37 @@ export class ListAnalysisService {
     return connection;
   }
 
+  private async checkIfS3FileExists(fileKey: string) {
+    const s3 = new S3Client({
+      credentials: {
+        accessKeyId: this.AWS_ACCESS_KEY_ID,
+        secretAccessKey: this.AWS_SECRET_ACCESS_KEY,
+      },
+      region: this.AWS_REGION,
+    });
+
+    const bucketName = this.LARGE_PROCESING_LIST_BUCKET;
+
+    const params = {
+      Bucket: bucketName,
+      Key: fileKey,
+    };
+
+    let contentLength = 0;
+
+    try {
+      const obj = new GetObjectCommand(params);
+      const response = await s3.send(obj);
+      contentLength = response?.ContentLength;
+    } catch (error) {
+      throwCustomErrorResponse('File not found', HttpStatus.FORBIDDEN);
+    }
+
+    if (contentLength < MIN_FILE_SIZE_IN_BYTES) {
+      throwCustomErrorResponse('File is empty', HttpStatus.FORBIDDEN);
+    }
+  }
+
   async uploadNewList(
     newListDetails: ListUploadNewRequest,
     organizationId: number
@@ -109,11 +151,14 @@ export class ListAnalysisService {
     });
 
     if (!externalUpload) {
-      const errorDescription = new ListUploadNewErrorResponse();
-      errorDescription.errorDetails = 'Failed to process the request, upload id not found';
-      throw new HttpException(errorDescription, HttpStatus.BAD_REQUEST);
+      throwCustomErrorResponse(
+        'Failed to process the request, upload id not found',
+        HttpStatus.BAD_REQUEST
+      );
     }
     const analysisIds = newListDetails.analysisIDs.split(',');
+
+    await this.checkIfS3FileExists(externalUpload.uploadKeyFile);
 
     // create large list process
     const largeListCreated = await axios.post<{

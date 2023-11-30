@@ -18,7 +18,7 @@ import Button from '../../../../common/js/components/Button';
 import Dialog from 'material-ui/Dialog';
 import httpRequest from '../../../../common/js/utils/httpRequest';
 import { containsPunctuation } from '../../utils/lists.utils';
-import { defaultCustomAttributeHeaders } from '../edit/table/MultiGridTable.config';
+import { defaultCustomAttributeHeaders } from '../../../../listDetails/js/components/edit/table/MultiGridTable.config';
 import '../../../css/locations.scss';
 
 let originalState;

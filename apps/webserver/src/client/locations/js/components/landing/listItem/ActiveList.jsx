@@ -76,7 +76,7 @@ function ActiveList({
       event_label: `user clicked on list ${list_name}`,
     });
 
-    window.location = `/locations?id=${id}${is_shared ? '&shared=true' : ''}`;
+    window.location = `/list-details?id=${id}${is_shared ? '&shared=true' : ''}`;
   };
 
   const viewMap = () => {

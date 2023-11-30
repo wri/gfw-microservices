@@ -3,7 +3,7 @@ import { locationsPage } from '../../../../common/js/config';
 import { deduceActiveId, deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
-import { filterValidCustom } from '../../utils/moveLocations';
+import { filterValidCustom } from '../../../../listDetails/js/utils/moveLocations';
 import { getListValidStatus } from '../../utils/lists.utils';
 
 function AddList(props) {

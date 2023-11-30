@@ -10,7 +10,7 @@ const List = {
 };
 
 const withName = (name: string) => {
-  cy.visit(`/locations?id=${listIdFromListName[name]}`);
+  cy.visit(`/list-details?id=${listIdFromListName[name]}`);
   return List;
 };
 

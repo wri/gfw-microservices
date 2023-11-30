@@ -17,7 +17,7 @@ function DiagnosticsBreadCrums({ selectedList, diagnosticName = '', isSharedList
   };
 
   const backToLists = () => {
-    window.location = `/locations?id=${id}${isSharedList ? '&shared=true' : ''}${
+    window.location = `/list-details?id=${id}${isSharedList ? '&shared=true' : ''}${
       isGfwList ? '&gfw=true' : ''
     }`;
   };

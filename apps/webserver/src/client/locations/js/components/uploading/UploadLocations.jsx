@@ -57,7 +57,7 @@ import {
   saveAsDraftListConfig,
   saveListConfig,
 } from '../../../../../config/config/locations.config';
-import { defaultCustomAttributeHeaders } from '../edit/table/MultiGridTable.config';
+import { defaultCustomAttributeHeaders } from '../../../../listDetails/js/components/edit/table/MultiGridTable.config';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
 

@@ -4,7 +4,10 @@ import { locationsPage } from '../../../../common/js/config';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
-import { filterValidTemplates, filterValidCustom } from '../../utils/moveLocations';
+import {
+  filterValidTemplates,
+  filterValidCustom,
+} from '../../../../listDetails/js/utils/moveLocations';
 import featureFlags from '../../../../../utils/general.utils';
 
 export default class StepFour extends Component {

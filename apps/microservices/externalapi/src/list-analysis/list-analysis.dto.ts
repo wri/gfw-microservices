@@ -3,7 +3,7 @@ export class ListAnalysisResponse {
   @ApiProperty()
   listId: string;
   @ApiProperty()
-  status: 'Processing' | 'Completed' | 'Failed';
+  status: string;
   @ApiProperty()
   errorsDetails: string[];
   @ApiProperty()

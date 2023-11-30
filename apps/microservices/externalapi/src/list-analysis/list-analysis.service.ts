@@ -18,6 +18,7 @@ import {
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
+import { getListStatusString } from '@wri-monorepos/shared';
 
 const DEFAULT_ANALYSIS = 'FCD';
 const LIST_INITIAL_STATUS = 'Pending';
@@ -54,11 +55,11 @@ export class ListAnalysisService {
     // Waiting for changes from Gustavo and Dakota on tickets 2353 and 2354
     const analysisStatus: ListAnalysisResponse = {
       listId: listAnalysisStatus.listId.toString(),
-      status: 'Completed',
+      status: getListStatusString(listAnalysisStatus.status),
       errorsDetails: (listAnalysisStatus.errorInfo || '').split('\n').filter((e) => e),
-      resultUrl: listAnalysisStatus.listId ? 'https://example.com/results' : null,
+      resultUrl: listAnalysisStatus.s3URL ? listAnalysisStatus.s3URL : null,
       creationDate: listAnalysisStatus.updateTime,
-      expirationDate: new Date(), // this should be updated after Gustavo save the data in database
+      expirationDate: listAnalysisStatus.expirationTime ? listAnalysisStatus.expirationTime : null,
     };
 
     return analysisStatus;

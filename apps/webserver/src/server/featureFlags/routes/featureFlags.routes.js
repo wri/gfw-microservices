@@ -8,6 +8,7 @@ const getFeatureFlagByFlagId = require('../controllers/getFeatureFlagByFlagId');
 const deleteFeatureFlag = require('../controllers/deleteFeatureFlag');
 
 const featureFlagRoutes = express.Router();
+const superAdminFeatureFlagsRoutes = express.Router();
 
 module.exports = (app, limiter) => {
   const routeMiddlewares = [
@@ -16,14 +17,18 @@ module.exports = (app, limiter) => {
     middlewares.checkActive,
     middlewares.checkInactivity,
   ];
+  const superAdminRoutesMiddlewares = [middlewares.checkProManagerAuthentication];
 
   if (rateLimiterUtil.useRateLimiter()) {
     routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));
   }
 
-  app.use('/api/feature-flags', [...routeMiddlewares, featureFlagRoutes]);
+  app.use('/api/feature-flags/myorg', [...routeMiddlewares, featureFlagRoutes]);
   featureFlagRoutes.get('/', getAllFeatureFlags);
-  featureFlagRoutes.get('/:flagId', getFeatureFlagByFlagId);
-  featureFlagRoutes.post('/', insertOrSaveFeatureFlag);
-  featureFlagRoutes.delete('/:flagId', deleteFeatureFlag);
+
+  app.use('/api/feature-flags', [...superAdminRoutesMiddlewares, superAdminFeatureFlagsRoutes]);
+  superAdminFeatureFlagsRoutes.get('/', getAllFeatureFlags);
+  superAdminFeatureFlagsRoutes.get('/:flagId', getFeatureFlagByFlagId);
+  superAdminFeatureFlagsRoutes.post('/', insertOrSaveFeatureFlag);
+  superAdminFeatureFlagsRoutes.delete('/:flagId', deleteFeatureFlag);
 };

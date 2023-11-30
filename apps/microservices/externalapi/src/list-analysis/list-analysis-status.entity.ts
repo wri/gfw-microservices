@@ -16,4 +16,10 @@ export class ListsAnalysisStatus {
 
   @Column({ name: 'UpdateTime' })
   updateTime: Date;
+
+  @Column({ name: 's3_url' })
+  s3URL: string;
+
+  @Column({ name: 'expiration_time' })
+  expirationTime: Date;
 }

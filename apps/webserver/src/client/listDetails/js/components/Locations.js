@@ -20,7 +20,6 @@ const pageOptions = {
 };
 
 class Locations extends Component {
-
   constructor(props) {
     super(props);
     this.state = {

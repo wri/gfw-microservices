@@ -7,8 +7,8 @@ export class ListAnalysisStatusRepositoryMock {
       analysisId: 'FCD',
       updateTime: new Date(),
       status: 2,
+      expirationTime: '11/30/2023',
       s3URL: 'https://example.com/results',
-      expirationTime: '11/28/2023',
     };
   });
 }

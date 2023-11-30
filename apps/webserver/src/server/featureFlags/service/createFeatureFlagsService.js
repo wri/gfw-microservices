@@ -80,7 +80,9 @@ function createFeatureFlagsService(dataSource) {
     const featureFlags = allFeatureFlags.map((flagId) => {
       const staticGlobalFeatureFlag = formatGlobalFeatureFlags(flagId);
       const globalFlagOverride = flagsOverrides.find((flag) => flag.flagId === flagId) || {};
-      const orgFlagOverride = orgId ? orgFlagsOverride.find((flag) => flag.flagId === flagId) || {} : {};
+      const orgFlagOverride = orgId
+        ? orgFlagsOverride.find((flag) => flag.flagId === flagId) || {}
+        : {};
 
       return {
         ...staticGlobalFeatureFlag,

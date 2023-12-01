@@ -87,7 +87,7 @@ export const checkValid = (value) =>
   value !== undefined && value !== '{}' && value !== '' && value !== ' ' && value !== null;
 
 export const numberWithCommas = (number) => {
-  return number?.toLocaleString() || 0;
+  return number ? number.toLocaleString() : 0;
 };
 
 export const formatDigit = (value, lat) => {

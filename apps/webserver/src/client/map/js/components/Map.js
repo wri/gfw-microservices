@@ -91,7 +91,7 @@ import SearchModal from './modals/SearchModal';
 
 import { GFWLists } from '../../../locations/js/config/listNames';
 import { selectList } from '../../../locations/js/actions/locationActions';
-import { gfwListsLocationID } from '../../../listDetails/js/components/lists/Lists.config';
+import { gfwListsLocationID } from '../../../locations/js/components/lists/Lists.config';
 import { FailedPopupDialog } from '../../../locations/js/components/landing/FailedPopupDialog';
 
 import FormaLayer from '../layers/FormaLayer';

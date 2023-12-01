@@ -72,14 +72,12 @@ export function updateZoomLevel(state = 0, action) {
       } else {
         return state;
       }
-      break;
     case types.DECREMENT_ZOOM:
       if (state > 0) {
-        return state-1;
+        return state - 1;
       } else {
         return state;
       }
-      break;
     case types.SELECT_LIST:
     case types.RESET_ZOOM:
       return 0;

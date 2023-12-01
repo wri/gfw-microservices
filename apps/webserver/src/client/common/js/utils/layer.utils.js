@@ -67,13 +67,13 @@ export const constructLayerObject = (visibleLayers, layer) => {
     // Import all layer names that we will be using directly
     const {
       aboveGroundBiomassId,
-      formaAlertsID,
       gladAlertsID,
       indonesiaLandCover,
       landCoverID,
       primaryForest,
       raddAlertsID,
       raddCoverageID,
+      integratedDeforestationAlertsID,
       soyPlantedArea,
       treeBiomassLossID,
       treeCoverGainID,
@@ -100,9 +100,6 @@ export const constructLayerObject = (visibleLayers, layer) => {
       case treeBiomassLossID:
         type = 'treeBiomass';
         break;
-      case formaAlertsID:
-        type = 'forma';
-        break;
       case gladAlertsID:
         type = 'glad';
         break;
@@ -111,6 +108,9 @@ export const constructLayerObject = (visibleLayers, layer) => {
         break;
       case raddCoverageID:
         type = 'radd-coverage';
+        break;
+      case integratedDeforestationAlertsID:
+        type = 'integraded-deforestation-alerts';
         break;
       case soyPlantedArea:
         type = 'soy-planted';

@@ -21,9 +21,8 @@ const fontStyle = {
 export default class DatePickerControl extends Component {
   constructor(props) {
     super(props);
-    const { title, start, end } = props;
+    const { start, end } = props;
     this.state = {
-      title: title,
       start: start,
       end: end,
       minDate: start,
@@ -32,14 +31,14 @@ export default class DatePickerControl extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { title, start, end } = nextProps;
-    this.setState({ title, start, end });
+    const { start, end } = nextProps;
+    this.setState({ start, end });
   }
 
   render() {
     const { changeStart, changeEnd } = this.props;
-    const { title, start, end, minDate, maxDate } = this.state;
-    const fromLabel = `${title} alerts from`;
+    const { start, end, minDate, maxDate } = this.state;
+    const fromLabel = `deforestation alerts from`;
 
     return (
       <div className="adhoc-analysis__date-picker-container" style={flexStyle}>

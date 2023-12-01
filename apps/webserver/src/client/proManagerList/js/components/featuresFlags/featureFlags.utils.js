@@ -17,6 +17,9 @@ export const getAllFeatureFlags = async () => {
 };
 
 export const getFeatureFlagsByFlagId = async (id) => {
+  if (!id) {
+    return [];
+  }
   try {
     const response = await fetch(`/api/feature-flags/${id}`, {
       method: 'GET',
@@ -29,7 +32,7 @@ export const getFeatureFlagsByFlagId = async (id) => {
     return data;
   } catch (error) {
     console.error(error);
-    return {};
+    return [];
   }
 };
 

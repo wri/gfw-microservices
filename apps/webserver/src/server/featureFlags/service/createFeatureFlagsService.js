@@ -1,5 +1,5 @@
 const path = require('path');
-const { DataSource, EntitySchema } = require('typeorm');
+const { DataSource, EntitySchema, IsNull } = require('typeorm');
 const config = require(path.resolve('./config/config'));
 const { allFeatureFlags } = require('../utils/featureFlagConstants');
 const DEFAULT_GLOBAL_FEATURE_FLAG_STATE = false;
@@ -74,14 +74,14 @@ function createFeatureFlagsService(dataSource) {
   }
 
   async function getAllFeatureFlags(orgId = null) {
-    const flagsOverrides = await getFeatureFlagsWhere();
-    const orgFlagsOverride = await getFeatureFlagsWhere({ orgId });
+    const globalFlagsOverrides = await getFeatureFlagsWhere({ orgId: IsNull() });
+    const orgFlagsOverrides = orgId && (await getFeatureFlagsWhere({ orgId }));
 
     const featureFlags = allFeatureFlags.map((flagId) => {
       const staticGlobalFeatureFlag = formatGlobalFeatureFlags(flagId);
-      const globalFlagOverride = flagsOverrides.find((flag) => flag.flagId === flagId) || {};
+      const globalFlagOverride = globalFlagsOverrides.find((flag) => flag.flagId === flagId) || {};
       const orgFlagOverride = orgId
-        ? orgFlagsOverride.find((flag) => flag.flagId === flagId) || {}
+        ? orgFlagsOverrides.find((flag) => flag.flagId === flagId) || {}
         : {};
 
       return {

@@ -23,8 +23,8 @@ export const sortAlphaNum = (a, b) => {
     return aN === bN
       ? sortOrderOption.sameValue
       : aN > bN
-      ? sortOrderOption.keep
-      : sortOrderOption.invert;
+        ? sortOrderOption.keep
+        : sortOrderOption.invert;
   }
   return aA > bA ? sortOrderOption.keep : sortOrderOption.invert;
 };
@@ -87,7 +87,7 @@ export const checkValid = (value) =>
   value !== undefined && value !== '{}' && value !== '' && value !== ' ' && value !== null;
 
 export const numberWithCommas = (number) => {
-  return number.toLocaleString();
+  return number ? number.toLocaleString() : 0;
 };
 
 export const formatDigit = (value, lat) => {

@@ -1,11 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UsePipes } from '@nestjs/common';
 
 import { TokenService } from './token.service';
 import { ApiResponse } from '@nestjs/swagger';
 import { CreateApiKeyRequest, ViewApiKeyResponse } from './dtos';
 import { z } from 'zod';
+import { ZodValidationPipe } from '../middleware/zod.middleware';
 
-const paramOrganizationIdSchema = z.number();
+const apiKeyRequestSchema = z.object({
+  organizationId: z.coerce.number(),
+  userId: z.coerce.number(),
+});
 
 @Controller('/api-keys')
 export class APIKeyController {
@@ -15,21 +19,15 @@ export class APIKeyController {
   @ApiResponse({ status: 200, type: [ViewApiKeyResponse] })
   @Get('/:organizationId')
   async getTokens(@Param('organizationId') organizationId: number): Promise<ViewApiKeyResponse[]> {
-    paramOrganizationIdSchema.parse(organizationId);
-
     return await this.tokenService.findTokenByOrganizationId(organizationId);
   }
 
   // Create a new Token
   @ApiResponse({ status: 200, type: ViewApiKeyResponse })
   @Post()
+  @UsePipes(new ZodValidationPipe(apiKeyRequestSchema))
   token(@Body() apiKeyRequest: CreateApiKeyRequest) {
-    const apiKeyRequestSchema = z.object({
-      organizationId: z.number(),
-      userId: z.number(),
-    });
-
-    const { organizationId, userId } = apiKeyRequestSchema.parse(apiKeyRequest);
+    const { organizationId, userId } = apiKeyRequest;
 
     return this.tokenService.createToken(organizationId, userId);
   }
@@ -37,11 +35,6 @@ export class APIKeyController {
   // Delete a token for a organization
   @Delete('/:organizationId/:tokenId')
   deleteToken(@Param('organizationId') organizationId: number, @Param('tokenId') tokenId: string) {
-    const paramTokenIdSchema = z.string();
-
-    paramOrganizationIdSchema.parse(organizationId);
-    paramTokenIdSchema.parse(tokenId);
-
     return this.tokenService.deleteToken(organizationId, tokenId);
   }
 }

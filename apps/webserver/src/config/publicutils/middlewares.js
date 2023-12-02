@@ -172,17 +172,14 @@ const checkRecognized = (request, response, next) => {
   }
 };
 
-// TODO: Lower rate limits once we better understand expected traffic
-// prod was failing repeatedly on Dec 1, 2023 because ECS was detecting
-// unhealth containers.  Multiplying both limits by 5 to see if that helps.
 const rateLimitAuthenticated = {
   windowMs: 1000, // 1 second
-  max: 5 * 5, // Limit each client to `max` requests per window
+  max: 5, // Limit each client to `max` requests per window
 };
 
 const rateLimitUnauthenticated = {
   windowMs: 1000, // 1 second
-  max: 1 * 5, // Limit each client to `max` requests per window
+  max: 1, // Limit each client to `max` requests per window
 };
 
 module.exports = {

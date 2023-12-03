@@ -40,8 +40,8 @@ const buildSQSMessage = (request) => {
   const { listId } = request.query;
   const { user_email: userEmail, organization_database: organizationDatabase } = request.session;
 
-  const tmpobj = tmp.fileSync();
-  const fileName = tmpobj.name.replace('/tmp/', '');
+  const tmpPath = tmp.tmpNameSync();
+  const fileName = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
 
   const filters = {
     userEmail,

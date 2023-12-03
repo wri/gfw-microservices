@@ -123,8 +123,8 @@ const buildSQSMessage = (request, file) => {
     aggregate,
   } = request.query;
 
-  const tmpobj = tmp.fileSync();
-  const fileName = tmpobj.name.replace('/tmp/', '');
+  const tmpPath = tmp.tmpNameSync();
+  const fileName = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
 
   const filters = {
     analysisArea: JSON.stringify({ analysisAreaMax, analysisAreaMin }),

@@ -7,7 +7,7 @@ const { buildSQSMessage } = require('./afi.utils');
 
 jest.spyOn(path, 'resolve').mockReturnValueOnce('./config/privateutils/sqs.utils');
 sqsUtils.uniqueIdGenerator = jest.fn().mockReturnValue('1234567890');
-tmp.fileSync = jest.fn().mockReturnValue({ name: '/tmp/1234567890' });
+tmp.tmpNameSync = jest.fn().mockReturnValue('/tmp/1234567890' );
 
 describe('Check build sqs message function', () => {
   it('Sending and empty request', () => {

@@ -1,6 +1,8 @@
 const listIdFromListName = {
-  'Argentina Jujuy OTBN': 5439,
-  'Southest Asia': 5528,
+  'AAT Argentina Points Generic': 2,
+  'AAT West Africa Cocoa Generic': 3,
+  'AAT Indonesia Palm Oil Generic': 4,
+  'AAT Argentina Polygons Generic': 5,
 };
 
 const List = {

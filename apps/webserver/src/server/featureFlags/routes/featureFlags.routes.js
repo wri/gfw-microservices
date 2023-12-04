@@ -3,6 +3,7 @@ const express = require('express');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 const insertOrSaveFeatureFlag = require('../controllers/insertOrSaveFeatureFlag');
+const getTransformedFeatureFlags = require('../controllers/getTransformedFeatureFlags');
 const getAllFeatureFlags = require('../controllers/getAllFeatureFlags');
 const getFeatureFlagByFlagId = require('../controllers/getFeatureFlagByFlagId');
 const deleteFeatureFlag = require('../controllers/deleteFeatureFlag');
@@ -24,7 +25,7 @@ module.exports = (app, limiter) => {
   }
 
   app.use('/api/feature-flags/myorg', [...routeMiddlewares, featureFlagRoutes]);
-  featureFlagRoutes.get('/', getAllFeatureFlags);
+  featureFlagRoutes.get('/', getTransformedFeatureFlags);
 
   app.use('/api/feature-flags', [...superAdminRoutesMiddlewares, superAdminFeatureFlagsRoutes]);
   superAdminFeatureFlagsRoutes.get('/', getAllFeatureFlags);

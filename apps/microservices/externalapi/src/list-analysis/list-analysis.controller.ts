@@ -22,7 +22,8 @@ export class ListAnalysisController {
       user: { organizationId },
     } = requestSchema.parse(request);
 
-    listAnalysisParamListIdSchema.parse(listID);
+    const id = Number(listID);
+    listAnalysisParamListIdSchema.parse(id);
 
     const analysisStatus = await this.listAnalysisService.getAnalysisStatus(organizationId, listID);
     return analysisStatus;

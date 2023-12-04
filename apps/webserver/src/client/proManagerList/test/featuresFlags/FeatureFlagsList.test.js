@@ -3,6 +3,7 @@ import { cleanup, render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import FeatureFlagsList from '../../js/components/featuresFlags/FeatureFlagsList';
 import { useFeatureFlagStateContext } from '../../js/components/featuresFlags/FeatureFlagStateContext';
+import moment from 'moment/moment';
 
 jest.mock('../../js/components/featuresFlags/FeatureFlagStateContext');
 
@@ -30,7 +31,7 @@ test('renders FeatureFlagsList component', () => {
   });
 
   featureFlagsList.forEach((flag) => {
-    const formattedDate = '01/01/2023 - 09:00';
+    const formattedDate = moment(flag.updateDateTime).format('MM/DD/YYYY - HH:mm');
 
     expect(screen.getByText(formattedDate)).toBeInTheDocument();
   });

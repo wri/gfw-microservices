@@ -59,6 +59,7 @@
     "^diagnostics(.*)$": "<rootDir>/client/diagnostics$1",
     "^forgot(.*)$": "<rootDir>/client/forgot$1",
     "^locations(.*)$": "<rootDir>/client/locations$1",
+    "^listDetails(.*)$": "<rootDir>/client/listDetails$1",
     "^login(.*)$": "<rootDir>/client/login$1",
     "^manager(.*)$": "<rootDir>/client/manager$1",
     "^map(.*)$": "<rootDir>/client/map$1",

@@ -41,9 +41,12 @@ import Button from '../../../../common/js/components/Button';
 import IconBadgeCheck from '../../../../common/js/components/icon/IconBadgeCheck';
 import IconExclamationTriangle from '../../../../common/js/components/icon/IconExclamationTriangle';
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
-import MultiGridTable from '../edit/table/MultiGridTable';
+import MultiGridTable from '../../../../listDetails/js/components/edit/table/MultiGridTable';
 // eslint-disable-next-line camelcase
-import { _getFeatures, prepUploadFeatures_AddLocationID } from '../edit/table/MultiGridTable.util';
+import {
+  _getFeatures,
+  prepUploadFeatures_AddLocationID,
+} from '../../../../listDetails/js/components/edit/table/MultiGridTable.util';
 import { messageIncorrectFileTypeUpload } from './Uploading.config';
 import {
   excelLocationClassificationExcluded,

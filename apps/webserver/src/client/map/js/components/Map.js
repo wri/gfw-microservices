@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import Dialog from 'material-ui/Dialog';
-import _isEmpty from 'lodash/isEmpty';
 
 // ESRI Imports
 import EsriMap from '@arcgis/core/Map';
@@ -91,7 +90,7 @@ import SearchModal from './modals/SearchModal';
 
 import { GFWLists } from '../../../locations/js/config/listNames';
 import { selectList } from '../../../locations/js/actions/locationActions';
-import { gfwListsLocationID } from '../../../locations/js/components/lists/Lists.config';
+import { gfwListsLocationID } from '../../../listDetails/js/components/lists/Lists.config';
 import { FailedPopupDialog } from '../../../locations/js/components/landing/FailedPopupDialog';
 
 import FormaLayer from '../layers/FormaLayer';

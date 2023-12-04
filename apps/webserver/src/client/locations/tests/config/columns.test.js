@@ -1,4 +1,4 @@
-import columns from '../../js/config/columns';
+import columns from '../../../listDetails/js/config/columns';
 import { ActiveLocationOne, ActiveLocationTwo, PedingLocation } from '../mockedData';
 import { sortOrderOption } from '../../js/utils/locationsTableUtils';
 

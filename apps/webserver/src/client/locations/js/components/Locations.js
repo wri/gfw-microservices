@@ -5,25 +5,21 @@ import Page from '../../../common/js/components/Page';
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import GFW_LIST_NAME from '../../../common/js/constants/lists.constants';
-import { proLayers, userAccessLevel } from '../../../common/js/config';
+import { proLayers } from '../../../common/js/config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import Landing from './landing/Landing';
 import FolderDetail from './landing/FolderDetail';
 import AddLocation from './adding/AddLocation';
 import UploadLocations from './uploading/UploadLocations';
-import EditList from './edit/EditList';
 import AddGFW from './addGFW/AddGFW';
-import onListFromViewToList from '../utils/redirect';
 
 // Store
 import store from '../store';
 import { addList, changeView, changeAddType } from '../actions/locationActions';
 
-import Lists from './lists/Lists';
 import { resetScroll } from '../utils/scroll.utils';
 
 import '../../css/locations.scss';
-import { getIsDiagnosticStatusDraft } from '../utils/draft.utils';
 import ShareListModal from './ShareList/ShareListModal';
 
 const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } =
@@ -54,30 +50,11 @@ class Locations extends Component {
   }
 
   componentDidMount() {
-    const { location, goToEditList, userLists, gfwLists, canopyModalVisible } = this.props;
+    const { goToEditList } = this.props;
     resetScroll();
     this.unsubscribe = store.subscribe(this.storeDidUpdate);
     this.getGeomFromMap(goToEditList);
-    const { history, locationName, fromMap, userSharedLists } = this.props;
-
-    let listToRedirect;
-    const redirectedFromMap = fromMap && locationName;
-    const locationIdSearch = parseInt(new URLSearchParams(location.search).get('id'));
-    const isGfwList = JSON.parse(new URLSearchParams(location.search).get('gfw'));
-    const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
-
-    if (locationIdSearch) {
-      const listToSearch = isGfwList ? gfwLists : isSharedList ? userSharedLists : userLists;
-      listToRedirect = listToSearch?.find((listData) => listData.id === locationIdSearch);
-    } else if (redirectedFromMap) {
-      const userList = userLists.find((userList) => userList.list_name === locationName);
-      listToRedirect =
-        userList || (dashList = gfwLists.find((gfwList) => gfwList.list_name === locationName));
-    }
-
-    if (listToRedirect) {
-      onListFromViewToList(listToRedirect, canopyModalVisible, history);
-    }
+    const { history } = this.props;
 
     this.unloadHistory = history.listen((location, action) => {
       // Update state view on browser back.
@@ -268,12 +245,6 @@ class Locations extends Component {
     }
   };
 
-  stopLoading = () => {
-    this.setState({
-      isLoading: false,
-    });
-  };
-
   showShareList = (show) => {
     if (show) {
       gtag('event', 'Back to list view link clicked', {
@@ -294,7 +265,6 @@ class Locations extends Component {
   render() {
     const {
       view,
-      listView,
       addType,
       addMethod,
       activeTemplate,
@@ -302,20 +272,12 @@ class Locations extends Component {
       selectedFolder,
       selectedLists,
       canopyModalVisible,
-      filters,
-      filterCount,
       language,
       listData,
       filteredData,
-      listLevelAnalysis,
       selectedLocations,
-      selectedAndVisibleLocations,
-      spatialData,
-      infoBubbleCache,
       gfwInfoFromMap,
-      userListInfoFromMap,
       drawnGeom,
-      popover: { displayPopover, bubbleData, popoverLoading, anchorEl },
       isLoading,
       shareView,
       adminArea,
@@ -338,26 +300,7 @@ class Locations extends Component {
     } = this.props;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
-    let draftNonOwner = false;
-    if (selectedList) {
-      const userIsAdmin = userInfo.access_level_id === userAccessLevel.ADMIN;
-      const userIsOwner = userInfo.id === selectedList.user_id;
-      draftNonOwner = !userIsAdmin && !userIsOwner;
-    }
 
-    const filteredLocationData = listData
-      .filter((listD) => filteredData.indexOf(listD.location_id) > -1)
-      .map((loc) => {
-        return {
-          ...loc,
-          draftNonOwner,
-        };
-      });
-
-    const selectedLocationData =
-      filteredLocationData.length > 0 && selectedLocations.length > 0
-        ? filteredLocationData.filter((feat) => selectedLocations.indexOf(feat.location_id) > -1)
-        : filteredLocationData;
     const allLists = userLists.concat(userSharedLists);
 
     const showShareListModal = shareView && B2BsharedListEnabled;
@@ -404,29 +347,6 @@ class Locations extends Component {
               orgLists={orgLists}
             />
           </Route>
-          <Route path="/edit">
-            <EditList
-              history={history}
-              organizationId={organizationId}
-              templateData={templateData}
-              templateDropdowns={templateDropdowns}
-              userLists={userLists}
-              view={view}
-              addType={addType}
-              addMethod={addMethod}
-              activeTemplate={activeTemplate}
-              orgLists={orgLists}
-              listData={listData}
-              selectedLists={selectedLists}
-              selectedLocationData={selectedLocationData}
-              selectedLocations={
-                selectedLocations.length && selectedAndVisibleLocations.length > 0
-                  ? selectedAndVisibleLocations
-                  : selectedLocations
-              }
-              filteredData={filteredData}
-            />
-          </Route>
           <Route path="/folders">
             <FolderDetail
               lists={allLists}
@@ -435,46 +355,6 @@ class Locations extends Component {
               history={history}
               currentUser={userInfo}
               showShareList={this.showShareList}
-            />
-          </Route>
-          <Route path="/lists">
-            <Lists
-              activeTemplate={activeTemplate}
-              addType={addType}
-              gfwInfoFromMap={gfwInfoFromMap}
-              history={history}
-              userListInfoFromMap={userListInfoFromMap}
-              organizationId={organizationId}
-              currentUser={userInfo}
-              selectedLists={selectedLists}
-              folders={userFolders}
-              userLists={userLists} // Contains all lists that users have created
-              view={view}
-              listView={listView}
-              locationCount={locationCount}
-              gfwLists={gfwLists}
-              canopyModalVisible={canopyModalVisible}
-              listLevelAnalysis={listLevelAnalysis}
-              filters={filters}
-              filterCount={filterCount}
-              getCurrentLists={this.getCurrentLists}
-              listData={listData}
-              filteredData={filteredData}
-              filteredLocationData={filteredLocationData}
-              selectedLocations={selectedLocations}
-              selectedAndVisibleLocations={selectedAndVisibleLocations}
-              templateData={templateData}
-              displayPopover={displayPopover}
-              bubbleData={bubbleData}
-              popoverLoading={popoverLoading}
-              anchorEl={anchorEl}
-              infoBubbleCache={infoBubbleCache}
-              stopLoading={this.stopLoading}
-              usersList={usersList} // Contains all users
-              userSharedLists={userSharedLists}
-              shareView={shareView}
-              showShareList={this.showShareList}
-              isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(...selectedLists)}
             />
           </Route>
           <Route path="/gfw">

@@ -149,7 +149,7 @@ class Landing extends Component {
   changeList = ({ id }) => {
     const { showShareList } = this.props;
     showShareList(false);
-    window.location = `/locations?id=${id}&gfw=true`;
+    window.location = `/list-details?id=${id}&gfw=true`;
   };
 
   showLoader = (isLoading) => {

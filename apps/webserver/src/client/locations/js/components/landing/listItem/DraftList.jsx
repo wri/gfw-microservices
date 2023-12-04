@@ -25,6 +25,7 @@ import { numberWithCommas } from '../../../utils/locationsTableUtils';
 import featureFlags from '../../../../../../utils/general.utils';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 import AnalysisListChips from './AnalysisListChips';
+import CustomDraftDialog from '../../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
 import {
   locationsPage,
   draftTooltipMessages,
@@ -77,7 +78,7 @@ function DraftList({
       event_label: `user clicked on Draft list ${list_name}`,
     });
 
-    window.location = `/locations?id=${id}${is_shared ? '&shared=true' : ''}`;
+    window.location = `/list-details?id=${id}${is_shared ? '&shared=true' : ''}`;
   };
 
   const viewMap = () => {

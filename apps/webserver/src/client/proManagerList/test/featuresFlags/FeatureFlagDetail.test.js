@@ -55,9 +55,6 @@ describe('FeatureFlagDetail Component', () => {
     const switchElement = screen.getByRole('checkbox');
     fireEvent.click(switchElement);
 
-    expect(mockFeatureFlagContext.upsertFeatureFlagByFlagId).toHaveBeenCalledWith(
-      false,
-      1
-    );
+    expect(mockFeatureFlagContext.upsertFeatureFlagByFlagId).toHaveBeenCalledWith(false, 1);
   });
 });

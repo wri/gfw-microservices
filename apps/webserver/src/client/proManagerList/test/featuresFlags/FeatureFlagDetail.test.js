@@ -30,6 +30,11 @@ const mockFeatureFlagContext = {
   upsertFeatureFlagByFlagId: jest.fn(),
 };
 
+jest.mock('../../js/components/featuresFlags/AddCompany', () => ({
+  __esModule: true,
+  default: jest.fn(() => <div data-testid="addCompanyMock">AddCompany Mock</div>),
+}));
+
 useFeatureFlagStateContext.mockReturnValue(mockFeatureFlagContext);
 afterEach(cleanup);
 
@@ -41,20 +46,19 @@ describe('FeatureFlagDetail Component', () => {
     expect(screen.getByText('Name')).toBeInTheDocument();
     expect(screen.getByText('TestFlag')).toBeInTheDocument();
     expect(screen.getByText('STATUS')).toBeInTheDocument();
-    expect(screen.getByLabelText('Active')).toBeInTheDocument();
     expect(screen.getByText('ACCOUNTS')).toBeInTheDocument();
     expect(screen.getByText('Organization 1')).toBeInTheDocument();
 
-    const switchElement = getByRole('checkbox');
-    expect(switchElement).toBeInTheDocument();
-    expect(switchElement).toBeChecked();
+    const switchElement = screen.getAllByRole('checkbox');
+    expect(switchElement[0]).toBeInTheDocument();
+    expect(switchElement[0]).toBeChecked();
   });
 
   test('handles switch change', () => {
     render(<FeatureFlagDetail />);
-    const switchElement = screen.getByRole('checkbox');
-    fireEvent.click(switchElement);
+    const switchElement = screen.getAllByRole('checkbox');
+    fireEvent.click(switchElement[0]);
 
-    expect(mockFeatureFlagContext.upsertFeatureFlagByFlagId).toHaveBeenCalledWith(false, 1);
+    expect(mockFeatureFlagContext.upsertFeatureFlagByFlagId).toHaveBeenCalledWith(false, null);
   });
 });

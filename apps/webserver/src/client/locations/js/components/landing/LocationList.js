@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
-import { getIsDiagnosticStatusDraft } from '../../utils/draft.utils';
+import { getIsDiagnosticStatusDraft } from '../../../../listDetails/js/utils/draft.utils';
 import { locationsPage, userAccessLevel, SAVED_LOCATIONS } from '../../../../common/js/config';
 import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
@@ -27,14 +27,12 @@ import { listStatus } from '../../../../../config/env/listStatuses.constants';
 export default class LocationList extends Component {
   constructor(props) {
     super(props);
-    const { B2BsharedListEnabled } = this.props;
     this.state = {
       isManageListFolderOpen: false,
       isDeleteDialogOpen: false,
       rerunDialogState: false,
       downloadLargeListFileDialogState: false,
       confirmDownloadDialog: false,
-      B2BsharedListEnabled,
     };
   }
 
@@ -99,7 +97,6 @@ export default class LocationList extends Component {
 
   shareList = (e, list) => {
     const { list: listProps, showShareList } = this.props;
-    const { B2BsharedListEnabled } = this.state;
     const { folder } = listProps;
     if (folder) {
       // if the user clicked on the map option from a folder
@@ -116,20 +113,22 @@ export default class LocationList extends Component {
 
     store.dispatch(resetList());
     store.dispatch(addList(list));
-    const { history } = this.props;
     showShareList(true);
-
-    if (!B2BsharedListEnabled) {
-      this.redirectToList(history);
-    }
-    this.handleRerunDialogState(e);
   };
 
   render() {
     const { isManageListFolderOpen, isDeleteDialogOpen, rerunDialogState, confirmDownloadDialog } =
       this.state;
-    const { folders, locations, list, currentUser, onFolderChange, isAListSharedWithMe, history } =
-      this.props;
+    const {
+      B2BsharedListEnabled,
+      folders,
+      locations,
+      list,
+      currentUser,
+      onFolderChange,
+      isAListSharedWithMe,
+      history,
+    } = this.props;
 
     const userIsAdmin = currentUser.access_level_id === userAccessLevel.ADMIN;
     const userIsViewer = currentUser.access_level_id === userAccessLevel.VIEWER;
@@ -196,6 +195,7 @@ export default class LocationList extends Component {
             shareList={(e, list) => this.shareList(e, list)}
             setDeleteDialogOpen={() => this.setState({ isDeleteDialogOpen: true })}
             userIsAdmin={userIsAdmin}
+            B2BsharedListEnabled={B2BsharedListEnabled}
           />
         );
       } else {

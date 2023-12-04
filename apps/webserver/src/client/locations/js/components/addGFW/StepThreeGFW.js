@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
-import { filterValidTemplates } from '../../utils/moveLocations';
+import { filterValidTemplates } from '../../../../listDetails/js/utils/moveLocations';
 
 export default class StepThreeGFW extends Component {
   componentWillReceiveProps(nextProps) {

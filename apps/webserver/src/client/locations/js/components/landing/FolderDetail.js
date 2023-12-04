@@ -9,20 +9,10 @@ import ListsFilter from '../lists/ListsFilter';
 import { locationsPage, folderDetailPage } from '../../../../common/js/config';
 import Banner from '../../../../common/js/components/Banners/Banner';
 
-import {
-  changeView,
-  addList,
-  resetList,
-  selectFolder,
-  toggleCanopyModal,
-  updateFilteredData,
-  updateListData,
-  updateSelectedLocations,
-} from '../../actions/locationActions';
+import { changeView, selectFolder } from '../../actions/locationActions';
 
 import './FolderDetail.scss';
 import { getFolders } from './foldersApi';
-import { getIsDiagnosticStatusDraft } from '../../utils/draft.utils';
 
 import Breadcrumbs from '../../../../common/js/components/Breadcrumbs';
 import { numberWithCommas } from '../../utils/locationsTableUtils';

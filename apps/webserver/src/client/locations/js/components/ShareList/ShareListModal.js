@@ -22,7 +22,7 @@ const ShareListModal = (props) => {
   const [shareListModalTab, setShareListModalTab] = useState('list');
   const [showActions, setShowActions] = useState(false);
   const { isOpen, onClose, selectedList, usersList, currentUser, SharedListUsers } = props;
-  const [notAdminsOwner, setNotAdminsOwner] = useState({});
+  const [notAdminsOwner, setNotAdminsOwner] = useState([]);
 
   const AdminsOwner = [];
   const getNotAdminsOwner = usersList.filter((user) => {

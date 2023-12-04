@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as PropTypes from 'prop-types';
-import { getListFilterValues } from '../../../../locations/js/components/lists/getListFilterValues';
+import { getListFilterValues } from '../../../../listDetails/js/components/lists/getListFilterValues';
 import './MultipleCountriesLabel.scss';
 
 function MultipleCountriesLabel({ listId }) {

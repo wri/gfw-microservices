@@ -182,7 +182,7 @@ export default class Lists extends Component {
   componentDidMount() {
     const { listData, filters, selectedLists } = this.props;
 
-    const {list_name, id, globalForestWatchList, associated_gfwlist } = selectedLists[0];
+    const { list_name, id, globalForestWatchList, associated_gfwlist } = selectedLists[0];
 
     gtag('event', 'User accessed list', {
       event_category: 'List Interaction',
@@ -211,7 +211,6 @@ export default class Lists extends Component {
     }
     store.dispatch(updateSelectedLocations([]));
     store.dispatch(updateSelectedAndVisibleLocations([]));
-
   }
 
   // When a list is selected update state

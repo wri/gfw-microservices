@@ -12,7 +12,7 @@ module.exports = async function (request, response) {
     const featureFlags = await getAllFeatureFlags(organization_id);
     const transformedFlags = transformFlagsToAvailabilityObject(featureFlags);
 
-    response.status(201).send({
+    response.status(200).send({
       success: true,
       data: transformedFlags,
     });

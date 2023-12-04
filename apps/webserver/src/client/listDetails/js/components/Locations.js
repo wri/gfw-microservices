@@ -53,7 +53,7 @@ class Locations extends Component {
       listToRedirect =
         userList || (dashList = gfwLists.find((gfwList) => gfwList.list_name === locationName));
     }
-    console.log(listToRedirect);
+
     if (listToRedirect) {
       onListFromViewToList(listToRedirect, canopyModalVisible);
       this.setState({ isLoading: false });

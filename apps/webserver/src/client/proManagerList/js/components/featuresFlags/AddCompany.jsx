@@ -33,7 +33,7 @@ function AddCompany() {
   };
 
   const handleAccountSelection = () => {
-    addFeatureFlagForAccountId(selectedAccountOption?.organization_id).then(() => {
+    addFeatureFlagForAccountId(selectedAccountOption?.orgId).then(() => {
       handleClose();
     });
   };
@@ -55,7 +55,8 @@ function AddCompany() {
             options={formatAccountListDataOptions(accountList)}
             sx={{ width: 552, height: 300, '& input': { border: 0 } }}
             renderInput={(params) => <TextField {...params} />}
-            onChange={(e) => setSelectedAccountOption(e)}
+            isOptionEqualToValue={(option, value) => option.orgId === value.orgId}
+            onChange={(e, v) => setSelectedAccountOption(v)}
             getOptionLabel={(option) => option.orgName}
             getOptionDisabled={(option) => {
               const accountsWithFlags = accountsWithFeatureFlagsByFlagId.map(
@@ -64,7 +65,7 @@ function AddCompany() {
               return accountsWithFlags.includes(option.id);
             }}
             renderOption={(props, option, { selected }) => (
-              <li {...props}>
+              <li {...props} key={option.orgId}>
                 <Box
                   sx={{
                     display: 'flex',

@@ -1,12 +1,12 @@
 const { dataSource, createFeatureFlagsService } = require('../service/createFeatureFlagsService');
 const logger = require('../../../config/privateutils/logger.utils');
 
+// Get all flags for SuperAdmin (no org)
 module.exports = async function (request, response) {
-  const { organization_id } = request.session; // undefined for proManagers
   const { getAllFeatureFlags } = createFeatureFlagsService(dataSource);
 
   try {
-    const featureFlags = await getAllFeatureFlags(organization_id);
+    const featureFlags = await getAllFeatureFlags();
 
     response.status(200).send({
       success: true,

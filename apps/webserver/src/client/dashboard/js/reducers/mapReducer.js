@@ -76,7 +76,7 @@ export function updateZoomLevel(state = 0, action) {
       if (state > 0) {
         return state - 1;
       }
-      
+
       return state;
     case types.SELECT_LIST:
     case types.RESET_ZOOM:

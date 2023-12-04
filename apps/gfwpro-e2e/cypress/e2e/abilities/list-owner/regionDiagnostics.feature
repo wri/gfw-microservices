@@ -6,8 +6,8 @@ Ability: Show Loss of Forests diagnostcs by regions
     Then I can see that <filter> is enabled
 
     Examples:
-      | list                   | filter                   |
-      | "Argentina Jujuy OTBN" | "Soy on Tree Cover Loss"   |
+      | list                           | filter                     |
+      | "AAT Argentina Points Generic" | "Soy on Tree Cover Loss"   |
 
   Scenario Outline: Locations graph changes when selecting filters
 
@@ -16,5 +16,5 @@ Ability: Show Loss of Forests diagnostcs by regions
     Then I can see that the graph value changes
 
     Examples:
-      | list                   | filter                   |
-      | "Argentina Jujuy OTBN" | "Soy on Tree Cover Loss"   |
+      | list                           | filter                     |
+      | "AAT Argentina Points Generic" | "Soy on Tree Cover Loss"   |

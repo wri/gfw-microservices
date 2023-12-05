@@ -56,7 +56,7 @@ describe('ListAnalysisService', () => {
       errorsDetails: [],
       resultUrl: 'https://example.com/results',
       creationDate: new Date().toLocaleDateString(),
-      expirationDate: new Date().toLocaleDateString(),
+      expirationDate: '11/28/2023',
     };
 
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({

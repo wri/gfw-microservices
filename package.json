@@ -98,6 +98,7 @@
     "passport": "0.6.0",
     "passport-local": "^1.0.0",
     "pbf": "^3.2.1",
+    "png-ts": "^0.0.3",
     "postcss-loader": "6.2.1",
     "postcss-safe-parser": "4.0.2",
     "pug": "3.0.2",

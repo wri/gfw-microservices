@@ -26,11 +26,13 @@ const {
   raddCoverageID,
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
+  integratedDeforestationAlertsID,
 } = proLayers;
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 
 import '../../../css/map.scss';
 import RaddLayerLegend from './RaddLayerLegend';
+import DeforestationAlertsLayerLegend from './DeforestationAlertsLayerLegend';
 import { toggleClarkLabsLayers, toggleRaddLayers } from '../../actions/analysisActions';
 import ClarkLabsLayerLeyend from './ClarkLabsLayerLeyend';
 import GladLayerLegend from './GladLayerLegend';
@@ -277,10 +279,6 @@ export default class LegendCheckbox extends Component {
           <ul className="layer-legend">{layer.legendConfig.items.map(this.layerLegendMap)}</ul>
         ) : null}
 
-        {store.getState().raddLayers && layer.id === raddAlertsID ? (
-          <RaddLayerLegend disabled={grayed} layer={layer} />
-        ) : null}
-
         {store.getState().clarkLabsLayers && layer.id === clarkLabsAquacultureLandCover ? (
           <ClarkLabsLayerLeyend
             disabled={grayed}
@@ -302,10 +300,19 @@ export default class LegendCheckbox extends Component {
           />
         ) : null}
 
+        {store.getState().raddLayers && layer.id === raddAlertsID ? (
+          <RaddLayerLegend disabled={grayed} layer={layer} />
+        ) : null}
+
+        {layer.id === integratedDeforestationAlertsID ? (
+          <DeforestationAlertsLayerLegend disabled={grayed} layer={layer} />
+        ) : null}
+
         {symbolsLength === 1 &&
         categoriesLength > 0 &&
         layer.id !== gladAlertsID &&
         layer.id !== raddAlertsID &&
+        layer.id !== integratedDeforestationAlertsID &&
         layer.id !== clarkLabsAquacultureLandCover &&
         layer.id !== soyPlantedArea ? (
           <ul className="layer-legend">

@@ -163,8 +163,12 @@ export default class LayerPanel extends Component {
   };
 
   render() {
+    // hide geographic coverage layers from map dropdown options so they only appear when turning on the legend toggle
     const forestChangeLayers = this.props.mapLayers.filter(
-      (layer) => layer.group === 'forest-change' && layer.id !== proLayers.raddCoverageID
+      (layer) =>
+        layer.group === 'forest-change' &&
+        layer.id !== proLayers.raddCoverageID &&
+        layer.id !== proLayers.umdGladLandsatAlertsCoverageID
     );
     const landCoverLayers = this.props.mapLayers.filter(
       (layer) =>

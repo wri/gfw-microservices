@@ -28,6 +28,7 @@ import {
   UPDATE_PLANET_TILE_LAYER,
   UPDATE_PLANET_TILE_COLOR,
   UPDATE_SOY_YEAR,
+  TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_INTEGRATED_ALERTS_LAYER,
 } from '../constants/actionTypes';
 import {
   mapPage,
@@ -65,6 +66,7 @@ const initialLocationState = {
   soyYear: soyPlantedYearsRange[1],
   planetTileLayer: PLANET_TILE_LAYER_INITIAL,
   planetTileColor: 'rgb',
+  showHighConfidenceAlertsOnIntegratedAlertsLayer: false,
 };
 
 export function populateLayers(state = initialLocationState.mapLayers, action) {
@@ -231,4 +233,11 @@ export function updateList(state = initialLocationState.selectedLists, action) {
 
 export function saveSketchTool(state = initialLocationState.sketchTool, action) {
   return action.type !== SAVE_SKETCH_TOOL ? state : action.sketchTool;
+}
+
+export function toggleHighConfidenceAlertsForIntegratedAlertsLayer(
+  state = initialLocationState.showHighConfidenceAlertsOnIntegratedAlertsLayer,
+  action
+) {
+  return action.type !== TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_INTEGRATED_ALERTS_LAYER ? state : !state;
 }

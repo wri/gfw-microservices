@@ -116,11 +116,7 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
       break;
     case config.platformVars.emailType.LIST_ANALYSIS_STARTED:
       title = "Now it's up to us";
-      msg = `${content.analysis_types.join(
-        ', '
-      )} calculations are processing for <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${
-        content.list_name
-      }</span>. Analysis may take up to 24 hours. You will be notified by email when it's complete.`;
+      msg = `${content.analysis_types} calculations are processing for <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.list_name}</span>. Analysis may take up to 24 hours. You will be notified by email when it's complete.`;
       hasClosing = false;
       break;
     case config.platformVars.emailType.LIST_ANALYSIS_RERUN_SUCCESS:

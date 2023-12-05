@@ -9,24 +9,9 @@ const initialAnalysisState = {
     sliderDate: new Date('2021-01-01 00:00:00'),
     end: new Date(),
   },
-  raddDates: {
-    start: new Date('2019-01-01 00:00:00'),
-    sliderDate: new Date('2019-01-01 00:00:00'),
-    end: new Date(),
-  },
   biomassRanges: {
     min: 0,
     max: 917,
-  },
-  formaDates: {
-    start: new Date('2012-01-01 00:00:00'),
-    sliderDate: new Date('2015-01-01 00:00:00'),
-    end: new Date(),
-  },
-  terraIDates: {
-    start: new Date('2004-01-01 00:00:00'),
-    sliderDate: new Date('2015-01-01 00:00:00'),
-    end: new Date(),
   },
   player: false,
   analysisWarning: false,
@@ -57,51 +42,12 @@ export function handleGLADDates(state = initialAnalysisState.gladDates, action) 
   }
 }
 
-export function handleRADDDates(state = initialAnalysisState.raddDates, action) {
-  switch (action.type) {
-    case actionTypes.SET_RADD_START_DATE:
-      return { ...state, start: action.date };
-    case actionTypes.SET_RADD_SLIDER_DATE:
-      return { ...state, sliderDate: action.date };
-    case actionTypes.SET_RADD_END_DATE:
-      return { ...state, end: action.date };
-    default:
-      return state;
-  }
-}
-
 export function handleBiomassRange(state = initialAnalysisState.biomassRanges, action) {
   switch (action.type) {
     case actionTypes.SET_BIOMASS_MIN_RANGE:
       return { ...state, min: parseInt(action.value, 10) };
     case actionTypes.SET_BIOMASS_MAX_RANGE:
       return { ...state, max: parseInt(action.value, 10) };
-    default:
-      return state;
-  }
-}
-
-export function handleFORMADates(state = initialAnalysisState.formaDates, action) {
-  switch (action.type) {
-    case actionTypes.SET_FORMA_START_DATE:
-      return { ...state, start: action.date };
-    case actionTypes.SET_FORMA_SLIDER_DATE:
-      return { ...state, sliderDate: action.date };
-    case actionTypes.SET_FORMA_END_DATE:
-      return { ...state, end: action.date };
-    default:
-      return state;
-  }
-}
-
-export function handleTerraIDates(state = initialAnalysisState.terraIDates, action) {
-  switch (action.type) {
-    case actionTypes.SET_RADD_START_DATE:
-      return { ...state, start: action.date };
-    case actionTypes.SET_RADD_SLIDER_DATE:
-      return { ...state, sliderDate: action.date };
-    case actionTypes.SET_RADD_END_DATE:
-      return { ...state, end: action.date };
     default:
       return state;
   }

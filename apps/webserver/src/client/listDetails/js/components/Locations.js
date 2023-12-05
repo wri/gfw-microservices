@@ -126,7 +126,6 @@ class Locations extends Component {
     const {
       history,
       templateData,
-
       userLists,
       userInfo,
       organizationId,
@@ -195,7 +194,6 @@ class Locations extends Component {
                 selectedLists={selectedLists}
                 folders={userFolders}
                 userLists={userLists} // Contains all lists that users have created
-                view={view}
                 listView={listView}
                 locationCount={locationCount}
                 gfwLists={gfwLists}

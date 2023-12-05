@@ -180,13 +180,20 @@ export default class Lists extends Component {
   }
 
   componentDidMount() {
-    const { history, listData, filters, selectedLists } = this.props;
-    window.scrollTo(0, 0);
-    this.loadLocationView();
-    this.unloadHistory = history.listen((location) => {
-      const view = location.pathname.slice(1) ? location.pathname.slice(1) : 'landing';
-      store.dispatch(changeView(view));
+    const { listData, filters, selectedLists } = this.props;
+
+    const { list_name, id, globalForestWatchList, associated_gfwlist } = selectedLists[0];
+
+    gtag('event', 'User accessed list', {
+      event_category: 'List Interaction',
+      event_label: 'Accessed List: ' + list_name,
+      list_name,
+      list_id: id,
+      is_gfw_list: !!globalForestWatchList,
+      associated_gfwlist,
     });
+
+    this.loadLocationView();
     this.setAddTypeAndTemplate();
 
     filterListData(
@@ -208,8 +215,8 @@ export default class Lists extends Component {
 
   // When a list is selected update state
   UNSAFE_componentWillReceiveProps(nextProps) {
-    const { gfwInfoFromMapNext, viewNext, selectedListsNext, userListInfoFromMapNext } = nextProps;
-    const { gfwInfoFromMap, gfwLists, userListInfoFromMap, userLists, view } = this.props;
+    const { gfwInfoFromMapNext, userListInfoFromMapNext } = nextProps;
+    const { gfwInfoFromMap, gfwLists, userListInfoFromMap, userLists } = this.props;
 
     if (gfwInfoFromMapNext && !gfwInfoFromMap) {
       /**
@@ -225,17 +232,7 @@ export default class Lists extends Component {
       const userList = userLists.filter((item) => item.id === userListInfoFromMapNext.listID)[0];
       store.dispatch(addList(userList));
       this.getUserLocationData(userListInfoFromMapNext.listID);
-    } else if (viewNext === 'lists' && view === 'landing' && selectedListsNext.length > 0) {
-      this.loadLocationView();
     }
-  }
-
-  shouldComponentUpdate(nextProps) {
-    const { view, listView } = this.props;
-    if (view !== 'lists' && nextProps.view !== 'lists' && listView === nextProps.listView) {
-      return false;
-    }
-    return true;
   }
 
   componentDidUpdate(prevProps) {
@@ -1913,7 +1910,6 @@ export default class Lists extends Component {
       userLists: userListsProps,
       userSharedLists,
       usersList,
-      view,
     } = this.props;
 
     const {

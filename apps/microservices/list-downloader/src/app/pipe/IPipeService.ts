@@ -83,10 +83,8 @@ export abstract class IPipeService {
   async saveS3UrlAtDatabase(filters: GenerationFileRequest, location: string) {
     const { listId, organizationDatabase, type, file } = filters;
 
-    const locationWithoutQueryParam = location?.split('?')[0] || '';
-
     const parameters = toSqlParameter({
-      location: locationWithoutQueryParam,
+      location,
       expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
       listId,
       analysisId: type == 'afi' ? 'AFI' : 'FCD',

@@ -33,9 +33,8 @@ Date.prototype.getJulian = function () {
 
 const createGFWIntegratedLayer = BaseTileLayer.createSubclass({
   properties: {
-    gfwjulianFrom: parseInt(moment().subtract(2, 'years').toDate().getJulian()),
-    gfwjulianTo: parseInt(new Date().getJulian()),
-    //based on only displaying high confidence levels toggle on integrated alert layer
+    julianTo: parseInt(new Date().getJulian()),
+    julianFrom: parseInt(moment().subtract(2, 'years').toDate().getJulian()),
     highConfidenceConfirmed: store.getState().showHighConfidenceAlertsOnIntegratedAlertsLayer,
   },
   getTileUrl: function (level, row, column) {
@@ -73,10 +72,10 @@ const createGFWIntegratedLayer = BaseTileLayer.createSubclass({
       // B - intensity (ranging from 0-55?)
       const slice = [data[i], data[i + 1], data[i + 2], data[i + 3]];
       const values = this.decodeDate(slice);
-      // console.log({gfwjulianFrom: this.gfwjulianFrom, valuesDate: values.date,  gfwjulianTo: this.gfwjulianTo})
-      //   console.log((values.date > this.gfwjulianFrom && values.date < this.gfwjulianTo))
+      // console.log({julianFrom: this.julianFrom, valuesDate: values.date,  julianTo: this.julianTo})
+      //   console.log((values.date > this.julianFrom && values.date < this.julianTo))
       //     console.log({"values.date": values.date})
-      if (values.date > this.gfwjulianFrom && values.date < this.gfwjulianTo) {
+      if (values.date > this.julianFrom && values.date < this.julianTo) {
         data[i + 3] = values.intensity;
         //see notes in confidence-level.ts for breakdown of confidence levels
         //  console.log(this.highConfidenceConfirmed)

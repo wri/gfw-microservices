@@ -33,7 +33,7 @@ import GfwSelect from '../../../../common/js/components/GfwSelect';
 import '../../../css/map.scss';
 import RaddLayerLegend from './RaddLayerLegend';
 import DeforestationAlertsLayerLegend from './DeforestationAlertsLayerLegend';
-import { toggleClarkLabsLayers, toggleRaddLayers } from '../../actions/analysisActions';
+import { toggleClarkLabsLayers } from '../../actions/analysisActions';
 import ClarkLabsLayerLeyend from './ClarkLabsLayerLeyend';
 import GladLayerLegend from './GladLayerLegend';
 
@@ -86,7 +86,6 @@ export default class LegendCheckbox extends Component {
 
     const { visibleLayers } = store.getState();
     if (this.props.layer.id === raddAlertsID) {
-      store.dispatch(toggleRaddLayers());
       if (visibleLayers.includes(raddAlertsID)) {
         store.dispatch(toggleLayer(raddAlertsID));
       }
@@ -207,9 +206,7 @@ export default class LegendCheckbox extends Component {
 
     let hidden;
 
-    if (layer.id === raddAlertsID) {
-      hidden = store.getState().raddLayers ? '' : 'hidden';
-    } else if (layer.id === clarkLabsAquacultureLandCover) {
+    if (layer.id === clarkLabsAquacultureLandCover) {
       hidden = store.getState().clarkLabsLayers ? '' : 'hidden';
     } else {
       hidden = visibleLayers.indexOf(layer.id) === -1 ? 'hidden' : '';
@@ -293,16 +290,10 @@ export default class LegendCheckbox extends Component {
         categoriesLength > 0 &&
         layer.id === gladAlertsID &&
         layer.id !== soyPlantedArea ? (
-          <GladLayerLegend
-            disabled={grayed}
-            layer={layer}
-            gladConfirmed={this.props.gladConfirmed}
-          />
+          <GladLayerLegend disabled={grayed} gladConfirmed={this.props.gladConfirmed} />
         ) : null}
 
-        {store.getState().raddLayers && layer.id === raddAlertsID ? (
-          <RaddLayerLegend disabled={grayed} layer={layer} />
-        ) : null}
+        {layer.id === raddAlertsID ? <RaddLayerLegend disabled={grayed} layer={layer} /> : null}
 
         {layer.id === integratedDeforestationAlertsID ? (
           <DeforestationAlertsLayerLegend disabled={grayed} layer={layer} />

@@ -50,3 +50,8 @@ export const listStatusDescriptions = [
       'Entity that has been triggered for dashboard analysis; diagnostic is ready.',
   },
 ];
+
+export function getListStatusString(status: number): string {
+  const listStatus = listStatusDescriptions.find((s) => s.id === status);
+  return listStatus ? listStatus.status_name : 'Invalid Status';
+}

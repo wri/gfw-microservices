@@ -5,4 +5,3 @@ export * from './object';
 export * from './tests-resources';
 export * from './generate-random-filename';
 export * from './sqs';
-export * from './list-status';

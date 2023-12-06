@@ -86,8 +86,8 @@ export class ListAnalysisService {
     return analysisStatus;
   }
 
-  async prepareUpload(userEmail: string) {
-    const user = await this.userService.findUser(userEmail);
+  async prepareUpload(organizationId: number, userEmail: string) {
+    const user = await this.userService.findUser(organizationId, userEmail);
     if (!user) {
       throw new NotFoundException(`User with ${userEmail} not found`);
     }

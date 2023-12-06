@@ -1379,6 +1379,18 @@ $print-width: 95%;
 //----------------
 //////////////////
 @media print {
+  .header {
+    display: none;
+  }
+
+  .landing-diagnostics {
+    background-color: #fff;
+  }
+
+  .diagnostics-menu-bar {
+    display: none;
+  }
+
   body {
     size: letter;
     padding: 10px;
@@ -1387,6 +1399,10 @@ $print-width: 95%;
       overflow: hidden;
       margin: auto;
       width: $print-width;
+    }
+
+    .app__body {
+      height: auto;
     }
   }
 

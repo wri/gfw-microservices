@@ -369,7 +369,7 @@ describe('ListUploadController', () => {
     axiosMock = new AxiosMockAdapter(axios);
     axiosMock.onPost(/\/api\/create-presigned-url/).reply(200, preSignURLMockExpectedResponse);
 
-    const request = {
+    const requestBody = {
       userEmail: 'test@test.com',
     };
 
@@ -379,6 +379,6 @@ describe('ListUploadController', () => {
       uploadUrl: 'mocked_url',
     };
 
-    expect(controller.prepareUploadList(request)).resolves.toEqual(expectedResult);
+    expect(controller.prepareUploadList(requestBody, requestMock)).resolves.toEqual(expectedResult);
   });
 });

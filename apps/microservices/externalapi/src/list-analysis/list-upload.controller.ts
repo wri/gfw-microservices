@@ -42,12 +42,15 @@ export class ListUploadController {
 
   @ApiResponse({ status: 200, type: PrepareUploadResponse })
   @Post('/prepare_upload')
-  async prepareUploadList(@Body() request: PrepareUploadRequest) {
+  async prepareUploadList(@Body() body: PrepareUploadRequest, @Req() request: Request) {
     const requestBodySchema = z.object({
       userEmail: z.string().email(),
     });
+    const {
+      user: { organizationId },
+    } = requestSchema.parse(request);
 
-    const { userEmail } = requestBodySchema.parse(request);
-    return await this.listAnalysisService.prepareUpload(userEmail);
+    const { userEmail } = requestBodySchema.parse(body);
+    return await this.listAnalysisService.prepareUpload(organizationId, userEmail);
   }
 }

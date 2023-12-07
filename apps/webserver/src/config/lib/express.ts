@@ -53,6 +53,7 @@ if (!unitTestMode) {
  * @param { Express.Application } app
  */
 const configureMiddleware = (app: Application) => {
+  app.set('trust proxy', 1);
   // Enable stack traces
   app.set('showStackError', true);
   // Enable jsonp via res.jsonp
@@ -208,7 +209,7 @@ const configureErrorRoutes = (app: Application) => {
 // either middlewares.rateLimitAuthenticated or middlewares.rateLimitUnauthenticated
 // @ts-ignore:next-line
 const redisBasedLimiter = (limitConfig) => {
-  return expressRateLimit.rateLimit({
+  const realLimiterFn = expressRateLimit.rateLimit({
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
     validate: { trustProxy: false }, // Don't complain about ERR_ERL_PERMISSIVE_TRUST_PROXY
@@ -221,6 +222,10 @@ const redisBasedLimiter = (limitConfig) => {
     // Configure windowMs and max based on the passed in limitConfig
     ...limitConfig,
   });
+  return (req, res, next) => {
+    console.log('HHHHHHHHHHH url2', limitConfig.max, limitConfig.windowMs, req.originalUrl, new Date().toISOString());
+    realLimiterFn(req, res, next);
+  };
 };
 
 /**
@@ -231,7 +236,6 @@ const redisBasedLimiter = (limitConfig) => {
  * @return {Promise}
  */
 export const initialize = (app: Application) => {
-  app.set('trust proxy', true);
   return new Promise((resolve, reject) => {
     logger.info('Initializing express');
     try {

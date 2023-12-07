@@ -28,10 +28,10 @@ export const updateDeforestationAlertsLayers = (map, prevState) => {
           mapLayer.julianFrom = julianFrom;
 
           if (deforestationAlertsLayer === integratedDeforestationAlertsID) {
-            mapLayer.highConfidenceConfirmed = showHighConfidenceAlertsOnIntegratedAlertsLayer;
+            mapLayer.showHighConfidenceConfirmed = showHighConfidenceAlertsOnIntegratedAlertsLayer;
           }
           if (deforestationAlertsLayer === raddAlertsID) {
-            mapLayer.highConfidenceConfirmed = showHighConfidenceAlertsOnRaddAlertsLayer;
+            mapLayer.showHighConfidenceConfirmed = showHighConfidenceAlertsOnRaddAlertsLayer;
           }
 
           if (deforestationAlertsLayer === gladAlertsID) {

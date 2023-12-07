@@ -35,7 +35,7 @@ const createGFWIntegratedLayer = BaseTileLayer.createSubclass({
   properties: {
     julianTo: parseInt(new Date().getJulian()),
     julianFrom: parseInt(moment().subtract(2, 'years').toDate().getJulian()),
-    highConfidenceConfirmed: store.getState().showHighConfidenceAlertsOnIntegratedAlertsLayer,
+    showHighConfidenceConfirmed: store.getState().showHighConfidenceAlertsOnIntegratedAlertsLayer,
   },
   getTileUrl: function (level, row, column) {
     return this.urlTemplate.replace('{z}', level).replace('{x}', column).replace('{y}', row);
@@ -78,9 +78,8 @@ const createGFWIntegratedLayer = BaseTileLayer.createSubclass({
       if (values.date > this.julianFrom && values.date < this.julianTo) {
         data[i + 3] = values.intensity;
         //see notes in confidence-level.ts for breakdown of confidence levels
-        //  console.log(this.highConfidenceConfirmed)
         if (values.confidence === 'one low') {
-          if (this.highConfidenceConfirmed) {
+          if (this.showHighConfidenceConfirmed) {
             data[i] = 255; // R
             data[i + 1] = 255; // G
             data[i + 2] = 255; // B

@@ -231,7 +231,7 @@ const redisBasedLimiter = (limitConfig) => {
  * @return {Promise}
  */
 export const initialize = (app: Application) => {
-  app.set('trust proxy', true);
+  app.set('trust proxy', 1);
   return new Promise((resolve, reject) => {
     logger.info('Initializing express');
     try {

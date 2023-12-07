@@ -22,4 +22,11 @@ module.exports = (app, limiter) => {
   }
 
   app.get('/', routeMiddlewares, controller.login);
+
+  const dumpHeaders = (req, res) => {
+    console.log('HHHHHHHHHHHHH headers', req.headers);
+    res.status(200).send('yo');
+  };
+  app.get('/dumpHeadersUnauth', [limiter(middlewares.rateLimitUnauthenticated)], dumpHeaders);
+  app.get('/dumpHeadersAuth', [limiter(middlewares.rateLimitAuthenticated)], dumpHeaders);
 };

@@ -29,6 +29,7 @@ import {
   UPDATE_PLANET_TILE_COLOR,
   UPDATE_SOY_YEAR,
   TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_INTEGRATED_ALERTS_LAYER,
+  TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_RADD_ALERTS_LAYER,
 } from '../constants/actionTypes';
 import {
   mapPage,
@@ -67,6 +68,7 @@ const initialLocationState = {
   planetTileLayer: PLANET_TILE_LAYER_INITIAL,
   planetTileColor: 'rgb',
   showHighConfidenceAlertsOnIntegratedAlertsLayer: false,
+  showHighConfidenceAlertsOnRaddAlertsLayer: false,
 };
 
 export function populateLayers(state = initialLocationState.mapLayers, action) {
@@ -240,4 +242,11 @@ export function toggleHighConfidenceAlertsForIntegratedAlertsLayer(
   action
 ) {
   return action.type !== TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_INTEGRATED_ALERTS_LAYER ? state : !state;
+}
+
+export function toggleHighConfidenceAlertsForRaddAlertsLayer(
+  state = initialLocationState.showHighConfidenceAlertsOnRaddAlertsLayer,
+  action
+) {
+  return action.type !== TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_RADD_ALERTS_LAYER ? state : !state;
 }

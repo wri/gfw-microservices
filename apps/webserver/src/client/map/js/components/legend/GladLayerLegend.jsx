@@ -4,11 +4,7 @@ import React from 'react';
 import store from '../../store';
 import { toggleGladConfirmed } from '../../actions/analysisActions';
 
-function GladLayerLegend({ disabled, layer, gladConfirmed }) {
-  const recentAlertsColor =
-    layer?.legendConfig?.items[0]?.categories?.find((symbol) => symbol.name === 'Recent alerts')
-      ?.color || '#e4c600';
-
+function GladLayerLegend({ disabled, gladConfirmed }) {
   const toggleHighConfidenceAlertsGladLayer = (event, eventType) => {
     if (!disabled) {
       if (eventType === 'click') {
@@ -23,18 +19,7 @@ function GladLayerLegend({ disabled, layer, gladConfirmed }) {
 
   return (
     <ul className="layer-legend">
-      <li key={0}>
-        <div>
-          <span
-            className="layer-legend-symbol"
-            style={{
-              background: recentAlertsColor,
-            }}
-          />
-          <span className="layer-legend-label">Recent alerts</span>
-        </div>
-      </li>
-      <li key={2} className={`layer-checkbox ${gladConfirmed ? 'active' : ''}`}>
+      <li className={`layer-checkbox ${gladConfirmed ? 'active' : ''}`}>
         <div>
           <span
             className="toggle-switch pointer"

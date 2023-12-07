@@ -1,10 +1,11 @@
 import React from 'react';
-import store from '../../store';
-import { proLayers } from '../../../../common/js/config';
+import store from '../../../store';
+import { proLayers } from '../../../../../common/js/config';
 import {
   toggleLayer,
   toggleHighConfidenceAlertsForRaddAlertsLayer,
-} from '../../actions/mapActions';
+} from '../../../actions/mapActions';
+import IntegratedAlertsMapLegends from './IntegratedAlertsMapLegends';
 const { raddCoverageID } = proLayers;
 
 const RaddLayerLegend = ({ disabled }) => {
@@ -23,6 +24,7 @@ const RaddLayerLegend = ({ disabled }) => {
 
   return (
     <ul className="layer-legend">
+      <IntegratedAlertsMapLegends />
       <li className={`layer-checkbox ${visibleLayers.includes(raddCoverageID) ? 'active' : ''}`}>
         <div onClick={toggleRaddCoverageLayer}>
           <span className="toggle-switch pointer">

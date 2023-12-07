@@ -18,12 +18,7 @@ function GladLayerLegend({ disabled, gladConfirmed }) {
 
   return (
     <ul className="layer-legend">
-
-         <IntegratedAlertsMapLegends />
-
-
-
-
+      <IntegratedAlertsMapLegends />
 
       <li className={`layer-checkbox ${gladConfirmed ? 'active' : ''}`}>
         <div>

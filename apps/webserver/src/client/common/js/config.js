@@ -19,7 +19,7 @@ export const proLayers = {
   treeCoverGainID: 'Tree cover gain',
   prodesDeforestationID: 'PRODES Deforestation Vizz',
   treeBiomassLossID: 'Tree biomass loss',
-  gladAlertsID: 'GLAD alerts',
+  gladAlertsID: 'GLAD-L alerts',
   raddAlertsID: 'RADD alerts',
   raddCoverageID: 'RADD Coverage',
   integratedDeforestationAlertsID: 'Integrated Deforestation Alerts',

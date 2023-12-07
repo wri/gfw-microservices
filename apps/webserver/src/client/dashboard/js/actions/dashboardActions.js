@@ -103,6 +103,10 @@ export function incrementZoomLevel() {
   return { type: types.INCREMENT_ZOOM };
 }
 
+export function decrementZoomLevel() {
+  return { type: types.DECREMENT_ZOOM };
+}
+
 export function resetZoomLevel() {
   return { type: types.RESET_ZOOM };
 }

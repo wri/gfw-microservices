@@ -363,6 +363,7 @@ export default class Dashboard extends Component {
       timeframeGeojson,
       timeframeDissolved,
       timeframeGeojsonForFooter,
+      selectedAdmin,
     } = this.state;
 
     const dashboardTitle = isEmpty(selectedList)
@@ -470,6 +471,7 @@ export default class Dashboard extends Component {
               selectedTimeframe={selectedTimeframe}
               infoBubbleCache={infoBubbleCache}
               filteredLocationGeoJSON={timeframeGeojson}
+              selectedAdmin={selectedAdmin}
             />
             {isEmpty(rawData) ? null : (
               <DashboardFooter

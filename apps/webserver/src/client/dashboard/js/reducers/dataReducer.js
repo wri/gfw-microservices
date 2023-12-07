@@ -280,6 +280,7 @@ export default function dataReducer(
     case types.UPDATE_LOCATION_FILTER:
     case types.SAVE_RAW_DATA:
     case types.INCREMENT_ZOOM:
+    case types.DECREMENT_ZOOM:
     case types.RESET_ZOOM:
       return reduceData(intermediateState, clonedRawData);
     default:

@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-
-// Store
 import store from '../../store';
 import { toggleLayer, showLoading, getLayerInfo } from '../../actions/mapActions';
-import { toggleClarkLabsLayers, toggleRaddLayers } from '../../actions/analysisActions';
+import { toggleClarkLabsLayers } from '../../actions/analysisActions';
 import { proLayers } from '../../../../common/js/config';
 
 const {
@@ -13,17 +11,11 @@ const {
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
 } = proLayers;
-
-// import MapComponent from '../../components/MapComponent';
-// import 'map/css/map.scss';
-
 export default class LayerCheckbox extends Component {
   toggleLayer = () => {
     const { layer, visibleLayers } = this.props;
     if (layer.id === soyInCerradoBiome) {
       store.dispatch(toggleLayer(soyOnTreeCoverLoss));
-    } else if (layer.id === raddAlertsID) {
-      store.dispatch(toggleRaddLayers());
     } else if (layer.id === clarkLabsAquacultureLandCover) {
       // hide clarkLabsAquacultureLandCover if hidding this layer
       if (
@@ -66,9 +58,7 @@ export default class LayerCheckbox extends Component {
   render() {
     const { layer, visibleLayers } = this.props;
     let checked;
-    if (this.props.layer.id === raddAlertsID) {
-      checked = !store.getState().raddLayers ? '' : 'active';
-    } else if (this.props.layer.id === clarkLabsAquacultureLandCover) {
+    if (this.props.layer.id === clarkLabsAquacultureLandCover) {
       checked = !store.getState().clarkLabsLayers ? '' : 'active';
     } else {
       checked = visibleLayers.indexOf(this.props.layer.id) === -1 ? '' : 'active';

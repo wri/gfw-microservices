@@ -3723,6 +3723,7 @@ export const mapPage = {
     proLayers.gladAlertsID,
     proLayers.raddAlertsID,
     proLayers.raddCoverageID,
+    proLayers.integratedDeforestationAlertsID,
     proLayers.viirsActiveFiresID,
   ],
   exclusiveDrawLayers: [

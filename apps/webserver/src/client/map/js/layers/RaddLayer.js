@@ -25,9 +25,9 @@ Date.prototype.getJulian = function () {
 
 const RaddLayer = BaseTileLayer.createSubclass({
   properties: {
-    julianFrom: 15000,
-    julianTo: new Date().getJulian(),
-    confirmed: false,
+    julianTo: parseInt(new Date().getJulian()),
+    julianFrom: parseInt(moment().subtract(2, 'years').toDate().getJulian()),
+    showHighConfidenceConfirmed: false,
   },
 
   getTileUrl: function (level, row, column) {
@@ -93,7 +93,7 @@ const RaddLayer = BaseTileLayer.createSubclass({
       // Check if pixel date is between Julian Date properties above
       if (values.date > this.julianFrom && values.date < this.julianTo) {
         // Check if we are only examining confirmed cases or not
-        if (this.confirmed) {
+        if (this.showHighConfidenceConfirmed) {
           if (values.confidence > 0) {
             data[i + 3] = values.intensity;
             // Make the pixel pink for glad alerts

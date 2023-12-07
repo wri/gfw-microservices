@@ -1,8 +1,7 @@
 import React from 'react';
-
-// Store
-import store from '../../store';
-import { toggleGladConfirmed } from '../../actions/analysisActions';
+import store from '../../../store';
+import { toggleGladConfirmed } from '../../../actions/analysisActions';
+import IntegratedAlertsMapLegends from './IntegratedAlertsMapLegends';
 
 function GladLayerLegend({ disabled, gladConfirmed }) {
   const toggleHighConfidenceAlertsGladLayer = (event, eventType) => {
@@ -19,6 +18,8 @@ function GladLayerLegend({ disabled, gladConfirmed }) {
 
   return (
     <ul className="layer-legend">
+      <IntegratedAlertsMapLegends />
+
       <li className={`layer-checkbox ${gladConfirmed ? 'active' : ''}`}>
         <div>
           <span

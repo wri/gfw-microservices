@@ -31,11 +31,11 @@ const {
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 
 import '../../../css/map.scss';
-import RaddLayerLegend from './RaddLayerLegend';
-import DeforestationAlertsLayerLegend from './DeforestationAlertsLayerLegend';
+import RaddLayerLegend from './DeforestationAlerts/RaddLayerLegend';
+import GladLayerLegend from './DeforestationAlerts/GladLayerLegend';
+import IntegratedDeforestationAlertsLayerLegend from './DeforestationAlerts/IntegratedDeforestationAlertsLayerLegend';
 import { toggleClarkLabsLayers } from '../../actions/analysisActions';
 import ClarkLabsLayerLeyend from './ClarkLabsLayerLeyend';
-import GladLayerLegend from './GladLayerLegend';
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -296,7 +296,7 @@ export default class LegendCheckbox extends Component {
         {layer.id === raddAlertsID ? <RaddLayerLegend disabled={grayed} layer={layer} /> : null}
 
         {layer.id === integratedDeforestationAlertsID ? (
-          <DeforestationAlertsLayerLegend disabled={grayed} layer={layer} />
+          <IntegratedDeforestationAlertsLayerLegend disabled={grayed} layer={layer} />
         ) : null}
 
         {symbolsLength === 1 &&

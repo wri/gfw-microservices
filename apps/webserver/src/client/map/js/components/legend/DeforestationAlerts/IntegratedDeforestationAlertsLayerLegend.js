@@ -1,11 +1,12 @@
 import React from 'react';
-import store from '../../store';
+import store from '../../../store';
 import {
   toggleLayer,
   toggleHighConfidenceAlertsForIntegratedAlertsLayer,
-} from '../../actions/mapActions';
+} from '../../../actions/mapActions';
+import IntegratedAlertsMapLegends from './IntegratedAlertsMapLegends';
 
-const DeforestationAlertsLayerLegend = ({ disabled, geographicCoverageLayer }) => {
+const IntegratedDeforestationAlertsLayerLegend = ({ disabled, geographicCoverageLayer }) => {
   const { visibleLayers, showHighConfidenceAlertsOnIntegratedAlertsLayer } = store.getState();
   const toggleGeographicCoverageLayer = () => {
     if (!disabled) {
@@ -21,6 +22,7 @@ const DeforestationAlertsLayerLegend = ({ disabled, geographicCoverageLayer }) =
 
   return (
     <ul className="layer-legend">
+      <IntegratedAlertsMapLegends />
       <li
         className={`layer-checkbox ${
           visibleLayers.includes(geographicCoverageLayer) ? 'active' : ''
@@ -50,4 +52,4 @@ const DeforestationAlertsLayerLegend = ({ disabled, geographicCoverageLayer }) =
   );
 };
 
-export default DeforestationAlertsLayerLegend;
+export default IntegratedDeforestationAlertsLayerLegend;

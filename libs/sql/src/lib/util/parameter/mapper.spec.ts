@@ -22,7 +22,7 @@ describe('Parameter Mapper', () => {
     expect(toSqlParameter(input)).toStrictEqual([
       {
         field: 'location',
-        type: sql.VarChar(255),
+        type: sql.VarChar(2047),
         value: 'http://www.google.com',
       },
       {
@@ -37,7 +37,7 @@ describe('Parameter Mapper', () => {
       },
       {
         field: 'analysisId',
-        type: sql.VarChar(10),
+        type: sql.VarChar(30),
         value: 'AFI',
       },
     ]);
@@ -53,7 +53,7 @@ describe('Parameter Mapper', () => {
     expect(toSqlParameter(input)).toStrictEqual([
       {
         field: 'location',
-        type: sql.VarChar(255),
+        type: sql.VarChar(2047),
         value: null,
       },
       {
@@ -68,7 +68,7 @@ describe('Parameter Mapper', () => {
       },
       {
         field: 'analysisId',
-        type: sql.VarChar(10),
+        type: sql.VarChar(30),
         value: 'AFI',
       },
     ]);

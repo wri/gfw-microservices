@@ -1,4 +1,4 @@
-import VectorTileLayer from 'esri/layers/VectorTileLayer';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 
 // Services
 import { fetchGfwProLayers } from '../service/gfw.service';

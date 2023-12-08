@@ -177,9 +177,12 @@ const rateLimitAuthenticated = {
   max: 5, // Limit each client to `max` requests per window
 };
 
+// max can't be one and best to match same number as authenticated case above
+// someone reloading the home page will be treated as same client and could get
+// limited unintentionally.  Therefore, increasing windowMs and keep max same.
 const rateLimitUnauthenticated = {
-  windowMs: 1000, // 1 second
-  max: 1, // Limit each client to `max` requests per window
+  windowMs: 5 * 1000, // 5 seconds
+  max: 5, // Limit each client to `max` requests per window
 };
 
 module.exports = {

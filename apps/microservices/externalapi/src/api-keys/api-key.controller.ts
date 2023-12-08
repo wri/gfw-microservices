@@ -7,8 +7,8 @@ import { z } from 'zod';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
 
 const apiKeyRequestSchema = z.object({
-  organizationId: z.coerce.number(),
-  userId: z.coerce.number(),
+  organizationId: z.number(),
+  userId: z.number(),
 });
 
 @Controller('/api-keys')

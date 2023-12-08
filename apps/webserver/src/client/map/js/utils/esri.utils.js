@@ -1,6 +1,6 @@
 /*********************************************************************************************************
  * ESM Migration Info
- * This file can be removed once src/client/locations is updated to use arcgis ES Modules.
+ * This file can be removed once src/client/diagnostics is updated to use arcgis ES Modules.
  * It is a copy of src/client/common/js/utils/esri.utils.js
  *
  * Currently, the map view is the focus of the migration effort. Therefore, to keep changes isolated to

@@ -53,6 +53,7 @@ if (!unitTestMode) {
  * @param { Express.Application } app
  */
 const configureMiddleware = (app: Application) => {
+  app.set('trust proxy', 1);
   // Enable stack traces
   app.set('showStackError', true);
   // Enable jsonp via res.jsonp
@@ -231,7 +232,6 @@ const redisBasedLimiter = (limitConfig) => {
  * @return {Promise}
  */
 export const initialize = (app: Application) => {
-  app.set('trust proxy', true);
   return new Promise((resolve, reject) => {
     logger.info('Initializing express');
     try {

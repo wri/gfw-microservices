@@ -31,11 +31,12 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
             return prevFeatureFlagListValues.map((flag) => {
               if (
                 flag.flagId === upsertedFeatureFlag.flagId &&
-                orgId === upsertedFeatureFlag.orgId
+                flag.orgId === upsertedFeatureFlag.orgId
               ) {
                 return upsertedFeatureFlag;
               }
-              return upsertedFeatureFlag;
+
+              return flag;
             });
           });
         } else {

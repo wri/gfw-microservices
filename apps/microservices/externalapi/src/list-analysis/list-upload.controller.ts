@@ -21,14 +21,10 @@ const listUploadBodySchema = z.object({
   analysisIDs: z.string(),
 });
 
-const prepareUploadRequestBodySchema = z.object({
-  userEmail: z.string().email(),
-});
-
 @ApiSecurity('x-api-key')
 @Controller('/v1')
 export class ListUploadController {
-  constructor (private listAnalysisService: ListAnalysisService) { }
+  constructor(private listAnalysisService: ListAnalysisService) {}
 
   @ApiResponse({ status: 200, type: ListUploadNewResponse })
   @Post('/list/upload_new')

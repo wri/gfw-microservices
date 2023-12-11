@@ -9,7 +9,7 @@ import { ZodValidationPipe } from '../middleware/zod.middleware';
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
 export class ListAnalysisController {
-  constructor (private readonly listAnalysisService: ListAnalysisService) { }
+  constructor(private readonly listAnalysisService: ListAnalysisService) {}
 
   @ApiResponse({ status: 200, type: ListAnalysisResponse })
   @Get(':listID/analysis/FCD/status')

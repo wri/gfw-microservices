@@ -8,9 +8,10 @@ export class Task {
 
   constructor(private unlockListService: UnlockListService) {}
 
-  @Cron('0 * * * * *')
+  // Run every day at 3 AM
+  @Cron('0 0 3 * * *')
   async runTaskEveryDay() {
-    this.logger.log('Run task every day');
+    this.logger.log('Running daily tasks at 3 AM');
     await this.unlockListService.execute();
   }
 }

@@ -50,7 +50,7 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
   const addFeatureFlagForAccountId = (orgId) => {
     return upsertFeatureFlagByFlagId(!!selectedFeatureFlag?.flagState, orgId).then(
       (newFeatureFlagRecord) => {
-        if(newFeatureFlagRecord){
+        if (newFeatureFlagRecord) {
           setFeatureFlagsListByFlagId([...featureFlagsListByFlagId, newFeatureFlagRecord]);
         }
       }

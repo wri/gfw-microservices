@@ -429,12 +429,12 @@ export default class Dashboard extends Component {
               <div style={{ cursor: 'auto' }}>
                 <span>{`Last updated: ${this.state.lastUpdatedDashboard} GMT`}</span>
               </div>
-              <div onClick={() => this.printReport()}>
+              <div onClick={() => this.printReport()} className='dashboard-subnav__control'>
                 <ReportIcon color="#b9b9bb" />
                 <span>Report</span>
               </div>
               <div
-                className={`${isEmpty(rawData) ? 'hidden' : ''}`}
+                className={`dashboard-subnav__control ${isEmpty(rawData) ? 'hidden' : ''}`}
                 onClick={() => downloadDashboard()}
               >
                 <DownloadIcon color="#b9b9bb" />

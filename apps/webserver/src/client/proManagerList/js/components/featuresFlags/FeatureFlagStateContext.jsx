@@ -52,7 +52,9 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
   const addFeatureFlagForAccountId = (orgId) => {
     return upsertFeatureFlagByFlagId(!!selectedFeatureFlag?.flagState, orgId).then(
       (newFeatureFlagRecord) => {
-        setFeatureFlagsListByFlagId(...featureFlagsListByFlagId, newFeatureFlagRecord);
+        if(newFeatureFlagRecord){
+          setFeatureFlagsListByFlagId([...featureFlagsListByFlagId, newFeatureFlagRecord]);
+        }
       }
     );
   };

@@ -40,10 +40,7 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
             });
           });
         } else {
-          setSelectedFeatureFlag((prevFeatureFlagValue) => ({
-            ...prevFeatureFlagValue,
-            upsertedFeatureFlag,
-          }));
+          setSelectedFeatureFlag(upsertedFeatureFlag);
         }
       });
     },

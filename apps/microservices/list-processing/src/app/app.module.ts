@@ -1,4 +1,3 @@
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 
 const envModule = ConfigModule.forRoot({
@@ -10,15 +9,13 @@ import { config } from 'aws-sdk';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseService } from '../shared/database/gfw';
 import { LargeListService } from './../services/largelist.service';
 import { GeoService, LocationService } from '@wri-monorepos/geo';
-import { SqlModule } from '@wri-monorepos/sql';
+import { SqlModule, createTypeOrmModule } from '@wri-monorepos/sql';
 import { ListService } from '../services/list.service';
-import { AfiController } from './afi.controller';
-import { AfiService } from '../services/afi.service';
-import { FCDService } from '../services/fcd.service';
-import { FCDController } from './fcd.controller';
+import { FCDModule } from './fcd';
+import { SchedulerModule } from './scheduler';
+import { AFIModule } from './afi';
 
 config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -27,16 +24,18 @@ config.update({
 });
 
 @Module({
-  imports: [envModule, TypeOrmModule.forRootAsync({ useClass: DatabaseService }), SqlModule],
-  controllers: [AppController, AfiController, FCDController],
-  providers: [
-    AppService,
-    LargeListService,
-    LocationService,
-    GeoService,
-    ListService,
-    AfiService,
-    FCDService,
+  imports: [
+    envModule,
+    createTypeOrmModule({
+      name: 'default',
+      imports: [SchedulerModule],
+    }),
+    SqlModule,
+    FCDModule,
+    AFIModule,
+    SchedulerModule,
   ],
+  controllers: [AppController],
+  providers: [AppService, LargeListService, LocationService, GeoService, ListService],
 })
 export class AppModule {}

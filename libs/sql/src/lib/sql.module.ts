@@ -6,6 +6,7 @@ import { UspGetListAnalysis } from './lists';
 import { DatabaseService } from './util/database.service';
 
 import { UspGetAnalysisDataCountForUserList, UspGetPaginatedAnalysisDataForUserList } from './llp';
+import { ClientStoreConnection } from './util/typeORM.utils';
 
 @Module({
   imports: [TypeOrmModule.forRootAsync({ useClass: DatabaseService })],
@@ -15,12 +16,14 @@ import { UspGetAnalysisDataCountForUserList, UspGetPaginatedAnalysisDataForUserL
     UspGetPaginatedAnalysisDataForUserList,
     UspGetListLocations,
     UspGetListAnalysis,
+    ClientStoreConnection,
   ],
   exports: [
     UspGetAnalysisDataCountForUserList,
     UspGetPaginatedAnalysisDataForUserList,
     UspGetListLocations,
     UspGetListAnalysis,
+    ClientStoreConnection,
   ],
 })
 export class SqlModule {}

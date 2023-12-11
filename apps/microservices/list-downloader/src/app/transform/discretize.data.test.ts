@@ -15,14 +15,14 @@ describe('DiscretizeData', () => {
     );
   });
 
-  test('Should return empty object', () => {
+  test('Should not break when receive empty object and also return an empty object', () => {
     const filterObject = new DiscretizeData();
     filterObject._transform({}, '', (err, data) => {
       expect(data).toEqual({});
     });
   });
 
-  test('Should return undefined', () => {
+  test('Should not break when receive undefined and also return undefined', () => {
     const filterObject = new DiscretizeData();
     filterObject._transform(undefined, '', (err, data) => {
       expect(data).toEqual(undefined);
@@ -53,6 +53,72 @@ describe('DiscretizeData', () => {
           'VALUES - Peat': 'High',
           'VALUES - Protected Areas': 'High',
           name: 'test',
+        });
+      }
+    );
+  });
+
+  test('Should discretize 0 to Low', () => {
+    const filterObject = new DiscretizeData();
+    filterObject._transform(
+      {
+        'Protected Areas': 0,
+        'THREATS - Fire': 0,
+      },
+      '',
+      (err, data) => {
+        expect(data).toEqual({
+          'Protected Areas': 'Low',
+          'THREATS - Fire': 'Low',
+        });
+      }
+    );
+  });
+
+  test('Should discretize 1 to Medium', () => {
+    const filterObject = new DiscretizeData();
+    filterObject._transform(
+      {
+        'THREATS - Overall': 1,
+        'VALUES - Forest': 1,
+      },
+      '',
+      (err, data) => {
+        expect(data).toEqual({
+          'THREATS - Overall': 'Medium',
+          'VALUES - Forest': 'Medium',
+        });
+      }
+    );
+  });
+
+  test('Should discretize 2 to High', () => {
+    const filterObject = new DiscretizeData();
+    filterObject._transform(
+      {
+        'VALUES - Peat': 2,
+        'VALUES - Protected Areas': 2,
+      },
+      '',
+      (err, data) => {
+        expect(data).toEqual({
+          'VALUES - Peat': 'High',
+          'VALUES - Protected Areas': 'High',
+        });
+      }
+    );
+  });
+
+  test('Should not convert when receive a number that is not mapped like 3', () => {
+    const filterObject = new DiscretizeData();
+    filterObject._transform(
+      {
+        'VALUES - Overall': 3,
+      },
+      '',
+      (err, data) => {
+        expect(data).toEqual({
+          'VALUES - Overall': 3,
         });
       }
     );

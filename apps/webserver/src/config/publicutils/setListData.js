@@ -36,17 +36,19 @@ const setListData = (locationData = [], locationAnalysisData = [], selectedList)
   const data = [];
   locationData.forEach((loc) => {
     /**
+     * ----------------------------------------
      * @TODO: - ENABLE IN PHASE 1.1
-     * const flag = {
+     * ----------------------------------------
+     *  const flag = {
      *   flag_forma: loc.flag_forma,
      *   flag_general: loc.flag_general,
      *   flag_glad: loc.flag_glad,
      *   flag_gran_chaco: loc.flag_gran_chaco,
      *   flag_terrai: loc.flag_terrai,
      *   flag_viirs: loc.flag_viirs
-     * };
+     *  };
+     * ----------------------------------------
      */
-
     if (selectedList.list_name === 'Administrative Areas') {
       if (loc['Location Name']) {
         const splitsies = loc['Location Name'].split('--');

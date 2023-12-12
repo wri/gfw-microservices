@@ -21,4 +21,12 @@ export class AppController {
     // This endpoint is protected by the token middleware
     return 'Protected endpoint accessed by user: ' + req.user.username;
   }
+
+  /**
+   * Latest commit hash
+   */
+  @Get('/latest_commit')
+  getLatestCommit(): string {
+    return process.env.LATEST_COMMIT;
+  }
 }

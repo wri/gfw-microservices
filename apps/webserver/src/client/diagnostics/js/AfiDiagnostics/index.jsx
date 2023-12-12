@@ -32,13 +32,13 @@ function AfiDiagnostics() {
   };
 
   const getDiagnosticsData = () => {
-    return fetch(`/diagnosticsData`, {
+    return fetch(`/diagnostics/${listId}`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({ listId, isSharedList }),
+      body: JSON.stringify({ locationId: '' }),
     }).then((res) => res.json());
   };
 
@@ -49,8 +49,7 @@ function AfiDiagnostics() {
     Promise.all([getAfiAnalysisForListId(), getDiagnosticsData()])
       .then(([afiAnalysisData, diagnosticsData]) => {
         const { regionalInfo, negligibleRiskStats } = afiAnalysisData;
-        const { selectedLists } = diagnosticsData;
-        const selectedList = selectedLists?.[0] || {};
+        const { selectedList } = diagnosticsData;
 
         setTableData(regionalInfo);
         setChartData(negligibleRiskStats);
@@ -76,7 +75,7 @@ function AfiDiagnostics() {
         'Content-type': 'application/zip',
       },
     })
-      .then((result) => {
+      .then(() => {
         setIsLoading(false);
       })
       .catch((error) => {

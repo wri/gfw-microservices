@@ -24,7 +24,7 @@ function getUserListDataRequestRoute(isSingleLocation = false) {
 
   return route;
 }
-// TODO, send this to the backend
+// TODO: remove me
 export const viewDiagnostic = async (selectedList, selectedLocation = []) => {
   const isSingleLocation = selectedLocation.length;
 

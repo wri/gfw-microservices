@@ -41,7 +41,6 @@ import {
   prettifyNum,
   validatePct,
 } from '../../../common/js/utils/diagnostics.utils';
-import { getGfwListName } from '../../../locations/js/utils/lists.utils';
 import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userListLocations/utils/listLayer.util';
 import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
 import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/vectorTileLayer';
@@ -133,7 +132,6 @@ export default class Diagnostics extends Component {
     });
 
     this.mapView.on('click', this.viewMap);
-
     this.mapView.when(this.mapLoaded); // TODO: setExtent of the map again after it loads to get rid of those funny dark TCL renders!
   }
 
@@ -199,9 +197,9 @@ export default class Diagnostics extends Component {
   };
 
   addMapGraphics = async () => {
-    const { selectedLists, spatialData, selectedLocations, isGfwList } = this.props;
-    const [selectedList] = selectedLists;
+    const { selectedList, spatialData, selectedLocations, isGfwList } = this.props;
     const { id, list_name: listName } = selectedList;
+
     this.updateStats();
 
     if (selectedLocations.length > 1) {
@@ -291,20 +289,20 @@ export default class Diagnostics extends Component {
   };
 
   viewMap = (evt) => {
-    const { selectedLocations, selectedLists, isGfwList } = this.props;
+    const { selectedLocations, selectedList, isGfwList } = this.props;
     const { listView } = this.state;
-    const { selectedList } = store.getState(); // do we use this?
-
-    const gfwList = getGfwListName(selectedLists);
+    const {
+      id: listId,
+      list_name: listName,
+      list_locations_count: totalNumberOfLocationsInList,
+    } = selectedList;
     const showFullListMap = selectedLocations.length !== 1; // if there is no specific location selected, then show the full map
 
-    const totalNumberOfLocationsInList =
-      selectedList?.list_locations_count || selectedLists[0]?.list_locations_count;
     const sendData = {
       l: [treeCoverLossID],
-      i: selectedList || selectedLists[0].id,
-      name: selectedList || selectedLists[0].list_name,
-      gfwListName: gfwList,
+      i: listId,
+      name: listName,
+      gfwListName: listName,
       numLocations: showFullListMap ? totalNumberOfLocationsInList : 1,
       filterCount: 0, // TODO: maybe don't hardcode this
       listView,
@@ -546,15 +544,16 @@ export default class Diagnostics extends Component {
   };
 
   fireDownload = (table, aggregate) => {
-    const { selectedLists } = this.props;
+    const { selectedList } = this.props;
     const { listView } = this.state;
     const filteredLocations = this.getFilteredLocations().map((fd) => fd.location_id) ?? [];
-    const [list] = selectedLists;
+
+    const { id: listId } = selectedList;
 
     this.setState({ isLoading: true, openDownloadDialog: true });
 
     downloadRequest({
-      listID: list.id,
+      listID: listId,
       format: 'csv',
       type: table,
       listView,
@@ -646,7 +645,7 @@ export default class Diagnostics extends Component {
 
   render() {
     const {
-      selectedLists,
+      selectedList,
       selectedLocations,
       listData,
       selectedLocationData,
@@ -656,6 +655,7 @@ export default class Diagnostics extends Component {
       anchorEl,
       diagnosticView,
       isSharedList,
+      isGfwList,
     } = this.props;
 
     const {
@@ -686,11 +686,11 @@ export default class Diagnostics extends Component {
     const asiaPresence = filteredLocations.some(
       (location) => location.southeast_asia_presence === 'true'
     );
-    const sAmericaPresence = filteredLocations.some(
+    const isAmericaPresence = filteredLocations.some(
       (location) => location.south_america_presence === 'true'
     );
-
-    const availableDiagnostics = getAvailableDiagnostics(listData, selectedLists);
+    // TODO: refactor all callsites of getAvailableDiagnostics to use selectedList instead of the first element of its plural
+    const availableDiagnostics = getAvailableDiagnostics(listData, [selectedList]);
 
     const showListViewTabs = availableDiagnostics.length > 1;
     const listViewOptions = availableDiagnostics.map(({ label, value }) => (
@@ -715,16 +715,15 @@ export default class Diagnostics extends Component {
           <div className="locations-diagnostics__header-container">
             <div className="locations-diagnostics__header-data">
               <div className="header-container">
-                {selectedLists.length > 0 && (
-                  <DiagnosticsBreadCrums
-                    selectedList={selectedLists[0]}
-                    diagnosticName={locationsPage.lists.diagnostic}
-                    isSharedList={isSharedList}
-                  />
-                )}
+                <DiagnosticsBreadCrums
+                  selectedList={selectedList}
+                  diagnosticName={locationsPage.lists.diagnostic}
+                  isSharedList={isSharedList}
+                  isGfwList={isGfwList}
+                />
 
                 <div style={{ marginBottom: '2rem' }}>
-                  <AnalysisListChips listAnalysesStatus={selectedLists[0]?.listAnalysesStatus} />
+                  <AnalysisListChips listAnalysesStatus={selectedList?.listAnalysesStatus} />
                 </div>
 
                 {showListViewTabs && (
@@ -740,11 +739,11 @@ export default class Diagnostics extends Component {
 
                 {isSingleLocation ? (
                   <SingleLocationDiagnosticsHeaderInfo
-                    selectedListName={selectedLists[0].list_name}
+                    selectedListName={selectedList.list_name}
                     currentLocation={selectedLocationData}
                   />
                 ) : (
-                  <FullListDiagnosticsHeaderInfo selectedLists={selectedLists} />
+                  <FullListDiagnosticsHeaderInfo selectedList={selectedList} />
                 )}
               </div>
               <div className="locations-diagnostics-statistics">
@@ -1004,7 +1003,7 @@ export default class Diagnostics extends Component {
         </div>
 
         <DiagnosticsMenuBar
-          listId={selectedLists[0]?.id}
+          listId={selectedList.id}
           isGfwList={this.props.isGfwList}
           selectedDiagnostics={analysisTypes.FOREST_CHANGE_DIAGNOSTICS}
           downloadDiagnostics={() => this.fireDownload('everything')}
@@ -1027,7 +1026,7 @@ export default class Diagnostics extends Component {
             />
           </div>
           <div className="print-no-break" data-cy="diagnotcs-regions">
-            {sAmericaPresence && !isArgentinaComplianceAvailable ? (
+            {isAmericaPresence && !isArgentinaComplianceAvailable ? (
               <SouthAmericaRegions
                 diagnosticView={diagnosticView}
                 listView={listView}
@@ -1043,22 +1042,24 @@ export default class Diagnostics extends Component {
               />
             ) : null}
 
-            {sAmericaPresence && isArgentinaComplianceAvailable && listView === 'forest_change' && (
-              <RegionChartsContainer
-                listId={selectedLists[0]?.id}
-                fireDownload={this.fireDownload}
-                data={this.getFilteredLocations()[0]}
-                diagnosticView={diagnosticView}
-                filteredData={listData}
-                togglePopover={this.togglePopover}
-                getYearlyData={this.getYearlyData}
-                parseYearlyData={this.parseYearlyData}
-                assignHighchartColor={this.assignHighchartColor}
-                getFilteredLocations={this.getFilteredLocations}
-                getYearlyHighchartSeries={this.getYearlyHighchartSeries}
-                getCategoricalHighchartSeries={this.getCategoricalHighchartSeries}
-              />
-            )}
+            {isAmericaPresence &&
+              isArgentinaComplianceAvailable &&
+              listView === 'forest_change' && (
+                <RegionChartsContainer
+                  listId={selectedList.id}
+                  fireDownload={this.fireDownload}
+                  data={this.getFilteredLocations()[0]}
+                  diagnosticView={diagnosticView}
+                  filteredData={listData}
+                  togglePopover={this.togglePopover}
+                  getYearlyData={this.getYearlyData}
+                  parseYearlyData={this.parseYearlyData}
+                  assignHighchartColor={this.assignHighchartColor}
+                  getFilteredLocations={this.getFilteredLocations}
+                  getYearlyHighchartSeries={this.getYearlyHighchartSeries}
+                  getCategoricalHighchartSeries={this.getCategoricalHighchartSeries}
+                />
+              )}
 
             {asiaPresence ? (
               <SoutheastAsiaRegions

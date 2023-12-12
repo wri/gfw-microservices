@@ -1,57 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 import CircularProgress from '@mui/material/CircularProgress';
-import { viewDiagnostic } from './viewDiagnostic';
 import Diagnostics from './Diagnostics';
 import { diagnosticsStrings } from '../../../common/js/config';
+import { useLocation } from 'react-router-dom';
+
+// TODO: organize this function
+function useQuery() {
+  const { search } = useLocation();
+
+  return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
 const mapStateToProps = ({ infoBubbleCache, popover }) => ({ infoBubbleCache, popover });
 
-function ForestChangeDiagnostics({ location, popover, infoBubbleCache }) {
+function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
+  const query = useQuery();
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState({});
-  const [spatialData, setSpatialData] = useState();
 
-  const [locationIds, setLocationIds] = useState([]);
+  const [selectedList, setSelectedList] = useState({});
+  const [spatialData, setSpatialData] = useState({});
+  const [listLocationsIds, setListLocationsIds] = useState([]);
+  const [listLevelAnalysis, setLstLevelAnalysis] = useState();
+  const [processedListData, setProcessedListData] = useState();
+  const [selectedLocationData, setSelectedLocationData] = useState();
 
-  const listId = parseInt(new URLSearchParams(location.search).get('listId'), 10);
-  const locationId = parseInt(new URLSearchParams(location.search).get('locationId'), 10) || null;
-  const selectedLocation = locationId ? [locationId] : [];
-  const isGfwList = JSON.parse(new URLSearchParams(location.search).get('gfw'));
-  const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
+  const listId = parseInt(query.get('listId'), 10);
+  const locationId = parseInt(query.get('locationId'), 10) || null;
+  const isGfwList = Boolean(query.get('gfw'));
+  const isSharedList = Boolean(query.get('shared'));
+
   const diagnosticView = locationId ? 'LOCATION' : 'LIST';
 
   useEffect(() => {
-    fetch(`/diagnosticsData`, {
+    gtag('event', 'User accesses Forest Change Diagnostics View', {
+      event_category: 'Forest Change Diagnostics',
+    });
+    fetch(`/diagnostics/${listId}`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({ listId, locationId, isGfwList, isSharedList }),
+      body: JSON.stringify({
+        locationId: locationId || '',
+      }),
     })
       .then((res) => res.json())
-      .then((data) => {
-        setData(data);
-        const { selectedLists } = data;
-        if (!selectedLists) {
+      .then((diagnosticsData) => {
+        const {
+          selectedList,
+          listLevelAnalysis,
+          processedListData,
+          spatialData,
+          listLocationsIds,
+        } = diagnosticsData;
+
+        if (!selectedList || !processedListData) {
           throw new Error(diagnosticsStrings.listOrLocationNotFound);
         }
-        return viewDiagnostic(selectedLists[0], selectedLocation); // we should move this to the diagnosticsData endpoint
-      })
-      .then(([spatialData, locationIDs]) => {
+
+        setSelectedList(selectedList);
+        setProcessedListData(processedListData);
         setSpatialData(spatialData);
-        setLocationIds(locationIDs);
+        setListLocationsIds(listLocationsIds);
+        setLstLevelAnalysis(listLevelAnalysis);
+        setSelectedLocationData(processedListData[0]);
         setIsLoading(false);
       })
       .catch((error) => {
         setIsLoading(false);
         console.warn(error);
       });
-  }, []);
+  }, [listId]);
 
-  const { selectedLists, listLevelAnalysis, processedListData, selectedLocationData } = data;
   const { displayPopover, bubbleData, popoverLoading, anchorEl } = popover;
 
   return (
@@ -69,7 +91,7 @@ function ForestChangeDiagnostics({ location, popover, infoBubbleCache }) {
           <CircularProgress color="success" />
         </div>
       )}
-      {!isLoading && !selectedLists && (
+      {!isLoading && !selectedList && !processedListData && (
         <div
           style={{
             display: 'flex',
@@ -82,29 +104,27 @@ function ForestChangeDiagnostics({ location, popover, infoBubbleCache }) {
           <h2>{diagnosticsStrings.listOrLocationNotFound}</h2>
         </div>
       )}
-      {!isLoading && selectedLists && (
-        <>
-          <Diagnostics
-            listId={listId}
-            isSharedList={isSharedList}
-            isGfwList={isGfwList}
-            diagnosticView={diagnosticView}
-            selectedLists={selectedLists}
-            listData={processedListData}
-            listLevelAnalysis={listLevelAnalysis}
-            spatialData={spatialData}
-            selectedLocations={locationIds}
-            infoBubbleCache={infoBubbleCache}
-            displayPopover={displayPopover}
-            bubbleData={bubbleData}
-            popoverLoading={popoverLoading}
-            anchorEl={anchorEl}
-            selectedLocationData={selectedLocationData}
-          />
-        </>
+      {!isLoading && selectedList && processedListData && (
+        <Diagnostics
+          selectedList={selectedList}
+          listId={listId}
+          isSharedList={isSharedList}
+          isGfwList={isGfwList}
+          diagnosticView={diagnosticView}
+          listData={processedListData}
+          listLevelAnalysis={listLevelAnalysis}
+          spatialData={spatialData}
+          selectedLocations={listLocationsIds}
+          infoBubbleCache={infoBubbleCache}
+          displayPopover={displayPopover}
+          bubbleData={bubbleData}
+          popoverLoading={popoverLoading}
+          anchorEl={anchorEl}
+          selectedLocationData={selectedLocationData}
+        />
       )}
     </>
   );
 }
 
-export default withRouter(connect(mapStateToProps)(ForestChangeDiagnostics));
+export default connect(mapStateToProps)(ForestChangeDiagnostics);

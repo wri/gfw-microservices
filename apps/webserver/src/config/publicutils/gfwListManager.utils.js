@@ -29,16 +29,16 @@ const path = require('path');
 const sql = require('mssql');
 const config = require('../config');
 
-const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
+// const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
+// const snsUtils = require(path.resolve('./config/privateutils/sns.utils.js'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
-const snsUtils = require(path.resolve('./config/privateutils/sns.utils.js'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { getAdministrativeAreasDataByLocation } = require(path.resolve(
   './queries/system/getAdministrativeAreasDataByLocation'
 ));
+import { gfwListsIds, gfwListsNames } from '@wri-monorepos/constants';
 
 let adminInfo = [];
 let protectedInfo = [];
@@ -65,6 +65,22 @@ const getGFWLists = (req) => {
         reject(errorObject);
       });
   });
+};
+
+/**
+ * @function {getGFWListsByListId}
+ * @summary Function to find GFWList by Id using getGFWLists
+ * @param {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Int} listId - GFWList Id to find
+ * @return {Promise} Returns promise object. If successful, list object, otherwise, error object
+ */
+const getGFWListsByListId = async (req, listId) => {
+  try {
+    const gfwListCollection = await getGFWLists(req);
+    return gfwListCollection.find((gfwListData) => gfwListData.id === Number(listId));
+  } catch (error) {
+    console.log('getGFWListsByListId', error);
+  }
 };
 
 /** @function {getGFWListLocations}
@@ -134,8 +150,6 @@ const getDashboardGFWListLocations = (req, list_id) => {
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
-  // TODO: Check callsites for type of list_id to see if Number() is necessary
-  const listIdNum = Number(list_id);
   return new Promise((resolve, reject) => {
     const parameters =
       Array.isArray(location_ids) && location_ids.length
@@ -143,7 +157,7 @@ const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
         : [];
 
     let promise;
-    switch (listIdNum) {
+    switch (Number(list_id)) {
       case 1:
         promise = sqlUtils.executeSystemStoredProcedure(
           req,
@@ -188,7 +202,7 @@ const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
           errorUtils.errorCodes.failedToGetList,
-          `Failed to get list location (no Geom) for List ${listIdNum}`,
+          `Failed to get list location (no Geom) for List ${list_id}`,
           err
         );
         reject(errorObject);
@@ -319,7 +333,8 @@ const getAdministrativeAreasDataByLocationId = (req, locationId) => {
     sqlUtils
       .executeSystemQuery(getAdministrativeAreasDataByLocation, parameters)
       .then((recordset) => {
-        resolve(recordset);
+        const [results] = recordset;
+        resolve(results);
       })
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
@@ -379,16 +394,13 @@ const getProtectedAreasData = (req, filters) => {
       });
   });
 };
-
+/**
+ * @function getGFWListNames
+ * @param {Array} list_ids lists IDs
+ * @returns {Array<string>} list_ids names mapped
+ */
 const getGFWListNames = (list_ids) => {
-  const dictionary = {
-    1: 'Administrative Areas',
-    2: 'Oil Palm Concessions',
-    3: 'Palm Oil Mills',
-    4: 'Protected Areas',
-    5: 'RSPO Palm Concessions',
-  };
-  return list_ids.map((id) => dictionary[id]);
+  return list_ids.map((id) => gfwListsNames[id]);
 };
 
 /** @function {updateGFWLists}
@@ -633,6 +645,15 @@ const copyGFWLocationsToList = async (
 };
 
 /**
+ * @function isGfwList
+ * @param {Int/Number} listId
+ * @return {Boolean}
+ */
+const isGfwList = (listId) => {
+  return Object.values(gfwListsIds).includes(listId);
+};
+
+/**
  * @function initialize
  * @summary Initializes the GFW List Manager.
  *           Loads all the lists needed for the application.
@@ -656,6 +677,7 @@ function initialize() {
 
 module.exports = {
   getGFWLists,
+  getGFWListsByListId,
   getGFWListLocations,
   getDashboardGFWListLocations,
   getGFWListLocationsNoGeom,
@@ -673,5 +695,6 @@ module.exports = {
   getGFWAnalysisTableColumnsStatement,
   copyGFWSingleLocation,
   copyGFWLocationsToList,
+  isGfwList,
   initialize,
 };

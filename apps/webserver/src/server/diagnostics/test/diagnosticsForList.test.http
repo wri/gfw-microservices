@@ -1,0 +1,102 @@
+### -------------------------------------
+### ENV = developmentOrg=DevCo
+### Org = DevCo
+### -------------------------------------
+### GFWList Diagnostics
+### Required: locationId=
+### -------------------------------------
+
+### Get diagnostics data for ADMINISTRATIVE_AREAS
+### requires a locationId
+POST https://localhost:8443/diagnostics/1
+Content-Type: application/zip
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "locationId": 1544
+}
+
+### Get diagnostics data for OIL_PALM_CONCESSIONS
+POST https://localhost:8443/diagnostics/2
+Content-Type: application/zip
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "locationId": ""
+}
+
+POST https://localhost:8443/diagnostics/2
+Content-Type: application/zip
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "locationId": 1728
+}
+
+
+### Get diagnostics data for PALM_OIL_MILLS
+POST https://localhost:8443/diagnostics/3
+Content-Type: application/zip
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "locationId": ""
+}
+
+POST https://localhost:8443/diagnostics/3
+Content-Type: application/zip
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "locationId": 958
+}
+
+### Get diagnostics data for PROTECTED_AREAS
+### requires a locationId
+POST https://localhost:8443/diagnostics/4
+Content-Type: application/zip
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "locationId": 2226
+}
+
+### Get diagnostics data for RSPO_PALM_CONCESSIONS
+POST https://localhost:8443/diagnostics/5
+Content-Type: application/zip
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "locationId": ""
+}
+
+POST https://localhost:8443/diagnostics/5
+Content-Type: application/zip
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "locationId": 134
+}
+
+### -------------------------------------
+### GFWPro List Diagnostics
+### -------------------------------------
+
+### Get diagnostics data for listId = 5467
+POST https://localhost:8443/diagnostics/5467
+Content-Type: application/zip
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "locationId": ""
+}
+
+
+### Get diagnostics data for listId = 5467 & locationId = 374
+POST https://localhost:8443/diagnostics/5467
+Content-Type: application/zip
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "locationId": 374
+}

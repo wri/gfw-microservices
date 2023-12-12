@@ -6,9 +6,14 @@ import { changeView, selectFolder } from '../../../locations/js/actions/location
 import store from '../../../locations/js/store';
 import { locationsPage } from '../../../common/js/config';
 
-function DiagnosticsBreadCrums({ selectedList, diagnosticName = '', isSharedList = false }) {
+function DiagnosticsBreadCrums({
+  selectedList,
+  diagnosticName = '',
+  isSharedList = false,
+  isGfwList,
+}) {
   const history = useHistory();
-  const { list_name, id, isGfwList } = selectedList;
+  const { list_name, id } = selectedList;
 
   const changeFolderView = (folder) => {
     history.push('/folders');

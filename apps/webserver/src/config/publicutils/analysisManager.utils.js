@@ -261,7 +261,7 @@ const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, location_id)
  */
 const getGFWListAnalyses = (req, list_id) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'list_id', type: sql.INT, value: list_id }];
+    const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetListAnalysis', parameters)
       .then((recordsets) => {
@@ -342,7 +342,7 @@ const getAFINegligibleStatsForListId = (req, listId) => {
  */
 const getListAnalyses = (req, list_id) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'list_id', type: sql.INT, value: list_id }];
+    const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetListAnalysis', parameters)
       .then((recordsets) => {

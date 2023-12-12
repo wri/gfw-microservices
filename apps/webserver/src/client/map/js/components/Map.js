@@ -70,6 +70,7 @@ import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullLis
 import { getLocationGeometry } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';
 import { getGfwProMapLayerName, isGfwList } from '../../../common/js/utils/gfw.utils';
+import { updateDeforestationAlertsLayers } from '../utils/layerUpdates.utils';
 
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
@@ -116,10 +117,11 @@ const {
   adminAreas,
   administrativeAreas,
   brazilBiomesID,
-  formaAlertsID,
   gladAlertsID,
   raddAlertsID,
+  integratedDeforestationAlertsID,
   raddCoverageID,
+  umdGladLandsatAlertsCoverageID,
   oilPalmConcessions,
   prodesDeforestationID,
   protectedAreas,
@@ -273,6 +275,8 @@ export default class Map extends Component {
     const { listData } = this.props;
     const { gfwListName } = listData;
 
+    updateDeforestationAlertsLayers(this.view.map, prevState);
+
     if (prevState.visibleLayers.length < visibleLayers.length) {
       this.view.popup.close();
       const nowVisible = visibleLayers.filter(
@@ -297,10 +301,6 @@ export default class Map extends Component {
             this.view.map.add(mapLayer);
             mapLayer.visible = true;
             this.sortMapArray(mapLayer);
-          } else if (nowVisibleLayer === formaAlertsID) {
-            this.getFormaLayer(this.state.mapLayers).then((formaLayer) => {
-              this.getFormaLayerCallback(configLayer, formaLayer);
-            });
           }
         }
 
@@ -363,10 +363,6 @@ export default class Map extends Component {
             this.view.map.add(mapLayer);
             mapLayer.visible = true;
             this.sortMapArray(mapLayer);
-          } else if (nowVisibleLayer === formaAlertsID) {
-            this.getFormaLayer(this.state.mapLayers).then((formaLayer) => {
-              this.getFormaLayerCallback(configLayer, formaLayer);
-            });
           }
         } else {
           //If layer to be turned on is already on the map, just turn it on
@@ -403,10 +399,6 @@ export default class Map extends Component {
                 gtag('event', 'layer toggle', {
                   event_category: 'Map Click',
                   event_label: `user turned the ${nowVisibleLayer.id} layer on`,
-                });
-              } else if (visibleLayer === formaAlertsID) {
-                this.getFormaLayer(this.state.mapLayers).then((formaLayer) => {
-                  this.getFormaLayerCallback(configLayer, formaLayer);
                 });
               }
             }
@@ -603,21 +595,6 @@ export default class Map extends Component {
     }
 
     if (prevState.gladConfirmed !== gladConfirmed) {
-      const mapLayer = this.view.map.findLayerById(gladAlertsID);
-      if (mapLayer) {
-        const duplicate = mapLayer;
-
-        // `confirmed` value updates Glad Layer to `Show only high confidence alerts` on map
-        duplicate.confirmed = gladConfirmed;
-        const promise = new Promise((resolve) => {
-          this.view.map.remove(mapLayer);
-          resolve();
-        });
-        promise.then(() => {
-          this.view.map.add(duplicate);
-        });
-      }
-
       if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
         this.analyzeCustom(this.view.graphics.items[0]);
       } else if (
@@ -703,19 +680,14 @@ export default class Map extends Component {
       });
     }
 
-    const { gladDateRange, formaDateRange, raddDateRange, biomassRange } = this.state;
+    const { gladDateRange, biomassRange } = this.state;
     if (prevState.gladDateRange !== gladDateRange) {
+      const gladAlertsLayer = this.view.map.findLayerById(gladAlertsID);
       if (
-        prevState.gladDateRange.start !== gladDateRange.start ||
-        prevState.gladDateRange.end !== gladDateRange.end
+        gladAlertsLayer &&
+        (prevState.gladDateRange.start !== gladDateRange.start ||
+          prevState.gladDateRange.end !== gladDateRange.end)
       ) {
-        const mapLayer = this.view.map.findLayerById(gladAlertsID);
-
-        // `julianTo` and `julianFrom` are used in GladLayer.js to filter the data in image provided by - tiles.globalforestwatch.org
-        const julianTo = parseInt(gladDateRange.end.getJulian(), 10);
-        const julianFrom = parseInt(gladDateRange.start.getJulian(), 10);
-        mapLayer.julianTo = julianTo;
-        mapLayer.julianFrom = julianFrom;
         if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
           this.analyzeCustom(this.view.graphics.items[0]);
         } else if (
@@ -746,53 +718,6 @@ export default class Map extends Component {
         adminArea.constructor === Object
       ) {
         this.analyzeAdmin(adminArea);
-      }
-    }
-
-    if (prevState.formaDateRange !== formaDateRange) {
-      if (
-        prevState.formaDateRange.start !== formaDateRange.start ||
-        prevState.formaDateRange.end !== formaDateRange.end
-      ) {
-        const mapLayer = this.view.map.findLayerById(formaAlertsID);
-        mapLayer.startDate = formaDateRange.start;
-        mapLayer.endDate = formaDateRange.end;
-
-        mapLayer.julianTo = formaDateRange.end.getJulian();
-        mapLayer.julianFrom = formaDateRange.start.getJulian();
-        if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-          this.analyzeCustom(this.view.graphics.items[0]);
-        } else if (
-          activeAnalysis === 'region' &&
-          Object.keys(adminArea).length !== 0 &&
-          adminArea.constructor === Object
-        ) {
-          this.analyzeAdmin(adminArea);
-        }
-      }
-    }
-
-    if (prevState.raddDateRange !== raddDateRange) {
-      if (
-        prevState.raddDateRange.start !== raddDateRange.start ||
-        prevState.raddDateRange.end !== raddDateRange.end
-      ) {
-        const mapLayer = this.view.map.findLayerById(raddAlertsID);
-        mapLayer.startDate = raddDateRange.start;
-        mapLayer.endDate = raddDateRange.end;
-
-        mapLayer.julianTo = raddDateRange.end.getJulian();
-        mapLayer.julianFrom = raddDateRange.start.getJulian();
-        //TODO: enable this when we have RADD OTF is available
-        // if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-        //   this.analyzeCustom(this.view.graphics.items[0]);
-        // } else if (
-        //   activeAnalysis === 'region' &&
-        //   Object.keys(adminArea).length !== 0 &&
-        //   adminArea.constructor === Object
-        // ) {
-        //   this.analyzeAdmin(adminArea);
-        // }
       }
     }
 
@@ -859,7 +784,6 @@ export default class Map extends Component {
     esriConfig.request.interceptors.push({
       urls: [locationsPage.add.protectedAreasUrl, locationsPage.add.protectedServicesUrl],
       before: (params) => {
-        console.log(params);
         params.requestOptions.query.token = locationsPage.add.protectedAreas[location.hostname];
       },
     });
@@ -1818,7 +1742,7 @@ export default class Map extends Component {
   getCurrentAnalysis = (type) => {
     let analysisType = 'tree cover';
     // const threshold = this.state.canopyDensity; //TODO: Add other layer-specific query params!
-    const { canopyDensity, fireDays, formaDateRange, prodesDateRange } = this.state;
+    const { canopyDensity, fireDays, prodesDateRange } = this.state;
 
     let microservice;
     if (this.state.visibleLayers.includes(prodesDeforestationID)) {
@@ -1828,15 +1752,6 @@ export default class Map extends Component {
       analysisType = 'tree biomass';
     } else if (this.state.visibleLayers.includes(gladAlertsID)) {
       analysisType = 'glad';
-    } else if (this.state.visibleLayers.includes(formaAlertsID)) {
-      microservice = `https://production-api.globalforestwatch.org/v1/forma250GFW?period=${formaDateRange.start.getFullYear()}-${(
-        '0' +
-        (formaDateRange.start.getMonth() + 1)
-      ).slice(-2)}-${formaDateRange.start.getDate()}%2C${formaDateRange.end.getFullYear()}-${(
-        '0' +
-        (formaDateRange.end.getMonth() + 1)
-      ).slice(-2)}-${formaDateRange.end.getDate()}&thresh=${canopyDensity}`;
-      analysisType = 'forma';
     } else if (this.state.visibleLayers.includes(viirsActiveFiresID)) {
       const currentDate = moment(new Date()).format('YYYY-MM-DD');
       const fireDayStart = moment(new Date()).subtract(fireDays, 'days').format('YYYY-MM-DD');
@@ -1942,12 +1857,10 @@ export default class Map extends Component {
     const { visibleLayers, landsatYear } = this.state;
 
     const layersData = await fetchGfwProLayers();
-
     let layers = layersData.map((layerObject) => {
       const layer = constructLayerObject(visibleLayers, layerObject);
       return layer;
     });
-
     // Remove layers that failed layerObject creation step (due to mismatched config or other reasons)
     layers = layers.filter((l) => l);
     // Sort constructed layers
@@ -1990,7 +1903,10 @@ export default class Map extends Component {
 
     const initialLayers = layersToAdd
       .filter(
-        (layer) => mapPage.visibleLayers.indexOf(layer.id) > -1 || layer.id === raddCoverageID
+        (layer) =>
+          mapPage.visibleLayers.indexOf(layer.id) > -1 ||
+          layer.id === raddCoverageID ||
+          layer.id === umdGladLandsatAlertsCoverageID
       )
       .sort((layerA, layerB) => {
         if (layerA.order > layerB.order) {
@@ -2718,45 +2634,6 @@ export default class Map extends Component {
     this.setState({ dialogOpen: false });
   };
 
-  handleStartDate = (evt, date) => {
-    const { visibleLayers } = this.state;
-    if (visibleLayers.indexOf(gladAlertsID) > -1) {
-      store.dispatch(analysisActions.setGLADStartDate(date));
-    }
-    if (visibleLayers.indexOf(formaAlertsID) > -1) {
-      store.dispatch(analysisActions.setFORMAStartDate(date));
-    }
-    if (visibleLayers.indexOf(raddAlertsID) > -1) {
-      store.dispatch(analysisActions.setRADDStartDate(date));
-    }
-  };
-
-  handleSliderDate = (evt, date) => {
-    const { visibleLayers } = this.state;
-    if (visibleLayers.indexOf(gladAlertsID) > -1) {
-      store.dispatch(analysisActions.setGLADSliderDate(date));
-    }
-    if (visibleLayers.indexOf(formaAlertsID) > -1) {
-      store.dispatch(analysisActions.setFORMASliderDate(date));
-    }
-    if (visibleLayers.indexOf(raddAlertsID) > -1) {
-      store.dispatch(analysisActions.setRADDSliderDate(date));
-    }
-  };
-
-  handleEndDate = (evt, date) => {
-    const { visibleLayers } = this.state;
-    if (visibleLayers.indexOf(gladAlertsID) > -1) {
-      store.dispatch(analysisActions.setGLADEndDate(date));
-    }
-    if (visibleLayers.indexOf(formaAlertsID) > -1) {
-      store.dispatch(analysisActions.setFORMAEndDate(date));
-    }
-    if (visibleLayers.indexOf(raddAlertsID) > -1) {
-      store.dispatch(analysisActions.setRADDEndDate(date));
-    }
-  };
-
   render() {
     const defaultAction = [
       <GfwButton
@@ -2781,8 +2658,6 @@ export default class Map extends Component {
       canopyDensity,
       drawingActive,
       gladDateRange,
-      formaDateRange,
-      raddDateRange,
       biomassRange,
       prodesDateRange,
       analysisResults,
@@ -2807,18 +2682,12 @@ export default class Map extends Component {
     const { userLists, locationCount, gfwLists, listData, userSharedLists } = this.props;
 
     let dateSliderDateRange = {};
-    let dateSliderTitle = '';
-    if (visibleLayers.indexOf(gladAlertsID) > -1) {
+    if (
+      visibleLayers.includes(gladAlertsID) ||
+      visibleLayers.includes(integratedDeforestationAlertsID) ||
+      visibleLayers.includes(raddAlertsID)
+    ) {
       dateSliderDateRange = gladDateRange;
-      dateSliderTitle = 'GLAD';
-    }
-    if (visibleLayers.indexOf(raddAlertsID) > -1) {
-      dateSliderDateRange = raddDateRange;
-      dateSliderTitle = 'RADD';
-    }
-    if (visibleLayers.indexOf(formaAlertsID) > -1) {
-      dateSliderDateRange = formaDateRange;
-      dateSliderTitle = 'FORMA';
     }
 
     return (
@@ -2900,20 +2769,7 @@ export default class Map extends Component {
           zoomIn={this.zoomIn}
         />
 
-        <AdhocAnalysis
-          visible={
-            visibleLayers.indexOf(gladAlertsID) > -1 ||
-            visibleLayers.indexOf(formaAlertsID) > -1 ||
-            visibleLayers.indexOf(raddAlertsID) > -1
-          }
-          start={dateSliderDateRange.start}
-          sliderDate={dateSliderDateRange.sliderDate}
-          end={dateSliderDateRange.end}
-          changeStart={this.handleStartDate}
-          changeSlider={this.handleSliderDate}
-          changeEnd={this.handleEndDate}
-          title={dateSliderTitle}
-        />
+        <AdhocAnalysis visibleLayers={visibleLayers} dateSliderDateRange={dateSliderDateRange} />
 
         <ProdesControls
           loaded={this.view && this.view.ready}
@@ -3001,8 +2857,6 @@ export default class Map extends Component {
           visibleLayers={visibleLayers}
           analysisWarning={analysisWarning}
           gladDateRange={gladDateRange}
-          formaDateRange={formaDateRange}
-          raddDateRange={raddDateRange}
           biomassRange={biomassRange}
           prodesDateRange={prodesDateRange}
           fireDays={fireDays}

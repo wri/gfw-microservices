@@ -187,36 +187,8 @@ const utils = {
     let endDate = '';
     let valueLabel = '';
     switch (label) {
-      case 'FORMA':
-        date = props.formaDateRange;
-        startDate = `${date.start.toLocaleString('en-us', {
-          month: 'short',
-        })}-${date.start.toLocaleString('en-us', {
-          year: 'numeric',
-        })}`;
-        endDate = `${date.end.toLocaleString('en-us', {
-          month: 'short',
-        })}-${date.end.toLocaleString('en-us', {
-          year: 'numeric',
-        })}`;
-        valueLabel = `total alerts (${startDate} to ${endDate})`;
-        break;
       case 'GLAD':
         date = props.gladDateRange;
-        startDate = `${date.start.toLocaleString('en-us', {
-          month: 'short',
-        })}-${date.start.toLocaleString('en-us', {
-          year: 'numeric',
-        })}`;
-        endDate = `${date.end.toLocaleString('en-us', {
-          month: 'short',
-        })}-${date.end.toLocaleString('en-us', {
-          year: 'numeric',
-        })}`;
-        valueLabel = `total alerts (${startDate} to ${endDate})`;
-        break;
-      case 'RADD':
-        date = props.raddDateRange;
         startDate = `${date.start.toLocaleString('en-us', {
           month: 'short',
         })}-${date.start.toLocaleString('en-us', {

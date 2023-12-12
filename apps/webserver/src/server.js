@@ -71,7 +71,11 @@ loadenv
       https.createServer(sslOptions, app).listen(config.port);
       logger.info(`App listening on port: ${config.port}`);
     } else {
-      http.createServer(app).listen(config.port);
+      const httpServer = http.createServer(app);
+      if (process.env.NODE_ENV !== 'test') {
+        // supertest does not need to listen on port
+        httpServer.listen(config.port);
+      }
       logger.info(`App listening on port: ${config.port}`);
     }
     app.emit('appReady', null);

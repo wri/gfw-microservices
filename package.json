@@ -98,6 +98,7 @@
     "passport": "0.6.0",
     "passport-local": "^1.0.0",
     "pbf": "^3.2.1",
+    "png-ts": "^0.0.3",
     "postcss-loader": "6.2.1",
     "postcss-safe-parser": "4.0.2",
     "pug": "3.0.2",
@@ -134,7 +135,8 @@
     "wellknown": "^0.5.0",
     "winston": "^3.11.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.0/xlsx-0.20.0.tgz",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-validation-error": "^2.1.0"
   },
   "overrides": {
     "d3-interpolate": {

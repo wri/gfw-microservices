@@ -11,12 +11,7 @@ import { OrganizationService } from '../organization.service';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ListsAnalysisStatus } from '../list-analysis-status.entity';
-
-class MockRepository {
-  findOne = jest.fn(async () => {
-    return { listId: 123, analysisId: 'FCD', updateTime: new Date(), status: 1 };
-  });
-}
+import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-status.repository.mock';
 
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
@@ -26,7 +21,7 @@ describe('ListAnalysisService', () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
       .withArgs(ListsAnalysisStatus)
-      .returns(new MockRepository());
+      .returns(new ListAnalysisStatusRepositoryMock());
   });
 
   beforeEach(async () => {
@@ -61,7 +56,7 @@ describe('ListAnalysisService', () => {
       errorsDetails: [],
       resultUrl: 'https://example.com/results',
       creationDate: new Date().toLocaleDateString(),
-      expirationDate: new Date().toLocaleDateString(),
+      expirationDate: '11/28/2999',
     };
 
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({

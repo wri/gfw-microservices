@@ -1,3 +1,4 @@
+@import url('https://js.arcgis.com/4.20/@arcgis/core/assets/esri/themes/light/main.css');
 @import './_sensitiveAreas';
 @import '../../common/css/baseGFW';
 @import '../../common/css/subHeader';
@@ -1379,6 +1380,18 @@ $print-width: 95%;
 //----------------
 //////////////////
 @media print {
+  .header {
+    display: none;
+  }
+
+  .landing-diagnostics {
+    background-color: #fff;
+  }
+
+  .diagnostics-menu-bar {
+    display: none;
+  }
+
   body {
     size: letter;
     padding: 10px;
@@ -1387,6 +1400,10 @@ $print-width: 95%;
       overflow: hidden;
       margin: auto;
       width: $print-width;
+    }
+
+    .app__body {
+      height: auto;
     }
   }
 

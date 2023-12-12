@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Popover from 'material-ui/Popover';
-import Deferred from 'dojo/Deferred';
-import EsriMap from 'esri/Map';
-import MapView from 'esri/views/MapView';
-import Graphic from 'esri/Graphic';
-import Polygon from 'esri/geometry/Polygon';
-import GraphicsLayer from 'esri/layers/GraphicsLayer';
+import EsriMap from '@arcgis/core/Map';
+import MapView from '@arcgis/core/views/MapView';
+import Graphic from '@arcgis/core/Graphic';
+import Polygon from '@arcgis/core/geometry/Polygon';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 
-import TreeCoverLossLayer from '../layers/TreeCoverLossLayer';
+import TreeCoverLossLayer from '../../../map/js/layers/TreeCoverLossLayer';
 import store from '../../../locations/js/store';
 import { updateInfoBubbleCache } from '../../../locations/js/actions/locationActions';
 import SensitiveAreas from './SensitiveAreas';
@@ -233,7 +233,7 @@ export default class Diagnostics extends Component {
         const esriJson = geojsonUtil.geojsonToArcGIS(result.geometry);
         const poly = new Polygon({
           rings: esriJson.rings,
-          spatialReference: { wkid: 4326 },
+          spatialReference: SpatialReference.WGS84,
         });
 
         const polyGraphic = new Graphic({
@@ -411,7 +411,6 @@ export default class Diagnostics extends Component {
     }
 
     // if the info is not in the cache, go get it
-    const promise = new Deferred();
     const request = new XMLHttpRequest();
 
     request.addEventListener('load', () => {
@@ -428,7 +427,7 @@ export default class Diagnostics extends Component {
     });
 
     request.onerror = () => {
-      promise.resolve(false);
+      Promise.resolve(false);
     };
 
     request.open('POST', `${DATA_API_URL}/dataApi/getInfoBubbleData/${infoBubbleId}`);

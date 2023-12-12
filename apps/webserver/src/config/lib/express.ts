@@ -53,6 +53,7 @@ if (!unitTestMode) {
  * @param { Express.Application } app
  */
 const configureMiddleware = (app: Application) => {
+  app.set('trust proxy', 1);
   // Enable stack traces
   app.set('showStackError', true);
   // Enable jsonp via res.jsonp
@@ -211,6 +212,7 @@ const redisBasedLimiter = (limitConfig) => {
   return expressRateLimit.rateLimit({
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    validate: { trustProxy: false }, // Don't complain about ERR_ERL_PERMISSIVE_TRUST_PROXY
 
     // Redis store configuration
     store: new redisRateLimit.RedisStore({
@@ -229,8 +231,8 @@ const redisBasedLimiter = (limitConfig) => {
  * @param {Express.Application} app
  * @return {Promise}
  */
-export const initialize = (app: Application) =>
-  new Promise((resolve, reject) => {
+export const initialize = (app: Application) => {
+  return new Promise((resolve, reject) => {
     logger.info('Initializing express');
     try {
       // Configure middleware
@@ -259,3 +261,4 @@ export const initialize = (app: Application) =>
       reject(err);
     }
   });
+};

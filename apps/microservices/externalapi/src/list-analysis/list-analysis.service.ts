@@ -18,6 +18,7 @@ import {
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
+import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 
 const DEFAULT_ANALYSIS = 'FCD';
 const LIST_INITIAL_STATUS = 'Pending';
@@ -43,6 +44,28 @@ export class ListAnalysisService {
     this.LARGE_PROCESING_LIST_BUCKET = this.config.get<string>('LARGE_PROCESING_LIST_BUCKET');
   }
 
+  private getEAPIListStatus(listAnalysisStatus: ListsAnalysisStatus) {
+    if (
+      listAnalysisStatus.status === listStatus.Active &&
+      listAnalysisStatus.expirationTime &&
+      listAnalysisStatus.s3URL &&
+      Date.now() < listAnalysisStatus.expirationTime.getTime()
+    ) {
+      return 'Completed';
+    }
+
+    if (
+      listAnalysisStatus.status === listStatus.Active &&
+      listAnalysisStatus.expirationTime &&
+      listAnalysisStatus.s3URL &&
+      Date.now() > listAnalysisStatus.expirationTime.getTime()
+    ) {
+      return 'Expired';
+    }
+
+    return getListStatusString(listAnalysisStatus.status);
+  }
+
   // Replace this with actual database or external service calls
   async getAnalysisStatus(organizationId: number, listID: number): Promise<ListAnalysisResponse> {
     const connection = await this.getOrganizationConnection(organizationId);
@@ -51,21 +74,20 @@ export class ListAnalysisService {
       where: { listId: listID, analysisId: DEFAULT_ANALYSIS },
     });
 
-    // Waiting for changes from Gustavo and Dakota on tickets 2353 and 2354
     const analysisStatus: ListAnalysisResponse = {
       listId: listAnalysisStatus.listId.toString(),
-      status: 'Completed',
+      status: this.getEAPIListStatus(listAnalysisStatus),
       errorsDetails: (listAnalysisStatus.errorInfo || '').split('\n').filter((e) => e),
-      resultUrl: listAnalysisStatus.listId ? 'https://example.com/results' : null,
+      resultUrl: listAnalysisStatus.s3URL || null,
       creationDate: listAnalysisStatus.updateTime,
-      expirationDate: new Date(), // this should be updated after Gustavo save the data in database
+      expirationDate: listAnalysisStatus.expirationTime || null,
     };
 
     return analysisStatus;
   }
 
-  async prepareUpload(userEmail: string) {
-    const user = await this.userService.findUser(userEmail);
+  async prepareUpload(organizationId: number, userEmail: string) {
+    const user = await this.userService.findUser(organizationId, userEmail);
     if (!user) {
       throw new NotFoundException(`User with ${userEmail} not found`);
     }

@@ -11,6 +11,7 @@ import RasterFunction from '@arcgis/core/layers/support/RasterFunction';
 import GladLayer from '../layers/GladLayer';
 import RaddLayer from '../layers/RaddLayer';
 import RaddCoverage from '../layers/RaddCoverage';
+import createGFWIntegratedLayer from '../layers/GFWIntegratedLayer';
 import TreeCoverLossLayer from '../layers/TreeCoverLossLayer';
 import TreeCoverGainLayer from '../layers/TreeCoverGainLayer';
 import IndonesiaLandCover from '../layers/IndonesiaLandCover';
@@ -273,6 +274,20 @@ export const layerFactory = function LayersFactory(layersArray, view) {
             order: layer.order || undefined,
             urlTemplate: layer.url,
             opacity: layer.layerConfig.body['coverage-options']?.opacity || 1,
+            view: view,
+          })
+        );
+
+        break;
+
+      case 'integraded-deforestation-alerts':
+        layers.push(
+          new createGFWIntegratedLayer({
+            id: layer.id,
+            visible: true,
+            order: layer.order || undefined,
+            urlTemplate: layer.url,
+            opacity: 1,
             view: view,
           })
         );

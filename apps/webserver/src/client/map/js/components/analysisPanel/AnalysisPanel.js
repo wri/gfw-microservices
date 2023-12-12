@@ -27,7 +27,6 @@ import store from '../../store';
 import { PLANET_BASEMAP } from '../../config/map.config';
 
 const {
-  formaAlertsID,
   gladAlertsID,
   prodesDeforestationID,
   raddAlertsID,
@@ -426,10 +425,6 @@ export default class AnalysisPanel extends Component {
         totalSelected = this.numberWithCommas(parseFloat(attributes.areaHa).toFixed(2));
         value = this.numberWithCommas(parseFloat(attributes.value).toFixed(2));
         valueLabel = 'GLAD';
-      } else if (visibleLayers.indexOf(formaAlertsID) > -1) {
-        totalSelected = this.numberWithCommas(parseFloat(attributes.areaHa).toFixed(2));
-        value = this.numberWithCommas(parseFloat(attributes.alertCounts).toFixed(2));
-        valueLabel = 'FORMA';
       } else if (visibleLayers.indexOf(viirsActiveFiresID) > -1) {
         totalSelected = this.numberWithCommas(parseFloat(attributes.areaHa).toFixed(2));
         value = this.numberWithCommas(parseFloat(attributes.value));

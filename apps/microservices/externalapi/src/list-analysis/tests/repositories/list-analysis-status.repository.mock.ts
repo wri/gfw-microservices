@@ -8,7 +8,7 @@ export class ListAnalysisStatusRepositoryMock {
       updateTime: new Date(),
       status: 2,
       s3URL: 'https://example.com/results',
-      expirationTime: '11/28/2023',
+      expirationTime: new Date('11/28/2999'),
     };
   });
 }

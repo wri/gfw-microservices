@@ -30,40 +30,12 @@ export function setBiomassMaxRange(value) {
   return { type: actionTypes.SET_BIOMASS_MAX_RANGE, value };
 }
 
-export function setFORMAStartDate(date) {
-  return { type: actionTypes.SET_FORMA_START_DATE, date };
-}
-
-export function setFORMASliderDate(date) {
-  return { type: actionTypes.SET_FORMA_SLIDER_DATE, date };
-}
-
-export function setFORMAEndDate(date) {
-  return { type: actionTypes.SET_FORMA_END_DATE, date };
-}
-
-export function setRADDStartDate(date) {
-  return { type: actionTypes.SET_RADD_START_DATE, date };
-}
-
-export function setRADDSliderDate(date) {
-  return { type: actionTypes.SET_RADD_SLIDER_DATE, date };
-}
-
-export function setRADDEndDate(date) {
-  return { type: actionTypes.SET_RADD_END_DATE, date };
-}
-
 export function toggleWarning(data) {
   return { type: actionTypes.TOGGLE_WARNING, data };
 }
 
 export function toggleGladConfirmed(data) {
   return { type: actionTypes.TOGGLE_GLAD, data };
-}
-
-export function toggleRaddLayers(data) {
-  return { type: actionTypes.TOGGLE_RADD_LAYERS, data };
 }
 
 export function toggleClarkLabsLayers(data) {

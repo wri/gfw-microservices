@@ -206,7 +206,7 @@ describe('Test Token Module', () => {
       );
     });
 
-    it('Should throw an error when user does not exist', () => {
+    it('Should throw an error when organization does not exist', () => {
       expect(tokenService.createToken(444, TEST_USER_ID)).rejects.toThrow(NotFoundException);
     });
   });

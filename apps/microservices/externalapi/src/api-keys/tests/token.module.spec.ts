@@ -4,7 +4,7 @@ import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
 import { TokenService } from '../token.service';
 import { Organization } from '../organization.entity';
-import { TokenMockRepository } from './token.mock.service';
+import { TokenMockRepository, UserMockRepository } from './token.mock.service';
 import { ConfigModule } from '@nestjs/config';
 import { UserRoutes } from '../user-route.entity';
 import * as sinon from 'sinon';
@@ -47,6 +47,10 @@ describe('Test Token Module', () => {
         {
           provide: getRepositoryToken(ExternalAPIKey, 'default'),
           useClass: TokenMockRepository,
+        },
+        {
+          provide: getRepositoryToken(UserRoutes, 'default'),
+          useClass: UserMockRepository,
         },
         TokenService,
       ],
@@ -194,6 +198,16 @@ describe('Test Token Module', () => {
       expect(
         tokenService.deleteToken(TEST_INVALID_ORGANIZATION_ID, 'TOTESTDELETE')
       ).rejects.toThrow(NotFoundException);
+    });
+
+    it('Should throw an error when user does not exist', () => {
+      expect(tokenService.createToken(TEST_NEW_ORGANIZATION_ID, 444)).rejects.toThrow(
+        NotFoundException
+      );
+    });
+
+    it('Should throw an error when user does not exist', () => {
+      expect(tokenService.createToken(444, TEST_USER_ID)).rejects.toThrow(NotFoundException);
     });
   });
 

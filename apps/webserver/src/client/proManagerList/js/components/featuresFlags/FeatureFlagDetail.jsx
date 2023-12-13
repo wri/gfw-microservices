@@ -61,12 +61,14 @@ function FeatureFlagDetail() {
           <label>STATUS</label>
         </Grid>
         <Grid item xs={6}>
-          {statusLabel}
-          <StyledSwitch
-            checked={selectedFeatureFlag.flagState}
-            color="default"
-            onChange={(event) => handleFeatureFlagStateChange(event.target.checked)}
-          />
+          <label>
+            {statusLabel}
+            <StyledSwitch
+              checked={selectedFeatureFlag.flagState}
+              color="default"
+              onChange={(event) => handleFeatureFlagStateChange(event.target.checked)}
+            />
+          </label>
         </Grid>
       </Grid>
       <Grid

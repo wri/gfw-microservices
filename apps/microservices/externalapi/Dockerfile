@@ -17,6 +17,11 @@ FROM amd64/node:20.5.1
 WORKDIR /app
 ENV GENERATE_SOURCEMAP=false
 ENV NODE_OPTIONS=--max-old-space-size=16384
+
+# Pass latest commit hash to the container
+ARG LATEST_COMMIT
+ENV LATEST_COMMIT ${LATEST_COMMIT}
+
 COPY --from=appbuilder /appbuilder/dist/apps/microservices/externalapi/ /app/
 COPY package.json .
 COPY yarn.lock .

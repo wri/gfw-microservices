@@ -153,10 +153,14 @@ $bubble-hover__print-width: 240px + 10px;
   }
   #headerGfw,
   .page-header,
-  .dashboard-subnav,
-  .dashboard-svg__globe {
+  .header,
+  .dashboard-svg__globe,
+  .button-list-panel-container,
+  ._hj_feedback_container,
+  .dashboard-subnav__control {
     display: none !important;
   }
+
   .dashboard__click-to-zoom {
     visibility: hidden;
   }
@@ -207,10 +211,5 @@ $bubble-hover__print-width: 240px + 10px;
   }
   .dashboard-map-details__container {
     page-break-before: always;
-  }
-  .dashboard-map__container {
-    width: 1024px;
-    transform: scale(0.65);
-    transform-origin: top left;
   }
 }

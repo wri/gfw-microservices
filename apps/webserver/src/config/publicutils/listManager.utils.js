@@ -1688,7 +1688,7 @@ const getListByListName = async (req, list_name) => {
  */
 const getListByIdWithAnalysisId = async (req, listId) => {
   try {
-    const allLists = await getAllListsWithAnalysisId(req);
+    const allLists = await getUserListsWithAnalysisId(req);
     return allLists.find((list) => list.id === Number(listId));
   } catch (e) {
     console.log('getListByIdWithAnalysisId', e);

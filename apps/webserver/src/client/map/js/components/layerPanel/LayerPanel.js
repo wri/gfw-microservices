@@ -168,7 +168,7 @@ export default class LayerPanel extends Component {
       (layer) =>
         layer.group === 'forest-change' &&
         layer.id !== proLayers.raddCoverageID &&
-        layer.id !== proLayers.umdGladLandsatAlertsCoverageID
+        layer.id !== proLayers.integratedAlertsGeographicCoverageID
     );
     const landCoverLayers = this.props.mapLayers.filter(
       (layer) =>

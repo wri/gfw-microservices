@@ -121,7 +121,7 @@ const {
   raddAlertsID,
   integratedDeforestationAlertsID,
   raddCoverageID,
-  umdGladLandsatAlertsCoverageID,
+  integratedAlertsGeographicCoverageID,
   oilPalmConcessions,
   prodesDeforestationID,
   protectedAreas,
@@ -1906,7 +1906,7 @@ export default class Map extends Component {
         (layer) =>
           mapPage.visibleLayers.indexOf(layer.id) > -1 ||
           layer.id === raddCoverageID ||
-          layer.id === umdGladLandsatAlertsCoverageID
+          layer.id === integratedAlertsGeographicCoverageID
       )
       .sort((layerA, layerB) => {
         if (layerA.order > layerB.order) {

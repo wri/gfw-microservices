@@ -27,6 +27,6 @@ export class AppController {
    */
   @Get('/latest_commit')
   getLatestCommit(): string {
-    return process.env.LATEST_COMMIT;
+    return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;
   }
 }

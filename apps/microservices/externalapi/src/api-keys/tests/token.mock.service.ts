@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ExternalAPIKey } from '../external-api-key.entity';
 import { FindManyOptions, QueryFailedError } from 'typeorm';
+import { UserRoutes } from '../user-route.entity';
 
 @Injectable()
 export class TokenMockRepository {
@@ -152,5 +153,34 @@ export class TokenMockRepository {
     if (index !== -1) {
       this.data.splice(index, 1);
     }
+  }
+}
+export class UserMockRepository {
+  private readonly data: UserRoutes[] = [
+    {
+      id: 23,
+      user_email: 'user1@example.com',
+      organization_id: 10,
+      organization_user_id: 1,
+      organization_user_status_id: 1,
+      tokens: [],
+    },
+    {
+      id: 23,
+      user_email: 'user1@example.com',
+      organization_id: 777,
+      organization_user_id: 1,
+      organization_user_status_id: 1,
+      tokens: [],
+    },
+  ];
+
+  async findOne(options?: FindManyOptions<UserRoutes>): Promise<UserRoutes | undefined> {
+    const [{ where }] = Array.isArray(options) ? options : [options];
+
+    return this.data.find(
+      (user) =>
+        user.id === where.organization_user_id && user.organization_id === where.organization_id
+    );
   }
 }

@@ -18,5 +18,9 @@ describe('AppController', () => {
       const appController = app.get<AppController>(AppController);
       expect(appController.getHealthCheck()).toEqual('Healthy');
     });
+    it('Latest commit"', () => {
+      const appController = app.get<AppController>(AppController);
+      expect(appController.getLatestCommit()).toEqual(undefined);
+    });
   });
 });

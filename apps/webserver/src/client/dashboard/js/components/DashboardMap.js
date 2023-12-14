@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import EsriMap from 'esri/Map';
-import Basemap from 'esri/Basemap';
-import MapView from 'esri/views/MapView';
-import MapImageLayer from 'esri/layers/MapImageLayer';
+import EsriMap from '@arcgis/core/Map';
+import Basemap from '@arcgis/core/Basemap';
+import MapView from '@arcgis/core/views/MapView';
+import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Button from '../../../common/js/components/Button';
 import IconButton from 'material-ui/IconButton';
 import InfoIcon from 'material-ui/svg-icons/action/info';

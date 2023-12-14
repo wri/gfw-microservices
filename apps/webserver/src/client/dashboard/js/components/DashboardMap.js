@@ -9,7 +9,6 @@ import InfoIcon from 'material-ui/svg-icons/action/info';
 import ZoomIcon from 'material-ui/svg-icons/action/zoom-out';
 import Popover from 'material-ui/Popover';
 import isEqual from 'lodash/isEqual';
-import Deferred from 'dojo/Deferred';
 
 // REDUX - Store
 import store from '../store';
@@ -207,7 +206,6 @@ export default class DashboardMap extends Component {
     }
 
     // if the info is not in the cache, go get it
-    const promise = new Deferred();
     const request = new XMLHttpRequest();
     request.addEventListener('load', () => {
       const resp = JSON.parse(request.response);
@@ -223,7 +221,7 @@ export default class DashboardMap extends Component {
     });
 
     request.onerror = () => {
-      promise.resolve(false);
+      Promise.resolve(false);
     };
 
     request.open('POST', `${DATA_API_URL}/dataApi/getInfoBubbleData/${infoBubbleId}`);

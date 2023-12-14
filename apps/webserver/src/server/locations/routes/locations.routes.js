@@ -61,24 +61,19 @@ module.exports = (app, limiter) => {
   app.use('/locations', routeMiddlewares);
 
   app.get('/locations', (req, res) => {
+    // Extract the serialized data from the query string
+    const serializedData = req.query.locationsDataFromMap;
+
+    // Deserialize the JSON string back into an object
+    const locationsDataFromMap = JSON.parse(decodeURIComponent(serializedData));
+
     const locationsData = {
-      goToEditList: !!app.get('go-to-edit-list'),
-      gfwData: app.get('gfw-data'),
-      mapData: app.get('map-data'),
-      drawData: app.get('draw-data'),
-      locationName: app.get('location-name'),
+      ...locationsDataFromMap,
       fromMap: app.get('from-map'),
       subscriptionStatus: req.session.subscription_status_id,
     };
 
     controller.locations(req, res, locationsData);
-
-    app.set('from-map', false);
-    app.set('go-to-edit-list', false);
-    app.set('gfw-data', '');
-    app.set('map-data', '');
-    app.set('draw-data', '');
-    app.set('location-name', '');
   });
 
   app.get('/getUserLists', (req, res) => {
@@ -113,18 +108,6 @@ module.exports = (app, limiter) => {
 
   app.get('/locations/upload/step/:step', (req, res) => {
     res.redirect('/locations');
-  });
-
-  app.post('/locations/map-locations', (req, res) => {
-    console.log('POST /locations/map-locations');
-    // app.set('admin-area', req.body.adminArea);
-    app.set('go-to-edit-list', req.body.goToEditList);
-    app.set('gfw-data', req.body.gfwData);
-    app.set('map-data', req.body.mapData);
-    app.set('draw-data', req.body.drawData);
-
-    app.set('location-name', req.body.locationName);
-    res.send('submitted');
   });
 
   app.post('/locations/addToNewList', (req, res) => {
@@ -241,13 +224,6 @@ module.exports = (app, limiter) => {
         console.log('Reject', err);
         res.send(saveAsDraftListConfig.failed);
       });
-  });
-
-  app.post('/locations/from-map', (req, res) => {
-    app.set('from-map', true);
-    app.set('go-to-edit-list', true);
-    app.set('location-name', req.body.locationName);
-    res.send('return');
   });
 
   app.post('/locations/addToNewListEdit', (req, res) => {

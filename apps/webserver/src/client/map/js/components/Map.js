@@ -1724,19 +1724,10 @@ export default class Map extends Component {
       };
     }
 
-    const request = new XMLHttpRequest();
-    request.open('POST', '/locations/map-locations', true);
-    request.setRequestHeader('Content-Type', 'application/json');
-    request.send(JSON.stringify(requestObject));
-    request.onload = () => {
-      if (request.response === 'submitted') {
-        window.location = '/locations';
-      }
-    };
-    request.onerror = (err) => {
-      this.setState({ spinnerOn: false });
-      console.log(err);
-    };
+    // Serialize JSON object into a string
+    const serializedData = encodeURIComponent(JSON.stringify(requestObject));
+
+    window.location = `/locations?locationsDataFromMap=${serializedData}`;
   };
 
   getCurrentAnalysis = (type) => {

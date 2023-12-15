@@ -17,7 +17,7 @@ function AfiDiagnostics() {
   const [chartData, setChartData] = useState({});
 
   const listId = parseInt(new URLSearchParams(location.search).get('listId'), 10);
-  const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
+  const isSharedList = Boolean(new URLSearchParams(location.search).get('shared'));
 
   const [selectedList, setSelectedList] = useState({});
 
@@ -38,7 +38,10 @@ function AfiDiagnostics() {
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({ locationId: '' }),
+      body: JSON.stringify({
+        locationId: '',
+        isSharedList,
+      }),
     }).then((res) => res.json());
   };
 

@@ -11,7 +11,6 @@ const setListData = require(path.resolve('./config/publicutils/setListData'));
 import { gfwListsIds } from '@wri-monorepos/constants';
 
 /**
- * TODO: move to its own file?
  * @summary Get the corresponding analysis function for this list.
  * @note Each of these function receives the express request object and the current list in context.
  * @param {Number|Int} listId listid
@@ -42,7 +41,9 @@ module.exports = async function (req, res) {
       selectedList = await GFWListManager.getGFWListsByListId(req, listId);
     } else {
       if (isSharedList) {
-        const orgSharedLists = await SharedListManager.getUserInternalShareLists();
+        const { organization_user_id: userId } = req.session;
+
+        const orgSharedLists = await SharedListManager.getUserInternalShareLists(req, userId);
         const allLists = await ListManager.getAllLists();
         const filteredSharedLists = SharedListManager.findSharedListsInsideOrganization(
           orgSharedLists,

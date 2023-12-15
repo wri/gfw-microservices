@@ -1,0 +1,30 @@
+import { proLayers } from '../../../../../common/js/config';
+const {
+  integratedDeforestationAlertsID,
+  raddAlertsID,
+  gladAlertsID,
+  gladS2AlertsID,
+  integratedAlertsGeographicCoverageID,
+  gladS2GeographicCoverageID,
+  raddCoverageID,
+} = proLayers;
+
+export const deforestationAlertsIds = [
+  integratedDeforestationAlertsID,
+  raddAlertsID,
+  gladAlertsID,
+  gladS2AlertsID,
+];
+
+export const deforestationAlertsGeographicCoverageIds = [
+  integratedAlertsGeographicCoverageID,
+  gladS2GeographicCoverageID,
+  raddCoverageID,
+];
+
+export const deforestationAlertsLayerToCoverageMap = {
+  [integratedDeforestationAlertsID]: integratedAlertsGeographicCoverageID,
+  [raddAlertsID]: raddCoverageID,
+  [gladAlertsID]: null,
+  [gladS2AlertsID]: gladS2GeographicCoverageID,
+};

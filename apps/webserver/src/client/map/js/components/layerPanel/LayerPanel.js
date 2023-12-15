@@ -1,12 +1,12 @@
 // import MapComponent from '../../../../map/js/components/MapComponent';
 // import '../../../../map/css/map.scss';
 import store from '../../store';
-import { toggleLayer, showLists } from '../../actions/mapActions';
+import { toggleLayer } from '../../actions/mapActions';
 import AppBar from 'material-ui/AppBar';
 import LayerCheckbox from './LayerCheckbox';
 import React, { Component } from 'react';
 import { proLayers } from '../../../../common/js/config';
-
+import { deforestationAlertsGeographicCoverageIds } from '../legend/DeforestationAlerts/deforestationAlerts.constants';
 import '../../../css/map.scss';
 
 export default class LayerPanel extends Component {
@@ -23,9 +23,6 @@ export default class LayerPanel extends Component {
   };
 
   showGroup = (evt) => {
-    // console.log('showGroup', evt.target.id);
-    // console.log('showGroup', evt.target);
-
     let current = '';
     let currentSpace = evt.target.id;
     if (!currentSpace) {
@@ -53,7 +50,6 @@ export default class LayerPanel extends Component {
       default:
         break;
     }
-    // console.log('current', current);
     if (current) {
       this.setState({ visibleMenu: current });
     }
@@ -167,8 +163,7 @@ export default class LayerPanel extends Component {
     const forestChangeLayers = this.props.mapLayers.filter(
       (layer) =>
         layer.group === 'forest-change' &&
-        layer.id !== proLayers.raddCoverageID &&
-        layer.id !== proLayers.integratedAlertsGeographicCoverageID
+        !deforestationAlertsGeographicCoverageIds.includes(layer.id)
     );
     const landCoverLayers = this.props.mapLayers.filter(
       (layer) =>

@@ -201,6 +201,19 @@ export const layerFactory = function LayersFactory(layersArray, view) {
         options.order = layer.order || undefined;
         layers.push(new GraphicsLayer(options));
         break;
+
+      case 'gladS2':
+        // we are using the same way we decode Glad alerts for Glad s2
+        layers.push(
+          new GladLayer({
+            id: layer.id,
+            visible: layer.visible || false,
+            order: layer.order || undefined,
+            urlTemplate: layer.url,
+            view: view,
+          })
+        );
+        break;
       case 'glad':
         layers.push(
           new GladLayer({
@@ -292,6 +305,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
           })
         );
         break;
+
       case 'soy-planted':
         const url = layer.layerConfig.body.url.replace('{year}', `${soyPlantedYearsRange[1]}`);
         layers.push(

@@ -29,7 +29,6 @@ import {
   UPDATE_PLANET_TILE_COLOR,
   UPDATE_SOY_YEAR,
   TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_INTEGRATED_ALERTS_LAYER,
-  TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_RADD_ALERTS_LAYER,
 } from '../constants/actionTypes';
 import {
   mapPage,
@@ -68,7 +67,6 @@ const initialLocationState = {
   planetTileLayer: PLANET_TILE_LAYER_INITIAL,
   planetTileColor: 'rgb',
   showHighConfidenceAlertsOnIntegratedAlertsLayer: false,
-  showHighConfidenceAlertsOnRaddAlertsLayer: false,
 };
 
 export function populateLayers(state = initialLocationState.mapLayers, action) {
@@ -107,14 +105,6 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
           if (
             (action.data === proLayers.treeCoverLossID && layer === proLayers.treeCoverGainID) ||
             (action.data === proLayers.treeCoverGainID && layer === proLayers.treeCoverLossID)
-          ) {
-            newLayers.push(layer);
-          }
-
-          //raddCoverage and raddAlerts are exclusive but can be shown together
-          if (
-            (action.data === proLayers.raddCoverageID && layer === proLayers.raddAlertsID) ||
-            (action.data === proLayers.raddAlertsID && layer === proLayers.raddCoverageID)
           ) {
             newLayers.push(layer);
           }
@@ -242,11 +232,4 @@ export function toggleHighConfidenceAlertsForIntegratedAlertsLayer(
   action
 ) {
   return action.type !== TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_INTEGRATED_ALERTS_LAYER ? state : !state;
-}
-
-export function toggleHighConfidenceAlertsForRaddAlertsLayer(
-  state = initialLocationState.showHighConfidenceAlertsOnRaddAlertsLayer,
-  action
-) {
-  return action.type !== TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_RADD_ALERTS_LAYER ? state : !state;
 }

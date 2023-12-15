@@ -3,6 +3,8 @@ import store from '../../store';
 import _range from 'lodash/range';
 import {
   toggleLayer,
+  turnLayerOff,
+  toggleHighConfidenceAlertsForIntegratedAlertsLayer,
   showLoading,
   getLayerInfo,
   showBasemapInfo,
@@ -20,23 +22,21 @@ const {
   soyInCerradoBiome,
   treeBiomassLossID,
   soyOnTreeCoverLoss,
-  gladAlertsID,
   soyPlantedArea,
-  raddAlertsID,
-  raddCoverageID,
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
-  integratedDeforestationAlertsID,
-  integratedAlertsGeographicCoverageID,
 } = proLayers;
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 
 import '../../../css/map.scss';
-import RaddLayerLegend from './DeforestationAlerts/RaddLayerLegend';
-import GladLayerLegend from './DeforestationAlerts/GladLayerLegend';
-import IntegratedDeforestationAlertsLayerLegend from './DeforestationAlerts/IntegratedDeforestationAlertsLayerLegend';
+import DeforestationAlertsLayerLegend from './DeforestationAlerts/DeforestationAlertsLayerLegend';
 import { toggleClarkLabsLayers } from '../../actions/analysisActions';
 import ClarkLabsLayerLeyend from './ClarkLabsLayerLeyend';
+import {
+  deforestationAlertsIds,
+  deforestationAlertsGeographicCoverageIds,
+  deforestationAlertsLayerToCoverageMap,
+} from './DeforestationAlerts/deforestationAlerts.constants';
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -48,10 +48,9 @@ export default class LegendCheckbox extends Component {
 
   componentDidUpdate(prevProps) {
     if (
-      prevProps.visibleLayers.indexOf(this.props.layer.id) > -1 &&
-      this.props.visibleLayers.indexOf(this.props.layer.id) === -1 &&
-      this.state.layerHidden === true &&
-      this.props.layer.id !== raddAlertsID
+      prevProps.visibleLayers.includes(this.props.layer.id) &&
+      !this.props.visibleLayers.includes(this.props.layer.id) &&
+      this.state.layerHidden === true
     ) {
       this.hardShow();
     }
@@ -81,27 +80,32 @@ export default class LegendCheckbox extends Component {
   };
 
   hideLayer = () => {
-    if (this.props.layer.id === soyInCerradoBiome) {
+    const { visibleLayers } = store.getState();
+
+    const layerId = this.props.layer.id;
+
+    if (layerId === soyInCerradoBiome) {
       store.dispatch(toggleLayer(soyOnTreeCoverLoss));
     }
 
-    const { visibleLayers } = store.getState();
-    if (this.props.layer.id === raddAlertsID) {
-      if (visibleLayers.includes(raddAlertsID)) {
-        store.dispatch(toggleLayer(raddAlertsID));
+    if (deforestationAlertsIds.includes(layerId)) {
+      // Toggle the layer itself
+      if (visibleLayers.includes(layerId)) {
+        store.dispatch(turnLayerOff(layerId));
       }
-      if (visibleLayers.includes(raddCoverageID)) {
-        store.dispatch(toggleLayer(raddCoverageID));
+
+      // Get the geographic coverage ID from the deforestation alerts map
+      const coverageId = deforestationAlertsLayerToCoverageMap[layerId];
+
+      // If there is a geographic coverage ID, toggle it
+      if (coverageId && visibleLayers.includes(coverageId)) {
+        store.dispatch(turnLayerOff(coverageId));
       }
-    } else if (this.props.layer.id === integratedDeforestationAlertsID) {
-      // integratedAlertsGeographicCoverageID depends on integratedDeforestationAlertsID to be shown
-      if (visibleLayers.includes(integratedDeforestationAlertsID)) {
-        store.dispatch(toggleLayer(integratedDeforestationAlertsID));
+      const { showHighConfidenceAlertsOnIntegratedAlertsLayer } = store.getState();
+      if (showHighConfidenceAlertsOnIntegratedAlertsLayer) {
+        store.dispatch(toggleHighConfidenceAlertsForIntegratedAlertsLayer());
       }
-      if (visibleLayers.includes(integratedAlertsGeographicCoverageID)) {
-        store.dispatch(toggleLayer(integratedAlertsGeographicCoverageID));
-      }
-    } else if (this.props.layer.id === clarkLabsAquacultureLandCover) {
+    } else if (layerId === clarkLabsAquacultureLandCover) {
       store.dispatch(toggleClarkLabsLayers());
       if (visibleLayers.includes(clarkLabsAquacultureLandCover)) {
         store.dispatch(toggleLayer(clarkLabsAquacultureLandCover));
@@ -110,7 +114,7 @@ export default class LegendCheckbox extends Component {
         store.dispatch(toggleLayer(clarkLabsAquacultureLandChange));
       }
     } else {
-      store.dispatch(toggleLayer(this.props.layer.id));
+      store.dispatch(toggleLayer(layerId));
     }
 
     const [selectedList] = this.props.selectedLists;
@@ -122,7 +126,7 @@ export default class LegendCheckbox extends Component {
       store.dispatch(removeList(0));
     }
 
-    if (this.props.gfwListDef.hasOwnProperty(this.props.layer.id)) {
+    if (this.props.gfwListDef.hasOwnProperty(layerId)) {
       this.clearGFWFilter();
     }
   };
@@ -132,22 +136,30 @@ export default class LegendCheckbox extends Component {
   };
 
   toggleLayerVisibility = async () => {
-    if (this.props.layer.id === raddAlertsID) {
-      if (this.props.visibleLayers.includes(raddAlertsID)) {
-        await store.dispatch(toggleLayer(raddAlertsID));
+    const layerId = this.props.layer.id;
+    const visibleLayers = this.props.visibleLayers;
+
+    if (deforestationAlertsIds.includes(layerId)) {
+      // Toggle the layer visibility
+
+      this.props.toggleLayerVisibility(layerId);
+
+      // Get the geographic coverage ID from the deforestation alerts map
+      const coverageId = deforestationAlertsLayerToCoverageMap[layerId];
+
+      // If there is a geographic coverage ID, toggle it
+      if (coverageId && visibleLayers.includes(coverageId)) {
+        this.props.toggleLayerVisibility(coverageId);
       }
-      if (this.props.visibleLayers.includes(raddCoverageID)) {
-        await store.dispatch(toggleLayer(raddCoverageID));
-      }
-    } else if (this.props.layer.id === clarkLabsAquacultureLandCover) {
-      if (this.props.visibleLayers.includes(clarkLabsAquacultureLandCover)) {
+    } else if (layerId === clarkLabsAquacultureLandCover) {
+      if (visibleLayers.includes(clarkLabsAquacultureLandCover)) {
         await store.dispatch(toggleLayer(clarkLabsAquacultureLandCover));
       }
-      if (this.props.visibleLayers.includes(clarkLabsAquacultureLandChange)) {
+      if (visibleLayers.includes(clarkLabsAquacultureLandChange)) {
         await store.dispatch(toggleLayer(clarkLabsAquacultureLandChange));
       }
     } else {
-      this.props.toggleLayerVisibility(this.props.layer.id);
+      this.props.toggleLayerVisibility(layerId);
     }
 
     this.setState({
@@ -218,9 +230,10 @@ export default class LegendCheckbox extends Component {
     if (layer.id === clarkLabsAquacultureLandCover) {
       hidden = store.getState().clarkLabsLayers ? '' : 'hidden';
     } else {
-      // we hide the legend for integratedAlertsGeographicCoverageID as it is part of the integrated alerts
+      // we hide the legend for deforestationAlertsGeographicCoverageIds as they depend on the deforestation alerts
       hidden =
-        visibleLayers.indexOf(layer.id) === -1 || layer.id === integratedAlertsGeographicCoverageID
+        visibleLayers.indexOf(layer.id) === -1 ||
+        deforestationAlertsGeographicCoverageIds.includes(layer.id)
           ? 'hidden'
           : '';
     }
@@ -299,24 +312,31 @@ export default class LegendCheckbox extends Component {
           />
         ) : null}
 
-        {symbolsLength === 1 &&
-        categoriesLength > 0 &&
-        layer.id === gladAlertsID &&
-        layer.id !== soyPlantedArea ? (
-          <GladLayerLegend disabled={grayed} gladConfirmed={this.props.gladConfirmed} />
+        {deforestationAlertsIds.includes(layer.id) && (
+          <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
+        )}
+        {/*
+        {layer.id === gladAlertsID  ? (
+          <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
         ) : null}
 
-        {layer.id === raddAlertsID ? <RaddLayerLegend disabled={grayed} layer={layer} /> : null}
+        {layer.id === raddAlertsID ? (
+          <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
+        ) : null}
 
         {layer.id === integratedDeforestationAlertsID ? (
-          <IntegratedDeforestationAlertsLayerLegend disabled={grayed} />
+          <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
         ) : null}
+
+        {layer.id === gladS2AlertsID ? (
+          <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
+        ) : null}
+
+        */}
 
         {symbolsLength === 1 &&
         categoriesLength > 0 &&
-        layer.id !== gladAlertsID &&
-        layer.id !== raddAlertsID &&
-        layer.id !== integratedDeforestationAlertsID &&
+        !deforestationAlertsIds.includes(layer.id) &&
         layer.id !== clarkLabsAquacultureLandCover &&
         layer.id !== soyPlantedArea ? (
           <ul className="layer-legend">

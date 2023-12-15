@@ -34,10 +34,6 @@ export function toggleWarning(data) {
   return { type: actionTypes.TOGGLE_WARNING, data };
 }
 
-export function toggleGladConfirmed(data) {
-  return { type: actionTypes.TOGGLE_GLAD, data };
-}
-
 export function toggleClarkLabsLayers(data) {
   return { type: actionTypes.TOGGLE_CLARK_LABS_LAYERS, data };
 }

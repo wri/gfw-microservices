@@ -29,7 +29,6 @@ import {
   UPDATE_PLANET_TILE_COLOR,
   UPDATE_SOY_YEAR,
   TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_INTEGRATED_ALERTS_LAYER,
-  TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_RADD_ALERTS_LAYER,
 } from '../constants/actionTypes';
 
 export function populateLayers(data) {
@@ -150,8 +149,4 @@ export function updatePlanetTileColor(data) {
 
 export function toggleHighConfidenceAlertsForIntegratedAlertsLayer(data) {
   return { type: TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_INTEGRATED_ALERTS_LAYER, data };
-}
-
-export function toggleHighConfidenceAlertsForRaddAlertsLayer(data) {
-  return { type: TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_RADD_ALERTS_LAYER, data };
 }

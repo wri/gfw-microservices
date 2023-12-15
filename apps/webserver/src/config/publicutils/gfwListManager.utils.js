@@ -29,8 +29,6 @@ const path = require('path');
 const sql = require('mssql');
 const config = require('../config');
 
-// const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
-// const snsUtils = require(path.resolve('./config/privateutils/sns.utils.js'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));

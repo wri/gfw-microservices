@@ -2,6 +2,7 @@ const path = require('path');
 const logger = require('../../../config/privateutils/logger.utils');
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
+const SharedListManager = require(path.resolve('./config/publicutils/shareManager.utils.js'));
 const getAnalysisFromAdministrativeAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromAdministrativeAreasList');
 const getAnalysisFromProtectedAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromProtectedAreasList');
 const getAnalysisFromGFWList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromGFWList');
@@ -31,6 +32,7 @@ const getDiagnosticsAnalysisFunction = (listId) => {
 
 module.exports = async function (req, res) {
   const listId = Number(req.params.listId);
+  const { isSharedList } = req.body;
   logger.info(`POST /diagnostics/${listId}`);
 
   try {
@@ -39,19 +41,30 @@ module.exports = async function (req, res) {
     if (GFWListManager.isGfwList(listId)) {
       selectedList = await GFWListManager.getGFWListsByListId(req, listId);
     } else {
-      selectedList = await ListManager.getListByIdWithAnalysisId(req, listId);
+      if (isSharedList) {
+        const orgSharedLists = await SharedListManager.getUserInternalShareLists();
+        const allLists = await ListManager.getAllLists();
+        const filteredSharedLists = SharedListManager.findSharedListsInsideOrganization(
+          orgSharedLists,
+          allLists
+        );
+        selectedList = filteredSharedLists.find((list) => list.id == listId);
+      } else {
+        selectedList = await ListManager.getListByIdWithAnalysisId(req, listId);
+      }
     }
 
     const getAnalysisData = getDiagnosticsAnalysisFunction(listId);
     const analysisData = await getAnalysisData(req, selectedList);
 
     const { spatialData, listLocationsIds, listAnalysis, locationAnalyses } = analysisData;
-
     const [locationData, locationAnalysisData] = locationAnalyses;
 
-    const processedListData = setListData(locationData || [], locationAnalysisData || [], [
-      selectedList,
-    ]);
+    const processedListData = setListData(
+      locationData || [],
+      locationAnalysisData || [],
+      selectedList
+    );
 
     return res.status(200).send({
       selectedList,

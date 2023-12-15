@@ -74,6 +74,8 @@ module.exports = (app, limiter) => {
     };
 
     controller.locations(req, res, locationsData);
+    // TODO: investigate if the variable from-map works correctly
+    app.set('from-map', false);
   });
 
   app.get('/getUserLists', (req, res) => {

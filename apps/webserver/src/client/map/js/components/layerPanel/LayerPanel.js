@@ -1,5 +1,3 @@
-// import MapComponent from '../../../../map/js/components/MapComponent';
-// import '../../../../map/css/map.scss';
 import store from '../../store';
 import { toggleLayer } from '../../actions/mapActions';
 import AppBar from 'material-ui/AppBar';

@@ -50,7 +50,7 @@ export default class LegendCheckbox extends Component {
     if (
       prevProps.visibleLayers.includes(this.props.layer.id) &&
       !this.props.visibleLayers.includes(this.props.layer.id) &&
-      this.state.layerHidden === true
+      this.state.layerHidden
     ) {
       this.hardShow();
     }
@@ -315,24 +315,6 @@ export default class LegendCheckbox extends Component {
         {deforestationAlertsIds.includes(layer.id) && (
           <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
         )}
-        {/*
-        {layer.id === gladAlertsID  ? (
-          <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
-        ) : null}
-
-        {layer.id === raddAlertsID ? (
-          <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
-        ) : null}
-
-        {layer.id === integratedDeforestationAlertsID ? (
-          <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
-        ) : null}
-
-        {layer.id === gladS2AlertsID ? (
-          <DeforestationAlertsLayerLegend disabled={grayed} layerId={layer.id} />
-        ) : null}
-
-        */}
 
         {symbolsLength === 1 &&
         categoriesLength > 0 &&

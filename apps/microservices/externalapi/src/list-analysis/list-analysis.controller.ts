@@ -13,16 +13,18 @@ export class ListAnalysisController {
 
   @ApiResponse({ status: 200, type: ListAnalysisResponse })
   @Get(':listID/analysis/FCD/status')
-  @UsePipes(new ZodValidationPipe(z.object({})))
+  @UsePipes(new ZodValidationPipe(requestSchema))
   async getAnalysisStatus(
-    @Param('listID') listID: number,
+    @Param('listID') listID: string,
     @Req() request: RequestSchema
   ): Promise<ListAnalysisResponse> {
     const {
       user: { organizationId },
-    } = requestSchema.parse(request);
+    } = request;
 
-    const analysisStatus = await this.listAnalysisService.getAnalysisStatus(organizationId, listID);
+    const listId = z.coerce.number().parse(listID);
+
+    const analysisStatus = await this.listAnalysisService.getAnalysisStatus(organizationId, listId);
     return analysisStatus;
   }
 }

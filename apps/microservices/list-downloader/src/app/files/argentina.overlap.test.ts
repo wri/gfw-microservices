@@ -51,7 +51,8 @@ describe('Argentina Overlap', () => {
     let csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Location Name,Data Layer,Sub-Layer,Overlap with Sub-layer (Ha),Overlap with Sub-Layer (%)',
-      'WRI,arg3 landmark,Argentina OTBN,Category II,32.89,100',
+      'WRI,arg3 landmark,Argentina OTBN,Category II,32.89,50',
+      'WRI,arg3 landmark,Argentina OTBN,"Category I, Category IV",32.89,50',
       'WRI,arg3 landmark,Argentina Indigenous Territories,,313.06,100',
       'WRI,arg4 wdpa,Argentina OTBN,Category I,1921.35,100',
       'WRI,arg4 wdpa,Argentina Protected Areas,Category Ia,1620.72,91.16',

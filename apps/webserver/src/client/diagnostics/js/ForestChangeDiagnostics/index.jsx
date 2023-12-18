@@ -71,6 +71,7 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
       })
       .catch((error) => {
         setIsLoading(false);
+        setSelectedList(null);
         console.warn(error);
       });
   }, [listId]);

@@ -2,7 +2,7 @@ const path = require('path');
 const logger = require('../../../config/privateutils/logger.utils');
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
-const SharedListManager = require(path.resolve('./config/publicutils/shareManager.utils.js'));
+const SharedListManager = require(path.resolve('./config/publicutils/shareManager.utils'));
 const getAnalysisFromAdministrativeAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromAdministrativeAreasList');
 const getAnalysisFromProtectedAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromProtectedAreasList');
 const getAnalysisFromGFWList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromGFWList');
@@ -40,16 +40,34 @@ module.exports = async function (req, res) {
     if (GFWListManager.isGfwList(listId)) {
       selectedList = await GFWListManager.getGFWListsByListId(req, listId);
     } else {
-      if (isSharedList) {
+      if (Boolean(isSharedList)) {
         const { organization_user_id: userId } = req.session;
 
+        const allLists = await ListManager.getAllListsWithAnalysisId(req);
         const orgSharedLists = await SharedListManager.getUserInternalShareLists(req, userId);
-        const allLists = await ListManager.getAllLists();
+
         const filteredSharedLists = SharedListManager.findSharedListsInsideOrganization(
           orgSharedLists,
           allLists
         );
-        selectedList = filteredSharedLists.find((list) => list.id == listId);
+
+        /**
+         * @summary will this path execute
+         * if the user can (supposedly) access
+         * their shared list thru the app?
+         *
+         * •= if app shows lists shared by user_id
+         * •= then filteredSharedLists should always
+         * contain a list
+         *
+         */
+        if (!filteredSharedLists.lenth) {
+          return res.status(500).json({
+            selectedList: null,
+          });
+        }
+
+        selectedList = allLists.find((list) => list.id == listId);
       } else {
         selectedList = await ListManager.getListByIdWithAnalysisId(req, listId);
       }

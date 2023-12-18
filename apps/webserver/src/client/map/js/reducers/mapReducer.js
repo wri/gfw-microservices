@@ -231,5 +231,7 @@ export function toggleHighConfidenceAlertsForDeforestationAlertsLayers(
   state = initialLocationState.showHighConfidenceAlertsOnDeforestationAlertsLayer,
   action
 ) {
-  return action.type !== TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS ? state : !state;
+  return action.type !== TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS
+    ? state
+    : !state;
 }

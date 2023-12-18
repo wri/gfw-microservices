@@ -35,7 +35,8 @@ const createGFWIntegratedLayer = BaseTileLayer.createSubclass({
   properties: {
     julianTo: parseInt(new Date().getJulian()),
     julianFrom: parseInt(moment().subtract(2, 'years').toDate().getJulian()),
-    showHighConfidenceConfirmed: store.getState().showHighConfidenceAlertsOnDeforestationAlertsLayer,
+    showHighConfidenceConfirmed:
+      store.getState().showHighConfidenceAlertsOnDeforestationAlertsLayer,
   },
   getTileUrl: function (level, row, column) {
     return this.urlTemplate.replace('{z}', level).replace('{x}', column).replace('{y}', row);

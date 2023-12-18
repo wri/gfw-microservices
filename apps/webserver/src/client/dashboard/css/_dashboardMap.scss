@@ -164,6 +164,16 @@ $bubble-hover__print-width: 240px + 10px;
   .dashboard__click-to-zoom {
     visibility: hidden;
   }
+
+  .dashboard-map__container {
+    .dashboard-map {
+      transform: scale(0.75);
+      width: 150%;
+      margin: 0 -12%;
+      height: 150%;
+    }
+  }
+
   .dashboard-map__title {
     background: none;
   }

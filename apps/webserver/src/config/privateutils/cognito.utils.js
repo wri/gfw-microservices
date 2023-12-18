@@ -31,7 +31,7 @@ const errorUtils = require('./error.utils');
 const logger = require('./logger.utils');
 
 // Local variable for Cognito Service Provider.
-let cognitoIdentityServiceProvider;
+let amazonCognitoIdentityProvider;
 
 /**
  * @function getUserInfo
@@ -40,7 +40,7 @@ let cognitoIdentityServiceProvider;
  * @param {String} USER_POOL_ID - The Cognito user pool id for that environment
  */
 const getUserInfo = async (email, USER_POOL_ID) => {
-  return cognitoIdentityServiceProvider.adminGetUser({
+  return amazonCognitoIdentityProvider.adminGetUser({
     UserPoolId: USER_POOL_ID,
     Username: email,
   });
@@ -70,7 +70,7 @@ const resetLoginAttributes = async (email, USER_POOL_ID) => {
   };
 
   try {
-    returnValue = cognitoIdentityServiceProvider.adminUpdateUserAttributes(params);
+    returnValue = amazonCognitoIdentityProvider.adminUpdateUserAttributes(params);
   } catch (error) {
     console.log('ERROR: could not update user attributes!');
   }
@@ -98,7 +98,7 @@ const setLoginFailCount = async (failureCount, email, USER_POOL_ID) => {
   };
 
   try {
-    returnValue = cognitoIdentityServiceProvider.adminUpdateUserAttributes(params);
+    returnValue = amazonCognitoIdentityProvider.adminUpdateUserAttributes(params);
   } catch (error) {
     console.log('ERROR: could not update user attributes!');
   }
@@ -126,7 +126,7 @@ const handleUserOpeningPasswordDate = async (updatedAt, email, USER_POOL_ID) => 
   };
 
   try {
-    returnValue = cognitoIdentityServiceProvider.adminUpdateUserAttributes(params);
+    returnValue = amazonCognitoIdentityProvider.adminUpdateUserAttributes(params);
   } catch (error) {
     console.log('ERROR: could not update user attributes!');
   }
@@ -147,7 +147,7 @@ const disableUserBasedOnFailCounts = async (email, USER_POOL_ID) => {
   };
 
   try {
-    returnValue = cognitoIdentityServiceProvider.adminResetUserPassword(params);
+    returnValue = amazonCognitoIdentityProvider.adminResetUserPassword(params);
   } catch (e) {
     console.log('error', e);
   }
@@ -169,7 +169,7 @@ const confirmUserEmail = (req, username) => {
       Username: username,
     };
 
-    cognitoIdentityServiceProvider.adminUpdateUserAttributes(parameters, (err, data) => {
+    amazonCognitoIdentityProvider.adminUpdateUserAttributes(parameters, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -215,7 +215,7 @@ const createUser = (req, email, resend_temp_password = false, unit_test = false)
       params.MessageAction = 'RESEND';
     }
 
-    cognitoIdentityServiceProvider.adminCreateUser(params, (err, data) => {
+    amazonCognitoIdentityProvider.adminCreateUser(params, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -252,7 +252,7 @@ const changePassword = (req, previousPassword, proposedPassword) => {
       ProposedPassword: proposedPassword,
     };
 
-    cognitoIdentityServiceProvider.changePassword(parameters, (err, data) => {
+    amazonCognitoIdentityProvider.changePassword(parameters, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -276,7 +276,7 @@ const deleteUser = (req, email) => {
       Username: email,
     };
 
-    cognitoIdentityServiceProvider.adminDeleteUser(params, (err, data) => {
+    amazonCognitoIdentityProvider.adminDeleteUser(params, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -646,7 +646,7 @@ const adminResetUserPassword = (req, email) => {
     };
 
     // Call API action
-    cognitoIdentityServiceProvider
+    amazonCognitoIdentityProvider
       .adminResetUserPassword(parameters)
       .then(() => {
         resolve(true);
@@ -682,7 +682,7 @@ const updateUser = (req, email, attributes) => {
       UserAttributes: [...attributes],
     };
 
-    cognitoIdentityServiceProvider.adminUpdateUserAttributes(params, (err, data) => {
+    amazonCognitoIdentityProvider.adminUpdateUserAttributes(params, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -708,7 +708,7 @@ const userExists = (req, email) => {
       Username: email,
     };
 
-    cognitoIdentityServiceProvider.adminGetUser(params, (err, data) => {
+    amazonCognitoIdentityProvider.adminGetUser(params, (err, data) => {
       if (err) {
         resolve(false);
       } else {
@@ -736,7 +736,7 @@ const confirmForgotPassword = (req, confirmationCode, newPassword, username) => 
       Username: username,
     };
 
-    cognitoIdentityServiceProvider.confirmForgotPassword(parameters, (err, data) => {
+    amazonCognitoIdentityProvider.confirmForgotPassword(parameters, (err, data) => {
       if (err) {
         if (err.code === 'ExpiredCodeException') {
           resolve('ExpiredCodeException');
@@ -757,7 +757,7 @@ const resendConfirmationCode = (req, username) => {
       Username: username,
     };
 
-    cognitoIdentityServiceProvider
+    amazonCognitoIdentityProvider
       .resendConfirmationCode(parameters)
       .then(() => {
         resolve(true);
@@ -771,7 +771,7 @@ const resendConfirmationCode = (req, username) => {
 
 function initialize() {
   //Instantiate a new Cognito Identity Service Provider.
-  cognitoIdentityServiceProvider = new CognitoIdentityProvider();
+  amazonCognitoIdentityProvider = new CognitoIdentityProvider();
 }
 
 module.exports = {

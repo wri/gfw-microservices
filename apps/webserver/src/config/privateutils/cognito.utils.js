@@ -674,7 +674,7 @@ const adminResetUserPassword = (req, email) => {
  *  @return {Promise} Returns a promise detailing success or failure of disableUser
  */
 const updateUser = (req, email, attributes) => {
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     // Parameters required to update user attributes
     const params = {
       UserPoolId: config.AWSVars.cognito.userpoolId,
@@ -690,7 +690,6 @@ const updateUser = (req, email, attributes) => {
       }
     });
   });
-  return promise;
 };
 
 /**

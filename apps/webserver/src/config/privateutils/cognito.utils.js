@@ -21,17 +21,16 @@
  ********************************************************************/
 // Imports for this module.
 const path = require('path');
-const AWS = require('aws-sdk');
+const { CognitoIdentityProvider } = require('@aws-sdk/client-cognito-identity-provider');
 const config = require('../config');
 const PasswordGenerator = require('generate-password');
 const AWSCognito = require('amazon-cognito-identity-js');
 const langResources = require(path.resolve('./config/langResources'));
 const errorUtils = require('./error.utils');
 const logger = require('./logger.utils');
-const AmazonCognitoIdentity = new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' });
 
 // Local variable for Cognito Service Provider.
-let cognitoidentityserviceprovider;
+let cognitoIdentityServiceProvider;
 
 /**
  * @function getUserInfo
@@ -40,10 +39,10 @@ let cognitoidentityserviceprovider;
  * @param {String} USER_POOL_ID - The Cognito user pool id for that environment
  */
 const getUserInfo = async (email, USER_POOL_ID) => {
-  return AmazonCognitoIdentity.adminGetUser({
+  return cognitoIdentityServiceProvider.adminGetUser({
     UserPoolId: USER_POOL_ID,
     Username: email,
-  }).promise();
+  });
 };
 
 /**
@@ -68,8 +67,9 @@ const resetLoginAttributes = async (email, USER_POOL_ID) => {
     UserPoolId: USER_POOL_ID,
     Username: email,
   };
+
   try {
-    returnValue = AmazonCognitoIdentity.adminUpdateUserAttributes(params).promise();
+    returnValue = cognitoIdentityServiceProvider.adminUpdateUserAttributes(params);
   } catch (error) {
     console.log('ERROR: could not update user attributes!');
   }
@@ -95,8 +95,9 @@ const setLoginFailCount = async (failureCount, email, USER_POOL_ID) => {
     UserPoolId: USER_POOL_ID,
     Username: email,
   };
+
   try {
-    returnValue = AmazonCognitoIdentity.adminUpdateUserAttributes(params).promise();
+    returnValue = cognitoIdentityServiceProvider.adminUpdateUserAttributes(params);
   } catch (error) {
     console.log('ERROR: could not update user attributes!');
   }
@@ -122,8 +123,9 @@ const handleUserOpeningPasswordDate = async (updatedAt, email, USER_POOL_ID) => 
     UserPoolId: USER_POOL_ID,
     Username: email,
   };
+
   try {
-    returnValue = AmazonCognitoIdentity.adminUpdateUserAttributes(params).promise();
+    returnValue = cognitoIdentityServiceProvider.adminUpdateUserAttributes(params);
   } catch (error) {
     console.log('ERROR: could not update user attributes!');
   }
@@ -142,8 +144,9 @@ const disableUserBasedOnFailCounts = async (email, USER_POOL_ID) => {
     UserPoolId: USER_POOL_ID,
     Username: email,
   };
+
   try {
-    returnValue = AmazonCognitoIdentity.adminResetUserPassword(params).promise();
+    returnValue = cognitoIdentityServiceProvider.adminResetUserPassword(params);
   } catch (e) {
     console.log('error', e);
   }
@@ -153,18 +156,19 @@ const disableUserBasedOnFailCounts = async (email, USER_POOL_ID) => {
 /**
  *  @function confirmUserEmail
  *  @summary Admin Cognito action to update verified email state
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} username - Cognito Username
  *  @return {Promise} Returns a promise detailing success or failure of confirmUserEmail
  */
 const confirmUserEmail = (req, username) => {
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const parameters = {
       UserAttributes: [{ Name: 'email_verified', Value: 'True' }],
       UserPoolId: config.AWSVars.cognito.userpoolId,
       Username: username,
     };
-    cognitoidentityserviceprovider.adminUpdateUserAttributes(parameters, (err, data) => {
+
+    cognitoIdentityServiceProvider.adminUpdateUserAttributes(parameters, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -172,19 +176,18 @@ const confirmUserEmail = (req, username) => {
       }
     });
   });
-  return promise;
 };
 
 /**
  *  @function createUser
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @summary Create a new user in the identity pool provided.
  *  @param {String} email - The username of the cognito user (should be there email)
  *  @param {boolean} resend_temp_password - In case a temporary password needs to be send back to the user
  *  @return {Promise} Returns a promise detailing success or failure of createUser
  */
 const createUser = (req, email, resend_temp_password = false, unit_test = false) => {
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     // Generate Random Password for new user.
     const randomPassword = PasswordGenerator.generate({
       length: 10,
@@ -211,7 +214,7 @@ const createUser = (req, email, resend_temp_password = false, unit_test = false)
       params.MessageAction = 'RESEND';
     }
 
-    cognitoidentityserviceprovider.adminCreateUser(params, (err, data) => {
+    cognitoIdentityServiceProvider.adminCreateUser(params, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -230,25 +233,25 @@ const createUser = (req, email, resend_temp_password = false, unit_test = false)
       }
     });
   });
-  return promise;
 };
 
 /**
  *  @function changePassword
  *  @summary Change password for an authenticated user
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} previousPassword
  *  @param {String} proposedPassword
  *  @return {Promise} Returns a promise detailing success or failure of changePassword
  */
 const changePassword = (req, previousPassword, proposedPassword) => {
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const parameters = {
       AccessToken: req.session.access_token,
       PreviousPassword: previousPassword,
       ProposedPassword: proposedPassword,
     };
-    cognitoidentityserviceprovider.changePassword(parameters, (err, data) => {
+
+    cognitoIdentityServiceProvider.changePassword(parameters, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -256,23 +259,23 @@ const changePassword = (req, previousPassword, proposedPassword) => {
       }
     });
   });
-  return promise;
 };
 
 /**
  *  @function deleteUser
  *  @summary Admin function to deleteUser from AWS Cognito
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} email - The username of the cognito user (should be there email)
  *  @return {Promise} Returns a promise detailing success or failure of deleteUser
  */
 const deleteUser = (req, email) => {
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const params = {
       UserPoolId: config.AWSVars.cognito.userpoolId,
       Username: email,
     };
-    cognitoidentityserviceprovider.adminDeleteUser(params, (err, data) => {
+
+    cognitoIdentityServiceProvider.adminDeleteUser(params, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -280,13 +283,12 @@ const deleteUser = (req, email) => {
       }
     });
   });
-  return promise;
 };
 
 /**
  *  @function handleLoginFailure
  *  @summary Handles login failure, and if the fail count is >= config.platformVars.maxUserLoginRetries, disable the user by forcing it to the RESET_REQUIRED state in Cognito
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} email - The username of the cognito user (should be there email)
  *  @return {Promise} Returns a promise detailing success or failure of disableUser
  */
@@ -329,7 +331,7 @@ const handleLoginFailure = async (req, email) => {
 /**
  *  @function authenticateUser
  *  @summary Authenticate User via Cognito
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} email - The username of the cognito user (should be there email)
  *  @param {String} password - The password given by User
  *  @return {Promise} Returns a promise detailing success or failure of authenticateUser
@@ -429,14 +431,14 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
 /**
  *  @function setPassword
  *  @summary Sets Cognito User Password
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} email - The username of the cognito user (should be there email)
  *  @param {String} verificationCode - verification code given by User
  *  @param {String} newPassword - Optional parameter on new Password challenge
  *  @return {Promise} Returns a promise detailing success or failure of setPassword
  */
 const setPassword = (req, email, verificationCode, newPassword) => {
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     // Cognito User Pool parameters
     const poolData = {
       UserPoolId: config.AWSVars.cognito.userpoolId, // Your user pool id here
@@ -460,13 +462,12 @@ const setPassword = (req, email, verificationCode, newPassword) => {
       },
     });
   });
-  return promise;
 };
 
 /**
  *  @function completeNewPasswordChallenge
  *  @summary Allows a user to change their password on initial login.
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} old_password - The user's old password.
  *  @param {String} new_password - The user's new password.
  *  @return {Promise} Returns a promise which returns true is success, error object otherwise.
@@ -631,7 +632,7 @@ const requestToResetPassword = async (req, email) => {
 /**
  *  @function adminResetUserPassword
  *  @summary Resets the user's password in AWS Cognito. User will need to reset their password.
- *  @param  {Object}  req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param  {Object}  req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param  {String}  email - The username of the cognito user (should be there email)
  *  @return {Promise<Boolean>} Returns if the action has been processed correctly
  */
@@ -642,9 +643,10 @@ const adminResetUserPassword = (req, email) => {
       UserPoolId: config.AWSVars.cognito.userpoolId,
       Username: email,
     };
+
     // Call API action
-    const action = cognitoidentityserviceprovider.adminResetUserPassword(parameters).promise();
-    action
+    cognitoIdentityServiceProvider
+      .adminResetUserPassword(parameters)
       .then(() => {
         resolve(true);
       })
@@ -665,7 +667,7 @@ const adminResetUserPassword = (req, email) => {
 /**
  *  @function updateUser
  *  @summary Update Cognito User
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} email - Cognito Username
  *  @param {Object[]} attributes - Array of Name, Value pair of attribtues
  *  @return {Promise} Returns a promise detailing success or failure of disableUser
@@ -678,7 +680,8 @@ const updateUser = (req, email, attributes) => {
       Username: email,
       UserAttributes: [...attributes],
     };
-    cognitoidentityserviceprovider.adminUpdateUserAttributes(params, (err, data) => {
+
+    cognitoIdentityServiceProvider.adminUpdateUserAttributes(params, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -692,18 +695,19 @@ const updateUser = (req, email, attributes) => {
 /**
  *  @function userExists
  *  @summary Check if a user exists.
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} email - Cognito Username
  *  @return {Promise} Returns a promise detailing success or failure of disableUser
  */
 const userExists = (req, email) => {
-  const promise = new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     // Parameters required to update user attributes
     const params = {
       UserPoolId: config.AWSVars.cognito.userpoolId,
       Username: email,
     };
-    cognitoidentityserviceprovider.adminGetUser(params, (err, data) => {
+
+    cognitoIdentityServiceProvider.adminGetUser(params, (err, data) => {
       if (err) {
         resolve(false);
       } else {
@@ -711,13 +715,12 @@ const userExists = (req, email) => {
       }
     });
   });
-  return promise;
 };
 
 /**
  *  @function confirmForgotPassword
  *  @summary API action to confirm forgotten password flow
- *  @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *  @param {String} confirmationCode - confirmation code sent to user
  *  @param {String} newPassword - new passowrd
  *  @param {String} username - Username
@@ -731,7 +734,8 @@ const confirmForgotPassword = (req, confirmationCode, newPassword, username) => 
       Password: newPassword,
       Username: username,
     };
-    cognitoidentityserviceprovider.confirmForgotPassword(parameters, (err, data) => {
+
+    cognitoIdentityServiceProvider.confirmForgotPassword(parameters, (err, data) => {
       if (err) {
         if (err.code === 'ExpiredCodeException') {
           resolve('ExpiredCodeException');
@@ -751,11 +755,10 @@ const resendConfirmationCode = (req, username) => {
       ClientId: config.AWSVars.cognito.clientId,
       Username: username,
     };
-    const resendPromise = cognitoidentityserviceprovider
+
+    cognitoIdentityServiceProvider
       .resendConfirmationCode(parameters)
-      .promise();
-    resendPromise
-      .then((data) => {
+      .then(() => {
         resolve(true);
       })
       .catch((err) => {
@@ -766,16 +769,8 @@ const resendConfirmationCode = (req, username) => {
 };
 
 function initialize() {
-  const objTemp = {
-    accessKeyId: config.AWSVars.credentials.accessKey,
-    secretAccessKey: config.AWSVars.credentials.secretKey,
-    region: config.AWSVars.cognito.region,
-  };
-  //Setup the AWS Config with the proper credentials.
-  AWS.config.update(objTemp);
-
   //Instantiate a new Cognito Identity Service Provider.
-  cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider();
+  cognitoIdentityServiceProvider = new CognitoIdentityProvider();
 }
 
 module.exports = {

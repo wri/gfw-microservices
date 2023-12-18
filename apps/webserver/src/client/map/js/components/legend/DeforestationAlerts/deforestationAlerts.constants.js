@@ -3,6 +3,7 @@ const {
   integratedDeforestationAlertsID,
   raddAlertsID,
   gladAlertsID,
+  gladLGeographicCoverageID,
   gladS2AlertsID,
   integratedAlertsGeographicCoverageID,
   gladS2GeographicCoverageID,
@@ -18,6 +19,7 @@ export const deforestationAlertsIds = [
 
 export const deforestationAlertsGeographicCoverageIds = [
   integratedAlertsGeographicCoverageID,
+  gladLGeographicCoverageID,
   gladS2GeographicCoverageID,
   raddCoverageID,
 ];
@@ -25,6 +27,6 @@ export const deforestationAlertsGeographicCoverageIds = [
 export const deforestationAlertsLayerToCoverageMap = {
   [integratedDeforestationAlertsID]: integratedAlertsGeographicCoverageID,
   [raddAlertsID]: raddCoverageID,
-  [gladAlertsID]: null,
+  [gladAlertsID]: gladLGeographicCoverageID,
   [gladS2AlertsID]: gladS2GeographicCoverageID,
 };

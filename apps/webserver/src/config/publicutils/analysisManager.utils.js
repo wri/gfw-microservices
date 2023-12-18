@@ -14,13 +14,10 @@
  * @function {getAFINegligibleStatsForListId}
  *
  ********************************************************************/
-const developmentEnv = process.env.NODE_ENV === 'development';
-
 const _ = require('lodash');
 const path = require('path');
 const sql = require('mssql');
 
-let getAsync, setAsync;
 // Redis is only available on qa, staging, and production
 const redis = require('redis');
 
@@ -32,17 +29,11 @@ if (process.env.NODE_ENV !== 'test') {
     url: `redis://${redisHost}:${redisPort}`,
   });
   client.connect();
-  const { promisify } = require('util');
-  getAsync = promisify(client.get).bind(client);
-  setAsync = promisify(client.set).bind(client);
 }
 
-const s3Utils = require(path.resolve('./config/privateutils/s3.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
-const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { getAnalysisDataForProtectedAreasByLocation } = require(path.resolve(
   './queries/system/getAnalysisDataForProtectedAreasByLocation'
 ));
@@ -260,7 +251,7 @@ const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, location_id)
  */
 const getGFWListAnalyses = (req, list_id) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'list_id', type: sql.INT, value: list_id }];
+    const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetListAnalysis', parameters)
       .then((recordsets) => {
@@ -341,7 +332,7 @@ const getAFINegligibleStatsForListId = (req, listId) => {
  */
 const getListAnalyses = (req, list_id) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'list_id', type: sql.INT, value: list_id }];
+    const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetListAnalysis', parameters)
       .then((recordsets) => {
@@ -436,4 +427,3 @@ module.exports = {
 
 // Require after modules have been exported so the module can be fully loaded
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
-const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));

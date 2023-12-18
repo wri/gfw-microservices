@@ -8,9 +8,9 @@ global.fetch = jest.fn(() =>
   })
 );
 
-beforeAll(()=> {
-    window.gtag = function() {}
-})
+beforeAll(() => {
+  window.gtag = function () {};
+});
 
 test('renders loading spinner initially', () => {
   render(<AfiDiagnostics />);

@@ -23,7 +23,7 @@ afterEach(cleanup);
 
 test('renders table with correct headers', () => {
   render(<AfiDiagnosticsTable data={mockData} />);
-  
+
   const countryHeader = screen.getByText('Country');
   const subStateHeader = screen.getByText('Sub-state');
   const coverageHeader = screen.getByText('Natural Forest Coverage (HA)');
@@ -39,7 +39,7 @@ test('renders table with correct headers', () => {
 
 test('renders table rows with data', () => {
   render(<AfiDiagnosticsTable data={mockData} />);
-  
+
   const countryCell1 = screen.getByText('Country1');
   const subStateCell1 = screen.getByText('SubState1');
   const coverageCell1 = screen.getByText('100');

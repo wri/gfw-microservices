@@ -22,9 +22,10 @@
 // Imports for this module.
 const path = require('path');
 const { CognitoIdentityProvider } = require('@aws-sdk/client-cognito-identity-provider');
-const config = require('../config');
 const PasswordGenerator = require('generate-password');
 const AWSCognito = require('amazon-cognito-identity-js');
+
+const config = require('../config');
 const langResources = require(path.resolve('./config/langResources'));
 const errorUtils = require('./error.utils');
 const logger = require('./logger.utils');

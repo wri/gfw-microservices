@@ -1,7 +1,7 @@
 import React from 'react';
 import store from '../../../store';
 import {
-  toggleHighConfidenceAlertsForIntegratedAlertsLayer,
+  toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   toggleLayer,
 } from '../../../actions/mapActions';
 import IntegratedAlertsMapLegends from './IntegratedAlertsMapLegends';
@@ -11,7 +11,7 @@ import { deforestationAlertsLayerToCoverageMap } from './deforestationAlerts.con
 const { integratedDeforestationAlertsID } = proLayers;
 
 const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
-  const { visibleLayers, showHighConfidenceAlertsOnIntegratedAlertsLayer } = store.getState();
+  const { visibleLayers, showHighConfidenceAlertsOnDeforestationAlertsLayer } = store.getState();
   const geographicCoverageLayer = deforestationAlertsLayerToCoverageMap[layerId];
 
   const toggleGeographicCoverageLayer = () => {
@@ -22,7 +22,7 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
 
   const toggleHighConfidenceAlerts = () => {
     if (!disabled) {
-      store.dispatch(toggleHighConfidenceAlertsForIntegratedAlertsLayer());
+      store.dispatch(toggleHighConfidenceAlertsForDeforestationAlertsLayers());
     }
   };
 
@@ -53,7 +53,7 @@ const DeforestationAlertsLayerLegend = ({ disabled, layerId }) => {
       </li>
       <li
         className={`layer-checkbox ${
-          showHighConfidenceAlertsOnIntegratedAlertsLayer ? 'active' : ''
+          showHighConfidenceAlertsOnDeforestationAlertsLayer ? 'active' : ''
         }`}
       >
         <div onClick={toggleHighConfidenceAlerts}>

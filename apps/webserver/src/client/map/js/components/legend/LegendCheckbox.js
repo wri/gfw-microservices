@@ -4,7 +4,7 @@ import _range from 'lodash/range';
 import {
   toggleLayer,
   turnLayerOff,
-  toggleHighConfidenceAlertsForIntegratedAlertsLayer,
+  toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   showLoading,
   getLayerInfo,
   showBasemapInfo,
@@ -101,9 +101,9 @@ export default class LegendCheckbox extends Component {
       if (coverageId && visibleLayers.includes(coverageId)) {
         store.dispatch(turnLayerOff(coverageId));
       }
-      const { showHighConfidenceAlertsOnIntegratedAlertsLayer } = store.getState();
-      if (showHighConfidenceAlertsOnIntegratedAlertsLayer) {
-        store.dispatch(toggleHighConfidenceAlertsForIntegratedAlertsLayer());
+      const { showHighConfidenceAlertsOnDeforestationAlertsLayer } = store.getState();
+      if (showHighConfidenceAlertsOnDeforestationAlertsLayer) {
+        store.dispatch(toggleHighConfidenceAlertsForDeforestationAlertsLayers());
       }
     } else if (layerId === clarkLabsAquacultureLandCover) {
       store.dispatch(toggleClarkLabsLayers());

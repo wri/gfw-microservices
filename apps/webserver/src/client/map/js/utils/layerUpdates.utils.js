@@ -2,11 +2,11 @@ import { deforestationAlertsIds } from '../components/legend/DeforestationAlerts
 import store from '../store';
 
 export const updateDeforestationAlertsLayers = (map, prevState) => {
-  const { showHighConfidenceAlertsOnIntegratedAlertsLayer, gladDateRange } = store.getState();
+  const { showHighConfidenceAlertsOnDeforestationAlertsLayer, gladDateRange } = store.getState();
 
   if (
-    prevState.showHighConfidenceAlertsOnIntegratedAlertsLayer !==
-      showHighConfidenceAlertsOnIntegratedAlertsLayer ||
+    prevState.showHighConfidenceAlertsOnDeforestationAlertsLayer !==
+      showHighConfidenceAlertsOnDeforestationAlertsLayer ||
     prevState.gladDateRange !== gladDateRange
   ) {
     deforestationAlertsIds.forEach((deforestationAlertsLayer) => {
@@ -17,7 +17,7 @@ export const updateDeforestationAlertsLayers = (map, prevState) => {
 
         mapLayer.julianTo = julianTo;
         mapLayer.julianFrom = julianFrom;
-        mapLayer.showHighConfidenceConfirmed = showHighConfidenceAlertsOnIntegratedAlertsLayer;
+        mapLayer.showHighConfidenceConfirmed = showHighConfidenceAlertsOnDeforestationAlertsLayer;
 
         const promise = new Promise((resolve) => {
           map.remove(mapLayer);

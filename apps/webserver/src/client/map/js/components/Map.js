@@ -33,7 +33,7 @@ import {
   toggleDrawShapeNoteDetailsModal,
   toggleLayer,
   turnLayerOff,
-  toggleHighConfidenceAlertsForIntegratedAlertsLayer,
+  toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   updateAdminSelections,
   updateAnalysis,
   updateGFWLocations,
@@ -267,7 +267,7 @@ export default class Map extends Component {
       visibleLayers,
       canopyDensity,
 
-      showHighConfidenceAlertsOnIntegratedAlertsLayer,
+      showHighConfidenceAlertsOnDeforestationAlertsLayer,
       modalLayerInfo,
       activeAnalysis,
       adminArea,
@@ -437,9 +437,9 @@ export default class Map extends Component {
                   if (visibleGeographicCoverageLayer) {
                     store.dispatch(turnLayerOff(geographicCoverageLayerId));
                   }
-                  const { showHighConfidenceAlertsOnIntegratedAlertsLayer } = store.getState();
-                  if (showHighConfidenceAlertsOnIntegratedAlertsLayer) {
-                    store.dispatch(toggleHighConfidenceAlertsForIntegratedAlertsLayer());
+                  const { showHighConfidenceAlertsOnDeforestationAlertsLayer } = store.getState();
+                  if (showHighConfidenceAlertsOnDeforestationAlertsLayer) {
+                    store.dispatch(toggleHighConfidenceAlertsForDeforestationAlertsLayers());
                   }
                 }
 
@@ -610,8 +610,8 @@ export default class Map extends Component {
     }
 
     if (
-      prevState.showHighConfidenceAlertsOnIntegratedAlertsLayer !==
-      showHighConfidenceAlertsOnIntegratedAlertsLayer
+      prevState.showHighConfidenceAlertsOnDeforestationAlertsLayer !==
+      showHighConfidenceAlertsOnDeforestationAlertsLayer
     ) {
       if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
         this.analyzeCustom(this.view.graphics.items[0]);

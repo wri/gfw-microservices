@@ -65,7 +65,9 @@ module.exports = (app, limiter) => {
     const serializedData = req.query.locationsDataFromMap;
 
     // Deserialize the JSON string back into an object
-    const locationsDataFromMap = JSON.parse(decodeURIComponent(serializedData));
+    const locationsDataFromMap = serializedData
+      ? JSON.parse(decodeURIComponent(serializedData))
+      : {};
 
     const locationsData = {
       ...locationsDataFromMap,

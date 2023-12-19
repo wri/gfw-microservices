@@ -80,6 +80,8 @@ export class TokenService {
       where: { organization_id: organizationId, organization_user_id: userId },
     });
 
+    if (!user) throw new NotFoundException('User or organization not found');
+
     const token = new ExternalAPIKey();
     token.awsId = awsToken.id;
     token.creatorUserId = userId;

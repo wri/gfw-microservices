@@ -2,6 +2,7 @@
 const path = require('path');
 const controller = require('../controllers/admin.controller');
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
+const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 
 /**
  * @name exports
@@ -48,4 +49,7 @@ module.exports = (app) => {
         res.send('Login error');
       });
   });
+
+  app.use('/api/latest_commit', [middlewares.checkProManagerAuthentication]);
+  app.get('/api/latest_commit', controller.latestCommit);
 };

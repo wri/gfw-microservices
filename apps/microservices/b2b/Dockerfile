@@ -17,6 +17,10 @@ WORKDIR /app
 ENV GENERATE_SOURCEMAP=false
 ENV NODE_OPTIONS=--max-old-space-size=16384
 
+# Populate NODE_ENV passed in from deploy-xxx.yml
+ARG NODE_ENV
+ENV NODE_ENV ${NODE_ENV}
+
 # Pass latest commit hash to the container
 ARG LATEST_COMMIT
 ENV LATEST_COMMIT ${LATEST_COMMIT}

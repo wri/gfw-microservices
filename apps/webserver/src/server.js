@@ -107,7 +107,7 @@ setInterval(() => {
         return console.error(err);
       }
 
-      if (now > endTime) {
+      if (now > endTime && !filePath.endsWith('.gitkeep')) {
         return fs.unlink(filePath, (unlinkErr) => {
           if (err) {
             return console.error(unlinkErr);

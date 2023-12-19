@@ -16,6 +16,7 @@ import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from './IPipeService';
 import { ManipulateDataForDashboard } from '../transform/manipulate.data.dashboard';
 import { FormatNumber } from '../transform/format.number';
+import { TreatStringWithComma } from '../transform/treat.string.with.comma';
 
 export class DashboardHandleDownload extends IPipeService {
   public readonly logger = new Logger(DashboardHandleDownload.name);
@@ -72,6 +73,7 @@ export class DashboardHandleDownload extends IPipeService {
       .pipe(new FilterObject(allFields))
       .pipe(new ManipulateDataForDashboard(EXCEL_TEMPLATES[table], listLevelAnalysis))
       .pipe(new FormatNumber())
+      .pipe(new TreatStringWithComma())
       .pipe(new ConvertObject2CSV(EXCEL_TEMPLATE_HEADERS[table]))
       .pipe(this.fileStream);
   }

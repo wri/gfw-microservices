@@ -52,7 +52,7 @@ describe('ListAnalysisController', () => {
   });
 
   it('should return analysis status', async () => {
-    const listID = 123;
+    const listID = '123';
 
     // Mock the request object with the 'x-api-key' header
     const requestMock = createRequest({

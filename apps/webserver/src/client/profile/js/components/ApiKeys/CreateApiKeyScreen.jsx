@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Icon from '@material-ui/core/Icon';
 import Button from '../../../../common/js/components/Button';
 import IconPlus from '../../../../common/js/components/icon/IconPlus';
-import Loading from '../../../../common/js/components/Loaders/Loading';
 
-export default function CreateApiKeyScreen({ setKeys }) {
-  const [isLoading, setIsLoading] = useState(false);
-
+export default function CreateApiKeyScreen({ setKeys, setIsLoading }) {
   const createApiKey = () => {
     setIsLoading(true);
     fetch('api/profile/api-keys', {
@@ -19,15 +16,8 @@ export default function CreateApiKeyScreen({ setKeys }) {
       .then(setKeys)
       .catch((error) => {
         console.error('Error', error);
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
   };
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   return (
     <div style={{ textAlign: 'center' }}>

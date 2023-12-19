@@ -1,29 +1,39 @@
 const path = require('path');
-const { pick } = require('lodash');
+const _ = require('lodash');
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const AnalysisManager = require(path.resolve('./config/publicutils/analysisManager.utils'));
 const LocationManager = require(path.resolve('./config/publicutils/locationManager.utils'));
 
 module.exports = async function (req, selectedList) {
   const listId = Number(req.params.listId);
-  const locationId = Number(req.body.locatonId);
-  let listLocationsIds = locationId ? [locationId] : [];
+  const locationId = Number(req.body.locationId);
   const { list_locations_count: rowsRequested } = selectedList;
 
-  try {
-    let spatialData;
+  let listLocationsIds = locationId ? [locationId] : [];
+  let spatialData;
+  let listAnalyses;
+  let locationAnalyses;
 
-    if (locationId) {
+  if (locationId) {
+    try {
       const SINGLE_LOCATION_ROW_REQUESTED = 1;
-      const [listLocationsData] = await ListManager.getListLocations(
+
+      const listLocationsData = await ListManager.getListLocations(
         req,
         listId,
+        locationId,
         SINGLE_LOCATION_ROW_REQUESTED
       );
-      spatialData = listLocationsData ? listLocationsData?.features : [];
-    } else {
-      spatialData = [];
 
+      spatialData = listLocationsData ? listLocationsData?.features : [];
+      listAnalyses = [];
+    } catch (error) {
+      console.error('Error @ListManager.getListLocation', error);
+      throw new Error(error);
+    }
+  } else {
+    spatialData = [];
+    try {
       /** @summary
        * ----------------------------------
        * this should be the same as
@@ -38,7 +48,7 @@ module.exports = async function (req, selectedList) {
       const DEFAULT_SELECTED_AREA_MAX = null;
 
       const queryFilters = {
-        listID: selectedList.id,
+        listID: listId,
         orderType: 'asc',
         sortByAttribute: 'location_id',
         country: DEFAULT_SELECTED_COUNTRY,
@@ -65,7 +75,7 @@ module.exports = async function (req, selectedList) {
         .map((location) => {
           const pickedLocationsColumns = ['list_id', ...DEFAULT_COLUMNS_TO_RETURN.split(',')];
 
-          return pick(location, pickedLocationsColumns);
+          return _.pick(location, pickedLocationsColumns);
         })
         .filter((location) => {
           return location.Latitude && location.Longitude;
@@ -86,10 +96,22 @@ module.exports = async function (req, selectedList) {
           },
         };
       });
+    } catch (error) {
+      console.error('Error @ListManager.getPaginatedAnalysisDataForUserList', error);
+      throw new Error(error);
     }
+  }
 
-    const listAnalyses = await AnalysisManager.getListAnalyses(req, listId);
+  /** get list analysis */
+  try {
+    listAnalyses = await AnalysisManager.getListAnalyses(req, listId);
+  } catch (error) {
+    console.error('Error @AnalysisManager.getListAnalyses', error);
+    throw new Error(error);
+  }
 
+  /** get analisis data */
+  try {
     const filters = {
       page: 1,
       pageSize: rowsRequested,
@@ -109,22 +131,19 @@ module.exports = async function (req, selectedList) {
         analysisDataForUserList,
         false
       );
-      return {
-        spatialData,
-        listLocationsIds,
-        listAnalyses,
-        locationAnalyses: [analysisDataForUserList, locationAttributeList],
-      };
+      locationAnalyses = [analysisDataForUserList, locationAttributeList];
     } else {
-      return {
-        spatialData,
-        listLocationsIds,
-        listAnalyses,
-        locationAnalyses: [],
-      };
+      locationAnalyses = [];
     }
   } catch (error) {
-    console.warn('Error /getAnalysisFromUserList', error);
-    return error;
+    console.error('Error @ListManager.getPaginatedAnalysisDataForUserList', error);
+    throw new Error(error);
   }
+
+  return {
+    spatialData,
+    listLocationsIds,
+    listAnalyses,
+    locationAnalyses,
+  };
 };

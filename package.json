@@ -122,6 +122,7 @@
     "sqlite": "^4.1.2",
     "sqlite3": "^5.1.6",
     "sqs-consumer": "^7.3.0",
+    "stream-chain": "^2.2.5",
     "style-loader": "3.3.1",
     "tiny-async-pool": "^2.1.0",
     "tippecanoe": "0.6.0",

@@ -1,8 +1,9 @@
 import * as archiver from 'archiver';
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
-import { PassThrough } from 'stream';
+import { PassThrough, Transform } from 'stream';
 import { Logger, Injectable } from '@nestjs/common';
+import * as Chain from 'stream-chain';
 
 import { EXCEL_TEMPLATES } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
@@ -70,32 +71,25 @@ export class ResultService extends IPipeService {
     });
     this.zipStream = fs.createWriteStream(`/tmp/${key}.zip`);
 
+    let pipeline: Array<Transform> = [
+      new FilterSelection(selectedLocationsList),
+      new FilterObject(allFields),
+    ];
+
     if (listView === 'forest_change') {
-      this.inputStream
-        .pipe(new FilterSelection(selectedLocationsList))
-        .pipe(new FilterObject(allFields))
-        .pipe(new SumValue(columnGetLastValue))
-        .pipe(new FormatNumber())
-        .pipe(
-          csvWriter({
-            sendHeaders: false,
-          })
-        )
-        .pipe(this.fileStream);
+      pipeline = [...pipeline, new SumValue(columnGetLastValue), new FormatNumber()];
     } else {
-      this.inputStream
-        .pipe(new FilterSelection(selectedLocationsList))
-        .pipe(new FilterObject(allFields))
-        .pipe(new GetLatestValue(columnGetLastValue))
-        .pipe(new DiscretizeData())
-        .pipe(
-          csvWriter({
-            sendHeaders: false,
-          })
-        )
-        .pipe(this.fileStream);
+      pipeline = [...pipeline, new GetLatestValue(columnGetLastValue), new DiscretizeData()];
     }
 
+    pipeline = [
+      ...pipeline,
+      csvWriter({
+        sendHeaders: false,
+      }),
+    ];
+
+    this.inputStream.pipe(new Chain(pipeline)).pipe(this.fileStream);
     return this.inputStream;
   }
 

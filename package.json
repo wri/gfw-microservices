@@ -205,6 +205,7 @@
     "@types/passport": "^1.0.12",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.14",
+    "@types/supertest": "^2.0.16",
     "@types/wellknown": "^0.5.0",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",

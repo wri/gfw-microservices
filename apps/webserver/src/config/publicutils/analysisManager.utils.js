@@ -10,18 +10,14 @@
  * @function {getGFWListAnalyses}
  * @function {getListAnalyses}
  * @function {requestAnalysis}
- * @function {requestDashboardAnalysis}
  * @function {getAFIAnalysisForListId}
  * @function {getAFINegligibleStatsForListId}
  *
  ********************************************************************/
-const developmentEnv = process.env.NODE_ENV === 'development';
-
 const _ = require('lodash');
 const path = require('path');
 const sql = require('mssql');
 
-let getAsync, setAsync;
 // Redis is only available on qa, staging, and production
 const redis = require('redis');
 
@@ -33,17 +29,11 @@ if (process.env.NODE_ENV !== 'test') {
     url: `redis://${redisHost}:${redisPort}`,
   });
   client.connect();
-  const { promisify } = require('util');
-  getAsync = promisify(client.get).bind(client);
-  setAsync = promisify(client.set).bind(client);
 }
 
-const s3Utils = require(path.resolve('./config/privateutils/s3.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
-const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
 const { getAnalysisDataForProtectedAreasByLocation } = require(path.resolve(
   './queries/system/getAnalysisDataForProtectedAreasByLocation'
 ));
@@ -261,7 +251,7 @@ const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, location_id)
  */
 const getGFWListAnalyses = (req, list_id) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'list_id', type: sql.INT, value: list_id }];
+    const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetListAnalysis', parameters)
       .then((recordsets) => {
@@ -342,7 +332,7 @@ const getAFINegligibleStatsForListId = (req, listId) => {
  */
 const getListAnalyses = (req, list_id) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'list_id', type: sql.INT, value: list_id }];
+    const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetListAnalysis', parameters)
       .then((recordsets) => {
@@ -396,129 +386,6 @@ const requestAnalysis = async (req, list_name, geojson = {}, isEdit = false) => 
   }
 };
 
-/**
- * @summary Returns a hash value from a string
- * @param {String} str String to be turned into a hash
- */
-const createHashFromString = (str) => {
-  let hash = 5381;
-  let i = str.length;
-
-  while (i) {
-    hash = (hash * 33) ^ str.charCodeAt(--i);
-  }
-  return hash >>> 0;
-};
-
-/** @function {requestDashboardAnalysis}
- *   @summary Invokes lambda to retrieve on-the-fly analysis results for Dashboard, returns cached data from Redis if it exists.
- *   @param  {Object}   request - Express request object
- *   @param  {Object}  list - Object containing target list properties
- *   @param  {Boolean}  isGFWList - Boolean to determine whether target list is a gfw list or organization list
- *   @return {Promise} Returns dashboard analysis results
- */
-const requestDashboardAnalysis = async (request, list, isGFWList) => {
-  try {
-    let dashboardData;
-    const { organization_database, organization_id, organization_user_id } = request.session;
-    // Naming the key that will be stored in Redis
-    const redisKey = createHashFromString(
-      `${process.env.NODE_ENV}:${organization_database}:${organization_id}:${list.id}:${isGFWList}`
-    );
-
-    // Grabing any cached dashboard data
-    if (!developmentEnv) {
-      try {
-        dashboardData = await getAsync(redisKey);
-        // If we have any dashboard data, just return that
-        if (dashboardData) {
-          return JSON.parse(dashboardData);
-        }
-      } catch (error) {
-        console.log('Could not fetch data from Redis.');
-      }
-    }
-    // grab correct location s3 info for the desired list
-    const { location_s3_info, geojson } = isGFWList
-      ? await GFWListManager.getDashboardGFWListLocations(request, list.id)
-      : await ListManager.getDashboardListLocations(request, list);
-    // filter out geojson by gadm as analysis can only run on locations with gadm
-    const { withGADM, withoutGADM } = locationUtils.filterGeojsonByGADM(geojson);
-    // those without gadm are determined as failed
-    const failedGeoJSON = withoutGADM;
-    // create unique name to place our dashboard analysis geoojson (those with gadm)
-    const name = `da-${list.list_table_name}-${organization_user_id}-${new Date().getTime()}`;
-
-    // run the first batch of analysis on the dissolved locations
-    // at the same time put the analysis geojson and retrieve dissolved locations from s3
-    const firstBatch = await Promise.all([
-      s3Utils.put(name, { geojson: withGADM }),
-      s3Utils.get(location_s3_info.bucket, location_s3_info.key),
-      lambdaUtils.invoke('dashboard-analysis', { location_s3_info, analysisType: 'GLAD' }),
-      lambdaUtils.invoke('dashboard-analysis', { location_s3_info, analysisType: 'FIRE' }),
-      lambdaUtils.invoke('dashboard-analysis', { location_s3_info, analysisType: 'EXTENT' }),
-      lambdaUtils.invoke('dashboard-analysis', { location_s3_info, analysisType: 'GLAD_VALIDATE' }),
-    ]);
-    const [s3Info, dissolvedObject, ...dissolvedAnalyses] = firstBatch;
-    // parse and push to array of dissolved analysis results
-    const dissolvedS3Data = dissolvedAnalyses.map((analysis) => JSON.parse(analysis.Payload));
-
-    // repeat the step above for locational dashboard analysis
-    const secondBatch = await Promise.all([
-      lambdaUtils.invoke('dashboard-analysis', { location_s3_info: s3Info, analysisType: 'GLAD' }),
-      lambdaUtils.invoke('dashboard-analysis', { location_s3_info: s3Info, analysisType: 'FIRE' }),
-      lambdaUtils.invoke('dashboard-analysis', {
-        location_s3_info: s3Info,
-        analysisType: 'EXTENT',
-      }),
-      lambdaUtils.invoke('dashboard-analysis', {
-        location_s3_info: s3Info,
-        analysisType: 'GLAD_VALIDATE',
-      }),
-    ]);
-    const listS3Data = secondBatch.map((analysis) => JSON.parse(analysis.Payload));
-
-    // retrieve the dashboard analysis data stored in s3
-    const dissolvedDataPromise = dissolvedS3Data.map((obj) => s3Utils.get(obj.bucket, obj.key));
-    const listDataPromise = listS3Data.map((obj) => s3Utils.get(obj.bucket, obj.key));
-    const data = await Promise.all([
-      Promise.all(dissolvedDataPromise),
-      Promise.all(listDataPromise),
-    ]);
-    const [dissolvedData, listData] = data;
-    // formulate the final dashboard analysis
-    const dashboardAnalysis = await locationUtils.dashboardMerger(
-      geojson,
-      dissolvedObject.geojson,
-      listData,
-      dissolvedData
-    );
-
-    const dashboardResults = {
-      geojson: dashboardAnalysis.geojson,
-      dissolvedGeoJSON: dashboardAnalysis.dissolvedGeoJSON,
-      failedGeoJSON,
-    };
-
-    // Caching the result in redis and letting it expire after 24 hours.
-    if (
-      !developmentEnv &&
-      dashboardResults.geojson.features.length > 0 &&
-      dashboardResults.dissolvedGeoJSON.features.length > 0
-    ) {
-      try {
-        await setAsync(redisKey, JSON.stringify(dashboardResults), 'EX', 86400);
-      } catch (error) {
-        console.log('Could not save the dashboard analysis to Redis.');
-      }
-    }
-    return dashboardResults;
-  } catch (error) {
-    console.log('Request Dashboard Analysis Error', error);
-    throw new Error(error);
-  }
-};
-
 const formatNumber = (data, decimals = 2) => {
   const isFloat = (n) => Number(n) === n && n % 1 !== 0;
 
@@ -554,11 +421,9 @@ module.exports = {
   getGFWListAnalyses,
   getListAnalyses,
   requestAnalysis,
-  requestDashboardAnalysis,
   getAFIAnalysisForListId,
   getAFINegligibleStatsForListId,
 };
 
 // Require after modules have been exported so the module can be fully loaded
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
-const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));

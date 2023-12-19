@@ -271,52 +271,6 @@ export default class Dashboard extends Component {
         store.dispatch(setZoomLevelTotal(rawDataObject.geojson.features.length));
         store.dispatch(toggleLoader());
 
-        //----
-        // use cache
-        // if (listCache.hasOwnProperty(key)) {
-        //   const cachedData = listCache[key];
-        //   store.dispatch(selectList(list));
-        //   store.dispatch(saveRawData(cachedData));
-        // } else {
-
-        // try {
-        // const data = await fetch({
-        //   url: '/dashboard/analyze-list',
-        //   method: 'POST',
-        //   headers: {
-        //     'Content-type': 'application/json',
-        //   },
-        //   body,
-        // });
-        // store.dispatch(toggleLoader());
-
-        //Re-implement this
-        // if (isEmpty(data) || data.hasOwnProperty('errors')) {
-        //   store.dispatch(
-        //     toggleDialog({
-        //       title: `${list_name} alerts failed to load `,
-        //       body:
-        //         'Please select the list to try loading alerts again. If alerts continue to fail, email <a href="mailto:GFWPROsupport@wri.org">GFWPROsupport@wri.org</a> for assistance.',
-        //     })
-        //   );
-        // } else {
-        //   const cache = {};
-        //   cache[key] = data;
-        //   store.dispatch(addListCache(cache));
-        //   store.dispatch(saveRawData(data));
-        // }
-        // } catch (error) {
-        // store.dispatch(toggleLoader());
-        // store.dispatch(
-        //   toggleDialog({
-        //     title: 'Dashboard Analysis Failed',
-        //     body:
-        //       'Please select the list to try loading alerts again. If alerts continue to fail, email <a href="mailto:GFWPROsupport@wri.org">GFWPROsupport@wri.org</a> for assistance.',
-        //   })
-        // );
-        // console.log('Error fetching /dashboard/analyze-list', error);
-        // }
-        // }
         gtag('event', 'List from Show Lists dropdown clicked', {
           event_category: 'Dashboard Click',
           event_label: 'user clicked on a list from Show Lists to analyze',

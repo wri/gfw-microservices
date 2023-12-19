@@ -86,4 +86,11 @@ describe('SumValue', () => {
       }
     );
   });
+
+  test('Should not add double quote when already have.', () => {
+    const treat = new TreatStringWithComma();
+    treat._transform([['"cat1, cat2"', 'wri']], '', (err, data) => {
+      expect(data).toEqual([['"cat1, cat2"', 'wri']]);
+    });
+  });
 });

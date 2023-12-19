@@ -2,7 +2,7 @@
 import { Transform } from 'stream';
 
 const checkAndFormatStringWithComma = (item) => {
-  if (typeof item === 'string' && item.includes(',')) {
+  if (typeof item === 'string' && item.includes(',') && !item.includes('"')) {
     return '"' + item + '"';
   }
   return item;

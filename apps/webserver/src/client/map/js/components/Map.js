@@ -1724,10 +1724,23 @@ export default class Map extends Component {
       };
     }
 
-    // Serialize JSON object into a string
-    const serializedData = encodeURIComponent(JSON.stringify(requestObject));
-
-    window.location = `/locations?locationsDataFromMap=${serializedData}`;
+    fetch('/locations/map-locations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestObject),
+    })
+      .then((response) => response.text())
+      .then((data) => {
+        if (data === 'submitted') {
+          window.location = '/locations';
+        }
+      })
+      .catch((error) => {
+        this.setState({ spinnerOn: false });
+        console.error('Error:', error);
+      });
   };
 
   getCurrentAnalysis = (type) => {

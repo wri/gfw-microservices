@@ -112,13 +112,15 @@ function FeatureFlagDetail() {
                             : ''}
                         </StyledTableCell>
                         <StyledTableCell>
-                          <StyledSwitch
-                            checked={featureFlag.flagState}
-                            color="default"
-                            onChange={(event) =>
-                              handleFeatureFlagStateChange(event.target.checked, organization_id)
-                            }
-                          />
+                          <label>
+                            <StyledSwitch
+                              checked={featureFlag.flagState}
+                              color="default"
+                              onChange={(event) =>
+                                handleFeatureFlagStateChange(event.target.checked, organization_id)
+                              }
+                            />
+                          </label>
                         </StyledTableCell>
                       </TableRow>
                     );

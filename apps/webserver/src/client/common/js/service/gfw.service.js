@@ -1,4 +1,4 @@
-import esriRequest from 'esri/request';
+import esriRequest from '@arcgis/core/request';
 
 // Configs
 import { mapPage, proLayers } from '../config';

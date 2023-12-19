@@ -3,15 +3,22 @@ import Icon from '@material-ui/core/Icon';
 import Button from '../../../../common/js/components/Button';
 import IconPlus from '../../../../common/js/components/icon/IconPlus';
 
-const keysMock = [
-  {
-    id: 1,
-    key: '1adf235312342311fad98',
-    creationDate: new Date().toDateString(),
-  },
-];
+export default function CreateApiKeyScreen({ setKeys, setIsLoading }) {
+  const createApiKey = () => {
+    setIsLoading(true);
+    fetch('api/profile/api-keys', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then(setKeys)
+      .catch((error) => {
+        console.error('Error', error);
+      });
+  };
 
-export default function CreateApiKeyScreen({ setKeys }) {
   return (
     <div style={{ textAlign: 'center' }}>
       <Icon style={{ color: '#999999', fontSize: '70px' }} height="60px">
@@ -23,9 +30,7 @@ export default function CreateApiKeyScreen({ setKeys }) {
       <Button
         variant="primary"
         className="users-section__action-button"
-        onClick={() => {
-          setKeys(keysMock);
-        }}
+        onClick={createApiKey}
         icon={<IconPlus height="10px" />}
         label={'Create'}
       />

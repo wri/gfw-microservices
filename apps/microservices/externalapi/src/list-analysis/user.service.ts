@@ -9,7 +9,9 @@ export class UserService {
     @InjectRepository(UserRoutes, 'default') private userRepository: Repository<UserRoutes>
   ) {}
 
-  async findUser(userEmail: string): Promise<UserRoutes> {
-    return await this.userRepository.findOne({ where: { user_email: userEmail } });
+  async findUser(organizationId: number, userEmail: string): Promise<UserRoutes> {
+    return await this.userRepository.findOne({
+      where: { organization_id: organizationId, user_email: userEmail },
+    });
   }
 }

@@ -70,7 +70,7 @@ import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullLis
 import { getLocationGeometry } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';
 import { getGfwProMapLayerName, isGfwList } from '../../../common/js/utils/gfw.utils';
-import { updateIntegratedDeforestationAlertsLayer } from '../utils/layerUpdates.utils';
+import { updateDeforestationAlertsLayers } from '../utils/layerUpdates.utils';
 
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
@@ -121,7 +121,7 @@ const {
   raddAlertsID,
   integratedDeforestationAlertsID,
   raddCoverageID,
-  umdGladLandsatAlertsCoverageID,
+  integratedAlertsGeographicCoverageID,
   oilPalmConcessions,
   prodesDeforestationID,
   protectedAreas,
@@ -275,7 +275,7 @@ export default class Map extends Component {
     const { listData } = this.props;
     const { gfwListName } = listData;
 
-    updateIntegratedDeforestationAlertsLayer(this.view.map, prevState);
+    updateDeforestationAlertsLayers(this.view.map, prevState);
 
     if (prevState.visibleLayers.length < visibleLayers.length) {
       this.view.popup.close();
@@ -595,21 +595,6 @@ export default class Map extends Component {
     }
 
     if (prevState.gladConfirmed !== gladConfirmed) {
-      const mapLayer = this.view.map.findLayerById(gladAlertsID);
-      if (mapLayer) {
-        const duplicate = mapLayer;
-
-        // `confirmed` value updates Glad Layer to `Show only high confidence alerts` on map
-        duplicate.confirmed = gladConfirmed;
-        const promise = new Promise((resolve) => {
-          this.view.map.remove(mapLayer);
-          resolve();
-        });
-        promise.then(() => {
-          this.view.map.add(duplicate);
-        });
-      }
-
       if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
         this.analyzeCustom(this.view.graphics.items[0]);
       } else if (
@@ -703,11 +688,6 @@ export default class Map extends Component {
         (prevState.gladDateRange.start !== gladDateRange.start ||
           prevState.gladDateRange.end !== gladDateRange.end)
       ) {
-        // `julianTo` and `julianFrom` are used in GladLayer.js to filter the data in image provided by - tiles.globalforestwatch.org
-        const julianTo = parseInt(gladDateRange.end.getJulian(), 10);
-        const julianFrom = parseInt(gladDateRange.start.getJulian(), 10);
-        gladAlertsLayer.julianTo = julianTo;
-        gladAlertsLayer.julianFrom = julianFrom;
         if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
           this.analyzeCustom(this.view.graphics.items[0]);
         } else if (
@@ -1926,7 +1906,7 @@ export default class Map extends Component {
         (layer) =>
           mapPage.visibleLayers.indexOf(layer.id) > -1 ||
           layer.id === raddCoverageID ||
-          layer.id === umdGladLandsatAlertsCoverageID
+          layer.id === integratedAlertsGeographicCoverageID
       )
       .sort((layerA, layerB) => {
         if (layerA.order > layerB.order) {
@@ -2704,7 +2684,8 @@ export default class Map extends Component {
     let dateSliderDateRange = {};
     if (
       visibleLayers.includes(gladAlertsID) ||
-      visibleLayers.includes(integratedDeforestationAlertsID)
+      visibleLayers.includes(integratedDeforestationAlertsID) ||
+      visibleLayers.includes(raddAlertsID)
     ) {
       dateSliderDateRange = gladDateRange;
     }

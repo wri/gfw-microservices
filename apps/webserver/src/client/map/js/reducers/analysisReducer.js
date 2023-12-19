@@ -1,11 +1,12 @@
 /* eslint-disable default-param-last */
 import * as actionTypes from '../constants/actionTypes';
+import moment from 'moment';
 
 const initialAnalysisState = {
   activeAnalysis: 'draw',
   adminArea: {},
   gladDates: {
-    start: new Date('2021-01-01 00:00:00'),
+    start: moment().subtract(2, 'years').toDate(),
     sliderDate: new Date('2021-01-01 00:00:00'),
     end: new Date(),
   },
@@ -17,7 +18,6 @@ const initialAnalysisState = {
   analysisWarning: false,
   selectedAnalysis: '',
   gladConfirmed: false,
-  raddLayers: false,
   clarkLabsLayers: false,
 };
 
@@ -59,10 +59,6 @@ export function toggleWarning(state = initialAnalysisState.analysisWarning, acti
 
 export function toggleGladConfirmed(state = initialAnalysisState.gladConfirmed, action) {
   return action.type === actionTypes.TOGGLE_GLAD ? !state : state;
-}
-
-export function toggleRaddLayers(state = initialAnalysisState.raddLayers, action) {
-  return action.type === actionTypes.TOGGLE_RADD_LAYERS ? !state : state;
 }
 
 export function toggleClarkLabsLayers(state = initialAnalysisState.clarkLabsLayers, action) {

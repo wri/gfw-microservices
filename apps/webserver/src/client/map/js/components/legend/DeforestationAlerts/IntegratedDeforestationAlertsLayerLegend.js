@@ -1,15 +1,19 @@
 import React from 'react';
-import store from '../../store';
+import store from '../../../store';
 import {
   toggleLayer,
   toggleHighConfidenceAlertsForIntegratedAlertsLayer,
-} from '../../actions/mapActions';
+} from '../../../actions/mapActions';
+import IntegratedAlertsMapLegends from './IntegratedAlertsMapLegends';
+import { proLayers } from '../../../../../common/js/config';
 
-const DeforestationAlertsLayerLegend = ({ disabled, geographicCoverageLayer }) => {
+const { integratedAlertsGeographicCoverageID } = proLayers;
+
+const IntegratedDeforestationAlertsLayerLegend = ({ disabled }) => {
   const { visibleLayers, showHighConfidenceAlertsOnIntegratedAlertsLayer } = store.getState();
   const toggleGeographicCoverageLayer = () => {
     if (!disabled) {
-      store.dispatch(toggleLayer(geographicCoverageLayer));
+      store.dispatch(toggleLayer(integratedAlertsGeographicCoverageID));
     }
   };
 
@@ -21,18 +25,19 @@ const DeforestationAlertsLayerLegend = ({ disabled, geographicCoverageLayer }) =
 
   return (
     <ul className="layer-legend">
+      <IntegratedAlertsMapLegends />
       <li
         className={`layer-checkbox ${
-          visibleLayers.includes(geographicCoverageLayer) ? 'active' : ''
+          visibleLayers.includes(integratedAlertsGeographicCoverageID) ? 'active' : ''
         }`}
       >
         {/* uncomment when we have the Geographic coverag endpoint avaiable */}
-        {/*<div onClick={toggleGeographicCoverageLayer}>
+        <div onClick={toggleGeographicCoverageLayer}>
           <span className="toggle-switch pointer">
             <span />
           </span>
           <span className="layer-checkbox-label pointer">Geographic coverage</span>
-      </div>*/}
+        </div>
       </li>
       <li
         className={`layer-checkbox ${
@@ -50,4 +55,4 @@ const DeforestationAlertsLayerLegend = ({ disabled, geographicCoverageLayer }) =
   );
 };
 
-export default DeforestationAlertsLayerLegend;
+export default IntegratedDeforestationAlertsLayerLegend;

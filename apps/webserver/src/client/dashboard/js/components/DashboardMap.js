@@ -14,7 +14,7 @@ import Deferred from 'dojo/Deferred';
 // REDUX - Store
 import store from '../store';
 import {
-  resetZoomLevel,
+  decrementZoomLevel,
   saveMap,
   setZoomLevelTotal,
   updateInfoBubbleCache,
@@ -324,8 +324,9 @@ export default class DashboardMap extends Component {
               label="Zoom Out"
               icon={<ZoomIcon />}
               onClick={() => {
-                store.dispatch(resetZoomLevel());
-                store.dispatch(setZoomLevelTotal(getAlertsTotal()));
+                const { zoomLevel, selectedAdmin } = this.props;
+                store.dispatch(decrementZoomLevel());
+                store.dispatch(setZoomLevelTotal(getAlertsTotal(selectedAdmin, zoomLevel)));
                 gtag('event', 'Dashboard Map zoom out button clicked', {
                   event_category: 'Dashboard Click',
                   event_label: 'User click on a Zoom Out button',

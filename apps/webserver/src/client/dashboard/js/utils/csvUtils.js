@@ -713,7 +713,7 @@ function downloadDashboard() {
   // Creating ZIP file
   const promise = zip.generateAsync({ type: 'blob' });
   promise.then((res) => {
-    saveAs(res, `dashboard-${selectedList.list_name}.zip`);
+    saveAs(res, `alerts-${selectedList.list_name}.zip`);
   });
 
   /**

@@ -27,17 +27,17 @@ describe('Proper ArcGIS Module Use', () => {
         expect(content).toDependOnArcGISModules();
         expect(content).toUseEsmArcGISModules();
       });
+
+      test('[diagnostics] bundle', () => {
+        const content = loadedBundleContentFor('diagnostics');
+        expect(content).toDependOnArcGISModules();
+        expect(content).toUseEsmArcGISModules();
+      });
     });
 
     describe('Loading Via AMD', () => {
       test('[dashboard] bundle', () => {
         const content = loadedBundleContentFor('dashboard');
-        expect(content).toDependOnArcGISModules();
-        expect(content).toUseAmdArcGISModules();
-      });
-
-      test('[diagnostics] bundle', () => {
-        const content = loadedBundleContentFor('diagnostics');
         expect(content).toDependOnArcGISModules();
         expect(content).toUseAmdArcGISModules();
       });

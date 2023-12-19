@@ -71,7 +71,11 @@ loadenv
       https.createServer(sslOptions, app).listen(config.port);
       logger.info(`App listening on port: ${config.port}`);
     } else {
-      http.createServer(app).listen(config.port);
+      const httpServer = http.createServer(app);
+      if (process.env.NODE_ENV !== 'test') {
+        // supertest does not need to listen on port
+        httpServer.listen(config.port);
+      }
       logger.info(`App listening on port: ${config.port}`);
     }
     app.emit('appReady', null);
@@ -103,7 +107,7 @@ setInterval(() => {
         return console.error(err);
       }
 
-      if (now > endTime) {
+      if (now > endTime && !filePath.endsWith('.gitkeep')) {
         return fs.unlink(filePath, (unlinkErr) => {
           if (err) {
             return console.error(unlinkErr);

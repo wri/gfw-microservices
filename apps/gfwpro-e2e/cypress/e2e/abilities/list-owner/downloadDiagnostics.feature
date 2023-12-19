@@ -6,8 +6,8 @@ Ability: Download list data from the diagnostics page
     Then I am able to download the list data
 
     Examples:
-      | list                   |
-      | "Argentina Jujuy OTBN" |
+      | list                           |
+      | "AAT Argentina Points Generic" |
 
   Scenario Outline: Electing to download list data notifies the list owner of where they can find their data
 
@@ -16,5 +16,5 @@ Ability: Download list data from the diagnostics page
     Then I can see the download confirmation
 
     Examples:
-      | list                   |
-      | "Argentina Jujuy OTBN" |
+      | list                           |
+      | "AAT Argentina Points Generic" |

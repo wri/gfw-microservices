@@ -76,7 +76,7 @@ export default class Legend extends Component {
     const peopleLayers = this.props.mapLayers.filter((layer) => layer.group === 'people');
     const regionLayers = this.props.mapLayers.filter((layer) => layer.group === 'region');
 
-    const visibleForestChange = this.isVisible(forestChangeLayers) || store.getState().raddLayers;
+    const visibleForestChange = this.isVisible(forestChangeLayers);
     const visibleLandCover = this.isVisible(landCoverLayers) || store.getState().clarkLabsLayers;
     const visibleLandUse = this.isVisible(landUseLayers);
     const visibleConservation = this.isVisible(conservationLayers);

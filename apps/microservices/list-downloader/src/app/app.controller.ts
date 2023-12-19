@@ -13,4 +13,12 @@ export class AppController {
   getHealthCheck(): string {
     return this.appService.getHealthCheck();
   }
+
+  /**
+   * Latest commit hash
+   */
+  @Get('/latest_commit')
+  getLatestCommit(): string {
+    return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;
+  }
 }

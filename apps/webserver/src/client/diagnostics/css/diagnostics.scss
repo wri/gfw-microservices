@@ -1,3 +1,4 @@
+@import url('https://js.arcgis.com/4.20/@arcgis/core/assets/esri/themes/light/main.css');
 @import './_sensitiveAreas';
 @import '../../common/css/baseGFW';
 @import '../../common/css/subHeader';
@@ -1379,6 +1380,34 @@ $print-width: 95%;
 //----------------
 //////////////////
 @media print {
+  .chart-container {
+    flex-direction: column-reverse;
+    page-break-inside: avoid;
+  }
+
+  .highcharts-container {
+    margin: 0 auto;
+  }
+
+  .chart-container__pie-chart {
+    width: 100%;
+
+    + div {
+      width: 100%;
+      margin-bottom: 30px;
+    }
+  }
+
+  .header,
+  .breadcrumb,
+  .diagnostics-menu-bar {
+    display: none;
+  }
+
+  .landing-diagnostics {
+    background-color: #fff;
+  }
+
   body {
     size: letter;
     padding: 10px;
@@ -1387,6 +1416,10 @@ $print-width: 95%;
       overflow: hidden;
       margin: auto;
       width: $print-width;
+    }
+
+    .app__body {
+      height: auto;
     }
   }
 
@@ -1413,10 +1446,6 @@ $print-width: 95%;
 
   .print-only {
     display: block !important;
-  }
-
-  .locations-diagnostics__header-data .breadcrumb {
-    display: none !important;
   }
 
   .section__loss-of-forests .locations-diagnostics-table__column,
@@ -1477,10 +1506,7 @@ $print-width: 95%;
     width: 80%;
   }
 
-  .locations-diagnostics__action-bar-container {
-    display: none;
-  }
-
+  .locations-diagnostics__action-bar-container,
   .locations-diagnostics-icon-holder {
     display: none;
   }

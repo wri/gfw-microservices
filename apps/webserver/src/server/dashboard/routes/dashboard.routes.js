@@ -40,12 +40,4 @@ module.exports = (app, limiter) => {
     app.set('from-map', true);
     res.send('return');
   });
-
-  app.post('/dashboard/analyze-list', (request, response) => {
-    request.setTimeout(600000); // in milleseconds - currently 10 minutes
-    const { list, gfw } = request.body;
-    AnalysisManager.requestDashboardAnalysis(request, list, gfw)
-      .then((result) => response.send(result))
-      .catch((err) => response.send(err));
-  });
 };

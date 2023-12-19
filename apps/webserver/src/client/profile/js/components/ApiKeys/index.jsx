@@ -4,7 +4,7 @@ import ApiKeysTable from './ApiKeysTable';
 import Loading from '../../../../common/js/components/Loaders/Loading';
 
 export default function ApiKeys() {
-  const [keys, setKeys] = useState(null);
+  const [keys, setKeys] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchApiKeys = () => {
@@ -26,7 +26,6 @@ export default function ApiKeys() {
 
   const deleteKey = (id) => {
     setIsLoading(true);
-
     fetch(`api/profile/api-keys/${id}`, {
       method: 'DELETE',
       headers: {
@@ -43,15 +42,15 @@ export default function ApiKeys() {
 
   useEffect(() => {
     fetchApiKeys();
-  }, []);
+  }, [keys.length]);
 
   if (isLoading) {
     return <Loading />;
   }
 
-  return keys ? (
+  return keys.length ? (
     <ApiKeysTable keys={keys} deleteKey={deleteKey} />
   ) : (
-    <CreateApiKeyScreen setKeys={setKeys} />
+    <CreateApiKeyScreen setKeys={setKeys} setIsLoading={setIsLoading} />
   );
 }

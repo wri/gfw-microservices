@@ -4,7 +4,7 @@ import { prettifyNum, formatNum, formatPct } from '../../../../common/js/utils/d
 import './CategoryCheckbox.scss';
 
 function Table({ data }) {
-  const rows = data?.map(({ id, category, coverage, totalAreaHA }) => {
+  const rows = data && data.map(({ id, category, coverage, totalAreaHA }) => {
     return (
       <tr key={id}>
         <td>

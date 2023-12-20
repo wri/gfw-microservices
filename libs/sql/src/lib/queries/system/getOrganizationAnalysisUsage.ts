@@ -20,11 +20,11 @@ DECLARE @TABLE NVARCHAR(80);
 BEGIN
     IF @countForEachList = 1
         BEGIN
-            create table #TotArea_list (total_area_analyzed INT,  max_area_analyzed INT, number_of_lists_analyzed INT, organization_id INT, list_id INT);
+            create table #TotArea_list (total_area_analyzed BIGINT,  max_area_analyzed BIGINT, number_of_lists_analyzed INT, organization_id INT, list_id INT);
         END
     ELSE
         BEGIN
-            create table #TotArea_org (total_area_analyzed INT,  max_area_analyzed INT, number_of_lists_analyzed INT, organization_id INT);
+            create table #TotArea_org (total_area_analyzed BIGINT,  max_area_analyzed BIGINT, number_of_lists_analyzed INT, organization_id INT);
         END
 
 

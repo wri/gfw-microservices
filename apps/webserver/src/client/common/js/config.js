@@ -106,7 +106,7 @@ export const convertURL = 'https://production-api.globalforestwatch.org/v2/ogr/c
 export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
 export const latestTreeCoverLossYearFC = 2022; // Forest Change
-export const latestTreeCoverLossYearCommodityRisk = 2020;
+export const latestTreeCoverLossYearCommodityRisk = 2022;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearSensitiveAreas = 2022; // Sensitive Areas
 

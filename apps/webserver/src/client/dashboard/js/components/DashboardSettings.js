@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import store from '../store';
 import mapUtils from '../utils/mapUtils';
 import { calculateAlerts } from '../utils/dashboard.utils';
@@ -69,7 +68,7 @@ export default class DashboardSettings extends Component {
 
     // const {   } = this.state;
     const layers =
-      selectedAlert === 'GLAD' ? [proLayers.gladAlertsID] : [proLayers.viirsActiveFiresID];
+      selectedAlert === 'GLAD' ? [proLayers.integratedDeforestationAlertsID] : [proLayers.viirsActiveFiresID];
     let numLocations,
       filteredIDs,
       filterCount = 0;
@@ -80,9 +79,6 @@ export default class DashboardSettings extends Component {
 
     const {
       withAlerts,
-      withinAlerts,
-      percentageAlerts,
-      totalAlerts,
       totalLocations,
       locationIdsWithAlerts,
       locationIdsWithoutAlerts,

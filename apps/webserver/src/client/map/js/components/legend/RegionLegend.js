@@ -54,7 +54,6 @@ export default class RegionLegend extends Component {
   createLayerLegend = (layer, i) => {
     return (
       <LegendCheckbox
-        gladConfirmed={this.props.gladConfirmed}
         canopyDensity={this.props.canopyDensity}
         key={i}
         layer={layer}

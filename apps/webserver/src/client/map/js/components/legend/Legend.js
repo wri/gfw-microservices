@@ -41,7 +41,6 @@ export default class Legend extends Component {
 
   createLayerLegend = (layer, i) => (
     <LegendCheckbox
-      gladConfirmed={this.props.gladConfirmed}
       biomassRange={this.props.biomassRange}
       canopyDensity={this.props.canopyDensity}
       key={i}

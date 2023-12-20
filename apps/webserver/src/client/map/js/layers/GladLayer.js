@@ -27,7 +27,7 @@ const GladLayer = BaseTileLayer.createSubclass({
   properties: {
     julianFrom: 15000,
     julianTo: new Date().getJulian(),
-    confirmed: false,
+    showHighConfidenceConfirmed: false,
   },
 
   getTileUrl: function (level, row, column) {
@@ -94,8 +94,8 @@ const GladLayer = BaseTileLayer.createSubclass({
       // `julianTo` and `julianFrom` are updated by date selector in Map.js component to filter the data in image provided by - tiles.globalforestwatch.org
       if (values.date > this.julianFrom && values.date < this.julianTo) {
         // Check if we are only examining confirmed cases or not
-        // `confirmed` value is updated by check element in GladLayerLegend.jsx component to `Show only high confidence alerts` on map
-        if (this.confirmed) {
+        // `showHighConfidenceConfirmed` value is updated by check element in GladLayerLegend.jsx component to `Show only high confidence alerts` on map
+        if (this.showHighConfidenceConfirmed) {
           if (values.confidence > 0) {
             data[i + 3] = values.intensity;
             // Make the pixel pink for glad alerts

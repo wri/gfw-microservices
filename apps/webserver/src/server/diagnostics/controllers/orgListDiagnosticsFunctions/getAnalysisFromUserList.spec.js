@@ -1,8 +1,12 @@
+/**
+ * @jest-environment node
+ */
 const getAnalysisFromUserList = require('./getAnalysisFromUserList');
 const ListManager = require('../../../../config/publicutils/listManager.utils');
 const AnalysisManager = require('../../../../config/publicutils/analysisManager.utils');
 const LocationManager = require('../../../../config/publicutils/locationManager.utils');
-const _ = require('lodash')
+const _ = require('lodash');
+
 // Mock ListManager
 jest.mock('../../../../config/publicutils/listManager.utils', () => ({
   getListLocations: jest.fn(),
@@ -19,7 +23,9 @@ jest.mock('../../../../config/publicutils/locationManager.utils', () => ({
   getLocationAttributesList: jest.fn(),
 }));
 
-jest.mock('lodash');
+jest.mock('lodash', {
+  pick: jest.fn(),
+});
 
 describe('getAnalysisFromUserList', () => {
   let selectedList;
@@ -62,13 +68,18 @@ describe('getAnalysisFromUserList', () => {
       SINGLE_LOCATION_ROW_REQUESTED
     );
     expect(AnalysisManager.getListAnalyses).toHaveBeenLastCalledWith(req, req.params.listId);
-    expect(ListManager.getPaginatedAnalysisDataForUserList).toHaveBeenLastCalledWith(req, req.params.listId, {
-      page: 1,
-      pageSize: selectedList.list_locations_count,
-      orderType: 'desc',
-      sortByAttribute: 'Investment Name',
-      searchString: '',
-    });
+    expect(ListManager.getPaginatedAnalysisDataForUserList).toHaveBeenLastCalledWith(
+      req,
+      req.params.listId,
+      {
+        page: 1,
+        pageSize: selectedList.list_locations_count,
+        orderType: 'desc',
+        sortByAttribute: 'Investment Name',
+        searchString: '',
+      }
+    );
+    expect(_.pick).toHaveBeenCalled();
     expect(result.spatialData).toEqual(expect.any(Array));
     expect(result.listLocationsIds).toEqual(expect.any(Array));
     expect(result.listAnalyses).toEqual(expect.any(Array));

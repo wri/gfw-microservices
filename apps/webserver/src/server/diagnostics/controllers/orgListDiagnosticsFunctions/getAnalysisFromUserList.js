@@ -11,7 +11,7 @@ module.exports = async function (req, selectedList) {
 
   let listLocationsIds = locationId ? [locationId] : [];
   let spatialData;
-  let listAnalyses;
+  let listAnalysis;
   let locationAnalyses;
 
   if (locationId) {
@@ -26,7 +26,6 @@ module.exports = async function (req, selectedList) {
       );
 
       spatialData = listLocationsData ? listLocationsData?.features : [];
-      listAnalyses = [];
     } catch (error) {
       console.error('Error @ListManager.getListLocation', error);
       throw new Error(error);
@@ -104,7 +103,7 @@ module.exports = async function (req, selectedList) {
 
   /** get list analysis */
   try {
-    listAnalyses = await AnalysisManager.getListAnalyses(req, listId);
+    listAnalysis = await AnalysisManager.getListAnalyses(req, listId);
   } catch (error) {
     console.error('Error @AnalysisManager.getListAnalyses', error);
     throw new Error(error);
@@ -136,14 +135,14 @@ module.exports = async function (req, selectedList) {
       locationAnalyses = [];
     }
   } catch (error) {
-    console.error('Error @ListManager.getPaginatedAnalysisDataForUserList', error);
+    console.warn('Error @ListManager.getPaginatedAnalysisDataForUserList', error);
     throw new Error(error);
   }
 
   return {
     spatialData,
     listLocationsIds,
-    listAnalyses,
+    listAnalysis,
     locationAnalyses,
   };
 };

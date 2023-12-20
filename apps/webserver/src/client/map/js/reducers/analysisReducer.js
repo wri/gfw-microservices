@@ -17,7 +17,6 @@ const initialAnalysisState = {
   player: false,
   analysisWarning: false,
   selectedAnalysis: '',
-  gladConfirmed: false,
   clarkLabsLayers: false,
 };
 
@@ -55,10 +54,6 @@ export function handleBiomassRange(state = initialAnalysisState.biomassRanges, a
 
 export function toggleWarning(state = initialAnalysisState.analysisWarning, action) {
   return action.type === actionTypes.TOGGLE_WARNING ? !state : state;
-}
-
-export function toggleGladConfirmed(state = initialAnalysisState.gladConfirmed, action) {
-  return action.type === actionTypes.TOGGLE_GLAD ? !state : state;
 }
 
 export function toggleClarkLabsLayers(state = initialAnalysisState.clarkLabsLayers, action) {

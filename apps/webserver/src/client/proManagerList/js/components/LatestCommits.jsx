@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
+const defaultData = {
+  EAPI: "N/A",
+  LD: "N/A",
+  LP: "N/A",
+  WEB: "N/A"
+}
+
 export const getLatestCommits = async () => {
   try {
     const response = await fetch(`/api/latest_commit`, {
@@ -13,22 +20,12 @@ export const getLatestCommits = async () => {
     return data;
   } catch (error) {
     console.error(error);
-    return {
-      EAPI: "N/A",
-      LD: "N/A",
-      LP: "N/A",
-      WEB: "N/A"
-    };
+    return defaultData;
   }
 };
 
 function LatestCommits({ setIsLoading }) {
-  const [latestCommitsData, setLatestCommitsData] = useState({
-    EAPI: "N/A",
-    LD: "N/A",
-    LP: "N/A",
-    WEB: "N/A"
-  });
+  const [latestCommitsData, setLatestCommitsData] = useState(defaultData);
 
   const commitfFormat = (commitName) => {
     if(commitName == "N/A") {

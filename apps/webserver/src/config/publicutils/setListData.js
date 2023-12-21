@@ -25,21 +25,31 @@ const dataCleanup = (data) => {
   });
   return cleanData;
 };
-
-const setListData = (locationData, analysisData, selectedLists) => {
+/**
+ * @summary merges analysis data to its location data and does some clean up
+ * @param {Array} locationData list locations data
+ * @param {Array} locationAnalysisData location analysis data
+ * @param {Object} selectedList current list context
+ * @returns {Array}
+ */
+const setListData = (locationData = [], locationAnalysisData = [], selectedList) => {
   const data = [];
   locationData.forEach((loc) => {
-    // TODO - ENABLE IN PHASE 1.1
-    // const flag = {
-    //   flag_forma: loc.flag_forma,
-    //   flag_general: loc.flag_general,
-    //   flag_glad: loc.flag_glad,
-    //   flag_gran_chaco: loc.flag_gran_chaco,
-    //   flag_terrai: loc.flag_terrai,
-    //   flag_viirs: loc.flag_viirs
-    // };
-
-    if (selectedLists[0].list_name === 'Administrative Areas') {
+    /**
+     * ----------------------------------------
+     * @TODO: - ENABLE IN PHASE 1.1
+     * ----------------------------------------
+     *  const flag = {
+     *   flag_forma: loc.flag_forma,
+     *   flag_general: loc.flag_general,
+     *   flag_glad: loc.flag_glad,
+     *   flag_gran_chaco: loc.flag_gran_chaco,
+     *   flag_terrai: loc.flag_terrai,
+     *   flag_viirs: loc.flag_viirs
+     *  };
+     * ----------------------------------------
+     */
+    if (selectedList.list_name === 'Administrative Areas') {
       if (loc['Location Name']) {
         const splitsies = loc['Location Name'].split('--');
         if (splitsies.length > 0) {
@@ -54,29 +64,30 @@ const setListData = (locationData, analysisData, selectedLists) => {
       }
     }
 
-    if (analysisData?.length > 0) {
-      let analysisList = [];
-      if (
-        selectedLists[0].list_name === 'Protected Areas' ||
-        selectedLists[0].list_name === 'Administrative Areas'
-      ) {
-        // for protected areas and admin areas we dont match list_ids, just location ids
-        [analysisList] = analysisData.filter(
-          (analysis) => analysis.location_id === loc.location_id
-        );
-      } else {
-        [analysisList] = analysisData.filter(
-          (analysis) => analysis.location_id === loc.location_id && analysis.list_id === loc.list_id
-        );
-      }
-      data.push({ ...loc, ...analysisList });
+    if (locationAnalysisData?.length > 0) {
+      let analysisList =
+        locationAnalysisData.find((analysis) => {
+          if (
+            selectedList.list_name === 'Protected Areas' ||
+            selectedList.list_name === 'Administrative Areas'
+          ) {
+            // for protected areas and admin areas we dont match list_ids, just location ids
+            return analysis.location_id === loc.location_id;
+          } else {
+            return analysis.location_id === loc.location_id && analysis.list_id === loc.list_id;
+          }
+        }) || {}; // default to an empty object if no matching element is found
+
+      data.push({
+        ...loc,
+        ...analysisList,
+      });
     } else {
       data.push({ ...loc });
     }
   });
+
   return dataCleanup(data);
 };
 
-module.exports = {
-  setListData,
-};
+module.exports = setListData;

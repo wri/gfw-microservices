@@ -280,13 +280,21 @@ const getLocationAttributesList = async (req, locations, isGfwList) => {
     selectedList = locations[0];
     selectedList.id = locations[0].list_id;
   } else {
+    /**
+     * ---
+     * TODO: determine if the following is tech debt
+     * `getAllLists` calls SP getAllLists
+     * `getUserLists` calls SP getAllLists where user_access = admin, otherwise getUserLists
+     * ---> essentially running same query twice for admin users
+     * ---
+     */
     const userLists = await ListManager.getUserLists(req);
     const orgLists = await ListManager.getAllLists(req);
     const sharedListsRecords = await ShareManager.getUserInternalShareLists(
       req,
       req.session.organization_user_id
     );
-    const userSharedLists = await ShareManager.findSharedListsInsideOrganization(
+    const userSharedLists = ShareManager.findSharedListsInsideOrganization(
       sharedListsRecords,
       orgLists
     );

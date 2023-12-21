@@ -4,21 +4,25 @@ import { prettifyNum, formatNum, formatPct } from '../../../../common/js/utils/d
 import './CategoryCheckbox.scss';
 
 function Table({ data }) {
-  const rows = Array.isArray(data) ? (data?.map(({ id, category, coverage, totalAreaHA }) => {
-    return (
-      <tr key={id}>
-        <td>
-          <span
-            className="category-checkbox"
-            style={{ background: afiDiagnosticsChartsColors[id] }}
-          />
-          <label htmlFor={category}>{category}</label>
-        </td>
-        <td>{formatPct(coverage || 0)}</td>
-        <td>{prettifyNum(formatNum(totalAreaHA))}</td>
-      </tr>
-    );
-  })) : <></>;
+  const rows = Array.isArray(data) ? (
+    data.map(({ id, category, coverage, totalAreaHA }) => {
+      return (
+        <tr key={id}>
+          <td>
+            <span
+              className="category-checkbox"
+              style={{ background: afiDiagnosticsChartsColors[id] }}
+            />
+            <label htmlFor={category}>{category}</label>
+          </td>
+          <td>{formatPct(coverage || 0)}</td>
+          <td>{prettifyNum(formatNum(totalAreaHA))}</td>
+        </tr>
+      );
+    })
+  ) : (
+    <></>
+  );
 
   return (
     <div>

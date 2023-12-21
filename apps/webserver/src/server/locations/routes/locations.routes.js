@@ -242,60 +242,6 @@ module.exports = (app, limiter) => {
       });
   });
 
-  app.post('/locations/addToNewListEdit', (req, res) => {
-    console.log('POST /locations/addToNewListEdit');
-    const isEdit = false;
-    const {
-      list_name,
-      template_id,
-      commodity,
-      geojson,
-      location_classification,
-      list_id,
-      gfw_list_id,
-    } = req.body;
-
-    const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
-    const custom_attributes = req.body.custom_attributes ? req.body.custom_attributes : [];
-
-    ListManager.getListLockStatus(req, list_id)
-      .then((record) => {
-        const { lock_status, lock_user_id } = record;
-        if (
-          lock_status === null ||
-          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
-        ) {
-          throw record;
-        } else {
-          return ListManager.uploadToNewList(
-            req,
-            list_name,
-            template_id,
-            commodity,
-            location_classification,
-            req.session.organization_id,
-            custom_attributes,
-            finalGeojson,
-            gfw_list_id,
-            isEdit
-          );
-        }
-      })
-      .then(() => {
-        // Call List Level Analysis
-        AnalysisManager.requestAnalysis(req, list_name, {}, isEdit);
-        return ListManager.setListUnlocked(req, list_id);
-      })
-      .then(() => {
-        res.send('LocationAdded');
-      })
-      .catch((err) => {
-        console.log('Reject', err);
-        ListManager.setListUnlocked(req, list_id);
-        res.send('Location add failed');
-      });
-  });
-
   app.post('/locations/rerunExistingList', (req, res) => {
     console.log('POST /locations/rerunExistingList');
 
@@ -496,30 +442,6 @@ module.exports = (app, limiter) => {
         success: false,
       });
     }
-  });
-
-  app.post('/locations/moveLocations', (req, res) => {
-    console.log('POST /locations/moveLocations');
-    const { src_list_id, src_location_ids, dest_list_id, gfw_list_id, geojson, delete_src_list } =
-      req.body;
-
-    ListManager.moveLocations(
-      req,
-      src_list_id,
-      src_location_ids,
-      dest_list_id,
-      geojson,
-      gfw_list_id,
-      delete_src_list
-    )
-      .then(async () => {
-        res.send('LocationMoved');
-      })
-      .catch((err) => {
-        console.log('Error /locations/moveLocations', err);
-        ListManager.setListUnlocked(req, src_list_id);
-        res.send(err);
-      });
   });
 
   app.post('/locations/deleteLocations', (req, res) => {

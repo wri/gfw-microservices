@@ -12,7 +12,6 @@
  * @function {getAllLists}
  * @function {getListLocations}
  * @function {getSimplifiedListLocations}
- * @function {getDashboardListLocations}
  * @function {getListLocationsNoGeom}
  * @function {getLocationsCount}
  * @function {uploadToExistingList}
@@ -650,43 +649,6 @@ const getSimplifiedListLocations = (req, list_id) => {
           errorUtils.errorCodes.failedToGetList,
           `Failed to get list locations for List ${list_id}`,
           errorMessage
-        );
-        reject(errorObject);
-      });
-  });
-};
-
-const getDashboardListLocations = (req, list) => {
-  return new Promise((resolve, reject) => {
-    const { id, template_id } = list;
-    const parameters = [{ field: 'listId', type: sql.Int, value: id }];
-    const storedProcedure =
-      template_id === 1
-        ? 'uspGetDashboardInvestmentLocations'
-        : 'uspGetDashboardCommodityLocations';
-    Promise.all([
-      sqlUtils.executeOrganizationStoredProcedure(req, storedProcedure, parameters),
-      sqlUtils.executeOrganizationStoredProcedure(
-        req,
-        'uspGetDashboardDissolvedS3Location',
-        parameters
-      ),
-    ])
-      .then((results) => {
-        const [locationRecordsets, s3Recordsets] = results;
-        const geojson = locationUtils.createGeoJSON(req, locationRecordsets);
-        const location_s3_info = JSON.parse(s3Recordsets[0].dissolved_data_location_info);
-        resolve({
-          geojson,
-          location_s3_info,
-        });
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.errorCodes.failedToGetList,
-          `Failed to get list locations for List ${id}`,
-          err
         );
         reject(errorObject);
       });
@@ -2084,7 +2046,6 @@ module.exports = {
   getAllLists,
   getListLocations,
   getSimplifiedListLocations,
-  getDashboardListLocations,
   getListLocationsNoGeom,
   getListAdminAreasOrderedByCountry,
   getLocationsCount,

@@ -1,5 +1,5 @@
 import { ResultService } from './result.service';
-import { locationListData } from '../shared/mock.data';
+import { locationListData, commodityRiskData } from '../shared/mock.data';
 import { describe, expect, test } from '@jest/globals';
 
 import * as fs from 'fs';
@@ -30,16 +30,39 @@ describe('Result Service', () => {
     createDirectory(dir);
   });
 
-  beforeEach(() => {
-    resultService.start(filters);
-  });
-
   afterEach(() => {
     fs.unlinkSync(filePath);
+  });
+
+  afterAll(() => {
     fs.rmdirSync(dir);
   });
 
-  test('When input data has 3 locations', async () => {
+  test('When the list view is commodity risk', async () => {
+    resultService.start({ ...filters, listView: 'commodity_risk' });
+
+    const input = commodityRiskData.map((x) => {
+      return { ...x, 'List Name': 'test' };
+    });
+    resultService.process(input);
+
+    await resultService.finish(filters);
+
+    const csvData = fs.readFileSync(filePath, 'utf8');
+    const lines = csvData.toString().split('\n');
+    expect(lines).toStrictEqual([
+      'List Name,Location Name,Country(Countries),Mill Priority,THREATS - Deforestation,THREATS - Peat,THREATS - Protected Areas,THREATS - Fire,THREATS - Overall,VALUES - Forest,VALUES - Peat,VALUES - Protected Areas,VALUES - Overall',
+      'WRI,id_1043,Malaysia,Medium,Low,High,Medium,Low,Medium,High,High,Medium,High',
+      'WRI,id_1049,Indonesia,High,Medium,High,High,Medium,High,Low,High,High,High',
+      'WRI,id_1071,Malaysia,Medium,Low,High,Low,Medium,Medium,Low,High,Low,Medium',
+      'WRI,id_1072,Malaysia,Medium,Low,High,Low,Low,Medium,Low,High,Low,Medium',
+      '',
+    ]);
+  }, 70000);
+
+  test('When the list view is forest change', async () => {
+    resultService.start(filters);
+
     const input = locationListData.map((x) => {
       return { ...x, 'List Name': 'test' };
     });

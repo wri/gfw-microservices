@@ -96,7 +96,7 @@ module.exports = async function (req, selectedList) {
         };
       });
     } catch (error) {
-      console.error('Error @ListManager.getPaginatedAnalysisDataForUserList', error);
+      console.error('Error !locationId@ListManager.getPaginatedAnalysisDataForUserList', error);
       throw new Error(error);
     }
   }

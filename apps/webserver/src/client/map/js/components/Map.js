@@ -1741,19 +1741,23 @@ export default class Map extends Component {
       };
     }
 
-    const request = new XMLHttpRequest();
-    request.open('POST', '/locations/map-locations', true);
-    request.setRequestHeader('Content-Type', 'application/json');
-    request.send(JSON.stringify(requestObject));
-    request.onload = () => {
-      if (request.response === 'submitted') {
-        window.location = '/locations';
-      }
-    };
-    request.onerror = (err) => {
-      this.setState({ spinnerOn: false });
-      console.log(err);
-    };
+    fetch('/locations/map-locations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestObject),
+    })
+      .then((response) => response.text())
+      .then((data) => {
+        if (data === 'submitted') {
+          window.location = '/locations';
+        }
+      })
+      .catch((error) => {
+        this.setState({ spinnerOn: false });
+        console.error('Error:', error);
+      });
   };
 
   getCurrentAnalysis = (type) => {

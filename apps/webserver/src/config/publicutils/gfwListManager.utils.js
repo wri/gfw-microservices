@@ -108,38 +108,6 @@ const getGFWListLocations = (req, list_id) => {
   });
 };
 
-const getDashboardGFWListLocations = (req, list_id) => {
-  return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'listId', type: sql.Int, value: list_id }];
-    Promise.all([
-      sqlUtils.executeSystemStoredProcedure(req, 'uspGetGFWDashboardListLocations', parameters),
-      sqlUtils.executeSystemStoredProcedure(
-        req,
-        'uspGetGFWDashboardDissolvedS3Location',
-        parameters
-      ),
-    ])
-      .then((results) => {
-        const [locationRecordsets, s3Recordsets] = results;
-        const geojson = locationUtils.createGeoJSON(req, locationRecordsets);
-        const location_s3_info = JSON.parse(s3Recordsets[0].dissolved_data_location_info);
-        resolve({
-          geojson,
-          location_s3_info,
-        });
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.errorCodes.failedToGetList,
-          `Failed to get list locations for List ${list_id}`,
-          err
-        );
-        reject(errorObject);
-      });
-  });
-};
-
 /** @function {getGFWListLocationsNoGeom}
  *   @summary Get function to return json of location metadata without geometry.
  *   @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
@@ -677,7 +645,6 @@ module.exports = {
   getGFWLists,
   getGFWListsByListId,
   getGFWListLocations,
-  getDashboardGFWListLocations,
   getGFWListLocationsNoGeom,
   getGFWListLocationsGeom,
   getGFWListLocationsGlobalId,

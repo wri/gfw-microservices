@@ -78,34 +78,6 @@ const logGeoJSON = (geojson) => {
   }
 };
 
-const filterGeojsonByGADM = (geojson) => {
-  const withGADM = {
-    type: 'FeatureCollection',
-    features: [],
-  };
-  const withoutGADM = {
-    type: 'FeatureCollection',
-    features: [],
-  };
-  for (let i = 0; i < geojson.features.length; i++) {
-    const feature = geojson.features[i];
-    const { properties } = feature;
-    if (
-      !properties.hasOwnProperty('gadmid') ||
-      properties.gadmid === '' ||
-      properties.gadmid === 'None'
-    ) {
-      withoutGADM.features.push(feature);
-    } else {
-      withGADM.features.push(feature);
-    }
-  }
-  return {
-    withGADM,
-    withoutGADM,
-  };
-};
-
 /**
  * Returns a GeoJSON containing dashboard analysis data. Geometry is removed for the dissolved geojson.
  * @param {Object} geojson GeoJSON object containing the geometries
@@ -150,41 +122,9 @@ const mergeGeoJSONWithAnalysis = (geojson, gladData, fireData, extentData, gladV
   );
 };
 
-/**
- * Prepares the data and GeoJSON to be merged together.
- * @param {Object} listGeoJSON List GeoJSON
- * @param {Object} dissolvedGeoJSON Location GeoJSON
- * @param {Array} listAnalyses List level analysis data
- * @param {Array} dissolvedAnalyses Location level analysis data
- */
-const dashboardMerger = (listGeoJSON, dissolvedGeoJSON, listAnalyses, dissolvedAnalyses) => {
-  return new Promise((resolve) => {
-    const [listGlad, listFire, listExtent, listValidate] = listAnalyses;
-    const [dissolvedGlad, dissolvedFire, dissolvedExtent, dissolvedValidate] = dissolvedAnalyses;
-    Promise.all([
-      mergeGeoJSONWithAnalysis(listGeoJSON, listGlad, listFire, listExtent, listValidate),
-      mergeGeoJSONWithAnalysis(
-        dissolvedGeoJSON,
-        dissolvedGlad,
-        dissolvedFire,
-        dissolvedExtent,
-        dissolvedValidate
-      ),
-    ]).then((mergedGeoJSONS) => {
-      const [geojson, dissolvedGeojson] = mergedGeoJSONS;
-      resolve({
-        geojson,
-        dissolvedGeoJSON: dissolvedGeojson,
-      });
-    });
-  });
-};
-
 module.exports = {
   getWKTGeometry,
   getGeoJSONGeometry,
   createGeoJSON,
   logGeoJSON,
-  filterGeojsonByGADM,
-  dashboardMerger,
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import AfiDiagnostics from '../../js/AfiDiagnostics/index';
 
 global.fetch = jest.fn(() =>
@@ -11,6 +11,8 @@ global.fetch = jest.fn(() =>
 beforeAll(() => {
   window.gtag = function () {};
 });
+
+afterEach(cleanup);
 
 test('renders loading spinner initially', () => {
   render(<AfiDiagnostics />);

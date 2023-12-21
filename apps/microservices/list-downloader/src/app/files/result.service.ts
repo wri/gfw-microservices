@@ -1,8 +1,9 @@
 import * as archiver from 'archiver';
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
-import { PassThrough } from 'stream';
+import { PassThrough, Transform } from 'stream';
 import { Logger, Injectable } from '@nestjs/common';
+import * as Chain from 'stream-chain';
 
 import { EXCEL_TEMPLATES } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
@@ -12,6 +13,8 @@ import { SumValue } from '../transform/sum.value';
 import { IPipeService } from '../pipe/IPipeService';
 import { finished } from 'stream/promises';
 import { FormatNumber } from '../transform/format.number';
+import { GetLatestValue } from '../transform/get.latest.value';
+import { DiscretizeData } from '../transform/discretize.data';
 
 @Injectable()
 export class ResultService extends IPipeService {
@@ -55,7 +58,7 @@ export class ResultService extends IPipeService {
     allFields: string[],
     columnGetLastValue: string[] = []
   ) {
-    const { listId, selectedLocationsList, key, listName } = filters;
+    const { listId, selectedLocationsList, key, listName, listView } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', (err) => {
@@ -68,18 +71,25 @@ export class ResultService extends IPipeService {
     });
     this.zipStream = fs.createWriteStream(`/tmp/${key}.zip`);
 
-    this.inputStream
-      .pipe(new FilterSelection(selectedLocationsList))
-      .pipe(new FilterObject(allFields))
-      .pipe(new SumValue(columnGetLastValue))
-      .pipe(new FormatNumber())
-      .pipe(
-        csvWriter({
-          sendHeaders: false,
-        })
-      )
-      .pipe(this.fileStream);
+    let pipeline: Array<Transform> = [
+      new FilterSelection(selectedLocationsList),
+      new FilterObject(allFields),
+    ];
 
+    if (listView === 'forest_change') {
+      pipeline = [...pipeline, new SumValue(columnGetLastValue), new FormatNumber()];
+    } else {
+      pipeline = [...pipeline, new GetLatestValue(columnGetLastValue), new DiscretizeData()];
+    }
+
+    pipeline = [
+      ...pipeline,
+      csvWriter({
+        sendHeaders: false,
+      }),
+    ];
+
+    this.inputStream.pipe(new Chain(pipeline)).pipe(this.fileStream);
     return this.inputStream;
   }
 

@@ -24,7 +24,7 @@ class GetLatestValue extends Transform {
           .reduce((a, b) => Math.max(a, b), -Infinity);
         result = {
           ...result,
-          [field]: values[key] ?? '',
+          [field]: values[key] ?? 0,
         };
       }
     });

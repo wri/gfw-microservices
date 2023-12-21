@@ -48,4 +48,17 @@ describe('GetLatestValue', () => {
       }
     );
   });
+
+  test('Should return 0 when all values are 0', () => {
+    const getLatestValue = new GetLatestValue(['yearly']);
+    getLatestValue._transform(
+      {
+        yearly: '{"2019": 0, "2020": 0, "2021": 0}',
+      },
+      '',
+      (err, data) => {
+        expect(data).toEqual({ yearly: 0 });
+      }
+    );
+  });
 });

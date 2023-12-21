@@ -16,7 +16,7 @@ const ShareManager = require('../../../config/publicutils/shareManager.utils');
 const {
   findSharedListsInsideOrganization,
 } = require('../../../config/publicutils/shareManager.utils');
-const { getListDataFilterValues, sendMessageToQueue } = require('../utils/locations.utils');
+const { formatListLocationDataForFilter, sendMessageToQueue } = require('../utils/locations.utils');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 
 // Config
@@ -146,8 +146,25 @@ exports.getUserLists = (req, res) => {
  */
 exports.listFilterValues = async (request, response) => {
   const { id } = request.params;
+
   try {
-    const filterValues = await getListDataFilterValues(request, id);
+    let adminAreasLocations;
+
+    if (GFWlistManager.isGfwList(Number(id))) {
+      adminAreasLocations = await GFWlistManager.getGFWListLocationsNoGeom(request, id);
+      adminAreasLocations = adminAreasLocations.map(
+        ({ Country, State, 'Sub State': SubState }) => ({
+          Country,
+          State,
+          'Sub State': SubState,
+        })
+      );
+    } else {
+      adminAreasLocations = await ListManager.getListAdminAreasOrderedByCountry(request, id);
+    }
+
+    const filterValues = formatListLocationDataForFilter(adminAreasLocations);
+
     response.status(200).json(filterValues);
   } catch (err) {
     logger.error(`Getting list filter data failed: /listData/filters/${id}. Error message ${err}`);

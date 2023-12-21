@@ -39,7 +39,7 @@ const filterValidTemplates = (template, activeTemplate, addType, commodityType) 
 const filterValidCustom = (userList, customFields) => {
   let validCustom = true;
 
-  const hasCustomAttributes = userList.custom_attribute_names.length > 0;
+  const hasCustomAttributes = userList.custom_attribute_names?.length > 0;
 
   if (!hasCustomAttributes && customFields.length === 0) {
     //lets be explicit: no custom attribution involved

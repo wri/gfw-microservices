@@ -3,14 +3,16 @@ import { numberWithCommas } from '../../../../locations/js/utils/locationsTableU
 import MultipleCountriesLabel from './MultipleCountriesLabel';
 import './DiagnosticsHeaderInfo.scss';
 
-function FullListDiagnosticsHeaderInfo({ selectedLists }) {
+function FullListDiagnosticsHeaderInfo({ selectedList }) {
+  const { id, list_name, list_locations_count } = selectedList;
+
   return (
     <div className="diagnostics-header-info">
       <div className="diagnostics-header-info__location-count">
-        {`${numberWithCommas(selectedLists[0].list_locations_count)} locations`}
+        {`${numberWithCommas(list_locations_count)} locations`}
       </div>
-      <div className="header-title print-only">{selectedLists[0].list_name}</div>
-      <MultipleCountriesLabel listId={selectedLists[0].id} />
+      <div className="header-title print-only">{list_name}</div>
+      <MultipleCountriesLabel listId={id} />
     </div>
   );
 }

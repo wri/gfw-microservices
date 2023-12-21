@@ -70,7 +70,8 @@
         "jestConfig": "apps/webserver/src/jest.config.json",
         "forceExit": true,
         "passWithNoTests": true,
-        "testPathIgnorePatterns": ["test/fitness"]
+        "testPathIgnorePatterns": ["test/fitness"],
+        "verbose": true
       }
     },
     "test": {
@@ -85,6 +86,7 @@
           },
           "nx run webserver:testweb"
         ],
+        "verbose": true,
         "parallel": false
       }
     },

@@ -17,7 +17,7 @@ function AfiDiagnostics() {
   const [chartData, setChartData] = useState({});
 
   const listId = parseInt(new URLSearchParams(location.search).get('listId'), 10);
-  const isSharedList = JSON.parse(new URLSearchParams(location.search).get('shared'));
+  const isSharedList = Boolean(new URLSearchParams(location.search).get('shared'));
 
   const [selectedList, setSelectedList] = useState({});
 
@@ -32,13 +32,16 @@ function AfiDiagnostics() {
   };
 
   const getDiagnosticsData = () => {
-    return fetch(`/diagnosticsData`, {
+    return fetch(`/diagnostics/${listId}`, {
       method: 'POST',
       credentials: 'same-origin',
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({ listId, isSharedList }),
+      body: JSON.stringify({
+        locationId: '',
+        isSharedList,
+      }),
     }).then((res) => res.json());
   };
 
@@ -49,8 +52,7 @@ function AfiDiagnostics() {
     Promise.all([getAfiAnalysisForListId(), getDiagnosticsData()])
       .then(([afiAnalysisData, diagnosticsData]) => {
         const { regionalInfo, negligibleRiskStats } = afiAnalysisData;
-        const { selectedLists } = diagnosticsData;
-        const selectedList = selectedLists?.[0] || {};
+        const { selectedList } = diagnosticsData;
 
         setTableData(regionalInfo);
         setChartData(negligibleRiskStats);
@@ -76,7 +78,7 @@ function AfiDiagnostics() {
         'Content-type': 'application/zip',
       },
     })
-      .then((result) => {
+      .then(() => {
         setIsLoading(false);
       })
       .catch((error) => {

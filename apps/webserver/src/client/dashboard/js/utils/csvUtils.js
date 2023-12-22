@@ -14,7 +14,7 @@ import {
   getGladDaily,
   getGladMonthlyQuarter,
   getGladMonthlyYear,
-  getGladWeekly,
+  getGladMonthlyMonth,
   getSelectedTimeframeStartEndGroupings,
   getViirsGrouped,
 } from './dashboard-date.utils';
@@ -105,10 +105,10 @@ function applyTimeframeFilter(geojson, selectedTimeframe) {
     // Month timeframe
     if (
       selectedTimeframe === 'MONTH' &&
-      feature.properties.hasOwnProperty('glad_alerts_weekly') &&
-      feature.properties.glad_alerts_weekly.length > 0
+      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly.length > 0
     ) {
-      groupedGlad = getGladWeekly(feature);
+      groupedGlad = getGladMonthlyMonth(feature);
     }
 
     // Quarter timeframe
@@ -161,10 +161,10 @@ function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
 
     if (
       selectedTimeframe === 'MONTH' &&
-      feature.properties.hasOwnProperty('glad_alerts_weekly') &&
-      feature.properties.glad_alerts_weekly.length > 0
+      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly.length > 0
     ) {
-      groupedGlad = getGladWeekly(feature);
+      groupedGlad = getGladMonthlyMonth(feature);
     }
 
     if (
@@ -222,17 +222,10 @@ const calculateAlertHistoryForList = (geojson, selectedAlert, selectedTimeframe)
     let total = 0;
     filtered.forEach((countObj) => {
       const { count, day } = countObj;
-      if (selectedTimeframe === 'MONTH') {
-        const ISOPeriod = moment(dateStart, 'DD MMM YYYY').format('YYYY-WW');
-        if (ISOPeriod === day) {
-          total += count;
-        }
-      } else {
-        const CURRENT_DATE_FORMAT = 'YYYY-MM-DD';
-        const currentM = moment(day, CURRENT_DATE_FORMAT);
-        if (currentM.isSameOrAfter(dateStart) && currentM.isSameOrBefore(dateEnd)) {
-          total += count;
-        }
+      const CURRENT_DATE_FORMAT = 'YYYY-MM-DD';
+      const currentM = moment(day, CURRENT_DATE_FORMAT);
+      if (currentM.isSameOrAfter(dateStart) && currentM.isSameOrBefore(dateEnd)) {
+        total += count;
       }
     });
     return {
@@ -436,7 +429,7 @@ function generate_AlertsHistory_Csv(state) {
   const endDateSchema = {
     GLAD: {
       WEEK: 'DAY',
-      MONTH: 'WEEK',
+      MONTH: 'MONTH',
       QUARTER: 'MONTH',
       YEAR: 'MONTH',
     },

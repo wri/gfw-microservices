@@ -10,7 +10,7 @@ import {
   getGladDaily,
   getGladMonthlyQuarter,
   getGladMonthlyYear,
-  getGladWeekly,
+  getGladMonthlyMonth,
   getViirsGrouped,
 } from '../utils/dashboard-date.utils';
 
@@ -82,10 +82,10 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
         // Month timeframe
         if (
           selectedTimeframe === 'MONTH' &&
-          feature.properties.hasOwnProperty('glad_alerts_weekly') &&
-          feature.properties.glad_alerts_weekly.length > 0
+          feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+          feature.properties.glad_alerts_monthly.length > 0
         ) {
-          groupedGlad = getGladWeekly(feature);
+          groupedGlad = getGladMonthlyMonth(feature);
         }
 
         // Quarter timeframe
@@ -141,10 +141,10 @@ function applyDataReducerTimeframeFilter(filteredLocationsObject, selectedTimefr
       // Month timeframe
       if (
         selectedTimeframe === 'MONTH' &&
-        feature.properties.hasOwnProperty('glad_alerts_weekly') &&
-        feature.properties.glad_alerts_weekly.length > 0
+        feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+        feature.properties.glad_alerts_monthly.length > 0
       ) {
-        groupedGlad = getGladWeekly(feature);
+        groupedGlad = getGladMonthlyMonth(feature);
       }
 
       // Quarter timeframe

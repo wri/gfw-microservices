@@ -8,6 +8,7 @@ import { prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import {
   getSelectedTimeframeStartEndGroupings,
   isInDaysOfWeek,
+  isInMonthsOfMonth,
   isInMonthsOfQuarter,
   isInMonthsOfYear,
 } from '../utils/dashboard-date.utils';
@@ -149,24 +150,18 @@ export default class DashboardChart extends Component {
             });
           total = alertsWithinTime.reduce((acc, curr) => acc + curr.count, 0);
         }
-        if (selectedTimeframe === 'MONTH') {
-          //Calc alerts within a month timeframe using ISO weeks. We take current week, eg: ISO 40, and determine 4 last ISO weeks, so it would be [39, 38, 37, 36]. Then we take all alerts within those weeks and sum them up.
-          const startOfTimeframe = period[0];
-          const ISOPeriod = moment(startOfTimeframe, DATE_FORMAT).format('YYYY-WW');
-
-          const alertsWithinTime = filteredDissolvedGeoJSON.features
-            .map((l) => l.properties.glad_alerts_weekly)
-            .flat()
-            .filter((f) => f.day === ISOPeriod);
-
-          total = alertsWithinTime.reduce((acc, curr) => acc + curr.count, 0);
-        }
-        if (selectedTimeframe === 'QUARTER' || selectedTimeframe === 'YEAR') {
+        if (
+          selectedTimeframe === 'MONTH' ||
+          selectedTimeframe === 'QUARTER' ||
+          selectedTimeframe === 'YEAR'
+        ) {
           const alertsWithinTime = filteredDissolvedGeoJSON.features
             .map((l) => l.properties.glad_alerts_monthly)
             .flat()
             .filter((f) => {
-              return selectedTimeframe === 'QUARTER'
+              return selectedTimeframe === 'MONTH'
+                ? isInMonthsOfMonth(idx, f.day)
+                : selectedTimeframe === 'QUARTER'
                 ? isInMonthsOfQuarter(idx, f.day)
                 : isInMonthsOfYear(idx, f.day);
             });

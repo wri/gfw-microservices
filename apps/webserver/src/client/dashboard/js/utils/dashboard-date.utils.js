@@ -33,29 +33,13 @@ export const getDashboardDaysRange = (numberOfDays = 1) => {
 };
 
 /**
- * Get Dashboard Weeks Range
- * Date format - 'YYYY-w'
- *
- * @return {string[]} - List of Formated Days Range (e.g. ['2021-35', ...])
- */
-export const getDashboardWeeksRange = () => {
-  const isoWeeks = [];
-  for (let i = 1; i < 5; i++) {
-    const weekDate = moment().subtract(i, 'week');
-    const isoWeek = weekDate.format('YYYY-WW');
-    isoWeeks.push(isoWeek);
-  }
-  return isoWeeks.reverse();
-};
-
-/**
- * Get Dashboard Quarter Range
+ * Get Dashboard Monthly Range
  * Date format - 'YYYY-MM'
  *
- * @param {number} [numberOfMonths = 3] - Number of Months (e.g 12 - for year)
+ * @param {number} [numberOfMonths] - Number of Months (e.g 12 - for year)
  * @return {string[]} - List of Formated Month Range (e.g. ['2021-08', ...])
  */
-function getDashboardQuarterRange(numberOfMonths = 3) {
+function getDashboardMonthlyRange(numberOfMonths) {
   return Array(numberOfMonths)
     .fill()
     .map((value, index) =>
@@ -67,14 +51,14 @@ function getDashboardQuarterRange(numberOfMonths = 3) {
 
 export const DASHBOARD_ONE_DAY_RANGE = getDashboardDaysRange();
 export const DASHBOARD_DAYS_RANGE = getDashboardDaysRange(7);
-export const DASHBOARD_WEEKS_RANGE = getDashboardWeeksRange();
-export const DASHBOARD_QUARTER_RANGE = getDashboardQuarterRange(3);
-export const DASHBOARD_YEAR_RANGE = getDashboardQuarterRange(12);
+export const DASHBOARD_MONTH_RANGE = getDashboardMonthlyRange(1);
+export const DASHBOARD_QUARTER_RANGE = getDashboardMonthlyRange(3);
+export const DASHBOARD_YEAR_RANGE = getDashboardMonthlyRange(12);
 
 export const TIMEFRAME_RANGE = {
   DAY: DASHBOARD_ONE_DAY_RANGE,
   WEEK: DASHBOARD_DAYS_RANGE,
-  MONTH: DASHBOARD_WEEKS_RANGE,
+  MONTH: DASHBOARD_MONTH_RANGE,
   QUARTER: DASHBOARD_QUARTER_RANGE,
   YEAR: DASHBOARD_YEAR_RANGE,
 };
@@ -97,8 +81,8 @@ export function isInDaysOfWeek(idx = 0, day) {
  * @param {string} day - Week (e.g '2021-38')
  * @return {boolean} - TRUE/FALSE
  */
-export function isInWeeksOfMonth(idx = 0, day) {
-  return DASHBOARD_WEEKS_RANGE[idx] === day;
+export function isInMonthsOfMonth(idx = 0, day) {
+  return DASHBOARD_MONTH_RANGE[idx] === day;
 }
 
 /**
@@ -136,14 +120,14 @@ export function getGladDaily(feature) {
 }
 
 /**
- * Get GLAD Weekly
+ * Get GLAD Monthly data for last month
  *
  * @param {Object} feature - Single location
  * @return {Object[]} - Filtered alerts
  */
-export function getGladWeekly(feature) {
-  return feature.properties.glad_alerts_weekly.filter((date) => {
-    return DASHBOARD_WEEKS_RANGE.includes(date.day);
+export function getGladMonthlyMonth(feature) {
+  return feature.properties.glad_alerts_monthly.filter((date) => {
+    return DASHBOARD_MONTH_RANGE.includes(date.day);
   });
 }
 
@@ -261,28 +245,18 @@ export function getNumberOfAlerts(adminUnitData, selectedTimeframe, timeframePro
  */
 export function getSelectedTimeframeStartEndGroupings(selectedTimeframe) {
   let selectedTimeframe_StartEndGroupings = [];
-  if (selectedTimeframe === 'MONTH') {
-    // For the month periods we are using ISO weeks and ISO week start day is Monday and end day is Sunday
-    const last4Weeks = getDashboardWeeksRange();
-    selectedTimeframe_StartEndGroupings = last4Weeks.map((week) => {
-      const startOfWeek = moment(week, 'YYYY-WW').startOf('isoWeek').format(DATE_FORMAT__CSV);
-      const endOfWeek = moment(week, 'YYYY-WW').endOf('isoWeek').format(DATE_FORMAT__CSV);
-      return [startOfWeek, endOfWeek];
-    });
-  } else {
-    const selectedTimePeriod = dictionary.timeframe_dateGroupBy[selectedTimeframe];
-    const { start, end } = getTimeframeBoundaries(selectedTimeframe);
-    const startMoment = moment(start);
-    const endMoment = moment(end);
+  const selectedTimePeriod = dictionary.timeframe_dateGroupBy[selectedTimeframe];
+  const { start, end } = getTimeframeBoundaries(selectedTimeframe);
+  const startMoment = moment(start);
+  const endMoment = moment(end);
 
-    let currentMoment = startMoment;
-    while (currentMoment.isSameOrBefore(endMoment)) {
-      selectedTimeframe_StartEndGroupings.push([
-        currentMoment.startOf(selectedTimePeriod).format(DATE_FORMAT__CSV),
-        currentMoment.endOf(selectedTimePeriod).format(DATE_FORMAT__CSV),
-      ]);
-      currentMoment = currentMoment.add(1, selectedTimePeriod).startOf('day');
-    }
+  let currentMoment = startMoment;
+  while (currentMoment.isSameOrBefore(endMoment)) {
+    selectedTimeframe_StartEndGroupings.push([
+      currentMoment.startOf(selectedTimePeriod).format(DATE_FORMAT__CSV),
+      currentMoment.endOf(selectedTimePeriod).format(DATE_FORMAT__CSV),
+    ]);
+    currentMoment = currentMoment.add(1, selectedTimePeriod).startOf('day');
   }
 
   return selectedTimeframe_StartEndGroupings;

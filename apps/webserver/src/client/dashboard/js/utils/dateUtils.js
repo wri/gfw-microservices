@@ -25,8 +25,8 @@ export const getTimeframeBoundaries = (selectedTimeframe) => {
     }
     case 'MONTH': {
       return {
-        start: moment().subtract(4, 'week').startOf('isoWeek').isoWeekday(1).format(DATE_FORMAT),
-        end: moment().subtract(1, 'week').endOf('isoWeek').isoWeekday(1).format(DATE_FORMAT),
+        start: moment().subtract(1, 'month').startOf('month').format(DATE_FORMAT),
+        end: moment().subtract(1, 'month').endOf('month').format(DATE_FORMAT),
       };
     }
     case 'QUARTER': {

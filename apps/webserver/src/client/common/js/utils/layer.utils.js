@@ -68,6 +68,7 @@ export const constructLayerObject = (visibleLayers, layer) => {
     const {
       aboveGroundBiomassId,
       gladAlertsID,
+      gladS2AlertsID,
       indonesiaLandCover,
       landCoverID,
       primaryForest,
@@ -102,6 +103,9 @@ export const constructLayerObject = (visibleLayers, layer) => {
         break;
       case gladAlertsID:
         type = 'glad';
+        break;
+      case gladS2AlertsID:
+        type = 'gladS2';
         break;
       case raddAlertsID:
         type = 'radd';

@@ -20,6 +20,9 @@ export const proLayers = {
   prodesDeforestationID: 'PRODES Deforestation Vizz',
   treeBiomassLossID: 'Tree biomass loss',
   gladAlertsID: 'GLAD-L alerts',
+  gladLGeographicCoverageID: 'GLAD-L Alerts Geographic Coverage',
+  gladS2AlertsID: 'GLAD-S2 alerts',
+  gladS2GeographicCoverageID: 'GLAD-S2 alerts geographic coverage',
   raddAlertsID: 'RADD alerts',
   raddCoverageID: 'RADD Coverage',
   integratedDeforestationAlertsID: 'Integrated Deforestation Alerts',
@@ -106,7 +109,7 @@ export const convertURL = 'https://production-api.globalforestwatch.org/v2/ogr/c
 export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
 export const latestTreeCoverLossYearFC = 2022; // Forest Change
-export const latestTreeCoverLossYearCommodityRisk = 2020;
+export const latestTreeCoverLossYearCommodityRisk = 2022;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearSensitiveAreas = 2022; // Sensitive Areas
 
@@ -3072,10 +3075,31 @@ export const mapPage = {
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
-      id: proLayers.raddAlertsID,
+      id: proLayers.gladLGeographicCoverageID,
+      group: 'forest-change',
+      subGroup: 'deforestation-alerts',
+      order: 107,
+      propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
+    },
+    {
+      id: proLayers.gladS2AlertsID,
+      group: 'forest-change',
+      subGroup: 'deforestation-alerts',
+      order: 108,
+      propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
+    },
+    {
+      id: proLayers.gladS2GeographicCoverageID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
       order: 109,
+      propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
+    },
+    {
+      id: proLayers.raddAlertsID,
+      group: 'forest-change',
+      subGroup: 'deforestation-alerts',
+      order: 110,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
@@ -3083,20 +3107,20 @@ export const mapPage = {
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
       ignored: true,
-      order: 110,
+      order: 111,
     },
     {
       id: proLayers.integratedDeforestationAlertsID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
-      order: 111,
+      order: 112,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.integratedAlertsGeographicCoverageID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
-      order: 112,
+      order: 113,
       ignored: true,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
@@ -3104,7 +3128,7 @@ export const mapPage = {
       id: proLayers.viirsActiveFiresID,
       group: 'forest-change',
       subGroup: 'fire-alerts',
-      order: 113,
+      order: 114,
       popupTemplate: {
         title: null,
         // LATITUDE, LONGITUDE, BRIGHTNESS, CONFIDENCE, ACQ_DATE, ACQ_TIME
@@ -3721,8 +3745,8 @@ export const mapPage = {
     proLayers.prodesDeforestationID,
     proLayers.treeBiomassLossID,
     proLayers.gladAlertsID,
+    proLayers.gladS2AlertsID,
     proLayers.raddAlertsID,
-    proLayers.raddCoverageID,
     proLayers.integratedDeforestationAlertsID,
     proLayers.viirsActiveFiresID,
   ],

@@ -1,10 +1,8 @@
 import React from 'react';
 import DatePickerControl from './DatePickerControl';
 import { setGLADStartDate, setGLADEndDate } from '../../actions/analysisActions';
-import { proLayers } from '../../../../common/js/config';
 import store from '../../store';
-
-const { integratedDeforestationAlertsID, raddAlertsID, gladAlertsID } = proLayers;
+import { deforestationAlertsIds } from './../legend/DeforestationAlerts/deforestationAlerts.constants';
 
 const AdhocAnalysis = ({ dateSliderDateRange, visibleLayers }) => {
   const handleStartDate = (evt, date) => {
@@ -15,10 +13,7 @@ const AdhocAnalysis = ({ dateSliderDateRange, visibleLayers }) => {
     store.dispatch(setGLADEndDate(date));
   };
 
-  const visible =
-    visibleLayers.includes(gladAlertsID) ||
-    visibleLayers.includes(integratedDeforestationAlertsID) ||
-    visibleLayers.includes(raddAlertsID);
+  const visible = visibleLayers.some((layerID) => deforestationAlertsIds.includes(layerID));
 
   return (
     <div className={`adhoc-analysis ${visible ? '' : 'hidden'}`}>

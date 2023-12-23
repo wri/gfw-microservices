@@ -35,6 +35,7 @@ const addState = (item, listRecord) => {
   return localListRecord;
 };
 
+// TODO: check if exists other callsites, otherwise this is deprecated
 const getListDataFilterValues = (request, listID) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
@@ -57,9 +58,25 @@ const getListDataFilterValues = (request, listID) => {
           `Failed to build fiter data for list location for List ${listID}`,
           errorMessage
         );
-        reject(false);
+        reject(errorObject);
       });
   });
+};
+
+/**
+ * @summary this function is an extraction of the getListDataFilterValues for formatting filter countries
+ * @param {Array} listLocations array of locations with fields [Country, State, 'Sub State']
+ * @returns {Array} array of locations of [Country, [State, [SubState]]]
+ */
+const formatListLocationDataForFilter = (listLocations) => {
+  let listRecord = {};
+  for (let i = 0; i < listLocations.length; i += 1) {
+    const item = listLocations[i];
+    listRecord = addCountry(item, listRecord);
+    listRecord = addState(item, listRecord);
+    listRecord[item.Country][item.State].push(item['Sub State']);
+  }
+  return listRecord;
 };
 
 /**
@@ -123,8 +140,8 @@ const buildSQSMessage = (request, file) => {
     aggregate,
   } = request.query;
 
-  const tmpobj = tmp.fileSync();
-  const fileName = tmpobj.name.replace('/tmp/', '');
+  const tmpPath = tmp.tmpNameSync();
+  const fileName = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
 
   const filters = {
     analysisArea: JSON.stringify({ analysisAreaMax, analysisAreaMin }),
@@ -198,5 +215,6 @@ module.exports = {
   sendMessageToQueue,
   buildSQSMessage,
   getListDataFilterValues,
+  formatListLocationDataForFilter,
   mapCommodityRiskValuesToDatabaseValues,
 };

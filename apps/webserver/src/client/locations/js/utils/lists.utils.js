@@ -244,6 +244,7 @@ const getGFWListLocationIDs = (gfwList, location) => {
 };
 
 /**
+ * TODO: check call sites, could be deprecated since list_name property is the same for GFWList and Lists
  * Get check and return GFW Lists Name or `FALSE` in case that list is not GFW List
  * @param {String} selectedLists - Selected list name
  * @returns {string|boolean}

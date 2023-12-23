@@ -5,7 +5,6 @@ import { toggleClarkLabsLayers } from '../../actions/analysisActions';
 import { proLayers } from '../../../../common/js/config';
 
 const {
-  raddAlertsID,
   soyInCerradoBiome,
   soyOnTreeCoverLoss,
   clarkLabsAquacultureLandCover,
@@ -14,9 +13,12 @@ const {
 export default class LayerCheckbox extends Component {
   toggleLayer = () => {
     const { layer, visibleLayers } = this.props;
-    if (layer.id === soyInCerradoBiome) {
+
+    const layerId = layer.id;
+
+    if (layerId === soyInCerradoBiome) {
       store.dispatch(toggleLayer(soyOnTreeCoverLoss));
-    } else if (layer.id === clarkLabsAquacultureLandCover) {
+    } else if (layerId === clarkLabsAquacultureLandCover) {
       // hide clarkLabsAquacultureLandCover if hidding this layer
       if (
         store.getState().clarkLabsLayers &&
@@ -37,7 +39,7 @@ export default class LayerCheckbox extends Component {
       }
       store.dispatch(toggleClarkLabsLayers());
     } else {
-      store.dispatch(toggleLayer(layer.id));
+      store.dispatch(toggleLayer(layerId));
     }
   };
 

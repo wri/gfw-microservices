@@ -28,7 +28,6 @@
     "^.+\\.(ts)$": "ts-jest"
   },
   "transformIgnorePatterns": ["/node_modules/"],
-  "verbose": false,
   "moduleNameMapper": {
     "^axios$": "<rootDir>/../../../node_modules/axios/dist/node/axios.cjs",
     "^mapshaper$": "<rootDir>/../../../node_modules/mapshaper/mapshaper.js",
@@ -58,8 +57,8 @@
     "^dashboard(.*)$": "<rootDir>/client/dashboard$1",
     "^diagnostics(.*)$": "<rootDir>/client/diagnostics$1",
     "^forgot(.*)$": "<rootDir>/client/forgot$1",
-    "^locations(.*)$": "<rootDir>/client/locations$1",
     "^listDetails(.*)$": "<rootDir>/client/listDetails$1",
+    "^locations(.*)$": "<rootDir>/client/locations$1",
     "^login(.*)$": "<rootDir>/client/login$1",
     "^manager(.*)$": "<rootDir>/client/manager$1",
     "^map(.*)$": "<rootDir>/client/map$1",

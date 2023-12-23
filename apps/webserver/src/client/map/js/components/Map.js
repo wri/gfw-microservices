@@ -32,6 +32,8 @@ import {
   toggleDrawing,
   toggleDrawShapeNoteDetailsModal,
   toggleLayer,
+  turnLayerOff,
+  toggleHighConfidenceAlertsForDeforestationAlertsLayers,
   updateAdminSelections,
   updateAnalysis,
   updateGFWLocations,
@@ -93,6 +95,10 @@ import { GFWLists } from '../../../locations/js/config/listNames';
 import { selectList } from '../../../locations/js/actions/locationActions';
 import { gfwListsLocationID } from '../../../listDetails/js/components/lists/Lists.config';
 import { FailedPopupDialog } from '../../../locations/js/components/landing/FailedPopupDialog';
+import {
+  deforestationAlertsIds,
+  deforestationAlertsLayerToCoverageMap,
+} from './legend/DeforestationAlerts/deforestationAlerts.constants';
 
 import FormaLayer from '../layers/FormaLayer';
 import viirsLayer, { fetchViirsFeatures } from '../layers/VIIRSLayerUtil';
@@ -119,7 +125,6 @@ const {
   brazilBiomesID,
   gladAlertsID,
   raddAlertsID,
-  integratedDeforestationAlertsID,
   raddCoverageID,
   integratedAlertsGeographicCoverageID,
   oilPalmConcessions,
@@ -261,7 +266,7 @@ export default class Map extends Component {
     const {
       visibleLayers,
       canopyDensity,
-      gladConfirmed,
+      showHighConfidenceAlertsOnDeforestationAlertsLayer,
       modalLayerInfo,
       activeAnalysis,
       adminArea,
@@ -421,13 +426,22 @@ export default class Map extends Component {
               const nowHiddenLayer = this.view.map.findLayerById(nowHiddenId);
               if (nowHiddenLayer) {
                 nowHiddenLayer.visible = false;
-                //Check if automatically hidden layer was radd alert layer and if so, hide coverage as well as those two layers go hand in hand
-                if (nowHiddenId === raddAlertsID) {
-                  const raddCoverageLayer = this.view.map.findLayerById(raddCoverageID);
-                  if (raddCoverageLayer) {
-                    raddCoverageLayer.visible = false;
+
+                //Check if automatically hidden layer was a deforestation alert layer and if so, hide coverage layer too
+                if (deforestationAlertsIds.includes(nowHiddenId)) {
+                  const geographicCoverageLayerId =
+                    deforestationAlertsLayerToCoverageMap[nowHiddenId];
+                  const visibleGeographicCoverageLayer =
+                    this.view.map.findLayerById(geographicCoverageLayerId);
+                  if (visibleGeographicCoverageLayer) {
+                    store.dispatch(turnLayerOff(geographicCoverageLayerId));
+                  }
+                  const { showHighConfidenceAlertsOnDeforestationAlertsLayer } = store.getState();
+                  if (showHighConfidenceAlertsOnDeforestationAlertsLayer) {
+                    store.dispatch(toggleHighConfidenceAlertsForDeforestationAlertsLayers());
                   }
                 }
+
                 gtag('event', 'layer toggle', {
                   event_category: 'Map Click',
                   event_label: `user turned the ${nowHiddenLayer.id} layer off`,
@@ -594,7 +608,10 @@ export default class Map extends Component {
       }
     }
 
-    if (prevState.gladConfirmed !== gladConfirmed) {
+    if (
+      prevState.showHighConfidenceAlertsOnDeforestationAlertsLayer !==
+      showHighConfidenceAlertsOnDeforestationAlertsLayer
+    ) {
       if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
         this.analyzeCustom(this.view.graphics.items[0]);
       } else if (
@@ -1724,19 +1741,23 @@ export default class Map extends Component {
       };
     }
 
-    const request = new XMLHttpRequest();
-    request.open('POST', '/locations/map-locations', true);
-    request.setRequestHeader('Content-Type', 'application/json');
-    request.send(JSON.stringify(requestObject));
-    request.onload = () => {
-      if (request.response === 'submitted') {
-        window.location = '/locations';
-      }
-    };
-    request.onerror = (err) => {
-      this.setState({ spinnerOn: false });
-      console.log(err);
-    };
+    fetch('/locations/map-locations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestObject),
+    })
+      .then((response) => response.text())
+      .then((data) => {
+        if (data === 'submitted') {
+          window.location = '/locations';
+        }
+      })
+      .catch((error) => {
+        this.setState({ spinnerOn: false });
+        console.error('Error:', error);
+      });
   };
 
   getCurrentAnalysis = (type) => {
@@ -1902,12 +1923,7 @@ export default class Map extends Component {
     );
 
     const initialLayers = layersToAdd
-      .filter(
-        (layer) =>
-          mapPage.visibleLayers.indexOf(layer.id) > -1 ||
-          layer.id === raddCoverageID ||
-          layer.id === integratedAlertsGeographicCoverageID
-      )
+      .filter((layer) => mapPage.visibleLayers.includes(layer.id))
       .sort((layerA, layerB) => {
         if (layerA.order > layerB.order) {
           return -1;
@@ -2664,7 +2680,6 @@ export default class Map extends Component {
       selectedAnalysis,
       selectedLists,
       analysisWarning,
-      gladConfirmed,
       fireDays,
       treeCoverLossDateRange,
       adminSelections,
@@ -2680,15 +2695,6 @@ export default class Map extends Component {
     } = this.state;
 
     const { userLists, locationCount, gfwLists, listData, userSharedLists } = this.props;
-
-    let dateSliderDateRange = {};
-    if (
-      visibleLayers.includes(gladAlertsID) ||
-      visibleLayers.includes(integratedDeforestationAlertsID) ||
-      visibleLayers.includes(raddAlertsID)
-    ) {
-      dateSliderDateRange = gladDateRange;
-    }
 
     return (
       <Page links={pageOptions.links} active="map">
@@ -2769,7 +2775,7 @@ export default class Map extends Component {
           zoomIn={this.zoomIn}
         />
 
-        <AdhocAnalysis visibleLayers={visibleLayers} dateSliderDateRange={dateSliderDateRange} />
+        <AdhocAnalysis visibleLayers={visibleLayers} dateSliderDateRange={gladDateRange} />
 
         <ProdesControls
           loaded={this.view && this.view.ready}
@@ -2874,7 +2880,6 @@ export default class Map extends Component {
           mapLayers={mapLayers}
           gfwListDef={gfwListDef}
           visibleLayers={visibleLayers}
-          gladConfirmed={gladConfirmed}
           biomassRange={biomassRange}
           toggleLayerVisibility={this.toggleLayerVisibility}
           selectedLists={selectedLists}

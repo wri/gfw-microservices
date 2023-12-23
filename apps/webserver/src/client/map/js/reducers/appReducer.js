@@ -26,8 +26,7 @@ import {
   saveSketchTool,
   updatePlanetTileLayer,
   updatePlanetTileColor,
-  toggleHighConfidenceAlertsForIntegratedAlertsLayer,
-  toggleHighConfidenceAlertsForRaddAlertsLayer,
+  toggleHighConfidenceAlertsForDeforestationAlertsLayers,
 } from './mapReducer';
 import * as analysisReducer from './analysisReducer';
 
@@ -61,12 +60,10 @@ const appReducer = combineReducers({
   biomassRange: analysisReducer.handleBiomassRange,
   analysisWarning: analysisReducer.toggleWarning,
   selectedAnalysis: analysisReducer.setAnalysis,
-  gladConfirmed: analysisReducer.toggleGladConfirmed,
   clarkLabsLayers: analysisReducer.toggleClarkLabsLayers,
   sketchTool: saveSketchTool,
-  showHighConfidenceAlertsOnIntegratedAlertsLayer:
-    toggleHighConfidenceAlertsForIntegratedAlertsLayer,
-  showHighConfidenceAlertsOnRaddAlertsLayer: toggleHighConfidenceAlertsForRaddAlertsLayer,
+  showHighConfidenceAlertsOnDeforestationAlertsLayer:
+    toggleHighConfidenceAlertsForDeforestationAlertsLayers,
 });
 
 const rootReducer = (state, action) => {

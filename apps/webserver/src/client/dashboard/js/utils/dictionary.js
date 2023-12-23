@@ -63,7 +63,7 @@ const dictionary = {
   timeframe_dateGroupBy: {
     DAY: 'day',
     WEEK: 'day',
-    MONTH: 'week',
+    MONTH: 'month',
     QUARTER: 'month',
     YEAR: 'month',
   },

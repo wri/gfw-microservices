@@ -62,23 +62,34 @@ module.exports = (app, limiter) => {
 
   app.get('/locations', (req, res) => {
     const locationsData = {
-      goToEditList: !!app.get('go-to-edit-list'),
-      gfwData: app.get('gfw-data'),
-      mapData: app.get('map-data'),
-      drawData: app.get('draw-data'),
-      locationName: app.get('location-name'),
+      goToEditList: Boolean(req.session.goToEditList),
+      gfwData: req.session.gfwData,
+      mapData: req.session.mapData,
+      drawData: req.session.drawData,
+      locationName: req.session.locationName,
       fromMap: app.get('from-map'),
       subscriptionStatus: req.session.subscription_status_id,
     };
 
-    controller.locations(req, res, locationsData);
+    req.session.goToEditList = false;
+    req.session.gfwData = '';
+    req.session.mapData = '';
+    req.session.drawData = '';
+    req.session.locationName = '';
 
+    controller.locations(req, res, locationsData);
+    // TODO: investigate if the variable from-map works correctly
     app.set('from-map', false);
-    app.set('go-to-edit-list', false);
-    app.set('gfw-data', '');
-    app.set('map-data', '');
-    app.set('draw-data', '');
-    app.set('location-name', '');
+  });
+
+  app.post('/locations/map-locations', (req, res) => {
+    console.log('POST /locations/map-locations');
+    req.session.goToEditList = req.body.goToEditList;
+    req.session.gfwData = req.body.gfwData;
+    req.session.mapData = req.body.mapData;
+    req.session.drawData = req.body.drawData;
+    req.session.locationName = req.body.locationName;
+    res.send('submitted');
   });
 
   app.get('/getUserLists', (req, res) => {
@@ -113,18 +124,6 @@ module.exports = (app, limiter) => {
 
   app.get('/locations/upload/step/:step', (req, res) => {
     res.redirect('/locations');
-  });
-
-  app.post('/locations/map-locations', (req, res) => {
-    console.log('POST /locations/map-locations');
-    // app.set('admin-area', req.body.adminArea);
-    app.set('go-to-edit-list', req.body.goToEditList);
-    app.set('gfw-data', req.body.gfwData);
-    app.set('map-data', req.body.mapData);
-    app.set('draw-data', req.body.drawData);
-
-    app.set('location-name', req.body.locationName);
-    res.send('submitted');
   });
 
   app.post('/locations/addToNewList', (req, res) => {
@@ -240,67 +239,6 @@ module.exports = (app, limiter) => {
       .catch((err) => {
         console.log('Reject', err);
         res.send(saveAsDraftListConfig.failed);
-      });
-  });
-
-  app.post('/locations/from-map', (req, res) => {
-    app.set('from-map', true);
-    app.set('go-to-edit-list', true);
-    app.set('location-name', req.body.locationName);
-    res.send('return');
-  });
-
-  app.post('/locations/addToNewListEdit', (req, res) => {
-    console.log('POST /locations/addToNewListEdit');
-    const isEdit = false;
-    const {
-      list_name,
-      template_id,
-      commodity,
-      geojson,
-      location_classification,
-      list_id,
-      gfw_list_id,
-    } = req.body;
-
-    const finalGeojson = LocationManager.getFinalGeojson(gfw_list_id, geojson);
-    const custom_attributes = req.body.custom_attributes ? req.body.custom_attributes : [];
-
-    ListManager.getListLockStatus(req, list_id)
-      .then((record) => {
-        const { lock_status, lock_user_id } = record;
-        if (
-          lock_status === null ||
-          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
-        ) {
-          throw record;
-        } else {
-          return ListManager.uploadToNewList(
-            req,
-            list_name,
-            template_id,
-            commodity,
-            location_classification,
-            req.session.organization_id,
-            custom_attributes,
-            finalGeojson,
-            gfw_list_id,
-            isEdit
-          );
-        }
-      })
-      .then(() => {
-        // Call List Level Analysis
-        AnalysisManager.requestAnalysis(req, list_name, {}, isEdit);
-        return ListManager.setListUnlocked(req, list_id);
-      })
-      .then(() => {
-        res.send('LocationAdded');
-      })
-      .catch((err) => {
-        console.log('Reject', err);
-        ListManager.setListUnlocked(req, list_id);
-        res.send('Location add failed');
       });
   });
 
@@ -504,30 +442,6 @@ module.exports = (app, limiter) => {
         success: false,
       });
     }
-  });
-
-  app.post('/locations/moveLocations', (req, res) => {
-    console.log('POST /locations/moveLocations');
-    const { src_list_id, src_location_ids, dest_list_id, gfw_list_id, geojson, delete_src_list } =
-      req.body;
-
-    ListManager.moveLocations(
-      req,
-      src_list_id,
-      src_location_ids,
-      dest_list_id,
-      geojson,
-      gfw_list_id,
-      delete_src_list
-    )
-      .then(async () => {
-        res.send('LocationMoved');
-      })
-      .catch((err) => {
-        console.log('Error /locations/moveLocations', err);
-        ListManager.setListUnlocked(req, src_list_id);
-        res.send(err);
-      });
   });
 
   app.post('/locations/deleteLocations', (req, res) => {

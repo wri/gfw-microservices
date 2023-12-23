@@ -1,0 +1,94 @@
+name: QA Release Workflow
+
+on:
+  schedule:
+    # Runs at 1 AM ET (5 AM UTC) every weekday
+    - cron: '0 5 * * 1-5'
+
+jobs:
+  createRelease:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60 # Timeout the workflow
+
+    steps:
+      - name: Create the labels to be released
+        id: check_label
+        run: |
+          release_labels="WEB-QA LD-QA LP-QA EAPI-QA"
+
+          echo "Labels '${release_labels}' scheduled to be released."
+          echo "::set-output name=labels::${release_labels}"
+
+        shell: bash
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ssh-key: '${{ secrets.DEPLOY_KEY }}'
+
+      - name: Setup git
+        run: |
+          git config --global user.name github-actions
+          git config --global user.email github-actions@github.com
+
+      - name: Create the release tag for scheduled labels
+        id: get_matching_tags
+        run: |
+          labels="${{ steps.check_label.outputs.labels }}"
+
+          if [ -z "$labels" ]; then
+            echo "No matching tags found."
+            exit 0
+          fi
+
+          if [[ "${{ github.event.act }}" == false || -z "${{ github.event.act }}" ]]; then
+            git fetch origin "refs/tags/*:refs/tags/*"
+            git fetch --all --tag
+            echo "Fetch latest changes"
+            # Make sure your local repository is up to date
+            git fetch origin
+            git checkout develop
+            git pull
+
+            # Switch to the qa branch
+            git checkout qa
+
+            # Rebase onto the develop branch
+            git rebase origin/develop
+
+            # Push changes to the qa branch
+            git push origin qa
+          else
+            echo "Skip checkout act is enabled."
+          fi
+
+          IFS=' ' read -r -a array <<< "$labels"
+          matching_tags=()
+
+          for label in "${array[@]}"; do
+
+            LAST_TAG=$(git tag --sort=creatordate | grep -E "$label-V" | tail -n 1 )
+            echo "LAST TAG: $LAST_TAG"
+
+            LAST_VERSION=$(echo "$LAST_TAG" | sed -e "s/$label-V//g")
+            echo "LAST_VERSION: $LAST_VERSION"
+
+            INCREMENTAL_NUMERIC_VERSION=$(printf "%03d" $((10#${LAST_VERSION} + 1)))
+            NEW_TAG=$(echo $label-V$INCREMENTAL_NUMERIC_VERSION)
+            echo "NEW TAG TO CREATE: $NEW_TAG"
+
+            if [[ "${{ github.event.act }}" == false || -z "${{ github.event.act }}" ]]; then
+              git tag -a $NEW_TAG -m "Release $NEW_TAG"
+              git push origin $NEW_TAG
+            else
+              echo "Exit from the workflow, act is enabled, no more execution needed."
+            fi
+
+            matching_tags+="$label "
+          done
+
+          echo "Tags to be released: ${matching_tags[*]}"
+          echo "::set-output name=matching_tags::${matching_tags[*]}"
+
+        shell: bash

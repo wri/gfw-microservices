@@ -1,45 +1,5 @@
 const path = require('path');
-const logger = require('../../../config/privateutils/logger.utils');
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
-
-/**
- * @function login
- * @summary login the user to the request
- * @param {Object} user
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
- */
-const login = function login(user, req, res) {
-  req.login(user, (err) => {
-    if (err) {
-      res.status(400).send({ error: true, message: err.message });
-    }
-    res.jsonp({ success: true });
-  });
-};
-
-/**
- * @function authenticateAndLogin
- * @summary Authenticate the user and then log them in
- * @param {String} strategy - Strategy to use
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
- * @param {Function} next - Next middleware
- */
-// const authenticateAndLogin = function authenticateAndLogin (strategy, req, res, next) {
-//   console.log('strategy', strategy);
-//   passport.authenticate(strategy, (error, user, info) => {
-//     console.log('error', error);
-//     console.log('user', user);
-//     if (error || !user) {
-//       logger.error('User authentication failed', { error, user, info });
-//       res.status(400).send(info);
-//     } else {
-//       // Maybe do some password expiration checks if desired
-//       login(user, req, res);
-//     }
-//   })(req, res, next);
-// };
 
 /**
  * @function signout
@@ -54,51 +14,4 @@ exports.signout = (req, res) => {
   AuthManager.logout(req);
   res.clearCookie('gfwpro.globalforestwatch.org');
   res.redirect('/');
-};
-
-/**
- * @function signin
- * @summary sign the user to the in
- * @name exports.signin
- * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
- * @param {Function} next - next middleware
- */
-exports.signin = (req, res, next) => {
-  console.log('signin');
-  authenticateAndLogin('local', req, res, next);
-};
-
-/**
- * @function signup
- * @summary create a new user and then log them in
- * @name exports.signup
- * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
- */
-exports.signup = (req, res) => {
-  console.log(res);
-  // const user = new User(User.makeCopy(res.body));
-  // user.save(err => {
-  //   if (err) {
-  //     logger.error('Failed to create a user account', err);
-  //     res.status(400).send(err);
-  //   } else {
-  //     login(user, req, res);
-  //   }
-  // });
-};
-
-/**
- * @function forgot
- * @summary send the user a link to reset their password
- * @name exports.forgot
- * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
- */
-exports.forgot = (req, res) => {
-  res.end('Feature coming soon');
 };

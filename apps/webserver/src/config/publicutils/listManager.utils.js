@@ -12,7 +12,6 @@
  * @function {getAllLists}
  * @function {getListLocations}
  * @function {getSimplifiedListLocations}
- * @function {getDashboardListLocations}
  * @function {getListLocationsNoGeom}
  * @function {getLocationsCount}
  * @function {uploadToExistingList}
@@ -650,43 +649,6 @@ const getSimplifiedListLocations = (req, list_id) => {
           errorUtils.errorCodes.failedToGetList,
           `Failed to get list locations for List ${list_id}`,
           errorMessage
-        );
-        reject(errorObject);
-      });
-  });
-};
-
-const getDashboardListLocations = (req, list) => {
-  return new Promise((resolve, reject) => {
-    const { id, template_id } = list;
-    const parameters = [{ field: 'listId', type: sql.Int, value: id }];
-    const storedProcedure =
-      template_id === 1
-        ? 'uspGetDashboardInvestmentLocations'
-        : 'uspGetDashboardCommodityLocations';
-    Promise.all([
-      sqlUtils.executeOrganizationStoredProcedure(req, storedProcedure, parameters),
-      sqlUtils.executeOrganizationStoredProcedure(
-        req,
-        'uspGetDashboardDissolvedS3Location',
-        parameters
-      ),
-    ])
-      .then((results) => {
-        const [locationRecordsets, s3Recordsets] = results;
-        const geojson = locationUtils.createGeoJSON(req, locationRecordsets);
-        const location_s3_info = JSON.parse(s3Recordsets[0].dissolved_data_location_info);
-        resolve({
-          geojson,
-          location_s3_info,
-        });
-      })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.errorCodes.failedToGetList,
-          `Failed to get list locations for List ${id}`,
-          err
         );
         reject(errorObject);
       });
@@ -1679,6 +1641,22 @@ const getListByListName = async (req, list_name) => {
   }
 };
 
+/**
+ * @function {getListByIdWithAnalysisId}
+ * @summary Get List by List Name
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {string} listId - List Name
+ * @return {Promise<*>} - Filtered list from array of all lists
+ */
+const getListByIdWithAnalysisId = async (req, listId) => {
+  try {
+    const allLists = await getUserListsWithAnalysisId(req);
+    return allLists.find((list) => list.id === Number(listId));
+  } catch (e) {
+    console.log('getListByIdWithAnalysisId', e);
+  }
+};
+
 /** @function {checkListLockStatus}
  *   @summary Checks the status of the locked list status and performs actions accordingly
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
@@ -2037,6 +2015,30 @@ function deleteListIfEmpty(req, listID) {
   });
 }
 
+/**
+ * @function {getListAdminAreasOrderedByCountry}
+ * @summary - Gets lists locations for filter values
+ * @param {Object} req - Mandatory express request
+ * @return {Promise<ListsRecords>}
+ */
+const getListAdminAreasOrderedByCountry = (request, listId) => {
+  return new Promise((resolve, reject) => {
+    const parameters = [{ field: 'listID', type: sql.Int, value: listId }];
+    sqlUtils
+      .executeOrganizationStoredProcedure(request, 'uspGetAdminAreas', parameters)
+      .then((recordsets) => resolve(recordsets))
+      .catch((error) => {
+        const errorObject = errorUtils.createErrorMessage(
+          request,
+          errorUtils.errorCodes.failedToGetList,
+          `Failed to Get list admin areas ordered by country for list ${listId}`,
+          error
+        );
+        reject(errorObject);
+      });
+  });
+};
+
 module.exports = {
   getUserLists,
   getUserListsWithAnalysisId,
@@ -2044,8 +2046,8 @@ module.exports = {
   getAllLists,
   getListLocations,
   getSimplifiedListLocations,
-  getDashboardListLocations,
   getListLocationsNoGeom,
+  getListAdminAreasOrderedByCountry,
   getLocationsCount,
   uploadToExistingList,
   uploadToNewList,
@@ -2058,6 +2060,7 @@ module.exports = {
   moveLocations,
   getListLockStatus,
   getListByListName,
+  getListByIdWithAnalysisId,
   setListLocked,
   setListUnlocked,
   checkListLockStatus,

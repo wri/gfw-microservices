@@ -15,7 +15,9 @@ function SingleLocationDiagnosticsHeaderInfo({ selectedListName, currentLocation
     <div className="diagnostics-header-info">
       <div>{locationName}</div>
       <div className="header-title print-only">{selectedListName}</div>
-      <span className="list-country-name">{`${state}, ${country}`}</span>
+      <span className="list-country-name">
+        {state ? state + ',' : ''} {country}
+      </span>
     </div>
   );
 }

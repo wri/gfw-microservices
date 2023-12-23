@@ -18,19 +18,6 @@ const _ = require('lodash');
 const path = require('path');
 const sql = require('mssql');
 
-// Redis is only available on qa, staging, and production
-const redis = require('redis');
-
-// redis not present or useful for jest unit testing
-if (process.env.NODE_ENV !== 'test') {
-  const redisHost = process.env.REDIS_HOST || 'redis';
-  const redisPort = process.env.REDIS_PORT || 6379;
-  const client = redis.createClient({
-    url: `redis://${redisHost}:${redisPort}`,
-  });
-  client.connect();
-}
-
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));

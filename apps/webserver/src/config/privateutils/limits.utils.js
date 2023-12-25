@@ -8,6 +8,12 @@ const calculateProcessingLimit = (accountLimits, accountUsage) => {
   return Math.min(availableAnalyzableAreaRemaining, accountLimits.MaxAreaPerList);
 };
 
+const calculateRemainingUsage = (accountLimits, accountUsage) => {
+  const availableAnalyzableAreaRemaining =
+    accountLimits.MaxAreaAnalyzeablePerYear - accountUsage.total_area_analyzed;
+  return availableAnalyzableAreaRemaining;
+};
+
 const calculateAccountUsagePercentage = (accountUsage, accountLimit) => {
   if (accountUsage === 0 || accountLimit === 0) {
     return 0; // Avoid division by zero
@@ -21,4 +27,5 @@ const calculateAccountUsagePercentage = (accountUsage, accountLimit) => {
 module.exports = {
   calculateProcessingLimit,
   calculateAccountUsagePercentage,
+  calculateRemainingUsage,
 };

@@ -12,9 +12,11 @@ const { getAllListsAnalysisStatus: getAllListsAnalysisStatusQuery } = require(pa
 const { getListAnalysisStatusById } = require(path.resolve(
   './queries/organization/getListAnalysisStatusById'
 ));
-const { calculateProcessingLimit, calculateAccountUsagePercentage } = require(path.resolve(
-  './config/privateutils/limits.utils'
-));
+const {
+  calculateProcessingLimit,
+  calculateAccountUsagePercentage,
+  calculateRemainingUsage,
+} = require(path.resolve('./config/privateutils/limits.utils'));
 
 const getOrganizationAnalysisUsage = async ({
   startDate,
@@ -90,6 +92,35 @@ const getAccountListProccesingLimit = async ({
   return processingLimit;
 };
 
+/**
+ * @see Epic Analysis Usage Limits v2
+ * {@link https://gfw.atlassian.net/browse/GPV-2228}
+ */
+const getAccountRemainingUsage = async ({
+  organizationId,
+  subscriptionStatusId,
+  organizationActivatedTime,
+}) => {
+  const todayAsEndDay = moment();
+  const accountActivationDate = moment(organizationActivatedTime);
+  const accountLatestYearStartDate = todayAsEndDay.subtract(
+    moment().diff(accountActivationDate, 'days') % 365,
+    'days'
+  );
+
+  const [accountUsage] = await getOrganizationAnalysisUsage({
+    startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
+    endDate: todayAsEndDay.format('YYYY-MM-DD'),
+    organizationId,
+    countForEachList: 0,
+  });
+  const accountLimits = await getAccountLimits(organizationId, subscriptionStatusId);
+
+  const remining = calculateRemainingUsage(accountLimits, accountUsage);
+  console.log('🚀 ~ file: analytics.service.js:120 ~ remining:', remining);
+  return remining;
+};
+
 const getAllListsAnalysisStatus = async (req) => {
   const [response] = await sqlUtils.executeOrganizationQuery(req, getAllListsAnalysisStatusQuery);
   return response;
@@ -140,4 +171,5 @@ module.exports = {
   getAccountListProccesingLimit,
   getListAnalysisStatusByListId,
   getOrganizationUsagePercentage,
+  getAccountRemainingUsage,
 };

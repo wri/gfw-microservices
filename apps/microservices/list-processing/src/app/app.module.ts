@@ -11,7 +11,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LargeListService } from './../services/largelist.service';
 import { GeoService, LocationService } from '@wri-monorepos/geo';
-import { SqlModule, createTypeOrmModule } from '@wri-monorepos/sql';
+import { SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
 import { ListService } from '../services/list.service';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
@@ -26,7 +26,7 @@ config.update({
 @Module({
   imports: [
     envModule,
-    createTypeOrmModule({
+    TypeOrmSystemModule.create({
       name: 'default',
       imports: [SchedulerModule],
     }),

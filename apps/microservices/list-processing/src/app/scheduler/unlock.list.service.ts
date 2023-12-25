@@ -14,8 +14,7 @@ export class UnlockListService {
     const organizations = await this.organizationService.findAll();
 
     for (let i = 0; i < organizations.length; i++) {
-      const lists = await this.listService.findLockedLists(organizations[i]);
-      await this.listService.unlockLists(organizations[i], lists);
+      await this.listService.unlockLists(organizations[i]);
     }
   }
 }

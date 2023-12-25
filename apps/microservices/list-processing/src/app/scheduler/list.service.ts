@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ClientStoreConnection, List, Organization } from '@wri-monorepos/sql';
-import { LessThan } from 'typeorm';
 import * as moment from 'moment';
 
 @Injectable()
@@ -9,39 +8,24 @@ export class ListService {
 
   constructor(private readonly clientStoreConnection: ClientStoreConnection) {}
 
-  async findLockedLists(organization: Organization) {
-    const connection = await this.createOrganizationConnection(organization);
-
-    const listRepository = connection.getRepository(List);
-    const yesterday = moment().add(-1, 'days').toDate();
-
-    const list = listRepository.find({
-      where: {
-        lockStatus: LessThan(yesterday),
-      },
-    });
-
-    return list;
-  }
-
   private async createOrganizationConnection(organization: Organization) {
     const connection = await this.clientStoreConnection.getConnection(organization.organizationDb);
     return connection;
   }
 
-  async unlockLists(organization: Organization, lists: List[]) {
-    const ids = lists.map((list) => list.id);
-    this.logger.log(`Unlocking lists ${ids.join(', ')}`);
+  async unlockLists(organization: Organization) {
+    const yesterday = moment().add(-1, 'days').toDate();
 
     const connection = await this.createOrganizationConnection(organization);
-    const listRepository = connection.getRepository(List);
 
-    for (let i = 0; i < lists.length; i++) {
-      const { id } = lists[i];
-      await listRepository.update(id, {
+    await connection
+      .createQueryBuilder()
+      .update(List)
+      .set({
         lockStatus: null,
         lockUserId: null,
-      });
-    }
+      })
+      .where('lockStatus <= :yesterday ', { yesterday })
+      .execute();
   }
 }

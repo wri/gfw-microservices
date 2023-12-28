@@ -1,18 +1,13 @@
-import { locationsPage, convertURL } from '../../../../common/js/config';
+import React, { Component } from 'react';
 import Point from '@arcgis/core/geometry/Point';
-import Polygon from '@arcgis/core/geometry/Polygon';
-import * as QueryTask from '@arcgis/core/rest/query';
-import Query from '@arcgis/core/rest/support/Query';
-import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
-import * as projection from '@arcgis/core/geometry/projection.js';
+import Papa from 'papaparse';
 import FileDrop from '../uploading/FileDrop';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
-import { discernProjection, maxLocations, maxFileSizeMB } from '../../utils/upload.utils';
-import Papa from 'papaparse';
-import * as XLSX from 'xlsx';
-import React, { Component } from 'react';
-import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
-import SpatialReference from '@arcgis/core/geometry/SpatialReference';
+import { maxLocations, maxFileSizeMB } from '../../utils/upload.utils';
+import { geocodeMill } from './geocodeMill';
+import { parseZip } from './parseZip';
+import { parseXlsx } from './parseXlsx';
+import { locationsPage } from '../../../../common/js/config';
 import { parseKMZAndKMLFile } from '../uploading/UploadLocations.util';
 
 export default class Upload extends Component {
@@ -30,237 +25,12 @@ export default class Upload extends Component {
     };
   }
 
-  geocodeMill = (mill) => {
-    return new Promise((resolve) => {
-      const queryObject = new Query({
-        where: "id = '" + mill.ID + "'",
-        returnGeometry: true,
-        outFields: [],
-      });
-
-      QueryTask.executeQueryJSON(locationsPage.updatedPalmOilMillUrl, queryObject).then(
-        (result) => {
-          if (result.features && result.features.length > 0) {
-            resolve(result.features[0]);
-          } else {
-            resolve(false);
-          }
-        }
-      );
-    });
-  };
-
-  parseZip = (file) => {
-    discernProjection(file).then(
-      (projDefs) => {
-        if (!projDefs[0]) {
-          const formData = new FormData();
-          formData.append('file', file);
-          const xmlhttp = new XMLHttpRequest();
-          xmlhttp.open('POST', convertURL);
-          xmlhttp.onreadystatechange = () => {
-            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
-              const response = JSON.parse(xmlhttp.responseText);
-              let geom;
-              const data = response.data;
-              const oldSpatialRef = new SpatialReference({ wkid: projDefs[1] });
-              const newSpatialRef = SpatialReference.WGS84;
-              projection.load().then(() => {
-                if (data?.attributes?.features?.length > 0) {
-                  const feat = data.attributes.features[0];
-                  if (feat.geometry?.coordinates?.[0] instanceof Array) {
-                    const esriJson = geojsonUtil.geojsonToArcGIS(feat.geometry);
-                    const oldFeatGeometry = new Polygon({
-                      rings: esriJson.rings,
-                      spatialReference:
-                        esriJson.spatialReference.wkid === newSpatialRef.wkid
-                          ? esriJson.spatialReference
-                          : oldSpatialRef,
-                    });
-                    geom = projection.project(oldFeatGeometry, newSpatialRef);
-                  } else if (typeof feat.geometry?.coordinates?.[0] === 'number') {
-                    const centerPoint = {
-                      type: 'point',
-                      x: feat.geometry.coordinates[0],
-                      y: feat.geometry.coordinates[1],
-                      spatialReference: oldSpatialRef,
-                    };
-                    const projectedCenterPoint = projection.project(centerPoint, newSpatialRef);
-                    //buffer the point into a poly based off of Analysis_R/Analysis_A and setGeometry of that poly!
-                    if (feat.properties.Analysis_R) {
-                      geom = GeometryEngine.geodesicBuffer(
-                        projectedCenterPoint,
-                        parseFloat(feat.properties.Analysis_R),
-                        'kilometers'
-                      );
-                    } else if (feat.properties.Analysis_A) {
-                      const kilosSquared = feat.properties.Analysis_A / 100;
-                      const kilos = Math.sqrt(kilosSquared / Math.PI);
-                      //this line never gets hit
-                      geom = GeometryEngine.geodesicBuffer(
-                        this.state.originalGeometry,
-                        kilos.toFixed(2),
-                        'kilometers'
-                      );
-                    } else {
-                      geom = GeometryEngine.geodesicBuffer(projectedCenterPoint, 4, 'kilometers'); //Medium Buffer
-                    }
-                  }
-
-                  this.props.setGeometry(geom);
-                  this.setState({ isUploading: false });
-                  gtag('event', 'add location upload file', {
-                    event_category: 'Locations File Upload',
-                    event_label: 'user uploaded a zip file',
-                  });
-                }
-              });
-            } else if (xmlhttp.readyState === 4) {
-              console.log('Error: shapefile not working');
-            }
-          };
-          xmlhttp.send(formData);
-        } else {
-          this.setState({
-            isUploading: false,
-            dialogOpen: true,
-            dialogTitle: locationsPage.upload.errors.dataProjection,
-            dialogMessage: projDefs[0],
-          });
-          gtag('event', 'add location upload projection error', {
-            event_category: 'Locations File Upload error',
-            event_label: 'user uploaded a shapefile in the wrong projection',
-          });
-        }
-      },
-      function (ex) {
-        this.setState({
-          dialogOpen: true,
-          dialogTitle: locationsPage.upload.errors.dataRead,
-          dialogMessage: ex,
-          isUploading: false,
-        });
-        gtag('event', 'add location upload data read error', {
-          event_category: 'Locations File Upload error',
-          event_label: 'user uploaded a shapefile that could not be read',
-        });
-      }
-    );
-  };
-
-  parseXlsx = (f) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = !e ? reader.content : e.target.result;
-      const workbook = XLSX.read(data, { type: 'binary' });
-      const jsonVar = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-      const feature = jsonVar[0];
-
-      if (this.props.activeTemplate === 'palmMill' || (feature.ID && !feature.Latitude)) {
-        this.geocodeMill(feature).then((feat) => {
-          if (feat) {
-            let point;
-            if (feat.properties.Analysis_R) {
-              point = GeometryEngine.geodesicBuffer(
-                feat.geometry,
-                parseFloat(feat.properties.Analysis_R),
-                'kilometers'
-              );
-            } else {
-              const kilosSquared = feat.properties.Analysis_A / 100;
-              const kilos = Math.sqrt(kilosSquared / Math.PI);
-              point = GeometryEngine.geodesicBuffer(feat.geometry, kilos.toFixed(2), 'kilometers');
-            }
-            this.props.setGeometry(geom);
-            this.setState({
-              isUploading: false,
-            });
-            gtag('event', 'add location upload file', {
-              event_category: 'Locations File Upload',
-              event_label: 'user uploaded an xls file',
-            });
-          } else {
-            this.setState({
-              dialogOpen: true,
-              dialogTitle: 'Incorrect Mill ID',
-              dialogMessage:
-                'The ID column that you provided does not match any known mill, please upload a valid "wri_id".',
-            });
-          }
-        });
-      } else {
-        const point = new Point({
-          latitude: parseInt(feature.Latitude),
-          longitude: parseInt(feature.Longitude),
-          spatialReference: { wkid: 4326 },
-        });
-
-        let geom;
-        if (feature['Analysis Radius']) {
-          geom = GeometryEngine.geodesicBuffer(
-            point,
-            parseFloat(feature['Analysis Radius']),
-            'kilometers'
-          );
-        } else if (feature['Analysis Area']) {
-          const kilosSquared = feature['Analysis Area'] / 100;
-          const kilos = Math.sqrt(kilosSquared / Math.PI);
-          geom = GeometryEngine.geodesicBuffer(point, kilos.toFixed(2), 'kilometers');
-        } else {
-          console.warn('missing both radius and area, which is not allowed');
-          geom = GeometryEngine.geodesicBuffer(point, 2, 'kilometers');
-        }
-
-        if (!geom) {
-          this.setState({
-            isUploading: false,
-            dialogOpen: true,
-            dialogTitle: locationsPage.upload.errors.excelTitle,
-            dialogMessage: locationsPage.upload.errors.excelMessage,
-          });
-          return;
-        }
-
-        this.props.setGeometry(geom);
-        this.setState({
-          isUploading: false,
-        });
-        gtag('event', 'add location upload file', {
-          event_category: 'Locations File Upload',
-          event_label: 'user uploaded an xls file',
-        });
-      }
-    };
-    reader.onerror = (err) => {
-      this.setState({
-        dialogOpen: true,
-        dialogTitle: 'Excel parsing error',
-        dialogMessage: 'The Excel file was parsed incorrectly, please upload a valid file.',
-      });
-      console.log(`Error: ${err}`);
-    };
-    reader.readAsBinaryString(f);
-  };
-
-  handleKMZandKML = (file) => {
-    parseKMZAndKMLFile(file)
-      .then((geometry) => {
-        this.props.setGeometry(geometry);
-        this.setState({ isUploading: false });
-        gtag('event', 'add location upload file', {
-          event_category: 'Locations File Upload',
-          event_label: 'user uploaded an kmz/kml file',
-        });
-      })
-      .catch((e) => console.error('Failed to parse KMZ/KML file', e));
-  };
-
   complete = (results) => {
     if (results.data && results.data.length && results.data.length > 0) {
       const feature = results.data[0];
 
       if (this.props.activeTemplate === 'palmMill' || (feature.ID && !feature.Latitude)) {
-        this.geocodeMill(feature).then((feat) => {
+        geocodeMill(feature).then((feat) => {
           if (feat) {
             this.props.setGeometry(feat.geometry);
             this.setState({
@@ -347,14 +117,48 @@ export default class Upload extends Component {
         Papa.parse(inputFile, config);
         break;
       case 'zip':
-        this.parseZip(inputFile);
+        parseZip(file, this.state.stateOriginalGeometry).then((result) => {
+          if (result.geom) {
+            this.setGeometry(result.geom);
+          }
+          this.setState(result);
+          if (!result.dialogOpen) {
+            gtag('event', 'add location upload file', {
+              event_category: 'Locations File Upload',
+              event_label: 'user uploaded a zip file',
+            });
+          }
+        });
+
         break;
       case 'xlsx':
-        this.parseXlsx(inputFile);
+        parseXlsx(inputFile, this.props.activeTemplate)
+          .then(({ geometry, isUploading }) => {
+            this.props.setGeometry(geometry);
+            this.setState({ isUploading });
+            gtag('event', 'add location upload file', {
+              event_category: 'Locations File Upload',
+              event_label: 'user uploaded an xls file',
+            });
+          })
+          .catch((error) => {
+            this.setState(error);
+          });
         break;
       case 'kml':
       case 'kmz':
-        this.handleKMZandKML(inputFile);
+        parseKMZAndKMLFile(file)
+          .then((geometry) => {
+            this.props.setGeometry(geometry);
+            this.setState({ isUploading: false });
+            gtag('event', 'add location upload file', {
+              event_category: 'Locations File Upload',
+              event_label: 'user uploaded an kmz/kml file',
+            });
+          })
+          .catch((error) => {
+            console.error('Failed to parse KMZ/KML file', error);
+          });
         break;
       default:
         console.log(

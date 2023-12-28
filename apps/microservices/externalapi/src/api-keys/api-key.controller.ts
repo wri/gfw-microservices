@@ -1,4 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  UsePipes,
+} from '@nestjs/common';
 
 import { TokenService } from './token.service';
 import { ApiResponse } from '@nestjs/swagger';
@@ -16,14 +25,20 @@ export class APIKeyController {
   constructor(private readonly tokenService: TokenService) {}
 
   //Get all tokens for one organization
-  @ApiResponse({ status: 200, type: [ViewApiKeyResponse] })
+  @ApiResponse({ type: [ViewApiKeyResponse] })
   @Get('/:organizationId')
-  async getTokens(@Param('organizationId') organizationId: number): Promise<ViewApiKeyResponse[]> {
-    return await this.tokenService.findTokenByOrganizationId(organizationId);
+  async getTokens(@Param('organizationId') orgId: string): Promise<ViewApiKeyResponse[]> {
+    const organizationId = z.coerce.number().parse(orgId);
+
+    const token = await this.tokenService.findTokenByOrganizationId(organizationId);
+
+    if (token.length === 0) throw new NotFoundException();
+
+    return token;
   }
 
   // Create a new Token
-  @ApiResponse({ status: 200, type: ViewApiKeyResponse })
+  @ApiResponse({ type: ViewApiKeyResponse })
   @Post()
   @UsePipes(new ZodValidationPipe(apiKeyRequestSchema))
   token(@Body() apiKeyRequest: CreateApiKeyRequest) {
@@ -34,7 +49,8 @@ export class APIKeyController {
 
   // Delete a token for a organization
   @Delete('/:organizationId/:tokenId')
-  deleteToken(@Param('organizationId') organizationId: number, @Param('tokenId') tokenId: string) {
+  deleteToken(@Param('organizationId') orgId: string, @Param('tokenId') tokenId: string) {
+    const organizationId = z.coerce.number().parse(orgId);
     return this.tokenService.deleteToken(organizationId, tokenId);
   }
 }

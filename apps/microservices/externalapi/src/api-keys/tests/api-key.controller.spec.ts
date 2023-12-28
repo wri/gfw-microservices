@@ -1,31 +1,24 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 
 import * as request from 'supertest';
-import { Organization } from '../organization.entity';
-import { ExternalAPIKey } from '../external-api-key.entity';
+import * as sinon from 'sinon';
+import * as AWS from 'aws-sdk';
+
+import { APIKeyController } from '../api-key.controller';
+import { TokenService } from '../token.service';
 import { UserRoutes } from '../user-route.entity';
 import { TokenMockRepository, UserMockRepository } from './token.mock.service';
-import { TokenService } from '../token.service';
-
-// import { describe, expect, test, beforeAll, afterAll } from '@jest/globals';
-
-// import { TokenSeederService } from './util/token-seeder';
-// import { TypeOrmSQLITETestingModule } from './util/type-orm-sqlite-testing-module';
-// import {AppModule} from '../../app/app.module'
-// import { AppController } from '../../app/app.controller';
-// import { AppService } from '../../app/app.service';
+import { Organization } from '../organization.entity';
+import { ExternalAPIKey } from '../external-api-key.entity';
+import { ConfigModule } from '@nestjs/config';
 
 describe('api-key', () => {
   let app: INestApplication;
+  const sandbox = sinon.createSandbox();
 
   beforeAll(async () => {
-    // const moduleFixture = await Test.createTestingModule({
-    //   imports: []
-    // }).compile();
-
     const moduleFixture = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
@@ -33,7 +26,6 @@ describe('api-key', () => {
           type: 'sqlite',
           database: ':memory:',
           synchronize: true,
-          logging: true,
           entities: [Organization, ExternalAPIKey, UserRoutes],
         }),
         TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
@@ -42,6 +34,7 @@ describe('api-key', () => {
           isGlobal: true,
         }),
       ],
+      controllers: [APIKeyController],
       providers: [
         {
           provide: getRepositoryToken(ExternalAPIKey, 'default'),
@@ -55,15 +48,25 @@ describe('api-key', () => {
       ],
     }).compile();
 
-    // const seederService = moduleFixture.get<TokenSeederService>(TokenSeederService);
-    // await seederService.seed();
+    const awsConfig = {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      region: process.env.AWS_REGION,
+    };
+
+    AWS.config.update(awsConfig);
+
+    const dummyGateway = new AWS.APIGateway();
+    const stub = sandbox.stub(dummyGateway.constructor.prototype, 'deleteApiKey');
+
+    stub.withArgs({ apiKey: '789' }).returns({
+      promise: () => {
+        return {};
+      },
+    });
 
     app = moduleFixture.createNestApplication();
 
-    app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true }),
-    );
-    
     await app.init();
   });
 
@@ -71,13 +74,31 @@ describe('api-key', () => {
     await app.close();
   });
 
-  test('[GET] healthCheck', async () => {
-    const httpServer = app.getHttpServer();
-    const httpRequest = request(httpServer);
-    const response = await httpRequest.get('/api/HealthCheck');
+  describe('GET /api-keys', () => {
+    test('token found', async () => {
+      const { statusCode } = await request(app.getHttpServer()).get('/api-keys/9');
 
-    console.log({response});
+      expect(statusCode).toBe(200);
+    });
 
-    expect(response.statusCode).toBe(404);
+    test('token not found', async () => {
+      const { statusCode } = await request(app.getHttpServer()).get('/api-keys/50');
+
+      expect(statusCode).toBe(404);
+    });
+  });
+
+  test('POST /api-keys', async () => {
+    const { statusCode } = await request(app.getHttpServer())
+      .post('/api-keys')
+      .send({ userId: 23, organizationId: 10 });
+
+    expect(statusCode).toBe(201);
+  });
+
+  test('DELETE /api-keys', async () => {
+    const { statusCode } = await request(app.getHttpServer()).delete('/api-keys/9/789');
+
+    expect(statusCode).toBe(200);
   });
 });

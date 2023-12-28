@@ -842,9 +842,7 @@ export default class Map extends Component {
       id: 'ADD LOCATION',
       className: 'map-popup-subscribe',
     };
-    view.watch('zoom', function (newZoom) {
-      console.log('Zoom level: ', newZoom);
-    });
+
     const popupAnalyzeAction = {
       title: 'Analyze',
       id: 'ANALYZE',

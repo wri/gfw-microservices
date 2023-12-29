@@ -70,26 +70,31 @@ describe('api-key', () => {
       // You can add other methods and their responses as needed
     };
 
-    // Redefine AWS.APIGateway.prototype to return the instance with the stubbed methods
-    Object.defineProperty(AWS.APIGateway.prototype, 'createApiKey', {
-      value: apiGatewayInstance.createApiKey,
-    });
-
     Object.defineProperty(AWS.APIGateway.prototype, 'createUsagePlanKey', {
       value: apiGatewayInstance.createUsagePlanKey,
     });
 
     const dummyGateway = new AWS.APIGateway();
-    sandbox.stub(dummyGateway.constructor.prototype, 'createApiKey').returns({
+
+    sandbox.stub(dummyGateway.constructor.prototype, 'createUsagePlanKey').returns({
       promise: () => {
         return {
-          id: 'd3grev7wa4',
-          value: 'HkIXacIxu73fo9T3EfRaP9OnUryUCLOV8WO87oIL',
-          name: 'externalapi',
-          enabled: true,
-          createdDate: new Date(),
-          lastUpdatedDate: new Date(),
-          stageKeys: [],
+          /**
+           * The Id of a usage plan key.
+           */
+          id: 'string',
+          /**
+           * The type of a usage plan key. Currently, the valid key type is API_KEY.
+           */
+          type: 'API_KEY',
+          /**
+           * The value of a usage plan key.
+           */
+          value: 'string',
+          /**
+           * The name of a usage plan key.
+           */
+          name: 'string',
         };
       },
     });

@@ -70,7 +70,7 @@ describe('api-key', () => {
         };
       },
     });
-    
+
     const stub = sandbox.stub(dummyGateway.constructor.prototype, 'deleteApiKey');
 
     stub.withArgs({ apiKey: '789' }).returns({

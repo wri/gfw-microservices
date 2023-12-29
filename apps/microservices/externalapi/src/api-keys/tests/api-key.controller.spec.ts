@@ -56,6 +56,29 @@ describe('api-key', () => {
 
     AWS.config.update(awsConfig);
 
+    const apiGatewayInstance = {
+      createApiKey: sandbox.stub().returns({
+        promise: sandbox.stub().resolves({
+          /* Mock response for createApiKey */
+        }),
+      }),
+      createUsagePlanKey: sandbox.stub().returns({
+        promise: sandbox.stub().resolves({
+          /* Mock response for createUsagePlanKey */
+        }),
+      }),
+      // You can add other methods and their responses as needed
+    };
+
+    // Redefine AWS.APIGateway.prototype to return the instance with the stubbed methods
+    Object.defineProperty(AWS.APIGateway.prototype, 'createApiKey', {
+      value: apiGatewayInstance.createApiKey,
+    });
+
+    Object.defineProperty(AWS.APIGateway.prototype, 'createUsagePlanKey', {
+      value: apiGatewayInstance.createUsagePlanKey,
+    });
+
     const dummyGateway = new AWS.APIGateway();
     sandbox.stub(dummyGateway.constructor.prototype, 'createApiKey').returns({
       promise: () => {

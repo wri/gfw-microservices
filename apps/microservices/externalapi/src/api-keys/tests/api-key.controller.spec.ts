@@ -57,6 +57,20 @@ describe('api-key', () => {
     AWS.config.update(awsConfig);
 
     const dummyGateway = new AWS.APIGateway();
+    sandbox.stub(dummyGateway.constructor.prototype, 'createApiKey').returns({
+      promise: () => {
+        return {
+          id: 'd3grev7wa4',
+          value: 'HkIXacIxu73fo9T3EfRaP9OnUryUCLOV8WO87oIL',
+          name: 'externalapi',
+          enabled: true,
+          createdDate: new Date(),
+          lastUpdatedDate: new Date(),
+          stageKeys: [],
+        };
+      },
+    });
+    
     const stub = sandbox.stub(dummyGateway.constructor.prototype, 'deleteApiKey');
 
     stub.withArgs({ apiKey: '789' }).returns({

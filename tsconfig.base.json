@@ -19,7 +19,8 @@
       "@wri-monorepos/feature-flags": ["libs/feature-flags/src/index.ts"],
       "@wri-monorepos/geo": ["libs/geo/src/index.ts"],
       "@wri-monorepos/shared": ["libs/shared/src/index.ts"],
-      "@wri-monorepos/sql": ["libs/sql/src/index.ts"]
+      "@wri-monorepos/sql": ["libs/sql/src/index.ts"],
+      "@wri-monorepos/subscription": ["libs/subscription/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

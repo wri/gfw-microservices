@@ -7,9 +7,7 @@ const {
 } = require('../service/analytics.service');
 import { analysisTypes } from '@wri-monorepos/constants';
 
-const { getOrganizationActivatedTime } = require(path.resolve(
-  './config/publicutils/accountManager.utils'
-));
+import { getAccountActivatedTime } from '@wri-monorepos/sql';
 
 /**
  * @function analytics
@@ -95,7 +93,7 @@ exports.getMyOrganizationAnalysisUsage = async (req, res) => {
 exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
   let { organization_id, subscription_status_id } = req.session;
 
-  const organizationActivatedTime = await getOrganizationActivatedTime(req, organization_id);
+  const organizationActivatedTime = await getAccountActivatedTime(organization_id);
 
   const accountUsagePercentage = await getOrganizationUsagePercentage({
     organizationId: organization_id,

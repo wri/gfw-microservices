@@ -26,7 +26,7 @@ import {
 import { Logger, Injectable } from '@nestjs/common';
 import { getFinalGeojson } from '@wri-monorepos/shared';
 import { GeoJson } from './type';
-import { getAccountListProccesingLimit } from '../utils/account.utils';
+import { getAccountListProccesingLimit } from '@wri-monorepos/subscription';
 
 const EMPTY_CUSTOM_ATTRIBUTES = [];
 

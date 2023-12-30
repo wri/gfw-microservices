@@ -1,13 +1,3 @@
-/**
- * @seen also {@path libs/geo/src/utils/account.utils.ts}
- * */
-const calculateProcessingLimit = (accountLimits, accountUsage) => {
-  const availableAnalyzableAreaRemaining =
-    accountLimits.MaxAreaAnalyzeablePerYear - accountUsage.total_area_analyzed;
-
-  return Math.min(availableAnalyzableAreaRemaining, accountLimits.MaxAreaPerList);
-};
-
 const calculateRemainingUsage = (accountLimits, accountUsage) => {
   const availableAnalyzableAreaRemaining =
     accountLimits.MaxAreaAnalyzeablePerYear - accountUsage.total_area_analyzed;
@@ -25,7 +15,6 @@ const calculateAccountUsagePercentage = (accountUsage, accountLimit) => {
 };
 
 module.exports = {
-  calculateProcessingLimit,
   calculateAccountUsagePercentage,
   calculateRemainingUsage,
 };

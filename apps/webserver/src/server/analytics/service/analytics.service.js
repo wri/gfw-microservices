@@ -12,11 +12,11 @@ const { getAllListsAnalysisStatus: getAllListsAnalysisStatusQuery } = require(pa
 const { getListAnalysisStatusById } = require(path.resolve(
   './queries/organization/getListAnalysisStatusById'
 ));
-const {
-  calculateProcessingLimit,
-  calculateAccountUsagePercentage,
-  calculateRemainingUsage,
-} = require(path.resolve('./config/privateutils/limits.utils'));
+const { calculateAccountUsagePercentage, calculateRemainingUsage } = require(path.resolve(
+  './config/privateutils/limits.utils'
+));
+
+import { getAccountLimits, getAccountListProccesingLimit } from '@wri-monorepos/subscription';
 
 const getOrganizationAnalysisUsage = async ({
   startDate,
@@ -53,44 +53,6 @@ const getAnalysisLimitData = async ({ organizationId = null, organizationType = 
 
   return response;
 };
-/**
- * @seen also {@path libs/geo/src/utils/account.utils.ts}
- * */
-const getAccountLimits = async (organizationId, organizationType) => {
-  const [limitsByOrgID] = await getAnalysisLimitData({ organizationId });
-  const [limitsByOrgType] = await getAnalysisLimitData({ organizationType });
-
-  // If no custom limit found return the fallback by subscription_id
-  return limitsByOrgID || limitsByOrgType;
-};
-/**
- * @seen also {@path libs/geo/src/utils/account.utils.ts}
- * */
-const getAccountListProccesingLimit = async ({
-  organization_id,
-  subscription_status_id,
-  OrganizationActivatedTime,
-}) => {
-  const todayAsEndDay = moment();
-  const accountActivationDate = moment(OrganizationActivatedTime);
-  const accountLatestYearStartDate = todayAsEndDay.subtract(
-    moment().diff(accountActivationDate, 'days') % 365,
-    'days'
-  );
-
-  const [accountUsage] = await getOrganizationAnalysisUsage({
-    startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
-    endDate: todayAsEndDay.format('YYYY-MM-DD'),
-    organizationId: organization_id,
-    countForEachList: 0,
-  });
-  const accountLimits = await getAccountLimits(organization_id, subscription_status_id);
-
-  // Calculate Processing limit either left for the year or max limit per list
-  const processingLimit = calculateProcessingLimit(accountLimits, accountUsage);
-
-  return processingLimit;
-};
 
 /**
  * @see Epic Analysis Usage Limits v2
@@ -116,9 +78,7 @@ const getAccountRemainingUsage = async ({
   });
   const accountLimits = await getAccountLimits(organizationId, subscriptionStatusId);
 
-  const remining = calculateRemainingUsage(accountLimits, accountUsage);
-  console.log('🚀 ~ file: analytics.service.js:120 ~ remining:', remining);
-  return remining;
+  return calculateRemainingUsage(accountLimits, accountUsage);
 };
 
 const getAllListsAnalysisStatus = async (req) => {
@@ -166,9 +126,9 @@ const getOrganizationUsagePercentage = async ({
 module.exports = {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
-  getAccountLimits,
+  getAccountLimits, // <- remove
   getAllListsAnalysisStatus,
-  getAccountListProccesingLimit,
+  getAccountListProccesingLimit, // <- remove
   getListAnalysisStatusByListId,
   getOrganizationUsagePercentage,
   getAccountRemainingUsage,

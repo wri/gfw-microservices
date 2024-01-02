@@ -97,34 +97,23 @@ const yearlyParser = ({ operation, data, dataRow, csvData }) => {
             csvData.push(nestedRow);
           });
         } else {
-          let totalSubCategory = 0;
-          Object.keys(yearlyData).forEach((yr) => {
-            totalSubCategory += yearlyData[yr];
-          });
+          rowValue = yearlyData[year] || 0;
 
-          rowValue = yearlyData[year];
-
-          if (totalSubCategory > 0) {
-            if (field.label) {
-              currentRow.push(field.label);
-            }
-
-            currentRow.push(rowValue);
-            currentRow.push(year);
-
-            if (totalStat) {
-              currentRow.push(totalStatValue);
-
-              const percent = formatPct(validatePct((rowValue / totalStatValue) * 100));
-              currentRow.push(percent);
-            }
-
-            csvData.push(currentRow);
-          } else {
-            currentRow.push(year);
-            currentRow.push(0);
-            csvData.push(currentRow);
+          if (field.label) {
+            currentRow.push(field.label);
           }
+
+          currentRow.push(rowValue);
+          currentRow.push(year);
+
+          if (totalStat) {
+            currentRow.push(totalStatValue);
+
+            const percent = formatPct(validatePct((rowValue / totalStatValue) * 100));
+            currentRow.push(percent);
+          }
+
+          csvData.push(currentRow);
         }
       });
     }

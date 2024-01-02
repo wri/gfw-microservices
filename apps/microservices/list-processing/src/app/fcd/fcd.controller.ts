@@ -1,6 +1,6 @@
 import { BadRequestException, Controller, Get, Param, Query } from '@nestjs/common';
-import { FCDService } from '../services/fcd.service';
-import { DatabaseQueryParam } from '../models';
+import { FCDService } from './fcd.service';
+import { DatabaseQueryParam } from '../../models';
 
 @Controller('fcd')
 export class FCDController {

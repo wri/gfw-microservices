@@ -1,7 +1,7 @@
 import { BadRequestException, Get, Param, Query } from '@nestjs/common';
 import { Controller, Logger } from '@nestjs/common';
-import { AfiService } from '../services/afi.service';
-import { getAfiAnalysisDataRequest } from '../models';
+import { AfiService } from './afi.service';
+import { getAfiAnalysisDataRequest } from '../../models';
 
 @Controller('afi')
 export class AfiController {

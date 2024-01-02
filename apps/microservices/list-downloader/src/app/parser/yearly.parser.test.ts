@@ -110,6 +110,35 @@ describe('Yearly Parser.', () => {
     expect(csvData[3]).toEqual(['Tree Cover Loss', 9570.9493, '2021']);
   });
 
+  test('When the all input data is zero', () => {
+    const dataRow = [];
+    const csvData = [];
+    yearlyParser({
+      operation: {
+        parsed: 'yearly',
+        composites: [
+          {
+            attribute: 'commodity_threat_deforestation',
+            label: 'trends',
+            following: {
+              attribute: 'commodity_threat_deforestation',
+              parsed: 'total',
+            },
+          },
+        ],
+      },
+      data: {
+        commodity_threat_deforestation: '{"2018":0,"2019":0,"2020":0}',
+      },
+      dataRow,
+      csvData,
+    });
+    expect(csvData.length).toEqual(3);
+    expect(csvData[0]).toEqual(['trends', 0, '2018', 0, '0.00']);
+    expect(csvData[1]).toEqual(['trends', 0, '2019', 0, '0.00']);
+    expect(csvData[2]).toEqual(['trends', 0, '2020', 0, '0.00']);
+  });
+
   test('Totalize a field that is a object inside another object.', () => {
     const dataRow = [];
     const csvData = [];

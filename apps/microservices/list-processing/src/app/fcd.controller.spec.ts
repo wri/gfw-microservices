@@ -1,4 +1,4 @@
-import * as request from 'supertest';
+import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { FCDService } from '../services/fcd.service';
 import { FCDController } from './fcd.controller';

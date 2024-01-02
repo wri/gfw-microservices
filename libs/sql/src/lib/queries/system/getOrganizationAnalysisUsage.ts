@@ -20,11 +20,24 @@ DECLARE @TABLE NVARCHAR(80);
 BEGIN
     IF @countForEachList = 1
         BEGIN
-            create table #TotArea_list (total_area_analyzed BIGINT,  max_area_analyzed BIGINT, number_of_lists_analyzed INT, organization_id INT, list_id INT);
+            create table #TotArea_list (
+              total_area_analyzed BIGINT,  
+              max_area_analyzed BIGINT, 
+              number_of_lists_analyzed INT, 
+              locations_analyzed INT,
+              organization_id INT, 
+              list_id INT
+            );
         END
     ELSE
         BEGIN
-            create table #TotArea_org (total_area_analyzed BIGINT,  max_area_analyzed BIGINT, number_of_lists_analyzed INT, organization_id INT);
+            create table #TotArea_org (
+              total_area_analyzed BIGINT,  
+              max_area_analyzed BIGINT, 
+              number_of_lists_analyzed INT, 
+              locations_analyzed INT,
+              organization_id INT
+            );
         END
 
 
@@ -40,7 +53,7 @@ BEGIN
 
     SET @SQL = 'INSERT INTO {TABLE} SELECT {PARAM} FROM [{DB_NAME}].[dbo].[ListsProcessing] lp WHERE analysis_end_time > ''{START_DATE}''  AND analysis_end_time < ''{END_DATE}'' ';
     SET @TABLE = '#TotArea_org'
-    SET @PARAM = 'SUM(area_analyzed_locations_ha) as total_area_analyzed, MAX(area_analyzed_locations_ha) as max_area_analyzed, COUNT(Distinct list_id) as number_of_lists_analyzed, {organization} as organization_id';
+    SET @PARAM = 'SUM(area_analyzed_locations_ha) as total_area_analyzed, MAX(area_analyzed_locations_ha) as max_area_analyzed, COUNT(Distinct list_id) as number_of_lists_analyzed, SUM(locations_analyzed) as locations_analyzed, {organization} as organization_id';
     IF @countForEachList = 1
         BEGIN
             SET @SQL = @SQL + ' GROUP BY list_id;'
@@ -98,6 +111,7 @@ export interface OrganizationAnalysisUsage {
   total_area_analyzed: number;
   max_area_analyzed: number;
   number_of_lists_analyzed: number;
+  locations_analyzed: number | null;
   organization_id: number;
   organization_name: string;
   list_id?: number;

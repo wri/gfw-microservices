@@ -1,28 +1,18 @@
 /**
  * @jest-environment node
  */
-const {
-  getOrganizationAnalysisUsage,
-  getAccountLimits,
-  getAccountRemainingUsage,
-} = require('./analytics.service');
+const getAccountRemainingUsage = require('./getAccountRemainingUsage');
+
+const { getOrganizationAnalysisUsage } = require('./analytics.service');
+
+import { getAccountLimits } from '@wri-monorepos/subscription';
 
 const { calculateRemainingUsage } = require('../../../config/privateutils/limits.utils');
 
-jest.mock('./analytics.service', () => {
-  // const {getAccountRemainingUsage} = jest.requireActual('./analytics.service');
-
-  return {
-    getOrganizationAnalysisUsage: jest.fn(),
-    getAnalysisLimitData: jest.fn(),
-    getAccountLimits: jest.fn(),
-    getAllListsAnalysisStatus: jest.fn(),
-    getAccountListProccesingLimit: jest.fn(),
-    getListAnalysisStatusByListId: jest.fn(),
-    getOrganizationUsagePercentage: jest.fn(),
-    getAccountRemainingUsage: jest.fn(() => 129852282),
-  };
-});
+jest.mock('@wri-monorepos/subscription');
+jest.mock('./analytics.service', () => ({
+  getOrganizationAnalysisUsage: jest.fn(),
+}));
 jest.mock('../../../config/privateutils/limits.utils');
 jest.mock('../../../config/privateutils/sql.utils');
 
@@ -62,14 +52,9 @@ describe('getAccountRemainingUsage', () => {
 
     // main
     expect(result).toEqual(129852282);
-    // expect(getOrganizationAnalysisUsage).toHaveBeenCalled();
-    // expect(getAccountLimits).toHaveBeenCalled();
-    // expect(getOrganizationAnalysisUsage).toHaveBeenCalledWith({
-    //   startDate: '2018-10-02',
-    //   endDate: '2023-12-25',
-    //   organizationId: 1,
-    //   countForEachList: 0,
-    // });
-    // expect(getAccountLimits).toHaveBeenCalledWith(1, 2);
+    expect(getOrganizationAnalysisUsage).toHaveBeenCalled();
+    expect(getAccountLimits).toHaveBeenCalled();
+    expect(getOrganizationAnalysisUsage).toHaveBeenCalled();
+    expect(getAccountLimits).toHaveBeenCalledWith(1, 2);
   });
 });

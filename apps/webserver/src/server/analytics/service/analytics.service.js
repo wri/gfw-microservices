@@ -12,11 +12,11 @@ const { getAllListsAnalysisStatus: getAllListsAnalysisStatusQuery } = require(pa
 const { getListAnalysisStatusById } = require(path.resolve(
   './queries/organization/getListAnalysisStatusById'
 ));
-const { calculateAccountUsagePercentage, calculateRemainingUsage } = require(path.resolve(
+const { calculateAccountUsagePercentage } = require(path.resolve(
   './config/privateutils/limits.utils'
 ));
 
-import { getAccountLimits, getAccountListProccesingLimit } from '@wri-monorepos/subscription';
+import { getAccountLimits } from '@wri-monorepos/subscription';
 
 const getOrganizationAnalysisUsage = async ({
   startDate,
@@ -52,33 +52,6 @@ const getAnalysisLimitData = async ({ organizationId = null, organizationType = 
   const [response] = await sqlUtils.executeSystemQuery(getAnalysisLimits, params);
 
   return response;
-};
-
-/**
- * @see Epic Analysis Usage Limits v2
- * {@link https://gfw.atlassian.net/browse/GPV-2228}
- */
-const getAccountRemainingUsage = async ({
-  organizationId,
-  subscriptionStatusId,
-  organizationActivatedTime,
-}) => {
-  const todayAsEndDay = moment();
-  const accountActivationDate = moment(organizationActivatedTime);
-  const accountLatestYearStartDate = todayAsEndDay.subtract(
-    moment().diff(accountActivationDate, 'days') % 365,
-    'days'
-  );
-
-  const [accountUsage] = await getOrganizationAnalysisUsage({
-    startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
-    endDate: todayAsEndDay.format('YYYY-MM-DD'),
-    organizationId,
-    countForEachList: 0,
-  });
-  const accountLimits = await getAccountLimits(organizationId, subscriptionStatusId);
-
-  return calculateRemainingUsage(accountLimits, accountUsage);
 };
 
 const getAllListsAnalysisStatus = async (req) => {
@@ -126,10 +99,7 @@ const getOrganizationUsagePercentage = async ({
 module.exports = {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
-  getAccountLimits, // <- remove
   getAllListsAnalysisStatus,
-  getAccountListProccesingLimit, // <- remove
   getListAnalysisStatusByListId,
   getOrganizationUsagePercentage,
-  getAccountRemainingUsage,
 };

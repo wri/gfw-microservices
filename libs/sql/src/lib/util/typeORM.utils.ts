@@ -60,7 +60,7 @@ export class ClientStoreConnection {
   mutexWithTimeout = withTimeout(
     new Mutex(),
     1000,
-    new Error('Error on try to stabilish connection')
+    new Error('Error on try to establish connection')
   );
 
   constructor(private config: ConfigService) {}
@@ -106,7 +106,6 @@ export class ClientStoreConnection {
     } catch (error) {
       Logger.error(`Data Source ${database} initialization error on env: ${env}`, error);
       throw new Error(`Data Source initialization error`);
-      1;
     } finally {
       release();
     }

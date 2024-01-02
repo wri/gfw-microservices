@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-  Post,
-  UsePipes,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UsePipes } from '@nestjs/common';
 
 import { TokenService } from './token.service';
 import { ApiResponse } from '@nestjs/swagger';
@@ -31,8 +22,6 @@ export class APIKeyController {
     const organizationId = z.coerce.number().parse(orgId);
 
     const token = await this.tokenService.findTokenByOrganizationId(organizationId);
-
-    if (token.length === 0) throw new NotFoundException();
 
     return token;
   }

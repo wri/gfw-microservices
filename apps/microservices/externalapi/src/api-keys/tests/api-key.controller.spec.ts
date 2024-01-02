@@ -134,21 +134,21 @@ describe('api-key', () => {
     await app.close();
   });
 
-  describe('GET /api-keys', () => {
-    test('token found', async () => {
+  describe('On GET request to /api-keys', () => {
+    test('should return 200 when orgId is found', async () => {
       const { statusCode } = await request(app.getHttpServer()).get('/api-keys/9');
 
       expect(statusCode).toBe(200);
     });
 
-    test('token not found', async () => {
+    test('should return 404 when orgId is not found', async () => {
       const { statusCode } = await request(app.getHttpServer()).get('/api-keys/50');
 
       expect(statusCode).toBe(404);
     });
   });
 
-  test('POST /api-keys', async () => {
+  test('On POST request to /api-keys should return 201', async () => {
     const { statusCode } = await request(app.getHttpServer())
       .post('/api-keys')
       .send({ userId: 23, organizationId: 10 });
@@ -156,7 +156,7 @@ describe('api-key', () => {
     expect(statusCode).toBe(201);
   });
 
-  test('DELETE /api-keys', async () => {
+  test('On DELETE request to /api-keys should return 200', async () => {
     const { statusCode } = await request(app.getHttpServer()).delete('/api-keys/9/789');
 
     expect(statusCode).toBe(200);

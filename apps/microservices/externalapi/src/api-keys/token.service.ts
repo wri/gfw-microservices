@@ -100,6 +100,9 @@ export class TokenService {
   }
   async findTokenByOrganizationId(organizationId: number): Promise<ViewApiKeyResponse[]> {
     const tokens = await this.tokenRepository.find({ where: { organizationId } });
+
+    if (tokens.length === 0) throw new NotFoundException('Organization not found');
+
     return transformApiKeys(tokens);
   }
 

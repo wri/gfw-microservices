@@ -10,7 +10,7 @@ DECLARE @SQL NVARCHAR(MAX)
 DECLARE @Filters NVARCHAR(MAX) = ''
 
 BEGIN
-    SET @SQL = 'SELECT a.MaxAreaAnalyzeablePerYear, a.MaxAreaPerList, a.OrgID, a.OrgType, o.organization_name, ss.status_name FROM AnalysisLimits a LEFT JOIN Organizations o ON a.OrgID = o.id LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType WHERE 1=1';
+    SET @SQL = 'SELECT a.MaxAreaAnalyzeablePerYear, a.MaxAreaPerList, a.OrgID, a.OrgType, a.max_locations_per_year, o.organization_name, ss.status_name FROM AnalysisLimits a LEFT JOIN Organizations o ON a.OrgID = o.id LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType WHERE 1=1';
 
     IF @orgID IS NOT NULL
         SET @Filters = + @Filters + ' AND a.OrgID = @orgID'
@@ -35,4 +35,5 @@ export interface AnalysisLimit {
   OrgType?: number;
   organization_name?: string;
   status_name?: string;
+  max_locations_per_year?: number;
 }

@@ -116,9 +116,7 @@ const getAccountRemainingUsage = async ({
   });
   const accountLimits = await getAccountLimits(organizationId, subscriptionStatusId);
 
-  const remining = calculateRemainingUsage(accountLimits, accountUsage);
-  console.log('🚀 ~ file: analytics.service.js:120 ~ remining:', remining);
-  return remining;
+  return calculateRemainingUsage(accountLimits, accountUsage);
 };
 
 const getAllListsAnalysisStatus = async (req) => {

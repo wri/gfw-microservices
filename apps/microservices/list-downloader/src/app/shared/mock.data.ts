@@ -1400,7 +1400,7 @@ export const argentinaListLevelData = {
   arg_otbn_area: '{"Category I":2488.1641,"Category II":315.7406}',
   argentina_presence: 'true',
   protected_areas_by_category_area:
-    '{"Category Ia":1620.7222,"Category II":156.9743,"Category VI":0.2748}',
+    '{"Category Ia":1620.7222,"Category II":156.9743,"Category VI, Category V":0.2748}',
   landmark_by_category_area: '{"Not Reported":1222.8716}',
 };
 

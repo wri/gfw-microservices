@@ -75,7 +75,7 @@ describe('Argentina Overlap', () => {
       'WRI,Argentina OTBN,Category II,315.74,11.26',
       'WRI,Argentina Protected Areas,Category Ia,1620.72,91.16',
       'WRI,Argentina Protected Areas,Category II,156.97,8.83',
-      'WRI,Argentina Protected Areas,Category VI,0.27,0.02',
+      'WRI,Argentina Protected Areas,"Category VI, Category V",0.27,0.02',
       'WRI,Argentina Indigenous Territories,,1222.87,10.82',
       '',
     ]);

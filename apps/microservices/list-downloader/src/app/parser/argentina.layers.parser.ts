@@ -1,3 +1,5 @@
+import { checkAndFormatStringWithComma } from '../transform/treat.string.with.comma';
+
 const calculatePercentage = (operation, data, values) => {
   const { attribute } = operation;
 
@@ -79,6 +81,8 @@ const argentinaCategoryData = (operation, data, dataRow, csvData) => {
   const sortedCategory = calculatePercentage(operation, data, values);
   const addOtherCategory = addOtherCategoryData(sortedCategory, limit);
   addOtherCategory.forEach((element) => {
+    const { key = '' } = element;
+    element.key = checkAndFormatStringWithComma(key);
     const values = Object.values(element);
     csvData.push([...dataRow, label, ...values]);
   });

@@ -33,4 +33,4 @@ class TreatStringWithComma extends Transform {
   }
 }
 
-export { TreatStringWithComma };
+export { TreatStringWithComma, checkAndFormatStringWithComma };

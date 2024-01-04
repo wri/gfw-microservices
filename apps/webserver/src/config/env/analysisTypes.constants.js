@@ -25,7 +25,7 @@ const analysisTypesOptions = [
   },
   {
     id: analysisTypes.ALERTS,
-    label: 'Near-real time alerts (GLAD, VIIRS)',
+    label: 'NEAR-REAL TIME ALERTS (INTEGRATED ALERTS, VIIRS)',
     shortLabel: 'Alerts',
   },
 ];

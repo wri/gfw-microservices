@@ -6,6 +6,8 @@ import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.uti
 import { getLastValue, getLastYear } from '../../../locations/js/utils/locationsTableUtils';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 
+const lastYear = locationsPage.diagnostics.lastDataYear;
+
 const attributeValues = [
   { attribute: 'location_id', type: 'string' },
   { attribute: 'Location Name', type: 'string' },
@@ -50,10 +52,10 @@ export default class PalmRiskList extends Component {
     });
   };
 
-  filterBelow2021 = (ax) => {
+  filterUpToYear = (lastYear, ax) => {
     const input = JSON.parse(ax);
     const output = Object.entries(input).reduce((acc, [key, value]) => {
-      if (parseInt(key, 10) < 2021) {
+      if (parseInt(key, 10) <= lastYear) {
         acc[key] = value;
       }
       return acc;
@@ -85,7 +87,7 @@ export default class PalmRiskList extends Component {
         // Mill Value
         const rowValue = mill[riskValues[subIdx].attribute];
         if (rowValue) {
-          value = getLastValue(this.filterBelow2021(rowValue));
+          value = getLastValue(this.filterUpToYear(lastYear, rowValue));
         } else {
           value = 0;
         }
@@ -97,7 +99,7 @@ export default class PalmRiskList extends Component {
         ) {
           millValue = this.assignRiskPriority(value);
         } else {
-          const yearlyData = getLastYear(this.filterBelow2021(attributeValue));
+          const yearlyData = getLastYear(this.filterUpToYear(lastYear, attributeValue));
           millValue = Number.isNaN(yearlyData) ? '--' : prettifyNum(formatNum(yearlyData));
         }
 
@@ -133,12 +135,12 @@ export default class PalmRiskList extends Component {
         >
           {millValue}
           {attr.attribute === 'commodity_threat_deforestation' ||
-          attr.attribute === 'commodity_threat_peat' ||
-          attr.attribute === 'commodity_threat_protected_areas' ||
-          attr.attribute === 'commodity_threat_fires' ||
-          attr.attribute === 'commodity_value_forest_extent' ||
-          attr.attribute === 'commodity_value_peat' ||
-          attr.attribute === 'commodity_value_protected_areas'
+            attr.attribute === 'commodity_threat_peat' ||
+            attr.attribute === 'commodity_threat_protected_areas' ||
+            attr.attribute === 'commodity_threat_fires' ||
+            attr.attribute === 'commodity_value_forest_extent' ||
+            attr.attribute === 'commodity_value_peat' ||
+            attr.attribute === 'commodity_value_protected_areas'
             ? symbol
             : null}
         </td>
@@ -161,7 +163,7 @@ export default class PalmRiskList extends Component {
       if (config.type === 'yearly') {
         const rowValue = mill[config.attribute];
         if (rowValue) {
-          value = getLastValue(this.filterBelow2021(rowValue));
+          value = getLastValue(this.filterUpToYear(lastYear, rowValue));
         } else {
           value = 0;
         }
@@ -179,9 +181,8 @@ export default class PalmRiskList extends Component {
     return (
       <tr
         key={i}
-        className={`border-bottom mill-row ${i % 2 === 0 ? 'even-mill-row' : 'odd-mill-row'} ${
-          viewBy === 'riskLevel' ? '' : 'hidden'
-        }`}
+        className={`border-bottom mill-row ${i % 2 === 0 ? 'even-mill-row' : 'odd-mill-row'} ${viewBy === 'riskLevel' ? '' : 'hidden'
+          }`}
       >
         {millRisks}
       </tr>
@@ -220,14 +221,12 @@ export default class PalmRiskList extends Component {
       <Card>
         <CardContent>
           <div
-            className={`locations-diagnostics-section-risk ${
-              listView === 'commodity_risk' ? '' : 'hidden'
-            } ${selectedLocations.length > 1 ? '' : 'hidden'}`}
+            className={`locations-diagnostics-section-risk ${listView === 'commodity_risk' ? '' : 'hidden'
+              } ${selectedLocations.length > 1 ? '' : 'hidden'}`}
           >
             <div
-              className={`locations-diagnostics-sub-section-risk palm-risk ${
-                selectedLocations.length > 1 ? '' : 'hidden'
-              }`}
+              className={`locations-diagnostics-sub-section-risk palm-risk ${selectedLocations.length > 1 ? '' : 'hidden'
+                }`}
             >
               <DiagnosticsChartHeader
                 title={'Palm Risk Analysis'}

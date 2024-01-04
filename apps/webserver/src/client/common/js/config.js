@@ -1057,7 +1057,7 @@ export const locationsPage = {
     soySilo: { value: 'Supply Shed' },
   },
   diagnostics: {
-    lastDataYear: 2020,
+    lastDataYear: 2022,
   },
   landing: {
     foldersFeatureFlag: false,

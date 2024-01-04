@@ -52,10 +52,10 @@ export default class PalmRiskList extends Component {
     });
   };
 
-  filterUpToYear = (lastYear, ax) => {
+  filterBelow2023 = (ax) => {
     const input = JSON.parse(ax);
     const output = Object.entries(input).reduce((acc, [key, value]) => {
-      if (parseInt(key, 10) <= lastYear) {
+      if (parseInt(key, 10) < 2023) {
         acc[key] = value;
       }
       return acc;
@@ -87,7 +87,7 @@ export default class PalmRiskList extends Component {
         // Mill Value
         const rowValue = mill[riskValues[subIdx].attribute];
         if (rowValue) {
-          value = getLastValue(this.filterUpToYear(lastYear, rowValue));
+          value = getLastValue(this.filterBelow2023(rowValue));
         } else {
           value = 0;
         }
@@ -99,7 +99,7 @@ export default class PalmRiskList extends Component {
         ) {
           millValue = this.assignRiskPriority(value);
         } else {
-          const yearlyData = getLastYear(this.filterUpToYear(lastYear, attributeValue));
+          const yearlyData = getLastYear(this.filterBelow2023(attributeValue));
           millValue = Number.isNaN(yearlyData) ? '--' : prettifyNum(formatNum(yearlyData));
         }
 
@@ -163,7 +163,7 @@ export default class PalmRiskList extends Component {
       if (config.type === 'yearly') {
         const rowValue = mill[config.attribute];
         if (rowValue) {
-          value = getLastValue(this.filterUpToYear(lastYear, rowValue));
+          value = getLastValue(this.filterBelow2023(rowValue));
         } else {
           value = 0;
         }

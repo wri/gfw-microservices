@@ -31,9 +31,10 @@ function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
                 onChange={() => handleAnalyzesSelection(id)}
               />
             }
+            style={{ marginRight: 0 }}
             label={label}
           />
-          {id === 'AFI' && <BetaTag>Preview</BetaTag>}
+          {id === 'AFI' && <BetaTag>(PREVIEW)</BetaTag>}
         </div>
       ))}
     </FormGroup>

@@ -8,7 +8,7 @@ const tagStyles = {
   marginLeft: '3px',
 };
 
-const BetaTag = ({children}) => {
+const BetaTag = ({ children }) => {
   return <span style={tagStyles}>{children}</span>;
 };
 

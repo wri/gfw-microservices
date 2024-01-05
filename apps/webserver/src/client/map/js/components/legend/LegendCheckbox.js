@@ -37,6 +37,7 @@ import {
   deforestationAlertsGeographicCoverageIds,
   deforestationAlertsLayerToCoverageMap,
 } from './DeforestationAlerts/deforestationAlerts.constants';
+import BetaTag from '../../../../common/js/components/BetaTag';
 
 export default class LegendCheckbox extends Component {
   constructor(props) {
@@ -259,7 +260,10 @@ export default class LegendCheckbox extends Component {
           )}
         </span>
 
-        <span className="layer-checkbox-label">{label}</span>
+        <span className="layer-checkbox-label">
+          {label}
+          {label === 'SBTN Natural Forest' && <BetaTag>(Beta)</BetaTag>}
+        </span>
         {gfwListDef &&
         Object.keys(gfwListDef).length > 0 &&
         Object.keys(gfwListDef)[0] === layer.id ? (

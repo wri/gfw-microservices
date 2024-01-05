@@ -18,11 +18,12 @@ function AfiDiagnosticsTable({ data }) {
               <TableCell>Country</TableCell>
               <TableCell align="right">Sub-state</TableCell>
               <TableCell align="right">
-                <span>Natural Forest Coverage (HA)</span> <BetaTag />
+                <span>Natural Forest Coverage (HA)</span>
+                <BetaTag>(Beta)</BetaTag>
               </TableCell>
               <TableCell align="right">
                 <span>Natural Forest Loss (HA)</span>
-                <BetaTag />
+                <BetaTag>(Beta)</BetaTag>
               </TableCell>
               <TableCell align="right">Negligible Risk</TableCell>
             </TableRow>

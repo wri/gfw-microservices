@@ -1,15 +1,15 @@
 import React from 'react';
 
 const tagStyles = {
-  fontSize: '0.7rem',
+  fontSize: '0.6rem',
   color: 'rgba(0, 0, 0, 0.37)',
   fontStyle: 'italic',
   verticalAlign: 'middle',
-  marginLeft: '-8px',
+  marginLeft: '3px',
 };
 
-const BetaTag = () => {
-  return <span style={tagStyles}>(BETA)</span>;
+const BetaTag = ({children}) => {
+  return <span style={tagStyles}>{children}</span>;
 };
 
 export default BetaTag;

@@ -33,7 +33,7 @@ function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
             }
             label={label}
           />
-          {id === 'AFI' && <BetaTag />}
+          {id === 'AFI' && <BetaTag>Preview</BetaTag>}
         </div>
       ))}
     </FormGroup>

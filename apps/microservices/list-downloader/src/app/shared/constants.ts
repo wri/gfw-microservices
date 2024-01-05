@@ -1545,8 +1545,8 @@ export const AFI_HEADER_AGGREGATE = {
   country: 'Country',
   state: 'State',
   subState: 'Sub State',
-  coverageHA: 'Natural Forest Coverage (HA)',
-  naturalForestLossHA: 'Natural Forest Loss (ha)',
+  coverageHA: 'Natural Forest Coverage (HA) (Beta)',
+  naturalForestLossHA: 'Natural Forest Loss (ha) (Beta)',
   negligibleRisk: 'Negligible Risk',
 };
 
@@ -1556,7 +1556,7 @@ export const AFI_HEADER = {
   country: 'Country',
   state: 'State',
   subState: 'Sub State',
-  coverageHA: 'Natural Forest Coverage (HA)',
-  naturalForestLossHA: 'Natural Forest Loss (ha)',
+  coverageHA: 'Natural Forest Coverage (HA) (Beta)',
+  naturalForestLossHA: 'Natural Forest Loss (ha) (Beta)',
   negligibleRisk: 'Negligible Risk (%)',
 };

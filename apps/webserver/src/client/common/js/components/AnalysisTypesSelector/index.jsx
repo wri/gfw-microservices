@@ -4,6 +4,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { locationsPage } from '../../config';
 import { analysisTypesOptions } from '../../../../../config/env/analysisTypes.constants';
+import BetaTag from '../BetaTag';
 import './AnalysisTypesSelector.scss';
 
 function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
@@ -32,6 +33,7 @@ function AnalysisTypesSelector({ selectedAnalyses, setSelectedAnalyses }) {
             }
             label={label}
           />
+          {id === 'AFI' && <BetaTag />}
         </div>
       ))}
     </FormGroup>

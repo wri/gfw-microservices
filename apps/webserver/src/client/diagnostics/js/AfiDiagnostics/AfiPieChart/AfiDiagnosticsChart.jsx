@@ -4,11 +4,13 @@ import useHookWithRefCallback from '../../common/useHookWithRefCallback';
 import { afiDiagnosticsChartsColors } from '../afiDiagnosticsChartsColors.constants';
 
 function AfiDiagnosticsChart({ data }) {
-  const formattedData = data?.map(({ id, category, coverage }) => ({
-    name: category,
-    y: coverage,
-    color: afiDiagnosticsChartsColors[id],
-  }));
+  const formattedData = Array.isArray(data)
+    ? data.map(({ id, category, coverage }) => ({
+        name: category,
+        y: coverage,
+        color: afiDiagnosticsChartsColors[id],
+      }))
+    : [];
   const renderChart = (divRef) => {
     Highcharts.chart({
       chart: {

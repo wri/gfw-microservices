@@ -62,7 +62,7 @@ function AddCompany() {
               const accountsWithFlags = accountsWithFeatureFlagsByFlagId.map(
                 (acc) => acc.organization_id
               );
-              return accountsWithFlags.includes(option.id);
+              return accountsWithFlags.includes(option.orgId);
             }}
             renderOption={(props, option, { selected }) => (
               <li {...props} key={option.orgId}>

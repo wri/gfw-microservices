@@ -137,7 +137,7 @@ export const getLastValue = (data) => {
 export const getLastYear = (data) => {
   const values = Object.values(JSON.parse(data));
   const lastValue = getDigit(values.pop());
-  return parseInt(lastValue);
+  return parseFloat(lastValue);
 };
 
 export const normalizeColunmData = (data) => {

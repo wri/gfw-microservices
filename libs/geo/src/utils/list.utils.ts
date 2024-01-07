@@ -3,11 +3,11 @@ import * as sql from 'mssql';
 import {
   SQLUtils,
   GetTableAnalysisColumnsById,
-  PerformListBulkCopy,
   RawSQLRunner,
   UnlockList,
   ListsAnalysisStatus,
 } from '@wri-monorepos/sql';
+import { ListBulkCopy } from './ListBulkCopy';
 
 import { analysisTypesOptions } from '@wri-monorepos/constants';
 
@@ -411,7 +411,8 @@ export async function PerformLocationsBulkCopy(
   commodityType,
   clientDatabase
 ) {
-  const resultingBulkGeoJSON = await PerformListBulkCopy(
+  const bulkcopy = new ListBulkCopy();
+  const resultingBulkGeoJSON = await bulkcopy.uploadBulkLocations(
     listId,
     listName,
     createTable,

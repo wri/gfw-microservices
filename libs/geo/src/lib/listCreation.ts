@@ -1,4 +1,4 @@
-import { SQLUtils } from '../util/sql.utils';
+import { SQLUtils } from '@wri-monorepos/sql';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 import { CreateListNameSchema } from '@wri-monorepos/shared';

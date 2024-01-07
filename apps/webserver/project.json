@@ -53,7 +53,7 @@
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "webserver:build",
-        "runtimeArgs": ["--max-old-space-size=4096"]
+        "runtimeArgs": ["--max-old-space-size=8192"]
       },
       "dependsOn": ["build"]
     },

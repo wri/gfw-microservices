@@ -113,7 +113,7 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: Run Test
-        run: npx nx affected --target=test --parallel=3 --configuration=ci --coverage
+        run: npx nx run webserver:test --codeCoverage --coverage --no-cache --ci
 
   Run-Webserver-Fitness-Test:
     needs: [Check-Format, Check-lint, Run-Test]

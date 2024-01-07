@@ -24,7 +24,7 @@ export class UspGetListLocations {
     const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
     await connection.connect();
     try {
-      const recordsets = await connection.executeQueryArray<Promise<unknown[]>>(
+      const recordsets = await connection.queryArray<Promise<unknown[]>>(
         'uspGetListLocations',
         parameters
       );

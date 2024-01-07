@@ -69,7 +69,7 @@ export class SQLUtils {
 
   executeQuery<T>(queryName: string, parameters?: ParameterType[]): Promise<T> {
     return new Promise((resolve, reject) => {
-      this.executeQueryArray<T>(queryName, parameters)
+      this.queryArray<T>(queryName, parameters)
         .then((result) => {
           if (result === undefined) {
             resolve(undefined);
@@ -83,10 +83,6 @@ export class SQLUtils {
           reject(error);
         });
     });
-  }
-
-  executeQueryArray<T>(queryName: string, parameters?: ParameterType[]): Promise<Array<T>> {
-    return this.queryArray<T>(queryName, parameters);
   }
 
   disconnect() {

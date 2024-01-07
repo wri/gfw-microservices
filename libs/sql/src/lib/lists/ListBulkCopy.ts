@@ -174,7 +174,7 @@ export class ListBulkCopy {
       'ListBulkCopy'
     );
 
-    const recorsets = await connection.executeQueryArray<Promise<unknown[]>>(
+    const recorsets = await connection.queryArray<Promise<unknown[]>>(
       'uspAddNewLocationToAnalysisTable',
       sqlAddNewLocationToAnalysisTableParameters
     );

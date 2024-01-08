@@ -1,13 +1,11 @@
 import moment from 'moment';
-import { getAccountAnalysisUsage } from '@wri-monorepos/sql';
+import { getAccountActivatedTime, getAccountAnalysisUsage } from '@wri-monorepos/sql';
 import { calculateAccountUsagePercentage } from '../utils';
 import { getAccountLimits } from '../limits';
 
-export async function getAccountUsagePercentage({
-  organizationId,
-  subscriptionStatusId,
-  organizationActivatedTime,
-}) {
+export async function getAccountUsagePercentage({ organizationId, subscriptionStatusId }) {
+  const organizationActivatedTime = await getAccountActivatedTime(organizationId);
+
   const todayAsEndDay = moment();
   const accountActivationDate = moment(organizationActivatedTime);
   const accountLatestYearStartDate = todayAsEndDay

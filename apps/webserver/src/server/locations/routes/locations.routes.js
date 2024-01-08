@@ -27,10 +27,10 @@ const { removeExistingVectorTileFromS3 } = require('../../vectorTiles/utils/vect
 const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
-const { getOrganizationActivatedTime } = require(path.resolve(
-  './config/publicutils/accountManager.utils'
-));
-const { getAccountListProccesingLimit, getListAnalysisStatusByListId } = require(path.resolve(
+
+import { getListProcessingLimits } from '@wri-monorepos/shared';
+
+const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
 ));
 const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extractAnalysisTypes'));
@@ -1131,48 +1131,43 @@ module.exports = (app, limiter) => {
    */
   app.post('/locations/process-list', (req, res) => {
     const { list_id, path: pathLocal, template_type, startAnalysis, listName } = req.body;
-    const { organization_user_id, organization_id } = req.session;
+    const { organization_user_id, organization_id, subscription_status_id } = req.session;
 
     const { LISTS_MICROSERVICE_URL } = process.env;
 
-    getOrganizationActivatedTime(req, organization_id)
-      .then((OrganizationActivatedTime) => {
-        // calculate list processing limit
-        return Promise.all([
-          getAccountListProccesingLimit({
-            ...req.session,
-            OrganizationActivatedTime,
-          }),
-          getListAnalysisStatusByListId(req, list_id),
-        ]);
-      })
-      .then(([processingLimit, listAnalysisStatusData]) => {
-        const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+    Promise.all([
+      getListProcessingLimits({
+        organizationId: organization_id,
+        organizationType: subscription_status_id,
+      }),
+      getListAnalysisStatusByListId(req, list_id),
+    ]).then(([processingLimit, listAnalysisStatusData]) => {
+      const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
 
-        axios
-          .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
-            organization_id,
-            list_id,
-            path: pathLocal,
-            template_type,
-            user_id: organization_user_id,
-            startAnalysis,
-            processing_limit: processingLimit,
-            analysis_types: analysisTypes,
-          })
-          .then((response) => {
-            console.log(response.data);
-            // Send email to user that list is submitted to be analysed
-            return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
-          })
-          .then((response) => {
-            console.log(response);
-            res.send(response);
-          })
-          .catch((err) => {
-            res.send(500, err);
-          });
-      });
+      axios
+        .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
+          organization_id,
+          list_id,
+          path: pathLocal,
+          template_type,
+          user_id: organization_user_id,
+          startAnalysis,
+          processing_limit: processingLimit,
+          analysis_types: analysisTypes,
+        })
+        .then((response) => {
+          console.log(response.data);
+          // Send email to user that list is submitted to be analysed
+          return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
+        })
+        .then((response) => {
+          console.log(response);
+          res.send(response);
+        })
+        .catch((err) => {
+          res.send(500, err);
+        });
+    });
   });
 
   /**

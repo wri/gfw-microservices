@@ -8,7 +8,6 @@
       "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/shared",
         "main": "libs/shared/src/index.ts",
         "tsConfig": "libs/shared/tsconfig.lib.json",
         "assets": ["libs/shared/*.md"]

@@ -29,7 +29,7 @@ exports.helpCenter = (req, res) => {
     const cognitoUser = new CognitoUser(userData);
     cognitoUser.authenticateUser(authenticationDetails, {
       onSuccess: (result) => {
-        logger.info(`Authentication succeeded.`);
+        logger.info(`Helpcenter authentication succeeded.`);
         res.json({
           success: true,
           token: result.getAccessToken().getJwtToken(),
@@ -37,10 +37,18 @@ exports.helpCenter = (req, res) => {
       },
 
       onFailure: (err) => {
-        logger.error(`Authentication failed: ${JSON.stringify(err)}`);
+        logger.error(`Helpcenter authentication failed: ${JSON.stringify(err)}`);
         res.status(403).json({
           success: false,
           message: 'Username or password is not correct',
+        });
+      },
+
+      newPasswordRequired: () => {
+        logger.error(`Helpcenter authentication failed: newPasswordRequired`);
+        res.status(403).json({
+          success: false,
+          message: 'Username needs newPassword.  Try normal website login (outside help center).',
         });
       },
     });

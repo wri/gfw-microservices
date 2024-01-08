@@ -4,8 +4,6 @@ import { ListNameSchema } from '../queries';
 import { UspUpdateListCount } from './uspUpdateListCount';
 import { UspDeleteLocation } from './uspDeleteLocation';
 import { UspGetAnalysisColumns } from './uspGetAnalysisColumns';
-import { ListBulkCopy } from './ListBulkCopy';
-import { CreateListResult, SPSListCreation } from './listCreation';
 import { UspGetListLocations } from './uspGetListLocations';
 import { UspGetListLockStatus } from './uspGetListLockStatus';
 import { UspCopyLocationAnalysis } from './uspCopyLocationAnalysis';
@@ -37,50 +35,6 @@ export const GetListLocations = (clientDatabase, listId, locationId) => {
     rowsRequested: DEFAULT_ROWS_REQUESTED,
   };
   return uspListLocations.run(clientDatabase, details);
-};
-
-export const CreateNewUserList = (
-  listName: string,
-  templateId: number,
-  locationClassification: string,
-  userId: number,
-  customAttributes: string[],
-  clientDatabase: string,
-  analysisIds: string[] = [],
-  gfwListId?: number,
-  saveAsDraft?: boolean
-): Promise<CreateListResult> => {
-  const listCreation = new SPSListCreation();
-  return listCreation.createNewList(
-    listName,
-    templateId,
-    locationClassification,
-    userId,
-    customAttributes,
-    clientDatabase,
-    analysisIds,
-    gfwListId,
-    saveAsDraft
-  );
-};
-
-export const PerformListBulkCopy = (
-  listId,
-  listName,
-  createTable,
-  finalGeojson,
-  commodityType,
-  clientDatabase
-) => {
-  const bulkcopy = new ListBulkCopy();
-  return bulkcopy.uploadBulkLocations(
-    listId,
-    listName,
-    createTable,
-    finalGeojson,
-    commodityType,
-    clientDatabase
-  );
 };
 
 export const PerformGetLockStatus = (clientDatabase, listId) => {

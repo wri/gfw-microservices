@@ -13,7 +13,6 @@ import {
   getAnalysisTypesFromIds,
 } from '../utils/list.utils';
 import {
-  CreateNewUserList,
   requestAnalysisProcess,
   PerformGetLockStatus,
   UspGetLocationsFilteredToCopy,
@@ -25,6 +24,7 @@ import {
 } from '@wri-monorepos/sql';
 import { Logger, Injectable } from '@nestjs/common';
 import { getFinalGeojson } from '@wri-monorepos/shared';
+import { SPSListCreation } from './listCreation';
 import { GeoJson } from './type';
 import { getAccountListProccesingLimit } from '../utils/account.utils';
 
@@ -159,7 +159,8 @@ export class LocationService {
       if (lock_status === null /*|| lock_status !== null*/) {
         throw new Error('LIST_NOT_LOCKED');
       }
-      const createdUserList = await CreateNewUserList(
+      const listCreation = new SPSListCreation();
+      const createdUserList = await listCreation.createNewList(
         newListName,
         template_id,
         location_classification,

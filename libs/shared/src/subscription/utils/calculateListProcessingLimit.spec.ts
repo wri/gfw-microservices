@@ -2,8 +2,8 @@ import { calculateListProcessingLimit } from './calculateListProcessingLimit';
 import { AnalysisLimit, OrganizationAnalysisUsage } from '@wri-monorepos/sql';
 
 describe('calculateListProcessingLimit', () => {
-   // Test case when availableAnalyzableAreaRemaining is less than MaxAreaPerList
-   it('returns availableAnalyzableAreaRemaining when it is less than MaxAreaPerList', () => {
+  // Test case when availableAnalyzableAreaRemaining is less than MaxAreaPerList
+  it('returns availableAnalyzableAreaRemaining when it is less than MaxAreaPerList', () => {
     const accountLimits: AnalysisLimit = {
       MaxAreaAnalyzeablePerYear: 1000,
       MaxAreaPerList: 500,

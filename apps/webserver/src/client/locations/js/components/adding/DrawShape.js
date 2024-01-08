@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import EsriMap from '@arcgis/core/Map';
 import Graphic from '@arcgis/core/Graphic';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
@@ -7,10 +6,10 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import MapView from '@arcgis/core/views/MapView';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
-
 import { locationsPage } from '../../../../common/js/config';
 import Button from '../../../../common/js/components/Button';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
+import './DrawShape.scss';
 
 const containerStyle = {
   display: 'block',
@@ -192,11 +191,11 @@ export default class DrawShape extends Component {
     }
 
     return (
-      <div className="add-location-map">
-        <div className={'add-location-map__message'}>{userMessage}</div>
-        <div style={containerStyle} className="add-location-map__map-container">
+      <div className="draw_shape">
+        <div className={'draw_shape__message'}>{userMessage}</div>
+        <div style={containerStyle} className="draw_shape__map-container">
           <Button
-            className="add-location-map__draw-button"
+            className="draw_shape__draw-button"
             onClick={this.onDrawButtonClick}
             label={buttonTitle}
           />

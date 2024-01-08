@@ -1946,18 +1946,15 @@ export default class AddLocation extends Component {
               <p className="locations-upload-step__option-description">
                 {locationsPage.upload.investmentAddTypeDescription}
               </p>
-              {this.props.addType === 'investment' ? (
+              {this.props.addType === 'investment' &&
                 this.props.templateData
                   .filter((t) => t.location_type_name === 'Investment')
                   .map((t, i) => {
                     <p key="{i}">{t.location_type_name}</p>;
-                  })
-              ) : (
-                <></>
-              )}
+                  })}
             </div>
 
-            {this.props.addType === 'investment' ? (
+            {this.props.addType === 'investment' && (
               <div className="locations-upload-step__suboptions">
                 <div className="locations-upload-step__suboptions-description">
                   {locationsPage.upload.investmentAddType}
@@ -1994,8 +1991,6 @@ export default class AddLocation extends Component {
                     })}
                 </div>
               </div>
-            ) : (
-              <></>
             )}
 
             {/* COMMODITY CHOICE */}
@@ -2017,17 +2012,14 @@ export default class AddLocation extends Component {
             <p className="locations-upload-step__option-description">
               {locationsPage.upload.commodityAddTypeDescription}
             </p>
-            {this.props.addType === 'commodity' ? (
+            {this.props.addType === 'commodity' &&
               this.props.templateData
                 .filter((t) => t.location_type_name === 'Commodity')
                 .map((t, i) => {
                   <p key={i}>{t.location_type_name}</p>;
-                })
-            ) : (
-              <></>
-            )}
+                })}
           </div>
-          {this.props.addType === 'commodity' ? (
+          {this.props.addType === 'commodity' && (
             <div className="locations-upload-step__suboptions">
               <div className="locations-upload-step__suboptions-description">
                 {locationsPage.upload.commodityAddType}
@@ -2062,8 +2054,6 @@ export default class AddLocation extends Component {
                 })}
               </div>
             </div>
-          ) : (
-            <></>
           )}
         </AddLocationCard>
 
@@ -2222,7 +2212,7 @@ export default class AddLocation extends Component {
           )}
         </AddLocationCard>
 
-        {this.props.addType === 'commodity' ? (
+        {this.props.addType === 'commodity' && (
           <AddLocationCard>
             <h2 className="add-location-card__title">
               {locationsPage.add.additionalMetadata}
@@ -2244,11 +2234,9 @@ export default class AddLocation extends Component {
               templateData={commodityTemplates}
             />
           </AddLocationCard>
-        ) : (
-          <></>
         )}
 
-        {this.props.addType === 'investment' ? (
+        {this.props.addType === 'investment' && (
           <AddLocationCard>
             <h2 className="add-location-card__title">
               {locationsPage.add.additionalMetadata}
@@ -2274,9 +2262,8 @@ export default class AddLocation extends Component {
               adminData={this.props.adminArea.adminData}
             />
           </AddLocationCard>
-        ) : (
-          <></>
         )}
+
         {featureFlags.isAfiAvailable && (
           <AddLocationCard>
             <h2 className="add-location-card__title">Analysis</h2>

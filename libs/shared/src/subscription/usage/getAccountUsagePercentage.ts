@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment = require('moment');
 import { getAccountActivatedTime, getAccountAnalysisUsage } from '@wri-monorepos/sql';
 import { calculateAccountUsagePercentage } from '../utils';
 import { getAccountLimits } from '../limits';

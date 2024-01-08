@@ -1,5 +1,4 @@
 const path = require('path');
-const moment = require('moment');
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const sql = require('mssql');
 const { getOrganizationAnalysisUsage: getOrganizationAnalysisUsageQuery } = require(path.resolve(
@@ -12,10 +11,7 @@ const { getAllListsAnalysisStatus: getAllListsAnalysisStatusQuery } = require(pa
 const { getListAnalysisStatusById } = require(path.resolve(
   './queries/organization/getListAnalysisStatusById'
 ));
-const { calculateProcessingLimit, calculateAccountUsagePercentage } = require(path.resolve(
-  './config/privateutils/limits.utils'
-));
-
+// TODO: review all call sites and decide vs `getAccountAnalysisUsage` from 'wri-monorepos/sql`
 const getOrganizationAnalysisUsage = async ({
   startDate,
   endDate,
@@ -51,44 +47,6 @@ const getAnalysisLimitData = async ({ organizationId = null, organizationType = 
 
   return response;
 };
-/**
- * @seen also {@path libs/geo/src/utils/account.utils.ts}
- * */
-const getAccountLimits = async (organizationId, organizationType) => {
-  const [limitsByOrgID] = await getAnalysisLimitData({ organizationId });
-  const [limitsByOrgType] = await getAnalysisLimitData({ organizationType });
-
-  // If no custom limit found return the fallback by subscription_id
-  return limitsByOrgID || limitsByOrgType;
-};
-/**
- * @seen also {@path libs/geo/src/utils/account.utils.ts}
- * */
-const getAccountListProccesingLimit = async ({
-  organization_id,
-  subscription_status_id,
-  OrganizationActivatedTime,
-}) => {
-  const todayAsEndDay = moment();
-  const accountActivationDate = moment(OrganizationActivatedTime);
-  const accountLatestYearStartDate = todayAsEndDay.subtract(
-    moment().diff(accountActivationDate, 'days') % 365,
-    'days'
-  );
-
-  const [accountUsage] = await getOrganizationAnalysisUsage({
-    startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
-    endDate: todayAsEndDay.format('YYYY-MM-DD'),
-    organizationId: organization_id,
-    countForEachList: 0,
-  });
-  const accountLimits = await getAccountLimits(organization_id, subscription_status_id);
-
-  // Calculate Processing limit either left for the year or max limit per list
-  const processingLimit = calculateProcessingLimit(accountLimits, accountUsage);
-
-  return processingLimit;
-};
 
 const getAllListsAnalysisStatus = async (req) => {
   const [response] = await sqlUtils.executeOrganizationQuery(req, getAllListsAnalysisStatusQuery);
@@ -105,39 +63,9 @@ const getListAnalysisStatusByListId = async (req, listId) => {
   return response;
 };
 
-const getOrganizationUsagePercentage = async ({
-  organizationId,
-  organizationType,
-  organizationActivatedTime,
-}) => {
-  const todayAsEndDay = moment();
-  const accountActivationDate = moment(organizationActivatedTime);
-  const accountLatestYearStartDate = todayAsEndDay.subtract(
-    moment().diff(accountActivationDate, 'days') % 365,
-    'days'
-  );
-  const [accountUsage] = await getOrganizationAnalysisUsage({
-    startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
-    endDate: todayAsEndDay.format('YYYY-MM-DD'),
-    organizationId,
-    countForEachList: 0,
-  });
-  const accountLimits = await getAccountLimits(organizationId, organizationType);
-
-  const usagePercentage = calculateAccountUsagePercentage(
-    accountUsage.total_area_analyzed,
-    accountLimits.MaxAreaAnalyzeablePerYear
-  );
-
-  return usagePercentage;
-};
-
 module.exports = {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
-  getAccountLimits,
   getAllListsAnalysisStatus,
-  getAccountListProccesingLimit,
   getListAnalysisStatusByListId,
-  getOrganizationUsagePercentage,
 };

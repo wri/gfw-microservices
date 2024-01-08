@@ -23,10 +23,9 @@ import {
   UnlockListAndSaveAsDraft,
 } from '@wri-monorepos/sql';
 import { Logger, Injectable } from '@nestjs/common';
-import { getFinalGeojson } from '@wri-monorepos/shared';
+import { getFinalGeojson, getListProcessingLimits } from '@wri-monorepos/shared';
 import { SPSListCreation } from './listCreation';
 import { GeoJson } from './type';
-import { getAccountListProccesingLimit } from '../utils/account.utils';
 
 const EMPTY_CUSTOM_ATTRIBUTES = [];
 
@@ -200,7 +199,7 @@ export class LocationService {
       Logger.log(`Copy analysis complete`, 'LocationsService');
 
       if (!isSaveAsDraft) {
-        const processingLimit = await getAccountListProccesingLimit({
+        const processingLimit = await getListProcessingLimits({
           organizationId,
           organizationType: subscriptionStatusId,
         });
@@ -254,7 +253,7 @@ export class LocationService {
       if (isSaveAsDraft) {
         await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
       } else {
-        const processingLimit = await getAccountListProccesingLimit({
+        const processingLimit = await getListProcessingLimits({
           organizationId,
           organizationType: subscriptionStatusId,
         });

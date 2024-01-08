@@ -1,4 +1,9 @@
-const allFeatureFlags = ['Afi', 'ArgentinaCompliance', 'PermanentFlagForExternalApiKeys'];
+const allFeatureFlags = [
+  'Afi',
+  'ArgentinaCompliance',
+  'PermanentFlagForExternalApiKeys',
+  'PolygonCoordinatesInput',
+];
 
 module.exports = {
   allFeatureFlags,

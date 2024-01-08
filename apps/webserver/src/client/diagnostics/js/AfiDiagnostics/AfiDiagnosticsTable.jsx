@@ -6,6 +6,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import BetaTag from '../../../common/js/components/BetaTag';
 
 function AfiDiagnosticsTable({ data }) {
   return (
@@ -16,8 +17,14 @@ function AfiDiagnosticsTable({ data }) {
             <TableRow>
               <TableCell>Country</TableCell>
               <TableCell align="right">Sub-state</TableCell>
-              <TableCell align="right">Natural Forest Coverage (HA)</TableCell>
-              <TableCell align="right">Natural Forest Loss (HA)</TableCell>
+              <TableCell align="right">
+                <span>Natural Forest Coverage (HA)</span>
+                <BetaTag>(Beta)</BetaTag>
+              </TableCell>
+              <TableCell align="right">
+                <span>Natural Forest Loss (HA)</span>
+                <BetaTag>(Beta)</BetaTag>
+              </TableCell>
               <TableCell align="right">Negligible Risk</TableCell>
             </TableRow>
           </TableHead>

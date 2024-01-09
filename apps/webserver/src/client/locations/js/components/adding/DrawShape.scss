@@ -1,0 +1,41 @@
+@import '../../../../common/css/variables';
+@import '../../../../common/css/colorsGFW';
+@import '../../../../common/css/typographyGFW';
+@import '../../../../common/css/mixins';
+
+.draw_shape {
+  padding-top: $space-comfortable;
+  position: relative;
+
+  &__message {
+    @include text(100);
+    position: absolute;
+    top: 0;
+
+    &--error {
+      color: $theme-danger-red-2;
+    }
+  }
+
+  &__map-container {
+    position: relative;
+  }
+
+  &__draw-button {
+    position: absolute;
+    top: $space-normal;
+    right: $space-normal;
+    z-index: 999;
+  }
+
+  .esri-ui-top-left.esri-ui-corner {
+    height: 100%;
+    width: 100%;
+  }
+
+  .esri-component.esri-zoom.esri-widget {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+  }
+}

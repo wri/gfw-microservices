@@ -667,7 +667,7 @@ const getListLocationsNoGeom = (req, listID, columnsToReturn = null) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
-      { field: 'ColumnsToReturn', type: sql.NVarChar, value: columnsToReturn },
+      { field: 'ColumnsToReturn', type: sql.NVarChar(255), value: columnsToReturn },
     ];
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspGetListLocationsNoGeom', parameters)
@@ -745,40 +745,44 @@ const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
       { field: 'PageNumber', type: sql.Int, value: page || null },
       { field: 'RowsOfPage', type: sql.Int, value: pageSize || null },
       { field: 'OrderByColumn', type: sql.NVarChar(255), value: sortByAttribute || null },
-      { field: 'Order', type: sql.NVarChar, value: orderType || null },
-      { field: 'SearchString', type: sql.NVarChar, value: searchString || null },
-      { field: 'Country', type: sql.NVarChar, value: country || null },
-      { field: 'State', type: sql.NVarChar, value: state || null },
-      { field: 'SubState', type: sql.NVarChar, value: subState || null },
+      { field: 'Order', type: sql.NVarChar(255), value: orderType || null },
+      { field: 'SearchString', type: sql.NVarChar(255), value: searchString || null },
+      { field: 'Country', type: sql.NVarChar(255), value: country || null },
+      { field: 'State', type: sql.NVarChar(255), value: state || null },
+      { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
       { field: 'analysisAreaMin', type: sql.Int, value: analysisAreaMin || null },
       { field: 'analysisAreaMax', type: sql.Int, value: analysisAreaMax || null },
-      { field: 'ColumnsToReturn', type: sql.NVarChar, value: columnsToReturn },
-      { field: 'LocationIds', type: sql.NVarChar, value: LocationIds },
-      { field: 'LocationLogic', type: sql.NVarChar, value: LocationLogic },
-      { field: 'LocationStatement', type: sql.NVarChar, value: LocationStatement || null },
+      { field: 'ColumnsToReturn', type: sql.NVarChar(255), value: columnsToReturn },
+      { field: 'LocationIds', type: sql.NVarChar(255), value: LocationIds },
+      { field: 'LocationLogic', type: sql.NVarChar(255), value: LocationLogic },
+      { field: 'LocationStatement', type: sql.NVarChar(255), value: LocationStatement || null },
       { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
       // commodity risk filters
-      { field: 'selectedSupplier', type: sql.NVarChar, value: selectedSupplier || null },
+      { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
       {
         field: 'selectedSecondSupplier',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: selectedSecondSupplier || null,
       },
-      { field: 'selectedParentCompany', type: sql.NVarChar, value: selectedParentCompany || null },
+      {
+        field: 'selectedParentCompany',
+        type: sql.NVarChar(255),
+        value: selectedParentCompany || null,
+      },
       { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || null },
       {
         field: 'selectedOverallThreats',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: JSON.stringify(selectedOverallThreats) || null,
       },
       {
         field: 'selectedOverallValues',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: JSON.stringify(selectedOverallValues) || null,
       },
       {
         field: 'selectedMillPriority',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: JSON.stringify(selectedMillPriority) || null,
       },
     ];
@@ -825,34 +829,38 @@ const getNumberPagesForAnalysisDataUserList = (req, list_id, filters) => {
     } = filters;
     const parameters = [
       { field: 'listID', type: sql.Int, value: list_id },
-      { field: 'searchString', type: sql.NVarChar, value: searchString || null },
-      { field: 'Country', type: sql.NVarChar, value: country || null },
-      { field: 'State', type: sql.NVarChar, value: state || null },
-      { field: 'SubState', type: sql.NVarChar, value: subState || null },
+      { field: 'searchString', type: sql.NVarChar(255), value: searchString || null },
+      { field: 'Country', type: sql.NVarChar(255), value: country || null },
+      { field: 'State', type: sql.NVarChar(255), value: state || null },
+      { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
       { field: 'analysisAreaMin', type: sql.Int, value: analysisAreaMin || null },
       { field: 'analysisAreaMax', type: sql.Int, value: analysisAreaMax || null },
       // commodity risk filters
-      { field: 'selectedSupplier', type: sql.NVarChar, value: selectedSupplier || null },
+      { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
       {
         field: 'selectedSecondSupplier',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: selectedSecondSupplier || null,
       },
-      { field: 'selectedParentCompany', type: sql.NVarChar, value: selectedParentCompany || null },
+      {
+        field: 'selectedParentCompany',
+        type: sql.NVarChar(255),
+        value: selectedParentCompany || null,
+      },
       { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || null },
       {
         field: 'selectedOverallThreats',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: JSON.stringify(selectedOverallThreats) || null,
       },
       {
         field: 'selectedOverallValues',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: JSON.stringify(selectedOverallValues) || null,
       },
       {
         field: 'selectedMillPriority',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: JSON.stringify(selectedMillPriority) || null,
       },
     ];
@@ -899,7 +907,7 @@ const getLocationsCount = (req) => {
     // Retrieve user access level
     const { user_access_level_id, organization_database, organization_user_id } = req.session;
     const parameters = [
-      { field: 'org_db', type: sql.NVarChar, value: req.session.organization_database },
+      { field: 'org_db', type: sql.NVarChar(255), value: req.session.organization_database },
     ];
     if (user_access_level_id === config.platformVars.accessLevel.Administrator) {
       promise = sqlUtils.executeSystemStoredProcedure(req, 'uspGetLocationsCount', parameters);
@@ -1111,7 +1119,7 @@ const updateIndividualLocationsStatusID = (
   return new Promise((resolve, reject) => {
     const sqlParameters = [
       { field: 'analysis_table_name', type: sql.NVarChar(150), value: list_analysis_table_name },
-      { field: 'location_ids_array', type: sql.NVarChar, value: location_id.toString() },
+      { field: 'location_ids_array', type: sql.NVarChar(255), value: location_id.toString() },
       { field: 'location_status_id', type: sql.Int, value: location_status_id },
     ];
     sqlUtils

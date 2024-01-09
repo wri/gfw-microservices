@@ -5,6 +5,7 @@ const {
   getAnalysisLimitData,
 } = require('../service/analytics.service');
 import { getAccountUsagePercentage } from '@wri-monorepos/shared';
+import { getAccountUsersAnalysisUsage } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 
 /**
@@ -86,6 +87,23 @@ exports.getMyOrganizationAnalysisUsage = async (req, res) => {
   });
 
   res.status(status).send(message);
+};
+
+exports.getMyOrganizationUsersAnalysisUsage = async (req, res) => {
+  let { startDate, endDate } = req.query;
+  const { organization_id: organizationId } = req.session;
+
+  const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsage({
+    startDate,
+    endDate,
+    organizationId,
+  });
+
+  res.status(200).send({
+    startDate,
+    endDate,
+    organizationUsersAnalysisUsage,
+  });
 };
 
 exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {

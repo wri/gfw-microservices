@@ -528,35 +528,6 @@ table tbody tr {
   }
 }
 
-/////////////////////////////
-// Draw Shape Map
-/////////////////////////////
-.add-location-map {
-  padding-top: $space-comfortable;
-  position: relative;
-
-  &__message {
-    @include text(100);
-    position: absolute;
-    top: 0;
-
-    &--error {
-      color: $theme-danger-red-2;
-    }
-  }
-
-  &__map-container {
-    position: relative;
-  }
-
-  &__draw-button {
-    position: absolute;
-    top: $space-normal;
-    right: $space-normal;
-    z-index: 999;
-  }
-}
-
 .upload-form {
   &__location-text {
     @include text(100);

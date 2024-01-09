@@ -62,7 +62,7 @@ const getAccountLimits = async (organizationId, organizationType) => {
 
   const accountLimits = limitsByOrgID || limitsByOrgType;
 
-  if (accountLimits < MAX_LOCATIONS_PER_YEAR) {
+  if (accountLimits.max_locations_per_year < MAX_LOCATIONS_PER_YEAR) {
     throw new Error('Analysis limit reached');
   }
 

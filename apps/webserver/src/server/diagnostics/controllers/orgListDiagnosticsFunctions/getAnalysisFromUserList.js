@@ -56,7 +56,8 @@ module.exports = async function (req, selectedList) {
         analysisAreaMin: DEFAULT_SELECTED_AREA_MIN,
         analysisAreaMax: DEFAULT_SELECTED_AREA_MAX,
         columnsToReturn: DEFAULT_COLUMNS_TO_RETURN,
-        pageSize: rowsRequested,
+        page: 1,
+        pageSize: Math.min(rowsRequested, 50),
       };
       const listLocationsData = await ListManager.getPaginatedAnalysisDataForUserList(
         req,
@@ -112,12 +113,17 @@ module.exports = async function (req, selectedList) {
   /** get analisis data */
   try {
     const filters = {
-      page: 1,
-      pageSize: rowsRequested,
       orderType: 'desc',
       sortByAttribute: 'Investment Name',
       searchString: '',
     };
+    if (locationId) {
+      filters.LocationIds = `${locationId}`;
+      filters.LocationLogic = 'IN';
+    } else {
+      filters.page = 1;
+      filters.pageSize = Math.min(rowsRequested, 50);
+    }
     const analysisDataForUserList = await ListManager.getPaginatedAnalysisDataForUserList(
       req,
       listId,

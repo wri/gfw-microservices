@@ -16,8 +16,6 @@ const { calculateProcessingLimit, calculateAccountUsagePercentage } = require(pa
   './config/privateutils/limits.utils'
 ));
 
-const MAX_LOCATIONS_PER_YEAR = 20000;
-
 const getOrganizationAnalysisUsage = async ({
   startDate,
   endDate,
@@ -60,14 +58,8 @@ const getAccountLimits = async (organizationId, organizationType) => {
   const [limitsByOrgID] = await getAnalysisLimitData({ organizationId });
   const [limitsByOrgType] = await getAnalysisLimitData({ organizationType });
 
-  const accountLimits = limitsByOrgID || limitsByOrgType;
-
-  if (accountLimits.max_locations_per_year < MAX_LOCATIONS_PER_YEAR) {
-    throw new Error('Analysis limit reached');
-  }
-
   // If no custom limit found return the fallback by subscription_id
-  return accountLimits;
+  return limitsByOrgID || limitsByOrgType;
 };
 /**
  * @seen also {@path libs/geo/src/utils/account.utils.ts}

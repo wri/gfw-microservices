@@ -1,5 +1,6 @@
 const path = require('path');
 const axios = require('axios');
+const moment = require('moment');
 
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
@@ -12,9 +13,12 @@ const {
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } = require('../config/geoTrellis.config');
 
-const { getAccountListProccesingLimit, getListAnalysisStatusByListId } = require(path.resolve(
-  './server/analytics/service/analytics.service'
-));
+const {
+  getAccountListProccesingLimit,
+  getListAnalysisStatusByListId,
+  getAnalysisLimitData,
+  getOrganizationAnalysisUsage,
+} = require(path.resolve('./server/analytics/service/analytics.service'));
 
 const { getOrganizationActivatedTime } = require(path.resolve(
   './config/publicutils/accountManager.utils'
@@ -46,6 +50,34 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
 
   // get org activated time
   const OrganizationActivatedTime = await getOrganizationActivatedTime(req, organization_id);
+
+  // DO THE LOGIC HERE
+  const todayAsEndDay = moment();
+  const accountActivationDate = moment(OrganizationActivatedTime);
+
+  /// ****** TODO HOW TO GET organizationType ****** ///
+  const organizationType = 1;
+
+  const [limitsByOrgID] = await getAnalysisLimitData({ organizationId: organization_id });
+  const [limitsByOrgType] = await getAnalysisLimitData({ organizationType });
+
+  const accountLatestYearStartDate = todayAsEndDay.subtract(
+    moment().diff(accountActivationDate, 'days') % 365,
+    'days'
+  );
+
+  const [organizationAnalysis] = await getOrganizationAnalysisUsage({
+    startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
+    endDate: todayAsEndDay.format('YYYY-MM-DD'),
+    organizationId: organization_id,
+    countForEachList: 0,
+  });
+
+  const accountLimits = limitsByOrgID || limitsByOrgType;
+
+  if (organizationAnalysis.locations_analyzed > accountLimits.max_locations_per_year) {
+    throw new Error('Analysis limit reached');
+  }
 
   // calculate list processing limit
   const processingLimit = await getAccountListProccesingLimit({

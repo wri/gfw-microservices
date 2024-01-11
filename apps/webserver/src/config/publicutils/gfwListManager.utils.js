@@ -612,6 +612,8 @@ const copyGFWLocationsToList = async (
 
 /**
  * @function isGfwList
+ * Note this is necessary but not sufficient check.  All GFW lists Ids have specific IDs,
+ * but non-GFW lists can use the same ID value.
  * @param {Int/Number} listId
  * @return {Boolean}
  */

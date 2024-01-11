@@ -73,7 +73,6 @@ const buildSQSMessage = (request) => {
 
 const sendMessageToQueue = async (request) => {
   const sqs = new SQS({});
-
   const { message, key } = buildSQSMessage(request);
 
   const sqsSendMessageResponse = await sqs.sendMessage(message);

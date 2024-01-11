@@ -13,10 +13,11 @@ import { gfwListsIds } from '@wri-monorepos/constants';
 /**
  * @summary Get the corresponding analysis function for this list.
  * @note Each of these function receives the express request object and the current list in context.
+ * @param {boolean} isGfwList
  * @param {Number|Int} listId listid
  * @returns {Function}
  */
-const getDiagnosticsAnalysisFunction = (listId) => {
+const getDiagnosticsAnalysisFunction = (isGfwList, listId) => {
   // function map for GfwLists analysis
   const analysisFunctionsMap = {
     [gfwListsIds.ADMINISTRATIVE_AREAS]: getAnalysisFromAdministrativeAreasList,
@@ -25,22 +26,24 @@ const getDiagnosticsAnalysisFunction = (listId) => {
     [gfwListsIds.PALM_OIL_MILLS]: getAnalysisFromGFWList,
     [gfwListsIds.RSPO_PALM_CONCESSIONS]: getAnalysisFromGFWList,
   };
-  // return analysis function for either a GfwList or userProList
-  return analysisFunctionsMap[listId] || getAnalysisFromUserList;
+  if (isGfwList) {
+    return analysisFunctionsMap[listId];
+  }
+  return getAnalysisFromUserList;
 };
 
 module.exports = async function (req, res) {
   const listId = Number(req.params.listId);
-  const { isSharedList } = req.body;
+  const { isGfwList, isSharedList } = req.body;
   logger.info(`POST /diagnostics/${listId}`);
 
   try {
     let selectedList;
 
-    if (GFWListManager.isGfwList(listId)) {
+    if (isGfwList) {
       selectedList = await GFWListManager.getGFWListsByListId(req, listId);
     } else {
-      if (Boolean(isSharedList)) {
+      if (isSharedList) {
         const { organization_user_id: userId } = req.session;
 
         const allLists = await ListManager.getAllListsWithAnalysisId(req);
@@ -73,7 +76,7 @@ module.exports = async function (req, res) {
       }
     }
 
-    const getAnalysisData = getDiagnosticsAnalysisFunction(listId);
+    const getAnalysisData = getDiagnosticsAnalysisFunction(isGfwList, listId);
     const analysisData = await getAnalysisData(req, selectedList);
 
     const { spatialData, listLocationsIds, listAnalysis, locationAnalyses } = analysisData;

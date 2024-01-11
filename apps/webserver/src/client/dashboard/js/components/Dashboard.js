@@ -326,7 +326,7 @@ export default class Dashboard extends Component {
       timeframeDissolved,
       timeframeGeojsonForFooter,
       selectedAdmin,
-      openDownloadDialog
+      openDownloadDialog,
     } = this.state;
 
     const dashboardTitle = isEmpty(selectedList)

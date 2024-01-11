@@ -5,10 +5,10 @@ import buildListMessage from './list.message';
 import buildAlertsMessage from './alerts.message';
 
 const buildMessageMethods = {
-  'afi': buildAfiMessage,
-  'list': buildListMessage,
-  'alerts': buildAlertsMessage,
-}
+  afi: buildAfiMessage,
+  list: buildListMessage,
+  alerts: buildAlertsMessage,
+};
 
 const sendMessageToQueue = async (request, source) => {
   const awsConfig = {
@@ -27,7 +27,4 @@ const sendMessageToQueue = async (request, source) => {
   return sendSqsMessage;
 };
 
-
-export {
-  sendMessageToQueue,
-}
+export { sendMessageToQueue };

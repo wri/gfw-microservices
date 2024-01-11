@@ -38,7 +38,7 @@ const buildSQSMessage = (request) => {
     file: JSON.stringify({ type: 'afi', key: fileName }),
   };
 
-  return convertObjectToAWSPattern({fileName, filters, messageTemplate: messageSQSTemplate});
-}
+  return convertObjectToAWSPattern({ fileName, filters, messageTemplate: messageSQSTemplate });
+};
 
 export default buildSQSMessage;

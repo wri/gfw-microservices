@@ -13,7 +13,7 @@ import {
 } from './dashboard-date.utils';
 
 import store from '../store';
-import downloadRequest from "../../../locations/js/components/lists/download/downloadRequest";
+import downloadRequest from '../../../locations/js/components/lists/download/downloadRequest';
 
 function applyTimeframeFilter(geojson, selectedTimeframe) {
   const propertyFilter = dictionary.timeframe_dateGroupBy[selectedTimeframe];
@@ -133,18 +133,15 @@ function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
 function downloadDashboard() {
   const state = store.getState();
   const { selectedList, selectedAlert, selectedTimeframe } = state;
-  const { id: listID} = selectedList
-
-
-
+  const { id: listID } = selectedList;
 
   downloadRequest({
     listID,
     format: 'csv',
     type: 'alerts',
     selectedAlert,
-    selectedTimeframe
-  })
+    selectedTimeframe,
+  });
 }
 
 module.exports = {

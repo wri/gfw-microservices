@@ -1,4 +1,3 @@
-
 const tmp = require('tmp');
 const _ = require('lodash');
 
@@ -90,7 +89,7 @@ const buildSQSMessage = ({ request, file }) => {
     filtersClean.type = 'input';
   }
 
-  return convertObjectToAWSPattern({fileName, filters, messageTemplate: messageSQSTemplate});
+  return convertObjectToAWSPattern({ fileName, filters, messageTemplate: messageSQSTemplate });
 };
 
 export default buildSQSMessage;

@@ -174,13 +174,13 @@ exports.listFilterValues = async (request, response) => {
 };
 
 const startTaskToCreateFile = async (request, response, file) => {
-  const { id: listID} = request.params;
+  const { id: listID } = request.params;
   const { type } = request.query;
 
   try {
     const source = type === 'alerts' ? 'alerts' : 'list';
 
-    const filter = await sendMessageToQueue({ request, file } , source);
+    const filter = await sendMessageToQueue({ request, file }, source);
     response.status(200).json({ status: 200, filter });
   } catch (err) {
     logger.error(`error to generate csv file to the list ${listID}, Error message ${err}`);

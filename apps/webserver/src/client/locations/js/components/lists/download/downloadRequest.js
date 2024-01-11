@@ -14,7 +14,7 @@ const downloadRequest = ({
   selectedLocations,
   allLocationsSelected,
   selectedAlert,
-  selectedTimeframe
+  selectedTimeframe,
 }) => {
   // 'Location Name' is named 'Investment Name' in the backend
   // adding quotation marks (stringify) to the column name as some of the field names in the database contain spaces

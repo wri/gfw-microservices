@@ -19,14 +19,14 @@ describe('PieChart Component', () => {
     const informationBubbleId = 'info-bubble-1';
 
     render(
-      <MuiThemeProvider >
+      <MuiThemeProvider>
         <PieChart
-            data={data}
-            chartLabels={chartLabels}
-            title={title}
-            informationBubbleId={informationBubbleId}
+          data={data}
+          chartLabels={chartLabels}
+          title={title}
+          informationBubbleId={informationBubbleId}
         />
-      </MuiThemeProvider > 
+      </MuiThemeProvider>
     );
 
     const chartHeader = screen.getAllByText(title);

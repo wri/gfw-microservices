@@ -19,7 +19,14 @@ describe('Table Component', () => {
     const title = 'Test Pie Chart';
     const sumOfAreasByChartLabel = 100;
 
-    render(<Table data={data} chartLabels={chartLabels} title={title} sumOfAreasByChartLabel={sumOfAreasByChartLabel} />);
+    render(
+      <Table
+        data={data}
+        chartLabels={chartLabels}
+        title={title}
+        sumOfAreasByChartLabel={sumOfAreasByChartLabel}
+      />
+    );
 
     const tableHeaders = screen.getAllByRole('columnheader');
     expect(tableHeaders).toHaveLength(3);
@@ -39,7 +46,14 @@ describe('Table Component', () => {
     const title = 'Test Pie Chart';
     const sumOfAreasByChartLabel = 0;
 
-    render(<Table data={data} chartLabels={chartLabels} title={title} sumOfAreasByChartLabel={sumOfAreasByChartLabel} />);
+    render(
+      <Table
+        data={data}
+        chartLabels={chartLabels}
+        title={title}
+        sumOfAreasByChartLabel={sumOfAreasByChartLabel}
+      />
+    );
 
     const tableRows = screen.queryAllByRole('row');
     expect(tableRows).toHaveLength(1);

@@ -60,10 +60,9 @@ describe('diagnosticsController', () => {
       },
       body: {
         locationId: '1544', // buenos aires, argentina
+        isGfwList: true,
       },
     };
-    // mock isGfwList
-    GFWListManager.isGfwList.mockReturnValue(true);
 
     // mock selected list
     const selectedList = {
@@ -95,7 +94,6 @@ describe('diagnosticsController', () => {
 
     expect(getAnalysisFromAdministrativeAreasList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/1');
-    expect(GFWListManager.isGfwList).toHaveBeenCalledWith(1);
     expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 1);
     expect(setListData).toHaveBeenCalled();
   });
@@ -107,10 +105,9 @@ describe('diagnosticsController', () => {
       },
       body: {
         locationId: '555637432', // patagonia, argentina
+        isGfwList: true,
       },
     };
-    // mock isGfwList
-    GFWListManager.isGfwList.mockReturnValue(true);
 
     // mock selected list
     const selectedList = {
@@ -142,7 +139,6 @@ describe('diagnosticsController', () => {
 
     expect(getAnalysisFromProtectedAreasList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/4');
-    expect(GFWListManager.isGfwList).toHaveBeenCalledWith(4);
     expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 4);
   });
 
@@ -153,10 +149,9 @@ describe('diagnosticsController', () => {
       },
       body: {
         locationId: '',
+        isGfwList: true,
       },
     };
-    // mock isGfwList
-    GFWListManager.isGfwList.mockReturnValue(true);
 
     // mock selected list
     const selectedList = {
@@ -188,7 +183,6 @@ describe('diagnosticsController', () => {
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/2');
-    expect(GFWListManager.isGfwList).toHaveBeenCalledWith(2);
     expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 2);
   });
 
@@ -199,10 +193,9 @@ describe('diagnosticsController', () => {
       },
       body: {
         locationId: '117',
+        isGfwList: true,
       },
     };
-    // mock isGfwList
-    GFWListManager.isGfwList.mockReturnValue(true);
 
     // mock selected list
     const selectedList = {
@@ -234,7 +227,6 @@ describe('diagnosticsController', () => {
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/2');
-    expect(GFWListManager.isGfwList).toHaveBeenCalledWith(2);
     expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 2);
   });
 
@@ -245,10 +237,9 @@ describe('diagnosticsController', () => {
       },
       body: {
         locationId: '117',
+        isGfwList: true,
       },
     };
-    // mock isGfwList
-    GFWListManager.isGfwList.mockReturnValue(true);
 
     // mock selected list
     const selectedList = {
@@ -280,7 +271,6 @@ describe('diagnosticsController', () => {
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/3');
-    expect(GFWListManager.isGfwList).toHaveBeenCalledWith(3);
     expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 3);
   });
 
@@ -291,10 +281,9 @@ describe('diagnosticsController', () => {
       },
       body: {
         locationId: '1914',
+        isGfwList: true,
       },
     };
-    // mock isGfwList
-    GFWListManager.isGfwList.mockReturnValue(true);
 
     // mock selected list
     const selectedList = {
@@ -326,7 +315,6 @@ describe('diagnosticsController', () => {
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/3');
-    expect(GFWListManager.isGfwList).toHaveBeenCalledWith(3);
     expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 3);
   });
 
@@ -386,13 +374,11 @@ describe('diagnosticsController', () => {
         },
       ],
     };
-    GFWListManager.isGfwList.mockReturnValue(false);
     ListManager.getListByIdWithAnalysisId.mockResolvedValue(selectedList);
 
     await diagnosticsController(req, res);
 
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/5583');
-    expect(GFWListManager.isGfwList).toHaveBeenCalledWith(5583);
     expect(ListManager.getListByIdWithAnalysisId).toHaveBeenCalledWith(req, 5583);
     expect(getAnalysisFromUserList).toHaveBeenCalledWith(req, selectedList);
   });
@@ -453,13 +439,11 @@ describe('diagnosticsController', () => {
         },
       ],
     };
-    GFWListManager.isGfwList.mockReturnValue(false);
     ListManager.getListByIdWithAnalysisId.mockResolvedValue(selectedList);
 
     await diagnosticsController(req, res);
 
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/5583');
-    expect(GFWListManager.isGfwList).toHaveBeenCalledWith(5583);
     expect(ListManager.getListByIdWithAnalysisId).toHaveBeenCalledWith(req, 5583);
     expect(getAnalysisFromUserList).toHaveBeenCalledWith(req, selectedList);
   });
@@ -510,7 +494,6 @@ describe('diagnosticsController', () => {
         },
       ],
     };
-    GFWListManager.isGfwList.mockReturnValue(false);
     ListManager.getAllListsWithAnalysisId.mockResolvedValue([]);
     SharedListManager.getUserInternalShareLists.mockResolvedValue([]);
     getAnalysisFromUserList.mockResolvedValue(req, selectedList);
@@ -518,7 +501,6 @@ describe('diagnosticsController', () => {
     await diagnosticsController(req, res);
 
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/5730');
-    expect(GFWListManager.isGfwList).toHaveBeenCalledWith(5730);
     expect(ListManager.getAllListsWithAnalysisId).toHaveBeenCalledWith(req);
     expect(SharedListManager.findSharedListsInsideOrganization).toHaveBeenCalledWith([], []);
     expect(SharedListManager.getUserInternalShareLists).toHaveBeenCalledWith(
@@ -535,9 +517,9 @@ describe('diagnosticsController', () => {
       },
       body: {
         locationId: '',
+        isGfwList: true,
       },
     };
-    GFWListManager.isGfwList.mockReturnValue(true);
     GFWListManager.getGFWListsByListId.mockRejectedValue(new Error('Mocked error'));
 
     await diagnosticsController(req, res);
@@ -557,7 +539,6 @@ describe('diagnosticsController', () => {
         isSharedList: 'false',
       },
     };
-    GFWListManager.isGfwList.mockReturnValue(false);
     ListManager.getListByIdWithAnalysisId.mockRejectedValue(new Error('Mocked error'));
 
     await diagnosticsController(req, res);

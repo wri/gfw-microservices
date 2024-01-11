@@ -55,8 +55,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   const todayAsEndDay = moment();
   const accountActivationDate = moment(OrganizationActivatedTime);
 
-  /// ****** TODO HOW TO GET organizationType ****** ///
-  const organizationType = 1;
+  const organizationType = req.session.subscription_status_id;
 
   const [limitsByOrgID] = await getAnalysisLimitData({ organizationId: organization_id });
   const [limitsByOrgType] = await getAnalysisLimitData({ organizationType });

@@ -7,13 +7,12 @@
 *   @function {sendMessage}
 
 ********************************************************************/
-const AWS = require('aws-sdk');
+
+const { SQS } = require('@aws-sdk/client-sqs');
+
 const config = require('../config');
 
-const sqs = new AWS.SQS({
-  apiVersion: '2012-11-05',
-  region: 'us-east-1',
-});
+const sqs = new SQS({});
 
 function partition(array, groupSize) {
   const output = [];
@@ -97,7 +96,7 @@ const sendMessage = (
     MessageGroupId: uniqueIdGenerator(),
     MessageAttributes: {},
   };
-  return sqs.sendMessage(parameters).promise();
+  return sqs.sendMessage(parameters);
 };
 
 const sendMessageBatch = (entries, queue_url) => {
@@ -116,7 +115,7 @@ const sendMessageBatch = (entries, queue_url) => {
         }),
         QueueUrl: queue_url,
       };
-      return sqs.sendMessageBatch(parameters).promise();
+      return sqs.sendMessageBatch(parameters);
     })
   );
 };

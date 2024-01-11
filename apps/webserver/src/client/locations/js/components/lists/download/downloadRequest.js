@@ -13,6 +13,8 @@ const downloadRequest = ({
   combinedColumns,
   selectedLocations,
   allLocationsSelected,
+  selectedAlert,
+  selectedTimeframe
 }) => {
   // 'Location Name' is named 'Investment Name' in the backend
   // adding quotation marks (stringify) to the column name as some of the field names in the database contain spaces
@@ -33,6 +35,8 @@ const downloadRequest = ({
     ...(filters.selectedSubState ? { subState: filters.selectedSubState } : {}),
     combinedColumns: combinedColumns?.join(','),
     selectedLocations: allLocationsSelected ? 'all' : selectedLocations?.join(','),
+    selectedAlert: selectedAlert ?? '',
+    selectedTimeframe: selectedTimeframe ?? '',
   };
 
   return axios({

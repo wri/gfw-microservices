@@ -37,6 +37,7 @@ import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtil
 import { loaderMessages } from '../../../common/js/config';
 import { gfwListNames } from '../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
+import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
 
 //TODO Remove temp file
 // import { data } from './old';
@@ -75,6 +76,7 @@ export default class Dashboard extends Component {
     this.state = {
       ...store.getState(),
       lastUpdatedDashboard: 'N/A',
+      openDownloadDialog: false,
     };
   }
 
@@ -178,6 +180,12 @@ export default class Dashboard extends Component {
   componentWillUnmount() {
     this.unsubscribe();
   }
+
+  setOpenDownloadDialog = (boolean) => {
+    this.setState({
+      openDownloadDialog: boolean,
+    });
+  };
 
   selectList = async (list) => {
     const { listCache, gfwLists } = this.state;
@@ -318,6 +326,7 @@ export default class Dashboard extends Component {
       timeframeDissolved,
       timeframeGeojsonForFooter,
       selectedAdmin,
+      openDownloadDialog
     } = this.state;
 
     const dashboardTitle = isEmpty(selectedList)
@@ -389,7 +398,10 @@ export default class Dashboard extends Component {
               </div>
               <div
                 className={`dashboard-subnav__control ${isEmpty(rawData) ? 'hidden' : ''}`}
-                onClick={() => downloadDashboard()}
+                onClick={() => {
+                  downloadDashboard();
+                  this.setState({ isLoading: true, openDownloadDialog: true });
+                }}
               >
                 <DownloadIcon color="#b9b9bb" />
                 <span>Download</span>
@@ -440,6 +452,7 @@ export default class Dashboard extends Component {
             )}
           </div>
         </div>
+        <ConfirmDialog open={openDownloadDialog} setDialogOpen={this.setOpenDownloadDialog} />
       </Page>
     );
   }

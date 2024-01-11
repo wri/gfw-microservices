@@ -2,8 +2,8 @@ import path from 'path';
 const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
 const tmp = require('tmp');
 
-import { expect, jest, it } from '@jest/globals';
-const { buildSQSMessage } = require('./locations.utils');
+import { describe, expect, jest, it } from '@jest/globals';
+const { buildSQSMessage } = require('./list.message');
 
 jest.spyOn(path, 'resolve').mockReturnValueOnce('./config/privateutils/sqs.utils');
 sqsUtils.uniqueIdGenerator = jest.fn().mockReturnValue('1234567890');

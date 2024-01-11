@@ -16,7 +16,7 @@ const ShareManager = require('../../../config/publicutils/shareManager.utils');
 const {
   findSharedListsInsideOrganization,
 } = require('../../../config/publicutils/shareManager.utils');
-const { formatListLocationDataForFilter, sendMessageToQueue } = require('../utils/locations.utils');
+const { formatListLocationDataForFilter } = require('../utils/locations.utils');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 
 // Config
@@ -24,6 +24,7 @@ const { getGeoJSONGeometry } = require('../../../config/privateutils/location.ut
 
 // Logging
 const logger = require('../../../config/privateutils/logger.utils');
+const { sendMessageToQueue } = require('../../downloader');
 
 /**
  * @function locations
@@ -173,9 +174,13 @@ exports.listFilterValues = async (request, response) => {
 };
 
 const startTaskToCreateFile = async (request, response, file) => {
-  const { id: listID } = request.params;
+  const { id: listID} = request.params;
+  const { type } = request.query;
+
   try {
-    const filter = await sendMessageToQueue(request, file);
+    const source = type === 'alerts' ? 'alerts' : 'list';
+
+    const filter = await sendMessageToQueue({ request, file } , source);
     response.status(200).json({ status: 200, filter });
   } catch (err) {
     logger.error(`error to generate csv file to the list ${listID}, Error message ${err}`);

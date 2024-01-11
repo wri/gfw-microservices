@@ -125,7 +125,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
       uploadFileToS3,
       largeListFile,
       isExistingList,
-      selectedAnalysis
+      selectedAnalysis.length > 0 ? selectedAnalysis : getAnalysesSelectedByDefault()
     )
       .then(() => {
         if (selectedAnalysis.includes(analysisTypes.DEFORESTATION_KPIS)) {
@@ -415,7 +415,10 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         <div className="dialog__footer add-location-chooser__footer" style={{ right: '0' }}>
           <Button
             className="dialog__primary-action"
-            disabled={(!listName && !existingListName) || selectedAnalysis.length <= 0}
+            disabled={
+              (!listName && !existingListName) ||
+              (selectedAnalysis.length <= 0 && featureFlags.isAfiAvailable)
+            }
             label={locationsPage.add.submit}
             onClick={() => createUploadProcess()}
             variant="primary"

@@ -9,13 +9,14 @@ import { config } from 'aws-sdk';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LargeListService } from './../services/largelist.service';
+import { LargeListService } from '../services/largelist.service';
 import { GeoService, LocationService } from '@wri-monorepos/geo';
 import { SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
 import { ListService } from '../services/list.service';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
 import { AFIModule } from './afi';
+import { DashboardModule } from './analysis';
 
 config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -34,6 +35,7 @@ config.update({
     FCDModule,
     AFIModule,
     SchedulerModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService, LargeListService, LocationService, GeoService, ListService],

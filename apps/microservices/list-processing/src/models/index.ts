@@ -116,3 +116,10 @@ export interface getAfiAnalysisDataRequest {
 export interface DatabaseQueryParam {
   clientDatabase: string;
 }
+
+export interface GetDashboardListDataRequest {
+  locationId: string;
+  clientDatabase: string;
+  page: number;
+  rowsPerPage: number;
+}

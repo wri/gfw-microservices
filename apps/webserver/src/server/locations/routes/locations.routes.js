@@ -452,8 +452,9 @@ module.exports = (app, limiter) => {
       .then(() => {
         return ListManager.deleteListIfEmpty(req, list_id);
       })
-      .then(() => {
-        res.send('LocationDeleted');
+      .then((isListEmpty) => {
+        const result = isListEmpty ? 'AllLocationsDeleted' : 'LocationDeleted';
+        res.send(result);
       })
       .catch((err) => {
         console.log('Error /locations/deleteLocations', err);
@@ -724,8 +725,9 @@ module.exports = (app, limiter) => {
       .then(() => {
         return ListManager.deleteListIfEmpty(req, listID);
       })
-      .then(() => {
-        res.send('LocationDeleted');
+      .then((isListEmpty) => {
+        const result = isListEmpty ? 'AllLocationsDeleted' : 'LocationDeleted';
+        res.send(result);
       })
       .catch((err) => {
         console.log('Error /locations/deleteFilteredLocations', err);

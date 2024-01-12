@@ -530,7 +530,7 @@ export default class Lists extends Component {
       .then(() => {
         deleteAllFilteredLocations(list_id, filters, filterString)
           .then((response) => {
-            if (response === 'LocationDeleted') {
+            if (response.includes('Deleted')) {
               this.setState({
                 dialogOpen: true,
                 dialogTitle: locationsPage.lists.deleteLocationsMessages.success.title,
@@ -542,6 +542,10 @@ export default class Lists extends Component {
                 event_category: 'Lists Click',
                 event_label: 'user deleted all locations from their own list',
               });
+
+              if (response === 'AllLocationsDeleted') {
+                window.location.href = '/locations';
+              }
             } else {
               console.warn('Got unrecognized location delete response', response);
               this.setState({
@@ -603,7 +607,7 @@ export default class Lists extends Component {
           gfw_list_id: gwfListId,
         })
         .then((response) => {
-          if (response === 'LocationDeleted') {
+          if (response.includes('Deleted')) {
             this.setState({
               dialogOpen: true,
               dialogTitle: locationsPage.lists.deleteLocationsMessages.success.title,
@@ -615,6 +619,10 @@ export default class Lists extends Component {
               event_category: 'Lists Click',
               event_label: 'user deleted locations from their own list',
             });
+
+            if (response === 'AllLocationsDeleted') {
+              window.location.href = '/locations';
+            }
           } else if (response.includes('isLocked')) {
             // Shouldn't happen due to call to unlock list above, but handle it if it does
             this.setState({

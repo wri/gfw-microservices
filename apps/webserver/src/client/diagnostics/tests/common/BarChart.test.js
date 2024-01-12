@@ -35,16 +35,18 @@ describe('BarChart Component', () => {
 
     render(<BarChart data={data} plotBands={plotBands} plotLines={plotLines} />);
 
-    expect(require('highcharts').chart).toHaveBeenCalledWith(expect.objectContaining({
-      chart: expect.objectContaining({
-        type: 'column',
-      }),
-      xAxis: expect.objectContaining({
-        type: 'category',
-        plotBands,
-        plotLines,
-      }),
-      series: data,
-    }));
+    expect(require('highcharts').chart).toHaveBeenCalledWith(
+      expect.objectContaining({
+        chart: expect.objectContaining({
+          type: 'column',
+        }),
+        xAxis: expect.objectContaining({
+          type: 'category',
+          plotBands,
+          plotLines,
+        }),
+        series: data,
+      })
+    );
   });
 });

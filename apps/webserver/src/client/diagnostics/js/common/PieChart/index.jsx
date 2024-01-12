@@ -14,7 +14,7 @@ function PieChart({ data, chartLabels, title, informationBubbleId }) {
         <DiagnosticsChartHeader title={title} informationBubbleId={informationBubbleId} />
         <Card>
           <CardContent>
-            <div className="diagnostics-chart-container" data-testid="chart-component">
+            <div className="diagnostics-chart-container" data-testid="pie-chart">
               <div className="diagnostics-chart-container__chart">
                 <Chart data={data} chartLabels={chartLabels} />
               </div>

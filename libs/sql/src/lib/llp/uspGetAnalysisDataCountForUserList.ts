@@ -42,9 +42,9 @@ export class UspGetAnalysisDataCountForUserList {
 
     const parameters = [
       { field: 'listID', type: sql.Int, value: listId },
-      { field: 'Country', type: sql.NVarChar, value: country || null },
-      { field: 'State', type: sql.NVarChar, value: state || null },
-      { field: 'SubState', type: sql.NVarChar, value: subState || null },
+      { field: 'Country', type: sql.NVarChar(255), value: country || null },
+      { field: 'State', type: sql.NVarChar(255), value: state || null },
+      { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
       {
         field: 'AnalysisAreaMin',
         type: sql.Int,
@@ -56,21 +56,33 @@ export class UspGetAnalysisDataCountForUserList {
         value: analysisAreaMax || null,
       },
       { field: 'SearchString', type: sql.Float, value: searchString || null },
-      { field: 'selectedSupplier', type: sql.NVarChar, value: selectedSupplier || null },
+      { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
       {
         field: 'selectedSecondSupplier',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: selectedSecondSupplier || null,
       },
-      { field: 'selectedParentCompany', type: sql.NVarChar, value: selectedParentCompany || null },
+      {
+        field: 'selectedParentCompany',
+        type: sql.NVarChar(255),
+        value: selectedParentCompany || null,
+      },
       { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
       {
         field: 'selectedOverallThreats',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: selectedOverallThreats || null,
       },
-      { field: 'selectedOverallValues', type: sql.NVarChar, value: selectedOverallValues || null },
-      { field: 'selectedMillPriority', type: sql.NVarChar, value: selectedMillPriority || null },
+      {
+        field: 'selectedOverallValues',
+        type: sql.NVarChar(255),
+        value: selectedOverallValues || null,
+      },
+      {
+        field: 'selectedMillPriority',
+        type: sql.NVarChar(255),
+        value: selectedMillPriority || null,
+      },
     ];
 
     const query = SQLUtils.isSystemDatabase(databaseName)

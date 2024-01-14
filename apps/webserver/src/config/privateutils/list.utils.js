@@ -103,12 +103,12 @@ const deleteFilteredLocations = (req, list_id, filters) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'listID', type: sql.Int, value: list_id },
-      { field: 'Country', type: sql.NVarChar, value: country ? country : null },
-      { field: 'State', type: sql.NVarChar, value: state ? state : null },
-      { field: 'SubState', type: sql.NVarChar, value: subState ? subState : null },
+      { field: 'Country', type: sql.NVarChar(255), value: country ? country : null },
+      { field: 'State', type: sql.NVarChar(255), value: state ? state : null },
+      { field: 'SubState', type: sql.NVarChar(255), value: subState ? subState : null },
       { field: 'AnalysisAreaMin', type: sql.Int, value: selectedAreaMin ? selectedAreaMin : null },
       { field: 'AnalysisAreaMax', type: sql.Int, value: selectedAreaMax ? selectedAreaMax : null },
-      { field: 'SearchString', type: sql.NVarChar, value: searchString || null },
+      { field: 'SearchString', type: sql.NVarChar(255), value: searchString || null },
     ];
 
     sqlUtils
@@ -149,7 +149,7 @@ const editSingleLocation = (req, list_id, location_id, attributes) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
       { field: 'location_id', type: sql.Int, value: location_id },
-      { field: 'statement', type: sql.NVarChar, value: statement },
+      { field: 'statement', type: sql.NVarChar(255), value: statement },
     ];
 
     sqlUtils

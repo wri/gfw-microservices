@@ -41,22 +41,13 @@ export class AfiService {
       { field: 'isListLevel', type: sql.Int, value: isListLevel },
     ];
 
-    const connection = new SQLUtils({
-      ...this.sqlConfig,
-      database: clientDatabase,
-    });
-
-    await connection.connect();
-
     this.logger.debug('Get Number Of Pages AFI Analysis');
-    const createListResult = await connection.query<CountAfiAnalysisByListId>(
+    const allRows = await SQLUtils.queryDB<CountAfiAnalysisByListId[]>(
+      clientDatabase,
       getCountAfiAnalysisByListId,
       parameters
     );
-
-    await connection.disconnect();
-
-    return createListResult;
+    return allRows[0];
   }
 
   async getAfiDataPerPage(listId: string, queryParam) {
@@ -68,22 +59,11 @@ export class AfiService {
       { field: 'pageNumber', type: sql.Int, value: pageNumber },
     ];
 
-    const connection = new SQLUtils({
-      ...this.sqlConfig,
-      database: clientDatabase,
-    });
-
-    await connection.connect();
+    this.logger.debug('Get data AFI Analysis');
     const query =
       Number(isListLevel) === 1
         ? getPaginatedAfiAnalysisListLevel
         : getPaginatedAfiAnalysisLocationLevel;
-
-    this.logger.debug('Get data AFI Analysis');
-    const createListResult = await connection.queryArray<AfiAnalysisByListId>(query, parameters);
-
-    connection.disconnect();
-
-    return createListResult;
+    return await SQLUtils.queryDB<AfiAnalysisByListId[]>(clientDatabase, query, parameters);
   }
 }

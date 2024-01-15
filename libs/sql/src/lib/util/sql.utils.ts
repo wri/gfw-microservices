@@ -19,28 +19,10 @@ export class SQLUtils {
     this.connection = await get(database, config); //sql.connect(this.config);
   }
 
-  /**
-   * This function runs a raw query against the database.
-   *
-   * @param query
-   * @param parameters
-   * @returns
-   */
-  query<T>(query: string, parameters?: ParameterType[]): Promise<T> {
-    return new Promise((resolve, reject) => {
-      this.queryArray<T>(query, parameters)
-        .then((result) => {
-          if (result && Array.isArray(result) && result.length > 0) {
-            resolve(result[0]);
-          }
-          resolve(undefined);
-        })
-        .catch((error) => {
-          reject(error);
-        });
-    });
-  }
-  queryArray<T>(queryNameOrString: string, parameters?: ParameterType[]): Promise<Array<T>> {
+  // mssql query function allows multiple queries to be executed in one call
+  // and returns an array of recordsets (one per query).
+  // We only use a single query per call, so we return the first recordset, which is itself an array of rows.
+  rawSingleQuery<T>(queryNameOrString: string, parameters?: ParameterType[]): Promise<Array<T>> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {
@@ -57,9 +39,9 @@ export class SQLUtils {
       dbPromise
         .then((result: sql.IResult<T>) => {
           if (Number(result.recordsets.length) > 0) {
-            resolve(result.recordsets[0] as Array<T>);
+            return resolve(result.recordsets[0] as Array<T>);
           }
-          resolve(undefined);
+          resolve(undefined); // this should never happen, but leaving it here just in case
         })
         .catch((errorMessage) => {
           reject(errorMessage);
@@ -67,17 +49,18 @@ export class SQLUtils {
     });
   }
 
+  // all rows for given query, unless there is only one row, in which case return that row
   executeQuery<T>(queryName: string, parameters?: ParameterType[]): Promise<T> {
     return new Promise((resolve, reject) => {
-      this.queryArray<T>(queryName, parameters)
-        .then((result) => {
-          if (result === undefined) {
-            resolve(undefined);
+      this.rawSingleQuery<T>(queryName, parameters)
+        .then((allRows) => {
+          if (allRows === undefined) {
+            return resolve(undefined);
           }
-          if (Number(result.length) > 1) {
-            resolve(result as T);
+          if (Number(allRows.length) > 1) {
+            return resolve(allRows as T); // all rows
           }
-          resolve(result[0] as T);
+          resolve(allRows[0] as T);
         })
         .catch((error) => {
           reject(error);
@@ -89,7 +72,7 @@ export class SQLUtils {
     return this.connection.close();
   }
 
-  // setup connection, lookup query by name, query DB, disconnect
+  // setup connection, lookup query by name, query DB, disconnect, return all rows for single query
   static async queryDB<T>(
     databaseName: string,
     queryName: string,
@@ -100,30 +83,9 @@ export class SQLUtils {
     try {
       const isSystemQuery = databaseName === SQL_CONFIG.database;
       const queryStr = getQueryStr(isSystemQuery, queryName);
-      const recordsets = await connection.query<T>(queryStr, parameters);
+      const allRows = await connection.rawSingleQuery<T>(queryStr || queryName, parameters);
       connection.disconnect();
-      return recordsets as T;
-    } catch (error) {
-      connection.disconnect();
-      throw new Error(error);
-    }
-  }
-
-  // This function is temporal, que queryDBArray always return the first recordset,
-  // Need to discuss if we need to return all recordsets in the previous function or we need to have this function
-  static async queryDBArray<T>(
-    databaseName: string,
-    queryName: string,
-    parameters?: ParameterType[]
-  ): Promise<T> {
-    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
-    await connection.connect();
-    try {
-      const isSystemQuery = databaseName === SQL_CONFIG.database;
-      const queryStr = getQueryStr(isSystemQuery, queryName);
-      const recordsets = await connection.queryArray<T>(queryStr, parameters);
-      connection.disconnect();
-      return recordsets as T;
+      return allRows as T;
     } catch (error) {
       connection.disconnect();
       throw new Error(error);

@@ -72,6 +72,10 @@ export class SQLUtils {
     return this.connection.close();
   }
 
+  static isSystemDatabase(databaseName: string): boolean {
+    return databaseName === SQL_CONFIG.database;
+  }
+
   // setup connection, lookup query by name, query DB, disconnect, return all rows for single query
   static async queryDB<T>(
     databaseName: string,
@@ -92,7 +96,13 @@ export class SQLUtils {
     }
   }
 
-  static isSystemDatabase(databaseName: string): boolean {
-    return databaseName === SQL_CONFIG.database;
+  // wrapper to return just the first row of the result set
+  static async queryDBFirstRow<T>(
+    databaseName: string,
+    queryName: string,
+    parameters?: ParameterType[]
+  ): Promise<T> {
+    const allRows = await SQLUtils.queryDB<T[]>(databaseName, queryName, parameters);
+    return allRows ? (allRows[0] as T) : undefined;
   }
 }

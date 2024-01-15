@@ -26,9 +26,9 @@ export class UspGetLocationsFilteredToCopy {
         type: sql.VarChar,
         value: selectedLocations,
       },
-      { field: 'Country', type: sql.NVarChar, value: country || null },
-      { field: 'State', type: sql.NVarChar, value: state || null },
-      { field: 'SubState', type: sql.NVarChar, value: subState || null },
+      { field: 'Country', type: sql.NVarChar(255), value: country || null },
+      { field: 'State', type: sql.NVarChar(255), value: state || null },
+      { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
       {
         field: 'AnalysisAreaMin',
         type: sql.Int,
@@ -41,7 +41,7 @@ export class UspGetLocationsFilteredToCopy {
       },
       {
         field: 'SearchString',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: searchString || null,
       },
     ];

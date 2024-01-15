@@ -42,12 +42,11 @@ export class AfiService {
     ];
 
     this.logger.debug('Get Number Of Pages AFI Analysis');
-    const allRows = await SQLUtils.queryDB<CountAfiAnalysisByListId[]>(
+    return await SQLUtils.queryDBFirstRow<CountAfiAnalysisByListId>(
       clientDatabase,
       getCountAfiAnalysisByListId,
       parameters
     );
-    return allRows[0];
   }
 
   async getAfiDataPerPage(listId: string, queryParam) {

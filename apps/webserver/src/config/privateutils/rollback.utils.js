@@ -32,7 +32,7 @@ const dropDatabase = (req, pendingaccounts_id) => {
 
 const dropOrganizationTable = (req, table_name) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'table_name', type: sql.NVarChar, value: table_name }];
+    const parameters = [{ field: 'table_name', type: sql.NVarChar(255), value: table_name }];
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspDropOrganizationTable', parameters)
       .then(() => {
@@ -47,7 +47,7 @@ const dropOrganizationTable = (req, table_name) => {
 
 const dropSystemTable = (req, table_name) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'table_name', type: sql.NVarChar, value: table_name }];
+    const parameters = [{ field: 'table_name', type: sql.NVarChar(255), value: table_name }];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspDropSystemTable', parameters)
       .then(() => {
@@ -63,9 +63,9 @@ const dropSystemTable = (req, table_name) => {
 const deleteOrganizationTableRow = (req, table_name, primary_key, column_name) => {
   return new Promise((resolve, reject) => {
     const parameters = [
-      { field: 'table_name', type: sql.NVarChar, value: table_name },
+      { field: 'table_name', type: sql.NVarChar(255), value: table_name },
       { field: 'primary_key', type: sql.Int, value: primary_key },
-      { field: 'column', type: sql.NVarChar, value: column_name },
+      { field: 'column', type: sql.NVarChar(255), value: column_name },
     ];
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspDeleteOrganizationTableRow', parameters)
@@ -82,9 +82,9 @@ const deleteOrganizationTableRow = (req, table_name, primary_key, column_name) =
 const deleteSystemTableRow = (req, table_name, primary_key, column_name) => {
   return new Promise((resolve, reject) => {
     const parameters = [
-      { field: 'table_name', type: sql.NVarChar, value: table_name },
+      { field: 'table_name', type: sql.NVarChar(255), value: table_name },
       { field: 'primary_key', type: sql.Int, value: primary_key },
-      { field: 'column', type: sql.NVarChar, value: column_name },
+      { field: 'column', type: sql.NVarChar(255), value: column_name },
     ];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspDeleteSystemTableRow', parameters)
@@ -101,7 +101,7 @@ const deleteSystemTableRow = (req, table_name, primary_key, column_name) => {
 const dropUserRoute = (req, user_email, organization_id, organization_user_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [
-      { field: 'user_email', type: sql.NVarChar, value: user_email },
+      { field: 'user_email', type: sql.NVarChar(255), value: user_email },
       { field: 'organization_id', type: sql.Int, value: organization_id },
       { field: 'organization_user_id', type: sql.Int, value: organization_user_id },
     ];
@@ -119,7 +119,7 @@ const dropUserRoute = (req, user_email, organization_id, organization_user_id) =
 
 const deleteUserSecret = (req, user_email) => {
   return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'user_email', type: sql.NVarChar, value: user_email }];
+    const parameters = [{ field: 'user_email', type: sql.NVarChar(255), value: user_email }];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspDeleteUserSecret', parameters)
       .then(() => {

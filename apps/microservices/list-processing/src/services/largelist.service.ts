@@ -199,7 +199,7 @@ export class LargeListService {
       await connection.executeQuery('uspDropOrganizationTable', [
         {
           field: 'table_name',
-          type: sql.NVarChar,
+          type: sql.NVarChar(255),
           value: list.list_table,
         },
       ]);
@@ -207,7 +207,7 @@ export class LargeListService {
       await connection.executeQuery('uspDropOrganizationTable', [
         {
           field: 'table_name',
-          type: sql.NVarChar,
+          type: sql.NVarChar(255),
           value: list.analysis_table,
         },
       ]);

@@ -103,17 +103,17 @@ export class AppService {
           },
           {
             field: 'list_name',
-            type: sql.NVarChar,
+            type: sql.NVarChar(255),
             value: listDetails.listName,
           },
           {
             field: 's3_filename',
-            type: sql.NVarChar,
+            type: sql.NVarChar(255),
             value: listDetails.key,
           },
           {
             field: 's3_location',
-            type: sql.NVarChar,
+            type: sql.NVarChar(255),
             value: fileS3Route,
           },
         ]

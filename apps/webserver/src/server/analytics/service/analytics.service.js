@@ -23,8 +23,8 @@ const getOrganizationAnalysisUsage = async ({
   countForEachList,
 }) => {
   const params = [
-    { field: 'startDate', type: sql.NVarChar, value: startDate },
-    { field: 'endDate', type: sql.NVarChar, value: endDate },
+    { field: 'startDate', type: sql.NVarChar(255), value: startDate },
+    { field: 'endDate', type: sql.NVarChar(255), value: endDate },
     { field: 'organization', type: sql.Int, value: organizationId },
     { field: 'countForEachList', type: sql.Int, value: countForEachList },
   ];

@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { GenerationFileRequest } from './model';
-import { SQL_CONFIG } from '../config/config';
 import {
   AnalysisDataCountType,
   getAnalysisDataCountForGFWList,
@@ -89,30 +88,24 @@ export class UspGetAnalysisDataCountForUserList {
       ? getAnalysisDataCountForGFWList
       : getAnalysisDataCountForUserList;
 
-    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
-    await connection.connect();
-    try {
-      const recordsets = await connection.queryArray<AnalysisDataCountType>(query, parameters);
-      const totalRows = recordsets.find(
-        (record) => record.statistic_type === 'Row Count'
-      ).statistic;
-      const maximumAnalysisAreaInTheList = recordsets.find(
-        (record) => record.statistic_type === 'Max Area'
-      ).statistic;
-      let numberOfPages = 2;
-      if (totalRows) {
-        numberOfPages = rowsPerPage ? Math.ceil(totalRows / rowsPerPage) : 1;
-      }
-      connection.disconnect();
-      return {
-        numberOfPages,
-        numberOfResults: totalRows,
-        maximumAnalysisAreaInTheList,
-      };
-    } catch (error) {
-      console.log(error);
-      connection.disconnect();
-      throw new Error(error);
+    const recordsets = await SQLUtils.queryDB<AnalysisDataCountType[]>(
+      databaseName,
+      query,
+      parameters
+    );
+
+    const totalRows = recordsets.find((record) => record.statistic_type === 'Row Count').statistic;
+    const maximumAnalysisAreaInTheList = recordsets.find(
+      (record) => record.statistic_type === 'Max Area'
+    ).statistic;
+    let numberOfPages = 2;
+    if (totalRows) {
+      numberOfPages = rowsPerPage ? Math.ceil(totalRows / rowsPerPage) : 1;
     }
+    return {
+      numberOfPages,
+      numberOfResults: totalRows,
+      maximumAnalysisAreaInTheList,
+    };
   }
 }

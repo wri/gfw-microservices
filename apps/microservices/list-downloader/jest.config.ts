@@ -2,6 +2,7 @@
 export default {
   displayName: 'microservices-list-downloader',
   preset: '../../../jest.preset.js',
+  setupFiles: ['<rootDir>/jest.set.env.ts'],
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',

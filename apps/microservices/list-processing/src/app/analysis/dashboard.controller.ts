@@ -7,8 +7,8 @@ import { z } from 'zod';
 const getDashboardListDataSchema = z.object({
   locationId: z.string().optional(),
   clientDatabase: z.string(),
-  rowsPerPage: z.string().transform((v) => parseInt(v)),
-  page: z.string().transform((v) => parseInt(v)),
+  rowsPerPage: z.coerce.number().gte(1, 'rowsPerPage must be greater than 0'),
+  page: z.coerce.number().gte(1, 'page must be greater than 0'),
 });
 
 @Controller('/analysis/dashboard')

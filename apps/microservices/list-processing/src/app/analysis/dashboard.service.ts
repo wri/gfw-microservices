@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ClientStoreConnection, AnalysisDashboard } from '@wri-monorepos/sql';
 import { In } from 'typeorm';
+import { DashboardRepository } from './dashboard.repository';
 
 @Injectable()
 export class DashboardService {
-  constructor(private readonly clientStoreConnection: ClientStoreConnection) {}
-
-  private async createOrganizationConnection(organizationDb: string) {
-    return await this.clientStoreConnection.getConnection(organizationDb);
-  }
+  constructor(private readonly dashboardRepository: DashboardRepository) {}
 
   async getDashboardData(
     listId: number,
@@ -17,18 +13,14 @@ export class DashboardService {
     pageNumber = 1,
     pageSize = 10
   ) {
-    const connection = await this.createOrganizationConnection(clientDatabase);
-
-    const analysesDashboardRepository = connection.getRepository(AnalysisDashboard);
-
     const whereClause =
       locationIdArray.length > 0
         ? { listId: listId, locationId: In(locationIdArray) }
         : { listId: listId };
 
-    const [result, total] = await analysesDashboardRepository.findAndCount({
+    const [result, total] = await this.dashboardRepository.findAndCount(clientDatabase, {
       where: whereClause,
-      take: pageNumber * pageSize,
+      take: pageSize,
       skip: (pageNumber - 1) * pageSize,
     });
 

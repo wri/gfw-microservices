@@ -24,7 +24,7 @@ const messageSQSTemplate = {
   },
 };
 
-const buildSQSMessage = (request) => {
+const buildSQSMessage = ({ request }) => {
   const { listId } = request.query;
   const { user_email: userEmail, organization_database: organizationDatabase } = request.session;
 

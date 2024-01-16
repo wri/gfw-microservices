@@ -22,7 +22,7 @@ export class SQLUtils {
   // mssql query function allows multiple queries to be executed in one call
   // and returns an array of recordsets (one per query).
   // We only use a single query per call, so we return the first recordset, which is itself an array of rows.
-  rawSingleQuery<T>(queryNameOrString: string, parameters?: ParameterType[]): Promise<Array<T>> {
+  runRawSingleQuery<T>(queryNameOrString: string, parameters?: ParameterType[]): Promise<Array<T>> {
     const request = this.connection.request();
 
     if (parameters && Array.isArray(parameters)) {
@@ -52,7 +52,7 @@ export class SQLUtils {
   // all rows for given query, unless there is only one row, in which case return that row
   executeQuery<T>(queryName: string, parameters?: ParameterType[]): Promise<T> {
     return new Promise((resolve, reject) => {
-      this.rawSingleQuery<T>(queryName, parameters)
+      this.runRawSingleQuery<T>(queryName, parameters)
         .then((allRows) => {
           if (allRows === undefined) {
             return resolve(undefined);
@@ -87,7 +87,7 @@ export class SQLUtils {
     try {
       const isSystemQuery = databaseName === SQL_CONFIG.database;
       const queryStr = getQueryStr(isSystemQuery, queryName);
-      const allRows = await connection.rawSingleQuery<T>(queryStr || queryName, parameters);
+      const allRows = await connection.runRawSingleQuery<T>(queryStr || queryName, parameters);
       connection.disconnect();
       return allRows as T;
     } catch (error) {

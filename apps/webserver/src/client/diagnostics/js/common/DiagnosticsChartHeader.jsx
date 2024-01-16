@@ -12,7 +12,9 @@ function DiagnosticsChartHeader({
 }) {
   return (
     <div className="diagnostics-chart-header">
-      <div className="diagnostics-chart-header__title">{title}</div>
+      <div className="diagnostics-chart-header__title" data-testid="chart-header-title">
+        {title}
+      </div>
       {subtitle && <span>{subtitle}</span>}
       {informationBubbleId && <IconButtonWrapper id={informationBubbleId} />}
       {downloadId && (

@@ -1,4 +1,4 @@
-import { ArgentinaOverlap } from './argentina.overlap';
+import { ArgentinaOverlapService } from './argentina.overlap.service';
 import { describe, expect, test } from '@jest/globals';
 import { argentinaListLevelData, argentinaLocationData } from '../shared/mock.data';
 
@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
 
 describe('Argentina Overlap', () => {
-  const argentinaOverlap = new ArgentinaOverlap();
+  const argentinaOverlapService = new ArgentinaOverlapService();
 
   const filters = {
     listId: 5642,
@@ -27,15 +27,15 @@ describe('Argentina Overlap', () => {
   };
 
   beforeAll(() => {
-    argentinaOverlap.startEmail = jest.fn();
-    argentinaOverlap.errorEmail = jest.fn();
-    argentinaOverlap.finishedEmail = jest.fn();
+    argentinaOverlapService.startEmail = jest.fn();
+    argentinaOverlapService.errorEmail = jest.fn();
+    argentinaOverlapService.finishedEmail = jest.fn();
 
     createDirectory(dir);
   });
 
   beforeEach(() => {
-    argentinaOverlap.start(filters);
+    argentinaOverlapService.start(filters);
   });
 
   afterEach(() => {
@@ -44,9 +44,9 @@ describe('Argentina Overlap', () => {
   });
 
   test('When input data has 6 locations', async () => {
-    argentinaOverlap.process(argentinaLocationData, filters);
+    argentinaOverlapService.process(argentinaLocationData, filters);
 
-    await argentinaOverlap.finish(filters);
+    await argentinaOverlapService.finish(filters);
 
     let csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([

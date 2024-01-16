@@ -6,7 +6,7 @@ import { convert } from 'geojson2shp';
 import { Logger, Injectable } from '@nestjs/common';
 
 import { GenerationFileRequest } from '@wri-monorepos/sql';
-import { IPipeService } from '../pipe/IPipeService';
+import { IPipeService } from '../pipe/i.pipe.service';
 import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
 import { FilterSelection } from '../transform/filter.selection';
@@ -22,7 +22,7 @@ export class ShapefileService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  start(filters: GenerationFileRequest) {
+  async start(filters: GenerationFileRequest) {
     const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
     this.inputStream = new PassThrough({
@@ -45,7 +45,7 @@ export class ShapefileService extends IPipeService {
     allFields = [...new Set(allFields)];
 
     this.organizeStream(filters, allFields);
-    this.startEmail(filters);
+    await this.startEmail(filters);
   }
 
   process(analysisData) {
@@ -59,9 +59,9 @@ export class ShapefileService extends IPipeService {
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();
 
-    this.inputStream.on('error', (err) => {
+    this.inputStream.on('error', async (err) => {
       this.logger.error(`(${listId}) - Error on stream: ${err}`);
-      this.errorEmail(filters);
+      await this.errorEmail(filters);
     });
 
     this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}.geojson`, { flags: 'r+' });

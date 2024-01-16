@@ -1,9 +1,10 @@
-import { Logger} from "@nestjs/common";
-import { AfiAnalysisByListId, GenerationFileRequest } from "@wri-monorepos/sql";
-import {IInputData} from "./i.input.data";
+import { Injectable, Logger } from '@nestjs/common';
+import { AfiAnalysisByListId, GenerationFileRequest } from '@wri-monorepos/sql';
+import { IInputData } from './i.input.data';
 
 import axios from 'axios';
 
+@Injectable()
 export class AnalysisAfiDataService extends IInputData {
   private readonly logger = new Logger(AnalysisAfiDataService.name);
 
@@ -22,7 +23,10 @@ export class AnalysisAfiDataService extends IInputData {
     }
   }
 
-  async getDataPaginated(filter: GenerationFileRequest, isListLevel: number): Promise<AfiAnalysisByListId[]> {
+  async getDataPaginated(
+    filter: GenerationFileRequest,
+    isListLevel: number
+  ): Promise<AfiAnalysisByListId[]> {
     const { organizationDatabase, rowsPerPage, page, listId } = filter;
     const queryString = `rowsPerPage=${rowsPerPage}&pageNumber=${page}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/afi/${listId}/data-per-page?${queryString}`;

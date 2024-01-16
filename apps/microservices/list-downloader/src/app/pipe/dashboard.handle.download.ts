@@ -13,7 +13,7 @@ import { FilterLocationHaveStatus } from '../transform/filter.location.have.stat
 import { FilterObject } from '../transform/filter.object';
 import { FilterSelection } from '../transform/filter.selection';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
-import { IPipeService } from './IPipeService';
+import { IPipeService } from './i.pipe.service';
 import { ManipulateDataForDashboard } from '../transform/manipulate.data.dashboard';
 import { FormatNumber } from '../transform/format.number';
 import { TreatStringWithComma } from '../transform/treat.string.with.comma';
@@ -58,9 +58,9 @@ export class DashboardHandleDownload extends IPipeService {
     const { key, listId, selectedLocationsList, listLevelAnalysis, listName } = filters;
     this.writeStream.removeAllListeners();
 
-    this.writeStream.on('error', (err) => {
+    this.writeStream.on('error', async (err) => {
       this.logger.error(`(${listId}) - Error on stream: ${err}`);
-      this.errorEmail(filters);
+      await this.errorEmail(filters);
     });
 
     this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}_${fileSuffix}.csv`, {

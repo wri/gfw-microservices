@@ -10,7 +10,7 @@ import { FilterObject } from '../transform/filter.object';
 import { FilterSelection } from '../transform/filter.selection';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { SumValue } from '../transform/sum.value';
-import { IPipeService } from '../pipe/IPipeService';
+import { IPipeService } from '../pipe/i.pipe.service';
 import { finished } from 'stream/promises';
 import { FormatNumber } from '../transform/format.number';
 import { GetLatestValue } from '../transform/get.latest.value';
@@ -24,7 +24,7 @@ export class ResultService extends IPipeService {
   private fileStream: fs.WriteStream;
   private zipStream: fs.WriteStream;
 
-  start(filters: GenerationFileRequest) {
+  async start(filters: GenerationFileRequest) {
     const { listId, key, listView, listName } = filters;
     this.logger.log(`(${listId}) - Starting result stream to process data`);
 
@@ -40,7 +40,7 @@ export class ResultService extends IPipeService {
 
     this.organizeStream(filters, headerFilter, columnGetLastValue);
     fs.writeFileSync(`/tmp/wri-${key}/${listName}_result.csv`, `${headerPrint.join(',')}\n`);
-    this.startEmail(filters);
+    await this.startEmail(filters);
   }
 
   process(analysisData) {
@@ -61,9 +61,9 @@ export class ResultService extends IPipeService {
     const { listId, selectedLocationsList, key, listName, listView } = filters;
     this.inputStream.removeAllListeners();
 
-    this.inputStream.on('error', (err) => {
+    this.inputStream.on('error', async (err) => {
       this.logger.error(`(${listId}) - Error on stream: ${err}`);
-      this.errorEmail(filters);
+      await this.errorEmail(filters);
     });
 
     this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}_result.csv`, {

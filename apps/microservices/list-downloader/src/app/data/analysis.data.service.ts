@@ -1,7 +1,11 @@
-import {Injectable, Logger} from "@nestjs/common";
-import { AnalysisDataCountReturnType, AnalysisDataType, GenerationFileRequest } from "@wri-monorepos/sql";
-import {IInputData} from "./i.input.data";
-import axios from "axios";
+import { Injectable, Logger } from '@nestjs/common';
+import {
+  AnalysisDataCountReturnType,
+  AnalysisDataType,
+  GenerationFileRequest,
+} from '@wri-monorepos/sql';
+import { IInputData } from './i.input.data';
+import axios from 'axios';
 
 @Injectable()
 export class AnalysisDataService extends IInputData {
@@ -20,7 +24,6 @@ export class AnalysisDataService extends IInputData {
       return 0;
     }
   }
-
 
   async getDataPaginated(filter: GenerationFileRequest): Promise<AnalysisDataType[]> {
     const { listId, page } = filter;

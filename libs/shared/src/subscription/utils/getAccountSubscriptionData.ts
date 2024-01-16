@@ -10,7 +10,7 @@ export async function getAccountSubscriptionData({
   subscriptionStatusId: number;
 }) {
   const organizationActivatedTime = await getAccountActivatedTime(organizationId);
-  const todayAsEndDay = moment();
+  const todayAsEndDay = moment().add(1, 'day');
   const accountActivationDate = moment(organizationActivatedTime);
   const accountLatestYearStartDate = todayAsEndDay
     .clone()

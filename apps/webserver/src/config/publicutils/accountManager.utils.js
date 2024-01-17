@@ -544,34 +544,6 @@ const updatePendingAccountUser = (
   });
 };
 
-/**
- * @function {getOrganizationActivatedTime}
- * @param {Express.Request} req
- * @param {Number} organizationId
- * @return {Promise<String>} OrganizationActivatedTime
- */
-const getOrganizationActivatedTime = async (req, organizationId) => {
-  try {
-    const params = [{ field: 'orgId', type: sql.Int, value: organizationId }];
-    const [resultset] = await sqlUtils.executeSystemStoredProcedure(
-      req,
-      'uspGetOrganizationActivatedTime',
-      params
-    );
-    const { OrganizationActivatedTime } = resultset;
-    return OrganizationActivatedTime;
-  } catch (error) {
-    const errorObject = errorUtils.createErrorMessage(
-      req,
-      errorUtils.errorCodes.failedToGetAccountActivatedTime,
-      `Failed to get organization activated time.`,
-      error
-    );
-    logger.error(errorObject);
-    throw new Error(errorObject);
-  }
-};
-
 /** @function {initialize}
  * @summary Initializes the Account Manager module. Loads all the lists needed for the application.
  */
@@ -595,5 +567,4 @@ module.exports = {
   initialize,
   updatePendingAccount,
   updatePendingAccountUser,
-  getOrganizationActivatedTime,
 };

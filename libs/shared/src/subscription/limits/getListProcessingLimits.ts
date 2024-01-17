@@ -1,8 +1,4 @@
-import moment = require('moment');
-import { getAccountAnalysisUsage, getAccountActivatedTime } from '@wri-monorepos/sql';
-
-import { getAccountLimits } from './getAccountLimits';
-import { calculateListProcessingLimit } from '../utils';
+import { getAccountSubscriptionData, calculateListProcessingLimit } from '../utils';
 
 interface GetAccountProcessingLimitFn {
   organizationId: number;
@@ -13,22 +9,10 @@ export async function getListProcessingLimits({
   organizationId,
   organizationType,
 }: GetAccountProcessingLimitFn) {
-  const organizationActivatedTime = await getAccountActivatedTime(organizationId);
-
-  const todayAsEndDay = moment();
-  const accountActivationDate = moment(organizationActivatedTime);
-  const accountLatestYearStartDate = todayAsEndDay.subtract(
-    moment().diff(accountActivationDate, 'days') % 365,
-    'days'
-  );
-
-  const accountUsage = await getAccountAnalysisUsage({
-    startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
-    endDate: todayAsEndDay.format('YYYY-MM-DD'),
+  const { accountUsage, accountLimits } = await getAccountSubscriptionData({
     organizationId,
-    countForEachList: 0,
+    subscriptionStatusId: organizationType,
   });
-  const accountLimits = await getAccountLimits(organizationId, organizationType);
 
   // Calculate Processing limit either left for the year or max limit per list
   return calculateListProcessingLimit(accountLimits, accountUsage);

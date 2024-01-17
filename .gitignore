@@ -41,4 +41,3 @@ tmp/*
 
 # cypress environment variables containing login credentials
 cypress.env.json
-.nx

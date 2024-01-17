@@ -12,6 +12,7 @@ const { getListAnalysisStatusById } = require(path.resolve(
   './queries/organization/getListAnalysisStatusById'
 ));
 // TODO: review all call sites and decide vs `getAccountAnalysisUsage` from 'wri-monorepos/sql`
+// See: https://gfw.atlassian.net/browse/GPV-2660
 const getOrganizationAnalysisUsage = async ({
   startDate,
   endDate,

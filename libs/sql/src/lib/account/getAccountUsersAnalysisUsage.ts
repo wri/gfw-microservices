@@ -20,7 +20,7 @@ export async function getAccountUsersAnalysisUsage({
       { field: 'organizationId', type: sql.Int, value: organizationId },
     ];
 
-    return await SQLUtils.queryDBArray<[OrganizationUsersAnalysisUsageResponse]>(
+    return await SQLUtils.queryDB<[OrganizationUsersAnalysisUsageResponse]>(
       databaseName,
       'uspGetOrganizationUsersAnalysisUsage',
       parameters

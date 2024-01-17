@@ -6,7 +6,7 @@ export async function getAccountActivatedTime(organizationId: number) {
   try {
     const { database: databaseName } = SQL_CONFIG;
     const parameters = [{ field: 'orgId', type: sql.Int, value: organizationId }];
-    const recordset = await SQLUtils.queryDB<{ OrganizationActivatedTime: string }>(
+    const recordset = await SQLUtils.queryDBFirstRow<{ OrganizationActivatedTime: string }>(
       databaseName,
       'uspGetOrganizationActivatedTime',
       parameters

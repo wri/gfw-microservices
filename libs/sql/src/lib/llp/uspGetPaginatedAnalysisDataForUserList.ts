@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { GenerationFileRequest } from './model';
-import { SQL_CONFIG } from '../config/config';
 import {
   AnalysisDataType,
   getPaginatedAnalysisDataForUserList,
@@ -116,16 +115,6 @@ export class UspGetPaginatedAnalysisDataForUserList {
     const query = SQLUtils.isSystemDatabase(databaseName)
       ? getPaginatedAnalysisDataForGFWList
       : getPaginatedAnalysisDataForUserList;
-    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
-    await connection.connect();
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const createListResult = await connection.queryArray<AnalysisDataType>(query, parameters);
-      await connection.disconnect();
-      return createListResult;
-    } catch (error) {
-      await connection.disconnect();
-      throw new Error(error);
-    }
+    return await SQLUtils.queryDB<AnalysisDataType[]>(databaseName, query, parameters);
   }
 }

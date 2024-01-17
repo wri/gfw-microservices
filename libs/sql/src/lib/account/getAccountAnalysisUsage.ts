@@ -23,7 +23,7 @@ export async function getAccountAnalysisUsage({
       { field: 'organization', type: sql.Int, value: organizationId },
       { field: 'countForEachList', type: sql.Int, value: countForEachList },
     ];
-    return SQLUtils.queryDB<OrganizationAnalysisUsageResponse>(
+    return SQLUtils.queryDBFirstRow<OrganizationAnalysisUsageResponse>(
       databaseName,
       'getOrganizationAnalysisUsagePerUser',
       parameters

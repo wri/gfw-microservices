@@ -25,7 +25,7 @@ export async function getAccountAnalysisUsage({
     ];
     return SQLUtils.queryDBFirstRow<OrganizationAnalysisUsageResponse>(
       databaseName,
-      'uspGetOrganizationAnalysisUsagePerUser',
+      'uspGetOrganizationAnalysisUsage',
       parameters
     );
   } catch (error) {

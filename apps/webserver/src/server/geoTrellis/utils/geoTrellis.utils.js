@@ -36,7 +36,11 @@ const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extr
  * @return {Promise} - request Promise
  */
 exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
-  const { organization_user_id, organization_id } = req.session;
+  const {
+    organization_user_id,
+    organization_id,
+    organization_database: databaseName,
+  } = req.session;
   const { reanalyze = false } = req.body;
   const { id: listID, list_name } = list;
 
@@ -53,7 +57,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   // get org activated time
   const OrganizationActivatedTime = await getOrganizationActivatedTime(req, organization_id);
 
-  const listLocationsCount = await getListLocationsCountById(listID);
+  const listLocationsCount = await getListLocationsCountById(listID, databaseName);
 
   const todayAsEndDay = moment();
   const accountActivationDate = moment(OrganizationActivatedTime);
@@ -78,8 +82,8 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   const accountLimits = limitsByOrgID || limitsByOrgType;
 
   if (
-    organizationAnalysis.locations_analyzed + listLocationsCount >
-    accountLimits.max_locations_per_year
+    organizationAnalysis.locations_analyzed ??
+    0 + listLocationsCount > accountLimits.max_locations_per_year
   ) {
     throw new Error('Analysis limit reached');
   }

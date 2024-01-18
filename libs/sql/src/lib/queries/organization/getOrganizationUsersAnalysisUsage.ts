@@ -16,6 +16,7 @@ FROM
 WHERE
   analysis_end_time >= @startDate
 AND analysis_end_time <= @endDate
+AND user_id IS NOT NULL
 GROUP BY
   user_id;
 `;

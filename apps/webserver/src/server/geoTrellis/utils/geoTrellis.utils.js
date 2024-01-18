@@ -4,11 +4,8 @@ const moment = require('moment');
 
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 
-const {
-  getListLocationsCountQueryById: getListLocationsCountQueryByIdQuery,
-} = require(path.resolve('./queries/organization/getListLocationsCountQueryById'));
+import { getListLocationsCountById } from '@wri-monorepos/sql';
 
 const {
   GEO_TRELLIS__ANALYZE_LIST_DEV,
@@ -56,7 +53,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   // get org activated time
   const OrganizationActivatedTime = await getOrganizationActivatedTime(req, organization_id);
 
-  const listLocationsCount = await getListLocationsCountQueryById(listID);
+  const listLocationsCount = await getListLocationsCountById(listID);
 
   const todayAsEndDay = moment();
   const accountActivationDate = moment(OrganizationActivatedTime);
@@ -136,10 +133,10 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
     });
 };
 
-const getListLocationsCountQueryById = async (req) => {
-  const [response] = await sqlUtils.executeOrganizationQuery(
-    req,
-    getListLocationsCountQueryByIdQuery
-  );
-  return response;
-};
+// const getListLocationsCountQueryById = async (req) => {
+//   const [response] = await sqlUtils.executeOrganizationQuery(
+//     req,
+//     getListLocationsCountQueryByIdQuery
+//   );
+//   return response;
+// };

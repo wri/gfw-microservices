@@ -1,18 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
-import { DashboardRepository } from './dashboard.repository';
+import { AlertsRepository } from './alerts.repository';
 
 @Injectable()
-export class DashboardService {
-  constructor(private readonly dashboardRepository: DashboardRepository) {}
+export class AlertsService {
+  constructor(private readonly dashboardRepository: AlertsRepository) {}
 
   async getDashboardData(
     listId: number,
-    locationIdArray: Array<number>,
+    locationId: string,
     clientDatabase: string,
     pageNumber = 1,
     pageSize = 10
   ) {
+    const locationIdArray = this.transformLocationId(locationId);
+
     const whereClause =
       locationIdArray.length > 0
         ? { listId: listId, locationId: In(locationIdArray) }
@@ -28,5 +30,18 @@ export class DashboardService {
       data: result,
       count: total,
     };
+  }
+
+  transformLocationId(locationId = ''): Array<number> {
+    let locationIdArray = [];
+    locationIdArray = locationId.split(',');
+    locationIdArray = locationIdArray.reduce((acc, item) => {
+      const value = parseInt(item, 10);
+      if (!isNaN(value)) {
+        acc.push(value);
+      }
+      return acc;
+    }, []);
+    return locationIdArray;
   }
 }

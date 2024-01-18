@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { DashboardController } from './dashboard.controller';
-import { DashboardService } from './dashboard.service';
+import { AlertsController } from './alerts.controller';
+import { AlertsService } from './alerts.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organization, SqlModule } from '@wri-monorepos/sql';
-import { DashboardRepository } from './dashboard.repository';
+import { AlertsRepository } from './alerts.repository';
 
 @Module({
   imports: [ConfigModule, TypeOrmModule.forFeature([Organization], 'default'), SqlModule],
-  controllers: [DashboardController],
-  providers: [DashboardService, DashboardRepository, ConfigService],
+  controllers: [AlertsController],
+  providers: [AlertsService, AlertsRepository, ConfigService],
 })
 export class DashboardModule {}

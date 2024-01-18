@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientStoreConnection, AnalysisDashboard } from '@wri-monorepos/sql';
 
 @Injectable()
-export class DashboardRepository {
+export class AlertsRepository {
   @Inject(ClientStoreConnection)
   private readonly clientStoreConnection: ClientStoreConnection;
 
@@ -16,8 +16,6 @@ export class DashboardRepository {
     const analysesDashboardRepository = connection.getRepository(AnalysisDashboard);
 
     const result = await analysesDashboardRepository.findAndCount(options);
-
-    await connection.destroy();
 
     return result;
   }

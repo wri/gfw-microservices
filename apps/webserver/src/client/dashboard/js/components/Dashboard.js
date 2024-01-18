@@ -38,6 +38,8 @@ import { loaderMessages } from '../../../common/js/config';
 import { gfwListNames } from '../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
+import CircularProgress from '@mui/material/CircularProgress';
+import Backdrop from '@mui/material/Backdrop';
 
 //TODO Remove temp file
 // import { data } from './old';
@@ -77,6 +79,7 @@ export default class Dashboard extends Component {
       ...store.getState(),
       lastUpdatedDashboard: 'N/A',
       openDownloadDialog: false,
+      isLoading: false,
     };
   }
 
@@ -184,16 +187,17 @@ export default class Dashboard extends Component {
   setOpenDownloadDialog = (boolean) => {
     this.setState({
       openDownloadDialog: boolean,
+      isLoading: boolean,
     });
   };
 
   selectList = async (list) => {
-    const { listCache, gfwLists } = this.state;
+    const { listCache } = this.state;
     const { id, list_name, GFWList } = list;
     const key = `${list_name}-${id}`;
 
     // use cache
-    if (listCache.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(listCache, key)) {
       const cachedData = listCache[key];
       store.dispatch(selectList(list));
       store.dispatch(saveRawData(cachedData));
@@ -235,7 +239,7 @@ export default class Dashboard extends Component {
         });
 
         if (
-          !listDashboardTimestamp.hasOwnProperty('errorCode') &&
+          !Object.prototype.hasOwnProperty.call(listDashboardTimestamp, 'errorCode') &&
           listDashboardTimestamp.length !== 0
         ) {
           const formatTimestamp = moment(listDashboardTimestamp[0].dashboard_last_results).format(
@@ -327,6 +331,7 @@ export default class Dashboard extends Component {
       timeframeGeojsonForFooter,
       selectedAdmin,
       openDownloadDialog,
+      isLoading,
     } = this.state;
 
     const dashboardTitle = isEmpty(selectedList)
@@ -453,6 +458,9 @@ export default class Dashboard extends Component {
           </div>
         </div>
         <ConfirmDialog open={openDownloadDialog} setDialogOpen={this.setOpenDownloadDialog} />
+        <Backdrop sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
+          <CircularProgress color="success" />
+        </Backdrop>
       </Page>
     );
   }

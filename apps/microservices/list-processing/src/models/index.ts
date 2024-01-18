@@ -117,7 +117,7 @@ export interface DatabaseQueryParam {
   clientDatabase: string;
 }
 
-export interface GetDashboardListDataRequest {
+export interface AlertsListDataRequest {
   locationId: string;
   clientDatabase: string;
   page: number;

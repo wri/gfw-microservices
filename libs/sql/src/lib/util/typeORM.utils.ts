@@ -10,6 +10,8 @@ const TEST_ENVIRONMENT = 'test';
 const CONNECTION_TYPE_MSSQL = 'mssql';
 const CONNECTION_TYPE_SQLITE = 'sqlite';
 
+const CLEAR_CONNECTION_FROM_CACHE_TIMEOUT = 60 * 60 * 1000;
+
 type CreateTypeOrmSystemModuleProps = {
   name: string;
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -98,7 +100,7 @@ export class ClientStoreConnection {
         connection: orgConnection,
         timeout: setTimeout(() => {
           this.clearCache(connectionId);
-        }, 60000),
+        }, CLEAR_CONNECTION_FROM_CACHE_TIMEOUT),
       });
 
       Logger.log(`Data Source ${database} has been initialized`);

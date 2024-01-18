@@ -6,3 +6,4 @@ export * from './lib/clientstore';
 export * from './lib/queries';
 export * from './lib/account';
 export * from './lib/entity';
+export * from './lib/dto';

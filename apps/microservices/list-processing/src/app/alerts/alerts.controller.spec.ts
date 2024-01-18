@@ -1,26 +1,26 @@
 import * as request from 'supertest';
 import { Test } from '@nestjs/testing';
 
-import { DashboardService } from './dashboard.service';
-import { DashboardController } from './dashboard.controller';
+import { AlertsService } from './alerts.service';
+import { AlertsController } from './alerts.controller';
 import { INestApplication } from '@nestjs/common';
-import { DashboardRepository } from './dashboard.repository';
+import { AlertsRepository } from './alerts.repository';
 import { SqlModule } from '@wri-monorepos/sql';
 import { ConfigModule } from '@nestjs/config';
 import { In } from 'typeorm';
 
-describe('[GET] /analysis/dashboard/:listId', () => {
-  let dashboardRepository: DashboardRepository;
+describe('[GET] /analysis/alerts/:listId', () => {
+  let dashboardRepository: AlertsRepository;
   let app: INestApplication;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [ConfigModule, SqlModule],
-      controllers: [DashboardController],
-      providers: [DashboardService, DashboardRepository],
+      controllers: [AlertsController],
+      providers: [AlertsService, AlertsRepository],
     }).compile();
 
-    dashboardRepository = moduleRef.get<DashboardRepository>(DashboardRepository);
+    dashboardRepository = moduleRef.get<AlertsRepository>(AlertsRepository);
     app = moduleRef.createNestApplication();
   });
 

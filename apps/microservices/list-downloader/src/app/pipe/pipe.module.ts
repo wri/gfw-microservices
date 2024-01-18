@@ -28,10 +28,11 @@ import { ListGeneratorService } from './list.generator.service';
 import { AfiGeneratorService } from './afi.generator.service';
 import { AfiFileService } from '../files/afi.file.service';
 import { ArgentinaOverlapService } from '../files/argentina.overlap.service';
-import { AnalysisDashboardDataService } from '../data/analysis.dashboard.data.service';
+import { AnalysisAlertsDataService } from '../data/analysis.alerts.data.service';
 import { AnalysisDataService } from '../data/analysis.data.service';
 import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
+import { AlertsFileService } from '../files/alerts.file.service';
 
 @Module({
   imports: [envModule, AwsModule, SqlModule],
@@ -57,10 +58,11 @@ import { AlertsGeneratorService } from './alerts.generator.service';
     AfiGeneratorService,
     AfiFileService,
     ArgentinaOverlapService,
-    AnalysisDashboardDataService,
+    AnalysisAlertsDataService,
     AnalysisDataService,
     AlertsGeneratorService,
     AnalysisAfiDataService,
+    AlertsFileService,
   ],
   exports: [PipeService],
 })

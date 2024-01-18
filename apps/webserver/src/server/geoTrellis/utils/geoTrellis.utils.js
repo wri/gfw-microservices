@@ -4,6 +4,11 @@ const moment = require('moment');
 
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
+const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
+
+const {
+  getListLocationsCountQueryById: getListLocationsCountQueryByIdQuery,
+} = require(path.resolve('./queries/organization/getListLocationsCountQueryById'));
 
 const {
   GEO_TRELLIS__ANALYZE_LIST_DEV,
@@ -51,7 +56,8 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   // get org activated time
   const OrganizationActivatedTime = await getOrganizationActivatedTime(req, organization_id);
 
-  // DO THE LOGIC HERE
+  const listLocationsCount = await getListLocationsCountQueryById(listID);
+
   const todayAsEndDay = moment();
   const accountActivationDate = moment(OrganizationActivatedTime);
 
@@ -74,7 +80,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
 
   const accountLimits = limitsByOrgID || limitsByOrgType;
 
-  if (organizationAnalysis.locations_analyzed > accountLimits.max_locations_per_year) {
+  if (organizationAnalysis.locations_analyzed + listLocationsCount > accountLimits.max_locations_per_year) {
     throw new Error('Analysis limit reached');
   }
 
@@ -125,4 +131,12 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
 
       return error.toJSON();
     });
+};
+
+const getListLocationsCountQueryById = async (req) => {
+  const [response] = await sqlUtils.executeOrganizationQuery(
+    req,
+    getListLocationsCountQueryByIdQuery
+  );
+  return response;
 };

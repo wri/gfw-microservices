@@ -6,4 +6,4 @@ export * from './uspGetLocationsFilteredToCopy';
 export * from './uspSetListLocked';
 export * from './uspDeleteLocationIdsFilteredDataForUserList';
 export * from './uspGetListAnalysis';
-export * from './getListLocationsCount';
+export * from './getListLocationsCountById';

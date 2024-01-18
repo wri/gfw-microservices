@@ -29,4 +29,4 @@ export * from './insertLog';
 export * from './setActivityLog';
 export * from './setS3UrlAndExpirationDate';
 export * from './resetListStatus';
-export * from './getListLocationsCountQuery';
+export * from './getListLocationsCountQueryById';

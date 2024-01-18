@@ -24,6 +24,6 @@ export interface OrganizationUsersAnalysisUsage {
   total_area_analyzed: number;
   max_area_analyzed: number;
   number_of_lists_analyzed: number;
-  locations_analyzed: number | null;
+  locations_analyzed: number;
   user_id: number;
 }

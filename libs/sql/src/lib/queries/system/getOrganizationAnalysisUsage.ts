@@ -45,7 +45,7 @@ BEGIN
     SELECT org.organization_db FROM
     Organizations org JOIN
         Statuses st ON st.id = org.organization_status_id
-    WHERE st.status_name = 'active' and (org.id = @organization or  ISNULL(@organization, '') = '');
+    WHERE st.status_name = 'active' and (org.id = @organization or ISNULL(@organization, '') = '');
 
     OPEN @MyCursor
     FETCH NEXT FROM @MyCursor

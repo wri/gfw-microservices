@@ -4,6 +4,7 @@ import {
   getOneDayBeforeEndDate,
   todaysDateISOString,
 } from './AccountUsage.utils';
+import Grid from '@mui/material/Grid';
 import { accountProfileStrings } from '../../../../../common/js/config';
 
 function DateRangeSelector({ startDate, setStartDate, endDate, setEndDate }) {
@@ -21,8 +22,8 @@ function DateRangeSelector({ startDate, setStartDate, endDate, setEndDate }) {
   };
 
   return (
-    <>
-      <div>
+    <Grid container spacing={2}>
+      <Grid item xs={6}>
         <label htmlFor="startDatePicker">
           {accountProfileStrings.dateRangeSelector.selectStartDate}
         </label>
@@ -33,8 +34,8 @@ function DateRangeSelector({ startDate, setStartDate, endDate, setEndDate }) {
           onChange={handleStartDateChange}
           max={oneDayBeforeEndDateISOString}
         />
-      </div>
-      <div>
+      </Grid>
+      <Grid item xs={6}>
         <label htmlFor="endDatePicker">
           {accountProfileStrings.dateRangeSelector.selectEndDate}
         </label>
@@ -46,8 +47,8 @@ function DateRangeSelector({ startDate, setStartDate, endDate, setEndDate }) {
           min={oneDayAfterStartDateISOString}
           max={todaysDateISOString} // Set the maximum selectable date to be today
         />
-      </div>
-    </>
+      </Grid>
+    </Grid>
   );
 }
 

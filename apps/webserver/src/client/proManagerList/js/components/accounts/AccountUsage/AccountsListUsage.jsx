@@ -7,10 +7,20 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import DateRangeSelector from './DateRangeSelector';
 import { oneMonthAgoDate, todaysDate } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
+
+const fontStyles = {
+  fontFamily: 'Fira Sans, sans-serif',
+  textTransform: 'uppercase',
+  color: '#555555',
+  fontSize: '28px',
+};
 
 function AccountsListUsage({ isLoading, setIsLoading }) {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
@@ -35,21 +45,30 @@ function AccountsListUsage({ isLoading, setIsLoading }) {
         console.log(error);
       });
   }, [startDate, endDate]);
-
-  return (
-    <section>
       <div>
         <h2>{accountProfileStrings.sectionTitles.accountUsage}</h2>
       </div>
-      <DateRangeSelector
-        startDate={startDate}
-        setStartDate={setStartDate}
-        endDate={endDate}
-        setEndDate={setEndDate}
-      />
-      {isLoading && <CircularProgress color="success" />}
-      {!isLoading && (
-        <div>
+
+  return (
+    <section>
+      <Grid container justifyContent="space-between" sx={{ marginBottom: '1.5rem' }}>
+        <Typography sx={fontStyles} variant="h2">
+          {accountProfileStrings.sectionTitles.accountUsage}
+        </Typography>
+      </Grid>
+
+      <Box sx={{ marginBottom: '1.5rem' }}>
+        <DateRangeSelector
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+        />
+      </Box>
+
+      <Grid container>
+        {isLoading && <CircularProgress color="success" />}
+        {!isLoading && (
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -85,8 +104,9 @@ function AccountsListUsage({ isLoading, setIsLoading }) {
               </TableBody>
             </Table>
           </TableContainer>
-        </div>
-      )}
+        )}
+      </Grid>
+
     </section>
   );
 }

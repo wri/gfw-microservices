@@ -1,27 +1,22 @@
 import { SQLUtils } from '../util/sql.utils';
 import * as sql from 'mssql';
-import { SQL_CONFIG } from '../config/config';
-import { OrganizationUsersAnalysisUsage as OrganizationUsersAnalysisUsageResponse } from '../queries/system/getOrganizationUsersAnalysisUsage';
-interface GetAccountUsersAnalysisUsage {
-  organizationId: number;
+import { OrganizationUsersAnalysisUsage as OrganizationUsersAnalysisUsageResponse } from '../queries';
+interface GetAccountUsersAnalysisUsageParameters {
   startDate: string;
   endDate: string;
 }
-export async function getAccountUsersAnalysisUsage({
-  organizationId,
-  startDate,
-  endDate,
-}: GetAccountUsersAnalysisUsage) {
+export async function getAccountUsersAnalysisUsage(
+  orgDbName: string,
+  { startDate, endDate }: GetAccountUsersAnalysisUsageParameters
+) {
   try {
-    const { database: databaseName } = SQL_CONFIG;
     const parameters = [
       { field: 'startDate', type: sql.NVarChar, value: startDate },
       { field: 'endDate', type: sql.NVarChar, value: endDate },
-      { field: 'organizationId', type: sql.Int, value: organizationId },
     ];
 
     return await SQLUtils.queryDB<[OrganizationUsersAnalysisUsageResponse]>(
-      databaseName,
+      orgDbName,
       'uspGetOrganizationUsersAnalysisUsage',
       parameters
     );

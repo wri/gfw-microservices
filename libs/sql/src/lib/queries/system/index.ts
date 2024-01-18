@@ -25,4 +25,3 @@ export * from './getCheckAndExpireConnection';
 export * from './getAdministrativeAreasDataByLocation';
 export * from './getAnalysisDataForProtectedAreasByLocation';
 export * from './getOrganizationActivatedTime';
-export * from './getOrganizationUsersAnalysisUsage';

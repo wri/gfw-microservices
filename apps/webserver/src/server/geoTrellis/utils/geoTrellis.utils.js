@@ -132,11 +132,3 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
       return error.toJSON();
     });
 };
-
-// const getListLocationsCountQueryById = async (req) => {
-//   const [response] = await sqlUtils.executeOrganizationQuery(
-//     req,
-//     getListLocationsCountQueryByIdQuery
-//   );
-//   return response;
-// };

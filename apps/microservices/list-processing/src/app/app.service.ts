@@ -69,26 +69,10 @@ export class AppService {
     listDetails: RequestSaveLargeListProcessModel
   ): Promise<CreateListInsertResultModel> {
     const fileS3Route = `s3://${process.env.LARGE_PROCESING_LIST_BUCKET}/${listDetails.key}`;
-    const sqlConfig = {
-      user: process.env.MSSQL_USERNAME,
-      password: process.env.MSSQL_PASSWORD,
-      database: listDetails.client_database,
-      server: process.env.MSSQL_HOSTNAME,
-      pool: {
-        max: 10,
-        min: 0,
-        idleTimeoutMillis: 30000,
-      },
-      port: parseInt(process.env.MSSQL_PORT),
-      options: {
-        trustServerCertificate: true, // change to true for local dev / self-signed certs
-      },
-    };
 
     try {
-      const connection = new SQLUtils(sqlConfig);
-      await connection.connect();
-      await connection.query(
+      await SQLUtils.queryDB(
+        listDetails.client_database,
         `INSERT INTO LargeLists(list_id, organization_user_id, list_name, s3_filename, s3_location, list_status, creation_date) VALUES(@list_id,@organization_user_id,@list_name,@s3_filename,@s3_location,'Created', GETDATE());`,
         [
           {
@@ -103,17 +87,17 @@ export class AppService {
           },
           {
             field: 'list_name',
-            type: sql.NVarChar,
+            type: sql.NVarChar(255),
             value: listDetails.listName,
           },
           {
             field: 's3_filename',
-            type: sql.NVarChar,
+            type: sql.NVarChar(255),
             value: listDetails.key,
           },
           {
             field: 's3_location',
-            type: sql.NVarChar,
+            type: sql.NVarChar(255),
             value: fileS3Route,
           },
         ]
@@ -132,7 +116,6 @@ export class AppService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    //const result = await queryRunner.query(`SELECT * FROM GFWLists`);
     const result = await queryRunner.connection.getRepository(MyObject).find();
     return result;
   }

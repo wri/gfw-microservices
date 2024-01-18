@@ -18,7 +18,7 @@ export async function getAccountAnalysisLimits({
       { field: 'orgType', type: sql.Int, value: organizationType ?? null },
     ];
 
-    return SQLUtils.queryDB<AnalysisLimitResponse>(
+    return SQLUtils.queryDBFirstRow<AnalysisLimitResponse>(
       databaseName,
       'uspGetAnalysisLimits',
       parameters

@@ -41,7 +41,7 @@ export class PipeService {
     const { organizationDatabase, listId } = filters;
 
     const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
-    const { list_name } = await SQLUtils.queryDB<ListNameSchema>(
+    const { list_name } = await SQLUtils.queryDBFirstRow<ListNameSchema>(
       organizationDatabase,
       'uspGetListNameSchema',
       parameters

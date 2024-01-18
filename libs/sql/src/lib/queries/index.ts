@@ -11,7 +11,7 @@ import * as orgQueries from './organization';
  * @param storedProcedureName - name of query
  * @returns string | null
  */
-export const getQueryStr = (isSystemQuery: boolean, storedProcedureName: string) => {
+const storedProcToQueryStr = (isSystemQuery: boolean, storedProcedureName: string) => {
   // if storedProcedureName is already a query string vs. SP name, return it
   if (storedProcedureName.includes(' ')) {
     return storedProcedureName;
@@ -35,4 +35,13 @@ export const getQueryStr = (isSystemQuery: boolean, storedProcedureName: string)
     return orgQueries[cleanQueryName];
   }
   return null;
+};
+
+// Add standard defaults for MS SQL server query semantics that code relies on
+export const getQueryStr = (isSystemQuery: boolean, storedProcedureName: string) => {
+  const queryStr = storedProcToQueryStr(isSystemQuery, storedProcedureName);
+  if (queryStr) {
+    return `SET ANSI_NULLS ON; SET QUOTED_IDENTIFIER ON; ${queryStr}`;
+  }
+  return queryStr;
 };

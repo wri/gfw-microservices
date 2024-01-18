@@ -1983,33 +1983,31 @@ function deleteListIfEmpty(req, listID) {
 
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspCheckIfListIsEmpty', parameters)
-      .then((records) => {
+      .then(async (records) => {
         const [resultset] = records;
         const { isListEmpty } = resultset;
 
-        if (!isListEmpty) {
-          resolve(isListEmpty);
-        } else {
-          sqlUtils
-            .executeOrganizationStoredProcedure(req, 'uspDeleteList', parameters)
-            .then(() => {
-              logger.logActivity(
-                req,
-                logger.listActivityTypes.List.ListDeleted,
-                `Deleted empty list with id (${listID}).`
-              );
-              resolve(isListEmpty);
-            })
-            .catch((error) => {
-              const errorObject = errorUtils.createErrorMessage(
-                req,
-                errorUtils.errorCodes.failedToDeleteList,
-                `Failed to delete list with id (${listID}). List not empty`,
-                error
-              );
-              reject(errorObject);
-            });
+        if (isListEmpty) {
+          try {
+            await sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteList', parameters);
+
+            logger.logActivity(
+              req,
+              logger.listActivityTypes.List.ListDeleted,
+              `Deleted empty list with id (${listID}).`
+            );
+          } catch (error) {
+            const errorObject = errorUtils.createErrorMessage(
+              req,
+              errorUtils.errorCodes.failedToDeleteList,
+              `Failed to delete list with id (${listID}). List not empty`,
+              error
+            );
+            reject(errorObject);
+          }
         }
+
+        resolve(isListEmpty);
       })
       .catch((error) => {
         const errorObject = errorUtils.createErrorMessage(

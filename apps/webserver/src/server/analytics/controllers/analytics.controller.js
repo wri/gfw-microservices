@@ -3,13 +3,9 @@ const { compiledAssets } = require(path.resolve('./config/config'));
 const {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
-  getOrganizationUsagePercentage,
 } = require('../service/analytics.service');
+import { getAccountUsagePercentage } from '@wri-monorepos/shared';
 import { analysisTypes } from '@wri-monorepos/constants';
-
-const { getOrganizationActivatedTime } = require(path.resolve(
-  './config/publicutils/accountManager.utils'
-));
 
 /**
  * @function analytics
@@ -95,12 +91,9 @@ exports.getMyOrganizationAnalysisUsage = async (req, res) => {
 exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
   let { organization_id, subscription_status_id } = req.session;
 
-  const organizationActivatedTime = await getOrganizationActivatedTime(req, organization_id);
-
-  const accountUsagePercentage = await getOrganizationUsagePercentage({
+  const accountUsagePercentage = await getAccountUsagePercentage({
     organizationId: organization_id,
     organizationType: subscription_status_id,
-    organizationActivatedTime,
   });
 
   res.status(200).send({

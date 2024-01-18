@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { ListLocationsRequest } from './model';
-import { SQL_CONFIG } from '../config/config';
 
 @Injectable()
 export class UspGetListLocations {
@@ -21,18 +20,10 @@ export class UspGetListLocations {
       },
     ];
 
-    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
-    await connection.connect();
-    try {
-      const recordsets = await connection.queryArray<Promise<unknown[]>>(
-        'uspGetListLocations',
-        parameters
-      );
-      connection.disconnect();
-      return recordsets;
-    } catch (error) {
-      connection.disconnect();
-      throw new Error(error);
-    }
+    return await SQLUtils.queryDB<Promise<unknown[]>>(
+      databaseName,
+      'uspGetListLocations',
+      parameters
+    );
   }
 }

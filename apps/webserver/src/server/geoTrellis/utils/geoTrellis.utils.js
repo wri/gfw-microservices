@@ -12,12 +12,10 @@ const {
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } = require('../config/geoTrellis.config');
 
-const { getAccountListProccesingLimit, getListAnalysisStatusByListId } = require(path.resolve(
-  './server/analytics/service/analytics.service'
-));
+import { getListProcessingLimits } from '@wri-monorepos/shared';
 
-const { getOrganizationActivatedTime } = require(path.resolve(
-  './config/publicutils/accountManager.utils'
+const { getListAnalysisStatusByListId } = require(path.resolve(
+  './server/analytics/service/analytics.service'
 ));
 
 const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extractAnalysisTypes'));
@@ -30,7 +28,7 @@ const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extr
  * @return {Promise} - request Promise
  */
 exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
-  const { organization_user_id, organization_id } = req.session;
+  const { organization_user_id, organization_id, subscription_status_id } = req.session;
   const { reanalyze = false } = req.body;
   const { id: listID, list_name } = list;
 
@@ -44,13 +42,10 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
 
   const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
 
-  // get org activated time
-  const OrganizationActivatedTime = await getOrganizationActivatedTime(req, organization_id);
-
   // calculate list processing limit
-  const processingLimit = await getAccountListProccesingLimit({
-    ...req.session,
-    OrganizationActivatedTime,
+  const processingLimit = await getListProcessingLimits({
+    organizationId: organization_id,
+    organizationType: subscription_status_id,
   });
 
   const listAnalysisStatusData = await getListAnalysisStatusByListId(req, listID);

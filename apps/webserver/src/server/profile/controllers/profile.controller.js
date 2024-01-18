@@ -5,7 +5,7 @@ const AccountManager = require(path.resolve('./config/publicutils/accountManager
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
-
+import { getAccountActivatedTime } from '@wri-monorepos/sql';
 /**
  * @function profile
  * @summary
@@ -32,7 +32,7 @@ exports.profileInfo = (req, res) => {
       AccountManager.getUsersList(req),
       PolicyManager.getPolicyList(req),
       AuthManager.getUserInfo(req),
-      AccountManager.getOrganizationActivatedTime(req, req.session.organization_id),
+      getAccountActivatedTime(req.session.organization_id),
     ];
 
     Promise.all(promises)

@@ -124,6 +124,7 @@ const mssql2sqliteQuery = (mssqlQuery) => {
   updatedQuery = regexReplaceCmd(updatedQuery, /STRING_AGG\((\w+), ','\)/g, 'group_concat');
   // 'TOP (n)' should be replaced with LIMIT n, but large results unlikely in test, so ignoring for now
   updatedQuery = updatedQuery.replaceAll(/TOP\s*\(\d+\)/g, '');
+  updatedQuery = updatedQuery.replace(/SET ANSI_NULLS ON; SET QUOTED_IDENTIFIER ON;/, '');
   return updatedQuery;
 };
 

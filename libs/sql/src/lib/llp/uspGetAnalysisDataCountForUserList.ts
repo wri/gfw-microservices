@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { GenerationFileRequest } from './model';
-import { SQL_CONFIG } from '../config/config';
 import {
   AnalysisDataCountType,
   getAnalysisDataCountForGFWList,
@@ -42,9 +41,9 @@ export class UspGetAnalysisDataCountForUserList {
 
     const parameters = [
       { field: 'listID', type: sql.Int, value: listId },
-      { field: 'Country', type: sql.NVarChar, value: country || null },
-      { field: 'State', type: sql.NVarChar, value: state || null },
-      { field: 'SubState', type: sql.NVarChar, value: subState || null },
+      { field: 'Country', type: sql.NVarChar(255), value: country || null },
+      { field: 'State', type: sql.NVarChar(255), value: state || null },
+      { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
       {
         field: 'AnalysisAreaMin',
         type: sql.Int,
@@ -56,51 +55,57 @@ export class UspGetAnalysisDataCountForUserList {
         value: analysisAreaMax || null,
       },
       { field: 'SearchString', type: sql.Float, value: searchString || null },
-      { field: 'selectedSupplier', type: sql.NVarChar, value: selectedSupplier || null },
+      { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
       {
         field: 'selectedSecondSupplier',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: selectedSecondSupplier || null,
       },
-      { field: 'selectedParentCompany', type: sql.NVarChar, value: selectedParentCompany || null },
+      {
+        field: 'selectedParentCompany',
+        type: sql.NVarChar(255),
+        value: selectedParentCompany || null,
+      },
       { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
       {
         field: 'selectedOverallThreats',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: selectedOverallThreats || null,
       },
-      { field: 'selectedOverallValues', type: sql.NVarChar, value: selectedOverallValues || null },
-      { field: 'selectedMillPriority', type: sql.NVarChar, value: selectedMillPriority || null },
+      {
+        field: 'selectedOverallValues',
+        type: sql.NVarChar(255),
+        value: selectedOverallValues || null,
+      },
+      {
+        field: 'selectedMillPriority',
+        type: sql.NVarChar(255),
+        value: selectedMillPriority || null,
+      },
     ];
 
     const query = SQLUtils.isSystemDatabase(databaseName)
       ? getAnalysisDataCountForGFWList
       : getAnalysisDataCountForUserList;
 
-    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
-    await connection.connect();
-    try {
-      const recordsets = await connection.queryArray<AnalysisDataCountType>(query, parameters);
-      const totalRows = recordsets.find(
-        (record) => record.statistic_type === 'Row Count'
-      ).statistic;
-      const maximumAnalysisAreaInTheList = recordsets.find(
-        (record) => record.statistic_type === 'Max Area'
-      ).statistic;
-      let numberOfPages = 2;
-      if (totalRows) {
-        numberOfPages = rowsPerPage ? Math.ceil(totalRows / rowsPerPage) : 1;
-      }
-      connection.disconnect();
-      return {
-        numberOfPages,
-        numberOfResults: totalRows,
-        maximumAnalysisAreaInTheList,
-      };
-    } catch (error) {
-      console.log(error);
-      connection.disconnect();
-      throw new Error(error);
+    const recordsets = await SQLUtils.queryDB<AnalysisDataCountType[]>(
+      databaseName,
+      query,
+      parameters
+    );
+
+    const totalRows = recordsets.find((record) => record.statistic_type === 'Row Count').statistic;
+    const maximumAnalysisAreaInTheList = recordsets.find(
+      (record) => record.statistic_type === 'Max Area'
+    ).statistic;
+    let numberOfPages = 2;
+    if (totalRows) {
+      numberOfPages = rowsPerPage ? Math.ceil(totalRows / rowsPerPage) : 1;
     }
+    return {
+      numberOfPages,
+      numberOfResults: totalRows,
+      maximumAnalysisAreaInTheList,
+    };
   }
 }

@@ -100,7 +100,11 @@ export const DeleteLocations = (databaseName, listId, locationIds, userId, gfwLi
           throw { isLocked: true, lock_user_id };
         } else {
           const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
-          return SQLUtils.queryDB<ListNameSchema>(databaseName, 'uspGetListNameSchema', parameters);
+          return SQLUtils.queryDBFirstRow<ListNameSchema>(
+            databaseName,
+            'uspGetListNameSchema',
+            parameters
+          );
         }
       })
       .then((record) => {
@@ -197,7 +201,11 @@ export const BulkDeleteLocations = (
           throw { isLocked: true, lock_user_id };
         } else {
           const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
-          return SQLUtils.queryDB<ListNameSchema>(databaseName, 'uspGetListNameSchema', parameters);
+          return SQLUtils.queryDBFirstRow<ListNameSchema>(
+            databaseName,
+            'uspGetListNameSchema',
+            parameters
+          );
         }
       })
       .then((record) => {
@@ -263,7 +271,11 @@ export const DeleteList = (databaseName, listId, userId) => {
           throw { isLocked: true, lock_user_id };
         } else {
           const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
-          return SQLUtils.queryDB<ListNameSchema>(databaseName, 'uspGetListNameSchema', parameters);
+          return SQLUtils.queryDBFirstRow<ListNameSchema>(
+            databaseName,
+            'uspGetListNameSchema',
+            parameters
+          );
         }
       })
       .then((record) => {

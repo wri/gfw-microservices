@@ -80,7 +80,10 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
 
   const accountLimits = limitsByOrgID || limitsByOrgType;
 
-  if (organizationAnalysis.locations_analyzed + listLocationsCount > accountLimits.max_locations_per_year) {
+  if (
+    organizationAnalysis.locations_analyzed + listLocationsCount >
+    accountLimits.max_locations_per_year
+  ) {
     throw new Error('Analysis limit reached');
   }
 

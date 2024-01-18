@@ -64,6 +64,8 @@ const getAnalysisUsageData = async ({ startDate, endDate, organizationId, countF
 
 exports.getOrganizationAnalysisUsage = async (req, res) => {
   let { startDate, endDate, organizationId, countForEachList } = req.query;
+  console.log("🚀 ~ exports.getOrganizationAnalysisUsage= ~ eq.query;:", req.query);
+  
 
   const { status, message } = await getAnalysisUsageData({
     startDate,

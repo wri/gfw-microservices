@@ -19,10 +19,11 @@ const getOrganizationAnalysisUsage = async ({
   organizationId,
   countForEachList,
 }) => {
+  console.log("🚀 ~ getOrganizationAnalysisUsage organizationId:", organizationId)
   const params = [
     { field: 'startDate', type: sql.NVarChar(255), value: startDate },
     { field: 'endDate', type: sql.NVarChar(255), value: endDate },
-    { field: 'organization', type: sql.Int, value: organizationId },
+    { field: 'organization', type: sql.Int, value: organizationId || null},
     { field: 'countForEachList', type: sql.Int, value: countForEachList },
   ];
 

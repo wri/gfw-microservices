@@ -28,7 +28,7 @@ BEGIN
   SET @MyCursor = CURSOR FOR
   SELECT org.organization_db FROM
   Organizations org JOIN
-      Statuses st ON st.id = org.organization_status_id
+    Statuses st ON st.id = org.organization_status_id
   WHERE st.status_name = 'active' and (org.id = @organization or  ISNULL(@organization, '') = '');
 
   OPEN @MyCursor
@@ -46,25 +46,25 @@ BEGIN
 
   WHILE @@FETCH_STATUS = 0
   BEGIN
-      SELECT @id = id FROM [dbo].[Organizations] odb WHERE odb.organization_db = @DBName;
+    SELECT @id = id FROM [dbo].[Organizations] odb WHERE odb.organization_db = @DBName;
 
-      SET @SQLQuery = REPLACE(@SQL, '{DB_NAME}', @DBName)
-      SET @SQLQuery = REPLACE(@SQLQuery, '{START_DATE}', @startDate)
-      SET @SQLQuery = REPLACE(@SQLQuery, '{END_DATE}', @endDate)
-      SET @SQLQuery = REPLACE(@SQLQuery, '{organization}',  @id)
-      PRINT @SQLQuery
-      BEGIN TRY
-        EXEC sp_executesql @SQLQuery
-      END TRY
-      BEGIN CATCH
-        SET @errorQuery = 'INSERT INTO {TABLE} VALUES {VALUES}'
-        SET @errorQuery = REPLACE(@errorQuery, '{VALUES}', '(0,0,0,{organization})')
-        SET @errorQuery = REPLACE(@errorQuery, '{TABLE}', @TABLE)
-        SET @errorQuery = REPLACE(@errorQuery, '{organization}',  @id)
-        EXEC sp_executesql @errorQuery
-      END CATCH
-      FETCH NEXT FROM @MyCursor
-      INTO @DBName
+    SET @SQLQuery = REPLACE(@SQL, '{DB_NAME}', @DBName)
+    SET @SQLQuery = REPLACE(@SQLQuery, '{START_DATE}', @startDate)
+    SET @SQLQuery = REPLACE(@SQLQuery, '{END_DATE}', @endDate)
+    SET @SQLQuery = REPLACE(@SQLQuery, '{organization}',  @id)
+    PRINT @SQLQuery
+    BEGIN TRY
+      EXEC sp_executesql @SQLQuery
+    END TRY
+    BEGIN CATCH
+      SET @errorQuery = 'INSERT INTO {TABLE} VALUES {VALUES}'
+      SET @errorQuery = REPLACE(@errorQuery, '{VALUES}', '(0,0,0,{organization})')
+      SET @errorQuery = REPLACE(@errorQuery, '{TABLE}', @TABLE)
+      SET @errorQuery = REPLACE(@errorQuery, '{organization}',  @id)
+      EXEC sp_executesql @errorQuery
+    END CATCH
+    FETCH NEXT FROM @MyCursor
+    INTO @DBName
   END;
 
   CLOSE @MyCursor ;

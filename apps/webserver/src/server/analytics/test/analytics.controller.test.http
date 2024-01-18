@@ -7,8 +7,9 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 GET https://localhost:8443/analytics/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=1
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
+
 ### return analysis usage in the organization level
-GET https://localhost:8443/analytics/usage?startDate=2023-07-01&endDate=2023-07-30&countForEachList=0
+GET https://localhost:8443/analytics/usage?startDate=2023-12-17&endDate=2024-01-17&countForEachList=0
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 

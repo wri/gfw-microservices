@@ -4,6 +4,8 @@ const axios = require('axios');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
 
+import { getListLocationsCountById } from '@wri-monorepos/sql';
+
 const {
   GEO_TRELLIS__ANALYZE_LIST_DEV,
   GEO_TRELLIS__ANALYZE_LIST_QA,
@@ -12,11 +14,11 @@ const {
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } = require('../config/geoTrellis.config');
 
-import { getListProcessingLimits } from '@wri-monorepos/shared';
-
 const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
 ));
+
+import { getListProcessingLimits, getAccountSubscriptionData } from '@wri-monorepos/shared';
 
 const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extractAnalysisTypes'));
 
@@ -28,7 +30,13 @@ const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extr
  * @return {Promise} - request Promise
  */
 exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
-  const { organization_user_id, organization_id, subscription_status_id } = req.session;
+  const {
+    organization_user_id,
+    organization_id,
+    organization_database: databaseName,
+    subscription_status_id,
+  } = req.session;
+
   const { reanalyze = false } = req.body;
   const { id: listID, list_name } = list;
 
@@ -41,6 +49,17 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   };
 
   const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
+
+  const listLocationsCount = await getListLocationsCountById(listID, databaseName);
+
+  const { accountUsage, accountLimits } = await getAccountSubscriptionData({
+    organizationId: organization_id,
+    subscriptionStatusId: subscription_status_id,
+  });
+
+  if (accountUsage.locations_analyzed + listLocationsCount > accountLimits.max_locations_per_year) {
+    throw new Error('Analysis limit reached');
+  }
 
   // calculate list processing limit
   const processingLimit = await getListProcessingLimits({

@@ -11,7 +11,7 @@ const filterHelpCenterRequest = async (req, res, next) => {
   const PARAM_ENVIRONMENT = PRODUCTION_ENVIRONMENTS.includes(NODE_ENV) ? 'production' : NODE_ENV;
 
   try {
-    const params = [{ field: 'environment', type: sql.NVarChar, value: PARAM_ENVIRONMENT }];
+    const params = [{ field: 'environment', type: sql.NVarChar(255), value: PARAM_ENVIRONMENT }];
     const allowedDomainsRecords = await sqlUtils.executeSystemStoredProcedure(
       req,
       'uspGetAllowedDomains',

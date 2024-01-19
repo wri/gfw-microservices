@@ -7,9 +7,7 @@ import Point from '@arcgis/core/geometry/Point';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 import { areasAndLengths } from '@arcgis/core/rest/geometryService';
-
 import AreasAndLengthsParameters from '@arcgis/core/rest/support/AreasAndLengthsParameters';
-
 import Upload from './Upload';
 import DrawShape from './DrawShape';
 import SelectAddress from './SelectAddress';
@@ -29,15 +27,12 @@ import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import SaveAsDraftNote from '../../../../common/js/components/SaveAsDraft/SaveAsDraftNote';
 import SaveAsDraftButtonWithDialog from '../../../../common/js/components/SaveAsDraft/SaveAsDraftButtonWithDialog';
-
 import { resetScroll } from '../../utils/scroll.utils';
 import { locationsPage, proLayers } from '../../../../common/js/config';
 import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
-// REDUX - Store
 import store from '../../store';
 import { changeAddMethod, changeAddType, changeTemplate } from '../../actions/locationActions';
-
 import { esriQuery } from '../../utils/esriTasks';
 import {
   appendListConfig,
@@ -49,10 +44,8 @@ import featureFlags from '../../../../../utils/general.utils';
 import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
-
 import '../../../css/addLocation.scss';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
-
 const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } =
   proLayers;
 
@@ -1594,9 +1587,16 @@ export default class AddLocation extends Component {
   };
 
   populateMethodOptions = (options) => {
-    const filteredOptions = options.filter(
+    const { isPolygonCoordinatesInputAvailable } = featureFlags;
+
+    let filteredOptions = options.filter(
       (option) => option.type === this.props.addType || option.type === 'both'
     );
+
+    if (isPolygonCoordinatesInputAvailable) {
+      filteredOptions = options.filter((option) => option.id !== 'byCoordinates');
+    }
+
     const actionItems = filteredOptions
       .sort((a, b) =>
         a.investmentOrder > b.investmentOrder ? 1 : b.investmentOrder > a.investmentOrder ? -1 : 0
@@ -1808,6 +1808,7 @@ export default class AddLocation extends Component {
   };
 
   render() {
+    const { isAfiAvailable, isPolygonCoordinatesInputAvailable } = featureFlags;
     const defaultAction =
       this.state.dialogTitle === 'Location Added' ||
       this.state.dialogTitle === 'Location Appended!' ||
@@ -2168,50 +2169,51 @@ export default class AddLocation extends Component {
           </section>
         </AddLocationCard>
 
-        <AddLocationCard>
-          <h2 className="add-location-card__title">
-            {locationsPage.add.timeframe}
-            <span className="add-location-card__optional-indicator">
-              {locationsPage.add.optional}
-            </span>
-          </h2>
-          <p className="add-location-card__prompt">{locationsPage.add.timeframeDesc}</p>
-          <div className="add-location-card__radio-group">
-            {locationsPage.add.timeHorizonOptions.map((option, i) => {
-              return this.createTimeframeRadio(option.label, option.id, i);
-            })}
-          </div>
-
-          {timeframe === 'Time Horizon' && (
-            <div className="location-date-input__container">
-              <div className="location-date-input__start-container">
-                <label className="label-block">{locationsPage.add.startDate}</label>
-                <MuiThemeProvider muiTheme={muiTheme}>
-                  <DatePicker
-                    hintText="mm/dd/yyyy"
-                    className="locations-timeframe-start gfw-datepicker"
-                    value={startDate}
-                    onChange={this.updateStartDate}
-                    formatDate={this.formatDate}
-                  />
-                </MuiThemeProvider>
-              </div>
-              <div className="location-date-input__end-container">
-                <label className="label-block">{locationsPage.add.endDate}</label>
-                <MuiThemeProvider muiTheme={muiTheme}>
-                  <DatePicker
-                    hintText="mm/dd/yyyy"
-                    className="locations-timeframe-end gfw-datepicker"
-                    value={endDate}
-                    onChange={this.updateEndDate}
-                    formatDate={this.formatDate}
-                  />
-                </MuiThemeProvider>
-              </div>
+        {!isPolygonCoordinatesInputAvailable && (
+          <AddLocationCard>
+            <h2 className="add-location-card__title">
+              {locationsPage.add.timeframe}
+              <span className="add-location-card__optional-indicator">
+                {locationsPage.add.optional}
+              </span>
+            </h2>
+            <p className="add-location-card__prompt">{locationsPage.add.timeframeDesc}</p>
+            <div className="add-location-card__radio-group">
+              {locationsPage.add.timeHorizonOptions.map((option, i) => {
+                return this.createTimeframeRadio(option.label, option.id, i);
+              })}
             </div>
-          )}
-        </AddLocationCard>
 
+            {timeframe === 'Time Horizon' && (
+              <div className="location-date-input__container">
+                <div className="location-date-input__start-container">
+                  <label className="label-block">{locationsPage.add.startDate}</label>
+                  <MuiThemeProvider muiTheme={muiTheme}>
+                    <DatePicker
+                      hintText="mm/dd/yyyy"
+                      className="locations-timeframe-start gfw-datepicker"
+                      value={startDate}
+                      onChange={this.updateStartDate}
+                      formatDate={this.formatDate}
+                    />
+                  </MuiThemeProvider>
+                </div>
+                <div className="location-date-input__end-container">
+                  <label className="label-block">{locationsPage.add.endDate}</label>
+                  <MuiThemeProvider muiTheme={muiTheme}>
+                    <DatePicker
+                      hintText="mm/dd/yyyy"
+                      className="locations-timeframe-end gfw-datepicker"
+                      value={endDate}
+                      onChange={this.updateEndDate}
+                      formatDate={this.formatDate}
+                    />
+                  </MuiThemeProvider>
+                </div>
+              </div>
+            )}
+          </AddLocationCard>
+        )}
         {this.props.addType === 'commodity' && (
           <AddLocationCard>
             <h2 className="add-location-card__title">
@@ -2264,7 +2266,7 @@ export default class AddLocation extends Component {
           </AddLocationCard>
         )}
 
-        {featureFlags.isAfiAvailable && (
+        {isAfiAvailable && (
           <AddLocationCard>
             <h2 className="add-location-card__title">Analysis</h2>
 

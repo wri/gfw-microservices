@@ -190,10 +190,11 @@ export class ListBulkCopy {
       'ListBulkCopy'
     );
 
-    const recorsets = await connection.queryArray<Promise<unknown[]>>(
+    const recorsets = await connection.runRawSingleQuery<Promise<unknown[]>>(
       'uspAddNewLocationToAnalysisTable',
       sqlAddNewLocationToAnalysisTableParameters
     );
+    connection.disconnect();
     const resultGeoJson = createGeoJSON(Array.isArray(recorsets) ? recorsets : [recorsets]);
 
     return resultGeoJson;

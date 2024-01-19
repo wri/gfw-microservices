@@ -36,18 +36,15 @@ module.exports = (app, limiter) => {
   }
 
   app.use('/analytics/myorg', [...routeMiddlewaresMyOrg, myOrgAnalyticsRouter]);
-
   app.use('/analytics', [...routeMiddlewaresAnalytics, analyticsRouter]);
 
   app.get('/analytics', controller.analytics);
 
   analyticsRouter.get('/usage', controller.getOrganizationAnalysisUsage);
-
   analyticsRouter.get('/limit', controller.getOrganizationAnalysisLimit);
 
   myOrgAnalyticsRouter.get('/usage', controller.getMyOrganizationAnalysisUsage);
-
+  myOrgAnalyticsRouter.get('/usage/users', controller.getMyOrganizationUsersAnalysisUsage);
   myOrgAnalyticsRouter.get('/usagePercentage', controller.getMyOrganizationAnalysisUsagePercentage);
-
   myOrgAnalyticsRouter.get('/options', controller.getMyOrganizationAnalysisOptions);
 };

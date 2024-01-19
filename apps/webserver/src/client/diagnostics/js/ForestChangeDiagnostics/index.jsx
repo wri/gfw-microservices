@@ -45,6 +45,7 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
       body: JSON.stringify({
         locationId: locationId || '',
         isSharedList,
+        isGfwList,
       }),
     })
       .then((res) => res.json())

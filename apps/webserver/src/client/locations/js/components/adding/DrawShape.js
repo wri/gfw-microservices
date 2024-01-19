@@ -8,7 +8,9 @@ import MapView from '@arcgis/core/views/MapView';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import { locationsPage } from '../../../../common/js/config';
 import Button from '../../../../common/js/components/Button';
+import PolygonCoordinatesInput from './PolygonCoordinates/PolygonCoordinatesInput';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
+import featureFlags from '../../../../../utils/general.utils';
 import './DrawShape.scss';
 
 const containerStyle = {
@@ -157,7 +159,7 @@ export default class DrawShape extends Component {
 
   render() {
     const { geometry, mode } = this.state;
-
+    const { isPolygonCoordinatesInputAvailable } = featureFlags;
     let buttonTitle;
     switch (mode) {
       case DrawShapeMode.Inactive:
@@ -199,6 +201,7 @@ export default class DrawShape extends Component {
             onClick={this.onDrawButtonClick}
             label={buttonTitle}
           />
+          {isPolygonCoordinatesInputAvailable && <PolygonCoordinatesInput />}
           <div style={mapStyle} ref="mapView"></div>
         </div>
       </div>

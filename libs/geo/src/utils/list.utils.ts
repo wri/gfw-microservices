@@ -3,7 +3,6 @@ import * as sql from 'mssql';
 import {
   SQLUtils,
   GetTableAnalysisColumnsById,
-  RawSQLRunner,
   UnlockList,
   ListsAnalysisStatus,
 } from '@wri-monorepos/sql';
@@ -391,7 +390,6 @@ export const PerformCopyAnalysis = async (
   );
   Logger.log(`Copy statement: ${statement}`, 'LocationsService');
 
-  const SQLRunner = new RawSQLRunner();
   const copyAnalysisRawQuery = ComposeAnalysisCopyQuery(
     sourceListId,
     destinationListId,
@@ -400,7 +398,7 @@ export const PerformCopyAnalysis = async (
     statement
   );
 
-  await SQLRunner.run(clientDatabase, copyAnalysisRawQuery);
+  await SQLUtils.queryDB(clientDatabase, copyAnalysisRawQuery);
 };
 
 export async function PerformLocationsBulkCopy(
@@ -436,7 +434,7 @@ export async function getListAnalysisStatus(
   listId: number
 ): Promise<ListsAnalysisStatus[]> {
   const parameters = [{ field: 'ListID', type: sql.Int, value: listId }];
-  return SQLUtils.queryDBArray<ListsAnalysisStatus[]>(
+  return await SQLUtils.queryDB<ListsAnalysisStatus[]>(
     clientDatabase,
     'getListAnalysisStatusById',
     parameters

@@ -70,7 +70,7 @@ function BarChart({ data, plotBands = [], plotLines = [] }) {
 
   const [ref] = useHookWithRefCallback(renderChart);
 
-  return <div ref={ref} />;
+  return <div data-testid="bar-chart" ref={ref} />;
 }
 
 export default BarChart;

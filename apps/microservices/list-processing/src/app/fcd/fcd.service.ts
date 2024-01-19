@@ -73,22 +73,12 @@ export class FCDService {
       { field: 'country', type: sql.VarChar, value: country },
     ];
 
-    const connection = new SQLUtils({
-      ...this.sqlConfig,
-      database: clientDatabase,
-    });
-
-    await connection.connect();
-
     this.logger.debug(`Get Protected Areas By Category Area for: ${country} and listId ${listId}`);
-    const createListResult = await connection.queryArray<GetProtectedAreasByCategoryAreaType>(
+    return await SQLUtils.queryDB<GetProtectedAreasByCategoryAreaType[]>(
+      clientDatabase,
       getProtectedAreasByCategoryArea,
       parameters
     );
-
-    connection.disconnect();
-
-    return createListResult;
   }
 
   async landmarkOverlapCountry(listId: string, country: string, clientDatabase: string) {
@@ -123,21 +113,11 @@ export class FCDService {
       { field: 'country', type: sql.VarChar, value: country },
     ];
 
-    const connection = new SQLUtils({
-      ...this.sqlConfig,
-      database: clientDatabase,
-    });
-
-    await connection.connect();
-
     this.logger.debug(`Get Protected Areas By Category Area for: ${country} and listId ${listId}`);
-    const createListResult = await connection.queryArray<GetLandmarkByCategoryAreaType>(
+    return await SQLUtils.queryDB<GetLandmarkByCategoryAreaType[]>(
+      clientDatabase,
       getLandmarkByCategoryArea,
       parameters
     );
-
-    connection.disconnect();
-
-    return createListResult;
   }
 }

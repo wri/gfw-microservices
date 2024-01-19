@@ -19,12 +19,16 @@ import {
 import { ApiKeyMiddleware } from '../middleware/api.middleware';
 import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
 
+// This needs to be at the beginning of the file to ensure that the '.env' file
+// is loaded into process.env before any code reads process.env
+const envModule = ConfigModule.forRoot({
+  envFilePath: ['.env', '.env.production'],
+  isGlobal: true,
+});
+
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: ['.env', '.env.production'],
-      isGlobal: true,
-    }),
+    envModule,
     createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes]),
     TokenModule,
     ListsAnalysisModule,

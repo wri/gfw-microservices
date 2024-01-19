@@ -30,7 +30,7 @@ export class StoredProcedureCommand implements Command {
 
   async execute<T>(database: string | null = null) {
     try {
-      const result = await SQLUtils.queryDB<T>(
+      const result = await SQLUtils.queryDBFirstRow<T>(
         database ? database : this.connection.config.database,
         this.sql,
         this.parameters,
@@ -45,7 +45,7 @@ export class StoredProcedureCommand implements Command {
     database: string | null = null,
   ): ResultPromise<T[] | undefined> {
     try {
-      const result = await SQLUtils.queryDBArray<T[]>(
+      const result = await SQLUtils.queryDB<T[]>(
         database ? database : this.connection.config.database,
         this.sql,
         this.parameters,

@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
 import { GenerationFileRequest } from './model';
-import { SQL_CONFIG } from '../config/config';
 import {
   AnalysisDataType,
   getPaginatedAnalysisDataForUserList,
@@ -48,10 +47,10 @@ export class UspGetPaginatedAnalysisDataForUserList {
         type: sql.NVarChar(255),
         value: sortByAttribute || 'Location Name',
       },
-      { field: 'Order', type: sql.NVarChar, value: orderType || 'ASC' },
-      { field: 'SubState', type: sql.NVarChar, value: subState || null },
-      { field: 'Country', type: sql.NVarChar, value: country || null },
-      { field: 'State', type: sql.NVarChar, value: state || null },
+      { field: 'Order', type: sql.NVarChar(255), value: orderType || 'ASC' },
+      { field: 'SubState', type: sql.NVarChar(255), value: subState || null },
+      { field: 'Country', type: sql.NVarChar(255), value: country || null },
+      { field: 'State', type: sql.NVarChar(255), value: state || null },
       {
         field: 'AnalysisAreaMin',
         type: sql.Int,
@@ -64,56 +63,58 @@ export class UspGetPaginatedAnalysisDataForUserList {
       },
       {
         field: 'LocationLogic',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: locationLogic || null,
       },
-      { field: 'LocationIds', type: sql.NVarChar, value: locationIds || null },
+      { field: 'LocationIds', type: sql.NVarChar(255), value: locationIds || null },
       {
         field: 'LocationStatement',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: locationStatement || null,
       },
       {
         field: 'ColumnsToReturn',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: combinedColumns || null,
       },
       {
         field: 'SearchString',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: searchString || null,
       },
       { field: 'Geometry', type: sql.Bit, value: geometry || 0 },
-      { field: 'selectedSupplier', type: sql.NVarChar, value: selectedSupplier || null },
+      { field: 'selectedSupplier', type: sql.NVarChar(255), value: selectedSupplier || null },
       {
         field: 'selectedSecondSupplier',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: selectedSecondSupplier || null,
       },
-      { field: 'selectedParentCompany', type: sql.NVarChar, value: selectedParentCompany || null },
+      {
+        field: 'selectedParentCompany',
+        type: sql.NVarChar(255),
+        value: selectedParentCompany || null,
+      },
       { field: 'showRSPOCertified', type: sql.Bit, value: showRSPOCertified || 0 },
       {
         field: 'selectedOverallThreats',
-        type: sql.NVarChar,
+        type: sql.NVarChar(255),
         value: selectedOverallThreats || null,
       },
-      { field: 'selectedOverallValues', type: sql.NVarChar, value: selectedOverallValues || null },
-      { field: 'selectedMillPriority', type: sql.NVarChar, value: selectedMillPriority || null },
+      {
+        field: 'selectedOverallValues',
+        type: sql.NVarChar(255),
+        value: selectedOverallValues || null,
+      },
+      {
+        field: 'selectedMillPriority',
+        type: sql.NVarChar(255),
+        value: selectedMillPriority || null,
+      },
     ];
 
     const query = SQLUtils.isSystemDatabase(databaseName)
       ? getPaginatedAnalysisDataForGFWList
       : getPaginatedAnalysisDataForUserList;
-    const connection = new SQLUtils({ ...SQL_CONFIG, database: databaseName });
-    await connection.connect();
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const createListResult = await connection.queryArray<AnalysisDataType>(query, parameters);
-      await connection.disconnect();
-      return createListResult;
-    } catch (error) {
-      await connection.disconnect();
-      throw new Error(error);
-    }
+    return await SQLUtils.queryDB<AnalysisDataType[]>(databaseName, query, parameters);
   }
 }

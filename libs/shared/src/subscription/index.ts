@@ -1,5 +1,6 @@
 export * from './usage';
 export * from './limits';
+export * from './utils';
 
 /**
  * @see Epic Analysis Usage Limits v2

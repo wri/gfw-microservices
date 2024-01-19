@@ -10,13 +10,13 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
 import DateRangeSelector from './DateRangeSelector';
-import { oneMonthAgoDate, todaysDate } from './AccountUsage.utils';
+import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { useAccountDetail } from '../AccountDetailSection';
 
 function AccountDetailUsage() {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
-  const [endDate, setEndDate] = useState(todaysDate);
+  const [endDate, setEndDate] = useState(endDayIncludingToday);
   const [isLoading, setIsLoading] = useState(true);
   const [usageData, setUsageData] = useState({});
   const { currentAccount } = useAccountDetail();

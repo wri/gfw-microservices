@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import DateRangeSelector from './DateRangeSelector';
-import { oneMonthAgoDate, todaysDate } from './AccountUsage.utils';
+import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils.js';
 
@@ -24,7 +24,7 @@ const fontStyles = {
 
 function AccountsListUsage({ setIsLoading }) {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
-  const [endDate, setEndDate] = useState(todaysDate);
+  const [endDate, setEndDate] = useState(endDayIncludingToday);
   const [usageData, setUsageData] = useState({});
   const [isFetching, setIsFetching] = useState(true);
 

@@ -60,25 +60,19 @@ function AccountDetailUsage() {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>
-                    {accountProfileStrings.accountUsageLabels.numberOfLists}
-                  </TableCell>
-                  <TableCell>
-                    {accountProfileStrings.accountUsageLabels.maxAreaPerList}
-                  </TableCell>
+                  <TableCell>{accountProfileStrings.accountUsageLabels.numberOfLists}</TableCell>
+                  <TableCell>{accountProfileStrings.accountUsageLabels.maxAreaPerList}</TableCell>
                   <TableCell>
                     {accountProfileStrings.accountUsageLabels.totalAreaAnalyzed}
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-              <TableRow>
-                <TableCell>
-                  {numberWithCommas(number_of_lists_analyzed)}
-                </TableCell>
-                <TableCell>{numberWithCommas(max_area_analyzed)}</TableCell>
-                <TableCell>{numberWithCommas(total_area_analyzed)}</TableCell>
-              </TableRow>
+                <TableRow>
+                  <TableCell>{numberWithCommas(number_of_lists_analyzed)}</TableCell>
+                  <TableCell>{numberWithCommas(max_area_analyzed)}</TableCell>
+                  <TableCell>{numberWithCommas(total_area_analyzed)}</TableCell>
+                </TableRow>
               </TableBody>
             </Table>
           </TableContainer>

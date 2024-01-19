@@ -42,7 +42,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
     organization_user_id,
     organization_id,
     organization_database: databaseName,
-    subscription_status_id
+    subscription_status_id,
   } = req.session;
 
   const { reanalyze = false } = req.body;

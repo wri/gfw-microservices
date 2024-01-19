@@ -23,7 +23,7 @@ function DateRangeSelector({ startDate, setStartDate, endDate, setEndDate }) {
 
   return (
     <Grid container spacing={2}>
-      <Grid item xs={6}>
+      <Grid item xs="auto">
         <label htmlFor="startDatePicker">
           {accountProfileStrings.dateRangeSelector.selectStartDate}
         </label>
@@ -35,7 +35,7 @@ function DateRangeSelector({ startDate, setStartDate, endDate, setEndDate }) {
           max={oneDayBeforeEndDateISOString}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs="auto">
         <label htmlFor="endDatePicker">
           {accountProfileStrings.dateRangeSelector.selectEndDate}
         </label>

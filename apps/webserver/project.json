@@ -51,6 +51,7 @@
     },
     "serve": {
       "executor": "@nx/js:node",
+      "dependsOn": ["build"],
       "options": {
         "buildTarget": "webserver:build",
         "runtimeArgs": ["--max-old-space-size=4096"]

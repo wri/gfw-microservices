@@ -17,7 +17,7 @@ function AccountDetailUsage() {
   useEffect(() => {
     setIsLoading(true);
     fetch(
-      `/analytics/usage?startDate=${startDate}&endDate=${endDate}&countForEachList=0&organizationId=${organizationId}`,
+      `/analytics/usage?startDate=${startDate}&endDate=${endDate}&organizationId=${organizationId}`,
       {
         method: 'GET',
         credentials: 'same-origin',

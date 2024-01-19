@@ -22,14 +22,17 @@ const fontStyles = {
   fontSize: '28px',
 };
 
-function AccountsListUsage({ isLoading, setIsLoading }) {
+function AccountsListUsage({ setIsLoading }) {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
   const [endDate, setEndDate] = useState(todaysDate);
   const [usageData, setUsageData] = useState({});
+  const [isFetching, setIsFetching] = useState(true);
+
+  useEffect(() => setIsLoading(false), []);
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch(`/analytics/usage?startDate=${startDate}&endDate=${endDate}&countForEachList=0`, {
+    setIsFetching(true);
+    fetch(`/analytics/usage?startDate=${startDate}&endDate=${endDate}`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {
@@ -39,15 +42,12 @@ function AccountsListUsage({ isLoading, setIsLoading }) {
       .then((res) => res.json())
       .then((data) => {
         setUsageData(data);
-        setIsLoading(false);
+        setIsFetching(false);
       })
       .catch((error) => {
         console.log(error);
       });
   }, [startDate, endDate]);
-      <div>
-        <h2>{accountProfileStrings.sectionTitles.accountUsage}</h2>
-      </div>
 
   return (
     <section>
@@ -66,9 +66,9 @@ function AccountsListUsage({ isLoading, setIsLoading }) {
         />
       </Box>
 
-      <Grid container>
-        {isLoading && <CircularProgress color="success" />}
-        {!isLoading && (
+      <Grid container justifyContent="center">
+        {isFetching && <CircularProgress color="success" />}
+        {!isFetching && (
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
@@ -106,7 +106,6 @@ function AccountsListUsage({ isLoading, setIsLoading }) {
           </TableContainer>
         )}
       </Grid>
-
     </section>
   );
 }

@@ -2,7 +2,7 @@ import moment from 'moment';
 
 export const oneMonthAgoDate = moment().subtract(1, 'months').format('YYYY-MM-DD');
 
-export const todaysDate = moment().format('YYYY-MM-DD');
+export const todaysDate = moment().add(1, 'day').format('YYYY-MM-DD');
 
 export const todaysDateISOString = new Date().toISOString().slice(0, 10);
 

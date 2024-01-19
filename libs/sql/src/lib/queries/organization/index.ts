@@ -30,3 +30,4 @@ export * from './setActivityLog';
 export * from './setS3UrlAndExpirationDate';
 export * from './resetListStatus';
 export * from './getOrganizationUsersAnalysisUsage';
+export * from './getDashboardData';

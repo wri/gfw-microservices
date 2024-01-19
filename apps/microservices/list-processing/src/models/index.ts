@@ -106,11 +106,17 @@ export interface getNumberOfPagesPaginatedListDataRequest {
   searchString?: string;
 }
 
-export interface getAfiAnalysisDataRequest {
+export interface PaginatedQuerySchema {
   clientDatabase: string;
-  isListLevel: 0;
   rowsPerPage?: number;
   pageNumber?: number;
+}
+
+export interface GetAfiAnalysisDataRequest {
+  clientDatabase: string;
+  rowsPerPage?: number;
+  pageNumber?: number;
+  isListLevel: 0;
 }
 
 export interface DatabaseQueryParam {

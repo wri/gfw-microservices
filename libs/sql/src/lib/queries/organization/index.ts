@@ -32,3 +32,5 @@ export * from './resetListStatus';
 export * from './getListLocationsCountQueryById';
 export * from './getOrganizationUsersAnalysisUsage';
 export * from './getDashboardData';
+export * from './getCountDashboardData';
+export * from './getDashboardDataPaginated';

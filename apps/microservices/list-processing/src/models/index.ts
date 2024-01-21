@@ -106,7 +106,7 @@ export interface getNumberOfPagesPaginatedListDataRequest {
   searchString?: string;
 }
 
-export interface PaginatedQuerySchema {
+export interface PaginatedQueryRequest {
   clientDatabase: string;
   rowsPerPage?: number;
   pageNumber?: number;

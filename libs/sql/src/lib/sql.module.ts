@@ -1,10 +1,12 @@
-import { UspGetListLocations } from './lists/uspGetListLocations';
+import { UspGetListLocations } from './lists';
 import { Module } from '@nestjs/common';
 import { UspGetListAnalysis } from './lists';
 import { UspGetAnalysisDataCountForUserList, UspGetPaginatedAnalysisDataForUserList } from './llp';
-import { ClientStoreConnection } from './util/typeORM.utils';
+import { ClientStoreConnection } from './util';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
+  imports: [ConfigModule],
   controllers: [],
   providers: [
     UspGetAnalysisDataCountForUserList,

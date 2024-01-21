@@ -15,16 +15,40 @@ export class AlertsService {
   }
 
   async getGFWListDashboardData(listID: number) {
-    const listDashboardData = await this.alertsRepository.findGFWListDashboardData(listID);
+    const listDashboardData = await this.alertsRepository.findGFWListDashboardDataByListId(listID);
     return this.buildGeojson(listDashboardData ?? []);
   }
 
   async getDashboardData(listID: number, clientDatabase: string) {
-    const listDashboardData = await this.alertsRepository.findDashboardData(listID, clientDatabase);
+    const listDashboardData = await this.alertsRepository.findDashboardDataByListId(
+      listID,
+      clientDatabase
+    );
     return this.buildGeojson(listDashboardData ?? []);
   }
 
-  buildGeojson(listDashboardData: DashboardDataType[]) {
+  async countDashboardData(listID: number, clientDatabase: string) {
+    return await this.alertsRepository.countDashboardData(listID, clientDatabase);
+  }
+
+  async getDashboardDataPaginated(
+    listID: number,
+    clientDatabase: string,
+    pageNumber: number,
+    rowsPerPage: number
+  ) {
+    const makePageStartOnZero = pageNumber - 1;
+    const listDashboardData = await this.alertsRepository.findDashboardDataByListIdPaginated(
+      listID,
+      clientDatabase,
+      makePageStartOnZero,
+      rowsPerPage
+    );
+    console.log('listDashboardData', listDashboardData);
+    return this.buildGeojson(listDashboardData ?? []);
+  }
+
+  buildGeojson(listDashboardData: DashboardDataType[] = []) {
     const modDashData = listDashboardData
       .filter((l) => l.gadmid)
       .map((l) => {

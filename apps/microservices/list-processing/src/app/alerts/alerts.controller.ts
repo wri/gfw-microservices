@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query, UsePipes } from '@nestjs/common';
 import { z } from 'zod';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
-import { DatabaseQueryParam, PaginatedQuerySchema } from '../../models';
+import { DatabaseQueryParam, PaginatedQueryRequest } from '../../models';
 import { AlertsService } from './alerts.service';
 
 const DatabaseQuerySchema = z.object({
@@ -41,5 +41,27 @@ export class AlertsController {
   getDashboardTimestamp(@Param('listID') listID: number, @Query() query: DatabaseQueryParam) {
     const { clientDatabase } = query;
     return this.alertsService.getDashboardTimestamp(listID, clientDatabase);
+  }
+
+  @Get(':listID/countDashboardData')
+  @UsePipes(new ZodValidationPipe(DatabaseQuerySchema))
+  async countDashboardData(@Param('listID') listID: number, @Query() query: DatabaseQueryParam) {
+    const { clientDatabase } = query;
+    return await this.alertsService.countDashboardData(listID, clientDatabase);
+  }
+
+  @Get(':listID/dashboardDataPaginated')
+  @UsePipes(new ZodValidationPipe(PaginatedQuerySchema))
+  async getDashboardDataPaginated(
+    @Param('listID') listID: number,
+    @Query() query: PaginatedQueryRequest
+  ) {
+    const { clientDatabase, pageNumber, rowsPerPage } = query;
+    return await this.alertsService.getDashboardDataPaginated(
+      listID,
+      clientDatabase,
+      pageNumber,
+      rowsPerPage
+    );
   }
 }

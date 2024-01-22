@@ -20,12 +20,12 @@ const CoordinateInputsContainer = ({
       <label>longitude</label>
     </Grid>
     <Grid item xs={12}>
-      {coordinates.map(({ lat, long }, index) => (
+      {coordinates.map(({ latitude, longitude }, index) => (
         <CoordinateInputRow
           key={index}
           index={index}
-          lat={lat}
-          long={long}
+          latitude={latitude}
+          longitude={longitude}
           onCoordinatesChange={onCoordinatesChange}
           onDelete={onDelete}
           onlyOneCorodinatesRow={onlyOneCorodinatesRow}

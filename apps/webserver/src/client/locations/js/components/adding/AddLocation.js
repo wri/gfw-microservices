@@ -9,7 +9,7 @@ import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercat
 import { areasAndLengths } from '@arcgis/core/rest/geometryService';
 import AreasAndLengthsParameters from '@arcgis/core/rest/support/AreasAndLengthsParameters';
 import Upload from './Upload';
-import DrawShape from './DrawShape';
+import AddLocationMap from './AddLocationMap';
 import SelectAddress from './SelectAddress';
 import SearchCoordinates from './SearchCoordinates';
 import DescribeInvestment from './DescribeInvestment';
@@ -2120,7 +2120,7 @@ export default class AddLocation extends Component {
                   addMethod={addMethod}
                 />
               ) : addMethod === 'byDrawing' ? (
-                <DrawShape
+                <AddLocationMap
                   geomFromMap={
                     this.props.geomFromMap && this.props.geomFromMap.geometry
                       ? this.props.geomFromMap.geometry

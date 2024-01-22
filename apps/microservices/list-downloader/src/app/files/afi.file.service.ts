@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PassThrough } from 'stream';
 import { finished } from 'stream/promises';
-import { IPipeService } from '../pipe/IPipeService';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
@@ -10,6 +9,7 @@ import { AFI_HEADER, AFI_HEADER_AGGREGATE } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
 import { NegligibleRiskDiscretize } from '../transform/negligible.risk.discretize';
 import { FormatNumber } from '../transform/format.number';
+import { IPipeService } from '../pipe/i.pipe.service';
 
 @Injectable()
 export class AfiFileService extends IPipeService {
@@ -17,8 +17,8 @@ export class AfiFileService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  start(filters: GenerationFileRequest, suffix = 'deforestation_kpis') {
-    this.startEmail(filters);
+  async start(filters: GenerationFileRequest, suffix = 'deforestation_kpis') {
+    await this.startEmail(filters);
 
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
@@ -41,9 +41,9 @@ export class AfiFileService extends IPipeService {
     const { listId, key, listName } = filters;
     this.inputStream.removeAllListeners();
 
-    this.inputStream.on('error', (err) => {
+    this.inputStream.on('error', async (err) => {
       this.logger.error(`(${listId}) - Error on stream: ${err}`);
-      this.errorEmail(filters);
+      await this.errorEmail(filters);
     });
 
     this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}_${suffix}.csv`, {

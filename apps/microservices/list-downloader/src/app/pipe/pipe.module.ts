@@ -24,10 +24,12 @@ import { SouthAmericaBiomesService } from '../files/south.america.biomes.service
 import { SouthAmericaLossService } from '../files/south.america.loss.service';
 import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.service';
 import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
-import { ListService } from './list.service';
-import { AfiService } from './afi.service';
+import { ListGeneratorService } from './list.generator.service';
+import { AfiGeneratorService } from './afi.generator.service';
 import { AfiFileService } from '../files/afi.file.service';
-import { ArgentinaOverlap } from '../files/argentina.overlap';
+import { ArgentinaOverlapService } from '../files/argentina.overlap.service';
+import { AnalysisDataService } from '../data/analysis.data.service';
+import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
 
 @Module({
   imports: [envModule, AwsModule, SqlModule],
@@ -49,10 +51,12 @@ import { ArgentinaOverlap } from '../files/argentina.overlap';
     SouthAmericaLossService,
     SouthEastAsiaOverlapService,
     SouthEastAsiaTCLService,
-    ListService,
-    AfiService,
+    ListGeneratorService,
+    AfiGeneratorService,
     AfiFileService,
-    ArgentinaOverlap,
+    ArgentinaOverlapService,
+    AnalysisDataService,
+    AnalysisAfiDataService,
   ],
   exports: [PipeService],
 })

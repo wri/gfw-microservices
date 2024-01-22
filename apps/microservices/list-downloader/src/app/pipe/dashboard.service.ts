@@ -1,6 +1,6 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
-import { IPipeService } from './IPipeService';
+import { IPipeService } from './i.pipe.service';
 
 import { ForestLossService } from '../files/forest.loss.service';
 import { HistoricPercentService } from '../files/historic.percent.service';
@@ -15,7 +15,7 @@ import { SouthAmericaLossService } from '../files/south.america.loss.service';
 import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.service';
 import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 import { getAllFilesAndZip } from '../shared/file.utils';
-import { ArgentinaOverlap } from '../files/argentina.overlap';
+import { ArgentinaOverlapService } from '../files/argentina.overlap.service';
 
 @Injectable()
 export class DashboardService extends IPipeService {
@@ -57,11 +57,11 @@ export class DashboardService extends IPipeService {
   @Inject(SouthEastAsiaTCLService)
   private readonly southEastAsiaTCLService: SouthEastAsiaTCLService;
 
-  @Inject(ArgentinaOverlap)
-  private readonly argentinaOverlap: ArgentinaOverlap;
+  @Inject(ArgentinaOverlapService)
+  private readonly argentinaOverlap: ArgentinaOverlapService;
 
-  start(filters: GenerationFileRequest) {
-    this.startEmail(filters);
+  async start(filters: GenerationFileRequest) {
+    await this.startEmail(filters);
 
     this.forestLoos.start(filters);
     this.historicPercentService.start(filters);
@@ -114,6 +114,6 @@ export class DashboardService extends IPipeService {
 
     this.logger.log(`(${key}) - Zipping files`);
     await getAllFilesAndZip(filters);
-    this.finishProcess(filters);
+    await this.finishProcess(filters);
   }
 }

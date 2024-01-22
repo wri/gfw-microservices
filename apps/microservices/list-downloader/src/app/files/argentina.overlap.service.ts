@@ -8,7 +8,7 @@ import { argentinaLayers } from '../parser/argentina.layers.parser';
 import { FormatNumber } from '../transform/format.number';
 
 @Injectable()
-export class ArgentinaOverlap extends DashboardHandleDownload {
+export class ArgentinaOverlapService extends DashboardHandleDownload {
   start(filters: GenerationFileRequest) {
     if (this.isArgentinaOverlapFile(filters)) {
       super.start(filters, 'argentinaOverlap', 'argentina_overlap');

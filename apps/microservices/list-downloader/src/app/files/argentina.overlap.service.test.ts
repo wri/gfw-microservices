@@ -1,12 +1,12 @@
-import { ArgentinaOverlap } from './argentina.overlap';
+import { ArgentinaOverlapService } from './argentina.overlap.service';
 import { describe, expect, test } from '@jest/globals';
 import { argentinaListLevelData, argentinaLocationData } from '../shared/mock.data';
 
 import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
 
-describe('Argentina Overlap', () => {
-  const argentinaOverlap = new ArgentinaOverlap();
+describe('Argentina Overlap Service', () => {
+  const argentinaOverlap = new ArgentinaOverlapService();
 
   const filters = {
     listId: 5642,

@@ -1,6 +1,6 @@
 import { Logger, Injectable } from '@nestjs/common';
-import { AfiService } from './afi.service';
-import { ListService } from './list.service';
+import { AfiGeneratorService } from './afi.generator.service';
+import { ListGeneratorService } from './list.generator.service';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
 import * as sql from 'mssql';
@@ -12,19 +12,17 @@ import { createDirectory } from '../shared/file.utils';
 export class PipeService {
   private readonly logger = new Logger(PipeService.name);
 
-  constructor(private readonly afiService: AfiService, private readonly listService: ListService) {}
+  constructor(
+    private readonly afiGeneratorService: AfiGeneratorService,
+    private readonly listGeneratorService: ListGeneratorService
+  ) {}
 
   public async makeFile(filters: GenerationFileRequest) {
-    const { type, organizationDatabase, listId, key } = filters;
+    const { type, listId } = filters;
 
     this.logger.log(`(${listId}) - Receive request to build file for list`);
 
-    const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
-    const { list_name } = await SQLUtils.queryDBFirstRow<ListNameSchema>(
-      organizationDatabase,
-      'uspGetListNameSchema',
-      parameters
-    );
+    const list_name = await this.getListName(filters);
 
     filters = {
       ...filters,
@@ -32,14 +30,50 @@ export class PipeService {
       rowsPerPage: MAX_NUMBER_OF_ROWS_PER_PAGE,
     };
 
+    this.createDirectory(filters);
+
+    this.getGeneratorBaseOnType()[type].makeFile(filters);
+  }
+
+  private async getListName(filters: GenerationFileRequest) {
+    const { organizationDatabase, listId } = filters;
+
+    const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
+    const { list_name } = await SQLUtils.queryDBFirstRow<ListNameSchema>(
+      organizationDatabase,
+      'uspGetListNameSchema',
+      parameters
+    );
+    return list_name;
+  }
+
+  private getGeneratorBaseOnType = () => {
+    return {
+      afi: this.afiGeneratorService,
+      argentinaOverlap: this.listGeneratorService,
+      commodityRiskDiagnosticLocationSummary: this.listGeneratorService,
+      deforestationTrends: this.listGeneratorService,
+      everything: this.listGeneratorService,
+      forestChangeDiagnosticListSummary: this.listGeneratorService,
+      forestChangeDiagnosticLocationSummary: this.listGeneratorService,
+      forestLoss: this.listGeneratorService,
+      historicPercent: this.listGeneratorService,
+      input: this.listGeneratorService,
+      millPriority: this.listGeneratorService,
+      palmRiskAnalysis: this.listGeneratorService,
+      results: this.listGeneratorService,
+      southAmericaOverlap: this.listGeneratorService,
+      southAmericaTCL: this.listGeneratorService,
+      southEastAsiaOverlap: this.listGeneratorService,
+      southEastAsiaTCL: this.listGeneratorService,
+    };
+  };
+
+  private createDirectory = (filters: GenerationFileRequest) => {
+    const { listId, key } = filters;
+
     const dir = `/tmp/wri-${key}`;
     this.logger.log(`(${listId}) - Create directory: ${dir}`);
     createDirectory(dir);
-
-    if (type == 'afi') {
-      this.afiService.makeFile(filters);
-    } else {
-      this.listService.makeFile(filters);
-    }
-  }
+  };
 }

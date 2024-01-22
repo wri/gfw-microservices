@@ -19,6 +19,7 @@ import {
   setZoomLevelTotal,
   updateInfoBubbleCache,
   updateLocationFilter,
+  selectAdmin,
 } from '../actions/dashboardActions';
 
 // Components
@@ -325,8 +326,13 @@ export default class DashboardMap extends Component {
               icon={<ZoomIcon />}
               onClick={() => {
                 const { zoomLevel, selectedAdmin } = this.props;
+                let prevewaSelectedAdmin = selectedAdmin.split('.');
+                prevewaSelectedAdmin.pop();
+                prevewaSelectedAdmin = prevewaSelectedAdmin.join('.');
+                
+                store.dispatch(selectAdmin(prevewaSelectedAdmin));
                 store.dispatch(decrementZoomLevel());
-                store.dispatch(setZoomLevelTotal(getAlertsTotal(selectedAdmin, zoomLevel)));
+                store.dispatch(setZoomLevelTotal(getAlertsTotal(prevewaSelectedAdmin, zoomLevel)));
                 gtag('event', 'Dashboard Map zoom out button clicked', {
                   event_category: 'Dashboard Click',
                   event_label: 'User click on a Zoom Out button',

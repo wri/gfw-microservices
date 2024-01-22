@@ -329,7 +329,7 @@ export default class DashboardMap extends Component {
                 let prevewaSelectedAdmin = selectedAdmin.split('.');
                 prevewaSelectedAdmin.pop();
                 prevewaSelectedAdmin = prevewaSelectedAdmin.join('.');
-                
+
                 store.dispatch(selectAdmin(prevewaSelectedAdmin));
                 store.dispatch(decrementZoomLevel());
                 store.dispatch(setZoomLevelTotal(getAlertsTotal(prevewaSelectedAdmin, zoomLevel)));

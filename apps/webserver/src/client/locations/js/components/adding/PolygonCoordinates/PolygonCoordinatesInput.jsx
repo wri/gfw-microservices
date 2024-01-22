@@ -89,8 +89,7 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
   };
 
   const addNewPolygon = () => {
-
-    const polygonCoordinates = coordinates.map(coord => [coord.longitude, coord.latitude]);
+    const polygonCoordinates = coordinates.map((coord) => [coord.longitude, coord.latitude]);
 
     const polygon = {
       type: 'polygon',

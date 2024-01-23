@@ -18,7 +18,7 @@ const listUploadBodySchema = z.object({
   uploadId: z.string(),
   listName: z.string(),
   templateId: z.number(),
-  analysisIDs: z.string(),
+  analysisIDs: z.enum(['ALERTS', 'FCD']),
 });
 
 @ApiSecurity('x-api-key')

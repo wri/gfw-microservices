@@ -3,12 +3,13 @@ import { Box, Grid, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 const CoordinateInputRow = ({
+  id,
   index,
   latitude,
   longitude,
   onCoordinatesChange,
-  onDelete,
-  onlyOneCorodinatesRow,
+  onDeleteCoordinate,
+  onlyOneCoordinatesRow,
 }) => (
   <Box display="flex" sx={{ alignItems: 'center' }}>
     <Grid item xs={1}>
@@ -17,20 +18,22 @@ const CoordinateInputRow = ({
     <Grid item xs={5}>
       <input
         type="number"
+        name="latitude"
         value={latitude}
-        onChange={(event) => onCoordinatesChange(event, index, 'latitude')}
+        onChange={(event) => onCoordinatesChange(event, id, 'latitude')}
       />
     </Grid>
     <Grid item xs={5}>
       <input
         type="number"
+        name="longitude"
         value={longitude}
-        onChange={(event) => onCoordinatesChange(event, index, 'longitude')}
+        onChange={(event) => onCoordinatesChange(event, id, 'longitude')}
       />
     </Grid>
     <Grid item xs={1}>
-      {!onlyOneCorodinatesRow && (
-        <CloseIcon style={{ cursor: 'pointer' }} onClick={() => onDelete(index)} />
+      {!onlyOneCoordinatesRow && (
+        <CloseIcon style={{ cursor: 'pointer' }} onClick={() => onDeleteCoordinate(id)} />
       )}
     </Grid>
   </Box>

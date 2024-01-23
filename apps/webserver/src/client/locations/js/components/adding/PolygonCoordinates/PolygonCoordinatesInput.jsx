@@ -15,19 +15,38 @@ import './PolygonCoordinatesInput.scss';
 const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
   const [selectedRadius, setSelectedRadius] = useState('big');
   const [coordinates, setCoordinates] = useState([
-    { id: 0, latitude: 34.0005930608889, longitude: -118.80657463861 },
+    { id: Date.now(), latitude: null, longitude: null },
   ]);
   const [customRadiusSize, setCustomRadiusSize] = useState();
   const [areaUnit, setAreaUnit] = useState('ha');
   const [open, setOpen] = useState(false);
-  const onlyOneCorodinatesRow = coordinates.length === 1;
+  const onlyOneCoordinatesRow = coordinates.length === 1;
 
-  const onCoordinatesChange = (event, index, field) => {
+  const onCoordinatesChange = (event, id, field) => {
     const result = coordinates.map((row) =>
-      row.id === index ? { ...row, [field]: event.target.value } : row
+      row.id === id ? { ...row, [field]: event.target.value } : row
     );
 
     setCoordinates(result);
+  };
+
+  const onAddCoordinate = () => {
+    const newCoordinate = {
+      id: Date.now(),
+      latitude: null,
+      longitude: null,
+    };
+    setCoordinates([...coordinates, newCoordinate]);
+  };
+
+  const onDeleteCoordinate = (id) => {
+    if (onlyOneCoordinatesRow) {
+      // User can't delete the coordinates if there is only one row
+      return;
+    }
+
+    const filteredCoordinates = coordinates.filter((coord) => coord.id !== id);
+    setCoordinates(filteredCoordinates);
   };
 
   const addNewPoint = () => {
@@ -79,15 +98,6 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
     return bufferGeometry;
   };
 
-  const onDeleteCoordinate = (index) => {
-    if (onlyOneCorodinatesRow) {
-      // user can't delete the coordinates if there is only one row
-      return;
-    }
-    const filteredCoordinates = coordinates.filter((coord) => coord.id !== index);
-    setCoordinates(filteredCoordinates);
-  };
-
   const addNewPolygon = () => {
     const polygonCoordinates = coordinates.map((coord) => [coord.longitude, coord.latitude]);
 
@@ -104,7 +114,7 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
     sketchViewModel.delete();
 
     let geometry;
-    if (onlyOneCorodinatesRow) {
+    if (onlyOneCoordinatesRow) {
       geometry = addNewPoint();
     } else {
       geometry = addNewPolygon();
@@ -136,6 +146,10 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
 
     setOpen(false);
   };
+  // disable if there are coordinates with null values or if there are only two coordinates (a line)
+  const isSubmitDisabled =
+    coordinates.some((coord) => coord.latitude === null || coord.longitude === null) ||
+    coordinates.length === 2;
 
   return (
     <div>
@@ -150,12 +164,13 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
       >
         <Card className="polygon-coordinates">
           <CoordinateInputsContainer
-            onlyOneCorodinatesRow={onlyOneCorodinatesRow}
+            onlyOneCoordinatesRow={onlyOneCoordinatesRow}
             coordinates={coordinates}
             onCoordinatesChange={onCoordinatesChange}
-            onDelete={onDeleteCoordinate}
+            onDeleteCoordinate={onDeleteCoordinate}
+            onAddCoordinate={onAddCoordinate}
           />
-          {onlyOneCorodinatesRow && (
+          {onlyOneCoordinatesRow && (
             <RadiusOptions
               selectedRadius={selectedRadius}
               setSelectedRadius={setSelectedRadius}
@@ -170,6 +185,7 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
             variant="primary"
             disable={!coordinates.length}
             style={{ float: 'right' }}
+            disabled={isSubmitDisabled}
             onClick={handleSubmit}
           >
             OK

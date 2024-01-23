@@ -6,7 +6,7 @@ import { finished } from 'stream/promises';
 import { formatPct, validatePct } from '../shared/functions';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 import { FilterSelection } from '../transform/filter.selection';
-import { IPipeService } from '../pipe/IPipeService';
+import { IPipeService } from '../pipe/i.pipe.service';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 
 class CountryAggregator extends EventEmitter {
@@ -77,9 +77,9 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
     const { listId, selectedLocationsList } = filters;
     this.writeStream.removeAllListeners();
 
-    this.writeStream.on('error', (err) => {
+    this.writeStream.on('error', async (err) => {
       this.logger.error(`(${listId}) - Error on stream: ${err}`);
-      this.errorEmail(filters);
+      await this.errorEmail(filters);
     });
 
     this.writeStream

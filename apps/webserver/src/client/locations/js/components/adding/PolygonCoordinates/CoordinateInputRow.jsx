@@ -11,7 +11,7 @@ const CoordinateInputRow = ({
   onDeleteCoordinate,
   onlyOneCoordinatesRow,
 }) => (
-  <Box display="flex" sx={{ alignItems: 'center' }}>
+  <Box display="flex" sx={{ alignItems: 'center', margin: '10px 0px' }}>
     <Grid item xs={1}>
       <Typography>{index + 1}</Typography>
     </Grid>

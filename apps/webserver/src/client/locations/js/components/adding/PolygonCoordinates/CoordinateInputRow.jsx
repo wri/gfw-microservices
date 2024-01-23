@@ -4,8 +4,8 @@ import CloseIcon from '@mui/icons-material/Close';
 
 const CoordinateInputRow = ({
   index,
-  lat,
-  long,
+  latitude,
+  longitude,
   onCoordinatesChange,
   onDelete,
   onlyOneCorodinatesRow,
@@ -17,15 +17,15 @@ const CoordinateInputRow = ({
     <Grid item xs={5}>
       <input
         type="number"
-        value={lat}
-        onChange={(event) => onCoordinatesChange(event, index, 'lat')}
+        value={latitude}
+        onChange={(event) => onCoordinatesChange(event, index, 'latitude')}
       />
     </Grid>
     <Grid item xs={5}>
       <input
         type="number"
-        value={long}
-        onChange={(event) => onCoordinatesChange(event, index, 'long')}
+        value={longitude}
+        onChange={(event) => onCoordinatesChange(event, index, 'longitude')}
       />
     </Grid>
     <Grid item xs={1}>

@@ -110,7 +110,7 @@ exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
 
   const accountUsagePercentage = await getAccountUsagePercentage({
     organizationId: organization_id,
-    organizationType: subscription_status_id,
+    subscriptionStatusId: subscription_status_id,
   });
 
   res.status(200).send({

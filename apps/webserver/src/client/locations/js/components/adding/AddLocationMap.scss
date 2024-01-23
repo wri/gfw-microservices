@@ -3,29 +3,20 @@
 @import '../../../../common/css/typographyGFW';
 @import '../../../../common/css/mixins';
 
-.draw_shape {
+.add-location-map {
   padding-top: $space-comfortable;
   position: relative;
 
-  &__message {
-    @include text(100);
-    position: absolute;
-    top: 0;
-
-    &--error {
-      color: $theme-danger-red-2;
-    }
-  }
-
   &__map-container {
+    display: block;
+    height: 490px;
+    background-color: #222327;
     position: relative;
   }
 
-  &__draw-button {
-    position: absolute;
-    top: $space-normal;
-    right: $space-normal;
-    z-index: 999;
+  &__map {
+    height: 100%;
+    width: 100%;
   }
 
   .esri-ui-top-left.esri-ui-corner {

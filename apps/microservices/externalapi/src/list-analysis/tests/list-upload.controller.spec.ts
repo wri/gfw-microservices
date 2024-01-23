@@ -17,6 +17,8 @@ import { Request } from 'node-fetch';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ExternalUpload } from '../external-upload.entity';
+import * as request from 'supertest';
+import { INestApplication } from '@nestjs/common';
 
 jest.mock('@aws-sdk/client-s3', () => {
   const keyMap: { [key: string]: number } = {
@@ -88,6 +90,8 @@ describe('ListUploadController', () => {
   let axiosMock;
   let userService: UserService;
   let organizationService: OrganizationService;
+  let app: INestApplication;
+
   const requestMock = createRequest({
     method: 'GET',
     url: ``,
@@ -129,6 +133,9 @@ describe('ListUploadController', () => {
       .stub(DataSource.prototype, 'getRepository')
       .withArgs(ExternalUpload)
       .returns(new ExternalUploadMockRepository());
+
+    app = module.createNestApplication();
+    await app.init();
   });
 
   it('should return a successful response', async () => {
@@ -165,7 +172,7 @@ describe('ListUploadController', () => {
       uploadId: '123',
       listName: 'Example List',
       templateId: 456,
-      analysisIDs: '789',
+      analysisIDs: 'FCD',
     };
 
     const expectedResult = {
@@ -185,7 +192,7 @@ describe('ListUploadController', () => {
       uploadId: '1234',
       listName: 'Example List',
       templateId: 456,
-      analysisIDs: '789',
+      analysisIDs: 'FCD',
     };
 
     // Mock user response to let process continue
@@ -224,7 +231,7 @@ describe('ListUploadController', () => {
       uploadId: '12345',
       listName: 'Example List',
       templateId: 456,
-      analysisIDs: '789',
+      analysisIDs: 'FCD',
     };
 
     // Mock user response to let process continue
@@ -264,7 +271,7 @@ describe('ListUploadController', () => {
       uploadId: '9999',
       listName: 'Example List',
       templateId: 456,
-      analysisIDs: '789',
+      analysisIDs: 'FCD',
     };
 
     // Mock user response to let process continue
@@ -304,7 +311,7 @@ describe('ListUploadController', () => {
       uploadId: '999',
       listName: 'Example List',
       templateId: 456,
-      analysisIDs: '789',
+      analysisIDs: 'FCD',
     };
 
     // Mock user response to let process continue
@@ -338,7 +345,7 @@ describe('ListUploadController', () => {
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
-  it('should return a successful response for prepare upload', () => {
+  it('should return a successful response for prepare upload', async () => {
     const actualDate = new Date();
     const preSignURLMockExpectedResponse = {
       url: 'mocked_url',
@@ -381,4 +388,18 @@ describe('ListUploadController', () => {
 
     expect(controller.prepareUploadList(requestBody, requestMock)).resolves.toEqual(expectedResult);
   });
+
+  it.each(['AFI', 'RandomWrongType'])(
+    'should return 400 if analysisIDs is not valid',
+    async (analysisIDs) => {
+      const { statusCode } = await request(app.getHttpServer()).post('/v1/list/upload_new').send({
+        uploadId: '999',
+        listName: 'Example List',
+        templateId: 456,
+        analysisIDs,
+      });
+
+      expect(statusCode).toBe(400);
+    }
+  );
 });

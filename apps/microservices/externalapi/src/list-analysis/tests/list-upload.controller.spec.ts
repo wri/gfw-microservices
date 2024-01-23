@@ -345,7 +345,7 @@ describe('ListUploadController', () => {
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
-  it('should return a successful response for prepare upload', async () => {
+  it('should return a successful response for prepare upload', () => {
     const actualDate = new Date();
     const preSignURLMockExpectedResponse = {
       url: 'mocked_url',

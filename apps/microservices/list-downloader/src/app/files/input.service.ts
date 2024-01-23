@@ -6,7 +6,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { PassThrough } from 'stream';
 import { finished } from 'stream/promises';
 
-import { IPipeService } from '../pipe/IPipeService';
+import { IPipeService } from '../pipe/i.pipe.service';
 import { GenerationFileRequest } from '@wri-monorepos/sql';
 
 import { columnsListName, columnsTemplateId } from '../shared/constants';
@@ -20,7 +20,7 @@ export class InputService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  start(filters: GenerationFileRequest) {
+  async start(filters: GenerationFileRequest) {
     const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
@@ -32,7 +32,7 @@ export class InputService extends IPipeService {
 
     this.organizeStream(filters, allFields);
     fs.writeFileSync(`/tmp/wri-${key}/${listName}_input.csv`, `${allFields.join(',')}\n`);
-    this.startEmail(filters);
+    await this.startEmail(filters);
   }
 
   process(analysisData) {
@@ -53,9 +53,9 @@ export class InputService extends IPipeService {
 
     this.fileStream = fs.createWriteStream(`/tmp/wri-${key}/${listName}_input.csv`, { flags: 'a' });
 
-    this.inputStream.on('error', (err) => {
+    this.inputStream.on('error', async (err) => {
       this.logger.error(`(${listId}) - Error on stream: ${err}`);
-      this.errorEmail(filters);
+      await this.errorEmail(filters);
     });
 
     this.inputStream

@@ -1,7 +1,16 @@
-import { BadRequestException, Get, Param, Query } from '@nestjs/common';
+import { Get, Param, Query, UsePipes } from '@nestjs/common';
 import { Controller, Logger } from '@nestjs/common';
 import { AfiService } from './afi.service';
-import { getAfiAnalysisDataRequest } from '../../models';
+import { GetAfiAnalysisDataRequest } from '../../models';
+import { z } from 'zod';
+import { ZodValidationPipe } from '@wri-monorepos/shared';
+
+const GetAfiAnalysisDataSchema = z.object({
+  clientDatabase: z.string(),
+  isListLevel: z.coerce.number().default(0),
+  rowsPerPage: z.coerce.number().gte(1, 'rowsPerPage must be greater than 0'),
+  pageNumber: z.coerce.number().optional(),
+});
 
 @Controller('afi')
 export class AfiController {
@@ -10,24 +19,13 @@ export class AfiController {
   constructor(private readonly afiService: AfiService) {}
 
   @Get('/:listId/number-of-pages')
+  @UsePipes(new ZodValidationPipe(GetAfiAnalysisDataSchema))
   async getNumberOfPagesAfiAnalysis(
     @Param('listId') listId: string,
-    @Query() queryParam: getAfiAnalysisDataRequest
+    @Query() queryParam: GetAfiAnalysisDataRequest
   ) {
     this.logger.debug('Get Number Of Pages AFI Analysis');
-    const { rowsPerPage, clientDatabase } = queryParam;
-
-    if (!listId) {
-      return new BadRequestException('listId is required');
-    }
-
-    if (!rowsPerPage) {
-      throw new BadRequestException('rowsPerPage is required');
-    }
-
-    if (!clientDatabase) {
-      throw new BadRequestException('clientDatabase is required');
-    }
+    const { rowsPerPage } = queryParam;
 
     const { quantity: qtdElements } = await this.afiService.getNumberOfPagesAfiAnalysis(
       listId,
@@ -43,30 +41,12 @@ export class AfiController {
   }
 
   @Get('/:listId/data-per-page')
+  @UsePipes(new ZodValidationPipe(GetAfiAnalysisDataSchema))
   async getDataAfiAnalysis(
     @Param('listId') listId: string,
-    @Query() queryParam: getAfiAnalysisDataRequest
+    @Query() queryParam: GetAfiAnalysisDataRequest
   ) {
     this.logger.debug('Get Number Of Pages AFI Analysis');
-    const { rowsPerPage, clientDatabase, pageNumber } = queryParam;
-
-    if (!listId) {
-      return new BadRequestException('listId is required');
-    }
-
-    if (!rowsPerPage) {
-      throw new BadRequestException('rowsPerPage is required');
-    }
-
-    if (!pageNumber) {
-      throw new BadRequestException('pageNumber is required');
-    }
-
-    if (!clientDatabase) {
-      throw new BadRequestException('clientDatabase is required');
-    }
-
-    const result = await this.afiService.getAfiDataPerPage(listId, queryParam);
-    return result;
+    return await this.afiService.getAfiDataPerPage(listId, queryParam);
   }
 }

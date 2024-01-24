@@ -1,15 +1,12 @@
-import { UspGetListLocations } from './lists/uspGetListLocations';
+import { UspGetListLocations } from './lists';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { UspGetListAnalysis } from './lists';
-
-import { DatabaseService } from './util/database.service';
-
 import { UspGetAnalysisDataCountForUserList, UspGetPaginatedAnalysisDataForUserList } from './llp';
-import { ClientStoreConnection } from './util/typeORM.utils';
+import { ClientStoreConnection } from './util';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [TypeOrmModule.forRootAsync({ useClass: DatabaseService })],
+  imports: [ConfigModule],
   controllers: [],
   providers: [
     UspGetAnalysisDataCountForUserList,

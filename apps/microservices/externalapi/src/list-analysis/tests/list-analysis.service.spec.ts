@@ -48,10 +48,10 @@ describe('ListAnalysisService', () => {
   });
 
   it('should get analysis status', async () => {
-    const listID = 123;
+    const listId = 123;
     const organizationId = 1;
     const expectedResult = {
-      listId: listID.toString(),
+      listId: listId.toString(),
       status: 'Completed',
       errorsDetails: [],
       resultUrl: 'https://example.com/results',
@@ -68,7 +68,7 @@ describe('ListAnalysisService', () => {
       subscriptionStatusId: 1,
     });
 
-    const result = await service.getAnalysisStatus(organizationId, listID);
+    const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
 
     const resultWithDatesTransformed = {};
     for (const prop in result) {

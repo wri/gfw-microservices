@@ -75,14 +75,13 @@ export class ListAnalysisService {
     listId: number;
     analysisId: string;
   }): Promise<ListAnalysisResponse> {
-
     const connection = await this.getOrganizationConnection(organizationId);
     const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
     const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
       where: { listId, analysisId },
     });
 
-    if(!listAnalysisStatus) {
+    if (!listAnalysisStatus) {
       throw new NotFoundException('Analysis status not found.');
     }
 

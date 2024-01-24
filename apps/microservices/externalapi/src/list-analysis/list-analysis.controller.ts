@@ -21,8 +21,6 @@ export class ListAnalysisController {
     @Param('analysisId', new ZodValidationPipe(analysisIdSchema)) analysisId: string,
     @Req() request: RequestSchema
   ): Promise<ListAnalysisResponse> {
-    console.log('request.user', request.user);
-    
     new ZodValidationPipe(requestSchema).transform(request);
 
     const {

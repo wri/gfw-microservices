@@ -208,7 +208,7 @@ export default class Dashboard extends Component {
         : '/dashboard/getListDashboardTimestamp';
 
       try {
-        const listDashboardData = await fetch({
+        const rawDataObject = await fetch({
           url: DASHBOARD_DATA_URL,
           method: 'POST',
           headers: {
@@ -230,39 +230,11 @@ export default class Dashboard extends Component {
           !listDashboardTimestamp.hasOwnProperty('errorCode') &&
           listDashboardTimestamp.length !== 0
         ) {
-          const formatTimestamp = moment(listDashboardTimestamp[0].dashboard_last_results).format(
+          const formatTimestamp = moment(listDashboardTimestamp.dashboardLastResults).format(
             'D MMMM YYYY, h:mm A'
           );
           this.setState({ lastUpdatedDashboard: formatTimestamp });
         }
-
-        const modDashData = listDashboardData
-          .filter((l) => l.gadmid)
-          .map((l) => {
-            return {
-              geometry: {},
-              type: 'Feature',
-              properties: {
-                ...l,
-                fire: formatDates(l.viirs_alerts_daily),
-                fireAlerts: true, //this seems to denote coverage of fire alerts and it should always be true.
-                gladAlerts: l.gladAlerts.trim().toLowerCase() === 'true',
-                glad_alerts_daily: formatDates(l.glad_alerts_daily),
-                glad_alerts_weekly: formatDates(l.glad_alerts_weekly),
-                glad_alerts_monthly: formatDates(l.glad_alerts_monthly),
-                viirs_alerts_daily: formatDates(l.viirs_alerts_daily),
-                umd: l.tree_cover_extent_total || 0,
-              },
-            };
-          });
-        const diss = modDashData.filter((l) => l.properties.location_id === -1);
-        const geo = modDashData.filter((l) => l.properties.location_id !== -1);
-        const rawDataObject = {
-          failedGeoJSON: { features: [] },
-          dissolvedGeoJSON: { features: diss },
-          geojson: { features: geo },
-        };
-        console.log(rawDataObject);
 
         const cache = {};
         cache[key] = rawDataObject;

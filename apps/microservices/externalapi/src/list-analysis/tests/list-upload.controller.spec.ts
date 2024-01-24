@@ -391,12 +391,12 @@ describe('ListUploadController', () => {
 
   it.each(['AFI', 'RandomWrongType'])(
     'should return 400 if analysisIDs is not valid',
-    async (analysisIDs) => {
+    async (analysisIds) => {
       const { statusCode } = await request(app.getHttpServer()).post('/v1/list/upload_new').send({
         uploadId: '999',
         listName: 'Example List',
         templateId: 456,
-        analysisIDs,
+        analysisIds,
       });
 
       expect(statusCode).toBe(400);

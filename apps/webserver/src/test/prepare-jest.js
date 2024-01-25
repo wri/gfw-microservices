@@ -51,6 +51,7 @@ try {
     '^dijit(.*)$': '<rootDir>/test/__mocks__/object.js',
     '@wri-monorepos/constants': '<rootDir>/../../../libs/constants/src/index.ts',
     '@wri-monorepos/shared': '<rootDir>/../../../libs/shared/src/index.ts',
+    '@wri-monorepos/sql': '<rootDir>/../../../libs/sql/src/index.ts',
     ...aliases,
   };
   // Set the test paths

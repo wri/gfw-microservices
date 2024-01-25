@@ -7,13 +7,11 @@ interface GetAccountAnalysisUsage {
   startDate: string;
   endDate: string;
   organizationId: number;
-  countForEachList: number;
 }
 export async function getAccountAnalysisUsage({
   startDate,
   endDate,
   organizationId,
-  countForEachList,
 }: GetAccountAnalysisUsage) {
   try {
     const { database: databaseName } = SQL_CONFIG;
@@ -21,7 +19,6 @@ export async function getAccountAnalysisUsage({
       { field: 'startDate', type: sql.NVarChar(255), value: startDate },
       { field: 'endDate', type: sql.NVarChar(255), value: endDate },
       { field: 'organization', type: sql.Int, value: organizationId },
-      { field: 'countForEachList', type: sql.Int, value: countForEachList },
     ];
     return SQLUtils.queryDBFirstRow<OrganizationAnalysisUsageResponse>(
       databaseName,

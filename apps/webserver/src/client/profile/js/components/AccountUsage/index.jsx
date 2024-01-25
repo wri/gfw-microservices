@@ -17,7 +17,7 @@ export default function AccountUsageContainer() {
     fetch(
       `/analytics/myorg/usage?startDate=${accountLatestYearStartDate.format(
         'YYYY-MM-DD'
-      )}&endDate=${todayAsEndDay.format('YYYY-MM-DD')}&countForEachList=0`,
+      )}&endDate=${todayAsEndDay.format('YYYY-MM-DD')}`,
       {
         method: 'GET',
         credentials: 'same-origin',

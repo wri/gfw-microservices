@@ -20,7 +20,6 @@ export async function getAccountSubscriptionData({
     startDate: accountLatestYearStartDate.format('YYYY-MM-DD'),
     endDate: todayAsEndDay.format('YYYY-MM-DD'),
     organizationId,
-    countForEachList: 0,
   };
 
   const accountUsage = await getAccountAnalysisUsage(accountUsageOptions);

@@ -30,6 +30,7 @@ import { AfiFileService } from '../files/afi.file.service';
 import { ArgentinaOverlapService } from '../files/argentina.overlap.service';
 import { AnalysisDataService } from '../data/analysis.data.service';
 import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
+import { AlertsDataService } from '../data/alerts.data.service';
 
 @Module({
   imports: [envModule, AwsModule, SqlModule],
@@ -57,6 +58,7 @@ import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
     ArgentinaOverlapService,
     AnalysisDataService,
     AnalysisAfiDataService,
+    AlertsDataService,
   ],
   exports: [PipeService],
 })

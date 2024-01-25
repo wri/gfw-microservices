@@ -1,4 +1,17 @@
-export interface GenerationFileRequest {
+export interface BasicFieldsFileRequest {
+  file?: string;
+  listId: number;
+  key?: string;
+  page?: number;
+  listName?: string;
+  rowsPerPage?: number;
+  userEmail?: string;
+  type?: string;
+  numberOfPages?: number;
+  organizationDatabase?: string;
+}
+
+export interface ListFieldsFileRequest extends  BasicFieldsFileRequest {
   aggregation?: boolean;
   analysisArea?: number;
   analysisAreaMax?: number;
@@ -8,21 +21,13 @@ export interface GenerationFileRequest {
   combinedColumnsSplitted?: Array<string>;
   country?: string;
   fields?: Array<string>;
-  file?: string;
   geometry?: number;
-  key?: string;
-  listId: number;
   listLevelAnalysis?: unknown;
-  listName?: string;
   listView?: string;
   locationIds?: string;
   locationLogic?: string;
   locationStatement?: string;
-  numberOfPages?: number;
   orderType?: string;
-  organizationDatabase?: string;
-  page?: number;
-  rowsPerPage?: number;
   searchString?: string;
   selectedLocations?: string;
   selectedLocationsList?: Array<number>;
@@ -37,10 +42,11 @@ export interface GenerationFileRequest {
   state?: string;
   subState?: string;
   templateId?: number;
-  type?: string;
-  userEmail?: string;
 }
 
-/*export interface GetAnalysisDataCountForUserListResponse {
-  TotalRows: number;
-}*/
+export interface AlertFieldsFileRequest extends BasicFieldsFileRequest {
+  selectedTimeframe: string;
+  selectedAlert: string;
+  startTime: string;
+  endTime: string;
+}

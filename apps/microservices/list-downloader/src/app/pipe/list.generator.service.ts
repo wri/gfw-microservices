@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 
 import * as asyncPool from 'tiny-async-pool';
 
-import { GenerationFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
 
 import { InputService } from '../files/input.service';
 import { ResultService } from '../files/result.service';
@@ -28,7 +28,7 @@ export class ListGeneratorService extends IFileGenerator {
     super();
   }
 
-  public async makeFile(filters: GenerationFileRequest) {
+  public async makeFile(filters: ListFieldsFileRequest) {
     const { organizationDatabase, listId, combinedColumns, selectedLocations, file } = filters;
 
     const numberOfPages = await this.analysisDataService.getNumberOfPages(filters);
@@ -84,7 +84,7 @@ export class ListGeneratorService extends IFileGenerator {
     service.finish(filters);
   }
 
-  private defineService(filters: GenerationFileRequest): IPipeService {
+  private defineService(filters: ListFieldsFileRequest): IPipeService {
     const { type, file } = filters;
 
     const mapFileType2Service = {
@@ -96,7 +96,7 @@ export class ListGeneratorService extends IFileGenerator {
     return mapFileType2Service[`${type}_${file}`] ?? this.dashboardService;
   }
 
-  private async getListOfFields(filters: GenerationFileRequest) {
+  private async getListOfFields(filters: ListFieldsFileRequest) {
     const newFilters = {
       ...filters,
       page: 1,

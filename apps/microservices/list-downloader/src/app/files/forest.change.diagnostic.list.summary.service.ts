@@ -4,7 +4,7 @@ import { EventEmitter, PassThrough, Transform } from 'stream';
 import { finished } from 'stream/promises';
 
 import { formatPct, validatePct } from '../shared/functions';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { FilterSelection } from '../transform/filter.selection';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
@@ -49,7 +49,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
   private writeStream: PassThrough;
   private countryAggregator: CountryAggregator;
 
-  start(filters: GenerationFileRequest) {
+  start(filters: ListFieldsFileRequest) {
     if (this.isForestChangeDiagnosticListSummaryFile(filters)) {
       const { listId } = filters;
       this.logger.log(
@@ -66,14 +66,14 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
     }
   }
 
-  process(analysisData, filters: GenerationFileRequest) {
+  process(analysisData, filters: ListFieldsFileRequest) {
     if (this.isForestChangeDiagnosticListSummaryFile(filters)) {
       const { listName } = filters;
       analysisData.forEach((data) => this.writeStream.write({ list_name: listName, ...data }));
     }
   }
 
-  private organizeStream(filters: GenerationFileRequest) {
+  private organizeStream(filters: ListFieldsFileRequest) {
     const { listId, selectedLocationsList } = filters;
     this.writeStream.removeAllListeners();
 
@@ -89,7 +89,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
     return this.writeStream;
   }
 
-  private getSuffix(filters: GenerationFileRequest) {
+  private getSuffix(filters: ListFieldsFileRequest) {
     const { listView, selectedLocationsList } = filters;
     if (listView === 'commodity_risk' && selectedLocationsList.length != 1) {
       return 'commodity_risk_diagnostic_list_summary';
@@ -98,7 +98,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
     }
   }
 
-  private generateAggregate(filters: GenerationFileRequest) {
+  private generateAggregate(filters: ListFieldsFileRequest) {
     const fileSuffix = this.getSuffix(filters);
     const { key, listName, listLevelAnalysis } = filters;
     let totalArea = Object.prototype.hasOwnProperty.call(listLevelAnalysis ?? {}, 'total_area')
@@ -132,7 +132,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
     fs.writeFileSync(`/tmp/wri-${key}/${listName}_${fileSuffix}.csv`, `${csvString}\n`);
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     if (this.isForestChangeDiagnosticListSummaryFile(filters)) {
       this.writeStream.end();
       await finished(this.writeStream);
@@ -142,7 +142,7 @@ export class ForestChangeDiagnosticListSummaryService extends IPipeService {
     }
   }
 
-  isForestChangeDiagnosticListSummaryFile(filters: GenerationFileRequest) {
+  isForestChangeDiagnosticListSummaryFile(filters: ListFieldsFileRequest) {
     const { selectedLocationsList, type } = filters;
     return (
       selectedLocationsList.length != 1 &&

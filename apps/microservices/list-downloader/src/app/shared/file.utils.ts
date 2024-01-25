@@ -1,7 +1,7 @@
 import * as readline from 'readline';
 import * as archiver from 'archiver';
 import * as fs from 'fs';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 
 const createDirectory = (dir: string) => {
   if (!fs.existsSync(dir)) {
@@ -9,7 +9,7 @@ const createDirectory = (dir: string) => {
   }
 };
 
-const getAllFilesAndZip = async (filter: GenerationFileRequest) => {
+const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
   return new Promise((resolve, reject) => {
     const { key, listName } = filter;
     const output = fs.createWriteStream(`/tmp/${key}.zip`);

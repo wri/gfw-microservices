@@ -12,7 +12,7 @@ import {
 import { FilterLocationHaveStatus } from '../transform/filter.location.have.status';
 import { FilterObject } from '../transform/filter.object';
 import { FilterSelection } from '../transform/filter.selection';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from './i.pipe.service';
 import { ManipulateDataForDashboard } from '../transform/manipulate.data.dashboard';
 import { FormatNumber } from '../transform/format.number';
@@ -23,7 +23,7 @@ export class DashboardHandleDownload extends IPipeService {
   private writeStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  start(filters: GenerationFileRequest, table: string, fileSuffix: string) {
+  start(filters: ListFieldsFileRequest, table: string, fileSuffix: string) {
     const { listId, key, listName } = filters;
     this.logger.log(
       `(${listId}) - Starting Dashboard download for ${table} stream to process data`
@@ -43,14 +43,14 @@ export class DashboardHandleDownload extends IPipeService {
     this.organizeStream(filters, allFields, table, fileSuffix);
   }
 
-  process(analysisData, filters: GenerationFileRequest) {
+  process(analysisData, filters: ListFieldsFileRequest) {
     const { listName } = filters;
 
     analysisData?.forEach((data) => this.writeStream.write({ list_name: listName, ...data }));
   }
 
   private organizeStream(
-    filters: GenerationFileRequest,
+    filters: ListFieldsFileRequest,
     allFields: string[],
     table: string,
     fileSuffix: string
@@ -78,7 +78,7 @@ export class DashboardHandleDownload extends IPipeService {
       .pipe(this.fileStream);
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     this.logger.log(`(${filters.key}) - Sending end event to stream`);
     this.writeStream.end();
     await this.writeAllData(this.writeStream);

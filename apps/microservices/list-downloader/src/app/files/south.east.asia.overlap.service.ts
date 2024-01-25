@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow, formatPct, validatePct, parseListData } from '../shared/functions';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
@@ -10,13 +10,13 @@ import { generateCSV } from '../shared/generate.csv';
 export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
   private existSouthEastLocation = false;
 
-  start(filters: GenerationFileRequest) {
+  start(filters: ListFieldsFileRequest) {
     if (this.isSouthEastAsiaOverlapFile(filters)) {
       super.start(filters, 'seAsiaOverlap', 'south_east_asia_overlap');
     }
   }
 
-  process(data, filters: GenerationFileRequest) {
+  process(data, filters: ListFieldsFileRequest) {
     if (this.isSouthEastAsiaOverlapFile(filters)) {
       const locations = data.filter((location) => location.southeast_asia_presence === 'true');
       if (locations && locations.length > 0) {
@@ -79,7 +79,7 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
     return csvData;
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
     if (this.isSouthEastAsiaOverlapFile(filters)) {
       this.logger.log('South East Asia Overlap Finish');
@@ -96,7 +96,7 @@ export class SouthEastAsiaOverlapService extends DashboardHandleDownload {
     this.existSouthEastLocation = false;
   }
 
-  isSouthEastAsiaOverlapFile(filters: GenerationFileRequest) {
+  isSouthEastAsiaOverlapFile(filters: ListFieldsFileRequest) {
     const { listView, type } = filters;
     return (
       listView === 'forest_change' && (type === 'southEastAsiaOverlap' || type === 'everything')

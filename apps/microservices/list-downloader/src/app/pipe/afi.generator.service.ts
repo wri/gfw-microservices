@@ -1,6 +1,6 @@
 import { AfiFileService } from '../files/afi.file.service';
 import { Injectable, Logger } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
 import { getAllFilesAndZip } from '../shared/file.utils';
 
@@ -18,7 +18,7 @@ export class AfiGeneratorService extends IFileGenerator {
     super();
   }
 
-  public async makeFile(filters: GenerationFileRequest) {
+  public async makeFile(filters: BasicFieldsFileRequest) {
     await this.runAfiFileGeneration(filters);
     await this.runAfiFileGeneration(filters, 1, 'deforestation_kpis_aggregated');
     await getAllFilesAndZip(filters);
@@ -26,7 +26,7 @@ export class AfiGeneratorService extends IFileGenerator {
   }
 
   private async runAfiFileGeneration(
-    filters: GenerationFileRequest,
+    filters: BasicFieldsFileRequest,
     isListLevel = 0,
     suffix = 'deforestation_kpis'
   ) {

@@ -5,7 +5,7 @@ import { PassThrough } from 'stream';
 import { convert } from 'geojson2shp';
 import { Logger, Injectable } from '@nestjs/common';
 
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
@@ -22,7 +22,7 @@ export class ShapefileService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  async start(filters: GenerationFileRequest) {
+  async start(filters: ListFieldsFileRequest) {
     const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting shapefile stream to process data`);
     this.inputStream = new PassThrough({
@@ -52,7 +52,7 @@ export class ShapefileService extends IPipeService {
     analysisData.forEach((data) => this.inputStream.write(data));
   }
 
-  private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
+  private organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
     const open = '{"type":"FeatureCollection","features":[';
     const close = ']}';
 
@@ -80,7 +80,7 @@ export class ShapefileService extends IPipeService {
     return this.inputStream;
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Finished to process data and generate shapefile`);
     await this.writeAllData(this.inputStream);

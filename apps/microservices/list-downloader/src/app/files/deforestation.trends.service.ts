@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
 
 @Injectable()
 export class DeforestationTrendsService extends DashboardHandleDownload {
-  start(filters: GenerationFileRequest) {
+  start(filters: ListFieldsFileRequest) {
     if (this.isDeforestationTrendsFile(filters)) {
       super.start(filters, 'deforestationTrends', 'trends_in_deforestation');
     }
   }
 
-  process(data, filters: GenerationFileRequest) {
+  process(data, filters: ListFieldsFileRequest) {
     if (this.isDeforestationTrendsFile(filters)) {
       super.process(data, filters);
     }
@@ -37,7 +37,7 @@ export class DeforestationTrendsService extends DashboardHandleDownload {
     return csvData;
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
     if (this.isDeforestationTrendsFile(filters)) {
       this.logger.log('Deforestation Trends Service finish');
@@ -53,7 +53,7 @@ export class DeforestationTrendsService extends DashboardHandleDownload {
     }
   }
 
-  isDeforestationTrendsFile(filters: GenerationFileRequest) {
+  isDeforestationTrendsFile(filters: ListFieldsFileRequest) {
     const { listView, type } = filters;
     return (
       listView === 'commodity_risk' && (type === 'deforestationTrends' || type === 'everything')

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import {
   AnalysisDataCountReturnType,
   AnalysisDataType,
-  GenerationFileRequest,
+  ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import { IInputData } from './i.input.data';
 import axios from 'axios';
@@ -11,7 +11,7 @@ import axios from 'axios';
 export class AnalysisDataService extends IInputData {
   private readonly logger = new Logger(AnalysisDataService.name);
 
-  async getNumberOfPages(filters: GenerationFileRequest): Promise<number> {
+  async getNumberOfPages(filters: ListFieldsFileRequest): Promise<number> {
     const { listId } = filters;
     const queryString = this.convertToQueryFields(filters);
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/pages-paginated-list-data?${queryString}`;
@@ -25,7 +25,7 @@ export class AnalysisDataService extends IInputData {
     }
   }
 
-  async getDataPaginated(filter: GenerationFileRequest): Promise<AnalysisDataType[]> {
+  async getDataPaginated(filter: ListFieldsFileRequest): Promise<AnalysisDataType[]> {
     const { listId, page } = filter;
     const queryString = this.convertToQueryFields(filter);
     const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/paginated-list-data?${queryString}`;
@@ -38,7 +38,7 @@ export class AnalysisDataService extends IInputData {
     }
   }
 
-  private convertToQueryFields(filters: GenerationFileRequest): string {
+  private convertToQueryFields(filters: ListFieldsFileRequest): string {
     const fields = [
       'listId',
       'organizationDatabase',

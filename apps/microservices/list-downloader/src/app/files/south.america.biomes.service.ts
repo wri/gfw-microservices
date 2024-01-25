@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { formatPct, validatePct } from '../shared/functions';
 import { DATA_LAYER, EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
@@ -10,13 +10,13 @@ import { generateCSV } from '../shared/generate.csv';
 export class SouthAmericaBiomesService extends DashboardHandleDownload {
   private existSouthLocation = false;
 
-  start(filters: GenerationFileRequest) {
+  start(filters: ListFieldsFileRequest) {
     if (this.isSouthAmericaBiomesFile(filters)) {
       super.start(filters, 'sAmericaBiomes', 'south_america_overlap');
     }
   }
 
-  process(data, filters: GenerationFileRequest) {
+  process(data, filters: ListFieldsFileRequest) {
     if (this.isSouthAmericaBiomesFile(filters)) {
       const locations = data.filter((location) => location.south_america_presence === 'true');
       if (locations && locations.length > 0) {
@@ -54,7 +54,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     return csvData;
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
     if (this.isSouthAmericaBiomesFile(filters)) {
       this.logger.log('South America Biomes Finish');
@@ -71,7 +71,7 @@ export class SouthAmericaBiomesService extends DashboardHandleDownload {
     this.existSouthLocation = false;
   }
 
-  isSouthAmericaBiomesFile(filters: GenerationFileRequest) {
+  isSouthAmericaBiomesFile(filters: ListFieldsFileRequest) {
     const { listView, type } = filters;
     return (
       listView === 'forest_change' && (type === 'southAmericaOverlap' || type === 'everything')

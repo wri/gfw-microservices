@@ -2,7 +2,7 @@ import { Inject, Logger } from '@nestjs/common';
 import { EmailService, S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import {
-  GenerationFileRequest,
+  BasicFieldsFileRequest,
   setS3UrlAndExpirationDate,
   toSqlParameter,
 } from '@wri-monorepos/sql';
@@ -26,11 +26,11 @@ export abstract class IPipeService {
   @Inject(S3Service)
   private readonly s3Service: S3Service;
 
-  abstract start(filters: GenerationFileRequest, table?: string, fileSuffix?: string);
-  abstract process(data, filters: GenerationFileRequest);
-  abstract finish(filters: GenerationFileRequest);
+  abstract start(filters: BasicFieldsFileRequest, table?: string, fileSuffix?: string);
+  abstract process(data, filters: BasicFieldsFileRequest);
+  abstract finish(filters: BasicFieldsFileRequest);
 
-  public async startEmail(filters: GenerationFileRequest) {
+  public async startEmail(filters: BasicFieldsFileRequest) {
     const { listName, userEmail } = filters;
     if (userEmail) {
       await this.emailService.sendEmail(
@@ -43,7 +43,7 @@ export abstract class IPipeService {
     }
   }
 
-  public async finishedEmail(filters: GenerationFileRequest, location: string) {
+  public async finishedEmail(filters: BasicFieldsFileRequest, location: string) {
     const { listName, userEmail } = filters;
     if (userEmail) {
       await this.emailService.sendEmail(
@@ -59,7 +59,7 @@ export abstract class IPipeService {
     }
   }
 
-  public async errorEmail(filters: GenerationFileRequest) {
+  public async errorEmail(filters: BasicFieldsFileRequest) {
     const { listName, userEmail } = filters;
     if (userEmail) {
       await this.emailService.sendEmail(
@@ -74,13 +74,13 @@ export abstract class IPipeService {
     }
   }
 
-  public async uploadFileToS3(filters: GenerationFileRequest) {
+  public async uploadFileToS3(filters: BasicFieldsFileRequest) {
     const { key } = filters;
     await this.s3Service.sendFiletoS3(key, 'zip', 'application/zip', process.env.AWS_TMP_BUCKET);
     return await this.s3Service.getFileSignedUrl(key, 'zip', process.env.AWS_TMP_BUCKET);
   }
 
-  async saveS3UrlAtDatabase(filters: GenerationFileRequest, location: string) {
+  async saveS3UrlAtDatabase(filters: BasicFieldsFileRequest, location: string) {
     const { listId, organizationDatabase, type, file } = filters;
 
     const parameters = toSqlParameter({
@@ -109,7 +109,7 @@ export abstract class IPipeService {
     inputStream.destroy();
   }
 
-  public async finishProcess(filters: GenerationFileRequest) {
+  public async finishProcess(filters: BasicFieldsFileRequest) {
     const location = await this.uploadFileToS3(filters);
     await this.finishedEmail(filters, location);
     await this.saveS3UrlAtDatabase(filters, location);

@@ -1,4 +1,4 @@
-const { sendMessageToQueue } = require('../utils/afi.utils');
+const { sendMessageToQueue } = require('../../downloader');
 
 /**
  * @summary handles afi analysis endpoint
@@ -6,18 +6,18 @@ const { sendMessageToQueue } = require('../utils/afi.utils');
  * @param {Object} res Express Respond
  */
 
-module.exports = async (req, res) => {
-  const { listId } = req.query;
+module.exports = async (request, response) => {
+  const { listId } = request.query;
 
   if (!listId) {
-    return res.status(400).send('Missing listId');
+    return request.status(400).send('Missing listId');
   }
 
   try {
-    const msg = await sendMessageToQueue(req);
-    return res.status(200).send(msg);
+    const msg = await sendMessageToQueue({ request }, 'afi');
+    return response.status(200).send(msg);
   } catch (error) {
     console.error('AFI Deforestation KPIs download failed on server', error);
-    res.status(500).send(error);
+    response.status(500).send(error);
   }
 };

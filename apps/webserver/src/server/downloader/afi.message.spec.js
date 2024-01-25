@@ -2,8 +2,8 @@ import path from 'path';
 const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
 const tmp = require('tmp');
 
-import { expect, jest, it } from '@jest/globals';
-const { buildSQSMessage } = require('./afi.utils');
+import { describe, expect, jest, it } from '@jest/globals';
+import buildSQSMessage from './afi.message';
 
 jest.spyOn(path, 'resolve').mockReturnValueOnce('./config/privateutils/sqs.utils');
 sqsUtils.uniqueIdGenerator = jest.fn().mockReturnValue('1234567890');
@@ -11,9 +11,11 @@ tmp.tmpNameSync = jest.fn().mockReturnValue('/tmp/1234567890');
 
 describe('Check build sqs message function', () => {
   it('Sending and empty request', () => {
-    const { message, key } = buildSQSMessage({
-      query: {},
-      session: {},
+    const { message, key } = new buildSQSMessage({
+      request: {
+        query: {},
+        session: {},
+      },
     });
 
     const { MessageAttributes } = message;
@@ -42,12 +44,14 @@ describe('Check build sqs message function', () => {
 
   it('Sending and empty request', () => {
     const { message, key } = buildSQSMessage({
-      query: {
-        listId: 2073,
-      },
-      session: {
-        user_email: 'teste@wri.com',
-        organization_database: 'clientdev-co',
+      request: {
+        query: {
+          listId: 2073,
+        },
+        session: {
+          user_email: 'teste@wri.com',
+          organization_database: 'clientdev-co',
+        },
       },
     });
 

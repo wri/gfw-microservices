@@ -1,4 +1,19 @@
-import dictionary from './dictionary';
+import moment from 'moment';
+import isEmpty from 'lodash/isEmpty';
+
+import store from '../store';
+import * as dictionary from './dictionary';
+
+import { getTimeframeBoundaries } from './dateUtils';
+import {
+  getGladDaily,
+  getGladMonthlyQuarter,
+  getGladMonthlyYear,
+  getGladMonthlyMonth,
+  getSelectedTimeframeStartEndGroupings,
+  getViirsGrouped,
+} from './dashboard-date.utils';
+import axios from 'axios';
 
 /**
  * Calculates the number of alerts for the dashboard
@@ -10,14 +25,13 @@ import dictionary from './dictionary';
  * @param {Array}  locationIdsWithAlerts A array of location IDs that have alerts
  * @returns {Object} Returns an object containing the resulting number of alerts for a given list processed in the dashboard
  */
-export const calculateAlerts = (
+function calculateAlerts(
   geoJSON,
   failedGeoJSON,
   selectedAlert,
   filteredLocationGeoJSON,
   filteredDissolvedGeoJSON
-) => {
-  const selectedProperty = dictionary.alertType_featureTimeframeProperty[selectedAlert];
+) {
   const selectedAlertsProperty = dictionary.alertType_featureCoverageProperty[selectedAlert];
   const totalLocations = geoJSON.features.length + failedGeoJSON.features.length;
   let locationIdsWithAlerts = [];
@@ -89,4 +103,198 @@ export const calculateAlerts = (
       locationIdsWithoutAlerts,
     };
   }
+}
+
+/**
+ * Sorting dates
+ * @param a
+ * @param b
+ * @returns {number}
+ */
+function momentSort(a, b) {
+  const momentA = moment(a.start, 'DD MMM YYYY');
+  const momentB = moment(b.start, 'DD MMM YYYY');
+  return momentA.diff(momentB);
+}
+
+function applyLocationFilter(geojson, locationFilters, selectedAlert, selectedTimeframe) {
+  const { ALERTS, NOALERTS } = locationFilters;
+  const selectedCoverageProperty = dictionary.alertType_featureCoverageProperty[selectedAlert];
+  const selectedTimeframeProperty = dictionary.alertType_featureTimeframeProperty[selectedAlert];
+
+  let filteredFeaturesCount = 0;
+  geojson.features.forEach((feature) => {
+    if (!ALERTS && !NOALERTS) {
+      filteredFeaturesCount++;
+    } else if (ALERTS && NOALERTS && feature.properties[selectedCoverageProperty]) {
+      filteredFeaturesCount++;
+    } else if (
+      ALERTS &&
+      !NOALERTS &&
+      feature.properties[selectedCoverageProperty] &&
+      !isEmpty(feature.properties[selectedTimeframeProperty])
+    ) {
+      filteredFeaturesCount++;
+    } else if (
+      !ALERTS &&
+      NOALERTS &&
+      feature.properties[selectedCoverageProperty] &&
+      isEmpty(feature.properties[selectedTimeframeProperty])
+    ) {
+      filteredFeaturesCount++;
+    }
+  });
+  return filteredFeaturesCount;
+}
+
+function applyTimeframeFilter(geojson, selectedTimeframe) {
+  const propertyFilter = dictionary.timeframe_dateGroupBy[selectedTimeframe];
+  const { start, end } = getTimeframeBoundaries(selectedTimeframe);
+  const momentStart = moment(start);
+  const momentEnd = moment(end);
+
+  for (let idx = 0; idx < geojson.features.length; idx++) {
+    const feature = geojson.features[idx];
+    let groupedGlad = [];
+
+    // Week timeframe
+    if (
+      selectedTimeframe === 'WEEK' &&
+      feature.properties.hasOwnProperty('glad_alerts_daily') &&
+      feature.properties.glad_alerts_daily.length > 0
+    ) {
+      groupedGlad = getGladDaily(feature);
+    }
+
+    // Month timeframe
+    if (
+      selectedTimeframe === 'MONTH' &&
+      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly.length > 0
+    ) {
+      groupedGlad = getGladMonthlyMonth(feature);
+    }
+
+    // Quarter timeframe
+    if (
+      selectedTimeframe === 'QUARTER' &&
+      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly.length > 0
+    ) {
+      groupedGlad = getGladMonthlyQuarter(feature);
+    }
+
+    // Year timeframe
+    if (
+      selectedTimeframe === 'YEAR' &&
+      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly.length > 0
+    ) {
+      groupedGlad = getGladMonthlyYear(feature);
+    }
+
+    const groupedViirs = getViirsGrouped(feature, momentStart, momentEnd, propertyFilter);
+
+    delete groupedGlad.delete;
+    delete groupedViirs.delete;
+    feature.properties.gladTimeframe = groupedGlad;
+    feature.properties.fireTimeframe = groupedViirs;
+  }
+
+  return geojson;
+}
+
+// We remixed the function above in order to ensure that the dashboard footer & chart data only updated in certain circumstances.
+function applyTimeframeFilterRemix(geojson, selectedTimeframe) {
+  const propertyFilter = dictionary.timeframe_dateGroupBy[selectedTimeframe];
+  const { start, end } = getTimeframeBoundaries(selectedTimeframe);
+  const momentStart = moment(start);
+  const momentEnd = moment(end);
+
+  const placeholderArray = [];
+  for (let idx = 0; idx < geojson.features.length; idx++) {
+    const feature = geojson.features[idx];
+    let groupedGlad = [];
+    if (
+      selectedTimeframe === 'WEEK' &&
+      feature.properties.hasOwnProperty('glad_alerts_daily') &&
+      feature.properties.glad_alerts_daily.length > 0
+    ) {
+      groupedGlad = getGladDaily(feature);
+    }
+
+    if (
+      selectedTimeframe === 'MONTH' &&
+      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly.length > 0
+    ) {
+      groupedGlad = getGladMonthlyMonth(feature);
+    }
+
+    if (
+      selectedTimeframe === 'QUARTER' &&
+      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly.length > 0
+    ) {
+      groupedGlad = getGladMonthlyQuarter(feature);
+    }
+
+    if (
+      selectedTimeframe === 'YEAR' &&
+      feature.properties.hasOwnProperty('glad_alerts_monthly') &&
+      feature.properties.glad_alerts_monthly.length > 0
+    ) {
+      groupedGlad = getGladMonthlyYear(feature);
+    }
+
+    const groupedViirs = getViirsGrouped(feature, momentStart, momentEnd, propertyFilter);
+
+    delete groupedGlad.delete;
+    delete groupedViirs.delete;
+    feature.properties.gladTimeframe = groupedGlad;
+    feature.properties.fireTimeframe = groupedViirs;
+    placeholderArray.push(feature);
+  }
+
+  return placeholderArray;
+}
+
+/**
+ * @desc Download all ZIP compressed CSV files
+ */
+function downloadDashboard() {
+  const state = store.getState();
+  const { selectedList, selectedAlert, selectedTimeframe } = state;
+  const { id: listID } = selectedList;
+
+  const data = {
+    listID,
+    format: 'csv',
+    type: 'alerts',
+    selectedAlert,
+    selectedTimeframe,
+  };
+
+  gtag('event', 'Download button clicked', {
+    event_category: 'Dashboard Download',
+    event_label: 'user downloaded dashboard data',
+  });
+
+  return axios({
+    url: `/locations/csv/${listID}`,
+    method: 'GET',
+    credentials: 'same-origin',
+    headers: {
+      'Content-type': 'application/json',
+    },
+    params: data,
+  }).then((response) => response.data);
+}
+
+export {
+  applyTimeframeFilter,
+  applyLocationFilter,
+  applyTimeframeFilterRemix,
+  downloadDashboard,
+  calculateAlerts,
 };

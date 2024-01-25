@@ -2,8 +2,8 @@ import path from 'path';
 const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
 const tmp = require('tmp');
 
-import { expect, jest, it } from '@jest/globals';
-const { buildSQSMessage } = require('./locations.utils');
+import { describe, expect, jest, it } from '@jest/globals';
+import buildSQSMessage from './list.message';
 
 jest.spyOn(path, 'resolve').mockReturnValueOnce('./config/privateutils/sqs.utils');
 sqsUtils.uniqueIdGenerator = jest.fn().mockReturnValue('1234567890');
@@ -11,8 +11,8 @@ tmp.fileSync = jest.fn().mockReturnValue({ name: '/tmp/1234567890' });
 
 describe('Check build sqs message function', () => {
   it('Sending all parameters and messageAttributes should have less than 10 objects', () => {
-    const { message, key } = buildSQSMessage(
-      {
+    const { message, key } = buildSQSMessage({
+      request: {
         params: {
           id: 2073,
         },
@@ -34,8 +34,8 @@ describe('Check build sqs message function', () => {
           organization_database: 'clientdev-co',
         },
       },
-      'csv'
-    );
+      file: 'csv',
+    });
 
     const { MessageAttributes } = message;
 
@@ -45,8 +45,8 @@ describe('Check build sqs message function', () => {
   });
 
   it('AnalysisArea should be sent as string inside the MessageAttributes', () => {
-    const { message } = buildSQSMessage(
-      {
+    const { message } = buildSQSMessage({
+      request: {
         params: {
           id: 2073,
         },
@@ -59,8 +59,8 @@ describe('Check build sqs message function', () => {
           organization_database: 'clientdev-co',
         },
       },
-      'csv'
-    );
+      file: 'csv',
+    });
 
     const { MessageAttributes } = message;
     const { analysisArea } = MessageAttributes;
@@ -71,8 +71,8 @@ describe('Check build sqs message function', () => {
   });
 
   it('AnalysisArea should be sent as string inside the MessageAttributes', () => {
-    const { message } = buildSQSMessage(
-      {
+    const { message } = buildSQSMessage({
+      request: {
         params: {
           id: 2073,
         },
@@ -84,8 +84,8 @@ describe('Check build sqs message function', () => {
           organization_database: 'clientdev-co',
         },
       },
-      'csv'
-    );
+      file: 'csv',
+    });
 
     const { MessageAttributes } = message;
     const { analysisArea } = MessageAttributes;
@@ -96,8 +96,8 @@ describe('Check build sqs message function', () => {
   });
 
   it('Should group aggregate, type, fileName, file, combinedColumns, order, sortByAttribute into file to send', () => {
-    const { message } = buildSQSMessage(
-      {
+    const { message } = buildSQSMessage({
+      request: {
         params: {
           id: 2073,
         },
@@ -114,8 +114,8 @@ describe('Check build sqs message function', () => {
           organization_database: 'clientdev-co',
         },
       },
-      'csv'
-    );
+      file: 'csv',
+    });
 
     const { MessageAttributes } = message;
     const { file } = MessageAttributes;
@@ -131,8 +131,8 @@ describe('Check build sqs message function', () => {
   });
 
   it('Should group listId, listFilterStr, listView, selectedLocations inside list', () => {
-    const { message } = buildSQSMessage(
-      {
+    const { message } = buildSQSMessage({
+      request: {
         params: {
           id: 2073,
         },
@@ -146,8 +146,8 @@ describe('Check build sqs message function', () => {
           organization_database: 'clientdev-co',
         },
       },
-      'csv'
-    );
+      file: 'csv',
+    });
 
     const { MessageAttributes } = message;
     const { list } = MessageAttributes;
@@ -160,8 +160,8 @@ describe('Check build sqs message function', () => {
   });
 
   it('Check if user_email and organization_database are passed thought SQS', () => {
-    const { message } = buildSQSMessage(
-      {
+    const { message } = buildSQSMessage({
+      request: {
         params: {
           id: 2073,
         },
@@ -173,8 +173,8 @@ describe('Check build sqs message function', () => {
           organization_database: 'clientdev-co',
         },
       },
-      'csv'
-    );
+      file: 'csv',
+    });
 
     const { MessageAttributes } = message;
     const { userEmail, organizationDatabase } = MessageAttributes;

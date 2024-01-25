@@ -78,7 +78,7 @@ export default class Dashboard extends Component {
     this.state = {
       ...store.getState(),
       lastUpdatedDashboard: 'N/A',
-      openDownloadDialog: false,
+      isOpenDownloadDialog: false,
       isLoading: false,
     };
   }
@@ -186,7 +186,7 @@ export default class Dashboard extends Component {
 
   setOpenDownloadDialog = (boolean) => {
     this.setState({
-      openDownloadDialog: boolean,
+      isOpenDownloadDialog: boolean,
       isLoading: boolean,
     });
   };
@@ -330,7 +330,7 @@ export default class Dashboard extends Component {
       timeframeDissolved,
       timeframeGeojsonForFooter,
       selectedAdmin,
-      openDownloadDialog,
+      isOpenDownloadDialog,
       isLoading,
     } = this.state;
 
@@ -405,7 +405,7 @@ export default class Dashboard extends Component {
                 className={`dashboard-subnav__control ${isEmpty(rawData) ? 'hidden' : ''}`}
                 onClick={() => {
                   downloadDashboard();
-                  this.setState({ isLoading: true, openDownloadDialog: true });
+                  this.setState({ isLoading: true, isOpenDownloadDialog: true });
                 }}
               >
                 <DownloadIcon color="#b9b9bb" />
@@ -457,7 +457,7 @@ export default class Dashboard extends Component {
             )}
           </div>
         </div>
-        <ConfirmDialog open={openDownloadDialog} setDialogOpen={this.setOpenDownloadDialog} />
+        <ConfirmDialog open={isOpenDownloadDialog} setDialogOpen={this.setOpenDownloadDialog} />
         <Backdrop sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
           <CircularProgress color="success" />
         </Backdrop>

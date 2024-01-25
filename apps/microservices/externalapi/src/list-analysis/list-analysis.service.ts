@@ -20,7 +20,6 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 
-const DEFAULT_ANALYSIS = 'FCD';
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 500;
 @Injectable()
@@ -67,12 +66,24 @@ export class ListAnalysisService {
   }
 
   // Replace this with actual database or external service calls
-  async getAnalysisStatus(organizationId: number, listID: number): Promise<ListAnalysisResponse> {
+  async getAnalysisStatus({
+    analysisId,
+    listId,
+    organizationId,
+  }: {
+    organizationId: number;
+    listId: number;
+    analysisId: string;
+  }): Promise<ListAnalysisResponse> {
     const connection = await this.getOrganizationConnection(organizationId);
     const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
     const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
-      where: { listId: listID, analysisId: DEFAULT_ANALYSIS },
+      where: { listId, analysisId },
     });
+
+    if (!listAnalysisStatus) {
+      throw new NotFoundException('Analysis status not found.');
+    }
 
     const analysisStatus: ListAnalysisResponse = {
       listId: listAnalysisStatus.listId.toString(),

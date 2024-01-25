@@ -7,9 +7,12 @@ import { Organization } from '../../api-keys/organization.entity';
 import { UserRoutes } from '../../api-keys/user-route.entity';
 import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { ConfigModule } from '@nestjs/config';
+import * as request from 'supertest';
+import { INestApplication } from '@nestjs/common';
 
 describe('ListAnalysisController', () => {
   let controller: ListAnalysisController;
+  let app: INestApplication;
 
   const expectedResult = {
     listId: 123,
@@ -49,15 +52,19 @@ describe('ListAnalysisController', () => {
     }).compile();
 
     controller = module.get<ListAnalysisController>(ListAnalysisController);
+
+    app = module.createNestApplication();
+    await app.init();
   });
 
   it('should return analysis status', async () => {
-    const listID = '123';
+    const listId = 123;
+    const analysisId = 'FCD';
 
     // Mock the request object with the 'x-api-key' header
     const requestMock = createRequest({
       method: 'GET',
-      url: `/api/v1/list/${listID}/analysis/FCD/status`,
+      url: `/api/v1/list/${listId}/analysis/FCD/status`,
       headers: {
         'x-api-key': 'your-api-key',
       },
@@ -66,7 +73,18 @@ describe('ListAnalysisController', () => {
       },
     });
 
-    const result = await controller.getAnalysisStatus(listID, requestMock);
+    const result = await controller.getAnalysisStatus(listId, analysisId, requestMock);
     expect(result).toMatchObject(expectedResult);
   });
+
+  it.each(['AFI', 'RandomWrongType'])(
+    'should return 400 if analysisIDs is not valid',
+    async (analysisIds) => {
+      const { statusCode } = await request(app.getHttpServer()).get(
+        `/v1/list/123/analysis/${analysisIds}/status`
+      );
+
+      expect(statusCode).toBe(400);
+    }
+  );
 });

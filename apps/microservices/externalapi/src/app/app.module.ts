@@ -42,7 +42,7 @@ export class AppModule {
     consumer
       .apply(ApiKeyMiddleware)
       .forRoutes(
-        '/v1/list/:listID/analysis/FCD/status',
+        '/v1/list/:listId/analysis/:analysisId/status',
         '/v1/list/upload_new',
         '/v1/prepare_upload'
       );

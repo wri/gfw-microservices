@@ -60,6 +60,7 @@ export default function HectareKilometerSwitch({ areaUnit, setAreaUnit }) {
           <HectareKilometerStyledSwitch
             sx={{ m: 1 }}
             checked={areaUnit === 'km'}
+            data-testid="hectare-kilometer-switch"
             onChange={() => {
               setAreaUnit(areaUnit === 'km' ? 'ha' : 'km');
             }}

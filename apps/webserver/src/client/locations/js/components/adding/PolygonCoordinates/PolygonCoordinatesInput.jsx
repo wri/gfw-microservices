@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
-import Card from '@mui/material/Card';
-import Button from '@mui/material/Button';
-import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
-import Point from '@arcgis/core/geometry/Point';
-import AddLocationIcon from '@mui/icons-material/AddLocation';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import Graphic from '@arcgis/core/Graphic';
+import Card from '@mui/material/Card';
+import Button from '@mui/material/Button';
+import AddLocationIcon from '@mui/icons-material/AddLocation';
 import Modal from '@mui/material/Modal';
-import { default as GfwButton } from '../../../../../common/js/components/Button';
 import CoordinateInputsContainer from './CoordinateInputsContainer';
 import RadiusOptions from './RadiusOptions';
+import { getPointGeometry, getPolygonGeometry } from './geometries';
 import './PolygonCoordinatesInput.scss';
 
 const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
   const [selectedRadius, setSelectedRadius] = useState('big');
   const [coordinates, setCoordinates] = useState([
-    { id: Date.now(), latitude: null, longitude: null, errors: {} },
+    { id: Date.now(), latitude: '', longitude: '', errors: {} },
   ]);
   const [customRadiusSize, setCustomRadiusSize] = useState();
   const [areaUnit, setAreaUnit] = useState('ha');
@@ -55,75 +53,15 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
     setCoordinates(filteredCoordinates);
   };
 
-  const addNewPoint = () => {
-    const { latitude, longitude } = coordinates[0];
-
-    /*
-      radius options:
-
-      small: 1000 hectares (1.78 km radius)
-      medium: 5000 hectares (3.99 km radius)
-      big: 20000hectares (7.98 km radius)
-      Custom Radius: user can input a custom radius size in hectares (radius must be calculated) or kilometers (radius)
-    */
-
-    let radius;
-
-    switch (selectedRadius) {
-      case 'small':
-        radius = 1780; // 1.78 km
-        break;
-      case 'medium':
-        radius = 3990; // 3.99 km
-        break;
-      case 'big':
-        radius = 7980; // 7.98 km
-        break;
-      case 'custom':
-        if (areaUnit === 'km') {
-          radius = customRadiusSize;
-        } else {
-          // User inputs area in hectares, calculate radius
-          radius = Math.sqrt((customRadiusSize * 10000) / Math.PI);
-        }
-        break;
-      default:
-        break;
-    }
-
-    const pointGeometry = new Point({
-      longitude,
-      latitude,
-      spatialReference: {
-        wkid: 4326,
-      },
-    });
-
-    const bufferGeometry = geometryEngine.geodesicBuffer(pointGeometry, radius, 'meters');
-
-    return bufferGeometry;
-  };
-
-  const addNewPolygon = () => {
-    const polygonCoordinates = coordinates.map((coord) => [coord.longitude, coord.latitude]);
-
-    const polygon = {
-      type: 'polygon',
-      rings: polygonCoordinates,
-    };
-
-    return polygon;
-  };
-
   const handleSubmit = () => {
     mapView.graphics.removeAll();
     sketchViewModel.delete();
 
     let geometry;
     if (onlyOneCoordinatesRow) {
-      geometry = addNewPoint();
+      geometry = getPointGeometry(coordinates, selectedRadius, areaUnit, customRadiusSize);
     } else {
-      geometry = addNewPolygon();
+      geometry = getPolygonGeometry(coordinates);
     }
 
     const symbol = new SimpleFillSymbol({
@@ -180,7 +118,11 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
   ));
   return (
     <div>
-      <Button style={{ position: 'absolute', zIndex: 100 }} onClick={() => setOpen(true)}>
+      <Button
+        data-testid="polygon-coordinates-button"
+        style={{ position: 'absolute', zIndex: 100 }}
+        onClick={() => setOpen(true)}
+      >
         <AddLocationIcon />
       </Button>
       <Modal
@@ -207,16 +149,20 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
               setAreaUnit={setAreaUnit}
             />
           )}
-          <GfwButton
+          <Button
+            style={{
+              backgroundColor: '#8bae3b',
+              float: 'right',
+              borderRadius: '18px',
+              color: '#fff',
+            }}
             type="button"
             variant="primary"
-            disable={!coordinates.length}
-            style={{ float: 'right' }}
             disabled={isSubmitDisabled}
             onClick={handleSubmit}
           >
             OK
-          </GfwButton>
+          </Button>
           {errorMessage}
         </Card>
       </Modal>

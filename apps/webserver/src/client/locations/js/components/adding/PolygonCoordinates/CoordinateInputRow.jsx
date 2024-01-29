@@ -19,21 +19,27 @@ const CoordinateInputRow = ({
       <input
         type="number"
         name="latitude"
-        value={latitude}
+        value={latitude || ''}
         onChange={(event) => onCoordinatesChange(event, id, 'latitude')}
+        data-testid={`latitude-input-${index}`}
       />
     </Grid>
     <Grid item xs={5}>
       <input
         type="number"
         name="longitude"
-        value={longitude}
+        value={longitude || ''}
         onChange={(event) => onCoordinatesChange(event, id, 'longitude')}
+        data-testid={`longitude-input-${index}`}
       />
     </Grid>
     <Grid item xs={1}>
       {!onlyOneCoordinatesRow && (
-        <CloseIcon style={{ cursor: 'pointer' }} onClick={() => onDeleteCoordinate(id)} />
+        <CloseIcon
+          data-testid={`coordinate-input-remove-row-${index}`}
+          style={{ cursor: 'pointer' }}
+          onClick={() => onDeleteCoordinate(id)}
+        />
       )}
     </Grid>
   </Box>

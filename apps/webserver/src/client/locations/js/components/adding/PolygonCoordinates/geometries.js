@@ -7,7 +7,7 @@ const WGS_1984_SPATIAL_REFERENCE = 4326;
 const SMALL_RADIUS_METERS = 1780; // 1.78 km
 const MEDIUM_RADIUS_METERS = 3990; // 3.99 km
 const BIG_RADIUS_METERS = 7980; // 7.98 km
-const KM_TO_METERS = 10000;
+const HECTARE_TO_METERS = 10000;
 
 export const getPointGeometry = (coordinates, selectedRadius, areaUnit, customRadiusSize) => {
   const { latitude, longitude } = coordinates[0];
@@ -29,7 +29,7 @@ export const getPointGeometry = (coordinates, selectedRadius, areaUnit, customRa
         radius = customRadiusSize;
       } else {
         // area in hectares converted to radius in meters
-        radius = Math.sqrt((customRadiusSize * KM_TO_METERS) / Math.PI);
+        radius = Math.sqrt((customRadiusSize * HECTARE_TO_METERS) / Math.PI);
       }
       break;
     default:

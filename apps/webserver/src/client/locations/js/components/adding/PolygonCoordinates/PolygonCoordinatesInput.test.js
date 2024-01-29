@@ -43,9 +43,17 @@ const mockSketchViewModel = {
 geometries.getPointGeometry.mockReturnValue('mockedPointGeometry');
 geometries.getPolygonGeometry.mockReturnValue('mockedPolygonGeometry');
 
+const mockSetGeometry = jest.fn();
+
 describe('PolygonCoordinatesInput Component', () => {
   beforeEach(() => {
-    render(<PolygonCoordinatesInput mapView={mockMapView} sketchViewModel={mockSketchViewModel} />);
+    render(
+      <PolygonCoordinatesInput
+        mapView={mockMapView}
+        sketchViewModel={mockSketchViewModel}
+        setGeometry={mockSetGeometry}
+      />
+    );
   });
   afterEach(() => {
     cleanup();
@@ -200,6 +208,7 @@ describe('PolygonCoordinatesInput Component', () => {
         'km', // Assuming the areaUnit is 'km' after switching
         '123' // Check if the customRadiusSize is '123'
       );
+      expect(mockSetGeometry).toHaveBeenCalled();
     });
   });
 
@@ -250,6 +259,8 @@ describe('PolygonCoordinatesInput Component', () => {
           errors: { latitude: false, longitude: false },
         },
       ]);
+
+      expect(mockSetGeometry).toHaveBeenCalled();
     });
   });
 });

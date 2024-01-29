@@ -88,6 +88,7 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView, setGeometry }) => {
         { duration: 1000 }
       );
     }, 500);
+    setGeometry(geometry);
     setOpen(false);
   };
   // disable if there are coordinates with null values, if there are only two coordinates (a line), or if there are errors

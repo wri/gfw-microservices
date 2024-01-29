@@ -77,7 +77,6 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView, setGeometry }) => {
       geometry,
       symbol,
     });
-    console.log({ graphic });
     mapView.graphics.add(graphic);
 
     setTimeout(() => {

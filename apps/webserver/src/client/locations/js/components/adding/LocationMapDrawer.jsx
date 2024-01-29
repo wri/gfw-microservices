@@ -144,7 +144,7 @@ const LocationMapDrawer = (props) => {
 
   return (
     <>
-      {!isPolygonCoordinatesInputAvailable && 
+      {!isPolygonCoordinatesInputAvailable && (
         <>
           <div className="location-map-drawer__message">{userMessage}</div>
           <Button
@@ -153,14 +153,14 @@ const LocationMapDrawer = (props) => {
             label={buttonTitle}
           />
         </>
-      }
+      )}
 
-      {isPolygonCoordinatesInputAvailable && 
+      {isPolygonCoordinatesInputAvailable && (
         <button className="draw_shape__draw-button" onClick={onDrawButtonClick}>
           <DrawIcon />
           <span>{buttonTitle}</span>
         </button>
-      }
+      )}
     </>
   );
 };

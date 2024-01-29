@@ -149,7 +149,15 @@ const PolygonCoordinatesInput = ({
           <AddLocationIcon />
           <span>Add coordinates</span>
         </button>
-        <LocationMapDrawer mapView={mapView} sketchViewModel={sketchViewModel} setSketchViewModel={setSketchViewModel} />
+        <LocationMapDrawer
+          mapView={mapView}
+          sketchViewModel={sketchViewModel}
+          setSketchViewModel={setSketchViewModel}
+        />
+      </div>
+
+      <div className="draw_shape__button-group" style={{ right: '1rem', left: 'auto' }}>
+        <GfwButton onClick={() => setOpen(true)} label="EDIT COORDINATES" />
       </div>
 
       <Modal

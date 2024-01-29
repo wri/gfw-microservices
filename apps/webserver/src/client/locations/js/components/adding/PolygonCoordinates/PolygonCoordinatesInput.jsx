@@ -40,7 +40,7 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
   };
 
   const onAddCoordinate = () => {
-    const newCoordinate = { id: Date.now(), latitude: null, longitude: null, errors: {} };
+    const newCoordinate = { id: Date.now(), latitude: '', longitude: '', errors: {} };
     setCoordinates([...coordinates, newCoordinate]);
   };
 

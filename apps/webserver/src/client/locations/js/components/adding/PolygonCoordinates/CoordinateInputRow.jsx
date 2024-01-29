@@ -19,7 +19,7 @@ const CoordinateInputRow = ({
       <input
         type="number"
         name="latitude"
-        value={latitude || ''}
+        value={latitude}
         onChange={(event) => onCoordinatesChange(event, id, 'latitude')}
         data-testid={`latitude-input-${index}`}
       />
@@ -28,7 +28,7 @@ const CoordinateInputRow = ({
       <input
         type="number"
         name="longitude"
-        value={longitude || ''}
+        value={longitude}
         onChange={(event) => onCoordinatesChange(event, id, 'longitude')}
         data-testid={`longitude-input-${index}`}
       />

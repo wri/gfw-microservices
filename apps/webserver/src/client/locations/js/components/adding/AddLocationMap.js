@@ -7,7 +7,7 @@ import LocationMapDrawer from './LocationMapDrawer';
 import './AddLocationMap.scss';
 
 const AddLocationMap = (props) => {
-  const { geomFromMap } = props;
+  const { geomFromMap, geometry } = props;
   const [mapView, setMapView] = useState(null);
   const [sketchViewModel, setSketchViewModel] = useState(null);
 

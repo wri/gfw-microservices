@@ -1,6 +1,5 @@
 class SimpleFillSymbolMock {
-  constructor(params) {
-  }
+  constructor(params) {}
 }
 
 module.exports = SimpleFillSymbolMock;

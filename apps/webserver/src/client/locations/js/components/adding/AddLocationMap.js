@@ -7,7 +7,7 @@ import LocationMapDrawer from './LocationMapDrawer';
 import './AddLocationMap.scss';
 
 const AddLocationMap = (props) => {
-  const { geomFromMap } = props;
+  const { geomFromMap, geometry } = props;
   const [mapView, setMapView] = useState(null);
   const [sketchViewModel, setSketchViewModel] = useState(null);
 
@@ -52,7 +52,7 @@ const AddLocationMap = (props) => {
           />
         )}
         {isPolygonCoordinatesInputAvailable && mapView && (
-          <PolygonCoordinatesInput mapView={mapView} sketchViewModel={sketchViewModel} />
+          <PolygonCoordinatesInput mapView={mapView} sketchViewModel={sketchViewModel} {...props} />
         )}
         <div className="add-location-map__map" id="mapView"></div>
       </div>

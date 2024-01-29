@@ -616,13 +616,13 @@ export default class AddLocation extends Component {
     // Geometries need to be in WGS84 Spatial Reference - we've done our best to catch it here - good luck front end
     let wgsGeometry = {};
 
-    if (geometry.spatialReference.wkid === 102100) {
+    if (geometry?.spatialReference?.wkid === 102100) {
       wgsGeometry = webMercatorToGeographic(geometry);
     } else {
       wgsGeometry = geometry;
     }
 
-    if (geometry.latitude) {
+    if (geometry?.latitude) {
       this.setState({
         geometry: wgsGeometry,
         originalGeometry: wgsGeometry,
@@ -2126,6 +2126,7 @@ export default class AddLocation extends Component {
                       ? this.props.geomFromMap.geometry
                       : this.props.geomFromMap
                   }
+                  geometry={this.state.geometry}
                   setGeometry={this.setGeometry}
                 />
               ) : addMethod === 'byAddress' ? (

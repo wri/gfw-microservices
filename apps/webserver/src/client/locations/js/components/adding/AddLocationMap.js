@@ -43,7 +43,7 @@ const AddLocationMap = (props) => {
   return (
     <div className="add-location-map">
       <div className="add-location-map__map-container">
-        {mapView && (
+        {(mapView && !isPolygonCoordinatesInputAvailable) && (
           <LocationMapDrawer
             mapView={mapView}
             sketchViewModel={sketchViewModel}
@@ -52,7 +52,7 @@ const AddLocationMap = (props) => {
           />
         )}
         {isPolygonCoordinatesInputAvailable && mapView && (
-          <PolygonCoordinatesInput mapView={mapView} sketchViewModel={sketchViewModel} {...props} />
+          <PolygonCoordinatesInput mapView={mapView} sketchViewModel={sketchViewModel} setSketchViewModel={setSketchViewModel} {...props} />
         )}
         <div className="add-location-map__map" id="mapView"></div>
       </div>

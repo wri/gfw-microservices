@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Card from '@mui/material/Card';
+import AddLocationIcon from '@mui/icons-material/AddLocation';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import Graphic from '@arcgis/core/Graphic';
 import Card from '@mui/material/Card';
@@ -16,8 +18,10 @@ const PolygonCoordinatesInput = ({
   sketchViewModel,
   mapView,
   setGeometry,
+  setSketchViewModel,
   measurementUnit,
   setMeasurementUnit,
+  
 }) => {
   const [selectedAreaRadioOption, setSelectedAreaRadioOption] = useState(
     NEW_LOCATION_AREA_OPTIONS.SMALL.id
@@ -140,13 +144,14 @@ const PolygonCoordinatesInput = ({
 
   return (
     <div>
-      <Button
-        data-testid="polygon-coordinates-button"
-        style={{ position: 'absolute', zIndex: 100 }}
-        onClick={() => setOpen(true)}
-      >
-        <AddLocationIcon />
-      </Button>
+      <div className="draw_shape__button-group">
+        <button className="draw_shape__draw-button" onClick={() => setOpen(true)}>
+          <AddLocationIcon />
+          <span>Add coordinates</span>
+        </button>
+        <LocationMapDrawer mapView={mapView} sketchViewModel={sketchViewModel} setSketchViewModel={setSketchViewModel} />
+      </div>
+
       <Modal
         open={open}
         onClose={() => setOpen(false)}

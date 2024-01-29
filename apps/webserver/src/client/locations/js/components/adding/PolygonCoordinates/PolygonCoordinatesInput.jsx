@@ -5,12 +5,13 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import Modal from '@mui/material/Modal';
+import GfwButton from '../../../../../common/js/components/GfwButton';
 import CoordinateInputsContainer from './CoordinateInputsContainer';
 import RadiusOptions from './RadiusOptions';
 import { getPointGeometry, getPolygonGeometry } from './geometries';
 import './PolygonCoordinatesInput.scss';
 
-const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
+const PolygonCoordinatesInput = ({ sketchViewModel, mapView, setGeometry }) => {
   const [selectedRadius, setSelectedRadius] = useState('big');
   const [coordinates, setCoordinates] = useState([
     { id: Date.now(), latitude: '', longitude: '', errors: {} },
@@ -87,18 +88,18 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
         { duration: 1000 }
       );
     }, 500);
-
     setOpen(false);
   };
   // disable if there are coordinates with null values, if there are only two coordinates (a line), or if there are errors
   const isSubmitDisabled =
     coordinates.some(
       (coord) =>
-        coord.latitude === null ||
-        coord.longitude === null ||
+        coord.latitude === '' ||
+        coord.longitude === '' ||
         coord.errors.latitude ||
         coord.errors.longitude
     ) || coordinates.length === 2;
+
   const uniqueErrors = new Set();
 
   const errorMessage = coordinates.map((coord) => (
@@ -116,6 +117,7 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
       })}
     </div>
   ));
+
   return (
     <div>
       <Button
@@ -149,20 +151,17 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView }) => {
               setAreaUnit={setAreaUnit}
             />
           )}
-          <Button
-            style={{
-              backgroundColor: '#8bae3b',
+          <GfwButton
+            buttonStyle={{
               float: 'right',
-              borderRadius: '18px',
-              color: '#fff',
             }}
-            type="button"
-            variant="primary"
+            classNames="btn-green"
             disabled={isSubmitDisabled}
             onClick={handleSubmit}
+            value="OK"
           >
             OK
-          </Button>
+          </GfwButton>
           {errorMessage}
         </Card>
       </Modal>

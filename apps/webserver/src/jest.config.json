@@ -12,7 +12,11 @@
     }
   },
   "moduleFileExtensions": ["js", "json", "jsx", "ts", "tsx"],
-  "modulePathIgnorePatterns": ["<rootDir>/node_modules/", "<rootDir>/dist/*"],
+  "modulePathIgnorePatterns": [
+    "<rootDir>/node_modules/",
+    "<rootDir>/node_modules/@arcgis",
+    "<rootDir>/dist/*"
+  ],
   "setupFiles": ["@testing-library/react/dont-cleanup-after-each"],
   "setupFilesAfterEnv": ["./test/jest.setup.js", "@testing-library/jest-dom/extend-expect"],
   "testEnvironment": "jest-environment-jsdom",
@@ -27,12 +31,14 @@
     "^.+\\.(js|jsx)?$": "babel-jest",
     "^.+\\.(ts)$": "ts-jest"
   },
-  "transformIgnorePatterns": ["/node_modules/"],
+  "transformIgnorePatterns": ["node_modules/(?!(@arcgis|@esri|@stencil)/)"],
   "moduleNameMapper": {
     "^axios$": "<rootDir>/../../../node_modules/axios/dist/node/axios.cjs",
     "^mapshaper$": "<rootDir>/../../../node_modules/mapshaper/mapshaper.js",
     "\\.(css|scss)$": "<rootDir>/test/__mocks__/object.js",
     "\\.(jpe?g|png|gif|svg)$": "<rootDir>/test/__mocks__/object.js",
+    "@arcgis/core/symbols/SimpleFillSymbol": "<rootDir>/test/__mocks__/SimpleFillSymbol.js",
+    "@arcgis": "<rootDir>/test/__mocks__/object.js",
     "src/client/map/js/layers(.*)$": "<rootDir>/test/__mocks__/constructor.js",
     "map/js/layers/TreeCoverLossLayer": "<rootDir>/test/__mocks__/constructor.js",
     "esri/Map": "<rootDir>/test/__mocks__/constructor.js",

@@ -86,6 +86,7 @@ const RadiusOptions = ({
             checked={selectedRadius === 'custom'}
             value="custom"
             name="radio-buttons"
+            data-testid="custom-radius-option"
             onClick={() => setSelectedRadius('custom')}
           />
         </Grid>

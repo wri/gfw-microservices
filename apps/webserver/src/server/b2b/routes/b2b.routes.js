@@ -11,7 +11,7 @@ const invitationController = require('../controllers/invitation.controller');
 const connectionController = require('../controllers/connection.controller');
 
 const b2bRoutes = express.Router();
-import { UserAccessLevel } from '@wri-monorepos/constants';
+import { UserAccessLevel } from '@wri-monorepos/shared';
 
 const BASE_URL = '/b2b'; // Used for rendering the page, mostly for routes that render pug templates
 const API_BASE_URL = `/api${BASE_URL}`; // Used for API calls, mostly for routes that return JSON and call the B2B microservice

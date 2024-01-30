@@ -47,6 +47,6 @@ export interface ListFieldsFileRequest extends  BasicFieldsFileRequest {
 export interface AlertFieldsFileRequest extends BasicFieldsFileRequest {
   selectedTimeframe: string;
   selectedAlert: string;
-  startTime: string;
-  endTime: string;
+  startDate: string;
+  endDate: string;
 }

@@ -43,6 +43,8 @@ const { listStatusDescriptions, listStatus } = require(path.resolve(
   './config/env/listStatuses.constants'
 ));
 
+import { UserAccessLevel } from '@wri-monorepos/shared';
+
 const lstTitles = [
   { id: 1, title: 'Analyst' },
   { id: 2, title: 'Chief Risk Officer' },
@@ -544,10 +546,10 @@ const updateUserInfo = (
   forma_email_frequency = 0,
   terrai_email_frequency = 0,
   gran_chaco_email_frequency = 0,
-  user_auth_preference_id = 0
+  user_auth_preference_id = 0,
+  loggedUserAccessLevelId
 ) => {
   return new Promise((resolve, reject) => {
-    // Insert the udpated user info
     const params = [
       { field: 'userID', type: sql.Int, value: user_id },
       { field: 'firstName', type: sql.NVarChar(35), value: user_first_name },
@@ -557,7 +559,6 @@ const updateUserInfo = (
       { field: 'phone', type: sql.NVarChar(50), value: user_phone },
       { field: 'titleId', type: sql.Int, value: user_title_id },
       { field: 'other_title', type: sql.NVarChar(150), value: other_title },
-      { field: 'accessLevelId', type: sql.Int, value: access_level_id },
       { field: 'email_subscription', type: sql.Bit, value: email_subscription },
       { field: 'commodity_ids', type: sql.VarChar(200), value: arr_user_commodity_ids.toString() },
       { field: 'geography_ids', type: sql.VarChar(200), value: arr_user_geography_ids.toString() },
@@ -567,6 +568,9 @@ const updateUserInfo = (
       { field: 'terrai_email_frequency', type: sql.Int, value: terrai_email_frequency },
       { field: 'gran_chaco_email_frequency', type: sql.Int, value: gran_chaco_email_frequency },
     ];
+    if (loggedUserAccessLevelId === UserAccessLevel.ADMIN) {
+      params.push({ field: 'accessLevelId', type: sql.Int, value: access_level_id });
+    }
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspUpdateUser', params)
       .then(() => {

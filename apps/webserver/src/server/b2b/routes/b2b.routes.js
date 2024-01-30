@@ -10,15 +10,13 @@ const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 const invitationController = require('../controllers/invitation.controller');
 const connectionController = require('../controllers/connection.controller');
 
-const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
-
 const b2bRoutes = express.Router();
+import { UserAccessLevel } from '@wri-monorepos/shared';
 
 const BASE_URL = '/b2b'; // Used for rendering the page, mostly for routes that render pug templates
 const API_BASE_URL = `/api${BASE_URL}`; // Used for API calls, mostly for routes that return JSON and call the B2B microservice
 
 const PREMIUM_ACCOUNT_CODE = 2;
-const ADMIN_ACCESS_LEVEL_CODE = 1;
 
 /**
  * @name exports
@@ -76,7 +74,7 @@ module.exports = (app, limiter) => {
     // If user is premium or admin, allow access
     if (
       req.session.subscription_status_id === PREMIUM_ACCOUNT_CODE &&
-      req.session.user_access_level_id === ADMIN_ACCESS_LEVEL_CODE
+      req.session.user_access_level_id === UserAccessLevel.ADMIN
     ) {
       return next();
     }

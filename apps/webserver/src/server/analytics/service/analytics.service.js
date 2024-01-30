@@ -13,17 +13,11 @@ const { getListAnalysisStatusById } = require(path.resolve(
 ));
 // TODO: review all call sites and decide vs `getAccountAnalysisUsage` from 'wri-monorepos/sql`
 // See: https://gfw.atlassian.net/browse/GPV-2660
-const getOrganizationAnalysisUsage = async ({
-  startDate,
-  endDate,
-  organizationId,
-  countForEachList,
-}) => {
+const getOrganizationAnalysisUsage = async ({ startDate, endDate, organizationId }) => {
   const params = [
     { field: 'startDate', type: sql.NVarChar(255), value: startDate },
     { field: 'endDate', type: sql.NVarChar(255), value: endDate },
-    { field: 'organization', type: sql.Int, value: organizationId },
-    { field: 'countForEachList', type: sql.Int, value: countForEachList },
+    { field: 'organization', type: sql.Int, value: organizationId || null },
   ];
 
   const [response] = await sqlUtils.executeSystemQuery(getOrganizationAnalysisUsageQuery, params);

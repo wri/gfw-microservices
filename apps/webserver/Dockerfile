@@ -40,6 +40,8 @@ RUN rm -rf /tmp/tippecanoe-src \
 WORKDIR /srv
 
 COPY dist/apps/webserver .
+RUN rm -rf ./libs/sql
+COPY dist/libs/sql ./libs/sql
 
 # Copy package*.json (required for npm install below)
 COPY package.json .

@@ -1,5 +1,5 @@
 import * as types from '../actions/actionTypes';
-import csvUtils from '../utils/csvUtils';
+import { applyTimeframeFilter, applyTimeframeFilterRemix } from '../utils/dashboard.utils';
 import isEmpty from 'lodash/isEmpty';
 
 function timeframeFilterDissolved(
@@ -19,7 +19,7 @@ function timeframeFilterDissolved(
       if (isEmpty(clonedRawData)) {
         return {};
       } else {
-        return csvUtils.applyTimeframeFilter(dissolvedGeoJSON, selectedTimeframe);
+        return applyTimeframeFilter(dissolvedGeoJSON, selectedTimeframe);
       }
     default:
       return typeof timeframeDissolved === 'undefined' ? {} : timeframeDissolved;
@@ -39,7 +39,7 @@ function timeframeFilterGeojson(intermediateState = {}, previousState = {}, acti
       if (isEmpty(clonedRawData)) {
         return {};
       } else {
-        return csvUtils.applyTimeframeFilter(geojson, selectedTimeframe);
+        return applyTimeframeFilter(geojson, selectedTimeframe);
       }
     default:
       return typeof timeframeGeojson === 'undefined' ? {} : timeframeGeojson;
@@ -63,7 +63,7 @@ function timeframeFilterGeojsonForFooter(
       if (isEmpty(clonedRawData)) {
         return {};
       } else {
-        return csvUtils.applyTimeframeFilterRemix(geojson, selectedTimeframe);
+        return applyTimeframeFilterRemix(geojson, selectedTimeframe);
       }
     default:
       return typeof timeframeGeojsonForFooter === 'undefined' ? {} : timeframeGeojsonForFooter;

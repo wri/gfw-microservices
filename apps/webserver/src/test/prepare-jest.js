@@ -1,4 +1,3 @@
-/* eslint-disable import/no-dynamic-require */
 // Set the environment to test in case it is not already set
 process.env.NODE_ENV = 'test';
 const path = require('path');
@@ -38,6 +37,8 @@ try {
     '\\.(css|scss)$': '<rootDir>/test/__mocks__/object.js',
     '\\.(jpe?g|png|gif|svg)$': '<rootDir>/test/__mocks__/object.js',
     // 'material-ui/Popover': '<rootDir>/__mocks__/constructor.js',
+    '@arcgis/core/symbols/SimpleFillSymbol': '<rootDir>/test/__mocks__/SimpleFillSymbol.js',
+    '@arcgis': '<rootDir>/test/__mocks__/object.js',
     'src/client/map/js/layers(.*)$': '<rootDir>/test/__mocks__/constructor.js',
     'map/js/layers/TreeCoverLossLayer': '<rootDir>/test/__mocks__/constructor.js',
     'esri/Map': '<rootDir>/test/__mocks__/constructor.js',
@@ -51,15 +52,22 @@ try {
     '^dijit(.*)$': '<rootDir>/test/__mocks__/object.js',
     '@wri-monorepos/constants': '<rootDir>/../../../libs/constants/src/index.ts',
     '@wri-monorepos/shared': '<rootDir>/../../../libs/shared/src/index.ts',
+    '@wri-monorepos/sql': '<rootDir>/../../../libs/sql/src/index.ts',
     ...aliases,
   };
-  // Set the test paths
-  jestConfig.testMatch = [
-    `<rootDir>/${assets.clientJest}`,
-    `<rootDir>/${assets.serverJest}`,
-    `<rootDir>/${assets.configJest}`,
-    `<rootDir>/test/fitness/**/*.test.js`,
-  ]; // Write the file back out to jestConfig
+  (jestConfig.modulePathIgnorePatterns = [
+    '<rootDir>/node_modules/',
+    '<rootDir>/node_modules/@arcgis',
+    '<rootDir>/dist/*',
+  ]),
+    (jestConfig.transformIgnorePatterns = ['node_modules/(?!(@arcgis|@esri|@stencil)/)']),
+    // Set the test paths
+    (jestConfig.testMatch = [
+      `<rootDir>/${assets.clientJest}`,
+      `<rootDir>/${assets.serverJest}`,
+      `<rootDir>/${assets.configJest}`,
+      `<rootDir>/test/fitness/**/*.test.js`,
+    ]); // Write the file back out to jestConfig
   fs.writeFileSync(jestConfigPath, JSON.stringify(jestConfig, null, 2), 'utf-8');
 } catch (err) {
   logger.error('Error preparing jest configuration file', err);

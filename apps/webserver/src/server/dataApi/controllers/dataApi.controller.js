@@ -32,7 +32,6 @@ exports.getInfoBubbleDataController = (req, res) => {
   const config = {
     method: 'get',
     url: `${GFW_API_URL__PRO_CONFIG}/${infoBubbleId}`,
-    headers: HEADERS_API_KEY,
   };
 
   axios(config)

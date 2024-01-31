@@ -14,6 +14,7 @@ import {
   ListUploadNewErrorResponse,
   ListUploadNewRequest,
   ListUploadNewResponse,
+  PrepareUploadRequestSchema,
 } from './list-upload-new.dto';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
@@ -97,7 +98,10 @@ export class ListAnalysisService {
     return analysisStatus;
   }
 
-  async prepareUpload(organizationId: number, userEmail: string) {
+  async prepareUpload({
+    organizationId,
+    userEmail,
+  }: PrepareUploadRequestSchema & { organizationId: number }) {
     const user = await this.userService.findUser(organizationId, userEmail);
     if (!user) {
       throw new NotFoundException(`User with ${userEmail} not found`);

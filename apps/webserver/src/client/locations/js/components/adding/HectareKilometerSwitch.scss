@@ -1,0 +1,46 @@
+@import '../../../../common/css/baseGFW';
+@import '../../../../common/css/colorsGFW.scss';
+
+.hectare-kilometer-switch {
+  margin-left: 10px;
+  padding: 4px;
+  background: $gfw-white;
+  border: 1px solid $gfw-light-gray;
+  border-radius: 35px;
+  display: flex;
+  height: 44px;
+  align-items: center;
+  cursor: pointer;
+
+  &__option {
+    @include heading(200, $color: $gfw-dark-gray);
+    height: 35px;
+    width: 35px;
+    border-radius: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    text-align: center;
+    line-height: 40px;
+  }
+
+  &__option--selected {
+    color: $gfw-white;
+    background: $gfw-green;
+  }
+
+  &__label {
+    pointer-events: none;
+  }
+
+  &:focus,
+  &:focus-within {
+    @include focus-outline();
+  }
+
+  &[disabled],
+  &.disabled {
+    opacity: 0.3;
+  }
+}

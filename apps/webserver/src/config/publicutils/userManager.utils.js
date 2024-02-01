@@ -43,7 +43,7 @@ const { listStatusDescriptions, listStatus } = require(path.resolve(
   './config/env/listStatuses.constants'
 ));
 
-import { UserAccessLevel } from '@wri-monorepos/shared';
+import { UserAccessLevel } from '@wri-monorepos/constants';
 
 const lstTitles = [
   { id: 1, title: 'Analyst' },

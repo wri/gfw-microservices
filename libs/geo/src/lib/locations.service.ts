@@ -32,7 +32,7 @@ const EMPTY_CUSTOM_ATTRIBUTES = [];
 @Injectable()
 export class LocationService {
   private readonly logger = new Logger(LocationService.name);
-  constructor (private geoService: GeoService) { }
+  constructor(private geoService: GeoService) {}
   assembleGeojson = (featProps, uploadingData): Promise<GeoJson> => {
     return new Promise<GeoJson>((resolve, reject) => {
       const geojson: GeoJson = {
@@ -273,7 +273,10 @@ export class LocationService {
       listsToUnlock.push(selectedListId);
       listsToUnlock.push(moveToList.id);
       await UnlockLists(clientDatabase, listsToUnlock);
-      Logger.log(`Lists unlocked, source list: ${selectedListId}, target list: ${moveToList.id}`, 'LocationsService');
+      Logger.log(
+        `Lists unlocked, source list: ${selectedListId}, target list: ${moveToList.id}`,
+        'LocationsService'
+      );
     }
 
     // Delete locations from source list if move action was selected
@@ -286,7 +289,9 @@ export class LocationService {
         Logger.log(`Delete list ${selectedListId} because all locations were moved.`);
         await DeleteList(clientDatabase, selectedListId, userId);
       } else {
-        Logger.log(`Deleting selected locations from source list ${selectedListId}, locations: ${selectedLocations.join()}.`);
+        Logger.log(
+          `Deleting selected locations from source list ${selectedListId}, locations: ${selectedLocations.join()}.`
+        );
         await BulkDeleteLocations(
           clientDatabase,
           selectedListId,
@@ -304,6 +309,5 @@ export class LocationService {
         await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
       }
     }
-
   };
 }

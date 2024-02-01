@@ -101,18 +101,22 @@ export class ListAnalysisService {
   async prepareUpload({
     organizationId,
     userEmail,
+    fileType,
   }: PrepareUploadRequestSchema & { organizationId: number }) {
     const user = await this.userService.findUser(organizationId, userEmail);
     if (!user) {
       throw new NotFoundException(`User with ${userEmail} not found`);
     }
 
-    const fileKey = generateRandomFilename('csv');
+    const fileKey = generateRandomFilename(fileType);
     const presignedURLResponse = await axios.post<{
       url: string;
       keyFile: string;
       fileS3Route: string;
-    }>(`${this.LLP_BASE_URL}/api/create-presigned-url`, { key: fileKey, contentType: 'text/csv' });
+    }>(`${this.LLP_BASE_URL}/api/create-presigned-url`, {
+      key: fileKey,
+      contentType: `text/${fileType}`,
+    });
     const { url, keyFile } = presignedURLResponse.data;
 
     const connection = await this.getOrganizationConnection(user.organization_id);

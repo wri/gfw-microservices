@@ -193,7 +193,8 @@ module.exports = (app, limiter) => {
       formaAlerts,
       terraIAlerts,
       granChacoAlerts,
-      auth_preference_id
+      auth_preference_id,
+      req.session.user_access_level_id
     )
       .then((result) => {
         res.send(result);

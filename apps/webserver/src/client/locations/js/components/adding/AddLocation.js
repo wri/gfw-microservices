@@ -1042,7 +1042,6 @@ export default class AddLocation extends Component {
                   valueFromState = parseFloat(this.state.calculatedArea);
                   break;
                 case 'Analysis Radius':
-
                   if (this.state.areaAround === SMALL.id) {
                     distance = SMALL.distance;
                   } else if (this.state.areaAround === MEDIUM.id) {

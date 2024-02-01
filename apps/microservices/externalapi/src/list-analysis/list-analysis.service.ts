@@ -23,6 +23,13 @@ import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 500;
+
+const contentType = {
+  csv: 'text/csv',
+  zip: 'application/x-zip-compressed',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+};
+
 @Injectable()
 export class ListAnalysisService {
   private readonly LLP_BASE_URL: string;
@@ -115,7 +122,7 @@ export class ListAnalysisService {
       fileS3Route: string;
     }>(`${this.LLP_BASE_URL}/api/create-presigned-url`, {
       key: fileKey,
-      contentType: `text/${fileType}`,
+      contentType: contentType[fileType],
     });
     const { url, keyFile } = presignedURLResponse.data;
 

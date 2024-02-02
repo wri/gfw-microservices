@@ -4,7 +4,6 @@ import AddLocationIcon from '@mui/icons-material/AddLocation';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import Graphic from '@arcgis/core/Graphic';
 import Card from '@mui/material/Card';
-import Button from '@mui/material/Button';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import Modal from '@mui/material/Modal';
 import GfwButton from '../../../../../common/js/components/GfwButton';
@@ -144,8 +143,8 @@ const PolygonCoordinatesInput = ({
 
   return (
     <div>
-      <div className="draw_shape__button-group">
-        <button className="draw_shape__draw-button" onClick={() => setOpen(true)}>
+      <div className="draw-shape__button-group">
+        <button className="draw-shape__draw-button" onClick={() => setOpen(true)}>
           <AddLocationIcon />
           <span>Add coordinates</span>
         </button>
@@ -156,7 +155,7 @@ const PolygonCoordinatesInput = ({
         />
       </div>
 
-      <div className="draw_shape__button-group" style={{ right: '1rem', left: 'auto' }}>
+      <div className="draw-shape__button-group" style={{ right: '1rem', left: 'auto' }}>
         <GfwButton onClick={() => setOpen(true)} label="EDIT COORDINATES" />
       </div>
 

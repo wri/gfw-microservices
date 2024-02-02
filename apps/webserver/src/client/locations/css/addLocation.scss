@@ -84,11 +84,6 @@ h3.title-light.locations-subpage-address-sub-area-title {
   border: 1px solid gray;
 }
 
-.toggle-button {
-  display: inline-block;
-  margin-left: $space-normal;
-}
-
 // Coord
 .locations-subpage-coord {
   width: 120px;
@@ -268,11 +263,6 @@ table tbody tr {
   align-items: center;
   flex-wrap: nowrap;
   position: relative;
-}
-
-.custom-area-input {
-  padding: 0.5rem !important;
-  width: 100% !important;
 }
 
 .location-type-selection_detail {
@@ -488,46 +478,6 @@ table tbody tr {
   }
 }
 
-/////////////////////////////
-// Location Custom Area
-/////////////////////////////
-.locations-set-area {
-  margin-top: $space-spacious;
-
-  &__input-container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-
-    .block-label {
-      flex: 0 0 100%;
-    }
-  }
-
-  &__input {
-    flex: 0 0 15rem;
-  }
-
-  &__calculation-text {
-    @include text(100);
-    margin-top: $space-compact;
-    flex: 0 0 100%;
-  }
-
-  &__calculation-num {
-    font-weight: $font-weight-semibold;
-
-    &::before {
-      content: '\00a0';
-    }
-  }
-
-  &__note {
-    margin-top: $space-normal;
-    max-width: 35rem;
-  }
-}
-
 .upload-form {
   &__location-text {
     @include text(100);
@@ -574,27 +524,6 @@ table tbody tr {
     display: block;
     margin-top: 8px;
     width: 450px;
-  }
-}
-
-/////////////////////////////
-// Set Area
-/////////////////////////////
-.locations-set-area {
-  &__title {
-    @include heading(100, $color: $gfw-dark-gray, $weight: $font-weight-semibold);
-  }
-
-  &__custom-container {
-    border-radius: $border-radius;
-    background-color: $gfw-x-light-gray;
-    padding: $space-spacious;
-    margin: $space-small 0 0 1.75rem;
-  }
-
-  .area-radius-hint {
-    @include text(100);
-    margin-left: 1.75rem;
   }
 }
 

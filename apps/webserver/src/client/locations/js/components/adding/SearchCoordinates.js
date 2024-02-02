@@ -1,9 +1,22 @@
-import Point from '@arcgis/core/geometry/Point';
-import { locationsPage } from '../../../../common/js/config';
-import SetArea from './SetArea';
 import React, { Component } from 'react';
+import Point from '@arcgis/core/geometry/Point';
+import SetArea from './SetArea';
+import { locationsPage } from '../../../../common/js/config';
+import { NEW_LOCATION_AREA_OPTIONS } from './areaOptions.constants';
 
 export default class SearchCoordinates extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      selectedAreaRadioOption: NEW_LOCATION_AREA_OPTIONS.SMALL.id,
+    };
+  }
+  setSelectedAreaRadioOption = (option) => {
+    this.setState({
+      selectedAreaRadioOption: option,
+    });
+  };
   updateLat = (evt) => {
     const lastChar = evt.target.value.charAt(evt.target.value.length - 1);
     if (
@@ -56,16 +69,6 @@ export default class SearchCoordinates extends Component {
     });
   };
 
-  setArea = (evt) => {
-    this.props.setArea(evt.target.id, '');
-  };
-
-  setCustom = (evt) => {
-    if (!isNaN(evt.target.value)) {
-      this.props.setArea('', evt.target.value);
-    }
-  };
-
   render() {
     const { country, state, substate } = this.props;
     return (
@@ -104,13 +107,15 @@ export default class SearchCoordinates extends Component {
         )}
         {this.props.hasGeometry && (
           <SetArea
+            selectedAreaRadioOption={this.state.selectedAreaRadioOption}
+            setSelectedAreaRadioOption={this.setSelectedAreaRadioOption}
             measurementUnit={this.props.measurementUnit}
-            setMeaurementUnit={this.props.setMeaurementUnit}
-            areaAround={this.props.areaAround}
+            setMeasurementUnit={this.props.setMeasurementUnit}
             customArea={this.props.customArea}
             calculatedArea={this.props.calculatedArea}
-            setCustom={this.setCustom}
-            setArea={this.setArea}
+            setCustomArea={(value) => {
+              this.props.setArea('', value);
+            }}
           />
         )}
       </div>

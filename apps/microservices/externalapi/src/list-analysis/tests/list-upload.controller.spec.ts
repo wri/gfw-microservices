@@ -1,6 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ListUploadController } from '../list-upload.controller';
-import { ListUploadNewRequest, ListUploadNewResponse } from '../list-upload-new.dto';
+import {
+  ListUploadNewRequest,
+  ListUploadNewResponse,
+  PrepareUploadRequest,
+} from '../list-upload-new.dto';
 import { ListAnalysisService } from '../list-analysis.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -376,8 +380,9 @@ describe('ListUploadController', () => {
     axiosMock = new AxiosMockAdapter(axios);
     axiosMock.onPost(/\/api\/create-presigned-url/).reply(200, preSignURLMockExpectedResponse);
 
-    const requestBody = {
+    const requestBody: PrepareUploadRequest = {
       userEmail: 'test@test.com',
+      fileType: 'csv',
     };
 
     const expectedResult = {

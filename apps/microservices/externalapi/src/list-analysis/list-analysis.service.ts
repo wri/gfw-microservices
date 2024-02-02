@@ -14,6 +14,7 @@ import {
   ListUploadNewErrorResponse,
   ListUploadNewRequest,
   ListUploadNewResponse,
+  PrepareUploadRequestSchema,
 } from './list-upload-new.dto';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
@@ -22,6 +23,13 @@ import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 500;
+
+const contentType = {
+  csv: 'text/csv',
+  zip: 'application/x-zip-compressed',
+  xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+};
+
 @Injectable()
 export class ListAnalysisService {
   private readonly LLP_BASE_URL: string;
@@ -97,18 +105,25 @@ export class ListAnalysisService {
     return analysisStatus;
   }
 
-  async prepareUpload(organizationId: number, userEmail: string) {
+  async prepareUpload({
+    organizationId,
+    userEmail,
+    fileType,
+  }: PrepareUploadRequestSchema & { organizationId: number }) {
     const user = await this.userService.findUser(organizationId, userEmail);
     if (!user) {
       throw new NotFoundException(`User with ${userEmail} not found`);
     }
 
-    const fileKey = generateRandomFilename('csv');
+    const fileKey = generateRandomFilename(fileType);
     const presignedURLResponse = await axios.post<{
       url: string;
       keyFile: string;
       fileS3Route: string;
-    }>(`${this.LLP_BASE_URL}/api/create-presigned-url`, { key: fileKey, contentType: 'text/csv' });
+    }>(`${this.LLP_BASE_URL}/api/create-presigned-url`, {
+      key: fileKey,
+      contentType: contentType[fileType],
+    });
     const { url, keyFile } = presignedURLResponse.data;
 
     const connection = await this.getOrganizationConnection(user.organization_id);

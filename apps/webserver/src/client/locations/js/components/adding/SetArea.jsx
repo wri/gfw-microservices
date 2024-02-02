@@ -5,6 +5,7 @@ import HectareKilometerSwitch from './HectareKilometerSwitch';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
 import AreaSelectionHelpInformation from './AreaSelectionHelpInformation';
 import { NEW_LOCATION_AREA_OPTIONS } from './areaOptions.constants';
+import { locationsPage } from '../../../../common/js/config';
 import './SetArea.scss';
 
 const GfwRadio = withStyles({
@@ -29,11 +30,19 @@ const SetArea = ({
   selectedAreaRadioOption,
   calculatedArea, // calculated area when the input is a radius in km
 }) => {
+  const { add } = locationsPage;
+  const {
+    customRadiusLabel,
+    customAreaLabel,
+    defineRadiusHeader,
+    calculatedSourcingArea,
+    customAreaPlaceholder,
+  } = add;
   return (
     <div style={{ maxWidth: '500px', marginTop: '20px' }}>
       <Grid container className="set-area" spacing={2}>
         <Grid item xs={12}>
-          <label>Define radius around location</label>
+          <label>{defineRadiusHeader}</label>
         </Grid>
         {Object.values(NEW_LOCATION_AREA_OPTIONS).map(({ id, label, hint }) => (
           <>
@@ -60,7 +69,7 @@ const SetArea = ({
         {selectedAreaRadioOption === NEW_LOCATION_AREA_OPTIONS.CUSTOM.id && (
           <Grid item xs={12}>
             <Card sx={{ background: '#f7f7f7', padding: '20px 40px' }}>
-              <label>Enter area (in ha) or radius (in km)</label>
+              <label>{customAreaPlaceholder}</label>
               <div
                 style={{
                   display: 'flex',
@@ -73,8 +82,9 @@ const SetArea = ({
                   type="number"
                   value={customArea}
                   data-testid="polygoon-coordinates-custom-area-input"
-                  placeholder={measurementUnit === 'kilometers' ? 'Custom radius' : 'Custom area'}
-                  title="Enter area (in ha) or radius (in km)"
+                  placeholder={
+                    measurementUnit === 'kilometers' ? customRadiusLabel : customAreaLabel
+                  }
                   onChange={(e) => setCustomArea(e.target.value)}
                 />
                 <HectareKilometerSwitch
@@ -85,7 +95,7 @@ const SetArea = ({
 
               {measurementUnit === 'kilometers' && customArea && calculatedArea && (
                 <div style={{ marginBottom: '10px' }}>
-                  {`Calculated sourcing area (ha): ${numberWithCommas(calculatedArea)}`}
+                  {`${calculatedSourcingArea}: ${numberWithCommas(calculatedArea)}`}
                 </div>
               )}
 

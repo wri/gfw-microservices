@@ -3,6 +3,7 @@ import { render, fireEvent, waitFor, screen, cleanup } from '@testing-library/re
 import '@testing-library/jest-dom';
 import PolygonCoordinatesInput from './PolygonCoordinatesInput';
 import * as geometries from './geometries';
+import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
 
 jest.mock('./geometries');
 jest.mock('esri/views/MapView');
@@ -44,6 +45,9 @@ geometries.getPointGeometry.mockReturnValue('mockedPointGeometry');
 geometries.getPolygonGeometry.mockReturnValue('mockedPolygonGeometry');
 
 const mockSetGeometry = jest.fn();
+const mockSetMeasurementUnit = jest.fn();
+
+let currentMeasurementUnit = 'hectares';
 
 describe('PolygonCoordinatesInput Component', () => {
   beforeEach(() => {
@@ -52,6 +56,8 @@ describe('PolygonCoordinatesInput Component', () => {
         mapView={mockMapView}
         sketchViewModel={mockSketchViewModel}
         setGeometry={mockSetGeometry}
+        measurementUnit={currentMeasurementUnit}
+        setMeasurementUnit={mockSetMeasurementUnit}
       />
     );
   });
@@ -157,8 +163,8 @@ describe('PolygonCoordinatesInput Component', () => {
             },
           },
         ],
-        'big',
-        'ha',
+        NEW_LOCATION_AREA_OPTIONS.SMALL.id,
+        'hectares',
         undefined
       );
     });
@@ -174,16 +180,17 @@ describe('PolygonCoordinatesInput Component', () => {
     fireEvent.change(longitudeInput, { target: { value: '-75' } });
 
     // Select "Custom" as the radius option
-    fireEvent.click(screen.queryByTestId('custom-radius-option'));
+    fireEvent.click(screen.queryByTestId('custom-area-radius-option'));
 
     // Enter a custom radius value
-    const customRadiusInput = screen.getByPlaceholderText('Custom Value');
+    const customRadiusInput = screen.queryByTestId('polygoon-coordinates-custom-area-input');
     fireEvent.change(customRadiusInput, { target: { value: '123' } });
 
     // Verify that the state variables are updated correctly
     expect(customRadiusInput.value).toBe('123');
 
     fireEvent.click(screen.queryByTestId('hectare-kilometer-switch'));
+    expect(mockSetMeasurementUnit).toHaveBeenCalledWith('kilometers');
 
     const submitButton = screen.getByText('OK');
     fireEvent.click(submitButton);
@@ -191,6 +198,7 @@ describe('PolygonCoordinatesInput Component', () => {
     await waitFor(() => {
       // Check if the correct geometry is generated based on the custom radius
       const mockGetPointGeometry = jest.spyOn(geometries, 'getPointGeometry');
+
       expect(mockGetPointGeometry).toHaveBeenCalled();
       expect(mockGetPointGeometry).toHaveBeenCalledWith(
         [
@@ -204,8 +212,8 @@ describe('PolygonCoordinatesInput Component', () => {
             },
           },
         ],
-        'custom', // Check if the selected radius is 'custom'
-        'km', // Assuming the areaUnit is 'km' after switching
+        'custom-area', // Check if the selected radius is 'custom'
+        'hectares', // Assuming the areaUnit is 'km' after switching
         '123' // Check if the customRadiusSize is '123'
       );
       expect(mockSetGeometry).toHaveBeenCalled();

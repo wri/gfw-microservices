@@ -48,6 +48,7 @@ import '../../../css/addLocation.scss';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } =
   proLayers;
+import { NEW_LOCATION_AREA_OPTIONS } from './areaOptions.constants';
 
 const primaryColor = '#8bae3b';
 
@@ -671,13 +672,14 @@ export default class AddLocation extends Component {
       longitude = this.state.geometry.centroid.longitude;
     }
     if (latitude) {
+      const { SMALL, MEDIUM, LARGE } = NEW_LOCATION_AREA_OPTIONS;
       let distance;
-      if (setRadius === 'small-area') {
-        distance = 1.78;
-      } else if (setRadius === 'medium-area') {
-        distance = 3.99;
-      } else if (setRadius === 'large-area') {
-        distance = 7.98;
+      if (setRadius === SMALL.id) {
+        distance = SMALL.distance;
+      } else if (setRadius === MEDIUM.id) {
+        distance = MEDIUM.distance;
+      } else if (setRadius === LARGE.id) {
+        distance = LARGE.distance;
       } else {
         distance = parseFloat(customRadius);
       }
@@ -704,9 +706,9 @@ export default class AddLocation extends Component {
         let area = 0;
         if (
           this.state.measurementUnit === 'kilometers' ||
-          setRadius === 'small-area' ||
-          setRadius === 'medium-area' ||
-          setRadius === 'large-area'
+          setRadius === NEW_LOCATION_AREA_OPTIONS.SMALL.id ||
+          setRadius === NEW_LOCATION_AREA_OPTIONS.MEDIUM.id ||
+          setRadius === NEW_LOCATION_AREA_OPTIONS.LARGE.id
         ) {
           area = distance ** 2 * Math.PI * 100;
         } else if (this.state.measurementUnit === 'hectares') {
@@ -733,26 +735,12 @@ export default class AddLocation extends Component {
     }
   };
 
-  setMeaurementUnit = (evt) => {
-    if (this.state.customArea) {
-      if (evt.target.id === 'use-kilometers') {
-        this.setState({
-          measurementUnit: evt.target.id === 'use-kilometers' ? 'kilometers' : 'hectares',
-          calculatedArea: '',
-          customArea: '',
-        });
-      } else {
-        this.setState({
-          measurementUnit: evt.target.id === 'use-kilometers' ? 'kilometers' : 'hectares',
-          calculatedArea: '',
-          customArea: '',
-        });
-      }
-    } else {
-      this.setState({
-        measurementUnit: evt.target.id === 'use-kilometers' ? 'kilometers' : 'hectares',
-      });
-    }
+  setMeasurementUnit = (unit) => {
+    this.setState({
+      measurementUnit: unit,
+      calculatedArea: '',
+      customArea: '',
+    });
   };
 
   cancelAdd = () => {
@@ -1006,7 +994,7 @@ export default class AddLocation extends Component {
             } else {
               let valueFromState;
               let distance;
-
+              const { SMALL, MEDIUM, LARGE } = NEW_LOCATION_AREA_OPTIONS;
               switch (field.template_datum_field_name) {
                 case 'Country':
                   valueFromState = this.state.country;
@@ -1054,12 +1042,12 @@ export default class AddLocation extends Component {
                   valueFromState = parseFloat(this.state.calculatedArea);
                   break;
                 case 'Analysis Radius':
-                  if (this.state.areaAround === 'small-area') {
-                    distance = 1.78;
-                  } else if (this.state.areaAround === 'medium-area') {
-                    distance = 3.99;
-                  } else if (this.state.areaAround === 'large-area') {
-                    distance = 7.98;
+                  if (this.state.areaAround === SMALL.id) {
+                    distance = SMALL.distance;
+                  } else if (this.state.areaAround === MEDIUM.id) {
+                    distance = MEDIUM.distance;
+                  } else if (this.state.areaAround === LARGE.id) {
+                    distance = LARGE.distance;
                   } else {
                     distance = parseFloat(this.state.customArea);
                   }
@@ -1234,7 +1222,7 @@ export default class AddLocation extends Component {
           } else {
             let valueFromState;
             let distance;
-
+            const { SMALL, MEDIUM, LARGE } = NEW_LOCATION_AREA_OPTIONS;
             switch (templateField.template_datum_field_name) {
               case 'Country':
                 valueFromState = this.state.country;
@@ -1291,12 +1279,12 @@ export default class AddLocation extends Component {
                 valueFromState = parseFloat(this.state.calculatedArea);
                 break;
               case 'Analysis Radius':
-                if (this.state.areaAround === 'small-area') {
-                  distance = 1.78;
-                } else if (this.state.areaAround === 'medium-area') {
-                  distance = 3.99;
-                } else if (this.state.areaAround === 'large-area') {
-                  distance = 7.98;
+                if (this.state.areaAround === SMALL.id) {
+                  distance = SMALL.distance;
+                } else if (this.state.areaAround === MEDIUM.id) {
+                  distance = MEDIUM.distance;
+                } else if (this.state.areaAround === LARGE.id) {
+                  distance = LARGE.distance;
                 } else {
                   distance = parseFloat(this.state.customArea);
                 }
@@ -1856,7 +1844,6 @@ export default class AddLocation extends Component {
       substate,
       state,
       country,
-      areaAround,
       customArea,
       calculatedArea,
       dialogOpen,
@@ -2128,13 +2115,17 @@ export default class AddLocation extends Component {
                   }
                   geometry={this.state.geometry}
                   setGeometry={this.setGeometry}
+                  measurementUnit={measurementUnit}
+                  setMeasurementUnit={this.setMeasurementUnit}
+                  setArea={this.setArea}
+                  customArea={customArea}
+                  calculatedArea={calculatedArea}
                 />
               ) : addMethod === 'byAddress' ? (
                 <SelectAddress
                   measurementUnit={measurementUnit}
-                  setMeaurementUnit={this.setMeaurementUnit}
+                  setMeasurementUnit={this.setMeasurementUnit}
                   setArea={this.setArea}
-                  areaAround={areaAround}
                   customArea={customArea}
                   calculatedArea={calculatedArea}
                   substate={substate}
@@ -2151,9 +2142,8 @@ export default class AddLocation extends Component {
                   setLat={this.setLat}
                   setLng={this.setLng}
                   measurementUnit={measurementUnit}
-                  setMeaurementUnit={this.setMeaurementUnit}
+                  setMeasurementUnit={this.setMeasurementUnit}
                   setArea={this.setArea}
-                  areaAround={areaAround}
                   customArea={customArea}
                   calculatedArea={calculatedArea}
                   substate={substate}

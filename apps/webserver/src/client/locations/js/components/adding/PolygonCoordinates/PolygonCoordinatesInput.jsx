@@ -7,17 +7,25 @@ import AddLocationIcon from '@mui/icons-material/AddLocation';
 import Modal from '@mui/material/Modal';
 import GfwButton from '../../../../../common/js/components/GfwButton';
 import CoordinateInputsContainer from './CoordinateInputsContainer';
-import RadiusOptions from './RadiusOptions';
+import SetArea from '../SetArea';
 import { getPointGeometry, getPolygonGeometry } from './geometries';
+import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
 import './PolygonCoordinatesInput.scss';
 
-const PolygonCoordinatesInput = ({ sketchViewModel, mapView, setGeometry }) => {
-  const [selectedRadius, setSelectedRadius] = useState('big');
+const PolygonCoordinatesInput = ({
+  sketchViewModel,
+  mapView,
+  setGeometry,
+  measurementUnit,
+  setMeasurementUnit,
+}) => {
+  const [selectedAreaRadioOption, setSelectedAreaRadioOption] = useState(
+    NEW_LOCATION_AREA_OPTIONS.SMALL.id
+  );
   const [coordinates, setCoordinates] = useState([
     { id: Date.now(), latitude: '', longitude: '', errors: {} },
   ]);
-  const [customRadiusSize, setCustomRadiusSize] = useState();
-  const [areaUnit, setAreaUnit] = useState('ha');
+  const [customArea, setCustomArea] = useState();
   const [open, setOpen] = useState(false);
 
   // Validation functions
@@ -60,7 +68,12 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView, setGeometry }) => {
 
     let geometry;
     if (onlyOneCoordinatesRow) {
-      geometry = getPointGeometry(coordinates, selectedRadius, areaUnit, customRadiusSize);
+      geometry = getPointGeometry(
+        coordinates,
+        selectedAreaRadioOption,
+        measurementUnit,
+        customArea
+      );
     } else {
       geometry = getPolygonGeometry(coordinates);
     }
@@ -77,6 +90,7 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView, setGeometry }) => {
       geometry,
       symbol,
     });
+
     mapView.graphics.add(graphic);
 
     setTimeout(() => {
@@ -90,15 +104,21 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView, setGeometry }) => {
     setGeometry(geometry);
     setOpen(false);
   };
-  // disable if there are coordinates with null values, if there are only two coordinates (a line), or if there are errors
+
+  // disable if custom area was selected and there is not custom area value
+  // if there are coordinates with null values
+  // if there are only two coordinates (a line)
+  // if there are errors
   const isSubmitDisabled =
+    (selectedAreaRadioOption === NEW_LOCATION_AREA_OPTIONS.CUSTOM.id && !customArea) ||
     coordinates.some(
       (coord) =>
         coord.latitude === '' ||
         coord.longitude === '' ||
         coord.errors.latitude ||
         coord.errors.longitude
-    ) || coordinates.length === 2;
+    ) ||
+    coordinates.length === 2;
 
   const uniqueErrors = new Set();
 
@@ -142,27 +162,32 @@ const PolygonCoordinatesInput = ({ sketchViewModel, mapView, setGeometry }) => {
             onAddCoordinate={onAddCoordinate}
           />
           {onlyOneCoordinatesRow && (
-            <RadiusOptions
-              selectedRadius={selectedRadius}
-              setSelectedRadius={setSelectedRadius}
-              customRadiusSize={customRadiusSize}
-              setCustomRadiusSize={setCustomRadiusSize}
-              areaUnit={areaUnit}
-              setAreaUnit={setAreaUnit}
+            <SetArea
+              selectedAreaRadioOption={selectedAreaRadioOption}
+              setSelectedAreaRadioOption={setSelectedAreaRadioOption}
+              measurementUnit={measurementUnit}
+              setMeasurementUnit={setMeasurementUnit}
+              customArea={customArea}
+              setCustomArea={setCustomArea}
             />
           )}
-          <GfwButton
-            buttonStyle={{
-              float: 'right',
-            }}
-            classNames="btn-green"
-            disabled={isSubmitDisabled}
-            onClick={handleSubmit}
-            value="OK"
-          >
-            OK
-          </GfwButton>
           {errorMessage}
+          <div className="polygon-coordinates__actions">
+            <Button variant="text" style={{ color: 'gray' }} onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <GfwButton
+              buttonStyle={{
+                marginLeft: '20px',
+              }}
+              classNames="btn-green"
+              disabled={isSubmitDisabled}
+              onClick={handleSubmit}
+              value="OK"
+            >
+              OK
+            </GfwButton>
+          </div>
         </Card>
       </Modal>
     </div>

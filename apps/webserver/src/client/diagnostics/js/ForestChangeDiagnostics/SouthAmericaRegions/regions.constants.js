@@ -43,7 +43,7 @@ export const chartDatasetConfigs = {
   landmarkOverlapCountry: {
     diagnosticTitle: 'Indigenous Terriotories Percent Overlap',
     downloadUrl: 'listId=5692&country=Argentina&category=landmark',
-    informationBubbleId: 'regions_arg_it_landcover_calc',
+    informationBubbleId: 'regiona_arg_it_landcover_calc',
     chartLabels: [
       { id: 'indigenous', color: '#a8704a', legend: 'Overlap with Indigenous Territories' },
       { id: 'nonIndegenous', color: '#deaf82', legend: 'Non-Overlap with Indigenous Territories' },

@@ -66,7 +66,7 @@ export class ListGeneratorService extends IFileGenerator {
 
     const service = this.defineService(filters);
 
-    service.start(filters);
+    await service.start(filters);
 
     const composeResults = async (i: number) => {
       const newFilters = { ...filters, page: i };

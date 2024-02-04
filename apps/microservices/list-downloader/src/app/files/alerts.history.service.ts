@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { AlertFieldsFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 
-
 @Injectable()
 export class AlertsHistoryService extends IPipeService {
   start(filters: AlertFieldsFileRequest, table?: string, fileSuffix?: string) {

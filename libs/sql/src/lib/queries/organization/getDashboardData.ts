@@ -81,4 +81,7 @@ export interface DashboardDataType {
   location_lat: number;
   location_lon: number;
   location_name: string;
+  fire?: string;
+  fireAlerts?: boolean;
+  umd?: number;
 }

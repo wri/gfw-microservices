@@ -11,7 +11,7 @@ export interface BasicFieldsFileRequest {
   organizationDatabase?: string;
 }
 
-export interface ListFieldsFileRequest extends  BasicFieldsFileRequest {
+export interface ListFieldsFileRequest extends BasicFieldsFileRequest {
   aggregation?: boolean;
   analysisArea?: number;
   analysisAreaMax?: number;

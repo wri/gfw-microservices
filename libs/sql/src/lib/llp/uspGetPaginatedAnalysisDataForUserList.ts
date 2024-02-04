@@ -11,7 +11,7 @@ import {
 
 @Injectable()
 export class UspGetPaginatedAnalysisDataForUserList {
-  async run(databaseName: string, filters:ListFieldsFileRequest ) {
+  async run(databaseName: string, filters: ListFieldsFileRequest) {
     const {
       analysisAreaMax,
       analysisAreaMin,

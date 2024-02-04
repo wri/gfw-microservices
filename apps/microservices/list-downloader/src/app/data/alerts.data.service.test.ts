@@ -26,7 +26,7 @@ describe('[AlertsDataService] Get number of pages', () => {
   it('When count return 200', async () => {
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: 200 });
 
-    const value  = await service.getNumberOfPages(filters);
+    const value = await service.getNumberOfPages(filters);
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
@@ -34,14 +34,13 @@ describe('[AlertsDataService] Get number of pages', () => {
     );
 
     expect(value).toBe(2);
-
   });
 
   it('When count return 0', async () => {
     service = new AlertsDataService();
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: 0 });
 
-    const value  = await service.getNumberOfPages(filters);
+    const value = await service.getNumberOfPages(filters);
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
@@ -49,7 +48,6 @@ describe('[AlertsDataService] Get number of pages', () => {
     );
 
     expect(value).toBe(0);
-
   });
 });
 

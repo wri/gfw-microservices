@@ -44,32 +44,42 @@ export class AlertsService {
       makePageStartOnZero,
       rowsPerPage
     );
-    console.log('listDashboardData', listDashboardData);
     return this.buildGeojson(listDashboardData ?? []);
   }
 
-  buildGeojson(listDashboardData: DashboardDataType[] = []) {
-    const modDashData = listDashboardData
+  formatData(listDashboardData: DashboardDataType[]) {
+    return listDashboardData
       .filter((l) => l.gadmid)
       .map((l) => {
         return {
-          geometry: {},
-          type: 'Feature',
-          properties: {
-            ...l,
-            fire: this.formatDates(l.viirs_alerts_daily),
-            fireAlerts: true, //this seems to denote coverage of fire alerts and it should always be true.
-            gladAlerts: l.gladAlerts.trim().toLowerCase() === 'true',
-            glad_alerts_daily: this.formatDates(l.glad_alerts_daily),
-            glad_alerts_weekly: this.formatDates(l.glad_alerts_weekly),
-            glad_alerts_monthly: this.formatDates(l.glad_alerts_monthly),
-            viirs_alerts_daily: this.formatDates(l.viirs_alerts_daily),
-            umd: l.tree_cover_extent_total || 0,
-          },
+          ...l,
+          fire: this.formatDates(l.viirs_alerts_daily),
+          fireAlerts: true, //this seems to denote coverage of fire alerts and it should always be true.
+          gladAlerts: l.gladAlerts.trim().toLowerCase() === 'true',
+          glad_alerts_daily: this.formatDates(l.glad_alerts_daily),
+          glad_alerts_weekly: this.formatDates(l.glad_alerts_weekly),
+          glad_alerts_monthly: this.formatDates(l.glad_alerts_monthly),
+          viirs_alerts_daily: this.formatDates(l.viirs_alerts_daily),
+          umd: l.tree_cover_extent_total || 0,
         };
       });
-    const diss = modDashData.filter((l) => l.properties.location_id === -1);
-    const geo = modDashData.filter((l) => l.properties.location_id !== -1);
+  }
+
+  buildGeojson(listDashboardData: DashboardDataType[] = []) {
+    const modDashData = this.formatData(listDashboardData);
+
+    const geoData = modDashData.map((l) => {
+      return {
+        geometry: {},
+        type: 'Feature',
+        properties: {
+          ...l,
+        },
+      };
+    });
+
+    const diss = geoData.filter((l) => l.properties.location_id === -1);
+    const geo = geoData.filter((l) => l.properties.location_id !== -1);
     return {
       failedGeoJSON: { features: [] },
       dissolvedGeoJSON: { features: diss },

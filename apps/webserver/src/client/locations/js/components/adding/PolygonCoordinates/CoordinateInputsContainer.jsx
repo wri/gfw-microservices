@@ -22,7 +22,7 @@ const CoordinateInputsContainer = ({
     <Grid item xs={5}>
       <label>longitude</label>
     </Grid>
-    <Grid item xs={12}>
+    <Grid xs={12}>
       {coordinates.map(({ id, latitude, longitude }, index) => (
         <CoordinateInputRow
           key={id}

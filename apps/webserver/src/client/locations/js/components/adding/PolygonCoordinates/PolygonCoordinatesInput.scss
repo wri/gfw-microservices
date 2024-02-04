@@ -20,4 +20,9 @@
       margin: 0;
     }
   }
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
 }

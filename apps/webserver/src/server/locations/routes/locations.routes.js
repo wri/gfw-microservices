@@ -1266,6 +1266,7 @@ module.exports = (app, limiter) => {
           });
       })
       .catch((err) => {
+        console.log("Error: /locations/cm-large-list'", err);
         res.status(500).send(err);
       });
   });

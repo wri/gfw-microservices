@@ -1225,6 +1225,7 @@ module.exports = (app, limiter) => {
    * Start list copy or move operation
    */
   app.post('/locations/cm-large-list', (req, res) => {
+    console.log('POST /locations/cm-large-list');
     const { listType, targetList } = req.body;
     let { listName, saveAsDraft } = req.body;
 
@@ -1237,6 +1238,8 @@ module.exports = (app, limiter) => {
       organizationId: organization_id,
       subscriptionStatusId: subscription_status_id,
     };
+
+    console.log('copyOrMoveRequestBody: ', copyOrMoveRequestBody);
 
     if (listType === 'existing') {
       listName = targetList.list_name;
@@ -1252,11 +1255,12 @@ module.exports = (app, limiter) => {
 
         // Send email to user that list is submitted to be analysed
         return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes).then(() => {
-          console.log(response.data);
+          console.log('List submitted for analysis details: ', response.data);
           res.send(response.data);
         });
       })
       .catch((err) => {
+        console.log("Error: /locations/cm-large-list'", err);
         res.status(500).send(err);
       });
   });

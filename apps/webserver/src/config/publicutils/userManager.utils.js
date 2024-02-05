@@ -575,6 +575,7 @@ const updateUserInfo = (
       type: sql.Int,
       value: isUserAdmin ? access_level_id : null,
     });
+
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspUpdateUser', params)
       .then(() => {

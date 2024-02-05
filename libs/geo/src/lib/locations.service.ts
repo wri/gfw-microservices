@@ -270,38 +270,44 @@ export class LocationService {
         const jsonResponse = await analysisRequestResponse.json();
         Logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
       }
-
-      Logger.log('remove locations or list if move is selected');
-      if (selectedMoveOrCopy === 'move') {
-        await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
-
-        if (allLocationsSelected && !isFiltered) {
-          Logger.log('Delete list because all locations were moved');
-          await DeleteList(clientDatabase, selectedListId, userId);
-        } else {
-          Logger.log('Delete selected locations');
-          await BulkDeleteLocations(
-            clientDatabase,
-            selectedListId,
-            userId,
-            gfwListId,
-            allLocationsSelected ? null : selectedLocations.join(),
-            filters.country,
-            filters.state,
-            filters.subState,
-            filters.analysisAreaMin,
-            filters.analysisAreaMax,
-            filters.searchString
-          );
-        }
-
-        await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
-      }
-
       listsToUnlock.push(selectedListId);
       listsToUnlock.push(moveToList.id);
       await UnlockLists(clientDatabase, listsToUnlock);
-      Logger.log(`Lists unlocked ${selectedListId}, ${moveToList.id}`, 'LocationsService');
+      Logger.log(
+        `Lists unlocked, source list: ${selectedListId}, target list: ${moveToList.id}`,
+        'LocationsService'
+      );
+    }
+
+    // Delete locations from source list if move action was selected
+    // this needs to occur when new list or existing list is selected
+    Logger.log('Checking if source list needs to be deleted when move action is selected');
+    if (selectedMoveOrCopy === 'move') {
+      await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
+
+      if (allLocationsSelected && !isFiltered) {
+        Logger.log(`Delete list ${selectedListId} because all locations were moved.`);
+        await DeleteList(clientDatabase, selectedListId, userId);
+      } else {
+        Logger.log(
+          `Deleting selected locations from source list ${selectedListId}, locations: ${selectedLocations.join()}.`
+        );
+        await BulkDeleteLocations(
+          clientDatabase,
+          selectedListId,
+          userId,
+          gfwListId,
+          allLocationsSelected ? null : selectedLocations.join(),
+          filters.country,
+          filters.state,
+          filters.subState,
+          filters.analysisAreaMin,
+          filters.analysisAreaMax,
+          filters.searchString
+        );
+        // If just a couple of locations were moved, we need to set the list to draft
+        await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
+      }
     }
   };
 }

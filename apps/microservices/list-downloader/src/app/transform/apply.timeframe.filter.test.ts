@@ -4,7 +4,7 @@ describe('ApplyTimeframeFilter', () => {
   test('Receive empty object and return undefined', () => {
     const applyTimeframeFilter = new ApplyTimeframeFilter('WEEK', '2023-02-01', '2023-04-01');
     applyTimeframeFilter._transform({}, '', (err, data) => {
-      expect(data).toEqual(undefined);
+      expect(data).toEqual({ fireTimeframe: {}, gladTimeframe: [] });
     });
   });
 

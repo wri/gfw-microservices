@@ -1,7 +1,7 @@
 import { Transform } from 'stream';
 
 export class AlertsGetLocationOrListData extends Transform {
-  constructor(private isList: boolean = false) {
+  constructor(private isListData: boolean = false) {
     super({ objectMode: true });
   }
 
@@ -10,7 +10,7 @@ export class AlertsGetLocationOrListData extends Transform {
       return next();
     }
 
-    if (this.isList) {
+    if (this.isListData) {
       if (Object.prototype.hasOwnProperty.call(chunk, 'location_id') && chunk.location_id === -1) {
         return next(null, chunk);
       }

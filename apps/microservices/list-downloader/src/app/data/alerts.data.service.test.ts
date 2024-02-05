@@ -24,7 +24,7 @@ describe('[AlertsDataService] Get number of pages', () => {
   });
 
   it('When count return 200', async () => {
-    jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: 200 });
+    jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: { quantity: 200 } });
 
     const value = await service.getNumberOfPages(filters);
 

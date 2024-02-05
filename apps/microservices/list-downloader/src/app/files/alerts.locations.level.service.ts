@@ -8,35 +8,36 @@ import { FeatureAlertTotal } from '../transform/feature.alert.total';
 import { dictionary } from '../shared/alert.utils';
 import { ALERTS_LOCATION_LEVEL, AlertsFilterData } from '../transform/alerts.filter.data';
 import { finished } from 'stream/promises';
+import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
+import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';
 
 @Injectable()
 export class AlertsLocationsLevelService extends IPipeService {
   private readonly logger = new Logger(AlertsLocationsLevelService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
+  private headers = [
+    'List Name',
+    'Location Name',
+    'Sub State',
+    'State',
+    'Country',
+    'Alert Type',
+    'Timeframe',
+    'Start Date',
+    'End Date',
+    'Current Density of Location Level Alerts (Alerts / 1000 ha)',
+  ];
 
   async start(filters: AlertFieldsFileRequest) {
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
-    const headers = [
-      'List Name',
-      'Location Name',
-      'Sub State',
-      'State',
-      'Country',
-      'Alert Type',
-      'Timeframe',
-      'Start Date',
-      'End Date',
-      'Current Density of Location Level Alerts (Alerts / 1000 ha)',
-    ];
-
     this.organizeStream(filters);
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}_${ALERTS_LOCATION_LEVEL}.csv`,
-      `${headers.join(',')}\n`
+      `${this.headers.join(',')}\n`
     );
   }
 
@@ -59,6 +60,7 @@ export class AlertsLocationsLevelService extends IPipeService {
     );
 
     this.inputStream
+      .pipe(new AlertsGetLocationOrListData())
       .pipe(new ApplyTimeframeFilter(selectedTimeframe, startDate, endDate))
       .pipe(new FeatureAlertTotal(timeframeProperty, selectedAlert))
       .pipe(
@@ -71,6 +73,7 @@ export class AlertsLocationsLevelService extends IPipeService {
           ALERTS_LOCATION_LEVEL
         )
       )
+      .pipe(new ConvertObject2CSV(this.headers))
       .pipe(this.fileStream);
   }
 

@@ -11,35 +11,36 @@ import {
   AlertsFilterData,
 } from '../transform/alerts.filter.data';
 import { finished } from 'stream/promises';
+import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
+import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';
 
 @Injectable()
 export class AlertsPrioritiesLocationsLevelService extends IPipeService {
   private readonly logger = new Logger(AlertsPrioritiesLocationsLevelService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
+  private headers = [
+    'List Name',
+    'Location Name',
+    'Sub State',
+    'State',
+    'Country',
+    'Alert Type',
+    'Timeframe',
+    'Start Date',
+    'End Date',
+    '# of Location Level Alerts',
+  ];
 
   async start(filters: AlertFieldsFileRequest) {
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
-    const headers = [
-      'List Name',
-      'Location Name',
-      'Sub State',
-      'State',
-      'Country',
-      'Alert Type',
-      'Timeframe',
-      'Start Date',
-      'End Date',
-      '# of Location Level Alerts',
-    ];
-
     this.organizeStream(filters);
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}_${ALERTS_PRIORITIES_LOCATION_LEVEL}.csv`,
-      `${headers.join(',')}\n`
+      `${this.headers.join(',')}\n`
     );
   }
 
@@ -62,6 +63,7 @@ export class AlertsPrioritiesLocationsLevelService extends IPipeService {
     );
 
     this.inputStream
+      .pipe(new AlertsGetLocationOrListData())
       .pipe(new ApplyTimeframeFilter(selectedTimeframe, startDate, endDate))
       .pipe(new FeatureAlertTotal(timeframeProperty, selectedAlert))
       .pipe(
@@ -74,6 +76,7 @@ export class AlertsPrioritiesLocationsLevelService extends IPipeService {
           ALERTS_PRIORITIES_LOCATION_LEVEL
         )
       )
+      .pipe(new ConvertObject2CSV(this.headers))
       .pipe(this.fileStream);
   }
 

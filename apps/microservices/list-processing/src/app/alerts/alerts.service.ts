@@ -44,7 +44,7 @@ export class AlertsService {
       makePageStartOnZero,
       rowsPerPage
     );
-    return this.buildGeojson(listDashboardData ?? []);
+    return this.formatData(listDashboardData ?? []);
   }
 
   formatData(listDashboardData: DashboardDataType[]) {

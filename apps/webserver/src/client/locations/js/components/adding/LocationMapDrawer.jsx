@@ -44,6 +44,14 @@ const LocationMapDrawer = (props) => {
     sketchViewModelInstance.on('create', ({ graphic, state }) => {
       if (state === 'complete') {
         setDrawPoly(mapView, sketchViewModelInstance, graphic.geometry);
+      } else if (state === 'active') {
+        const polygon = graphic.geometry;
+        const vertexCount = polygon?.rings?.[0]?.length || 0;
+        if (vertexCount > 11) {
+          // Automatically complete the drawing when 11 vertices are reached
+          // the shape should have 10 vertices but to close the polygon we need an extra point in the start
+          sketchViewModelInstance.complete();
+        }
       }
     });
   }, [mapView]);

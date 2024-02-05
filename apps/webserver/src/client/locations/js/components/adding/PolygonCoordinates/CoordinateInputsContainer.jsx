@@ -1,7 +1,6 @@
 import React from 'react';
 import { Grid, Button } from '@mui/material';
 import IconPlus from '../../../../../common/js/components/icon/IconPlus';
-
 import CoordinateInputRow from './CoordinateInputRow';
 
 const CoordinateInputsContainer = ({
@@ -22,7 +21,7 @@ const CoordinateInputsContainer = ({
     <Grid item xs={5}>
       <label>longitude</label>
     </Grid>
-    <Grid xs={12}>
+    <Grid item xs={12}>
       {coordinates.map(({ id, latitude, longitude }, index) => (
         <CoordinateInputRow
           key={id}
@@ -37,25 +36,27 @@ const CoordinateInputsContainer = ({
       ))}
     </Grid>
 
-    <Grid item xs={12}>
-      <Button
-        style={{
-          color: '#97bd3d',
-          border: '1px dashed',
-          width: '100%',
-          background: 'rgba(151, 189, 61, 0.1)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginBottom: '10px',
-        }}
-        variant="outlined"
-        startIcon={<IconPlus height="10px" />}
-        onClick={onAddCoordinate}
-      >
-        Add Coordinate
-      </Button>
-    </Grid>
+    {coordinates.length < 10 && (
+      <Grid item xs={12}>
+        <Button
+          style={{
+            color: '#97bd3d',
+            border: '1px dashed',
+            width: '100%',
+            background: 'rgba(151, 189, 61, 0.1)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: '10px',
+          }}
+          variant="outlined"
+          startIcon={<IconPlus height="10px" />}
+          onClick={onAddCoordinate}
+        >
+          Add Coordinate
+        </Button>
+      </Grid>
+    )}
   </Grid>
 );
 

@@ -5,6 +5,7 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import Modal from '@mui/material/Modal';
+import { v4 as uuidv4 } from 'uuid';
 import GfwButton from '../../../../../common/js/components/GfwButton';
 import CoordinateInputsContainer from './CoordinateInputsContainer';
 import SetArea from '../SetArea';
@@ -23,7 +24,7 @@ const PolygonCoordinatesInput = ({
     NEW_LOCATION_AREA_OPTIONS.SMALL.id
   );
   const [coordinates, setCoordinates] = useState([
-    { id: Date.now(), latitude: '', longitude: '', errors: {} },
+    { id: uuidv4(), latitude: '', longitude: '', errors: {} },
   ]);
   const [customArea, setCustomArea] = useState();
   const [open, setOpen] = useState(false);
@@ -49,8 +50,14 @@ const PolygonCoordinatesInput = ({
   };
 
   const onAddCoordinate = () => {
-    const newCoordinate = { id: Date.now(), latitude: '', longitude: '', errors: {} };
-    setCoordinates([...coordinates, newCoordinate]);
+    const newCoordinate = { id: uuidv4(), latitude: '', longitude: '', errors: {} };
+    if (coordinates.length === 1) {
+      // if there is only one row, add two more, user should not be able to enter a line
+      const secondNewCoordinate = { id: uuidv4(), latitude: '', longitude: '', errors: {} };
+      setCoordinates([...coordinates, newCoordinate, secondNewCoordinate]);
+    } else {
+      setCoordinates([...coordinates, newCoordinate]);
+    }
   };
 
   const onDeleteCoordinate = (id) => {
@@ -58,8 +65,15 @@ const PolygonCoordinatesInput = ({
       // User can't delete the coordinates if there is only one row
       return;
     }
-    const filteredCoordinates = coordinates.filter((coord) => coord.id !== id);
-    setCoordinates(filteredCoordinates);
+
+    if (coordinates.length === 3) {
+      // if there are three rows, remove two rows
+      const updatedCoordinates = [coordinates[0]]; // Keep only the first coordinate
+      setCoordinates(updatedCoordinates);
+    } else {
+      const filteredCoordinates = coordinates.filter((coord) => coord.id !== id);
+      setCoordinates(filteredCoordinates);
+    }
   };
 
   const handleSubmit = () => {

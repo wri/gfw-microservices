@@ -45,8 +45,8 @@ const SetArea = ({
           <label>{defineRadiusHeader}</label>
         </Grid>
         {Object.values(NEW_LOCATION_AREA_OPTIONS).map(({ id, label, hint }) => (
-          <>
-            <Grid item xs={1} key={id}>
+          <React.Fragment key={id}>
+            <Grid item xs={1}>
               <GfwRadio
                 type="radio"
                 className="set-area__radio-input"
@@ -63,7 +63,7 @@ const SetArea = ({
               <div>{label}</div>
               <div className="set-area__radio-label-description">{hint}</div>
             </Grid>
-          </>
+          </React.Fragment>
         ))}
 
         {selectedAreaRadioOption === NEW_LOCATION_AREA_OPTIONS.CUSTOM.id && (

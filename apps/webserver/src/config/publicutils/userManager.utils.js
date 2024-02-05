@@ -551,7 +551,7 @@ const updateUserInfo = (
 ) => {
   return new Promise((resolve, reject) => {
     const params = [
-      { field: 'userID', type: sql.Int, value: user_id },
+      { field: 'userId', type: sql.Int, value: user_id },
       { field: 'firstName', type: sql.NVarChar(35), value: user_first_name },
       { field: 'mi', type: sql.NVarChar(2), value: user_middle_initial },
       { field: 'lastName', type: sql.NVarChar(35), value: user_last_name },
@@ -568,9 +568,13 @@ const updateUserInfo = (
       { field: 'terrai_email_frequency', type: sql.Int, value: terrai_email_frequency },
       { field: 'gran_chaco_email_frequency', type: sql.Int, value: gran_chaco_email_frequency },
     ];
-    if (loggedUserAccessLevelId === UserAccessLevel.ADMIN) {
-      params.push({ field: 'accessLevelId', type: sql.Int, value: access_level_id });
-    }
+    const isUserAdmin = loggedUserAccessLevelId === UserAccessLevel.ADMIN;
+
+    params.push({
+      field: 'accessLevelId',
+      type: sql.Int,
+      value: isUserAdmin ? access_level_id : null,
+    });
     sqlUtils
       .executeOrganizationStoredProcedure(req, 'uspUpdateUser', params)
       .then(() => {

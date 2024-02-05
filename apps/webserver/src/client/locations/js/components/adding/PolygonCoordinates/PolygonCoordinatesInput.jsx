@@ -13,6 +13,8 @@ import { getPointGeometry, getPolygonGeometry } from './geometries';
 import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
 import './PolygonCoordinatesInput.scss';
 
+const newCoordinate = () => ({ id: uuidv4(), latitude: '', longitude: '', errors: {} })
+
 const PolygonCoordinatesInput = ({
   sketchViewModel,
   mapView,
@@ -24,7 +26,7 @@ const PolygonCoordinatesInput = ({
     NEW_LOCATION_AREA_OPTIONS.SMALL.id
   );
   const [coordinates, setCoordinates] = useState([
-    { id: uuidv4(), latitude: '', longitude: '', errors: {} },
+    newCoordinate(),
   ]);
   const [customArea, setCustomArea] = useState();
   const [open, setOpen] = useState(false);
@@ -50,13 +52,11 @@ const PolygonCoordinatesInput = ({
   };
 
   const onAddCoordinate = () => {
-    const newCoordinate = { id: uuidv4(), latitude: '', longitude: '', errors: {} };
     if (coordinates.length === 1) {
       // if there is only one row, add two more, user should not be able to enter a line
-      const secondNewCoordinate = { id: uuidv4(), latitude: '', longitude: '', errors: {} };
-      setCoordinates([...coordinates, newCoordinate, secondNewCoordinate]);
+      setCoordinates([...coordinates, newCoordinate(), newCoordinate()]);
     } else {
-      setCoordinates([...coordinates, newCoordinate]);
+      setCoordinates([...coordinates, newCoordinate()]);
     }
   };
 

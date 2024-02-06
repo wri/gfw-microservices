@@ -16,8 +16,6 @@ interface AlertHistory {
   total: number;
 }
 
-
-
 class AccumulateHistory extends EventEmitter {
   private history = [];
 

@@ -6,7 +6,6 @@ import * as asyncPool from 'tiny-async-pool';
 import * as moment from 'moment';
 import { AlertsFileService } from '../files/alerts.file.service';
 
-
 const DATE_FORMAT = 'YYYY-MM-DD';
 
 @Injectable()
@@ -28,13 +27,11 @@ export class AlertsGeneratorService extends IFileGenerator {
 
     const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
-    if(!startDate || !endDate) {
+    if (!startDate || !endDate) {
       const { startDate, endDate } = this.getTimeframeBoundaries(selectedTimeframe);
       filters.startDate = startDate;
       filters.endDate = endDate;
     }
-
-
 
     const composeResults = async (i: number) => {
       const newFilter = { ...filters, page: i + 1 };
@@ -49,7 +46,7 @@ export class AlertsGeneratorService extends IFileGenerator {
     await this.alertsFileService.finish(filters);
   }
 
-  getTimeframeBoundaries(selectedTimeframe: string)  {
+  getTimeframeBoundaries(selectedTimeframe: string) {
     switch (selectedTimeframe) {
       case 'DAY': {
         return {
@@ -82,6 +79,5 @@ export class AlertsGeneratorService extends IFileGenerator {
         };
       }
     }
-  };
-
+  }
 }

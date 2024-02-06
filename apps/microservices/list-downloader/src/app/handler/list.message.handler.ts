@@ -57,9 +57,17 @@ export class ListMessageHandler {
     };
 
     const {
-      analysisArea,file, geoInfo, list, organizationDatabase, userEmail, selectedTimeframe, selectedAlert, startDate, endDate } = JSON.parse(
-      message.Body ?? '{}'
-    );
+      analysisArea,
+      file,
+      geoInfo,
+      list,
+      organizationDatabase,
+      userEmail,
+      selectedTimeframe,
+      selectedAlert,
+      startDate,
+      endDate,
+    } = JSON.parse(message.Body ?? '{}');
 
     const filters = {
       organizationDatabase: getValues(organizationDatabase),
@@ -79,7 +87,7 @@ export class ListMessageHandler {
       selectedTimeframe: getValues(selectedTimeframe),
       selectedAlert: getValues(selectedAlert),
       startDate: getValues(startDate),
-      endDate: getValues(endDate)
+      endDate: getValues(endDate),
     };
   }
 }

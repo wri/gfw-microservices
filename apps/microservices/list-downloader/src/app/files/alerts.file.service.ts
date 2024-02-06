@@ -24,39 +24,37 @@ export class AlertsFileService extends IPipeService {
     super();
   }
 
-    async start(filters: AlertFieldsFileRequest) {
-      await this.startEmail(filters);
-      await this.alertsLocationsLevelService.start(filters);
-      await this.alertsPrioritiesLocationsLevelService.start(filters);
-      this.alertsAdminAreasLevelService.start(filters);
-      this.alertsHistoryService.start(filters);
-      this.alertsPrioritiesAdminAreasLevelService.start(filters);
-      this.alertsSummaryService.start(filters);
-    }
-    process(analysisData: DashboardDataType[]) {
-      this.alertsLocationsLevelService.process(analysisData);
-      this.alertsPrioritiesLocationsLevelService.process(analysisData);
-      this.alertsAdminAreasLevelService.process(analysisData);
-      this.alertsHistoryService.process(analysisData);
-      this.alertsPrioritiesAdminAreasLevelService.process(analysisData);
-      this.alertsPrioritiesLocationsLevelService.process(analysisData);
-      this.alertsSummaryService.process(analysisData);
-    }
-    async finish(filters: AlertFieldsFileRequest) {
-      const { key } = filters;
-      await this.alertsLocationsLevelService.finish(filters);
-      await this.alertsPrioritiesLocationsLevelService.finish(filters);
-      await this.alertsAdminAreasLevelService.finish(filters);
-      await this.alertsHistoryService.finish(filters);
-      await this.alertsLocationsLevelService.finish(filters);
-      await this.alertsPrioritiesAdminAreasLevelService.finish(filters);
-      await this.alertsPrioritiesLocationsLevelService.finish(filters);
-      await this.alertsSummaryService.finish(filters);
+  async start(filters: AlertFieldsFileRequest) {
+    await this.startEmail(filters);
+    await this.alertsLocationsLevelService.start(filters);
+    await this.alertsPrioritiesLocationsLevelService.start(filters);
+    this.alertsAdminAreasLevelService.start(filters);
+    this.alertsHistoryService.start(filters);
+    this.alertsPrioritiesAdminAreasLevelService.start(filters);
+    this.alertsSummaryService.start(filters);
+  }
+  process(analysisData: DashboardDataType[]) {
+    this.alertsLocationsLevelService.process(analysisData);
+    this.alertsPrioritiesLocationsLevelService.process(analysisData);
+    this.alertsAdminAreasLevelService.process(analysisData);
+    this.alertsHistoryService.process(analysisData);
+    this.alertsPrioritiesAdminAreasLevelService.process(analysisData);
+    this.alertsPrioritiesLocationsLevelService.process(analysisData);
+    this.alertsSummaryService.process(analysisData);
+  }
+  async finish(filters: AlertFieldsFileRequest) {
+    const { key } = filters;
+    await this.alertsLocationsLevelService.finish(filters);
+    await this.alertsPrioritiesLocationsLevelService.finish(filters);
+    await this.alertsAdminAreasLevelService.finish(filters);
+    await this.alertsHistoryService.finish(filters);
+    await this.alertsLocationsLevelService.finish(filters);
+    await this.alertsPrioritiesAdminAreasLevelService.finish(filters);
+    await this.alertsPrioritiesLocationsLevelService.finish(filters);
+    await this.alertsSummaryService.finish(filters);
 
-      this.logger.log(`(${key}) - Zipping files`);
-      await getAllFilesAndZip(filters);
-      await this.finishProcess(filters);
-    }
-
-
+    this.logger.log(`(${key}) - Zipping files`);
+    await getAllFilesAndZip(filters);
+    await this.finishProcess(filters);
+  }
 }

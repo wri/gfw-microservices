@@ -1257,15 +1257,16 @@ module.exports = (app, limiter) => {
             }
 
             // Send email to user that list is submitted to be analysed
-            return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes).then(
-              () => {
+            return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes)
+              .then(() => {
                 console.log('List submitted for analysis details: ', response.data);
                 res.send(response.data);
-              }
-            );
+              })
+              .catch((err) => {
+                console.log(`Error sendEmail__ListSubmittedForAnalysis`, err);
+              });
           })
           .catch((err) => {
-            console.log("Error: /locations/cm-large-list'", err);
             res.status(500).send(err);
           });
       })

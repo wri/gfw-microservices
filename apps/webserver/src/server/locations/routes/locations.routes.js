@@ -1259,7 +1259,7 @@ module.exports = (app, limiter) => {
             // Send email to user that list is submitted to be analysed
             return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes).then(
               () => {
-                onsole.log('List submitted for analysis details: ', response.data);
+                console.log('List submitted for analysis details: ', response.data);
                 res.send(response.data);
               }
             );

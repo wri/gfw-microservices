@@ -39,7 +39,7 @@ export class AfiGeneratorService extends IFileGenerator {
     await this.afiFileService.start(filters, suffix);
 
     const composeResults = async (i: number) => {
-      const newFilter = { ...filters, pageNumber: i };
+      const newFilter = { ...filters, page: i };
       const analysisData = await this.analysisAfiDataService.getDataPaginated(
         newFilter,
         isListLevel

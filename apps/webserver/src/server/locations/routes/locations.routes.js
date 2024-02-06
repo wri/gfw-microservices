@@ -1265,11 +1265,12 @@ module.exports = (app, limiter) => {
             );
           })
           .catch((err) => {
+            console.log("Error: /locations/cm-large-list'", err);
             res.status(500).send(err);
           });
       })
       .catch((err) => {
-        console.log("Error: /locations/cm-large-list'", err);
+        console.log('Error: getListAnalysisStatusByListId', err);
         res.status(500).send(err);
       });
   });

@@ -1267,6 +1267,7 @@ module.exports = (app, limiter) => {
               });
           })
           .catch((err) => {
+            console.log('Error LISTS_MICROSERVICE_URL/CopyOrMoveLargeList', err);
             res.status(500).send(err);
           });
       })

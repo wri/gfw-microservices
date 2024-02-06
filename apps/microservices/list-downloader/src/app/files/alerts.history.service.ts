@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AlertFieldsFileRequest } from '@wri-monorepos/sql';
+import { AlertFieldsFileRequest, CountObj, DashboardDataType } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { EventEmitter, PassThrough, Transform } from 'stream';
 import * as fs from 'fs';
@@ -16,10 +16,7 @@ interface AlertHistory {
   total: number;
 }
 
-interface CountObj {
-  count: number;
-  day: string;
-}
+
 
 class AccumulateHistory extends EventEmitter {
   private history = [];
@@ -171,7 +168,7 @@ export class AlertsHistoryService extends IPipeService {
       .pipe(new EventEmitterTransform(this.accumulateHistory, filters));
   }
 
-  process(analysisData: any) {
+  process(analysisData: DashboardDataType[]) {
     analysisData?.forEach((data) => this.inputStream.write(data));
   }
   async finish(filters: AlertFieldsFileRequest) {

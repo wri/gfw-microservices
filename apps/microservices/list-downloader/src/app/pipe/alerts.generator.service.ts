@@ -3,70 +3,85 @@ import { AlertFieldsFileRequest } from '@wri-monorepos/sql';
 import { IFileGenerator } from './i.file.generator';
 import { AlertsDataService } from '../data/alerts.data.service';
 import * as asyncPool from 'tiny-async-pool';
-// import { AlertsAdminAreasLevelService } from '../files/alerts.admin.areas.level.service';
-import { AlertsHistoryService } from '../files/alerts.history.service';
-import { AlertsLocationsLevelService } from '../files/alerts.locations.level.service';
-import { AlertsPrioritiesAdminAreasLevelService } from '../files/alerts.priorities.admin.areas.level.service';
-import { AlertsSummaryService } from '../files/alerts.summary.service';
-import { AlertsPrioritiesLocationsLevelService } from '../files/alerts.priorities.locations.level.service';
+import * as moment from 'moment';
+import { AlertsFileService } from '../files/alerts.file.service';
+
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 @Injectable()
 export class AlertsGeneratorService extends IFileGenerator {
   private readonly logger = new Logger(AlertsGeneratorService.name);
+
   constructor(
     private readonly alertDataService: AlertsDataService,
-    //private readonly alertsAdminAreasLevelService: AlertsAdminAreasLevelService,
-    private readonly alertsHistoryService: AlertsHistoryService,
-    private readonly alertsLocationsLevelService: AlertsLocationsLevelService,
-    private readonly alertsPrioritiesAdminAreasLevelService: AlertsPrioritiesAdminAreasLevelService,
-    private readonly alertsPrioritiesLocationsLevelService: AlertsPrioritiesLocationsLevelService,
-    private readonly alertsSummaryService: AlertsSummaryService
+    private readonly alertsFileService: AlertsFileService
   ) {
     super();
   }
+
   async makeFile(filters: AlertFieldsFileRequest): Promise<void> {
     const numberOfPages = await this.alertDataService.getNumberOfPages(filters);
-    const { listId } = filters;
+    const { listId, startDate, endDate, selectedTimeframe } = filters;
     this.logger.log(`(${listId}) - Number of pages: ${numberOfPages}`);
+    await this.alertsFileService.start(filters);
 
     const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
-    await this.alertsLocationsLevelService.start(filters);
-    await this.alertsPrioritiesLocationsLevelService.start(filters);
+    if(!startDate || !endDate) {
+      const { startDate, endDate } = this.getTimeframeBoundaries(selectedTimeframe);
+      filters.startDate = startDate;
+      filters.endDate = endDate;
+    }
 
-    // await this.alertsAdminAreasLevelService.start(filters);
-    // await this.alertsHistoryService.start(filters);
-    // await this.alertsPrioritiesAdminAreasLevelService.start(filters);
-    // await this.alertsSummaryService.start(filters);
+
 
     const composeResults = async (i: number) => {
       const newFilter = { ...filters, page: i + 1 };
       const analysisData = await this.alertDataService.getDataPaginated(newFilter);
-
-      this.alertsLocationsLevelService.process(analysisData);
-      this.alertsPrioritiesLocationsLevelService.process(analysisData);
-
-      // await this.alertsAdminAreasLevelService.process(analysisData, newFilter);
-      // await this.alertsHistoryService.process(analysisData, newFilter);
-      //
-      // await this.alertsPrioritiesAdminAreasLevelService.process(analysisData, newFilter);
-      // await this.alertsPrioritiesLocationsLevelService.process(analysisData, newFilter);
-      // await this.alertsSummaryService.process(analysisData, newFilter);
+      this.alertsFileService.process(analysisData);
       return i;
     };
 
     for await (const localPage of asyncPool(this.POOL_SIZE, arrayOfPages, composeResults)) {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
-
-    await this.alertsLocationsLevelService.finish(filters);
-    await this.alertsPrioritiesLocationsLevelService.finish(filters);
-
-    // await this.alertsAdminAreasLevelService.finish(filters);
-    // await this.alertsHistoryService.finish(filters);
-    // await this.alertsLocationsLevelService.finish(filters);
-    // await this.alertsPrioritiesAdminAreasLevelService.finish(filters);
-    // await this.alertsPrioritiesLocationsLevelService.finish(filters);
-    // await this.alertsSummaryService.finish(filters);
+    await this.alertsFileService.finish(filters);
   }
+
+  getTimeframeBoundaries(selectedTimeframe: string)  {
+    switch (selectedTimeframe) {
+      case 'DAY': {
+        return {
+          startDate: moment().subtract(1, 'days').format(DATE_FORMAT),
+          endDate: moment().endOf('day').format(DATE_FORMAT),
+        };
+      }
+      case 'WEEK': {
+        return {
+          startDate: moment().subtract(1, 'week').format(DATE_FORMAT),
+          endDate: moment().subtract(1, 'day').format(DATE_FORMAT),
+        };
+      }
+      case 'MONTH': {
+        return {
+          startDate: moment().subtract(1, 'month').startOf('month').format(DATE_FORMAT),
+          endDate: moment().subtract(1, 'month').endOf('month').format(DATE_FORMAT),
+        };
+      }
+      case 'QUARTER': {
+        return {
+          startDate: moment().subtract(3, 'month').startOf('month').format(DATE_FORMAT),
+          endDate: moment().subtract(1, 'month').endOf('month').format(DATE_FORMAT),
+        };
+      }
+      case 'YEAR': {
+        return {
+          startDate: moment().subtract(12, 'month').startOf('month').format(DATE_FORMAT),
+          endDate: moment().subtract(1, 'month').endOf('month').format(DATE_FORMAT),
+        };
+      }
+    }
+  };
+
 }

@@ -53,13 +53,13 @@ export class AlertsService {
       .map((l) => {
         return {
           ...l,
-          fire: this.formatDates(l.viirs_alerts_daily),
+          fire: this.formatDates(l.viirs_alerts_daily as string),
           fireAlerts: true, //this seems to denote coverage of fire alerts and it should always be true.
-          gladAlerts: l.gladAlerts.trim().toLowerCase() === 'true',
-          glad_alerts_daily: this.formatDates(l.glad_alerts_daily),
-          glad_alerts_weekly: this.formatDates(l.glad_alerts_weekly),
-          glad_alerts_monthly: this.formatDates(l.glad_alerts_monthly),
-          viirs_alerts_daily: this.formatDates(l.viirs_alerts_daily),
+          gladAlerts: (l.gladAlerts as string).trim().toLowerCase() === 'true',
+          glad_alerts_daily: this.formatDates(l.glad_alerts_daily as string),
+          glad_alerts_weekly: this.formatDates(l.glad_alerts_weekly as string),
+          glad_alerts_monthly: this.formatDates(l.glad_alerts_monthly as string),
+          viirs_alerts_daily: this.formatDates(l.viirs_alerts_daily as string),
           umd: l.tree_cover_extent_total || 0,
         };
       });

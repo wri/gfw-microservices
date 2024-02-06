@@ -38,6 +38,7 @@ import { AlertsPrioritiesAdminAreasLevelService } from '../files/alerts.prioriti
 import { AlertsSummaryService } from '../files/alerts.summary.service';
 import { AlertsPrioritiesLocationsLevelService } from '../files/alerts.priorities.locations.level.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
+import { AlertsFileService } from '../files/alerts.file.service';
 
 @Module({
   imports: [envModule, AwsModule, SqlModule],
@@ -73,6 +74,7 @@ import { AlertsGeneratorService } from './alerts.generator.service';
     AlertsPrioritiesLocationsLevelService,
     AlertsSummaryService,
     AlertsGeneratorService,
+    AlertsFileService,
   ],
   exports: [PipeService],
 })

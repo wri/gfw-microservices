@@ -56,7 +56,8 @@ export class ListMessageHandler {
       return value;
     };
 
-    const { analysisArea, file, geoInfo, list, organizationDatabase, userEmail } = JSON.parse(
+    const {
+      analysisArea,file, geoInfo, list, organizationDatabase, userEmail, selectedTimeframe, selectedAlert, startDate, endDate } = JSON.parse(
       message.Body ?? '{}'
     );
 
@@ -75,6 +76,10 @@ export class ListMessageHandler {
       ...filters,
       // avoid logging sensitive data
       userEmail: getValues(userEmail),
+      selectedTimeframe: getValues(selectedTimeframe),
+      selectedAlert: getValues(selectedAlert),
+      startDate: getValues(startDate),
+      endDate: getValues(endDate)
     };
   }
 }

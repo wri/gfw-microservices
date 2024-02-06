@@ -20,7 +20,6 @@ const sendMessageToQueue = async (request, source) => {
   const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
 
   const { message, key } = buildMessageMethods[source](request);
-
   const sendSqsMessage = await sqs.sendMessage(message).promise();
   sendSqsMessage.key = key;
   return sendSqsMessage;

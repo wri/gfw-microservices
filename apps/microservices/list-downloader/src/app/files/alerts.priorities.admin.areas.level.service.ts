@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AlertFieldsFileRequest } from '@wri-monorepos/sql';
+import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { PassThrough } from 'stream';
 import * as fs from 'fs';
@@ -59,7 +59,7 @@ export class AlertsPrioritiesAdminAreasLevelService extends IPipeService {
       .pipe(new AlertsEventEmitterTransform(this.featureDensityForAdminLevelAggregator));
   }
 
-  process(analysisData: any) {
+  process(analysisData: DashboardDataType[]) {
     analysisData?.forEach((data) => this.inputStream.write(data));
   }
   async finish(filters: AlertFieldsFileRequest) {

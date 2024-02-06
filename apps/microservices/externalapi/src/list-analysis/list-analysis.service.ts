@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ListAnalysisResponse } from './list-analysis.dto';
+import { AlertsGenerateBodySchema, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
@@ -22,7 +22,6 @@ import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import * as tmp from 'tmp';
-import { AlertsGenerateBodySchema } from './list-analysis.controller';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 500;
@@ -254,8 +253,6 @@ export class ListAnalysisService {
     endDate,
     organizationId,
     listId,
-    selectedAlert,
-    selectedTimeFrame,
     userEmail,
   }: AlertsGenerateBodySchema & { organizationId: number; listId: number }) {
     const organization = await this.getOrganizationDetails(organizationId);
@@ -283,11 +280,11 @@ export class ListAnalysisService {
       },
       selectedTimeframe: {
         DataType: 'String',
-        StringValue: selectedTimeFrame,
+        StringValue: 'DAY',
       },
       selectedAlert: {
         DataType: 'String',
-        StringValue: selectedAlert,
+        StringValue: 'VIIRS',
       },
       key: {
         DataType: 'String',

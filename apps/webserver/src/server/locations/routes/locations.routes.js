@@ -1226,7 +1226,7 @@ module.exports = (app, limiter) => {
    */
   app.post('/locations/cm-large-list', (req, res) => {
     console.log('POST /locations/cm-large-list');
-    const { listType, targetList } = req.body;
+    const { listType, targetList, listId } = req.body;
     let { listName, saveAsDraft } = req.body;
 
     const { organization_user_id, organization_id, organization_database, subscription_status_id } =
@@ -1244,23 +1244,35 @@ module.exports = (app, limiter) => {
     if (listType === 'existing') {
       listName = targetList.list_name;
     }
+    getListAnalysisStatusByListId(req, listId)
+      .then((listAnalysisStatusData) => {
+        const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+        const { LISTS_MICROSERVICE_URL } = process.env;
 
-    const { LISTS_MICROSERVICE_URL } = process.env;
-    axios
-      .post(`${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`, copyOrMoveRequestBody)
-      .then((response) => {
-        if (saveAsDraft) {
-          return res.send(response.data);
-        }
+        axios
+          .post(`${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`, copyOrMoveRequestBody)
+          .then((response) => {
+            if (saveAsDraft) {
+              return res.send(response.data);
+            }
 
-        // Send email to user that list is submitted to be analysed
-        return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes).then(() => {
-          console.log('List submitted for analysis details: ', response.data);
-          res.send(response.data);
-        });
+            // Send email to user that list is submitted to be analysed
+            return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes)
+              .then(() => {
+                console.log('List submitted for analysis details: ', response.data);
+                res.send(response.data);
+              })
+              .catch((err) => {
+                console.log(`Error sendEmail__ListSubmittedForAnalysis`, err);
+              });
+          })
+          .catch((err) => {
+            console.log('Error LISTS_MICROSERVICE_URL/CopyOrMoveLargeList', err);
+            res.status(500).send(err);
+          });
       })
       .catch((err) => {
-        console.log("Error: /locations/cm-large-list'", err);
+        console.log('Error: getListAnalysisStatusByListId', err);
         res.status(500).send(err);
       });
   });

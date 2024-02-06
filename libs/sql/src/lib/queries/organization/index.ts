@@ -34,3 +34,4 @@ export * from './getOrganizationUsersAnalysisUsage';
 export * from './getDashboardData';
 export * from './getCountDashboardData';
 export * from './getDashboardDataPaginated';
+export * from './updateUser';

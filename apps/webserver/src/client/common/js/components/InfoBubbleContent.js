@@ -8,7 +8,7 @@ const stylesheet = {
     display: 'flex',
     paddingRight: '10px',
     height: '35px',
-    float: 'right'
+    float: 'right',
   },
   closeIcon: {
     cursor: 'pointer',

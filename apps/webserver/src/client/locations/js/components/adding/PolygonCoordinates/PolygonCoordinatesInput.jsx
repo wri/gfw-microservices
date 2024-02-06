@@ -13,7 +13,7 @@ import { getPointGeometry, getPolygonGeometry } from './geometries';
 import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
 import './PolygonCoordinatesInput.scss';
 
-const newCoordinate = () => ({ id: uuidv4(), latitude: '', longitude: '', errors: {} })
+const newCoordinate = () => ({ id: uuidv4(), latitude: '', longitude: '', errors: {} });
 
 const PolygonCoordinatesInput = ({
   sketchViewModel,
@@ -25,9 +25,7 @@ const PolygonCoordinatesInput = ({
   const [selectedAreaRadioOption, setSelectedAreaRadioOption] = useState(
     NEW_LOCATION_AREA_OPTIONS.SMALL.id
   );
-  const [coordinates, setCoordinates] = useState([
-    newCoordinate(),
-  ]);
+  const [coordinates, setCoordinates] = useState([newCoordinate()]);
   const [customArea, setCustomArea] = useState();
   const [open, setOpen] = useState(false);
 

@@ -284,7 +284,7 @@ export class ListAnalysisService {
       },
       selectedAlert: {
         DataType: 'String',
-        StringValue: 'VIIRS',
+        StringValue: 'GLAD',
       },
       key: {
         DataType: 'String',

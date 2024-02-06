@@ -1,18 +1,14 @@
 // import {locationsPage} from 'common/js/config';
 import React, { Component } from 'react';
-
 import { marked } from 'marked';
-
 import '../../../locations/css/diagnosticsBubble.scss';
 
 const stylesheet = {
   closeIconContainer: {
     display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
     paddingRight: '10px',
     height: '35px',
-    width: '100%',
+    float: 'right'
   },
   closeIcon: {
     cursor: 'pointer',
@@ -21,8 +17,6 @@ const stylesheet = {
     width: '26px',
   },
 };
-
-// const markedOptions = { sanitize: true, gfm: true };
 
 export default class InfoBubbleContent extends Component {
   render() {
@@ -50,24 +44,24 @@ export default class InfoBubbleContent extends Component {
         </div>
         <div className="locations-diagnostics-bubble-view">
           <h3 className="bubble-title">{bubbleData.Title}</h3>
-          {bubbleData['Why this Analysis?'] ? <h3>Why this Analysis?</h3> : null}
+          {bubbleData['Why this Analysis?'] ? <h4>Why this Analysis?</h4> : null}
           {bubbleData['Why this Analysis?'] ? (
             <p dangerouslySetInnerHTML={{ __html: marked(bubbleData['Why this Analysis?']) }}></p>
           ) : null}
 
-          {bubbleData['What this Section Explains'] ? <h3>What this Section Explains</h3> : null}
+          {bubbleData['What this Section Explains'] ? <h4>What this Section Explains</h4> : null}
           {bubbleData['What this Section Explains'] ? (
             <p
               dangerouslySetInnerHTML={{ __html: marked(bubbleData['What this Section Explains']) }}
             ></p>
           ) : null}
 
-          {bubbleData["How it's Calculated"] ? <h3>How it's Calculated</h3> : null}
+          {bubbleData["How it's Calculated"] ? <h4>How it's Calculated</h4> : null}
           {bubbleData["How it's Calculated"] ? (
             <p dangerouslySetInnerHTML={{ __html: marked(bubbleData["How it's Calculated"]) }}></p>
           ) : null}
 
-          {bubbleData.Notes ? <h3>Notes</h3> : null}
+          {bubbleData.Notes ? <h4>Notes</h4> : null}
           {bubbleData.Notes ? (
             <p dangerouslySetInnerHTML={{ __html: marked(bubbleData.Notes) }}></p>
           ) : null}

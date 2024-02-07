@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
+import Card from '@mui/material/Card';
+import AddLocationIcon from '@mui/icons-material/AddLocation';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import Graphic from '@arcgis/core/Graphic';
-import Card from '@mui/material/Card';
-import Button from '@mui/material/Button';
-import AddLocationIcon from '@mui/icons-material/AddLocation';
 import Modal from '@mui/material/Modal';
+import Button from '@mui/material/Button';
 import GfwButton from '../../../../../common/js/components/GfwButton';
 import CoordinateInputsContainer from './CoordinateInputsContainer';
 import SetArea from '../SetArea';
 import { getPointGeometry, getPolygonGeometry } from './geometries';
 import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
 import './PolygonCoordinatesInput.scss';
+import LocationMapDrawer from '../LocationMapDrawer';
 
 const PolygonCoordinatesInput = ({
   sketchViewModel,
   mapView,
   setGeometry,
+  setSketchViewModel,
   measurementUnit,
   setMeasurementUnit,
 }) => {
@@ -140,18 +142,33 @@ const PolygonCoordinatesInput = ({
 
   return (
     <div>
-      <Button
-        data-testid="polygon-coordinates-button"
-        style={{ position: 'absolute', zIndex: 100 }}
-        onClick={() => setOpen(true)}
-      >
-        <AddLocationIcon />
-      </Button>
+      <div className="draw-shape__button-group">
+        <button
+          className="draw-shape__draw-button"
+          onClick={() => setOpen(true)}
+          data-testid="polygon-coordinates-button"
+        >
+          <AddLocationIcon />
+          <span>Add coordinates</span>
+        </button>
+
+        <LocationMapDrawer
+          mapView={mapView}
+          sketchViewModel={sketchViewModel}
+          setSketchViewModel={setSketchViewModel}
+        />
+      </div>
+
+      <div className="draw-shape__button-group" style={{ right: '1rem', left: 'auto' }}>
+        <GfwButton onClick={() => setOpen(true)} label="EDIT COORDINATES" />
+      </div>
+
       <Modal
         open={open}
         onClose={() => setOpen(false)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        data-testid="polygon-coordinates-modal"
       >
         <Card className="polygon-coordinates">
           <CoordinateInputsContainer

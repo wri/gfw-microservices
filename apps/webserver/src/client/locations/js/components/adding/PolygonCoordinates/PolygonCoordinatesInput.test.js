@@ -77,13 +77,13 @@ describe('PolygonCoordinatesInput Component', () => {
   });
   test('opens PolygonCoordinatesInput modal', () => {
     // Check if the modal is initially closed
-    expect(screen.queryByText('Add coordinates')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('polygon-coordinates-modal')).not.toBeInTheDocument();
 
     const button = screen.queryByTestId('polygon-coordinates-button');
     fireEvent.click(button);
 
     // Check if the modal content is present after clicking the button
-    expect(screen.getByText('Add coordinates')).toBeInTheDocument();
+    expect(screen.queryByTestId('polygon-coordinates-modal')).toBeInTheDocument();
   });
 
   test('validates coordinates input', async () => {

@@ -168,6 +168,7 @@ const PolygonCoordinatesInput = ({
         onClose={() => setOpen(false)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        data-testid="polygon-coordinates-modal"
       >
         <Card className="polygon-coordinates">
           <CoordinateInputsContainer

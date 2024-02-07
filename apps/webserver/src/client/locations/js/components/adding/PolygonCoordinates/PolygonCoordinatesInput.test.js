@@ -58,7 +58,6 @@ let currentMeasurementUnit = 'hectares';
 
 describe('PolygonCoordinatesInput Component', () => {
   beforeEach(() => {
-
     render(
       <MuiThemeProvider>
         <PolygonCoordinatesInput

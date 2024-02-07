@@ -143,7 +143,11 @@ const PolygonCoordinatesInput = ({
   return (
     <div>
       <div className="draw-shape__button-group">
-        <button className="draw-shape__draw-button" onClick={() => setOpen(true)}>
+        <button
+          className="draw-shape__draw-button"
+          onClick={() => setOpen(true)}
+          data-testid="polygon-coordinates-button"
+        >
           <AddLocationIcon />
           <span>Add coordinates</span>
         </button>

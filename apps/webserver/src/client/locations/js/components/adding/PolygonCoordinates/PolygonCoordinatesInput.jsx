@@ -4,12 +4,14 @@ import AddLocationIcon from '@mui/icons-material/AddLocation';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import Graphic from '@arcgis/core/Graphic';
 import Modal from '@mui/material/Modal';
+import Button from '@mui/material/Button';
 import GfwButton from '../../../../../common/js/components/GfwButton';
 import CoordinateInputsContainer from './CoordinateInputsContainer';
 import SetArea from '../SetArea';
 import { getPointGeometry, getPolygonGeometry } from './geometries';
 import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
 import './PolygonCoordinatesInput.scss';
+import LocationMapDrawer from '../LocationMapDrawer';
 
 const PolygonCoordinatesInput = ({
   sketchViewModel,
@@ -18,7 +20,6 @@ const PolygonCoordinatesInput = ({
   setSketchViewModel,
   measurementUnit,
   setMeasurementUnit,
-  
 }) => {
   const [selectedAreaRadioOption, setSelectedAreaRadioOption] = useState(
     NEW_LOCATION_AREA_OPTIONS.SMALL.id
@@ -146,6 +147,7 @@ const PolygonCoordinatesInput = ({
           <AddLocationIcon />
           <span>Add coordinates</span>
         </button>
+
         <LocationMapDrawer
           mapView={mapView}
           sketchViewModel={sketchViewModel}

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { render, fireEvent, waitFor, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PolygonCoordinatesInput from './PolygonCoordinatesInput';
@@ -17,6 +18,10 @@ jest.mock('@arcgis/core/symbols/SimpleFillSymbol', () => {
       };
     }),
   };
+});
+
+jest.mock('../LocationMapDrawer', () => {
+  return () => <div />;
 });
 
 jest.mock('@arcgis/core/Graphic', () => {
@@ -40,6 +45,8 @@ const mockSketchViewModel = {
   delete: jest.fn(),
 };
 
+const mockSetSketchViewModel = jest.fn();
+
 // Mock the individual functions inside the module
 geometries.getPointGeometry.mockReturnValue('mockedPointGeometry');
 geometries.getPolygonGeometry.mockReturnValue('mockedPolygonGeometry');
@@ -51,14 +58,18 @@ let currentMeasurementUnit = 'hectares';
 
 describe('PolygonCoordinatesInput Component', () => {
   beforeEach(() => {
+
     render(
-      <PolygonCoordinatesInput
-        mapView={mockMapView}
-        sketchViewModel={mockSketchViewModel}
-        setGeometry={mockSetGeometry}
-        measurementUnit={currentMeasurementUnit}
-        setMeasurementUnit={mockSetMeasurementUnit}
-      />
+      <MuiThemeProvider>
+        <PolygonCoordinatesInput
+          mapView={mockMapView}
+          sketchViewModel={mockSketchViewModel}
+          setGeometry={mockSetGeometry}
+          measurementUnit={currentMeasurementUnit}
+          setMeasurementUnit={mockSetMeasurementUnit}
+          setSketchViewModel={mockSetSketchViewModel}
+        />
+      </MuiThemeProvider>
     );
   });
   afterEach(() => {

@@ -1,4 +1,4 @@
-const AWS = require('aws-sdk');
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 
 import buildAfiMessage from './afi.message';
 import buildListMessage from './list.message';
@@ -11,19 +11,14 @@ const buildMessageMethods = {
 };
 
 const sendMessageToQueue = async (request, source) => {
-  const awsConfig = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
-  };
-  AWS.config.update(awsConfig);
-  const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
+  const sqsClient = new SQSClient();
 
   const { message, key } = buildMessageMethods[source](request);
 
-  const sendSqsMessage = await sqs.sendMessage(message).promise();
-  sendSqsMessage.key = key;
-  return sendSqsMessage;
+  const command = new SendMessageCommand(message);
+  const response = await sqsClient.send(command);
+
+  return { key, response };
 };
 
 export { sendMessageToQueue };

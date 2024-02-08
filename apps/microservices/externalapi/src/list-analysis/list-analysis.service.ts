@@ -1,4 +1,10 @@
-import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
@@ -211,12 +217,18 @@ export class ListAnalysisService {
     // create large list process
     const largeListCreated = await axios.post<{
       list_id: number;
+      status?: number;
+      message?: string;
     }>(`${this.LLP_BASE_URL}/api/create-large-list`, {
       list_name: newListDetails.listName,
       user_id: externalUpload.userId,
       client_database: organizationDetails.organizationDb,
       analysisIds: analysisIds,
     });
+
+    if (largeListCreated.data.status === 400) {
+      throw new BadRequestException(largeListCreated.data.message);
+    }
     const listId = largeListCreated.data.list_id;
 
     // save list to process

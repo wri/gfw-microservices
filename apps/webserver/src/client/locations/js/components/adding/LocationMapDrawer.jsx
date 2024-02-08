@@ -14,6 +14,7 @@ import './LocationMapDrawer.scss';
 const { isPolygonCoordinatesInputAvailable } = featureFlags;
 
 const DrawShapeMode = {
+  Active: 'active',
   Inactive: 'inactive',
   Drawing: 'drawing',
   Complete: 'complete',
@@ -46,9 +47,9 @@ const LocationMapDrawer = (props) => {
     }
 
     sketchViewModelInstance.on('create', ({ graphic, state }) => {
-      if (state === 'complete') {
+      if (state === DrawShapeMode.Complete) {
         setDrawPoly(mapView, sketchViewModelInstance, graphic.geometry);
-      } else if (state === 'active') {
+      } else if (state === DrawShapeMode.Active) {
         const polygon = graphic.geometry;
         const vertexCount = polygon?.rings?.[0]?.length || 0;
         if (vertexCount > 11) {

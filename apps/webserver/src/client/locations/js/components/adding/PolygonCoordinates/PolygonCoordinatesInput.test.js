@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { render, fireEvent, waitFor, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -276,6 +276,12 @@ describe('PolygonCoordinatesInput Component', () => {
           id: expect.any(String),
           latitude: 42,
           longitude: -77,
+          errors: { latitude: false, longitude: false },
+        },
+        { // the first point is added to the end to close the polygon
+          id: expect.any(String),
+          latitude: 40,
+          longitude: -75,
           errors: { latitude: false, longitude: false },
         },
       ]);

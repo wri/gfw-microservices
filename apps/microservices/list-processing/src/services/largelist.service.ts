@@ -132,16 +132,16 @@ export class LargeListService {
     const connection = new SQLUtils(sqlConfig);
     await connection.connect();
 
+    const doesListNameAlreadyExist = await getListByFilters(
+      { listName: list_name },
+      clientDatabase
+    );
+
+    if (doesListNameAlreadyExist) {
+      throw new BadRequestException('List name already exists');
+    }
+
     try {
-      const doesListNameAlreadyExist = await getListByFilters(
-        { listName: list_name },
-        clientDatabase
-      );
-
-      if (doesListNameAlreadyExist) {
-        throw new BadRequestException('List name already exists');
-      }
-
       // Create a new list in table
       createListResult = await connection.executeQuery<CreateListResult>(
         'uspCreateList',

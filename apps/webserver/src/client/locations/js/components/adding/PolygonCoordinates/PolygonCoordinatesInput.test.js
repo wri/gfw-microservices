@@ -278,7 +278,8 @@ describe('PolygonCoordinatesInput Component', () => {
           longitude: -77,
           errors: { latitude: false, longitude: false },
         },
-        { // the first point is added to the end to close the polygon
+        {
+          // the first point is added to the end to close the polygon
           id: expect.any(String),
           latitude: 40,
           longitude: -75,

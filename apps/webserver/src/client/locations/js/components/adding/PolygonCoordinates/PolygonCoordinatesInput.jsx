@@ -42,9 +42,9 @@ const PolygonCoordinatesInput = ({
     // initialize with the coordinates of the geometry that is being edited
     const numberOfVertices = geometry?.rings?.[0]?.length;
 
-     // if there are more than 10 vertices,
-     // we assume it is a circle created by entering a point and a radius,
-     // so we don't want to edit the coordinates
+    // if there are more than 10 vertices,
+    // we assume it is a circle created by entering a point and a radius,
+    // so we don't want to edit the coordinates
     if (numberOfVertices > 1 && numberOfVertices < 11) {
       const rings = geometry.rings[0];
       const vertices = rings.slice(0, -1); // we remove the last vertex because it is the same as the first one

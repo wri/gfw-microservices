@@ -26,8 +26,8 @@ import { INestApplication } from '@nestjs/common';
 
 jest.mock('@aws-sdk/client-s3', () => {
   const keyMap: { [key: string]: number } = {
-    mock_key_123: 500,
-    mock_key_1234: 499,
+    mock_key_123: 300,
+    mock_key_1234: 299,
   };
 
   const mockS3Client = {

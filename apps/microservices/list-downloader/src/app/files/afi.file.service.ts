@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PassThrough } from 'stream';
+import { PassThrough, Transform } from 'stream';
 import { finished } from 'stream/promises';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
+import * as Chain from 'stream-chain';
 import { AFI_HEADER, AFI_HEADER_AGGREGATE } from '../shared/constants';
 
 import { FilterObject } from '../transform/filter.object';
@@ -17,7 +18,7 @@ export class AfiFileService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  async start(filters: GenerationFileRequest, suffix = 'deforestation_kpis') {
+  async start(filters: BasicFieldsFileRequest, suffix = 'deforestation_kpis') {
     await this.startEmail(filters);
 
     const { listId, key, listName } = filters;
@@ -37,7 +38,7 @@ export class AfiFileService extends IPipeService {
     analysisData?.forEach((data) => this.inputStream.write(data));
   }
 
-  private organizeStream(filters: GenerationFileRequest, allFields: string[], suffix: string) {
+  private organizeStream(filters: BasicFieldsFileRequest, allFields: string[], suffix: string) {
     const { listId, key, listName } = filters;
     this.inputStream.removeAllListeners();
 
@@ -50,33 +51,24 @@ export class AfiFileService extends IPipeService {
       flags: 'a',
     });
 
+    let pipeline: Array<Transform> = [new FilterObject(allFields)];
+
     if (suffix.includes('aggregated')) {
-      this.inputStream
-        .pipe(new FilterObject(allFields))
-        .pipe(new NegligibleRiskDiscretize())
-        .pipe(new FormatNumber())
-        .pipe(
-          csvWriter({
-            sendHeaders: false,
-          })
-        )
-        .pipe(this.fileStream);
+      pipeline = [...pipeline, new NegligibleRiskDiscretize(), new FormatNumber()];
     } else {
-      this.inputStream
-        .pipe(new FilterObject(allFields))
-        .pipe(new FormatNumber())
-        .pipe(
-          csvWriter({
-            sendHeaders: false,
-          })
-        )
-        .pipe(this.fileStream);
+      pipeline = [...pipeline, new FormatNumber()];
     }
 
-    return this.inputStream;
+    pipeline.push(
+      csvWriter({
+        sendHeaders: false,
+      })
+    );
+
+    this.inputStream.pipe(new Chain(pipeline)).pipe(this.fileStream);
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: BasicFieldsFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process result data`);
     await this.writeAllData(this.inputStream);

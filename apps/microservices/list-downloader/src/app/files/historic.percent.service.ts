@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import {
   cloneRow,
@@ -14,13 +14,13 @@ import { generateCSV } from '../shared/generate.csv';
 
 @Injectable()
 export class HistoricPercentService extends DashboardHandleDownload {
-  start(filters: GenerationFileRequest) {
+  start(filters: ListFieldsFileRequest) {
     if (this.isHistoricPercentFile(filters)) {
       super.start(filters, 'historicPercent', 'sensitive_areas_percentage_historic_area_lost');
     }
   }
 
-  process(data, filters: GenerationFileRequest) {
+  process(data, filters: ListFieldsFileRequest) {
     if (this.isHistoricPercentFile(filters)) {
       super.process(data, filters);
     }
@@ -53,7 +53,7 @@ export class HistoricPercentService extends DashboardHandleDownload {
     return csvData;
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
     if (this.isHistoricPercentFile(filters)) {
       this.logger.log('Historic Percent Finish');
@@ -69,7 +69,7 @@ export class HistoricPercentService extends DashboardHandleDownload {
     }
   }
 
-  isHistoricPercentFile(filters: GenerationFileRequest) {
+  isHistoricPercentFile(filters: ListFieldsFileRequest) {
     const { listView, type } = filters;
     return listView === 'forest_change' && (type === 'historicPercent' || type === 'everything');
   }

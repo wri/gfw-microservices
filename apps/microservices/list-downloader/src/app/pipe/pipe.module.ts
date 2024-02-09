@@ -30,6 +30,15 @@ import { AfiFileService } from '../files/afi.file.service';
 import { ArgentinaOverlapService } from '../files/argentina.overlap.service';
 import { AnalysisDataService } from '../data/analysis.data.service';
 import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
+import { AlertsDataService } from '../data/alerts.data.service';
+import { AlertsAdminAreasLevelService } from '../files/alerts.admin.areas.level.service';
+import { AlertsHistoryService } from '../files/alerts.history.service';
+import { AlertsLocationsLevelService } from '../files/alerts.locations.level.service';
+import { AlertsPrioritiesAdminAreasLevelService } from '../files/alerts.priorities.admin.areas.level.service';
+import { AlertsSummaryService } from '../files/alerts.summary.service';
+import { AlertsPrioritiesLocationsLevelService } from '../files/alerts.priorities.locations.level.service';
+import { AlertsGeneratorService } from './alerts.generator.service';
+import { AlertsFileService } from '../files/alerts.file.service';
 
 @Module({
   imports: [envModule, AwsModule, SqlModule],
@@ -57,6 +66,15 @@ import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
     ArgentinaOverlapService,
     AnalysisDataService,
     AnalysisAfiDataService,
+    AlertsDataService,
+    AlertsAdminAreasLevelService,
+    AlertsHistoryService,
+    AlertsLocationsLevelService,
+    AlertsPrioritiesAdminAreasLevelService,
+    AlertsPrioritiesLocationsLevelService,
+    AlertsSummaryService,
+    AlertsGeneratorService,
+    AlertsFileService,
   ],
   exports: [PipeService],
 })

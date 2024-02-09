@@ -56,9 +56,18 @@ export class ListMessageHandler {
       return value;
     };
 
-    const { analysisArea, file, geoInfo, list, organizationDatabase, userEmail } = JSON.parse(
-      message.Body ?? '{}'
-    );
+    const {
+      analysisArea,
+      file,
+      geoInfo,
+      list,
+      organizationDatabase,
+      userEmail,
+      selectedTimeframe,
+      selectedAlert,
+      startDate,
+      endDate,
+    } = JSON.parse(message.Body ?? '{}');
 
     const filters = {
       organizationDatabase: getValues(organizationDatabase),
@@ -75,6 +84,10 @@ export class ListMessageHandler {
       ...filters,
       // avoid logging sensitive data
       userEmail: getValues(userEmail),
+      selectedTimeframe: getValues(selectedTimeframe),
+      selectedAlert: getValues(selectedAlert),
+      startDate: getValues(startDate),
+      endDate: getValues(endDate),
     };
   }
 }

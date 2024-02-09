@@ -7,7 +7,7 @@ import { PassThrough } from 'stream';
 import { finished } from 'stream/promises';
 
 import { IPipeService } from '../pipe/i.pipe.service';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterSelection } from '../transform/filter.selection';
@@ -20,7 +20,7 @@ export class InputService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  async start(filters: GenerationFileRequest) {
+  async start(filters: ListFieldsFileRequest) {
     const { listId, key, templateId, combinedColumnsSplitted, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
@@ -39,7 +39,7 @@ export class InputService extends IPipeService {
     analysisData?.forEach((data) => this.inputStream.write(data));
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process input data`);
     await this.writeAllData(this.inputStream);
@@ -47,7 +47,7 @@ export class InputService extends IPipeService {
     this.fileStream.destroy();
   }
 
-  private organizeStream(filters: GenerationFileRequest, allFields: string[]) {
+  private organizeStream(filters: ListFieldsFileRequest, allFields: string[]) {
     const { key, selectedLocationsList, listId, listName } = filters;
     this.inputStream.removeAllListeners();
 
@@ -69,7 +69,7 @@ export class InputService extends IPipeService {
       )
       .pipe(this.fileStream);
 
-    this.inputStream.on('end', () => {
+    this.inputStream.on('end', async () => {
       const output = fs.createWriteStream(`/tmp/${key}.zip`);
       const archive = archiver('zip', {
         zlib: { level: 9 }, // Sets the compression level.
@@ -78,7 +78,7 @@ export class InputService extends IPipeService {
         name: `${listName}_input.csv`,
       });
       archive.pipe(output);
-      archive.finalize();
+      await archive.finalize();
 
       output.on('close', async () => {
         this.logger.log(`(${listId}) - Data has been zipped`);

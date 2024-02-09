@@ -1,30 +1,30 @@
 import { Injectable } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 
 @Injectable()
 export class MillPriorityService extends DashboardHandleDownload {
-  start(filters: GenerationFileRequest) {
+  start(filters: ListFieldsFileRequest) {
     if (this.isMillPriorityFile(filters)) {
       super.start(filters, 'millPriority', 'mill_priority_history');
     }
   }
 
-  process(data, filters: GenerationFileRequest) {
+  process(data, filters: ListFieldsFileRequest) {
     if (this.isMillPriorityFile(filters)) {
       super.process(data, filters);
     }
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     if (this.isMillPriorityFile(filters)) {
       this.logger.log('Mill Priority Finish');
       await super.finish(filters);
     }
   }
 
-  isMillPriorityFile(filters: GenerationFileRequest) {
+  isMillPriorityFile(filters: ListFieldsFileRequest) {
     const { listView, type, selectedLocationsList } = filters;
     return (
       listView === 'commodity_risk' &&

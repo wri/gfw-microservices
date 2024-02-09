@@ -21,7 +21,7 @@ describe('Argentina Overlap Service', () => {
   const filePath = `${dir}/${filters.listName}_argentina_overlap.csv`;
   const fileAggregatePath = `${dir}/${filters.listName}_argentina_overlap_aggregate.csv`;
 
-  const readCsvData = (filePath) => {
+  const readCsvData = (filePath: string) => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     return csvData.toString().split('\n');
   };

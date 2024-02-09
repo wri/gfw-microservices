@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow, formatPct, validatePct, parseListData } from '../shared/functions';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
@@ -8,13 +8,13 @@ import { generateCSV } from '../shared/generate.csv';
 
 @Injectable()
 export class ForestLossService extends DashboardHandleDownload {
-  start(filters: GenerationFileRequest) {
+  start(filters: ListFieldsFileRequest) {
     if (this.isForestLossFile(filters)) {
       super.start(filters, 'forestLoss', 'sensitive_areas_loss_forests');
     }
   }
 
-  process(data, filters: GenerationFileRequest) {
+  process(data, filters: ListFieldsFileRequest) {
     if (this.isForestLossFile(filters)) {
       super.process(data, filters);
     }
@@ -75,7 +75,7 @@ export class ForestLossService extends DashboardHandleDownload {
     return csvData;
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
     if (this.isForestLossFile(filters)) {
       this.logger.log('Forest Loss Finish');
@@ -91,7 +91,7 @@ export class ForestLossService extends DashboardHandleDownload {
     }
   }
 
-  isForestLossFile(filters: GenerationFileRequest) {
+  isForestLossFile(filters: ListFieldsFileRequest) {
     const { listView, type } = filters;
     return listView === 'forest_change' && (type === 'forestLoss' || type === 'everything');
   }

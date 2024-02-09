@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 const generateCSV = (
-  filters: GenerationFileRequest,
+  filters: ListFieldsFileRequest,
   table: string,
   fileSuffix: string,
   mountCsv: (table: string, list_name: string, listLevelAnalysis) => Array<Array<string>>

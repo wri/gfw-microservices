@@ -1,12 +1,13 @@
 import { Logger, Injectable } from '@nestjs/common';
 import { AfiGeneratorService } from './afi.generator.service';
 import { ListGeneratorService } from './list.generator.service';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
 import * as sql from 'mssql';
 
 import { SQLUtils, ListNameSchema } from '@wri-monorepos/sql';
 import { createDirectory } from '../shared/file.utils';
+import { AlertsGeneratorService } from './alerts.generator.service';
 
 @Injectable()
 export class PipeService {
@@ -14,10 +15,11 @@ export class PipeService {
 
   constructor(
     private readonly afiGeneratorService: AfiGeneratorService,
-    private readonly listGeneratorService: ListGeneratorService
+    private readonly listGeneratorService: ListGeneratorService,
+    private readonly alertsGeneratorService: AlertsGeneratorService
   ) {}
 
-  public async makeFile(filters: GenerationFileRequest) {
+  public async makeFile(filters: BasicFieldsFileRequest) {
     const { type, listId } = filters;
 
     this.logger.log(`(${listId}) - Receive request to build file for list`);
@@ -35,7 +37,7 @@ export class PipeService {
     this.getGeneratorBaseOnType()[type].makeFile(filters);
   }
 
-  private async getListName(filters: GenerationFileRequest) {
+  private async getListName(filters: BasicFieldsFileRequest) {
     const { organizationDatabase, listId } = filters;
 
     const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
@@ -50,6 +52,7 @@ export class PipeService {
   private getGeneratorBaseOnType = () => {
     return {
       afi: this.afiGeneratorService,
+      alerts: this.alertsGeneratorService,
       argentinaOverlap: this.listGeneratorService,
       commodityRiskDiagnosticLocationSummary: this.listGeneratorService,
       deforestationTrends: this.listGeneratorService,
@@ -69,7 +72,7 @@ export class PipeService {
     };
   };
 
-  private createDirectory = (filters: GenerationFileRequest) => {
+  private createDirectory = (filters: BasicFieldsFileRequest) => {
     const { listId, key } = filters;
 
     const dir = `/tmp/wri-${key}`;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { render, fireEvent, waitFor, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -113,16 +113,18 @@ describe('PolygonCoordinatesInput Component', () => {
     let latitudeInputs = screen.queryAllByTestId(/latitude-input-/);
     let longitudeInputs = screen.queryAllByTestId(/longitude-input-/);
 
-    // Assuming that the initial state has one row, so the length should be 2 after adding one more
-    expect(latitudeInputs).toHaveLength(2);
-    expect(longitudeInputs).toHaveLength(2);
+    // Assuming that the initial state has one row,
+    // the length should be 3 after adding one more
+    // because user should not be able to add a line
+    expect(latitudeInputs).toHaveLength(3);
+    expect(longitudeInputs).toHaveLength(3);
 
     fireEvent.click(screen.getByText('Add Coordinate'));
     latitudeInputs = screen.queryAllByTestId(/latitude-input-/);
     longitudeInputs = screen.queryAllByTestId(/longitude-input-/);
 
-    expect(latitudeInputs).toHaveLength(3);
-    expect(longitudeInputs).toHaveLength(3);
+    expect(latitudeInputs).toHaveLength(4);
+    expect(longitudeInputs).toHaveLength(4);
   });
 
   test('allows removing a row of coordinates input', () => {
@@ -135,14 +137,15 @@ describe('PolygonCoordinatesInput Component', () => {
 
     let removeRowButtons = screen.queryAllByTestId(/coordinate-input-remove-row-/);
 
-    // Assuming that the initial state has one row, so the length should be 3 after adding two more
-    expect(removeRowButtons).toHaveLength(3);
+    // Assuming that the initial state has one row, so the length should be 4 after adding two more
+    // (the fist time it adds two rows to prevent user from submiting a line)
+    expect(removeRowButtons).toHaveLength(4);
 
     //delete one row
     fireEvent.click(removeRowButtons[0]);
 
     removeRowButtons = screen.queryAllByTestId(/latitude-input-/);
-    expect(removeRowButtons).toHaveLength(2);
+    expect(removeRowButtons).toHaveLength(3);
   });
 
   test('allows adding coordinates and submits a point geometry', async () => {
@@ -164,7 +167,7 @@ describe('PolygonCoordinatesInput Component', () => {
       expect(mockGetPointGeometry).toHaveBeenCalledWith(
         [
           {
-            id: expect.any(Number),
+            id: expect.any(String),
             latitude: 40,
             longitude: -75,
             errors: {
@@ -213,7 +216,7 @@ describe('PolygonCoordinatesInput Component', () => {
       expect(mockGetPointGeometry).toHaveBeenCalledWith(
         [
           {
-            id: expect.any(Number),
+            id: expect.any(String),
             latitude: expect.any(Number),
             longitude: expect.any(Number),
             errors: {
@@ -234,8 +237,7 @@ describe('PolygonCoordinatesInput Component', () => {
     const button = screen.queryByTestId('polygon-coordinates-button');
     fireEvent.click(button);
 
-    // Add multiple rows of coordinates
-    fireEvent.click(screen.getByText('Add Coordinate'));
+    // Add two rows of coordinates
     fireEvent.click(screen.getByText('Add Coordinate'));
 
     // Enter values for each coordinate
@@ -259,21 +261,28 @@ describe('PolygonCoordinatesInput Component', () => {
       expect(mockGetPolygonGeometry).toHaveBeenCalled();
       expect(mockGetPolygonGeometry).toHaveBeenCalledWith([
         {
-          id: expect.any(Number),
+          id: expect.any(String),
           latitude: 40,
           longitude: -75,
           errors: { latitude: false, longitude: false },
         },
         {
-          id: expect.any(Number),
+          id: expect.any(String),
           latitude: 41,
           longitude: -76,
           errors: { latitude: false, longitude: false },
         },
         {
-          id: expect.any(Number),
+          id: expect.any(String),
           latitude: 42,
           longitude: -77,
+          errors: { latitude: false, longitude: false },
+        },
+        {
+          // the first point is added to the end to close the polygon
+          id: expect.any(String),
+          latitude: 40,
+          longitude: -75,
           errors: { latitude: false, longitude: false },
         },
       ]);

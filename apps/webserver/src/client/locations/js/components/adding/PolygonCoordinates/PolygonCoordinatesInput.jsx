@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import Graphic from '@arcgis/core/Graphic';
 import Modal from '@mui/material/Modal';
+import { v4 as uuidv4 } from 'uuid';
 import Button from '@mui/material/Button';
 import GfwButton from '../../../../../common/js/components/GfwButton';
 import CoordinateInputsContainer from './CoordinateInputsContainer';
@@ -13,6 +14,8 @@ import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
 import './PolygonCoordinatesInput.scss';
 import LocationMapDrawer from '../LocationMapDrawer';
 
+const newCoordinate = () => ({ id: uuidv4(), latitude: '', longitude: '', errors: {} });
+
 const PolygonCoordinatesInput = ({
   sketchViewModel,
   mapView,
@@ -20,13 +23,12 @@ const PolygonCoordinatesInput = ({
   setSketchViewModel,
   measurementUnit,
   setMeasurementUnit,
+  geometry,
 }) => {
   const [selectedAreaRadioOption, setSelectedAreaRadioOption] = useState(
     NEW_LOCATION_AREA_OPTIONS.SMALL.id
   );
-  const [coordinates, setCoordinates] = useState([
-    { id: Date.now(), latitude: '', longitude: '', errors: {} },
-  ]);
+  const [coordinates, setCoordinates] = useState([newCoordinate()]);
   const [customArea, setCustomArea] = useState();
   const [open, setOpen] = useState(false);
 
@@ -35,6 +37,26 @@ const PolygonCoordinatesInput = ({
   const isValidLongitude = (value) => value !== null && value >= -180 && value <= 180;
 
   const onlyOneCoordinatesRow = coordinates.length === 1;
+
+  useEffect(() => {
+    // initialize with the coordinates of the geometry that is being edited
+    const numberOfVertices = geometry?.rings?.[0]?.length;
+
+    // if there are more than 10 vertices,
+    // we assume it is a circle created by entering a point and a radius,
+    // so we don't want to edit the coordinates
+    if (numberOfVertices > 1 && numberOfVertices < 11) {
+      const rings = geometry.rings[0];
+      const vertices = rings.slice(0, -1); // we remove the last vertex because it is the same as the first one
+      const initialCoordinates = vertices.map(([longitude, latitude]) => ({
+        id: uuidv4(),
+        latitude: latitude.toFixed(6),
+        longitude: longitude.toFixed(6),
+        errors: {},
+      }));
+      setCoordinates(initialCoordinates);
+    }
+  }, [geometry]);
 
   const onCoordinatesChange = (event, id, field) => {
     const value = parseFloat(event.target.value);
@@ -51,8 +73,12 @@ const PolygonCoordinatesInput = ({
   };
 
   const onAddCoordinate = () => {
-    const newCoordinate = { id: Date.now(), latitude: '', longitude: '', errors: {} };
-    setCoordinates([...coordinates, newCoordinate]);
+    if (coordinates.length === 1) {
+      // if there is only one row, add two more, user should not be able to enter a line
+      setCoordinates([...coordinates, newCoordinate(), newCoordinate()]);
+    } else {
+      setCoordinates([...coordinates, newCoordinate()]);
+    }
   };
 
   const onDeleteCoordinate = (id) => {
@@ -60,8 +86,14 @@ const PolygonCoordinatesInput = ({
       // User can't delete the coordinates if there is only one row
       return;
     }
-    const filteredCoordinates = coordinates.filter((coord) => coord.id !== id);
-    setCoordinates(filteredCoordinates);
+    if (coordinates.length === 3) {
+      // if there are three rows, remove two rows
+      const updatedCoordinates = [coordinates[0]]; // Keep only the first coordinate
+      setCoordinates(updatedCoordinates);
+    } else {
+      const filteredCoordinates = coordinates.filter((coord) => coord.id !== id);
+      setCoordinates(filteredCoordinates);
+    }
   };
 
   const handleSubmit = () => {
@@ -77,7 +109,10 @@ const PolygonCoordinatesInput = ({
         customArea
       );
     } else {
-      geometry = getPolygonGeometry(coordinates);
+      let polygonCoordinates = [...coordinates]; // Copy the coordinates array
+      const firstPoint = polygonCoordinates[0]; // copy the first point as the last point to close the polygon
+      polygonCoordinates.push(firstPoint);
+      geometry = getPolygonGeometry(polygonCoordinates);
     }
 
     const symbol = new SimpleFillSymbol({

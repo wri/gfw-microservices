@@ -3,9 +3,7 @@ import { AfiGeneratorService } from './afi.generator.service';
 import { ListGeneratorService } from './list.generator.service';
 import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
-import * as sql from 'mssql';
-
-import { SQLUtils, ListNameSchema } from '@wri-monorepos/sql';
+import { ClientStoreConnection, List } from '@wri-monorepos/sql';
 import { createDirectory } from '../shared/file.utils';
 import { AlertsGeneratorService } from './alerts.generator.service';
 
@@ -16,7 +14,8 @@ export class PipeService {
   constructor(
     private readonly afiGeneratorService: AfiGeneratorService,
     private readonly listGeneratorService: ListGeneratorService,
-    private readonly alertsGeneratorService: AlertsGeneratorService
+    private readonly alertsGeneratorService: AlertsGeneratorService,
+    private readonly clientStoreConnection: ClientStoreConnection
   ) {}
 
   public async makeFile(filters: BasicFieldsFileRequest) {
@@ -39,14 +38,10 @@ export class PipeService {
 
   private async getListName(filters: BasicFieldsFileRequest) {
     const { organizationDatabase, listId } = filters;
-
-    const parameters = [{ field: 'list_id', type: sql.Int, value: listId }];
-    const { list_name } = await SQLUtils.queryDBFirstRow<ListNameSchema>(
-      organizationDatabase,
-      'uspGetListNameSchema',
-      parameters
-    );
-    return list_name;
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const listRepository = connection.getRepository(List);
+    const { listName } = await listRepository.findOne({ where: { id: listId } });
+    return listName;
   }
 
   private getGeneratorBaseOnType = () => {

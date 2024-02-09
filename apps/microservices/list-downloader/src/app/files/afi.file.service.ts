@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PassThrough, Transform } from 'stream';
 import { finished } from 'stream/promises';
-import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
+import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
 import * as Chain from 'stream-chain';
@@ -19,8 +19,6 @@ export class AfiFileService extends IPipeService {
   private fileStream: fs.WriteStream;
 
   async start(filters: BasicFieldsFileRequest, suffix = 'deforestation_kpis') {
-    await this.startEmail(filters);
-
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
@@ -34,7 +32,7 @@ export class AfiFileService extends IPipeService {
     );
   }
 
-  process(analysisData) {
+  process(analysisData: AfiAnalysisByListId[]) {
     analysisData?.forEach((data) => this.inputStream.write(data));
   }
 

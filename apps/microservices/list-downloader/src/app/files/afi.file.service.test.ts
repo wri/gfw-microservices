@@ -4,6 +4,7 @@ import { afiListLevelData, afiLocationLevelData } from '../shared/mock.data';
 
 import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
+import { AfiAnalysisByListId } from '@wri-monorepos/sql';
 
 describe('AFI File Service - [Location level]', () => {
   const afiFileService = new AfiFileService();
@@ -84,7 +85,7 @@ describe('AFI File Service - [Location level]', () => {
         }
         return acc;
       }, {})
-    );
+    ) as AfiAnalysisByListId[];
     afiFileService.process(newAfiData);
 
     await afiFileService.finish(filters);
@@ -178,7 +179,7 @@ describe('AFI File Service - [List level]', () => {
         }
         return acc;
       }, {})
-    );
+    ) as AfiAnalysisByListId[];
 
     afiFileService.process(newAfiData);
 

@@ -1,10 +1,4 @@
-import {
-  BadRequestException,
-  HttpStatus,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
@@ -225,7 +219,7 @@ export class ListAnalysisService {
         analysisIds: analysisIds,
       });
     } catch (error) {
-      throw new BadRequestException(error.response?.data?.message);
+      throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
     }
     const listId = largeListCreated.data.list_id;
 

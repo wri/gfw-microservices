@@ -394,6 +394,37 @@ describe('ListUploadController', () => {
     expect(controller.prepareUploadList(requestBody, requestMock)).resolves.toEqual(expectedResult);
   });
 
+  it('should return 400 when list name already exists', async () => {
+    axiosMock.onPost(/\/api\/create-large-list/).reply(400, {
+      message: 'List name already exists',
+    });
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    const request: ListUploadNewRequest = {
+      uploadId: '123',
+      listName: 'List name duplicated',
+      templateId: 456,
+      analysisIDs: 'FCD',
+    };
+
+    const expectedError = {
+      message: 'Http Exception',
+      name: 'HttpException',
+      status: 400,
+      response: { errorDetails: 'List name already exists' },
+    };
+
+    expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
+  });
+
   it.each(['AFI', 'RandomWrongType'])(
     'should return 400 if analysisIDs is not valid',
     async (analysisIds) => {

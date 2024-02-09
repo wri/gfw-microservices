@@ -208,15 +208,19 @@ export class ListAnalysisService {
 
     await this.checkIfS3FileExists(externalUpload.uploadKeyFile);
 
-    // create large list process
-    const largeListCreated = await axios.post<{
-      list_id: number;
-    }>(`${this.LLP_BASE_URL}/api/create-large-list`, {
-      list_name: newListDetails.listName,
-      user_id: externalUpload.userId,
-      client_database: organizationDetails.organizationDb,
-      analysisIds: analysisIds,
-    });
+    let largeListCreated: {
+      data: { list_id: number };
+    };
+    try {
+      largeListCreated = await axios.post(`${this.LLP_BASE_URL}/api/create-large-list`, {
+        list_name: newListDetails.listName,
+        user_id: externalUpload.userId,
+        client_database: organizationDetails.organizationDb,
+        analysisIds: analysisIds,
+      });
+    } catch (error) {
+      throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
+    }
     const listId = largeListCreated.data.list_id;
 
     // save list to process

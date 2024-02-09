@@ -1,5 +1,5 @@
 import { SQLUtils } from '@wri-monorepos/sql';
-import { Logger } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import { Injectable, Inject } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../models';
 import fetch from 'node-fetch';
@@ -7,6 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import * as sql from 'mssql';
 import { createListNameSchema } from '../utils/list.utils';
 import { DataSource } from 'typeorm';
+import { getListByFilters } from '@wri-monorepos/sql';
+
 interface CreateListResult {
   list_id: number;
 }
@@ -129,6 +131,15 @@ export class LargeListService {
     );*/
     const connection = new SQLUtils(sqlConfig);
     await connection.connect();
+
+    const doesListNameAlreadyExist = await getListByFilters(
+      { listName: list_name },
+      clientDatabase
+    );
+
+    if (doesListNameAlreadyExist) {
+      throw new BadRequestException('List name already exists');
+    }
 
     try {
       // Create a new list in table

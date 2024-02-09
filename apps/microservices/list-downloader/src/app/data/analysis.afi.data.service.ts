@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AfiAnalysisByListId, GenerationFileRequest } from '@wri-monorepos/sql';
+import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import { IInputData } from './i.input.data';
 
 import axios from 'axios';
@@ -8,7 +8,7 @@ import axios from 'axios';
 export class AnalysisAfiDataService extends IInputData {
   private readonly logger = new Logger(AnalysisAfiDataService.name);
 
-  async getNumberOfPages(filters: GenerationFileRequest, isListLevel: number): Promise<number> {
+  async getNumberOfPages(filters: BasicFieldsFileRequest, isListLevel: number): Promise<number> {
     const { organizationDatabase, listId, rowsPerPage } = filters;
 
     const queryString = `rowsPerPage=${rowsPerPage}&clientDatabase=${organizationDatabase}&isListLevel=${isListLevel}`;
@@ -24,7 +24,7 @@ export class AnalysisAfiDataService extends IInputData {
   }
 
   async getDataPaginated(
-    filter: GenerationFileRequest,
+    filter: BasicFieldsFileRequest,
     isListLevel: number
   ): Promise<AfiAnalysisByListId[]> {
     const { organizationDatabase, rowsPerPage, page, listId } = filter;

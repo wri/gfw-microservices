@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow } from '../shared/functions';
 import { DATA_LAYER, EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
@@ -11,13 +11,13 @@ import SouthAmericaLossAggregateHandler from '../strategies/south-america-loss/a
 export class SouthAmericaLossService extends DashboardHandleDownload {
   private existSouthLocation = false;
 
-  start(filters: GenerationFileRequest) {
+  start(filters: ListFieldsFileRequest) {
     if (this.isSouthAmericaLossFile(filters)) {
       super.start(filters, 'sAmericaLoss', 'south_america_loss_of_forests');
     }
   }
 
-  process(data, filters: GenerationFileRequest) {
+  process(data, filters: ListFieldsFileRequest) {
     if (this.isSouthAmericaLossFile(filters)) {
       const locations = data.filter((location) => location.south_america_presence === 'true');
       if (locations && locations.length > 0) {
@@ -66,7 +66,7 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
     return csvData;
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
     if (this.isSouthAmericaLossFile(filters)) {
       this.logger.log('Finish South America Loss');
@@ -83,7 +83,7 @@ export class SouthAmericaLossService extends DashboardHandleDownload {
     this.existSouthLocation = false;
   }
 
-  isSouthAmericaLossFile(filters: GenerationFileRequest) {
+  isSouthAmericaLossFile(filters: ListFieldsFileRequest) {
     const { listView, type } = filters;
     return listView === 'forest_change' && (type === 'southAmericaTCL' || type === 'everything');
   }

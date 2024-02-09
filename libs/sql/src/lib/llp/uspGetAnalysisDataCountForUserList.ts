@@ -2,7 +2,7 @@ import { SQLUtils } from '../util/sql.utils';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
-import { GenerationFileRequest } from './model';
+import { ListFieldsFileRequest } from './model';
 import {
   AnalysisDataCountType,
   getAnalysisDataCountForGFWList,
@@ -19,7 +19,7 @@ export interface AnalysisDataCountReturnType {
 export class UspGetAnalysisDataCountForUserList {
   async run(
     databaseName: string,
-    filters: GenerationFileRequest
+    filters: ListFieldsFileRequest
   ): Promise<AnalysisDataCountReturnType> {
     const {
       country,

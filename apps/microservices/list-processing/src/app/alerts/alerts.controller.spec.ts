@@ -270,11 +270,7 @@ describe('Alerts Controller', () => {
       .spyOn(alertsService, 'getDashboardDataPaginated')
       .mockImplementation(() => {
         return new Promise((resolve) => {
-          resolve({
-            failedGeoJSON: { features: [] },
-            dissolvedGeoJSON: { features: [] },
-            geojson: { features: [] },
-          });
+          resolve([]);
         });
       });
 

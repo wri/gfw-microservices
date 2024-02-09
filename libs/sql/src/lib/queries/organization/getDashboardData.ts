@@ -54,15 +54,20 @@ export const getDashboardData = `
     EXEC sp_executesql @SQL;
 `;
 
+export interface CountObj {
+  count: number;
+  day: string;
+}
+
 export interface DashboardDataType {
   list_id: number;
   location_id: number;
   gadm_id: string;
-  gladAlerts: string;
-  glad_alerts_daily: string;
-  glad_alerts_weekly: string;
-  glad_alerts_monthly: string;
-  viirs_alerts_daily: string;
+  gladAlerts: string | boolean;
+  glad_alerts_daily: string | CountObj[];
+  glad_alerts_weekly: string | CountObj[];
+  glad_alerts_monthly: string | CountObj[];
+  viirs_alerts_daily: string | CountObj[];
   tree_cover_extent_total: number;
   Country: string;
   State: string;
@@ -81,4 +86,10 @@ export interface DashboardDataType {
   location_lat: number;
   location_lon: number;
   location_name: string;
+  fire?: string | CountObj[];
+  fireAlerts?: boolean;
+  gladTimeframe?: CountObj[];
+  fireTimeframe?: unknown;
+  featureAlertTotal?: number;
+  umd?: number;
 }

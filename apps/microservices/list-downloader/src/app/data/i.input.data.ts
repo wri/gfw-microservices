@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 
 import axios from 'axios';
 import * as axiosRetry from 'axios-retry';
@@ -17,6 +17,6 @@ export abstract class IInputData {
     });
   }
 
-  abstract getNumberOfPages(filters: GenerationFileRequest, isListLevel: number): Promise<number>;
-  abstract getDataPaginated(filters: GenerationFileRequest, isListLevel: number): Promise<unknown>;
+  abstract getNumberOfPages(filters: BasicFieldsFileRequest, isListLevel: number): Promise<number>;
+  abstract getDataPaginated(filters: BasicFieldsFileRequest, isListLevel: number): Promise<unknown>;
 }

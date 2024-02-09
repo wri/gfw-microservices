@@ -2,7 +2,7 @@ import { SQLUtils } from '../util/sql.utils';
 import { Injectable } from '@nestjs/common';
 import * as sql from 'mssql';
 
-import { GenerationFileRequest } from './model';
+import { ListFieldsFileRequest } from './model';
 import {
   AnalysisDataType,
   getPaginatedAnalysisDataForUserList,
@@ -11,7 +11,7 @@ import {
 
 @Injectable()
 export class UspGetPaginatedAnalysisDataForUserList {
-  async run(databaseName: string, filters: GenerationFileRequest) {
+  async run(databaseName: string, filters: ListFieldsFileRequest) {
     const {
       analysisAreaMax,
       analysisAreaMin,

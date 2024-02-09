@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
@@ -9,13 +9,13 @@ import { FormatNumber } from '../transform/format.number';
 
 @Injectable()
 export class ArgentinaOverlapService extends DashboardHandleDownload {
-  start(filters: GenerationFileRequest) {
+  start(filters: ListFieldsFileRequest) {
     if (this.isArgentinaOverlapFile(filters)) {
       super.start(filters, 'argentinaOverlap', 'argentina_overlap');
     }
   }
 
-  process(data, filters: GenerationFileRequest) {
+  process(data, filters: ListFieldsFileRequest) {
     if (this.isArgentinaOverlapFile(filters)) {
       super.process(data, filters);
     }
@@ -46,7 +46,7 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
     return csvData;
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
     if (this.isArgentinaOverlapFile(filters)) {
       this.logger.log('Argentina Overlap Service finish');
@@ -62,7 +62,7 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
     }
   }
 
-  isArgentinaOverlapFile(filters: GenerationFileRequest) {
+  isArgentinaOverlapFile(filters: ListFieldsFileRequest) {
     const { type } = filters;
     return type === 'argentinaOverlap' || type === 'everything';
   }

@@ -21,6 +21,8 @@ export const SELECTED_TIMEFRAME_WEEK = 'WEEK';
 export const SELECTED_TIMEFRAME_MONTH = 'MONTH';
 export const SELECTED_TIMEFRAME_QUARTER = 'QUARTER';
 export const SELECTED_TIMEFRAME_YEAR = 'YEAR';
+
+// number of threads that will be used to process the data
 export const POOL_SIZE = 5;
 export const MAX_NUMBER_OF_ROWS_PER_PAGE = 5000;
 

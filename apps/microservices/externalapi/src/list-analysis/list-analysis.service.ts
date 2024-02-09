@@ -22,7 +22,7 @@ import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 
 const LIST_INITIAL_STATUS = 'Pending';
-const MIN_FILE_SIZE_IN_BYTES = 500;
+const MIN_FILE_SIZE_IN_BYTES = 300;
 
 const contentType = {
   csv: 'text/csv',

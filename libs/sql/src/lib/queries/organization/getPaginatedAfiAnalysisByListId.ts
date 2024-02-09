@@ -86,8 +86,8 @@ export class AfiAnalysisByListId {
   coverageHA: number;
   naturalForestLossHA: number;
   totalAreaHa: number;
-  negligibleRisk: boolean;
-  statusCode: string;
+  negligibleRisk: number;
+  statusCode: number;
   locationError: string;
   locationName?: string;
   country: string;

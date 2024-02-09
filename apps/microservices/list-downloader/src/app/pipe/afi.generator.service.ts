@@ -20,6 +20,7 @@ export class AfiGeneratorService extends IFileGenerator {
   }
 
   public async makeFile(filters: BasicFieldsFileRequest) {
+    await this.afiFileService.startEmail(filters);
     await this.runAfiFileGeneration(filters);
     await this.runAfiFileGeneration(filters, 1, 'deforestation_kpis_aggregated');
     await getAllFilesAndZip(filters);

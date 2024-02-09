@@ -1,5 +1,5 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from './i.pipe.service';
 
 import { ForestLossService } from '../files/forest.loss.service';
@@ -60,7 +60,7 @@ export class DashboardService extends IPipeService {
   @Inject(ArgentinaOverlapService)
   private readonly argentinaOverlap: ArgentinaOverlapService;
 
-  async start(filters: GenerationFileRequest) {
+  async start(filters: ListFieldsFileRequest) {
     await this.startEmail(filters);
 
     this.forestLoos.start(filters);
@@ -78,7 +78,7 @@ export class DashboardService extends IPipeService {
     this.argentinaOverlap.start(filters);
   }
 
-  process(data, filters: GenerationFileRequest) {
+  process(data, filters: ListFieldsFileRequest) {
     this.forestLoos.process(data, filters);
     this.historicPercentService.process(data, filters);
     this.forestChangeDiagnosticLocationSummaryService.process(data, filters);
@@ -94,7 +94,7 @@ export class DashboardService extends IPipeService {
     this.argentinaOverlap.process(data, filters);
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { key } = filters;
 
     this.logger.log(`(${key}) - Waiting all stream to finish`);

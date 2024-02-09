@@ -1,11 +1,12 @@
 import { AfiFileService } from '../files/afi.file.service';
 import { Injectable, Logger } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
 import { getAllFilesAndZip } from '../shared/file.utils';
 
 import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
 import { IFileGenerator } from './i.file.generator';
+import { POOL_SIZE } from '../shared/constants';
 
 @Injectable()
 export class AfiGeneratorService extends IFileGenerator {
@@ -18,7 +19,7 @@ export class AfiGeneratorService extends IFileGenerator {
     super();
   }
 
-  public async makeFile(filters: GenerationFileRequest) {
+  public async makeFile(filters: BasicFieldsFileRequest) {
     await this.runAfiFileGeneration(filters);
     await this.runAfiFileGeneration(filters, 1, 'deforestation_kpis_aggregated');
     await getAllFilesAndZip(filters);
@@ -26,7 +27,7 @@ export class AfiGeneratorService extends IFileGenerator {
   }
 
   private async runAfiFileGeneration(
-    filters: GenerationFileRequest,
+    filters: BasicFieldsFileRequest,
     isListLevel = 0,
     suffix = 'deforestation_kpis'
   ) {
@@ -39,7 +40,7 @@ export class AfiGeneratorService extends IFileGenerator {
     await this.afiFileService.start(filters, suffix);
 
     const composeResults = async (i: number) => {
-      const newFilter = { ...filters, pageNumber: i };
+      const newFilter = { ...filters, page: i };
       const analysisData = await this.analysisAfiDataService.getDataPaginated(
         newFilter,
         isListLevel
@@ -48,7 +49,7 @@ export class AfiGeneratorService extends IFileGenerator {
       return i;
     };
 
-    for await (const localPage of asyncPool(this.POOL_SIZE, arrayOfPages, composeResults)) {
+    for await (const localPage of asyncPool(POOL_SIZE, arrayOfPages, composeResults)) {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 

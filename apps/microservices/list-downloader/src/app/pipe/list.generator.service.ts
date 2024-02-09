@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 
 import * as asyncPool from 'tiny-async-pool';
 
-import { GenerationFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest, UspGetListAnalysis } from '@wri-monorepos/sql';
 
 import { InputService } from '../files/input.service';
 import { ResultService } from '../files/result.service';
@@ -12,6 +12,7 @@ import { IPipeService } from './i.pipe.service';
 
 import { AnalysisDataService } from '../data/analysis.data.service';
 import { IFileGenerator } from './i.file.generator';
+import { POOL_SIZE } from '../shared/constants';
 
 @Injectable()
 export class ListGeneratorService extends IFileGenerator {
@@ -28,7 +29,7 @@ export class ListGeneratorService extends IFileGenerator {
     super();
   }
 
-  public async makeFile(filters: GenerationFileRequest) {
+  public async makeFile(filters: ListFieldsFileRequest) {
     const { organizationDatabase, listId, combinedColumns, selectedLocations, file } = filters;
 
     const numberOfPages = await this.analysisDataService.getNumberOfPages(filters);
@@ -77,14 +78,14 @@ export class ListGeneratorService extends IFileGenerator {
       return i;
     };
 
-    for await (const localPage of asyncPool(this.POOL_SIZE, arrayOfPages, composeResults)) {
+    for await (const localPage of asyncPool(POOL_SIZE, arrayOfPages, composeResults)) {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 
     service.finish(filters);
   }
 
-  private defineService(filters: GenerationFileRequest): IPipeService {
+  private defineService(filters: ListFieldsFileRequest): IPipeService {
     const { type, file } = filters;
 
     const mapFileType2Service = {
@@ -96,7 +97,7 @@ export class ListGeneratorService extends IFileGenerator {
     return mapFileType2Service[`${type}_${file}`] ?? this.dashboardService;
   }
 
-  private async getListOfFields(filters: GenerationFileRequest) {
+  private async getListOfFields(filters: ListFieldsFileRequest) {
     const newFilters = {
       ...filters,
       page: 1,

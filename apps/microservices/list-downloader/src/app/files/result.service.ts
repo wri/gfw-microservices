@@ -8,7 +8,7 @@ import * as Chain from 'stream-chain';
 import { EXCEL_TEMPLATES } from '../shared/constants';
 import { FilterObject } from '../transform/filter.object';
 import { FilterSelection } from '../transform/filter.selection';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { SumValue } from '../transform/sum.value';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { finished } from 'stream/promises';
@@ -20,11 +20,11 @@ import { DiscretizeData } from '../transform/discretize.data';
 export class ResultService extends IPipeService {
   private readonly logger = new Logger(ResultService.name);
   private inputStream: PassThrough;
-  private filters: GenerationFileRequest;
+  private filters: ListFieldsFileRequest;
   private fileStream: fs.WriteStream;
   private zipStream: fs.WriteStream;
 
-  async start(filters: GenerationFileRequest) {
+  async start(filters: ListFieldsFileRequest) {
     const { listId, key, listView, listName } = filters;
     this.logger.log(`(${listId}) - Starting result stream to process data`);
 
@@ -54,7 +54,7 @@ export class ResultService extends IPipeService {
   }
 
   private organizeStream(
-    filters: GenerationFileRequest,
+    filters: ListFieldsFileRequest,
     allFields: string[],
     columnGetLastValue: string[] = []
   ) {
@@ -93,7 +93,7 @@ export class ResultService extends IPipeService {
     return this.inputStream;
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Finished to process result data`);
 

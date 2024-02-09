@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { GenerationFileRequest } from '@wri-monorepos/sql';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 
 @Injectable()
 export class ForestChangeDiagnosticLocationSummaryService extends DashboardHandleDownload {
-  start(filters: GenerationFileRequest) {
+  start(filters: ListFieldsFileRequest) {
     if (this.isForestChangeDiagnosticLocationSummaryFile(filters)) {
       super.start(
         filters,
@@ -15,20 +15,20 @@ export class ForestChangeDiagnosticLocationSummaryService extends DashboardHandl
     }
   }
 
-  process(data, filters: GenerationFileRequest) {
+  process(data, filters: ListFieldsFileRequest) {
     if (this.isForestChangeDiagnosticLocationSummaryFile(filters)) {
       super.process(data, filters);
     }
   }
 
-  async finish(filters: GenerationFileRequest) {
+  async finish(filters: ListFieldsFileRequest) {
     if (this.isForestChangeDiagnosticLocationSummaryFile(filters)) {
       this.logger.log('Forest Change Diagnostic Location Summary Finish');
       await super.finish(filters);
     }
   }
 
-  isForestChangeDiagnosticLocationSummaryFile(filters: GenerationFileRequest) {
+  isForestChangeDiagnosticLocationSummaryFile(filters: ListFieldsFileRequest) {
     const { listView, type } = filters;
     return (
       listView === 'forest_change' &&

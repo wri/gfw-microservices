@@ -6,6 +6,7 @@ import { getAllFilesAndZip } from '../shared/file.utils';
 
 import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
 import { IFileGenerator } from './i.file.generator';
+import { POOL_SIZE } from '../shared/constants';
 
 @Injectable()
 export class AfiGeneratorService extends IFileGenerator {
@@ -48,7 +49,7 @@ export class AfiGeneratorService extends IFileGenerator {
       return i;
     };
 
-    for await (const localPage of asyncPool(this.POOL_SIZE, arrayOfPages, composeResults)) {
+    for await (const localPage of asyncPool(POOL_SIZE, arrayOfPages, composeResults)) {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 

@@ -7,7 +7,11 @@ import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import { locationsPage } from '../../../../common/js/config';
 import Button from '../../../../common/js/components/Button';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
+import featureFlags from '../../../../../utils/general.utils';
+import DrawIcon from '@mui/icons-material/Draw';
 import './LocationMapDrawer.scss';
+
+const { isPolygonCoordinatesInputAvailable } = featureFlags;
 
 const DrawShapeMode = {
   Inactive: 'inactive',
@@ -140,12 +144,23 @@ const LocationMapDrawer = (props) => {
 
   return (
     <>
-      <div className="location-map-drawer__message">{userMessage}</div>
-      <Button
-        className="location-map-drawer__draw-button"
-        onClick={onDrawButtonClick}
-        label={buttonTitle}
-      />
+      {!isPolygonCoordinatesInputAvailable && (
+        <>
+          <div className="location-map-drawer__message">{userMessage}</div>
+          <Button
+            className="location-map-drawer__draw-button"
+            onClick={onDrawButtonClick}
+            label={buttonTitle}
+          />
+        </>
+      )}
+
+      {isPolygonCoordinatesInputAvailable && (
+        <button className="draw_shape__draw-button" onClick={onDrawButtonClick}>
+          <DrawIcon />
+          <span>{buttonTitle}</span>
+        </button>
+      )}
     </>
   );
 };

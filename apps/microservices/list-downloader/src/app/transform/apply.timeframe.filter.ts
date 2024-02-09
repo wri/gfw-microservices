@@ -7,6 +7,13 @@ import {
   getGladMonthlyYear,
   getViirsGrouped,
 } from '../parser/alerts.parser';
+import { DashboardDataType } from '@wri-monorepos/sql';
+import {
+  SELECTED_TIMEFRAME_MONTH,
+  SELECTED_TIMEFRAME_QUARTER,
+  SELECTED_TIMEFRAME_WEEK,
+  SELECTED_TIMEFRAME_YEAR,
+} from '../shared/constants';
 
 export class ApplyTimeframeFilter extends Transform {
   constructor(
@@ -17,14 +24,14 @@ export class ApplyTimeframeFilter extends Transform {
     super({ objectMode: true });
   }
 
-  _transform(data, _, next) {
+  _transform(data: DashboardDataType, _, next) {
     const momentStart = moment(this.startDate);
     const momentEnd = moment(this.endDate);
     let groupedGlad = [];
 
     // Week timeframe
     if (
-      this.selectedTimeframe === 'WEEK' &&
+      this.selectedTimeframe === SELECTED_TIMEFRAME_WEEK &&
       Object.prototype.hasOwnProperty.call(data, 'glad_alerts_daily') &&
       data.glad_alerts_daily.length > 0
     ) {
@@ -33,7 +40,7 @@ export class ApplyTimeframeFilter extends Transform {
 
     // Month timeframe
     if (
-      this.selectedTimeframe === 'MONTH' &&
+      this.selectedTimeframe === SELECTED_TIMEFRAME_MONTH &&
       Object.prototype.hasOwnProperty.call(data, 'glad_alerts_monthly') &&
       data.glad_alerts_monthly.length > 0
     ) {
@@ -42,7 +49,7 @@ export class ApplyTimeframeFilter extends Transform {
 
     // Quarter timeframe
     if (
-      this.selectedTimeframe === 'QUARTER' &&
+      this.selectedTimeframe === SELECTED_TIMEFRAME_QUARTER &&
       Object.prototype.hasOwnProperty.call(data, 'glad_alerts_monthly') &&
       data.glad_alerts_monthly.length > 0
     ) {
@@ -51,7 +58,7 @@ export class ApplyTimeframeFilter extends Transform {
 
     // Year timeframe
     if (
-      this.selectedTimeframe === 'YEAR' &&
+      this.selectedTimeframe === SELECTED_TIMEFRAME_YEAR &&
       Object.prototype.hasOwnProperty.call(data, 'glad_alerts_monthly') &&
       data.glad_alerts_monthly.length > 0
     ) {

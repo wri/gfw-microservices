@@ -3,9 +3,7 @@ import {
   generateAlertsPrioritiesLocationsLevel,
   generateAlertsLocationsLevel,
 } from '../parser/alerts.parser';
-
-export const ALERTS_PRIORITIES_LOCATION_LEVEL = 'AlertsPriorities_LocationsLevel';
-export const ALERTS_LOCATION_LEVEL = 'Alerts_LocationsLevel';
+import { ALERTS_LOCATION_LEVEL, ALERTS_PRIORITIES_LOCATION_LEVEL } from '../shared/constants';
 export class AlertsFilterData extends Transform {
   constructor(
     private selectedAlert: string,

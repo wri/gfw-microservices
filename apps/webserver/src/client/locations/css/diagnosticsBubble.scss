@@ -1,12 +1,10 @@
 .locations-diagnostics-bubble-view-container {
   width: 500px;
-  overflow: hidden;
+  padding: 15px;
 
   .locations-diagnostics-bubble-view {
     font-family: 'Fira Sans', sans-serif;
-    padding: 0 20px 20px;
-    max-height: 450px;
-    overflow: auto;
+    padding: 0 20px;
 
     h1,
     h2,
@@ -20,6 +18,7 @@
     }
 
     p {
+      font-size: 12px;
       margin: 7.5px 0;
     }
 

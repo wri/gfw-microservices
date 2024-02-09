@@ -1,6 +1,18 @@
 import { EventEmitter, Transform } from 'stream';
 import { COLUMN_COUNTRY, COLUMN_STATE, COLUMN_SUB_STATE } from '../shared/alert.utils';
+import { DashboardDataType } from '@wri-monorepos/sql';
 
+interface City {
+  [key: string]: number | undefined;
+}
+
+interface State {
+  [key: string]: City | number;
+}
+
+interface Country {
+  [key: string]: State | number;
+}
 export class FeatureDensityForAdminLevelAggregator extends EventEmitter {
   counts = {
     alerts: {},
@@ -22,7 +34,7 @@ export class FeatureDensityForAdminLevelAggregator extends EventEmitter {
 
   sumFeature(
     currentAlertsCount: number,
-    adminLevelObject: any,
+    adminLevelObject: Country,
     subStateName: string,
     stateName: string,
     countryName: string
@@ -37,8 +49,8 @@ export class FeatureDensityForAdminLevelAggregator extends EventEmitter {
     stateObject.total = countsObjectValueTotal + currentAlertsCount;
     countryObject[stateName] = stateObject;
 
-    countsObjectValueTotal = countryObject.total || 0;
-    countryObject.total = countsObjectValueTotal + currentAlertsCount;
+    countsObjectValueTotal = countryObject['total'] || 0;
+    countryObject['total'] = countsObjectValueTotal + currentAlertsCount;
     adminLevelObject[countryName] = countryObject;
   }
 
@@ -57,7 +69,7 @@ export class AlertsEventEmitterTransform extends Transform {
     super({ objectMode: true });
   }
 
-  getFeatureRowValueByColumnName = function (feature, columnName) {
+  getFeatureRowValueByColumnName = function (feature: DashboardDataType, columnName: string) {
     if (feature[columnName]) {
       return feature[columnName].includes(',') ? `"${feature[columnName]}"` : feature[columnName];
     } else {
@@ -65,7 +77,7 @@ export class AlertsEventEmitterTransform extends Transform {
     }
   };
 
-  _transform(chunk, _, next) {
+  _transform(chunk: DashboardDataType, _, next) {
     const subStateName = this.getFeatureRowValueByColumnName(chunk, COLUMN_SUB_STATE);
     const stateName = this.getFeatureRowValueByColumnName(chunk, COLUMN_STATE);
     const countryName = this.getFeatureRowValueByColumnName(chunk, COLUMN_COUNTRY);

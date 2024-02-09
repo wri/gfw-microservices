@@ -88,5 +88,8 @@ export interface DashboardDataType {
   location_name: string;
   fire?: string | CountObj[];
   fireAlerts?: boolean;
+  gladTimeframe?: CountObj[];
+  fireTimeframe?: unknown;
+  featureAlertTotal?: number;
   umd?: number;
 }

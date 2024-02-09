@@ -5,8 +5,15 @@ import { AlertsDataService } from '../data/alerts.data.service';
 import * as asyncPool from 'tiny-async-pool';
 import * as moment from 'moment';
 import { AlertsFileService } from '../files/alerts.file.service';
-
-const DATE_FORMAT = 'YYYY-MM-DD';
+import {
+  POOL_SIZE,
+  SELECTED_TIMEFRAME_MONTH,
+  SELECTED_TIMEFRAME_QUARTER,
+  SELECTED_TIMEFRAME_WEEK,
+  SELECTED_TIMEFRAME_YEAR,
+  SELECTED_TIMEFRAME_DAY,
+  DATE_FORMAT,
+} from '../shared/constants';
 
 @Injectable()
 export class AlertsGeneratorService extends IFileGenerator {
@@ -40,42 +47,45 @@ export class AlertsGeneratorService extends IFileGenerator {
       return i;
     };
 
-    for await (const localPage of asyncPool(this.POOL_SIZE, arrayOfPages, composeResults)) {
+    for await (const localPage of asyncPool(POOL_SIZE, arrayOfPages, composeResults)) {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
     await this.alertsFileService.finish(filters);
   }
 
   getTimeframeBoundaries(selectedTimeframe: string) {
+    const startDateFormat = `${DATE_FORMAT} 00:00:00`;
+    const endDateFormat = `${DATE_FORMAT} 23:59:59`;
+
     switch (selectedTimeframe) {
-      case 'DAY': {
+      case SELECTED_TIMEFRAME_DAY: {
         return {
-          startDate: moment().subtract(1, 'days').format(DATE_FORMAT),
-          endDate: moment().endOf('day').format(DATE_FORMAT),
+          startDate: moment().subtract(1, 'days').format(startDateFormat),
+          endDate: moment().endOf('day').format(endDateFormat),
         };
       }
-      case 'WEEK': {
+      case SELECTED_TIMEFRAME_WEEK: {
         return {
-          startDate: moment().subtract(1, 'week').format(DATE_FORMAT),
-          endDate: moment().subtract(1, 'day').format(DATE_FORMAT),
+          startDate: moment().subtract(1, 'week').format(startDateFormat),
+          endDate: moment().subtract(1, 'day').format(endDateFormat),
         };
       }
-      case 'MONTH': {
+      case SELECTED_TIMEFRAME_MONTH: {
         return {
-          startDate: moment().subtract(1, 'month').startOf('month').format(DATE_FORMAT),
-          endDate: moment().subtract(1, 'month').endOf('month').format(DATE_FORMAT),
+          startDate: moment().subtract(1, 'month').startOf('month').format(startDateFormat),
+          endDate: moment().subtract(1, 'month').endOf('month').format(endDateFormat),
         };
       }
-      case 'QUARTER': {
+      case SELECTED_TIMEFRAME_QUARTER: {
         return {
-          startDate: moment().subtract(3, 'month').startOf('month').format(DATE_FORMAT),
-          endDate: moment().subtract(1, 'month').endOf('month').format(DATE_FORMAT),
+          startDate: moment().subtract(3, 'month').startOf('month').format(startDateFormat),
+          endDate: moment().subtract(1, 'month').endOf('month').format(endDateFormat),
         };
       }
-      case 'YEAR': {
+      case SELECTED_TIMEFRAME_YEAR: {
         return {
-          startDate: moment().subtract(12, 'month').startOf('month').format(DATE_FORMAT),
-          endDate: moment().subtract(1, 'month').endOf('month').format(DATE_FORMAT),
+          startDate: moment().subtract(12, 'month').startOf('month').format(startDateFormat),
+          endDate: moment().subtract(1, 'month').endOf('month').format(endDateFormat),
         };
       }
     }

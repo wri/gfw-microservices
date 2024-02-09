@@ -1,4 +1,5 @@
-import { ALERTS_LOCATION_LEVEL, AlertsFilterData } from './alerts.filter.data';
+import { AlertsFilterData } from './alerts.filter.data';
+import { ALERTS_LOCATION_LEVEL } from '../shared/constants';
 
 describe('AlertsFilterData', () => {
   test('receiving an empty object and return undefined', () => {

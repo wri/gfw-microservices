@@ -22,7 +22,7 @@ describe('Alerts Summary Service', () => {
   const dir = `/tmp/wri-${filters.key}`;
   const filePath = `${dir}/${filters.listName}_AlertsSummary.csv`;
 
-  const readCsvData = (filePath) => {
+  const readCsvData = (filePath: string) => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     return csvData.toString().split('\n');
   };

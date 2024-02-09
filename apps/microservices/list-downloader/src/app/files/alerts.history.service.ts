@@ -8,8 +8,7 @@ import { ApplyTimeframeFilter } from '../transform/apply.timeframe.filter';
 import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';
 import { dictionary } from '../shared/alert.utils';
 import { isEmpty, sortBy } from 'lodash';
-
-const DATE_FORMAT_CSV = 'DD MMM YYYY';
+import { DATE_FORMAT, DATE_FORMAT_CSV } from '../shared/constants';
 
 interface AlertHistory {
   start: string;
@@ -17,7 +16,7 @@ interface AlertHistory {
 }
 
 class AccumulateHistory extends EventEmitter {
-  private history = [];
+  private history = {};
 
   constructor() {
     super();
@@ -26,23 +25,19 @@ class AccumulateHistory extends EventEmitter {
   }
 
   cleanAccumulateHistory() {
-    this.history = new Array<AlertHistory>();
+    this.history = {};
   }
 
   addHistory(partialHistory: AlertHistory[]) {
-    const newHistory = [];
-    partialHistory.forEach((partial) => {
-      const result = this.history.find((h) => partial.start === h?.start);
-      if (result) {
-        result.total += partial.total;
-      } else {
-        newHistory.push(partial);
+    partialHistory.forEach(({ start, total }) => {
+      if (!this.history[start]) {
+        this.history[start] = 0;
       }
+      this.history[start] += total;
     });
-    this.history = [...this.history, ...newHistory];
   }
 
-  getHistory(): AlertHistory[] {
+  getHistory(): Record<string, number> {
     return this.history;
   }
 }
@@ -74,7 +69,13 @@ class EventEmitterTransform extends Transform {
     return selectedTimeframe_StartEndGroupings;
   }
 
-  calculateAlertHistoryForList(chunk, selectedAlert, selectedTimeframe, startDate, endDate) {
+  calculateAlertHistoryForList(
+    chunk: DashboardDataType,
+    selectedAlert: string,
+    selectedTimeframe: string,
+    startDate: string,
+    endDate: string
+  ) {
     const selectedTimeframeProperty = dictionary.alertType_featureTimeframeProperty[selectedAlert];
     const selectedTimeframe_StartEndGroupings = this.getSelectedTimeframeStartEndGroupings(
       selectedTimeframe,
@@ -94,13 +95,13 @@ class EventEmitterTransform extends Transform {
 
     return selectedTimeframe_StartEndGroupings.map((dateBounds) => {
       const [startBound, endBound] = dateBounds;
-      const dateStart = moment(startBound, 'DD MMM YYYY');
-      const dateEnd = moment(endBound, 'DD MMM YYYY');
+      const dateStart = moment(startBound, DATE_FORMAT_CSV);
+      const dateEnd = moment(endBound, DATE_FORMAT_CSV);
       let total = 0;
       filtered.forEach((countObj) => {
         const { count, day } = countObj;
-        const CURRENT_DATE_FORMAT = 'YYYY-MM-DD';
-        const currentM = moment(day, CURRENT_DATE_FORMAT);
+
+        const currentM = moment(day, DATE_FORMAT);
         if (currentM.isSameOrAfter(dateStart) && currentM.isSameOrBefore(dateEnd)) {
           total += count;
         }
@@ -112,7 +113,7 @@ class EventEmitterTransform extends Transform {
     });
   }
 
-  _transform(chunk, _, next) {
+  _transform(chunk: DashboardDataType, _, next) {
     const { selectedAlert, selectedTimeframe, startDate, endDate } = this.filters;
     const total = this.calculateAlertHistoryForList(
       chunk,
@@ -169,6 +170,7 @@ export class AlertsHistoryService extends IPipeService {
   process(analysisData: DashboardDataType[]) {
     analysisData?.forEach((data) => this.inputStream.write(data));
   }
+
   async finish(filters: AlertFieldsFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process result data`);
@@ -185,12 +187,15 @@ export class AlertsHistoryService extends IPipeService {
     fs.writeFileSync(filePath, `${this.headers.join(',')}\n`);
 
     const momentSort = (a: AlertHistory, b: AlertHistory) => {
-      const momentA = moment(a.start, 'DD MMM YYYY');
-      const momentB = moment(b.start, 'DD MMM YYYY');
+      const momentA = moment(a.start, DATE_FORMAT_CSV);
+      const momentB = moment(b.start, DATE_FORMAT_CSV);
       return momentA.diff(momentB);
     };
 
-    const groupedTimeframeArray = this.accumulateHistory.getHistory();
+    const accumulateHistory = this.accumulateHistory.getHistory();
+    const groupedTimeframeArray = Object.entries(accumulateHistory).map(([start, total]) => {
+      return { start, total };
+    });
     const sorted = groupedTimeframeArray.sort(momentSort);
 
     const endDateSchema = {
@@ -208,10 +213,10 @@ export class AlertsHistoryService extends IPipeService {
 
     const rows = sorted.map((timeframe) => {
       const { start, total } = timeframe;
-      const endDate = moment(start, 'DD MMM YYYY')
+      const endDate = moment(start, DATE_FORMAT_CSV)
         .add(1, endDateSchema[selectedAlert][selectedTimeframe])
         .subtract(1, 'days')
-        .format('DD MMM YYYY');
+        .format(DATE_FORMAT_CSV);
 
       return [listName, selectedAlertText, selectedTimeframe, total, start, endDate];
     });

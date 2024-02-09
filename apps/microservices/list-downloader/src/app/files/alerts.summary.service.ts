@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AlertFieldsFileRequest } from '@wri-monorepos/sql';
+import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { EventEmitter, PassThrough, Transform } from 'stream';
 import { dictionary } from '../shared/alert.utils';
@@ -70,7 +70,7 @@ class EventEmitterTransform extends Transform {
     super({ objectMode: true });
   }
 
-  _transform(chunk, _, next) {
+  _transform(chunk: DashboardDataType, _, next) {
     const { selectedAlert } = this.filters;
     const selectedProperty = dictionary.alertType_featureTimeframeProperty[selectedAlert];
     const selectedAlertsProperty = dictionary.alertType_featureCoverageProperty[selectedAlert];
@@ -124,7 +124,7 @@ export class AlertsSummaryService extends IPipeService {
       .pipe(new EventEmitterTransform(this.generateAlertsSummary, filters));
   }
 
-  process(analysisData: any) {
+  process(analysisData: DashboardDataType[]) {
     analysisData?.forEach((data) => this.inputStream.write(data));
   }
   async finish(filters: AlertFieldsFileRequest) {

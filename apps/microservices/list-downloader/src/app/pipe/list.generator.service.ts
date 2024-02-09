@@ -12,6 +12,7 @@ import { IPipeService } from './i.pipe.service';
 
 import { AnalysisDataService } from '../data/analysis.data.service';
 import { IFileGenerator } from './i.file.generator';
+import { POOL_SIZE } from '../shared/constants';
 
 @Injectable()
 export class ListGeneratorService extends IFileGenerator {
@@ -77,7 +78,7 @@ export class ListGeneratorService extends IFileGenerator {
       return i;
     };
 
-    for await (const localPage of asyncPool(this.POOL_SIZE, arrayOfPages, composeResults)) {
+    for await (const localPage of asyncPool(POOL_SIZE, arrayOfPages, composeResults)) {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 

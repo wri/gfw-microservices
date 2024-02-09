@@ -22,7 +22,7 @@ describe('Alerts Priorities Admin Areas Level Service', () => {
   const dir = `/tmp/wri-${filters.key}`;
   const filePath = `${dir}/${filters.listName}_AlertsPriorities_AdminAreasLevel.csv`;
 
-  const readCsvData = (filePath) => {
+  const readCsvData = (filePath: string) => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     return csvData.toString().split('\n');
   };

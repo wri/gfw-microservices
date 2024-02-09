@@ -6,13 +6,11 @@ import * as fs from 'fs';
 import { ApplyTimeframeFilter } from '../transform/apply.timeframe.filter';
 import { FeatureAlertTotal } from '../transform/feature.alert.total';
 import { dictionary } from '../shared/alert.utils';
-import {
-  ALERTS_PRIORITIES_LOCATION_LEVEL,
-  AlertsFilterData,
-} from '../transform/alerts.filter.data';
+import { AlertsFilterData } from '../transform/alerts.filter.data';
 import { finished } from 'stream/promises';
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';
+import { ALERTS_PRIORITIES_LOCATION_LEVEL } from '../shared/constants';
 
 @Injectable()
 export class AlertsPrioritiesLocationsLevelService extends IPipeService {

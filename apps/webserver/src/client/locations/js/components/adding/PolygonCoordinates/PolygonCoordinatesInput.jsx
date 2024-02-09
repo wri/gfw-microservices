@@ -142,9 +142,9 @@ const PolygonCoordinatesInput = ({
 
   return (
     <div>
-      <div className="draw_shape__button-group">
+      <div className="draw-shape__button-group">
         <button
-          className="draw_shape__draw-button"
+          className="draw-shape__draw-button"
           onClick={() => setOpen(true)}
           data-testid="polygon-coordinates-button"
         >
@@ -159,7 +159,7 @@ const PolygonCoordinatesInput = ({
         />
       </div>
 
-      <div className="draw_shape__button-group" style={{ right: '1rem', left: 'auto' }}>
+      <div className="draw-shape__button-group" style={{ right: '1rem', left: 'auto' }}>
         <GfwButton onClick={() => setOpen(true)} value="EDIT COORDINATES" />
       </div>
 

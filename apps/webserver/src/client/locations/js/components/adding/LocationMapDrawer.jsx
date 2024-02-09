@@ -156,7 +156,7 @@ const LocationMapDrawer = (props) => {
       )}
 
       {isPolygonCoordinatesInputAvailable && (
-        <button className="draw_shape__draw-button" onClick={onDrawButtonClick}>
+        <button className="draw-shape__draw-button" onClick={onDrawButtonClick}>
           <DrawIcon />
           <span>{buttonTitle}</span>
         </button>

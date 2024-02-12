@@ -278,13 +278,11 @@ export const DeleteList = (databaseName, listId, userId) => {
           );
         }
       })
-      .then((record) => {
+      .then(() => {
         // 2. Deleting list locations
         new UspDeleteList().run(
           databaseName,
-          record.list_name,
-          record.list_table_name,
-          record.list_analysis_table_name
+          listId
         );
         resolve(true);
       })

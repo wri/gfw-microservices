@@ -119,7 +119,7 @@ export default class Upload extends Component {
       case 'zip':
         parseZip(file, this.state.stateOriginalGeometry).then((result) => {
           if (result.geom) {
-            this.setGeometry(result.geom);
+            this.props.setGeometry(result.geom);
           }
           this.setState(result);
           if (!result.dialogOpen) {

@@ -17,11 +17,11 @@ export const parseZip = (file, stateOriginalGeometry) => {
         return axios
           .post(convertURL, formData)
           .then((response) => {
-            const data = response.data;
+            const data = response.data.data;
             let geom;
             const oldSpatialRef = new SpatialReference({ wkid: projDefs[1] });
             const newSpatialRef = SpatialReference.WGS84;
-            projection.load().then(() => {
+            return projection.load().then(() => {
               if (data?.attributes?.features?.length > 0) {
                 const feat = data.attributes.features[0];
                 if (feat.geometry?.coordinates?.[0] instanceof Array) {
@@ -60,9 +60,9 @@ export const parseZip = (file, stateOriginalGeometry) => {
                   } else {
                     geom = GeometryEngine.geodesicBuffer(projectedCenterPoint, 4, 'kilometers'); // Medium Buffer
                   }
-
-                  return { geom, isUploading: false };
                 }
+
+                return { geom, isUploading: false };
               }
             });
           })

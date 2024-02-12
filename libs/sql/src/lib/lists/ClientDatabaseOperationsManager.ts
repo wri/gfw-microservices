@@ -280,10 +280,7 @@ export const DeleteList = (databaseName, listId, userId) => {
       })
       .then(() => {
         // 2. Deleting list locations
-        new UspDeleteList().run(
-          databaseName,
-          listId
-        );
+        new UspDeleteList().run(databaseName, listId);
         resolve(true);
       })
       .catch((err) => {

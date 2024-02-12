@@ -195,7 +195,7 @@ const PolygonCoordinatesInput = ({
       </div>
 
       <div className="draw-shape__button-group" style={{ right: '1rem', left: 'auto' }}>
-        <GfwButton onClick={() => setOpen(true)} label="EDIT COORDINATES" />
+        <GfwButton onClick={() => setOpen(true)} value="EDIT COORDINATES" />
       </div>
 
       <Modal

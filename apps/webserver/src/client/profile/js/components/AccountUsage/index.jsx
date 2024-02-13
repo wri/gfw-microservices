@@ -23,13 +23,21 @@ export default function AccountUsageContainer() {
     .clone()
     .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
 
-  const HeaderTableCell = styled(TableCell)(() => ({
-      backgroundColor: 'rgba(0, 0, 0, 0.04)',
-      color: 'rgba(0, 0, 0, 0.73)',
-      fontSize: '15px',
-      fontWeight: 'bold'
+  const subscriptionYearEnd = accountLatestYearStartDate.clone().add(1, 'years').format('LL');
 
+  const HeaderTableCell = styled(TableCell)(() => ({
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    color: 'rgba(0, 0, 0, 0.73)',
+    fontSize: '15px',
+    fontWeight: 'bold',
   }));
+
+  const renewalTextStyle = {
+    margin: '0px 0 30px 0',
+    color: 'rgba(0, 0, 0, 0.5)',
+    fontSize: '10px',
+    float: 'right',
+  };
 
   useEffect(() => {
     fetch(
@@ -77,25 +85,22 @@ export default function AccountUsageContainer() {
   }, []);
 
   const getAreasPercentage = (area) => {
-    return (area / usageData.max_area_analyzed * 100).toFixed(3)
-  }
+    return ((area / usageData.max_area_analyzed) * 100).toFixed(3);
+  };
 
   const getAnalysesPercentage = (locations) => {
-    return (locations / usageData.locations_analyzed * 100).toFixed(3)
-  }
+    return ((locations / usageData.locations_analyzed) * 100).toFixed(3);
+  };
 
   return usageData === null ? (
     <InlineLoader />
   ) : (
     <>
-      <h3 style={{margin: '0px 0 30px 0', fontWeight: 'normal'}}>Summary</h3>
-      <AccountUsage
-        {...usageData}
-        subscriptionYearStart={accountLatestYearStartDate.format('LL')}
-        subscriptionYearEnd={accountLatestYearStartDate.clone().add(1, 'years').format('LL')}
-      />
-      
-      <h3 style={{margin: '30px 0 20px 0', fontWeight: 'normal'}}>History</h3>
+      <p style={renewalTextStyle}>Account renewal on {subscriptionYearEnd}</p>
+      <h3 style={{ margin: '0px 0 30px 0', fontWeight: 'normal' }}>Summary</h3>
+      <AccountUsage {...usageData} />
+
+      <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>History</h3>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
@@ -114,7 +119,9 @@ export default function AccountUsageContainer() {
                 <TableCell component="th" scope="row">
                   {row.first_name} {row.last_name}
                 </TableCell>
-                <TableCell align="right">{getAnalysesPercentage(row.total_locations_analyzed)}%</TableCell>
+                <TableCell align="right">
+                  {getAnalysesPercentage(row.total_locations_analyzed)}%
+                </TableCell>
                 <TableCell align="right">{getAreasPercentage(row.total_area_analyzed)}%</TableCell>
               </TableRow>
             ))}

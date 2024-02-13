@@ -11,15 +11,11 @@ import { styled } from '@mui/material/styles';
  * @param {Object} props
  * @returns ReactNode
  */
-export default function AccountProfile({
-  total_area_analyzed,
-  max_area_analyzed,
-}) {
-
+export default function AccountUsage({ total_area_analyzed, locations_analyzed }) {
   const CardLabel = styled(Typography)(() => ({
     marginBottom: '30px',
     Color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: '15px'
+    fontSize: '15px',
   }));
 
   return (
@@ -29,9 +25,9 @@ export default function AccountProfile({
           <Card sx={{ padding: '1rem' }}>
             <CardContent>
               <CardLabel variant="caption" display="block" gutterBottom>
-                {profilePage.accountUsage.usageAnalyzed}
+                {profilePage.accountUsage.areaAnalyzed}
               </CardLabel>
-              <Typography variant="h4">{Number(max_area_analyzed).toLocaleString()}</Typography>
+              <Typography variant="h4">{Number(locations_analyzed).toLocaleString()}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -39,7 +35,7 @@ export default function AccountProfile({
           <Card sx={{ padding: '1rem' }}>
             <CardContent>
               <CardLabel variant="caption" display="block" gutterBottom>
-                {profilePage.accountUsage.totalAnalysis}
+                {profilePage.accountUsage.locationsAnalyzed}
               </CardLabel>
               <Typography variant="h4">{Number(total_area_analyzed).toLocaleString()}</Typography>
             </CardContent>

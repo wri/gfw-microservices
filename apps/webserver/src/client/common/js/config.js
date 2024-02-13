@@ -2974,8 +2974,8 @@ export const profilePage = {
   accountUsage: {
     title:
       'Analytics usage for subscription year ({subscriptionYearStart} to {subscriptionYearEnd})',
-    usageAnalyzed: '# of Analyses',
-    totalAnalysis: 'Areas analyzed (HA)',
+    locationsAnalyzed: '# of Analyses',
+    areaAnalyzed: 'Areas analyzed (HA)',
   },
 };
 

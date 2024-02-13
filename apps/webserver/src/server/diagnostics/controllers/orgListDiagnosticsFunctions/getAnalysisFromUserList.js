@@ -113,8 +113,8 @@ module.exports = async function (req, selectedList) {
   /** get analisis data */
   try {
     const filters = {
-      orderType: 'desc',
-      sortByAttribute: 'Investment Name',
+      orderType: 'asc',
+      sortByAttribute: 'location_id',
       searchString: '',
     };
     if (locationId) {

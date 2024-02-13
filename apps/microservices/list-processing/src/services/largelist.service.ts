@@ -32,7 +32,28 @@ export class LargeListService {
 
     const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
 
-    const { isExternalAPIProcess, ...llpRequest } = request;
+    const {
+      isExternalAPIProcess,
+      organization_id: organizationId,
+      organization_database: databaseName,
+      subscription_status_id: subscriptionStatusId,
+      list_id: listId,
+      ...llpRequest
+    } = request;
+
+    const listLocationsCount = await getListLocationsCountById(listId, databaseName);
+
+    const { accountUsage, accountLimits } = await getAccountSubscriptionData({
+      organizationId,
+      subscriptionStatusId,
+    });
+
+    if (
+      accountUsage.locations_analyzed + listLocationsCount >
+      accountLimits.max_locations_per_year
+    ) {
+      throw new Error('Analysis limit reached');
+    }
     const {
       organization_id: organizationId,
       organization_database: databaseName,

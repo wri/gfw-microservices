@@ -49,7 +49,8 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 # =======================================
 
 {
-  "organizationId": 1,
+  "organizationId": 99,
   "MaxAreaAnalyzeablePerYear": 15000,
-  "MaxAreaPerList": 37
+  "MaxAreaPerList": 37,
+  "MaxLocationsPerYear": 100
 }

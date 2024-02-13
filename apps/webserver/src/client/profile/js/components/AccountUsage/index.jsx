@@ -114,7 +114,7 @@ export default function AccountUsageContainer() {
                 <TableCell component="th" scope="row">
                   {row.first_name} {row.last_name}
                 </TableCell>
-                <TableCell align="right">{getAnalysesPercentage(row.total_lists_analyzed)}%</TableCell>
+                <TableCell align="right">{getAnalysesPercentage(row.total_locations_analyzed)}%</TableCell>
                 <TableCell align="right">{getAreasPercentage(row.total_area_analyzed)}%</TableCell>
               </TableRow>
             ))}

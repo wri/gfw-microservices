@@ -12,7 +12,11 @@ import {
 } from '../../../../common/js/userListLocations/utils/userListLocations.util';
 
 // Configs
-import { USER_LIST_LOCATIONS_VECTOR_TILE_LAYER_ID } from '../../config/map.config';
+import {
+  DEFAULT_MAPVIEW_ZOOM_CENTER,
+  DEFAULT_MAPVIEW_GOTO_DURATION,
+  USER_LIST_LOCATIONS_VECTOR_TILE_LAYER_ID,
+} from '../../config/map.config';
 import { generateUserListLocationsVectorTileLayerStyle } from '../../../../common/js/userListLocations/utils/userListLocationsMapVectorTiles.util';
 
 /**
@@ -21,7 +25,7 @@ import { generateUserListLocationsVectorTileLayerStyle } from '../../../../commo
  * @param {Object} esriMapView - Esri MapView object
  * @param {[]} bounds - Bounds of vector tile layer (e.g. [-82.6221, 39.8809, -82.6221, 39.8809])
  */
-export function goToUserListLocations(esriMapView, bounds) {
+export async function goToUserListLocations(esriMapView, bounds) {
   const [xmin, ymin, xmax, ymax] = bounds;
   const extent = new Extent({
     xmin,
@@ -30,7 +34,22 @@ export function goToUserListLocations(esriMapView, bounds) {
     ymax,
     spatialReference: 4326,
   });
-  esriMapView.goTo(extent, { duration: 1000 });
+
+  if (esriMapView.zoom > 3) {
+    await esriMapView.goTo(DEFAULT_MAPVIEW_ZOOM_CENTER, {
+      duration: DEFAULT_MAPVIEW_GOTO_DURATION,
+    });
+  }
+
+  const EXTENT_DIFF_MIN_SIZE = 0.05;
+  if (extent.height < EXTENT_DIFF_MIN_SIZE || extent.width < EXTENT_DIFF_MIN_SIZE) {
+    await esriMapView.goTo(
+      { center: extent.center, zoom: 14 },
+      { duration: DEFAULT_MAPVIEW_GOTO_DURATION }
+    );
+  } else {
+    await esriMapView.goTo(extent, { duration: DEFAULT_MAPVIEW_GOTO_DURATION });
+  }
 }
 
 /**

@@ -1,4 +1,5 @@
 const path = require('path');
+const moment = require('moment');
 const AWS = require('aws-sdk');
 const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
 const { compiledAssets } = require(path.resolve('./config/config'));
@@ -8,7 +9,7 @@ const {
 } = require('../service/analytics.service');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 import { getAccountUsagePercentage } from '@wri-monorepos/shared';
-import { getAccountUsersAnalysisUsage } from '@wri-monorepos/sql';
+import { getAccountUsersAnalysisUsage, getAccountActivatedTime } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 
 /**
@@ -133,8 +134,21 @@ exports.getMyOrganizationAnalysisOptions = (req, res) => {
 };
 
 exports.downladOrganizationUsersUsageExport = async (req, res) => {
-  const { startDate, endDate } = req.query;
-  const { organization_database: orgDbName, user_email: userEmail } = req.session;
+  const {
+    organization_database: orgDbName,
+    user_email: userEmail,
+    organization_id: orgId,
+  } = req.session;
+
+  const orgActivatedTime = await getAccountActivatedTime(orgId);
+  const todayAsEndDay = moment().add(1, 'day');
+  const accountActivationDate = moment(orgActivatedTime);
+  const accountLatestYearStartDate = todayAsEndDay
+    .clone()
+    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+  const startDate = accountLatestYearStartDate.format('YYYY-MM-DD');
+  const endDate = todayAsEndDay.format('YYYY-MM-DD');
 
   const awsConfig = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,

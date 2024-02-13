@@ -8,14 +8,11 @@ export const getOrganizationUsersUsageExport = `
 SELECT
     u.email AS 'Username',
     lp.list_id as 'List ID',
-    (SELECT 
-        STRING_AGG(l.analysis_type, ', ') 
-    AS Result FROM dbo.ListsProcessing l 
-    WHERE l.list_id = lp.list_id) AS 'Analysis Types',
+    STRING_AGG(lp.analysis_type, ',') AS 'Analysis Types',
     ISNULL(lp.area_analyzed_list_ha, 0) AS 'Hectares',
     ISNULL(lp.locations_analyzed, 0) AS 'Locations',        
     FORMAT(lp.analysis_start_time, 'dd MMM yyyy HH:mm:ss') + ' GMT' AS 'Date/Timestamp',
-    CASE WHEN COUNT(ll.list_id) > 0 THEN 'API' ELSE 'UI' END AS 'UI/API'
+    CASE WHEN COUNT(eu.id) > 0 THEN 'API' ELSE 'UI' END AS 'UI/API'
 FROM dbo.ListsProcessing lp
 JOIN dbo.Users u ON lp.user_id = u.id
 LEFT JOIN dbo.LargeLists ll ON lp.list_id = ll.list_id

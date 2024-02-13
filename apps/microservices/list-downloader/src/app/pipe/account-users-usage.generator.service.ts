@@ -7,6 +7,7 @@ import {
   getAccountUsersAnalysisUsageExport,
 } from '@wri-monorepos/sql';
 import { ACCOUNT_USERS_USAGE_CSV_HEADER } from '../shared/constants';
+import { analysisTypesOptions } from '@wri-monorepos/constants';
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -108,15 +109,23 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
         endDate,
       });
 
-      return accountUsersUsageData.map((dataRow: OrganizationUsersAnalysisUsageExport) => [
-        dataRow['Username'],
-        dataRow['List ID'] as string,
-        `${dataRow['Analysis Types']}`, // analysis types is a comma separated value and breaks the csv
-        dataRow['Hectares'].toString(),
-        dataRow['Locations'].toString(),
-        dataRow['Date/Timestamp'],
-        dataRow['UI/API'],
-      ]);
+      return accountUsersUsageData.map((dataRow: OrganizationUsersAnalysisUsageExport) => {
+        const analysisTypes = new Set(
+          dataRow['Analysis Types']
+            .split(',')
+            .map((analysisTypeId) => this.getAnalysisTypeShortLabel(analysisTypeId.trim()))
+        );
+
+        return [
+          dataRow['Username'],
+          dataRow['List ID'] as string,
+          `${[...analysisTypes].join(', ')}`, // analysis types shortLabels is a comma separated value
+          dataRow['Hectares'].toString(),
+          dataRow['Locations'].toString(),
+          dataRow['Date/Timestamp'],
+          dataRow['UI/API'],
+        ];
+      });
     } catch (error) {
       throw new Error(`[getFileContents] Failed to get file contents. ${error.message}`);
     }
@@ -188,5 +197,12 @@ export class AccountUsersAnalysisUsageFileService extends IFileGenerator {
     } catch (error) {
       throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
     }
+  }
+
+  private getAnalysisTypeShortLabel(analysisTypeId: string) {
+    const analysisType = analysisTypesOptions.find(
+      (analysisOpt) => analysisOpt.id === analysisTypeId
+    );
+    return analysisType ? analysisType.shortLabel : '';
   }
 }

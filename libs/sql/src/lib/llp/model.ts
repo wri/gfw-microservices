@@ -1,6 +1,6 @@
 export interface BasicFieldsFileRequest {
   file?: string;
-  listId: number;
+  listId?: number;
   key?: string;
   page?: number;
   listName?: string;
@@ -47,6 +47,11 @@ export interface ListFieldsFileRequest extends BasicFieldsFileRequest {
 export interface AlertFieldsFileRequest extends BasicFieldsFileRequest {
   selectedTimeframe: string;
   selectedAlert: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface AccountUsersUsageRequest extends BasicFieldsFileRequest {
   startDate?: string;
   endDate?: string;
 }

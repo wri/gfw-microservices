@@ -67,6 +67,8 @@ export class ListMessageHandler {
       selectedAlert,
       startDate,
       endDate,
+      type,
+      key,
     } = JSON.parse(message.Body ?? '{}');
 
     const filters = {
@@ -77,11 +79,10 @@ export class ListMessageHandler {
       ...getValues(list, true),
     };
 
-    // temporally log just to understand type error bug
-    this.logger.debug(`Received message ${JSON.stringify(filters)}...`);
-
     return {
       ...filters,
+      key: getValues(key),
+      type: getValues(type),
       // avoid logging sensitive data
       userEmail: getValues(userEmail),
       selectedTimeframe: getValues(selectedTimeframe),

@@ -1,9 +1,12 @@
 const path = require('path');
+const AWS = require('aws-sdk');
+const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
 const { compiledAssets } = require(path.resolve('./config/config'));
 const {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
 } = require('../service/analytics.service');
+const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 import { getAccountUsagePercentage } from '@wri-monorepos/shared';
 import { getAccountUsersAnalysisUsage } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
@@ -127,6 +130,60 @@ exports.getOrganizationAnalysisLimit = async (req, res) => {
 
 exports.getMyOrganizationAnalysisOptions = (req, res) => {
   res.status(200).send(Object.values(analysisTypes));
+};
+
+exports.downladOrganizationUsersUsageExport = async (req, res) => {
+  const { startDate, endDate } = req.query;
+  const { organization_database: orgDbName, user_email: userEmail } = req.session;
+
+  const awsConfig = {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
+  };
+  AWS.config.update(awsConfig);
+
+  const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
+
+  const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
+  const fileName = `AccountUsersUsage-from-${startDate}-to-${endDate}-${currentDate}.csv`;
+  const messageAttributes = {
+    userEmail: {
+      DataType: 'String',
+      StringValue: userEmail,
+    },
+    organizationDatabase: {
+      DataType: 'String',
+      StringValue: orgDbName,
+    },
+    startDate: {
+      DataType: 'String',
+      StringValue: startDate,
+    },
+    endDate: {
+      DataType: 'String',
+      StringValue: endDate,
+    },
+    key: {
+      DataType: 'String',
+      StringValue: fileName,
+    },
+    type: {
+      DataType: 'String',
+      StringValue: 'accountUsersUsage',
+    },
+  };
+
+  const message = {
+    MessageAttributes: messageAttributes,
+    MessageBody: JSON.stringify(messageAttributes),
+    MessageDeduplicationId: sqsUtils.uniqueIdGenerator(),
+    MessageGroupId: sqsUtils.uniqueIdGenerator(),
+    QueueUrl: process.env.AWS_TMP_QUEUE,
+  };
+
+  const sendSqsMessage = await sqs.sendMessage(message).promise();
+  return res.status(201).send(sendSqsMessage);
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

@@ -51,3 +51,9 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 GET https://localhost:8443/analytics/myorg/usage/users?startDate=2022-10-02&endDate=2023-10-02
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+### download analysis usage by users csv export for current organizations
+GET https://localhost:8443/analytics/myorg/usage/users/download?startDate=2022-10-02&endDate=2023-10-02
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+

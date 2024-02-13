@@ -229,13 +229,15 @@ module.exports = (app, limiter) => {
 
   app.post('/pro-manager/updateGlobalAnalysisLimits', async (req, res) => {
     console.log('POST /pro-manager/updateGlobalAnalysisLimits');
-    const { MaxAreaPerList, MaxAreaAnalyzeablePerYear, subscriptionStatusId } = req.body;
+    const { MaxAreaPerList, MaxAreaAnalyzeablePerYear, subscriptionStatusId, MaxLocationsPerYear } =
+      req.body;
 
     try {
       const response = await ProManager.updateGlobalAnalysisLimits(req, {
         subscriptionStatusId,
         MaxAreaPerList,
         MaxAreaAnalyzeablePerYear,
+        MaxLocationsPerYear,
       });
 
       res.send({
@@ -249,19 +251,15 @@ module.exports = (app, limiter) => {
 
   app.post('/pro-manager/updateAccountAnalysisLimits', async (req, res) => {
     console.log('POST /pro-manager/updateAccountAnalysisLimits');
-    const { 
-      organizationId,
-      MaxAreaPerList, 
-      MaxAreaAnalyzeablePerYear,
-      MaxLocationsPerYear
-    } = req.body;
+    const { organizationId, MaxAreaPerList, MaxAreaAnalyzeablePerYear, MaxLocationsPerYear } =
+      req.body;
 
     try {
       const response = await ProManager.updateAccountAnalysisLimits(req, {
         organizationId,
         MaxAreaPerList,
         MaxAreaAnalyzeablePerYear,
-        MaxLocationsPerYear
+        MaxLocationsPerYear,
       });
 
       res.send({

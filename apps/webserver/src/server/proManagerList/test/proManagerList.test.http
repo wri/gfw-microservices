@@ -35,7 +35,8 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 {
   "subscriptionStatusId": 1,
   "MaxAreaAnalyzeablePerYear": 1998,
-  "MaxAreaPerList": 18
+  "MaxAreaPerList": 18,
+  "MaxLocationsPerYear": 100
 }
 
 ### Update Account Analysis Limits

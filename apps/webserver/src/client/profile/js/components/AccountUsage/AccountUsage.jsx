@@ -25,7 +25,7 @@ export default function AccountUsage({ total_area_analyzed, locations_analyzed }
           <Card sx={{ padding: '1rem' }}>
             <CardContent>
               <CardLabel variant="caption" display="block" gutterBottom>
-                {profilePage.accountUsage.areaAnalyzed}
+                {profilePage.accountUsage.locationsAnalyzed}
               </CardLabel>
               <Typography variant="h4">{Number(locations_analyzed).toLocaleString()}</Typography>
             </CardContent>
@@ -35,7 +35,7 @@ export default function AccountUsage({ total_area_analyzed, locations_analyzed }
           <Card sx={{ padding: '1rem' }}>
             <CardContent>
               <CardLabel variant="caption" display="block" gutterBottom>
-                {profilePage.accountUsage.locationsAnalyzed}
+                {profilePage.accountUsage.areaAnalyzed}
               </CardLabel>
               <Typography variant="h4">{Number(total_area_analyzed).toLocaleString()}</Typography>
             </CardContent>

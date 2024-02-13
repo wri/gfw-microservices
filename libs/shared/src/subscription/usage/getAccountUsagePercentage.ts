@@ -6,8 +6,15 @@ export async function getAccountUsagePercentage({ organizationId, subscriptionSt
     subscriptionStatusId,
   });
 
-  return calculateAccountUsagePercentage(
+  const areaUsagePercentage = calculateAccountUsagePercentage(
     accountUsage.total_area_analyzed,
     accountLimits.MaxAreaAnalyzeablePerYear
   );
+
+  const locationUsagePercentage = calculateAccountUsagePercentage(
+    accountUsage.locations_analyzed,
+    accountLimits.max_locations_per_year
+  );
+
+  return Math.max(areaUsagePercentage, locationUsagePercentage);
 }

@@ -491,6 +491,17 @@ function createLayer(graphics) {
     geometryType: 'point',
     spatialReference: { wkid: 4326 },
     source: graphics,
+    renderer: {
+      type: "simple", // autocasts as new SimpleRenderer()
+      symbol: {
+        type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+        color: "palegreen",
+        outline: {
+          color: "seagreen",
+          width: 0.5
+        }
+      }
+    }
   });
 }
 

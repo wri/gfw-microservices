@@ -1,10 +1,17 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { TokenService } from '../api-keys/token.service';
+import { createFeatureFlagsService } from '@wri-monorepos/feature-flags';
+import { ConfigService } from '@nestjs/config';
+import { ClientStoreConnection } from '../shared/client-store-connection';
 // TODO: Verify the key is valid and extract the organization data from database
 @Injectable()
 export class ApiKeyMiddleware implements NestMiddleware {
-  constructor(private readonly tokenService: TokenService) {}
+  constructor(
+    private readonly tokenService: TokenService,
+    private readonly configService: ConfigService,
+    private readonly clientStoreConnection: ClientStoreConnection
+  ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
     const apiKey = req.headers['x-api-key'] as string;
@@ -14,6 +21,22 @@ export class ApiKeyMiddleware implements NestMiddleware {
 
     const apiKeyRecord = await this.tokenService.findToken(apiKey);
     if (!apiKeyRecord) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const databaseName = this.configService.get<string>('MSSQL_DATABASE');
+    const connection = await this.clientStoreConnection.getConnection(databaseName);
+
+    const featureFlagsService = createFeatureFlagsService(connection);
+    const flags = await featureFlagsService.getFeatureFlagsForCurrentOrg(
+      apiKeyRecord.organizationId
+    );
+
+    const hasFlagForExternalApiEnabled = flags.some(
+      (f) => f.flagId === 'PermanentFlagForExternalApiKeys'
+    );
+
+    if (!hasFlagForExternalApiEnabled) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
     // Work in progress, ticket needs to be created to implement this

@@ -18,6 +18,8 @@ import {
 } from '../config';
 import { ApiKeyMiddleware } from '../middleware/api.middleware';
 import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
+import { OrganizationService } from '../list-analysis/organization.service';
+import { ClientStoreConnection } from '../shared/client-store-connection';
 
 // This needs to be at the beginning of the file to ensure that the '.env' file
 // is loaded into process.env before any code reads process.env
@@ -32,9 +34,10 @@ const envModule = ConfigModule.forRoot({
     createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes]),
     TokenModule,
     ListsAnalysisModule,
+    TypeOrmModule.forFeature([Organization], 'default'),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, OrganizationService, ClientStoreConnection],
 })
 export class AppModule {
   // Configure protected routes

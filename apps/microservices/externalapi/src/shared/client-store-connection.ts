@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { TEST_ENVIRONMENT, CONNECTION_TYPE_SQLITE, CONNECTION_TYPE_MSSQL } from '../config';
 import { ExternalUpload } from '../list-analysis/external-upload.entity';
 import { ListsAnalysisStatus } from '../list-analysis/list-analysis-status.entity';
+import { FeatureFlags } from '@wri-monorepos/feature-flags';
 
 export interface ConnectionCacheItem {
   connection: Promise<DataSource>;
@@ -24,7 +25,7 @@ export class ClientStoreConnection {
           database,
           synchronize: env === TEST_ENVIRONMENT,
           logging: true,
-          entities: [ExternalUpload, ListsAnalysisStatus],
+          entities: [ExternalUpload, ListsAnalysisStatus, FeatureFlags],
           username: this.config.get<string>('MSSQL_USERNAME'),
           password: this.config.get<string>('MSSQL_PASSWORD'),
           host: this.config.get<string>('MSSQL_HOSTNAME'),
@@ -48,7 +49,6 @@ export class ClientStoreConnection {
       } catch (error) {
         Logger.error(`Data Source ${database} initialization error on env: ${env}`, error);
         throw new Error(`Data Source initialization error`);
-        1;
       }
     }
 

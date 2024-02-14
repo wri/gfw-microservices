@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ListUploadController } from '../list-upload.controller';
 import { ListUploadNewRequest, ListUploadNewResponse } from '../list-upload-new.dto';
 import { ListAnalysisService } from '../list-analysis.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { Organization } from '../../api-keys/organization.entity';
@@ -122,7 +122,23 @@ describe('ListUploadController', () => {
         ListAnalysisMessageModule,
       ],
       controllers: [ListUploadController],
-      providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
+      providers: [
+        ListAnalysisService,
+        UserService,
+        ClientStoreConnection,
+        OrganizationService,
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              if (key === 'AWS_ANALYSIS_QUEUE' || key === 'AWS_DOWNLOAD_QUEUE') {
+                return 'https://example.com';
+              }
+              return null;
+            }),
+          },
+        },
+      ],
     }).compile();
 
     controller = module.get<ListUploadController>(ListUploadController);

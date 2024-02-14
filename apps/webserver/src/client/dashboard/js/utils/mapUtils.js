@@ -486,6 +486,31 @@ function createLayer(graphics) {
         alias: 'Type',
         type: 'string',
       },
+      {
+        name: 'numberOfAlerts',
+        alias: 'numberOfAlerts',
+        type: 'integer',
+      },
+      {
+        name: 'numberOfLocations',
+        alias: 'numberOfLocations',
+        type: 'integer',
+      },
+      {
+        name: 'gadmid_0',
+        alias: 'gadmid_0',
+        type: 'string',
+      },
+      {
+        name: 'gadmid_1',
+        alias: 'gadmid_1',
+        type: 'string',
+      },
+      {
+        name: 'gadmid_2',
+        alias: 'gadmid_2',
+        type: 'string',
+      },
     ],
     objectIdField: 'ObjectID',
     geometryType: 'point',

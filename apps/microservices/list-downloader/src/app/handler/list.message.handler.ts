@@ -24,8 +24,12 @@ export class ListMessageHandler {
     const filters = this.reorganizeFilters(message);
 
     const { listId } = filters;
+
+    if (listId) {
+      this.logger.log(`Removing message for the list ${listId}...`);
+    }
+
     // TODO: improve remove message should be automatically
-    listId && this.logger.log(`Removing message for the list ${listId}...`);
     await this.removeMessage(message);
     await this.pipeService.makeFile(filters);
   }

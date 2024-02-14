@@ -48,7 +48,7 @@ const AddLocationMap = (props) => {
             mapView={mapView}
             sketchViewModel={sketchViewModel}
             setSketchViewModel={setSketchViewModel}
-            {...props}
+            setGeometry={props.setGeometry}
           />
         )}
         {isPolygonCoordinatesInputAvailable && mapView && (

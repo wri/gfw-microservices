@@ -90,8 +90,17 @@ exports.getMyOrganizationAnalysisUsage = async (req, res) => {
 };
 
 exports.getMyOrganizationUsersAnalysisUsage = async (req, res) => {
-  let { startDate, endDate } = req.query;
-  const { organization_database: orgDbName } = req.session;
+  const { organization_database: orgDbName, organization_id } = req.session;
+
+  const orgActivatedTime = await getAccountActivatedTime(organization_id);
+  const todayAsEndDay = moment().add(1, 'day');
+  const accountActivationDate = moment(orgActivatedTime);
+  const accountLatestYearStartDate = todayAsEndDay
+    .clone()
+    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+  const startDate = accountLatestYearStartDate.format('YYYY-MM-DD');
+  const endDate = todayAsEndDay.format('YYYY-MM-DD');
 
   const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsage(orgDbName, {
     startDate,

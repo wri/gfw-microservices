@@ -4,7 +4,7 @@ block head
   script(src=common)
 block content
   div#dashboard-mount
-  link(rel='stylesheet', href='https://js.arcgis.com/4.6/esri/css/main.css')
+  link(rel='stylesheet', href='https://js.arcgis.com/4.9/esri/css/main.css')
   include ./svg.pug
   script.
     var userLists = !{JSON.stringify(userLists)};
@@ -17,7 +17,7 @@ block content
     var listStatuses = !{JSON.stringify(listStatuses)};
     var userInfo = !{JSON.stringify(userInfo)};
 
-  script(src='https://js.arcgis.com/4.6/', async)
+  script(src='https://js.arcgis.com/4.9/', async)
   script.
     function makePath (base, path) {
       var position = base.length - 1;

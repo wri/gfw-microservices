@@ -12,20 +12,20 @@ import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
 import { ListsAnalysisStatus } from '../list-analysis-status.entity';
 import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-status.repository.mock';
+import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
   let organizationService: OrganizationService;
+  let module: TestingModule;
 
   beforeAll(async () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
       .withArgs(ListsAnalysisStatus)
       .returns(new ListAnalysisStatusRepositoryMock());
-  });
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
           name: 'default',
@@ -40,9 +40,13 @@ describe('ListAnalysisService', () => {
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,
         }),
+        ListAnalysisMessageModule,
       ],
       providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
     }).compile();
+  });
+
+  beforeEach(async () => {
     organizationService = module.get<OrganizationService>(OrganizationService);
     service = module.get<ListAnalysisService>(ListAnalysisService);
   });

@@ -19,7 +19,7 @@ import { DataSource } from 'typeorm';
 import { ExternalUpload } from '../external-upload.entity';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
-
+import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 jest.mock('@aws-sdk/client-s3', () => {
   const keyMap: { [key: string]: number } = {
     mock_key_123: 500,
@@ -119,6 +119,7 @@ describe('ListUploadController', () => {
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,
         }),
+        ListAnalysisMessageModule,
       ],
       controllers: [ListUploadController],
       providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],

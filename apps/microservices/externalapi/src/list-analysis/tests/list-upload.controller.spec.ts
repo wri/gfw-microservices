@@ -131,7 +131,7 @@ describe('ListUploadController', () => {
           provide: ConfigService,
           useValue: {
             get: jest.fn((key: string) => {
-              if (key === 'AWS_ANALYSIS_QUEUE' || key === 'AWS_DOWNLOAD_QUEUE') {
+              if (key === 'AWS_ANALYSIS_QUEUE' || key === 'AWS_DOWNLOAD_QUEUE' || key === 'AWS_REGION') {
                 return 'https://example.com';
               }
               return null;

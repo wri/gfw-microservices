@@ -494,18 +494,6 @@ function createLayer(graphics) {
   });
 }
 
-function parseGADMId(id, zoomLevel) {
-  const adminIDs = id.split('.');
-  switch (zoomLevel) {
-    case 0:
-      return adminIDs[0];
-    case 1:
-      return [adminIDs[0], adminIDs[1]].join('.');
-    default:
-      return id;
-  }
-}
-
 function updateLayer(
   map,
   view,
@@ -625,7 +613,6 @@ module.exports = {
   getAlertsTotal,
   updateLayer,
   getLayerGraphicsJSON,
-  parseGADMId,
   getExtent,
   getMapExtent,
 };

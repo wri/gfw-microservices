@@ -2,15 +2,14 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { TokenService } from '../api-keys/token.service';
 import { createFeatureFlagsService } from '@wri-monorepos/feature-flags';
-import { ConfigService } from '@nestjs/config';
-import { ClientStoreConnection } from '../shared/client-store-connection';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 // TODO: Verify the key is valid and extract the organization data from database
 @Injectable()
 export class ApiKeyMiddleware implements NestMiddleware {
   constructor(
     private readonly tokenService: TokenService,
-    private readonly configService: ConfigService,
-    private readonly clientStoreConnection: ClientStoreConnection
+    @InjectDataSource('default') private connection: DataSource
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -24,10 +23,7 @@ export class ApiKeyMiddleware implements NestMiddleware {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const databaseName = this.configService.get<string>('MSSQL_DATABASE');
-    const connection = await this.clientStoreConnection.getConnection(databaseName);
-
-    const featureFlagsService = createFeatureFlagsService(connection);
+    const featureFlagsService = createFeatureFlagsService(this.connection);
     const flags = await featureFlagsService.getFeatureFlagsForCurrentOrg(
       apiKeyRecord.organizationId
     );

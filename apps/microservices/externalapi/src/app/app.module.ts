@@ -18,8 +18,7 @@ import {
 } from '../config';
 import { ApiKeyMiddleware } from '../middleware/api.middleware';
 import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
-import { OrganizationService } from '../list-analysis/organization.service';
-import { ClientStoreConnection } from '../shared/client-store-connection';
+import { FeatureFlags } from '@wri-monorepos/feature-flags';
 
 // This needs to be at the beginning of the file to ensure that the '.env' file
 // is loaded into process.env before any code reads process.env
@@ -31,13 +30,12 @@ const envModule = ConfigModule.forRoot({
 @Module({
   imports: [
     envModule,
-    createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes]),
+    createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes, FeatureFlags]),
     TokenModule,
     ListsAnalysisModule,
-    TypeOrmModule.forFeature([Organization], 'default'),
   ],
   controllers: [AppController],
-  providers: [AppService, OrganizationService, ClientStoreConnection],
+  providers: [AppService],
 })
 export class AppModule {
   // Configure protected routes

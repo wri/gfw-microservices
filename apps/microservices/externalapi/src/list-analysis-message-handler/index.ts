@@ -1,7 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { SqsModule } from '@ssut/nestjs-sqs';
 import * as AWS from 'aws-sdk';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { AnalysisMessageHandler } from './analysis-message-handler';
 import { AWS_ANALYSIS_QUEUE_IDENTIFIER, AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { ListsAnalysisModule } from '../list-analysis';
@@ -14,10 +14,8 @@ AWS.config.update({
 
 @Module({
   imports: [
-    ConfigModule,
     ListsAnalysisModule,
     SqsModule.registerAsync({
-      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
         const env = config.get<string>('NODE_ENV');

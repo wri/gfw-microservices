@@ -24,7 +24,7 @@ import { ExternalUpload } from '../external-upload.entity';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
-import { SqsModule } from '@ssut/nestjs-sqs';
+import { SqsModule, SqsMessageHandler } from '@ssut/nestjs-sqs';
 
 // Mock ConfigService
 const mockConfigService = {
@@ -172,7 +172,7 @@ describe('ListUploadController', () => {
           type: 'sqlite',
           database: ':memory:',
           synchronize: true,
-          logging: true,
+          logging: false,
           entities: [Organization, ExternalAPIKey, UserRoutes],
         }),
         TypeOrmModule.forFeature([ExternalAPIKey, Organization, UserRoutes], 'default'),
@@ -202,6 +202,8 @@ describe('ListUploadController', () => {
     sinon.stub(SqsModule, 'registerAsync').returns({
       register: jest.fn(),
     });
+
+    sinon.stub(SqsMessageHandler);
 
     app = module.createNestApplication();
     await app.init();

@@ -24,8 +24,8 @@ AWS.config.update({
           consumers: [
             {
               name: AWS_ANALYSIS_QUEUE_IDENTIFIER,
-              queueUrl: config.get<string>('AWS_ANALYSIS_QUEUE') ?? 'test',
-              region: config.get<string>('AWS_REGION') ?? 'test',
+              queueUrl: config.get<string>('AWS_ANALYSIS_QUEUE'),
+              region: config.get<string>('AWS_REGION'),
               waitTimeSeconds: 1,
               batchSize: 3,
               terminateVisibilityTimeout: true,
@@ -35,8 +35,8 @@ AWS.config.update({
           producers: [
             {
               name: AWS_DOWNLOADER_QUEUE_IDENTIFIER,
-              queueUrl: config.get<string>('AWS_DOWNLOAD_QUEUE') ?? 'test',
-              region: config.get<string>('AWS_REGION') ?? 'test',
+              queueUrl: config.get<string>('AWS_DOWNLOAD_QUEUE'),
+              region: config.get<string>('AWS_REGION'),
             },
           ],
         };

@@ -1,7 +1,5 @@
 const path = require('path');
 const moment = require('moment');
-const AWS = require('aws-sdk');
-const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
 const { compiledAssets } = require(path.resolve('./config/config'));
 const {
   getOrganizationAnalysisUsage,
@@ -11,6 +9,7 @@ const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorT
 import { getAccountUsagePercentage } from '@wri-monorepos/shared';
 import { getAccountUsersAnalysisUsage, getAccountActivatedTime } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
+const { sendMessageToQueue } = require('../../downloader');
 
 /**
  * @function analytics
@@ -144,7 +143,7 @@ exports.getMyOrganizationAnalysisOptions = (req, res) => {
 
 exports.downladOrganizationUsersUsageExport = async (req, res) => {
   const {
-    organization_database: orgDbName,
+    organization_database: organizationDatabase,
     user_email: userEmail,
     organization_id: orgId,
   } = req.session;
@@ -159,54 +158,24 @@ exports.downladOrganizationUsersUsageExport = async (req, res) => {
   const startDate = accountLatestYearStartDate.format('YYYY-MM-DD');
   const endDate = todayAsEndDay.format('YYYY-MM-DD');
 
-  const awsConfig = {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION,
-  };
-  AWS.config.update(awsConfig);
-
-  const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
-
   const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
   const fileName = `AccountUsersUsage-from-${startDate}-to-${endDate}-${currentDate}.csv`;
-  const messageAttributes = {
-    userEmail: {
-      DataType: 'String',
-      StringValue: userEmail,
-    },
-    organizationDatabase: {
-      DataType: 'String',
-      StringValue: orgDbName,
-    },
-    startDate: {
-      DataType: 'String',
-      StringValue: startDate,
-    },
-    endDate: {
-      DataType: 'String',
-      StringValue: endDate,
-    },
-    key: {
-      DataType: 'String',
-      StringValue: fileName,
-    },
-    type: {
-      DataType: 'String',
-      StringValue: 'accountUsersUsage',
-    },
-  };
 
-  const message = {
-    MessageAttributes: messageAttributes,
-    MessageBody: JSON.stringify(messageAttributes),
-    MessageDeduplicationId: sqsUtils.uniqueIdGenerator(),
-    MessageGroupId: sqsUtils.uniqueIdGenerator(),
-    QueueUrl: process.env.AWS_TMP_QUEUE,
-  };
+  const filters = sendMessageToQueue(
+    {
+      userEmail,
+      organizationDatabase,
+      startDate,
+      endDate,
+      fileName,
+    },
+    'accountUsersUsage'
+  );
 
-  const sendSqsMessage = await sqs.sendMessage(message).promise();
-  return res.status(201).send(sendSqsMessage);
+  return res.status(201).send({
+    success: true,
+    message: filters,
+  });
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

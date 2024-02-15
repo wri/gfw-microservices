@@ -497,6 +497,11 @@ function createLayer(graphics) {
         type: 'integer',
       },
       {
+        name: 'percentageOfLocations',
+        alias: 'percentageOfLocations',
+        type: 'double'
+      },
+      {
         name: 'gadmid_0',
         alias: 'gadmid_0',
         type: 'string',
@@ -517,16 +522,29 @@ function createLayer(graphics) {
     spatialReference: { wkid: 4326 },
     source: graphics,
     renderer: {
-      type: "simple", // autocasts as new SimpleRenderer()
+      type: 'simple',
       symbol: {
-        type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
-        color: "palegreen",
+        type: 'simple-marker',
+        color: 'green',  // getSymbolColor(feature, maxDensity),
         outline: {
-          color: "seagreen",
-          width: 0.5
+          width: 0,
+          color: [0, 0, 0, 0],
+        },
+      },
+      visualVariables: [
+        {
+          type: 'size',
+          field: 'percentageOfLocations',
+          valueExpression: 'Math.floor($feature.percentageOfLocations * 100)',
+          stops: [
+            { value: 25, size: '20px' },
+            { value: 50, size: '40px' },
+            { value: 75, size: '60px' },
+            { value: 100, size: '80px' }
+          ]
         }
-      }
-    }
+      ],
+    },
   });
 }
 

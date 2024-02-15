@@ -20,6 +20,17 @@ import { ExternalUpload } from '../external-upload.entity';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
+
+// Mock ConfigService
+const mockConfigService = {
+  get: jest.fn().mockImplementation((key: string) => {
+    if (key === 'AWS_ANALYSIS_QUEUE' || key === 'AWS_DOWNLOAD_QUEUE')
+      return 'https://sqs.us-west-2.amazonaws.com/123456789012/MyQueue';
+    if (key === 'AWS_REGION') return 'us-west-2';
+    if (key === 'NODE_ENV') return 'test';
+  }),
+};
+
 jest.mock('@aws-sdk/client-s3', () => {
   const keyMap: { [key: string]: number } = {
     mock_key_123: 500,
@@ -115,35 +126,18 @@ describe('ListUploadController', () => {
           entities: [Organization, ExternalAPIKey, UserRoutes],
         }),
         TypeOrmModule.forFeature([ExternalAPIKey, Organization, UserRoutes], 'default'),
+        ListAnalysisMessageModule,
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,
         }),
-        ListAnalysisMessageModule,
       ],
       controllers: [ListUploadController],
-      providers: [
-        ListAnalysisService,
-        UserService,
-        ClientStoreConnection,
-        OrganizationService,
-        {
-          provide: ConfigService,
-          useValue: {
-            get: jest.fn((key: string) => {
-              if (key === 'AWS_ANALYSIS_QUEUE' || key === 'AWS_DOWNLOAD_QUEUE') {
-                return 'https://example.com';
-              }
-
-              if (key === 'AWS_REGION') {
-                return 'test';
-              }
-              return null;
-            }),
-          },
-        },
-      ],
-    }).compile();
+      providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
+    })
+      .overrideProvider(ConfigService)
+      .useValue(mockConfigService) // Use the mock ConfigService
+      .compile();
 
     controller = module.get<ListUploadController>(ListUploadController);
     userService = module.get<UserService>(UserService);

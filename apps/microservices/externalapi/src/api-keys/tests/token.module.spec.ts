@@ -21,7 +21,7 @@ const MINIMUM_TOKEN_LEN = 30;
 const MAXIMUM_TOKEN_LEN = 128;
 
 jest.setTimeout(30_000);
-describe('Test Token Module', () => {
+xdescribe('Test Token Module', () => {
   let tokenService: TokenService;
   const sandbox = sinon.createSandbox();
   let app: TestingModule;

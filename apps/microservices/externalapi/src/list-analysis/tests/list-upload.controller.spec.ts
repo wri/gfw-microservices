@@ -24,8 +24,8 @@ import { ExternalUpload } from '../external-upload.entity';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
-import { SqsService } from '@ssut/nestjs-sqs';
-//import { SqsModule, SqsMessageHandler } from '@ssut/nestjs-sqs';
+import { SqsService, SqsModule, SqsMessageHandler } from '@ssut/nestjs-sqs';
+//import { } from '@ssut/nestjs-sqs';
 
 // Mock ConfigService
 const mockConfigService = {
@@ -203,11 +203,11 @@ describe('ListUploadController', () => {
     sinon.stub(SqsService.prototype, 'send').returns({
       register: jest.fn(),
     });
-    /* sinon.stub(SqsModule, 'registerAsync').returns({
+    sinon.stub(SqsModule, 'registerAsync').returns({
       register: jest.fn(),
     });
 
-    sinon.stub(SqsMessageHandler); */
+    sinon.stub(SqsMessageHandler);
 
     app = module.createNestApplication();
     await app.init();

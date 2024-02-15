@@ -1170,7 +1170,7 @@ module.exports = (app, limiter) => {
           res.send(response);
         })
         .catch((err) => {
-          res.send(500, err);
+          res.status(500).send(err);
         });
     });
   });

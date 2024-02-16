@@ -22,7 +22,7 @@ import { INestApplication } from '@nestjs/common';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { SqsService, SqsModule, SqsMessageHandler } from '@ssut/nestjs-sqs';
 //import { } from '@ssut/nestjs-sqs';
-
+import { Consumer } from 'sqs-consumer';
 // Mock ConfigService
 const mockConfigService = {
   get: jest.fn().mockImplementation((key: string) => {
@@ -205,6 +205,9 @@ describe('ListUploadController', () => {
     });
 
     sinon.stub(SqsMessageHandler);
+    sinon.stub(Consumer.prototype, 'poll').returns({
+      register: jest.fn(),
+    });
 
     app = module.createNestApplication();
     await app.init();

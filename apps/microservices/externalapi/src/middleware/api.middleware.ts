@@ -33,7 +33,7 @@ export class ApiKeyMiddleware implements NestMiddleware {
     );
 
     if (!hasFlagForExternalApiEnabled) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      return res.status(401).json({ message: 'Feature not authorized' });
     }
     // Work in progress, ticket needs to be created to implement this
     req.user = {

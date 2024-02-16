@@ -200,7 +200,8 @@ describe('ListUploadController', () => {
       register: jest.fn(),
     });
     sinon.stub(SqsModule, 'registerAsync').returns({
-      register: jest.fn(),
+      consumers: [],
+      producers: [],
     });
 
     sinon.stub(SqsMessageHandler);

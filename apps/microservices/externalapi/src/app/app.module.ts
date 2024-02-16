@@ -44,6 +44,7 @@ export class AppModule {
       .apply(ApiKeyMiddleware)
       .forRoutes(
         '/v1/list/:listId/analysis/:analysisId/status',
+        '/v1/list/:listId/analysis/ALERTS/generate',
         '/v1/list/upload_new',
         '/v1/prepare_upload'
       );

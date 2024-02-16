@@ -1,13 +1,15 @@
-import { Controller, Get, Param, Req } from '@nestjs/common';
-import { ListAnalysisResponse } from './list-analysis.dto';
+import { Controller, Get, Post, Param, Req, Body } from '@nestjs/common';
+import {
+  AlertsGenerateRequest,
+  ListAnalysisResponse,
+  alertsGenerateBodySchema,
+  analysisIdSchema,
+  listIdSchema,
+} from './list-analysis.dto';
 import { ListAnalysisService } from './list-analysis.service';
 import { ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { requestSchema, RequestSchema } from '../types/request-schema';
-import { z } from 'zod';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
-
-const listIdSchema = z.coerce.number();
-const analysisIdSchema = z.enum(['ALERTS', 'FCD']);
 
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
@@ -22,7 +24,6 @@ export class ListAnalysisController {
     @Req() request: RequestSchema
   ): Promise<ListAnalysisResponse> {
     new ZodValidationPipe(requestSchema).transform(request);
-
     const {
       user: { organizationId },
     } = request;
@@ -34,5 +35,28 @@ export class ListAnalysisController {
     });
 
     return analysisStatus;
+  }
+
+  @Post(':listId/analysis/Alerts/generate')
+  async createAnalysisStatus(
+    @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
+    @Body(new ZodValidationPipe(alertsGenerateBodySchema)) alertsGenerate: AlertsGenerateRequest,
+    @Req() request: RequestSchema
+  ) {
+    new ZodValidationPipe(requestSchema).transform(request);
+
+    const {
+      user: { organizationId },
+    } = request;
+
+    const { startDate, endDate, userEmail } = alertsGenerate;
+
+    await this.listAnalysisService.generateAlert({
+      organizationId,
+      startDate,
+      endDate,
+      userEmail,
+      listId,
+    });
   }
 }

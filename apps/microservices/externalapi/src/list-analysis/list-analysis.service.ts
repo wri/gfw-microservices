@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ListAnalysisResponse } from './list-analysis.dto';
+import { AlertsGenerateBodySchema, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
@@ -20,6 +20,9 @@ import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import { getListStatusString, listStatus } from '@wri-monorepos/constants';
+import { SqsService } from '@ssut/nestjs-sqs';
+import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
+import * as tmp from 'tmp';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -42,7 +45,8 @@ export class ListAnalysisService {
     private config: ConfigService,
     private userService: UserService,
     private clientStoreConnection: ClientStoreConnection,
-    private organizationService: OrganizationService
+    private organizationService: OrganizationService,
+    private readonly sqsService: SqsService
   ) {
     this.LLP_BASE_URL = this.config.get<string>('LLP_BASE_URL');
     this.AWS_ACCESS_KEY_ID = this.config.get<string>('AWS_ACCESS_KEY_ID');
@@ -219,7 +223,11 @@ export class ListAnalysisService {
         analysisIds: analysisIds,
       });
     } catch (error) {
-      throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
+      if (error?.response?.status === HttpStatus.BAD_REQUEST) {
+        throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
+      }
+
+      throwCustomErrorResponse('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     const listId = largeListCreated.data.list_id;
 
@@ -261,5 +269,66 @@ export class ListAnalysisService {
     };
 
     return response;
+  }
+
+  async generateAlert({
+    startDate,
+    endDate,
+    organizationId,
+    listId,
+    userEmail,
+  }: AlertsGenerateBodySchema & { organizationId: number; listId: number }) {
+    const organization = await this.getOrganizationDetails(organizationId);
+    const fileName = generateRandomFilename('');
+
+    const tmpPath = tmp.tmpNameSync();
+    const key = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
+
+    const sqsMessage = {
+      list: {
+        DataType: 'String',
+        StringValue: `{"listId":${listId},"listView":"forest_change"}`,
+      },
+      userEmail: {
+        DataType: 'String',
+        StringValue: userEmail,
+      },
+      organizationDatabase: {
+        DataType: 'String',
+        StringValue: organization.organizationDb,
+      },
+      file: {
+        DataType: 'String',
+        StringValue: `{"type":"everything","key":"${fileName}","file":"csv"}`,
+      },
+      selectedTimeframe: {
+        DataType: 'String',
+        StringValue: 'DAY',
+      },
+      selectedAlert: {
+        DataType: 'String',
+        StringValue: 'GLAD',
+      },
+      key: {
+        DataType: 'String',
+        StringValue: key,
+      },
+      startDate: {
+        DataType: 'String',
+        StringValue: startDate.toISOString(),
+      },
+      endDate: {
+        DataType: 'String',
+        StringValue: endDate.toISOString(),
+      },
+    };
+
+    await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
+      id: 'dl' + listId,
+      body: sqsMessage,
+      messageAttributes: sqsMessage,
+      delaySeconds: 0,
+      groupId: 'default',
+    });
   }
 }

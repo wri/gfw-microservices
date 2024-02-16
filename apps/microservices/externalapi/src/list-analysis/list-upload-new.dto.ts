@@ -5,7 +5,7 @@ export const listUploadNewRequestSchema = z.object({
   uploadId: z.string(),
   listName: z.string(),
   templateId: z.number(),
-  analysisIDs: z.enum(['ALERTS', 'FCD']),
+  analysisIDs: z.enum(['Alerts', 'FCD']).transform((x) => x.toUpperCase()),
 });
 export class ListUploadNewRequest {
   @ApiProperty()

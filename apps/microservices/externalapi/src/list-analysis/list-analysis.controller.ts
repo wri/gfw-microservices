@@ -24,7 +24,6 @@ export class ListAnalysisController {
     @Req() request: RequestSchema
   ): Promise<ListAnalysisResponse> {
     new ZodValidationPipe(requestSchema).transform(request);
-
     const {
       user: { organizationId },
     } = request;
@@ -38,7 +37,7 @@ export class ListAnalysisController {
     return analysisStatus;
   }
 
-  @Post(':listId/analysis/ALERTS/generate')
+  @Post(':listId/analysis/Alerts/generate')
   async createAnalysisStatus(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Body(new ZodValidationPipe(alertsGenerateBodySchema)) alertsGenerate: AlertsGenerateRequest,

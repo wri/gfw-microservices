@@ -1,10 +1,10 @@
 import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { z } from 'zod';
+import * as moment from 'moment';
 
 export const listIdSchema = z.coerce.number();
-export const analysisIdSchema = z.enum(['ALERTS', 'FCD']);
-import * as moment from 'moment';
+export const analysisIdSchema = z.enum(['Alerts', 'FCD']).transform((x) => x.toUpperCase());
 
 export class ListAnalysisResponse {
   @ApiProperty()

@@ -223,7 +223,11 @@ export class ListAnalysisService {
         analysisIds: analysisIds,
       });
     } catch (error) {
-      throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
+      if (error?.response?.status === HttpStatus.BAD_REQUEST) {
+        throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
+      }
+
+      throwCustomErrorResponse('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     const listId = largeListCreated.data.list_id;
 

@@ -48,7 +48,6 @@ export class ClientStoreConnection {
       } catch (error) {
         Logger.error(`Data Source ${database} initialization error on env: ${env}`, error);
         throw new Error(`Data Source initialization error`);
-        1;
       }
     }
 

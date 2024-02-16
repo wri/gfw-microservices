@@ -5,6 +5,7 @@ import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
 import { ClientStoreConnection, List } from '@wri-monorepos/sql';
 import { createDirectory } from '../shared/file.utils';
+import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
 
 @Injectable()
@@ -14,6 +15,7 @@ export class PipeService {
   constructor(
     private readonly afiGeneratorService: AfiGeneratorService,
     private readonly listGeneratorService: ListGeneratorService,
+    private readonly accountUsersUsageGeneratorService: AccountUsersAnalysisUsageFileService,
     private readonly alertsGeneratorService: AlertsGeneratorService,
     private readonly clientStoreConnection: ClientStoreConnection
   ) {}
@@ -21,19 +23,22 @@ export class PipeService {
   public async makeFile(filters: BasicFieldsFileRequest) {
     const { type, listId } = filters;
 
-    this.logger.log(`(${listId}) - Receive request to build file for list`);
+    const pipeHandler = this.getGeneratorBaseOnType()[type];
 
-    const list_name = await this.getListName(filters);
+    if (listId) {
+      this.logger.log(`Building file for list ID: [${listId}]`);
+      const listName = await this.getListName(filters);
 
-    filters = {
-      ...filters,
-      listName: list_name,
-      rowsPerPage: MAX_NUMBER_OF_ROWS_PER_PAGE,
-    };
+      filters = {
+        ...filters,
+        listName,
+        rowsPerPage: MAX_NUMBER_OF_ROWS_PER_PAGE,
+      };
 
-    this.createDirectory(filters);
+      this.createDirectory(filters);
+    }
 
-    this.getGeneratorBaseOnType()[type].makeFile(filters);
+    pipeHandler.makeFile(filters);
   }
 
   private async getListName(filters: BasicFieldsFileRequest) {
@@ -64,6 +69,7 @@ export class PipeService {
       southAmericaTCL: this.listGeneratorService,
       southEastAsiaOverlap: this.listGeneratorService,
       southEastAsiaTCL: this.listGeneratorService,
+      accountUsersUsage: this.accountUsersUsageGeneratorService,
     };
   };
 

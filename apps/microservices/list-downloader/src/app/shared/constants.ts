@@ -1574,3 +1574,13 @@ export const AFI_HEADER = {
   naturalForestLossHA: 'Natural Forest Loss (ha) (Beta)',
   negligibleRisk: 'Negligible Risk (%)',
 };
+
+export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
+  'Username',
+  'List ID',
+  'Analysis Types',
+  'Hectares',
+  'Locations',
+  'Date/Timestamp',
+  'UI/API',
+];

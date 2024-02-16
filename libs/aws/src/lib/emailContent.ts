@@ -9,12 +9,16 @@ type Content = {
   extra?: string;
 };
 
-export function createEmailContent(
+interface DefaultEmailContentFilter {
+  listName?: string;
+  location?: string;
+}
+export function createEmailContent<CustomFilter>(
   type: string,
-  filter: { listName: string; location?: string },
+  filter: DefaultEmailContentFilter | CustomFilter,
   context: { sender: string }
 ): Content {
-  const { listName, location } = filter;
+  const { listName, location } = filter as DefaultEmailContentFilter;
   const { sender } = context;
 
   const emailMessage = {
@@ -46,6 +50,15 @@ export function createEmailContent(
       icon: 'https://dpptfqp76xood.cloudfront.net/images/pending_black_24dp.png',
       title: 'B2B connection invitation',
       body: [`${sender} has invited you to create an new connection.`],
+    },
+    accountUsersUsageExportSuccess: {
+      icon: 'https://dpptfqp76xood.cloudfront.net/images/check_circle_black_24dp.png',
+      title: 'File generation completed successfully',
+      body: [`Your account's usage breakdown by users is ready to be downloaded.`],
+      cta: {
+        href: `${location}`,
+        body: 'DOWNLOAD FILE',
+      },
     },
   };
 

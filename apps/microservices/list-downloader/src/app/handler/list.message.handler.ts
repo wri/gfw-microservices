@@ -24,8 +24,12 @@ export class ListMessageHandler {
     const filters = this.reorganizeFilters(message);
 
     const { listId } = filters;
+
+    if (listId) {
+      this.logger.log(`Removing message for the list ${listId}...`);
+    }
+
     // TODO: improve remove message should be automatically
-    this.logger.log(`Removing message for the list ${listId}...`);
     await this.removeMessage(message);
     await this.pipeService.makeFile(filters);
   }
@@ -67,6 +71,8 @@ export class ListMessageHandler {
       selectedAlert,
       startDate,
       endDate,
+      type,
+      key,
     } = JSON.parse(message.Body ?? '{}');
 
     const filters = {
@@ -77,11 +83,10 @@ export class ListMessageHandler {
       ...getValues(list, true),
     };
 
-    // temporally log just to understand type error bug
-    this.logger.debug(`Received message ${JSON.stringify(filters)}...`);
-
     return {
       ...filters,
+      key: getValues(key),
+      type: getValues(type),
       // avoid logging sensitive data
       userEmail: getValues(userEmail),
       selectedTimeframe: getValues(selectedTimeframe),

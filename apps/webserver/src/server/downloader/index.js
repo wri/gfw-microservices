@@ -3,11 +3,13 @@ import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import buildAfiMessage from './afi.message';
 import buildListMessage from './list.message';
 import buildAlertsMessage from './alerts.message';
+import buildAccountUsersUsageMessage from './account.users.usage.message';
 
 const buildMessageMethods = {
   afi: buildAfiMessage,
   list: buildListMessage,
   alerts: buildAlertsMessage,
+  accountUsersUsage: buildAccountUsersUsageMessage,
 };
 
 const sendMessageToQueue = async (request, source) => {

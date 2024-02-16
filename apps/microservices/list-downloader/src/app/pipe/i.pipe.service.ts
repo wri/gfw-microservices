@@ -33,7 +33,7 @@ export abstract class IPipeService {
   public async startEmail(filters: BasicFieldsFileRequest) {
     const { listName, userEmail } = filters;
     if (userEmail) {
-      await this.emailService.sendEmail(
+      await this.emailService.sendEmail<{ listName: string }>(
         process.env.SES_SENDER_EMAIL,
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,
@@ -46,7 +46,10 @@ export abstract class IPipeService {
   public async finishedEmail(filters: BasicFieldsFileRequest, location: string) {
     const { listName, userEmail } = filters;
     if (userEmail) {
-      await this.emailService.sendEmail(
+      await this.emailService.sendEmail<{
+        listName: string;
+        location: string;
+      }>(
         process.env.SES_SENDER_EMAIL,
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,
@@ -62,7 +65,9 @@ export abstract class IPipeService {
   public async errorEmail(filters: BasicFieldsFileRequest) {
     const { listName, userEmail } = filters;
     if (userEmail) {
-      await this.emailService.sendEmail(
+      await this.emailService.sendEmail<{
+        listName: string;
+      }>(
         process.env.SES_SENDER_EMAIL,
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,

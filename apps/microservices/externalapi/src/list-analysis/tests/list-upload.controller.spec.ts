@@ -143,7 +143,7 @@ class ExternalUploadMockRepository {
   }));
 }
 
-xdescribe('ListUploadController', () => {
+describe('ListUploadController', () => {
   let controller: ListUploadController;
   let axiosMock;
   let userService: UserService;

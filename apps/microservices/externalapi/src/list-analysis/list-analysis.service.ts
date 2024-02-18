@@ -287,7 +287,7 @@ export class ListAnalysisService {
     const sqsMessage = {
       list: {
         DataType: 'String',
-        StringValue: `{"listId":${listId},"listView":"forest_change"}`,
+        StringValue: `{"listId":${listId}}`,
       },
       userEmail: {
         DataType: 'String',
@@ -299,7 +299,7 @@ export class ListAnalysisService {
       },
       file: {
         DataType: 'String',
-        StringValue: `{"type":"everything","key":"${fileName}","file":"csv"}`,
+        StringValue: `{"type":"alerts","key":"${fileName}","file":"csv"}`,
       },
       selectedTimeframe: {
         DataType: 'String',

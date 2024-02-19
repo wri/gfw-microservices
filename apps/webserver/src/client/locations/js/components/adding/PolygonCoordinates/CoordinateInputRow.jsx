@@ -28,7 +28,7 @@ const CoordinateInputRow = ({
             name="latitude"
             value={latitude}
             onChange={(event) => onCoordinatesChange(event, id, 'latitude')}
-            data-testid={`latitude-input-${index}`}
+            inputProps={{ 'data-testid': `latitude-input-${index}` }}
             error={errors.latitude}
             className="coordinate-input-row__input"
             helperText={errors.latitude && 'Invalid latitude'}
@@ -43,7 +43,7 @@ const CoordinateInputRow = ({
             name="longitude"
             value={longitude}
             onChange={(event) => onCoordinatesChange(event, id, 'longitude')}
-            data-testid={`longitude-input-${index}`}
+            inputProps={{ 'data-testid': `longitude-input-${index}` }}
             error={errors.longitude}
             className="coordinate-input-row__input"
             helperText={errors.longitude && 'Invalid longitude'}

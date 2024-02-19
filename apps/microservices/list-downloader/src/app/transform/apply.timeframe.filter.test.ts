@@ -2,7 +2,12 @@ import { ApplyTimeframeFilter } from './apply.timeframe.filter';
 
 describe('ApplyTimeframeFilter', () => {
   test('Receive empty object and return undefined', () => {
-    const applyTimeframeFilter = new ApplyTimeframeFilter('WEEK', '2023-02-01', '2023-04-01');
+    const applyTimeframeFilter = new ApplyTimeframeFilter(
+      'WEEK',
+      'GLAD',
+      '2023-02-01',
+      '2023-04-01'
+    );
     applyTimeframeFilter._transform(
       {
         'Sub State': '',
@@ -69,7 +74,12 @@ describe('ApplyTimeframeFilter', () => {
   });
 
   test('Add field glad timeframe on a Week base', () => {
-    const applyTimeframeFilter = new ApplyTimeframeFilter('WEEK', '2023-02-01', '2023-02-03');
+    const applyTimeframeFilter = new ApplyTimeframeFilter(
+      'WEEK',
+      'GLAD',
+      '2023-02-01',
+      '2023-02-03'
+    );
     applyTimeframeFilter._transform(
       {
         'Sub State': '',
@@ -186,7 +196,12 @@ describe('ApplyTimeframeFilter', () => {
   });
 
   test('Add field glad timeframe on a Month base', () => {
-    const applyTimeframeFilter = new ApplyTimeframeFilter('MONTH', '2023-02-01', '2023-03-31');
+    const applyTimeframeFilter = new ApplyTimeframeFilter(
+      'MONTH',
+      'GLAD',
+      '2023-02-01',
+      '2023-03-31'
+    );
     applyTimeframeFilter._transform(
       {
         'Sub State': '',
@@ -329,7 +344,12 @@ describe('ApplyTimeframeFilter', () => {
   });
 
   test('Add field glad timeframe on a Quarter base', () => {
-    const applyTimeframeFilter = new ApplyTimeframeFilter('QUARTER', '2023-02-01', '2023-03-31');
+    const applyTimeframeFilter = new ApplyTimeframeFilter(
+      'QUARTER',
+      'GLAD',
+      '2023-02-01',
+      '2023-03-31'
+    );
     applyTimeframeFilter._transform(
       {
         'Sub State': '',
@@ -476,7 +496,12 @@ describe('ApplyTimeframeFilter', () => {
   });
 
   test('Add field glad timeframe on a Year base', () => {
-    const applyTimeframeFilter = new ApplyTimeframeFilter('YEAR', '2023-02-01', '2023-03-31');
+    const applyTimeframeFilter = new ApplyTimeframeFilter(
+      'YEAR',
+      'GLAD',
+      '2023-02-01',
+      '2023-03-31'
+    );
     applyTimeframeFilter._transform(
       {
         'Sub State': '',

@@ -47,7 +47,7 @@ describe('Alerts Summary Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List(s),Alert Type,Timeframe,Total Locations with alerts data,Total Locations,Locations with Alerts,Percentage Locations with Alerts of All Locations,Number of Alerts',
-      'WRI,Deforestation (Integrated Alerts),WEEK,3,1,1,100,1182',
+      'WRI,Deforestation (Integrated Alerts),WEEK,3,3,2,66.66666666666666,1182',
       '',
     ]);
   });
@@ -65,7 +65,7 @@ describe('Alerts Summary Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List(s),Alert Type,Timeframe,Total Locations with alerts data,Total Locations,Locations with Alerts,Percentage Locations with Alerts of All Locations,Number of Alerts',
-      'WRI,Deforestation (Integrated Alerts),MONTH,3,1,1,100,1182',
+      'WRI,Deforestation (Integrated Alerts),MONTH,3,3,2,66.66666666666666,1182',
       '',
     ]);
   });
@@ -83,7 +83,7 @@ describe('Alerts Summary Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List(s),Alert Type,Timeframe,Total Locations with alerts data,Total Locations,Locations with Alerts,Percentage Locations with Alerts of All Locations,Number of Alerts',
-      'WRI,Deforestation (Integrated Alerts),YEAR,3,1,1,100,1182',
+      'WRI,Deforestation (Integrated Alerts),YEAR,3,3,2,66.66666666666666,1182',
       '',
     ]);
   });
@@ -103,7 +103,7 @@ describe('Alerts Summary Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List(s),Alert Type,Timeframe,Total Locations with alerts data,Total Locations,Locations with Alerts,Percentage Locations with Alerts of All Locations,Number of Alerts',
-      'WRI,FIRES (VIIRS),WEEK,3,1,1,100,56',
+      'WRI,FIRES (VIIRS),WEEK,3,3,1,33.33333333333333,56',
       '',
     ]);
   });

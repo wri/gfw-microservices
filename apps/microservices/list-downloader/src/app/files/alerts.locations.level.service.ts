@@ -3,6 +3,7 @@ import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { PassThrough } from 'stream';
 import * as fs from 'fs';
+import * as moment from 'moment';
 import { ApplyTimeframeFilter } from '../transform/apply.timeframe.filter';
 import { FeatureAlertTotal } from '../transform/feature.alert.total';
 import { dictionary } from '../shared/alert.utils';
@@ -11,6 +12,7 @@ import { finished } from 'stream/promises';
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 import { AlertsGetLocationOrListData } from '../transform/alerts.get.location.or.list.data';
 import { ALERTS_LOCATION_LEVEL } from '../shared/constants';
+import { DATE_FORMAT_CSV } from '../shared/constants';
 
 @Injectable()
 export class AlertsLocationsLevelService extends IPipeService {
@@ -27,7 +29,7 @@ export class AlertsLocationsLevelService extends IPipeService {
     'Timeframe',
     'Start Date',
     'End Date',
-    'Current Density of Location Level Alerts (Alerts / 1000 ha)',
+    '# of Location Level Alerts',
   ];
 
   async start(filters: AlertFieldsFileRequest) {
@@ -62,14 +64,14 @@ export class AlertsLocationsLevelService extends IPipeService {
 
     this.inputStream
       .pipe(new AlertsGetLocationOrListData())
-      .pipe(new ApplyTimeframeFilter(selectedTimeframe, startDate, endDate))
+      .pipe(new ApplyTimeframeFilter(selectedTimeframe, selectedAlert, startDate, endDate))
       .pipe(new FeatureAlertTotal(timeframeProperty, selectedAlert))
       .pipe(
         new AlertsFilterData(
           selectedAlert,
           selectedTimeframe,
-          startDate,
-          endDate,
+          moment(startDate).format(DATE_FORMAT_CSV),
+          moment(endDate).format(DATE_FORMAT_CSV),
           listName,
           ALERTS_LOCATION_LEVEL
         )

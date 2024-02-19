@@ -157,24 +157,6 @@ const PolygonCoordinatesInput = ({
     ) ||
     coordinates.length === 2;
 
-  const uniqueErrors = new Set();
-
-  const errorMessage = coordinates.map((coord) => (
-    <div key={coord.id}>
-      {Object.entries(coord.errors).map(([field, error], index) => {
-        if (error && !uniqueErrors.has(field)) {
-          uniqueErrors.add(field);
-          return (
-            <div key={index} style={{ color: 'red', marginTop: '5px' }}>
-              {`Invalid ${field}`}
-            </div>
-          );
-        }
-        return null;
-      })}
-    </div>
-  ));
-
   return (
     <div>
       <div className="draw-shape__button-group">
@@ -201,6 +183,7 @@ const PolygonCoordinatesInput = ({
 
       <Modal
         open={open}
+        style={{ overflow: 'auto', zIndex: 9999 }}
         onClose={() => setOpen(false)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
@@ -224,7 +207,6 @@ const PolygonCoordinatesInput = ({
               setCustomArea={setCustomArea}
             />
           )}
-          {errorMessage}
           <div className="polygon-coordinates__actions">
             <Button variant="text" style={{ color: 'gray' }} onClick={() => setOpen(false)}>
               Cancel

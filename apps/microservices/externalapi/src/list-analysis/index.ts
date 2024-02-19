@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 import { ListAnalysisController } from './list-analysis.controller';
 import { ListAnalysisService } from './list-analysis.service';
@@ -20,10 +19,7 @@ const awsConfig = {
 AWS.config.update(awsConfig);
 
 @Module({
-  imports: [
-    ConfigModule,
-    TypeOrmModule.forFeature([ExternalAPIKey, UserRoutes, Organization], 'default'),
-  ],
+  imports: [TypeOrmModule.forFeature([ExternalAPIKey, UserRoutes, Organization], 'default')],
   controllers: [ListAnalysisController, ListUploadController],
   providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
   exports: [OrganizationService],

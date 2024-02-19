@@ -8,15 +8,15 @@ import { createPage } from './htmlTemplate';
 export class EmailService {
   constructor(private sesService: SesService) {}
 
-  async sendEmail(
+  async sendEmail<CustomFilter>(
     sender: string,
     receivers: Array<string>,
     subject: string,
     type: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    filter: { listName: string; location?: string } | any
+    filter: CustomFilter | unknown
   ) {
-    const content = createPage(createEmailContent(type, filter, { sender }));
+    const content = createPage(createEmailContent<CustomFilter>(type, filter, { sender }));
     const options: SesEmailOptions = {
       from: sender,
       to: receivers.join(','),

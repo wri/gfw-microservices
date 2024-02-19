@@ -1,12 +1,15 @@
 const path = require('path');
+const moment = require('moment');
 const { compiledAssets } = require(path.resolve('./config/config'));
 const {
   getOrganizationAnalysisUsage,
   getAnalysisLimitData,
 } = require('../service/analytics.service');
+const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 import { getAccountUsagePercentage } from '@wri-monorepos/shared';
-import { getAccountUsersAnalysisUsage } from '@wri-monorepos/sql';
+import { getAccountUsersAnalysisUsage, getAccountActivatedTime } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
+const { sendMessageToQueue } = require('../../downloader');
 
 /**
  * @function analytics
@@ -86,8 +89,17 @@ exports.getMyOrganizationAnalysisUsage = async (req, res) => {
 };
 
 exports.getMyOrganizationUsersAnalysisUsage = async (req, res) => {
-  let { startDate, endDate } = req.query;
-  const { organization_database: orgDbName } = req.session;
+  const { organization_database: orgDbName, organization_id } = req.session;
+
+  const orgActivatedTime = await getAccountActivatedTime(organization_id);
+  const todayAsEndDay = moment().add(1, 'day');
+  const accountActivationDate = moment(orgActivatedTime);
+  const accountLatestYearStartDate = todayAsEndDay
+    .clone()
+    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+  const startDate = accountLatestYearStartDate.format('YYYY-MM-DD');
+  const endDate = todayAsEndDay.format('YYYY-MM-DD');
 
   const organizationUsersAnalysisUsage = await getAccountUsersAnalysisUsage(orgDbName, {
     startDate,
@@ -127,6 +139,43 @@ exports.getOrganizationAnalysisLimit = async (req, res) => {
 
 exports.getMyOrganizationAnalysisOptions = (req, res) => {
   res.status(200).send(Object.values(analysisTypes));
+};
+
+exports.downladOrganizationUsersUsageExport = async (req, res) => {
+  const {
+    organization_database: organizationDatabase,
+    user_email: userEmail,
+    organization_id: orgId,
+  } = req.session;
+
+  const orgActivatedTime = await getAccountActivatedTime(orgId);
+  const todayAsEndDay = moment().add(1, 'day');
+  const accountActivationDate = moment(orgActivatedTime);
+  const accountLatestYearStartDate = todayAsEndDay
+    .clone()
+    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+  const startDate = accountLatestYearStartDate.format('YYYY-MM-DD');
+  const endDate = todayAsEndDay.format('YYYY-MM-DD');
+
+  const currentDate = getCurrentDateTimeFormatted(); // 20240129_131020
+  const fileName = `AccountUsersUsage-from-${startDate}-to-${endDate}-${currentDate}.csv`;
+
+  const filters = sendMessageToQueue(
+    {
+      userEmail,
+      organizationDatabase,
+      startDate,
+      endDate,
+      fileName,
+    },
+    'accountUsersUsage'
+  );
+
+  return res.status(201).send({
+    success: true,
+    message: filters,
+  });
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

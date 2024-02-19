@@ -191,6 +191,7 @@ const PolygonCoordinatesInput = ({
           mapView={mapView}
           sketchViewModel={sketchViewModel}
           setSketchViewModel={setSketchViewModel}
+          setGeometry={setGeometry}
         />
       </div>
 

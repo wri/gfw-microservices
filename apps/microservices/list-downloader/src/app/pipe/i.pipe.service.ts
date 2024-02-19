@@ -33,7 +33,7 @@ export abstract class IPipeService {
   public async startEmail(filters: BasicFieldsFileRequest) {
     const { listName, userEmail } = filters;
     if (userEmail) {
-      await this.emailService.sendEmail(
+      await this.emailService.sendEmail<{ listName: string }>(
         process.env.SES_SENDER_EMAIL,
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,
@@ -46,7 +46,10 @@ export abstract class IPipeService {
   public async finishedEmail(filters: BasicFieldsFileRequest, location: string) {
     const { listName, userEmail } = filters;
     if (userEmail) {
-      await this.emailService.sendEmail(
+      await this.emailService.sendEmail<{
+        listName: string;
+        location: string;
+      }>(
         process.env.SES_SENDER_EMAIL,
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,
@@ -62,7 +65,9 @@ export abstract class IPipeService {
   public async errorEmail(filters: BasicFieldsFileRequest) {
     const { listName, userEmail } = filters;
     if (userEmail) {
-      await this.emailService.sendEmail(
+      await this.emailService.sendEmail<{
+        listName: string;
+      }>(
         process.env.SES_SENDER_EMAIL,
         [userEmail],
         `[GFW-PRO] File Generation for list ${listName}`,
@@ -87,7 +92,7 @@ export abstract class IPipeService {
       location,
       expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
       listId,
-      analysisId: type == 'afi' ? 'AFI' : 'FCD',
+      analysisId: type === 'afi' ? 'AFI' : type === 'alerts' ? 'ALERTS' : 'FCD',
     });
 
     if (!['input_csv', 'input_shapefile', 'results_csv'].includes(`${type}_${file}`)) {

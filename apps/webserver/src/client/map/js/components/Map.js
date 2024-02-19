@@ -106,6 +106,7 @@ import { getProdesUpdatedVectorTileStyle } from '../layers/Prodes_LayerUtil';
 
 // Configs
 import {
+  DEFAULT_MAPVIEW_CENTER,
   PLANET_BASEMAP,
   PLANET_BASEMAP_REFERENCE_LAYER,
   PLANET_BASEMAP_REFERENCE_LAYER_VECTOR_TILE_STYLE,
@@ -245,9 +246,10 @@ export default class Map extends Component {
       })
     );
 
+    const mapviewCenter = x && y ? [x, y] : DEFAULT_MAPVIEW_CENTER;
     const mapView = new MapView({
       container: this.refs.mapView,
-      center: x && y ? [x, y] : [0, 16.53],
+      center: mapviewCenter,
       zoom: z ? z - 1 : 3,
       map: esriMap,
       ui: {

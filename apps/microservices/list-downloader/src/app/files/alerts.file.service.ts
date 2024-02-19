@@ -35,7 +35,6 @@ export class AlertsFileService extends IPipeService {
   }
   process(analysisData: DashboardDataType[]) {
     this.alertsLocationsLevelService.process(analysisData);
-    this.alertsPrioritiesLocationsLevelService.process(analysisData);
     this.alertsAdminAreasLevelService.process(analysisData);
     this.alertsHistoryService.process(analysisData);
     this.alertsPrioritiesAdminAreasLevelService.process(analysisData);
@@ -45,10 +44,8 @@ export class AlertsFileService extends IPipeService {
   async finish(filters: AlertFieldsFileRequest) {
     const { key } = filters;
     await this.alertsLocationsLevelService.finish(filters);
-    await this.alertsPrioritiesLocationsLevelService.finish(filters);
     await this.alertsAdminAreasLevelService.finish(filters);
     await this.alertsHistoryService.finish(filters);
-    await this.alertsLocationsLevelService.finish(filters);
     await this.alertsPrioritiesAdminAreasLevelService.finish(filters);
     await this.alertsPrioritiesLocationsLevelService.finish(filters);
     await this.alertsSummaryService.finish(filters);

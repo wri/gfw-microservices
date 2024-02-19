@@ -19,8 +19,8 @@ export const getTimeframeBoundaries = (selectedTimeframe) => {
     }
     case 'WEEK': {
       return {
-        start: moment().subtract(1, 'week').format(DATE_FORMAT),
-        end: moment().subtract(1, 'day').format(DATE_FORMAT),
+        start: moment().subtract(1, 'week').startOf('week').format(DATE_FORMAT),
+        end: moment().subtract(1, 'week').endOf('week').format(DATE_FORMAT),
       };
     }
     case 'MONTH': {

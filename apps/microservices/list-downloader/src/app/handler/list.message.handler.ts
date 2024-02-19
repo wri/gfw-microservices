@@ -83,10 +83,14 @@ export class ListMessageHandler {
       ...getValues(list, true),
     };
 
+    if (getValues(key)) {
+      filters.key = getValues(key);
+    }
+    if (getValues(type)) {
+      filters.type = getValues(type);
+    }
     return {
       ...filters,
-      key: getValues(key),
-      type: getValues(type),
       // avoid logging sensitive data
       userEmail: getValues(userEmail),
       selectedTimeframe: getValues(selectedTimeframe),

@@ -46,10 +46,10 @@ describe('Alerts Locations Level Service', () => {
     await alertsLocationsLevelService.finish(filters);
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
-      'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,Current Density of Location Level Alerts (Alerts / 1000 ha)',
-      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,Deforestation (Integrated Alerts),WEEK,2021-01-01,2021-01-31,1008',
-      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,Deforestation (Integrated Alerts),WEEK,2021-01-01,2021-01-31,1',
-      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,Deforestation (Integrated Alerts),WEEK,2021-01-01,2021-01-31,0',
+      'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Location Level Alerts',
+      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,Deforestation (Integrated Alerts),WEEK,01 Jan 2021,31 Jan 2021,1008',
+      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,Deforestation (Integrated Alerts),WEEK,01 Jan 2021,31 Jan 2021,1',
+      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,Deforestation (Integrated Alerts),WEEK,01 Jan 2021,31 Jan 2021,0',
       '',
     ]);
   });
@@ -64,10 +64,10 @@ describe('Alerts Locations Level Service', () => {
     await alertsLocationsLevelService.finish(filters);
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
-      'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,Current Density of Location Level Alerts (Alerts / 1000 ha)',
-      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,Deforestation (Integrated Alerts),MONTH,2021-01-01,2021-01-31,1008',
-      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,Deforestation (Integrated Alerts),MONTH,2021-01-01,2021-01-31,1',
-      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,Deforestation (Integrated Alerts),MONTH,2021-01-01,2021-01-31,0',
+      'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Location Level Alerts',
+      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,Deforestation (Integrated Alerts),MONTH,01 Jan 2021,31 Jan 2021,1008',
+      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,Deforestation (Integrated Alerts),MONTH,01 Jan 2021,31 Jan 2021,1',
+      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,Deforestation (Integrated Alerts),MONTH,01 Jan 2021,31 Jan 2021,0',
       '',
     ]);
   });
@@ -82,10 +82,10 @@ describe('Alerts Locations Level Service', () => {
     await alertsLocationsLevelService.finish(filters);
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
-      'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,Current Density of Location Level Alerts (Alerts / 1000 ha)',
-      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,Deforestation (Integrated Alerts),YEAR,2021-01-01,2021-01-31,1008',
-      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,Deforestation (Integrated Alerts),YEAR,2021-01-01,2021-01-31,1',
-      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,Deforestation (Integrated Alerts),YEAR,2021-01-01,2021-01-31,0',
+      'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Location Level Alerts',
+      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,Deforestation (Integrated Alerts),YEAR,01 Jan 2021,31 Jan 2021,1008',
+      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,Deforestation (Integrated Alerts),YEAR,01 Jan 2021,31 Jan 2021,1',
+      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,Deforestation (Integrated Alerts),YEAR,01 Jan 2021,31 Jan 2021,0',
       '',
     ]);
   });
@@ -102,10 +102,10 @@ describe('Alerts Locations Level Service', () => {
     await alertsLocationsLevelService.finish(filters);
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
-      'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,Current Density of Location Level Alerts (Alerts / 1000 ha)',
-      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,FIRES (VIIRS),WEEK,2023-04-01,2023-04-30,2',
-      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,FIRES (VIIRS),WEEK,2023-04-01,2023-04-30,0',
-      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,FIRES (VIIRS),WEEK,2023-04-01,2023-04-30,0',
+      'List Name,Location Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Location Level Alerts',
+      'WRI,BRA.12.116_1,Sinop,Mato Grosso,Brazil,FIRES (VIIRS),WEEK,01 Apr 2023,30 Apr 2023,2',
+      'WRI,Presidencia de la Plaza,Presidencia de la Plaza,Chaco,Argentina,FIRES (VIIRS),WEEK,01 Apr 2023,30 Apr 2023,0',
+      'WRI,Sargento Cabral,Sargento Cabral,Chaco,Argentina,FIRES (VIIRS),WEEK,01 Apr 2023,30 Apr 2023,0',
       '',
     ]);
   });

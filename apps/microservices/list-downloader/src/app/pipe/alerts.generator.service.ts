@@ -29,16 +29,16 @@ export class AlertsGeneratorService extends IFileGenerator {
   async makeFile(filters: AlertFieldsFileRequest): Promise<void> {
     const numberOfPages = await this.alertDataService.getNumberOfPages(filters);
     const { listId, startDate, endDate, selectedTimeframe } = filters;
-    this.logger.log(`(${listId}) - Number of pages: ${numberOfPages}`);
-    await this.alertsFileService.start(filters);
-
-    const arrayOfPages = Array.from(Array(numberOfPages).keys());
-
     if (!startDate || !endDate) {
       const { startDate, endDate } = this.getTimeframeBoundaries(selectedTimeframe);
       filters.startDate = startDate;
       filters.endDate = endDate;
     }
+
+    this.logger.log(`(${listId}) - Number of pages: ${numberOfPages}`);
+    await this.alertsFileService.start(filters);
+
+    const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
     const composeResults = async (i: number) => {
       const newFilter = { ...filters, page: i + 1 };
@@ -66,8 +66,8 @@ export class AlertsGeneratorService extends IFileGenerator {
       }
       case SELECTED_TIMEFRAME_WEEK: {
         return {
-          startDate: moment().subtract(1, 'week').format(startDateFormat),
-          endDate: moment().subtract(1, 'day').format(endDateFormat),
+          startDate: moment().subtract(1, 'week').startOf('week').format(startDateFormat),
+          endDate: moment().subtract(1, 'week').endOf('week').format(endDateFormat),
         };
       }
       case SELECTED_TIMEFRAME_MONTH: {

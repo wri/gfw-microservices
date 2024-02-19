@@ -153,7 +153,7 @@ export class AlertsHistoryService extends IPipeService {
   }
 
   private organizeStream(filters: AlertFieldsFileRequest) {
-    const { listId, startDate, endDate, selectedTimeframe } = filters;
+    const { listId, startDate, endDate, selectedTimeframe, selectedAlert } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', async (err) => {
@@ -163,7 +163,7 @@ export class AlertsHistoryService extends IPipeService {
 
     this.inputStream
       .pipe(new AlertsGetLocationOrListData(true))
-      .pipe(new ApplyTimeframeFilter(selectedTimeframe, startDate, endDate))
+      .pipe(new ApplyTimeframeFilter(selectedTimeframe, selectedAlert, startDate, endDate))
       .pipe(new EventEmitterTransform(this.accumulateHistory, filters));
   }
 
@@ -200,6 +200,7 @@ export class AlertsHistoryService extends IPipeService {
 
     const endDateSchema = {
       GLAD: {
+        DAY: 'DAY',
         WEEK: 'DAY',
         MONTH: 'MONTH',
         QUARTER: 'MONTH',

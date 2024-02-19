@@ -3,6 +3,7 @@ import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
 import { IPipeService } from '../pipe/i.pipe.service';
 import { PassThrough } from 'stream';
 import * as fs from 'fs';
+import * as moment from 'moment';
 import { dictionary } from '../shared/alert.utils';
 import { ApplyTimeframeFilter } from '../transform/apply.timeframe.filter';
 import { FeatureAlertTotal } from '../transform/feature.alert.total';
@@ -11,6 +12,7 @@ import {
   AlertsEventEmitterTransform,
   FeatureDensityForAdminLevelAggregator,
 } from '../transform/alerts.event.emitter';
+import { DATE_FORMAT_CSV } from '../shared/constants';
 
 @Injectable()
 export class AlertsPrioritiesAdminAreasLevelService extends IPipeService {
@@ -54,7 +56,7 @@ export class AlertsPrioritiesAdminAreasLevelService extends IPipeService {
 
     this.inputStream
       .pipe(new AlertsGetLocationOrListData(true))
-      .pipe(new ApplyTimeframeFilter(selectedTimeframe, startDate, endDate))
+      .pipe(new ApplyTimeframeFilter(selectedTimeframe, selectedAlert, startDate, endDate))
       .pipe(new FeatureAlertTotal(timeframeProperty, selectedAlert))
       .pipe(new AlertsEventEmitterTransform(this.featureDensityForAdminLevelAggregator));
   }
@@ -96,8 +98,8 @@ export class AlertsPrioritiesAdminAreasLevelService extends IPipeService {
             countryName,
             selectedAlertText,
             selectedTimeframe,
-            startDate,
-            endDate,
+            moment(startDate).format(DATE_FORMAT_CSV),
+            moment(endDate).format(DATE_FORMAT_CSV),
             subStateCount / subStateCountDensity,
             counts.alerts[countryName][stateName].total /
               counts.density[countryName][stateName].total,

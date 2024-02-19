@@ -92,7 +92,7 @@ export abstract class IPipeService {
       location,
       expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
       listId,
-      analysisId: type == 'afi' ? 'AFI' : 'FCD',
+      analysisId: type === 'afi' ? 'AFI' : type === 'alerts' ? 'ALERTS' : 'FCD',
     });
 
     if (!['input_csv', 'input_shapefile', 'results_csv'].includes(`${type}_${file}`)) {

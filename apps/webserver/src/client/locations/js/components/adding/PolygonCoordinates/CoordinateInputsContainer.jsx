@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Button } from '@mui/material';
+import { Grid, Button, Tab, Tabs } from '@mui/material';
 import IconPlus from '../../../../../common/js/components/icon/IconPlus';
 import CoordinateInputRow from './CoordinateInputRow';
 
@@ -7,12 +7,24 @@ const CoordinateInputsContainer = ({
   coordinates,
   onCoordinatesChange,
   onDeleteCoordinate,
-  onlyOneCoordinatesRow,
   onAddCoordinate,
+  isPolygon,
+  setIsPolygon,
 }) => (
   <Grid container spacing={2}>
     <Grid item xs={12}>
       <h3 style={{ margin: '5px 0px' }}>Add coordinates</h3>
+    </Grid>
+    <Grid item xs={12}>
+      <Tabs
+        value={isPolygon ? 'polygon' : 'point'}
+        onChange={(e, value) => setIsPolygon(value === 'polygon')}
+        style={{ marginBottom: '0.7rem' }}
+        TabIndicatorProps={{ style: { background: '#97bd3d' } }}
+      >
+        <Tab label={<span style={{ color: 'black' }}>{'point'}</span>} value={'point'} />
+        <Tab label={<span style={{ color: 'black' }}>{'polygon'}</span>} value={'polygon'} />
+      </Tabs>
     </Grid>
     <Grid item xs={1}></Grid>
     <Grid item xs={5}>
@@ -32,12 +44,12 @@ const CoordinateInputsContainer = ({
           errors={errors}
           onCoordinatesChange={onCoordinatesChange}
           onDeleteCoordinate={onDeleteCoordinate}
-          onlyOneCoordinatesRow={onlyOneCoordinatesRow}
+          showDeleteIcon={isPolygon && coordinates.length > 3}
         />
       ))}
     </Grid>
 
-    {coordinates.length < 10 && (
+    {isPolygon && coordinates.length < 10 && (
       <Grid item xs={12}>
         <Button
           style={{

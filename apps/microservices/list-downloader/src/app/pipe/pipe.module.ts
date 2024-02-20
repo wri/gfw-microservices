@@ -26,6 +26,7 @@ import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.se
 import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 import { ListGeneratorService } from './list.generator.service';
 import { AfiGeneratorService } from './afi.generator.service';
+import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { AfiFileService } from '../files/afi.file.service';
 import { ArgentinaOverlapService } from '../files/argentina.overlap.service';
 import { AnalysisDataService } from '../data/analysis.data.service';
@@ -66,6 +67,7 @@ import { AlertsFileService } from '../files/alerts.file.service';
     ArgentinaOverlapService,
     AnalysisDataService,
     AnalysisAfiDataService,
+    AccountUsersAnalysisUsageFileService,
     AlertsDataService,
     AlertsAdminAreasLevelService,
     AlertsHistoryService,

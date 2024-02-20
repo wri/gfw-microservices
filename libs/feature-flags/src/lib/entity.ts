@@ -5,13 +5,13 @@ export class FeatureFlags {
   @PrimaryColumn('text', { name: 'flag_id' })
   flagId: string;
 
-  @PrimaryColumn('number', { name: 'org_id' })
+  @PrimaryColumn('int', { name: 'org_id' })
   orgId: number | null;
 
-  @Column('boolean', { name: 'flag_state' })
+  @Column('bit', { name: 'flag_state' })
   flagState: boolean;
 
-  @Column('number', { name: 'modifier_user_id' })
+  @Column('int', { name: 'modifier_user_id' })
   modifierUserId: number;
 
   @Column('date', { name: 'update_date_time' })

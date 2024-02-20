@@ -22,6 +22,8 @@ export const SELECTED_TIMEFRAME_MONTH = 'MONTH';
 export const SELECTED_TIMEFRAME_QUARTER = 'QUARTER';
 export const SELECTED_TIMEFRAME_YEAR = 'YEAR';
 
+export const SELECTED_ALERT_INTEGRATED = 'GLAD';
+
 // number of threads that will be used to process the data
 export const POOL_SIZE = 5;
 export const MAX_NUMBER_OF_ROWS_PER_PAGE = 5000;
@@ -1574,3 +1576,13 @@ export const AFI_HEADER = {
   naturalForestLossHA: 'Natural Forest Loss (ha) (Beta)',
   negligibleRisk: 'Negligible Risk (%)',
 };
+
+export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
+  'Username',
+  'List ID',
+  'Analysis Types',
+  'Hectares',
+  'Locations',
+  'Date/Timestamp',
+  'UI/API',
+];

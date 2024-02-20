@@ -24,6 +24,18 @@ describe('reorganizeFilters', () => {
           StringValue:
             '{"listId":"1069","listFilterStr":"","listView":"forest_change","selectedLocations":""}',
         },
+        endDate: {
+          DataType: 'String',
+          StringValue: '09-02-2024',
+        },
+        type: {
+          DataType: 'String',
+          StringValue: 'everything',
+        },
+        key: {
+          DataType: 'String',
+          StringValue: 'tmp-20-WhpxMYru54jx',
+        },
       }),
     });
 
@@ -40,6 +52,7 @@ describe('reorganizeFilters', () => {
       selectedLocations: '',
       type: 'everything',
       userEmail: 'gustavo.figueiredo.5@wriconsultant.org',
+      endDate: '09-02-2024',
     });
   });
 

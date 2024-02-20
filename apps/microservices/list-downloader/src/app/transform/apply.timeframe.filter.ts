@@ -9,15 +9,18 @@ import {
 } from '../parser/alerts.parser';
 import { DashboardDataType } from '@wri-monorepos/sql';
 import {
+  SELECTED_TIMEFRAME_DAY,
+  SELECTED_TIMEFRAME_WEEK,
   SELECTED_TIMEFRAME_MONTH,
   SELECTED_TIMEFRAME_QUARTER,
-  SELECTED_TIMEFRAME_WEEK,
   SELECTED_TIMEFRAME_YEAR,
+  SELECTED_ALERT_INTEGRATED,
 } from '../shared/constants';
 
 export class ApplyTimeframeFilter extends Transform {
   constructor(
     private readonly selectedTimeframe: string,
+    private readonly selectedAlert: string,
     private readonly startDate: string,
     private readonly endDate: string
   ) {
@@ -31,7 +34,9 @@ export class ApplyTimeframeFilter extends Transform {
 
     // Week timeframe
     if (
-      this.selectedTimeframe === SELECTED_TIMEFRAME_WEEK &&
+      (this.selectedTimeframe === SELECTED_TIMEFRAME_WEEK ||
+        this.selectedTimeframe === SELECTED_TIMEFRAME_DAY) &&
+      this.selectedAlert === SELECTED_ALERT_INTEGRATED &&
       Object.prototype.hasOwnProperty.call(data, 'glad_alerts_daily') &&
       data.glad_alerts_daily.length > 0
     ) {
@@ -41,6 +46,7 @@ export class ApplyTimeframeFilter extends Transform {
     // Month timeframe
     if (
       this.selectedTimeframe === SELECTED_TIMEFRAME_MONTH &&
+      this.selectedAlert === SELECTED_ALERT_INTEGRATED &&
       Object.prototype.hasOwnProperty.call(data, 'glad_alerts_monthly') &&
       data.glad_alerts_monthly.length > 0
     ) {
@@ -50,6 +56,7 @@ export class ApplyTimeframeFilter extends Transform {
     // Quarter timeframe
     if (
       this.selectedTimeframe === SELECTED_TIMEFRAME_QUARTER &&
+      this.selectedAlert === SELECTED_ALERT_INTEGRATED &&
       Object.prototype.hasOwnProperty.call(data, 'glad_alerts_monthly') &&
       data.glad_alerts_monthly.length > 0
     ) {
@@ -59,6 +66,7 @@ export class ApplyTimeframeFilter extends Transform {
     // Year timeframe
     if (
       this.selectedTimeframe === SELECTED_TIMEFRAME_YEAR &&
+      this.selectedAlert === SELECTED_ALERT_INTEGRATED &&
       Object.prototype.hasOwnProperty.call(data, 'glad_alerts_monthly') &&
       data.glad_alerts_monthly.length > 0
     ) {

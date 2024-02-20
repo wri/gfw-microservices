@@ -47,9 +47,9 @@ describe('Alerts Admin Areas Level Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Sub State Level Alerts,# of State Level Alerts,# of Country Level Alerts',
-      'WRI,Alberdi,Santiago del Estero,Argentina,Deforestation (Integrated Alerts),WEEK,2021-01-01,2021-01-31,1,1,2',
-      'WRI,Independencia,Chaco,Argentina,Deforestation (Integrated Alerts),WEEK,2021-01-01,2021-01-31,1,1,2',
-      'WRI,Gaúcha do Norte,Mato Grosso,Brazil,Deforestation (Integrated Alerts),WEEK,2021-01-01,2021-01-31,1180,1180,1180',
+      'WRI,Alberdi,Santiago del Estero,Argentina,Deforestation (Integrated Alerts),WEEK,01 Jan 2021,31 Jan 2021,1,1,2',
+      'WRI,Independencia,Chaco,Argentina,Deforestation (Integrated Alerts),WEEK,01 Jan 2021,31 Jan 2021,1,1,2',
+      'WRI,Gaúcha do Norte,Mato Grosso,Brazil,Deforestation (Integrated Alerts),WEEK,01 Jan 2021,31 Jan 2021,1180,1180,1180',
       '',
     ]);
   });
@@ -67,9 +67,9 @@ describe('Alerts Admin Areas Level Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Sub State Level Alerts,# of State Level Alerts,# of Country Level Alerts',
-      'WRI,Alberdi,Santiago del Estero,Argentina,Deforestation (Integrated Alerts),MONTH,2021-01-01,2021-01-31,1,1,2',
-      'WRI,Independencia,Chaco,Argentina,Deforestation (Integrated Alerts),MONTH,2021-01-01,2021-01-31,1,1,2',
-      'WRI,Gaúcha do Norte,Mato Grosso,Brazil,Deforestation (Integrated Alerts),MONTH,2021-01-01,2021-01-31,1180,1180,1180',
+      'WRI,Alberdi,Santiago del Estero,Argentina,Deforestation (Integrated Alerts),MONTH,01 Jan 2021,31 Jan 2021,1,1,2',
+      'WRI,Independencia,Chaco,Argentina,Deforestation (Integrated Alerts),MONTH,01 Jan 2021,31 Jan 2021,1,1,2',
+      'WRI,Gaúcha do Norte,Mato Grosso,Brazil,Deforestation (Integrated Alerts),MONTH,01 Jan 2021,31 Jan 2021,1180,1180,1180',
       '',
     ]);
   });
@@ -87,9 +87,9 @@ describe('Alerts Admin Areas Level Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Sub State Level Alerts,# of State Level Alerts,# of Country Level Alerts',
-      'WRI,Alberdi,Santiago del Estero,Argentina,Deforestation (Integrated Alerts),YEAR,2021-01-01,2021-01-31,1,1,2',
-      'WRI,Independencia,Chaco,Argentina,Deforestation (Integrated Alerts),YEAR,2021-01-01,2021-01-31,1,1,2',
-      'WRI,Gaúcha do Norte,Mato Grosso,Brazil,Deforestation (Integrated Alerts),YEAR,2021-01-01,2021-01-31,1180,1180,1180',
+      'WRI,Alberdi,Santiago del Estero,Argentina,Deforestation (Integrated Alerts),YEAR,01 Jan 2021,31 Jan 2021,1,1,2',
+      'WRI,Independencia,Chaco,Argentina,Deforestation (Integrated Alerts),YEAR,01 Jan 2021,31 Jan 2021,1,1,2',
+      'WRI,Gaúcha do Norte,Mato Grosso,Brazil,Deforestation (Integrated Alerts),YEAR,01 Jan 2021,31 Jan 2021,1180,1180,1180',
       '',
     ]);
   });
@@ -109,9 +109,9 @@ describe('Alerts Admin Areas Level Service', () => {
     const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Sub State,State,Country,Alert Type,Timeframe,Start Date,End Date,# of Sub State Level Alerts,# of State Level Alerts,# of Country Level Alerts',
-      'WRI,Alberdi,Santiago del Estero,Argentina,FIRES (VIIRS),WEEK,2023-04-01,2023-04-30,0,0,4',
-      'WRI,Independencia,Chaco,Argentina,FIRES (VIIRS),WEEK,2023-04-01,2023-04-30,4,4,4',
-      'WRI,Gaúcha do Norte,Mato Grosso,Brazil,FIRES (VIIRS),WEEK,2023-04-01,2023-04-30,52,52,52',
+      'WRI,Alberdi,Santiago del Estero,Argentina,FIRES (VIIRS),WEEK,01 Apr 2023,30 Apr 2023,0,0,4',
+      'WRI,Independencia,Chaco,Argentina,FIRES (VIIRS),WEEK,01 Apr 2023,30 Apr 2023,4,4,4',
+      'WRI,Gaúcha do Norte,Mato Grosso,Brazil,FIRES (VIIRS),WEEK,01 Apr 2023,30 Apr 2023,52,52,52',
       '',
     ]);
   });

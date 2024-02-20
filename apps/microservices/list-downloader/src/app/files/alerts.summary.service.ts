@@ -28,28 +28,24 @@ class GenerateAlertsSummary extends EventEmitter {
   calculateAlertsSummary({ chunk, selectedProperty, selectedAlertsProperty, selectedAlert }) {
     const { location_id } = chunk;
     if (location_id !== -1) {
-      this.locationsWithinAlerts =
-        this.locationsWithinAlerts + chunk[selectedAlertsProperty] ? 1 : 0;
-      this.locationsWithAlerts =
-        this.locationsWithinAlerts + (Object.keys(chunk[selectedProperty]).length > 0 ? 1 : 0);
+      this.locationsWithinAlerts += chunk[selectedAlertsProperty] ? 1 : 0;
+      this.locationsWithAlerts += Object.keys(chunk[selectedProperty]).length > 0 ? 1 : 0;
       this.totalLocations++;
     } else {
       if (selectedAlert === 'GLAD') {
-        this.totalAlerts =
-          this.totalAlerts +
-          chunk[selectedProperty].flat().reduce((acc, curr) => curr.count + acc, 0);
+        this.totalAlerts += chunk[selectedProperty]
+          .flat()
+          .reduce((acc, curr) => curr.count + acc, 0);
       } else {
-        this.totalAlerts =
-          this.totalAlerts +
-          Object.values(chunk.fireTimeframe)
-            .map(
-              (
-                arr: Array<{
-                  count: number;
-                }>
-              ) => arr.reduce((total, element) => total + element.count, 0)
-            )
-            .reduce((featureTotal, el) => featureTotal + el, 0);
+        this.totalAlerts += Object.values(chunk.fireTimeframe)
+          .map(
+            (
+              arr: Array<{
+                count: number;
+              }>
+            ) => arr.reduce((total, element) => total + element.count, 0)
+          )
+          .reduce((featureTotal, el) => featureTotal + el, 0);
       }
     }
   }
@@ -111,7 +107,7 @@ export class AlertsSummaryService extends IPipeService {
   }
 
   private organizeStream(filters: AlertFieldsFileRequest) {
-    const { listId, startDate, endDate, selectedTimeframe } = filters;
+    const { listId, startDate, endDate, selectedTimeframe, selectedAlert } = filters;
     this.inputStream.removeAllListeners();
 
     this.inputStream.on('error', async (err) => {
@@ -120,7 +116,7 @@ export class AlertsSummaryService extends IPipeService {
     });
 
     this.inputStream
-      .pipe(new ApplyTimeframeFilter(selectedTimeframe, startDate, endDate))
+      .pipe(new ApplyTimeframeFilter(selectedTimeframe, selectedAlert, startDate, endDate))
       .pipe(new EventEmitterTransform(this.generateAlertsSummary, filters));
   }
 

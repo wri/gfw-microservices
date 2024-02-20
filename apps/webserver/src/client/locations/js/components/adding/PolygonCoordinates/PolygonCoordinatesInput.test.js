@@ -107,15 +107,14 @@ describe('PolygonCoordinatesInput Component', () => {
     const button = screen.queryByTestId('polygon-coordinates-button');
     fireEvent.click(button);
 
-    fireEvent.click(screen.getByText('Add Coordinate'));
+    // Change to the polygon tab
+    fireEvent.click(screen.getByText('polygon'));
 
     // Check if a new row of inputs has been added
     let latitudeInputs = screen.queryAllByTestId(/latitude-input-/);
     let longitudeInputs = screen.queryAllByTestId(/longitude-input-/);
 
-    // Assuming that the initial state has one row,
-    // the length should be 3 after adding one more
-    // because user should not be able to add a line
+    // The initial state for the polygon tab should have 3 rows of inputs
     expect(latitudeInputs).toHaveLength(3);
     expect(longitudeInputs).toHaveLength(3);
 
@@ -131,21 +130,24 @@ describe('PolygonCoordinatesInput Component', () => {
     const button = screen.queryByTestId('polygon-coordinates-button');
     fireEvent.click(button);
 
+    // Change to the polygon tab
+    fireEvent.click(screen.getByText('polygon'));
+
     // add two more rows
     fireEvent.click(screen.getByText('Add Coordinate'));
     fireEvent.click(screen.getByText('Add Coordinate'));
 
     let removeRowButtons = screen.queryAllByTestId(/coordinate-input-remove-row-/);
 
-    // Assuming that the initial state has one row, so the length should be 4 after adding two more
-    // (the fist time it adds two rows to prevent user from submiting a line)
-    expect(removeRowButtons).toHaveLength(4);
+    // Assuming that the initial state in the polygon tab has 3 rows,
+    // so the length should be 5 after adding two more
+    expect(removeRowButtons).toHaveLength(5);
 
     //delete one row
     fireEvent.click(removeRowButtons[0]);
 
     removeRowButtons = screen.queryAllByTestId(/latitude-input-/);
-    expect(removeRowButtons).toHaveLength(3);
+    expect(removeRowButtons).toHaveLength(4);
   });
 
   test('allows adding coordinates and submits a point geometry', async () => {
@@ -237,7 +239,10 @@ describe('PolygonCoordinatesInput Component', () => {
     const button = screen.queryByTestId('polygon-coordinates-button');
     fireEvent.click(button);
 
-    // Add two rows of coordinates
+    // Change to the polygon tab
+    fireEvent.click(screen.getByText('polygon'));
+
+    // Add another row of coordinates
     fireEvent.click(screen.getByText('Add Coordinate'));
 
     // Enter values for each coordinate
@@ -249,6 +254,9 @@ describe('PolygonCoordinatesInput Component', () => {
 
     fireEvent.change(screen.getByTestId('latitude-input-2'), { target: { value: '42' } });
     fireEvent.change(screen.getByTestId('longitude-input-2'), { target: { value: '-77' } });
+
+    fireEvent.change(screen.getByTestId('latitude-input-3'), { target: { value: '41' } });
+    fireEvent.change(screen.getByTestId('longitude-input-3'), { target: { value: '-76' } });
 
     const submitButton = screen.getByText('OK');
     fireEvent.click(submitButton);
@@ -276,6 +284,12 @@ describe('PolygonCoordinatesInput Component', () => {
           id: expect.any(String),
           latitude: 42,
           longitude: -77,
+          errors: { latitude: false, longitude: false },
+        },
+        {
+          id: expect.any(String),
+          latitude: 41,
+          longitude: -76,
           errors: { latitude: false, longitude: false },
         },
         {

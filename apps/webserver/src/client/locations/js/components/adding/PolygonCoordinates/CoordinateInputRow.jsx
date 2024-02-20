@@ -12,7 +12,7 @@ const CoordinateInputRow = ({
   errors,
   onCoordinatesChange,
   onDeleteCoordinate,
-  onlyOneCoordinatesRow,
+  showDeleteIcon,
 }) => (
   <Box className="coordinate-input-row">
     <Grid container alignItems="center" display="flex" spacing={1}>
@@ -53,7 +53,7 @@ const CoordinateInputRow = ({
       </Grid>
       <Grid item xs={1}>
         <Box className="coordinate-input-row__cell">
-          {!onlyOneCoordinatesRow && (
+          {showDeleteIcon && (
             <CloseIcon
               data-testid={`coordinate-input-remove-row-${index}`}
               className="coordinate-input-row__delete-icon"

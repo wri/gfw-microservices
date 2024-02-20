@@ -1,12 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { z } from 'zod';
 
+const analysisIdsMap = {
+  Alerts: 'ALERTS',
+  FCD: 'FCD',
+  DefReport: 'AFI',
+};
+
+const analysisIdsInputArray = Object.keys(analysisIdsMap) as [string];
+
 export const listUploadNewRequestSchema = z.object({
   uploadId: z.string(),
   listName: z.string(),
   templateId: z.number(),
-  analysisIDs: z.enum(['Alerts', 'FCD']).transform((x) => x.toUpperCase()),
+  analysisIDs: z
+    .string()
+    .transform((x) => Array.from(new Set(x.replace(/ /g, '').split(','))))
+    .pipe(z.array(z.enum(analysisIdsInputArray).transform((x) => analysisIdsMap[x]))),
 });
+
+export type ListUploadNewRequestSchema = z.infer<typeof listUploadNewRequestSchema>;
 export class ListUploadNewRequest {
   @ApiProperty()
   uploadId: string;

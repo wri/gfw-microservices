@@ -7,6 +7,7 @@ import {
   prepareUploadRequestSchema,
   listUploadNewRequestSchema,
   PrepareUploadRequestSchema,
+  ListUploadNewRequestSchema,
 } from './list-upload-new.dto';
 import { ApiSecurity, ApiResponse } from '@nestjs/swagger';
 import { ListAnalysisService } from './list-analysis.service';
@@ -24,7 +25,7 @@ export class ListUploadController {
   @Post('/list/upload_new')
   @UsePipes(new ZodValidationPipe(listUploadNewRequestSchema))
   async uploadNewList(
-    @Body() listUpload: ListUploadNewRequest,
+    @Body() listUploadBody: ListUploadNewRequest,
     @Req() request: Request
   ): Promise<ListUploadNewResponse | ListUploadNewErrorResponse> {
     new ZodValidationPipe(requestSchema).transform(request);
@@ -32,6 +33,8 @@ export class ListUploadController {
     const {
       user: { organizationId },
     } = request;
+
+    const listUpload = listUploadBody as unknown as ListUploadNewRequestSchema;
 
     return await this.listAnalysisService.uploadNewList(listUpload, organizationId);
   }

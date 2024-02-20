@@ -12,7 +12,7 @@ import { ListsAnalysisStatus } from './list-analysis-status.entity';
 import { transformExternalUpload } from './transformers';
 import {
   ListUploadNewErrorResponse,
-  ListUploadNewRequest,
+  ListUploadNewRequestSchema,
   ListUploadNewResponse,
   PrepareUploadRequestSchema,
 } from './list-upload-new.dto';
@@ -191,7 +191,7 @@ export class ListAnalysisService {
   }
 
   async uploadNewList(
-    newListDetails: ListUploadNewRequest,
+    newListDetails: ListUploadNewRequestSchema,
     organizationId: number
   ): Promise<ListUploadNewResponse | ListUploadNewErrorResponse> {
     const organizationDetails = await this.getOrganizationDetails(organizationId);
@@ -208,7 +208,6 @@ export class ListAnalysisService {
         HttpStatus.BAD_REQUEST
       );
     }
-    const analysisIds = newListDetails.analysisIDs.split(',');
 
     await this.checkIfS3FileExists(externalUpload.uploadKeyFile);
 
@@ -220,7 +219,7 @@ export class ListAnalysisService {
         list_name: newListDetails.listName,
         user_id: externalUpload.userId,
         client_database: organizationDetails.organizationDb,
-        analysisIds: analysisIds,
+        analysisIds: newListDetails.analysisIDs,
       });
     } catch (error) {
       if (error?.response?.status === HttpStatus.BAD_REQUEST) {
@@ -254,7 +253,7 @@ export class ListAnalysisService {
       template_type: newListDetails.templateId,
       user_id: externalUpload.userId,
       startAnalysis: true,
-      analysis_types: getAnalysisTypesFromIds(analysisIds),
+      analysis_types: getAnalysisTypesFromIds(newListDetails.analysisIDs),
       isExternalAPIProcess: true,
     });
 

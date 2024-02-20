@@ -30,13 +30,12 @@ const PolygonCoordinatesInput = ({
   );
   const [coordinates, setCoordinates] = useState([newCoordinate()]);
   const [customArea, setCustomArea] = useState();
+  const [isPolygon, setIsPolygon] = useState(false);
   const [open, setOpen] = useState(false);
 
   // Validation functions
   const isValidLatitude = (value) => value !== null && value >= -90 && value <= 90;
   const isValidLongitude = (value) => value !== null && value >= -180 && value <= 180;
-
-  const onlyOneCoordinatesRow = coordinates.length === 1;
 
   useEffect(() => {
     // initialize with the coordinates of the geometry that is being edited
@@ -57,6 +56,16 @@ const PolygonCoordinatesInput = ({
       setCoordinates(initialCoordinates);
     }
   }, [geometry]);
+
+  useEffect(() => {
+    if (isPolygon) {
+      // Set the coordinates to have three rows
+      setCoordinates([newCoordinate(), newCoordinate(), newCoordinate()]);
+    } else {
+      // Set the coordinates to have one row
+      setCoordinates([newCoordinate()]);
+    }
+  }, [isPolygon]);
 
   const onCoordinatesChange = (event, id, field) => {
     const value = parseFloat(event.target.value);
@@ -82,7 +91,7 @@ const PolygonCoordinatesInput = ({
   };
 
   const onDeleteCoordinate = (id) => {
-    if (onlyOneCoordinatesRow) {
+    if (!isPolygon) {
       // User can't delete the coordinates if there is only one row
       return;
     }
@@ -101,7 +110,7 @@ const PolygonCoordinatesInput = ({
     sketchViewModel.delete();
 
     let geometry;
-    if (onlyOneCoordinatesRow) {
+    if (!isPolygon) {
       geometry = getPointGeometry(
         coordinates,
         selectedAreaRadioOption,
@@ -191,13 +200,14 @@ const PolygonCoordinatesInput = ({
       >
         <Card className="polygon-coordinates">
           <CoordinateInputsContainer
-            onlyOneCoordinatesRow={onlyOneCoordinatesRow}
+            isPolygon={isPolygon}
+            setIsPolygon={setIsPolygon}
             coordinates={coordinates}
             onCoordinatesChange={onCoordinatesChange}
             onDeleteCoordinate={onDeleteCoordinate}
             onAddCoordinate={onAddCoordinate}
           />
-          {onlyOneCoordinatesRow && (
+          {!isPolygon && (
             <SetArea
               selectedAreaRadioOption={selectedAreaRadioOption}
               setSelectedAreaRadioOption={setSelectedAreaRadioOption}

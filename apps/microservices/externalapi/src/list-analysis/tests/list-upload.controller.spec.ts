@@ -60,50 +60,16 @@ jest.mock('@aws-sdk/client-s3', () => {
   };
 });
 
-/*
-const SqsModuleMock = {
-  registerAsync: jest.fn().mockImplementation(() => ({
-    register: jest.fn(),
-  }))
-}
-jest.mock('@hhssut/nestjs-sqs', () => {
+// Mock SQS consumer so it doesn't try receiving messages
+jest.mock('sqs-consumer', () => {
   return {
-    SqsModule: {
-      registerAsync: jest.fn().mockResolvedValue({
-        useFactory: async () => {
-          return {
-            consumers: [
-              {
-                name: 'AWS_ANALYSIS_QUEUE_IDENTIFIER',
-                queueUrl: 'https://sqs.us-west-2.amazonaws.com/123456789012/MyQueue',
-                region: 'us-west-2',
-                waitTimeSeconds: 1,
-                batchSize: 3,
-                terminateVisibilityTimeout: true,
-                messageAttributeNames: ['All'],
-              },
-            ],
-            producers: [
-              {
-                name: 'AWS_DOWNLOADER_QUEUE_IDENTIFIER',
-                queueUrl: 'https://sqs.us-west-2.amazonaws.com/123456789012/MyQueue',
-                region: 'us-west-2',
-              },
-            ],
-          };
-        }
-      })
+    Consumer: {
+      create: jest.fn().mockImplementation(() => ({
+        start: jest.fn(),
+      })),
     },
-    SqsService: jest.fn().mockImplementation(() => ({
-      sendMessage: jest.fn().mockResolvedValue({}),
-    })),
-    SqsMessageHandler: jest.fn().mockImplementation((param1, param2) => {
-      return (param1, param2) => {
-        return { param1, param2 };
-      }
-    }),
-  }
-});*/
+  };
+});
 
 interface WhereRequest {
   where: {
@@ -147,7 +113,7 @@ class ExternalUploadMockRepository {
   }));
 }
 
-xdescribe('ListUploadController', () => {
+describe('ListUploadController', () => {
   let controller: ListUploadController;
   let axiosMock;
   let userService: UserService;

@@ -450,20 +450,9 @@ function createGraphics(features, locationFilters, zoomLevel) {
   const maxDensity = Math.max(...densityArray);
 
   return features.map((feature) => {
-    const { percentageOfLocations } = feature.attributes;
-    const size = zoomLevel < 3 ? getSymbolSize(percentageOfLocations) : 20;
     return new Graphic({
       attributes: feature.attributes,
       geometry: feature.geometry,
-      symbol: {
-        type: 'simple-marker',
-        color: getSymbolColor(feature, maxDensity),
-        size,
-        outline: {
-          width: 0,
-          color: [0, 0, 0, 0],
-        },
-      },
     });
   });
 }
@@ -490,6 +479,11 @@ function createLayer(graphics) {
         name: 'numberOfAlerts',
         alias: 'numberOfAlerts',
         type: 'integer',
+      },
+      {
+        name: 'treeDensity',
+        alias: 'treeDensity',
+        type: 'double',
       },
       {
         name: 'numberOfLocations',
@@ -525,7 +519,6 @@ function createLayer(graphics) {
       type: 'simple',
       symbol: {
         type: 'simple-marker',
-        color: 'green',  // getSymbolColor(feature, maxDensity),
         outline: {
           width: 0,
           color: [0, 0, 0, 0],
@@ -542,7 +535,32 @@ function createLayer(graphics) {
             { value: 75, size: '60px' },
             { value: 100, size: '80px' }
           ]
-        }
+        },
+        {
+          type: "color", // indicates this is a color visual variable
+          field: "treeDensity",
+          valueExpression: '$feature.hasAlerts ? $feature.treeDensity : 0.0',
+          stops: [
+            {
+              value: 0.0,
+              opacity: '0.75',
+              color: "#999999",
+            },
+            {
+              value: 0.001, // features where < .1% of tree density
+              opacity: '0.75',
+              color: "#008000", // will be assigned this color (green)
+            },
+            {
+              value: 1.0, // features where 100% tree density
+              opacity: '0.75',
+              color: "#FFA500", // will be assigned this color (orange)
+            }
+          ],
+          // features with values between 0.001 - 1.0 will be assigned
+          // a color on a ramp between green and orange proportional
+          // to where the value falls between 0.001 and 1.0
+        },
       ],
     },
   });

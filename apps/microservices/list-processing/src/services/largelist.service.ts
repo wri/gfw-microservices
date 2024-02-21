@@ -1,5 +1,5 @@
 import { SQLUtils } from '@wri-monorepos/sql';
-import { BadRequestException, Logger, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, Logger } from '@nestjs/common';
 import { Injectable, Inject } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../models';
 import fetch from 'node-fetch';
@@ -52,10 +52,7 @@ export class LargeListService {
       accountUsage.locations_analyzed + listLocationsCount >
       accountLimits.max_locations_per_year
     ) {
-      throw new UnprocessableEntityException('Resource could not be processed', {
-        cause: new Error(),
-        description: 'Analysis limit reached',
-      });
+      throw new ProcessingLimitException();
     }
     const {
       organization_id: organizationId,

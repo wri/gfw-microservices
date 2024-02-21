@@ -3969,6 +3969,7 @@ export const accountProfileStrings = {
     numberOfLists: 'Number of lists',
     maxAreaPerList: 'Max area per list',
     totalAreaAnalyzed: 'Total area analyzed',
+    locationsAnalyzed: 'Locations analyzed',
   },
   accountFormLabels: {
     org_name: 'Organization Name',

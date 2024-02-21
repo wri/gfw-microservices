@@ -35,8 +35,8 @@ for (let z = 1; z < 21; z++) {
 const TreeCoverLossLayer = BaseTileLayer.createSubclass({
   properties: {
     threshold: 30,
-    minYear: 2001,
-    maxYear: latestTreeCoverLossYearFC,
+    minYear: 1, // 2001
+    maxYear: latestTreeCoverLossYearFC - 2000, // 2022
   },
 
   getTileUrl: function (level, row, column) {
@@ -95,43 +95,46 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
 
   // Filter Data Method
   filter: function (data) {
-    const z = this.view.zoom;
+    // intensityBank indexes are integers for each zoom level
+    const z = Math.round(this.view.zoom);
 
     for (let i = 0; i < data.length; i += 4) {
       // Decode the rgba/pixel so I can filter on date ranges
       const slice = [data[i], data[i + 1], data[i + 2]];
       const values = this.decodeDate(slice);
 
-      if (!values.intensity) {
-        values.intensity = 0;
-      }
-      if (values.year >= this.minYear - 2000 && values.year <= this.maxYear - 2000) {
-        if (intensityBank[z] && intensityBank[z][values.intensity]) {
-          data[i] =
-            intensityBank[z] &&
-            intensityBank[z][values.intensity] &&
-            intensityBank[z][values.intensity][2]
-              ? intensityBank[z][values.intensity][2]
-              : 0;
-          data[i + 1] =
-            intensityBank[z] &&
-            intensityBank[z][values.intensity] &&
-            intensityBank[z][values.intensity][3]
-              ? intensityBank[z][values.intensity][3]
-              : 0;
-          data[i + 2] =
-            intensityBank[z] &&
-            intensityBank[z][values.intensity] &&
-            intensityBank[z][values.intensity][0]
-              ? intensityBank[z][values.intensity][0]
-              : 0;
-          data[i + 3] =
-            intensityBank[z] &&
-            intensityBank[z][values.intensity] &&
-            intensityBank[z][values.intensity][1]
-              ? intensityBank[z][values.intensity][1]
-              : 0;
-        }
+      //if data is under the year range
+      // and it's avaiable for this zoom level
+      if (
+        values.year >= this.minYear &&
+        values.year <= this.maxYear &&
+        intensityBank[z] &&
+        intensityBank[z][values.intensity]
+      ) {
+        data[i] =
+          intensityBank[z] &&
+          intensityBank[z][values.intensity] &&
+          intensityBank[z][values.intensity][2]
+            ? intensityBank[z][values.intensity][2]
+            : 0;
+        data[i + 1] =
+          intensityBank[z] &&
+          intensityBank[z][values.intensity] &&
+          intensityBank[z][values.intensity][3]
+            ? intensityBank[z][values.intensity][3]
+            : 0;
+        data[i + 2] =
+          intensityBank[z] &&
+          intensityBank[z][values.intensity] &&
+          intensityBank[z][values.intensity][0]
+            ? intensityBank[z][values.intensity][0]
+            : 0;
+        data[i + 3] =
+          intensityBank[z] &&
+          intensityBank[z][values.intensity] &&
+          intensityBank[z][values.intensity][1]
+            ? intensityBank[z][values.intensity][1]
+            : 0;
       } else {
         // Hide the pixel
         data[i + 3] = 0;
@@ -145,7 +148,7 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
 
   decodeDate: function (pixel) {
     const year = pixel[2];
-    const intensity = pixel[0];
+    const intensity = pixel[0] || 0;
     return { intensity, year };
   },
 });

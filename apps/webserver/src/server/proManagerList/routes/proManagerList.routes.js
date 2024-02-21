@@ -2,7 +2,7 @@
 /* eslint-disable import/no-dynamic-require */
 const path = require('path');
 const controller = require('../controllers/proManagerList.controller');
-
+const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const ProManager = require(path.resolve('./config/publicutils/proManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
@@ -62,59 +62,60 @@ module.exports = (app, limiter) => {
   );
 
   app.post('/pro-manager/activateProAccount', (req, res) => {
-    console.log('POST /pro-manager/activateProAccount');
+    logger.info('POST /pro-manager/activateProAccount');
     const { id } = req.body;
     ProManager.activatePendingAccount(req, id)
       .then(() => {
         res.send({ redirect: '/pro-manager-list' });
       })
-      .catch((err) => {
-        console.log('Reject', err);
-        res.send(err);
+      .catch((error) => {
+        logger.info(`Error POST /pro-manager/activateProAccount`, error);
+        res.send(error);
       });
   });
 
   app.post('/pro-manager/activateProActiveAccount', (req, res) => {
-    console.log('POST /pro-manager/activateProActiveAccount');
+    logger.info('POST /pro-manager/activateProActiveAccount');
     const { id } = req.body;
     ProManager.reactivateAccount(req, id)
       .then(() => {
         res.send({ redirect: '/pro-manager-list' });
       })
-      .catch((err) => {
-        console.log('Reject', err);
-        res.send(err);
+      .catch((error) => {
+        logger.info(`Error POST /pro-manager/activateProActiveAccount`, error);
+        res.send(error);
       });
   });
 
   app.post('/pro-manager/deactivateProAccount', (req, res) => {
-    console.log('POST /pro-manager/deactivateProAccount');
+    logger.info('POST /pro-manager/deactivateProAccount');
     const { id } = req.body;
     ProManager.deactivateAccount(req, id)
       .then(() => {
         res.send({ redirect: '/pro-manager-list' });
       })
-      .catch((err) => {
-        console.log('Reject', err);
-        res.send(err);
+      .catch((error) => {
+        logger.info(`Error POST /pro-manager/deactivateProAccount`, error);
+        res.send(error);
       });
   });
 
   app.post('/pro-manager/deleteProAccountRequest', (req, res) => {
-    console.log('POST /pro-manager/deleteProAccountRequest');
+    logger.info('POST /pro-manager/deleteProAccountRequest');
     const { id } = req.body;
 
     ProManager.deletePendingAccount(req, id)
       .then(() => {
         res.send({ redirect: '/pro-manager-list' });
       })
-      .catch((err) => {
-        res.send(err);
+      .catch((error) => {
+        logger.info(`Error POST /pro-manager/deleteProAccountRequest`, error);
+        res.send(error);
       });
   });
 
   app.post('/pro-manager/updateProAccount', (req, res) => {
-    console.log('POST /pro-manager/updateProAccount');
+    logger.info('POST /pro-manager/updateProAccount');
     const {
       id,
       org_name,
@@ -147,14 +148,14 @@ module.exports = (app, limiter) => {
       .then(() => {
         res.send({ status: 'success' });
       })
-      .catch((err) => {
-        console.log('Reject', err);
-        res.status(500).send(err);
+      .catch((error) => {
+        logger.info(`Error POST /pro-manager/updateProAccount`, error);
+        res.status(500).send(error);
       });
   });
 
   app.post('/pro-manager/updateProAccountUser', (req, res) => {
-    console.log('POST /pro-manager/updateProAccountUser');
+    logger.info('POST /pro-manager/updateProAccountUser');
     const {
       id,
       first_name,
@@ -184,21 +185,23 @@ module.exports = (app, limiter) => {
       .then(() => {
         res.send({ redirect: '/pro-manager-list' });
       })
-      .catch((err) => {
-        console.log('Reject', err);
-        res.send(err);
+      .catch((error) => {
+        logger.info(`Error POST /pro-manager/updateProAccountUser`, error);
+        res.send(error);
       });
   });
 
   app.get('/pro-manager/downloadPolicyPro/:policyList/:orgID', (req, res) => {
-    PolicyManager.downloadPolicy(req, [req.params.policyList], [req.params.orgID])
+    const { policyList, orgID } = req.params;
+
+    PolicyManager.downloadPolicy(req, [policyList], [orgID])
       .then((filestream) => {
-        res.attachment(req.params.policyList);
+        res.attachment(policyList);
         filestream.pipe(res);
       })
-      .catch((err) => {
-        console.log('Reject', err);
-        res.send(err);
+      .catch((error) => {
+        logger.info(`Error POST /pro-manager/downloadPolicyPro/${policyList}/${orgID}`, error);
+        res.send(error);
       });
   });
 
@@ -208,34 +211,36 @@ module.exports = (app, limiter) => {
       .then((secret) => {
         res.send(secret);
       })
-      .catch((err) => {
-        console.log('Error getting secret', err);
+      .catch((error) => {
+        logger.info(`Error POST /userSecret`, error);
       });
   });
 
   app.post('/pro-manager/gfwlists', (req, res) => {
-    console.log('POST /pro-manager/gfwlists');
+    logger.info('POST /pro-manager/gfwlists');
     const { list_ids } = req.body;
 
     GFWListManager.updateGFWLists(req, list_ids)
       .then(() => {
         res.send('success');
       })
-      .catch((err) => {
-        console.log('Error /pro-manager/gfwlists', err);
-        res.send(err);
+      .catch((error) => {
+        logger.info(`Error POST /pro-manager/gfwlists`, error);
+        res.send(error);
       });
   });
 
   app.post('/pro-manager/updateGlobalAnalysisLimits', async (req, res) => {
-    console.log('POST /pro-manager/updateGlobalAnalysisLimits');
-    const { MaxAreaPerList, MaxAreaAnalyzeablePerYear, subscriptionStatusId } = req.body;
+    logger.info('POST /pro-manager/updateGlobalAnalysisLimits');
+    const { maxAreaPerList, maxAreaAnalyzeablePerYear, subscriptionStatusId, maxLocationsPerYear } =
+      req.body;
 
     try {
       const response = await ProManager.updateGlobalAnalysisLimits(req, {
         subscriptionStatusId,
-        MaxAreaPerList,
-        MaxAreaAnalyzeablePerYear,
+        maxAreaPerList,
+        maxAreaAnalyzeablePerYear,
+        maxLocationsPerYear,
       });
 
       res.send({
@@ -243,19 +248,26 @@ module.exports = (app, limiter) => {
         data: response,
       });
     } catch (error) {
+      logger.info(`Error POST /pro-manager/updateGlobalAnalysisLimits`, error);
       res.status(500).send(error);
     }
   });
 
   app.post('/pro-manager/updateAccountAnalysisLimits', async (req, res) => {
-    console.log('POST /pro-manager/updateAccountAnalysisLimits');
-    const { MaxAreaPerList, MaxAreaAnalyzeablePerYear, organizationId } = req.body;
+    logger.info('POST /pro-manager/updateAccountAnalysisLimits');
+    const {
+      organizationId,
+      maxAreaPerList = 0,
+      maxAreaAnalyzeablePerYear = 0,
+      maxLocationsPerYear = 0,
+    } = req.body;
 
     try {
       const response = await ProManager.updateAccountAnalysisLimits(req, {
         organizationId,
-        MaxAreaPerList,
-        MaxAreaAnalyzeablePerYear,
+        maxAreaPerList,
+        maxAreaAnalyzeablePerYear,
+        maxLocationsPerYear,
       });
 
       res.send({
@@ -263,6 +275,7 @@ module.exports = (app, limiter) => {
         data: response,
       });
     } catch (error) {
+      logger.info(`Error POST /pro-manager/updateAccountAnalysisLimits`, error);
       res.status(500).send(error);
     }
   });

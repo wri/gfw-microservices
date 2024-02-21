@@ -149,7 +149,7 @@ const editSingleLocation = (req, list_id, location_id, attributes) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
       { field: 'location_id', type: sql.Int, value: location_id },
-      { field: 'statement', type: sql.NVarChar(255), value: statement },
+      { field: 'statement', type: sql.Text, value: statement },
     ];
 
     sqlUtils

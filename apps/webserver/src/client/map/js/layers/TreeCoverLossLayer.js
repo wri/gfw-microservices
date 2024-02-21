@@ -35,8 +35,8 @@ for (let z = 1; z < 21; z++) {
 const TreeCoverLossLayer = BaseTileLayer.createSubclass({
   properties: {
     threshold: 30,
-    minYear: 1, // 2001
-    maxYear: latestTreeCoverLossYearFC - 2000, // 2022
+    minYear: 2001,
+    maxYear: latestTreeCoverLossYearFC,
   },
 
   getTileUrl: function (level, row, column) {
@@ -106,8 +106,8 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
       //if data is under the year range
       // and it's avaiable for this zoom level
       if (
-        values.year >= this.minYear &&
-        values.year <= this.maxYear &&
+        values.year >= this.minYear - 2000 &&
+        values.year <= this.maxYear - 2000 &&
         intensityBank[z] &&
         intensityBank[z][values.intensity]
       ) {

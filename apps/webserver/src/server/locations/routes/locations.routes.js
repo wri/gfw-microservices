@@ -1169,8 +1169,18 @@ module.exports = (app, limiter) => {
           console.log(response);
           res.send(response);
         })
-        .catch((err) => {
-          res.status(500).send(err);
+        .catch(({ response }) => {
+          logger.info(`Error /locations/process-list`);
+          const {
+            status = 500,
+            statusText: reason = 'Error /locations/process-list',
+            data = {},
+          } = response;
+
+          res.status(status).send({
+            reason,
+            ...data,
+          });
         });
     });
   });

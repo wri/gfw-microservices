@@ -124,6 +124,8 @@ describe('AppController', () => {
       const appController = app.get<AppController>(AppController);
       const result = await appController.processLargeList({
         organization_id: 1,
+        organization_database: 'clientstore-DevCo',
+        subscription_status_id: 1,
         list_id: 2082,
         path: 's3://gfwpro-geotrellis-pre-data/TESTING/cocoa_generic_point.zip',
         template_type: 'cocoa_generic',
@@ -201,6 +203,8 @@ describe('AppController', () => {
 
       const trigguerLargeListProcessResult = await appController.processLargeList({
         organization_id: 1,
+        organization_database: 'clientstore-DevCo',
+        subscription_status_id: 1,
         list_id: trigguerProccessResult.list_id,
         path: presignedURL.fileS3Route,
         template_type: 'cocoa_generic',

@@ -31,6 +31,8 @@ export interface CreateListInsertResultModel {
 
 export interface RequestLargeListProcess {
   organization_id: number;
+  subscription_status_id: number;
+  organization_database: string;
   list_id: number;
   path: string;
   template_type: string;

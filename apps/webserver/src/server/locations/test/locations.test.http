@@ -217,3 +217,18 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
     ]
   }
 }
+
+### webserver locations to list-processing microservice
+POST https://localhost:8443/locations/process-list
+Content-Type: application/json
+Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+
+{
+  "listName": "llp gfw pro 205806022023",
+  "list_id": 5465,
+  "path": "s3://gfwpro-lpl-dev/4j6l9gkvvldsuhug7-input_cocoageneric_random_10.csv",
+  "template_type": "investment",
+  "startAnalysis": true,
+  "processing_limit": 120000,
+  "analysis_types": ["FCD", "ALERTS"]
+}

@@ -1133,7 +1133,8 @@ module.exports = (app, limiter) => {
    */
   app.post('/locations/process-list', (req, res) => {
     const { list_id, path: pathLocal, template_type, startAnalysis, listName } = req.body;
-    const { organization_user_id, organization_id, subscription_status_id } = req.session;
+    const { organization_user_id, organization_id, subscription_status_id, organization_database } =
+      req.session;
 
     const { LISTS_MICROSERVICE_URL } = process.env;
 
@@ -1150,6 +1151,8 @@ module.exports = (app, limiter) => {
         .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
           organization_id,
           list_id,
+          organization_database,
+          subscription_status_id,
           path: pathLocal,
           template_type,
           user_id: organization_user_id,
@@ -1166,8 +1169,18 @@ module.exports = (app, limiter) => {
           console.log(response);
           res.send(response);
         })
-        .catch((err) => {
-          res.send(500, err);
+        .catch(({ response }) => {
+          logger.info(`Error /locations/process-list`);
+          const {
+            status = 500,
+            statusText: reason = 'Error /locations/process-list',
+            data = {},
+          } = response;
+
+          res.status(status).send({
+            reason,
+            ...data,
+          });
         });
     });
   });

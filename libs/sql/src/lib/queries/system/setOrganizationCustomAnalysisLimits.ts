@@ -1,18 +1,9 @@
 /**
- * @summary Upsert Query: Updates the row if it finds a match, inserts a new row when it doesn't
+ * @summary Insert Query: Inserts a new row for each call with automatic update_time field using GETDATE(), does not update existing rows
  * @param {Int} OrgID
  * @param {Decimal} MaxAreaPerList
  * @param {Decimal} MaxAreaAnalyzeablePerYear
- *
+ * @param {Int} MaxLocationsPerYear
  */
-export const setOrganizationCustomAnalysisLimits = `MERGE AnalysisLimits AS target
-USING (VALUES (@OrgID, NULL, @MaxAreaPerList, @MaxAreaAnalyzeablePerYear)) AS source (OrgID, OrgType, MaxAreaPerList, MaxAreaAnalyzeablePerYear)
-ON target.OrgID = source.OrgID
-WHEN MATCHED THEN
-  UPDATE SET
-    target.OrgType = source.OrgType,
-    target.MaxAreaPerList = source.MaxAreaPerList,
-    target.MaxAreaAnalyzeablePerYear = source.MaxAreaAnalyzeablePerYear
-WHEN NOT MATCHED THEN
-  INSERT (OrgID, OrgType, MaxAreaPerList, MaxAreaAnalyzeablePerYear)
-  VALUES (source.OrgID, source.OrgType, source.MaxAreaPerList, source.MaxAreaAnalyzeablePerYear);`;
+export const setOrganizationCustomAnalysisLimits = `INSERT INTO AnalysisLimits (OrgID, OrgType, MaxAreaPerList, MaxAreaAnalyzeablePerYear, MaxLocationsPerYear, update_time)
+VALUES (@OrgID, NULL, @MaxAreaPerList, @MaxAreaAnalyzeablePerYear, @MaxLocationsPerYear, GETDATE());`;

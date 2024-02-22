@@ -329,25 +329,33 @@ exports.downloadingSelectedLocationsJson = async (request, response) => {
 };
 
 exports.downloadErrorFile = async (req, res) => {
-  const { fileKey } = req.query;
-  // Example of fileKey - `s3://gfwpro-geotrellis-pre-data/development/failed/20221104051534_iizo1ewdla21ee1s-input_cocoageneric_random_50k_r25.csv`
-  const basename = path.basename(fileKey);
-  const fileKeyClean = fileKey.replace('S3://', '').replace('s3://', '');
-  const fileKeyCleanChunks = fileKeyClean.split('/');
-  const [bucket, ...keyPathChunks] = fileKeyCleanChunks;
-  const key = keyPathChunks.join('/');
+  try {
+    const { fileKey } = req.query;
+    // Example of fileKey - `s3://gfwpro-geotrellis-pre-data/development/failed/20221104051534_iizo1ewdla21ee1s-input_cocoageneric_random_50k_r25.csv`
+    const basename = path.basename(fileKey);
+    const fileKeyClean = fileKey.replace('S3://', '').replace('s3://', '');
+    const fileKeyCleanChunks = fileKeyClean.split('/');
+    const [bucket, ...keyPathChunks] = fileKeyCleanChunks;
+    const key = keyPathChunks.join('/');
 
-  const parameters = {
-    Bucket: bucket, // (e.g. 'gfwpro-geotrellis-pre-data')
-    Key: key, // (e.g. 'development/failed/20221104051534_iizo1ewdla21ee1s-input_cocoageneric_random_50k_r25.csv')
-  };
+    const parameters = {
+      Bucket: bucket, // (e.g. 'gfwpro-geotrellis-pre-data')
+      Key: key, // (e.g. 'development/failed/20221104051534_iizo1ewdla21ee1s-input_cocoageneric_random_50k_r25.csv')
+    };
 
-  const s3client = new S3Client();
-  const s3command = new GetObjectCommand(parameters);
-  const s3response = await s3client.send(s3command);
-  const fileStream = s3response.Body;
-  fileStream.pipe(res);
-  res.attachment(basename);
+    const s3client = new S3Client();
+    const s3command = new GetObjectCommand(parameters);
+    const s3response = await s3client.send(s3command);
+    const fileStream = s3response.Body;
+    fileStream.pipe(res);
+    res.attachment(basename);
+  } catch (err) {
+    logger.error('downloadErrorFile Failed', err);
+    res.status(500).send({
+      error: err.message,
+      success: false,
+    });
+  }
 };
 
 /**

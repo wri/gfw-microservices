@@ -1,5 +1,7 @@
 const moment = require('moment');
 
+const DATE_FORMATS = ['MM/DD/YYYY', 'M/D/YYYY', 'MM/D/YYYY'];
+
 const mandatoryLocationName = (str) => {
   let returnValue = true;
   if (str === '') {
@@ -154,14 +156,19 @@ const validDate = (date) => {
     return true;
   }
 
-  const momentDate = moment(date);
-  if (momentDate.isValid()) {
-    return true;
-  }
+  try {
+    const momentDate = moment(date,DATE_FORMATS, true);
+    if (momentDate.isValid()) {
+      return true;
+    }
 
-  // Otherwise if it has a year
-  const regCheck = /^(0[1-9]|1[0-2]|[1-9])\/(0[1-9]|[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$/;
-  return regCheck.test(date);
+    // Otherwise if it has a year
+    const regCheck = /^(0[1-9]|1[0-2]|[1-9])\/(0[1-9]|[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$/;
+    return regCheck.test(date);
+
+  } catch (e) {
+    return false;
+  }
 };
 
 const validStartDate = (dateStart, dateEnd) => {
@@ -170,21 +177,22 @@ const validStartDate = (dateStart, dateEnd) => {
     return true;
   }
 
-  const momentDateStart = moment(dateStart);
-  // Otherwise if it has a year
-  if (momentDateStart.year()) {
-    if (dateEnd) {
-      const momentDateEnd = moment(dateEnd);
-
-      // Check if start date is before end date
-      return momentDateStart <= momentDateEnd; // Can be true or false
+  try {
+    const momentDateStart = moment(dateStart, DATE_FORMATS, true);
+    // Otherwise if it has a year
+    if (momentDateStart.year()) {
+      if (dateEnd) {
+        const momentDateEnd = moment(dateEnd, DATE_FORMATS, true);
+        // Check if start date is before end date
+        return momentDateStart <= momentDateEnd; // Can be true or false
+      }
+      return true;
     }
-
-    return true;
+    // Anything else is false
+    return false;
+  } catch (e) {
+    return false;
   }
-
-  // Anything else is false
-  return false;
 };
 
 const isNotNone = (value) => {

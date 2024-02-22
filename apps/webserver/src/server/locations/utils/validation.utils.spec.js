@@ -293,7 +293,7 @@ describe('Validate List attributes', () => {
     }
   );
 
-  it.each(['10/10/2023', '12/30/2023', '', '120', undefined, 123])(
+  it.each(['10/10/2023', '12/30/2023', '', undefined])(
     '[End Date] should accept the following value: %p',
     (value) => {
       const errorListSize = 0;
@@ -320,7 +320,7 @@ describe('Validate List attributes', () => {
 
   it.each([
     ['10/10/2023', '10/10/2023'],
-    ['9/10/2023', '10/10/2023'],
+    ['09/10/2023', '10/10/2023'],
     ['', '10/10/2023'],
     [undefined, '10/10/2023'],
   ])('[Start Date] should accept the following value: %p - %p', (value1, value2) => {

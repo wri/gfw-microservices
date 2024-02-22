@@ -623,101 +623,6 @@
       }
     },
     {
-      "id": "b98f92cc-08c5-48e4-af71-2366304ee545",
-      "type": "layer",
-      "attributes": {
-        "name": "Tree Plantations by species",
-        "slug": "Tree-Plantations-by-species_2",
-        "dataset": "eaf07d6c-ba45-4fb9-afb7-a8cbc7e7fc2c",
-        "description": "Tree Plantations by species",
-        "application": ["gfw-pro"],
-        "iso": [],
-        "provider": "featureservice",
-        "userId": "5c533e5cc3b3242d2ed73bc7",
-        "default": true,
-        "protected": false,
-        "published": true,
-        "env": "staging",
-        "layerConfig": {
-          "body": {
-            "url": "https://tiles.globalforestwatch.org/gfw_planted_forests/v20201209/default/root.json",
-            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_planted_forests",
-            "useCors": true
-          },
-          "type": "Vector.Layer"
-        },
-        "legendConfig": {
-          "items": [
-            {
-              "color": "#cb8335",
-              "categories": [
-                {
-                  "color": "#98a7c4",
-                  "name": "Wood fiber / timber"
-                },
-                {
-                  "color": "#fdada9",
-                  "name": "Oil Palm"
-                },
-                {
-                  "color": "#a0c746",
-                  "name": "Unknown Mix"
-                },
-                {
-                  "color": "#dcd9d9",
-                  "name": "Unknown"
-                },
-                {
-                  "color": "#a4fdff",
-                  "name": "Rubber Mix"
-                },
-                {
-                  "color": "#fefe97",
-                  "name": "Fruit Mix"
-                },
-                {
-                  "color": "#d1e6ab",
-                  "name": "Other"
-                },
-                {
-                  "color": "#9993A3",
-                  "name": "Rubber"
-                },
-                {
-                  "color": "#dada95",
-                  "name": "Fruit"
-                },
-                {
-                  "color": "#fcc4c1",
-                  "name": "Oil Palm Mix"
-                },
-                {
-                  "color": "#9ebbf2",
-                  "name": "Wood fiber / timber Mix"
-                },
-                {
-                  "color": "#d5a6ea",
-                  "name": "Recently cleared"
-                },
-                {
-                  "color": "#e1efc8",
-                  "name": "Other Mix"
-                }
-              ],
-              "name": "Tree plantations by species",
-              "source": "(2020, select countries)"
-            }
-          ],
-          "type": "basic"
-        },
-        "interactionConfig": {},
-        "applicationConfig": {},
-        "staticImageConfig": {},
-        "createdAt": "2022-01-06T17:02:38.418Z",
-        "updatedAt": "2022-01-10T22:24:46.085Z"
-      }
-    },
-    {
       "id": "6ec35660-ac80-4e08-8f20-c9c6005eec4a",
       "type": "layer",
       "attributes": {
@@ -810,6 +715,102 @@
         "staticImageConfig": {},
         "createdAt": "2022-10-12T15:53:39.192Z",
         "updatedAt": "2023-12-07T15:04:51.317Z"
+      }
+    },
+    {
+      "id": "b98f92cc-08c5-48e4-af71-2366304ee545",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree Plantations by species",
+        "slug": "Tree-Plantations-by-species_2",
+        "dataset": "eaf07d6c-ba45-4fb9-afb7-a8cbc7e7fc2c",
+        "description": "Tree Plantations by species",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b98f92cc-08c5-48e4-af71-2366304ee545-1707935844920.png",
+        "env": "staging",
+        "layerConfig": {
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/gfw_planted_forests/v20230911/default/{z}/{x}/{y}.png",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_planted_forests",
+            "useCors": true
+          },
+          "type": "tileLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#cb8335",
+              "categories": [
+                {
+                  "color": "#98a7c4",
+                  "name": "Wood fiber / timber"
+                },
+                {
+                  "color": "#fdada9",
+                  "name": "Oil Palm"
+                },
+                {
+                  "color": "#a0c746",
+                  "name": "Unknown Mix"
+                },
+                {
+                  "color": "#dcd9d9",
+                  "name": "Unknown"
+                },
+                {
+                  "color": "#a4fdff",
+                  "name": "Rubber Mix"
+                },
+                {
+                  "color": "#fefe97",
+                  "name": "Fruit Mix"
+                },
+                {
+                  "color": "#d1e6ab",
+                  "name": "Other"
+                },
+                {
+                  "color": "#9993A3",
+                  "name": "Rubber"
+                },
+                {
+                  "color": "#dada95",
+                  "name": "Fruit"
+                },
+                {
+                  "color": "#fcc4c1",
+                  "name": "Oil Palm Mix"
+                },
+                {
+                  "color": "#9ebbf2",
+                  "name": "Wood fiber / timber Mix"
+                },
+                {
+                  "color": "#d5a6ea",
+                  "name": "Recently cleared"
+                },
+                {
+                  "color": "#e1efc8",
+                  "name": "Other Mix"
+                }
+              ],
+              "name": "Tree plantations by species",
+              "source": "(2020, select countries)"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2022-01-06T17:02:38.418Z",
+        "updatedAt": "2024-02-14T18:37:24.827Z"
       }
     },
     {

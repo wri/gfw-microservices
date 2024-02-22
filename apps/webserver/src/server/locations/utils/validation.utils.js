@@ -157,7 +157,7 @@ const validDate = (date) => {
   }
 
   try {
-    const momentDate = moment(date,DATE_FORMATS, true);
+    const momentDate = moment(date, DATE_FORMATS, true);
     if (momentDate.isValid()) {
       return true;
     }
@@ -165,7 +165,6 @@ const validDate = (date) => {
     // Otherwise if it has a year
     const regCheck = /^(0[1-9]|1[0-2]|[1-9])\/(0[1-9]|[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$/;
     return regCheck.test(date);
-
   } catch (e) {
     return false;
   }

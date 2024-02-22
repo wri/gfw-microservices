@@ -8,22 +8,28 @@ import AccountUsageContainer from './AccountUsageContent';
  * @param {Object} props
  * @returns ReactNode
  */
-export default function AccountUsage({ total_area_analyzed, locations_analyzed, maxLocations, maxArea }) {
-
+export default function AccountUsage({
+  total_area_analyzed,
+  locations_analyzed,
+  maxLocations,
+  maxArea,
+}) {
   return (
     <Fragment>
       <Grid container spacing={4}>
         <Grid item xs={12} sm={6}>
-          <AccountUsageContainer 
+          <AccountUsageContainer
             label={profilePage.accountUsage.locationsAnalyzed}
             usedValue={locations_analyzed}
-            maxValue={maxLocations} />
+            maxValue={maxLocations}
+          />
         </Grid>
         <Grid item xs={12} sm={6}>
-          <AccountUsageContainer 
+          <AccountUsageContainer
             label={profilePage.accountUsage.areaAnalyzed}
             usedValue={total_area_analyzed}
-            maxValue={maxArea} />
+            maxValue={maxArea}
+          />
         </Grid>
       </Grid>
     </Fragment>

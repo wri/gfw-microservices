@@ -95,7 +95,7 @@ export default function AccountUsageContainer() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data, `analytics/myorg/limit`)
+        console.log(data, `analytics/myorg/limit`);
         setUsageLimitsData(data);
       })
       .catch((error) => {
@@ -120,7 +120,8 @@ export default function AccountUsageContainer() {
       <AccountUsage
         {...usageData}
         maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
-        maxLocations={usageLimitsData?.max_locations_per_year} />
+        maxLocations={usageLimitsData?.max_locations_per_year}
+      />
 
       <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>History</h3>
       <TableContainer component={Paper}>

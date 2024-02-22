@@ -1,48 +1,75 @@
 import React from 'react';
+import Card from '@mui/material/Card';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import { styled } from '@mui/material/styles';
-import LinearProgress from '@mui/material/LinearProgress';
+import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+
+const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.73)',
+  },
+}));
 
 export default function AccountUsage({ label, usedValue, maxValue }) {
-
   const CardLabel = styled(Typography)(() => ({
-    marginBottom: '30px',
-    Color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: '15px',
+    color: 'rgba(0, 0, 0, 0.5)',
+    fontSize: '12px',
+  }));
+
+  const ProgressLabel = styled(Typography)(() => ({
+    color: 'rgba(0, 0, 0, 0.73)',
+    fontSize: '14px',
+    lineHeight: '36px',
+    fontWeight: 'bold',
+  }));
+
+  const ProgressMark = styled(Typography)(() => ({
+    color: 'rgba(0, 0, 0, 0.25)',
+    fontSize: '10px',
+    lineHeight: '36px',
   }));
 
   const calculatePercentage = usedValue / maxValue * 100;
 
   return (
-    <CardContent>
-      <CardLabel variant="caption" display="block" gutterBottom>
-        {label}
-      </CardLabel>
+    <Card sx={{ padding: '1rem' }}>
+      <CardContent>
+        <CardLabel style={{marginBottom: '30px'}} variant="span" display="block" gutterBottom>
+          {label}
+        </CardLabel>
 
-      <Grid 
-        container
-        direction="row"
-        justifyContent="space-between"
-        alignItems="stretch">
+        <Grid 
+          container
+          direction="row"
+          justifyContent="space-between"
+          alignItems="stretch">
 
-        <Grid item>
-          <CardLabel variant="caption" display="block">
-            Used
-          </CardLabel>
-          <Typography variant="span">{usedValue}</Typography>
+          <Grid item>
+            <CardLabel variant="span" display="block">
+              Used
+            </CardLabel>
+            <ProgressLabel variant="span">{usedValue}</ProgressLabel>
+          </Grid>
+
+          <Grid item>
+            <CardLabel variant="caption" display="block" style={{textAlign: 'right'}}>
+              Avaliable
+            </CardLabel>
+            <ProgressLabel variant="span">{maxValue - usedValue}</ProgressLabel>
+            <ProgressMark variant="span">/{maxValue}</ProgressMark>
+          </Grid>
         </Grid>
 
-        <Grid item>
-          <CardLabel variant="caption" display="block">
-            Avaliable
-          </CardLabel>
-          <span>{maxValue - usedValue}</span> / <span>{maxValue}</span>
-        </Grid>
-      </Grid>
-
-      <LinearProgress variant="determinate" value={calculatePercentage} />
-    </CardContent>
+        <BorderLinearProgress variant="determinate" value={calculatePercentage} />
+      </CardContent>
+    </Card>
   );
 }

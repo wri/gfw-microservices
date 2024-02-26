@@ -1,13 +1,15 @@
 const path = require('path');
 const moment = require('moment');
 const { compiledAssets } = require(path.resolve('./config/config'));
-const {
-  getOrganizationAnalysisUsage,
-  getAnalysisLimitData,
-} = require('../service/analytics.service');
+const { getOrganizationAnalysisUsage } = require('../service/analytics.service');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
-import { getAccountUsagePercentage } from '@wri-monorepos/shared';
-import { getAccountUsersAnalysisUsage, getAccountActivatedTime } from '@wri-monorepos/sql';
+import { getAccountExtraLimits, getAccountUsagePercentage } from '@wri-monorepos/shared';
+import {
+  getAccountUsersAnalysisUsage,
+  getAccountActivatedTime,
+  getAccountAnalysisLimits,
+  getAccountRolloverLimits,
+} from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
 
@@ -129,7 +131,7 @@ exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
 exports.getOrganizationAnalysisLimit = async (req, res) => {
   const { organizationId, organizationType } = req.query;
 
-  const response = await getAnalysisLimitData({
+  const response = await getAccountAnalysisLimits({
     organizationId,
     organizationType,
   });
@@ -176,6 +178,22 @@ exports.downladOrganizationUsersUsageExport = async (req, res) => {
     success: true,
     message: filters,
   });
+};
+
+exports.getMyOrganizationExtendedLimits = async (req, res) => {
+  const { organization_id: organizationId } = req.session;
+
+  const accountExtraLimits = await getAccountExtraLimits(organizationId);
+
+  res.status(200).send(accountExtraLimits);
+};
+
+exports.getMyOrganizationRolloverLimits = async (req, res) => {
+  const { organization_id: organizationId } = req.session;
+
+  const accountRolloverLimits = await getAccountRolloverLimits(organizationId);
+
+  res.status(200).send(accountRolloverLimits);
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

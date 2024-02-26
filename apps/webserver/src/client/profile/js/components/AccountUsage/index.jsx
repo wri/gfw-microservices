@@ -95,7 +95,6 @@ export default function AccountUsageContainer() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data, `analytics/myorg/limit`);
         setUsageLimitsData(data);
       })
       .catch((error) => {

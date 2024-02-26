@@ -1,15 +1,12 @@
-﻿###db_to_s3_for_athena####
-
+﻿#db_to_s3_for_athena
 # Please update the github repository https://github.com/wri/gfw-microservices/blob/devops_automations/tools/devops_automations/ when  making changes to this script.
 
-###############
 $base_directory = "D:\DevOps\Automations\Git\gfw-microservices\tools\devops_automations"
 $sql_query_root_folder = Join-Path -Path $base_directory -ChildPath "sql"
 $log_file_name = Join-Path -Path $base_directory -ChildPath "logs\activity_log_workflow.txt"
 $sql_output_root = Join-Path -Path $base_directory -ChildPath "output"
 $sql_temp_file = Join-Path -Path $base_directory -ChildPath "output\temp.csv"
 $s3_bucket = "s3://gfwpro-analytics/tables"
-###############
 
 #Start Logging
 Start-Transcript -Path $log_file_name -Append -NoClobber
@@ -49,4 +46,3 @@ aws s3 sync $sql_output_root $s3_bucket
 
 #Stop Logging
 Stop-Transcript
-

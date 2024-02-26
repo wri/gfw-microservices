@@ -49,7 +49,7 @@ export default function AccountProfileLimitsSetting() {
     let errors = [];
 
     if (!data.max_locations_per_year) {
-      errors.push('The field "Area Per List" cannot be empty');
+      errors.push('The field "Max Locations Per Year" cannot be empty');
     }
     if (!data.MaxAreaAnalyzeablePerYear) {
       errors.push('The field "Area Per Year" cannot be empty');

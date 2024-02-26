@@ -17,6 +17,9 @@
 const path = require('path');
 const sql = require('mssql');
 const AWS = require('aws-sdk');
+const { S3 } = require('@aws-sdk/client-s3');
+const { Upload } = require('@aws-sdk/lib-storage');
+
 const config = require('../config');
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const langResources = require(path.resolve('./config/langResources'));
@@ -25,7 +28,7 @@ const UserManager = require(path.resolve('./config/publicutils/userManager.utils
 const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils'));
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 
-const s3 = new AWS.S3();
+const s3 = new S3();
 
 /** @function {uploadPolicies}
  *   @summary upload company policies to S3 and DB.
@@ -70,7 +73,10 @@ const uploadPolicies = (req, policyList, policyNames, overwrite = false) => {
               { field: 'document_name', type: sql.NVarChar(250), value: policyNames[i] },
             ];
             promises.push(
-              s3.upload(params).promise(),
+              new Upload({
+                client: s3,
+                params,
+              }).done(),
               sqlUtils.executeOrganizationStoredProcedure(req, 'uspAddPolicy', sqlParams)
             );
             uspAddPolicyExecuted = true;
@@ -127,7 +133,10 @@ const uploadPendingPolicies = (req, organizationId, policyList, policyNames) => 
         { field: 'document_name', type: sql.NVarChar(250), value: policyNames[i] },
       ];
       promises.push(
-        s3.upload(s3Params).promise(),
+        new Upload({
+          client: s3,
+          params: s3Params,
+        }).done(),
         sqlUtils.executeSystemStoredProcedure(req, 'uspAddPendingPolicy', sqlParams)
       );
     });
@@ -290,7 +299,7 @@ const deletePolicies = (req, policyList) => {
       const sqlParams = [{ field: 'document_name', type: sql.NVarChar(250), value: policy }];
       // Push list of documents to delete to promise array
       promises.push(
-        s3.deleteObject(s3Params).promise(),
+        s3.deleteObject(s3Params),
         sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeletePolicy', sqlParams)
       );
     });
@@ -331,7 +340,6 @@ const movePolicy = (req, pendingaccount_id, organizationId) => {
       Prefix: `${config.AWSVars.policyParams.keyPending}/${pendingaccount_id}`,
     };
     s3.listObjects(listObjParams)
-      .promise()
       .then((result) => {
         policyList = result.Contents;
         policyList.reverse().forEach((file) => {
@@ -345,7 +353,6 @@ const movePolicy = (req, pendingaccount_id, organizationId) => {
           };
           // Move each item in the pending folder to the new organization folder
           s3.copyObject(copyParams)
-            .promise()
             .then(() => {
               const deleteParams = {
                 Bucket: config.AWSVars.policyParams.bucket,

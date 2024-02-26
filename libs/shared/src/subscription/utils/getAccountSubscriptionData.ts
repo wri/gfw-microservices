@@ -1,6 +1,6 @@
 import moment = require('moment');
 import { getAccountAnalysisUsage, getAccountActivatedTime } from '@wri-monorepos/sql';
-import { getAccountLimits } from '../limits';
+import { getAccountComputedLimits } from '../limits';
 
 export async function getAccountSubscriptionData({
   organizationId,
@@ -23,7 +23,7 @@ export async function getAccountSubscriptionData({
   };
 
   const accountUsage = await getAccountAnalysisUsage(accountUsageOptions);
-  const accountLimits = await getAccountLimits(organizationId, subscriptionStatusId);
+  const accountLimits = await getAccountComputedLimits(organizationId, subscriptionStatusId);
 
   return {
     accountUsage,

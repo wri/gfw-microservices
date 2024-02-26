@@ -126,6 +126,17 @@ exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
   });
 };
 
+exports.getMyOrganizationAnalysisLimit = async (req, res) => {
+  const { organization_id, organization_type } = req.session;
+
+  const response = await getAnalysisLimitData({
+    organizationId: organization_id,
+    organizationType: organization_type,
+  });
+
+  res.status(200).send(response[0]);
+};
+
 exports.getOrganizationAnalysisLimit = async (req, res) => {
   const { organizationId, organizationType } = req.query;
 

@@ -21,7 +21,6 @@ export const SELECTED_TIMEFRAME_WEEK = 'WEEK';
 export const SELECTED_TIMEFRAME_MONTH = 'MONTH';
 export const SELECTED_TIMEFRAME_QUARTER = 'QUARTER';
 export const SELECTED_TIMEFRAME_YEAR = 'YEAR';
-
 export const SELECTED_ALERT_INTEGRATED = 'GLAD';
 
 // number of threads that will be used to process the data
@@ -33,6 +32,7 @@ export const DATE_FORMAT = 'YYYY-MM-DD';
 
 export const ALERTS_PRIORITIES_LOCATION_LEVEL = 'AlertsPriorities_LocationsLevel';
 export const ALERTS_LOCATION_LEVEL = 'Alerts_LocationsLevel';
+export const ALERTS_LOCATION_LEVEL_DAILY = 'Alerts_LocationsLevel_Daily';
 
 export const templateColumns = {
   INVESTMENT: [

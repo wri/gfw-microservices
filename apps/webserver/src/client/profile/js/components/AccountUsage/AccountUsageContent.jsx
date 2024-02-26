@@ -68,7 +68,7 @@ export default function AccountUsage({ label, usedValue, maxValue }) {
 
           <Grid item>
             <CardLabel variant="caption" display="block" style={{ textAlign: 'right' }}>
-              Avaliable
+              Available
             </CardLabel>
             <ProgressLabel variant="span">{maxValue - usedValue}</ProgressLabel>
             <ProgressMark variant="span">/{maxValue}</ProgressMark>

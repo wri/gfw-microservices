@@ -1,7 +1,6 @@
 const express = require('express');
 const path = require('path');
 const controller = require('../controllers/analytics.controller');
-
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
@@ -48,5 +47,6 @@ module.exports = (app, limiter) => {
   myOrgAnalyticsRouter.get('/usage/users/download', controller.downladOrganizationUsersUsageExport);
   myOrgAnalyticsRouter.get('/usagePercentage', controller.getMyOrganizationAnalysisUsagePercentage);
   myOrgAnalyticsRouter.get('/options', controller.getMyOrganizationAnalysisOptions);
-  myOrgAnalyticsRouter.get('/limit', controller.getMyOrganizationAnalysisLimit);
+  myOrgAnalyticsRouter.get('/extendedLimits', controller.getMyOrganizationExtendedLimits);
+  myOrgAnalyticsRouter.get('/rolloverLimits', controller.getMyOrganizationRolloverLimits);
 };

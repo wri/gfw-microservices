@@ -1,4 +1,0 @@
-﻿id	accesslevel_name	accesslevel_description
-1	Administrator	Allows administration of the account.
-2	Editor	An editor can add/update/delete new/existing location data
-3	Viewer	A user allowed to run and view analysis on existing data

@@ -3996,7 +3996,7 @@ export const accountLimitsStrings = {
   pageHeading: 'Account Limits',
   stantardSubscriptionSection: 'Standard Subscription',
   premiumSubscriptionSection: 'Premium Subscription',
-  locationsPerYear: 'Locations per year',
+  locationsPerYear: 'Locations Per Year',
   areaPerYear: 'Area Per Year',
 };
 

@@ -7,6 +7,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
+import { SecurityHeaderMiddleware } from './middleware/security-header.middleware';
 const SWAGGER_DISABLED_ENVS = ['staging', 'production'];
 const DEFAULT_APP_PORT = 3337;
 
@@ -14,6 +15,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
+  app.use(new SecurityHeaderMiddleware().use);
   const port = process.env.PORT || DEFAULT_APP_PORT;
 
   if (!SWAGGER_DISABLED_ENVS.includes(process.env.NODE_ENV)) {

@@ -60,7 +60,7 @@ function LandingDownload({
       );
     }
 
-    if (isLargeList && hasErrorFile) {
+    if (isLargeList && hasErrorFile && error_file_storage_path !== 'None') {
       newMenuItem.push(
         <MenuItem
           leftIcon={<DownloadIcon />}

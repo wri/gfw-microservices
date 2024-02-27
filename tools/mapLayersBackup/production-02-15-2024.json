@@ -111,7 +111,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.547Z",
+        "createdAt": "2024-02-22T17:32:31.874Z",
         "updatedAt": "2017-10-12T11:36:55.807Z"
       }
     },
@@ -869,6 +869,102 @@
       }
     },
     {
+      "id": "eaafb83a-d0e5-4a15-a0e5-a5528b71bc74",
+      "type": "layer",
+      "attributes": {
+        "name": "Tree Plantations by species",
+        "slug": "Tree-Plantations-by-species_1",
+        "dataset": "eaf07d6c-ba45-4fb9-afb7-a8cbc7e7fc2c",
+        "description": "Tree Plantations by species",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "featureservice",
+        "userId": "5c533e5cc3b3242d2ed73bc7",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/eaafb83a-d0e5-4a15-a0e5-a5528b71bc74-1708529121631.png",
+        "env": "production",
+        "layerConfig": {
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/gfw_planted_forests/v20230911/default/{z}/{x}/{y}.png",
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_planted_forests",
+            "useCors": true
+          },
+          "type": "tileLayer"
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#cb8335",
+              "categories": [
+                {
+                  "color": "#98a7c4",
+                  "name": "Wood fiber / timber"
+                },
+                {
+                  "color": "#fdada9",
+                  "name": "Oil Palm"
+                },
+                {
+                  "color": "#a0c746",
+                  "name": "Unknown Mix"
+                },
+                {
+                  "color": "#dcd9d9",
+                  "name": "Unknown"
+                },
+                {
+                  "color": "#a4fdff",
+                  "name": "Rubber Mix"
+                },
+                {
+                  "color": "#fefe97",
+                  "name": "Fruit Mix"
+                },
+                {
+                  "color": "#d1e6ab",
+                  "name": "Other"
+                },
+                {
+                  "color": "#9993A3",
+                  "name": "Rubber"
+                },
+                {
+                  "color": "#dada95",
+                  "name": "Fruit"
+                },
+                {
+                  "color": "#fcc4c1",
+                  "name": "Oil Palm Mix"
+                },
+                {
+                  "color": "#9ebbf2",
+                  "name": "Wood fiber / timber Mix"
+                },
+                {
+                  "color": "#d5a6ea",
+                  "name": "Recently cleared"
+                },
+                {
+                  "color": "#e1efc8",
+                  "name": "Other Mix"
+                }
+              ],
+              "name": "Tree plantations by species",
+              "source": "(2020, select countries)"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2019-09-26T20:41:54.726Z",
+        "updatedAt": "2024-02-21T15:25:21.538Z"
+      }
+    },
+    {
       "id": "df1e5f29-9094-46aa-9eed-71a4b9b95023",
       "type": "layer",
       "attributes": {
@@ -912,6 +1008,78 @@
         "staticImageConfig": {},
         "createdAt": "2021-12-06T22:20:34.353Z",
         "updatedAt": "2021-12-06T22:20:34.354Z"
+      }
+    },
+    {
+      "id": "a110a1a8-3d2f-4696-babc-6c54d0b7b459",
+      "type": "layer",
+      "attributes": {
+        "name": "cocoa_deforestation_risk",
+        "slug": "cocoa_deforestation_risk",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Cocoa Deforestation Risk Assessment",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/a110a1a8-3d2f-4696-babc-6c54d0b7b459-1708623020970.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "color": [220, 102, 153]
+            },
+            "coverage-options": {
+              "opacity": 0.3,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/gfw_west_africa_cocoa_deforestation_risk/v202312/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/gfw_west_africa_cocoa_deforestation_risk"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "color": "#3900b3ff",
+                  "name": "High"
+                },
+                {
+                  "color": "#714dbfff",
+                  "name": "Mid-high"
+                },
+                {
+                  "color": "#9e6b90ff",
+                  "name": "Medium"
+                },
+                {
+                  "color": "#cf9270ff",
+                  "name": "Mid-low"
+                },
+                {
+                  "color": "#ebb698ff",
+                  "name": "Low"
+                }
+              ],
+              "name": "Cocoa Deforestation Risk Assessment (Cocoa DRA)",
+              "source": "World Resources Institute",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2024-02-14T18:45:29.776Z",
+        "updatedAt": "2024-02-22T17:30:20.873Z"
       }
     },
     {
@@ -1149,7 +1317,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.550Z",
+        "createdAt": "2024-02-22T17:32:31.876Z",
         "updatedAt": "2017-11-13T15:44:40.770Z"
       }
     },
@@ -1510,7 +1678,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.551Z",
+        "createdAt": "2024-02-22T17:32:31.877Z",
         "updatedAt": "2017-11-03T15:42:33.672Z"
       }
     },
@@ -1616,7 +1784,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.552Z",
+        "createdAt": "2024-02-22T17:32:31.878Z",
         "updatedAt": "2017-10-12T11:36:57.080Z"
       }
     },
@@ -1672,7 +1840,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.552Z",
+        "createdAt": "2024-02-22T17:32:31.878Z",
         "updatedAt": "2017-11-13T15:44:42.098Z"
       }
     },
@@ -1821,7 +1989,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.552Z",
+        "createdAt": "2024-02-22T17:32:31.878Z",
         "updatedAt": "2017-10-20T14:18:54.913Z"
       }
     },
@@ -1865,7 +2033,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.552Z",
+        "createdAt": "2024-02-22T17:32:31.878Z",
         "updatedAt": "2017-10-20T14:42:05.859Z"
       }
     },
@@ -2070,7 +2238,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.553Z",
+        "createdAt": "2024-02-22T17:32:31.878Z",
         "updatedAt": "2017-10-12T11:36:56.014Z"
       }
     },
@@ -2111,7 +2279,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.553Z",
+        "createdAt": "2024-02-22T17:32:31.878Z",
         "updatedAt": "2017-10-20T14:18:55.130Z"
       }
     },
@@ -2280,7 +2448,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.554Z",
+        "createdAt": "2024-02-22T17:32:31.879Z",
         "updatedAt": "2017-11-03T17:12:42.185Z"
       }
     },
@@ -2320,7 +2488,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.554Z",
+        "createdAt": "2024-02-22T17:32:31.879Z",
         "updatedAt": "2018-05-19T18:41:46.405Z"
       }
     },
@@ -2360,7 +2528,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.554Z",
+        "createdAt": "2024-02-22T17:32:31.879Z",
         "updatedAt": "2017-10-12T11:36:47.461Z"
       }
     },
@@ -2410,7 +2578,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.554Z",
+        "createdAt": "2024-02-22T17:32:31.879Z",
         "updatedAt": "2017-10-13T12:07:04.638Z"
       }
     },
@@ -2450,7 +2618,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.554Z",
+        "createdAt": "2024-02-22T17:32:31.879Z",
         "updatedAt": "2017-10-12T11:36:53.349Z"
       }
     },
@@ -2491,7 +2659,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.554Z",
+        "createdAt": "2024-02-22T17:32:31.879Z",
         "updatedAt": "2017-10-20T14:18:55.755Z"
       }
     },
@@ -2637,7 +2805,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.554Z",
+        "createdAt": "2024-02-22T17:32:31.879Z",
         "updatedAt": "2017-10-12T11:36:47.972Z"
       }
     },
@@ -2677,7 +2845,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.555Z",
+        "createdAt": "2024-02-22T17:32:31.879Z",
         "updatedAt": "2017-10-12T11:36:56.419Z"
       }
     },
@@ -3047,7 +3215,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.555Z",
+        "createdAt": "2024-02-22T17:32:31.880Z",
         "updatedAt": "2018-04-02T19:32:30.375Z"
       }
     },
@@ -3087,7 +3255,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.556Z",
+        "createdAt": "2024-02-22T17:32:31.880Z",
         "updatedAt": "2017-10-20T14:18:53.509Z"
       }
     },
@@ -3186,7 +3354,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.556Z",
+        "createdAt": "2024-02-22T17:32:31.881Z",
         "updatedAt": "2017-10-12T11:36:48.524Z"
       }
     },
@@ -3226,7 +3394,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.560Z",
+        "createdAt": "2024-02-22T17:32:31.881Z",
         "updatedAt": "2017-10-12T11:36:51.604Z"
       }
     },
@@ -3328,7 +3496,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.560Z",
+        "createdAt": "2024-02-22T17:32:31.881Z",
         "updatedAt": "2018-04-02T19:32:32.427Z"
       }
     },
@@ -3384,7 +3552,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.560Z",
+        "createdAt": "2024-02-22T17:32:31.882Z",
         "updatedAt": "2017-11-13T15:44:40.485Z"
       }
     },
@@ -3485,7 +3653,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2023-12-21T15:20:50.561Z",
+        "createdAt": "2024-02-22T17:32:31.882Z",
         "updatedAt": "2018-07-19T08:43:49.261Z"
       }
     },
@@ -3841,101 +4009,6 @@
       }
     },
     {
-      "id": "eaafb83a-d0e5-4a15-a0e5-a5528b71bc74",
-      "type": "layer",
-      "attributes": {
-        "name": "Tree Plantations by species",
-        "slug": "Tree-Plantations-by-species_1",
-        "dataset": "eaf07d6c-ba45-4fb9-afb7-a8cbc7e7fc2c",
-        "description": "Tree Plantations by species",
-        "application": ["gfw-pro"],
-        "iso": [],
-        "provider": "featureservice",
-        "userId": "5c533e5cc3b3242d2ed73bc7",
-        "default": true,
-        "protected": false,
-        "published": true,
-        "env": "production",
-        "layerConfig": {
-          "body": {
-            "url": "https://tiles.globalforestwatch.org/gfw_planted_forests/v20201209/default/root.json",
-            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/gfw_planted_forests",
-            "useCors": true
-          },
-          "type": "Vector.Layer"
-        },
-        "legendConfig": {
-          "items": [
-            {
-              "color": "#cb8335",
-              "categories": [
-                {
-                  "color": "#98a7c4",
-                  "name": "Wood fiber / timber"
-                },
-                {
-                  "color": "#fdada9",
-                  "name": "Oil Palm"
-                },
-                {
-                  "color": "#a0c746",
-                  "name": "Unknown Mix"
-                },
-                {
-                  "color": "#dcd9d9",
-                  "name": "Unknown"
-                },
-                {
-                  "color": "#a4fdff",
-                  "name": "Rubber Mix"
-                },
-                {
-                  "color": "#fefe97",
-                  "name": "Fruit Mix"
-                },
-                {
-                  "color": "#d1e6ab",
-                  "name": "Other"
-                },
-                {
-                  "color": "#9993A3",
-                  "name": "Rubber"
-                },
-                {
-                  "color": "#dada95",
-                  "name": "Fruit"
-                },
-                {
-                  "color": "#fcc4c1",
-                  "name": "Oil Palm Mix"
-                },
-                {
-                  "color": "#9ebbf2",
-                  "name": "Wood fiber / timber Mix"
-                },
-                {
-                  "color": "#d5a6ea",
-                  "name": "Recently cleared"
-                },
-                {
-                  "color": "#e1efc8",
-                  "name": "Other Mix"
-                }
-              ],
-              "name": "Tree plantations by species",
-              "source": "(2020, select countries)"
-            }
-          ],
-          "type": "basic"
-        },
-        "interactionConfig": {},
-        "applicationConfig": {},
-        "staticImageConfig": {},
-        "createdAt": "2019-09-26T20:41:54.726Z",
-        "updatedAt": "2022-01-11T18:56:52.605Z"
-      }
-    },
-    {
       "id": "9ed63703-7133-4d1c-9e79-fefd2390c2e4",
       "type": "layer",
       "attributes": {
@@ -4237,7 +4310,7 @@
   },
   "meta": {
     "total-pages": 1,
-    "total-items": 76,
+    "total-items": 77,
     "size": 1000
   }
 }

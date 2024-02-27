@@ -99,7 +99,7 @@ function returnNameBasedOnZoom(zoomLevel, attributes) {
   } else if (zoomLevel === 1) {
     locationName = attributes.State;
   } else if (zoomLevel === 2) {
-    locationName = attributes['Sub State'];
+    locationName = attributes.SubState;
   } else {
     locationName = attributes.location_name;
   }
@@ -319,7 +319,7 @@ function mergeData(
     // 2. calculate number of alerts within a given admin unit
     const numberOfAlerts = getNumberOfAlerts(adminUnitData, selectedTimeframe, timeframeProperty);
 
-    const percentageOfLocations = (numberOfLocations / zoomLevelTotal) * 100;
+    const percentageOfLocations = zoomLevelTotal ? (numberOfLocations / zoomLevelTotal) * 100 : 1;
     const treeCoverArea = adminUnitData.reduce(
       (totalTree, f) => totalTree + Number(f.properties.umd),
       0
@@ -334,7 +334,7 @@ function mergeData(
         percentageOfLocations,
         numberOfAlerts,
         treeCoverArea,
-        treeDensity: numberOfAlerts / treeCoverArea,
+        treeDensity: treeCoverArea ? numberOfAlerts / treeCoverArea : 1,
       },
     };
   });
@@ -356,11 +356,11 @@ function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
     const selectedCoverageProperty = dictionary.alertType_featureCoverageProperty[selectedAlert];
     const totalLocations = featuresArray.length;
     const hasDataForAlert = feature.attributes[selectedCoverageProperty];
-    feature.attributes.percentageOfLocations = (numberOfLocations / totalLocations) * 100;
+    feature.attributes.percentageOfLocations = totalLocations ? (numberOfLocations / totalLocations) * 100 : 1;
     feature.attributes.numberOfAlerts = numberOfAlerts;
     feature.attributes.numberOfLocations = numberOfLocations;
     feature.attributes.treeCoverArea = treeCoverArea;
-    feature.attributes.treeDensity = numberOfAlerts / treeCoverArea;
+    feature.attributes.treeDensity = treeCoverArea ? numberOfAlerts / treeCoverArea : 1;
     feature.attributes.hasAlerts = hasDataForAlert;
     return feature;
   });
@@ -451,7 +451,7 @@ function createGraphics(features, locationFilters, zoomLevel) {
 
   return features.map((feature) => {
     return new Graphic({
-      attributes: feature.attributes,
+      attributes: {...feature.attributes, SubState: feature.attributes['Sub State']},
       geometry: feature.geometry,
     });
   });
@@ -510,6 +510,26 @@ function createLayer(graphics) {
         alias: 'gadmid_2',
         type: 'string',
       },
+      {
+        name: 'Country',
+        alias: 'Country',
+        type: 'string',
+      },
+      {
+        name: 'State',
+        alias: 'State',
+        type: 'string',
+      },
+      {
+        name: 'SubState',
+        alias: 'SubState',
+        type: 'string',
+      },
+      {
+        name: 'location_name',
+        alias: 'location_name',
+        type: 'string',
+      },
     ],
     objectIdField: 'ObjectID',
     geometryType: 'point',
@@ -528,7 +548,6 @@ function createLayer(graphics) {
         {
           type: 'size',
           field: 'percentageOfLocations',
-          valueExpression: 'Math.floor($feature.percentageOfLocations * 100)',
           stops: [
             { value: 25, size: '20px' },
             { value: 50, size: '40px' },
@@ -547,7 +566,7 @@ function createLayer(graphics) {
               color: "#999999",
             },
             {
-              value: 0.001, // features where < .1% of tree density
+              value: 0.01, // features where < 1% of tree density
               opacity: '0.75',
               color: "#008000", // will be assigned this color (green)
             },

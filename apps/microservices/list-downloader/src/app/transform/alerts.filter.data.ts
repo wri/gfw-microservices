@@ -2,8 +2,13 @@ import { Transform } from 'stream';
 import {
   generateAlertsPrioritiesLocationsLevel,
   generateAlertsLocationsLevel,
+  generateAlertsDailyLocationLevel,
 } from '../parser/alerts.parser';
-import { ALERTS_LOCATION_LEVEL, ALERTS_PRIORITIES_LOCATION_LEVEL } from '../shared/constants';
+import {
+  ALERTS_LOCATION_LEVEL,
+  ALERTS_LOCATION_LEVEL_DAILY,
+  ALERTS_PRIORITIES_LOCATION_LEVEL,
+} from '../shared/constants';
 export class AlertsFilterData extends Transform {
   constructor(
     private selectedAlert: string,
@@ -36,6 +41,15 @@ export class AlertsFilterData extends Transform {
         feature: chunk,
         selectedAlert: this.selectedAlert,
         selectedTimeframe: this.selectedTimeframe,
+        startDate: this.startDate,
+        endDate: this.endDate,
+        listName: this.listName,
+      });
+      next(null, value);
+    } else if (this.file === ALERTS_LOCATION_LEVEL_DAILY) {
+      const value = generateAlertsDailyLocationLevel({
+        feature: chunk,
+        selectedAlert: this.selectedAlert,
         startDate: this.startDate,
         endDate: this.endDate,
         listName: this.listName,

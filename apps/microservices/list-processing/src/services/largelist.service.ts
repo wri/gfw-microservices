@@ -32,14 +32,13 @@ export class LargeListService {
 
     const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
 
+    const { isExternalAPIProcess, ...llpRequest } = request;
     const {
-      isExternalAPIProcess,
       organization_id: organizationId,
       organization_database: databaseName,
       subscription_status_id: subscriptionStatusId,
       list_id: listId,
-      ...llpRequest
-    } = request;
+    } = llpRequest;
 
     const listLocationsCount = await getListLocationsCountById(listId, databaseName);
 

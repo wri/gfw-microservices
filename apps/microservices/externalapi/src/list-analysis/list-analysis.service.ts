@@ -250,6 +250,8 @@ export class ListAnalysisService {
     }>(`${this.LLP_BASE_URL}/api/process-list`, {
       organization_id: organizationDetails.id,
       list_id: listId,
+      organization_database: organizationDetails.organizationDb,
+      subscription_status_id: organizationDetails.subscriptionStatusId,
       path: saveListToProcess.data.s3_location,
       template_type: newListDetails.templateId,
       user_id: externalUpload.userId,

@@ -1,4 +1,4 @@
-import { getAccountAnalysisLimits, AnalysisLimit } from '@wri-monorepos/sql';
+import { getAccountAnalysisLimits } from '@wri-monorepos/sql';
 import { combineOrganizationLimits } from '../utils';
 
 export async function getAccountSubscriptionLimits(organizationType: number) {

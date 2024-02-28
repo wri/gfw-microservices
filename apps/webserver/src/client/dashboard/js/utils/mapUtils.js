@@ -58,9 +58,8 @@ function initializeMap(view) {
           event_label:
             'User click on a circle on the Dashboard to zoom the map in to the next level',
         });
-      } else {
-        view.popup.close();
       }
+      view.popup.close();
     });
   });
 
@@ -531,6 +530,7 @@ function createLayer(graphics) {
         type: 'string',
       },
     ],
+    outFields: ['*'],
     objectIdField: 'ObjectID',
     geometryType: 'point',
     spatialReference: { wkid: 4326 },

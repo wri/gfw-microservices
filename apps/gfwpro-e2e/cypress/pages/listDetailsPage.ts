@@ -1,4 +1,4 @@
-class listDetailsPage {
+class ListDetailsPage {
   elements = {
     listDiagnosticsBtn: () => cy.get('[data-cy="list-diagnostics"]'),
     fullListMapBtn: () => cy.contains('Full List Map'),
@@ -13,4 +13,5 @@ class listDetailsPage {
   }
 }
 
-module.exports = new listDetailsPage();
+// module.exports = new ListDetailsPage();
+export default ListDetailsPage;

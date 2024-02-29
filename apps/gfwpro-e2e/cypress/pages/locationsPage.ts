@@ -1,4 +1,4 @@
-class locationsPage {
+class LocationsPage {
   elements = {
     addLocationsBtn: () => cy.contains('Add locations'),
     searchInput: () => cy.get('.input-search__input'),
@@ -23,4 +23,5 @@ class locationsPage {
   }
 }
 
-module.exports = new locationsPage();
+// module.exports = new LocationsPage();
+export default LocationsPage;

@@ -149,7 +149,6 @@ function createPopup(graphic) {
 
 function handleBaseLayer(map, zoomLevel) {
   const selectedSublayer = dictionary.zoomLevel_basemapLayerId[zoomLevel];
-  // const layer = map.findLayerById('BASEMAP');
   map.basemap.baseLayers.items[0].sublayers.items.forEach((sublayer) => {
     sublayer.visible = sublayer.id === selectedSublayer;
   });
@@ -188,78 +187,6 @@ function getCentroidGeometries(gadmids, zoomLevel, data) {
         };
       });
     resolve(features);
-    // Query for centroids if zoom level is below 3
-    // if (zoomLevel < 3) {
-    // query all gadmids and return features
-    // query.where = `gadmid IN (${needToQuery.map(gadmid => `'${gadmid}'`).join(',')})`;
-
-    // each feature should represent esri feature { attributes: gadmid, geometry: geom? > I guess this could be a Point }
-    // const allFeatures = [...features];
-    // const state = store.getState();
-    // const { geometryCache, selectedList } = state;
-    // const { list_name } = selectedList;
-    // // Determine what needs to be queried
-    // const needToQuery = gadmids.filter(gadmid => !Object.keys(geometryCache).includes(gadmid));
-    // // If nothing needs to be queried - everything is in cache
-    // if (isEmpty(needToQuery)) {
-    //     resolve([ ...Object.values(geometryCache).filter(feat => gadmids.includes(feat.attributes.gadmid)) ]);
-    // } else {
-    //     const url = 'https://gis-gfw.wri.org/arcgis/rest/services/admin/MapServer/7';
-    //     const task = new QueryTask({ url });
-    //     const query = new Query();
-    //     query.returnGeometry = true;
-    //     query.outFields = ['*'];
-    //     query.where = `gadmid IN (${needToQuery.map(gadmid => `'${gadmid}'`).join(',')})`;
-    //     task.execute(query).then(response => {
-    //         if (response.hasOwnProperty('features') && response.features.length) {
-    //             const { features } = response;
-    //             // Retrieve geometries from cache
-    //             const cachedGeometries = Object.values(geometryCache).filter(feat => gadmids.includes(feat.attributes.gadmid));
-    //             const allFeatures = [...cachedGeometries, ...features];
-    //             // Save the queried features to cache
-    //             const cache = {};
-    //             features.forEach(feature => {
-    //                 cache[feature.attributes.gadmid] = feature;
-    //             });
-    //             store.dispatch(addGeometryCache(cache));
-    //             resolve(allFeatures);
-    //         } else {
-    //             store.dispatch(toggleDialog({
-    //                 title: 'Dashboard Analysis Failed',
-    //                 body: 'Geojson contain no features to retrieve centroids.'
-    //             }));
-    //             reject(new Error('No features'));
-    //         }
-    //     }).catch(err => {
-    //         store.dispatch(toggleDialog({
-    //             title: `${list_name} alerts failed to load`,
-    //             body: 'Please select the list to try loading alerts again. If alerts continue to fail, email <a href="mailto:gfwprosupport@wri.org">GFWPROsupport@wri.org</a> for assistance.'
-    //         }));
-    //         reject(err);
-    //     });
-    // }
-    // } else {
-    // Object.values(data).forEach(subArray => {
-    //   const [feature] = subArray;
-    //   const esriJson = geojsonUtil.geojsonToArcGIS(feature);
-    //   const esriGeometry = new Polygon({
-    //     rings: esriJson.geometry.rings,
-
-    //     spatialReference: {
-    //       wkid: 4326
-    //     }
-    //   });
-
-    //   const esriFeature = {
-    //     attributes: esriJson.attributes,
-    //     geometry: esriGeometry.centroid
-    //   };
-
-    //   featuresArray.push(esriFeature);
-    // });
-
-    // resolve(featuresArray);
-    // }
   });
 }
 
@@ -576,7 +503,7 @@ function createLayer(graphics) {
               color: "#FFA500", // will be assigned this color (orange)
             }
           ],
-          // features with values between 0.001 - 1.0 will be assigned
+          // features with values between 0.01 - 1.0 will be assigned
           // a color on a ramp between green and orange proportional
           // to where the value falls between 0.001 and 1.0
         },
@@ -595,8 +522,6 @@ function updateLayer(
   zoomLevel,
   rawData
 ) {
-  // Clone for mutation sake
-  // const clonedData = cloneDeep(data);
   const clonedData = data;
   // If no features, delete the key/value
   if (zoomLevel < 3) {

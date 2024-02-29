@@ -14,7 +14,7 @@ describe('Alerts History Service', () => {
     key: 'tmp-key',
     type: 'argentinaOverlap',
     selectedTimeframe: 'WEEK',
-    selectedAlert: 'GLAD',
+    selectedAlert: 'Integrated',
     startDate: '2021-01-01',
     endDate: '2021-01-31',
   };
@@ -39,7 +39,7 @@ describe('Alerts History Service', () => {
     fs.unlinkSync(filePath);
   });
 
-  test('GLAD alerts selected timeframe WEEK', async () => {
+  test('Integrated alerts selected timeframe WEEK', async () => {
     alertsHistoryService.start(filters);
     alertsHistoryService.process(alertsData);
 
@@ -81,7 +81,7 @@ describe('Alerts History Service', () => {
     ]);
   });
 
-  test('GLAD alerts selected timeframe MONTH', async () => {
+  test('Integrated alerts selected timeframe MONTH', async () => {
     const newFilters = {
       ...filters,
       selectedTimeframe: 'MONTH',
@@ -98,7 +98,7 @@ describe('Alerts History Service', () => {
     ]);
   });
 
-  test('GLAD alerts selected timeframe YEAR', async () => {
+  test('Integrated alerts selected timeframe YEAR', async () => {
     const newFilters = {
       ...filters,
       selectedTimeframe: 'YEAR',

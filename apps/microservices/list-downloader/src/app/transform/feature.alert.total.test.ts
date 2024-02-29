@@ -2,7 +2,7 @@ import { FeatureAlertTotal } from './feature.alert.total';
 
 describe('FeatureAlertTotal', () => {
   test('Should return undefined when receive empty object', () => {
-    const featureAlertTotal = new FeatureAlertTotal('gladTimeframe', 'GLAD');
+    const featureAlertTotal = new FeatureAlertTotal('gladTimeframe', 'Integrated');
 
     featureAlertTotal._transform(
       {
@@ -54,7 +54,7 @@ describe('FeatureAlertTotal', () => {
   });
 
   test('Aggregate gladTimeFrame and organize data', () => {
-    const featureAlertTotal = new FeatureAlertTotal('gladTimeframe', 'GLAD');
+    const featureAlertTotal = new FeatureAlertTotal('gladTimeframe', 'Integrated');
 
     featureAlertTotal._transform(
       {

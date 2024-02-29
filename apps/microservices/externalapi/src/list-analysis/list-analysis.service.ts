@@ -309,7 +309,7 @@ export class ListAnalysisService {
       },
       selectedAlert: {
         DataType: 'String',
-        StringValue: 'GLAD',
+        StringValue: 'Integrated',
       },
       key: {
         DataType: 'String',

@@ -14,7 +14,7 @@ describe('Alerts Admin Areas Level Service', () => {
     key: 'tmp-key',
     type: 'argentinaOverlap',
     selectedTimeframe: 'WEEK',
-    selectedAlert: 'GLAD',
+    selectedAlert: 'Integrated',
     startDate: '2021-01-01',
     endDate: '2021-01-31',
   };
@@ -39,7 +39,7 @@ describe('Alerts Admin Areas Level Service', () => {
     fs.unlinkSync(filePath);
   });
 
-  test('GLAD alerts selected timeframe WEEK', async () => {
+  test('Integrated alerts selected timeframe WEEK', async () => {
     alertsAdminAreasLevelService.start(filters);
     alertsAdminAreasLevelService.process(alertsData);
 
@@ -54,7 +54,7 @@ describe('Alerts Admin Areas Level Service', () => {
     ]);
   });
 
-  test('GLAD alerts selected timeframe MONTH', async () => {
+  test('Integrated alerts selected timeframe MONTH', async () => {
     const newFilters = {
       ...filters,
       selectedTimeframe: 'MONTH',
@@ -74,7 +74,7 @@ describe('Alerts Admin Areas Level Service', () => {
     ]);
   });
 
-  test('GLAD alerts selected timeframe YEAR', async () => {
+  test('Integrated alerts selected timeframe YEAR', async () => {
     const newFilters = {
       ...filters,
       selectedTimeframe: 'YEAR',

@@ -2,7 +2,7 @@ import { FeatureExpandDailyAlerts } from './feature.expand.daily.alerts';
 
 describe('Feature Alert Total Greater Than Zero', () => {
   test('Should return undefined when receive empty object', () => {
-    const featureExpandDailyAlerts = new FeatureExpandDailyAlerts('GLAD');
+    const featureExpandDailyAlerts = new FeatureExpandDailyAlerts('Integrated');
 
     featureExpandDailyAlerts._transform(
       {
@@ -42,7 +42,7 @@ describe('Feature Alert Total Greater Than Zero', () => {
   });
 
   test('Should expandd glad data', () => {
-    const featureExpandDailyAlerts = new FeatureExpandDailyAlerts('GLAD');
+    const featureExpandDailyAlerts = new FeatureExpandDailyAlerts('Integrated');
 
     featureExpandDailyAlerts._transform(
       {
@@ -84,7 +84,7 @@ describe('Feature Alert Total Greater Than Zero', () => {
   });
 
   test('Should work when gladTimeframe is empty', () => {
-    const featureExpandDailyAlerts = new FeatureExpandDailyAlerts('GLAD');
+    const featureExpandDailyAlerts = new FeatureExpandDailyAlerts('Integrated');
 
     featureExpandDailyAlerts._transform(
       {

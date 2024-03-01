@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
 import { alertsData } from '../shared/mock.data';
 
-const duplicateAlertsData = [
+const duplicatedRow = [
   {
     list_id: 5479,
     location_id: 31,
@@ -291,7 +291,7 @@ describe('Alerts Locations History Service', () => {
       selectedTimeframe: 'DAY',
     };
     alertsLocationsHistoryService.start(newFilters);
-    alertsLocationsHistoryService.process([...alertsData, ...duplicateAlertsData]);
+    alertsLocationsHistoryService.process([...alertsData, ...duplicatedRow]);
 
     await alertsLocationsHistoryService.finish(newFilters);
     const csvData = readCsvData(filePath);

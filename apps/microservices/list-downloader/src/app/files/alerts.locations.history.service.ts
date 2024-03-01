@@ -25,8 +25,8 @@ class AccumulateHistory extends EventEmitter {
 
   addHistory(partialHistory: DashboardDataType[]) {
     partialHistory.forEach((data) => {
-      const { gadmid, date } = data;
-      const key = `${gadmid}_${date}`;
+      const { location_id, date } = data;
+      const key = `${location_id}_${date}`;
       if (!this.history[key]) {
         this.history[key] = data;
       } else {

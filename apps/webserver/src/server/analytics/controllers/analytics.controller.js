@@ -3,10 +3,7 @@ const moment = require('moment');
 const { compiledAssets } = require(path.resolve('./config/config'));
 const { getOrganizationAnalysisUsage } = require('../service/analytics.service');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
-import {
-  getAccountExtraLimits,
-  getAccountUsagePercentage,
-} from '@wri-monorepos/shared';
+import { getAccountExtraLimits, getAccountUsagePercentage } from '@wri-monorepos/shared';
 import {
   getAccountUsersAnalysisUsage,
   getAccountActivatedTime,

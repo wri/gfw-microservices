@@ -7,17 +7,21 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
+import Alert from '@mui/material/Alert';
 
 import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader';
 import AccountUsage from './AccountUsage';
 import moment from 'moment';
 import { useProfileContext } from '../../ProfileStateContext';
+import MenuOption from './MenuOption';
 
 export default function AccountUsageContainer() {
   const { accountActivatedTime } = useProfileContext();
   const [usageData, setUsageData] = useState(null);
   const [usageLimitsData, setUsageLimitsData] = useState(null);
   const [usageDataperUser, setUsageDataperUser] = useState([]);
+  const [messageType, setMessageType] = useState('');
+  const [messageText, setMessageText] = useState('');
   const todayAsEndDay = moment();
   const accountActivationDate = moment(accountActivatedTime);
   const accountLatestYearStartDate = todayAsEndDay
@@ -37,7 +41,7 @@ export default function AccountUsageContainer() {
     margin: '0px 0 30px 0',
     color: 'rgba(0, 0, 0, 0.5)',
     fontSize: '10px',
-    float: 'right',
+    textAling: 'right',
   };
 
   useEffect(() => {
@@ -102,6 +106,31 @@ export default function AccountUsageContainer() {
       });
   }, []);
 
+  const exportUsage = () => {
+    return fetch(`analytics/myorg/usage/users/download`, {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
+      .then((res) => handleDownloadConfirmation('success'))
+      .catch((error) => {
+        handleDownloadConfirmation('error')
+        console.log(error);
+      });
+  }
+
+  const handleDownloadConfirmation = (type) => {
+    setMessageType(type)
+
+    if(type == 'error') {
+      return setMessageText('Something Went Wrong')
+    }
+
+    setMessageText('Success! Your file has been successfully exported.')
+  }
+
   const getAreasPercentage = (area) => {
     return ((area / usageData.max_area_analyzed) * 100).toFixed(3);
   };
@@ -114,8 +143,12 @@ export default function AccountUsageContainer() {
     <InlineLoader />
   ) : (
     <>
+      <Alert severity={messageType}>{messageText}</Alert>
       <p style={renewalTextStyle}>Account renewal on {subscriptionYearEnd}</p>
+
+      <MenuOption export={exportUsage} />
       <h3 style={{ margin: '0px 0 30px 0', fontWeight: 'normal' }}>Summary</h3>
+
       <AccountUsage
         {...usageData}
         maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}

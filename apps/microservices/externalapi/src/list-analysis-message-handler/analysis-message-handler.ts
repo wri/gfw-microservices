@@ -57,7 +57,7 @@ export class AnalysisMessageHandler {
               },
               file: {
                 DataType: 'String',
-                StringValue: `{"type":"afi","key":"${fileName}"`,
+                StringValue: `{"type":"afi","key":"${fileName}"}`,
               },
               list: {
                 DataType: 'String',

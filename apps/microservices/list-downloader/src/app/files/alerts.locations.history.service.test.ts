@@ -8,7 +8,7 @@ const duplicatedRow = [
   {
     list_id: 5479,
     location_id: 31,
-    gadm_id: 'ARG.3.17',
+    gadm_id: 'ARG.3.18',
     gladAlerts: true,
     glad_alerts_daily: [
       {

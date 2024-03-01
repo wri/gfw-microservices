@@ -672,6 +672,58 @@
       }
     },
     {
+      "id": "9f77b90f-73f0-444c-b9d2-2bdd58cc444c",
+      "type": "layer",
+      "attributes": {
+        "name": "Land Planning Classification of Native Forests",
+        "slug": "Land-Planning-Classification-of-Native-Forests",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Territorial Regulation of Native Forests in Argentina. Ordenamiento Territorial de los Bosques Nativos (OTBN)",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/9f77b90f-73f0-444c-b9d2-2bdd58cc444c-1709143062155.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/arg_native_forest_land_plan/v202212/default/{z}/{x}/{y}.png",
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/arg_native_forest_land_plan"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "I",
+                  "color": "#EE2521"
+                },
+                {
+                  "name": "II",
+                  "color": "#FFCC33"
+                },
+                {
+                  "name": "III",
+                  "color": "#97BD3D"
+                }
+              ],
+              "name": "Territorial Planning of Native Forests"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2024-02-28T17:57:41.951Z",
+        "updatedAt": "2024-02-28T17:57:41.951Z"
+      }
+    },
+    {
       "id": "db8de286-174b-4966-8673-3a50ff993ba8",
       "type": "layer",
       "attributes": {
@@ -715,6 +767,62 @@
         "staticImageConfig": {},
         "createdAt": "2022-10-12T15:53:39.192Z",
         "updatedAt": "2023-12-07T15:04:51.317Z"
+      }
+    },
+    {
+      "id": "fa3182a0-f0e6-4298-8b49-83ae21a76683",
+      "type": "layer",
+      "attributes": {
+        "name": "Soy Planted Area",
+        "slug": "Soy-Planted-Area_2",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Soy Planted Area",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/fa3182a0-f0e6-4298-8b49-83ae21a76683-1709218958228.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "color": [220, 102, 153]
+            },
+            "coverage-options": {
+              "opacity": 1,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/umd_soy_planted_area",
+            "url": "https://tiles.globalforestwatch.org/umd_soy_planted_area/v3/{year}/{z}/{x}/{y}.png"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Soy Planted Area",
+                  "color": "#98BD46"
+                }
+              ],
+              "name": "Soy Planted Area",
+              "source": "(2000-2019, S. America, Song et al. 2021)",
+              "color": "#98BD46"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2024-02-29T14:55:55.358Z",
+        "updatedAt": "2024-02-29T15:02:38.116Z"
       }
     },
     {
@@ -828,14 +936,14 @@
         "default": true,
         "protected": false,
         "published": true,
-        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/21375165-a520-4d35-8b39-8c94c939c173-1699551509691.png",
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/21375165-a520-4d35-8b39-8c94c939c173-1709132762912.png",
         "env": "staging",
         "layerConfig": {
           "type": "Vector.Layer",
           "body": {
             "useCors": true,
             "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/wdpa_licensed_protected_areas",
-            "url": "https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202310/default/root.json"
+            "url": "https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202402/default/root.json"
           }
         },
         "legendConfig": {
@@ -898,7 +1006,7 @@
         "applicationConfig": {},
         "staticImageConfig": {},
         "createdAt": "2022-05-02T12:45:28.885Z",
-        "updatedAt": "2023-11-09T17:38:29.640Z"
+        "updatedAt": "2024-02-28T15:06:02.827Z"
       }
     }
   ],
@@ -911,7 +1019,7 @@
   },
   "meta": {
     "total-pages": 1,
-    "total-items": 14,
+    "total-items": 16,
     "size": 1000
   }
 }

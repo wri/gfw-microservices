@@ -50,4 +50,5 @@ module.exports = (app, limiter) => {
   myOrgAnalyticsRouter.get('/limits', controller.getMyOrganizationAnalysisLimit);
   myOrgAnalyticsRouter.get('/rolloverLimits', controller.getMyOrganizationRolloverLimits);
   myOrgAnalyticsRouter.get('/limits', controller.getMyOrganizationAnalysisLimit);
+  myOrgAnalyticsRouter.get('/rolloverLimits', controller.getMyOrganizationRolloverLimits);
 };

@@ -1,16 +1,13 @@
 import { SQLUtils } from '../util/sql.utils';
 import * as sql from 'mssql';
 import { OrganizationRolloverLimitsAmount as OrganizationAllTimeAnalysisUsageResponse } from '../queries';
-import { SQL_CONFIG } from '../config/config';
 
-export async function getAccountRolloverLimits(orgId: number) {
+export async function getAccountRolloverLimits(orgDBName: string, orgId: number) {
   try {
-    const { database: databaseName } = SQL_CONFIG;
-
     const parameters = [{ field: 'orgId', type: sql.Int, value: orgId }];
 
     return await SQLUtils.queryDBFirstRow<OrganizationAllTimeAnalysisUsageResponse>(
-      databaseName,
+      orgDBName,
       'uspGetOrganizationRolloverLimitsAmounts',
       parameters
     );

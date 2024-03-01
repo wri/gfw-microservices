@@ -92,4 +92,6 @@ export interface DashboardDataType {
   fireTimeframe?: unknown;
   featureAlertTotal?: number;
   umd?: number;
+  date?: string;
+  count?: number;
 }

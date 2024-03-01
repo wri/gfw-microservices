@@ -5,22 +5,22 @@ export const COLUMN_COUNTRY = 'Country';
 
 export const dictionary = {
   alertType_featureCoverageProperty: {
-    GLAD: 'gladAlerts',
+    Integrated: 'gladAlerts',
     VIIRS: 'fireAlerts',
   },
   // Alerts type - feature raw data property
   alertType_featureDataProperty: {
-    GLAD: 'glad',
+    Integrated: 'glad',
     VIIRS: 'fire',
   },
   // Alerts type - feature timeframe property
   alertType_featureTimeframeProperty: {
-    GLAD: 'gladTimeframe',
+    Integrated: 'gladTimeframe',
     VIIRS: 'fireTimeframe',
   },
   // Alerts type - Title Text
   alertType_alertText: {
-    GLAD: 'Deforestation (Integrated Alerts)',
+    Integrated: 'Deforestation (Integrated Alerts)',
     VIIRS: 'FIRES (VIIRS)',
   },
   // Timeframe - dateGrouping

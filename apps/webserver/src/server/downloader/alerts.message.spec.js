@@ -58,7 +58,7 @@ describe('Check build sqs message function', () => {
       file: { DataType: 'String', StringValue: '{"type":"alerts","key":"1234567890"}' },
       list: { DataType: 'String', StringValue: '{"listId":2073}' },
       organizationDatabase: { DataType: 'String', StringValue: 'clientdev-co' },
-      selectedAlert: { DataType: 'String', StringValue: 'GLAD' },
+      selectedAlert: { DataType: 'String', StringValue: 'Integrated' },
       selectedTimeframe: { DataType: 'String', StringValue: 'WEEKLY' },
       userEmail: { DataType: 'String', StringValue: 'teste@wri.com' },
     });

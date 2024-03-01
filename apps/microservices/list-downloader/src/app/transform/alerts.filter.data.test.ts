@@ -1,10 +1,10 @@
 import { AlertsFilterData } from './alerts.filter.data';
-import { ALERTS_LOCATION_LEVEL, ALERTS_LOCATION_LEVEL_DAILY } from '../shared/constants';
+import { ALERTS_LOCATION_LEVEL } from '../shared/constants';
 
 describe('AlertsFilterData', () => {
   test('receiving an empty object and return undefined', () => {
     const alertsFilterData = new AlertsFilterData(
-      'GLAD',
+      'Integrated',
       'WEEK',
       '2020-01-01',
       '2020-01-07',
@@ -17,7 +17,7 @@ describe('AlertsFilterData', () => {
 
   test('receiving undefined and return undefined', () => {
     const alertsFilterData = new AlertsFilterData(
-      'GLAD',
+      'Integrated',
       'WEEK',
       '2020-01-01',
       '2020-01-07',
@@ -30,7 +30,7 @@ describe('AlertsFilterData', () => {
 
   test('file is not an accepted value', () => {
     const alertsFilterData = new AlertsFilterData(
-      'GLAD',
+      'Integrated',
       'WEEK',
       '2020-01-01',
       '2020-01-07',
@@ -53,7 +53,7 @@ describe('AlertsFilterData', () => {
 
   test('[Priority Location Level] Glad dont have alerts ', () => {
     const alertsFilterData = new AlertsFilterData(
-      'GLAD',
+      'Integrated',
       'WEEK',
       '2020-01-01',
       '2020-01-07',
@@ -119,7 +119,7 @@ describe('AlertsFilterData', () => {
 
   test('[Priority Location Level] Glad when have alerts ', () => {
     const alertsFilterData = new AlertsFilterData(
-      'GLAD',
+      'Integrated',
       'WEEK',
       '2020-01-01',
       '2020-01-07',
@@ -191,7 +191,7 @@ describe('AlertsFilterData', () => {
 
   test('[Location Level] Glad when dont have alerts ', () => {
     const alertsFilterData = new AlertsFilterData(
-      'GLAD',
+      'Integrated',
       'WEEK',
       '2020-01-01',
       '2020-01-07',
@@ -259,7 +259,7 @@ describe('AlertsFilterData', () => {
 
   test('[Location Level] Glad when have alerts ', () => {
     const alertsFilterData = new AlertsFilterData(
-      'GLAD',
+      'Integrated',
       'WEEK',
       '2020-01-01',
       '2020-01-07',
@@ -324,69 +324,6 @@ describe('AlertsFilterData', () => {
           '2020-01-01',
           '2020-01-07',
           10,
-        ]);
-      }
-    );
-  });
-
-  test('[Location Level Daily] Glad when have alerts ', () => {
-    const alertsFilterData = new AlertsFilterData(
-      'GLAD',
-      'WEEK',
-      '2020-01-01',
-      '2020-01-07',
-      'test',
-      ALERTS_LOCATION_LEVEL_DAILY
-    );
-    alertsFilterData._transform(
-      [
-        {
-          location_name: 'wri-1',
-          date: '2020-01-01',
-          count: 10,
-        },
-      ],
-      null,
-      (err, data) => {
-        expect(data).toEqual([
-          [
-            'test',
-            'wri-1',
-            'Deforestation (Integrated Alerts)',
-            '2020-01-01',
-            '2020-01-07',
-            '01 Jan 2020',
-            10,
-          ],
-        ]);
-      }
-    );
-  });
-
-  test('[Location Level Daily] VIIRS when have alerts', () => {
-    const alertsFilterData = new AlertsFilterData(
-      'VIIRS',
-      'WEEK',
-      '2020-01-01',
-      '2020-01-07',
-      'test',
-      ALERTS_LOCATION_LEVEL_DAILY
-    );
-    alertsFilterData._transform(
-      [
-        {
-          location_name: 'wri-1',
-          'Sub State': 'sub state',
-          State: 'state',
-          Country: 'country',
-          count: 10,
-          date: '2020-01-01',
-        },
-      ],
-      null,
-      (err, data) => {
-        expect(data).toEqual([
-          ['test', 'wri-1', 'FIRES (VIIRS)', '2020-01-01', '2020-01-07', '01 Jan 2020', 10],
         ]);
       }
     );

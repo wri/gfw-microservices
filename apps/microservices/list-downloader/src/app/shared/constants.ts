@@ -21,7 +21,7 @@ export const SELECTED_TIMEFRAME_WEEK = 'WEEK';
 export const SELECTED_TIMEFRAME_MONTH = 'MONTH';
 export const SELECTED_TIMEFRAME_QUARTER = 'QUARTER';
 export const SELECTED_TIMEFRAME_YEAR = 'YEAR';
-export const SELECTED_ALERT_INTEGRATED = 'GLAD';
+export const SELECTED_ALERT_INTEGRATED = 'Integrated';
 
 // number of threads that will be used to process the data
 export const POOL_SIZE = 5;

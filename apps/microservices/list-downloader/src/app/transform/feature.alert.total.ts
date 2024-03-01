@@ -10,7 +10,7 @@ export class FeatureAlertTotal extends Transform {
 
     let featureAlertTotal = 0;
     if (selectedData) {
-      if (this.selectedAlert === 'GLAD') {
+      if (this.selectedAlert === 'Integrated') {
         featureAlertTotal = selectedData.reduce((acc, val) => acc + val.count, 0);
       } else {
         featureAlertTotal = Object.values(selectedData)

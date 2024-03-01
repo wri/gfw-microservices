@@ -4,7 +4,7 @@ describe('ApplyTimeframeFilter', () => {
   test('Receive empty object and return undefined', () => {
     const applyTimeframeFilter = new ApplyTimeframeFilter(
       'WEEK',
-      'GLAD',
+      'Integrated',
       '2023-02-01',
       '2023-04-01'
     );
@@ -76,7 +76,7 @@ describe('ApplyTimeframeFilter', () => {
   test('Add field glad timeframe on a Week base', () => {
     const applyTimeframeFilter = new ApplyTimeframeFilter(
       'WEEK',
-      'GLAD',
+      'Integrated',
       '2023-02-01',
       '2023-02-03'
     );
@@ -198,7 +198,7 @@ describe('ApplyTimeframeFilter', () => {
   test('Add field glad timeframe on a Month base', () => {
     const applyTimeframeFilter = new ApplyTimeframeFilter(
       'MONTH',
-      'GLAD',
+      'Integrated',
       '2023-02-01',
       '2023-03-31'
     );
@@ -346,7 +346,7 @@ describe('ApplyTimeframeFilter', () => {
   test('Add field glad timeframe on a Quarter base', () => {
     const applyTimeframeFilter = new ApplyTimeframeFilter(
       'QUARTER',
-      'GLAD',
+      'Integrated',
       '2023-02-01',
       '2023-03-31'
     );
@@ -498,7 +498,7 @@ describe('ApplyTimeframeFilter', () => {
   test('Add field glad timeframe on a Year base', () => {
     const applyTimeframeFilter = new ApplyTimeframeFilter(
       'YEAR',
-      'GLAD',
+      'Integrated',
       '2023-02-01',
       '2023-03-31'
     );

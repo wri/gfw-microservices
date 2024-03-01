@@ -26,4 +26,3 @@ export * from './getAdministrativeAreasDataByLocation';
 export * from './getAnalysisDataForProtectedAreasByLocation';
 export * from './getOrganizationActivatedTime';
 export * from './getGFWListsDashboardData';
-export * from './getOrganizationRolloverLimitsAmounts';

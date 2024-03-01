@@ -208,9 +208,9 @@ exports.getMyOrganizationExtendedLimits = async (req, res) => {
 };
 
 exports.getMyOrganizationRolloverLimits = async (req, res) => {
-  const { organization_id: organizationId } = req.session;
+  const { organization_id: organizationId, organization_database: orgDbName } = req.session;
 
-  const accountRolloverLimits = await getAccountRolloverLimits(organizationId);
+  const accountRolloverLimits = await getAccountRolloverLimits(orgDbName, organizationId);
 
   res.status(200).send(accountRolloverLimits);
 };

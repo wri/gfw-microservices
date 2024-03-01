@@ -86,7 +86,7 @@ export default function AccountUsageContainer() {
   }, []);
 
   useEffect(() => {
-    fetch(`analytics/myorg/limits`, {
+    return fetch(`analytics/myorg/limit`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {
@@ -95,8 +95,7 @@ export default function AccountUsageContainer() {
     })
       .then((res) => res.json())
       .then((data) => {
-        const { limits } = data;
-        setUsageLimitsData(limits);
+        setUsageLimitsData(data);
       })
       .catch((error) => {
         console.log(error);

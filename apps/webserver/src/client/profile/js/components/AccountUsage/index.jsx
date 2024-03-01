@@ -16,6 +16,7 @@ import { useProfileContext } from '../../ProfileStateContext';
 export default function AccountUsageContainer() {
   const { accountActivatedTime } = useProfileContext();
   const [usageData, setUsageData] = useState(null);
+  const [usageLimitsData, setUsageLimitsData] = useState(null);
   const [usageDataperUser, setUsageDataperUser] = useState([]);
   const todayAsEndDay = moment();
   const accountActivationDate = moment(accountActivatedTime);
@@ -84,6 +85,23 @@ export default function AccountUsageContainer() {
       });
   }, []);
 
+  useEffect(() => {
+    return fetch(`analytics/myorg/limit`, {
+      method: 'GET',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setUsageLimitsData(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
   const getAreasPercentage = (area) => {
     return ((area / usageData.max_area_analyzed) * 100).toFixed(3);
   };
@@ -98,7 +116,11 @@ export default function AccountUsageContainer() {
     <>
       <p style={renewalTextStyle}>Account renewal on {subscriptionYearEnd}</p>
       <h3 style={{ margin: '0px 0 30px 0', fontWeight: 'normal' }}>Summary</h3>
-      <AccountUsage {...usageData} />
+      <AccountUsage
+        {...usageData}
+        maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
+        maxLocations={usageLimitsData?.max_locations_per_year}
+      />
 
       <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>History</h3>
       <TableContainer component={Paper}>

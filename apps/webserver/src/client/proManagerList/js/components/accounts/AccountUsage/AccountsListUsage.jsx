@@ -83,6 +83,9 @@ function AccountsListUsage({ setIsLoading }) {
                   <TableCell align="right">
                     {accountProfileStrings.accountUsageLabels.totalAreaAnalyzed}
                   </TableCell>
+                  <TableCell align="right">
+                    {accountProfileStrings.accountUsageLabels.locationsAnalyzed}
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -99,6 +102,7 @@ function AccountsListUsage({ setIsLoading }) {
                     </TableCell>
                     <TableCell align="right">{numberWithCommas(row.max_area_analyzed)}</TableCell>
                     <TableCell align="right">{numberWithCommas(row.total_area_analyzed)}</TableCell>
+                    <TableCell align="right">{numberWithCommas(row.locations_analyzed)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

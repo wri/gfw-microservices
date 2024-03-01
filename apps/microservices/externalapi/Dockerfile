@@ -1,11 +1,11 @@
-FROM amd64/node:20.5.1 as builder
+FROM amd64/node:20.11.1 as builder
 WORKDIR /build
 COPY package.json .
 COPY yarn.lock .
 
 RUN yarn install
 
-FROM amd64/node:20.5.1 as appbuilder
+FROM amd64/node:20.11.1 as appbuilder
 WORKDIR /appbuilder
 COPY --from=builder /build/ /appbuilder/
 COPY ./ .
@@ -13,7 +13,7 @@ COPY ./ .
 RUN /appbuilder/node_modules/.bin/nx build microservices-externalapi --configuration=production
 
 
-FROM amd64/node:20.5.1
+FROM amd64/node:20.11.1
 WORKDIR /app
 ENV GENERATE_SOURCEMAP=false
 ENV NODE_OPTIONS=--max-old-space-size=16384

@@ -12,6 +12,7 @@ import { PLANET_BASEMAP } from '../../map/js/config/map.config';
 export const proLayers = {
   sBTNNaturalForest: 'SBTN Natural Forest',
   negligibleRisk: 'Negligible Risk',
+  cocoaDeforestationRisk: 'cocoa_deforestation_risk',
   otbn: 'Land Planning Classification of Native Forests',
   clarkLabsAquacultureLandCover: 'Clark Labs Aquaculture Land Cover 2018',
   clarkLabsAquacultureLandChange: 'Clark Labs Aquaculture Land Change',
@@ -3068,17 +3069,24 @@ export const mapPage = {
       order: 105,
     },
     {
+      id: proLayers.cocoaDeforestationRisk,
+      group: 'forest-change',
+      subGroup: 'tree-cover-change',
+      order: 106,
+    },
+
+    {
       id: proLayers.gladAlertsID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
-      order: 106,
+      order: 107,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.gladLGeographicCoverageID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
-      order: 107,
+      order: 108,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
@@ -3092,14 +3100,14 @@ export const mapPage = {
       id: proLayers.gladS2GeographicCoverageID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
-      order: 109,
+      order: 110,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.raddAlertsID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
-      order: 110,
+      order: 111,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
@@ -3107,20 +3115,20 @@ export const mapPage = {
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
       ignored: true,
-      order: 111,
+      order: 112,
     },
     {
       id: proLayers.integratedDeforestationAlertsID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
-      order: 112,
+      order: 113,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.integratedAlertsGeographicCoverageID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
-      order: 113,
+      order: 114,
       ignored: true,
       propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
@@ -3128,7 +3136,7 @@ export const mapPage = {
       id: proLayers.viirsActiveFiresID,
       group: 'forest-change',
       subGroup: 'fire-alerts',
-      order: 114,
+      order: 115,
       popupTemplate: {
         title: null,
         // LATITUDE, LONGITUDE, BRIGHTNESS, CONFIDENCE, ACQ_DATE, ACQ_TIME
@@ -3969,6 +3977,7 @@ export const accountProfileStrings = {
     numberOfLists: 'Number of lists',
     maxAreaPerList: 'Max area per list',
     totalAreaAnalyzed: 'Total area analyzed',
+    locationsAnalyzed: 'Locations analyzed',
   },
   accountFormLabels: {
     org_name: 'Organization Name',
@@ -3981,7 +3990,7 @@ export const accountProfileStrings = {
     subscription_status_id: 'Subscription Status',
   },
   accountLimitsSetting: {
-    areaPerList: 'Area Per List',
+    locationsPerYear: 'Locations Per Year',
     areaPerYear: 'Area Per Year',
     subHeadingSubscriptionLimits: ' Subscription',
     subHeadingCustomLimits: 'Custom Limits',
@@ -3996,7 +4005,7 @@ export const accountLimitsStrings = {
   pageHeading: 'Account Limits',
   stantardSubscriptionSection: 'Standard Subscription',
   premiumSubscriptionSection: 'Premium Subscription',
-  areaPerList: 'Area Per List',
+  locationsPerYear: 'Locations Per Year',
   areaPerYear: 'Area Per Year',
 };
 

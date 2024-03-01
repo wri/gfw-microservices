@@ -3,13 +3,13 @@ import {
   AlertsGenerateRequest,
   ListAnalysisResponse,
   alertsGenerateBodySchema,
-  analysisIdSchema,
   listIdSchema,
 } from './list-analysis.dto';
 import { ListAnalysisService } from './list-analysis.service';
 import { ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { requestSchema, RequestSchema } from '../types/request-schema';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
+import { analysisIdSchema } from '../types/analysis-id';
 
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')

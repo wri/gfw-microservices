@@ -17,6 +17,7 @@
     "@aws-sdk/client-ses": "^3.427.0",
     "@aws-sdk/client-sns": "^3.427.0",
     "@aws-sdk/client-sqs": "^3.427.0",
+    "@aws-sdk/lib-storage": "^3.427.0",
     "@babel/runtime-corejs2": "7.17.9",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
@@ -253,7 +254,7 @@
     "xhr-mock": "2.5.1"
   },
   "engines": {
-    "node": "20.5.1"
+    "node": "20.11.1"
   },
   "lint-staged": {
     "{apps,libs,tools}/**/*.{ts, js, jsx}": [

@@ -7,6 +7,7 @@ import {
   COLUMN_STATE,
   COLUMN_COUNTRY,
 } from '../shared/alert.utils';
+import { DATE_FORMAT_CSV } from '../shared/constants';
 
 export function getGladDaily(feature, momentStart: moment.Moment, momentEnd: moment.Moment) {
   return feature.glad_alerts_daily.filter((date) => {
@@ -150,4 +151,32 @@ export const generateAlertsLocationsLevel = (state: {
     endDate,
     alertPresent,
   ];
+};
+
+export const generateAlertsDailyLocationLevel = (state: {
+  feature: Array<Record<string, unknown>>;
+  selectedAlert: string;
+  startDate: string;
+  endDate: string;
+  listName: string;
+}) => {
+  const { feature, selectedAlert, startDate, endDate, listName } = state;
+
+  if (feature.length === 0) return [];
+
+  const [locationName, , , , alertTypeText, ,] = basicLocationInfo(feature[0], selectedAlert);
+
+  const newArray = feature.map(({ date, count }) => {
+    return [
+      listName,
+      locationName,
+      alertTypeText,
+      startDate,
+      endDate,
+      moment(date).format(DATE_FORMAT_CSV),
+      count,
+    ];
+  });
+
+  return newArray;
 };

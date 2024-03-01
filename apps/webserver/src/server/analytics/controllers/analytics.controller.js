@@ -3,7 +3,12 @@ const moment = require('moment');
 const { compiledAssets } = require(path.resolve('./config/config'));
 const { getOrganizationAnalysisUsage } = require('../service/analytics.service');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
-import { getAccountExtraLimits, getAccountUsagePercentage } from '@wri-monorepos/shared';
+import {
+  getAccountExtraLimits,
+  getAccountSubscriptionLimits,
+  getAccountUsagePercentage,
+  combineOrganizationLimits,
+} from '@wri-monorepos/shared';
 import {
   getAccountUsersAnalysisUsage,
   getAccountActivatedTime,
@@ -125,6 +130,20 @@ exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
 
   res.status(200).send({
     accountUsagePercentage,
+  });
+};
+
+exports.getMyOrganizationAnalysisLimit = async (req, res) => {
+  const { organization_id, organization_type } = req.session;
+
+  const subscribed = await getAccountSubscriptionLimits(organization_type);
+  const purchased = await getAccountExtraLimits(organization_id);
+  const limits = combineOrganizationLimits(subscribed, purchased);
+
+  res.status(200).send({
+    limits,
+    subscribed,
+    purchased,
   });
 };
 

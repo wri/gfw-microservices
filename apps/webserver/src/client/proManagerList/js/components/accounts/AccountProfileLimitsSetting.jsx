@@ -32,7 +32,7 @@ export default function AccountProfileLimitsSetting() {
   const isEditingDisabled =
     currentAccount.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
   const [accountLimitsFormData, setAccountLimitsFormData] = useState({
-    MaxAreaPerList: accountLimitsData?.MaxAreaPerList,
+    max_locations_per_year: accountLimitsData?.max_locations_per_year,
     MaxAreaAnalyzeablePerYear: accountLimitsData?.MaxAreaAnalyzeablePerYear,
     organizationId,
   });
@@ -48,8 +48,8 @@ export default function AccountProfileLimitsSetting() {
   const validateLimitsFormData = (data) => {
     let errors = [];
 
-    if (!data.MaxAreaPerList) {
-      errors.push('The field "Area Per List" cannot be empty');
+    if (!data.max_locations_per_year) {
+      errors.push('The field "Max Locations Per Year" cannot be empty');
     }
     if (!data.MaxAreaAnalyzeablePerYear) {
       errors.push('The field "Area Per Year" cannot be empty');
@@ -103,10 +103,10 @@ export default function AccountProfileLimitsSetting() {
               {accountProfileStrings.accountLimitsSetting.areaPerList}
             </FieldLabel>
             <TextField
-              name="MaxAreaPerList"
-              id="MaxAreaPerList"
-              onChange={(e) => onChangeUpdateField('MaxAreaPerList', e.target.value)}
-              value={accountLimitsFormData.MaxAreaPerList}
+              name="max_locations_per_year"
+              id="max_locations_per_year"
+              onChange={(e) => onChangeUpdateField('max_locations_per_year', e.target.value)}
+              value={accountLimitsFormData.max_locations_per_year}
               disabled={!isEditingDisabled}
               size="small"
               variant="outlined"
@@ -115,8 +115,8 @@ export default function AccountProfileLimitsSetting() {
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.areaPerYear}>
-              {accountProfileStrings.accountLimitsSetting.areaPerYear}
+            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.locationsPerYear}>
+              {accountProfileStrings.accountLimitsSetting.locationsPerYear}
             </FieldLabel>
             <TextField
               name="MaxAreaAnalyzeablePerYear"

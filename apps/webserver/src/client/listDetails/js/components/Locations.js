@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import Page from '../../../common/js/components/Page';
-import { userAccessLevel } from '../../../common/js/config';
+import { userAccessLevel, locationsPage } from '../../../common/js/config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import EditList from './edit/EditList';
 import onListFromViewToList from '../utils/redirect';
@@ -56,8 +56,8 @@ class Locations extends Component {
 
     if (listToRedirect) {
       onListFromViewToList(listToRedirect, canopyModalVisible);
-      this.setState({ isLoading: false });
     }
+    this.setState({ isLoading: false });
   }
 
   componentWillUnmount() {
@@ -182,7 +182,7 @@ class Locations extends Component {
             />
           </Route>
           <Route>
-            {!isLoading && (
+            {(!isLoading && selectedList && (
               <Lists
                 activeTemplate={activeTemplate}
                 addType={addType}
@@ -220,6 +220,18 @@ class Locations extends Component {
                 showShareList={this.showShareList}
                 isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(...selectedLists)}
               />
+            )) || (
+              <div
+                style={{
+                  display: 'flex',
+                  width: '100vw',
+                  height: '100vh',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <h2>{locationsPage.lists.notFound}</h2>
+              </div>
             )}
           </Route>
         </Switch>

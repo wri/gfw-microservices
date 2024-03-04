@@ -3,12 +3,17 @@ const moment = require('moment');
 const { compiledAssets } = require(path.resolve('./config/config'));
 const { getOrganizationAnalysisUsage } = require('../service/analytics.service');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
-import { getAccountExtraLimits, getAccountUsagePercentage } from '@wri-monorepos/shared';
+import {
+  calculateRolloverUsableAnalysis,
+  getAccountExtraLimits,
+  getAccountUsagePercentage,
+} from '@wri-monorepos/shared';
 import {
   getAccountUsersAnalysisUsage,
   getAccountActivatedTime,
   getAccountAnalysisLimits,
-  getAccountRolloverLimits,
+  getAccountYearlyUsageSinceActivation,
+  getOrganizationActivatedTime,
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
@@ -189,11 +194,29 @@ exports.getMyOrganizationExtendedLimits = async (req, res) => {
 };
 
 exports.getMyOrganizationRolloverLimits = async (req, res) => {
-  const { organization_id: organizationId, organization_database: orgDbName } = req.session;
+  const {
+    organization_database: orgDbName,
+    organization_id: organizationId,
+    subscription_status_id: organizationType,
+  } = req.session;
 
-  const accountRolloverLimits = await getAccountRolloverLimits(orgDbName, organizationId);
+  const orgActivatedTime = await getAccountActivatedTime(organizationId);
+  const accountActivationDate = moment(orgActivatedTime);
 
-  res.status(200).send(accountRolloverLimits);
+  const yearlyUsageSinceActivation = await getAccountYearlyUsageSinceActivation(orgDbName, {
+    orgActivatedTime: accountActivationDate.format('YYYY-MM-DD'),
+  });
+
+  const subscriptionLimits = await getAccountAnalysisLimits({
+    organizationType,
+  });
+
+  const rolloverAmounts = calculateRolloverUsableAnalysis(
+    yearlyUsageSinceActivation,
+    subscriptionLimits
+  );
+
+  res.status(200).send(rolloverAmounts);
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

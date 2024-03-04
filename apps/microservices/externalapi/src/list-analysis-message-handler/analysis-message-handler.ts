@@ -86,7 +86,7 @@ export class AnalysisMessageHandler {
               },
               selectedAlert: {
                 DataType: 'String',
-                StringValue: 'GLAD',
+                StringValue: 'Integrated',
               },
             };
             break;

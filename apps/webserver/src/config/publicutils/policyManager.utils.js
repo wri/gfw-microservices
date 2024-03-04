@@ -342,7 +342,7 @@ const movePolicy = (req, pendingaccount_id, organizationId) => {
     s3.listObjects(listObjParams)
       .then((result) => {
         policyList = result.Contents;
-        policyList.reverse().forEach((file) => {
+        policyList?.reverse().forEach((file) => {
           const key = file.Key.match(/([\w-\s\(\)]+\.\w+)$/)
             ? file.Key.match(/([\w-\s\(\)]+\.\w+)$/)[0]
             : '';

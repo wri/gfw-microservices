@@ -16,7 +16,7 @@ jobs:
       - name: Check if pull request has a release label
         id: check_label
         run: |
-          labels='${{ toJson(github.event.pull_request.labels) }}'
+          labels='$(echo "${{ toJson(github.event.pull_request.labels) }}" | sed "s/'/\\\\'/g")'
           echo '${{ toJson(github.event.pull_request.labels) }}'
           matched_labels=""
           for label in "WEB-QA" "LD-QA" "LP-QA" "EAPI-QA"; do

@@ -23,24 +23,53 @@ export class AnalysisMessageHandler {
     const [message] = messages;
     try {
       // Body example from: https://gfw.atlassian.net/browse/GPV-1570
-      const { Status, /*AnalysisType, AFI,*/ OrgID, ListID } = JSON.parse(message.Body ?? '{}');
+      const { Status, AnalysisType, OrgID, ListID } = JSON.parse(message.Body ?? '{}');
       Logger.log(`Message received: ${message.Body}`);
 
       if (parseInt(Status, 10) === SUCCESS_STATUS) {
         const organization = await this.organizationService.findOrganizationById(OrgID);
         const fileName = generateRandomFilename('');
 
-        const sqsMessage = {
-          organizationDatabase: { DataType: 'String', StringValue: organization.organizationDb },
-          file: {
-            DataType: 'String',
-            StringValue: `{"type":"everything","key":"${fileName}","file":"csv"}`,
-          },
-          list: {
-            DataType: 'String',
-            StringValue: `{"listId":${ListID},"listView":"forest_change"}`,
-          },
-        };
+        let sqsMessage;
+
+        switch (AnalysisType) {
+          case 'FCD':
+            sqsMessage = {
+              organizationDatabase: {
+                DataType: 'String',
+                StringValue: organization.organizationDb,
+              },
+              file: {
+                DataType: 'String',
+                StringValue: `{"type":"everything","key":"${fileName}","file":"csv"}`,
+              },
+              list: {
+                DataType: 'String',
+                StringValue: `{"listId":${ListID},"listView":"forest_change"}`,
+              },
+            };
+            break;
+          case 'AFI': {
+            sqsMessage = {
+              organizationDatabase: {
+                DataType: 'String',
+                StringValue: organization.organizationDb,
+              },
+              file: {
+                DataType: 'String',
+                StringValue: `{"type":"afi","key":"${fileName}"}`,
+              },
+              list: {
+                DataType: 'String',
+                StringValue: `{"listId":${ListID}`,
+              },
+            };
+            break;
+          }
+          default:
+            return;
+        }
+
         await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
           id: 'dl' + ListID,
           body: sqsMessage,

@@ -8,7 +8,7 @@ export class FeatureExpandDailyAlerts extends Transform {
   _transform(feature, _, next) {
     const newArray = [];
     if (
-      this.selectedAlert === 'GLAD' &&
+      this.selectedAlert === 'Integrated' &&
       feature.gladTimeframe &&
       feature.gladTimeframe.length > 0
     ) {

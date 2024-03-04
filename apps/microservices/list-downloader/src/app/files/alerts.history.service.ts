@@ -199,7 +199,7 @@ export class AlertsHistoryService extends IPipeService {
     const sorted = groupedTimeframeArray.sort(momentSort);
 
     const endDateSchema = {
-      GLAD: {
+      Integrated: {
         DAY: 'DAY',
         WEEK: 'DAY',
         MONTH: 'MONTH',

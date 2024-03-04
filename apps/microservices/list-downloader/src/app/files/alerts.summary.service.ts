@@ -32,7 +32,7 @@ class GenerateAlertsSummary extends EventEmitter {
       this.locationsWithAlerts += Object.keys(chunk[selectedProperty]).length > 0 ? 1 : 0;
       this.totalLocations++;
     } else {
-      if (selectedAlert === 'GLAD') {
+      if (selectedAlert === 'Integrated') {
         this.totalAlerts += chunk[selectedProperty]
           .flat()
           .reduce((acc, curr) => curr.count + acc, 0);

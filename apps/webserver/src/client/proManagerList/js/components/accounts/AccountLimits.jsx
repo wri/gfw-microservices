@@ -35,12 +35,11 @@ const FieldLabel = styled(InputLabel)({
  */
 const generateGlobalLimitsFormDataObject = (subscriptionOptions) => {
   const defaultFields = {
-    MaxAreaPerList: 0,
+    max_locations_per_year: 0,
     MaxAreaAnalyzeablePerYear: 0,
   };
 
   let returningObject = {};
-
   for (const option of subscriptionOptions) {
     returningObject[option.value] = {
       ...defaultFields,
@@ -173,16 +172,16 @@ function AccountLimitsGlobal({ setIsLoading }) {
         <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2}>
           <Grid item sm={6} xs={12}>
             <Grid container direction="column">
-              <FieldLabel aria-label={accountLimitsStrings.areaPerList}>
-                {accountLimitsStrings.areaPerList}
+              <FieldLabel aria-label={accountLimitsStrings.locationsPerYear}>
+                {accountLimitsStrings.locationsPerYear}
               </FieldLabel>
               <TextField
-                name="MaxAreaPerList"
-                id="STANDARD_SUBSCRIPTION-MaxAreaPerList"
+                name="max_locations_per_year"
+                id="STANDARD_SUBSCRIPTION-max_locations_per_year"
                 onChange={({ target }) =>
                   onChangeUpdateField(STANDARD_SUBSCRIPTION, target.name, target.value)
                 }
-                value={globalLimitsFormData[STANDARD_SUBSCRIPTION]?.MaxAreaPerList || 0}
+                value={globalLimitsFormData[STANDARD_SUBSCRIPTION]?.max_locations_per_year || 0}
                 size="small"
                 variant="outlined"
               />
@@ -211,16 +210,16 @@ function AccountLimitsGlobal({ setIsLoading }) {
         <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2}>
           <Grid item sm={6} xs={12}>
             <Grid container direction="column">
-              <FieldLabel aria-label={accountLimitsStrings.areaPerList}>
-                {accountLimitsStrings.areaPerList}
+              <FieldLabel aria-label={accountLimitsStrings.locationsPerYear}>
+                {accountLimitsStrings.locationsPerYear}
               </FieldLabel>
               <TextField
-                name="MaxAreaPerList"
-                id="PREMIUM_SUBSCRIPTION-MaxAreaPerList"
+                name="max_locations_per_year"
+                id="PREMIUM_SUBSCRIPTION-max_locations_per_year"
                 onChange={({ target }) =>
                   onChangeUpdateField(PREMIUM_SUBSCRIPTION, target.name, target.value)
                 }
-                value={globalLimitsFormData[PREMIUM_SUBSCRIPTION]?.MaxAreaPerList || 0}
+                value={globalLimitsFormData[PREMIUM_SUBSCRIPTION]?.max_locations_per_year || 0}
                 size="small"
                 variant="outlined"
               />

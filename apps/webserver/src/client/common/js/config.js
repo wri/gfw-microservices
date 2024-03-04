@@ -839,6 +839,7 @@ export const locationsPage = {
     renameFolderPrompt: 'Enter a new name to rename this folder.',
     renameFolderSuccessFragment: ' was renamed to ',
     renameFolderError: 'There was an error renaming the folder.',
+    notFound: 'List not found',
     adminFilters: {
       modalHeader: 'Show Administrative Areas for',
       apply: 'Apply filters',
@@ -3990,7 +3991,7 @@ export const accountProfileStrings = {
     subscription_status_id: 'Subscription Status',
   },
   accountLimitsSetting: {
-    areaPerList: 'Area Per List',
+    locationsPerYear: 'Locations Per Year',
     areaPerYear: 'Area Per Year',
     subHeadingSubscriptionLimits: ' Subscription',
     subHeadingCustomLimits: 'Custom Limits',
@@ -4005,7 +4006,7 @@ export const accountLimitsStrings = {
   pageHeading: 'Account Limits',
   stantardSubscriptionSection: 'Standard Subscription',
   premiumSubscriptionSection: 'Premium Subscription',
-  areaPerList: 'Area Per List',
+  locationsPerYear: 'Locations Per Year',
   areaPerYear: 'Area Per Year',
 };
 

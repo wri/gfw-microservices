@@ -37,6 +37,9 @@ const buildSQSMessage = ({ request }) => {
 
   const { selectedTimeframe, selectedAlert } = request.query;
 
+  // TODO we should rename all mentions from glad to integrated.
+  const alert = selectedAlert === 'GLAD' ? 'Integrated' : selectedAlert;
+
   const { user_email: userEmail, organization_database: organizationDatabase } = request.session;
 
   const tmpPath = tmp.tmpNameSync();
@@ -46,7 +49,7 @@ const buildSQSMessage = ({ request }) => {
     userEmail,
     organizationDatabase,
     selectedTimeframe,
-    selectedAlert,
+    selectedAlert: alert,
     list: JSON.stringify({ listId }),
     file: JSON.stringify({ type: 'alerts', key: fileName }),
   };

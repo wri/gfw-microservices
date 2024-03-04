@@ -61,7 +61,32 @@ export class AnalysisMessageHandler {
               },
               list: {
                 DataType: 'String',
-                StringValue: `{"listId":${ListID}`,
+                StringValue: `{"listId":${ListID}}`,
+              },
+            };
+            break;
+          }
+          case 'ALERTS': {
+            sqsMessage = {
+              organizationDatabase: {
+                DataType: 'String',
+                StringValue: organization.organizationDb,
+              },
+              file: {
+                DataType: 'String',
+                StringValue: `{"type":"alerts","key":"${fileName}"}`,
+              },
+              list: {
+                DataType: 'String',
+                StringValue: `{"listId":${ListID}}`,
+              },
+              selectedTimeframe: {
+                DataType: 'String',
+                StringValue: 'MONTH',
+              },
+              selectedAlert: {
+                DataType: 'String',
+                StringValue: 'GLAD',
               },
             };
             break;

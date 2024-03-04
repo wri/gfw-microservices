@@ -1,14 +1,19 @@
 import { SQLUtils } from '../util/sql.utils';
 import * as sql from 'mssql';
-import { OrganizationRolloverLimitsAmount as OrganizationAllTimeAnalysisUsageResponse } from '../queries';
+import { OrganizationYearlyUsageSinceOrgActivation as OrganizationAllTimeAnalysisUsageResponse } from '../queries';
 
-export async function getAccountRolloverLimits(orgDBName: string, orgId: number) {
+export async function getAccountYearlyUsageSinceActivation(
+  orgDBName: string,
+  { orgActivatedTime }
+) {
   try {
-    const parameters = [{ field: 'orgId', type: sql.Int, value: orgId }];
+    const parameters = [
+      { field: 'orgActivatedTime', type: sql.NVarChar(100), value: orgActivatedTime },
+    ];
 
-    return await SQLUtils.queryDBFirstRow<OrganizationAllTimeAnalysisUsageResponse>(
+    return await SQLUtils.queryDB<OrganizationAllTimeAnalysisUsageResponse>(
       orgDBName,
-      'uspGetOrganizationRolloverLimitsAmounts',
+      'uspGetOrganizationYearlyUsageSinceOrgActivatedTime',
       parameters
     );
   } catch (error) {

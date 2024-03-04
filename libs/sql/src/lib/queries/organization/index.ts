@@ -38,4 +38,4 @@ export * from './getOrganizationUsersUsageExport';
 export * from './updateUser';
 export * from './getOrganizationUsersUsageExport';
 export * from './getListByFiltersQuery';
-export * from './getOrganizationRolloverLimitsAmounts';
+export * from './getOrganizationYearlyUsageSinceOrgActivatedTime';

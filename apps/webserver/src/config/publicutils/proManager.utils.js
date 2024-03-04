@@ -699,13 +699,17 @@ const updateAccountSubscriptionStatus = async (
  * @returns {Promise<payload>}
  */
 const updateGlobalAnalysisLimits = async (request, payload) => {
-  const { subscriptionStatusId, MaxAreaPerList, MaxAreaAnalyzeablePerYear, MaxLocationsPerYear } =
-    payload;
+  const {
+    subscriptionStatusId,
+    MaxAreaPerList,
+    MaxAreaAnalyzeablePerYear,
+    max_locations_per_year,
+  } = payload;
   const params = [
     { field: 'subscriptionStatusId', type: sql.Int, value: subscriptionStatusId },
     { field: 'MaxAreaPerList', type: sql.Decimal, value: MaxAreaPerList },
     { field: 'MaxAreaAnalyzeablePerYear', type: sql.Decimal, value: MaxAreaAnalyzeablePerYear },
-    { field: 'MaxLocationsPerYear', type: sql.Int, value: MaxLocationsPerYear },
+    { field: 'max_locations_per_year', type: sql.Int, value: max_locations_per_year },
   ];
 
   try {
@@ -719,7 +723,7 @@ const updateGlobalAnalysisLimits = async (request, payload) => {
       `Failed to update global analysis limit`,
       error
     );
-    return errorObject;
+    throw new Error(errorObject);
   }
 };
 
@@ -731,13 +735,13 @@ const updateGlobalAnalysisLimits = async (request, payload) => {
  * @returns {Promise<payload>}
  */
 const updateAccountAnalysisLimits = async (request, payload) => {
-  const { organizationId, MaxAreaPerList, MaxAreaAnalyzeablePerYear, MaxLocationsPerYear } =
+  const { organizationId, MaxAreaPerList, MaxAreaAnalyzeablePerYear, max_locations_per_year } =
     payload;
   const params = [
     { field: 'OrgID', type: sql.Int, value: organizationId },
     { field: 'MaxAreaPerList', type: sql.Decimal, value: MaxAreaPerList },
     { field: 'MaxAreaAnalyzeablePerYear', type: sql.Decimal, value: MaxAreaAnalyzeablePerYear },
-    { field: 'MaxLocationsPerYear', type: sql.Int, value: MaxLocationsPerYear },
+    { field: 'max_locations_per_year', type: sql.Int, value: max_locations_per_year },
   ];
 
   try {
@@ -751,7 +755,7 @@ const updateAccountAnalysisLimits = async (request, payload) => {
       `Failed to update account custom analysis limits`,
       error
     );
-    return errorObject;
+    throw new Error(errorObject);
   }
 };
 

@@ -3,10 +3,10 @@
  * @param {Int} subscriptionStatusId
  * @param {Decimal} MaxAreaPerList
  * @param {Decimal} MaxAreaAnalyzeablePerYear
- * @param {Int} MaxLocationsPerYear
+ * @param {Int} max_locations_per_year
  */
 export const setGlobalAnalysisLimit = `UPDATE AnalysisLimits 
 SET MaxAreaPerList = @MaxAreaPerList,
   MaxAreaAnalyzeablePerYear = @MaxAreaAnalyzeablePerYear,
-  MaxLocationsPerYear = @MaxLocationsPerYear
+  max_locations_per_year = @max_locations_per_year
 WHERE OrgType = @subscriptionStatusId`;

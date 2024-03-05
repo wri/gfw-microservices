@@ -7,13 +7,11 @@
 export const getOrganizationYearlyUsageSinceOrgActivatedTime = `
 SELECT 
     years_since_activation,
-    SUM(area_analyzed_list_ha) AS totalAreaAnalyzedYearly,
     SUM(area_analyzed_locations_ha) as totalAreaPerLocationsAnalyzedYearly,
     SUM(locations_analyzed) AS totalLocationsYearly
 FROM (
     SELECT
         DATEDIFF(YEAR, @orgActivatedTime, lp.analysis_start_time) AS years_since_activation,
-        lp.area_analyzed_list_ha,
         lp.area_analyzed_locations_ha,
         lp.locations_analyzed
     FROM
@@ -25,7 +23,6 @@ FROM (
 `;
 
 export interface OrganizationYearlyUsageSinceOrgActivation {
-  totalAreaAnalyzedYearly: number;
   totalAreaPerLocationsAnalyzedYearly: number;
   totalLocationsYearly: number;
 }

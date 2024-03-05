@@ -1,7 +1,4 @@
-import {
-  calculateRolloverUsed,
-  RolloverAnalysisAmounts,
-} from './calculateRolloverUsed';
+import { calculateRolloverUsed, RolloverAnalysisAmounts } from './calculateRolloverUsed';
 
 describe('calculateRolloverUsableAnalysis', () => {
   test('calculates rollover amounts correctly', () => {
@@ -29,7 +26,7 @@ describe('calculateRolloverUsableAnalysis', () => {
       subscriptionLimits
     );
 
-    expect(result.rolloverAreaAnalyzable).toBe(300000000);
-    expect(result.rolloverLocations).toBe(24000);
+    expect(result.rolloverAnalysisAreaUsed).toBe(300000000);
+    expect(result.rolloverLocationsUsed).toBe(24000);
   });
 });

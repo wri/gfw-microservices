@@ -8,7 +8,6 @@ export const generateAlertsSqsTemplate = ({
   endDate,
   organization,
   listId,
-  userEmail,
 }: AlertsGenerateBodySchema & { organization: Organization; listId: number }) => {
   const fileName = generateRandomFilename('');
 
@@ -19,10 +18,6 @@ export const generateAlertsSqsTemplate = ({
     list: {
       DataType: 'String',
       StringValue: `{"listId":${listId}}`,
-    },
-    userEmail: {
-      DataType: 'String',
-      StringValue: userEmail,
     },
     organizationDatabase: {
       DataType: 'String',

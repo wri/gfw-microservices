@@ -75,7 +75,6 @@ export class AnalysisMessageHandler {
             sqsMessage = generateAlertsSqsTemplate({
               listId: ListID,
               organization,
-              userEmail: '',
               startDate: thirtyDaysAgo,
               endDate: currentDate,
             });
@@ -91,6 +90,7 @@ export class AnalysisMessageHandler {
           messageAttributes: sqsMessage,
           delaySeconds: 0,
           groupId: 'default',
+          deduplicationId: Math.random().toString(),
         });
       } else {
         Logger.log(`Status is not COMPLETED, ignoring message`);

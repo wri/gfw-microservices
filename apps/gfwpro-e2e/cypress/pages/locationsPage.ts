@@ -23,5 +23,4 @@ class LocationsPage {
   }
 }
 
-// module.exports = new LocationsPage();
 export default LocationsPage;

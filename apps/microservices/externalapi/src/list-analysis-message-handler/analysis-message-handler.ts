@@ -85,8 +85,6 @@ export class AnalysisMessageHandler {
             return;
         }
 
-        console.log({ sqsMessage });
-
         await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
           id: 'dl' + ListID,
           body: sqsMessage,

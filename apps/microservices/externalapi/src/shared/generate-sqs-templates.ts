@@ -8,7 +8,10 @@ export const generateAlertsSqsTemplate = ({
   endDate,
   organization,
   listId,
-}: AlertsGenerateBodySchema & { organization: Organization; listId: number }) => {
+}: Omit<AlertsGenerateBodySchema, 'userEmail'> & {
+  organization: Organization;
+  listId: number;
+}) => {
   const fileName = generateRandomFilename('');
 
   const tmpPath = tmp.tmpNameSync();

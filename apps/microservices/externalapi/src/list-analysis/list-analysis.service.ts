@@ -280,6 +280,11 @@ export class ListAnalysisService {
     listId,
     userEmail,
   }: AlertsGenerateBodySchema & { organizationId: number; listId: number }) {
+    const user = await this.userService.findUser(organizationId, userEmail);
+    if (!user) {
+      throw new NotFoundException(`User with ${userEmail} not found`);
+    }
+
     const organization = await this.getOrganizationDetails(organizationId);
 
     const sqsMessage = generateAlertsSqsTemplate({
@@ -287,7 +292,6 @@ export class ListAnalysisService {
       listId,
       organization,
       endDate,
-      userEmail,
     });
 
     await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {

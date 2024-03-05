@@ -4,4 +4,4 @@ export * from './calculateListProcessingLimit';
 export * from './calculateAccountUsagePercentage';
 export * from './getAccountSubscriptionData';
 export * from './combineOrganizationLimits';
-export * from './calculateRolloverUsableAnalysis';
+export * from './calculateRolloverUsed';

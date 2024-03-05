@@ -1,7 +1,7 @@
 import {
-  calculateRolloverUsableAnalysis,
+  calculateRolloverUsed,
   RolloverAnalysisAmounts,
-} from './calculateRolloverUsableAnalysis';
+} from './calculateRolloverUsed';
 
 describe('calculateRolloverUsableAnalysis', () => {
   test('calculates rollover amounts correctly', () => {
@@ -24,12 +24,11 @@ describe('calculateRolloverUsableAnalysis', () => {
       max_locations_per_year: 1000,
     };
 
-    const result: RolloverAnalysisAmounts = calculateRolloverUsableAnalysis(
+    const result: RolloverAnalysisAmounts = calculateRolloverUsed(
       yearlyUsageSinceActivation,
       subscriptionLimits
     );
 
-    // Adjust the expected values based on your calculations
     expect(result.rolloverAreaAnalyzable).toBe(300000000);
     expect(result.rolloverLocations).toBe(24000);
   });

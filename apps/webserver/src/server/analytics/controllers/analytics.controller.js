@@ -4,15 +4,14 @@ const { compiledAssets } = require(path.resolve('./config/config'));
 const { getOrganizationAnalysisUsage } = require('../service/analytics.service');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 import {
-  calculateRolloverUsed,
   getAccountExtraLimits,
+  getAccountRolloverLimits,
   getAccountUsagePercentage,
 } from '@wri-monorepos/shared';
 import {
   getAccountUsersAnalysisUsage,
   getAccountActivatedTime,
   getAccountAnalysisLimits,
-  getAccountYearlyUsageSinceActivation,
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
@@ -199,23 +198,13 @@ exports.getMyOrganizationRolloverLimits = async (req, res) => {
     subscription_status_id: organizationType,
   } = req.session;
 
-  const orgActivatedTime = await getAccountActivatedTime(organizationId);
-  const accountActivationDate = moment(orgActivatedTime);
-
-  const yearlyUsageSinceActivation = await getAccountYearlyUsageSinceActivation(orgDbName, {
-    orgActivatedTime: accountActivationDate.format('YYYY-MM-DD'),
-  });
-
-  const subscriptionLimits = await getAccountAnalysisLimits({
+  const rolloverLimits = await getAccountRolloverLimits({
+    orgDbName,
+    organizationId,
     organizationType,
   });
 
-  const rolloverAmounts = calculateRolloverUsed(
-    yearlyUsageSinceActivation,
-    subscriptionLimits
-  );
-
-  res.status(200).send(rolloverAmounts);
+  res.status(200).send(rolloverLimits);
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

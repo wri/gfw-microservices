@@ -3,7 +3,7 @@ import * as sql from 'mssql';
 import { OrganizationYearlyUsageSinceOrgActivation as OrganizationAllTimeAnalysisUsageResponse } from '../queries';
 
 export async function getAccountYearlyUsageSinceActivation(
-  orgDBName: string,
+  orgDbName: string,
   { orgActivatedTime }
 ) {
   try {
@@ -11,8 +11,8 @@ export async function getAccountYearlyUsageSinceActivation(
       { field: 'orgActivatedTime', type: sql.NVarChar(100), value: orgActivatedTime },
     ];
 
-    return await SQLUtils.queryDB<OrganizationAllTimeAnalysisUsageResponse>(
-      orgDBName,
+    return await SQLUtils.queryDB<OrganizationAllTimeAnalysisUsageResponse[]>(
+      orgDbName,
       'uspGetOrganizationYearlyUsageSinceOrgActivatedTime',
       parameters
     );

@@ -4,7 +4,7 @@ const { compiledAssets } = require(path.resolve('./config/config'));
 const { getOrganizationAnalysisUsage } = require('../service/analytics.service');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 import {
-  calculateRolloverUsableAnalysis,
+  calculateRolloverUsed,
   getAccountExtraLimits,
   getAccountUsagePercentage,
 } from '@wri-monorepos/shared';
@@ -13,7 +13,6 @@ import {
   getAccountActivatedTime,
   getAccountAnalysisLimits,
   getAccountYearlyUsageSinceActivation,
-  getOrganizationActivatedTime,
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
@@ -211,7 +210,7 @@ exports.getMyOrganizationRolloverLimits = async (req, res) => {
     organizationType,
   });
 
-  const rolloverAmounts = calculateRolloverUsableAnalysis(
+  const rolloverAmounts = calculateRolloverUsed(
     yearlyUsageSinceActivation,
     subscriptionLimits
   );

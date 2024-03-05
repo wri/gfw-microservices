@@ -4,7 +4,7 @@ export interface RolloverAnalysisAmounts {
   rolloverAreaAnalyzable: number;
   rolloverLocations: number;
 }
-export function calculateRolloverUsableAnalysis(
+export function calculateRolloverUsed(
   yearlyUsageSinceActivation: OrganizationYearlyUsageSinceOrgActivation[],
   subscriptionLimits: AnalysisLimit
 ): RolloverAnalysisAmounts {

@@ -7,5 +7,4 @@ class DiagnosticsPage {
   };
 }
 
-// module.exports = new DiagnosticsPage();
 export default DiagnosticsPage;

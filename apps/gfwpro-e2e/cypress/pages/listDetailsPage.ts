@@ -13,5 +13,4 @@ class ListDetailsPage {
   }
 }
 
-// module.exports = new ListDetailsPage();
 export default ListDetailsPage;

@@ -3,7 +3,7 @@ import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 import DiagnosticsPage from '../../pages/diagnosticsPage';
 
-describe('List diagnostics', () => {
+describe('Location diagnostics', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
   const diagnosticsPage = new DiagnosticsPage();

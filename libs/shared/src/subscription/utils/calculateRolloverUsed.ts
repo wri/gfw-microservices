@@ -6,7 +6,7 @@ export interface RolloverAnalysisAmounts {
 }
 export function calculateRolloverUsed(
   yearlyUsageSinceActivation: OrganizationYearlyUsageSinceOrgActivation[],
-  subscriptionLimits: AnalysisLimit
+  subscriptionLimits: Partial<AnalysisLimit>
 ): RolloverAnalysisAmounts {
   let rolloverAnalysisAreaUsed = 0;
   let rolloverLocationsUsed = 0;

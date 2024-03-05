@@ -22,7 +22,7 @@ import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
-import * as tmp from 'tmp';
+import { generateAlertsSqsTemplate } from '../shared/generate-sqs-templates';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -280,50 +280,19 @@ export class ListAnalysisService {
     listId,
     userEmail,
   }: AlertsGenerateBodySchema & { organizationId: number; listId: number }) {
+    const user = await this.userService.findUser(organizationId, userEmail);
+    if (!user) {
+      throw new NotFoundException(`User with ${userEmail} not found`);
+    }
+
     const organization = await this.getOrganizationDetails(organizationId);
-    const fileName = generateRandomFilename('');
 
-    const tmpPath = tmp.tmpNameSync();
-    const key = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
-
-    const sqsMessage = {
-      list: {
-        DataType: 'String',
-        StringValue: `{"listId":${listId}}`,
-      },
-      userEmail: {
-        DataType: 'String',
-        StringValue: userEmail,
-      },
-      organizationDatabase: {
-        DataType: 'String',
-        StringValue: organization.organizationDb,
-      },
-      file: {
-        DataType: 'String',
-        StringValue: `{"type":"alerts","key":"${fileName}","file":"csv"}`,
-      },
-      selectedTimeframe: {
-        DataType: 'String',
-        StringValue: 'DAY',
-      },
-      selectedAlert: {
-        DataType: 'String',
-        StringValue: 'Integrated',
-      },
-      key: {
-        DataType: 'String',
-        StringValue: key,
-      },
-      startDate: {
-        DataType: 'String',
-        StringValue: startDate.toISOString(),
-      },
-      endDate: {
-        DataType: 'String',
-        StringValue: endDate.toISOString(),
-      },
-    };
+    const sqsMessage = generateAlertsSqsTemplate({
+      startDate,
+      listId,
+      organization,
+      endDate,
+    });
 
     await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
       id: 'dl' + listId,

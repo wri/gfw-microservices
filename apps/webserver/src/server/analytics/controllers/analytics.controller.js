@@ -6,6 +6,8 @@ const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorT
 import {
   getAccountExtraLimits,
   getAccountRolloverLimits,
+  getAccountSubscriptionLimits,
+  combineOrganizationLimits,
   getAccountUsagePercentage,
 } from '@wri-monorepos/shared';
 import {
@@ -131,6 +133,20 @@ exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
   });
 };
 
+exports.getMyOrganizationAnalysisLimit = async (req, res) => {
+  const { organization_id, organization_type } = req.session;
+
+  const subscribed = await getAccountSubscriptionLimits(organization_type);
+  const purchased = await getAccountExtraLimits(organization_id);
+  const limits = combineOrganizationLimits(subscribed, purchased);
+
+  res.status(200).send({
+    limits,
+    subscribed,
+    purchased,
+  });
+};
+
 exports.getOrganizationAnalysisLimit = async (req, res) => {
   const { organizationId, organizationType } = req.query;
 
@@ -181,14 +197,6 @@ exports.downladOrganizationUsersUsageExport = async (req, res) => {
     success: true,
     message: filters,
   });
-};
-
-exports.getMyOrganizationExtendedLimits = async (req, res) => {
-  const { organization_id: organizationId } = req.session;
-
-  const accountExtraLimits = await getAccountExtraLimits(organizationId);
-
-  res.status(200).send(accountExtraLimits);
 };
 
 exports.getMyOrganizationRolloverLimits = async (req, res) => {

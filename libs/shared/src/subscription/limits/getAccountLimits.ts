@@ -14,6 +14,6 @@ export async function getAccountLimits(organizationId: number, organizationType:
   const organizationSubscriptionLimits = await getAccountSubscriptionLimits(organizationType);
 
   return organizationExtraLimits
-    ? combineOrganizationLimits(organizationExtraLimits, organizationSubscriptionLimits)
+    ? combineOrganizationLimits(organizationSubscriptionLimits, organizationExtraLimits)
     : organizationSubscriptionLimits;
 }

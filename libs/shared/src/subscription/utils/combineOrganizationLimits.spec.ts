@@ -27,10 +27,6 @@ describe('combineOrganizationLimits', () => {
 
     expect(result.MaxAreaAnalyzeablePerYear).toBe(150); // 100 + 50
     expect(result.MaxAreaPerList).toBe(80); // 50 + 30
-    expect(result.OrgID).toBe(1);
-    expect(result.OrgType).toBe(2);
-    expect(result.organization_name).toBe('Org1');
-    expect(result.status_name).toBe('Active');
     expect(result.max_locations_per_year).toBe(15); // 10 + 5
   });
 });

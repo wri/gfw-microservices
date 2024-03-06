@@ -5,8 +5,6 @@ export function combineOrganizationLimits(
   extraLimits: AnalysisLimit
 ) {
   return {
-    ...subscriptionLimits,
-    ...extraLimits,
     MaxAreaAnalyzeablePerYear:
       subscriptionLimits.MaxAreaAnalyzeablePerYear + extraLimits.MaxAreaAnalyzeablePerYear,
     MaxAreaPerList: subscriptionLimits.MaxAreaPerList + extraLimits.MaxAreaPerList,

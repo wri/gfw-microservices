@@ -100,17 +100,17 @@ function RegionChart({ listId, data, fireDownload }) {
         informationBubbleId={argentinaOtbn.informationBubbleId}
       />
 
-      {WDPA && (
+      {WDPA?.overlap && (
         <PieChart
-          data={WDPA}
+          data={WDPA.overlap}
           chartLabels={wdpaOverlapCountry.chartLabels}
           title={wdpaOverlapCountry.diagnosticTitle}
           informationBubbleId={wdpaOverlapCountry.informationBubbleId}
         />
       )}
-      {landmark && (
+      {landmark?.overlap && (
         <PieChart
-          data={landmark}
+          data={landmark.overlap}
           chartLabels={landmarkOverlapCountry.chartLabels}
           title={landmarkOverlapCountry.diagnosticTitle}
           informationBubbleId={landmarkOverlapCountry.informationBubbleId}

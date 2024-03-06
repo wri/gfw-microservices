@@ -4,7 +4,6 @@ const sql = require('mssql');
 const { getOrganizationAnalysisUsage: getOrganizationAnalysisUsageQuery } = require(path.resolve(
   './queries/system/getOrganizationAnalysisUsage'
 ));
-const { getAnalysisLimits } = require(path.resolve('./queries/system/getAnalysisLimits'));
 const { getAllListsAnalysisStatus: getAllListsAnalysisStatusQuery } = require(path.resolve(
   './queries/organization/getAllListsAnalysisStatus'
 ));
@@ -32,17 +31,6 @@ const getOrganizationAnalysisUsage = async ({ startDate, endDate, organizationId
   return result;
 };
 
-const getAnalysisLimitData = async ({ organizationId = null, organizationType = null }) => {
-  const params = [
-    { field: 'orgID', type: sql.Int, value: organizationId },
-    { field: 'orgType', type: sql.Int, value: organizationType },
-  ];
-
-  const [response] = await sqlUtils.executeSystemQuery(getAnalysisLimits, params);
-
-  return response;
-};
-
 const getAllListsAnalysisStatus = async (req) => {
   const [response] = await sqlUtils.executeOrganizationQuery(req, getAllListsAnalysisStatusQuery);
   return response;
@@ -60,7 +48,6 @@ const getListAnalysisStatusByListId = async (req, listId) => {
 
 module.exports = {
   getOrganizationAnalysisUsage,
-  getAnalysisLimitData,
   getAllListsAnalysisStatus,
   getListAnalysisStatusByListId,
 };

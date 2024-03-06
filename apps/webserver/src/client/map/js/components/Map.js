@@ -2391,7 +2391,6 @@ export default class Map extends Component {
     });
   };
 
-
   addCustomBasemaps = (view) => {
     const customBasemaps = [];
     mapPage.basemaps.forEach((basemap) => {

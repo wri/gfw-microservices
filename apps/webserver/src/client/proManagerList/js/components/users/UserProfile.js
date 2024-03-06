@@ -49,9 +49,6 @@ export default class UserProfile extends Component {
       gladAlerts: this.props.currentUser.glad_email_frequency
         ? this.props.currentUser.glad_email_frequency
         : 0,
-      formaAlerts: this.props.currentUser.forma_email_frequency
-        ? this.props.currentUser.forma_email_frequency
-        : 0,
       granChacoAlerts: this.props.currentUser.gran_chaco_email_frequency
         ? this.props.currentUser.gran_chaco_email_frequency
         : 0,
@@ -412,22 +409,6 @@ export default class UserProfile extends Component {
         onChange={(evt) => this.setState({ gladAlerts: parseInt(evt.target.value) })}
       />
       <label htmlFor={option.id + 'glad'} className="profile-label">
-        {option.name}
-      </label>
-    </td>
-  );
-
-  createFormaOption = (option, j) => (
-    <td key={j}>
-      <input
-        type="radio"
-        id={option.id + 'forma'}
-        value={option.id}
-        key={j + 'forma'}
-        checked={this.state.formaAlerts === option.id}
-        onChange={(evt) => this.setState({ formaAlerts: parseInt(evt.target.value) })}
-      />
-      <label htmlFor={option.id + 'forma'} className="profile-label">
         {option.name}
       </label>
     </td>

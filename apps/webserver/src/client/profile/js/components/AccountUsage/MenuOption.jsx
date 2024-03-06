@@ -22,7 +22,7 @@ export default function MenuOption(props) {
 
   return (
     <div style={{ float: 'right' }}>
-      <IconButton style={{padding: 0}} onClick={handleClick}>
+      <IconButton style={{ padding: 0 }} onClick={handleClick}>
         <MoreVertIcon />
       </IconButton>
 

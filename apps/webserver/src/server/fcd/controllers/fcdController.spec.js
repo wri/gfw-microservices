@@ -85,8 +85,10 @@ describe('FCD Controller', () => {
     expect(response).toStrictEqual({
       error: false,
       wdpa: {
-        fullyRestrictive: 123,
-        lessRestricted: 45,
+        overlap: {
+          fullyRestrictive: 123,
+          lessRestricted: 45,
+        },
       },
     });
   });
@@ -116,8 +118,10 @@ describe('FCD Controller', () => {
     expect(response).toStrictEqual({
       error: false,
       landmark: {
-        indigenous: 1222,
-        nonIndegenous: 3802,
+        overlap: {
+          indigenous: 1222,
+          nonIndegenous: 3802,
+        },
       },
     });
   });

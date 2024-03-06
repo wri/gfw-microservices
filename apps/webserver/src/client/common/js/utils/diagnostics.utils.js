@@ -73,10 +73,11 @@ const formatDecimals = (chunk, decimals = 2) => {
 
 function getFormatedTooltipForDiagnosticsChart() {
   const { color: optionsColor, label, type } = this.options;
-  const { color: seriesColor, name } = this.series;
+  const { color: seriesColor, userOptions } = this.series;
+
   return `<tr>
 <td style="color:${optionsColor || seriesColor};padding:0">${
-    type === 'PRODES' ? `${type} (${label})` : name
+    type === 'PRODES' ? `${type} (${label})` : (userOptions.name || userOptions.id)
   }: </td>
 <td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(formatNum(this.y || 0))} ha</b></td>
 </tr>`;

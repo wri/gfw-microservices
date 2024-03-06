@@ -116,20 +116,20 @@ export default function AccountUsageContainer() {
     })
       .then((res) => handleDownloadConfirmation('success'))
       .catch((error) => {
-        handleDownloadConfirmation('error')
+        handleDownloadConfirmation('error');
         console.log(error);
       });
-  }
+  };
 
   const handleDownloadConfirmation = (type) => {
-    setMessageType(type)
+    setMessageType(type);
 
-    if(type == 'error') {
-      return setMessageText('Something Went Wrong')
+    if (type == 'error') {
+      return setMessageText('Something Went Wrong');
     }
 
-    setMessageText('Success! Your file has been successfully exported.')
-  }
+    setMessageText('Success! Your file has been successfully exported.');
+  };
 
   const getAreasPercentage = (area) => {
     return ((area / usageData.max_area_analyzed) * 100).toFixed(3);

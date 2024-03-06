@@ -8,7 +8,7 @@ export default function MenuOption(props) {
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {
-    setOpen(!open)
+    setOpen(!open);
   };
 
   const handleClose = () => {
@@ -18,18 +18,16 @@ export default function MenuOption(props) {
   const handleExport = () => {
     props.export();
     handleClose();
-  }
+  };
 
   return (
-    <div style={{float: 'right'}}>
-      <IconButton onClick={handleClick}>
+    <div style={{ float: 'right' }}>
+      <IconButton style={{padding: 0}} onClick={handleClick}>
         <MoreVertIcon />
       </IconButton>
 
       <Menu open={open} onClose={handleClose}>
-        <MenuItem onClick={handleExport}>
-          Export
-        </MenuItem>
+        <MenuItem onClick={handleExport}>Export</MenuItem>
       </Menu>
     </div>
   );

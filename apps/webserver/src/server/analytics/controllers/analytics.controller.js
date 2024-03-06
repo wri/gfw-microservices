@@ -1,13 +1,20 @@
 const path = require('path');
 const moment = require('moment');
 const { compiledAssets } = require(path.resolve('./config/config'));
-const {
-  getOrganizationAnalysisUsage,
-  getAnalysisLimitData,
-} = require('../service/analytics.service');
+const { getOrganizationAnalysisUsage } = require('../service/analytics.service');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
-import { getAccountUsagePercentage } from '@wri-monorepos/shared';
-import { getAccountUsersAnalysisUsage, getAccountActivatedTime } from '@wri-monorepos/sql';
+import {
+  getAccountExtraLimits,
+  getAccountRolloverLimits,
+  getAccountSubscriptionLimits,
+  combineOrganizationLimits,
+  getAccountUsagePercentage,
+} from '@wri-monorepos/shared';
+import {
+  getAccountUsersAnalysisUsage,
+  getAccountActivatedTime,
+  getAccountAnalysisLimits,
+} from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
 
@@ -129,23 +136,26 @@ exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
 exports.getMyOrganizationAnalysisLimit = async (req, res) => {
   const { organization_id, organization_type } = req.session;
 
-  const response = await getAnalysisLimitData({
-    organizationId: organization_id,
-    organizationType: organization_type,
-  });
+  const subscribed = await getAccountSubscriptionLimits(organization_type);
+  const purchased = await getAccountExtraLimits(organization_id);
+  const limits = combineOrganizationLimits(subscribed, purchased);
 
-  res.status(200).send(response[0]);
+  res.status(200).send({
+    limits,
+    subscribed,
+    purchased,
+  });
 };
 
 exports.getOrganizationAnalysisLimit = async (req, res) => {
   const { organizationId, organizationType } = req.query;
 
-  const response = await getAnalysisLimitData({
+  const response = await getAccountAnalysisLimits({
     organizationId,
     organizationType,
   });
 
-  res.status(200).send(response);
+  res.status(200).send([response]);
 };
 
 exports.getMyOrganizationAnalysisOptions = (req, res) => {
@@ -187,6 +197,22 @@ exports.downladOrganizationUsersUsageExport = async (req, res) => {
     success: true,
     message: filters,
   });
+};
+
+exports.getMyOrganizationRolloverLimits = async (req, res) => {
+  const {
+    organization_database: orgDbName,
+    organization_id: organizationId,
+    subscription_status_id: organizationType,
+  } = req.session;
+
+  const rolloverLimits = await getAccountRolloverLimits({
+    orgDbName,
+    organizationId,
+    organizationType,
+  });
+
+  res.status(200).send(rolloverLimits);
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

@@ -10,21 +10,32 @@ DECLARE @SQL NVARCHAR(MAX)
 DECLARE @Filters NVARCHAR(MAX) = ''
 
 BEGIN
-    SET @SQL = 'SELECT a.MaxAreaAnalyzeablePerYear, a.MaxAreaPerList, a.OrgID, a.OrgType, a.max_locations_per_year, o.organization_name, ss.status_name FROM AnalysisLimits a LEFT JOIN Organizations o ON a.OrgID = o.id LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType WHERE 1=1';
+    SET @SQL = 'SELECT 
+                    a.OrgID, 
+                    a.OrgType, 
+                    o.organization_name, 
+                    ss.status_name,
+                    SUM(a.MaxAreaAnalyzeablePerYear) AS MaxAreaAnalyzeablePerYear,
+                    SUM(a.MaxAreaPerList) AS MaxAreaPerList,
+                    SUM(a.max_locations_per_year) AS max_locations_per_year
+                FROM AnalysisLimits a 
+                LEFT JOIN Organizations o ON a.OrgID = o.id 
+                LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType 
+                WHERE 1=1';
 
     IF @orgID IS NOT NULL
-        SET @Filters = + @Filters + ' AND a.OrgID = @orgID'
+        SET @Filters = @Filters + ' AND a.OrgID = @orgID';
 
     IF @orgType IS NOT NULL
-        SET @Filters = + @Filters + ' AND a.OrgType = @orgType'
+        SET @Filters = @Filters + ' AND a.OrgType = @orgType';
 
+    SET @SQL = @SQL + @Filters;
 
-    SET @SQL = @SQL + @Filters
+    SET @SQL = @SQL + ' GROUP BY a.OrgID, a.OrgType, o.organization_name, ss.status_name';
 
     EXEC sp_executesql @SQL,
-        			   N'@orgID INT, @orgType INT',
+                       N'@orgID INT, @orgType INT',
                        @orgType=@orgType, @orgID=@orgID
-
 END
 `;
 

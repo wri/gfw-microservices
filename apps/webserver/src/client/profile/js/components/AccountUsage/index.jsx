@@ -119,7 +119,7 @@ export default function AccountUsageContainer() {
       <AccountUsage
         {...usageData}
         maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
-        maxLocations={usageLimitsData?.max_locations_per_year}
+        maxLocations={usageLimitsData?.total_area_analyzed}
       />
 
       <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>History</h3>

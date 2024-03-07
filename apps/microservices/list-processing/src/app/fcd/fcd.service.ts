@@ -53,7 +53,7 @@ export class FCDService {
       });
     });
 
-    return result;
+    return { overlap: result };
   }
 
   isFullRestrictiveCategory(category: string) {
@@ -98,8 +98,10 @@ export class FCDService {
     });
 
     return {
-      indigenous: indigenousLand,
-      nonIndegenous: totalArea - indigenousLand,
+      overlap: {
+        indigenous: indigenousLand,
+        nonIndigenous: totalArea - indigenousLand,
+      },
     };
   }
 

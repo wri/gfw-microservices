@@ -33,8 +33,10 @@ describe('WDPA Overlap Country', () => {
 
     const result = await fcdService.aggregateOverlapByCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      fullyRestrictive: 1777.6965,
-      lessRestricted: 0.2748,
+      overlap: {
+        fullyRestrictive: 1777.6965,
+        lessRestricted: 0.2748,
+      },
     });
   });
 
@@ -46,8 +48,10 @@ describe('WDPA Overlap Country', () => {
 
     const result = await fcdService.aggregateOverlapByCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      fullyRestrictive: 0,
-      lessRestricted: 0,
+      overlap: {
+        fullyRestrictive: 0,
+        lessRestricted: 0,
+      },
     });
   });
 
@@ -59,8 +63,10 @@ describe('WDPA Overlap Country', () => {
 
     const result = await fcdService.aggregateOverlapByCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      fullyRestrictive: 0,
-      lessRestricted: 0,
+      overlap: {
+        fullyRestrictive: 0,
+        lessRestricted: 0,
+      },
     });
   });
 });
@@ -107,8 +113,10 @@ describe('Landmark Overlap Country', () => {
 
     const result = await fcdService.landmarkOverlapCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      indigenous: 10743.949200000001,
-      nonIndegenous: 14941.3889,
+      overlap: {
+        indigenous: 10743.949200000001,
+        nonIndigenous: 14941.3889,
+      },
     });
   });
 
@@ -120,8 +128,10 @@ describe('Landmark Overlap Country', () => {
 
     const result = await fcdService.landmarkOverlapCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      indigenous: 0,
-      nonIndegenous: 0,
+      overlap: {
+        indigenous: 0,
+        nonIndigenous: 0,
+      },
     });
   });
 
@@ -133,8 +143,10 @@ describe('Landmark Overlap Country', () => {
 
     const result = await fcdService.landmarkOverlapCountry('5692', 'Argentina', 'production');
     expect(result).toStrictEqual({
-      indigenous: 0,
-      nonIndegenous: 0,
+      overlap: {
+        indigenous: 0,
+        nonIndigenous: 0,
+      },
     });
   });
 });

@@ -21,9 +21,7 @@ const addData = async (response, { listId, category, country, organizationDataba
     const { data } = result;
 
     response[category] = {
-      overlap: {
-        ...data,
-      },
+      ...data,
     };
   } catch (error) {
     response[category] = {

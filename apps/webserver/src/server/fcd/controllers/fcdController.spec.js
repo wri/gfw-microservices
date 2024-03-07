@@ -64,8 +64,10 @@ describe('FCD Controller', () => {
     jest.spyOn(axios, 'get').mockImplementation(() =>
       Promise.resolve({
         data: {
-          fullyRestrictive: 123,
-          lessRestricted: 45,
+          overlap: {
+            fullyRestrictive: 123,
+            lessRestricted: 45,
+          },
         },
       })
     );
@@ -97,8 +99,10 @@ describe('FCD Controller', () => {
     jest.spyOn(axios, 'get').mockImplementation(() =>
       Promise.resolve({
         data: {
-          indigenous: 1222,
-          nonIndegenous: 3802,
+          overlap: {
+            indigenous: 1222,
+            nonIndigenous: 3802,
+          },
         },
       })
     );
@@ -120,7 +124,7 @@ describe('FCD Controller', () => {
       landmark: {
         overlap: {
           indigenous: 1222,
-          nonIndegenous: 3802,
+          nonIndigenous: 3802,
         },
       },
     });

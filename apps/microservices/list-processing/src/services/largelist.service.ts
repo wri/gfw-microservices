@@ -32,20 +32,13 @@ export class LargeListService {
 
     const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
 
-    const {
-      isExternalAPIProcess,
-      organization_id: organizationId,
-      organization_database: databaseName,
-      subscription_status_id: subscriptionStatusId,
-      list_id: listId,
-      ...llpRequest
-    } = request;
+    const { isExternalAPIProcess, ...llpRequest } = request;
 
     const isListLocationOverLimit = await getListLocationProcessingLimitCheck({
-      listId,
-      orgDbName: databaseName,
-      organizationId,
-      subscriptionStatusId,
+      listId: request.list_id,
+      orgDbName: request.organization_database,
+      organizationId: request.organization_id,
+      subscriptionStatusId: request.subscription_status_id,
     });
 
     if (isListLocationOverLimit) {

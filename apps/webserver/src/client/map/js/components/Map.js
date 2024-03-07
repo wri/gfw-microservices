@@ -100,7 +100,6 @@ import {
   deforestationAlertsLayerToCoverageMap,
 } from './legend/DeforestationAlerts/deforestationAlerts.constants';
 
-import FormaLayer from '../layers/FormaLayer';
 import viirsLayer, { fetchViirsFeatures } from '../layers/VIIRSLayerUtil';
 import { getProdesUpdatedVectorTileStyle } from '../layers/Prodes_LayerUtil';
 
@@ -2390,42 +2389,6 @@ export default class Map extends Component {
       event_category: 'Map Click',
       event_label: `user added locations from the ${listName} list`,
     });
-  };
-
-  getFormaLayer = (layers) => {
-    return new Promise((resolve) => {
-      const formaLayer = layers.filter((layer) => layer && layer.type === 'forma')[0];
-
-      const request = new XMLHttpRequest();
-      request.onload = () => {
-        const jsonData = JSON.parse(request.responseText);
-        resolve(
-          new FormaLayer({
-            id: formaLayer.id,
-            visible: false,
-            urlTemplate: jsonData.url,
-            date: jsonData.date,
-          })
-        );
-      };
-      request.onerror = (err) => {
-        console.log('Request Error:', err);
-        resolve(false);
-      };
-
-      request.open('GET', formaLayer.url, true);
-      request.send();
-    });
-  };
-
-  getFormaLayerCallback = (configLayer, formaLayer) => {
-    this.view.map.add(formaLayer);
-    formaLayer.visible = true;
-    gtag('event', 'layer toggle', {
-      event_category: 'Map Click',
-      event_label: `user turned the ${formaLayer.id} layer on`,
-    });
-    this.setLayerWatching(configLayer, formaLayer);
   };
 
   addCustomBasemaps = (view) => {

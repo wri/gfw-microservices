@@ -46,7 +46,7 @@ export const chartDatasetConfigs = {
     informationBubbleId: 'regions_arg_it_landcover_calc',
     chartLabels: [
       { id: 'indigenous', color: '#a8704a', legend: 'Overlap with Indigenous Territories' },
-      { id: 'nonIndegenous', color: '#deaf82', legend: 'Non-Overlap with Indigenous Territories' },
+      { id: 'nonIndigenous', color: '#deaf82', legend: 'Non-Overlap with Indigenous Territories' },
     ],
   },
 };

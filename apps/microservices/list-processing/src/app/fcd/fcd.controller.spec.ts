@@ -54,8 +54,10 @@ describe('[GET] /:listId/wdpa_overlap_country/:country', () => {
     expect(response.status).toEqual(200);
     expect(response.body).toBeDefined();
     expect(response.body).toEqual({
-      fullyRestrictive: 1777.6965,
-      lessRestricted: 0.2748,
+      overlap: {
+        fullyRestrictive: 1777.6965,
+        lessRestricted: 0.2748,
+      },
     });
 
     await app.close();
@@ -85,8 +87,10 @@ describe('[GET] /:listId/wdpa_overlap_country/:country', () => {
     expect(response.status).toEqual(200);
     expect(response.body).toBeDefined();
     expect(response.body).toEqual({
-      fullyRestrictive: 0,
-      lessRestricted: 0,
+      overlap: {
+        fullyRestrictive: 0,
+        lessRestricted: 0,
+      },
     });
 
     await app.close();
@@ -190,8 +194,10 @@ describe('[GET] /:listId/landmark_overlap_country/:country', () => {
     expect(response.status).toEqual(200);
     expect(response.body).toBeDefined();
     expect(response.body).toEqual({
-      indigenous: 10743.949200000001,
-      nonIndegenous: 14941.3889,
+      overlap: {
+        indigenous: 10743.949200000001,
+        nonIndigenous: 14941.3889,
+      },
     });
 
     await app.close();
@@ -221,8 +227,10 @@ describe('[GET] /:listId/landmark_overlap_country/:country', () => {
     expect(response.status).toEqual(200);
     expect(response.body).toBeDefined();
     expect(response.body).toEqual({
-      indigenous: 0,
-      nonIndegenous: 0,
+      overlap: {
+        indigenous: 0,
+        nonIndigenous: 0,
+      },
     });
 
     await app.close();

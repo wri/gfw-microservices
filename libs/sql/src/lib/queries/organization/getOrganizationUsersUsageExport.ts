@@ -17,6 +17,7 @@ FROM dbo.ListsProcessing lp
 JOIN dbo.Users u ON lp.user_id = u.id
 LEFT JOIN dbo.LargeLists ll ON lp.list_id = ll.list_id
 LEFT JOIN dbo.ExternalUploads eu ON ll.s3_filename = eu.uploadKeyFile 
+WHERE lp.user_id IS NOT NULL
 GROUP BY
   u.email,
   lp.list_id,

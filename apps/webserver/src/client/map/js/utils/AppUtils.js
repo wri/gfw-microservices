@@ -237,9 +237,6 @@ const utils = {
       case 'VIIRS':
         valueUnit = `${value} [VIIRS active fires alerts]`;
         break;
-      case 'FORMA':
-        valueUnit = value;
-        break;
       default:
         valueUnit = `${value} ha`;
     }

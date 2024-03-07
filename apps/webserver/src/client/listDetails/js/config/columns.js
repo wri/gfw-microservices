@@ -37,10 +37,6 @@ const columns = {
       field: 'flag_glad',
     },
     {
-      name: 'FORMA alerts',
-      field: 'flag_forma',
-    },
-    {
       name: 'VIIRS active fires alerts',
       field: 'flag_viirs',
     },

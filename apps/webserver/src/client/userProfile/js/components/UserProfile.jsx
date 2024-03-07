@@ -117,7 +117,6 @@ export default class UserProfile extends Component {
       commodities,
       viirsAlerts: currentUser.viirs_email_frequency ? currentUser.viirs_email_frequency : 0,
       gladAlerts: currentUser.glad_email_frequency ? currentUser.glad_email_frequency : 0,
-      formaAlerts: currentUser.forma_email_frequency ? currentUser.forma_email_frequency : 0,
       granChacoAlerts: currentUser.gran_chaco_email_frequency
         ? currentUser.gran_chaco_email_frequency
         : 0,

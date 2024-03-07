@@ -25,7 +25,6 @@ function RegionChart({ listId, data, fireDownload }) {
   });
   const [checkedChartLabels, setCheckedChartLabels] = useState(initialCheckedChartLabels);
   const [argentinaPieChartsData, setArgentinaPieChartsData] = useState({});
-
   const { totalLossByCategory, otbnTotalLoss, chartData } = getTreeCoverLossArgOtbnYearlyData(
     data,
     dateRange.startYear,

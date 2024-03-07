@@ -28,11 +28,7 @@ const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 
-import {
-  getListLocationProcessingLimitCheck,
-  getListProcessingLimits,
-} from '@wri-monorepos/shared';
-import { getListLocationsCountById } from '@wri-monorepos/sql';
+import { getListProcessingLimits } from '@wri-monorepos/shared';
 
 const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'

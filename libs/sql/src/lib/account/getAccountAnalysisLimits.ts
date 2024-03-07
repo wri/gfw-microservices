@@ -3,6 +3,19 @@ import * as sql from 'mssql';
 import { SQL_CONFIG } from '../config/config';
 import { AnalysisLimit as AnalysisLimitResponse } from '../queries/system/getAnalysisLimits';
 
+export const createEmptyAnalysisObject = (
+  overrides: Partial<AnalysisLimitResponse>
+): AnalysisLimitResponse => ({
+  MaxAreaAnalyzeablePerYear: 0,
+  MaxAreaPerList: 0,
+  max_locations_per_year: 0,
+  OrgID: null,
+  OrgType: null,
+  organization_name: '',
+  status_name: '',
+  ...overrides,
+});
+
 interface GetAccountAnalysisLimits {
   organizationId?: number;
   organizationType?: number;

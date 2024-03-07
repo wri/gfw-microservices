@@ -1,5 +1,6 @@
 const path = require('path');
 const moment = require('moment');
+const logger = require('../../../config/privateutils/logger.utils');
 const { compiledAssets } = require(path.resolve('./config/config'));
 const { getOrganizationAnalysisUsage } = require('../service/analytics.service');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
@@ -134,17 +135,22 @@ exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
 };
 
 exports.getMyOrganizationAnalysisLimit = async (req, res) => {
-  const { organization_id, organization_type } = req.session;
+  const { organization_id, subscription_status_id } = req.session;
 
-  const subscribed = await getAccountSubscriptionLimits(organization_type);
-  const purchased = await getAccountExtraLimits(organization_id);
-  const limits = combineOrganizationLimits(subscribed, purchased);
+  try {
+    const subscribed = await getAccountSubscriptionLimits(subscription_status_id);
+    const purchased = await getAccountExtraLimits(organization_id);
+    const limits = combineOrganizationLimits(subscribed, purchased);
 
-  res.status(200).send({
-    limits,
-    subscribed,
-    purchased,
-  });
+    res.status(200).send({
+      limits,
+      subscribed,
+      purchased,
+    });
+  } catch (error) {
+    logger.error(`GET /analytics/myorg/limits ${error}`);
+    res.status(500).send(error);
+  }
 };
 
 exports.getOrganizationAnalysisLimit = async (req, res) => {
@@ -206,13 +212,18 @@ exports.getMyOrganizationRolloverLimits = async (req, res) => {
     subscription_status_id: organizationType,
   } = req.session;
 
-  const rolloverLimits = await getAccountRolloverLimits({
-    orgDbName,
-    organizationId,
-    organizationType,
-  });
+  try {
+    const rolloverLimits = await getAccountRolloverLimits({
+      orgDbName,
+      organizationId,
+      organizationType,
+    });
 
-  res.status(200).send(rolloverLimits);
+    res.status(200).send(rolloverLimits);
+  } catch (error) {
+    logger.error(`GET /analytics/myorg/rolloverLimits ${error}`);
+    res.status(500).send(error);
+  }
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

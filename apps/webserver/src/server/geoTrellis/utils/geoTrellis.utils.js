@@ -18,7 +18,10 @@ const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
 ));
 
-import { getListProcessingLimits, getAccountSubscriptionData } from '@wri-monorepos/shared';
+import {
+  getListProcessingLimits,
+  getListLocationProcessingLimitCheck,
+} from '@wri-monorepos/shared';
 
 const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extractAnalysisTypes'));
 
@@ -50,14 +53,14 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
 
   const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
 
-  const listLocationsCount = await getListLocationsCountById(listID, databaseName);
-
-  const { accountUsage, accountLimits } = await getAccountSubscriptionData({
+  const isListLocationOverLimit = await getListLocationProcessingLimitCheck({
+    listId: listID,
+    orgDbName: databaseName,
     organizationId: organization_id,
     subscriptionStatusId: subscription_status_id,
   });
 
-  if (accountUsage.locations_analyzed + listLocationsCount > accountLimits.max_locations_per_year) {
+  if (isListLocationOverLimit) {
     throw new Error('Analysis limit reached');
   }
 

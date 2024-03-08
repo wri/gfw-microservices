@@ -7,8 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import * as sql from 'mssql';
 import { createListNameSchema } from '../utils/list.utils';
 import { DataSource } from 'typeorm';
-import { getListByFilters, getListLocationsCountById } from '@wri-monorepos/sql';
-import { getAccountSubscriptionData } from '@wri-monorepos/shared';
+import { getListByFilters } from '@wri-monorepos/sql';
+import { getListLocationProcessingLimitCheck } from '@wri-monorepos/shared';
 import { ProcessingLimitException } from '../app/app.exceptions';
 
 interface CreateListResult {
@@ -33,24 +33,15 @@ export class LargeListService {
     const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
 
     const { isExternalAPIProcess, ...llpRequest } = request;
-    const {
-      organization_id: organizationId,
-      organization_database: databaseName,
-      subscription_status_id: subscriptionStatusId,
-      list_id: listId,
-    } = llpRequest;
 
-    const listLocationsCount = await getListLocationsCountById(listId, databaseName);
-
-    const { accountUsage, accountLimits } = await getAccountSubscriptionData({
-      organizationId,
-      subscriptionStatusId,
+    const isListLocationOverLimit = await getListLocationProcessingLimitCheck({
+      listId: request.list_id,
+      orgDbName: request.organization_database,
+      organizationId: request.organization_id,
+      subscriptionStatusId: request.subscription_status_id,
     });
 
-    if (
-      accountUsage.locations_analyzed + listLocationsCount >
-      accountLimits.max_locations_per_year
-    ) {
+    if (isListLocationOverLimit) {
       throw new ProcessingLimitException();
     }
 

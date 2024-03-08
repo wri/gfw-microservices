@@ -10,28 +10,52 @@ DECLARE @SQL NVARCHAR(MAX)
 DECLARE @Filters NVARCHAR(MAX) = ''
 
 BEGIN
-    SET @SQL = 'SELECT 
-                    a.OrgID, 
-                    a.OrgType, 
-                    o.organization_name, 
-                    ss.status_name,
-                    SUM(a.MaxAreaAnalyzeablePerYear) AS MaxAreaAnalyzeablePerYear,
-                    SUM(a.MaxAreaPerList) AS MaxAreaPerList,
-                    SUM(a.max_locations_per_year) AS max_locations_per_year
-                FROM AnalysisLimits a 
-                LEFT JOIN Organizations o ON a.OrgID = o.id 
-                LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType 
-                WHERE 1=1';
-
     IF @orgID IS NOT NULL
-        SET @Filters = @Filters + ' AND a.OrgID = @orgID';
+		SET @SQL = 'SELECT  
+						COALESCE(a.OrgID, @orgID) as OrgID
+						,a.OrgType
+						,o.organization_name
+						,NULL as subscription_name
+						,ISNULL(SUM(a.MaxAreaAnalyzeablePerYear), 0) AS MaxAreaAnalyzeablePerYear
+						,ISNULL(SUM(a.MaxAreaPerList), 0) AS MaxAreaPerList
+						,ISNULL(SUM(a.max_locations_per_year), 0) AS max_locations_per_year 
+					FROM Organizations o 
+					LEFT JOIN AnalysisLimits a ON a.OrgID = o.id
+					LEFT JOIN SubscriptionStatuses ss ON ss.id = o.subscription_status_id
+					WHERE o.id = @orgID';
 
-    IF @orgType IS NOT NULL
-        SET @Filters = @Filters + ' AND a.OrgType = @orgType';
+	IF @orgType IS NOT NULL
+		SET @SQL =  'SELECT  
+						a.OrgID
+						,a.OrgType
+						,o.organization_name
+						,ss.status_name as subscription_name
+						,ISNULL(SUM(a.MaxAreaAnalyzeablePerYear), 0) AS MaxAreaAnalyzeablePerYear
+						,ISNULL(SUM(a.MaxAreaPerList), 0) AS MaxAreaPerList
+						,ISNULL(SUM(a.max_locations_per_year), 0) AS max_locations_per_year 
+					FROM AnalysisLimits a 
+	                LEFT JOIN Organizations o ON a.OrgID = o.id 
+	                LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType 
+					WHERE a.OrgType = @orgType';
 
-    SET @SQL = @SQL + @Filters;
+	IF @orgID IS NULL AND @orgType IS NULL
+		SET @SQL = 'SELECT  
+						a.OrgID
+						,a.OrgType
+						,o.organization_name
+						,ss.status_name as subscription_name
+						,ISNULL(SUM(a.MaxAreaAnalyzeablePerYear), 0) AS MaxAreaAnalyzeablePerYear
+						,ISNULL(SUM(a.MaxAreaPerList), 0) AS MaxAreaPerList
+						,ISNULL(SUM(a.max_locations_per_year), 0) AS max_locations_per_year 
+					FROM AnalysisLimits a 
+	                LEFT JOIN Organizations o ON a.OrgID = o.id 
+	                LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType ';
+   
 
     SET @SQL = @SQL + ' GROUP BY a.OrgID, a.OrgType, o.organization_name, ss.status_name';
+	
+    -- debug
+   	-- PRINT @SQL
 
     EXEC sp_executesql @SQL,
                        N'@orgID INT, @orgType INT',

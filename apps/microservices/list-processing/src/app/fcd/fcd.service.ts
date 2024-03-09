@@ -141,7 +141,7 @@ export class FCDService {
 
     const result = data.map((item) => JSON.parse(item.countrySpecificDeforestation)[countryGadm]);
 
-    return result[0];
+    return { country_specific_deforestation: result[0] };
   }
 
   async getCountrySpecificDeforestationData(

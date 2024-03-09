@@ -40,7 +40,7 @@ describe('RegionChart Component', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        `/api/fcd?listId=${listId}&country=Argentina&category=WDPA,landmark`,
+        `/api/fcd?listId=${listId}&country=Argentina&countryGadm=ARG&category=WDPA,landmark`,
         expect.objectContaining({
           method: 'GET',
           credentials: 'same-origin',

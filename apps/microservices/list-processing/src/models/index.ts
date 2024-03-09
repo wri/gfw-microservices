@@ -124,3 +124,8 @@ export interface GetAfiAnalysisDataRequest {
 export interface DatabaseQueryParam {
   clientDatabase: string;
 }
+
+export type DatabaseQueryParamCountryDeforestation = DatabaseQueryParam & {
+  countryGadm: string;
+  locationId: string;
+};

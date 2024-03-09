@@ -1,9 +1,11 @@
 import {
   GetLandmarkByCategoryAreaType,
   GetProtectedAreasByCategoryAreaType,
+  GetCountrySpecificDeforestationType,
   SQLUtils,
   getLandmarkByCategoryArea,
   getProtectedAreasByCategoryArea,
+  getCountrySpecificDeforestation,
 } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -119,6 +121,47 @@ export class FCDService {
     return await SQLUtils.queryDB<GetLandmarkByCategoryAreaType[]>(
       clientDatabase,
       getLandmarkByCategoryArea,
+      parameters
+    );
+  }
+
+  async countrySpecificDeforestation(
+    listId: string,
+    country: string,
+    clientDatabase: string,
+    countryGadm: string,
+    locationId: string
+  ) {
+    const data = await this.getCountrySpecificDeforestationData(
+      listId,
+      country,
+      clientDatabase,
+      locationId
+    );
+
+    const result = data.map((item) => JSON.parse(item.countrySpecificDeforestation)[countryGadm]);
+
+    return result[0];
+  }
+
+  async getCountrySpecificDeforestationData(
+    listId: string,
+    country: string,
+    clientDatabase: string,
+    locationId: string
+  ) {
+    const parameters = [
+      { field: 'listId', type: sql.Int, value: listId },
+      { field: 'country', type: sql.VarChar, value: country },
+      { field: 'locationId', type: sql.VarChar, value: locationId },
+    ];
+
+    this.logger.debug(
+      `Get country specific deforestation for: ${country},  listId ${listId} and locationId ${locationId}`
+    );
+    return await SQLUtils.queryDB<GetCountrySpecificDeforestationType[]>(
+      clientDatabase,
+      getCountrySpecificDeforestation,
       parameters
     );
   }

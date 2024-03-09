@@ -14,12 +14,16 @@ const addData = async (
   response,
   { listId, category, country, organizationDatabase, countryGadm, locationId }
 ) => {
-  const url = `${BASE_URL}/${listId}/${
-    categoryUrls[category.toLowerCase()]
-  }/${country}?clientDatabase=${organizationDatabase}&countryGadm=${countryGadm}&locationId=${locationId}`;
+  let url = `${BASE_URL}/${listId}/${categoryUrls[category.toLowerCase()]}/${country}`;
+
+  const params = {
+    clientDatabase: organizationDatabase,
+    countryGadm,
+    locationId,
+  };
 
   try {
-    const result = await axios.get(url);
+    const result = await axios.get(url, { params });
 
     const { data } = result;
 

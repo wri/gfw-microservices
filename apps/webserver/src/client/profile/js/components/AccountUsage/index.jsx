@@ -119,7 +119,7 @@ export default function AccountUsageContainer() {
       <AccountUsage
         {...usageData}
         maxArea={usageLimitsData?.MaxAreaAnalyzeablePerYear}
-        maxLocations={usageLimitsData?.total_area_analyzed}
+        maxLocations={usageLimitsData?.max_locations_per_year}
       />
 
       <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>History</h3>
@@ -144,7 +144,7 @@ export default function AccountUsageContainer() {
                 <TableCell align="right">
                   {getAnalysesPercentage(row.total_locations_analyzed)}%
                 </TableCell>
-                <TableCell align="right">{getAreasPercentage(row.max_locations_per_year)}%</TableCell>
+                <TableCell align="right">{getAreasPercentage(row.total_area_analyzed)}%</TableCell>
               </TableRow>
             ))}
           </TableBody>

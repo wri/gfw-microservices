@@ -99,8 +99,8 @@ export default function AccountProfileLimitsSetting() {
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.areaPerList}>
-              {accountProfileStrings.accountLimitsSetting.areaPerList}
+            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.locationsPerYear}>
+              {accountProfileStrings.accountLimitsSetting.locationsPerYear}
             </FieldLabel>
             <TextField
               name="max_locations_per_year"
@@ -115,8 +115,8 @@ export default function AccountProfileLimitsSetting() {
         </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
-            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.locationsPerYear}>
-              {accountProfileStrings.accountLimitsSetting.locationsPerYear}
+            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.areaPerYear}>
+              {accountProfileStrings.accountLimitsSetting.areaPerYear}
             </FieldLabel>
             <TextField
               name="MaxAreaAnalyzeablePerYear"

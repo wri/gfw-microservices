@@ -5,37 +5,54 @@
  * @orgType INT,
  */
 
-export const getAnalysisLimits = `
+export const getAnalysisLimits = `BEGIN
+	
 DECLARE @SQL NVARCHAR(MAX)
-DECLARE @Filters NVARCHAR(MAX) = ''
 
-BEGIN
-    SET @SQL = 'SELECT 
-                    a.OrgID, 
-                    a.OrgType, 
-                    o.organization_name, 
-                    ss.status_name,
-                    SUM(a.MaxAreaAnalyzeablePerYear) AS MaxAreaAnalyzeablePerYear,
-                    SUM(a.MaxAreaPerList) AS MaxAreaPerList,
-                    SUM(a.max_locations_per_year) AS max_locations_per_year
+    SET @SQL =  'SELECT  
+                    a.OrgID
+                    ,a.OrgType
+                    ,o.organization_name
+                    ,ss.status_name as subscription_name
+                    ,ISNULL(SUM(a.MaxAreaAnalyzeablePerYear), 0) AS MaxAreaAnalyzeablePerYear
+                    ,ISNULL(SUM(a.MaxAreaPerList), 0) AS MaxAreaPerList
+                    ,ISNULL(SUM(a.max_locations_per_year), 0) AS max_locations_per_year 
                 FROM AnalysisLimits a 
                 LEFT JOIN Organizations o ON a.OrgID = o.id 
-                LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType 
-                WHERE 1=1';
+                LEFT JOIN SubscriptionStatuses ss ON ss.id = a.OrgType';
 
     IF @orgID IS NOT NULL
-        SET @Filters = @Filters + ' AND a.OrgID = @orgID';
+        SET @SQL = 'SELECT  
+                        COALESCE(a.OrgID, @orgID) as OrgID
+                        ,a.OrgType
+                        ,o.organization_name
+                        ,NULL as subscription_name
+                        ,ISNULL(SUM(a.MaxAreaAnalyzeablePerYear), 0) AS MaxAreaAnalyzeablePerYear
+                        ,ISNULL(SUM(a.MaxAreaPerList), 0) AS MaxAreaPerList
+                        ,ISNULL(SUM(a.max_locations_per_year), 0) AS max_locations_per_year 
+                    FROM Organizations o 
+                    LEFT JOIN AnalysisLimits a ON a.OrgID = o.id
+                    LEFT JOIN SubscriptionStatuses ss ON ss.id = o.subscription_status_id';
 
-    IF @orgType IS NOT NULL
-        SET @Filters = @Filters + ' AND a.OrgType = @orgType';
 
-    SET @SQL = @SQL + @Filters;
 
-    SET @SQL = @SQL + ' GROUP BY a.OrgID, a.OrgType, o.organization_name, ss.status_name';
+IF @orgID IS NOT NULL
+BEGIN
+    SET @SQL = @SQL + ' WHERE o.id = @orgID';
+END
+ELSE IF @orgType IS NOT NULL
+BEGIN
+    SET @SQL = @SQL + ' WHERE a.OrgType = @orgType';
+END
 
-    EXEC sp_executesql @SQL,
-                       N'@orgID INT, @orgType INT',
-                       @orgType=@orgType, @orgID=@orgID
+SET @SQL = @SQL + ' GROUP BY a.OrgID, a.OrgType, o.organization_name, ss.status_name';
+
+-- debug
+-- PRINT @SQL
+
+EXEC sp_executesql @SQL,
+                   N'@orgID INT, @orgType INT',
+                   @orgType=@orgType, @orgID=@orgID;
 END
 `;
 

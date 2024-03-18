@@ -3,7 +3,6 @@ import * as sql from 'mssql';
 import { SQL_CONFIG } from '../config/config';
 import { AnalysisLimit as AnalysisLimitResponse } from '../queries/system/getAnalysisLimits';
 
-
 interface GetAccountAnalysisLimits {
   organizationId?: number;
   organizationType?: number;

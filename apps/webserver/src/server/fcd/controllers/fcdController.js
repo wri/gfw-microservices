@@ -89,15 +89,6 @@ const getData = async ({
             },
           ];
         }
-        if (!locationId) {
-          return [
-            400,
-            {
-              message: 'Missing locationId',
-              error: true,
-            },
-          ];
-        }
       }
       await addData(result, {
         listId,

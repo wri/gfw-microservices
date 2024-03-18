@@ -2,10 +2,12 @@ import {
   GetLandmarkByCategoryAreaType,
   GetProtectedAreasByCategoryAreaType,
   GetCountrySpecificDeforestationType,
+  GetCountrySpecificDeforestationWithoutLocationIdType,
   SQLUtils,
   getLandmarkByCategoryArea,
   getProtectedAreasByCategoryArea,
   getCountrySpecificDeforestation,
+  getCountrySpecificDeforestationWithoutLocationId,
 } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
 
@@ -139,9 +141,9 @@ export class FCDService {
       locationId
     );
 
-    const result = data.map((item) => JSON.parse(item.countrySpecificDeforestation)[countryGadm]);
-
-    return { country_specific_deforestation: result[0] };
+    return {
+      country_specific_deforestation: JSON.parse(data[0].countrySpecificDeforestation)[countryGadm],
+    };
   }
 
   async getCountrySpecificDeforestationData(
@@ -150,19 +152,27 @@ export class FCDService {
     clientDatabase: string,
     locationId: string
   ) {
-    const parameters = [
-      { field: 'listId', type: sql.Int, value: listId },
-      { field: 'country', type: sql.VarChar, value: country },
-      { field: 'locationId', type: sql.VarChar, value: locationId },
-    ];
-
     this.logger.debug(
       `Get country specific deforestation for: ${country},  listId ${listId} and locationId ${locationId}`
     );
-    return await SQLUtils.queryDB<GetCountrySpecificDeforestationType[]>(
-      clientDatabase,
-      getCountrySpecificDeforestation,
-      parameters
-    );
+    if (locationId) {
+      const parameters = [
+        { field: 'listId', type: sql.Int, value: listId },
+        { field: 'country', type: sql.VarChar, value: country },
+        { field: 'locationId', type: sql.VarChar, value: locationId },
+      ];
+      return await SQLUtils.queryDB<GetCountrySpecificDeforestationType[]>(
+        clientDatabase,
+        getCountrySpecificDeforestation,
+        parameters
+      );
+    } else {
+      const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
+      return await SQLUtils.queryDB<GetCountrySpecificDeforestationWithoutLocationIdType[]>(
+        clientDatabase,
+        getCountrySpecificDeforestationWithoutLocationId,
+        parameters
+      );
+    }
   }
 }

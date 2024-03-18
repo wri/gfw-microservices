@@ -40,3 +40,4 @@ export * from './getOrganizationUsersUsageExport';
 export * from './getListByFiltersQuery';
 export * from './getOrganizationYearlyUsageSinceOrgActivatedTime';
 export * from './getCountrySpecificDeforestation';
+export * from './getCountrySpecificDeforestationWithoutLocationId';

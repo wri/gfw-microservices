@@ -103,7 +103,7 @@ export default function AccountUsageContainer() {
   }, []);
 
   const getAreasPercentage = (area) => {
-    return ((area / usageData.max_area_analyzed) * 100).toFixed(3);
+    return ((area / usageData.total_area_analyzed) * 100).toFixed(3);
   };
 
   const getAnalysesPercentage = (locations) => {
@@ -144,7 +144,7 @@ export default function AccountUsageContainer() {
                 <TableCell align="right">
                   {getAnalysesPercentage(row.total_locations_analyzed)}%
                 </TableCell>
-                <TableCell align="right">{getAreasPercentage(row.total_area_analyzed)}%</TableCell>
+                <TableCell align="right">{getAreasPercentage(row.max_locations_per_year)}%</TableCell>
               </TableRow>
             ))}
           </TableBody>

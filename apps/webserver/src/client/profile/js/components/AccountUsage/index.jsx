@@ -117,7 +117,6 @@ export default function AccountUsageContainer() {
       .then((res) => handleDownloadConfirmation('success'))
       .catch((error) => {
         handleDownloadConfirmation('error');
-        console.log(error);
       });
   };
 

@@ -1,4 +1,4 @@
-import { createEmptyAnalysisObject, getAccountAnalysisLimits } from '@wri-monorepos/sql';
+import { getAccountAnalysisLimits } from '@wri-monorepos/sql';
 import { combineOrganizationLimits } from '../utils';
 
 export async function getAccountSubscriptionLimits(organizationType: number) {
@@ -6,14 +6,7 @@ export async function getAccountSubscriptionLimits(organizationType: number) {
 }
 
 export async function getAccountExtraLimits(organizationId: number) {
-  const extraLimits = await getAccountAnalysisLimits({ organizationId });
-
-  return (
-    extraLimits ||
-    createEmptyAnalysisObject({
-      OrgID: organizationId,
-    })
-  );
+  return await getAccountAnalysisLimits({ organizationId });
 }
 
 export async function getAccountLimits(organizationId: number, organizationType: number) {

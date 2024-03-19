@@ -139,8 +139,8 @@ BEGIN
 							END
 							ELSE IF OBJECT_ID(@sql, 'U') IS NOT NULL AND @afi_exists = 0
 							BEGIN
-								-- Analysis table exists
-								-- AFI Table does not exist
+								-- Analysis does not exist
+								-- AFI Table exists
 								SET @sql = N'INSERT INTO #temp_grouped_list_info
 											SELECT {LIST_ID} AS list_id
 												,lt.Country

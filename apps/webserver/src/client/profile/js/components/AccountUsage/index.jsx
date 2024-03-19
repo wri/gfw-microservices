@@ -103,7 +103,7 @@ export default function AccountUsageContainer() {
   }, []);
 
   const getAreasPercentage = (area) => {
-    return ((area / usageData.max_area_analyzed) * 100).toFixed(3);
+    return ((area / usageData.total_area_analyzed) * 100).toFixed(3);
   };
 
   const getAnalysesPercentage = (locations) => {

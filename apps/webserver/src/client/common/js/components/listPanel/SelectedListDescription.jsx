@@ -61,7 +61,7 @@ function SelectedListDescription({
       userSharedLists &&
       userSharedLists.map((userSharedList) => userSharedList.id).includes(transitionListData.id);
     const addShared = selectedListIsShared ? `&shared=true` : ``;
-    window.location = `/locations?id=${id}${addShared}`;
+    window.location = `/list-details?id=${id}${addShared}`;
   };
 
   const handleBack = () => {

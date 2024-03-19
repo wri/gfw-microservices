@@ -79,16 +79,14 @@ const getData = async ({
 
     for (let i = 0; i < categorySplitted.length; i++) {
       const category = categorySplitted[i];
-      if (category === 'country') {
-        if (!countryGadm) {
-          return [
-            400,
-            {
-              message: 'Missing country Gadm',
-              error: true,
-            },
-          ];
-        }
+      if (category === 'country' && !countryGadm) {
+        return [
+          400,
+          {
+            message: 'Missing country Gadm',
+            error: true,
+          },
+        ];
       }
       await addData(result, {
         listId,

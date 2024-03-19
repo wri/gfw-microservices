@@ -125,7 +125,7 @@ export interface DatabaseQueryParam {
   clientDatabase: string;
 }
 
-export type DatabaseQueryParamCountryDeforestation = DatabaseQueryParam & {
+export interface DatabaseQueryParamCountryDeforestation extends DatabaseQueryParam {
   countryGadm: string;
-  locationId: string;
-};
+  locationId?: string;
+}

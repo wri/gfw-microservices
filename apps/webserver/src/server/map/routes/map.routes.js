@@ -40,7 +40,7 @@ module.exports = (app, limiter) => {
    * Get Planet mosaics Tiles Info
    */
   app.get('/map/getPlanetTilesInfo', (req, res) => {
-    const url = `https://api.planet.com/basemaps/v1/mosaics?api_key=${process.env.PLANET_TILES_API_KEY}`;
+    const url = `https://api.planet.com/basemaps/v1/mosaics?api_key=${process.env.PLANET_TILES_API_KEY}&_page_size=1000`;
     axios
       .get(url)
       .then((results) => {

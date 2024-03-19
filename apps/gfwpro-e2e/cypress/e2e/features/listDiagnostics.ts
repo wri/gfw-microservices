@@ -41,5 +41,6 @@ describe('List diagnostics', () => {
     cy.get('.diagnostics-menu-bar').scrollIntoView();
     expect(diagnosticsPage.elements.reportBtn().should('be.visible'));
     expect(diagnosticsPage.elements.downloadBtn().should('be.visible'));
+    expect(diagnosticsPage.elements.diagnosticsMap().should('be.visible'));
   });
 });

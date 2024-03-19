@@ -34,7 +34,7 @@ describe('Location diagnostics', () => {
   });
 
   When('I click on location diagnostic button', () => {
-    listDetailsPage.clickOnListDiagnosticsBtn();
+    listDetailsPage.clickOnLocationDiagnosticsBtn();
   });
 
   Then('I should be redirected to diagnostic view', () => {
@@ -42,5 +42,6 @@ describe('Location diagnostics', () => {
     cy.get('.diagnostics-menu-bar').scrollIntoView();
     expect(diagnosticsPage.elements.reportBtn().should('be.visible'));
     expect(diagnosticsPage.elements.downloadBtn().should('be.visible'));
+    expect(diagnosticsPage.elements.diagnosticsMap().should('be.visible'));
   });
 });

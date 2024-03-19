@@ -129,17 +129,11 @@ export class FCDService {
 
   async countrySpecificDeforestation(
     listId: string,
-    country: string,
     clientDatabase: string,
     countryGadm: string,
     locationId: string
   ) {
-    const data = await this.getCountrySpecificDeforestationData(
-      listId,
-      country,
-      clientDatabase,
-      locationId
-    );
+    const data = await this.getCountrySpecificDeforestationData(listId, clientDatabase, locationId);
 
     return {
       country_specific_deforestation: JSON.parse(data[0].countrySpecificDeforestation)[countryGadm],
@@ -148,26 +142,23 @@ export class FCDService {
 
   async getCountrySpecificDeforestationData(
     listId: string,
-    country: string,
     clientDatabase: string,
     locationId: string
   ) {
     this.logger.debug(
-      `Get country specific deforestation for: ${country},  listId ${listId} and locationId ${locationId}`
+      `Get country specific deforestation for: listId ${listId} and locationId ${locationId}`
     );
+    const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
+
     if (locationId) {
-      const parameters = [
-        { field: 'listId', type: sql.Int, value: listId },
-        { field: 'country', type: sql.VarChar, value: country },
-        { field: 'locationId', type: sql.VarChar, value: locationId },
-      ];
+      parameters.push({ field: 'locationId', type: sql.VarChar, value: locationId });
+
       return await SQLUtils.queryDB<GetCountrySpecificDeforestationType[]>(
         clientDatabase,
         getCountrySpecificDeforestation,
         parameters
       );
     } else {
-      const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
       return await SQLUtils.queryDB<GetCountrySpecificDeforestationWithoutLocationIdType[]>(
         clientDatabase,
         getCountrySpecificDeforestationWithoutLocationId,

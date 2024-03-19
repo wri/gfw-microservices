@@ -14,7 +14,11 @@ const addData = async (
   response,
   { listId, category, country, organizationDatabase, countryGadm, locationId }
 ) => {
-  let url = `${BASE_URL}/${listId}/${categoryUrls[category.toLowerCase()]}/${country}`;
+  let url = `${BASE_URL}/${listId}/${categoryUrls[category.toLowerCase()]}`;
+
+  if (category !== 'country') {
+    url += `/${country}`;
+  }
 
   const params = {
     clientDatabase: organizationDatabase,

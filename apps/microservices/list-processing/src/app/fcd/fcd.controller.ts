@@ -34,17 +34,15 @@ export class FCDController {
     return this.fcdService.landmarkOverlapCountry(listId, country, clientDatabase);
   }
 
-  @Get('/:listId/country_specific_deforestation/:country')
+  @Get('/:listId/country_specific_deforestation')
   @UsePipes(new ZodValidationPipe(DatabaseQuerySchema))
   async getCountrySpecificDeforestation(
     @Param('listId') listId: string,
-    @Param('country') country: string,
     @Query() queryParam: DatabaseQueryParamCountryDeforestation
   ) {
     const { clientDatabase, countryGadm, locationId } = queryParam;
     return this.fcdService.countrySpecificDeforestation(
       listId,
-      country,
       clientDatabase,
       countryGadm,
       locationId

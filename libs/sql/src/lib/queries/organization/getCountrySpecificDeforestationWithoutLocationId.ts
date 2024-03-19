@@ -1,7 +1,6 @@
 /**
  * Return the protected areas by category area for a given country and list
  * @listId INT,
- * @country VARCHAR,
  * Returns type GetProtectedAreasByCategoryAreaType
  */
 

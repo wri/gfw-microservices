@@ -37,15 +37,21 @@ function RegionChart({ listId, data, fireDownload }) {
   const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || {});
 
   useEffect(() => {
-    fetch(`/api/fcd?listId=${listId}&country=Argentina&category=WDPA,landmark`, {
+    fetch(`/api/fcd?listId=${listId}&country=Argentina&countryGadm=ARG&category=WDPA,landmark`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
     })
-      .then((res) => res.json())
       .then((response) => {
-        if (!response.WDPA?.error || !response.landmark?.error) {
-          setArgentinaPieChartsData(response);
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Request error');
+        }
+      })
+      .then((data) => {
+        if (!data.WDPA?.error || !data.landmark?.error) {
+          setArgentinaPieChartsData(data);
         }
       })
       .catch((e) => {

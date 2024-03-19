@@ -1,22 +1,33 @@
 const axios = require('axios');
-const { forEach } = require('lodash');
-const CATEGORIES = ['wdpa', 'landmark'];
+const CATEGORIES = ['wdpa', 'landmark', 'country'];
 
 const { LISTS_MICROSERVICE_URL } = process.env;
 const BASE_URL = `${LISTS_MICROSERVICE_URL ?? 'http://localhost:3333/api'}/fcd`;
 
-const addData = async (response, { listId, category, country, organizationDatabase }) => {
-  let url = `${BASE_URL}/${listId}`;
+const categoryUrls = {
+  wdpa: 'wdpa_overlap_country',
+  landmark: 'landmark_overlap_country',
+  country: 'country_specific_deforestation',
+};
 
-  if (category.toLowerCase().includes('wdpa')) {
-    url = `${url}/wdpa_overlap_country`;
-  } else if (category.toLowerCase().includes('landmark')) {
-    url = `${url}/landmark_overlap_country`;
+const addData = async (
+  response,
+  { listId, category, country, organizationDatabase, countryGadm, locationId }
+) => {
+  let url = `${BASE_URL}/${listId}/${categoryUrls[category.toLowerCase()]}`;
+
+  if (category !== 'country') {
+    url += `/${country}`;
   }
 
-  url = `${url}/${country}?clientDatabase=${organizationDatabase}`;
+  const params = {
+    clientDatabase: organizationDatabase,
+    countryGadm,
+    locationId,
+  };
+
   try {
-    const result = await axios.get(url);
+    const result = await axios.get(url, { params });
 
     const { data } = result;
 
@@ -31,7 +42,14 @@ const addData = async (response, { listId, category, country, organizationDataba
   }
 };
 
-const getData = async ({ listId, category, country, organizationDatabase }) => {
+const getData = async ({
+  listId,
+  category,
+  country,
+  organizationDatabase,
+  countryGadm,
+  locationId,
+}) => {
   const message = [];
 
   if (!listId) {
@@ -64,11 +82,23 @@ const getData = async ({ listId, category, country, organizationDatabase }) => {
     const categorySplitted = category.split(',');
 
     for (let i = 0; i < categorySplitted.length; i++) {
+      const category = categorySplitted[i];
+      if (category === 'country' && !countryGadm) {
+        return [
+          400,
+          {
+            message: 'Missing country Gadm',
+            error: true,
+          },
+        ];
+      }
       await addData(result, {
         listId,
-        category: categorySplitted[i],
+        category,
         country,
         organizationDatabase,
+        countryGadm,
+        locationId,
       });
     }
 
@@ -85,9 +115,16 @@ const getData = async ({ listId, category, country, organizationDatabase }) => {
 };
 
 const run = async (request, response) => {
-  const { listId, category, country } = request.query;
+  const { listId, category, country, countryGadm, locationId } = request.query;
   const { organization_database: organizationDatabase } = request.session;
-  const [statusCode, result] = await getData({ listId, category, country, organizationDatabase });
+  const [statusCode, result] = await getData({
+    listId,
+    category,
+    country,
+    organizationDatabase,
+    countryGadm,
+    locationId,
+  });
   response.status(statusCode).send(result);
 };
 

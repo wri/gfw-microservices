@@ -76,11 +76,13 @@ describe('FCD Controller', () => {
       listId: 5692,
       category: 'wdpa',
       country: 'Argentina',
+      countryGadm: 'ARG',
       organizationDatabase: 'Test-CO',
     });
 
     expect(axios.get).toHaveBeenCalledWith(
-      'http://localhost:3333/api/fcd/5692/wdpa_overlap_country/Argentina?clientDatabase=Test-CO'
+      'http://localhost:3333/api/fcd/5692/wdpa_overlap_country/Argentina',
+      { params: { clientDatabase: 'Test-CO', countryGadm: 'ARG', locationId: undefined } }
     );
     expect(status).toBe(200);
     expect(response.error).toBe(false);
@@ -111,11 +113,13 @@ describe('FCD Controller', () => {
       listId: 5692,
       category: 'landmark',
       country: 'Argentina',
+      countryGadm: 'ARG',
       organizationDatabase: 'Test-CO',
     });
 
     expect(axios.get).toHaveBeenCalledWith(
-      'http://localhost:3333/api/fcd/5692/landmark_overlap_country/Argentina?clientDatabase=Test-CO'
+      'http://localhost:3333/api/fcd/5692/landmark_overlap_country/Argentina',
+      { params: { clientDatabase: 'Test-CO', countryGadm: 'ARG', locationId: undefined } }
     );
     expect(status).toBe(200);
     expect(response.error).toBe(false);

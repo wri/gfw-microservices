@@ -3994,7 +3994,8 @@ export const accountProfileStrings = {
     locationsPerYear: 'Locations Per Year',
     areaPerYear: 'Area Per Year',
     subHeadingSubscriptionLimits: ' Subscription',
-    subHeadingCustomLimits: 'Custom Limits',
+    subHeadingCustomLimits: 'Extended Limits',
+    subHeadingToAddExtraLimits: 'Add Limits',
   },
   dateRangeSelector: {
     selectStartDate: 'Select start date:',

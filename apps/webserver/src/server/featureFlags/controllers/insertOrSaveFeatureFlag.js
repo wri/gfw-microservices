@@ -1,6 +1,6 @@
 const logger = require('../../../config/privateutils/logger.utils');
 
-import { featureFlagsService } from '@wri-monorepos/sql';
+import { featureFlagsService } from '@wri-monorepos/shared';
 
 module.exports = async function (request, response) {
   const { body: featureFlagData, session } = request;

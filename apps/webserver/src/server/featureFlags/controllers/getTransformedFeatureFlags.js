@@ -1,4 +1,4 @@
-import { featureFlagsService } from '@wri-monorepos/sql';
+import { featureFlagsService } from '@wri-monorepos/shared';
 const transformFlagsToAvailabilityObject = require('../utils/transformFlagsToAvailabilityObject');
 const logger = require('../../../config/privateutils/logger.utils');
 

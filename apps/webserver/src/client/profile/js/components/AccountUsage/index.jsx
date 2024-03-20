@@ -95,7 +95,8 @@ export default function AccountUsageContainer() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setUsageLimitsData(data);
+        const { limits } = data;
+        setUsageLimitsData(limits);
       })
       .catch((error) => {
         console.log(error);

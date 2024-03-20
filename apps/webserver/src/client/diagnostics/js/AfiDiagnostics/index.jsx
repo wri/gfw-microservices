@@ -29,7 +29,7 @@ function AfiDiagnostics({ popover }) {
 
   const [selectedList, setSelectedList] = useState({});
   const [displayPopover, setDisplayPopover] = useState(false);
-  console.log(popover)
+  console.log(popover);
   const getAfiAnalysisForListId = () => {
     return fetch(`/api/afi/analysis/${listId}`, {
       method: 'GET',

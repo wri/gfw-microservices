@@ -4,7 +4,12 @@ const AccountManager = require(path.resolve('./config/publicutils/accountManager
 const ProManager = require(path.resolve('./config/publicutils/proManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
-const AnalysisLimitsService = require(path.resolve('./server/analytics/service/analytics.service'));
+const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
+import {
+  getAccountSubscriptionLimits,
+  getAccountExtraLimits,
+  combineOrganizationLimits,
+} from '@wri-monorepos/shared';
 /**
  * @function proManagerList
  * @summary
@@ -77,26 +82,39 @@ exports.proManagerListAccountDetailData = async (req, res) => {
     ProManager.getAllUsersList(req),
     PolicyManager.getPendingPolicyList(req),
     PolicyManager.getAllPolicyList(req),
-    AnalysisLimitsService.getAnalysisLimitData({}),
   ];
 
   try {
-    const [accounts, users, pendingPolicy, allPolicy, accountsLimits] = await Promise.all(promises);
+    const [accounts, users, pendingPolicy, allPolicy] = await Promise.all(promises);
 
     const policyList = pendingPolicy.concat(allPolicy);
     let selectedAccount = getAccounFromQuery(organizationName, organizationId, accounts);
 
     /**
-     * @note
-     * If the account is not PENDING(=1), attach an analysis_limits property based on the OrgID or OrgType (subscription_status)
-     * Otherwise the object should be null.
-     * @see GPV-1950
+     * @update
+     *
+     * With the new subscription model, every account that is not pending,
+     * should have an object representing their limit from their subscription and their purchase
+     *
+     * @see GPV-2228
      */
-    selectedAccount.analysis_limits =
-      selectedAccount.organization_status_id !== 1
-        ? accountsLimits.find((limit) => limit.OrgID === selectedAccount.organization_id) ||
-          accountsLimits.find((limit) => limit.OrgType === selectedAccount.subscription_status_id)
-        : null;
+    if (selectedAccount) {
+      if (selectedAccount.organization_status_id !== orgAccountStatus.Pending) {
+        const subscriptionLimits = await getAccountSubscriptionLimits(
+          selectedAccount.subscription_status_id
+        );
+        const extraLimits = await getAccountExtraLimits(selectedAccount.organization_id);
+        const limits = combineOrganizationLimits(subscriptionLimits, extraLimits);
+
+        selectedAccount.analysis_limits = {
+          limits,
+          subscriptionLimits,
+          extraLimits,
+        };
+      } else {
+        selectedAccount.analysis_limits = null;
+      }
+    }
 
     res.status(200).json({
       users,

@@ -656,7 +656,7 @@ export const locationsPage = {
     landcoverCalc: 'deforestation_kpis_landcover_calc',
     naturalForestCoverage: 'deforestation_kpis_natural_forest_coverage',
     naturalForestLoss: 'deforestation_kpis_natural_forest_loss',
-    negligibleRisk: 'deforestation_kpis_negligible_risk'
+    negligibleRisk: 'deforestation_kpis_negligible_risk',
   },
   defaultFilterValues: {
     selectedCountry: '',

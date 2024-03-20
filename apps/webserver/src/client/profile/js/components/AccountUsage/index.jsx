@@ -13,7 +13,7 @@ import InlineLoader from '../../../../common/js/components/Loaders/InlineLoader'
 import AccountUsage from './AccountUsage';
 import moment from 'moment';
 import { useProfileContext } from '../../ProfileStateContext';
-import MenuOption from './MenuOption';
+import AccountUsageDropMenu from './AccountUsageDropMenu';
 
 export default function AccountUsageContainer() {
   const { accountActivatedTime } = useProfileContext();
@@ -41,7 +41,7 @@ export default function AccountUsageContainer() {
     margin: '0px 0 30px 0',
     color: 'rgba(0, 0, 0, 0.5)',
     fontSize: '10px',
-    textAling: 'right',
+    textAlign: 'right',
   };
 
   useEffect(() => {
@@ -145,7 +145,7 @@ export default function AccountUsageContainer() {
       <Alert severity={messageType}>{messageText}</Alert>
       <p style={renewalTextStyle}>Account renewal on {subscriptionYearEnd}</p>
 
-      <MenuOption export={exportUsage} />
+      <AccountUsageDropMenu export={exportUsage} />
       <h3 style={{ margin: '0px 0 30px 0', fontWeight: 'normal' }}>Summary</h3>
 
       <AccountUsage

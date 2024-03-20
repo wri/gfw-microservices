@@ -4,7 +4,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-export default function MenuOption(props) {
+export default function AccountUsageDropMenu(props) {
   const [open, setOpen] = useState(false);
 
   const handleClick = () => {

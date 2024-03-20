@@ -8,12 +8,21 @@ import { useDialog } from '../../../../common/js/components/Dialog';
 import { accountProfileStrings } from '../../../../common/js/config';
 import { useAccountDetail } from './AccountDetailSection';
 import { ACCOUNT_ORG_STATUSES } from '../../../../common/js/constants/orgAccountStatuses';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+
+const fontStyles = {
+  fontFamily: 'Fira Sans, sans-serif',
+  textTransform: 'uppercase',
+  color: '#555555',
+  fontWeight: 500,
+};
 
 const FieldLabel = styled(InputLabel)({
   fontFamily: 'Fira Sans, sans-serif',
   textTransform: 'uppercase',
   color: '#555555',
-  fontWeight: 500,
+  fontWeight: 400,
   lineHeight: '1.2',
   fontSize: '14px',
   marginBottom: '5px',
@@ -26,14 +35,14 @@ const FieldLabel = styled(InputLabel)({
 export default function AccountProfileLimitsSetting() {
   const dialog = useDialog();
   const { currentAccount, refreshAccountData } = useAccountDetail();
-
-  const { analysis_limits: accountLimitsData = {}, organization_id: organizationId } =
-    currentAccount;
+  const { analysis_limits = {}, organization_id: organizationId } = currentAccount;
+  const { subscriptionLimits, extraLimits } = analysis_limits;
   const isEditingDisabled =
     currentAccount.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
+
   const [accountLimitsFormData, setAccountLimitsFormData] = useState({
-    max_locations_per_year: accountLimitsData?.max_locations_per_year,
-    MaxAreaAnalyzeablePerYear: accountLimitsData?.MaxAreaAnalyzeablePerYear,
+    max_locations_per_year: 0,
+    MaxAreaAnalyzeablePerYear: 0,
     organizationId,
   });
   const onChangeUpdateField = (field, values) => {
@@ -41,9 +50,6 @@ export default function AccountProfileLimitsSetting() {
       ...prevData,
       [field]: values,
     }));
-  };
-  const getButtonLabel = () => {
-    return accountLimitsData?.OrgID ? 'Set Custom Limits' : 'Update Limits';
   };
   const validateLimitsFormData = (data) => {
     let errors = [];
@@ -60,6 +66,7 @@ export default function AccountProfileLimitsSetting() {
       errors,
     };
   };
+
   const updateAccountProfileLimits = (payload) => {
     const { isFormDataValid, errors } = validateLimitsFormData(payload);
     dialog.openDialog('Updating Account', 'Please wait...', true);
@@ -96,7 +103,89 @@ export default function AccountProfileLimitsSetting() {
 
   return (
     <Fragment>
+      {/* Subscription Limits */}
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
+        <Grid item sm={12} xs={12}>
+          <Typography sx={fontStyles} variant="body1">
+            {`${subscriptionLimits.subscription_name} ${accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits}`}
+          </Typography>
+        </Grid>
+        <Grid item sm={6} xs={12}>
+          <Grid container direction="column">
+            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.locationsPerYear}>
+              {accountProfileStrings.accountLimitsSetting.locationsPerYear}
+            </FieldLabel>
+            <TextField
+              value={subscriptionLimits?.max_locations_per_year || 0}
+              disabled={true}
+              size="small"
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+        <Grid item sm={6} xs={12}>
+          <Grid container direction="column">
+            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.areaPerYear}>
+              {accountProfileStrings.accountLimitsSetting.areaPerYear}
+            </FieldLabel>
+            <TextField
+              value={subscriptionLimits?.MaxAreaAnalyzeablePerYear || 0}
+              disabled={true}
+              size="small"
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+
+      {/* Purchased/Extended Limits */}
+      <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
+        <Grid item sm={12} xs={12}>
+          <Typography sx={fontStyles} variant="body1">
+            {accountProfileStrings.accountLimitsSetting.subHeadingCustomLimits}
+          </Typography>
+        </Grid>
+        <Grid item sm={6} xs={12}>
+          <Grid container direction="column">
+            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.locationsPerYear}>
+              {accountProfileStrings.accountLimitsSetting.locationsPerYear}
+            </FieldLabel>
+            <TextField
+              value={extraLimits?.max_locations_per_year || 0}
+              disabled={true}
+              size="small"
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+        <Grid item sm={6} xs={12}>
+          <Grid container direction="column">
+            <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.areaPerYear}>
+              {accountProfileStrings.accountLimitsSetting.areaPerYear}
+            </FieldLabel>
+            <TextField
+              value={extraLimits?.MaxAreaAnalyzeablePerYear || 0}
+              disabled={true}
+              size="small"
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+      </Grid>
+
+      <Grid sx={{ marginBottom: '16px' }} container spacing={2} rowSpacing={2}>
+        <Grid item sm={12} xs={12}>
+          <Divider />
+        </Grid>
+      </Grid>
+
+      {/* Add Extra Limits Form */}
+      <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
+        <Grid item sm={12} xs={12}>
+          <Typography sx={fontStyles} variant="body1">
+            {accountProfileStrings.accountLimitsSetting.subHeadingToAddExtraLimits}
+          </Typography>
+        </Grid>
         <Grid item sm={6} xs={12}>
           <Grid container direction="column">
             <FieldLabel aria-label={accountProfileStrings.accountLimitsSetting.locationsPerYear}>
@@ -136,7 +225,7 @@ export default function AccountProfileLimitsSetting() {
             classNames={`btn-green ${!isEditingDisabled ? 'button-disabled' : ''}`}
             disabled={!isEditingDisabled}
             onClick={() => updateAccountProfileLimits(accountLimitsFormData)}
-            value={getButtonLabel()}
+            value={`Add Limits`}
           />
         </Grid>
       </Grid>

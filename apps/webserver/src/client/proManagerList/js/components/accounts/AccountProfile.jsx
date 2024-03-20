@@ -19,15 +19,6 @@ export default function AccountProfile() {
   const back = () => {
     window.location.href = '/pro-manager-list?tab=accounts';
   };
-  const getAccountLimitsTypeLabel = (isOrgPresent, orgSubscriptionStatus) => {
-    if (isOrgPresent) {
-      return accountProfileStrings.accountLimitsSetting.subHeadingCustomLimits;
-    }
-    return (
-      subscriptionStatusOptions.find((subscription) => subscription.value === orgSubscriptionStatus)
-        .label + accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits
-    );
-  };
 
   const isAccountStatusActive =
     currentAccount.organization_status_id === ACCOUNT_ORG_STATUSES['ACTIVE'];
@@ -43,17 +34,7 @@ export default function AccountProfile() {
       <SettingSection heading={accountProfileStrings.sectionTitles.statusSetting}>
         <AccountStatusSetting />
       </SettingSection>
-      <SettingSection
-        heading={accountProfileStrings.sectionTitles.limitsSetting}
-        {...(currentAccount.analysis_limits !== null
-          ? {
-              subHeading: getAccountLimitsTypeLabel(
-                currentAccount.analysis_limits.OrgID,
-                currentAccount.analysis_limits.OrgType
-              ),
-            }
-          : {})}
-      >
+      <SettingSection heading={accountProfileStrings.sectionTitles.limitsSetting}>
         <AccountProfileLimitsSetting />
       </SettingSection>
       {isAccountStatusActive && (

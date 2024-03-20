@@ -107,7 +107,9 @@ export default function AccountProfileLimitsSetting() {
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={12} xs={12}>
           <Typography sx={fontStyles} variant="body1">
-            {`${subscriptionLimits?.subscription_name ?? ''} ${accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits}`}
+            {`${subscriptionLimits?.subscription_name ?? ''} ${
+              accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits
+            }`}
           </Typography>
         </Grid>
         <Grid item sm={6} xs={12}>

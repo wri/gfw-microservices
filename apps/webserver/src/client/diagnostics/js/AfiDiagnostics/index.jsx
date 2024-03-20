@@ -26,10 +26,8 @@ function AfiDiagnostics({ popover }) {
 
   const listId = parseInt(new URLSearchParams(location.search).get('listId'), 10);
   const isSharedList = Boolean(new URLSearchParams(location.search).get('shared'));
-
   const [selectedList, setSelectedList] = useState({});
-  const [displayPopover, setDisplayPopover] = useState(false);
-  console.log(popover);
+
   const getAfiAnalysisForListId = () => {
     return fetch(`/api/afi/analysis/${listId}`, {
       method: 'GET',

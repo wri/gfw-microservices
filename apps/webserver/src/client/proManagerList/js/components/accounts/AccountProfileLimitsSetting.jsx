@@ -36,7 +36,7 @@ export default function AccountProfileLimitsSetting() {
   const dialog = useDialog();
   const { currentAccount, refreshAccountData } = useAccountDetail();
   const { analysis_limits = {}, organization_id: organizationId } = currentAccount;
-  const { subscriptionLimits, extraLimits } = analysis_limits;
+  const { subscriptionLimits, extraLimits } = analysis_limits || {};
   const isEditingDisabled =
     currentAccount.organization_status_id !== ACCOUNT_ORG_STATUSES['PENDING'];
 
@@ -107,7 +107,9 @@ export default function AccountProfileLimitsSetting() {
       <Grid sx={{ marginBottom: '1.5rem' }} container spacing={2} rowSpacing={2}>
         <Grid item sm={12} xs={12}>
           <Typography sx={fontStyles} variant="body1">
-            {`${subscriptionLimits.subscription_name} ${accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits}`}
+            {`${subscriptionLimits?.subscription_name ?? ''} ${
+              accountProfileStrings.accountLimitsSetting.subHeadingSubscriptionLimits
+            }`}
           </Typography>
         </Grid>
         <Grid item sm={6} xs={12}>

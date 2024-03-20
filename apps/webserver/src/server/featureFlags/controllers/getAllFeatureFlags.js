@@ -1,9 +1,9 @@
-const { dataSource, createFeatureFlagsService } = require('../service/createFeatureFlagsService');
 const logger = require('../../../config/privateutils/logger.utils');
+import { featureFlagsService } from '@wri-monorepos/shared';
 
 // Get all flags for SuperAdmin (no org)
 module.exports = async function (request, response) {
-  const { getAllFeatureFlags } = createFeatureFlagsService(dataSource);
+  const { getAllFeatureFlags } = featureFlagsService();
 
   try {
     const featureFlags = await getAllFeatureFlags();

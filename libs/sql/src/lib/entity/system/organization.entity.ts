@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { FeatureFlag } from './feature.flag.entity';
 
 @Entity({ name: 'Organizations' })
 export class Organization {
@@ -19,4 +20,7 @@ export class Organization {
 
   @Column({ name: 'subscription_status_id' })
   subscriptionStatusId: number;
+
+  @OneToMany(() => FeatureFlag, (featureFlag) => featureFlag.orgId)
+  featureFlags: FeatureFlag[];
 }

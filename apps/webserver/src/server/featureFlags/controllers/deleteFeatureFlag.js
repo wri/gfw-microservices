@@ -1,4 +1,3 @@
-const { dataSource, createFeatureFlagsService } = require('../service/createFeatureFlagsService');
 const logger = require('../../../config/privateutils/logger.utils');
 
 module.exports = async function (request, response) {

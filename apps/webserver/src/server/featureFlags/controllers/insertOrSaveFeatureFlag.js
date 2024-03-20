@@ -1,10 +1,11 @@
-const { dataSource, createFeatureFlagsService } = require('../service/createFeatureFlagsService');
 const logger = require('../../../config/privateutils/logger.utils');
+
+import { featureFlagsService } from '@wri-monorepos/sql';
 
 module.exports = async function (request, response) {
   const { body: featureFlagData, session } = request;
   const { user_id: modifierUserId } = session;
-  const { insertOrSaveFeatureFlag } = createFeatureFlagsService(dataSource);
+  const { insertOrSaveFeatureFlag } = featureFlagsService();
 
   try {
     const updateDateTime = new Date();

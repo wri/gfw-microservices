@@ -135,9 +135,17 @@ export class FCDService {
   ) {
     const data = await this.getCountrySpecificDeforestationData(listId, clientDatabase, locationId);
 
+    if (!data) {
+      return null;
+    }
+
     return {
-      country_specific_deforestation: JSON.parse(data.countrySpecificDeforestation)[countryGadm],
-      tree_cover_loss: JSON.parse(data.treeCoverLoss)[countryGadm],
+      country_specific_deforestation: this.getDataFromJsonString(
+        data,
+        'countrySpecificDeforestation',
+        countryGadm
+      ),
+      tree_cover_loss: this.getDataFromJsonString(data, 'treeCoverLoss', countryGadm),
     };
   }
 
@@ -165,6 +173,18 @@ export class FCDService {
         getCountrySpecificDeforestationWithoutLocationId,
         parameters
       );
+    }
+  }
+
+  private getDataFromJsonString(
+    data: GetCountrySpecificDeforestationType,
+    objName: string,
+    countryGadm: string
+  ) {
+    try {
+      return JSON.parse(data[objName][countryGadm]);
+    } catch (ex) {
+      return null;
     }
   }
 }

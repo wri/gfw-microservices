@@ -1,6 +1,7 @@
 import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import AfiDiagnosticsTable from '../../js/AfiDiagnostics/AfiDiagnosticsTable';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 const mockData = [
   {
@@ -22,7 +23,11 @@ const mockData = [
 afterEach(cleanup);
 
 test('renders table with correct headers', () => {
-  render(<AfiDiagnosticsTable data={mockData} />);
+  render(
+    <MuiThemeProvider>
+      <AfiDiagnosticsTable data={mockData} />
+    </MuiThemeProvider>
+  );
 
   const countryHeader = screen.getByText('Country');
   const subStateHeader = screen.getByText('Sub-state');
@@ -38,7 +43,11 @@ test('renders table with correct headers', () => {
 });
 
 test('renders table rows with data', () => {
-  render(<AfiDiagnosticsTable data={mockData} />);
+  render(
+    <MuiThemeProvider>
+      <AfiDiagnosticsTable data={mockData} />
+    </MuiThemeProvider>
+  );
 
   const countryCell1 = screen.getByText('Country1');
   const subStateCell1 = screen.getByText('SubState1');

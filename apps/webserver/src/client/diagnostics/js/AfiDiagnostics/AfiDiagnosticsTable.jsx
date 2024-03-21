@@ -7,6 +7,8 @@ import TableRow from '@mui/material/TableRow';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import BetaTag from '../../../common/js/components/BetaTag';
+import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import { locationsPage } from '../../../common/js/config';
 
 function AfiDiagnosticsTable({ data }) {
   return (
@@ -20,12 +22,17 @@ function AfiDiagnosticsTable({ data }) {
               <TableCell align="right">
                 <span>Natural Forest Coverage (HA)</span>
                 <BetaTag>(Beta)</BetaTag>
+                <IconButtonWrapper id={locationsPage.infoBubbleConfig.naturalForestCoverage} />
               </TableCell>
               <TableCell align="right">
                 <span>Natural Forest Loss (HA)</span>
                 <BetaTag>(Beta)</BetaTag>
+                <IconButtonWrapper id={locationsPage.infoBubbleConfig.naturalForestLoss} />
               </TableCell>
-              <TableCell align="right">Negligible Risk</TableCell>
+              <TableCell align="right">
+                Negligible Risk
+                <IconButtonWrapper id={locationsPage.infoBubbleConfig.negligibleRisk} />
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

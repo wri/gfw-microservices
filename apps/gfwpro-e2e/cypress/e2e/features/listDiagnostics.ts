@@ -37,9 +37,11 @@ describe('List diagnostics', () => {
   });
 
   Then('I should be redirected to diagnostic view', () => {
-    cy.url().should('include', '/diagnostics');
+    cy.url().should('include', '/diagnostics?listId=2');
     cy.get('.diagnostics-menu-bar').scrollIntoView();
     expect(diagnosticsPage.elements.reportBtn().should('be.visible'));
     expect(diagnosticsPage.elements.downloadBtn().should('be.visible'));
+    expect(diagnosticsPage.elements.diagnosticsMap().should('be.visible'));
+    expect(diagnosticsPage.elements.headerLocationCount().should('have.text', '787 locations'));
   });
 });

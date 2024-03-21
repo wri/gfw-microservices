@@ -245,11 +245,14 @@ function mergeData(
     // 2. calculate number of alerts within a given admin unit
     const numberOfAlerts = getNumberOfAlerts(adminUnitData, selectedTimeframe, timeframeProperty);
 
-    const percentageOfLocations = zoomLevelTotal ? (numberOfLocations / zoomLevelTotal) * 100 : 1;
-    const treeCoverArea = adminUnitData.reduce(
+    const percentageOfLocations = zoomLevelTotal ? (numberOfLocations / zoomLevelTotal) * 100 : 100;
+    let treeCoverArea = adminUnitData.reduce(
       (totalTree, f) => totalTree + Number(f.properties.umd),
       0
     );
+
+    treeCoverArea = treeCoverArea === 0 ? numberOfAlerts : treeCoverArea;
+    const treeDensity = numberOfAlerts / treeCoverArea;
 
     return {
       ...feature,
@@ -260,7 +263,7 @@ function mergeData(
         percentageOfLocations,
         numberOfAlerts,
         treeCoverArea,
-        treeDensity: treeCoverArea ? numberOfAlerts / treeCoverArea : 1,
+        treeDensity,
       },
     };
   });
@@ -272,21 +275,25 @@ function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
   const timeframeAttributeField = getTimeframeProperty(selectedAlert, selectedTimeframe);
 
   const summarizedFeaturesArray = featuresArray.map((feature) => {
-    const treeCoverArea = Number(feature.attributes.umd);
     const selectedTimeframeValues = feature.attributes[timeframeAttributeField];
     const numberOfAlerts = selectedTimeframeValues.reduce((total, curent) => {
       return TIMEFRAME_RANGE[selectedTimeframe].includes(curent.day) ? total + curent.count : total;
     }, 0);
 
+    let treeCoverArea = Number(feature.attributes.umd);
+    treeCoverArea = treeCoverArea === 0 ? numberOfAlerts : treeCoverArea;
+
     const numberOfLocations = 1;
     const selectedCoverageProperty = dictionary.alertType_featureCoverageProperty[selectedAlert];
     const totalLocations = featuresArray.length;
     const hasDataForAlert = feature.attributes[selectedCoverageProperty];
-    feature.attributes.percentageOfLocations = totalLocations ? (numberOfLocations / totalLocations) * 100 : 1;
+    const percentageOfLocations = totalLocations ? (numberOfLocations / totalLocations) * 100 : 100;
+    const treeDensity = numberOfAlerts / treeCoverArea;
+    feature.attributes.percentageOfLocations = percentageOfLocations
     feature.attributes.numberOfAlerts = numberOfAlerts;
     feature.attributes.numberOfLocations = numberOfLocations;
     feature.attributes.treeCoverArea = treeCoverArea;
-    feature.attributes.treeDensity = treeCoverArea ? numberOfAlerts / treeCoverArea : 1;
+    feature.attributes.treeDensity = treeDensity;
     feature.attributes.hasAlerts = hasDataForAlert;
     return feature;
   });
@@ -373,11 +380,17 @@ function createGraphics(features, locationFilters, zoomLevel) {
   const densityArray = features
     .map((feature) => feature.attributes.treeDensity)
     .filter((density) => !isNaN(density));
-  const maxDensity = Math.max(...densityArray);
+  let maxDensity = Math.max(...densityArray);
+  maxDensity = (maxDensity && maxDensity !== -Infinity) ? maxDensity : 1;
 
   return features.map((feature) => {
     return new Graphic({
-      attributes: {...feature.attributes, SubState: feature.attributes['Sub State']},
+      attributes: {
+        ...feature.attributes,
+        SubState: feature.attributes['Sub State'],
+        treeDensity: feature.attributes.hasAlerts ? feature.attributes.treeDensity : -1,
+        maxTreeDensity: maxDensity,
+      },
       geometry: feature.geometry,
     });
   });
@@ -387,7 +400,43 @@ function createGraphics(features, locationFilters, zoomLevel) {
  * Create and return graphics layer based on graphics passed in function
  * @param graphics
  */
-function createLayer(graphics) {
+function createLayer(graphics, maxDensity) {
+  const zeroToTwentyFive = {
+    type: 'simple-marker',
+    size: '20px',
+    outline: {
+      width: 0,
+      color: [0, 0, 0, 0],
+    },
+  };
+
+  const TwentyFiveToFifty = {
+    type: 'simple-marker',
+    size: '40px',
+    outline: {
+      width: 0,
+      color: [0, 0, 0, 0],
+    },
+  };
+
+  const FiftyToSeventyFive = {
+    type: 'simple-marker',
+    size: '60px',
+    outline: {
+      width: 0,
+      color: [0, 0, 0, 0],
+    },
+  };
+
+  const SeventyFiveToOneHundred = {
+    type: 'simple-marker',
+    size: '80px',
+    outline: {
+      width: 0,
+      color: [0, 0, 0, 0],
+    },
+  }
+
   return new FeatureLayer({
     id: 'DASHBOARDLAYER',
     fields: [
@@ -410,6 +459,11 @@ function createLayer(graphics) {
         name: 'treeDensity',
         alias: 'treeDensity',
         type: 'double',
+      },
+      {
+        name: 'maxTreeDensity',
+        alias: 'maxTreeDensity',
+        type: 'double'
       },
       {
         name: 'numberOfLocations',
@@ -463,37 +517,51 @@ function createLayer(graphics) {
     spatialReference: { wkid: 4326 },
     source: graphics,
     renderer: {
-      type: 'simple',
-      symbol: {
-        type: 'simple-marker',
+      type: 'class-breaks',
+      field: 'percentageOfLocations',
+      defaultSymbol: {
+        type: "simple-marker", // autocasts as new SimpleFillSymbol()
+        color: "#999999",
         outline: {
           width: 0,
           color: [0, 0, 0, 0],
-        },
+        }
       },
-      visualVariables: [
+      classBreakInfos: [
         {
-          type: 'size',
-          field: 'percentageOfLocations',
-          stops: [
-            { value: 25, size: '20px' },
-            { value: 50, size: '40px' },
-            { value: 75, size: '60px' },
-            { value: 100, size: '80px' }
-          ]
+          minValue: 0,
+          maxValue: 25,
+          symbol: zeroToTwentyFive,
         },
+        {
+          minValue: 25.09,
+          maxValue: 50,
+          symbol: TwentyFiveToFifty,
+        },
+        {
+          minValue: 50.09,
+          maxValue: 75,
+          symbol: FiftyToSeventyFive,
+        },
+        {
+          minValue: 75.09,
+          maxValue: 100,
+          symbol: SeventyFiveToOneHundred,
+        },
+      ],
+      visualVariables: [
         {
           type: "color", // indicates this is a color visual variable
           field: "treeDensity",
-          valueExpression: '$feature.hasAlerts ? $feature.treeDensity : 0.0',
+          normalizationField: 'maxTreeDensity',
           stops: [
             {
-              value: 0.0,
+              value: -1.0,
               opacity: '0.75',
               color: "#999999",
             },
             {
-              value: 0.01, // features where < 1% of tree density
+              value: 0.0, // features where < 1% of tree density
               opacity: '0.75',
               color: "#008000", // will be assigned this color (green)
             },

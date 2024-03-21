@@ -184,6 +184,7 @@ export class FCDService {
     try {
       return JSON.parse(data[objName][countryGadm]);
     } catch (ex) {
+      this.logger.error('error converting json object');
       return null;
     }
   }

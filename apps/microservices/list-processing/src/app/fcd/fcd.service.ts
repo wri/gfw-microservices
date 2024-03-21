@@ -135,8 +135,17 @@ export class FCDService {
   ) {
     const data = await this.getCountrySpecificDeforestationData(listId, clientDatabase, locationId);
 
+    if (!data) {
+      return null;
+    }
+
     return {
-      country_specific_deforestation: JSON.parse(data[0].countrySpecificDeforestation)[countryGadm],
+      country_specific_deforestation: this.getDataFromJsonString(
+        data,
+        'countrySpecificDeforestation',
+        countryGadm
+      ),
+      tree_cover_loss: this.getDataFromJsonString(data, 'treeCoverLoss', countryGadm),
     };
   }
 
@@ -153,17 +162,30 @@ export class FCDService {
     if (locationId) {
       parameters.push({ field: 'locationId', type: sql.VarChar, value: locationId });
 
-      return await SQLUtils.queryDB<GetCountrySpecificDeforestationType[]>(
+      return await SQLUtils.queryDBFirstRow<GetCountrySpecificDeforestationType>(
         clientDatabase,
         getCountrySpecificDeforestation,
         parameters
       );
     } else {
-      return await SQLUtils.queryDB<GetCountrySpecificDeforestationWithoutLocationIdType[]>(
+      return await SQLUtils.queryDBFirstRow<GetCountrySpecificDeforestationWithoutLocationIdType>(
         clientDatabase,
         getCountrySpecificDeforestationWithoutLocationId,
         parameters
       );
+    }
+  }
+
+  private getDataFromJsonString(
+    data: GetCountrySpecificDeforestationType,
+    objName: string,
+    countryGadm: string
+  ) {
+    try {
+      return JSON.parse(data[objName][countryGadm]);
+    } catch (ex) {
+      this.logger.error('error converting json object');
+      return null;
     }
   }
 }

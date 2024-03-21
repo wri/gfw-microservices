@@ -6,7 +6,8 @@
 
 export const getCountrySpecificDeforestationWithoutLocationId = `
 SELECT 
-  ISNULL(country_specific_deforestation_yearly, '{}') as countrySpecificDeforestation
+  ISNULL(country_specific_deforestation_yearly, '{}') as countrySpecificDeforestation,
+  ISNULL(tree_cover_loss_by_country_yearly, '{}') as treeCoverLoss
 FROM 
   dbo.Analyses 
 WHERE 
@@ -15,4 +16,5 @@ WHERE
 
 export type GetCountrySpecificDeforestationWithoutLocationIdType = {
   countrySpecificDeforestation: string;
+  treeCoverLoss: string;
 };

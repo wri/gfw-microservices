@@ -2,6 +2,7 @@ import {
   SERVER_DOMAIN_ORIGIN,
   USER_LIST_LOCATIONS_VECTOR_TILE_LAYER__LOCATIONS,
   USER_LIST_LOCATIONS_VECTOR_TILE_LAYER__LOCATIONS_HIGHLIGHT,
+  USER_LIST_LOCATIONS_VECTOR_TILE_LAYER__LOCATIONS_OUTLINE,
 } from '../config/userListLocationsVectorTile.config';
 
 /**
@@ -51,10 +52,8 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
         source: 'local',
         'source-layer': mbtileLayerName,
         paint: {
-          // 'fill-color': 'rgba(253,67,193,0.25)',
-          // 'fill-outline-color': 'rgba(253,67,193,1)',
           'fill-color': 'rgba(178,255,0,0)',
-          'fill-outline-color': 'rgba(151,189,61,1)',
+          'fill-outline-color': 'rgba(151,189,61,0)',
         },
         filter: getVectorTileLayerHighLightFilterMultipleLocations(locationIDs),
       },
@@ -68,6 +67,17 @@ export function generateUserListLocationsVectorTileLayerStyle(mbtileLayerName, l
           'fill-outline-color': 'rgb(3, 255, 255)',
         },
         filter: getVectorTileLayerHighLightFilter(''),
+      },
+      {
+        id: USER_LIST_LOCATIONS_VECTOR_TILE_LAYER__LOCATIONS_OUTLINE,
+        type: 'line',
+        source: 'local',
+        'source-layer': mbtileLayerName,
+        paint: {
+          'line-color': 'rgba(151,189,61,1)',
+          'line-width': 5,
+        },
+        filter: getVectorTileLayerHighLightFilterMultipleLocations(locationIDs),
       },
     ],
   };

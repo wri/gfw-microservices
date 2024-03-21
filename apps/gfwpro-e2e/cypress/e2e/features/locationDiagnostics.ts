@@ -38,10 +38,11 @@ describe('Location diagnostics', () => {
   });
 
   Then('I should be redirected to diagnostic view', () => {
-    cy.url().should('include', '/diagnostics');
+    cy.url().should('include', '/diagnostics?listId=2&locationId=103');
     cy.get('.diagnostics-menu-bar').scrollIntoView();
     expect(diagnosticsPage.elements.reportBtn().should('be.visible'));
     expect(diagnosticsPage.elements.downloadBtn().should('be.visible'));
     expect(diagnosticsPage.elements.diagnosticsMap().should('be.visible'));
+    expect(diagnosticsPage.elements.headerInfo().should('have.text', 'a1'));
   });
 });

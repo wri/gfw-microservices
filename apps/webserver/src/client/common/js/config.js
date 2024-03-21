@@ -652,6 +652,11 @@ export const locationsPage = {
     values: 'values',
     threatsAndValues: 'threats_and_values',
     treeCoverLossArgOtbnYearly: 'tree_cover_loss_arg_otbn_yearly',
+    analysisOverview: 'deforestation_kpis_analysis_overview',
+    landcoverCalc: 'deforestation_kpis_landcover_calc',
+    naturalForestCoverage: 'deforestation_kpis_natural_forest_coverage',
+    naturalForestLoss: 'deforestation_kpis_natural_forest_loss',
+    negligibleRisk: 'deforestation_kpis_negligible_risk',
   },
   defaultFilterValues: {
     selectedCountry: '',

@@ -2662,6 +2662,7 @@ export default class Lists extends Component {
                           (isGfwList || getActiveAnalysisType(listAnalysesStatus)) && (
                             <Button
                               variant="primary"
+                              data-cy="location-diagnostics"
                               className="list-detail-action-bar__diagnostic-button"
                               disabled={!this.listDiagnosticAccess(selectedList)}
                               onClick={() => this.viewDiagnostic(true)}

@@ -167,9 +167,7 @@ export default class LayerPanel extends Component {
       (layer) =>
         layer.group === 'land-cover' && layer.id !== proLayers.clarkLabsAquacultureLandChange
     );
-    const landUseLayers = this.props.mapLayers.filter(
-      (layer) => layer.group === 'land-use' && layer.id !== proLayers.soyOnTreeCoverLoss
-    );
+    const landUseLayers = this.props.mapLayers.filter((layer) => layer.group === 'land-use');
     const conservationLayers = this.props.mapLayers.filter(
       (layer) => layer.group === 'conservation'
     );

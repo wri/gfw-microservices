@@ -5,21 +5,14 @@ import { toggleClarkLabsLayers } from '../../actions/analysisActions';
 import { proLayers } from '../../../../common/js/config';
 import BetaTag from '../../../../common/js/components/BetaTag';
 
-const {
-  soyInCerradoBiome,
-  soyOnTreeCoverLoss,
-  clarkLabsAquacultureLandCover,
-  clarkLabsAquacultureLandChange,
-} = proLayers;
+const { clarkLabsAquacultureLandCover, clarkLabsAquacultureLandChange } = proLayers;
 export default class LayerCheckbox extends Component {
   toggleLayer = () => {
     const { layer, visibleLayers } = this.props;
 
     const layerId = layer.id;
 
-    if (layerId === soyInCerradoBiome) {
-      store.dispatch(toggleLayer(soyOnTreeCoverLoss));
-    } else if (layerId === clarkLabsAquacultureLandCover) {
+    if (layerId === clarkLabsAquacultureLandCover) {
       // hide clarkLabsAquacultureLandCover if hidding this layer
       if (
         store.getState().clarkLabsLayers &&

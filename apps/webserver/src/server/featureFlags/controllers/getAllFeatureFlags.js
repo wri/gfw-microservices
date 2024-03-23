@@ -3,6 +3,7 @@ import { featureFlagsService } from '@wri-monorepos/shared';
 
 // Get all flags for SuperAdmin (no org)
 module.exports = async function (request, response) {
+  console.table(featureFlagsService());
   const { getAllFeatureFlags } = featureFlagsService();
 
   try {

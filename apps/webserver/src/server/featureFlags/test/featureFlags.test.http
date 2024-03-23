@@ -8,7 +8,7 @@ GET https://localhost:8443/api/feature-flags
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
-### Get feature flags rules by flagId 
+### Get feature flags rules by flagId
 GET https://localhost:8443/api/feature-flags/Afi
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
@@ -16,7 +16,7 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 ### Insert or save a feature flag
 POST https://localhost:8443/api/feature-flags
 Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
+Cookie: gfwpro.globalforestwatch.org=s%3A0166ecf0-e91d-11ee-bfc4-55171210ec11.awy9Z817wzXPZrFmW94rOgHMeagVrjEpYGatyHd6Jas
 
 {
 	"flagId": "Afi",

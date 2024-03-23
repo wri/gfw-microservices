@@ -1,5 +1,5 @@
 import { IsNull } from 'typeorm';
-import { ClientStoreConnection, FeatureFlag } from '@wri-monorepos/sql';
+import { ClientStoreConnection, FeatureFlag, systemEntities } from '@wri-monorepos/sql';
 
 const DEFAULT_GLOBAL_FEATURE_FLAG_STATE = false;
 export const allFeatureFlags = [
@@ -12,7 +12,8 @@ export const allFeatureFlags = [
 
 export const featureFlagsService = async () => {
   const clientStoreConnection = new ClientStoreConnection();
-  const connection = await clientStoreConnection.getConnection(process.env.MYSQL_DATABASE);
+  const database = process.env.MSSQL_DATABASE || 'gfwpro';
+  const connection = await clientStoreConnection.getConnection(database, systemEntities);
   const repository = connection.getRepository(FeatureFlag);
 
   async function getFeatureFlagsWhere(where = {}) {
@@ -76,7 +77,7 @@ export const featureFlagsService = async () => {
 
   async function getFeatureFlagsForCurrentOrg(orgId: number) {
     const mergedFeatureFlags = new Map();
-    const globalFeatureFlags = await getFeatureFlagWhere({ orgId: null });
+    const globalFeatureFlags = await getFeatureFlagWhere({ orgId: IsNull() });
     const currentOrgFeatureFlags = await getFeatureFlagWhere({ orgId });
 
     for (const flag of currentOrgFeatureFlags) {

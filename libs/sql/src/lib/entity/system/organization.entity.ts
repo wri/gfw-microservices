@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from 'typeorm';
 import { FeatureFlag } from './feature.flag.entity';
 
 @Entity({ name: 'Organizations' })
@@ -16,11 +16,12 @@ export class Organization {
   organizationStatusId: number;
 
   @Column({ name: 'organization_activated_time' })
-  organizationActivatedTime: number;
+  organizationActivatedTime: Date;
 
   @Column({ name: 'subscription_status_id' })
   subscriptionStatusId: number;
 
   @OneToMany(() => FeatureFlag, (featureFlag) => featureFlag.orgId)
+  @JoinColumn({ name: 'org_id' })
   featureFlags: FeatureFlag[];
 }

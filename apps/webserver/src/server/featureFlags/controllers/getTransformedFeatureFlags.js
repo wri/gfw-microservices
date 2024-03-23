@@ -6,7 +6,7 @@ const logger = require('../../../config/privateutils/logger.utils');
 // suitable for the frontend
 module.exports = async function (request, response) {
   const { organization_id } = request.session;
-  const { getAllFeatureFlags } = featureFlagsService();
+  const { getAllFeatureFlags } = await featureFlagsService();
 
   try {
     const featureFlags = await getAllFeatureFlags(organization_id);

@@ -95,7 +95,11 @@ export class ClientStoreConnection {
 
   private readonly connections: Map<string, ConnectionCacheItem> = new Map();
 
-  async getConnection(database: string): Promise<DataSource> {
+  async getConnection(
+    database: string,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    entities: MixedList<Function | string | EntitySchema> = organizationEntities
+  ): Promise<DataSource> {
     const connectionId = process.env.MSSQL_HOSTNAME + database;
 
     if (this.connections.has(connectionId)) {
@@ -107,7 +111,7 @@ export class ClientStoreConnection {
       const datasourceConfig = createDatasourceConfig(
         database,
         database,
-        organizationEntities
+        entities
       ) as DataSourceOptions;
       const connectionDb = new DataSource(datasourceConfig);
 

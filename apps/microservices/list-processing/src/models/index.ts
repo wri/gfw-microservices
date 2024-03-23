@@ -129,3 +129,10 @@ export interface DatabaseQueryParamCountryDeforestation extends DatabaseQueryPar
   countryGadm: string;
   locationId?: string;
 }
+
+export interface FcdV2ControllerRequestBody extends DatabaseQueryParam {
+  clientDatabase: string;
+  country?: string;
+  countryGadm?: string;
+  locationId?: string;
+}

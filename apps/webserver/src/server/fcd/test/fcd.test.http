@@ -1,16 +1,4 @@
-### Generate download data for specific list
-GET https://localhost:8443/api/fcd?listId=5692&country=Argentina&category=WDPA
-Content-Type: application/zip
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
-
-
-### Generate download data for specific list
-GET https://localhost:8443/api/fcd?listId=5692&country=Argentina&category=landmark
-Content-Type: application/zip
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
-
-
-### Generate download data for specific list
-GET https://localhost:8443/api/fcd?listId=5692&country=Argentina&category=WDPA,landmark
+### Get FCD data for list 
+GET https://localhost:8443/api/fcd?listId=5837&country=Argentina&countryGadm=ARG&category=WDPA,landmark
 Content-Type: application/zip
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

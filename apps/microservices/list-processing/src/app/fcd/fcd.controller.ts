@@ -1,8 +1,25 @@
-import { Controller, Get, Param, Query, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  NotImplementedException,
+  Param,
+  Post,
+  Query,
+  UsePipes,
+} from '@nestjs/common';
 import { FCDService } from './fcd.service';
-import { DatabaseQueryParam, DatabaseQueryParamCountryDeforestation } from '../../models';
+import {
+  DatabaseQueryParam,
+  DatabaseQueryParamCountryDeforestation,
+  FcdV2ControllerRequestBody,
+} from '../../models';
 import { z } from 'zod';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
+import { fcdCategoriesMap } from '@wri-monorepos/constants';
 
 const DatabaseQuerySchema = z.object({
   clientDatabase: z.string(),
@@ -11,6 +28,36 @@ const DatabaseQuerySchema = z.object({
 @Controller('fcd')
 export class FCDController {
   constructor(private readonly fcdService: FCDService) {}
+
+  @Post('/v2/:listId/:category')
+  @HttpCode(200)
+  async getFCDCategoryDataForListId(
+    @Param('listId') listId: string,
+    @Param('category') category: string,
+    @Body() bodyPayload: FcdV2ControllerRequestBody
+  ) {
+    const categoryFor = fcdCategoriesMap[category];
+    console.log('/v2/:listId/:category', listId, category, categoryFor);
+
+    switch (categoryFor) {
+      case fcdCategoriesMap.WDPA:
+        return await this.fcdService.wdpaFcdCategory(listId, bodyPayload);
+
+      case fcdCategoriesMap.landmark:
+        return await this.fcdService.landmarkFcdCategory(listId, bodyPayload);
+
+      case fcdCategoriesMap.country:
+        throw new NotImplementedException();
+        
+      case fcdCategoriesMap.classified_region:
+        throw new NotImplementedException();
+
+      default:
+        return new NotImplementedException(
+          `getFCDCategoryDataForListId: category ['${category}'] not implemented`
+        );
+    }
+  }
 
   @Get('/:listId/wdpa_overlap_country/:country')
   @UsePipes(new ZodValidationPipe(DatabaseQuerySchema))

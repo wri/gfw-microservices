@@ -9,9 +9,9 @@ import {
   getCountrySpecificDeforestation,
   getCountrySpecificDeforestationWithoutLocationId,
 } from '@wri-monorepos/sql';
-import { Injectable, Logger } from '@nestjs/common';
-
+import { Injectable, Logger, NotImplementedException } from '@nestjs/common';
 import * as sql from 'mssql';
+import { FcdV2ControllerRequestBody } from '../../models';
 
 @Injectable()
 export class FCDService {
@@ -35,6 +35,64 @@ export class FCDService {
       trustServerCertificate: true,
     },
   };
+
+  async wdpaFcdCategory(listId: string, params: FcdV2ControllerRequestBody) {
+    const { clientDatabase, country, locationId } = params;
+    // TODO: arrange getting the overlap data (already existing function) in here
+    const overlap = this.getAggregatedWDPAOverlapByCountry(
+      listId,
+      country,
+      clientDatabase,
+      locationId
+    );
+    // TODO: get tree_cover_loss data and process
+    // TODO: get country_specific_defo restation data and process
+
+    return {
+      overlap,
+    };
+  }
+
+  async getAggregatedWDPAOverlapByCountry(
+    listId: string,
+    country: string,
+    clientDatabase: string,
+    locationId: string
+  ) {
+    const data = await this.getProtectedAreasByCategoryAreaData(listId, country, clientDatabase);
+
+    const result = {
+      fullyRestrictive: 0,
+      lessRestricted: 0,
+    };
+
+    data?.forEach((item) => {
+      const protectedAreasByCategoryArea = JSON.parse(item.protectedAreasByCategoryArea);
+      Object.entries(protectedAreasByCategoryArea).forEach(([key, value]) => {
+        if (typeof value === 'number') {
+          if (this.isFullRestrictiveCategory(key)) {
+            result.fullyRestrictive += value;
+          } else {
+            result.lessRestricted += value;
+          }
+        }
+      });
+    });
+
+    return result;
+  }
+
+  async landmarkFcdCategory(listId: string, params: any) {
+    throw new NotImplementedException('landmark');
+    // TODO: arrange getting the overlap data (already existing function) in here
+    // TODO: get tree_cover_loss data and process
+    // TODO: get country_specific_deforestation data and process
+  }
+
+  // TODO: sync w/ Guilherme
+  // async countryFcdCategory(listId: number) {}
+  // TODO: sync w/ Guilherme
+  // async classifiedRegionFcdCategory(listId: number) {}
 
   async aggregateOverlapByCountry(listId: string, country: string, clientDatabase: string) {
     const data = await this.getProtectedAreasByCategoryAreaData(listId, country, clientDatabase);

@@ -1,12 +1,11 @@
-const isValidJSON = () => {
+const getFeatureFlag = () => {
   try {
-    JSON.parse(localStorage.getItem('featureFlags'));
+    return JSON.parse(localStorage.getItem('featureFlags'));
   } catch (e) {
-    return false;
+    return {};
   }
-  return true;
 };
 
-const featureFlags = isValidJSON() ? JSON.parse(localStorage.getItem('featureFlags')) : '{}';
+const featureFlags = getFeatureFlag();
 
 export default featureFlags;

@@ -3,7 +3,7 @@ import { featureFlagsService } from '@wri-monorepos/shared';
 
 module.exports = async function (request, response) {
   const { flagId } = request.params;
-  const { getFeatureFlagsByFlagId } = featureFlagsService();
+  const { getFeatureFlagsByFlagId } = await featureFlagsService();
 
   try {
     const featureFlags = await getFeatureFlagsByFlagId(flagId);

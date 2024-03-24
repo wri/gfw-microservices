@@ -5,7 +5,7 @@ import { featureFlagsService } from '@wri-monorepos/shared';
 module.exports = async function (request, response) {
   const { body: featureFlagData, session } = request;
   const { user_id: modifierUserId } = session;
-  const { insertOrSaveFeatureFlag } = featureFlagsService();
+  const { insertOrSaveFeatureFlag } = await featureFlagsService();
 
   try {
     const updateDateTime = new Date();

@@ -127,6 +127,10 @@ export class ClientStoreConnection {
       Logger.log(`Data Source ${database} has been initialized`);
       return this.connections.get(connectionId).connection;
     } catch (error) {
+      Logger.error(
+        `Data Source ${database} initialization error on env: ${process.env.NODE_ENV}`,
+        error
+      );
       throw new Error(`Data Source initialization error`);
     } finally {
       release();

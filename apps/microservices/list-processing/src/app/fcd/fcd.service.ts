@@ -140,7 +140,7 @@ export class FCDService {
   ) {
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },
-      { field: 'country', type: sql.VarChar, value: country },
+      { field: 'country', type: sql.VarChar(150), value: country },
       { field: 'locationId', type: sql.Int, value: locationId || null },
     ];
 

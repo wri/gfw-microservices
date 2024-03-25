@@ -9,9 +9,8 @@ import {
   getCountrySpecificDeforestation,
   getCountrySpecificDeforestationWithoutLocationId,
 } from '@wri-monorepos/sql';
-import { Injectable, Logger, NotImplementedException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as sql from 'mssql';
-import { FcdV2ControllerRequestBody } from '../../models';
 
 @Injectable()
 export class FCDService {
@@ -36,30 +35,18 @@ export class FCDService {
     },
   };
 
-  async wdpaFcdCategory(listId: string, params: FcdV2ControllerRequestBody) {
-    const { clientDatabase, country, locationId } = params;
-    // TODO: arrange getting the overlap data (already existing function) in here
-    const overlap = this.getAggregatedWDPAOverlapByCountry(
-      listId,
-      country,
-      clientDatabase,
-      locationId
-    );
-    // TODO: get tree_cover_loss data and process
-    // TODO: get country_specific_defo restation data and process
-
-    return {
-      overlap,
-    };
-  }
-
   async getAggregatedWDPAOverlapByCountry(
     listId: string,
     country: string,
     clientDatabase: string,
     locationId: string
   ) {
-    const data = await this.getProtectedAreasByCategoryAreaData(listId, country, clientDatabase);
+    const data = await this.getProtectedAreasByCategoryAreaData(
+      listId,
+      country,
+      clientDatabase,
+      locationId
+    );
 
     const result = {
       fullyRestrictive: 0,
@@ -82,69 +69,18 @@ export class FCDService {
     return result;
   }
 
-  async landmarkFcdCategory(listId: string, params: any) {
-    throw new NotImplementedException('landmark');
-    // TODO: arrange getting the overlap data (already existing function) in here
-    // TODO: get tree_cover_loss data and process
-    // TODO: get country_specific_deforestation data and process
-  }
-
-  // TODO: sync w/ Guilherme
-  // async countryFcdCategory(listId: number) {}
-  // TODO: sync w/ Guilherme
-  // async classifiedRegionFcdCategory(listId: number) {}
-
-  async aggregateOverlapByCountry(listId: string, country: string, clientDatabase: string) {
-    const data = await this.getProtectedAreasByCategoryAreaData(listId, country, clientDatabase);
-
-    const result = {
-      fullyRestrictive: 0,
-      lessRestricted: 0,
-    };
-
-    data?.forEach((item) => {
-      const protectedAreasByCategoryArea = JSON.parse(item.protectedAreasByCategoryArea);
-      Object.entries(protectedAreasByCategoryArea).forEach(([key, value]) => {
-        if (typeof value === 'number') {
-          if (this.isFullRestrictiveCategory(key)) {
-            result.fullyRestrictive += value;
-          } else {
-            result.lessRestricted += value;
-          }
-        }
-      });
-    });
-
-    return { overlap: result };
-  }
-
-  isFullRestrictiveCategory(category: string) {
-    const found = this.FULLY_RESTRICTIVE_CATEGORY.find((item) =>
-      category.toLowerCase().includes(item.toLowerCase())
-    );
-    return !!found;
-  }
-
-  async getProtectedAreasByCategoryAreaData(
+  async getAggregatedLandmarkOverlapByCountry(
     listId: string,
     country: string,
-    clientDatabase: string
+    clientDatabase: string,
+    locationId: string
   ) {
-    const parameters = [
-      { field: 'listId', type: sql.Int, value: listId },
-      { field: 'country', type: sql.VarChar, value: country },
-    ];
-
-    this.logger.debug(`Get Protected Areas By Category Area for: ${country} and listId ${listId}`);
-    return await SQLUtils.queryDB<GetProtectedAreasByCategoryAreaType[]>(
+    const data = await this.getLandmarkOverlapCountryData(
+      listId,
+      country,
       clientDatabase,
-      getProtectedAreasByCategoryArea,
-      parameters
+      locationId
     );
-  }
-
-  async landmarkOverlapCountry(listId: string, country: string, clientDatabase: string) {
-    const data = await this.getLandmarkOverlapCountryData(listId, country, clientDatabase);
     let totalArea = 0;
     let indigenousLand = 0;
     data?.forEach((item) => {
@@ -160,21 +96,52 @@ export class FCDService {
     });
 
     return {
-      overlap: {
-        indigenous: indigenousLand,
-        nonIndigenous: totalArea - indigenousLand,
-      },
+      indigenous: indigenousLand,
+      nonIndigenous: totalArea - indigenousLand,
     };
+  }
+
+  isFullRestrictiveCategory(category: string) {
+    const found = this.FULLY_RESTRICTIVE_CATEGORY.find((item) =>
+      category.toLowerCase().includes(item.toLowerCase())
+    );
+    return !!found;
+  }
+
+  async getProtectedAreasByCategoryAreaData(
+    listId: string,
+    country: string,
+    clientDatabase: string,
+    locationId: string
+  ) {
+    const parameters = [
+      { field: 'listId', type: sql.Int, value: listId },
+      { field: 'country', type: sql.VarChar, value: country },
+      { field: 'locationId', type: sql.Int, value: locationId || null },
+    ];
+
+    this.logger.debug(`getProtectedAreasByCategoryAreaData: `, parameters);
+    return await SQLUtils.queryDB<GetProtectedAreasByCategoryAreaType[]>(
+      clientDatabase,
+      getProtectedAreasByCategoryArea,
+      parameters
+    );
   }
 
   isIndigenousLand(category: string) {
     return this.INDIGENOUS_LAND.toLowerCase().includes(category.toLowerCase());
   }
 
-  async getLandmarkOverlapCountryData(listId: string, country: string, clientDatabase: string) {
+  async getLandmarkOverlapCountryData(
+    listId: string,
+    country: string,
+    clientDatabase: string,
+    locationId: string
+  ) {
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },
       { field: 'country', type: sql.VarChar, value: country },
+      { field: 'locationId', type: sql.VarChar, value: locationId || null },
     ];
 
     this.logger.debug(`Get Protected Areas By Category Area for: ${country} and listId ${listId}`);
@@ -218,7 +185,7 @@ export class FCDService {
     const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
 
     if (locationId) {
-      parameters.push({ field: 'locationId', type: sql.VarChar, value: locationId });
+      parameters.push({ field: 'locationId', type: sql.Int, value: locationId });
 
       return await SQLUtils.queryDBFirstRow<GetCountrySpecificDeforestationType>(
         clientDatabase,

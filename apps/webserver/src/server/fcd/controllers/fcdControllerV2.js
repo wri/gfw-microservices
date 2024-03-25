@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
           return {
             error: true,
             category,
-            message: [error?.message],
+            message: error.message,
           };
         }
       })
@@ -41,9 +41,9 @@ module.exports = async (req, res) => {
 
     // prepare data for client
     const responseData = requestData.reduce((acc, item) => {
-      const { category } = item;
+      const { category, ...rest } = item;
       acc[category] = {
-        ...item,
+        ...rest,
       };
       return acc;
     }, {});

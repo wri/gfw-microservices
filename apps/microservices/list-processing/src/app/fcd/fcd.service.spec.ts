@@ -110,6 +110,7 @@ describe('WDPA Category', () => {
 
   it(`getAggregatedWDPAOverlapData when getProtectedAreasByCategoryAreaData result array is empty`, async () => {
     const fcdService = new FCDService();
+
     jest
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
       .mockImplementation(() => Promise.resolve([]));

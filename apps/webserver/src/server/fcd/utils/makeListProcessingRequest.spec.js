@@ -56,7 +56,7 @@ describe('makeListProcessingRequest', () => {
         locationId: 'testLocationId',
       })
     ).rejects.toThrow(
-      "ListProcessingRequestError Error POST http://localhost:3333/api/fcd/v2/123/WDPA failed with status 404: 'Not Found'"
+      "ListProcessingRequestError Error POST http://localhost:3333/api/fcd/123/WDPA failed with status 404: 'Not Found'"
     );
 
     expect(fetch).toHaveBeenCalledTimes(1);

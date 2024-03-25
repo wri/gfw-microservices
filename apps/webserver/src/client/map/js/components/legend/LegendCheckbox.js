@@ -19,9 +19,7 @@ import { proLayers, mapPage, soyPlantedYearsRange } from '../../../../common/js/
 const {
   viirsActiveFiresID,
   aboveGroundBiomassId,
-  soyInCerradoBiome,
   treeBiomassLossID,
-  soyOnTreeCoverLoss,
   soyPlantedArea,
   clarkLabsAquacultureLandCover,
   clarkLabsAquacultureLandChange,
@@ -84,10 +82,6 @@ export default class LegendCheckbox extends Component {
     const { visibleLayers } = store.getState();
 
     const layerId = this.props.layer.id;
-
-    if (layerId === soyInCerradoBiome) {
-      store.dispatch(toggleLayer(soyOnTreeCoverLoss));
-    }
 
     if (deforestationAlertsIds.includes(layerId)) {
       // Toggle the layer itself
@@ -283,23 +277,13 @@ export default class LegendCheckbox extends Component {
             <use xlinkHref="#shape-info" />
           </svg>
         </span>
-        {layer.id !== soyOnTreeCoverLoss ? (
-          <span className="info-icon pointer" onClick={this.hideLayer}>
-            <svg>
-              <use xlinkHref="#shape-close" />
-            </svg>
-          </span>
-        ) : null}
-        {layer.id === soyOnTreeCoverLoss ? (
-          <p className="layer-legend-message">
-            {mapPage.densityLossStart}
-            <span
-              onClick={this.toggleCanopyModal}
-              className="layer-legend-loss-display"
-            >{`>${this.props.canopyDensity}%`}</span>
-            {mapPage.densityLossEnd}
-          </p>
-        ) : null}
+
+        <span className="info-icon pointer" onClick={this.hideLayer}>
+          <svg>
+            <use xlinkHref="#shape-close" />
+          </svg>
+        </span>
+
         {layer.id === soyPlantedArea ? this.soyPlantedYearPicker(layer) : null}
 
         {symbolsLength > 1 && layer.id !== soyPlantedArea ? (

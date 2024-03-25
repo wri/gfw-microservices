@@ -37,8 +37,6 @@ export const proLayers = {
   administrativeAreas: 'administrative-areas', // this layer does not seem to exist in PROD api
   oilPalmConcessions: 'Oil Palm Concessions',
   soyPlantedArea: 'Soy Planted Area',
-  // soyInCerradoBiome: 'Soy in Cerrado Biome',
-  // soyOnTreeCoverLoss: 'Soy on tree cover loss',
   aboveGroundBiomassId: 'Aboveground live woody biomass density',
   primaryForest: 'Primary Forest',
   // treePlantationsType: 'Tree Plantations by type',
@@ -3046,7 +3044,6 @@ export const mapPage = {
       id: proLayers.treeCoverLossID,
       group: 'forest-change',
       subGroup: 'tree-cover-change',
-      propsToWatch: ['threshold', 'maxYear', 'minYear'],
       order: 100,
     },
     {
@@ -3066,7 +3063,6 @@ export const mapPage = {
       group: 'forest-change',
       subGroup: 'tree-cover-change',
       order: 104,
-      propsToWatch: ['threshold', 'maxYear', 'minYear', 'minRange', 'maxRange'],
     },
     {
       id: proLayers.negligibleRisk,
@@ -3086,35 +3082,30 @@ export const mapPage = {
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
       order: 107,
-      propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.gladLGeographicCoverageID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
       order: 108,
-      propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.gladS2AlertsID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
       order: 108,
-      propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.gladS2GeographicCoverageID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
       order: 110,
-      propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.raddAlertsID,
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
       order: 111,
-      propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.raddCoverageID,
@@ -3128,7 +3119,6 @@ export const mapPage = {
       group: 'forest-change',
       subGroup: 'deforestation-alerts',
       order: 113,
-      propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.integratedAlertsGeographicCoverageID,
@@ -3136,7 +3126,6 @@ export const mapPage = {
       subGroup: 'deforestation-alerts',
       order: 114,
       ignored: true,
-      propsToWatch: ['julianTo', 'julianFrom', 'confirmed'],
     },
     {
       id: proLayers.viirsActiveFiresID,
@@ -3163,7 +3152,6 @@ export const mapPage = {
     {
       id: proLayers.treeCoverID,
       group: 'land-cover',
-      propsToWatch: ['threshold'],
       order: 200,
     },
     {
@@ -3192,7 +3180,6 @@ export const mapPage = {
     {
       id: proLayers.aboveGroundBiomassId,
       group: 'land-cover',
-      propsToWatch: ['threshold'],
       order: 204,
     },
     /* {
@@ -3286,19 +3273,6 @@ export const mapPage = {
       subGroup: 'crop-production',
       order: 302,
     },
-    // {
-    //   id: proLayers.soyInCerradoBiome,
-    //   group: 'land-use',
-    //   subGroup: 'crop-production',
-    //   order: 303,
-    // },
-    // {
-    //   id: proLayers.soyOnTreeCoverLoss,
-    //   group: 'land-use',
-    //   subGroup: 'crop-production',
-    //   order: 304,
-    //   propsToWatch: ['threshold'],
-    // },
     {
       id: proLayers.universalMillList,
       group: 'land-use',

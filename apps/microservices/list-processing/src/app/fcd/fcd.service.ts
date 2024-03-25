@@ -141,7 +141,7 @@ export class FCDService {
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },
       { field: 'country', type: sql.VarChar, value: country },
-      { field: 'locationId', type: sql.VarChar, value: locationId || null },
+      { field: 'locationId', type: sql.Int, value: locationId || null },
     ];
 
     this.logger.debug(`Get Protected Areas By Category Area for: ${country} and listId ${listId}`);

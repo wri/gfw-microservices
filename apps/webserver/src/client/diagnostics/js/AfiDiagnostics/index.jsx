@@ -28,8 +28,7 @@ function AfiDiagnostics({ popover }) {
   const isSharedList = Boolean(new URLSearchParams(location.search).get('shared'));
 
   const [selectedList, setSelectedList] = useState({});
-  const [displayPopover, setDisplayPopover] = useState(false);
-  console.log(popover);
+
   const getAfiAnalysisForListId = () => {
     return fetch(`/api/afi/analysis/${listId}`, {
       method: 'GET',

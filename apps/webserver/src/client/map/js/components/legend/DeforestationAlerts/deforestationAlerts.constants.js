@@ -8,7 +8,16 @@ const {
   integratedAlertsGeographicCoverageID,
   gladS2GeographicCoverageID,
   raddCoverageID,
+  aboveGroundBiomassId,
+  treeBiomassLossID,
+  treeCoverID,
 } = proLayers;
+
+export const layersWithCanopyDensityThresholdControl = [
+  aboveGroundBiomassId,
+  treeBiomassLossID,
+  treeCoverID,
+];
 
 export const deforestationAlertsIds = [
   integratedDeforestationAlertsID,

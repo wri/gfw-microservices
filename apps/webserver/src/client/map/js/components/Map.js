@@ -72,7 +72,8 @@ import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullLis
 import { getLocationGeometry } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';
 import { getGfwProMapLayerName, isGfwList } from '../../../common/js/utils/gfw.utils';
-import { updateDeforestationAlertsLayers } from '../utils/layerUpdates.utils';
+import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
+import sortMapArray from './sortMapArray';
 
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
@@ -90,7 +91,6 @@ import CanopyModal from './modals/CanopyModal';
 import InfoModal from './modals/InfoModal';
 import LayerModal from './modals/LayerModal';
 import SearchModal from './modals/SearchModal';
-
 import { GFWLists } from '../../../locations/js/config/listNames';
 import { selectList } from '../../../locations/js/actions/locationActions';
 import { gfwListsLocationID } from '../../../listDetails/js/components/lists/Lists.config';
@@ -129,9 +129,7 @@ const {
   protectedAreas,
   rspoConcessions,
   rspoPalmOilMills,
-  soyOnTreeCoverLoss,
   treeBiomassLossID,
-  treeCoverID,
   treeCoverLossID,
   treePlantationsSpecies,
   universalMillList,
@@ -267,7 +265,6 @@ export default class Map extends Component {
       showHighConfidenceAlertsOnDeforestationAlertsLayer,
       modalLayerInfo,
       activeAnalysis,
-      adminArea,
       gfwListDef,
       landsatYear,
       soyYear,
@@ -278,7 +275,7 @@ export default class Map extends Component {
     const { listData } = this.props;
     const { gfwListName } = listData;
 
-    updateDeforestationAlertsLayers(this.view.map, prevState);
+    updateInteractiveLayers(this.view.map, prevState, this.state);
 
     if (prevState.visibleLayers.length < visibleLayers.length) {
       this.view.popup.close();
@@ -296,14 +293,10 @@ export default class Map extends Component {
           }
         } else {
           mapLayer = layersToAdd.find((layer) => layer.id === nowVisibleLayer);
-          const configLayer = mapPage.layers.find((layer) => layer.id === nowVisibleLayer);
           if (mapLayer) {
-            if (configLayer.propsToWatch) {
-              this.setLayerWatching(configLayer, mapLayer);
-            }
             this.view.map.add(mapLayer);
             mapLayer.visible = true;
-            this.sortMapArray(mapLayer);
+            sortMapArray(mapLayer, this.view.map);
           }
         }
 
@@ -358,14 +351,10 @@ export default class Map extends Component {
         let mapLayer = this.view.map.findLayerById(nowVisibleLayer);
         if (!mapLayer) {
           mapLayer = layersToAdd.find((layer) => layer.id === nowVisibleLayer);
-          const configLayer = mapPage.layers.find((layer) => layer.id === nowVisibleLayer);
           if (mapLayer) {
-            if (configLayer.propsToWatch) {
-              this.setLayerWatching(configLayer, mapLayer);
-            }
             this.view.map.add(mapLayer);
             mapLayer.visible = true;
-            this.sortMapArray(mapLayer);
+            sortMapArray(mapLayer, this.view.map);
           }
         } else {
           //If layer to be turned on is already on the map, just turn it on
@@ -392,11 +381,7 @@ export default class Map extends Component {
               });
             } else {
               nowVisibleLayer = layersToAdd.find((layer) => layer.id === visibleLayer);
-              const configLayer = mapPage.layers.find((layer) => layer.id === visibleLayer);
               if (nowVisibleLayer) {
-                if (configLayer.propsToWatch) {
-                  this.setLayerWatching(configLayer, nowVisibleLayer);
-                }
                 this.view.map.add(nowVisibleLayer);
                 nowVisibleLayer.visible = true;
                 gtag('event', 'layer toggle', {
@@ -405,15 +390,7 @@ export default class Map extends Component {
                 });
               }
             }
-            if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-              this.analyzeCustom(this.view.graphics.items[0]);
-            } else if (
-              activeAnalysis === 'region' &&
-              Object.keys(adminArea).length !== 0 &&
-              adminArea.constructor === Object
-            ) {
-              this.analyzeAdmin(adminArea);
-            }
+            this.updateActiveAnalysis();
           }
 
           const nowHiddenIds = prevState.visibleLayers.filter(
@@ -522,15 +499,7 @@ export default class Map extends Component {
           drawnGraphic.pop();
         }
         store.dispatch(analysisActions.setAnalysis('analysis'));
-        if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-          this.analyzeCustom(this.view.graphics.items[0]);
-        } else if (
-          activeAnalysis === 'region' &&
-          Object.keys(adminArea).length !== 0 &&
-          adminArea.constructor === Object
-        ) {
-          this.analyzeAdmin(adminArea);
-        }
+        this.updateActiveAnalysis();
       }
     }
 
@@ -544,81 +513,14 @@ export default class Map extends Component {
     }
 
     if (prevState.canopyDensity !== canopyDensity) {
-      const densityLayers = mapPage.layers.filter(
-        (layer) => layer && layer.propsToWatch && layer.propsToWatch.indexOf('threshold') > -1
-      );
-      densityLayers.forEach((densityLayer) => {
-        const mapLayer = this.view.map.findLayerById(densityLayer.id);
-        if (mapLayer) {
-          const duplicate = mapLayer;
-          if (mapLayer.id === soyOnTreeCoverLoss) {
-            duplicate.renderingRule.functionName = 'soy' + (this.state.canopyDensity + 1);
-            const promise = new Promise((resolve) => {
-              this.view.map.remove(mapLayer);
-              resolve();
-            });
-            promise.then(() => {
-              this.view.map.add(duplicate);
-            });
-          } else {
-            duplicate.threshold = canopyDensity;
-
-            //this is to force-trigger a re-add of this layer which will make new tile requests w/ the new density
-            const handler = this.view.map.allLayers.on('change', (evt) => {
-              handler.remove(); // this ensures that we only do this once
-              if (evt.removed.length > 0) {
-                if (evt.removed[0].id === duplicate.id) {
-                  const promise = new Promise((resolve) => {
-                    resolve();
-                  });
-                  promise.then(() => {
-                    // Adding 'tree-cover' layer always before 'tree-cover-loss' if 'tree-cover-loss' is present
-                    let treeCoverLossIndex;
-                    const [treeCoverLoss] = this.view.map.layers.items.filter((item, index) => {
-                      if (item.id === treeCoverLossID) {
-                        treeCoverLossIndex = index;
-                        return true;
-                      }
-                      return false;
-                    });
-                    if (treeCoverLoss && duplicate.id === treeCoverID) {
-                      this.view.map.add(duplicate, treeCoverLossIndex);
-                    } else {
-                      this.view.map.add(duplicate);
-                    }
-                  });
-                }
-              }
-            });
-
-            this.view.map.remove(mapLayer);
-          }
-        }
-      });
-      if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-        this.analyzeCustom(this.view.graphics.items[0]);
-      } else if (
-        activeAnalysis === 'region' &&
-        Object.keys(adminArea).length !== 0 &&
-        adminArea.constructor === Object
-      ) {
-        this.analyzeAdmin(adminArea);
-      }
+      this.updateActiveAnalysis();
     }
 
     if (
       prevState.showHighConfidenceAlertsOnDeforestationAlertsLayer !==
       showHighConfidenceAlertsOnDeforestationAlertsLayer
     ) {
-      if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-        this.analyzeCustom(this.view.graphics.items[0]);
-      } else if (
-        activeAnalysis === 'region' &&
-        Object.keys(adminArea).length !== 0 &&
-        adminArea.constructor === Object
-      ) {
-        this.analyzeAdmin(adminArea);
-      }
+      this.updateActiveAnalysis();
     }
 
     if (prevState.landsatYear !== landsatYear) {
@@ -696,44 +598,19 @@ export default class Map extends Component {
     }
 
     const { gladDateRange, biomassRange } = this.state;
-    if (prevState.gladDateRange !== gladDateRange) {
-      const gladAlertsLayer = this.view.map.findLayerById(gladAlertsID);
-      if (
-        gladAlertsLayer &&
-        (prevState.gladDateRange.start !== gladDateRange.start ||
-          prevState.gladDateRange.end !== gladDateRange.end)
-      ) {
-        if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-          this.analyzeCustom(this.view.graphics.items[0]);
-        } else if (
-          activeAnalysis === 'region' &&
-          Object.keys(adminArea).length !== 0 &&
-          adminArea.constructor === Object
-        ) {
-          this.analyzeAdmin(adminArea);
-        }
-      }
+
+    if (
+      prevState.gladDateRange?.start !== gladDateRange?.start ||
+      prevState.gladDateRange?.end !== gladDateRange?.end
+    ) {
+      this.updateActiveAnalysis();
     }
 
     if (
-      prevState.biomassRange.min !== biomassRange.min ||
-      prevState.biomassRange.max !== biomassRange.max
+      prevState.biomassRange?.min !== biomassRange?.min ||
+      prevState.biomassRange?.max !== biomassRange?.max
     ) {
-      const mapLayer = this.view.map.findLayerById(treeBiomassLossID);
-      if (mapLayer) {
-        mapLayer.minRange = biomassRange.min;
-        mapLayer.maxRange = biomassRange.max;
-      }
-
-      if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-        this.analyzeCustom(this.view.graphics.items[0]);
-      } else if (
-        activeAnalysis === 'region' &&
-        Object.keys(adminArea).length !== 0 &&
-        adminArea.constructor === Object
-      ) {
-        this.analyzeAdmin(adminArea);
-      }
+      this.updateActiveAnalysis();
     }
 
     if (prevState.fireDays !== this.state.fireDays) {
@@ -748,52 +625,22 @@ export default class Map extends Component {
       );
       this.view.map.remove(activeFires);
       this.view.map.add(newViirsLayer);
-
-      if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-        this.analyzeCustom(this.view.graphics.items[0]);
-      } else if (
-        activeAnalysis === 'region' &&
-        Object.keys(adminArea).length !== 0 &&
-        adminArea.constructor === Object
-      ) {
-        this.analyzeAdmin(adminArea);
-      }
+      this.updateActiveAnalysis();
     }
   }
 
-  sortMapArray = (mapLayer) => {
-    const mapLayerConfigIndex = mapPage.layers.findIndex(
-      (configLayer) => configLayer.id === mapLayer.id
-    );
-    this.view.map.layers.items.some((layer, index) => {
-      const configLayerIndex = mapPage.layers.findIndex(
-        (configLayer) => configLayer.id === layer.id
-      );
-      // this layer exists in the layer config
-      if (configLayerIndex > -1) {
-        // get order number for current layer
-        const configOrder = mapPage.layers[configLayerIndex].order;
-        // get order number for layer to add
-        const configOrderToAdd = mapPage.layers[mapLayerConfigIndex].order;
-
-        // THING ABOUT LAYERS:
-        // Start of layer array is rendered at the BOTTOM.
-        // End of layer array is rendered at the TOP.
-
-        if (configOrder < configOrderToAdd) {
-          this.view.map.layers.reorder(mapLayer, index);
-          return true;
-        } else if (index === this.view.map.layers.items.length - 1) {
-          this.view.map.add(mapLayer);
-          return true;
-        }
-      } else if (index === this.view.map.layers.items.length - 1) {
-        // if you get to the end of the array without adding layer yet then add it at the end
-        this.view.map.add(mapLayer);
-        return true;
-      }
-    });
-  };
+  updateActiveAnalysis() {
+    const { activeAnalysis, adminArea } = this.state;
+    if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
+      this.analyzeCustom(this.view.graphics.items[0]);
+    } else if (
+      activeAnalysis === 'region' &&
+      Object.keys(adminArea).length !== 0 &&
+      adminArea.constructor === Object
+    ) {
+      this.analyzeAdmin(adminArea);
+    }
+  }
 
   setEsriDefaults = () => {
     esriConfig.request.interceptors.push({
@@ -802,25 +649,6 @@ export default class Map extends Component {
         params.requestOptions.query.token = locationsPage.add.protectedAreas[location.hostname];
       },
     });
-
-    // esriRequest.setRequestPreCallback((ioArgs) => {
-    //   if (ioArgs.url.search(locationsPage.add.protectedAreasUrl) > -1) {
-    //     if (!ioArgs.content) {
-    //       ioArgs.content = {
-    //         f: 'json'
-    //       };
-    //     }
-    //     ioArgs.content.token = locationsPage.add.protectedAreas[location.hostname];
-    //   } else if (ioArgs.url.search(locationsPage.add.protectedServicesUrl) > -1) {
-    //     if (!ioArgs.content) {
-    //       ioArgs.content = {
-    //         f: 'json'
-    //       };
-    //     }
-    //     ioArgs.content.token = locationsPage.add.protectedAreas[location.hostname];
-    //   }
-    //   return ioArgs;
-    // });
   };
 
   showLayerModal = (layerInfo) => {
@@ -1437,7 +1265,6 @@ export default class Map extends Component {
   };
 
   geostoreAnalysisCall = async (totalAreaHa, type, geostoreID, origin = 'rw') => {
-    const baseTCLURL = `https://data-api.globalforestwatch.org/analysis/zonal/${geostoreID}`;
     this.setState({ spinnerOn: true });
 
     if (type === 'viirs' || type === 'prodes') {
@@ -1873,7 +1700,7 @@ export default class Map extends Component {
   };
 
   addProLayers = async (view) => {
-    const { visibleLayers, landsatYear } = this.state;
+    const { visibleLayers } = this.state;
 
     const layersData = await fetchGfwProLayers();
     let layers = layersData.map((layerObject) => {
@@ -1901,17 +1728,6 @@ export default class Map extends Component {
                 mapPage.noLocationLayers.indexOf(selectedFeat.layerName) === -1);
           }
         });
-      }
-    });
-
-    this.view.watch('zoom', (newZoom) => {
-      const mapLayer = this.view.map.findLayerById('landsat');
-      if (mapLayer) {
-        if (newZoom >= 12 && mapLayer.urlTemplate.indexOf('.png') === -1) {
-          mapLayer.urlTemplate = `https://production-api.globalforestwatch.org/v2/landsat-tiles/${landsatYear}/{level}/{col}/{row}.png`;
-        } else if (newZoom < 12 && mapLayer.urlTemplate.indexOf('.png') > -1) {
-          mapLayer.urlTemplate = `https://production-api.globalforestwatch.org/v2/landsat-tiles/${landsatYear}/{level}/{col}/{row}`;
-        }
       }
     });
 
@@ -2007,25 +1823,6 @@ export default class Map extends Component {
     store.dispatch(populateLayers(layers));
 
     this.applyStateFromUrl();
-  };
-
-  setLayerWatching = (configLayer, mapLayer) => {
-    configLayer.propsToWatch.forEach((prop) => {
-      mapLayer.watch(prop, (propValue) => {
-        const duplicate = mapLayer;
-        duplicate[prop] = propValue;
-        const promise = new Promise((resolve) => {
-          this.view.map.remove(mapLayer);
-          resolve();
-        });
-        promise.then(() => {
-          this.view.map.add(duplicate);
-        });
-      });
-      if (prop === 'threshold') {
-        mapLayer.threshold = this.state.canopyDensity;
-      }
-    });
   };
 
   applyStateFromUrl = () => {
@@ -2440,34 +2237,12 @@ export default class Map extends Component {
   };
 
   setLossTimeline = (startYear, endYear) => {
-    const { activeAnalysis, adminArea } = this.state;
-    const treeCoverLoss = this.view.map.findLayerById(treeCoverLossID);
-
-    treeCoverLoss.minYear = startYear;
-    treeCoverLoss.maxYear = endYear;
-    // this is to force-trigger a re-add of this layer which will make new tile requests w/ the new density
-    const promise = new Promise((resolve) => {
-      this.view.map.remove(treeCoverLoss);
-      resolve();
-    });
-    promise.then(() => {
-      this.view.map.add(treeCoverLoss);
-    });
-
     this.setState(
       {
         treeCoverLossDateRange: { startYear: startYear, endYear: endYear },
       },
       () => {
-        if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-          this.analyzeCustom(this.view.graphics.items[0]);
-        } else if (
-          activeAnalysis === 'region' &&
-          Object.keys(adminArea).length !== 0 &&
-          adminArea.constructor === Object
-        ) {
-          this.analyzeAdmin(adminArea);
-        }
+        this.updateActiveAnalysis();
       }
     );
     gtag('event', 'timeslider update', {
@@ -2477,27 +2252,15 @@ export default class Map extends Component {
   };
 
   setBiomassTimeline = (startYear, endYear) => {
-    const { activeAnalysis, adminArea } = this.state;
-    const biomassLoss = this.view.map.findLayerById(treeBiomassLossID);
-    biomassLoss.minYear = startYear;
-    biomassLoss.maxYear = endYear;
-    biomassLoss.refresh();
     this.setState(
       {
-        biomassLossDateRange: { startYear: startYear, endYear: endYear },
+        biomassLossDateRange: { startYear, endYear },
       },
       () => {
-        if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-          this.analyzeCustom(this.view.graphics.items[0]);
-        } else if (
-          activeAnalysis === 'region' &&
-          Object.keys(adminArea).length !== 0 &&
-          adminArea.constructor === Object
-        ) {
-          this.analyzeAdmin(adminArea);
-        }
+        this.updateActiveAnalysis();
       }
     );
+
     gtag('event', 'timeslider update', {
       event_category: 'Map Click',
       event_label: 'user updated the biomass loss timeslider',
@@ -2505,20 +2268,11 @@ export default class Map extends Component {
   };
 
   setProdesTimeline = (startYear, endYear) => {
-    const { activeAnalysis, adminArea } = this.state;
     this.updateProdesVectorTileLayerStyle(startYear, endYear);
 
     const newState = { startYear, endYear };
     this.setState({ prodesDateRange: newState }, () => {
-      if (activeAnalysis === 'draw' && this.view.graphics.items.length > 0) {
-        this.analyzeCustom(this.view.graphics.items[0]);
-      } else if (
-        activeAnalysis === 'region' &&
-        Object.keys(adminArea).length !== 0 &&
-        adminArea.constructor === Object
-      ) {
-        this.analyzeAdmin(adminArea);
-      }
+      this.updateActiveAnalysis();
     });
 
     gtag('event', 'timeslider update', {

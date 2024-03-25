@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import RegionChart from '../../../js/ForestChangeDiagnostics/SouthAmericaRegions/RegionChart';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { BrowserRouter } from 'react-router-dom';
 import { MOCK_ARGENTINA_DATA } from './mockArgentinaData';
 
 jest.mock('../../../js/ForestChangeDiagnostics/SouthAmericaRegions/DateRangeSlider', () => () => {
@@ -24,12 +25,23 @@ describe('RegionChart Component', () => {
 
   it('renders the component correctly', async () => {
     const listId = 1;
+    const locationId = null;
     const fireDownload = jest.fn();
 
+    const fcdParams = {
+      listId,
+      locationId,
+      country: 'Argentina',
+      countryGadm: 'ARG',
+      category: ['WDPA', 'landmark', 'country', 'classified_region'],
+    };
+
     render(
-      <MuiThemeProvider>
-        <RegionChart listId={listId} data={MOCK_ARGENTINA_DATA} fireDownload={fireDownload} />
-      </MuiThemeProvider>
+      <BrowserRouter>
+        <MuiThemeProvider>
+          <RegionChart listId={listId} data={MOCK_ARGENTINA_DATA} fireDownload={fireDownload} />
+        </MuiThemeProvider>
+      </BrowserRouter>
     );
 
     const chartHeader = screen.getAllByTestId('chart-header-title');
@@ -40,7 +52,7 @@ describe('RegionChart Component', () => {
 
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
-        `/api/fcd?listId=${listId}&country=Argentina&countryGadm=ARG&category=WDPA,landmark`,
+        `/api/fcd?${new URLSearchParams(fcdParams).toString()}`,
         expect.objectContaining({
           method: 'GET',
           credentials: 'same-origin',

@@ -131,7 +131,7 @@ describe('FCDController', () => {
   );
 
   it('should respond with a validation error for missing clientDatabase', async () => {
-    const response = await supertest(app.getHttpServer()).post('/fcd/v2/1/WDPA').send({
+    const response = await supertest(app.getHttpServer()).post('/fcd/1/WDPA').send({
       /* Omitting clientDatabase to trigger the validation error */
     });
 

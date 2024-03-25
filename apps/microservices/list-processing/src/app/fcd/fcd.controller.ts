@@ -25,7 +25,7 @@ export class FCDController {
 
   private readonly logger = new Logger(FCDService.name);
 
-  @Post('/v2/:listId/:category')
+  @Post('/:listId/:category')
   @HttpCode(HttpStatus.OK)
   @UsePipes(new ZodValidationPipe(DatabaseQuerySchema))
   async getFCDCategoryDataForListId(
@@ -34,7 +34,7 @@ export class FCDController {
     @Body() bodyPayload: FcdV2ControllerRequestBody
   ) {
     const categoryFor = fcdCategoriesMap[category];
-    this.logger.log('POST /v2/:listId/:category', listId, category);
+    this.logger.log('POST /:listId/:category', listId, category);
 
     switch (categoryFor) {
       case fcdCategoriesMap.WDPA:

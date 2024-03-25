@@ -6,7 +6,7 @@ const { LISTS_MICROSERVICE_URL } = process.env;
 const BASE_URL = `${LISTS_MICROSERVICE_URL ?? 'http://localhost:3333/api'}/fcd`;
 
 const getListProcessingUrl = ({ listId, category }) => {
-  return `${BASE_URL}/v2/${listId}/${category}`;
+  return `${BASE_URL}/${listId}/${category}`;
 };
 
 /**

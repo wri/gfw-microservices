@@ -1,96 +1,103 @@
 import { FCDService } from './fcd.service';
 
-describe('WDPA Overlap Country', () => {
+describe('getAggregatedWDPAOverlapData', () => {});
+
+describe('WDPA Category', () => {
   const data = [
     {
-      listId: 5692,
-      locationId: 2,
+      listId: 5837,
+      locationId: 5,
       protectedAreasByCategoryArea: '{}',
+      countrySpecificDeforestationWdpaYearly: '{"ARG":{}}',
     },
     {
-      listId: 5692,
+      listId: 5837,
+      locationId: 7,
+      protectedAreasByCategoryArea: '{"Category II":16600.2927}',
+      countrySpecificDeforestationWdpaYearly: '{"ARG":{"Category II":{}}}',
+    },
+    {
+      listId: 5837,
       locationId: 3,
       protectedAreasByCategoryArea: '{}',
+      countrySpecificDeforestationWdpaYearly: '{"ARG":{}}',
     },
     {
-      listId: 5692,
-      locationId: 4,
+      listId: 5837,
+      locationId: 9,
       protectedAreasByCategoryArea: '{}',
+      countrySpecificDeforestationWdpaYearly: '{"ARG":{}}',
     },
     {
-      listId: 5692,
-      locationId: 6,
-      protectedAreasByCategoryArea:
-        '{"Category Ia":1620.7222,"Category II":156.9743,"Category VI":0.2748}',
+      listId: 5837,
+      locationId: 8,
+      protectedAreasByCategoryArea: '{"Not Reported":3335.8852}',
+      countrySpecificDeforestationWdpaYearly:
+        '{"ARG":{"Not Reported":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":527.781}}}',
     },
   ];
 
-  it(`When the input array has 4 locations`, async () => {
+  it('getAggregatedWDPAOverlapData should correctly aggregate fullyRestrictive and lessRestricted data', () => {
     const fcdService = new FCDService();
-    jest
-      .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
-      .mockImplementation(() => Promise.resolve(data));
+    const result = fcdService.getAggregatedWDPAOverlapData(data);
 
-    const result = await fcdService.getAggregatedWDPAOverlapByCountry(
-      '5692',
-      'Argentina',
-      'production',
-      ''
-    );
-    expect(result).toStrictEqual({
-      fullyRestrictive: 1777.6965,
-      lessRestricted: 0.2748,
+    expect(result).toEqual({
+      fullyRestrictive: 16600.2927,
+      lessRestricted: 3335.8852,
     });
   });
 
-  it(`When the input array has 4 locations with specific locationId is requested`, async () => {
+  it('getProcessedWDPACountrySpecificDeforestationYearlyData should correctly process country specific data', () => {
     const fcdService = new FCDService();
-    jest
-      .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
-      .mockImplementation(() => Promise.resolve(data));
+    const result = fcdService.getProcessedWDPACountrySpecificDeforestationYearlyData('ARG', data);
 
-    const result = await fcdService.getAggregatedWDPAOverlapByCountry(
-      '5692',
-      'Argentina',
-      'production',
-      '3'
-    );
-    expect(result).toStrictEqual({
-      fullyRestrictive: 1777.6965,
-      lessRestricted: 0.2748,
+    expect(result).toEqual({
+      fullyRestrictive: {},
+      lessRestricted: {
+        '2001': 0,
+        '2002': 0,
+        '2003': 0,
+        '2004': 0,
+        '2005': 0,
+        '2006': 0,
+        '2007': 0,
+        '2008': 0,
+        '2009': 0,
+        '2010': 0,
+        '2011': 0,
+        '2012': 0,
+        '2013': 0,
+        '2014': 0,
+        '2015': 0,
+        '2016': 0,
+        '2017': 0,
+        '2018': 0,
+        '2019': 0,
+        '2020': 0,
+        '2021': 0,
+        '2022': 527.781,
+      },
     });
   });
 
-  it(`When the input is undefined`, async () => {
+  it(`getAggregatedWDPAOverlapData when the input is undefined`, () => {
     const fcdService = new FCDService();
-    jest
-      .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
-      .mockImplementation(() => Promise.resolve(undefined));
+    const result = fcdService.getAggregatedWDPAOverlapData(undefined);
 
-    const result = await fcdService.getAggregatedWDPAOverlapByCountry(
-      '5692',
-      'Argentina',
-      'production',
-      ''
-    );
     expect(result).toStrictEqual({
       fullyRestrictive: 0,
       lessRestricted: 0,
     });
   });
 
-  it(`When the input array is empty`, async () => {
+  it(`getAggregatedWDPAOverlapData when the input array is empty`, () => {
     const fcdService = new FCDService();
     jest
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
       .mockImplementation(() => Promise.resolve([]));
 
-    const result = await fcdService.getAggregatedWDPAOverlapByCountry(
-      '5692',
-      'Argentina',
-      'production',
-      '3'
-    );
+    const result = fcdService.getAggregatedWDPAOverlapData([]);
+
     expect(result).toStrictEqual({
       fullyRestrictive: 0,
       lessRestricted: 0,

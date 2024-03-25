@@ -1,7 +1,5 @@
 import { FCDService } from './fcd.service';
 
-describe('getAggregatedWDPAOverlapData', () => {});
-
 describe('WDPA Category', () => {
   const data = [
     {

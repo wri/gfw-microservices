@@ -31,12 +31,33 @@ describe('WDPA Overlap Country', () => {
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
       .mockImplementation(() => Promise.resolve(data));
 
-    const result = await fcdService.aggregateOverlapByCountry('5692', 'Argentina', 'production');
+    const result = await fcdService.getAggregatedWDPAOverlapByCountry(
+      '5692',
+      'Argentina',
+      'production',
+      ''
+    );
     expect(result).toStrictEqual({
-      overlap: {
-        fullyRestrictive: 1777.6965,
-        lessRestricted: 0.2748,
-      },
+      fullyRestrictive: 1777.6965,
+      lessRestricted: 0.2748,
+    });
+  });
+
+  it(`When the input array has 4 locations with specific locationId is requested`, async () => {
+    const fcdService = new FCDService();
+    jest
+      .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
+      .mockImplementation(() => Promise.resolve(data));
+
+    const result = await fcdService.getAggregatedWDPAOverlapByCountry(
+      '5692',
+      'Argentina',
+      'production',
+      '3'
+    );
+    expect(result).toStrictEqual({
+      fullyRestrictive: 1777.6965,
+      lessRestricted: 0.2748,
     });
   });
 
@@ -46,12 +67,15 @@ describe('WDPA Overlap Country', () => {
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
       .mockImplementation(() => Promise.resolve(undefined));
 
-    const result = await fcdService.aggregateOverlapByCountry('5692', 'Argentina', 'production');
+    const result = await fcdService.getAggregatedWDPAOverlapByCountry(
+      '5692',
+      'Argentina',
+      'production',
+      ''
+    );
     expect(result).toStrictEqual({
-      overlap: {
-        fullyRestrictive: 0,
-        lessRestricted: 0,
-      },
+      fullyRestrictive: 0,
+      lessRestricted: 0,
     });
   });
 
@@ -61,12 +85,15 @@ describe('WDPA Overlap Country', () => {
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
       .mockImplementation(() => Promise.resolve([]));
 
-    const result = await fcdService.aggregateOverlapByCountry('5692', 'Argentina', 'production');
+    const result = await fcdService.getAggregatedWDPAOverlapByCountry(
+      '5692',
+      'Argentina',
+      'production',
+      '3'
+    );
     expect(result).toStrictEqual({
-      overlap: {
-        fullyRestrictive: 0,
-        lessRestricted: 0,
-      },
+      fullyRestrictive: 0,
+      lessRestricted: 0,
     });
   });
 });
@@ -111,12 +138,33 @@ describe('Landmark Overlap Country', () => {
       .spyOn(fcdService, 'getLandmarkOverlapCountryData')
       .mockImplementation(() => Promise.resolve(data));
 
-    const result = await fcdService.landmarkOverlapCountry('5692', 'Argentina', 'production');
+    const result = await fcdService.getAggregatedLandmarkOverlapByCountry(
+      '5692',
+      'Argentina',
+      'production',
+      ''
+    );
     expect(result).toStrictEqual({
-      overlap: {
-        indigenous: 10743.949200000001,
-        nonIndigenous: 14941.3889,
-      },
+      indigenous: 10743.949200000001,
+      nonIndigenous: 14941.3889,
+    });
+  });
+
+  it(`When have 4 locations as input array with specific locationId`, async () => {
+    const fcdService = new FCDService();
+    jest
+      .spyOn(fcdService, 'getLandmarkOverlapCountryData')
+      .mockImplementation(() => Promise.resolve(data));
+
+    const result = await fcdService.getAggregatedLandmarkOverlapByCountry(
+      '5692',
+      'Argentina',
+      'production',
+      '6'
+    );
+    expect(result).toStrictEqual({
+      indigenous: 10743.949200000001,
+      nonIndigenous: 14941.3889,
     });
   });
 
@@ -126,12 +174,15 @@ describe('Landmark Overlap Country', () => {
       .spyOn(fcdService, 'getLandmarkOverlapCountryData')
       .mockImplementation(() => Promise.resolve(undefined));
 
-    const result = await fcdService.landmarkOverlapCountry('5692', 'Argentina', 'production');
+    const result = await fcdService.getAggregatedLandmarkOverlapByCountry(
+      '5692',
+      'Argentina',
+      'production',
+      ''
+    );
     expect(result).toStrictEqual({
-      overlap: {
-        indigenous: 0,
-        nonIndigenous: 0,
-      },
+      indigenous: 0,
+      nonIndigenous: 0,
     });
   });
 
@@ -141,12 +192,15 @@ describe('Landmark Overlap Country', () => {
       .spyOn(fcdService, 'getLandmarkOverlapCountryData')
       .mockImplementation(() => Promise.resolve([]));
 
-    const result = await fcdService.landmarkOverlapCountry('5692', 'Argentina', 'production');
+    const result = await fcdService.getAggregatedLandmarkOverlapByCountry(
+      '5692',
+      'Argentina',
+      'production',
+      ''
+    );
     expect(result).toStrictEqual({
-      overlap: {
-        indigenous: 0,
-        nonIndigenous: 0,
-      },
+      indigenous: 0,
+      nonIndigenous: 0,
     });
   });
 });

@@ -57,17 +57,25 @@ export class FCDController {
   }
 
   async handleWDPACategoryForList(listId: string, params: FcdV2ControllerRequestBody) {
-    const { clientDatabase, country, locationId } = params;
+    const { clientDatabase, country, locationId, countryGadm } = params;
 
-    const overlap = await this.fcdService.getAggregatedWDPAOverlapByCountry(
+    const wdpaRawData = await this.fcdService.getProtectedAreasByCategoryAreaData(
       listId,
       country,
       clientDatabase,
       locationId
     );
 
+    const overlap = this.fcdService.getAggregatedWDPAOverlapData(wdpaRawData);
+    const country_specific_deforestation_wdpa_yearly =
+      this.fcdService.getProcessedWDPACountrySpecificDeforestationYearlyData(
+        countryGadm,
+        wdpaRawData
+      );
+
     return {
       overlap,
+      country_specific_deforestation_wdpa_yearly,
     };
   }
 

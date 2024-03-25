@@ -4,6 +4,6 @@ Content-Type: application/zip
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
 ### Get FCD data for list filtered by locationId
-GET https://localhost:8443/api/fcd?listId=5837&country=Argentina&countryGadm=ARG&locationId=3&category=WDPA,landmark,country,classified_region
+GET https://localhost:8443/api/fcd?listId=5837&country=Argentina&countryGadm=ARG&locationId=7&category=WDPA,landmark,country,classified_region
 Content-Type: application/zip
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

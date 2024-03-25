@@ -35,19 +35,7 @@ export class FCDService {
     },
   };
 
-  async getAggregatedWDPAOverlapByCountry(
-    listId: string,
-    country: string,
-    clientDatabase: string,
-    locationId: string
-  ) {
-    const data = await this.getProtectedAreasByCategoryAreaData(
-      listId,
-      country,
-      clientDatabase,
-      locationId
-    );
-
+  getAggregatedWDPAOverlapData(data: GetProtectedAreasByCategoryAreaType[]) {
     const result = {
       fullyRestrictive: 0,
       lessRestricted: 0,
@@ -62,6 +50,40 @@ export class FCDService {
           } else {
             result.lessRestricted += value;
           }
+        }
+      });
+    });
+
+    return result;
+  }
+
+  getProcessedWDPACountrySpecificDeforestationYearlyData(
+    countryGadm: string,
+    data: GetProtectedAreasByCategoryAreaType[]
+  ) {
+    const result = {
+      fullyRestrictive: {},
+      lessRestricted: {},
+    };
+
+    data?.forEach((item) => {
+      const jsonParsedItemData = JSON.parse(item.countrySpecificDeforestationWdpaYearly || '{}');
+      const countrySpecificDeforestationData = jsonParsedItemData[countryGadm] || {};
+      Object.entries(countrySpecificDeforestationData)?.forEach(([key, value]) => {
+        if (this.isFullRestrictiveCategory(key)) {
+          Object.entries(value)?.forEach(([innerKey, innerValue]) => {
+            if (!result.fullyRestrictive[innerKey]) {
+              result.fullyRestrictive[innerKey] = 0;
+            }
+            result.fullyRestrictive[innerKey] += innerValue;
+          });
+        } else {
+          Object.entries(value)?.forEach(([innerKey, innerValue]) => {
+            if (!result.lessRestricted[innerKey]) {
+              result.lessRestricted[innerKey] = 0;
+            }
+            result.lessRestricted[innerKey] += innerValue;
+          });
         }
       });
     });

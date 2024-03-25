@@ -31,31 +31,39 @@ describe('FCDController', () => {
   });
 
   it('should handle WDPA category successfully', async () => {
-    const wdpaOverlapMockedData = {
-      fullyRestrictive: 1777.6965,
-      lessRestricted: 0.2748,
-    };
-    service.getAggregatedWDPAOverlapByCountry = jest
+    const wdpaOverlapMockedData = {};
+    const countrySpecificDeforestationData = {};
+
+    service.getProtectedAreasByCategoryAreaData = jest
       .fn()
-      .mockResolvedValue(wdpaOverlapMockedData) as jest.MockedFunction<
-      typeof service.getAggregatedWDPAOverlapByCountry
+      .mockResolvedValue([]) as jest.MockedFunction<
+      typeof service.getProtectedAreasByCategoryAreaData
+    >;
+
+    service.getAggregatedWDPAOverlapData = jest
+      .fn()
+      .mockReturnValue(wdpaOverlapMockedData) as jest.MockedFunction<
+      typeof service.getAggregatedWDPAOverlapData
+    >;
+
+    service.getProcessedWDPACountrySpecificDeforestationYearlyData = jest
+      .fn()
+      .mockReturnValue(countrySpecificDeforestationData) as jest.MockedFunction<
+      typeof service.getProcessedWDPACountrySpecificDeforestationYearlyData
     >;
 
     const response = await controller.getFCDCategoryDataForListId('1', 'WDPA', {
       clientDatabase: 'TestCo',
       country: 'Argentina',
       locationId: '5',
+      countryGadm: 'ARG',
     });
 
     expect(response).toEqual({
       overlap: wdpaOverlapMockedData,
+      country_specific_deforestation_wdpa_yearly: countrySpecificDeforestationData,
     });
-    expect(service.getAggregatedWDPAOverlapByCountry).toHaveBeenCalledWith(
-      '1',
-      'Argentina',
-      'TestCo',
-      '5'
-    );
+    expect(service.getAggregatedWDPAOverlapData).toHaveBeenCalledWith([]);
   });
 
   it('should handle landmark category successfully', async () => {

@@ -8,7 +8,7 @@ GET https://localhost:8443/api/feature-flags
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 
-### Get feature flags rules by flagId 
+### Get feature flags rules by flagId
 GET https://localhost:8443/api/feature-flags/Afi
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

@@ -1,10 +1,11 @@
-import { DynamicModule, ForwardReference, Type } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { DynamicModule, ForwardReference, Injectable, Type } from '@nestjs/common';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { organizationEntities, systemEntities } from '../entity';
-import { Injectable, Logger } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { Logger } from '@nestjs/common';
+import { DataSource, EntitySchema } from 'typeorm';
 import { withTimeout, Mutex } from 'async-mutex';
+import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
+import { MixedList } from 'typeorm/common/MixedList';
 
 const TEST_ENVIRONMENT = 'test';
 const CONNECTION_TYPE_MSSQL = 'mssql';
@@ -23,35 +24,62 @@ export interface ConnectionCacheItem {
   timeout: NodeJS.Timeout;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+const createDatasourceConfig = (
+  name: string,
+  database: string,
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  entities: MixedList<Function | string | EntitySchema>
+): TypeOrmModuleOptions => {
+  const env = process.env.NODE_ENV;
+
+  let databaseName = '';
+  if (env === TEST_ENVIRONMENT && name === 'default') {
+    databaseName = 'db.default.sqlite';
+  } else if (env === TEST_ENVIRONMENT) {
+    databaseName = 'db.sqlite';
+  } else if (env !== TEST_ENVIRONMENT && (database != '' || database != undefined)) {
+    databaseName = database;
+  } else {
+    databaseName = process.env.MSSQL_DATABASE;
+  }
+
+  let newEntities = entities;
+  if (entities === undefined || entities.length === 0) {
+    if (database === 'gfwpro') {
+      newEntities = systemEntities;
+    } else {
+      newEntities = organizationEntities;
+    }
+  }
+
+  const type = env === TEST_ENVIRONMENT ? CONNECTION_TYPE_SQLITE : CONNECTION_TYPE_MSSQL;
+
+  return {
+    name,
+    type,
+    database: databaseName,
+    synchronize: env === TEST_ENVIRONMENT,
+    logging: env === TEST_ENVIRONMENT,
+    entities: newEntities,
+    username: process.env.MSSQL_USERNAME,
+    password: process.env.MSSQL_PASSWORD,
+    host: process.env.MSSQL_HOSTNAME,
+    port: parseInt(process.env.MSSQL_PORT, 10),
+    extra: {
+      trustServerCertificate: true,
+    },
+  };
+};
+
 export class TypeOrmSystemModule {
   static create(props: CreateTypeOrmSystemModuleProps) {
     const { name, imports } = props;
     return TypeOrmModule.forRootAsync({
       name,
-      imports: [ConfigModule, ...imports],
-      inject: [ConfigService],
-      useFactory: async (config: ConfigService) => {
-        const env = config.get<string>('NODE_ENV');
-        return {
-          name,
-          type: env === TEST_ENVIRONMENT ? CONNECTION_TYPE_SQLITE : CONNECTION_TYPE_MSSQL,
-          database:
-            env === TEST_ENVIRONMENT
-              ? name === 'default'
-                ? 'db.default.sqlite'
-                : 'db.sqlite'
-              : config.get<string>('MSSQL_DATABASE'),
-          username: config.get<string>('MSSQL_USERNAME'),
-          password: config.get<string>('MSSQL_PASSWORD'),
-          synchronize: env === TEST_ENVIRONMENT,
-          logging: true,
-          entities: systemEntities,
-          host: config.get<string>('MSSQL_HOSTNAME'),
-          port: parseInt(config.get<string>('MSSQL_PORT'), 10),
-          extra: {
-            trustServerCertificate: true,
-          },
-        };
+      imports: [...imports],
+      useFactory: async () => {
+        return createDatasourceConfig(name, '', systemEntities);
       },
     });
   }
@@ -65,13 +93,14 @@ export class ClientStoreConnection {
     new Error('Error on try to establish connection')
   );
 
-  constructor(private config: ConfigService) {}
-
   private readonly connections: Map<string, ConnectionCacheItem> = new Map();
 
-  async getConnection(database: string): Promise<DataSource> {
+  async getConnection(
+    database: string,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    entities: MixedList<Function | string | EntitySchema> = organizationEntities
+  ): Promise<DataSource> {
     const connectionId = process.env.MSSQL_HOSTNAME + database;
-    const env = this.config.get<string>('NODE_ENV');
 
     if (this.connections.has(connectionId)) {
       return this.connections.get(connectionId).connection;
@@ -79,20 +108,12 @@ export class ClientStoreConnection {
 
     const release = await this.mutexWithTimeout.acquire();
     try {
-      const connectionDb = new DataSource({
-        type: env === TEST_ENVIRONMENT ? CONNECTION_TYPE_SQLITE : CONNECTION_TYPE_MSSQL,
+      const datasourceConfig = createDatasourceConfig(
         database,
-        synchronize: env === TEST_ENVIRONMENT,
-        logging: true,
-        entities: organizationEntities,
-        username: this.config.get<string>('MSSQL_USERNAME'),
-        password: this.config.get<string>('MSSQL_PASSWORD'),
-        host: this.config.get<string>('MSSQL_HOSTNAME'),
-        port: parseInt(this.config.get<string>('MSSQL_PORT'), 10),
-        extra: {
-          trustServerCertificate: true,
-        },
-      });
+        database,
+        entities
+      ) as DataSourceOptions;
+      const connectionDb = new DataSource(datasourceConfig);
 
       const orgConnection = await connectionDb.initialize();
 
@@ -106,7 +127,10 @@ export class ClientStoreConnection {
       Logger.log(`Data Source ${database} has been initialized`);
       return this.connections.get(connectionId).connection;
     } catch (error) {
-      Logger.error(`Data Source ${database} initialization error on env: ${env}`, error);
+      Logger.error(
+        `Data Source ${database} initialization error on env: ${process.env.NODE_ENV}`,
+        error
+      );
       throw new Error(`Data Source initialization error`);
     } finally {
       release();
@@ -117,7 +141,7 @@ export class ClientStoreConnection {
     const cached = this.connections.get(connectionId);
     if (cached) {
       this.connections.delete(connectionId);
-      (await cached.connection).destroy();
+      await cached.connection.destroy();
     }
   }
 }

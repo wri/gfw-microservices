@@ -432,6 +432,81 @@ function createGraphics(features) {
   });
 }
 
+function getFields() {
+  return [
+    {
+      name: 'ObjectID',
+      alias: 'ObjectID',
+      type: 'oid',
+    },
+    {
+      name: 'type',
+      alias: 'Type',
+      type: 'string',
+    },
+    {
+      name: 'numberOfAlerts',
+      alias: 'numberOfAlerts',
+      type: 'integer',
+    },
+    {
+      name: 'treeDensity',
+      alias: 'treeDensity',
+      type: 'double',
+    },
+    {
+      name: 'maxTreeDensity',
+      alias: 'maxTreeDensity',
+      type: 'double',
+    },
+    {
+      name: 'numberOfLocations',
+      alias: 'numberOfLocations',
+      type: 'integer',
+    },
+    {
+      name: 'percentageOfLocations',
+      alias: 'percentageOfLocations',
+      type: 'double',
+    },
+    {
+      name: 'gadmid_0',
+      alias: 'gadmid_0',
+      type: 'string',
+    },
+    {
+      name: 'gadmid_1',
+      alias: 'gadmid_1',
+      type: 'string',
+    },
+    {
+      name: 'gadmid_2',
+      alias: 'gadmid_2',
+      type: 'string',
+    },
+    {
+      name: 'Country',
+      alias: 'Country',
+      type: 'string',
+    },
+    {
+      name: 'State',
+      alias: 'State',
+      type: 'string',
+    },
+    {
+      name: 'SubState',
+      alias: 'SubState',
+      type: 'string',
+    },
+    {
+      name: 'location_name',
+      alias: 'location_name',
+      type: 'string',
+    },
+  ];
+}
+
 /**
  * Create and return graphics layer based on graphics passed in function
  * @param graphics
@@ -439,78 +514,7 @@ function createGraphics(features) {
 function createLayer(graphics, maxDensity) {
   return new FeatureLayer({
     id: 'DASHBOARDLAYER',
-    fields: [
-      {
-        name: 'ObjectID',
-        alias: 'ObjectID',
-        type: 'oid',
-      },
-      {
-        name: 'type',
-        alias: 'Type',
-        type: 'string',
-      },
-      {
-        name: 'numberOfAlerts',
-        alias: 'numberOfAlerts',
-        type: 'integer',
-      },
-      {
-        name: 'treeDensity',
-        alias: 'treeDensity',
-        type: 'double',
-      },
-      {
-        name: 'maxTreeDensity',
-        alias: 'maxTreeDensity',
-        type: 'double',
-      },
-      {
-        name: 'numberOfLocations',
-        alias: 'numberOfLocations',
-        type: 'integer',
-      },
-      {
-        name: 'percentageOfLocations',
-        alias: 'percentageOfLocations',
-        type: 'double',
-      },
-      {
-        name: 'gadmid_0',
-        alias: 'gadmid_0',
-        type: 'string',
-      },
-      {
-        name: 'gadmid_1',
-        alias: 'gadmid_1',
-        type: 'string',
-      },
-      {
-        name: 'gadmid_2',
-        alias: 'gadmid_2',
-        type: 'string',
-      },
-      {
-        name: 'Country',
-        alias: 'Country',
-        type: 'string',
-      },
-      {
-        name: 'State',
-        alias: 'State',
-        type: 'string',
-      },
-      {
-        name: 'SubState',
-        alias: 'SubState',
-        type: 'string',
-      },
-      {
-        name: 'location_name',
-        alias: 'location_name',
-        type: 'string',
-      },
-    ],
+    fields: getFields(),
     outFields: ['*'],
     objectIdField: 'ObjectID',
     geometryType: 'point',

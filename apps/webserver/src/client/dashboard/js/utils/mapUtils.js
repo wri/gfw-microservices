@@ -370,19 +370,21 @@ function getAlertsTotal(selectedAdmin = '', zoomLevel = -1) {
   return totalLocations.length;
 }
 
-/**
- * Create graphics for feature
- * @param {Array} features - List of features
- * @param {Object} locationFilters - Location Filters (ALERTS, FLAGGED, NOALERTS)
- * @param {number} zoomLevel - Zoom level
- * @returns {Array} - List of graphics
- */
-function createGraphics(features, locationFilters, zoomLevel) {
+function findMaxTreeDensity(features) {
   const densityArray = features
     .map((feature) => feature.attributes.treeDensity)
     .filter((density) => !isNaN(density));
-  let maxDensity = Math.max(...densityArray);
-  maxDensity = (maxDensity && maxDensity !== -Infinity) ? maxDensity : 1;
+  const maxTreeDensity = Math.max(...densityArray);
+  return (maxTreeDensity && maxTreeDensity !== -Infinity) ? maxTreeDensity : 1;
+}
+
+/**
+ * Create graphics for feature
+ * @param {Array} features - List of features
+ * @returns {Array} - List of graphics
+ */
+function createGraphics(features) {
+  const maxTreeDensity = findMaxTreeDensity(features);
 
   return features.map((feature) => {
     return new Graphic({
@@ -390,7 +392,7 @@ function createGraphics(features, locationFilters, zoomLevel) {
         ...feature.attributes,
         SubState: feature.attributes['Sub State'],
         treeDensity: feature.attributes.hasAlerts ? feature.attributes.treeDensity : -1,
-        maxTreeDensity: maxDensity,
+        maxTreeDensity,
       },
       geometry: feature.geometry,
     });
@@ -633,7 +635,7 @@ function updateLayer(
 
         handleBaseLayer(map, zoomLevel);
 
-        const graphics = createGraphics(features, locationFilters, zoomLevel);
+        const graphics = createGraphics(features);
         const layer = createLayer(graphics);
         map.add(layer);
 

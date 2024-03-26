@@ -283,19 +283,24 @@ function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
 
     let treeCoverArea = Number(feature.attributes.umd);
     treeCoverArea = treeCoverArea === 0 ? numberOfAlerts : treeCoverArea;
+    const treeDensity = numberOfAlerts / treeCoverArea;
 
     const numberOfLocations = 1;
     const selectedCoverageProperty = dictionary.alertType_featureCoverageProperty[selectedAlert];
     const totalLocations = featuresArray.length;
-    const hasDataForAlert = feature.attributes[selectedCoverageProperty];
+    const hasAlerts = feature.attributes[selectedCoverageProperty];
     const percentageOfLocations = totalLocations ? (numberOfLocations / totalLocations) * 100 : 100;
-    const treeDensity = numberOfAlerts / treeCoverArea;
-    feature.attributes.percentageOfLocations = percentageOfLocations
-    feature.attributes.numberOfAlerts = numberOfAlerts;
-    feature.attributes.numberOfLocations = numberOfLocations;
-    feature.attributes.treeCoverArea = treeCoverArea;
-    feature.attributes.treeDensity = treeDensity;
-    feature.attributes.hasAlerts = hasDataForAlert;
+
+    feature.attributes = {
+      ...feature.attributes,
+      percentageOfLocations,
+      numberOfAlerts,
+      numberOfLocations,
+      treeCoverArea,
+      treeDensity,
+      hasAlerts,
+    }
+
     return feature;
   });
 

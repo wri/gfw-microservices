@@ -93,17 +93,11 @@ function handleFeatureHover(view, graphic) {
 }
 
 function returnNameBasedOnZoom(zoomLevel, attributes) {
-  let locationName = '';
-  if (zoomLevel === 0) {
-    locationName = attributes.Country;
-  } else if (zoomLevel === 1) {
-    locationName = attributes.State;
-  } else if (zoomLevel === 2) {
-    locationName = attributes.SubState;
-  } else {
-    locationName = attributes.location_name;
+  const adminNames = ['Country', 'State', 'SubState'];
+  if (zoomLevel < 0 || zoomLevel > adminNames.length - 1) {
+    return attributes.location_name;
   }
-  return locationName;
+  return attributes[adminNames[zoomLevel]];
 }
 
 /**

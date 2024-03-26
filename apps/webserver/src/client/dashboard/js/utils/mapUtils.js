@@ -214,7 +214,7 @@ function mergeData(
     // data is and object that has features grouped by admin unit depending on zoom level it can be IDN.[1].[15] (e.g "IDN": [...features], "LKA": [...features])
     const activeAdminId = feature.attributes[selectedAdminProperty];
     const adminUnitData = data[feature.attributes[selectedAdminProperty]];
-    const hasDataForAlert = adminUnitData.some(
+    const hasAlerts = adminUnitData.some(
       (f) => f.properties[selectedCoverageProperty] === true
     );
 
@@ -259,12 +259,12 @@ function mergeData(
       ...feature,
       attributes: {
         ...feature.attributes,
-        hasAlerts: hasDataForAlert,
-        numberOfLocations,
         percentageOfLocations,
         numberOfAlerts,
+        numberOfLocations,
         treeCoverArea,
         treeDensity,
+        hasAlerts,
       },
     };
   });
@@ -291,17 +291,18 @@ function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
     const hasAlerts = feature.attributes[selectedCoverageProperty];
     const percentageOfLocations = totalLocations ? (numberOfLocations / totalLocations) * 100 : 100;
 
-    feature.attributes = {
-      ...feature.attributes,
-      percentageOfLocations,
-      numberOfAlerts,
-      numberOfLocations,
-      treeCoverArea,
-      treeDensity,
-      hasAlerts,
+    return {
+      ...feature,
+      attributes: {
+        ...feature.attributes,
+        percentageOfLocations,
+        numberOfAlerts,
+        numberOfLocations,
+        treeCoverArea,
+        treeDensity,
+        hasAlerts,
+      }
     }
-
-    return feature;
   });
 
   return summarizedFeaturesArray;

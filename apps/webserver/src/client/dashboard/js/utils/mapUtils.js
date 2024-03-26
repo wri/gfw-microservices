@@ -310,20 +310,40 @@ function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
 
 /**
  * Get Symbol size
- * @param {number} percentageOfLocations - Percentage of Locations
- * @returns {number} - Size of Symbol
+ * @returns {number} - ArcGIS class-break infos
  */
-function getSymbolSize(percentageOfLocations) {
-  if (percentageOfLocations > 75) {
-    return 50;
-  }
-  if (percentageOfLocations > 50) {
-    return 40;
-  }
-  if (percentageOfLocations > 25) {
-    return 30;
-  }
-  return 20;
+function getSymbolSize() {
+  const markerWithSize = (size) => ({
+    type: 'simple-marker',
+    size,
+    outline: {
+      width: 0,
+      color: [0, 0, 0, 0],
+    },
+  });
+
+  return [
+    {
+      minValue: 0,
+      maxValue: 25,
+      symbol: markerWithSize('20px'),
+    },
+    {
+      minValue: 25.09,
+      maxValue: 50,
+      symbol: markerWithSize('40px'),
+    },
+    {
+      minValue: 50.09,
+      maxValue: 75,
+      symbol: markerWithSize('60px'),
+    },
+    {
+      minValue: 75.09,
+      maxValue: 100,
+      symbol: markerWithSize('80px'),
+    },
+  ];
 }
 
 /**
@@ -417,42 +437,6 @@ function createGraphics(features) {
  * @param graphics
  */
 function createLayer(graphics, maxDensity) {
-  const zeroToTwentyFive = {
-    type: 'simple-marker',
-    size: '20px',
-    outline: {
-      width: 0,
-      color: [0, 0, 0, 0],
-    },
-  };
-
-  const TwentyFiveToFifty = {
-    type: 'simple-marker',
-    size: '40px',
-    outline: {
-      width: 0,
-      color: [0, 0, 0, 0],
-    },
-  };
-
-  const FiftyToSeventyFive = {
-    type: 'simple-marker',
-    size: '60px',
-    outline: {
-      width: 0,
-      color: [0, 0, 0, 0],
-    },
-  };
-
-  const SeventyFiveToOneHundred = {
-    type: 'simple-marker',
-    size: '80px',
-    outline: {
-      width: 0,
-      color: [0, 0, 0, 0],
-    },
-  };
-
   return new FeatureLayer({
     id: 'DASHBOARDLAYER',
     fields: [
@@ -543,28 +527,7 @@ function createLayer(graphics, maxDensity) {
           color: [0, 0, 0, 0],
         },
       },
-      classBreakInfos: [
-        {
-          minValue: 0,
-          maxValue: 25,
-          symbol: zeroToTwentyFive,
-        },
-        {
-          minValue: 25.09,
-          maxValue: 50,
-          symbol: TwentyFiveToFifty,
-        },
-        {
-          minValue: 50.09,
-          maxValue: 75,
-          symbol: FiftyToSeventyFive,
-        },
-        {
-          minValue: 75.09,
-          maxValue: 100,
-          symbol: SeventyFiveToOneHundred,
-        },
-      ],
+      classBreakInfos: getSymbolSize(),
       visualVariables: [getSymbolColor()],
     },
   });

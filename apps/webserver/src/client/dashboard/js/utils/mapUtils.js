@@ -191,6 +191,19 @@ function getCentroidGeometries(gadmids, zoomLevel, data) {
   });
 }
 
+function getPercentageOfLocations(totalPopulation, numberOfLocations) {
+  return totalPopulation ? (numberOfLocations / totalPopulation) * 100 : 100;
+}
+
+function getTreeCoverMetrics(originalTreeCoverArea, numberOfAlerts) {
+  const treeCoverArea = originalTreeCoverArea === 0 ? numberOfAlerts : originalTreeCoverArea;
+  const treeDensity = numberOfAlerts / treeCoverArea;
+  return {
+    treeCoverArea,
+    treeDensity,
+  }
+}
+
 function mergeData(
   featuresArray,
   data,
@@ -246,14 +259,9 @@ function mergeData(
     // 2. calculate number of alerts within a given admin unit
     const numberOfAlerts = getNumberOfAlerts(adminUnitData, selectedTimeframe, timeframeProperty);
 
-    const percentageOfLocations = zoomLevelTotal ? (numberOfLocations / zoomLevelTotal) * 100 : 100;
-    let treeCoverArea = adminUnitData.reduce(
-      (totalTree, f) => totalTree + Number(f.properties.umd),
-      0
-    );
-
-    treeCoverArea = treeCoverArea === 0 ? numberOfAlerts : treeCoverArea;
-    const treeDensity = numberOfAlerts / treeCoverArea;
+    const percentageOfLocations = getPercentageOfLocations(zoomLevelTotal, numberOfLocations);
+    const treeCoverArea = adminUnitData.reduce((totalTree, f) => totalTree + Number(f.properties.umd), 0);
+    const treeCoverMetrics = getTreeCoverMetrics(treeCoverArea, numberOfAlerts);
 
     return {
       ...feature,
@@ -262,8 +270,7 @@ function mergeData(
         percentageOfLocations,
         numberOfAlerts,
         numberOfLocations,
-        treeCoverArea,
-        treeDensity,
+        ...treeCoverMetrics,
         hasAlerts,
       },
     };
@@ -281,15 +288,14 @@ function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
       return TIMEFRAME_RANGE[selectedTimeframe].includes(curent.day) ? total + curent.count : total;
     }, 0);
 
-    let treeCoverArea = Number(feature.attributes.umd);
-    treeCoverArea = treeCoverArea === 0 ? numberOfAlerts : treeCoverArea;
-    const treeDensity = numberOfAlerts / treeCoverArea;
+    const treeCoverArea = Number(feature.attributes.umd);
+    const treeCoverMetrics = getTreeCoverMetrics(treeCoverArea, numberOfAlerts);
 
     const numberOfLocations = 1;
     const selectedCoverageProperty = dictionary.alertType_featureCoverageProperty[selectedAlert];
     const totalLocations = featuresArray.length;
     const hasAlerts = feature.attributes[selectedCoverageProperty];
-    const percentageOfLocations = totalLocations ? (numberOfLocations / totalLocations) * 100 : 100;
+    const percentageOfLocations = getPercentageOfLocations(totalLocations, numberOfLocations);
 
     return {
       ...feature,
@@ -298,8 +304,7 @@ function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
         percentageOfLocations,
         numberOfAlerts,
         numberOfLocations,
-        treeCoverArea,
-        treeDensity,
+        ...treeCoverMetrics,
         hasAlerts,
       }
     }

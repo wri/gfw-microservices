@@ -242,7 +242,7 @@ export default class Dashboard extends Component {
           !Object.prototype.hasOwnProperty.call(listDashboardTimestamp, 'errorCode') &&
           listDashboardTimestamp.length !== 0
         ) {
-          const formatTimestamp = moment(listDashboardTimestamp.dashboardLastResults).format(
+          const formatTimestamp = moment(listDashboardTimestamp.dashboardLastSubmit).format(
             'D MMMM YYYY, h:mm A'
           );
           this.setState({ lastUpdatedDashboard: formatTimestamp });

@@ -7,10 +7,15 @@ import { Injectable, Logger } from '@nestjs/common';
 export class AlertsDataService extends IInputData {
   private readonly logger = new Logger(AlertsDataService.name);
   async getNumberOfPages(filters: BasicFieldsFileRequest): Promise<number> {
-    const { organizationDatabase, listId, rowsPerPage } = filters;
+    const { organizationDatabase, listId, rowsPerPage, isGFWList } = filters;
 
-    const queryString = `clientDatabase=${organizationDatabase}`;
-    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/alerts/${listId}/countDashboardData?${queryString}`;
+    let url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/alerts/${listId}`;
+    if ((typeof isGFWList === 'string' && isGFWList === 'false') || !isGFWList) {
+      const queryString = `clientDatabase=${organizationDatabase}`;
+      url = `${url}/countDashboardData?${queryString}`;
+    } else {
+      url = `${url}/countGFWDashboardData`;
+    }
 
     try {
       const { data } = await axios.get(encodeURI(url));
@@ -22,9 +27,16 @@ export class AlertsDataService extends IInputData {
     }
   }
   async getDataPaginated(filters: BasicFieldsFileRequest): Promise<DashboardDataType[]> {
-    const { organizationDatabase, rowsPerPage, page, listId } = filters;
-    const queryString = `rowsPerPage=${rowsPerPage}&pageNumber=${page}&clientDatabase=${organizationDatabase}`;
-    const url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/alerts/${listId}/dashboardDataPaginated?${queryString}`;
+    const { organizationDatabase, rowsPerPage, page, listId, isGFWList } = filters;
+
+    let queryString = `rowsPerPage=${rowsPerPage}&pageNumber=${page}`;
+    let url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/alerts/${listId}`;
+    if ((typeof isGFWList === 'string' && isGFWList === 'false') || !isGFWList) {
+      queryString = `${queryString}&clientDatabase=${organizationDatabase}`;
+      url = `${url}/dashboardDataPaginated?${queryString}`;
+    } else {
+      url = `${url}/dashboardGFWDataPaginated?${queryString}`;
+    }
 
     try {
       const { data } = await axios.get(encodeURI(url));

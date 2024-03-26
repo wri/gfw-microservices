@@ -14,6 +14,11 @@ const PaginatedQuerySchema = z.object({
   rowsPerPage: z.coerce.number().gte(1, 'Page size must be greater than or equal to 1'),
 });
 
+const GFWPaginatedQuerySchema = z.object({
+  pageNumber: z.coerce.number().gte(1, 'Page must be greater than or equal to 1'),
+  rowsPerPage: z.coerce.number().gte(1, 'Page size must be greater than or equal to 1'),
+});
+
 @Controller('alerts')
 export class AlertsController {
   constructor(private readonly alertsService: AlertsService) {}
@@ -41,6 +46,21 @@ export class AlertsController {
   getDashboardTimestamp(@Param('listID') listID: number, @Query() query: DatabaseQueryParam) {
     const { clientDatabase } = query;
     return this.alertsService.getDashboardTimestamp(listID, clientDatabase);
+  }
+
+  @Get(':listID/countGFWDashboardData')
+  async countGFWDashboardData(@Param('listID') listID: number) {
+    return await this.alertsService.countGFWDashboardData(listID);
+  }
+
+  @Get(':listID/dashboardGFWDataPaginated')
+  @UsePipes(new ZodValidationPipe(GFWPaginatedQuerySchema))
+  async getGFWDashboardDataPaginated(
+    @Param('listID') listID: number,
+    @Query() query: PaginatedQueryRequest
+  ) {
+    const { pageNumber, rowsPerPage } = query;
+    return await this.alertsService.getGFWDashboardDataPaginated(listID, pageNumber, rowsPerPage);
   }
 
   @Get(':listID/countDashboardData')

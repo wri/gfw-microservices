@@ -148,25 +148,13 @@ function handleBaseLayer(map, zoomLevel) {
   });
 }
 
-function getCentroidGeometries(gadmids, zoomLevel, data) {
-  const lat_long__mapping = {
-    0: {
-      lat: 'gadmid_0_lat',
-      long: 'gadmid_0_lon',
-    },
-    1: {
-      lat: 'gadmid_1_lat',
-      long: 'gadmid_1_lon',
-    },
-    2: {
-      lat: 'gadmid_2_lat',
-      long: 'gadmid_2_lon',
-    },
-    3: {
-      lat: 'location_lat',
-      long: 'location_lon',
-    },
-  };
+function getCentroidGeometries(zoomLevel, data) {
+  const lat_long__mapping = [
+    { lat: 'gadmid_0_lat', long: 'gadmid_0_lon' },
+    { lat: 'gadmid_1_lat', long: 'gadmid_1_lon' },
+    { lat: 'gadmid_2_lat', long: 'gadmid_2_lon' },
+    { lat: 'location_lat', long: 'location_lon' },
+  ];
 
   return new Promise((resolve) => {
     const features = Object.values(data)
@@ -357,9 +345,9 @@ function getSymbolColor() {
     normalizationField: 'maxTreeDensity',
     stops: [
       {
-        value: -1.0,
+        value: -1.0, // features where hasAlerts == false
         opacity: '0.75',
-        color: '#999999',
+        color: '#999999', // will be assigned this color (gray)
       },
       {
         value: 0.0, // features where < 1% of tree density
@@ -559,8 +547,7 @@ function updateLayer(
       map.remove(oldLayer);
     }
   } else {
-    const processedGADMIds = Object.keys(clonedData);
-    getCentroidGeometries(processedGADMIds, zoomLevel, clonedData)
+    getCentroidGeometries(zoomLevel, clonedData)
       .then((featuresArray) => {
         // depending on the zoom level we either merge data? or summarize features?
         let features;

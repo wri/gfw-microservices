@@ -85,6 +85,7 @@ function initializeMap(view) {
  * @param {Object} graphic
  */
 function handleFeatureHover(view, graphic) {
+  view.popup.viewModel.includeDefaultActions = false; // remove 'Zoom To' icon
   view.popup.open({
     location: graphic.mapPoint,
     content: createPopup(graphic.graphic),

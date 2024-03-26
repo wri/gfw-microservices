@@ -45,7 +45,7 @@ function initializeMap(view) {
         Object.hasOwn(layer.graphic.attributes, 'numberOfAlerts')
       );
 
-      if (dashboardGraphic.graphic.attributes.numberOfLocations > 0 && zoomLevel < 3) {
+      if (dashboardGraphic?.graphic?.attributes?.numberOfLocations > 0 && zoomLevel < 3) {
         const selectedAdmin = dashboardGraphic.graphic.attributes[`gadmid_${zoomLevel}`];
         const locationsWithAlert = getAlertsTotal(selectedAdmin, zoomLevel);
         store.dispatch(setZoomLevelTotal(locationsWithAlert));

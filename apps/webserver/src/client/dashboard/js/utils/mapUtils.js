@@ -201,7 +201,7 @@ function getTreeCoverMetrics(originalTreeCoverArea, numberOfAlerts) {
   return {
     treeCoverArea,
     treeDensity,
-  }
+  };
 }
 
 function mergeData(
@@ -227,9 +227,7 @@ function mergeData(
     // data is and object that has features grouped by admin unit depending on zoom level it can be IDN.[1].[15] (e.g "IDN": [...features], "LKA": [...features])
     const activeAdminId = feature.attributes[selectedAdminProperty];
     const adminUnitData = data[feature.attributes[selectedAdminProperty]];
-    const hasAlerts = adminUnitData.some(
-      (f) => f.properties[selectedCoverageProperty] === true
-    );
+    const hasAlerts = adminUnitData.some((f) => f.properties[selectedCoverageProperty] === true);
 
     const numberOfLocations = rawData.geojson.features.reduce((acc, val) => {
       if (val.properties[selectedAdminProperty] === activeAdminId) {
@@ -260,7 +258,10 @@ function mergeData(
     const numberOfAlerts = getNumberOfAlerts(adminUnitData, selectedTimeframe, timeframeProperty);
 
     const percentageOfLocations = getPercentageOfLocations(zoomLevelTotal, numberOfLocations);
-    const treeCoverArea = adminUnitData.reduce((totalTree, f) => totalTree + Number(f.properties.umd), 0);
+    const treeCoverArea = adminUnitData.reduce(
+      (totalTree, f) => totalTree + Number(f.properties.umd),
+      0
+    );
     const treeCoverMetrics = getTreeCoverMetrics(treeCoverArea, numberOfAlerts);
 
     return {
@@ -306,8 +307,8 @@ function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
         numberOfLocations,
         ...treeCoverMetrics,
         hasAlerts,
-      }
-    }
+      },
+    };
   });
 
   return summarizedFeaturesArray;
@@ -386,7 +387,7 @@ function findMaxTreeDensity(features) {
     .map((feature) => feature.attributes.treeDensity)
     .filter((density) => !isNaN(density));
   const maxTreeDensity = Math.max(...densityArray);
-  return (maxTreeDensity && maxTreeDensity !== -Infinity) ? maxTreeDensity : 1;
+  return maxTreeDensity && maxTreeDensity !== -Infinity ? maxTreeDensity : 1;
 }
 
 /**
@@ -449,7 +450,7 @@ function createLayer(graphics, maxDensity) {
       width: 0,
       color: [0, 0, 0, 0],
     },
-  }
+  };
 
   return new FeatureLayer({
     id: 'DASHBOARDLAYER',
@@ -477,7 +478,7 @@ function createLayer(graphics, maxDensity) {
       {
         name: 'maxTreeDensity',
         alias: 'maxTreeDensity',
-        type: 'double'
+        type: 'double',
       },
       {
         name: 'numberOfLocations',
@@ -487,7 +488,7 @@ function createLayer(graphics, maxDensity) {
       {
         name: 'percentageOfLocations',
         alias: 'percentageOfLocations',
-        type: 'double'
+        type: 'double',
       },
       {
         name: 'gadmid_0',
@@ -534,12 +535,12 @@ function createLayer(graphics, maxDensity) {
       type: 'class-breaks',
       field: 'percentageOfLocations',
       defaultSymbol: {
-        type: "simple-marker", // autocasts as new SimpleFillSymbol()
-        color: "#999999",
+        type: 'simple-marker', // autocasts as new SimpleFillSymbol()
+        color: '#999999',
         outline: {
           width: 0,
           color: [0, 0, 0, 0],
-        }
+        },
       },
       classBreakInfos: [
         {
@@ -565,25 +566,25 @@ function createLayer(graphics, maxDensity) {
       ],
       visualVariables: [
         {
-          type: "color", // indicates this is a color visual variable
-          field: "treeDensity",
+          type: 'color', // indicates this is a color visual variable
+          field: 'treeDensity',
           normalizationField: 'maxTreeDensity',
           stops: [
             {
               value: -1.0,
               opacity: '0.75',
-              color: "#999999",
+              color: '#999999',
             },
             {
               value: 0.0, // features where < 1% of tree density
               opacity: '0.75',
-              color: "#008000", // will be assigned this color (green)
+              color: '#008000', // will be assigned this color (green)
             },
             {
               value: 1.0, // features where 100% tree density
               opacity: '0.75',
-              color: "#FFA500", // will be assigned this color (orange)
-            }
+              color: '#FFA500', // will be assigned this color (orange)
+            },
           ],
           // features with values between 0.01 - 1.0 will be assigned
           // a color on a ramp between green and orange proportional

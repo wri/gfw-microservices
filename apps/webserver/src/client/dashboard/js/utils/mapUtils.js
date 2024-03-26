@@ -328,29 +328,36 @@ function getSymbolSize(percentageOfLocations) {
 
 /**
  * Get symbol color
- * @param {Object} feature - Feature object
- * @param {number} maxDensity - Features Density Max value
- * @returns {string} - Color RGBA value
+ * features with values between 0.01 - 1.0 will be assigned
+ * a color on a ramp between green and orange proportional
+ * to where the value falls between 0.001 and 1.0.
+ *
+ * features with no alerts will have treeDensity of -1 and will appear gray
+ * @returns {object} - ArcGIS visual variable configuration
  */
-function getSymbolColor(feature, maxDensity) {
-  const { treeDensity, hasAlerts } = feature.attributes;
-  const orange = 'rgba(255, 165, 0, 0.75)';
-  const green = 'rgba(0, 128, 0, 0.75)';
-  const gray = 'rgba(153, 153, 153, 0.75)';
-
-  // Determine color
-  if (hasAlerts) {
-    if (isNaN(treeDensity)) {
-      return green;
-    }
-    if (!isFinite(treeDensity)) {
-      return orange;
-    }
-    // Create scale
-    const scale = scaleLinear().domain([0, maxDensity]).range([green, orange]);
-    return scale(treeDensity);
-  }
-  return gray;
+function getSymbolColor() {
+  return {
+    type: 'color', // indicates this is a color visual variable
+    field: 'treeDensity',
+    normalizationField: 'maxTreeDensity',
+    stops: [
+      {
+        value: -1.0,
+        opacity: '0.75',
+        color: '#999999',
+      },
+      {
+        value: 0.0, // features where < 1% of tree density
+        opacity: '0.75',
+        color: '#008000', // will be assigned this color (green)
+      },
+      {
+        value: 1.0, // features where 100% tree density
+        opacity: '0.75',
+        color: '#FFA500', // will be assigned this color (orange)
+      },
+    ],
+  };
 }
 
 /**
@@ -558,33 +565,7 @@ function createLayer(graphics, maxDensity) {
           symbol: SeventyFiveToOneHundred,
         },
       ],
-      visualVariables: [
-        {
-          type: 'color', // indicates this is a color visual variable
-          field: 'treeDensity',
-          normalizationField: 'maxTreeDensity',
-          stops: [
-            {
-              value: -1.0,
-              opacity: '0.75',
-              color: '#999999',
-            },
-            {
-              value: 0.0, // features where < 1% of tree density
-              opacity: '0.75',
-              color: '#008000', // will be assigned this color (green)
-            },
-            {
-              value: 1.0, // features where 100% tree density
-              opacity: '0.75',
-              color: '#FFA500', // will be assigned this color (orange)
-            },
-          ],
-          // features with values between 0.01 - 1.0 will be assigned
-          // a color on a ramp between green and orange proportional
-          // to where the value falls between 0.001 and 1.0
-        },
-      ],
+      visualVariables: [getSymbolColor()],
     },
   });
 }

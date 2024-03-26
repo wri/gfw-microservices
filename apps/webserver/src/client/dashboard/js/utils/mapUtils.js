@@ -2,7 +2,6 @@ import React from 'react';
 import { render } from 'react-dom';
 import _uniq from 'lodash/uniq';
 import isEmpty from 'lodash/isEmpty';
-import { scaleLinear } from 'd3-scale';
 import Graphic from 'esri/Graphic';
 import Point from 'esri/geometry/Point';
 import FeatureLayer from 'esri/layers/FeatureLayer';
@@ -44,7 +43,7 @@ function initializeMap(view) {
       const { zoomLevel } = state;
       const { results } = response;
       const dashboardGraphic = results.find((layer) =>
-        layer.graphic.attributes.hasOwnProperty('numberOfAlerts')
+        Object.hasOwn(layer.graphic.attributes, 'numberOfAlerts')
       );
 
       if (dashboardGraphic.graphic.attributes.numberOfLocations > 0 && zoomLevel < 3) {
@@ -68,7 +67,7 @@ function initializeMap(view) {
     view.hitTest({ x: evt.x, y: evt.y }).then((response) => {
       const { results } = response;
       const dashboardGraphic = results.find((layer) =>
-        layer.graphic.attributes.hasOwnProperty('numberOfAlerts')
+        Object.hasOwn(layer.graphic.attributes, 'numberOfAlerts')
       );
       if (dashboardGraphic) {
         handleFeatureHover(view, dashboardGraphic);

@@ -25,7 +25,6 @@ import {
 } from './dashboard-date.utils';
 
 function initializeMap(view) {
-  // Save view to redux - can be used in other react components if needed
   store.dispatch(saveView(view));
   // Disable certain navigation as detailed in requirements
   view.on('double-click', (evt) => {
@@ -63,7 +62,7 @@ function initializeMap(view) {
   });
 
   view.on('pointer-move', (evt) => {
-    // Perform hit text at the screenpoint
+    // Perform hit test at the pointer
     view.hitTest({ x: evt.x, y: evt.y }).then((response) => {
       const { results } = response;
       const dashboardGraphic = results.find((layer) =>
@@ -201,7 +200,7 @@ function mergeData(
   const selectedAdminProperty = dictionary.zoomLevel_gadmidGroupBy[zoomLevel];
   const timeframeProperty = getTimeframeProperty(selectedAlert, selectedTimeframe);
 
-  // --WIP TODO rewrite, this needs major refactoring, right now we check for alert type and then the time fram
+  // --WIP TODO rewrite, this needs major refactoring, right now we check for alert type and then the time frame
   // and we apply different filters based on different timeframes, we need solution that is re-usable and less verbose
   return featuresArray.map((feature) => {
     // 1. calculate number of locations within a given admin unit
@@ -221,13 +220,11 @@ function mergeData(
         if (ALERTS && !NOALERTS) {
           // With Alerts
           const timeFrameCheck = checkForAlerts(val, selectedTimeframe, timeframeProperty);
-
           return val.properties[selectedCoverageProperty] && timeFrameCheck ? acc + 1 : acc;
         }
         if (!ALERTS && NOALERTS) {
           // With NO Alerts
           const timeFrameCheck = checkForNoAlerts(val, selectedTimeframe, timeframeProperty);
-
           return val.properties[selectedCoverageProperty] && timeFrameCheck ? acc + 1 : acc;
         }
       } else {

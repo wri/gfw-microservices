@@ -30,7 +30,7 @@ describe('Location diagnostics', () => {
 
   When('I navigate to a list details page and click on a location checkbox', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
-    locationsPage.clickOnLocationCheckbox();
+    locationsPage.clickOnLocationCheckbox('a1');
   });
 
   When('I click on location diagnostic button', () => {

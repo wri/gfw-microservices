@@ -60,7 +60,7 @@ const createDatasourceConfig = (
     type,
     database: databaseName,
     synchronize: env === TEST_ENVIRONMENT,
-    logging: true,
+    logging: env === TEST_ENVIRONMENT,
     entities: newEntities,
     username: process.env.MSSQL_USERNAME,
     password: process.env.MSSQL_PASSWORD,

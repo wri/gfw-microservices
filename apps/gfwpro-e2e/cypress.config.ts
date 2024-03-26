@@ -48,6 +48,8 @@ async function setupNodeEvents(
 }
 
 export default defineConfig({
+  viewportWidth: 1800,
+  viewportHeight: 1080,
   e2e: {
     ...nxE2EPreset(__dirname),
     setupNodeEvents,

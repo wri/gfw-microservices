@@ -1,16 +1,11 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { TokenService } from '../api-keys/token.service';
-import { createFeatureFlagsService } from '@wri-monorepos/feature-flags';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { featureFlagsService } from '@wri-monorepos/shared';
 // TODO: Verify the key is valid and extract the organization data from database
 @Injectable()
 export class ApiKeyMiddleware implements NestMiddleware {
-  constructor(
-    private readonly tokenService: TokenService,
-    @InjectDataSource('default') private connection: DataSource
-  ) {}
+  constructor(private readonly tokenService: TokenService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
     const apiKey = req.headers['x-api-key'] as string;
@@ -23,10 +18,8 @@ export class ApiKeyMiddleware implements NestMiddleware {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const featureFlagsService = createFeatureFlagsService(this.connection);
-    const flags = await featureFlagsService.getFeatureFlagsForCurrentOrg(
-      apiKeyRecord.organizationId
-    );
+    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+    const flags = await getFeatureFlagsForCurrentOrg(apiKeyRecord.organizationId);
 
     const hasFlagForExternalApiEnabled = flags.some(
       (f) => f.flagId === 'PermanentFlagForExternalApiKeys'

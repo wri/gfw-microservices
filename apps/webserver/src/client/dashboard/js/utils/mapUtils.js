@@ -107,7 +107,7 @@ function returnNameBasedOnZoom(zoomLevel, attributes) {
 function createPopup(graphic) {
   const state = store.getState();
   const { attributes } = graphic;
-  const { zoomLevel, rawData } = state;
+  const { zoomLevel } = state;
 
   const content = (
     <div className="popup__content">
@@ -168,7 +168,7 @@ function getCentroidGeometries(gadmids, zoomLevel, data) {
     },
   };
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const features = Object.values(data)
       .flat()
       .map((f) => {
@@ -215,7 +215,7 @@ function mergeData(
 
   // --WIP TODO rewrite, this needs major refactoring, right now we check for alert type and then the time fram
   // and we apply different filters based on different timeframes, we need solution that is re-usable and less verbose
-  const filteredFeatures = featuresArray.map((feature) => {
+  return featuresArray.map((feature) => {
     // 1. calculate number of locations within a given admin unit
     // data is and object that has features grouped by admin unit depending on zoom level it can be IDN.[1].[15] (e.g "IDN": [...features], "LKA": [...features])
     const activeAdminId = feature.attributes[selectedAdminProperty];
@@ -269,14 +269,12 @@ function mergeData(
       },
     };
   });
-
-  return filteredFeatures;
 }
 
 function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
   const timeframeAttributeField = getTimeframeProperty(selectedAlert, selectedTimeframe);
 
-  const summarizedFeaturesArray = featuresArray.map((feature) => {
+  return featuresArray.map((feature) => {
     const selectedTimeframeValues = feature.attributes[timeframeAttributeField];
     const numberOfAlerts = selectedTimeframeValues.reduce((total, curent) => {
       return TIMEFRAME_RANGE[selectedTimeframe].includes(curent.day) ? total + curent.count : total;
@@ -303,13 +301,11 @@ function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
       },
     };
   });
-
-  return summarizedFeaturesArray;
 }
 
 /**
  * Get Symbol size
- * @returns {number} - ArcGIS class-break infos
+ * @returns {array} - ArcGIS class-break infos
  */
 function getSymbolSize() {
   const markerWithSize = (size) => ({
@@ -510,7 +506,7 @@ function getFields() {
  * Create and return graphics layer based on graphics passed in function
  * @param graphics
  */
-function createLayer(graphics, maxDensity) {
+function createLayer(graphics) {
   return new FeatureLayer({
     id: 'DASHBOARDLAYER',
     fields: getFields(),

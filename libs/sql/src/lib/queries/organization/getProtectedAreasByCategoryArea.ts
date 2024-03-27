@@ -39,4 +39,5 @@ export type GetProtectedAreasByCategoryAreaType = {
   listId: number;
   locationId: number;
   protectedAreasByCategoryArea: string;
+  countrySpecificDeforestationWdpaYearly: string | null;
 };

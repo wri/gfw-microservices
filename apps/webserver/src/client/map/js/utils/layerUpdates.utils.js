@@ -47,7 +47,7 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     prevState.treeCoverLossDateRange?.startYear !== treeCoverLossDateRange?.startYear ||
     prevState.treeCoverLossDateRange?.endYear !== treeCoverLossDateRange?.endYear
   ) {
-    const mapLayer = map.findLayerById(proLayers.treeBiomassLossID);
+    const mapLayer = map.findLayerById(proLayers.treeCoverLossID);
     if (mapLayer) {
       mapLayer.minYear = treeCoverLossDateRange.startYear;
       mapLayer.maxYear = treeCoverLossDateRange.endYear;

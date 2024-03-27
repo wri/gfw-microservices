@@ -105,30 +105,35 @@ describe('Landmark Overlap Country', () => {
       locationId: 2,
       totalArea: 314.2081,
       landmarkByCategoryArea: '{}',
+      countrySpecificDeforestation: '{}',
     },
     {
       listId: 5692,
       locationId: 3,
       totalArea: 45.6463,
       landmarkByCategoryArea: '{"Not Reported":45.6463}',
+      countrySpecificDeforestation: '{}',
     },
     {
       listId: 5692,
       locationId: 4,
       totalArea: 5024.1901,
       landmarkByCategoryArea: '{}',
+      countrySpecificDeforestation: '{}',
     },
     {
       listId: 5692,
       locationId: 6,
       totalArea: 299.3889,
       landmarkByCategoryArea: '{"Not Reported":299.3889}',
+      countrySpecificDeforestation: '{}',
     },
     {
       listId: 5692,
       locationId: 6,
       totalArea: 20001.9047,
       landmarkByCategoryArea: '{"Not Reported":10398.914}',
+      countrySpecificDeforestation: '{}',
     },
   ];
 
@@ -142,11 +147,17 @@ describe('Landmark Overlap Country', () => {
       '5692',
       'Argentina',
       'production',
-      ''
+      '',
+      'ARG'
     );
     expect(result).toStrictEqual({
-      indigenous: 10743.949200000001,
-      nonIndigenous: 14941.3889,
+      country_specific_deforestation: {
+        indigenous: {},
+      },
+      overlap: {
+        indigenous: 10743.949200000001,
+        nonIndigenous: 14941.388899999998,
+      },
     });
   });
 
@@ -160,11 +171,17 @@ describe('Landmark Overlap Country', () => {
       '5692',
       'Argentina',
       'production',
-      '6'
+      '6',
+      'ARG'
     );
     expect(result).toStrictEqual({
-      indigenous: 10743.949200000001,
-      nonIndigenous: 14941.3889,
+      country_specific_deforestation: {
+        indigenous: {},
+      },
+      overlap: {
+        indigenous: 10743.949200000001,
+        nonIndigenous: 14941.388899999998,
+      },
     });
   });
 
@@ -178,12 +195,10 @@ describe('Landmark Overlap Country', () => {
       '5692',
       'Argentina',
       'production',
-      ''
+      '',
+      'ARG'
     );
-    expect(result).toStrictEqual({
-      indigenous: 0,
-      nonIndigenous: 0,
-    });
+    expect(result).toStrictEqual({});
   });
 
   it(`When the input array is empty`, async () => {
@@ -196,11 +211,17 @@ describe('Landmark Overlap Country', () => {
       '5692',
       'Argentina',
       'production',
-      ''
+      '',
+      'ARG'
     );
     expect(result).toStrictEqual({
-      indigenous: 0,
-      nonIndigenous: 0,
+      country_specific_deforestation: {
+        indigenous: {},
+      },
+      overlap: {
+        indigenous: 0,
+        nonIndigenous: 0,
+      },
     });
   });
 });

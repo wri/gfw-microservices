@@ -93,7 +93,7 @@ export class FCDService {
       },
     };
 
-    const landmark = data.reduce((prev, curr) => {
+    const landmark = data?.reduce((prev, curr) => {
       let landmark = { ...prev };
 
       try {

@@ -59,13 +59,15 @@ describe('FCDController', () => {
   });
 
   it('should handle landmark category successfully', async () => {
-    const landmarOverlapMockedData = {
-      indigenous: 10743.949200000001,
-      nonIndigenous: 14941.3889,
+    const landmarkOverlapMockedData = {
+      overlap: {
+        indigenous: 10743.949200000001,
+        nonIndigenous: 14941.3889,
+      },
     };
     service.getAggregatedLandmarkOverlapByCountry = jest
       .fn()
-      .mockResolvedValue(landmarOverlapMockedData) as jest.MockedFunction<
+      .mockResolvedValue(landmarkOverlapMockedData) as jest.MockedFunction<
       typeof service.getAggregatedLandmarkOverlapByCountry
     >;
 
@@ -73,16 +75,16 @@ describe('FCDController', () => {
       clientDatabase: 'TestCo',
       country: 'Argentina',
       locationId: '3',
+      countryGadm: 'ARG',
     });
 
-    expect(response).toEqual({
-      overlap: landmarOverlapMockedData,
-    });
+    expect(response).toEqual(landmarkOverlapMockedData);
     expect(service.getAggregatedLandmarkOverlapByCountry).toHaveBeenCalledWith(
       '1',
       'Argentina',
       'TestCo',
-      '3'
+      '3',
+      'ARG'
     );
   });
 

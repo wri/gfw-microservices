@@ -38,6 +38,10 @@ describe('WDPA Category', () => {
   it('getAggregatedWDPAOverlapData should correctly aggregate fullyRestrictive and lessRestricted data', async () => {
     const fcdService = new FCDService();
 
+    jest
+      .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
+      .mockImplementation(() => Promise.resolve(data));
+
     const result = await fcdService.getAggregatedWDPAOverlapData('1', 'Argentina', 'TestCo', '5');
 
     expect(result).toEqual({
@@ -48,6 +52,7 @@ describe('WDPA Category', () => {
 
   it('getProcessedWDPACountrySpecificDeforestationYearlyData should correctly process country specific data', async () => {
     const fcdService = new FCDService();
+
     jest
       .spyOn(fcdService, 'getWDPACountrySpecificDeforestationYearlyData')
       .mockImplementation(() => Promise.resolve(data));
@@ -88,10 +93,14 @@ describe('WDPA Category', () => {
     });
   });
 
-  it(`getAggregatedWDPAOverlapData when the input is undefined`, async () => {
+  it(`getAggregatedWDPAOverlapData when data is undefined`, async () => {
     const fcdService = new FCDService();
 
-    const result = await fcdService.getAggregatedWDPAOverlapData('1', 'Argentina', 'TestCo', '5');
+    jest
+      .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
+      .mockImplementation(() => Promise.resolve(undefined));
+
+    const result = await fcdService.getAggregatedWDPAOverlapData('1', 'Argentina', 'TestCo', '');
 
     expect(result).toStrictEqual({
       fullyRestrictive: 0,
@@ -99,7 +108,7 @@ describe('WDPA Category', () => {
     });
   });
 
-  it(`getAggregatedWDPAOverlapData when the input array is empty`, async () => {
+  it(`getAggregatedWDPAOverlapData when getProtectedAreasByCategoryAreaData result array is empty`, async () => {
     const fcdService = new FCDService();
     jest
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')

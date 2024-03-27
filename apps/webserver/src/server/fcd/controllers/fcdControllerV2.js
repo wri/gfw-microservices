@@ -2,6 +2,7 @@ const path = require('path');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const makeListProcessingRequest = require('../utils/makeListProcessingRequest');
 const FcdParamsSchema = require('../utils/fcdValidationSchema');
+const { HttpStatus } = require('@nestjs/common');
 
 /**
  * @summary manage requests for list-processing api
@@ -49,8 +50,8 @@ module.exports = async (req, res) => {
     }, {});
 
     // prepare status for client
-    const isEveryRequestSuccessful = requestData.every((item) => item.status === 200);
-    const statusCode = isEveryRequestSuccessful ? 200 : 207;
+    const isEveryRequestSuccessful = requestData.every((item) => item.status === HttpStatus.OK);
+    const statusCode = isEveryRequestSuccessful ? HttpStatus.OK : 207;
 
     res.status(statusCode).send(responseData);
   } catch (error) {

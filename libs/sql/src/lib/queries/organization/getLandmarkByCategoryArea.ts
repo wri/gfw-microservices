@@ -11,14 +11,21 @@ DECLARE @listTable NVARCHAR(100) = ''
 DECLARE @analysisTable NVARCHAR(100) = ''
 DECLARE @TEMPLATE NVARCHAR(MAX)
 
-SELECT @listTable=l.list_table_name, @analysisTable=l.list_analysis_table_name FROM [dbo].[Lists] l WHERE l.id =  @listID
+SELECT 
+    @listTable=l.list_table_name,
+    @analysisTable=l.list_analysis_table_name 
+FROM 
+    [dbo].[Lists] l 
+WHERE 
+    l.id = @listID
 
 SET @TEMPLATE = '
   SELECT 
       @listId as listId,
       lt.location_id as locationId,
       an.total_area as totalArea,
-      an.landmark_by_category_area as landmarkByCategoryArea 
+      an.landmark_by_category_area as landmarkByCategoryArea,
+      ISNULL(an.tree_cover_loss_by_country_landmark_yearly, ''{}'') as countrySpecificDeforestation
   FROM 
       dbo.[{LIST_TABLE_NAME}] lt 
   JOIN 
@@ -41,4 +48,5 @@ export type GetLandmarkByCategoryAreaType = {
   totalArea: number;
   locationId: number;
   landmarkByCategoryArea: string;
+  countrySpecificDeforestation: string;
 };

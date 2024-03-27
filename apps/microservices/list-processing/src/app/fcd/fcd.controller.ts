@@ -72,17 +72,18 @@ export class FCDController {
   }
 
   async handleLandmarkCategoryForList(listId: string, params: FcdV2ControllerRequestBody) {
-    const { clientDatabase, country, locationId } = params;
+    const { clientDatabase, country, locationId, countryGadm } = params;
 
     const overlap = await this.fcdService.getAggregatedLandmarkOverlapByCountry(
       listId,
       country,
       clientDatabase,
-      locationId
+      locationId,
+      countryGadm
     );
 
     return {
-      overlap,
+      ...overlap,
     };
   }
 

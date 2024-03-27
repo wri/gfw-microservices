@@ -73,7 +73,8 @@ export class FCDService {
     listId: string,
     country: string,
     clientDatabase: string,
-    locationId: string
+    locationId: string,
+    countryGadm: string
   ) {
     const data = await this.getLandmarkOverlapCountryData(
       listId,
@@ -81,23 +82,61 @@ export class FCDService {
       clientDatabase,
       locationId
     );
-    let totalArea = 0;
-    let indigenousLand = 0;
-    data?.forEach((item) => {
-      totalArea += item.totalArea;
-      const landmarkByCategoryArea = JSON.parse(item.landmarkByCategoryArea);
-      Object.entries(landmarkByCategoryArea).forEach(([key, value]) => {
-        if (typeof value === 'number') {
-          if (this.isIndigenousLand(key)) {
-            indigenousLand += value;
-          }
+
+    const initialObj = {
+      overlap: {
+        indigenous: 0,
+        nonIndigenous: 0,
+      },
+      country_specific_deforestation: {
+        indigenous: {},
+      },
+    };
+
+    const landmark = data.reduce((prev, curr) => {
+      let landmark = { ...prev };
+
+      try {
+        const overlapIndigenous =
+          JSON.parse(curr?.landmarkByCategoryArea)[this.INDIGENOUS_LAND] ?? 0;
+
+        landmark = {
+          ...landmark,
+          overlap: {
+            indigenous: prev.overlap.indigenous + overlapIndigenous,
+            nonIndigenous: prev.overlap.nonIndigenous + curr.totalArea - overlapIndigenous,
+          },
+        };
+      } catch (_) {
+        this.logger.error('error converting json object');
+      }
+
+      try {
+        const countrySpecificDeforestation = JSON.parse(curr.countrySpecificDeforestation)[
+          countryGadm
+        ][this.INDIGENOUS_LAND];
+
+        for (const key in countrySpecificDeforestation) {
+          landmark = {
+            ...landmark,
+            country_specific_deforestation: {
+              indigenous: {
+                ...landmark.country_specific_deforestation.indigenous,
+                [key]:
+                  (landmark.country_specific_deforestation.indigenous[key] ?? 0) +
+                  (countrySpecificDeforestation[key] ?? 0),
+              },
+            },
+          };
         }
-      });
-    });
+      } catch (_) {
+        this.logger.error('error converting json object');
+      }
+      return landmark;
+    }, initialObj);
 
     return {
-      indigenous: indigenousLand,
-      nonIndigenous: totalArea - indigenousLand,
+      ...landmark,
     };
   }
 
@@ -207,7 +246,7 @@ export class FCDService {
     countryGadm: string
   ) {
     try {
-      return JSON.parse(data[objName][countryGadm]);
+      return JSON.parse(data[objName])[countryGadm];
     } catch (ex) {
       this.logger.error('error converting json object');
       return null;

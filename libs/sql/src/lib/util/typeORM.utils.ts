@@ -38,7 +38,7 @@ export const createDatasourceConfig = (
     databaseName = 'db.default.sqlite';
   } else if (env === TEST_ENVIRONMENT) {
     databaseName = 'db.sqlite';
-  } else if (env !== TEST_ENVIRONMENT && (database != '' && database != undefined)) {
+  } else if (env !== TEST_ENVIRONMENT && database !== '' && database !== undefined) {
     databaseName = database;
   } else {
     databaseName = process.env.MSSQL_DATABASE;

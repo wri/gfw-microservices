@@ -28,7 +28,7 @@ describe('createDatasourceConfig', () => {
   });
 
   it('returns correct config when entities are not provided', () => {
-    process.env.NODE_ENV = "QA"; // Or any non-test environment
+    process.env.NODE_ENV = 'QA'; // Or any non-test environment
     process.env.MSSQL_DATABASE = 'GFWPro';
     const config = createDatasourceConfig('default', '', []);
     expect(config.database).toBe('GFWPro');

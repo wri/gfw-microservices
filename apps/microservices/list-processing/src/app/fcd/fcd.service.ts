@@ -8,9 +8,12 @@ import {
   getProtectedAreasByCategoryArea,
   getCountrySpecificDeforestation,
   getCountrySpecificDeforestationWithoutLocationId,
+  getWDPACountrySpecificDeforestationYearly,
+  GetWDPACountrySpecificDeforestationYearlyType,
 } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
 import * as sql from 'mssql';
+import { FcdV2ControllerRequestBody } from '../../models';
 
 @Injectable()
 export class FCDService {
@@ -35,7 +38,64 @@ export class FCDService {
     },
   };
 
-  getAggregatedWDPAOverlapData(data: GetProtectedAreasByCategoryAreaType[]) {
+  async handleWDPACategoryForList(listId: string, params: FcdV2ControllerRequestBody) {
+    const { clientDatabase, country, locationId, countryGadm } = params;
+
+    const overlap = await this.getAggregatedWDPAOverlapData(
+      listId,
+      country,
+      clientDatabase,
+      locationId
+    );
+
+    const country_specific_deforestation_wdpa_yearly =
+      await this.getProcessedWDPACountrySpecificDeforestationYearlyData(
+        clientDatabase,
+        listId,
+        countryGadm,
+        locationId
+      );
+
+    return {
+      overlap,
+      country_specific_deforestation_wdpa_yearly,
+    };
+  }
+
+  async handleLandmarkCategoryForList(listId: string, params: FcdV2ControllerRequestBody) {
+    const { clientDatabase, country, locationId } = params;
+
+    const overlap = await this.getAggregatedLandmarkOverlapByCountry(
+      listId,
+      country,
+      clientDatabase,
+      locationId
+    );
+
+    return {
+      overlap,
+    };
+  }
+
+  async handleCountryCategoryForList(listId: string, params: FcdV2ControllerRequestBody) {
+    const { clientDatabase, countryGadm, locationId } = params;
+
+    return this.countrySpecificDeforestation(listId, clientDatabase, countryGadm, locationId);
+  }
+
+  async getAggregatedWDPAOverlapData(
+    listId: string,
+    country: string,
+    clientDatabase: string,
+    locationId: string
+  ) {
+    const data = await this.getProtectedAreasByCategoryAreaData(
+      listId,
+      country,
+      clientDatabase,
+      locationId
+    );
+
     const result = {
       fullyRestrictive: 0,
       lessRestricted: 0,
@@ -57,10 +117,18 @@ export class FCDService {
     return result;
   }
 
-  getProcessedWDPACountrySpecificDeforestationYearlyData(
+  async getProcessedWDPACountrySpecificDeforestationYearlyData(
+    clientDatabase: string,
+    listId: string,
     countryGadm: string,
-    data: GetProtectedAreasByCategoryAreaType[]
+    locationId: string
   ) {
+    const data = await this.getWDPACountrySpecificDeforestationYearlyData(
+      clientDatabase,
+      listId,
+      locationId
+    );
+
     const result = {
       fullyRestrictive: {},
       lessRestricted: {},
@@ -146,6 +214,24 @@ export class FCDService {
     return await SQLUtils.queryDB<GetProtectedAreasByCategoryAreaType[]>(
       clientDatabase,
       getProtectedAreasByCategoryArea,
+      parameters
+    );
+  }
+
+  async getWDPACountrySpecificDeforestationYearlyData(
+    clientDatabase: string,
+    listId: string,
+    locationId: string
+  ) {
+    const parameters = [
+      { field: 'listId', type: sql.Int, value: listId },
+      { field: 'locationId', type: sql.Int, value: locationId || null },
+    ];
+
+    this.logger.debug(`getWDPACountrySpecificDeforestationYearlyData: `, parameters);
+    return await SQLUtils.queryDB<GetWDPACountrySpecificDeforestationYearlyType[]>(
+      clientDatabase,
+      getWDPACountrySpecificDeforestationYearly,
       parameters
     );
   }

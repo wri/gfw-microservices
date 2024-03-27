@@ -17,8 +17,7 @@ SET @TEMPLATE = '
   SELECT 
       @listId as listId,
       lt.location_id as locationId,
-      an.protected_areas_by_category_area as protectedAreasByCategoryArea, 
-      an.country_specific_deforestation_wdpa_yearly as countrySpecificDeforestationWdpaYearly
+      an.protected_areas_by_category_area as protectedAreasByCategoryArea
   FROM 
       dbo.[{LIST_TABLE_NAME}] lt 
   JOIN 
@@ -40,5 +39,4 @@ export type GetProtectedAreasByCategoryAreaType = {
   listId: number;
   locationId: number;
   protectedAreasByCategoryArea: string;
-  countrySpecificDeforestationWdpaYearly: string | null;
 };

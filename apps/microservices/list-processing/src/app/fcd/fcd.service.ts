@@ -8,12 +8,12 @@ import {
   getProtectedAreasByCategoryArea,
   getCountrySpecificDeforestation,
   getCountrySpecificDeforestationWithoutLocationId,
-  getWDPACountrySpecificDeforestationYearly,
-  GetWDPACountrySpecificDeforestationYearlyType,
+  getWDPAYearlyLoss,
+  GetWDPAYearlyLossType,
 } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
 import * as sql from 'mssql';
-import { FcdV2ControllerRequestBody } from '../../models';
+import { FcdControllerRequestBody } from '../../models';
 
 @Injectable()
 export class FCDService {
@@ -38,7 +38,7 @@ export class FCDService {
     },
   };
 
-  async handleWDPACategoryForList(listId: string, params: FcdV2ControllerRequestBody) {
+  async handleWDPACategoryForList(listId: string, params: FcdControllerRequestBody) {
     const { clientDatabase, country, locationId, countryGadm } = params;
 
     const overlap = await this.getAggregatedWDPAOverlapData(
@@ -62,7 +62,7 @@ export class FCDService {
     };
   }
 
-  async handleLandmarkCategoryForList(listId: string, params: FcdV2ControllerRequestBody) {
+  async handleLandmarkCategoryForList(listId: string, params: FcdControllerRequestBody) {
     const { clientDatabase, country, locationId } = params;
 
     const overlap = await this.getAggregatedLandmarkOverlapByCountry(
@@ -77,7 +77,7 @@ export class FCDService {
     };
   }
 
-  async handleCountryCategoryForList(listId: string, params: FcdV2ControllerRequestBody) {
+  async handleCountryCategoryForList(listId: string, params: FcdControllerRequestBody) {
     const { clientDatabase, countryGadm, locationId } = params;
 
     return this.countrySpecificDeforestation(listId, clientDatabase, countryGadm, locationId);
@@ -229,9 +229,9 @@ export class FCDService {
     ];
 
     this.logger.debug(`getWDPACountrySpecificDeforestationYearlyData: `, parameters);
-    return await SQLUtils.queryDB<GetWDPACountrySpecificDeforestationYearlyType[]>(
+    return await SQLUtils.queryDB<GetWDPAYearlyLossType[]>(
       clientDatabase,
-      getWDPACountrySpecificDeforestationYearly,
+      getWDPAYearlyLoss,
       parameters
     );
   }

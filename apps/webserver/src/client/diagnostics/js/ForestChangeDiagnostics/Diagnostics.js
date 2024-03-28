@@ -1021,24 +1021,22 @@ export default class Diagnostics extends Component {
             />
           </div>
           <div className="print-no-break" data-cy="diagnotcs-regions">
-
-            {isAmericaPresence &&
-              listView === 'forest_change' && (
-                <RegionChartsContainer
-                  listId={selectedList.id}
-                  fireDownload={this.fireDownload}
-                  data={this.getFilteredLocations()[0]}
-                  diagnosticView={diagnosticView}
-                  filteredData={listData}
-                  togglePopover={this.togglePopover}
-                  getYearlyData={this.getYearlyData}
-                  parseYearlyData={this.parseYearlyData}
-                  assignHighchartColor={this.assignHighchartColor}
-                  getFilteredLocations={this.getFilteredLocations}
-                  getYearlyHighchartSeries={this.getYearlyHighchartSeries}
-                  getCategoricalHighchartSeries={this.getCategoricalHighchartSeries}
-                />
-              )}
+            {isAmericaPresence && listView === 'forest_change' && (
+              <RegionChartsContainer
+                listId={selectedList.id}
+                fireDownload={this.fireDownload}
+                data={this.getFilteredLocations()[0]}
+                diagnosticView={diagnosticView}
+                filteredData={listData}
+                togglePopover={this.togglePopover}
+                getYearlyData={this.getYearlyData}
+                parseYearlyData={this.parseYearlyData}
+                assignHighchartColor={this.assignHighchartColor}
+                getFilteredLocations={this.getFilteredLocations}
+                getYearlyHighchartSeries={this.getYearlyHighchartSeries}
+                getCategoricalHighchartSeries={this.getCategoricalHighchartSeries}
+              />
+            )}
 
             {asiaPresence ? (
               <SoutheastAsiaRegions

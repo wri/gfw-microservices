@@ -34,9 +34,7 @@ export default function InfoBubbleContent({ children, closeBubble }) {
       >
         <CloseIcon />
       </div>
-      <div className="locations-diagnostics-bubble-view">
-        {children}
-      </div>
+      <div className="locations-diagnostics-bubble-view">{children}</div>
     </div>
   );
 }

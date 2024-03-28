@@ -25,6 +25,7 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { SqsService, SqsModule, SqsMessageHandler } from '@ssut/nestjs-sqs';
+import { ListService } from '../../Lists/lists.service'
 //import { } from '@ssut/nestjs-sqs';
 
 // Mock ConfigService
@@ -150,7 +151,7 @@ describe('ListUploadController', () => {
         }),
       ],
       controllers: [ListUploadController],
-      providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
+      providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService, ListService],
     })
       .overrideProvider(ConfigService)
       .useValue(mockConfigService) // Use the mock ConfigService

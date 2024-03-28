@@ -9,6 +9,7 @@ import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
+import { ListService } from '../../Lists/lists.service'
 
 describe('ListAnalysisController', () => {
   let controller: ListAnalysisController;
@@ -22,6 +23,15 @@ describe('ListAnalysisController', () => {
     creationDate: new Date('2023-09-28'),
     expirationDate: new Date('2023-09-28'),
   };
+  const expectedListResult={
+    listId: 123,
+    status: 'Completed',
+    errorsDetails: [],
+    resultUrl: 'https://example.com/results',
+    creationDate: new Date('2023-09-28'),
+    expirationDate: new Date('2023-09-28'),
+  
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -46,8 +56,14 @@ describe('ListAnalysisController', () => {
           provide: ListAnalysisService,
           useValue: {
             getAnalysisStatus: jest.fn(() => expectedResult),
+            getAnalysisStatusWithErrorFileStoragePath: jest.fn(() => expectedResult),
           },
-        },
+        },{
+          provide: ListService,
+          useValue: {
+            getList: jest.fn(() => expectedListResult),
+          },
+        }
       ],
     }).compile();
 

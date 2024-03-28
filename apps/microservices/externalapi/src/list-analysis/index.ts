@@ -9,7 +9,10 @@ import { Organization } from '../api-keys/organization.entity';
 import { ExternalAPIKey } from '../api-keys/external-api-key.entity';
 import { UserRoutes } from '../api-keys/user-route.entity';
 import { ClientStoreConnection } from '../shared/client-store-connection';
-import { OrganizationService } from './organization.service';
+import { ListService } from '../Lists/lists.service'
+import { Lists } from '../Lists/lists.entity'
+import { OrganizationService } from './organization.service'
+
 const awsConfig = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -19,9 +22,9 @@ const awsConfig = {
 AWS.config.update(awsConfig);
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ExternalAPIKey, UserRoutes, Organization], 'default')],
+  imports: [TypeOrmModule.forFeature([ExternalAPIKey, UserRoutes, Organization, Lists], 'default')],
   controllers: [ListAnalysisController, ListUploadController],
-  providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
+  providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService, ListService],
   exports: [OrganizationService],
 })
 export class ListsAnalysisModule {}

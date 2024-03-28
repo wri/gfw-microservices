@@ -191,10 +191,8 @@ export default class Dashboard extends Component {
     });
   };
 
-  setDashboardLastSubmit({dashboardLastSubmit}) {
-    const formatTimestamp = moment(dashboardLastSubmit).format(
-      'D MMMM YYYY, h:mm A'
-    );
+  setDashboardLastSubmit({ dashboardLastSubmit }) {
+    const formatTimestamp = moment(dashboardLastSubmit).format('D MMMM YYYY, h:mm A');
     this.setState({ lastUpdatedDashboard: formatTimestamp });
   }
 
@@ -205,10 +203,9 @@ export default class Dashboard extends Component {
 
     // use cache
     if (Object.prototype.hasOwnProperty.call(listCache, key)) {
-      const { data, time }  = listCache[key];
+      const { data, time } = listCache[key];
 
-
-      this.setDashboardLastSubmit(time)
+      this.setDashboardLastSubmit(time);
 
       store.dispatch(selectList(list));
       store.dispatch(saveRawData(data));

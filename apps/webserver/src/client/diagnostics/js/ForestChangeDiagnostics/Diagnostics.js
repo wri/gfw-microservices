@@ -13,7 +13,6 @@ import TreeCoverLossLayer from '../../../map/js/layers/TreeCoverLossLayer';
 import store from '../../../locations/js/store';
 import { updateInfoBubbleCache } from '../../../locations/js/actions/locationActions';
 import SensitiveAreas from './SensitiveAreas';
-import SouthAmericaRegions from './SouthAmericaRegions';
 import SoutheastAsiaRegions from './SoutheastAsiaRegions';
 import DeforestationTrends from './DeforestationTrends';
 import MillPrioritySummary from './MillPrioritySummary';

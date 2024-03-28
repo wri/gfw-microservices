@@ -19,11 +19,11 @@ import {
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
-import { getListStatusString, listStatus} from '@wri-monorepos/constants';
+import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAlertsSqsTemplate } from '../shared/generate-sqs-templates';
-import { ListService } from '../Lists/lists.service'
+import { ListService } from '../lists/lists.service';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -111,39 +111,37 @@ export class ListAnalysisService {
     return analysisStatus;
   }
 
-async getAnalysisStatusWithErrorFileStoragePath({
-  analysisId,
-  listId,
-  organizationId,
-}: {
-  organizationId: number;
-  listId: number;
-  analysisId: string;
-}): Promise<ListAnalysisResponse> {
-  
-  const analysisStatus = await this.getAnalysisStatus({
+  async getAnalysisStatusWithErrorFileStoragePath({
     analysisId,
     listId,
     organizationId,
-  })
-  // If the analysis status is Draft, get the list details to get the error file storage path if it exists
-  if (analysisStatus.status === getListStatusString(listStatus.Draft)) {
-
-    // Get the list details to get the error file storage path if it exists
-    const list = await this.listService.getList({
+  }: {
+    organizationId: number;
+    listId: number;
+    analysisId: string;
+  }): Promise<ListAnalysisResponse> {
+    const analysisStatus = await this.getAnalysisStatus({
       analysisId,
       listId,
       organizationId,
-    })
-    if (list ) {
-      // Add the error file storage path to the errorsDetails array
-      if (list.errorFileStoragePath) {
-        analysisStatus.errorsDetails.push(list.errorFileStoragePath)
+    });
+    // If the analysis status is Draft, get the list details to get the error file storage path if it exists
+    if (analysisStatus.status === getListStatusString(listStatus.Draft)) {
+      // Get the list details to get the error file storage path if it exists
+      const list = await this.listService.getList({
+        analysisId,
+        listId,
+        organizationId,
+      });
+      if (list) {
+        // Add the error file storage path to the errorsDetails array
+        if (list.errorFileStoragePath) {
+          analysisStatus.errorsDetails.push(list.errorFileStoragePath);
+        }
       }
     }
+    return analysisStatus;
   }
-  return analysisStatus;
-}
   async prepareUpload({
     organizationId,
     userEmail,

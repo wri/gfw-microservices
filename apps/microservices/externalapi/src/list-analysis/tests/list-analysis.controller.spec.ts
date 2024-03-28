@@ -9,7 +9,7 @@ import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
-import { ListService } from '../../Lists/lists.service'
+import { ListService } from '../../lists/lists.service';
 
 describe('ListAnalysisController', () => {
   let controller: ListAnalysisController;
@@ -23,15 +23,23 @@ describe('ListAnalysisController', () => {
     creationDate: new Date('2023-09-28'),
     expirationDate: new Date('2023-09-28'),
   };
-  const expectedListResult={
+  const expectedResultWithErroPath = {
     listId: 123,
     status: 'Completed',
     errorsDetails: [],
     resultUrl: 'https://example.com/results',
     creationDate: new Date('2023-09-28'),
     expirationDate: new Date('2023-09-28'),
-  
-  }
+    errorFileStoragePath: 'https://example.com/errors',
+  };
+  const expectedListResult = {
+    listId: 123,
+    status: 'Completed',
+    errorsDetails: [],
+    resultUrl: 'https://example.com/results',
+    creationDate: new Date('2023-09-28'),
+    expirationDate: new Date('2023-09-28'),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -56,14 +64,15 @@ describe('ListAnalysisController', () => {
           provide: ListAnalysisService,
           useValue: {
             getAnalysisStatus: jest.fn(() => expectedResult),
-            getAnalysisStatusWithErrorFileStoragePath: jest.fn(() => expectedResult),
+            getAnalysisStatusWithErrorFileStoragePath: jest.fn(() => expectedResultWithErroPath),
           },
-        },{
+        },
+        {
           provide: ListService,
           useValue: {
             getList: jest.fn(() => expectedListResult),
           },
-        }
+        },
       ],
     }).compile();
 
@@ -91,6 +100,25 @@ describe('ListAnalysisController', () => {
 
     const result = await controller.getAnalysisStatus(listId, analysisId, requestMock);
     expect(result).toMatchObject(expectedResult);
+  });
+  it('should return a successful response containing errorFileStoragePath', async () => {
+    const listId = 123;
+    const analysisId = 'FCD';
+
+    // Mock the request object with the 'x-api-key' header
+    const requestMock = createRequest({
+      method: 'GET',
+      url: `/api/v1/list/${listId}/analysis/FCD/status`,
+      headers: {
+        'x-api-key': 'your-api-key',
+      },
+      user: {
+        organizationId: 1,
+      },
+    });
+
+    const result = await controller.getAnalysisStatus(listId, analysisId, requestMock);
+    expect(result).toMatchObject(expectedResultWithErroPath);
   });
 
   it.each(['AFI', 'RandomWrongType'])(

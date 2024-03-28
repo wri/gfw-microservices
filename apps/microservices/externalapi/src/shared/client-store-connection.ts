@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { TEST_ENVIRONMENT, CONNECTION_TYPE_SQLITE, CONNECTION_TYPE_MSSQL } from '../config';
 import { ExternalUpload } from '../list-analysis/external-upload.entity';
 import { ListsAnalysisStatus } from '../list-analysis/list-analysis-status.entity';
-import { Lists } from '../Lists/lists.entity'
+import { Lists } from '../lists/lists.entity';
 
 export interface ConnectionCacheItem {
   connection: Promise<DataSource>;

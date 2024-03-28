@@ -13,8 +13,8 @@ import { DataSource } from 'typeorm';
 import { ListsAnalysisStatus } from '../list-analysis-status.entity';
 import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-status.repository.mock';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
-import { ListService } from '../../Lists/lists.service'
-import { Lists } from '../../Lists/lists.entity'
+import { ListService } from '../../lists/lists.service';
+import { Lists } from '../../lists/lists.entity';
 
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
@@ -35,7 +35,7 @@ describe('ListAnalysisService', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization, UserRoutes, ExternalAPIKey,Lists],
+          entities: [Organization, UserRoutes, ExternalAPIKey, Lists],
         }),
         TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
         ConfigModule.forRoot({
@@ -44,7 +44,13 @@ describe('ListAnalysisService', () => {
         }),
         ListAnalysisMessageModule,
       ],
-      providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService, ListService],
+      providers: [
+        ListAnalysisService,
+        UserService,
+        ClientStoreConnection,
+        OrganizationService,
+        ListService,
+      ],
     }).compile();
   });
 
@@ -79,7 +85,8 @@ describe('ListAnalysisService', () => {
     const resultWithDatesTransformed = {};
     for (const prop in result) {
       const value = result[prop];
-      resultWithDatesTransformed[prop] = value instanceof Date ? value.toLocaleDateString('en-US') : value;
+      resultWithDatesTransformed[prop] =
+        value instanceof Date ? value.toLocaleDateString('en-US') : value;
     }
 
     expect(resultWithDatesTransformed).toEqual(expectedResult);

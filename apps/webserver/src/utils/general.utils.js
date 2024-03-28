@@ -1,6 +1,6 @@
 const getFeatureFlag = () => {
   try {
-    return JSON.parse(localStorage.getItem('featureFlags'));
+    return JSON.parse(localStorage.getItem('featureFlags')) || {};
   } catch (e) {
     return {};
   }

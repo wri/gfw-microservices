@@ -23,14 +23,33 @@ describe('[AlertsDataService] Get number of pages', () => {
     jest.clearAllMocks();
   });
 
-  it('When count return 200', async () => {
+  it('When count return 200 and not a gfwlist', async () => {
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: { quantity: 200 } });
 
-    const value = await service.getNumberOfPages(filters);
+    const value = await service.getNumberOfPages({
+      ...filters,
+      isGFWList: false,
+    });
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
       'http://localhost:3334/api/alerts/6982/countDashboardData?clientDatabase=test'
+    );
+
+    expect(value).toBe(2);
+  });
+
+  it('When count return 200 and is a gfwlist', async () => {
+    jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: { quantity: 200 } });
+
+    const value = await service.getNumberOfPages({
+      ...filters,
+      isGFWList: true,
+    });
+
+    expect(mockedAxios.get).toBeCalledTimes(1);
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'http://localhost:3334/api/alerts/6982/countGFWDashboardData'
     );
 
     expect(value).toBe(2);
@@ -62,17 +81,33 @@ describe('[AnalysisAfiDataService] Get data', () => {
     jest.clearAllMocks();
   });
 
-  it('Get number of pages for location level', () => {
+  it('list is not a gfwlist and get number of pages for location level and the', () => {
     service.getDataPaginated({
       ...filters,
-      numberOfPages: 2,
+      page: 2,
+      isGFWList: false,
     });
 
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: [] });
 
     expect(mockedAxios.get).toBeCalledTimes(1);
     expect(mockedAxios.get).toHaveBeenCalledWith(
-      'http://localhost:3334/api/alerts/6982/dashboardDataPaginated?rowsPerPage=100&pageNumber=undefined&clientDatabase=test'
+      'http://localhost:3334/api/alerts/6982/dashboardDataPaginated?rowsPerPage=100&pageNumber=2&clientDatabase=test'
+    );
+  });
+
+  it('list is a gfwlist and get number of pages for location level and the', () => {
+    service.getDataPaginated({
+      ...filters,
+      page: 2,
+      isGFWList: true,
+    });
+
+    jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: [] });
+
+    expect(mockedAxios.get).toBeCalledTimes(1);
+    expect(mockedAxios.get).toHaveBeenCalledWith(
+      'http://localhost:3334/api/alerts/6982/dashboardGFWDataPaginated?rowsPerPage=100&pageNumber=2'
     );
   });
 });

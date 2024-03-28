@@ -9,7 +9,7 @@ export interface BasicFieldsFileRequest {
   type?: string;
   numberOfPages?: number;
   organizationDatabase?: string;
-  isGFWList?: false;
+  isGFWList?: boolean;
 }
 
 export interface ListFieldsFileRequest extends BasicFieldsFileRequest {

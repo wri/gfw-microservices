@@ -285,4 +285,80 @@ describe('Alerts Controller', () => {
 
     await app.close();
   });
+
+  it(`[GET] /alerts/:listID/countGFWDashboardData - when service return data`, async () => {
+    await app.init();
+
+    const getData = jest.spyOn(alertsService, 'countGFWDashboardData').mockImplementation(() => {
+      return new Promise((resolve) => {
+        resolve({
+          quantity: 1,
+        });
+      });
+    });
+
+    const response = await request(app.getHttpServer()).get(
+      '/alerts/1/countGFWDashboardData?clientDatabase=production'
+    );
+    expect(response.status).toEqual(200);
+    expect(response.body).toBeDefined();
+
+    expect(getData).toBeCalledTimes(1);
+    expect(getData).toBeCalledWith('1');
+
+    await app.close();
+  });
+
+  it(`[GET] /alerts/:listID/dashboardGFWDataPaginated - when dont send the query param`, async () => {
+    await app.init();
+
+    const response = await request(app.getHttpServer()).get('/alerts/1/dashboardGFWDataPaginated');
+    expect(response.status).toEqual(400);
+    expect(response.body).toBeDefined();
+
+    expect(response.body).toEqual({
+      details: [
+        {
+          code: 'invalid_type',
+          expected: 'number',
+          message: 'Expected number, received nan',
+          path: ['pageNumber'],
+          received: 'nan',
+        },
+        {
+          code: 'invalid_type',
+          expected: 'number',
+          message: 'Expected number, received nan',
+          path: ['rowsPerPage'],
+          received: 'nan',
+        },
+      ],
+      name: 'ZodValidationError',
+    });
+
+    await app.close();
+  });
+
+  it(`[GET] /alerts/:listID/dashboardGFWDataPaginated - when service return data `, async () => {
+    await app.init();
+
+    const getData = jest
+      .spyOn(alertsService, 'getGFWDashboardDataPaginated')
+      .mockImplementation(() => {
+        return new Promise((resolve) => {
+          resolve([]);
+        });
+      });
+
+    const response = await request(app.getHttpServer()).get(
+      '/alerts/1/dashboardGFWDataPaginated?pageNumber=2&rowsPerPage=50'
+    );
+    expect(response.status).toEqual(200);
+    expect(response.body).toBeDefined();
+
+    expect(getData).toBeCalledTimes(1);
+    expect(getData).toBeCalledWith('1', '2', '50');
+
+    await app.close();
+  });
 });

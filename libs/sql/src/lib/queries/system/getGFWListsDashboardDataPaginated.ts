@@ -36,7 +36,7 @@ export const getGFWListsDashboardDataPaginated = `
     LEFT JOIN (SELECT * FROM gfwpro.dbo.[list-administrativeAreas] WHERE State IS NULL) C ON C.Country = AA.Country
     LEFT JOIN (SELECT [Location Name] AS location_name, location_id, longitude AS location_lon, latitude AS location_lat FROM [{LIST_TABLE}]) L ON L.location_id = AD.location_id
     WHERE AD.list_id = {LIST_ID}
-    ORDER BY AD.
+    ORDER BY AD.location_id
     OFFSET {PAGE_NUMBER}*{ROW_PER_PAGE} ROWS FETCH NEXT {ROW_PER_PAGE} ROWS ONLY
   '
     SET @SQL = REPLACE(@TEMPLATE, '{LIST_ID}', @listId)

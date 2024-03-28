@@ -8,7 +8,10 @@ import * as sql from 'mssql';
 import { createListNameSchema } from '../utils/list.utils';
 import { DataSource } from 'typeorm';
 import { getListByFilters } from '@wri-monorepos/sql';
-import { getListLocationProcessingLimitCheck } from '@wri-monorepos/shared';
+import {
+  getListLocationProcessingLimitCheck,
+  getListProcessingLimits,
+} from '@wri-monorepos/shared';
 import { ProcessingLimitException } from '../app/app.exceptions';
 
 interface CreateListResult {
@@ -34,21 +37,29 @@ export class LargeListService {
 
     const { isExternalAPIProcess, ...llpRequest } = request;
 
+    const { organization_id: organizationId, subscription_status_id: subscriptionStatusId } =
+      request;
     const isListLocationOverLimit = await getListLocationProcessingLimitCheck({
       listId: request.list_id,
       orgDbName: request.organization_database,
-      organizationId: request.organization_id,
-      subscriptionStatusId: request.subscription_status_id,
+      organizationId,
+      subscriptionStatusId,
     });
 
     if (isListLocationOverLimit) {
       throw new ProcessingLimitException();
     }
 
+    const processingLimit = await getListProcessingLimits({
+      organizationId,
+      organizationType: subscriptionStatusId,
+    });
+
     const payloadBody = {
       ...llpRequest,
       environment: microserviceEnvironment,
       send_email: isExternalAPIProcess === true ? false : true,
+      processingLimit,
     };
 
     const requestBody = JSON.stringify(payloadBody);

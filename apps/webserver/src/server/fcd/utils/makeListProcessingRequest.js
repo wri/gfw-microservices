@@ -52,10 +52,6 @@ module.exports = async ({
 
     const data = await request.json();
 
-    // debugging
-    // console.log('request: ——[•]>', request);
-    // console.log("data: ——[•]>", data);
-
     return {
       error: false,
       category,

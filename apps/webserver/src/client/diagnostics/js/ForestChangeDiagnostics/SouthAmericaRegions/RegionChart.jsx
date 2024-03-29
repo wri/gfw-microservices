@@ -47,8 +47,6 @@ function RegionChart({ listId, data, fireDownload }) {
     category: ['WDPA', 'landmark', 'country', 'classified_region'],
   };
 
-  // console.log(new URLSearchParams(fcdParams).toString());
-
   useEffect(() => {
     fetch(`/api/fcd?${new URLSearchParams(fcdParams).toString()}`, {
       method: 'GET',

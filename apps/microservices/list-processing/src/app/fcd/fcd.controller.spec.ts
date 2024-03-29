@@ -31,31 +31,31 @@ describe('FCDController', () => {
   });
 
   it('should handle WDPA category successfully', async () => {
-    const wdpaOverlapMockedData = {
-      fullyRestrictive: 1777.6965,
-      lessRestricted: 0.2748,
+    const expectedResult = {
+      wdpaOverlapMockedData: {},
+      countrySpecificDeforestationData: {},
     };
-    service.getAggregatedWDPAOverlapByCountry = jest
+
+    service.handleWDPACategoryForList = jest
       .fn()
-      .mockResolvedValue(wdpaOverlapMockedData) as jest.MockedFunction<
-      typeof service.getAggregatedWDPAOverlapByCountry
+      .mockResolvedValue(expectedResult) as jest.MockedFunction<
+      typeof service.handleWDPACategoryForList
     >;
 
     const response = await controller.getFCDCategoryDataForListId('1', 'WDPA', {
       clientDatabase: 'TestCo',
       country: 'Argentina',
       locationId: '5',
+      countryGadm: 'ARG',
     });
 
-    expect(response).toEqual({
-      overlap: wdpaOverlapMockedData,
+    expect(response).toEqual(expectedResult);
+    expect(service.handleWDPACategoryForList).toHaveBeenCalledWith('1', {
+      clientDatabase: 'TestCo',
+      country: 'Argentina',
+      locationId: '5',
+      countryGadm: 'ARG',
     });
-    expect(service.getAggregatedWDPAOverlapByCountry).toHaveBeenCalledWith(
-      '1',
-      'Argentina',
-      'TestCo',
-      '5'
-    );
   });
 
   it('should handle landmark category successfully', async () => {
@@ -63,10 +63,11 @@ describe('FCDController', () => {
       indigenous: 10743.949200000001,
       nonIndigenous: 14941.3889,
     };
-    service.getAggregatedLandmarkOverlapByCountry = jest
+
+    service.handleLandmarkCategoryForList = jest
       .fn()
       .mockResolvedValue(landmarOverlapMockedData) as jest.MockedFunction<
-      typeof service.getAggregatedLandmarkOverlapByCountry
+      typeof service.handleLandmarkCategoryForList
     >;
 
     const response = await controller.getFCDCategoryDataForListId('1', 'landmark', {
@@ -75,15 +76,13 @@ describe('FCDController', () => {
       locationId: '3',
     });
 
-    expect(response).toEqual({
-      overlap: landmarOverlapMockedData,
+    expect(response).toEqual(landmarOverlapMockedData);
+
+    expect(service.handleLandmarkCategoryForList).toHaveBeenCalledWith('1', {
+      clientDatabase: 'TestCo',
+      country: 'Argentina',
+      locationId: '3',
     });
-    expect(service.getAggregatedLandmarkOverlapByCountry).toHaveBeenCalledWith(
-      '1',
-      'Argentina',
-      'TestCo',
-      '3'
-    );
   });
 
   it('should handle country category successfully', async () => {
@@ -92,29 +91,25 @@ describe('FCDController', () => {
       tree_cover_loss: {},
     };
 
-    const listId = '1';
-    const category = 'country';
-    const bodyPayload = {
-      clientDatabase: 'testDb',
-      countryGadm: 'testGadm',
-      locationId: 'testLocationId',
-    };
-
-    service.countrySpecificDeforestation = jest
+    service.handleCountryCategoryForList = jest
       .fn()
       .mockResolvedValue(mockResponse) as jest.MockedFunction<
-      typeof service.countrySpecificDeforestation
+      typeof service.handleCountryCategoryForList
     >;
 
-    const response = await controller.getFCDCategoryDataForListId(listId, category, bodyPayload);
+    const response = await controller.getFCDCategoryDataForListId('1', 'country', {
+      clientDatabase: 'TestCo',
+      countryGadm: 'ARG',
+      locationId: '4',
+    });
 
     expect(response).toEqual(mockResponse);
-    expect(service.countrySpecificDeforestation).toHaveBeenCalledWith(
-      listId,
-      bodyPayload.clientDatabase,
-      bodyPayload.countryGadm,
-      bodyPayload.locationId
-    );
+
+    expect(service.handleCountryCategoryForList).toHaveBeenCalledWith('1', {
+      clientDatabase: 'TestCo',
+      countryGadm: 'ARG',
+      locationId: '4',
+    });
   });
 
   it.each(['classified_region', 'random_category_param'])(

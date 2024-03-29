@@ -1,134 +1,63 @@
-const axios = require('axios');
-const CATEGORIES = ['wdpa', 'landmark', 'country'];
+const path = require('path');
+const logger = require(path.resolve('./config/privateutils/logger.utils'));
+const makeListProcessingRequest = require('../utils/makeListProcessingRequest');
+const FcdParamsSchema = require('../utils/fcdValidationSchema');
 
-const { LISTS_MICROSERVICE_URL } = process.env;
-const BASE_URL = `${LISTS_MICROSERVICE_URL ?? 'http://localhost:3333/api'}/fcd`;
-
-const categoryUrls = {
-  wdpa: 'wdpa_overlap_country',
-  landmark: 'landmark_overlap_country',
-  country: 'country_specific_deforestation',
-};
-
-const addData = async (
-  response,
-  { listId, category, country, organizationDatabase, countryGadm, locationId }
-) => {
-  let url = `${BASE_URL}/${listId}/${categoryUrls[category.toLowerCase()]}`;
-
-  if (category !== 'country') {
-    url += `/${country}`;
-  }
-
-  const params = {
-    clientDatabase: organizationDatabase,
-    countryGadm,
-    locationId,
-  };
-
+/**
+ * @summary manage requests for list-processing api
+ * @param {Object} req Express Request
+ * @param {Object} res Express Respond
+ */
+module.exports = async (req, res) => {
   try {
-    const result = await axios.get(url, { params });
+    const { organization_database: clientDatabase } = req.session;
 
-    const { data } = result;
+    // validate params and throw error if something's missing
+    const zodValidationResult = FcdParamsSchema.parse(req.query);
 
-    response[category] = {
-      ...data,
-    };
-  } catch (error) {
-    response[category] = {
-      error: true,
-      message: [error.message],
-    };
-  }
-};
+    // note: category is transformed by zod from string => string[]
+    const { listId, category: categories, country, countryGadm, locationId } = zodValidationResult;
 
-const getData = async ({
-  listId,
-  category,
-  country,
-  organizationDatabase,
-  countryGadm,
-  locationId,
-}) => {
-  const message = [];
-
-  if (!listId) {
-    message.push('Missing listId');
-  }
-
-  if (!category || !CATEGORIES.join(',').includes(category.toLowerCase())) {
-    message.push('Missing category');
-  }
-
-  if (!country) {
-    message.push('Missing country');
-  }
-
-  if (message.length > 0) {
-    return [
-      400,
-      {
-        message,
-        error: true,
-      },
-    ];
-  }
-
-  try {
-    const result = {
-      error: false,
-    };
-
-    const categorySplitted = category.split(',');
-
-    for (let i = 0; i < categorySplitted.length; i++) {
-      const category = categorySplitted[i];
-      if (category === 'country' && !countryGadm) {
-        return [
-          400,
-          {
-            message: 'Missing country Gadm',
+    const requestData = await Promise.all(
+      categories.map(async (category) => {
+        try {
+          return await makeListProcessingRequest({
+            clientDatabase,
+            listId,
+            category,
+            country,
+            countryGadm,
+            locationId,
+          });
+        } catch (error) {
+          return {
             error: true,
-          },
-        ];
-      }
-      await addData(result, {
-        listId,
-        category,
-        country,
-        organizationDatabase,
-        countryGadm,
-        locationId,
-      });
-    }
+            category,
+            message: error.message,
+          };
+        }
+      })
+    );
 
-    return [200, result];
+    // prepare data for client
+    const responseData = requestData.reduce((acc, item) => {
+      const { category, ...rest } = item;
+      acc[category] = {
+        ...rest,
+      };
+      return acc;
+    }, {});
+
+    // prepare status for client
+    const isEveryRequestSuccessful = requestData.every((item) => item.status === 200);
+    const statusCode = isEveryRequestSuccessful ? 200 : 207;
+
+    res.status(statusCode).send(responseData);
   } catch (error) {
-    return [
-      400,
-      {
-        message: [error.message],
-        error: true,
-      },
-    ];
+    logger.info('Error POST /api/fcd failed on webserver', error);
+    res.status(500).send({
+      error: true,
+      message: error.message,
+    });
   }
-};
-
-const run = async (request, response) => {
-  const { listId, category, country, countryGadm, locationId } = request.query;
-  const { organization_database: organizationDatabase } = request.session;
-  const [statusCode, result] = await getData({
-    listId,
-    category,
-    country,
-    organizationDatabase,
-    countryGadm,
-    locationId,
-  });
-  response.status(statusCode).send(result);
-};
-
-module.exports = {
-  run,
-  getData,
 };

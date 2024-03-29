@@ -1,10 +1,10 @@
-const { dataSource, createFeatureFlagsService } = require('../service/createFeatureFlagsService');
 const logger = require('../../../config/privateutils/logger.utils');
+import { featureFlagsService } from '@wri-monorepos/shared';
 
 module.exports = async function (request, response) {
   const { flagId } = request.params;
   const { orgId } = request.body;
-  const { deleteFeatureFlag } = createFeatureFlagsService(dataSource);
+  const { deleteFeatureFlag } = await featureFlagsService();
 
   try {
     const deletedFeatureFlag = await deleteFeatureFlag({

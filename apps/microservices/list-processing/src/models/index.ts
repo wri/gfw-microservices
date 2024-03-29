@@ -124,3 +124,15 @@ export interface GetAfiAnalysisDataRequest {
 export interface DatabaseQueryParam {
   clientDatabase: string;
 }
+
+export interface DatabaseQueryParamCountryDeforestation extends DatabaseQueryParam {
+  countryGadm: string;
+  locationId?: string;
+}
+
+export interface FcdV2ControllerRequestBody extends DatabaseQueryParam {
+  clientDatabase: string;
+  country?: string;
+  countryGadm?: string;
+  locationId?: string;
+}

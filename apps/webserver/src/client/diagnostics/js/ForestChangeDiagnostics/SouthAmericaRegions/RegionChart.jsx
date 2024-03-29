@@ -10,8 +10,11 @@ import DiagnosticsChartHeader from '../../common/DiagnosticsChartHeader';
 import { formatDecimals } from '../../../../common/js/utils/diagnostics.utils';
 import { chartDatasetConfigs } from './regions.constants';
 import '../../common/DiagnosticsChartContainer.scss';
+import { useQuery } from '../../../../common/js/hooks';
 
 function RegionChart({ listId, data, fireDownload }) {
+  const query = useQuery();
+  const locationId = query.get('locationId');
   const { argentinaOtbn, wdpaOverlapCountry, landmarkOverlapCountry } = chartDatasetConfigs;
 
   const initialCheckedChartLabels = argentinaOtbn.chartLabels.map((label) => ({
@@ -36,16 +39,32 @@ function RegionChart({ listId, data, fireDownload }) {
 
   const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || {});
 
+  const fcdParams = {
+    listId,
+    locationId,
+    country: 'Argentina',
+    countryGadm: 'ARG',
+    category: ['WDPA', 'landmark', 'country', 'classified_region'],
+  };
+
+  // console.log(new URLSearchParams(fcdParams).toString());
+
   useEffect(() => {
-    fetch(`/api/fcd?listId=${listId}&country=Argentina&category=WDPA,landmark`, {
+    fetch(`/api/fcd?${new URLSearchParams(fcdParams).toString()}`, {
       method: 'GET',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
     })
-      .then((res) => res.json())
       .then((response) => {
-        if (!response.WDPA?.error || !response.landmark?.error) {
-          setArgentinaPieChartsData(response);
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error('Request error');
+        }
+      })
+      .then((data) => {
+        if (!data.WDPA?.error || !data.landmark?.error) {
+          setArgentinaPieChartsData(data);
         }
       })
       .catch((e) => {

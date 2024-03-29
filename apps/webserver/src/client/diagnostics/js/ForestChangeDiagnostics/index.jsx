@@ -3,14 +3,7 @@ import { connect } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import Diagnostics from './Diagnostics';
 import { diagnosticsStrings } from '../../../common/js/config';
-import { useLocation } from 'react-router-dom';
-
-// TODO: organize this function
-function useQuery() {
-  const { search } = useLocation();
-
-  return React.useMemo(() => new URLSearchParams(search), [search]);
-}
+import { useQuery } from '../../../common/js/hooks';
 
 const mapStateToProps = ({ infoBubbleCache, popover }) => ({ infoBubbleCache, popover });
 

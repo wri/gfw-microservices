@@ -97,7 +97,8 @@ const TreeBiomassLayer = BaseTileLayer.createSubclass({
   },
 
   filter: function (data) {
-    const z = this.view.zoom;
+    // intensityBank indexes are integers for each zoom level
+    const z = Math.round(this.view.zoom);
 
     for (let i = 0; i < data.length; i += 4) {
       // Decode the rgba/pixel so I can filter on confidence and date ranges

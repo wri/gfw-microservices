@@ -30,17 +30,19 @@ describe('Location diagnostics', () => {
 
   When('I navigate to a list details page and click on a location checkbox', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
-    locationsPage.clickOnLocationCheckbox();
+    locationsPage.clickOnLocationCheckbox('a1');
   });
 
   When('I click on location diagnostic button', () => {
-    listDetailsPage.clickOnListDiagnosticsBtn();
+    listDetailsPage.clickOnLocationDiagnosticsBtn();
   });
 
   Then('I should be redirected to diagnostic view', () => {
-    cy.url().should('include', '/diagnostics');
+    cy.url().should('include', '/diagnostics?listId=2&locationId=');
     cy.get('.diagnostics-menu-bar').scrollIntoView();
     expect(diagnosticsPage.elements.reportBtn().should('be.visible'));
     expect(diagnosticsPage.elements.downloadBtn().should('be.visible'));
+    expect(diagnosticsPage.elements.diagnosticsMap().should('be.visible'));
+    expect(diagnosticsPage.elements.headerInfo().invoke('text').should('include', 'a1'));
   });
 });

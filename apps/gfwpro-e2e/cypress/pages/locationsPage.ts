@@ -4,7 +4,8 @@ class LocationsPage {
     searchInput: () => cy.get('.input-search__input'),
     downloadTypeDropdown: () => cy.get('#downloadTypeSelect'),
     downloadBtn: () => cy.contains('Download'),
-    checkbox: () => cy.get('.rt-td.td-checkbox'),
+    locationNameCell: () => cy.get('.rt-td.cell__Location-Name.default-cell'),
+    checkbox: () => '.rt-td.td-checkbox',
   };
 
   clickOnLocationsList(name: string) {
@@ -23,8 +24,13 @@ class LocationsPage {
     this.elements.downloadBtn().click();
   }
 
-  clickOnLocationCheckbox() {
-    this.elements.checkbox().eq(2).click();
+  clickOnLocationCheckbox(locationName: string) {
+    this.elements
+      .locationNameCell()
+      .contains(new RegExp('^' + locationName + '$'))
+      .parents()
+      .siblings(this.elements.checkbox())
+      .click();
   }
 }
 

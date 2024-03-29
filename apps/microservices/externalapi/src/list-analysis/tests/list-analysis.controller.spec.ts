@@ -29,7 +29,7 @@ describe('ListAnalysisController', () => {
     errorsDetails: ['s3://gfwpro-geotrellis-pre-data/example.com/errors'],
     resultUrl: 'https://example.com/results',
     creationDate: new Date('2023-09-28'),
-    expirationDate: new Date('2023-09-28')
+    expirationDate: new Date('2023-09-28'),
   };
   const expectedListResult = {
     listId: 123,
@@ -97,7 +97,7 @@ describe('ListAnalysisController', () => {
       },
     });
     controller.getAnalysisStatus = jest.fn().mockResolvedValue({
-      ...expectedResult
+      ...expectedResult,
     });
 
     const result = await controller.getAnalysisStatus(listId, analysisId, requestMock);

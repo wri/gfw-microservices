@@ -1,124 +1,141 @@
-import * as request from 'supertest';
-import { Test } from '@nestjs/testing';
-import { FCDService } from './fcd.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import { FCDController } from './fcd.controller';
-import { INestApplication } from '@nestjs/common';
+import { FCDService } from './fcd.service';
+import { INestApplication, NotImplementedException } from '@nestjs/common';
+import * as supertest from 'supertest';
 
-describe('[GET] /:listId/wdpa_overlap_country/:country', () => {
-  let fcdService: FCDService;
+describe('FCDController', () => {
+  let controller: FCDController;
+  let service: FCDService;
   let app: INestApplication;
 
-  it(`when database return data`, async () => {
-    const moduleRef = await Test.createTestingModule({
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
       controllers: [FCDController],
-      providers: [FCDService],
+      providers: [
+        {
+          provide: FCDService,
+          useValue: {
+            getAggregatedWDPAOverlapByCountry: jest.fn(),
+            getAggregatedLandmarkOverlapByCountry: jest.fn(),
+            countrySpecificDeforestation: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
-    fcdService = moduleRef.get<FCDService>(FCDService);
-    moduleRef.get<FCDController>(FCDController);
-
-    jest.spyOn(fcdService, 'getProtectedAreasByCategoryAreaData').mockImplementation(() => {
-      return new Promise((resolve) => {
-        resolve([
-          {
-            listId: 5692,
-            locationId: 2,
-            protectedAreasByCategoryArea: '{}',
-          },
-          {
-            listId: 5692,
-            locationId: 3,
-            protectedAreasByCategoryArea: '{}',
-          },
-          {
-            listId: 5692,
-            locationId: 4,
-            protectedAreasByCategoryArea: '{}',
-          },
-          {
-            listId: 5692,
-            locationId: 6,
-            protectedAreasByCategoryArea:
-              '{"Category Ia":1620.7222,"Category II":156.9743,"Category VI":0.2748}',
-          },
-        ]);
-      });
-    });
-
-    app = moduleRef.createNestApplication();
+    controller = module.get<FCDController>(FCDController);
+    service = module.get<FCDService>(FCDService);
+    app = module.createNestApplication();
     await app.init();
-
-    const response = await request(app.getHttpServer()).get(
-      '/fcd/5692/wdpa_overlap_country/Argentina?clientDatabase=production'
-    );
-    expect(response.status).toEqual(200);
-    expect(response.body).toBeDefined();
-    expect(response.body).toEqual({
-      overlap: {
-        fullyRestrictive: 1777.6965,
-        lessRestricted: 0.2748,
-      },
-    });
-
-    await app.close();
   });
 
-  it(`when return empty database`, async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [FCDController],
-      providers: [FCDService],
-    }).compile();
+  it('should handle WDPA category successfully', async () => {
+    const wdpaOverlapMockedData = {
+      fullyRestrictive: 1777.6965,
+      lessRestricted: 0.2748,
+    };
+    service.getAggregatedWDPAOverlapByCountry = jest
+      .fn()
+      .mockResolvedValue(wdpaOverlapMockedData) as jest.MockedFunction<
+      typeof service.getAggregatedWDPAOverlapByCountry
+    >;
 
-    fcdService = moduleRef.get<FCDService>(FCDService);
-    moduleRef.get<FCDController>(FCDController);
-
-    jest.spyOn(fcdService, 'getProtectedAreasByCategoryAreaData').mockImplementation(() => {
-      return new Promise((resolve) => {
-        resolve([]);
-      });
+    const response = await controller.getFCDCategoryDataForListId('1', 'WDPA', {
+      clientDatabase: 'TestCo',
+      country: 'Argentina',
+      locationId: '5',
     });
 
-    app = moduleRef.createNestApplication();
-    await app.init();
-
-    const response = await request(app.getHttpServer()).get(
-      '/fcd/5692/wdpa_overlap_country/Argentina?clientDatabase=production'
+    expect(response).toEqual({
+      overlap: wdpaOverlapMockedData,
+    });
+    expect(service.getAggregatedWDPAOverlapByCountry).toHaveBeenCalledWith(
+      '1',
+      'Argentina',
+      'TestCo',
+      '5'
     );
-    expect(response.status).toEqual(200);
-    expect(response.body).toBeDefined();
-    expect(response.body).toEqual({
-      overlap: {
-        fullyRestrictive: 0,
-        lessRestricted: 0,
-      },
-    });
-
-    await app.close();
   });
 
-  it(`realize request without database param`, async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [FCDController],
-      providers: [FCDService],
-    }).compile();
+  it('should handle landmark category successfully', async () => {
+    const landmarOverlapMockedData = {
+      indigenous: 10743.949200000001,
+      nonIndigenous: 14941.3889,
+    };
+    service.getAggregatedLandmarkOverlapByCountry = jest
+      .fn()
+      .mockResolvedValue(landmarOverlapMockedData) as jest.MockedFunction<
+      typeof service.getAggregatedLandmarkOverlapByCountry
+    >;
 
-    fcdService = moduleRef.get<FCDService>(FCDService);
-    moduleRef.get<FCDController>(FCDController);
-
-    jest.spyOn(fcdService, 'getProtectedAreasByCategoryAreaData').mockImplementation(() => {
-      return new Promise((resolve) => {
-        resolve([]);
-      });
+    const response = await controller.getFCDCategoryDataForListId('1', 'landmark', {
+      clientDatabase: 'TestCo',
+      country: 'Argentina',
+      locationId: '3',
     });
 
-    app = moduleRef.createNestApplication();
-    await app.init();
-
-    const response = await request(app.getHttpServer()).get(
-      '/fcd/5692/wdpa_overlap_country/Argentina'
+    expect(response).toEqual({
+      overlap: landmarOverlapMockedData,
+    });
+    expect(service.getAggregatedLandmarkOverlapByCountry).toHaveBeenCalledWith(
+      '1',
+      'Argentina',
+      'TestCo',
+      '3'
     );
-    expect(response.status).toEqual(400);
-    expect(response.body).toBeDefined();
+  });
+
+  it('should handle country category successfully', async () => {
+    const mockResponse = {
+      country_specific_deforestation: {},
+      tree_cover_loss: {},
+    };
+
+    const listId = '1';
+    const category = 'country';
+    const bodyPayload = {
+      clientDatabase: 'testDb',
+      countryGadm: 'testGadm',
+      locationId: 'testLocationId',
+    };
+
+    service.countrySpecificDeforestation = jest
+      .fn()
+      .mockResolvedValue(mockResponse) as jest.MockedFunction<
+      typeof service.countrySpecificDeforestation
+    >;
+
+    const response = await controller.getFCDCategoryDataForListId(listId, category, bodyPayload);
+
+    expect(response).toEqual(mockResponse);
+    expect(service.countrySpecificDeforestation).toHaveBeenCalledWith(
+      listId,
+      bodyPayload.clientDatabase,
+      bodyPayload.countryGadm,
+      bodyPayload.locationId
+    );
+  });
+
+  it.each(['classified_region', 'random_category_param'])(
+    'should throw NotImplementedException for %s category',
+    async (category) => {
+      await expect(
+        controller.getFCDCategoryDataForListId('1', category, {
+          clientDatabase: 'TestCo',
+          country: 'Argentina',
+          locationId: '3',
+        })
+      ).rejects.toThrow(NotImplementedException);
+    }
+  );
+
+  it('should respond with a validation error for missing clientDatabase', async () => {
+    const response = await supertest(app.getHttpServer()).post('/fcd/1/WDPA').send({
+      /* Omitting clientDatabase to trigger the validation error */
+    });
+
+    expect(response.status).toBe(400);
     expect(response.body).toEqual({
       details: [
         {
@@ -131,147 +148,9 @@ describe('[GET] /:listId/wdpa_overlap_country/:country', () => {
       ],
       name: 'ZodValidationError',
     });
-
-    await app.close();
-  });
-});
-describe('[GET] /:listId/landmark_overlap_country/:country', () => {
-  let fcdService: FCDService;
-  let app: INestApplication;
-
-  it(`when database return data`, async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [FCDController],
-      providers: [FCDService],
-    }).compile();
-
-    fcdService = moduleRef.get<FCDService>(FCDService);
-    moduleRef.get<FCDController>(FCDController);
-
-    jest.spyOn(fcdService, 'getLandmarkOverlapCountryData').mockImplementation(() => {
-      return new Promise((resolve) => {
-        resolve([
-          {
-            listId: 5692,
-            locationId: 2,
-            totalArea: 314.2081,
-            landmarkByCategoryArea: '{}',
-          },
-          {
-            listId: 5692,
-            locationId: 3,
-            totalArea: 45.6463,
-            landmarkByCategoryArea: '{"Not Reported":45.6463}',
-          },
-          {
-            listId: 5692,
-            locationId: 4,
-            totalArea: 5024.1901,
-            landmarkByCategoryArea: '{}',
-          },
-          {
-            listId: 5692,
-            locationId: 6,
-            totalArea: 299.3889,
-            landmarkByCategoryArea: '{"Not Reported":299.3889}',
-          },
-          {
-            listId: 5692,
-            locationId: 6,
-            totalArea: 20001.9047,
-            landmarkByCategoryArea: '{"Not Reported":10398.914}',
-          },
-        ]);
-      });
-    });
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-
-    const response = await request(app.getHttpServer()).get(
-      '/fcd/5692/landmark_overlap_country/Argentina?clientDatabase=production'
-    );
-    expect(response.status).toEqual(200);
-    expect(response.body).toBeDefined();
-    expect(response.body).toEqual({
-      overlap: {
-        indigenous: 10743.949200000001,
-        nonIndigenous: 14941.3889,
-      },
-    });
-
-    await app.close();
   });
 
-  it(`when empty database`, async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [FCDController],
-      providers: [FCDService],
-    }).compile();
-
-    fcdService = moduleRef.get<FCDService>(FCDService);
-    moduleRef.get<FCDController>(FCDController);
-
-    jest.spyOn(fcdService, 'getLandmarkOverlapCountryData').mockImplementation(() => {
-      return new Promise((resolve) => {
-        resolve([]);
-      });
-    });
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-
-    const response = await request(app.getHttpServer()).get(
-      '/fcd/5692/landmark_overlap_country/Argentina?clientDatabase=production'
-    );
-    expect(response.status).toEqual(200);
-    expect(response.body).toBeDefined();
-    expect(response.body).toEqual({
-      overlap: {
-        indigenous: 0,
-        nonIndigenous: 0,
-      },
-    });
-
-    await app.close();
-  });
-
-  it(`realize request without database param`, async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [FCDController],
-      providers: [FCDService],
-    }).compile();
-
-    fcdService = moduleRef.get<FCDService>(FCDService);
-    moduleRef.get<FCDController>(FCDController);
-
-    jest.spyOn(fcdService, 'getLandmarkOverlapCountryData').mockImplementation(() => {
-      return new Promise((resolve) => {
-        resolve([]);
-      });
-    });
-
-    app = moduleRef.createNestApplication();
-    await app.init();
-
-    const response = await request(app.getHttpServer()).get(
-      '/fcd/5692/landmark_overlap_country/Argentina'
-    );
-    expect(response.status).toEqual(400);
-    expect(response.body).toBeDefined();
-    expect(response.body).toEqual({
-      details: [
-        {
-          code: 'invalid_type',
-          expected: 'string',
-          message: 'Required',
-          path: ['clientDatabase'],
-          received: 'undefined',
-        },
-      ],
-      name: 'ZodValidationError',
-    });
-
+  afterAll(async () => {
     await app.close();
   });
 });

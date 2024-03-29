@@ -13,7 +13,6 @@ import TreeCoverLossLayer from '../../../map/js/layers/TreeCoverLossLayer';
 import store from '../../../locations/js/store';
 import { updateInfoBubbleCache } from '../../../locations/js/actions/locationActions';
 import SensitiveAreas from './SensitiveAreas';
-import SouthAmericaRegions from './SouthAmericaRegions';
 import SoutheastAsiaRegions from './SoutheastAsiaRegions';
 import DeforestationTrends from './DeforestationTrends';
 import MillPrioritySummary from './MillPrioritySummary';
@@ -57,7 +56,6 @@ import {
 import { centroidSymbol, fillSymbolDefault } from '../../../common/js/map.config';
 import AnalysisListChips from '../../../locations/js/components/landing/listItem/AnalysisListChips';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
-import featureFlags from '../../../../utils/general.utils';
 
 import '../../css/locations.scss';
 import '../common/DiagnosticsContainer.scss';
@@ -696,8 +694,6 @@ export default class Diagnostics extends Component {
       <Tab key={value} label={<span style={{ color: 'white' }}>{label}</span>} value={value} />
     ));
 
-    const { isArgentinaComplianceAvailable } = featureFlags;
-
     return (
       <div className="landing-diagnostics">
         <Popover
@@ -1025,11 +1021,12 @@ export default class Diagnostics extends Component {
             />
           </div>
           <div className="print-no-break" data-cy="diagnotcs-regions">
-            {isAmericaPresence && !isArgentinaComplianceAvailable ? (
-              <SouthAmericaRegions
-                diagnosticView={diagnosticView}
-                listView={listView}
+            {isAmericaPresence && listView === 'forest_change' && (
+              <RegionChartsContainer
+                listId={selectedList.id}
                 fireDownload={this.fireDownload}
+                data={this.getFilteredLocations()[0]}
+                diagnosticView={diagnosticView}
                 filteredData={listData}
                 togglePopover={this.togglePopover}
                 getYearlyData={this.getYearlyData}
@@ -1039,26 +1036,7 @@ export default class Diagnostics extends Component {
                 getYearlyHighchartSeries={this.getYearlyHighchartSeries}
                 getCategoricalHighchartSeries={this.getCategoricalHighchartSeries}
               />
-            ) : null}
-
-            {isAmericaPresence &&
-              isArgentinaComplianceAvailable &&
-              listView === 'forest_change' && (
-                <RegionChartsContainer
-                  listId={selectedList.id}
-                  fireDownload={this.fireDownload}
-                  data={this.getFilteredLocations()[0]}
-                  diagnosticView={diagnosticView}
-                  filteredData={listData}
-                  togglePopover={this.togglePopover}
-                  getYearlyData={this.getYearlyData}
-                  parseYearlyData={this.parseYearlyData}
-                  assignHighchartColor={this.assignHighchartColor}
-                  getFilteredLocations={this.getFilteredLocations}
-                  getYearlyHighchartSeries={this.getYearlyHighchartSeries}
-                  getCategoricalHighchartSeries={this.getCategoricalHighchartSeries}
-                />
-              )}
+            )}
 
             {asiaPresence ? (
               <SoutheastAsiaRegions

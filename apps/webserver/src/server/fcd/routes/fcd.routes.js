@@ -3,7 +3,7 @@ const express = require('express');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 const fcdRoutes = express.Router();
-const fcdController = require('../controllers/fcdController');
+const fcdControllerV2 = require('../controllers/fcdControllerV2');
 
 /**
  * @name exports
@@ -24,5 +24,5 @@ module.exports = (app, limiter) => {
 
   app.use('/api/fcd', [...routeMiddlewares, fcdRoutes]);
 
-  fcdRoutes.get('', fcdController.run);
+  fcdRoutes.get('', fcdControllerV2);
 };

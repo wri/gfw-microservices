@@ -88,7 +88,7 @@ describe('ListService', () => {
 
   it('Should get List', async () => {
     const organizationId = 1;
-    
+
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
       id: 1,
       organizationName: 'ABC Corp',
@@ -118,14 +118,13 @@ describe('ListService', () => {
   it('Should get List and format errorFileStoragePath', async () => {
     const listId = 123;
     const organizationId = 1;
-    const repositoryResult = expectedResult
-    repositoryResult['errorFileStoragePath']= 's3://bucketname/enviroment/status/erro_name.file_extension'
-    
-  
+    const repositoryResult = expectedResult;
+    repositoryResult['errorFileStoragePath'] =
+      's3://bucketname/enviroment/status/erro_name.file_extension';
+
     const expectedResultWithErroPath = {
       ...repositoryResult,
-      errorFileStoragePath:
-      's3://bucketname/enviroment/status/erro_name.file_extension',
+      errorFileStoragePath: 's3://bucketname/enviroment/status/erro_name.file_extension',
     };
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
       id: 1,
@@ -140,7 +139,9 @@ describe('ListService', () => {
         findOneBy: () => ({ ...repositoryResult }),
       }),
     });
-    s3Service.getFileSignedUrlDinamicEnvironment = jest.fn().mockResolvedValue(expectedResult.errorFileStoragePath)
+    s3Service.getFileSignedUrlDinamicEnvironment = jest
+      .fn()
+      .mockResolvedValue(expectedResult.errorFileStoragePath);
     const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });
 
     const resultWithDatesTransformed = {};

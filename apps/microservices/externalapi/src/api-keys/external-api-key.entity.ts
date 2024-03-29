@@ -22,6 +22,9 @@ export class ExternalAPIKey {
   updateDateTime: Date;
 
   @ManyToOne(() => UserRoutes, (user) => user.tokens, { eager: true })
-  @JoinColumn({ name: 'creatorUserId', referencedColumnName: 'organization_user_id' }) // Specify the foreign key column
+  @JoinColumn([
+    { name: 'creatorUserId', referencedColumnName: 'organization_user_id' },
+    { name: 'organizationId', referencedColumnName: 'organization_id' },
+  ])
   user: UserRoutes;
 }

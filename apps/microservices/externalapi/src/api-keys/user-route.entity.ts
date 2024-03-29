@@ -19,6 +19,9 @@ export class UserRoutes {
   organization_user_status_id: number;
 
   @OneToMany(() => ExternalAPIKey, (token) => token.user)
-  @JoinColumn({ name: 'creatorUserId', referencedColumnName: 'organization_user_id' })
+  @JoinColumn([
+    { name: 'creatorUserId', referencedColumnName: 'organization_user_id' },
+    { name: 'organizationId', referencedColumnName: 'organization_id' },
+  ])
   tokens: ExternalAPIKey[];
 }

@@ -26,7 +26,7 @@ describe('ListAnalysisController', () => {
   const expectedResultWithErroPath = {
     listId: 123,
     status: 'Completed',
-    errorsDetails: ['https://example.com/errors'],
+    errorsDetails: ['s3://gfwpro-geotrellis-pre-data/example.com/errors'],
     resultUrl: 'https://example.com/results',
     creationDate: new Date('2023-09-28'),
     expirationDate: new Date('2023-09-28')
@@ -95,6 +95,9 @@ describe('ListAnalysisController', () => {
       user: {
         organizationId: 1,
       },
+    });
+    controller.getAnalysisStatus = jest.fn().mockResolvedValue({
+      ...expectedResult
     });
 
     const result = await controller.getAnalysisStatus(listId, analysisId, requestMock);

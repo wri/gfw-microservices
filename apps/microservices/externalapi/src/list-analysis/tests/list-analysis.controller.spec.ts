@@ -26,11 +26,10 @@ describe('ListAnalysisController', () => {
   const expectedResultWithErroPath = {
     listId: 123,
     status: 'Completed',
-    errorsDetails: [],
+    errorsDetails: ['https://example.com/errors'],
     resultUrl: 'https://example.com/results',
     creationDate: new Date('2023-09-28'),
-    expirationDate: new Date('2023-09-28'),
-    errorFileStoragePath: 'https://example.com/errors',
+    expirationDate: new Date('2023-09-28')
   };
   const expectedListResult = {
     listId: 123,

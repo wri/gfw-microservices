@@ -3,11 +3,13 @@ import { Lists } from './lists.entity';
 import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { Organization } from '../api-keys/organization.entity';
+import { S3Service } from '@wri-monorepos/aws';
 @Injectable()
 export class ListService {
   constructor(
     private clientStoreConnection: ClientStoreConnection,
-    private organizationService: OrganizationService
+    private organizationService: OrganizationService,
+    private s3Service: S3Service
   ) {}
   // Replace this with actual database or external service calls
   async getList({
@@ -32,9 +34,8 @@ export class ListService {
       }
       // There is some trash in DevCo db that has the errorFileStoragePath as 'none' so we need to check if it is different from 'none'
       if (listStatus.errorFileStoragePath && listStatus.errorFileStoragePath.includes('s3://')) {
-        listStatus.errorFileStoragePath = listStatus.errorFileStoragePath.replace(
-          's3://gfwpro-geotrellis-pre-data/',
-          'https://gfwpro-geotrellis-pre-data.s3.amazonaws.com/'
+        listStatus.errorFileStoragePath = await this.getPresignedUrl(
+          listStatus.errorFileStoragePath
         );
       } else {
         listStatus.errorFileStoragePath = null;
@@ -60,5 +61,21 @@ export class ListService {
   private async getOrganizationDetails(organizationId: number) {
     const organization = await this.organizationService.findOrganizationById(organizationId);
     return organization;
+  }
+  private async getPresignedUrl(fileName: string) {
+    const fileUrl = fileName.split('s3://').pop();
+    const [bucket, environment, subPath, filenameWithExtensin] = fileUrl.split('/');
+    const [filename, extension] = filenameWithExtensin.split('.');
+    try {
+      return await this.s3Service.getFileSignedUrlDinamicEnvironment(
+        filename,
+        extension,
+        bucket,
+        environment,
+        subPath
+      );
+    } catch (error) {
+      throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
+    }
   }
 }

@@ -15,6 +15,7 @@ import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-s
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { ListService } from '../../lists/lists.service';
 import { Lists } from '../../lists/lists.entity';
+import { S3Service } from '@wri-monorepos/aws';
 
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
@@ -50,6 +51,7 @@ describe('ListAnalysisService', () => {
         ClientStoreConnection,
         OrganizationService,
         ListService,
+        S3Service,
       ],
     }).compile();
   });

@@ -14,13 +14,37 @@ import { UserService } from '../../list-analysis/user.service';
 import { OrganizationService } from '../../list-analysis/organization.service';
 import { ListRepositoryMock } from './lists.repository.mock';
 import { ListAnalysisService } from '../../list-analysis/list-analysis.service';
+import { S3Service } from '@wri-monorepos/aws';
 
 describe('ListService', () => {
   let organizationService: OrganizationService;
   let module: TestingModule;
   let listService: ListService;
   let clientStoreConnection: ClientStoreConnection;
-
+  let s3Service: S3Service;
+  const listId = 123;
+  const expectedResult = {
+    id: listId.toString(),
+    userId: 10033,
+    templateId: 5,
+    listName: 'list name ',
+    listTableName: 'list - table_name',
+    listAnalysisTableName: 'analysis - ',
+    listStatusId: 4,
+    listErrorMessage: null,
+    locationClassification: 'location_classification',
+    customAttributeNames: null,
+    customAttributeTypes: null,
+    listLocationsCount: 1266,
+    lockStatus: null,
+    lockUserId: 1,
+    associatedGfwlist: null,
+    dashboardLastSubmit: new Date().toLocaleDateString('en-US'),
+    dashboardLastResults: null,
+    vectorTilesStoragePath: 'vector_tiles_storage_path',
+    errorFileStoragePath: null,
+    vectorTilesLastUpdated: new Date().toLocaleDateString('en-US'),
+  };
   beforeAll(async () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
@@ -50,6 +74,7 @@ describe('ListService', () => {
         ClientStoreConnection,
         OrganizationService,
         ListService,
+        S3Service,
       ],
     }).compile();
   });
@@ -58,34 +83,12 @@ describe('ListService', () => {
     organizationService = module.get<OrganizationService>(OrganizationService);
     listService = module.get<ListService>(ListService);
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
+    s3Service = module.get<S3Service>(S3Service);
   });
 
   it('Should get List', async () => {
-    const listId = 123;
     const organizationId = 1;
-    const expectedResult = {
-      id: listId.toString(),
-      userId: 10033,
-      templateId: 5,
-      listName: 'list name ',
-      listTableName: 'list - table_name',
-      listAnalysisTableName: 'analysis - ',
-      listStatusId: 4,
-      listErrorMessage: null,
-      locationClassification: 'location_classification',
-      customAttributeNames: null,
-      customAttributeTypes: null,
-      listLocationsCount: 1266,
-      lockStatus: null,
-      lockUserId: 1,
-      associatedGfwlist: null,
-      dashboardLastSubmit: new Date().toLocaleDateString('en-US'),
-      dashboardLastResults: null,
-      vectorTilesStoragePath: 'vector_tiles_storage_path',
-      errorFileStoragePath: null,
-      vectorTilesLastUpdated: new Date().toLocaleDateString('en-US'),
-    };
-
+    
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
       id: 1,
       organizationName: 'ABC Corp',
@@ -115,32 +118,14 @@ describe('ListService', () => {
   it('Should get List and format errorFileStoragePath', async () => {
     const listId = 123;
     const organizationId = 1;
-    const repositoryResult = {
-      id: listId.toString(),
-      userId: 10033,
-      templateId: 5,
-      listName: 'list name ',
-      listTableName: 'list - table_name',
-      listAnalysisTableName: 'analysis - ',
-      listStatusId: 4,
-      listErrorMessage: null,
-      locationClassification: 'location_classification',
-      customAttributeNames: null,
-      customAttributeTypes: null,
-      listLocationsCount: 1266,
-      lockStatus: null,
-      lockUserId: 1,
-      associatedGfwlist: null,
-      dashboardLastSubmit: new Date().toLocaleDateString('en-US'),
-      dashboardLastResults: null,
-      vectorTilesStoragePath: 'vector_tiles_storage_path',
-      errorFileStoragePath: 's3://gfwpro-geotrellis-pre-data/error_file_storage_path',
-      vectorTilesLastUpdated: new Date().toLocaleDateString('en-US'),
-    };
-    const expectedResult = {
+    const repositoryResult = expectedResult
+    repositoryResult['errorFileStoragePath']= 's3://bucketname/enviroment/status/erro_name.file_extension'
+    
+  
+    const expectedResultWithErroPath = {
       ...repositoryResult,
       errorFileStoragePath:
-        'https://gfwpro-geotrellis-pre-data.s3.amazonaws.com/error_file_storage_path',
+      's3://bucketname/enviroment/status/erro_name.file_extension',
     };
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
       id: 1,
@@ -155,7 +140,7 @@ describe('ListService', () => {
         findOneBy: () => ({ ...repositoryResult }),
       }),
     });
-
+    s3Service.getFileSignedUrlDinamicEnvironment = jest.fn().mockResolvedValue(expectedResult.errorFileStoragePath)
     const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });
 
     const resultWithDatesTransformed = {};
@@ -165,7 +150,7 @@ describe('ListService', () => {
         value instanceof Date ? value.toLocaleDateString('en-US') : value;
     }
 
-    expect(resultWithDatesTransformed).toEqual(expectedResult);
+    expect(resultWithDatesTransformed).toEqual(expectedResultWithErroPath);
   });
   it('Should not find List', async () => {
     const listId = 123;

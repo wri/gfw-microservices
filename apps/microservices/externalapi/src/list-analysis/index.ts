@@ -12,6 +12,7 @@ import { ClientStoreConnection } from '../shared/client-store-connection';
 import { ListService } from '../lists/lists.service';
 import { Lists } from '../lists/lists.entity';
 import { OrganizationService } from './organization.service';
+import { S3Service } from '@wri-monorepos/aws';
 
 const awsConfig = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -30,6 +31,7 @@ AWS.config.update(awsConfig);
     ClientStoreConnection,
     OrganizationService,
     ListService,
+    S3Service,
   ],
   exports: [OrganizationService],
 })

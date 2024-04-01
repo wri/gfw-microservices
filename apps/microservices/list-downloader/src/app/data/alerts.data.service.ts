@@ -10,7 +10,10 @@ export class AlertsDataService extends IInputData {
     const { organizationDatabase, listId, rowsPerPage, isGFWList } = filters;
 
     let url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/alerts/${listId}`;
-    if ((typeof isGFWList === 'string' && isGFWList === 'false') || typeof isGFWList === 'undefined'){
+    if (
+      (typeof isGFWList === 'string' && isGFWList === 'false') ||
+      typeof isGFWList === 'undefined'
+    ) {
       const queryString = `clientDatabase=${organizationDatabase}`;
       url = `${url}/countDashboardData?${queryString}`;
     } else {
@@ -31,7 +34,10 @@ export class AlertsDataService extends IInputData {
 
     let queryString = `rowsPerPage=${rowsPerPage}&pageNumber=${page}`;
     let url = `${process.env.LIST_PROCESSING_MICROSERVICE_URL}/alerts/${listId}`;
-    if ((typeof isGFWList === 'string' && isGFWList === 'false')  || typeof isGFWList === 'undefined') {
+    if (
+      (typeof isGFWList === 'string' && isGFWList === 'false') ||
+      typeof isGFWList === 'undefined'
+    ) {
       queryString = `${queryString}&clientDatabase=${organizationDatabase}`;
       url = `${url}/dashboardDataPaginated?${queryString}`;
     } else {

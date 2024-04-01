@@ -98,7 +98,7 @@ const setLoginFailCount = async (failureCount, email, USER_POOL_ID) => {
   };
 
   try {
-    returnValue = amazonCognitoIdentityProvider.adminUpdateUserAttributes(params);
+    returnValue = await amazonCognitoIdentityProvider.adminUpdateUserAttributes(params);
   } catch (error) {
     console.log('ERROR: could not update user attributes!');
   }

@@ -141,7 +141,7 @@ export default function AccountUsageContainer() {
 
   const formatNumber = (number) => {
     return number >= 1000000 ? (number / 1000000).toFixed(2) + 'M' : number.toFixed(2);
-  }
+  };
 
   return usageData === null ? (
     <InlineLoader />

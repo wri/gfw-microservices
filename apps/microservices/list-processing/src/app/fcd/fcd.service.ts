@@ -8,9 +8,12 @@ import {
   getProtectedAreasByCategoryArea,
   getCountrySpecificDeforestation,
   getCountrySpecificDeforestationWithoutLocationId,
+  getWDPAYearlyLoss,
+  GetWDPAYearlyLossType,
 } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
 import * as sql from 'mssql';
+import { FcdControllerRequestBody } from '../../models';
 
 @Injectable()
 export class FCDService {
@@ -35,7 +38,52 @@ export class FCDService {
     },
   };
 
-  async getAggregatedWDPAOverlapByCountry(
+  async handleWDPACategoryForList(listId: string, params: FcdControllerRequestBody) {
+    const { clientDatabase, country, locationId, countryGadm } = params;
+
+    const overlap = await this.getAggregatedWDPAOverlapData(
+      listId,
+      country,
+      clientDatabase,
+      locationId
+    );
+
+    const country_specific_deforestation_wdpa_yearly =
+      await this.getProcessedWDPACountrySpecificDeforestationYearlyData(
+        clientDatabase,
+        listId,
+        countryGadm,
+        locationId
+      );
+
+    return {
+      overlap,
+      country_specific_deforestation_wdpa_yearly,
+    };
+  }
+
+  async handleLandmarkCategoryForList(listId: string, params: FcdControllerRequestBody) {
+    const { clientDatabase, country, locationId } = params;
+
+    const overlap = await this.getAggregatedLandmarkOverlapByCountry(
+      listId,
+      country,
+      clientDatabase,
+      locationId
+    );
+
+    return {
+      overlap,
+    };
+  }
+
+  async handleCountryCategoryForList(listId: string, params: FcdControllerRequestBody) {
+    const { clientDatabase, countryGadm, locationId } = params;
+
+    return this.countrySpecificDeforestation(listId, clientDatabase, countryGadm, locationId);
+  }
+
+  async getAggregatedWDPAOverlapData(
     listId: string,
     country: string,
     clientDatabase: string,
@@ -62,6 +110,48 @@ export class FCDService {
           } else {
             result.lessRestricted += value;
           }
+        }
+      });
+    });
+
+    return result;
+  }
+
+  async getProcessedWDPACountrySpecificDeforestationYearlyData(
+    clientDatabase: string,
+    listId: string,
+    countryGadm: string,
+    locationId: string
+  ) {
+    const data = await this.getWDPACountrySpecificDeforestationYearlyData(
+      clientDatabase,
+      listId,
+      locationId
+    );
+
+    const result = {
+      fullyRestrictive: {},
+      lessRestricted: {},
+    };
+
+    data?.forEach((item) => {
+      const jsonParsedItemData = JSON.parse(item.countrySpecificDeforestationWdpaYearly || '{}');
+      const countrySpecificDeforestationData = jsonParsedItemData[countryGadm] || {};
+      Object.entries(countrySpecificDeforestationData)?.forEach(([key, value]) => {
+        if (this.isFullRestrictiveCategory(key)) {
+          Object.entries(value)?.forEach(([innerKey, innerValue]) => {
+            if (!result.fullyRestrictive[innerKey]) {
+              result.fullyRestrictive[innerKey] = 0;
+            }
+            result.fullyRestrictive[innerKey] += innerValue;
+          });
+        } else {
+          Object.entries(value)?.forEach(([innerKey, innerValue]) => {
+            if (!result.lessRestricted[innerKey]) {
+              result.lessRestricted[innerKey] = 0;
+            }
+            result.lessRestricted[innerKey] += innerValue;
+          });
         }
       });
     });
@@ -128,6 +218,24 @@ export class FCDService {
     );
   }
 
+  async getWDPACountrySpecificDeforestationYearlyData(
+    clientDatabase: string,
+    listId: string,
+    locationId: string
+  ) {
+    const parameters = [
+      { field: 'listId', type: sql.Int, value: listId },
+      { field: 'locationId', type: sql.Int, value: locationId || null },
+    ];
+
+    this.logger.debug(`getWDPACountrySpecificDeforestationYearlyData: `, parameters);
+    return await SQLUtils.queryDB<GetWDPAYearlyLossType[]>(
+      clientDatabase,
+      getWDPAYearlyLoss,
+      parameters
+    );
+  }
+
   isIndigenousLand(category: string) {
     return this.INDIGENOUS_LAND.toLowerCase().includes(category.toLowerCase());
   }
@@ -140,7 +248,7 @@ export class FCDService {
   ) {
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },
-      { field: 'country', type: sql.VarChar, value: country },
+      { field: 'country', type: sql.VarChar(150), value: country },
       { field: 'locationId', type: sql.Int, value: locationId || null },
     ];
 

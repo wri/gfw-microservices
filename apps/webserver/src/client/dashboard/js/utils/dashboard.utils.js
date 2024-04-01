@@ -267,12 +267,15 @@ function downloadDashboard() {
   const { selectedList, selectedAlert, selectedTimeframe } = state;
   const { id: listID } = selectedList;
 
+  const isGFWList = 'GFWList' in selectedList;
+
   const data = {
     listID,
     format: 'csv',
     type: 'alerts',
     selectedAlert,
     selectedTimeframe,
+    isGFWList,
   };
 
   gtag('event', 'Download button clicked', {

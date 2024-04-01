@@ -8,7 +8,7 @@ const envModule = ConfigModule.forRoot({
 import { PipeService } from './pipe.service';
 import { InputService } from '../files/input.service';
 import { AwsModule } from '@wri-monorepos/aws';
-import { SqlModule } from '@wri-monorepos/sql';
+import { GFWList, SqlModule } from '@wri-monorepos/sql';
 import { ShapefileService } from '../files/shapefile.service';
 import { ResultService } from '../files/result.service';
 import { DashboardService } from './dashboard.service';
@@ -41,9 +41,10 @@ import { AlertsPrioritiesLocationsLevelService } from '../files/alerts.prioritie
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { AlertsFileService } from '../files/alerts.file.service';
 import { AlertsLocationsHistoryService } from '../files/alerts.locations.history.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [envModule, AwsModule, SqlModule],
+  imports: [envModule, AwsModule, SqlModule, TypeOrmModule.forFeature([GFWList], 'default')],
   providers: [
     CommodityRiskDiagnosticLocationSummaryService,
     DashboardService,

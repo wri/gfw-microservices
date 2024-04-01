@@ -47,6 +47,20 @@ export class AlertsService {
     return this.formatData(listDashboardData ?? []);
   }
 
+  async countGFWDashboardData(listID: number) {
+    return await this.alertsRepository.countGFWDashboardData(listID);
+  }
+
+  async getGFWDashboardDataPaginated(listID: number, pageNumber: number, rowsPerPage: number) {
+    const makePageStartOnZero = pageNumber - 1;
+    const listDashboardData = await this.alertsRepository.findGFWDashboardDataByListIdPaginated(
+      listID,
+      makePageStartOnZero,
+      rowsPerPage
+    );
+    return this.formatData(listDashboardData ?? []);
+  }
+
   formatData(listDashboardData: DashboardDataType[]) {
     return listDashboardData
       .filter((l) => l.gadmid)

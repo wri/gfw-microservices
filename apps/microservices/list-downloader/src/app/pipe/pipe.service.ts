@@ -1,16 +1,21 @@
 import { Logger, Injectable } from '@nestjs/common';
 import { AfiGeneratorService } from './afi.generator.service';
 import { ListGeneratorService } from './list.generator.service';
-import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
+import { BasicFieldsFileRequest, GFWList } from '@wri-monorepos/sql';
 import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
 import { ClientStoreConnection, List } from '@wri-monorepos/sql';
 import { createDirectory } from '../shared/file.utils';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class PipeService {
   private readonly logger = new Logger(PipeService.name);
+
+  @InjectRepository(GFWList, 'default')
+  private gfwListRepository: Repository<GFWList>;
 
   constructor(
     private readonly afiGeneratorService: AfiGeneratorService,
@@ -42,11 +47,17 @@ export class PipeService {
   }
 
   private async getListName(filters: BasicFieldsFileRequest) {
-    const { organizationDatabase, listId } = filters;
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
-    const { listName } = await listRepository.findOne({ where: { id: listId } });
-    return listName;
+    console.log(filters);
+    const { organizationDatabase, listId, isGFWList } = filters;
+    if ((typeof isGFWList === 'string' && isGFWList === 'false') || !isGFWList) {
+      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const listRepository = connection.getRepository(List);
+      const { listName } = await listRepository.findOne({ where: { id: listId } });
+      return listName;
+    } else {
+      const { listName } = await this.gfwListRepository.findOne({ where: { id: listId } });
+      return listName;
+    }
   }
 
   private getGeneratorBaseOnType = () => {

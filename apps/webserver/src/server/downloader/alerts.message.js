@@ -35,7 +35,7 @@ const messageSQSTemplate = {
 const buildSQSMessage = ({ request }) => {
   const { id: listId } = request.params;
 
-  const { selectedTimeframe, selectedAlert } = request.query;
+  const { selectedTimeframe, selectedAlert, isGFWList } = request.query;
 
   // TODO we should rename all mentions from glad to integrated.
   const alert = selectedAlert === 'GLAD' ? 'Integrated' : selectedAlert;
@@ -50,7 +50,7 @@ const buildSQSMessage = ({ request }) => {
     organizationDatabase,
     selectedTimeframe,
     selectedAlert: alert,
-    list: JSON.stringify({ listId }),
+    list: JSON.stringify({ listId, isGFWList }),
     file: JSON.stringify({ type: 'alerts', key: fileName }),
   };
 

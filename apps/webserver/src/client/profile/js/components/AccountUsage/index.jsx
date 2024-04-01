@@ -40,7 +40,7 @@ export default function AccountUsageContainer() {
   const renewalTextStyle = {
     margin: '0px 0 30px 0',
     color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: '10px',
+    fontSize: '12px',
     textAlign: 'right',
   };
 
@@ -155,14 +155,14 @@ export default function AccountUsageContainer() {
         maxLocations={usageLimitsData?.max_locations_per_year}
       />
 
-      <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>History</h3>
+      <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per User</h3>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
               <HeaderTableCell>User</HeaderTableCell>
               <HeaderTableCell align="right"># Analyses (% of Total used)</HeaderTableCell>
-              <HeaderTableCell align="right">Areas (% of Total used)</HeaderTableCell>
+              <HeaderTableCell align="right">Area (% of Total used)</HeaderTableCell>
             </TableRow>
           </TableHead>
           <TableBody>

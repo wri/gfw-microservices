@@ -219,7 +219,7 @@ const login = async (req, username, password, promanager_login = false) => {
           // Set User ID
           req.session.user_id = userRecord.id;
           // Set User Email.
-          req.session.user_email = userRecord.user_email;
+          req.session.user_email = userRecord.user_email.toLocaleLowerCase();
           // Set Pro Manager Session.
           req.session.ispromanager = promanager_login;
           // Set the user secret session variables.

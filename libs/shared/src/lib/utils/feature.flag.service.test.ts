@@ -67,13 +67,14 @@ describe('Feature Flag Service', () => {
     const { getAllFeatureFlags } = await featureFlagsService();
     const allFeatureFlag = await getAllFeatureFlags();
     expect(allFeatureFlag).toBeDefined();
-    expect(allFeatureFlag.length).toBe(5);
+    expect(allFeatureFlag.length).toBe(6);
     expect(allFeatureFlag).toStrictEqual([
       { flagId: 'Afi', flagState: false, orgId: null },
       { flagId: 'ArgentinaCompliance', flagState: false, orgId: null },
       { flagId: 'PermanentFlagForExternalApiKeys', flagState: false, orgId: null },
       { flagId: 'PolygonCoordinatesInput', flagState: false, orgId: null },
       { flagId: 'UploadListLp', flagState: false, orgId: null },
+      { flagId: 'ArgentinaDeforestation', flagState: false, orgId: null },
     ]);
   });
 
@@ -86,7 +87,7 @@ describe('Feature Flag Service', () => {
       delete flag['updateDateTime'];
     });
     expect(allFeatureFlag).toBeDefined();
-    expect(allFeatureFlag.length).toBe(5);
+    expect(allFeatureFlag.length).toBe(6);
     expect(allFeatureFlag).toStrictEqual([
       {
         flagId: 'Afi',
@@ -111,6 +112,11 @@ describe('Feature Flag Service', () => {
       },
       {
         flagId: 'UploadListLp',
+        flagState: false,
+        orgId: null,
+      },
+      {
+        flagId: 'ArgentinaDeforestation',
         flagState: false,
         orgId: null,
       },

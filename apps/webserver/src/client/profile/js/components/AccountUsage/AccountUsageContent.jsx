@@ -8,7 +8,7 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 
 export default function AccountUsage({ label, usedValue, maxValue }) {
   const getProgressColor = () => {
-    if (calculatePercentage === 0) {
+    if (calculatePercentage === 100) {
       return 'rgba(242, 78, 30, 0.73)';
     }
 

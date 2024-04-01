@@ -44,12 +44,16 @@ export default function AccountUsage({ label, usedValue, maxValue }) {
   }));
 
   const ProgressMark = styled(Typography)(() => ({
-    color: 'rgba(0, 0, 0, 0.25)',
-    fontSize: '10px',
+    color: 'rgba(0, 0, 0, 0.5)',
+    fontSize: '12px',
     lineHeight: '36px',
   }));
 
-  const calculatePercentage = (usedValue / maxValue) * 100;
+  const formatNumber = (number) => {
+    return number >= 1000000 ? (number / 1000000).toFixed(2) + 'M' : number;
+  }
+
+  const calculatePercentage = maxValue > usedValue ? (usedValue / maxValue) * 100 : 100;
 
   return (
     <Card sx={{ padding: '1rem' }}>
@@ -58,20 +62,20 @@ export default function AccountUsage({ label, usedValue, maxValue }) {
           {label}
         </CardLabel>
 
-        <Grid container direction="row" justifyContent="space-between" alignItems="stretch">
+        <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
           <Grid item>
             <CardLabel variant="span" display="block">
               Used
             </CardLabel>
-            <ProgressLabel variant="span">{usedValue}</ProgressLabel>
+            <ProgressLabel variant="span">{formatNumber(usedValue)}</ProgressLabel>
           </Grid>
 
           <Grid item>
             <CardLabel variant="caption" display="block" style={{ textAlign: 'right' }}>
               Available
             </CardLabel>
-            <ProgressLabel variant="span">{maxValue - usedValue}</ProgressLabel>
-            <ProgressMark variant="span">/{maxValue}</ProgressMark>
+            <ProgressLabel variant="span">{formatNumber(maxValue - usedValue)}</ProgressLabel>
+            <ProgressMark variant="span">/{formatNumber(maxValue)}</ProgressMark>
           </Grid>
         </Grid>
 

@@ -51,7 +51,7 @@ export default function AccountUsage({ label, usedValue, maxValue }) {
 
   const formatNumber = (number) => {
     return number >= 1000000 ? (number / 1000000).toFixed(2) + 'M' : number;
-  }
+  };
 
   const calculatePercentage = maxValue > usedValue ? (usedValue / maxValue) * 100 : 100;
 

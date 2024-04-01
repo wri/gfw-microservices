@@ -139,6 +139,10 @@ export default function AccountUsageContainer() {
     return ((locations / usageData.locations_analyzed) * 100).toFixed(3);
   };
 
+  const formatNumber = (number) => {
+    return number >= 1000000 ? (number / 1000000).toFixed(2) + 'M' : number.toFixed(2);
+  };
+
   return usageData === null ? (
     <InlineLoader />
   ) : (
@@ -175,9 +179,13 @@ export default function AccountUsageContainer() {
                   {row.first_name} {row.last_name}
                 </TableCell>
                 <TableCell align="right">
-                  {getAnalysesPercentage(row.total_locations_analyzed)}%
+                  {row.total_locations_analyzed} (
+                  {getAnalysesPercentage(row.total_locations_analyzed)}%)
                 </TableCell>
-                <TableCell align="right">{getAreasPercentage(row.total_area_analyzed)}%</TableCell>
+                <TableCell align="right">
+                  {formatNumber(row.total_area_analyzed)} (
+                  {getAreasPercentage(row.total_area_analyzed)}%)
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

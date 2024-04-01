@@ -144,7 +144,7 @@ export default function AccountUsageContainer() {
       return (number / 1000000).toFixed(2) + 'M';
     }
 
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   return usageData === null ? (

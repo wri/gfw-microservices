@@ -54,7 +54,7 @@ export default function AccountUsage({ label, usedValue, maxValue }) {
       return (number / 1000000).toFixed(2) + 'M';
     }
 
-    return number?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return number?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   const calculatePercentage = maxValue > usedValue ? (usedValue / maxValue) * 100 : 100;

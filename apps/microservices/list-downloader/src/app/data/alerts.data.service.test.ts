@@ -28,7 +28,7 @@ describe('[AlertsDataService] Get number of pages', () => {
 
     const value = await service.getNumberOfPages({
       ...filters,
-      isGFWList: false,
+      isGFWList: 'false',
     });
 
     expect(mockedAxios.get).toBeCalledTimes(1);
@@ -44,7 +44,7 @@ describe('[AlertsDataService] Get number of pages', () => {
 
     const value = await service.getNumberOfPages({
       ...filters,
-      isGFWList: true,
+      isGFWList: 'true',
     });
 
     expect(mockedAxios.get).toBeCalledTimes(1);
@@ -85,7 +85,7 @@ describe('[AnalysisAfiDataService] Get data', () => {
     service.getDataPaginated({
       ...filters,
       page: 2,
-      isGFWList: false,
+      isGFWList: 'false',
     });
 
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: [] });
@@ -100,7 +100,7 @@ describe('[AnalysisAfiDataService] Get data', () => {
     service.getDataPaginated({
       ...filters,
       page: 2,
-      isGFWList: true,
+      isGFWList: 'true',
     });
 
     jest.spyOn(mockedAxios, 'get').mockResolvedValueOnce({ data: [] });

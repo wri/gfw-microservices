@@ -1,3 +1,9 @@
+/**
+ * Count the number of records an specific gfw list has in the dashboard table, used for pagination
+ * The command requires the following parameters:
+ * @listId AS INT,
+ */
+
 export const getCountGFWListsDashboardData = `
 -- SET NOCOUNT ON added to prevent extra result sets from
 -- interfering with SELECT statements.

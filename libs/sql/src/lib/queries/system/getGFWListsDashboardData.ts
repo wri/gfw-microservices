@@ -1,3 +1,11 @@
+/**
+ * Returns the dashboard data for a GFW List
+ *
+ * @listId INT - id of the list
+ *
+ * Returns type DashboardDataType (same as getDashboardData)
+ */
+
 export const getGFWListsDashboardData = `
   -- SET NOCOUNT ON added to prevent extra result sets from
   -- interfering with SELECT statements.
@@ -38,7 +46,7 @@ export const getGFWListsDashboardData = `
     WHERE AD.list_id = {LIST_ID}
     ORDER BY AD.location_id
   '
-    SET @SQL = REPLACE(@TEMPLATE, '{LIST_ID}', @listId)
+  SET @SQL = REPLACE(@TEMPLATE, '{LIST_ID}', @listId)
   SET @SQL = REPLACE(@SQL, '{LIST_TABLE}', @list_table_name)
 
     EXEC sp_executesql @SQL;

@@ -2980,7 +2980,7 @@ export const profilePage = {
     title:
       'Analytics usage for subscription year ({subscriptionYearStart} to {subscriptionYearEnd})',
     locationsAnalyzed: '# of Analyses',
-    areaAnalyzed: 'Areas analyzed (HA)',
+    areaAnalyzed: 'Area analyzed (HA)',
   },
 };
 

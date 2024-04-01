@@ -8,6 +8,7 @@ export const allFeatureFlags = [
   'PermanentFlagForExternalApiKeys',
   'PolygonCoordinatesInput',
   'UploadListLp',
+  'ArgentinaDeforestation',
 ];
 
 export const featureFlagsService = async () => {

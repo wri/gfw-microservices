@@ -5,14 +5,15 @@ import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 export default function AccountUsageDropMenu(props) {
-  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
-  const handleClick = () => {
-    setOpen(!open);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setAnchorEl(null);
   };
 
   const handleExport = () => {
@@ -26,7 +27,7 @@ export default function AccountUsageDropMenu(props) {
         <MoreVertIcon />
       </IconButton>
 
-      <Menu open={open} onClose={handleClose}>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         <MenuItem onClick={handleExport}>Export</MenuItem>
       </Menu>
     </div>

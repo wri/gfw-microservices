@@ -175,10 +175,12 @@ export default function AccountUsageContainer() {
                   {row.first_name} {row.last_name}
                 </TableCell>
                 <TableCell align="right">
-                  {row.total_locations_analyzed} ({getAnalysesPercentage(row.total_locations_analyzed)}%)
+                  {row.total_locations_analyzed} (
+                  {getAnalysesPercentage(row.total_locations_analyzed)}%)
                 </TableCell>
                 <TableCell align="right">
-                  {row.total_area_analyzed} ({getAreasPercentage(row.total_area_analyzed)}%)</TableCell>
+                  {row.total_area_analyzed} ({getAreasPercentage(row.total_area_analyzed)}%)
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

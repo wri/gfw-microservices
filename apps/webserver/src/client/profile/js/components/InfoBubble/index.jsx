@@ -3,6 +3,10 @@ import IconButton from 'material-ui/IconButton';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import InfoBubbleContent from './InfoBubbleContent';
 
+import './infoBubble.scss';
+
+import '../../../../locations/css/diagnosticsBubble.scss';
+
 export default function InfoBubble({ children }) {
   const [showBubble, setShowBubble] = useState(false);
   const handleOpen = () => {

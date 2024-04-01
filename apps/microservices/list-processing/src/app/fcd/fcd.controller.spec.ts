@@ -18,7 +18,7 @@ describe('FCDController', () => {
           useValue: {
             getAggregatedWDPAOverlapByCountry: jest.fn(),
             getAggregatedLandmarkOverlapByCountry: jest.fn(),
-            countrySpecificDeforestation: jest.fn(),
+            getAggregatedCountryData: jest.fn(),
           },
         },
       ],
@@ -102,16 +102,16 @@ describe('FCDController', () => {
       locationId: 'testLocationId',
     };
 
-    service.countrySpecificDeforestation = jest
+    service.getAggregatedCountryData = jest
       .fn()
       .mockResolvedValue(mockResponse) as jest.MockedFunction<
-      typeof service.countrySpecificDeforestation
+      typeof service.getAggregatedCountryData
     >;
 
     const response = await controller.getFCDCategoryDataForListId(listId, category, bodyPayload);
 
     expect(response).toEqual(mockResponse);
-    expect(service.countrySpecificDeforestation).toHaveBeenCalledWith(
+    expect(service.getAggregatedCountryData).toHaveBeenCalledWith(
       listId,
       bodyPayload.clientDatabase,
       bodyPayload.countryGadm,

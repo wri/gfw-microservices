@@ -90,7 +90,7 @@ export class FCDController {
   async handleCountryCategoryForList(listId: string, params: FcdV2ControllerRequestBody) {
     const { clientDatabase, countryGadm, locationId } = params;
 
-    return this.fcdService.countrySpecificDeforestation(
+    return this.fcdService.getAggregatedCountryData(
       listId,
       clientDatabase,
       countryGadm,

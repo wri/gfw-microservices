@@ -66,6 +66,7 @@ export class ListService {
     const fileUrl = fileName.split('s3://').pop();
     const [bucket, environment, subPath, filenameWithExtensin] = fileUrl.split('/');
     const [filename, extension] = filenameWithExtensin.split('.');
+
     try {
       return await this.s3Service.getFileSignedUrlDynamicEnvironment(
         filename,

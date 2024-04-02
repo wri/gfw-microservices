@@ -135,4 +135,26 @@ export class TokenService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async findUserEmailByToken(token: string, userEmail: string): Promise<boolean> {
+    const organizationToken = await this.tokenRepository.findOne({ where: { apiKey: token } });
+    try {
+      if (!organizationToken) {
+        return false;
+      }
+      const user = await this.userRepository.findOne({
+        where: {
+          organization_id: organizationToken.organizationId,
+          organization_user_id: organizationToken.creatorUserId,
+        },
+      });
+      if (user && user.user_email === userEmail) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.warn('Error finding user email by token', error);
+      return false;
+    }
+  }
 }

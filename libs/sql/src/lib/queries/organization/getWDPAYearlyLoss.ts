@@ -29,8 +29,8 @@ SET @TEMPLATE = REPLACE(@TEMPLATE, '{LIST_TABLE_NAME}', @listTable);
 SET @TEMPLATE = REPLACE(@TEMPLATE, '{ANALYSIS_TABLE_NAME}', @analysisTable);
 
 EXEC sp_executesql @TEMPLATE,
-    N'@country NVARCHAR(150), @listID INT, @locationId INT',
-    @country=@country, @listID=@listID, @locationId=@locationId;
+    N'@listID INT, @locationId INT',
+    @listID=@listID, @locationId=@locationId;
 `;
 
 export type GetWDPAYearlyLossType = {

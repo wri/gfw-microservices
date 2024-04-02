@@ -3,11 +3,15 @@ import {
   GetProtectedAreasByCategoryAreaType,
   GetCountrySpecificDeforestationType,
   GetCountrySpecificDeforestationWithoutLocationIdType,
+  GetLandmarkAnnualLossType,
+  GetLandmarkAnnualLossWithoutLocationIdFilterType,
   SQLUtils,
   getLandmarkByCategoryArea,
   getProtectedAreasByCategoryArea,
   getCountrySpecificDeforestation,
   getCountrySpecificDeforestationWithoutLocationId,
+  getLandmarkAnnualLoss,
+  getLandmarkAnnualLossWithoutLocationIdFilter,
   getWDPAYearlyLoss,
   GetWDPAYearlyLossType,
 } from '@wri-monorepos/sql';
@@ -63,17 +67,18 @@ export class FCDService {
   }
 
   async handleLandmarkCategoryForList(listId: string, params: FcdControllerRequestBody) {
-    const { clientDatabase, country, locationId } = params;
+    const { clientDatabase, country, locationId, countryGadm } = params;
 
-    const overlap = await this.getAggregatedLandmarkOverlapByCountry(
+    const landmark = await this.getAggregatedLandmark(
       listId,
       country,
       clientDatabase,
-      locationId
+      locationId,
+      countryGadm
     );
 
     return {
-      overlap,
+      landmark,
     };
   }
 
@@ -159,11 +164,12 @@ export class FCDService {
     return result;
   }
 
-  async getAggregatedLandmarkOverlapByCountry(
+  async getAggregatedLandmark(
     listId: string,
     country: string,
     clientDatabase: string,
-    locationId: string
+    locationId: string,
+    countryGadm: string
   ) {
     const data = await this.getLandmarkOverlapCountryData(
       listId,
@@ -171,23 +177,61 @@ export class FCDService {
       clientDatabase,
       locationId
     );
-    let totalArea = 0;
-    let indigenousLand = 0;
-    data?.forEach((item) => {
-      totalArea += item.totalArea;
-      const landmarkByCategoryArea = JSON.parse(item.landmarkByCategoryArea);
-      Object.entries(landmarkByCategoryArea).forEach(([key, value]) => {
-        if (typeof value === 'number') {
-          if (this.isIndigenousLand(key)) {
-            indigenousLand += value;
-          }
-        }
-      });
-    });
+
+    const initialObj = {
+      overlap: {
+        indigenous: 0,
+        nonIndigenous: 0,
+      },
+      country_specific_deforestation: {
+        indigenous: {},
+      },
+      tree_cover_loss: {
+        indigenous: {},
+      },
+    };
+
+    let landmark = data?.reduce((prev, curr) => {
+      let landmark = { ...prev };
+
+      try {
+        const overlapIndigenous =
+          JSON.parse(curr?.landmarkByCategoryArea)[this.INDIGENOUS_LAND] ?? 0;
+
+        landmark = {
+          ...landmark,
+          overlap: {
+            indigenous: prev.overlap.indigenous + overlapIndigenous,
+            nonIndigenous: prev.overlap.nonIndigenous + curr.totalArea - overlapIndigenous,
+          },
+        };
+      } catch (error) {
+        this.logger.error(`error converting json object: ${error}`);
+      }
+      return landmark;
+    }, initialObj);
+
+    const annualLossData = await this.getLandmarkAnnualLossData(listId, clientDatabase, locationId);
+
+    try {
+      const countrySpecificDeforestation = JSON.parse(annualLossData.countrySpecificDeforestation)[
+        countryGadm
+      ][this.INDIGENOUS_LAND];
+      const treeCoverLoss = JSON.parse(annualLossData.treeCoverLoss)[countryGadm][
+        this.INDIGENOUS_LAND
+      ];
+
+      landmark = {
+        ...landmark,
+        country_specific_deforestation: { indigenous: countrySpecificDeforestation },
+        tree_cover_loss: { indigenous: treeCoverLoss },
+      };
+    } catch (error) {
+      this.logger.error(`error converting json object: ${error}`);
+    }
 
     return {
-      indigenous: indigenousLand,
-      nonIndigenous: totalArea - indigenousLand,
+      ...landmark,
     };
   }
 
@@ -240,7 +284,7 @@ export class FCDService {
     return this.INDIGENOUS_LAND.toLowerCase().includes(category.toLowerCase());
   }
 
-  async getLandmarkOverlapCountryData(
+  getLandmarkOverlapCountryData(
     listId: string,
     country: string,
     clientDatabase: string,
@@ -253,11 +297,32 @@ export class FCDService {
     ];
 
     this.logger.debug(`Get Protected Areas By Category Area for: ${country} and listId ${listId}`);
-    return await SQLUtils.queryDB<GetLandmarkByCategoryAreaType[]>(
+    return SQLUtils.queryDB<GetLandmarkByCategoryAreaType[]>(
       clientDatabase,
       getLandmarkByCategoryArea,
       parameters
     );
+  }
+
+  getLandmarkAnnualLossData(listId: string, clientDatabase: string, locationId: string) {
+    this.logger.debug(`Get landmark annual loss: listId ${listId} and locationId ${locationId}`);
+    const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
+
+    if (locationId) {
+      parameters.push({ field: 'locationId', type: sql.Int, value: locationId });
+
+      return SQLUtils.queryDBFirstRow<GetLandmarkAnnualLossType>(
+        clientDatabase,
+        getLandmarkAnnualLoss,
+        parameters
+      );
+    } else {
+      return SQLUtils.queryDBFirstRow<GetLandmarkAnnualLossWithoutLocationIdFilterType>(
+        clientDatabase,
+        getLandmarkAnnualLossWithoutLocationIdFilter,
+        parameters
+      );
+    }
   }
 
   async countrySpecificDeforestation(
@@ -315,9 +380,9 @@ export class FCDService {
     countryGadm: string
   ) {
     try {
-      return JSON.parse(data[objName][countryGadm]);
-    } catch (ex) {
-      this.logger.error('error converting json object');
+      return JSON.parse(data[objName])[countryGadm];
+    } catch (error) {
+      this.logger.error(`error converting json object: ${error}`);
       return null;
     }
   }

@@ -139,7 +139,7 @@ describe('ListService', () => {
         findOneBy: () => ({ ...repositoryResult }),
       }),
     });
-    s3Service.getFileSignedUrlDinamicEnvironment = jest
+    s3Service.getFileSignedUrlDynamicEnvironment = jest
       .fn()
       .mockResolvedValue(expectedResult.errorFileStoragePath);
     const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });

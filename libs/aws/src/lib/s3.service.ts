@@ -44,7 +44,7 @@ export class S3Service {
     const url = await s3.getSignedUrl('getObject', params);
     return url;
   }
-  async getFileSignedUrlDinamicEnvironment(
+  async getFileSignedUrlDynamicEnvironment(
     key: string,
     fileExtension: string,
     bucket: string,

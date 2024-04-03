@@ -8,10 +8,7 @@ import * as sql from 'mssql';
 import { createListNameSchema } from '../utils/list.utils';
 import { DataSource } from 'typeorm';
 import { getListByFilters } from '@wri-monorepos/sql';
-import {
-  getListLocationProcessingLimitCheck,
-  getListProcessingLimits,
-} from '@wri-monorepos/shared';
+import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { ProcessingLimitException } from '../app/app.exceptions';
 
 interface CreateListResult {
@@ -39,21 +36,20 @@ export class LargeListService {
 
     const { organization_id: organizationId, subscription_status_id: subscriptionStatusId } =
       request;
-    const isListLocationOverLimit = await getListLocationProcessingLimitCheck({
-      listId: request.list_id,
-      orgDbName: request.organization_database,
+
+    const processingLimit = await checkProcessingLimits({
+      organizationDb: request.organization_database,
       organizationId,
       subscriptionStatusId,
+      listId: request.list_id,
     });
 
-    if (isListLocationOverLimit) {
+    if (
+      processingLimit instanceof Error &&
+      processingLimit.message === 'ProcessingLimitException'
+    ) {
       throw new ProcessingLimitException();
     }
-
-    const processingLimit = await getListProcessingLimits({
-      organizationId,
-      organizationType: subscriptionStatusId,
-    });
 
     const payloadBody = {
       ...llpRequest,

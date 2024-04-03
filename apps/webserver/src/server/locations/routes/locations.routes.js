@@ -28,8 +28,6 @@ const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 
-import { getListProcessingLimits } from '@wri-monorepos/shared';
-
 const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
 ));
@@ -1138,13 +1136,7 @@ module.exports = (app, limiter) => {
 
     const { LISTS_MICROSERVICE_URL } = process.env;
 
-    Promise.all([
-      getListProcessingLimits({
-        organizationId: organization_id,
-        organizationType: subscription_status_id,
-      }),
-      getListAnalysisStatusByListId(req, list_id),
-    ]).then(([processingLimit, listAnalysisStatusData]) => {
+    getListAnalysisStatusByListId(req, list_id).then((listAnalysisStatusData) => {
       const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
 
       axios
@@ -1157,7 +1149,6 @@ module.exports = (app, limiter) => {
           template_type,
           user_id: organization_user_id,
           startAnalysis,
-          processing_limit: processingLimit,
           analysis_types: analysisTypes,
         })
         .then((response) => {

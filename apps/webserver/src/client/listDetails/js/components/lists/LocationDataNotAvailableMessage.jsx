@@ -2,10 +2,10 @@ import React from 'react';
 import { isAnalyzingStatus, isFailedList } from '../../../../locations/js/utils/lists.utils';
 import { locationsPage } from '../../../../common/js/config';
 
-function LocationDataNotAvailableMessage({ list }) {
+function LocationDataNotAvailableMessage({ list, isListSubmitedForAnalysis }) {
   const { list_status_id, lock_status, lock_user_id } = list;
   const isFailed = isFailedList(list);
-  const isBeingAnalized = isAnalyzingStatus(list_status_id);
+  const isBeingAnalized = isListSubmitedForAnalysis || isAnalyzingStatus(list_status_id);
   const hasLockStatus = !!lock_status && !!lock_user_id;
 
   let message;

@@ -176,6 +176,7 @@ export default class Lists extends Component {
       displayLargeListEditingModal: false,
       visibleColumns: [],
       isChangeTypeOfAnalysisModalOpen: false,
+      isListSubmittedForAnalysis: false,
     };
   }
 
@@ -1961,6 +1962,7 @@ export default class Lists extends Component {
       displayLargeListEditingModal,
       visibleColumns,
       allLocationsSelected,
+      isListSubmittedForAnalysis,
     } = this.state;
 
     const userLists = userListsProps
@@ -1991,7 +1993,8 @@ export default class Lists extends Component {
       .map(this.createUserLists);
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
-    const locationDataIsNotAvailable = isLocationDataNotAvailable(selectedList);
+    const locationDataIsNotAvailable =
+      isListSubmittedForAnalysis || isLocationDataNotAvailable(selectedList);
 
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
@@ -2529,7 +2532,7 @@ export default class Lists extends Component {
                                 event_label: 'User submits a list from listview page',
                               });
                               // TODO: Get details what to do after list is submitted
-                              window.location.reload();
+                              this.setState({ isListSubmittedForAnalysis: true });
                             })
                             .catch((error) => {
                               // TODO: Get details what to do after list submission fails
@@ -2737,7 +2740,10 @@ export default class Lists extends Component {
                   )}
                 </>
               )}
-              <LocationDataNotAvailableMessage list={selectedList} />
+              <LocationDataNotAvailableMessage
+                list={selectedList}
+                isListSubmittedForAnalysis={isListSubmittedForAnalysis}
+              />
             </section>
           </div>
         </section>

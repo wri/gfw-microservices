@@ -2,7 +2,6 @@ import React from 'react';
 import GroupsIcon from '@mui/icons-material/Groups';
 import PublicIcon from '@mui/icons-material/Public';
 import IconUsers from '../../../../../common/js/components/icon/IconUsers';
-import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
 import sharedColumnText from './sharedColumnText';
@@ -10,7 +9,7 @@ import { locationsPage } from '../../../../../common/js/config';
 import AnalysisListChips from './AnalysisListChips';
 
 // returns 'anaylizing' (also called 'pending') list items
-function AnalyzingList({ list, isAListSharedWithMe, isShared, showSharedColumn }) {
+function AnalyzingList({ list, isAListSharedWithMe, showSharedColumn }) {
   const { list_name, is_shared, listAnalysesStatus } = list;
 
   return (

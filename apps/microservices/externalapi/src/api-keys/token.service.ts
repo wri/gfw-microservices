@@ -136,19 +136,15 @@ export class TokenService {
     }
   }
 
-  async findUserEmailByToken(token: string, userEmail: string): Promise<boolean> {
-    const organizationToken = await this.tokenRepository.findOne({ where: { apiKey: token } });
+  async findUserEmailByToken(organizationId: number, userEmail: string): Promise<boolean> {
     try {
-      if (!organizationToken) {
-        return false;
-      }
       const user = await this.userRepository.findOne({
         where: {
-          organization_id: organizationToken.organizationId,
-          organization_user_id: organizationToken.creatorUserId,
+          organization_id: organizationId,
+          user_email: userEmail,
         },
       });
-      if (user && user.user_email === userEmail) {
+      if (user) {
         return true;
       }
       return false;

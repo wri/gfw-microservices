@@ -198,9 +198,10 @@ export class UserMockRepository {
   async findOne(options?: FindManyOptions<UserRoutes>): Promise<UserRoutes | undefined> {
     const [{ where }] = Array.isArray(options) ? options : [options];
 
-    return this.data.find(
-      (user) =>
-        user.id === where.organization_user_id && user.organization_id === where.organization_id
+    return this.data.find((user) =>
+      Object.keys(where).every(
+        (key) => user[key == 'organization_user_id' ? 'id' : key] === where[key]
+      )
     );
   }
 }

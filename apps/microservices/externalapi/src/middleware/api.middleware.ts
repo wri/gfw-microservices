@@ -9,7 +9,7 @@ export class ApiKeyMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
     const apiKey = req.headers['x-api-key'] as string;
-    const userEmail = req.headers['user-email'] as string;
+    const { userEmail } = req.body as { userEmail: string };
     if (!apiKey) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
@@ -37,7 +37,10 @@ export class ApiKeyMiddleware implements NestMiddleware {
     if (userEmail) {
       req.user = {
         ...req.user,
-        hasValidEmail: await this.tokenService.findUserEmailByToken(apiKey, userEmail),
+        hasValidEmail: await this.tokenService.findUserEmailByToken(
+          apiKeyRecord.organizationId,
+          userEmail
+        ),
       };
     }
     // If the API key is valid, continue with the request

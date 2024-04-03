@@ -10,22 +10,21 @@ function DraftListWrapper(props) {
     const { list } = props;
     setIsAnalyzing(true);
     return requestGeoTrellisAnalyzeList(list)
-    .then(() => {
-      gtag('event', 'Submit List', {
-        event_category: 'Submit',
-        event_label: 'User submits a list for analysis',
+      .then(() => {
+        gtag('event', 'Submit List', {
+          event_category: 'Submit',
+          event_label: 'User submits a list for analysis',
+        });
+        gtag('event', 'Submit List', {
+          event_category: 'Submit',
+          event_label: 'User submits a list from landing page',
+        });
+      })
+      .catch((error) => {
+        setIsAnalyzing(false);
+        // TODO: Get details what to do after list submission fails
+        console.log(error);
       });
-      gtag('event', 'Submit List', {
-        event_category: 'Submit',
-        event_label: 'User submits a list from landing page',
-      });
-    })
-    .catch((error) => {
-      setIsAnalyzing(false);
-      // TODO: Get details what to do after list submission fails
-      console.log(error);
-    })
-
   };
 
   return (

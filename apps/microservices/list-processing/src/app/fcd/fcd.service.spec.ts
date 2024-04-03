@@ -27,7 +27,7 @@ describe('WDPA Category', () => {
     const fcdService = new FCDService();
 
     jest
-      .spyOn(fcdService, 'getWDPACountrySpecificDeforestationYearlyData')
+      .spyOn(fcdService, 'getWdpaAnnualLossData')
       .mockImplementation(() => Promise.resolve(wdpaData));
 
     const result = await fcdService.getProcessedWDPACountrySpecificDeforestationYearlyData(
@@ -38,30 +38,59 @@ describe('WDPA Category', () => {
     );
 
     expect(result).toEqual({
-      fullyRestrictive: {},
-      lessRestricted: {
-        '2001': 0,
-        '2002': 0,
-        '2003': 0,
-        '2004': 0,
-        '2005': 0,
-        '2006': 0,
-        '2007': 0,
-        '2008': 0,
-        '2009': 0,
-        '2010': 0,
-        '2011': 0,
-        '2012': 0,
-        '2013': 0,
-        '2014': 0,
-        '2015': 0,
-        '2016': 0,
-        '2017': 0,
-        '2018': 0,
-        '2019': 0,
-        '2020': 0,
-        '2021': 0,
-        '2022': 527.781,
+      country_specific_deforestation: {
+        fullyRestrictive: {},
+        lessRestricted: {
+          '2001': 0,
+          '2002': 0,
+          '2003': 0,
+          '2004': 0,
+          '2005': 0,
+          '2006': 0,
+          '2007': 0,
+          '2008': 0,
+          '2009': 0,
+          '2010': 0,
+          '2011': 0,
+          '2012': 0,
+          '2013': 0,
+          '2014': 0,
+          '2015': 0,
+          '2016': 0,
+          '2017': 0,
+          '2018': 0,
+          '2019': 0,
+          '2020': 0,
+          '2021': 0,
+          '2022': 527.781,
+        },
+      },
+      tree_cover_loss: {
+        fullyRestrictive: {},
+        lessRestricted: {
+          '2001': 0,
+          '2002': 0,
+          '2003': 0,
+          '2004': 0,
+          '2005': 0,
+          '2006': 0,
+          '2007': 0,
+          '2008': 0,
+          '2009': 0,
+          '2010': 0,
+          '2011': 0,
+          '2012': 0,
+          '2013': 0,
+          '2014': 0,
+          '2015': 0,
+          '2016': 0,
+          '2017': 0,
+          '2018': 0,
+          '2019': 0,
+          '2020': 0,
+          '2021': 0,
+          '2022': 527.781,
+        },
       },
     });
   });

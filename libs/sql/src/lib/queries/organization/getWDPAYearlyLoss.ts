@@ -14,9 +14,8 @@ SELECT @listTable=l.list_table_name, @analysisTable=l.list_analysis_table_name F
 
 SET @TEMPLATE = '
   SELECT 
-      @listId as listId,
-      lt.location_id as locationId,
-      an.country_specific_deforestation_wdpa_yearly as countrySpecificDeforestationWdpaYearly
+      ISNULL(an.country_specific_deforestation_wdpa_yearly, ''{}'') as countrySpecificDeforestationWdpaYearly,
+      ISNULL(an.tree_cover_loss_by_country_wdpa_yearly, ''{}'') as treeCoverLossByCountryWdpaYearly
   FROM 
       dbo.[{LIST_TABLE_NAME}] lt 
   JOIN 
@@ -34,7 +33,6 @@ EXEC sp_executesql @TEMPLATE,
 `;
 
 export type GetWDPAYearlyLossType = {
-  listId: number;
-  locationId: number;
-  countrySpecificDeforestationWdpaYearly: string | null;
+  countrySpecificDeforestationWdpaYearly: string;
+  treeCoverLossByCountryWdpaYearly: string;
 };

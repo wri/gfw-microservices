@@ -20,7 +20,7 @@ import DeleteListDialog from './DeleteListDialog';
 import ConfirmDialog from '../lists/download/confirmDialog';
 import AnalyzingList from './listItem/AnalyzingList';
 import FailedList from './listItem/FailedList';
-import DraftList from './listItem/DraftList';
+import DraftListWrapper from './listItem/DraftListWrapper';
 import ActiveList from './listItem/ActiveList';
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
 
@@ -180,7 +180,7 @@ export default class LocationList extends Component {
         );
       } else if (getIsDiagnosticStatusDraft(list)) {
         return (
-          <DraftList
+          <DraftListWrapper
             list={list}
             locations={locations}
             showListSharedWithMeIcon={isAListSharedWithMe}

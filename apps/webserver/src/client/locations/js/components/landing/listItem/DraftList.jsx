@@ -20,7 +20,6 @@ import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots'
 import sharedColumnText from './sharedColumnText';
 import redirectToPage from '../../../../../common/js/utils/redirect';
 import LandingDownload from '../../lists/download/LandingDownload';
-import { requestGeoTrellisAnalyzeList } from '../../../utils/request.utils';
 import { numberWithCommas } from '../../../utils/locationsTableUtils';
 import featureFlags from '../../../../../../utils/general.utils';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
@@ -47,6 +46,8 @@ function DraftList({
   shareList,
   setDeleteDialogOpen,
   userIsAdmin,
+  submitForAnalysis,
+  setManageListFolderOpen,
 }) {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -152,7 +153,7 @@ function DraftList({
         <div className="locations-list__controls">
           <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
-          {showRerunOpt && <ListDiagnosticStatusDraft list={list} />}
+          {showRerunOpt && <ListDiagnosticStatusDraft submitForAnalysis={submitForAnalysis} />}
           {showNonOwnerDraft && (
             <span className="DiagnosticStatusDraft__label">
               <CustomTooltip
@@ -270,25 +271,8 @@ function DraftList({
               dialogTitle="Confirm Submission"
               dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
               dialogActionConfirm={() => {
-                requestGeoTrellisAnalyzeList(list)
-                  .then((response) => {
-                    gtag('event', 'User submits a list from landing page', {
-                      event_category: 'Submit List',
-                    });
-                    gtag('event', 'Submit List', 'User submits a list from landing page', {
-                      event_category: 'Submit List',
-                    });
-                    // TODO: Get details what to do after list is submitted
-                    console.log(response.data);
-                    window.location.reload();
-                  })
-                  .catch((error) => {
-                    // TODO: Get details what to do after list submission fails
-                    console.log(error);
-                  })
-                  .finally(() => {
-                    setShowSubmitModal(false);
-                  });
+                setShowSubmitModal(false);
+                submitForAnalysis();
               }}
             />
           )}

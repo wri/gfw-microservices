@@ -14,6 +14,7 @@ import AccountUsage from './AccountUsage';
 import moment from 'moment';
 import { useProfileContext } from '../../ProfileStateContext';
 import AccountUsageDropMenu from './AccountUsageDropMenu';
+import { formatNumber } from '../../../../common/js/utils/formatNumber';
 
 export default function AccountUsageContainer() {
   const { accountActivatedTime } = useProfileContext();
@@ -137,14 +138,6 @@ export default function AccountUsageContainer() {
 
   const getAnalysesPercentage = (locations) => {
     return ((locations / usageData.locations_analyzed) * 100).toFixed(3);
-  };
-
-  const formatNumber = (number) => {
-    if (number >= 1000000) {
-      return (number / 1000000).toFixed(2) + 'M';
-    }
-
-    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   return usageData === null ? (

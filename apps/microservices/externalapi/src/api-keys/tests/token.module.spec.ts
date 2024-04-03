@@ -210,7 +210,23 @@ describe('Test Token Module', () => {
       expect(tokenService.createToken(444, TEST_USER_ID)).rejects.toThrow(NotFoundException);
     });
   });
-
+  describe('Validate user email', () => {
+    it('Should validate userEmail', async () => {
+      const hasValidEmail = await tokenService.findUserEmailByToken('V4L1DUS3R', 'user1@valid.com');
+      expect(hasValidEmail).toEqual(true);
+    });
+    it('Should verify userEmail is not valid', async () => {
+      const hasValidEmail = await tokenService.findUserEmailByToken(
+        'V4L1DUS3R',
+        'not.valid@valid.com'
+      );
+      expect(hasValidEmail).toEqual(false);
+    });
+    it('Should verify userEmail is not valid for empty parameter', async () => {
+      const hasValidEmail = await tokenService.findUserEmailByToken('V4L1DUS3R', '');
+      expect(hasValidEmail).toEqual(false);
+    });
+  });
   afterAll(async () => {
     sandbox.restore();
     await app.close();

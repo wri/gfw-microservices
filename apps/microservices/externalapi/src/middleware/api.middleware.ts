@@ -36,6 +36,7 @@ export class ApiKeyMiddleware implements NestMiddleware {
     // If the user email is present, check if it is valid
     if (userEmail) {
       req.user = {
+        ...req.user,
         hasValidEmail: await this.tokenService.findUserEmailByToken(apiKey, userEmail),
       };
     }

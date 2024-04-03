@@ -153,7 +153,7 @@ export class TokenService {
       }
       return false;
     } catch (error) {
-      console.warn('Error finding user email by token', error);
+      Logger.warn('Error finding user email by token', error);
       return false;
     }
   }

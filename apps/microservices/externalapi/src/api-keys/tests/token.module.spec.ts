@@ -19,7 +19,8 @@ const TEST_MOCK_ORG = 777;
 
 const MINIMUM_TOKEN_LEN = 30;
 const MAXIMUM_TOKEN_LEN = 128;
-
+const VALID_USER = 'V4L1DUS3R';
+const VALID_USER_EMAIL = 'user1@valid.com';
 jest.setTimeout(30_000);
 describe('Test Token Module', () => {
   let tokenService: TokenService;
@@ -212,18 +213,19 @@ describe('Test Token Module', () => {
   });
   describe('Validate user email', () => {
     it('Should validate userEmail', async () => {
-      const hasValidEmail = await tokenService.findUserEmailByToken('V4L1DUS3R', 'user1@valid.com');
+      const hasValidEmail = await tokenService.findUserEmailByToken(VALID_USER, VALID_USER_EMAIL);
       expect(hasValidEmail).toEqual(true);
     });
     it('Should verify userEmail is not valid', async () => {
+      const NOT_VALID_USER_EMAIL = 'not.valid@valid.com';
       const hasValidEmail = await tokenService.findUserEmailByToken(
-        'V4L1DUS3R',
-        'not.valid@valid.com'
+        VALID_USER,
+        NOT_VALID_USER_EMAIL
       );
       expect(hasValidEmail).toEqual(false);
     });
     it('Should verify userEmail is not valid for empty parameter', async () => {
-      const hasValidEmail = await tokenService.findUserEmailByToken('V4L1DUS3R', '');
+      const hasValidEmail = await tokenService.findUserEmailByToken(VALID_USER, '');
       expect(hasValidEmail).toEqual(false);
     });
   });

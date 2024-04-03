@@ -20,26 +20,10 @@ import { FcdControllerRequestBody } from '../../models';
 
 @Injectable()
 export class FCDService {
-  FULLY_RESTRICTIVE_CATEGORY = ['Ia', 'Ib', 'II', 'III'];
-  INDIGENOUS_LAND = 'Not Reported';
+  private readonly FULLY_RESTRICTIVE_CATEGORY = ['Ia', 'Ib', 'II', 'III'];
+  private readonly INDIGENOUS_LAND = 'Not Reported';
 
   private readonly logger = new Logger(FCDService.name);
-
-  sqlConfig = {
-    user: process.env.MSSQL_USERNAME,
-    password: process.env.MSSQL_PASSWORD,
-    database: '',
-    server: process.env.MSSQL_HOSTNAME,
-    pool: {
-      max: 10,
-      min: 0,
-      idleTimeoutMillis: 30000,
-    },
-    port: parseInt(process.env.MSSQL_PORT),
-    options: {
-      trustServerCertificate: true,
-    },
-  };
 
   async handleWDPACategoryForList(listId: string, params: FcdControllerRequestBody) {
     const { clientDatabase, country, locationId, countryGadm } = params;
@@ -86,7 +70,7 @@ export class FCDService {
     return this.countrySpecificDeforestation(listId, clientDatabase, countryGadm, locationId);
   }
 
-  async getAggregatedWDPAOverlapData(
+  private async getAggregatedWDPAOverlapData(
     listId: string,
     country: string,
     clientDatabase: string,
@@ -120,7 +104,7 @@ export class FCDService {
     return result;
   }
 
-  async getProcessedWDPACountrySpecificDeforestationYearlyData(
+  private async getProcessedWDPACountrySpecificDeforestationYearlyData(
     clientDatabase: string,
     listId: string,
     countryGadm: string,
@@ -165,7 +149,7 @@ export class FCDService {
     return annualLosses;
   }
 
-  async getAggregatedLandmark(
+  private async getAggregatedLandmark(
     listId: string,
     country: string,
     clientDatabase: string,
@@ -243,7 +227,7 @@ export class FCDService {
     return !!found;
   }
 
-  getProtectedAreasByCategoryAreaData(
+  private getProtectedAreasByCategoryAreaData(
     listId: string,
     country: string,
     clientDatabase: string,
@@ -263,7 +247,7 @@ export class FCDService {
     );
   }
 
-  getWdpaAnnualLossData(clientDatabase: string, listId: string, locationId?: number) {
+  private getWdpaAnnualLossData(clientDatabase: string, listId: string, locationId?: number) {
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },
       { field: 'locationId', type: sql.Int, value: locationId || null },
@@ -276,7 +260,7 @@ export class FCDService {
     );
   }
 
-  getLandmarkOverlapCountryData(
+  private getLandmarkOverlapCountryData(
     listId: string,
     country: string,
     clientDatabase: string,
@@ -296,7 +280,7 @@ export class FCDService {
     );
   }
 
-  getLandmarkAnnualLossData(listId: string, clientDatabase: string, locationId: number) {
+  private getLandmarkAnnualLossData(listId: string, clientDatabase: string, locationId: number) {
     this.logger.debug(`Get landmark annual loss: listId ${listId} and locationId ${locationId}`);
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },

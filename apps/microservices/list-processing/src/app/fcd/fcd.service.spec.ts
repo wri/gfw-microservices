@@ -1,6 +1,7 @@
 import { FCDService } from './fcd.service';
 import {
-  wdpaData,
+  overlapProtectedAreasWdpaData,
+  annualLossWdpaData,
   annualLossLandmarkData,
   overlapCountryLandmarkData,
   overlapCountryWrongFormatLandmarkData,
@@ -13,9 +14,9 @@ describe('WDPA Category', () => {
 
     jest
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
-      .mockImplementation(() => Promise.resolve(wdpaData));
+      .mockImplementation(() => Promise.resolve(overlapProtectedAreasWdpaData));
 
-    const result = await fcdService.getAggregatedWDPAOverlapData('1', 'Argentina', 'TestCo', '5');
+    const result = await fcdService.getAggregatedWDPAOverlapData('1', 'Argentina', 'TestCo', 5);
 
     expect(result).toEqual({
       fullyRestrictive: 16600.2927,
@@ -28,13 +29,13 @@ describe('WDPA Category', () => {
 
     jest
       .spyOn(fcdService, 'getWdpaAnnualLossData')
-      .mockImplementation(() => Promise.resolve(wdpaData));
+      .mockImplementation(() => Promise.resolve(annualLossWdpaData));
 
     const result = await fcdService.getProcessedWDPACountrySpecificDeforestationYearlyData(
       'TestCo',
       '1',
       'ARG',
-      '5'
+      5
     );
 
     expect(result).toEqual({
@@ -102,7 +103,7 @@ describe('WDPA Category', () => {
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
       .mockImplementation(() => Promise.resolve(undefined));
 
-    const result = await fcdService.getAggregatedWDPAOverlapData('1', 'Argentina', 'TestCo', '');
+    const result = await fcdService.getAggregatedWDPAOverlapData('1', 'Argentina', 'TestCo', null);
 
     expect(result).toStrictEqual({
       fullyRestrictive: 0,
@@ -117,7 +118,7 @@ describe('WDPA Category', () => {
       .spyOn(fcdService, 'getProtectedAreasByCategoryAreaData')
       .mockImplementation(() => Promise.resolve([]));
 
-    const result = await fcdService.getAggregatedWDPAOverlapData('1', 'Argentina', 'TestCo', '5');
+    const result = await fcdService.getAggregatedWDPAOverlapData('1', 'Argentina', 'TestCo', 5);
 
     expect(result).toStrictEqual({
       fullyRestrictive: 0,
@@ -141,7 +142,7 @@ describe('Landmark Overlap Country', () => {
       '5692',
       'Argentina',
       'production',
-      '',
+      null,
       'ARG'
     );
     expect(result).toStrictEqual({
@@ -218,7 +219,7 @@ describe('Landmark Overlap Country', () => {
       '5692',
       'Argentina',
       'production',
-      '',
+      null,
       'ARG'
     );
     expect(result).toStrictEqual({
@@ -249,7 +250,7 @@ describe('Landmark Overlap Country', () => {
       '5692',
       'Argentina',
       'production',
-      '',
+      null,
       'ARG'
     );
     expect(result).toStrictEqual({

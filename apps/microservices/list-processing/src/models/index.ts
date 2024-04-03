@@ -127,12 +127,12 @@ export interface DatabaseQueryParam {
 
 export interface DatabaseQueryParamCountryDeforestation extends DatabaseQueryParam {
   countryGadm: string;
-  locationId?: string;
+  locationId?: number;
 }
 
 export interface FcdControllerRequestBody extends DatabaseQueryParam {
   clientDatabase: string;
   country?: string;
   countryGadm?: string;
-  locationId?: string;
+  locationId?: number;
 }

@@ -2,9 +2,7 @@ import {
   GetLandmarkByCategoryAreaType,
   GetProtectedAreasByCategoryAreaType,
   GetCountrySpecificDeforestationType,
-  GetCountrySpecificDeforestationWithoutLocationIdType,
   GetLandmarkAnnualLossType,
-  GetLandmarkAnnualLossWithoutLocationIdFilterType,
   SQLUtils,
   getLandmarkByCategoryArea,
   getProtectedAreasByCategoryArea,
@@ -12,8 +10,9 @@ import {
   getCountrySpecificDeforestationWithoutLocationId,
   getLandmarkAnnualLoss,
   getLandmarkAnnualLossWithoutLocationIdFilter,
-  getWDPAYearlyLoss,
-  GetWDPAYearlyLossType,
+  getWdpaYearlyLoss,
+  GetWdpaYearlyLossType,
+  getWdpaYearlyLossWithoutLocationIdFilter,
 } from '@wri-monorepos/sql';
 import { Injectable, Logger } from '@nestjs/common';
 import * as sql from 'mssql';
@@ -91,7 +90,7 @@ export class FCDService {
     listId: string,
     country: string,
     clientDatabase: string,
-    locationId: string
+    locationId?: number
   ) {
     const data = await this.getProtectedAreasByCategoryAreaData(
       listId,
@@ -125,45 +124,41 @@ export class FCDService {
     clientDatabase: string,
     listId: string,
     countryGadm: string,
-    locationId: string
+    locationId?: number
   ) {
-    const data = await this.getWdpaAnnualLossData(clientDatabase, listId, locationId);
+    const { countrySpecificDeforestationWdpaYearly, treeCoverLossByCountryWdpaYearly } =
+      await this.getWdpaAnnualLossData(clientDatabase, listId, locationId);
 
     const annualLosses = {
       country_specific_deforestation: { fullyRestrictive: {}, lessRestricted: {} },
       tree_cover_loss: { fullyRestrictive: {}, lessRestricted: {} },
     };
 
-    data?.forEach((item) => {
-      const jsonParsedSpecificDeforestationWdpa = JSON.parse(
-        item.countrySpecificDeforestationWdpaYearly
-      );
-      const countrySpecificDeforestationData =
-        jsonParsedSpecificDeforestationWdpa[countryGadm] || {};
-      Object.entries(countrySpecificDeforestationData)?.forEach(([key, value]) => {
-        const restrictionType = this.isFullRestrictiveCategory(key)
-          ? 'fullyRestrictive'
-          : 'lessRestricted';
-        Object.entries(value)?.forEach(([innerKey, innerValue]) => {
-          if (!annualLosses.country_specific_deforestation[restrictionType][innerKey]) {
-            annualLosses.country_specific_deforestation[restrictionType][innerKey] = 0;
-          }
-          annualLosses.country_specific_deforestation[restrictionType][innerKey] += innerValue;
-        });
+    const jsonParsedSpecificDeforestationWdpa = JSON.parse(countrySpecificDeforestationWdpaYearly);
+    const countrySpecificDeforestationData = jsonParsedSpecificDeforestationWdpa[countryGadm] || {};
+    Object.entries(countrySpecificDeforestationData)?.forEach(([key, value]) => {
+      const restrictionType = this.isFullRestrictiveCategory(key)
+        ? 'fullyRestrictive'
+        : 'lessRestricted';
+      Object.entries(value)?.forEach(([innerKey, innerValue]) => {
+        if (!annualLosses.country_specific_deforestation[restrictionType][innerKey]) {
+          annualLosses.country_specific_deforestation[restrictionType][innerKey] = 0;
+        }
+        annualLosses.country_specific_deforestation[restrictionType][innerKey] += innerValue;
       });
+    });
 
-      const jsonParsedTreeCoverLossWdpa = JSON.parse(item.treeCoverLossByCountryWdpaYearly);
-      const countryTreeCoverLossData = jsonParsedTreeCoverLossWdpa[countryGadm] || {};
-      Object.entries(countryTreeCoverLossData)?.forEach(([key, value]) => {
-        const restrictionType = this.isFullRestrictiveCategory(key)
-          ? 'fullyRestrictive'
-          : 'lessRestricted';
-        Object.entries(value)?.forEach(([innerKey, innerValue]) => {
-          if (!annualLosses.tree_cover_loss[restrictionType][innerKey]) {
-            annualLosses.tree_cover_loss[restrictionType][innerKey] = 0;
-          }
-          annualLosses.tree_cover_loss[restrictionType][innerKey] += innerValue;
-        });
+    const jsonParsedTreeCoverLossWdpa = JSON.parse(treeCoverLossByCountryWdpaYearly);
+    const countryTreeCoverLossData = jsonParsedTreeCoverLossWdpa[countryGadm] || {};
+    Object.entries(countryTreeCoverLossData)?.forEach(([key, value]) => {
+      const restrictionType = this.isFullRestrictiveCategory(key)
+        ? 'fullyRestrictive'
+        : 'lessRestricted';
+      Object.entries(value)?.forEach(([innerKey, innerValue]) => {
+        if (!annualLosses.tree_cover_loss[restrictionType][innerKey]) {
+          annualLosses.tree_cover_loss[restrictionType][innerKey] = 0;
+        }
+        annualLosses.tree_cover_loss[restrictionType][innerKey] += innerValue;
       });
     });
 
@@ -174,7 +169,7 @@ export class FCDService {
     listId: string,
     country: string,
     clientDatabase: string,
-    locationId: string,
+    locationId: number,
     countryGadm: string
   ) {
     const data = await this.getLandmarkOverlapCountryData(
@@ -252,7 +247,7 @@ export class FCDService {
     listId: string,
     country: string,
     clientDatabase: string,
-    locationId: string
+    locationId: number
   ) {
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },
@@ -268,21 +263,26 @@ export class FCDService {
     );
   }
 
-  getWdpaAnnualLossData(clientDatabase: string, listId: string, locationId: string) {
+  getWdpaAnnualLossData(clientDatabase: string, listId: string, locationId?: number) {
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },
       { field: 'locationId', type: sql.Int, value: locationId || null },
     ];
 
-    this.logger.debug(`getWdpaAnnualLossData: `, parameters);
-    return SQLUtils.queryDB<GetWDPAYearlyLossType[]>(clientDatabase, getWDPAYearlyLoss, parameters);
+    console.log('AAAA', locationId ? getWdpaYearlyLoss : getWdpaYearlyLossWithoutLocationIdFilter);
+
+    return SQLUtils.queryDBFirstRow<GetWdpaYearlyLossType>(
+      clientDatabase,
+      locationId ? getWdpaYearlyLoss : getWdpaYearlyLossWithoutLocationIdFilter,
+      parameters
+    );
   }
 
   getLandmarkOverlapCountryData(
     listId: string,
     country: string,
     clientDatabase: string,
-    locationId: string
+    locationId: number
   ) {
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },
@@ -298,32 +298,25 @@ export class FCDService {
     );
   }
 
-  getLandmarkAnnualLossData(listId: string, clientDatabase: string, locationId: string) {
+  getLandmarkAnnualLossData(listId: string, clientDatabase: string, locationId: number) {
     this.logger.debug(`Get landmark annual loss: listId ${listId} and locationId ${locationId}`);
-    const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
+    const parameters = [
+      { field: 'listId', type: sql.Int, value: listId },
+      { field: 'locationId', type: sql.Int, value: locationId || null },
+    ];
 
-    if (locationId) {
-      parameters.push({ field: 'locationId', type: sql.Int, value: locationId });
-
-      return SQLUtils.queryDBFirstRow<GetLandmarkAnnualLossType>(
-        clientDatabase,
-        getLandmarkAnnualLoss,
-        parameters
-      );
-    } else {
-      return SQLUtils.queryDBFirstRow<GetLandmarkAnnualLossWithoutLocationIdFilterType>(
-        clientDatabase,
-        getLandmarkAnnualLossWithoutLocationIdFilter,
-        parameters
-      );
-    }
+    return SQLUtils.queryDBFirstRow<GetLandmarkAnnualLossType>(
+      clientDatabase,
+      locationId ? getLandmarkAnnualLoss : getLandmarkAnnualLossWithoutLocationIdFilter,
+      parameters
+    );
   }
 
   private async countrySpecificDeforestation(
     listId: string,
     clientDatabase: string,
     countryGadm: string,
-    locationId: string
+    locationId: number
   ) {
     const data = await this.getCountrySpecificDeforestationData(listId, clientDatabase, locationId);
 
@@ -344,28 +337,23 @@ export class FCDService {
   private getCountrySpecificDeforestationData(
     listId: string,
     clientDatabase: string,
-    locationId: string
+    locationId?: number
   ) {
     this.logger.debug(
       `Get country specific deforestation for: listId ${listId} and locationId ${locationId}`
     );
-    const parameters = [{ field: 'listId', type: sql.Int, value: listId }];
+    const parameters = [
+      { field: 'listId', type: sql.Int, value: listId },
+      { field: 'locationId', type: sql.Int, value: locationId || null },
+    ];
 
-    if (locationId) {
-      parameters.push({ field: 'locationId', type: sql.Int, value: locationId });
-
-      return SQLUtils.queryDBFirstRow<GetCountrySpecificDeforestationType>(
-        clientDatabase,
-        getCountrySpecificDeforestation,
-        parameters
-      );
-    } else {
-      return SQLUtils.queryDBFirstRow<GetCountrySpecificDeforestationWithoutLocationIdType>(
-        clientDatabase,
-        getCountrySpecificDeforestationWithoutLocationId,
-        parameters
-      );
-    }
+    return SQLUtils.queryDBFirstRow<GetCountrySpecificDeforestationType>(
+      clientDatabase,
+      locationId
+        ? getCountrySpecificDeforestation
+        : getCountrySpecificDeforestationWithoutLocationId,
+      parameters
+    );
   }
 
   private getDataFromJsonString(

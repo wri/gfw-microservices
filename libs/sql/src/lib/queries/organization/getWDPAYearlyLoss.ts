@@ -2,15 +2,20 @@
  * Return the WDPA yearly loss for given list and filter for optional location
  * @listId INT,
  * @locationId INT | NULL
- * Returns type GetWDPAYearlyLossType
+ * Returns type GetWdpaYearlyLossType
  */
-
-export const getWDPAYearlyLoss = `
+export const getWdpaYearlyLoss = `
 DECLARE @listTable NVARCHAR(100) = ''
 DECLARE @analysisTable NVARCHAR(100) = ''
 DECLARE @TEMPLATE NVARCHAR(MAX)
 
-SELECT @listTable=l.list_table_name, @analysisTable=l.list_analysis_table_name FROM [dbo].[Lists] l WHERE l.id =  @listID
+SELECT 
+    @listTable=l.list_table_name
+    ,@analysisTable=l.list_analysis_table_name 
+FROM 
+    [dbo].[Lists] l 
+WHERE 
+    l.id =  @listID
 
 SET @TEMPLATE = '
   SELECT 
@@ -21,7 +26,7 @@ SET @TEMPLATE = '
   JOIN 
       dbo.[{ANALYSIS_TABLE_NAME}] an ON an.location_id = lt.location_id 
   WHERE 
-      (@locationId IS NULL OR lt.location_id = @locationId)
+      lt.location_id = @locationId
   ';
 
 SET @TEMPLATE = REPLACE(@TEMPLATE, '{LIST_TABLE_NAME}', @listTable);
@@ -32,7 +37,23 @@ EXEC sp_executesql @TEMPLATE,
     @listID=@listID, @locationId=@locationId;
 `;
 
-export type GetWDPAYearlyLossType = {
+/**
+ * Return the protected areas by category area for a given country and list
+ * @listId INT,
+ * Returns type GetProtectedAreasByCategoryAreaType
+ */
+
+export const getWdpaYearlyLossWithoutLocationIdFilter = `
+SELECT 
+  ISNULL(country_specific_deforestation_wdpa_yearly, '{}') as countrySpecificDeforestationWdpaYearly,
+  ISNULL(tree_cover_loss_by_country_wdpa_yearly, '{}') as treeCoverLossByCountryWdpaYearly
+FROM 
+  dbo.Analyses 
+WHERE 
+  list_id = @listID
+`;
+
+export type GetWdpaYearlyLossType = {
   countrySpecificDeforestationWdpaYearly: string;
   treeCoverLossByCountryWdpaYearly: string;
 };

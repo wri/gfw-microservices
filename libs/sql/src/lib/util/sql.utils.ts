@@ -87,7 +87,6 @@ export class SQLUtils {
     try {
       const isSystemQuery = databaseName === SQL_CONFIG.database;
       const queryStr = getQueryStr(isSystemQuery, queryName);
-      console.log({ queryStr });
       const allRows = await connection.runRawSingleQuery<T>(queryStr || queryName, parameters);
       connection.disconnect();
       return allRows as T;

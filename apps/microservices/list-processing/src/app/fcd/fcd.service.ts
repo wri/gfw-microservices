@@ -269,8 +269,6 @@ export class FCDService {
       { field: 'locationId', type: sql.Int, value: locationId || null },
     ];
 
-    console.log('AAAA', locationId ? getWdpaYearlyLoss : getWdpaYearlyLossWithoutLocationIdFilter);
-
     return SQLUtils.queryDBFirstRow<GetWdpaYearlyLossType>(
       clientDatabase,
       locationId ? getWdpaYearlyLoss : getWdpaYearlyLossWithoutLocationIdFilter,

@@ -115,10 +115,7 @@ export class ListAnalysisService {
     fileType,
   }: PrepareUploadRequestSchema & { organizationId: number }) {
     const user = await this.userService.findUser(organizationId, userEmail);
-    if (!user) {
-      throw new NotFoundException(`User with ${userEmail} not found`);
-    }
-
+    
     const fileKey = generateRandomFilename(fileType);
     const presignedURLResponse = await axios.post<{
       url: string;
@@ -281,10 +278,7 @@ export class ListAnalysisService {
     userEmail,
   }: AlertsGenerateBodySchema & { organizationId: number; listId: number }) {
     const user = await this.userService.findUser(organizationId, userEmail);
-    if (!user) {
-      throw new NotFoundException(`User with ${userEmail} not found`);
-    }
-
+  
     const organization = await this.getOrganizationDetails(organizationId);
 
     const sqsMessage = generateAlertsSqsTemplate({

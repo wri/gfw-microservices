@@ -199,18 +199,15 @@ export class LocationService {
       Logger.log(`Copy analysis complete`, 'LocationsService');
 
       if (!isSaveAsDraft) {
-        const processingLimit = await checkProcessingLimits({
+        const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
           organizationDb: clientDatabase,
           organizationId,
           subscriptionStatusId,
           listId: createdListId,
         });
 
-        if (
-          processingLimit instanceof Error &&
-          processingLimit.message === 'ProcessingLimitException'
-        ) {
-          throw new Error(`${processingLimit.message}: Analysis limit reached`);
+        if (isListLocationOverLimit) {
+          throw new Error(`Analysis limit reached`);
         }
 
         const postData = {
@@ -262,18 +259,15 @@ export class LocationService {
       if (isSaveAsDraft) {
         await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
       } else {
-        const processingLimit = await checkProcessingLimits({
+        const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
           organizationDb: clientDatabase,
           organizationId,
           subscriptionStatusId,
           listId: moveToList.id,
         });
 
-        if (
-          processingLimit instanceof Error &&
-          processingLimit.message === 'ProcessingLimitException'
-        ) {
-          throw new Error(`${processingLimit.message}: Analysis limit reached`);
+        if (isListLocationOverLimit) {
+          throw new Error(`Analysis limit reached`);
         }
 
         const postData = {

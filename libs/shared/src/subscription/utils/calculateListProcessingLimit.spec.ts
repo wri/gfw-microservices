@@ -3,7 +3,7 @@ import { AnalysisLimit, OrganizationAnalysisUsage } from '@wri-monorepos/sql';
 
 describe('calculateListProcessingLimit', () => {
   it('returns availableAnalyzableAreaRemaining', () => {
-    const accountLimits: Partial<AnalysisLimit> = {
+    const accountLimits: AnalysisLimit = {
       MaxAreaAnalyzeablePerYear: 1000,
       MaxAreaPerList: 500,
     };

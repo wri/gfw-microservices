@@ -1,8 +1,8 @@
 import { AnalysisLimit } from '@wri-monorepos/sql';
 
 export function combineOrganizationLimits(
-  subscriptionLimits: Partial<AnalysisLimit>,
-  extraLimits: Partial<AnalysisLimit>
+  subscriptionLimits: AnalysisLimit,
+  extraLimits: AnalysisLimit
 ) {
   return {
     MaxAreaAnalyzeablePerYear:

@@ -37,17 +37,14 @@ export class LargeListService {
     const { organization_id: organizationId, subscription_status_id: subscriptionStatusId } =
       request;
 
-    const processingLimit = await checkProcessingLimits({
+    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
       organizationDb: request.organization_database,
       organizationId,
       subscriptionStatusId,
       listId: request.list_id,
     });
 
-    if (
-      processingLimit instanceof Error &&
-      processingLimit.message === 'ProcessingLimitException'
-    ) {
+    if (isListLocationOverLimit) {
       throw new ProcessingLimitException();
     }
 
@@ -55,7 +52,7 @@ export class LargeListService {
       ...llpRequest,
       environment: microserviceEnvironment,
       send_email: isExternalAPIProcess === true ? false : true,
-      processingLimit,
+      processing_limit: processingLimit,
     };
 
     const requestBody = JSON.stringify(payloadBody);

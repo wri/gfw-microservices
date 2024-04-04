@@ -4,8 +4,6 @@ const axios = require('axios');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
 
-import { getListLocationsCountById } from '@wri-monorepos/sql';
-
 const {
   GEO_TRELLIS__ANALYZE_LIST_DEV,
   GEO_TRELLIS__ANALYZE_LIST_QA,
@@ -50,15 +48,15 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
 
   const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
 
-  const processingLimit = await checkProcessingLimits({
+  const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
     organizationDb: databaseName,
     organizationId,
     subscriptionStatusId,
-    listId: request.list_id,
+    listId: listID,
   });
 
-  if (processingLimit instanceof Error && processingLimit.message === 'ProcessingLimitException') {
-    throw new Error(`${processingLimit.message}: Analysis limit reached`);
+  if (isListLocationOverLimit) {
+    throw new Error(`Analysis limit reached`);
   }
 
   const listAnalysisStatusData = await getListAnalysisStatusByListId(req, listID);

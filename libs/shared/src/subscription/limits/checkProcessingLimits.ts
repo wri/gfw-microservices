@@ -1,4 +1,4 @@
-import { getListLocationProcessingLimitCheck } from './getListLocationProcessingLimitCheck';
+import { checkLocationProcessingLimit } from './checkLocationProcessingLimit';
 import { getListProcessingLimits } from './getListProcessingLimits';
 
 interface CheckProcessingLimitsParameters {
@@ -18,28 +18,20 @@ export async function checkProcessingLimits({
   subscriptionStatusId,
   listId,
 }: CheckProcessingLimitsParameters) {
-  try {
-    const isListLocationOverLimit = await getListLocationProcessingLimitCheck({
-      listId,
-      orgDbName: organizationDb,
-      organizationId,
-      subscriptionStatusId,
-    });
+  const isListLocationOverLimit = await checkLocationProcessingLimit({
+    listId,
+    orgDbName: organizationDb,
+    organizationId,
+    subscriptionStatusId,
+  });
 
-    if (isListLocationOverLimit) {
-      throw new Error('ProcessingLimitException');
-    }
+  const processingLimit = await getListProcessingLimits({
+    organizationId,
+    organizationType: subscriptionStatusId,
+  });
 
-    const processingLimit = await getListProcessingLimits({
-      organizationId,
-      organizationType: subscriptionStatusId,
-    });
-
-    return processingLimit;
-  } catch (error) {
-    if (error.message === 'ProcessingLimitException') {
-      return error;
-    }
-    throw new Error(error);
-  }
+  return {
+    isListLocationOverLimit,
+    processingLimit,
+  };
 }

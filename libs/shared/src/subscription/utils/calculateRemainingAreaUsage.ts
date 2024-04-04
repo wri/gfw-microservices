@@ -1,7 +1,7 @@
 import { AnalysisLimit, OrganizationAnalysisUsage } from '@wri-monorepos/sql';
 
 export function calculateRemainingAreaUsage(
-  accountLimits: AnalysisLimit,
+  accountLimits: Partial<AnalysisLimit>,
   accountUsage: OrganizationAnalysisUsage
 ) {
   const availableAnalyzableArea =

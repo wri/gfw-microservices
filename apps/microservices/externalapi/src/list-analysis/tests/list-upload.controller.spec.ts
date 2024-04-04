@@ -215,7 +215,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
-      organizationRenewalTime: new Date(),
+      renewalTime: new Date(),
       subscriptionStatusId: 1,
     });
 
@@ -262,7 +262,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
-      organizationRenewalTime: new Date(),
+      renewalTime: new Date(),
       subscriptionStatusId: 1,
     });
 
@@ -302,7 +302,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
-      organizationRenewalTime: new Date(),
+      renewalTime: new Date(),
       subscriptionStatusId: 1,
     });
 
@@ -343,7 +343,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: actualDate,
-      organizationRenewalTime: actualDate,
+      renewalTime: actualDate,
       subscriptionStatusId: 1,
     });
 
@@ -384,7 +384,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: actualDate,
-      organizationRenewalTime: actualDate,
+      renewalTime: actualDate,
       subscriptionStatusId: 1,
     });
 
@@ -424,7 +424,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: actualDate,
-      organizationRenewalTime: actualDate,
+      renewalTime: actualDate,
       subscriptionStatusId: 1,
     });
 
@@ -457,7 +457,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
-      organizationRenewalTime: new Date(),
+      renewalTime: new Date(),
       subscriptionStatusId: 1,
     });
 

@@ -95,7 +95,7 @@ describe('ListService', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
-      organizationRenewalTime: new Date(),
+      renewalTime: new Date(),
       subscriptionStatusId: 1,
     });
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
@@ -133,7 +133,7 @@ describe('ListService', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
-      organizationRenewalTime: new Date(),
+      renewalTime: new Date(),
       subscriptionStatusId: 1,
     });
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
@@ -165,7 +165,7 @@ describe('ListService', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
-      organizationRenewalTime: new Date(),
+      renewalTime: new Date(),
       subscriptionStatusId: 1,
     });
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({

@@ -1,8 +1,16 @@
 {
   "clearMocks": true,
-  "collectCoverageFrom": ["<rootDir>/{client,config,server}/**/*.{js,jsx,ts,tsx}"],
+  "collectCoverageFrom": [
+    "<rootDir>/{client,config,server}/**/*.{js,jsx,ts,tsx}"
+  ],
   "coverageDirectory": "../../../coverage/apps/webserver",
-  "coverageReporters": ["json", "text", "lcov", "clover", "cobertura"],
+  "coverageReporters": [
+    "json",
+    "text",
+    "lcov",
+    "clover",
+    "cobertura"
+  ],
   "coverageThreshold": {
     "global": {
       "branches": 1,
@@ -11,14 +19,25 @@
       "statements": 1
     }
   },
-  "moduleFileExtensions": ["js", "json", "jsx", "ts", "tsx"],
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "jsx",
+    "ts",
+    "tsx"
+  ],
   "modulePathIgnorePatterns": [
     "<rootDir>/node_modules/",
     "<rootDir>/node_modules/@arcgis",
     "<rootDir>/dist/*"
   ],
-  "setupFiles": ["@testing-library/react/dont-cleanup-after-each"],
-  "setupFilesAfterEnv": ["./test/jest.setup.js", "@testing-library/jest-dom/extend-expect"],
+  "setupFiles": [
+    "@testing-library/react/dont-cleanup-after-each"
+  ],
+  "setupFilesAfterEnv": [
+    "./test/jest.setup.js",
+    "@testing-library/jest-dom/extend-expect"
+  ],
   "testEnvironment": "jest-environment-jsdom",
   "testMatch": [
     "<rootDir>/client/**/*.test.js",
@@ -31,7 +50,9 @@
     "^.+\\.(js|jsx)?$": "babel-jest",
     "^.+\\.(ts)$": "ts-jest"
   },
-  "transformIgnorePatterns": ["node_modules/(?!(@arcgis|@esri|@stencil)/)"],
+  "transformIgnorePatterns": [
+    "node_modules/(?!(@arcgis|@esri|@stencil)/)"
+  ],
   "moduleNameMapper": {
     "^axios$": "<rootDir>/../../../node_modules/axios/dist/node/axios.cjs",
     "^mapshaper$": "<rootDir>/../../../node_modules/mapshaper/mapshaper.js",

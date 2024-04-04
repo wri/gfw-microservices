@@ -5,13 +5,13 @@ block head
 block content
   div#account-mount
   //- script(src=accountjs, async)
-  link(rel='stylesheet', href='https://js.arcgis.com/4.6/esri/css/main.css')
+  link(rel='stylesheet', href='https://js.arcgis.com/4.20/esri/css/main.css')
   script.
     var classificationsData = !{JSON.stringify(classifications)};
     var commoditiesData = !{JSON.stringify(commodities)};
     var geographiesData = !{JSON.stringify(geographies)};
     var titlesData = !{JSON.stringify(titles)};
-  script(src='https://js.arcgis.com/4.6/', async)
+  script(src='https://js.arcgis.com/4.20/', async)
   script.
     var makePath = function makePath (base, path) {
       var position = base.length - 1;

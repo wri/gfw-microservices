@@ -34,14 +34,23 @@ export class ApiKeyMiddleware implements NestMiddleware {
       organizationId: apiKeyRecord.organizationId,
     };
     // If the user email is present, check if it is valid
-    if (userEmail) {
-      req.user = {
-        ...req.user,
-        hasValidEmail: await this.tokenService.findUserEmailByToken(
+    if (typeof userEmail !== 'undefined') {
+      try {
+        const validUserEmail = await this.tokenService.findUserEmailByToken(
           apiKeyRecord.organizationId,
           userEmail
-        ),
-      };
+        );
+        if (validUserEmail) {
+          req.user = {
+            ...req.user,
+            hasValidEmail: validUserEmail,
+          };
+        } else {
+          return res.status(401).json({ message: 'Unauthorized' });
+        }
+      } catch (error) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
     }
     // If the API key is valid, continue with the request
     next();

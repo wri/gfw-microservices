@@ -3,5 +3,8 @@ export function formatNumber(number) {
     return (number / 1000000).toFixed(2) + 'M';
   }
 
-  return number?.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-};
+  return number
+    ?.toFixed(2)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}

@@ -30,6 +30,16 @@ EXEC sp_executesql @TEMPLATE,
     @listID=@listID, @locationId=@locationId
 `;
 
+export const getLandmarkAnnualLossWithoutLocationIdFilter = `
+SELECT 
+  ISNULL(country_specific_deforestation_landmark_yearly, '{}') as countrySpecificDeforestation,
+  ISNULL(tree_cover_loss_by_country_landmark_yearly, '{}') as treeCoverLoss
+FROM 
+  dbo.Analyses 
+WHERE 
+  list_id = @listID
+`;
+
 export type GetLandmarkAnnualLossType = {
   countrySpecificDeforestation: string;
   treeCoverLoss: string;

@@ -45,7 +45,7 @@ describe('FCDController', () => {
     const response = await controller.getFCDCategoryDataForListId('1', 'WDPA', {
       clientDatabase: 'TestCo',
       country: 'Argentina',
-      locationId: '5',
+      locationId: 5,
       countryGadm: 'ARG',
     });
 
@@ -53,7 +53,7 @@ describe('FCDController', () => {
     expect(service.handleWDPACategoryForList).toHaveBeenCalledWith('1', {
       clientDatabase: 'TestCo',
       country: 'Argentina',
-      locationId: '5',
+      locationId: 5,
       countryGadm: 'ARG',
     });
   });
@@ -73,7 +73,7 @@ describe('FCDController', () => {
     const response = await controller.getFCDCategoryDataForListId('1', 'landmark', {
       clientDatabase: 'TestCo',
       country: 'Argentina',
-      locationId: '3',
+      locationId: 3,
     });
 
     expect(response).toEqual(landmarOverlapMockedData);
@@ -81,7 +81,7 @@ describe('FCDController', () => {
     expect(service.handleLandmarkCategoryForList).toHaveBeenCalledWith('1', {
       clientDatabase: 'TestCo',
       country: 'Argentina',
-      locationId: '3',
+      locationId: 3,
     });
   });
 
@@ -100,7 +100,7 @@ describe('FCDController', () => {
     const response = await controller.getFCDCategoryDataForListId('1', 'country', {
       clientDatabase: 'TestCo',
       countryGadm: 'ARG',
-      locationId: '4',
+      locationId: 4,
     });
 
     expect(response).toEqual(mockResponse);
@@ -108,7 +108,7 @@ describe('FCDController', () => {
     expect(service.handleCountryCategoryForList).toHaveBeenCalledWith('1', {
       clientDatabase: 'TestCo',
       countryGadm: 'ARG',
-      locationId: '4',
+      locationId: 4,
     });
   });
 
@@ -119,7 +119,7 @@ describe('FCDController', () => {
         controller.getFCDCategoryDataForListId('1', category, {
           clientDatabase: 'TestCo',
           country: 'Argentina',
-          locationId: '3',
+          locationId: 3,
         })
       ).rejects.toThrow(NotImplementedException);
     }

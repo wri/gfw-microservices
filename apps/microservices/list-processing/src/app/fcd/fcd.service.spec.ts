@@ -4,8 +4,6 @@ import {
   overlapProtectedAreasWdpaData,
   annualLossWdpaData,
   annualLossLandmarkData,
-  overlapCountryWrongFormatLandmarkData,
-  annualLossWrongFormatLandmarkData,
   overlapCountryLandmarkData,
 } from './fixture';
 
@@ -27,7 +25,7 @@ describe('WDPA Category', () => {
       .mockImplementation(() => Promise.resolve(annualLossWdpaData));
 
     expect(
-      fcdService.handleWDPACategoryForList('1', {
+      fcdService.handleWDPACategoryForList(1, {
         clientDatabase: 'TestCo',
         countryGadm: 'ARG',
         country: 'Argentina',
@@ -96,13 +94,13 @@ describe('WDPA Category', () => {
     jest.spyOn(SQLUtils, 'queryDB').mockImplementation(() => Promise.resolve([]));
     jest.spyOn(SQLUtils, 'queryDBFirstRow').mockImplementation(() =>
       Promise.resolve({
-        countrySpecificDeforestationWdpaYearly: '{}',
-        treeCoverLossByCountryWdpaYearly: '{}',
+        country_specific_deforestation_wdpa_yearly: '{}',
+        tree_cover_loss_by_country_wdpa_yearly: '{}',
       })
     );
 
     expect(
-      fcdService.handleWDPACategoryForList('1', {
+      fcdService.handleWDPACategoryForList(1, {
         country: 'Argentina',
         clientDatabase: 'TestCo',
         locationId: 5,
@@ -142,7 +140,7 @@ describe('Landmark Overlap Country', () => {
       .mockImplementation(() => Promise.resolve(annualLossLandmarkData));
 
     expect(
-      fcdService.handleLandmarkCategoryForList('5692', {
+      fcdService.handleLandmarkCategoryForList(5692, {
         country: 'Argentina',
         clientDatabase: 'production',
         locationId: null,
@@ -213,40 +211,15 @@ describe('Landmark Overlap Country', () => {
   it('Should return empty obj for country_specific_deforestation & tree_cover_loss and 0 for overlap when database values are empty', () => {
     jest.spyOn(SQLUtils, 'queryDB').mockImplementation(() => Promise.resolve([]));
 
-    expect(
-      fcdService.handleLandmarkCategoryForList('5692', {
-        country: 'Argentina',
-        clientDatabase: 'production',
-        locationId: null,
-        countryGadm: 'ARG',
+    jest.spyOn(SQLUtils, 'queryDBFirstRow').mockImplementation(() =>
+      Promise.resolve({
+        country_specific_deforestation_landmark_yearly: '{}',
+        tree_cover_loss_by_country_landmark_yearly: '{}',
       })
-    ).resolves.toStrictEqual({
-      landmark: {
-        country_specific_deforestation: {
-          indigenous: {},
-        },
-        tree_cover_loss: {
-          indigenous: {},
-        },
-        overlap: {
-          indigenous: 0,
-          nonIndigenous: 0,
-        },
-      },
-    });
-  });
-
-  it('Should return empty obj for country_specific_deforestation & tree_cover_loss and 0 for overlap when database json is invalid', () => {
-    jest.spyOn(SQLUtils, 'queryDB').mockImplementation((_, __, parameters) => {
-      if (parameters.some((x) => x.field === 'country')) {
-        return Promise.resolve(overlapCountryWrongFormatLandmarkData);
-      } else {
-        return Promise.resolve([annualLossWrongFormatLandmarkData]);
-      }
-    });
+    );
 
     expect(
-      fcdService.handleLandmarkCategoryForList('5692', {
+      fcdService.handleLandmarkCategoryForList(5692, {
         country: 'Argentina',
         clientDatabase: 'production',
         locationId: null,

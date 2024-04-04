@@ -2,6 +2,7 @@ import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import LocationsPage from '../../pages/locationsPage';
 import ListDetailsPage from '../../pages/listDetailsPage';
 import DiagnosticsPage from '../../pages/diagnosticsPage';
+import * as User from '../../app-api/User';
 
 describe('Information Bubbles', () => {
   const locationsPage = new LocationsPage();
@@ -9,23 +10,8 @@ describe('Information Bubbles', () => {
   const diagnosticsPage = new DiagnosticsPage();
 
   When('I login in the landing page', () => {
-    cy.on('uncaught:exception', () => {
-      // work around for existing errors that otherwise fail the test
-      return false;
-    });
-    cy.visit('/');
-
-    const deployment = Cypress.env('deployment');
-    const credentials = Cypress.env(deployment);
-    cy.get('[data-cy="desktopHeader"]').then((desktopHeader) => {
-      cy.wrap(desktopHeader).find('[data-cy="loginNav"]').click();
-      cy.wrap(desktopHeader).find('[data-cy="username"]').type(credentials.username);
-      cy.wrap(desktopHeader).find('[data-cy="password"]').type(credentials.password);
-      cy.wrap(desktopHeader).find('[data-cy="loginButton"]').click();
-    });
-
-    cy.get('[data-cy="verifyToken"]').type(credentials.password);
-    cy.get('[data-cy="verifyButton"]').click();
+    User.login();
+    cy.visit('/locations');
   });
 
   When('I navigate to a list diagnostic page', () => {

@@ -1,36 +1,40 @@
-export const wdpaData = [
+export const overlapProtectedAreasWdpaData = [
   {
-    listId: 5837,
-    locationId: 5,
     protectedAreasByCategoryArea: '{}',
     countrySpecificDeforestationWdpaYearly: '{"ARG":{}}',
+    treeCoverLossByCountryWdpaYearly: '{"ARG":{}}',
   },
   {
-    listId: 5837,
-    locationId: 7,
     protectedAreasByCategoryArea: '{"Category II":16600.2927}',
     countrySpecificDeforestationWdpaYearly: '{"ARG":{"Category II":{}}}',
+    treeCoverLossByCountryWdpaYearly: '{"ARG":{"Category II":{}}}',
   },
   {
-    listId: 5837,
-    locationId: 3,
     protectedAreasByCategoryArea: '{}',
     countrySpecificDeforestationWdpaYearly: '{"ARG":{}}',
+    treeCoverLossByCountryWdpaYearly: '{"ARG":{}}',
   },
   {
-    listId: 5837,
-    locationId: 9,
     protectedAreasByCategoryArea: '{}',
     countrySpecificDeforestationWdpaYearly: '{"ARG":{}}',
+    treeCoverLossByCountryWdpaYearly: '{"ARG":{}}',
   },
   {
-    listId: 5837,
-    locationId: 8,
     protectedAreasByCategoryArea: '{"Not Reported":3335.8852}',
     countrySpecificDeforestationWdpaYearly:
       '{"ARG":{"Not Reported":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":527.781}}}',
+    treeCoverLossByCountryWdpaYearly:
+      '{"ARG":{"Not Reported":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":527.781}}}',
   },
 ];
+
+export const annualLossWdpaData = {
+  protectedAreasByCategoryArea: '{"Not Reported":3335.8852}',
+  countrySpecificDeforestationWdpaYearly:
+    '{"ARG":{"Not Reported":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":527.781}}}',
+  treeCoverLossByCountryWdpaYearly:
+    '{"ARG":{"Not Reported":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":527.781}}}',
+};
 
 export const overlapCountryLandmarkData = [
   {

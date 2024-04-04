@@ -31,7 +31,7 @@ module.exports = async ({
   try {
     const url = getListProcessingUrl({ listId, category });
 
-    const request = await fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -44,17 +44,13 @@ module.exports = async ({
       }),
     });
 
-    if (!request.ok) {
+    if (!response.ok) {
       throw new Error(
-        `Error POST ${url} failed with status ${request.status}: '${request.statusText}'`
+        `Error POST ${url} failed with status ${response.status}: '${response.statusText}'`
       );
     }
 
-    const data = await request.json();
-
-    // debugging
-    // console.log('request: ——[•]>', request);
-    // console.log("data: ——[•]>", data);
+    const data = await response.json();
 
     return {
       error: false,

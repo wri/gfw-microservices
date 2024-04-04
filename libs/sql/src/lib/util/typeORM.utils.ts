@@ -74,7 +74,7 @@ export const createDatasourceConfig = (
 
 export class TypeOrmSystemModule {
   static create(props: CreateTypeOrmSystemModuleProps) {
-    const { name, imports } = props;
+    const { name, imports = [] } = props;
     return TypeOrmModule.forRootAsync({
       name,
       imports: [...imports],

@@ -27,3 +27,5 @@ export * from './getAnalysisDataForProtectedAreasByLocation';
 export * from './getOrganizationActivatedTime';
 export * from './getGFWListsDashboardData';
 export * from './getOrganizationDb';
+export * from './getGFWListsDashboardDataPaginated';
+export * from './getCountGFWListsDashboardData';

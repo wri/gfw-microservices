@@ -40,7 +40,7 @@ export default function AccountUsageContainer() {
   const renewalTextStyle = {
     margin: '0px 0 30px 0',
     color: 'rgba(0, 0, 0, 0.5)',
-    fontSize: '10px',
+    fontSize: '12px',
     textAlign: 'right',
   };
 
@@ -139,6 +139,10 @@ export default function AccountUsageContainer() {
     return ((locations / usageData.locations_analyzed) * 100).toFixed(3);
   };
 
+  const formatNumber = (number) => {
+    return number >= 1000000 ? (number / 1000000).toFixed(2) + 'M' : number.toFixed(2);
+  };
+
   return usageData === null ? (
     <InlineLoader />
   ) : (
@@ -155,14 +159,14 @@ export default function AccountUsageContainer() {
         maxLocations={usageLimitsData?.max_locations_per_year}
       />
 
-      <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>History</h3>
+      <h3 style={{ margin: '30px 0 20px 0', fontWeight: 'normal' }}>Usage Per User</h3>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
               <HeaderTableCell>User</HeaderTableCell>
               <HeaderTableCell align="right"># Analyses (% of Total used)</HeaderTableCell>
-              <HeaderTableCell align="right">Areas (% of Total used)</HeaderTableCell>
+              <HeaderTableCell align="right">Area (% of Total used)</HeaderTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -175,9 +179,13 @@ export default function AccountUsageContainer() {
                   {row.first_name} {row.last_name}
                 </TableCell>
                 <TableCell align="right">
-                  {getAnalysesPercentage(row.total_locations_analyzed)}%
+                  {row.total_locations_analyzed} (
+                  {getAnalysesPercentage(row.total_locations_analyzed)}%)
                 </TableCell>
-                <TableCell align="right">{getAreasPercentage(row.total_area_analyzed)}%</TableCell>
+                <TableCell align="right">
+                  {formatNumber(row.total_area_analyzed)} (
+                  {getAreasPercentage(row.total_area_analyzed)}%)
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

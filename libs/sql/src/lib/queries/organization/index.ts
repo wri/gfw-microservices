@@ -41,3 +41,6 @@ export * from './getListByFiltersQuery';
 export * from './getOrganizationYearlyUsageSinceOrgActivatedTime';
 export * from './getCountrySpecificDeforestation';
 export * from './getCountrySpecificDeforestationWithoutLocationId';
+export * from './getWDPAYearlyLoss';
+export * from './getLandmarkAnnualLoss';
+export * from './getLandmarkAnnualLossWithoutLocationIdFilter';

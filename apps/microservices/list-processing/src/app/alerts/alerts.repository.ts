@@ -10,6 +10,8 @@ import {
   getDashboardDataPaginated,
   CountDashboardDataType,
   getCountDashboardData,
+  getGFWListsDashboardDataPaginated,
+  getCountGFWListsDashboardData,
 } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -37,7 +39,7 @@ export class AlertsRepository {
     const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
 
     return await SQLUtils.queryDB<DashboardDataType[]>(
-      'gfwpro',
+      process.env.MSSQL_DATABASE,
       getGFWListsDashboardData,
       parameters
     );
@@ -90,6 +92,34 @@ export class AlertsRepository {
     return await SQLUtils.queryDB<DashboardDataType[]>(
       clientDatabase,
       getDashboardDataPaginated,
+      parameters
+    );
+  }
+
+  async countGFWDashboardData(listID: number) {
+    const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
+
+    return await SQLUtils.queryDBFirstRow<CountDashboardDataType>(
+      process.env.MSSQL_DATABASE,
+      getCountGFWListsDashboardData,
+      parameters
+    );
+  }
+
+  async findGFWDashboardDataByListIdPaginated(
+    listID: number,
+    pageNumber: number,
+    rowsPerPage: number
+  ) {
+    const parameters = [
+      { field: 'listID', type: sql.Int, value: listID },
+      { field: 'pageNumber', type: sql.Int, value: pageNumber },
+      { field: 'rowsPerPage', type: sql.Int, value: rowsPerPage },
+    ];
+
+    return await SQLUtils.queryDB<DashboardDataType[]>(
+      process.env.MSSQL_DATABASE,
+      getGFWListsDashboardDataPaginated,
       parameters
     );
   }

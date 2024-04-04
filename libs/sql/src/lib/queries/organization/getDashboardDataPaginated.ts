@@ -1,3 +1,12 @@
+/**
+ * Returns the dashboard data for user list paginated
+ *
+ * @listId INT - id of the list
+ * @pageNumber INT - page that we want to get
+ * @rowsPerPage INT - number of rows per page
+ *
+ * Returns type DashboardDataType (same as getDashboardData)
+ */
 export const getDashboardDataPaginated = `
  -- SET NOCOUNT ON added to prevent extra result sets from
  -- interfering with SELECT statements.

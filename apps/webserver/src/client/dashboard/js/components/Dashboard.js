@@ -191,6 +191,11 @@ export default class Dashboard extends Component {
     });
   };
 
+  setDashboardLastSubmit({ dashboardLastSubmit }) {
+    const formatTimestamp = moment(dashboardLastSubmit).format('D MMMM YYYY, h:mm A');
+    this.setState({ lastUpdatedDashboard: formatTimestamp });
+  }
+
   selectList = async (list) => {
     const { listCache } = this.state;
     const { id, list_name, GFWList } = list;
@@ -198,10 +203,13 @@ export default class Dashboard extends Component {
 
     // use cache
     if (Object.prototype.hasOwnProperty.call(listCache, key)) {
-      const cachedData = listCache[key];
+      const { data, time } = listCache[key];
+
+      this.setDashboardLastSubmit(time);
+
       store.dispatch(selectList(list));
-      store.dispatch(saveRawData(cachedData));
-      store.dispatch(setZoomLevelTotal(cachedData.geojson.features.length));
+      store.dispatch(saveRawData(data));
+      store.dispatch(setZoomLevelTotal(data.geojson.features.length));
     } else {
       store.dispatch(toggleLoader());
 
@@ -240,16 +248,16 @@ export default class Dashboard extends Component {
 
         if (
           !Object.prototype.hasOwnProperty.call(listDashboardTimestamp, 'errorCode') &&
-          listDashboardTimestamp.length !== 0
+          Object.prototype.hasOwnProperty.call(listDashboardTimestamp, 'dashboardLastSubmit')
         ) {
-          const formatTimestamp = moment(listDashboardTimestamp.dashboardLastResults).format(
-            'D MMMM YYYY, h:mm A'
-          );
-          this.setState({ lastUpdatedDashboard: formatTimestamp });
+          this.setDashboardLastSubmit(listDashboardTimestamp);
         }
 
         const cache = {};
-        cache[key] = rawDataObject;
+        cache[key] = {
+          data: rawDataObject,
+          time: listDashboardTimestamp,
+        };
         store.dispatch(addListCache(cache));
         store.dispatch(saveRawData(rawDataObject));
         store.dispatch(setZoomLevelTotal(rawDataObject.geojson.features.length));

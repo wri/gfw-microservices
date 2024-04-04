@@ -16,14 +16,14 @@ import { useProfileContext } from '../../ProfileStateContext';
 import AccountUsageDropMenu from './AccountUsageDropMenu';
 
 export default function AccountUsageContainer() {
-  const { accountActivatedTime } = useProfileContext();
+  const { accountRenewalTime } = useProfileContext();
   const [usageData, setUsageData] = useState(null);
   const [usageLimitsData, setUsageLimitsData] = useState(null);
   const [usageDataperUser, setUsageDataperUser] = useState([]);
   const [messageType, setMessageType] = useState('');
   const [messageText, setMessageText] = useState('');
   const todayAsEndDay = moment();
-  const accountActivationDate = moment(accountActivatedTime);
+  const accountActivationDate = moment(accountRenewalTime);
   const accountLatestYearStartDate = todayAsEndDay
     .clone()
     .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');

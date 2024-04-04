@@ -24,7 +24,7 @@ export * from './setOrganizationCustomAnalysisLimits';
 export * from './getCheckAndExpireConnection';
 export * from './getAdministrativeAreasDataByLocation';
 export * from './getAnalysisDataForProtectedAreasByLocation';
-export * from './getOrganizationActivatedTime';
+export * from './getOrganizationRenewalTime';
 export * from './getGFWListsDashboardData';
 export * from './getGFWListsDashboardDataPaginated';
 export * from './getCountGFWListsDashboardData';

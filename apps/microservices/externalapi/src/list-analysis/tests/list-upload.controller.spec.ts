@@ -215,6 +215,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
+      organizationRenewalTime: new Date(),
       subscriptionStatusId: 1,
     });
 
@@ -261,6 +262,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
+      organizationRenewalTime: new Date(),
       subscriptionStatusId: 1,
     });
 
@@ -300,6 +302,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
+      organizationRenewalTime: new Date(),
       subscriptionStatusId: 1,
     });
 
@@ -340,6 +343,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: actualDate,
+      organizationRenewalTime: actualDate,
       subscriptionStatusId: 1,
     });
 
@@ -380,6 +384,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: actualDate,
+      organizationRenewalTime: actualDate,
       subscriptionStatusId: 1,
     });
 
@@ -419,6 +424,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: actualDate,
+      organizationRenewalTime: actualDate,
       subscriptionStatusId: 1,
     });
 
@@ -451,6 +457,7 @@ describe('ListUploadController', () => {
       organizationDb: ':memory:',
       organizationStatusId: 1,
       organizationActivatedTime: new Date(),
+      organizationRenewalTime: new Date(),
       subscriptionStatusId: 1,
     });
 

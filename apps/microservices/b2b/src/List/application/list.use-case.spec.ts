@@ -53,6 +53,7 @@ describe('ListUseCases', () => {
         organizationDb: 'db1',
         organizationStatusId: 1,
         organizationActivatedTime: new Date('2022-01-01'),
+        organizationRenewalTime: new Date('2022-01-01'),
         subscriptionStatusId: 1,
       };
       const lists: List[] = [
@@ -144,6 +145,7 @@ describe('ListUseCases', () => {
         organizationDb: 'db1',
         organizationStatusId: 1,
         organizationActivatedTime: new Date('2022-01-01'),
+        organizationRenewalTime: new Date('2022-01-01'),
         subscriptionStatusId: 1,
       };
       const list: List = {

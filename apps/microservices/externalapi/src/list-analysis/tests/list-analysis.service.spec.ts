@@ -13,6 +13,9 @@ import { DataSource } from 'typeorm';
 import { ListsAnalysisStatus } from '../list-analysis-status.entity';
 import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-status.repository.mock';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
+import { ListService } from '../../lists/lists.service';
+import { Lists } from '../../lists/lists.entity';
+import { S3Service } from '@wri-monorepos/aws';
 
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
@@ -33,7 +36,7 @@ describe('ListAnalysisService', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [Organization, UserRoutes, ExternalAPIKey],
+          entities: [Organization, UserRoutes, ExternalAPIKey, Lists],
         }),
         TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
         ConfigModule.forRoot({
@@ -42,7 +45,14 @@ describe('ListAnalysisService', () => {
         }),
         ListAnalysisMessageModule,
       ],
-      providers: [ListAnalysisService, UserService, ClientStoreConnection, OrganizationService],
+      providers: [
+        ListAnalysisService,
+        UserService,
+        ClientStoreConnection,
+        OrganizationService,
+        ListService,
+        S3Service,
+      ],
     }).compile();
   });
 
@@ -59,8 +69,8 @@ describe('ListAnalysisService', () => {
       status: 'Completed',
       errorsDetails: [],
       resultUrl: 'https://example.com/results',
-      creationDate: new Date().toLocaleDateString(),
-      expirationDate: '11/28/2999',
+      creationDate: new Date().toLocaleDateString('en-US'),
+      expirationDate: new Date('11/28/2999').toLocaleDateString('en-US'),
     };
 
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
@@ -77,7 +87,8 @@ describe('ListAnalysisService', () => {
     const resultWithDatesTransformed = {};
     for (const prop in result) {
       const value = result[prop];
-      resultWithDatesTransformed[prop] = value instanceof Date ? value.toLocaleDateString() : value;
+      resultWithDatesTransformed[prop] =
+        value instanceof Date ? value.toLocaleDateString('en-US') : value;
     }
 
     expect(resultWithDatesTransformed).toEqual(expectedResult);

@@ -10,7 +10,6 @@ import { ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { requestSchema, RequestSchema } from '../types/request-schema';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
 import { analysisIdSchema } from '../types/analysis-id';
-
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
 export class ListAnalysisController {
@@ -28,11 +27,13 @@ export class ListAnalysisController {
       user: { organizationId },
     } = request;
 
-    const analysisStatus = await this.listAnalysisService.getAnalysisStatus({
-      organizationId,
-      listId,
-      analysisId,
-    });
+    const analysisStatus = await this.listAnalysisService.getAnalysisStatusWithErrorFileStoragePath(
+      {
+        organizationId,
+        listId,
+        analysisId,
+      }
+    );
 
     return analysisStatus;
   }

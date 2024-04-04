@@ -44,4 +44,32 @@ export class S3Service {
     const url = await s3.getSignedUrl('getObject', params);
     return url;
   }
+  async getFileSignedUrlDynamicEnvironment(
+    key: string,
+    fileExtension: string,
+    bucket: string,
+    environment: string,
+    subPath?: string
+  ) {
+    const s3 = new S3({
+      signatureVersion: 'v4',
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      },
+      region: process.env.AWS_REGION,
+    });
+
+    const params = {
+      Bucket: bucket,
+      Key: `${environment}/${key}.${fileExtension}`,
+      Expires: 86400,
+    };
+    if (subPath) {
+      params.Key = `${environment}/${subPath}/${key}.${fileExtension}`;
+    }
+
+    const url = await s3.getSignedUrl('getObject', params);
+    return url;
+  }
 }

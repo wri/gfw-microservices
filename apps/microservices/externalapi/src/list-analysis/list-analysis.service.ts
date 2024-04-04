@@ -115,7 +115,7 @@ export class ListAnalysisService {
     fileType,
   }: PrepareUploadRequestSchema & { organizationId: number }) {
     const user = await this.userService.findUser(organizationId, userEmail);
-    
+
     const fileKey = generateRandomFilename(fileType);
     const presignedURLResponse = await axios.post<{
       url: string;
@@ -275,10 +275,7 @@ export class ListAnalysisService {
     endDate,
     organizationId,
     listId,
-    userEmail,
   }: AlertsGenerateBodySchema & { organizationId: number; listId: number }) {
-    const user = await this.userService.findUser(organizationId, userEmail);
-  
     const organization = await this.getOrganizationDetails(organizationId);
 
     const sqsMessage = generateAlertsSqsTemplate({

@@ -41,6 +41,8 @@ const { setOrganizationCustomAnalysisLimits } = require(path.resolve(
 const { setGlobalAnalysisLimit } = require(path.resolve('./queries/system/setGlobalAnalysisLimit'));
 const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
 const { setOrganizationRenewalTime } = require('@wri-monorepos/sql');
+const logger = require(path.resolve('./config/privateutils/logger.utils'));
+
 /**
  * @function getAllAccountsList
  * @summary Gets an array of All Accounts.
@@ -276,7 +278,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
               ];
               await sqlUtils.executeSystemQuery(setOrganizationRenewalTime, renewalParams);
             } catch (error) {
-              console.error(`[SettingOrganizationRenewalTime] ${error.name}: ${error.message}`);
+              logger.error(`Failed setting Organizations.renewal_time`, error);
               throw error;
             }
             return recordsets;

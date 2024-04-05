@@ -26,5 +26,6 @@ export * from './getAdministrativeAreasDataByLocation';
 export * from './getAnalysisDataForProtectedAreasByLocation';
 export * from './getOrganizationRenewalTime';
 export * from './getGFWListsDashboardData';
+export * from './getOrganizationDb';
 export * from './getGFWListsDashboardDataPaginated';
 export * from './getCountGFWListsDashboardData';

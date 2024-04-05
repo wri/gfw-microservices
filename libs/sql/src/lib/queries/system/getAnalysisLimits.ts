@@ -58,7 +58,7 @@ END
 
 export interface AnalysisLimit {
   MaxAreaAnalyzeablePerYear: number;
-  MaxAreaPerList: number;
+  MaxAreaPerList?: number;
   OrgID?: number;
   OrgType?: number;
   organization_name?: string;

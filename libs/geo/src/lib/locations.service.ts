@@ -23,7 +23,7 @@ import {
   UnlockListAndSaveAsDraft,
 } from '@wri-monorepos/sql';
 import { Logger, Injectable } from '@nestjs/common';
-import { getFinalGeojson, getListProcessingLimits } from '@wri-monorepos/shared';
+import { checkProcessingLimits, getFinalGeojson } from '@wri-monorepos/shared';
 import { SPSListCreation } from './listCreation';
 import { GeoJson } from './type';
 
@@ -199,10 +199,16 @@ export class LocationService {
       Logger.log(`Copy analysis complete`, 'LocationsService');
 
       if (!isSaveAsDraft) {
-        const processingLimit = await getListProcessingLimits({
+        const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+          organizationDb: clientDatabase,
           organizationId,
-          organizationType: subscriptionStatusId,
+          subscriptionStatusId,
+          listId: createdListId,
         });
+
+        if (isListLocationOverLimit) {
+          throw new Error(`Analysis limit reached`);
+        }
 
         const postData = {
           list_id: createdListId,
@@ -253,10 +259,16 @@ export class LocationService {
       if (isSaveAsDraft) {
         await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
       } else {
-        const processingLimit = await getListProcessingLimits({
+        const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+          organizationDb: clientDatabase,
           organizationId,
-          organizationType: subscriptionStatusId,
+          subscriptionStatusId,
+          listId: moveToList.id,
         });
+
+        if (isListLocationOverLimit) {
+          throw new Error(`Analysis limit reached`);
+        }
 
         const postData = {
           list_id: moveToList.id,

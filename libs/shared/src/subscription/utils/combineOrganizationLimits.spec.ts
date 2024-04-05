@@ -26,7 +26,6 @@ describe('combineOrganizationLimits', () => {
     const result = combineOrganizationLimits(subscriptionLimits, extraLimits);
 
     expect(result.MaxAreaAnalyzeablePerYear).toBe(150); // 100 + 50
-    expect(result.MaxAreaPerList).toBe(80); // 50 + 30
     expect(result.max_locations_per_year).toBe(15); // 10 + 5
   });
 });

@@ -7,7 +7,7 @@ export interface CheckAccountListLocationProcessingLimit {
   organizationId: number;
   subscriptionStatusId: number;
 }
-export async function getListLocationProcessingLimitCheck({
+export async function checkLocationProcessingLimit({
   listId,
   orgDbName,
   organizationId,

@@ -4,8 +4,6 @@ const axios = require('axios');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
 
-import { getListLocationsCountById } from '@wri-monorepos/sql';
-
 const {
   GEO_TRELLIS__ANALYZE_LIST_DEV,
   GEO_TRELLIS__ANALYZE_LIST_QA,
@@ -18,10 +16,7 @@ const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
 ));
 
-import {
-  getListProcessingLimits,
-  getListLocationProcessingLimitCheck,
-} from '@wri-monorepos/shared';
+import { checkProcessingLimits } from '@wri-monorepos/shared';
 
 const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extractAnalysisTypes'));
 
@@ -35,9 +30,9 @@ const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extr
 exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   const {
     organization_user_id,
-    organization_id,
+    organization_id: organizationId,
     organization_database: databaseName,
-    subscription_status_id,
+    subscription_status_id: subscriptionStatusId,
   } = req.session;
 
   const { reanalyze = false } = req.body;
@@ -53,22 +48,16 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
 
   const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
 
-  const isListLocationOverLimit = await getListLocationProcessingLimitCheck({
+  const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+    organizationDb: databaseName,
+    organizationId,
+    subscriptionStatusId,
     listId: listID,
-    orgDbName: databaseName,
-    organizationId: organization_id,
-    subscriptionStatusId: subscription_status_id,
   });
 
   if (isListLocationOverLimit) {
-    throw new Error('Analysis limit reached');
+    throw new Error(`Analysis limit reached`);
   }
-
-  // calculate list processing limit
-  const processingLimit = await getListProcessingLimits({
-    organizationId: organization_id,
-    organizationType: subscription_status_id,
-  });
 
   const listAnalysisStatusData = await getListAnalysisStatusByListId(req, listID);
   const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
@@ -76,7 +65,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   const data = {
     list_id: listID,
     user_id: organization_user_id,
-    organization_id: parseInt(organization_id),
+    organization_id: parseInt(organizationId),
     reanalyze,
     processing_limit: processingLimit,
     analysis_types: analysisTypes,

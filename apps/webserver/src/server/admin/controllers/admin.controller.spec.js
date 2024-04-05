@@ -19,8 +19,8 @@ describe('Latest Commit', () => {
   it('getAllCommits', async () => {
     const res = await adminController.getAllCommits();
     expect(res).toEqual({
+      EAPI: 'N/A',
       LD: 'N/A',
-      LP: 'N/A',
       LP: 'dev',
       WEB: 'dev',
     });

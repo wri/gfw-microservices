@@ -21,8 +21,8 @@ export type GetAnnualLossFcdDataReturnType = {
  */
 
 export const getAnnualLossFcdData = (fields: AnnualLossFcdFields[]) => `
-  DECLARE @listTable NVARCHAR(100) = ''
-  DECLARE @analysisTable NVARCHAR(100) = ''
+  DECLARE @listTable NVARCHAR(150) = ''
+  DECLARE @analysisTable NVARCHAR(150) = ''
   DECLARE @TEMPLATE NVARCHAR(MAX)
 
   SELECT 

@@ -84,21 +84,29 @@ export class FCDService {
   async handleClassifiedRegionCategoryForList(listId: number, params: FcdControllerRequestBody) {
     const { clientDatabase, locationId, countryGadm } = params;
 
-    const { country_specific_deforestation_classified_region_yearly } =
-      await this.getAnnualLossData({
-        clientDatabase,
-        locationId,
-        listId,
-        sqlFields: [AnnualLossFcdFields.COUNTRY_SPECIFIC_DEFORESTATION_CLASSIFIED_REGION_YEARLY],
-      });
+    const {
+      country_specific_deforestation_classified_region_yearly,
+      tree_cover_loss_arg_otbn_yearly,
+    } = await this.getAnnualLossData({
+      clientDatabase,
+      locationId,
+      listId,
+      sqlFields: [
+        AnnualLossFcdFields.COUNTRY_SPECIFIC_DEFORESTATION_CLASSIFIED_REGION_YEARLY,
+        AnnualLossFcdFields.TREE_COVER_LOSS_ARG_OTBN_YEARLY,
+      ],
+    });
 
     const country_specific_deforestation = JSON.parse(
       country_specific_deforestation_classified_region_yearly
     )[countryGadm];
 
+    const tree_cover_loss = JSON.parse(tree_cover_loss_arg_otbn_yearly);
+
     return {
       classified_region: {
         country_specific_deforestation,
+        tree_cover_loss,
       },
     };
   }

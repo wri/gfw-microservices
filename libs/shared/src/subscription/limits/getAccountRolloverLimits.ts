@@ -1,33 +1,31 @@
-import { getAccountActivatedTime, getAccountYearlyUsageSinceActivation } from '@wri-monorepos/sql';
-import moment = require('moment');
-import { getAccountExtraLimits, getAccountSubscriptionLimits } from './getAccountLimits';
+import {
+  AnalysisLimit,
+  getAccountActivatedTime,
+  getAccountYearlyUsageSinceActivation,
+} from '@wri-monorepos/sql';
 import { calculateRolloverUsed } from '../utils';
+import moment = require('moment');
 
-export interface AccountRolloverUsedParameters {
-  orgDbName: string;
-  organizationId: number;
-  organizationType: number;
-}
-
-export async function getAccountRolloverLimits({ orgDbName, organizationId, organizationType }) {
+export async function getAccountRolloverLimits(
+  organizationId: number,
+  subscriptionLimits: AnalysisLimit,
+  extendedLimits: AnalysisLimit
+) {
   const orgActivatedTime = await getAccountActivatedTime(organizationId);
   const accountActivationDate = moment(orgActivatedTime);
-
-  const yearlyUsageSinceActivation = await getAccountYearlyUsageSinceActivation(orgDbName, {
-    orgActivatedTime: accountActivationDate.format('YYYY-MM-DD'),
-  });
-
-  const subscriptionLimits = await getAccountSubscriptionLimits(organizationType);
-  const extendedLimits = await getAccountExtraLimits(organizationId);
+  const yearlyUsageSinceActivation = await getAccountYearlyUsageSinceActivation(
+    organizationId,
+    accountActivationDate.format('YYYY-MM-DD')
+  );
 
   // RolloverUsed = for[y]yearlyUsageSinceActivation =- subscriptionLimits
   const rolloverUsed = calculateRolloverUsed(yearlyUsageSinceActivation, subscriptionLimits);
 
   // RolloverRemaining = extendedLimits - RolloverUsed
   return {
-    analyzableAreaAvailable:
+    MaxAreaAnalyzeablePerYear:
       extendedLimits.MaxAreaAnalyzeablePerYear - rolloverUsed.rolloverAnalysisAreaUsed,
-    analyzableLocationsAvailable:
+    max_locations_per_year:
       extendedLimits.max_locations_per_year - rolloverUsed.rolloverLocationsUsed,
   };
 }

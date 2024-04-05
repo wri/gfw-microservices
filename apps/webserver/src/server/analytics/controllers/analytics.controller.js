@@ -6,10 +6,10 @@ const { getOrganizationAnalysisUsage } = require('../service/analytics.service')
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 import {
   getAccountExtraLimits,
-  getAccountRolloverLimits,
   getAccountSubscriptionLimits,
   combineOrganizationLimits,
   getAccountUsagePercentage,
+  getAccountRolloverLimits,
 } from '@wri-monorepos/shared';
 import {
   getAccountUsersAnalysisUsage,
@@ -139,13 +139,15 @@ exports.getMyOrganizationAnalysisLimit = async (req, res) => {
 
   try {
     const subscribed = await getAccountSubscriptionLimits(subscription_status_id);
-    const purchased = await getAccountExtraLimits(organization_id);
-    const limits = combineOrganizationLimits(subscribed, purchased);
+    const extended = await getAccountExtraLimits(organization_id);
+    const rollover = await getAccountRolloverLimits(organization_id, subscribed, extended);
+
+    const limits = combineOrganizationLimits(subscribed, rollover);
 
     res.status(200).send({
       limits,
       subscribed,
-      purchased,
+      purchased: rollover,
     });
   } catch (error) {
     logger.error(`GET /analytics/myorg/limits ${error}`);
@@ -203,27 +205,6 @@ exports.downladOrganizationUsersUsageExport = async (req, res) => {
     success: true,
     message: filters,
   });
-};
-
-exports.getMyOrganizationRolloverLimits = async (req, res) => {
-  const {
-    organization_database: orgDbName,
-    organization_id: organizationId,
-    subscription_status_id: organizationType,
-  } = req.session;
-
-  try {
-    const rolloverLimits = await getAccountRolloverLimits({
-      orgDbName,
-      organizationId,
-      organizationType,
-    });
-
-    res.status(200).send(rolloverLimits);
-  } catch (error) {
-    logger.error(`GET /analytics/myorg/rolloverLimits ${error}`);
-    res.status(500).send(error);
-  }
 };
 
 const validateQueryParams = ({ startDate, endDate }) => {

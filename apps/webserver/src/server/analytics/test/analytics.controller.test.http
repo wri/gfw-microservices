@@ -61,8 +61,3 @@ Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
 GET https://localhost:8443/analytics/myorg/limits
 Content-Type: application/json
 Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}
-
-### returns account limits for current account organization
-GET https://localhost:8443/analytics/myorg/rolloverLimits
-Content-Type: application/json
-Cookie: gfwpro.globalforestwatch.org={{gfwpro_token}}

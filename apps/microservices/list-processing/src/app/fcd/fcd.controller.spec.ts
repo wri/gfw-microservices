@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { FCDController } from './fcd.controller';
 import { FCDService } from './fcd.service';
-import { INestApplication, NotImplementedException } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import * as supertest from 'supertest';
 
 describe('FCDController', () => {
@@ -42,7 +42,7 @@ describe('FCDController', () => {
       typeof service.handleWDPACategoryForList
     >;
 
-    const response = await controller.getFCDCategoryDataForListId('1', 'WDPA', {
+    const response = await controller.getFCDCategoryDataForListId(1, 'WDPA', {
       clientDatabase: 'TestCo',
       country: 'Argentina',
       locationId: 5,
@@ -50,7 +50,7 @@ describe('FCDController', () => {
     });
 
     expect(response).toEqual(expectedResult);
-    expect(service.handleWDPACategoryForList).toHaveBeenCalledWith('1', {
+    expect(service.handleWDPACategoryForList).toHaveBeenCalledWith(1, {
       clientDatabase: 'TestCo',
       country: 'Argentina',
       locationId: 5,
@@ -70,7 +70,7 @@ describe('FCDController', () => {
       typeof service.handleLandmarkCategoryForList
     >;
 
-    const response = await controller.getFCDCategoryDataForListId('1', 'landmark', {
+    const response = await controller.getFCDCategoryDataForListId(1, 'landmark', {
       clientDatabase: 'TestCo',
       country: 'Argentina',
       locationId: 3,
@@ -78,7 +78,7 @@ describe('FCDController', () => {
 
     expect(response).toEqual(landmarOverlapMockedData);
 
-    expect(service.handleLandmarkCategoryForList).toHaveBeenCalledWith('1', {
+    expect(service.handleLandmarkCategoryForList).toHaveBeenCalledWith(1, {
       clientDatabase: 'TestCo',
       country: 'Argentina',
       locationId: 3,
@@ -97,7 +97,7 @@ describe('FCDController', () => {
       typeof service.handleCountryCategoryForList
     >;
 
-    const response = await controller.getFCDCategoryDataForListId('1', 'country', {
+    const response = await controller.getFCDCategoryDataForListId(1, 'country', {
       clientDatabase: 'TestCo',
       countryGadm: 'ARG',
       locationId: 4,
@@ -105,25 +105,12 @@ describe('FCDController', () => {
 
     expect(response).toEqual(mockResponse);
 
-    expect(service.handleCountryCategoryForList).toHaveBeenCalledWith('1', {
+    expect(service.handleCountryCategoryForList).toHaveBeenCalledWith(1, {
       clientDatabase: 'TestCo',
       countryGadm: 'ARG',
       locationId: 4,
     });
   });
-
-  it.each(['classified_region', 'random_category_param'])(
-    'should throw NotImplementedException for %s category',
-    async (category) => {
-      await expect(
-        controller.getFCDCategoryDataForListId('1', category, {
-          clientDatabase: 'TestCo',
-          country: 'Argentina',
-          locationId: 3,
-        })
-      ).rejects.toThrow(NotImplementedException);
-    }
-  );
 
   it('should respond with a validation error for missing clientDatabase', async () => {
     const response = await supertest(app.getHttpServer()).post('/fcd/1/WDPA').send({

@@ -59,15 +59,8 @@ export class ListAnalysisController {
       listId,
     });
   }
-  @Delete('list/:listID')
-  async DeletList(
-    @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
-    @Body(new ZodValidationPipe(requestSchema)) requestSchema: RequestSchema,
-    @Req() request: RequestSchema
-  ) {
-    const {
-      user: { organizationId,userEmail },
-    } = request;
-    console.log('organizationId',organizationId, 'userEmail',userEmail)
+  @Delete(':listId/delete/list')
+  async DeletList(@Param('listId', new ZodValidationPipe(listIdSchema)) listId: number) {
+    console.log('organizationId', listId);
   }
 }

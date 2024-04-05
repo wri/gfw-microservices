@@ -59,7 +59,7 @@ describe('ListAnalysisService', () => {
       status: 'Completed',
       errorsDetails: [],
       resultUrl: 'https://example.com/results',
-      creationDate: new Date().toLocaleDateString(),
+      creationDate: new Date().toLocaleDateString('en-Us'),
       expirationDate: '11/28/2999',
     };
 
@@ -77,7 +77,8 @@ describe('ListAnalysisService', () => {
     const resultWithDatesTransformed = {};
     for (const prop in result) {
       const value = result[prop];
-      resultWithDatesTransformed[prop] = value instanceof Date ? value.toLocaleDateString() : value;
+      resultWithDatesTransformed[prop] =
+        value instanceof Date ? value.toLocaleDateString('en-Us') : value;
     }
 
     expect(resultWithDatesTransformed).toEqual(expectedResult);

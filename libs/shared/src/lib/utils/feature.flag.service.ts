@@ -2,14 +2,6 @@ import { IsNull } from 'typeorm';
 import { ClientStoreConnection, FeatureFlag, systemEntities } from '@wri-monorepos/sql';
 
 const DEFAULT_GLOBAL_FEATURE_FLAG_STATE = false;
-export const allFeatureFlags = [
-  'Afi',
-  'ArgentinaCompliance',
-  'PermanentFlagForExternalApiKeys',
-  'PolygonCoordinatesInput',
-  'UploadListLp',
-  'ArgentinaDeforestation',
-];
 
 export const featureFlagsService = async () => {
   const clientStoreConnection = new ClientStoreConnection();
@@ -30,7 +22,7 @@ export const featureFlagsService = async () => {
   }
 
   async function insertOrSaveFeatureFlag(data: Partial<FeatureFlag>) {
-    const fieldsWithErrors = validateFeatureFlagFields(data);
+    const fieldsWithErrors = await validateFeatureFlagFields(data);
 
     if (fieldsWithErrors.length < 1) {
       const featureFlag = repository.create(data);
@@ -48,6 +40,7 @@ export const featureFlagsService = async () => {
   async function getAllFeatureFlags(orgId = null) {
     const globalFlagsOverrides = await getFeatureFlagsWhere({ orgId: IsNull() });
     const orgFlagsOverrides = orgId && (await getFeatureFlagsWhere({ orgId }));
+    const allFeatureFlags = await getAllFeaturesNames();
 
     return allFeatureFlags.map((flagId) => {
       const staticGlobalFeatureFlag = formatGlobalFeatureFlags(flagId);
@@ -66,6 +59,7 @@ export const featureFlagsService = async () => {
 
   async function deleteFeatureFlag(where: { flagId: string; orgId: number }) {
     const { flagId } = where;
+    const allFeatureFlags = await getAllFeaturesNames();
 
     if (!allFeatureFlags.includes(flagId)) {
       throw new Error('Invalid flagId');
@@ -94,10 +88,10 @@ export const featureFlagsService = async () => {
     return [...mergedFeatureFlags.values()];
   }
 
-  function validateFeatureFlagFields(data: Partial<FeatureFlag>): string[] {
+  async function validateFeatureFlagFields(data: Partial<FeatureFlag>): Promise<string[]> {
     const missingOrInvalidFields = [];
 
-    if (!data.flagId || typeof data.flagId !== 'string' || !allFeatureFlags.includes(data.flagId)) {
+    if (!data.flagId || typeof data.flagId !== 'string') {
       missingOrInvalidFields.push('flagId');
     }
 
@@ -123,6 +117,15 @@ export const featureFlagsService = async () => {
     };
   }
 
+  async function getAllFeaturesNames(): Promise<string[]> {
+    const result = await repository
+      .createQueryBuilder('FeatureFlag')
+      .select('flag_id')
+      .distinct()
+      .execute();
+    return result.map((flag) => flag.flag_id);
+  }
+
   return {
     getAllFeatureFlags,
     getFeatureFlagsWhere,
@@ -130,5 +133,6 @@ export const featureFlagsService = async () => {
     insertOrSaveFeatureFlag,
     deleteFeatureFlag,
     getFeatureFlagsForCurrentOrg,
+    getAllFeaturesNames,
   };
 };

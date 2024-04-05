@@ -50,31 +50,36 @@ describe('Feature Flag Service', () => {
   it('Should return error when try to insert flagId that is not acceptable', async () => {
     const { insertOrSaveFeatureFlag } = await featureFlagsService();
 
-    await insertOrSaveFeatureFlag({
-      flagId: 'self',
-      orgId: null,
-      flagState: true,
-      modifierUserId: 1692,
-    }).catch((error) => {
-      expect(error).toBeDefined();
-      expect(error.message).toStrictEqual(
+    try {
+      await insertOrSaveFeatureFlag({
+        orgId: null,
+        flagState: true,
+        modifierUserId: 1692,
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toBe(
         'Could not create FeatureFlag record. The following fields are missing or invalid: flagId'
       );
-    });
+    }
   });
 
   it('Should return all feature flag that exist inside the database.', async () => {
     const { getAllFeatureFlags } = await featureFlagsService();
     const allFeatureFlag = await getAllFeatureFlags();
     expect(allFeatureFlag).toBeDefined();
-    expect(allFeatureFlag.length).toBe(6);
+    expect(allFeatureFlag.length).toBe(2);
     expect(allFeatureFlag).toStrictEqual([
-      { flagId: 'Afi', flagState: false, orgId: null },
-      { flagId: 'ArgentinaCompliance', flagState: false, orgId: null },
-      { flagId: 'PermanentFlagForExternalApiKeys', flagState: false, orgId: null },
-      { flagId: 'PolygonCoordinatesInput', flagState: false, orgId: null },
-      { flagId: 'UploadListLp', flagState: false, orgId: null },
-      { flagId: 'ArgentinaDeforestation', flagState: false, orgId: null },
+      {
+        flagId: 'Afi',
+        flagState: false,
+        orgId: null,
+      },
+      {
+        flagId: 'PolygonCoordinatesInput',
+        flagState: false,
+        orgId: null,
+      },
     ]);
   });
 
@@ -87,20 +92,10 @@ describe('Feature Flag Service', () => {
       delete flag['updateDateTime'];
     });
     expect(allFeatureFlag).toBeDefined();
-    expect(allFeatureFlag.length).toBe(6);
+    expect(allFeatureFlag.length).toBe(2);
     expect(allFeatureFlag).toStrictEqual([
       {
         flagId: 'Afi',
-        flagState: false,
-        orgId: null,
-      },
-      {
-        flagId: 'ArgentinaCompliance',
-        flagState: false,
-        orgId: null,
-      },
-      {
-        flagId: 'PermanentFlagForExternalApiKeys',
         flagState: false,
         orgId: null,
       },
@@ -109,16 +104,6 @@ describe('Feature Flag Service', () => {
         flagState: 0,
         modifierUserId: 1692,
         orgId: 10,
-      },
-      {
-        flagId: 'UploadListLp',
-        flagState: false,
-        orgId: null,
-      },
-      {
-        flagId: 'ArgentinaDeforestation',
-        flagState: false,
-        orgId: null,
       },
     ]);
   });

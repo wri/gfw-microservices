@@ -28,8 +28,8 @@ export class FCDController {
   @Post('/:listId/:category')
   @HttpCode(HttpStatus.OK)
   @UsePipes(new ZodValidationPipe(DatabaseQuerySchema))
-  async getFCDCategoryDataForListId(
-    @Param('listId') listId: string,
+  getFCDCategoryDataForListId(
+    @Param('listId') listId: number,
     @Param('category') category: string,
     @Body() bodyPayload: FcdControllerRequestBody
   ) {
@@ -38,16 +38,16 @@ export class FCDController {
 
     switch (categoryFor) {
       case fcdCategoriesMap.WDPA:
-        return await this.fcdService.handleWDPACategoryForList(listId, bodyPayload);
+        return this.fcdService.handleWDPACategoryForList(listId, bodyPayload);
 
       case fcdCategoriesMap.landmark:
-        return await this.fcdService.handleLandmarkCategoryForList(listId, bodyPayload);
+        return this.fcdService.handleLandmarkCategoryForList(listId, bodyPayload);
 
       case fcdCategoriesMap.country:
-        return await this.fcdService.handleCountryCategoryForList(listId, bodyPayload);
+        return this.fcdService.handleCountryCategoryForList(listId, bodyPayload);
 
       case fcdCategoriesMap.classified_region:
-        throw new NotImplementedException();
+        return this.fcdService.handleClassifiedRegionCategoryForList(listId, bodyPayload);
 
       default:
         throw new NotImplementedException(

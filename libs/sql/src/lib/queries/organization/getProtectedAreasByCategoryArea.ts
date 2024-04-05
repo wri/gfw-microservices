@@ -15,8 +15,6 @@ SELECT @listTable=l.list_table_name, @analysisTable=l.list_analysis_table_name F
 
 SET @TEMPLATE = '
   SELECT 
-      @listId as listId,
-      lt.location_id as locationId,
       an.protected_areas_by_category_area as protectedAreasByCategoryArea
   FROM 
       dbo.[{LIST_TABLE_NAME}] lt 
@@ -36,8 +34,5 @@ EXEC sp_executesql @TEMPLATE,
 `;
 
 export type GetProtectedAreasByCategoryAreaType = {
-  listId: number;
-  locationId: number;
   protectedAreasByCategoryArea: string;
-  countrySpecificDeforestationWdpaYearly: string | null;
 };

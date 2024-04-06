@@ -8,7 +8,7 @@ import { UserRoutes } from '../../api-keys/user-route.entity';
 import { ExternalAPIKey } from '../../api-keys/external-api-key.entity';
 import { ConfigModule } from '@nestjs/config';
 import * as request from 'supertest';
-import { INestApplication } from '@nestjs/common';
+import { BadRequestException, INestApplication } from '@nestjs/common';
 import { ListService } from '../../lists/lists.service';
 
 describe('ListAnalysisController', () => {
@@ -64,6 +64,7 @@ describe('ListAnalysisController', () => {
           useValue: {
             getAnalysisStatus: jest.fn(() => expectedResult),
             getAnalysisStatusWithErrorFileStoragePath: jest.fn(() => expectedResultWithErroPath),
+            deletList: jest.fn(() => true),
           },
         },
         {
@@ -133,4 +134,43 @@ describe('ListAnalysisController', () => {
       expect(statusCode).toBe(400);
     }
   );
+  it('should delete list', async () => {
+    const listId = 123;
+
+    // Mock the request object with the 'x-api-key' header
+    const requestMock = createRequest({
+      method: 'GET',
+      url: `/api/v1/list/${listId}/delete/list`,
+      headers: {
+        'x-api-key': 'your-api-key',
+      },
+      user: {
+        organizationId: 1,
+        userEmail: 'email@email.com',
+      },
+    });
+    const deleteBodyList = { userEmail: 'email@email.com' };
+    const result = await controller.deletList(listId, deleteBodyList, requestMock);
+    expect(result).toBe(true);
+  });
+  it('should return unauthorizate when no provide a valid userEmail', async () => {
+    const listId = 123;
+
+    // Mock the request object with the 'x-api-key' header
+    const requestMock = createRequest({
+      method: 'GET',
+      url: `/api/v1/list/${listId}/delete/list`,
+      headers: {
+        'x-api-key': 'your-api-key',
+      },
+      user: {
+        organizationId: 1,
+        userEmail: 'wrongEmail',
+      },
+    });
+    const deleteBodyList = { userEmail: 'email@email.com' };
+    await expect(controller.deletList(listId, deleteBodyList, requestMock)).rejects.toThrowError(
+      BadRequestException
+    );
+  });
 });

@@ -1,8 +1,10 @@
 import { Controller, Get, Post, Param, Req, Body, Delete } from '@nestjs/common';
 import {
   AlertsGenerateRequest,
+  DeleteListRequest,
   ListAnalysisResponse,
   alertsGenerateBodySchema,
+  deleteListBodySchema,
   listIdSchema,
 } from './list-analysis.dto';
 import { ListAnalysisService } from './list-analysis.service';
@@ -61,7 +63,16 @@ export class ListAnalysisController {
     });
   }
   @Delete(':listId/delete/list')
-  async DeletList(@Param('listId', new ZodValidationPipe(listIdSchema)) listId: number) {
-    console.log('organizationId', listId);
+  async deletList(
+    @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
+    @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest,
+    @Req() request: RequestSchema
+  ) {
+    new ZodValidationPipe(requestSchema).transform(request);
+    const {
+      user: { organizationId },
+    } = request;
+    console.log('organizationId', organizationId, 'listId', listId);
+    return await this.listAnalysisService.deletList(listId, organizationId);
   }
 }

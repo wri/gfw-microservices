@@ -57,7 +57,12 @@ export class AlertsGenerateRequest {
   @ApiProperty()
   userEmail: string;
 }
+
 export const deleteListBodySchema = z.object({
   userEmail: z.string().email(),
 });
-export type DeleteListBodySchema = z.infer<typeof deleteListBodySchema>;
+
+export class DeleteListRequest {
+  @ApiProperty()
+  userEmail: string;
+}

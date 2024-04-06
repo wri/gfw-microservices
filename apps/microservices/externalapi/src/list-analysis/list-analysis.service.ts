@@ -41,7 +41,7 @@ export class ListAnalysisService {
   private readonly AWS_REGION: string;
   private readonly AWS_SECRET_ACCESS_KEY: string;
   private readonly LARGE_PROCESING_LIST_BUCKET: string;
-
+  private readonly logger = new Logger(ListAnalysisResponse.name);
   constructor(
     private config: ConfigService,
     private userService: UserService,
@@ -259,7 +259,7 @@ export class ListAnalysisService {
         throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
       }
 
-      Logger.error('create large list internal error');
+      this.logger.error('create large list internal error');
       throwCustomErrorResponse('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     const listId = largeListCreated.data.list_id;
@@ -293,7 +293,7 @@ export class ListAnalysisService {
       isExternalAPIProcess: true,
     });
 
-    Logger.log('Event analysis response: ', processListResponse.data);
+    this.logger.log('Event analysis response: ', processListResponse.data);
 
     const response: ListUploadNewResponse = {
       uploadId: newListDetails.uploadId,
@@ -334,5 +334,24 @@ export class ListAnalysisService {
       delaySeconds: 0,
       groupId: 'default',
     });
+  }
+  async deletList(listId: number, organizationId: number): Promise<boolean> {
+    try {
+      const connection = await this.getOrganizationConnection(organizationId);
+      const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+      const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
+        where: { listId },
+      });
+      if (listAnalysisStatus) {
+        await listAnalysisStatusRepository.delete(listId);
+        console.log({ msg: `${listId} deleted` });
+        return true;
+      } else {
+        throw new NotFoundException();
+      }
+    } catch (error) {
+      this.logger.warn(error);
+      throw new NotFoundException();
+    }
   }
 }

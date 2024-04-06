@@ -16,11 +16,13 @@ import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { ListService } from '../../lists/lists.service';
 import { Lists } from '../../lists/lists.entity';
 import { S3Service } from '@wri-monorepos/aws';
+import { NotFoundException } from '@nestjs/common';
 
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
   let organizationService: OrganizationService;
   let module: TestingModule;
+  let clientStoreConnection: ClientStoreConnection;
 
   beforeAll(async () => {
     sinon
@@ -59,6 +61,7 @@ describe('ListAnalysisService', () => {
   beforeEach(async () => {
     organizationService = module.get<OrganizationService>(OrganizationService);
     service = module.get<ListAnalysisService>(ListAnalysisService);
+    clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
   });
 
   it('should get analysis status', async () => {
@@ -92,5 +95,86 @@ describe('ListAnalysisService', () => {
     }
 
     expect(resultWithDatesTransformed).toEqual(expectedResult);
+  });
+
+  it('should delete a list', async () => {
+    const listId = 123;
+    const organizationId = 1;
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+    const mockList = {
+      listId: 123,
+      status: 'Completed',
+      errorsDetails: [],
+      resultUrl: 'https://example.com/results',
+      creationDate: new Date('2023-09-28'),
+      expirationDate: new Date('2023-09-28'),
+    };
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        delete: () => true,
+        findOne: () => mockList,
+      }),
+    });
+    const result = await service.deletList(organizationId, listId);
+    expect(result).toEqual(true);
+  });
+  it('should not find a list to delete', async () => {
+    const listId = 123;
+    const organizationId = 1;
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        delete: () => true,
+        findOne: () => null,
+      }),
+    });
+    await expect(service.deletList(organizationId, listId)).rejects.toThrowError(NotFoundException);
+  });
+  it('should throw error on trying to delete a list', async () => {
+    const listId = 123;
+    const organizationId = 1;
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+    const mockList = {
+      listId: 123,
+      status: 'Completed',
+      errorsDetails: [],
+      resultUrl: 'https://example.com/results',
+      creationDate: new Date('2023-09-28'),
+      expirationDate: new Date('2023-09-28'),
+    };
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        delete: () => {
+          throw new NotFoundException();
+        },
+        findOne: () => mockList,
+      }),
+    });
+    await expect(service.deletList(organizationId, listId)).rejects.toThrowError(NotFoundException);
   });
 });

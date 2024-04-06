@@ -344,7 +344,6 @@ export class ListAnalysisService {
       });
       if (listAnalysisStatus) {
         await listAnalysisStatusRepository.delete(listId);
-        console.log({ msg: `${listId} deleted` });
         return true;
       } else {
         throw new NotFoundException();

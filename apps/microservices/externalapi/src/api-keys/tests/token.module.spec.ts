@@ -221,14 +221,15 @@ describe('Test Token Module', () => {
     });
     it('Should verify userEmail is not valid', async () => {
       const NOT_VALID_USER_EMAIL = 'not.valid@valid.com';
-      await expect(
-        tokenService.findUserEmailByToken(ORGANIZATION_ID_VALID_USER, NOT_VALID_USER_EMAIL)
-      ).rejects.toThrow(NotFoundException);
+      const hasValidEmail = await tokenService.findUserEmailByToken(
+        ORGANIZATION_ID_VALID_USER,
+        NOT_VALID_USER_EMAIL
+      );
+      expect(hasValidEmail).toBe(false);
     });
     it('Should verify userEmail is not valid for empty parameter', async () => {
-      await expect(
-        tokenService.findUserEmailByToken(ORGANIZATION_ID_VALID_USER, '')
-      ).rejects.toThrow(NotFoundException);
+      const hasValidEmail = await tokenService.findUserEmailByToken(ORGANIZATION_ID_VALID_USER, '');
+      expect(hasValidEmail).toBe(false);
     });
   });
   afterAll(async () => {

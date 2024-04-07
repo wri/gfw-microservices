@@ -147,10 +147,10 @@ export class TokenService {
       if (user) {
         return true;
       }
-      throw new NotFoundException('Unauthorized');
+      return false;
     } catch (error) {
       Logger.warn('Error finding user email by token', error);
-      throw new NotFoundException('Unauthorized');
+      throw new InternalServerErrorException(error.message);
     }
   }
 }

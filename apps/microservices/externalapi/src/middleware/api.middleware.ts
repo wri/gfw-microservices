@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { TokenService } from '../api-keys/token.service';
 import { featureFlagsService } from '@wri-monorepos/shared';
@@ -33,6 +33,10 @@ export class ApiKeyMiddleware implements NestMiddleware {
     req.user = {
       organizationId: apiKeyRecord.organizationId,
     };
+    // Check if the user email is present but invalid
+    if (userEmail === '' || userEmail === null) {
+      return res.status(400).json({ message: 'userEmail is required' });
+    }
     // If the user email is present, check if it is valid
     if (typeof userEmail !== 'undefined') {
       try {
@@ -46,10 +50,10 @@ export class ApiKeyMiddleware implements NestMiddleware {
             hasValidEmail: validUserEmail,
           };
         } else {
-          return res.status(401).json({ message: 'Unauthorized' });
+          return res.status(401).json({ msg: `Unauthorized User ${userEmail} email not found` });
         }
       } catch (error) {
-        return res.status(401).json({ message: 'Unauthorized' });
+        throw new InternalServerErrorException(error.message);
       }
     }
     // If the API key is valid, continue with the request

@@ -21,7 +21,7 @@ describe('Latest Commit', () => {
     expect(res).toEqual({
       EAPI: 'N/A',
       LD: 'N/A',
-      LP: 'dev',
+      LP: 'N/A',
       WEB: 'dev',
     });
   });

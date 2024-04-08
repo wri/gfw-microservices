@@ -111,10 +111,11 @@ export class ListAnalysisService {
 
   async prepareUpload({
     organizationId,
-    userEmail,
+    organization_user_id,
     fileType,
-  }: PrepareUploadRequestSchema & { organizationId: number }) {
-    const user = await this.userService.findUser(organizationId, userEmail);
+  }: PrepareUploadRequestSchema & { organizationId: number; organization_user_id: number }) {
+    // Remove this function, and receive parameters form api middleware
+    // const user = await this.userService.findUser(organizationId, userEmail);
 
     const fileKey = generateRandomFilename(fileType);
     const presignedURLResponse = await axios.post<{
@@ -127,11 +128,11 @@ export class ListAnalysisService {
     });
     const { url, keyFile } = presignedURLResponse.data;
 
-    const connection = await this.getOrganizationConnection(user.organization_id);
+    const connection = await this.getOrganizationConnection(organizationId);
     const externalUploadRepository = connection.getRepository(ExternalUpload);
 
     const externalUpload = new ExternalUpload();
-    externalUpload.userId = user.organization_user_id;
+    externalUpload.userId = organization_user_id;
     externalUpload.uploadKeyFile = keyFile;
     externalUpload.uploadUrl = url;
     externalUpload.uploadDateTime = new Date();

@@ -3,6 +3,7 @@ declare namespace Express {
     user?: {
       organizationId?: number;
       hasValidEmail?: boolean;
+      organization_user_id?: number;
     };
   }
 }

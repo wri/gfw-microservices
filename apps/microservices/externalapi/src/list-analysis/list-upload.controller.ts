@@ -47,10 +47,14 @@ export class ListUploadController {
     new ZodValidationPipe(requestSchema).transform(request);
 
     const {
-      user: { organizationId },
+      user: { organizationId, organization_user_id },
     } = request;
 
-    const { userEmail, fileType } = body as PrepareUploadRequestSchema;
-    return await this.listAnalysisService.prepareUpload({ organizationId, userEmail, fileType });
+    const { fileType } = body as PrepareUploadRequestSchema;
+    return await this.listAnalysisService.prepareUpload({
+      organizationId,
+      organization_user_id,
+      fileType,
+    });
   }
 }

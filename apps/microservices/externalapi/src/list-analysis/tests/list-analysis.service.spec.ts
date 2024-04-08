@@ -83,4 +83,22 @@ describe('ListAnalysisService', () => {
 
     expect(resultWithDatesTransformed).toEqual(expectedResult);
   });
+  it('should create a prepare upload list', async () => {
+    const organizationId = 1;
+    const organization_user_id = 1;
+    const fileType = 'csv';
+    const expectedResult = {
+      organizationId: organizationId.toString(),
+      organization_user_id: organization_user_id.toString(),
+      fileType,
+    };
+    service.prepareUpload = jest.fn().mockResolvedValue(expectedResult);
+    const result = await service.prepareUpload({
+      organizationId,
+      organization_user_id,
+      fileType,
+    });
+
+    expect(result).toEqual(expectedResult);
+  });
 });

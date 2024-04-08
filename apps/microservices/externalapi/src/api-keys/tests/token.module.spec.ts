@@ -212,12 +212,20 @@ describe('Test Token Module', () => {
     });
   });
   describe('Validate user email', () => {
+    const mockExpectedUser = {
+      id: 24,
+      organization_id: 778,
+      organization_user_id: 7,
+      organization_user_status_id: 1,
+      tokens: [],
+      user_email: 'user1@valid.com',
+    };
     it('Should validate userEmail', async () => {
       const hasValidEmail = await tokenService.findUserEmailByToken(
         ORGANIZATION_ID_VALID_USER,
         VALID_USER_EMAIL
       );
-      expect(hasValidEmail).toEqual(true);
+      expect(hasValidEmail).toEqual(mockExpectedUser);
     });
     it('Should verify userEmail is not valid', async () => {
       const NOT_VALID_USER_EMAIL = 'not.valid@valid.com';
@@ -225,11 +233,11 @@ describe('Test Token Module', () => {
         ORGANIZATION_ID_VALID_USER,
         NOT_VALID_USER_EMAIL
       );
-      expect(hasValidEmail).toBe(false);
+      expect(hasValidEmail).toBe(null);
     });
     it('Should verify userEmail is not valid for empty parameter', async () => {
       const hasValidEmail = await tokenService.findUserEmailByToken(ORGANIZATION_ID_VALID_USER, '');
-      expect(hasValidEmail).toBe(false);
+      expect(hasValidEmail).toBe(null);
     });
   });
   afterAll(async () => {

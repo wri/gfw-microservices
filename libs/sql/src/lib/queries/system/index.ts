@@ -29,3 +29,4 @@ export * from './getGFWListsDashboardData';
 export * from './getOrganizationDb';
 export * from './getGFWListsDashboardDataPaginated';
 export * from './getCountGFWListsDashboardData';
+export * from './setOrganizationRenewalTime';

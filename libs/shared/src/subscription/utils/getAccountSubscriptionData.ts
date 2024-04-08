@@ -1,5 +1,5 @@
 import moment = require('moment');
-import { getAccountAnalysisUsage, getAccountActivatedTime } from '@wri-monorepos/sql';
+import { getAccountAnalysisUsage, getAccountRenewalTime } from '@wri-monorepos/sql';
 import { getAccountLimits } from '../limits';
 
 export async function getAccountSubscriptionData({
@@ -9,9 +9,9 @@ export async function getAccountSubscriptionData({
   organizationId: number;
   subscriptionStatusId: number;
 }) {
-  const organizationActivatedTime = await getAccountActivatedTime(organizationId);
+  const organizationRenewalTime = await getAccountRenewalTime(organizationId);
   const todayAsEndDay = moment().add(1, 'day');
-  const accountActivationDate = moment(organizationActivatedTime);
+  const accountActivationDate = moment(organizationRenewalTime);
   const accountLatestYearStartDate = todayAsEndDay
     .clone()
     .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
@@ -28,6 +28,6 @@ export async function getAccountSubscriptionData({
   return {
     accountUsage,
     accountLimits,
-    organizationActivatedTime,
+    organizationRenewalTime,
   };
 }

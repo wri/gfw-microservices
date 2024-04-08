@@ -20,7 +20,7 @@ export default function ProfileContextProvider({ children }) {
     geographies,
     titles,
     policyList,
-    accountActivatedTime,
+    accountRenewalTime,
   } = profileInfo ?? {};
 
   const fetchProfileInfo = useCallback(() => {
@@ -49,7 +49,7 @@ export default function ProfileContextProvider({ children }) {
     <ProfileStateContext.Provider
       value={{
         organization,
-        accountActivatedTime,
+        accountRenewalTime,
         userInfo,
         users,
         classifications,

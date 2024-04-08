@@ -13,12 +13,14 @@ describe('Feature Flag Service', () => {
     const database = process.env.MSSQL_DATABASE || 'gfwpro';
     const connection = await clientStoreConnection.getConnection(database, systemEntities);
     const repository = connection.getRepository(Organization);
+
     await repository.save({
       id: 10,
       organizationName: 'Test Organization',
       organizationDb: 'test10',
       organizationStatusId: 1,
       organizationActivatedTime: '2024-03-23T21:24:24.000Z',
+      renewalTime: '2024-03-23T21:24:25.000Z',
       subscriptionStatusId: 1,
     });
     await repository.save({
@@ -27,6 +29,7 @@ describe('Feature Flag Service', () => {
       organizationDb: 'test20',
       organizationStatusId: 2,
       organizationActivatedTime: '2024-03-23T21:24:24.000Z',
+      renewalTime: '2024-03-23T21:24:25.000Z',
       subscriptionStatusId: 1,
     });
 

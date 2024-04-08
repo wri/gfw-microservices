@@ -19,10 +19,10 @@ describe('Latest Commit', () => {
   it('getAllCommits', async () => {
     const res = await adminController.getAllCommits();
     expect(res).toEqual({
-      WEB: 'dev',
+      EAPI: 'N/A',
       LD: 'N/A',
       LP: 'N/A',
-      EAPI: 'N/A',
+      WEB: 'dev',
     });
   });
 });

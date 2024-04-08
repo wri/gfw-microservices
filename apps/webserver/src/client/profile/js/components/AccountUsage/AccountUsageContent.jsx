@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import { styled } from '@mui/material/styles';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import { formatNumber } from '../../../../common/js/utils/formatNumber';
 
 export default function AccountUsage({ label, usedValue, maxValue }) {
   const getProgressColor = () => {
@@ -48,10 +49,6 @@ export default function AccountUsage({ label, usedValue, maxValue }) {
     fontSize: '12px',
     lineHeight: '36px',
   }));
-
-  const formatNumber = (number) => {
-    return number >= 1000000 ? (number / 1000000).toFixed(2) + 'M' : number;
-  };
 
   const calculatePercentage = maxValue > usedValue ? (usedValue / maxValue) * 100 : 100;
 

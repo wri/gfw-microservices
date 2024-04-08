@@ -42,6 +42,7 @@ export class ListUploadController {
   @ApiResponse({ status: 200, type: PrepareUploadResponse })
   @Post('/prepare_upload')
   @UsePipes(new ZodValidationPipe(prepareUploadRequestSchema))
+  // We must require the userEmail from the user to validate it in the API middleware
   async prepareUploadList(@Body() body: PrepareUploadRequest, @Req() request: Request) {
     new ZodValidationPipe(requestSchema).transform(request);
 

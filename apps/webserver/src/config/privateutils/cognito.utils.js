@@ -393,7 +393,7 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
         // In case the account is in RESET_REQUIRED and has failed to login successfully multiple times...
         if (
           err.code === 'PasswordResetRequiredException' &&
-          failCountAttribute.Value >= config.platformVars.maxUserLoginRetries
+          failCountAttribute?.Value >= config.platformVars.maxUserLoginRetries
         ) {
           authResult.authenticationStatus = config.platformVars.authenticationStatus.ForceReset;
           resolve(authResult);

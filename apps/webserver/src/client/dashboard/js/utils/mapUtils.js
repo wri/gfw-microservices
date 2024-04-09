@@ -2,9 +2,10 @@ import React from 'react';
 import { render } from 'react-dom';
 import _uniq from 'lodash/uniq';
 import isEmpty from 'lodash/isEmpty';
-import Graphic from 'esri/Graphic';
-import Point from 'esri/geometry/Point';
-import FeatureLayer from 'esri/layers/FeatureLayer';
+import Graphic from '@arcgis/core/Graphic';
+import Point from '@arcgis/core/geometry/Point';
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 
 import {
   incrementZoomLevel,
@@ -498,7 +499,7 @@ function createLayer(graphics) {
     outFields: ['*'],
     objectIdField: 'ObjectID',
     geometryType: 'point',
-    spatialReference: { wkid: 4326 },
+    spatialReference: SpatialReference.WGS84,
     source: graphics,
     renderer: {
       type: 'class-breaks',

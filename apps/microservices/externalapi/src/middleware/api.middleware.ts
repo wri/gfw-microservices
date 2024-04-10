@@ -52,7 +52,7 @@ export class ApiKeyMiddleware implements NestMiddleware {
             organization_user_id: validUserEmail.organization_user_id,
           };
         } else {
-          return res.status(401).json({ msg: `Unauthorized User ${userEmail} email not found` });
+          return res.status(401).json({ msg: `Unauthorized user ${userEmail} email not found` });
         }
       } catch (error) {
         throw new InternalServerErrorException(error.message);

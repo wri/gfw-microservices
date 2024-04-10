@@ -33,13 +33,13 @@ export class ApiKeyMiddleware implements NestMiddleware {
     req.user = {
       organizationId: apiKeyRecord.organizationId,
     };
-    // Check if the user email is present but invalid
-    if (userEmail === '' || userEmail === null) {
-      return res.status(400).json({ message: 'userEmail is required' });
-    }
     // If the userEmail param is present, check if it is valid.
     //  Heads Up we need to force user to send userEmail in controller when we want to validate
     if (typeof userEmail !== 'undefined') {
+      // Check if the user email is present but invalid
+      if (userEmail === '' || userEmail === null) {
+        return res.status(400).json({ message: 'userEmail is required' });
+      }
       try {
         const validUserEmail = await this.tokenService.findUserEmailByToken(
           apiKeyRecord.organizationId,

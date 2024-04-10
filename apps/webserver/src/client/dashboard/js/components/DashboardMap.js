@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import EsriMap from 'esri/Map';
-import Basemap from 'esri/Basemap';
-import MapView from 'esri/views/MapView';
-import MapImageLayer from 'esri/layers/MapImageLayer';
+import EsriMap from '@arcgis/core/Map';
+import Basemap from '@arcgis/core/Basemap';
+import MapView from '@arcgis/core/views/MapView';
+import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Button from '../../../common/js/components/Button';
 import IconButton from 'material-ui/IconButton';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import ZoomIcon from 'material-ui/svg-icons/action/zoom-out';
 import Popover from 'material-ui/Popover';
 import isEqual from 'lodash/isEqual';
-import Deferred from 'dojo/Deferred';
 
 // REDUX - Store
 import store from '../store';
@@ -207,7 +206,6 @@ export default class DashboardMap extends Component {
     }
 
     // if the info is not in the cache, go get it
-    const promise = new Deferred();
     const request = new XMLHttpRequest();
     request.addEventListener('load', () => {
       const resp = JSON.parse(request.response);
@@ -223,7 +221,7 @@ export default class DashboardMap extends Component {
     });
 
     request.onerror = () => {
-      promise.resolve(false);
+      Promise.resolve(false);
     };
 
     request.open('POST', `${DATA_API_URL}/dataApi/getInfoBubbleData/${infoBubbleId}`);

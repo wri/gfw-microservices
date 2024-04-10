@@ -114,9 +114,6 @@ export class ListAnalysisService {
     organization_user_id,
     fileType,
   }: PrepareUploadRequestSchema & { organizationId: number; organization_user_id: number }) {
-    // Remove this function, and receive parameters form api middleware
-    // const user = await this.userService.findUser(organizationId, userEmail);
-
     const fileKey = generateRandomFilename(fileType);
     const presignedURLResponse = await axios.post<{
       url: string;

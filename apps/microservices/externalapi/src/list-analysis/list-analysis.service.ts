@@ -144,14 +144,9 @@ export class ListAnalysisService {
   }
   async prepareUpload({
     organizationId,
-    userEmail,
+    organization_user_id,
     fileType,
-  }: PrepareUploadRequestSchema & { organizationId: number }) {
-    const user = await this.userService.findUser(organizationId, userEmail);
-    if (!user) {
-      throw new NotFoundException(`User with ${userEmail} not found`);
-    }
-
+  }: PrepareUploadRequestSchema & { organizationId: number; organization_user_id: number }) {
     const fileKey = generateRandomFilename(fileType);
     const presignedURLResponse = await axios.post<{
       url: string;
@@ -163,11 +158,11 @@ export class ListAnalysisService {
     });
     const { url, keyFile } = presignedURLResponse.data;
 
-    const connection = await this.getOrganizationConnection(user.organization_id);
+    const connection = await this.getOrganizationConnection(organizationId);
     const externalUploadRepository = connection.getRepository(ExternalUpload);
 
     const externalUpload = new ExternalUpload();
-    externalUpload.userId = user.organization_user_id;
+    externalUpload.userId = organization_user_id;
     externalUpload.uploadKeyFile = keyFile;
     externalUpload.uploadUrl = url;
     externalUpload.uploadDateTime = new Date();
@@ -311,13 +306,7 @@ export class ListAnalysisService {
     endDate,
     organizationId,
     listId,
-    userEmail,
   }: AlertsGenerateBodySchema & { organizationId: number; listId: number }) {
-    const user = await this.userService.findUser(organizationId, userEmail);
-    if (!user) {
-      throw new NotFoundException(`User with ${userEmail} not found`);
-    }
-
     const organization = await this.getOrganizationDetails(organizationId);
 
     const sqsMessage = generateAlertsSqsTemplate({

@@ -17,6 +17,7 @@ import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
 import { AFIModule } from './afi';
 import { AlertsModule } from './alerts';
+import { ListUploadModule } from './list-upload';
 
 config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -36,6 +37,7 @@ config.update({
     AFIModule,
     SchedulerModule,
     AlertsModule,
+    ListUploadModule,
   ],
   controllers: [AppController],
   providers: [AppService, LargeListService, LocationService, GeoService, ListService],

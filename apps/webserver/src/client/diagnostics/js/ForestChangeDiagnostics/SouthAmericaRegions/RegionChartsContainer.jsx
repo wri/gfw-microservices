@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import RegionChart from './RegionChart';
+import RegionChartArgentina from './RegionChartArgentina';
 import RegionChartsTabs from './RegionChartsTabs';
 import SouthAmericaRegionsWithoutArgentina from '../SouthAmericaRegionsWithoutArgentina';
 import { regionsTabs, regionIds } from './regions.constants';
+import featureFlags from '../../../../../utils/general.utils';
 
 function RegionChartsContainer({
   listId,
@@ -18,6 +20,8 @@ function RegionChartsContainer({
   getYearlyHighchartSeries,
   getCategoricalHighchartSeries,
 }) {
+  const { isArgentinaDeforestationAvailable } = featureFlags;
+
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);
 
   const argentinaOtnbDataNotAvailable =
@@ -37,9 +41,15 @@ function RegionChartsContainer({
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
       />
-      {selectedTab === regionIds.ARGENTINA && (
+
+      {selectedTab === regionIds.ARGENTINA && !isArgentinaDeforestationAvailable && (
         <RegionChart listId={listId} data={data} fireDownload={fireDownload} />
       )}
+
+      {selectedTab === regionIds.ARGENTINA && isArgentinaDeforestationAvailable && (
+        <RegionChartArgentina listId={listId} data={data} fireDownload={fireDownload} />
+      )}
+
       {selectedTab === regionIds.REGIONAL && (
         <SouthAmericaRegionsWithoutArgentina
           diagnosticView={diagnosticView}

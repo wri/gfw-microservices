@@ -24,12 +24,34 @@ export const chartDatasetConfigs = {
     downloadId: 'southAmericaTCL',
     diagnosticTitle: 'OTBN Percent Overlap',
     chartLabels: [
-      { id: 'Category I', color: 'rgb(238,37,33)', legend: 'Category I' },
-      { id: 'Category II', color: 'rgb(255,204,51)', legend: 'Category II' },
-      { id: 'Category III', color: 'rgb(151,189,61)', legend: 'Category III' },
+      { id: 'Category I', color: 'rgb(238,37,33)', legend: 'Category I', checked: true },
+      { id: 'Category II', color: 'rgb(255,204,51)', legend: 'Category II', checked: true },
+      { id: 'Category III', color: 'rgb(151,189,61)', legend: 'Category III', checked: true },
     ],
     startYear: 2008,
     endYear: 2022,
+  },
+  argentinaTreeCoverLoss: {
+    id: 'argentinaTreeCoverLoss',
+    dataCy: 'argentina-tree-cover-loss',
+    chartsSelectorTitle: 'Tree cover loss',
+    totalLoss: null,
+    chartLabels: [
+      {
+        id: 'country_specific_deforestation',
+        legend: 'argentina deforestation',
+        color: '#ff00ff',
+        checked: false,
+        totalLossByCategory: null,
+      },
+      {
+        id: 'hansenTreeCoverLoss',
+        legend: 'tree cover loss',
+        color: '#00ffff',
+        checked: true,
+        totalLossByCategory: null,
+      },
+    ],
   },
   wdpaOverlapCountry: {
     diagnosticTitle: 'Protected Areas Percent Overlap',

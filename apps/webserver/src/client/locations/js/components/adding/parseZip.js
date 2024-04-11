@@ -53,7 +53,7 @@ export const parseZip = (file, stateOriginalGeometry) => {
                     const kilosSquared = feat.properties.Analysis_A / 100;
                     const kilos = Math.sqrt(kilosSquared / Math.PI);
                     geom = GeometryEngine.geodesicBuffer(
-                      stateOriginalGeometry,
+                      projectedCenterPoint,
                       kilos.toFixed(2),
                       'kilometers'
                     );

@@ -110,54 +110,67 @@ BEGIN
 							);
 														
 							-- Construct the dynamic SQL query string to check if the AFI table has values
-							DECLARE @afi_exists INT
-							SET @sql = 'SELECT @afi_exists = CASE WHEN EXISTS(SELECT 1 FROM [' + @db_name + '].[dbo].[AFIAnalysis]) THEN 1 ELSE 0 END'
-							EXEC sp_executesql @sql, N'@afi_exists INT OUTPUT', @afi_exists OUTPUT
+							DECLARE @afi_has_vals INT
+							SET @sql = 'SELECT @afi_has_vals = CASE WHEN EXISTS(SELECT 1 FROM [' + @db_name + '].[dbo].[AFIAnalysis]) THEN 1 ELSE 0 END'
+							EXEC sp_executesql @sql, N'@afi_has_vals INT OUTPUT', @afi_has_vals OUTPUT
 
 							-- Construct the dynamic SQL query string to check if the analysis table exists
 							SET @sql = QUOTENAME(@db_name) + '.dbo.' + QUOTENAME(@analysis_table_name);
 
-							-- Check if the tables exist
-							IF OBJECT_ID(@sql, 'U') IS NOT NULL AND @afi_exists = 1
+							-- Determine query based on existance of table values
+							IF OBJECT_ID(@sql, 'U') IS NOT NULL AND @afi_has_vals = 1
 							BEGIN
 								-- Analysis table exists
-								-- AFI table exists
+								-- AFI table has values
+								SET @sql = N'INSERT INTO #temp_grouped_list_info
+											SELECT lat.list_id
+												,lat.Country
+												,lat.Commodity
+												,lat.list_table_area
+												,lat.analysis_table_area
+												,afi.total_area_ha
+												,lat.location_count
+											FROM (
+												SELECT {LIST_ID} AS list_id
+													,lt.Country
+													,lt.Commodity
+													,SUM(lt.[Analysis Area]) AS list_table_area
+													,SUM(at.total_area) AS analysis_table_area
+													,COUNT(lt.location_id) AS location_count
+												FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}] AS lt
+												JOIN [{DB_NAME}].dbo.[{ANALYSIS_TABLE_NAME}] AS at
+												ON lt.location_id = at.location_id
+												GROUP BY lt.Country, lt.Commodity
+											) AS lat
+											JOIN(
+												SELECT list_id
+													,SUM(total_area_ha) AS total_area_ha
+												FROM [{DB_NAME}].dbo.[AFIAnalysis] 
+												GROUP BY list_id
+											) AS afi
+											ON lat.list_id = afi.list_id';
+							END
+							ELSE IF OBJECT_ID(@sql, 'U') IS NOT NULL AND @afi_has_vals = 0
+							BEGIN
+								-- Analysis table exists
+								-- AFI Table has no values
 								SET @sql = N'INSERT INTO #temp_grouped_list_info
 											SELECT {LIST_ID} AS list_id
 												,lt.Country
 												,lt.Commodity
 												,SUM(lt.[Analysis Area]) AS list_table_area
 												,SUM(at.total_area) AS analysis_table_area
-												,SUM(afi.total_area_ha) AS afi_table_area
+												,0.0 AS afi_table_area
 												,COUNT(lt.location_id) AS location_count
 											FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}] AS lt
 											JOIN [{DB_NAME}].dbo.[{ANALYSIS_TABLE_NAME}] AS at
 											ON lt.location_id = at.location_id
-											JOIN [{DB_NAME}].dbo.AFIAnalysis AS afi
-											ON list_id = afi.list_id
-											GROUP BY lt.Country, lt.Commodity, afi.list_id';
-							END
-							ELSE IF OBJECT_ID(@sql, 'U') IS NOT NULL AND @afi_exists = 0
-							BEGIN
-								-- Analysis does not exist
-								-- AFI Table exists
-								SET @sql = N'INSERT INTO #temp_grouped_list_info
-											SELECT {LIST_ID} AS list_id
-												,lt.Country
-												,lt.Commodity
-												,SUM(lt.[Analysis Area]) AS list_table_area
-												,0.0 AS analysis_table_area
-												,SUM(afi.total_area_ha) AS afi_table_area
-												,COUNT(lt.location_id) AS location_count
-											FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}] AS lt
-											JOIN [{DB_NAME}].dbo.AFIAnalysis AS afi
-											ON list_id = afi.list_id
-											GROUP BY lt.Country, lt.Commodity, afi.list_id';
+											GROUP BY lt.Country, lt.Commodity';
 							END
 							ELSE
 							BEGIN
-								-- Analysis table not exist
-								-- AFI Table does not exist
+								-- Analysis table does not exist
+								-- AFI Table has no values
 								SET @sql = N'INSERT INTO #temp_grouped_list_info
 											SELECT lt.Country
 												,lt.Commodity

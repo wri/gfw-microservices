@@ -98,7 +98,9 @@ const analyzeList = async (req, organization_database, list) => {
     const msg = AWSSES.createBodyContent(
       req,
       config.platformVars.emailType.LIST_ANALYSIS_ERROR,
-      {},
+      {
+        list_name,
+      },
       'error'
     );
     return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);

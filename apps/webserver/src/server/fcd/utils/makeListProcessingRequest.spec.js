@@ -1,8 +1,8 @@
 /**
  * @jest-environment node
  */
-const makeListProcessingRequest = require('./makeListProcessingRequest');
-const fetch = require('node-fetch');
+import makeListProcessingRequest from './makeListProcessingRequest';
+import fetch from 'node-fetch';
 
 jest.mock('node-fetch', () => jest.fn());
 
@@ -32,7 +32,7 @@ describe('makeListProcessingRequest', () => {
     expect(response).toEqual({
       error: false,
       category: 'WDPA',
-      data: { data: 'some data' },
+      data: 'some data',
     });
     expect(fetch).toHaveBeenCalledTimes(1);
   });

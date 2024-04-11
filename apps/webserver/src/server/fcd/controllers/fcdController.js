@@ -1,6 +1,6 @@
 const path = require('path');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
-const makeListProcessingRequest = require('../utils/makeListProcessingRequest');
+import makeListProcessingRequest from '../utils/makeListProcessingRequest';
 const FcdParamsSchema = require('../utils/fcdValidationSchema');
 
 /**

@@ -94,12 +94,10 @@ describe('Landmark - handleLandmarkCategoryForList', () => {
         locationId: 5,
       })
     ).resolves.toEqual({
-      landmark: {
-        ...landmarkAnnualLossProcessedValue[countryGadm],
-        overlap: {
-          indigenous: 10743.949200000001,
-          nonIndigenous: 14941.388899999998,
-        },
+      ...landmarkAnnualLossProcessedValue[countryGadm],
+      overlap: {
+        indigenous: 10743.949200000001,
+        nonIndigenous: 14941.388899999998,
       },
     });
   });
@@ -122,17 +120,15 @@ describe('Landmark - handleLandmarkCategoryForList', () => {
         countryGadm: 'ARG',
       })
     ).resolves.toStrictEqual({
-      landmark: {
-        country_specific_deforestation: {
-          indigenous: {},
-        },
-        tree_cover_loss: {
-          indigenous: {},
-        },
-        overlap: {
-          indigenous: 0,
-          nonIndigenous: 0,
-        },
+      country_specific_deforestation: {
+        indigenous: {},
+      },
+      tree_cover_loss: {
+        indigenous: {},
+      },
+      overlap: {
+        indigenous: 0,
+        nonIndigenous: 0,
       },
     });
   });

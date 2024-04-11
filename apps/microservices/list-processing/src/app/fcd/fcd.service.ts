@@ -55,7 +55,7 @@ export class FCDService {
     );
 
     return {
-      landmark,
+      ...landmark,
     };
   }
 

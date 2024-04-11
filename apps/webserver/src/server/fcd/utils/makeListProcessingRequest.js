@@ -1,6 +1,5 @@
-const path = require('path');
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
-const fetch = require('node-fetch');
+const logger = require('../../../config/privateutils/logger.utils');
+import fetch from 'node-fetch';
 
 const { LISTS_MICROSERVICE_URL } = process.env;
 const BASE_URL = `${LISTS_MICROSERVICE_URL ?? 'http://localhost:3333/api'}/fcd`;
@@ -20,7 +19,7 @@ const getListProcessingUrl = ({ listId, category }) => {
  * @param {Number} locationId
  * @returns {Object} result
  */
-module.exports = async ({
+export default async ({
   clientDatabase,
   listId,
   category,
@@ -55,7 +54,7 @@ module.exports = async ({
     return {
       error: false,
       category,
-      data,
+      ...data,
     };
   } catch (error) {
     logger.info(`ListProcessingRequest ${error.name}: ${error.message}`);

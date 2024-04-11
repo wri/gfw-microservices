@@ -568,9 +568,9 @@ export default class StepThree extends Component {
                         'kilometers'
                       );
                     } else if (feat.properties.Analysis_A && feat.properties.Analysis_A !== ' ') {
-                      feat.properties.Analysis_R = Math.sqrt(
-                        parseFloat(feat.properties.Analysis_A) / Math.PI
-                      );
+                      const areaKmSquared = parseFloat(feat.properties.Analysis_A) / 100;
+                      const radiusKm = Math.sqrt(areaKmSquared / Math.PI);
+                      feat.properties.Analysis_R = radiusKm;
                       feat.properties.Analysis_A = '';
                       feat.geometry = geometryEngine.geodesicBuffer(
                         projectedCenterPoint,
@@ -1126,10 +1126,12 @@ export default class StepThree extends Component {
               'kilometers'
             );
           } else if (feat.properties.Analysis_A && feat.properties.Analysis_A !== ' ') {
-            feat.properties.Analysis_R = Math.sqrt(feat.properties.Analysis_A / Math.PI);
+            const hectaresKmSquared = parseFloat(feat.properties.Analysis_A) / 100;
+            const radiusKm = Math.sqrt(hectaresKmSquared / Math.PI);
+            feat.properties.Analysis_R = radiusKm;
             feat.geometry = geometryEngine.geodesicBuffer(
               centerPoint,
-              parseFloat(feat.properties.Analysis_R),
+              feat.properties.Analysis_R,
               'kilometers'
             );
             feat.properties.Analysis_A = '';

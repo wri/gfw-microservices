@@ -1,6 +1,7 @@
 import { LargeListService } from './../services/largelist.service';
 import {
   CopyOrMoveLargeListRequest,
+  DeleteListRequest,
   RequestLargeListProcess,
   RequestPreSignedURLModel,
   RequestSaveLargeListProcessModel,
@@ -8,7 +9,16 @@ import {
   getNumberOfPagesPaginatedListDataRequest,
   getPaginatedListDataRequest,
 } from './../models/index';
-import { Controller, Post, Get, Body, Query, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Query,
+  BadRequestException,
+  Delete,
+  Param,
+} from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { LocationService } from '@wri-monorepos/geo';
@@ -147,5 +157,20 @@ export class AppController {
   @Get('/latest_commit')
   getLatestCommit(): string {
     return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;
+  }
+  @Delete('/delete/list/:listId')
+  deleteList(
+    @Param('listId') listId: number,
+    @Body() deleteBodyList: DeleteListRequest
+  ): Promise<boolean> {
+    const { organizationDatabase, organization_user_id } = deleteBodyList;
+    if (
+      typeof organizationDatabase === 'undefined' ||
+      typeof organization_user_id === 'undefined' ||
+      typeof listId === 'undefined'
+    ) {
+      throw new BadRequestException('some parameters are required');
+    }
+    return this.appService.deleteList(listId, organizationDatabase, organization_user_id);
   }
 }

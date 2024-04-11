@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { DataSource } from 'typeorm';
 import * as uniqId from 'uniqid';
@@ -8,7 +8,7 @@ import {
   RequestSaveLargeListProcessModel,
   CreateListInsertResultModel,
 } from '../models';
-import { SQLUtils } from '@wri-monorepos/sql';
+import { SQLUtils, ClientStoreConnection, List } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 
 class MyObject {
@@ -19,7 +19,10 @@ class MyObject {
 
 @Injectable()
 export class AppService {
-  constructor(private dataSource: DataSource) {}
+  constructor(
+    private dataSource: DataSource,
+    private readonly clientStoreConnection: ClientStoreConnection
+  ) {}
 
   /**
    *
@@ -125,5 +128,36 @@ export class AppService {
    */
   getHealthCheck(): string {
     return 'Healthy';
+  }
+  //Deletes a list from Lists table, and list's attribute and analysis table
+  async deleteList(
+    list_id: number,
+    organizationDatabase: string,
+    organization_user_id: number
+  ): Promise<boolean> {
+    try {
+      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const listRepository = connection.getRepository(List);
+      const record = await listRepository.findOne({ where: { id: list_id } });
+      const { lockStatus, lockUserId } = record;
+      if (lockStatus === null || (lockStatus !== null && lockUserId !== organization_user_id)) {
+        // Reject object
+        // Return message that the list is locked to user
+        throw { isLocked: true, lockUserId };
+      } else {
+        // Delete list
+        // Salve log at ActivityLog table
+        // Return message that the list was deleted to user
+        //`User '${user_email}' has deleted list (${list_name}).`
+        // If some problem occurs, return message that the list was not deleted to user
+        // failedToDeleteList: 603,
+        //  errorUtils.errorCodes.failedToDeleteList,
+        //  `Failed to delete locations from list id ${list_id}`,
+        //  err
+      }
+      return true;
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

@@ -1,5 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { ListFilters } from '@wri-monorepos/geo';
-
 export interface RequestPreSignedURLModel {
   key: string;
   contentType: string;
@@ -135,4 +135,12 @@ export interface FcdControllerRequestBody extends DatabaseQueryParam {
   country?: string;
   countryGadm?: string;
   locationId?: number;
+}
+
+export class DeleteListRequest {
+  @ApiProperty()
+  organization_user_id: number;
+
+  @ApiProperty()
+  organizationDatabase: string;
 }

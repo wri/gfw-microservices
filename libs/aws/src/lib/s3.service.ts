@@ -49,6 +49,7 @@ export class S3Service {
     key: string,
     fileExtension: string,
     bucket: string,
+    environment: string,
     subPath?: string
   ) {
     const s3 = new S3({
@@ -66,7 +67,7 @@ export class S3Service {
       Expires: 86400,
     };
     if (subPath) {
-      params.Key = `${process.env.NODE_ENV}/${subPath}/${key}.${fileExtension}`;
+      params.Key = `${environment}/${subPath}/${key}.${fileExtension}`;
     }
 
     const url = await s3.getSignedUrl('getObject', params);

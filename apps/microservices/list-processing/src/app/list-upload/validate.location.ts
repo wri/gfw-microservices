@@ -34,26 +34,26 @@ const greaterThanZeroFloats = (value) => {
   return regCheck.test(val) || val === 0 || val === '' || val === null;
 };
 
-const onlyNumber = (value) => {
+const onlyNumber = (value: string) => {
   const regCheck = /^[0-9]*$/g;
   return regCheck.test(value) || value === '' || value === ' ';
 };
 
-const alphanumericSpace = (str) => {
+const alphanumericSpace = (str: string) => {
   const regCheck = /^[a-zA-Z0-9.\-_\s\\']*$/;
   return str === '' || regCheck.test(str);
 };
 
-const alphanumeric = (str) => {
+const alphanumeric = (str: string) => {
   const regCheck = /^[a-zA-Z0-9]*$/;
   return regCheck.test(str) || str === '';
 };
 
-const analysisCheck = (value) => {
+const analysisCheck = (value: unknown) => {
   return value >= 0 || value === '';
 };
 
-const companyIdCheck = (str, template) => {
+const companyIdCheck = (str: string, template: string) => {
   const optionalTemplates = [
     'rubberGeneric',
     'palmGeneric',
@@ -82,11 +82,11 @@ const companyIdCheck = (str, template) => {
   return returnValue;
 };
 
-const isNotSelect = (value) => {
+const isNotSelect = (value: string) => {
   return value !== 'Select...';
 };
 
-const locationClassCheck = (str) => {
+const locationClassCheck = (str: string) => {
   const newStr = (str ?? '').toLowerCase();
   return (
     mandatoryCheck(newStr) &&
@@ -97,7 +97,7 @@ const locationClassCheck = (str) => {
   );
 };
 
-const timeHorizon = (str) => {
+const timeHorizon = (str: string) => {
   if (typeof str === 'number') {
     return false;
   }
@@ -114,7 +114,7 @@ const timeHorizon = (str) => {
   return returnValue;
 };
 
-const latitudeCheck = (value) => {
+const latitudeCheck = (value: string) => {
   const latitude = parseFloat(value);
   if (latitude) {
     return latitude <= 90 && latitude >= -90 && typeof latitude !== 'string';
@@ -122,7 +122,7 @@ const latitudeCheck = (value) => {
   return false;
 };
 
-const longitudeCheck = (value) => {
+const longitudeCheck = (value: string) => {
   const longitude = parseFloat(value);
   if (longitude) {
     return longitude <= 180 && longitude >= -180 && typeof longitude !== 'string';
@@ -130,7 +130,7 @@ const longitudeCheck = (value) => {
   return false;
 };
 
-const accuracyOptions = (str) => {
+const accuracyOptions = (str: string) => {
   let returnValue = true;
   if (str && typeof str === 'string') {
     if (
@@ -150,7 +150,7 @@ const accuracyOptions = (str) => {
   return returnValue;
 };
 
-const validDate = (date) => {
+const validDate = (date: string) => {
   // Date is not mandatory (empty string or null is valid)
   if (!date || date === '') {
     return true;
@@ -170,7 +170,7 @@ const validDate = (date) => {
   }
 };
 
-const validStartDate = (dateStart, dateEnd) => {
+const validStartDate = (dateStart: string, dateEnd: string) => {
   // Date is not mandatory (empty string or null is valid)
   if (!dateStart || dateStart === '') {
     return true;
@@ -194,14 +194,14 @@ const validStartDate = (dateStart, dateEnd) => {
   }
 };
 
-const isNotNone = (value) => {
+const isNotNone = (value: string) => {
   if (!value || typeof value === 'number') {
     return false;
   }
   return value.toLowerCase() !== 'none';
 };
 
-const existsCheck = (str) => {
+const existsCheck = (str: string) => {
   let returnValue = true;
   const passedValue = String(str);
   if (!passedValue || passedValue.length === 0) {
@@ -210,7 +210,7 @@ const existsCheck = (str) => {
   return returnValue;
 };
 
-const riskLevelCheck = (str) => {
+const riskLevelCheck = (str: string) => {
   if (
     str &&
     (str === '' ||
@@ -229,7 +229,7 @@ const riskLevelCheck = (str) => {
   return false;
 };
 
-const currencyCheck = (str) => {
+const currencyCheck = (str: string) => {
   const validCurrencyValues = [
     'AED',
     'AFN',
@@ -413,7 +413,7 @@ const currencyCheck = (str) => {
   return checkNUllOrUndefined(str) || validCurrencyValues.includes(String(str).toUpperCase());
 };
 
-const policyRankingCheck = (str) => {
+const policyRankingCheck = (str: string) => {
   if (typeof str === 'number') {
     return false;
   }
@@ -426,7 +426,7 @@ const policyRankingCheck = (str) => {
   return lcString && (lcString === 'a' || lcString === 'b' || lcString === 'c');
 };
 
-const investmentType = (str) => {
+const investmentType = (str: string) => {
   if (typeof str === 'number') {
     return false;
   }
@@ -437,7 +437,7 @@ const investmentType = (str) => {
   return returnValue;
 };
 
-const certificationCheck = (value, template) => {
+const certificationCheck = (value: string, template: string) => {
   const certObj = {
     cattleGeneric: ['yes', 'no'],
     cocoaFarms: ['utz', 'fairtrade', 'rainforest alliance', 'other standard', 'none'],
@@ -492,7 +492,7 @@ const certificationCheck = (value, template) => {
   return valid;
 };
 
-const oilTypeCheck = (str) => {
+const oilTypeCheck = (str: string) => {
   if (
     str &&
     (str === '' || str.toLowerCase() === 'palm oil' || str.toLowerCase() === 'palm kernel oil')
@@ -508,7 +508,7 @@ const oilTypeCheck = (str) => {
   return false;
 };
 
-const rspoTypeCheck = (value, template) => {
+const rspoTypeCheck = (value: string, template: string) => {
   const certObj = {
     palmGeneric: ['ip', 'sg', 'mb', 'mb/sg', 'mb/ip'],
     palmMill: ['ip', 'sg', 'mb', 'mb/sg', 'mb/ip'],
@@ -535,13 +535,13 @@ const rspoTypeCheck = (value, template) => {
   return valid;
 };
 
-const validEmail = (str) => {
+const validEmail = (str: string) => {
   const regCheck =
     /^(([^<>()\\[\]\\.,;:\s@"]+(\.[^<>()\\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return regCheck.test(str) || str === '';
 };
 
-const yesNoBinaryCheck = (value) =>
+const yesNoBinaryCheck = (value: string) =>
   String(value).toLowerCase() === 'yes' || String(value).toLowerCase() === 'no' || value === '';
 
 const fieldValidations = {
@@ -909,11 +909,15 @@ const fieldValidations = {
   },
 };
 
-export const validateLocation = (attributes, activeTemplate) => {
+export const validateLocation = (
+  attributes: Array<Record<string, unknown>>,
+  activeTemplate: string
+) => {
   const errors = new Set();
   attributes.forEach((attribute) => {
     Object.entries(attribute).forEach(([key, value]) => {
-      fieldValidations[key]?.validations.forEach((validation) => {
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      fieldValidations[key]?.validations.forEach((validation: Function) => {
         const comparedKey = key.toLowerCase();
         let valid = true;
         if (['company id', 'rspo model', 'certification'].includes(comparedKey)) {

@@ -143,4 +143,7 @@ export class DeleteListRequest {
 
   @ApiProperty()
   organizationDatabase: string;
+
+  @ApiProperty()
+  userEmail: string;
 }

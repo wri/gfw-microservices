@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { DataSource } from 'typeorm';
 import * as uniqId from 'uniqid';
@@ -8,7 +8,7 @@ import {
   RequestSaveLargeListProcessModel,
   CreateListInsertResultModel,
 } from '../models';
-import { SQLUtils, ClientStoreConnection, List } from '@wri-monorepos/sql';
+import { SQLUtils, ClientStoreConnection, List, ActivityLog } from '@wri-monorepos/sql';
 import * as sql from 'mssql';
 
 class MyObject {
@@ -133,12 +133,16 @@ export class AppService {
   async deleteList(
     list_id: number,
     organizationDatabase: string,
-    organization_user_id: number
-  ): Promise<boolean> {
+    organization_user_id: number,
+    userEmail: string
+  ): Promise<string> {
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(List);
       const record = await listRepository.findOne({ where: { id: list_id } });
+      if (!record) {
+        throw new NotFoundException();
+      }
       const { lockStatus, lockUserId } = record;
       if (lockStatus === null || (lockStatus !== null && lockUserId !== organization_user_id)) {
         // Reject object
@@ -146,18 +150,38 @@ export class AppService {
         throw { isLocked: true, lockUserId };
       } else {
         // Delete list
-        // Salve log at ActivityLog table
-        // Return message that the list was deleted to user
-        //`User '${user_email}' has deleted list (${list_name}).`
-        // If some problem occurs, return message that the list was not deleted to user
-        // failedToDeleteList: 603,
-        //  errorUtils.errorCodes.failedToDeleteList,
-        //  `Failed to delete locations from list id ${list_id}`,
-        //  err
+        await listRepository.delete({ id: list_id });
+
+        const activityLogRepository = connection.getRepository(ActivityLog);
+
+        if (!activityLogRepository) {
+          throw new InternalServerErrorException('Failed to get repository for ActivityLog');
+        }
+        try {
+          // Salve log at ActivityLog table
+          const activityLog = new ActivityLog();
+          activityLog.userId = organization_user_id;
+          activityLog.activityTypeId = 1;
+          activityLog.activityDescription = `User '${userEmail}' has deleted list (${record.listName}).`;
+          activityLog.activityTime = new Date();
+          await activityLogRepository.save(activityLog);
+
+          // Return message that the list was deleted to user
+          return `User '${userEmail}' has deleted list (${record.listName}).`;
+        } catch (error) {
+          // If some problem occurs, return message that the list was not deleted to user
+          throw new InternalServerErrorException({
+            message: `Failed to delete locations from list id ${list_id}`,
+            code: 603,
+          });
+        }
       }
-      return true;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      if (error instanceof NotFoundException) {
+        throw error; // Rethrow NotFoundException
+      } else {
+        throw new InternalServerErrorException(error);
+      }
     }
   }
 }

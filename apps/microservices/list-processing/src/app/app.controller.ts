@@ -162,15 +162,21 @@ export class AppController {
   deleteList(
     @Param('listId') listId: number,
     @Body() deleteBodyList: DeleteListRequest
-  ): Promise<boolean> {
-    const { organizationDatabase, organization_user_id } = deleteBodyList;
+  ): Promise<string> {
+    const { organizationDatabase, organization_user_id, userEmail } = deleteBodyList;
     if (
       typeof organizationDatabase === 'undefined' ||
       typeof organization_user_id === 'undefined' ||
+      typeof userEmail === 'undefined' ||
       typeof listId === 'undefined'
     ) {
       throw new BadRequestException('some parameters are required');
     }
-    return this.appService.deleteList(listId, organizationDatabase, organization_user_id);
+    return this.appService.deleteList(
+      listId,
+      organizationDatabase,
+      organization_user_id,
+      userEmail
+    );
   }
 }

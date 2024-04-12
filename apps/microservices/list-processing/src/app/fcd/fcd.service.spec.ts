@@ -5,6 +5,10 @@ import {
   wdpaAnnualLossProcessedValue,
   landmarkDatabaseOutput,
   landmarkAnnualLossProcessedValue,
+  countryDatabaseOutput,
+  countryAnnualLossProcessedValue,
+  classifiedAnnualLossProcessedValue,
+  classifiedRegionDatabaseOutput,
 } from './fixture';
 
 describe('WDPA - handleWDPACategoryForList', () => {
@@ -32,8 +36,8 @@ describe('WDPA - handleWDPACategoryForList', () => {
         locationId: 5,
       })
     ).resolves.toEqual({
-      ...wdpaAnnualLossProcessedValue[countryGadm],
       overlap: { fullyRestrictive: 16600.2927, lessRestricted: 3485.8852 },
+      ...wdpaAnnualLossProcessedValue[countryGadm],
     });
   });
 
@@ -55,12 +59,12 @@ describe('WDPA - handleWDPACategoryForList', () => {
       })
     ).resolves.toStrictEqual({
       country_specific_deforestation: {
-        fullyRestrictive: {},
-        lessRestricted: {},
+        fullyRestrictive: [],
+        lessRestricted: [],
       },
       tree_cover_loss: {
-        fullyRestrictive: {},
-        lessRestricted: {},
+        fullyRestrictive: [],
+        lessRestricted: [],
       },
       overlap: {
         fullyRestrictive: 0,
@@ -121,15 +125,107 @@ describe('Landmark - handleLandmarkCategoryForList', () => {
       })
     ).resolves.toStrictEqual({
       country_specific_deforestation: {
-        indigenous: {},
+        indigenous: [],
       },
       tree_cover_loss: {
-        indigenous: {},
+        indigenous: [],
       },
       overlap: {
         indigenous: 0,
         nonIndigenous: 0,
       },
+    });
+  });
+});
+
+describe('Country - handleCountryCategoryForList', () => {
+  let fcdService: FCDService;
+
+  beforeEach(() => {
+    fcdService = new FCDService();
+    jest.restoreAllMocks();
+  });
+  it.each(['ARG', 'BRA'])(
+    'should return the data correctly for each country',
+    async (countryGadm) => {
+      jest
+        .spyOn(SQLUtils, 'queryDBFirstRow')
+        .mockImplementation(() => Promise.resolve(countryDatabaseOutput.annualLoss));
+
+      const result = await fcdService.handleCountryCategoryForList(1, {
+        clientDatabase: 'TestCo',
+        countryGadm,
+        country: 'Argentina',
+        locationId: 5,
+      });
+      expect(result).toStrictEqual(countryAnnualLossProcessedValue[countryGadm]);
+    }
+  );
+
+  it('should return empty country obj when database fields are empty', () => {
+    jest.spyOn(SQLUtils, 'queryDBFirstRow').mockImplementation(() =>
+      Promise.resolve({
+        country_specific_deforestation_yearly: '{}',
+        tree_cover_loss_by_country_yearly: '{}',
+      })
+    );
+
+    expect(
+      fcdService.handleCountryCategoryForList(1, {
+        clientDatabase: 'TestCo',
+        countryGadm: 'ARG',
+        country: 'Argentina',
+        locationId: 5,
+      })
+    ).resolves.toStrictEqual({ country_specific_deforestation: [], tree_cover_loss: [] });
+  });
+});
+
+describe('Classified Region - handleClassifiedRegionCategoryForList', () => {
+  let fcdService: FCDService;
+
+  beforeEach(() => {
+    fcdService = new FCDService();
+    jest.restoreAllMocks();
+  });
+  it('should return the data correctly for classified region', () => {
+    jest
+      .spyOn(SQLUtils, 'queryDBFirstRow')
+      .mockImplementation(() => Promise.resolve(classifiedRegionDatabaseOutput));
+
+    expect(
+      fcdService.handleClassifiedRegionCategoryForList(1, {
+        clientDatabase: 'TestCo',
+        countryGadm: 'ARG',
+        country: 'Argentina',
+        locationId: 5,
+      })
+    ).resolves.toStrictEqual({
+      overlap: { 'Category I': 2487.9471, 'Category II': 315.8723 },
+      ...classifiedAnnualLossProcessedValue,
+    });
+  });
+
+  it('should return empty classified region obj when database fields are empty', () => {
+    jest.spyOn(SQLUtils, 'queryDBFirstRow').mockImplementation(() =>
+      Promise.resolve({
+        country_specific_deforestation_classified_region_yearly: '{}',
+        tree_cover_loss_arg_otbn_yearly: '{}',
+        arg_otbn_area: '{}',
+      })
+    );
+
+    expect(
+      fcdService.handleClassifiedRegionCategoryForList(1, {
+        clientDatabase: 'TestCo',
+        countryGadm: 'ARG',
+        country: 'Argentina',
+        locationId: 5,
+      })
+    ).resolves.toStrictEqual({
+      overlap: {},
+      country_specific_deforestation: {},
+      tree_cover_loss: {},
     });
   });
 });

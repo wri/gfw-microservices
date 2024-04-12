@@ -281,7 +281,7 @@ describe('Alerts Controller', () => {
     expect(response.body).toBeDefined();
 
     expect(getData).toBeCalledTimes(1);
-    expect(getData).toBeCalledWith('5673', 'production', '2', '50');
+    expect(getData).toBeCalledWith('5673', 'production', 2, 50);
 
     await app.close();
   });
@@ -357,7 +357,7 @@ describe('Alerts Controller', () => {
     expect(response.body).toBeDefined();
 
     expect(getData).toBeCalledTimes(1);
-    expect(getData).toBeCalledWith('1', '2', '50');
+    expect(getData).toBeCalledWith('1', 2, 50);
 
     await app.close();
   });

@@ -37,8 +37,9 @@ describe('[GET] /afi/:listId/number-of-pages', () => {
     expect(response.body).toBeDefined();
     expect(response.body).toEqual({
       clientDatabase: 'production',
+      isListLevel: 0,
       pages: 2,
-      rowsPerPage: '5',
+      rowsPerPage: 5,
     });
 
     await app.close();
@@ -72,8 +73,9 @@ describe('[GET] /afi/:listId/number-of-pages', () => {
     expect(response.body).toBeDefined();
     expect(response.body).toEqual({
       clientDatabase: 'production',
+      isListLevel: 0,
       pages: 0,
-      rowsPerPage: '5',
+      rowsPerPage: 5,
     });
 
     await app.close();

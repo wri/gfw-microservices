@@ -59,7 +59,7 @@ module.exports = async ({
     return {
       error: false,
       category,
-      data,
+      ...data,
     };
   } catch (error) {
     logger.info(`ListProcessingRequest ${error.name}: ${error.message}`);

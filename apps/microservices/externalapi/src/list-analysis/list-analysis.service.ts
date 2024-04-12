@@ -335,7 +335,7 @@ export class ListAnalysisService {
       groupId: 'default',
     });
   }
-  async deletList(listId: number, organizationId: number): Promise<boolean> {
+  async deletList(listId: number, organizationId: number, userEmail: string): Promise<boolean> {
     try {
       const connection = await this.getOrganizationConnection(organizationId);
       const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
@@ -343,8 +343,25 @@ export class ListAnalysisService {
         where: { listId },
       });
       if (listAnalysisStatus) {
-        await listAnalysisStatusRepository.delete(listId);
-        return true;
+        const user = await this.userService.findUser(organizationId, userEmail);
+
+        const URL_DELETE_LIST = `${this.LLP_BASE_URL}/api/delete/list/${listId}`;
+        const result = await axios.delete(URL_DELETE_LIST, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          params: {
+            organization_user_id: user.organization_user_id,
+            userEmail: userEmail,
+            organizationDatabase: connection.options.database,
+            listId: listId,
+          },
+        });
+        if (result) {
+          return true;
+        } else {
+          return false;
+        }
       } else {
         throw new NotFoundException();
       }

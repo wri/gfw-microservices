@@ -72,7 +72,7 @@ export class ListAnalysisController {
     const {
       user: { organizationId },
     } = request;
-    console.log('organizationId', organizationId, 'listId', listId);
-    return await this.listAnalysisService.deletList(listId, organizationId);
+    const { userEmail } = deleteBodyList;
+    return await this.listAnalysisService.deletList(listId, organizationId, userEmail);
   }
 }

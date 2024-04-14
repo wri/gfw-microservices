@@ -12,13 +12,9 @@ const {
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } = require('../config/geoTrellis.config');
 
-const { getListAnalysisStatusByListId } = require(path.resolve(
-  './server/analytics/service/analytics.service'
-));
-
 import { checkProcessingLimits } from '@wri-monorepos/shared';
-
-const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extractAnalysisTypes'));
+import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
 
 /**
  * Submitting Analyze List request to step function for list to be processed by GeoTrellis
@@ -55,12 +51,17 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
     listId: listID,
   });
 
+  const listAnalysisStatusData = await getListAnalysisStatus(listID);
+  const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+
   if (isListLocationOverLimit) {
+    await updateListsAnalysisStatus(databaseName, {
+      listId: listID,
+      errorInfo: 'Exceeded Analysis Limit',
+      status: 3,
+    });
     throw new Error(`Analysis limit reached`);
   }
-
-  const listAnalysisStatusData = await getListAnalysisStatusByListId(req, listID);
-  const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
 
   const data = {
     list_id: listID,

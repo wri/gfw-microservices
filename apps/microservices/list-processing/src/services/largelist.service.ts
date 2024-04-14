@@ -1,4 +1,4 @@
-import { SQLUtils } from '@wri-monorepos/sql';
+import { SQLUtils, updateListsAnalysisStatus } from '@wri-monorepos/sql';
 import { BadRequestException, Logger } from '@nestjs/common';
 import { Injectable, Inject } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../models';
@@ -10,6 +10,7 @@ import { DataSource } from 'typeorm';
 import { getListByFilters } from '@wri-monorepos/sql';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { ProcessingLimitException } from '../app/app.exceptions';
+import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
 
 interface CreateListResult {
   list_id: number;
@@ -29,11 +30,9 @@ export class LargeListService {
     request: RequestLargeListProcess
   ): Promise<ResponseLargeListProcess> {
     const largeListProcesingEndPoint = this.config.get<string>('LARGE_LIST_PROCESING_ENDPOINT');
-
     const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
 
     const { isExternalAPIProcess, ...llpRequest } = request;
-
     const { organization_id: organizationId, subscription_status_id: subscriptionStatusId } =
       request;
 
@@ -45,14 +44,26 @@ export class LargeListService {
     });
 
     if (isListLocationOverLimit) {
+      await updateListsAnalysisStatus(request.organization_database, {
+        listId: request.list_id,
+        errorInfo: 'Exceeded Analysis Limit',
+        status: 3,
+      });
       throw new ProcessingLimitException();
     }
+
+    const listAnalysisStatusData = await getListAnalysisStatus(
+      request.organization_database,
+      request.list_id
+    );
+    const analysis_types = extractAnalysisTypes(listAnalysisStatusData);
 
     const payloadBody = {
       ...llpRequest,
       environment: microserviceEnvironment,
       send_email: isExternalAPIProcess === true ? false : true,
       processing_limit: processingLimit,
+      analysis_types,
     };
 
     const requestBody = JSON.stringify(payloadBody);

@@ -21,6 +21,7 @@ import {
   DeleteList,
   SetListDrafStatus,
   UnlockListAndSaveAsDraft,
+  updateListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 import { Logger, Injectable } from '@nestjs/common';
 import { checkProcessingLimits, getFinalGeojson } from '@wri-monorepos/shared';
@@ -207,6 +208,11 @@ export class LocationService {
         });
 
         if (isListLocationOverLimit) {
+          await updateListsAnalysisStatus(clientDatabase, {
+            listId: createdListId,
+            errorInfo: 'Exceeded Analysis Limit',
+            status: 3,
+          });
           throw new Error(`Analysis limit reached`);
         }
 
@@ -267,6 +273,11 @@ export class LocationService {
         });
 
         if (isListLocationOverLimit) {
+          await updateListsAnalysisStatus(clientDatabase, {
+            listId: moveToList.id,
+            errorInfo: 'Exceeded Analysis Limit',
+            status: 3,
+          });
           throw new Error(`Analysis limit reached`);
         }
 

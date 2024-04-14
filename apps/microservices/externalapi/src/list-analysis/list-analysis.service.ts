@@ -289,7 +289,6 @@ export class ListAnalysisService {
       template_type: newListDetails.templateId,
       user_id: externalUpload.userId,
       startAnalysis: true,
-      analysis_types: getAnalysisTypesFromIds(newListDetails.analysisIDs),
       isExternalAPIProcess: true,
     });
 

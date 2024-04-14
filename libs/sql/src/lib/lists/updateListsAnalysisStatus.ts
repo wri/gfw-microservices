@@ -21,7 +21,7 @@ export async function updateListsAnalysisStatus(
       { field: 'ErrorInfo', type: sql.VarChar(2000), value: errorInfo },
       { field: 'Status', type: sql.Int, value: status },
     ];
-    return await SQLUtils.queryDBFirstRow<Boolean>(
+    return await SQLUtils.queryDBFirstRow<boolean>(
       databaseName,
       'updateListAnalysisStatus',
       parameters

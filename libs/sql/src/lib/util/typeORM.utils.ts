@@ -131,7 +131,7 @@ export class ClientStoreConnection {
         `Data Source ${database} initialization error on env: ${process.env.NODE_ENV}`,
         error
       );
-      throw new Error(`Data Source initialization error`);
+      throw new Error(`Data Source initialization error ${error.message}`);
     } finally {
       release();
     }

@@ -36,6 +36,8 @@ const defineIcon = (type) => {
       return 'https://dpptfqp76xood.cloudfront.net/images/check_circle_black_24dp.png';
     case 'warning':
       return 'https://dpptfqp76xood.cloudfront.net/images/warning_black_24dp.png';
+    case 'limit':
+      return 'https://gfwpro-site-assets.s3.amazonaws.com/images/speed_black_24dp.png';
     default:
   }
 };
@@ -128,6 +130,11 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
       msg =
         `<p>Diagnostic and List View calculations failed for the GFW Pro list <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.list_name}</span>.</p>` +
         '<p>Try again and if the problem persists please contact GFW Pro support at <a href="mailto:gfwprosupport@wri.org">gfwprosupport@wri.org</a> for further information.</p>';
+      hasClosing = false;
+      break;
+    case config.platformVars.emailType.ANALYSIS_LIMIT_REACHED:
+      title = 'Analysis Limit Exceeded';
+      msg = `<p>You have reached your organization's GFW Pro analysis limit. Please Contact GFW Pro support at <a href="mailto:gfwprosupport@wri.org">gfwprosupport@wri.org</a> for further information. Your list will appear saved in your account as a draft.</p>`;
       hasClosing = false;
       break;
     case config.platformVars.emailType.ORGANIZATION_APPROVED:

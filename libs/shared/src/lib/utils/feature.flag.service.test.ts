@@ -20,7 +20,7 @@ describe('Feature Flag Service', () => {
       organizationDb: 'test10',
       organizationStatusId: 1,
       organizationActivatedTime: '2024-03-23T21:24:24.000Z',
-      renewalTime: '2024-03-23T21:24:25.000Z',
+      renewalTime: '2024-03-23T22:24:24.000Z',
       subscriptionStatusId: 1,
     });
     await repository.save({
@@ -29,7 +29,7 @@ describe('Feature Flag Service', () => {
       organizationDb: 'test20',
       organizationStatusId: 2,
       organizationActivatedTime: '2024-03-23T21:24:24.000Z',
-      renewalTime: '2024-03-23T21:24:25.000Z',
+      renewalTime: '2024-03-23T22:24:24.000Z',
       subscriptionStatusId: 1,
     });
 

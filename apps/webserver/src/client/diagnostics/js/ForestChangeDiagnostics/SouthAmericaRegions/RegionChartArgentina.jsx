@@ -158,7 +158,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
   const filteredHansenTreeCoverLoss = hansenTreeCoverLoss
     ? [
         {
-          id: 'hansenTreeCoverLoss',
+          id: 'tree cover loss',
           data: filterDataByYearRange(
             Object.entries(hansenTreeCoverLoss)?.map(([year, value]) => ({
               x: parseInt(year),
@@ -177,7 +177,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
   const filteredCountrySpecificDeforestation = country_specific_deforestation
     ? [
         {
-          id: 'country_specific_deforestation',
+          id: 'argentina deforestation',
           data: filterDataByYearRange(
             Object.entries(country_specific_deforestation)?.map(([year, value]) => {
               // Check if the key ends with "approx"

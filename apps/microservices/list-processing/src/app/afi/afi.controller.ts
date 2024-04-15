@@ -1,4 +1,4 @@
-import { Get, Param, Query, UsePipes } from '@nestjs/common';
+import { Get, Param, Query } from '@nestjs/common';
 import { Controller, Logger } from '@nestjs/common';
 import { AfiService } from './afi.service';
 import { GetAfiAnalysisDataRequest } from '../../models';
@@ -19,10 +19,9 @@ export class AfiController {
   constructor(private readonly afiService: AfiService) {}
 
   @Get('/:listId/number-of-pages')
-  @UsePipes(new ZodValidationPipe(GetAfiAnalysisDataSchema))
   async getNumberOfPagesAfiAnalysis(
     @Param('listId') listId: string,
-    @Query() queryParam: GetAfiAnalysisDataRequest
+    @Query(new ZodValidationPipe(GetAfiAnalysisDataSchema)) queryParam: GetAfiAnalysisDataRequest
   ) {
     this.logger.debug('Get Number Of Pages AFI Analysis');
     const { rowsPerPage } = queryParam;
@@ -41,10 +40,9 @@ export class AfiController {
   }
 
   @Get('/:listId/data-per-page')
-  @UsePipes(new ZodValidationPipe(GetAfiAnalysisDataSchema))
   async getDataAfiAnalysis(
     @Param('listId') listId: string,
-    @Query() queryParam: GetAfiAnalysisDataRequest
+    @Query(new ZodValidationPipe(GetAfiAnalysisDataSchema)) queryParam: GetAfiAnalysisDataRequest
   ) {
     this.logger.debug('Get Number Of Pages AFI Analysis');
     return await this.afiService.getAfiDataPerPage(listId, queryParam);

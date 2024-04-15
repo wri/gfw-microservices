@@ -6,7 +6,7 @@ const analysisIdsMap = {
   DefReport: 'AFI',
 };
 
-const analysisIdsInputArray = Object.keys(analysisIdsMap) as [string];
+const analysisIdsInputArray = Object.keys(analysisIdsMap) as [keyof typeof analysisIdsMap];
 
 export const analysisIdSchema = z.enum(analysisIdsInputArray).transform((x) => analysisIdsMap[x]);
 

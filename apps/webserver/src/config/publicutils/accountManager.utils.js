@@ -15,7 +15,6 @@
  *   @function {initialize}
  *   @function {updatePendingAccount}
  *   @function {updatePendingAccountUser}
- *   @function {getOrganizationActivatedTime}
  *
  ******************************************************************* */
 // Imports required for this module

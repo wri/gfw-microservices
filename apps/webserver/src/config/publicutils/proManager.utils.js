@@ -40,6 +40,8 @@ const { setOrganizationCustomAnalysisLimits } = require(path.resolve(
 ));
 const { setGlobalAnalysisLimit } = require(path.resolve('./queries/system/setGlobalAnalysisLimit'));
 const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
+const { setOrganizationRenewalTime } = require('@wri-monorepos/sql');
+const logger = require(path.resolve('./config/privateutils/logger.utils'));
 
 /**
  * @function getAllAccountsList
@@ -260,12 +262,27 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
         }
 
         const secret = SpeakEasy.createSecret(req);
+        const timestamp = new Date();
         const params = [
           { field: 'PendingAccountID', type: sql.Int, value: pendingaccount_id },
           { field: 'UserSecret', type: sql.VarChar(50), value: secret },
-          { field: 'ActivatedTime', type: sql.SmallDateTime, value: new Date() },
+          { field: 'ActivatedTime', type: sql.SmallDateTime, value: timestamp },
         ];
-        return sqlUtils.executeSystemStoredProcedure(req, 'uspActivatePendingAccount', params);
+        return sqlUtils
+          .executeSystemStoredProcedure(req, 'uspActivatePendingAccount', params)
+          .then(async (recordsets) => {
+            try {
+              const renewalParams = [
+                { field: 'PendingAccountID', type: sql.Int, value: pendingaccount_id },
+                { field: 'RenewalTime', type: sql.DateTime, value: timestamp },
+              ];
+              await sqlUtils.executeSystemQuery(setOrganizationRenewalTime, renewalParams);
+            } catch (error) {
+              logger.error(`Failed setting Organizations.renewal_time`, error);
+              throw error;
+            }
+            return recordsets;
+          });
       })
       .then((recordsets) => {
         const [record] = recordsets;

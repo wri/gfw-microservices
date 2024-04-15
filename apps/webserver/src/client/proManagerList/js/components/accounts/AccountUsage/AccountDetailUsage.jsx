@@ -13,6 +13,8 @@ import DateRangeSelector from './DateRangeSelector';
 import { oneMonthAgoDate, endDayIncludingToday } from './AccountUsage.utils';
 import { accountProfileStrings } from '../../../../../common/js/config';
 import { useAccountDetail } from '../AccountDetailSection';
+import AccountUsage from '../../../../../profile/js/components/AccountUsage/AccountUsage.jsx';
+import Divider from '@mui/material/Divider';
 
 function AccountDetailUsage() {
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
@@ -45,8 +47,18 @@ function AccountDetailUsage() {
       });
   }, [startDate, endDate]);
 
+  const accountLimits = currentAccount.analysis_limits.limits;
+  const accountUsageData = {
+    total_area_analyzed,
+    locations_analyzed: number_of_lists_analyzed,
+    maxLocations: accountLimits.max_locations_per_year,
+    maxArea: accountLimits.MaxAreaAnalyzeablePerYear,
+  };
+
   return (
     <section>
+      <AccountUsage {...accountUsageData} />
+      <Divider sx={{ margin: '1.5rem 0' }} />
       <DateRangeSelector
         startDate={startDate}
         setStartDate={setStartDate}

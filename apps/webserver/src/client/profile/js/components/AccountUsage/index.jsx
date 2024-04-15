@@ -14,16 +14,17 @@ import AccountUsage from './AccountUsage';
 import moment from 'moment';
 import { useProfileContext } from '../../ProfileStateContext';
 import AccountUsageDropMenu from './AccountUsageDropMenu';
+import { formatNumber } from '../../../../common/js/utils/formatNumber';
 
 export default function AccountUsageContainer() {
-  const { accountActivatedTime } = useProfileContext();
+  const { accountRenewalTime } = useProfileContext();
   const [usageData, setUsageData] = useState(null);
   const [usageLimitsData, setUsageLimitsData] = useState(null);
   const [usageDataperUser, setUsageDataperUser] = useState([]);
   const [messageType, setMessageType] = useState('');
   const [messageText, setMessageText] = useState('');
   const todayAsEndDay = moment();
-  const accountActivationDate = moment(accountActivatedTime);
+  const accountActivationDate = moment(accountRenewalTime);
   const accountLatestYearStartDate = todayAsEndDay
     .clone()
     .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
@@ -137,10 +138,6 @@ export default function AccountUsageContainer() {
 
   const getAnalysesPercentage = (locations) => {
     return ((locations / usageData.locations_analyzed) * 100).toFixed(3);
-  };
-
-  const formatNumber = (number) => {
-    return number >= 1000000 ? (number / 1000000).toFixed(2) + 'M' : number.toFixed(2);
   };
 
   return usageData === null ? (

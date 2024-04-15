@@ -135,4 +135,22 @@ export class TokenService {
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async findUserEmailByToken(organizationId: number, userEmail: string): Promise<UserRoutes> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: {
+          organization_id: organizationId,
+          user_email: userEmail,
+        },
+      });
+      if (user) {
+        return user;
+      }
+      return null;
+    } catch (error) {
+      Logger.warn('Error finding user email by token', error);
+      throw new InternalServerErrorException(error.message);
+    }
+  }
 }

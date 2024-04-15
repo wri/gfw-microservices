@@ -5,7 +5,7 @@ const AccountManager = require(path.resolve('./config/publicutils/accountManager
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
-import { getAccountActivatedTime } from '@wri-monorepos/sql';
+import { getAccountRenewalTime } from '@wri-monorepos/sql';
 /**
  * @function profile
  * @summary
@@ -32,15 +32,15 @@ exports.profileInfo = (req, res) => {
       AccountManager.getUsersList(req),
       PolicyManager.getPolicyList(req),
       AuthManager.getUserInfo(req),
-      getAccountActivatedTime(req.session.organization_id),
+      getAccountRenewalTime(req.session.organization_id),
     ];
 
     Promise.all(promises)
       .then((results) => {
-        const [accountProfile, usersList, policyList, userInfo, accountActivatedTime] = results;
+        const [accountProfile, usersList, policyList, userInfo, accountRenewalTime] = results;
         res.status(200).json({
           organization: accountProfile,
-          accountActivatedTime,
+          accountRenewalTime,
           users: usersList,
           userInfo, // TODO: use getAccountProfile..or should this be called accountInfo ?
           classifications: classes,

@@ -1,6 +1,6 @@
 import {
   AnalysisLimit,
-  getAccountActivatedTime,
+  getAccountRenewalTime,
   getAccountYearlyUsageSinceActivation,
 } from '@wri-monorepos/sql';
 import { calculateRolloverUsed } from '../utils';
@@ -11,7 +11,7 @@ export async function getAccountRolloverLimits(
   subscriptionLimits: AnalysisLimit,
   extendedLimits: AnalysisLimit
 ) {
-  const orgActivatedTime = await getAccountActivatedTime(organizationId);
+  const orgActivatedTime = await getAccountRenewalTime(organizationId);
   const accountActivationDate = moment(orgActivatedTime);
   const yearlyUsageSinceActivation = await getAccountYearlyUsageSinceActivation(
     organizationId,

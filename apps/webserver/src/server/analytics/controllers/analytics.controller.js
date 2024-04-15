@@ -13,7 +13,7 @@ import {
 } from '@wri-monorepos/shared';
 import {
   getAccountUsersAnalysisUsage,
-  getAccountActivatedTime,
+  getAccountRenewalTime,
   getAccountAnalysisLimits,
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
@@ -99,7 +99,7 @@ exports.getMyOrganizationAnalysisUsage = async (req, res) => {
 exports.getMyOrganizationUsersAnalysisUsage = async (req, res) => {
   const { organization_database: orgDbName, organization_id } = req.session;
 
-  const orgActivatedTime = await getAccountActivatedTime(organization_id);
+  const orgActivatedTime = await getAccountRenewalTime(organization_id);
   const todayAsEndDay = moment().add(1, 'day');
   const accountActivationDate = moment(orgActivatedTime);
   const accountLatestYearStartDate = todayAsEndDay
@@ -177,7 +177,7 @@ exports.downladOrganizationUsersUsageExport = async (req, res) => {
     organization_id: orgId,
   } = req.session;
 
-  const orgActivatedTime = await getAccountActivatedTime(orgId);
+  const orgActivatedTime = await getAccountRenewalTime(orgId);
   const todayAsEndDay = moment().add(1, 'day');
   const accountActivationDate = moment(orgActivatedTime);
   const accountLatestYearStartDate = todayAsEndDay

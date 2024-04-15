@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { S3 } from 'aws-sdk';
-import * as fsp from 'fs';
+import * as fs from 'fs';
+import { finished } from 'stream/promises';
 
 @Injectable()
 export class S3Service {
@@ -14,7 +15,7 @@ export class S3Service {
       region: process.env.AWS_REGION,
     });
 
-    const fileContent = fsp.readFileSync(`/tmp/${key}.${fileExtension}`);
+    const fileContent = fs.readFileSync(`/tmp/${key}.${fileExtension}`);
     const params = {
       Bucket: bucket,
       Key: `${process.env.NODE_ENV}/${key}.${fileExtension}`,
@@ -62,7 +63,7 @@ export class S3Service {
 
     const params = {
       Bucket: bucket,
-      Key: `${environment}/${key}.${fileExtension}`,
+      Key: `${process.env.NODE_ENV}/${key}.${fileExtension}`,
       Expires: 86400,
     };
     if (subPath) {
@@ -71,5 +72,27 @@ export class S3Service {
 
     const url = await s3.getSignedUrl('getObject', params);
     return url;
+  }
+
+  async writeS3fileIntoTmp(fileName: string, bucket: string) {
+    const s3 = new S3({
+      signatureVersion: 'v4',
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      },
+      region: process.env.AWS_REGION,
+    });
+
+    const params = {
+      Bucket: bucket,
+      Key: `${fileName}`,
+    };
+
+    const filePath = `/tmp/${fileName}`;
+    const file = fs.createWriteStream(filePath);
+    await s3.getObject(params).createReadStream().pipe(file);
+    await finished(file);
+    return filePath;
   }
 }

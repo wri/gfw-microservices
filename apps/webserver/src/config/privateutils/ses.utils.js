@@ -234,9 +234,26 @@ const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => 
   return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
 };
 
+const sendEmail__ListAnalysisFailedByLimitException = (req, userEmail) => {
+  const subject = `Error: Analysis Limit Reached`;
+  const emailTemplate = config.platformVars.emailType.ANALYSIS_LIMIT_REACHED;
+  const level = 'limit';
+
+  const msg = createBodyContent(
+    req,
+    emailTemplate,
+    {
+      list_name,
+    },
+    level
+  );
+  return sendEmail(req, config.AWSVars.ses.sender, [userEmail], subject, msg);
+};
+
 module.exports = {
   initialize,
   sendEmail,
   createBodyContent,
   sendEmail__ListSubmittedForAnalysis,
+  sendEmail__ListAnalysisFailedByLimitException,
 };

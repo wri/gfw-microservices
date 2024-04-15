@@ -26,6 +26,7 @@ const { saveAsDraftListConfig } = require('../../../config/config/locations.conf
 const { removeExistingVectorTileFromS3 } = require('../../vectorTiles/utils/vectorTile.utils');
 const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
+const { HttpStatus } = require('@nestjs/common');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 
 const { getListAnalysisStatusByListId } = require(path.resolve(
@@ -1167,6 +1168,11 @@ module.exports = (app, limiter) => {
             statusText: reason = 'Error /locations/process-list',
             data = {},
           } = response;
+
+          if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
+            const { user_email } = req.session;
+            return AWSSES.sendEmail__ListAnalysisFailedByLimitException(req, user_email);
+          }
 
           res.status(status).send({
             reason,

@@ -42,7 +42,7 @@ function ChartsSelectorArgentina({
               {selectedOptionId === option.id &&
                 option?.chartLabels.map(({ id, legend, color, checked, totalLossByCategory }) => (
                   <tr key={id}>
-                    <td>
+                    <td style={{ paddingLeft: '30px' }}>
                       <input
                         id={id}
                         type="checkbox"

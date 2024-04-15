@@ -73,11 +73,27 @@ export class FCDService {
         ],
       });
 
+    let countrySpecificDeforestation = [];
+    try {
+      countrySpecificDeforestation = this.toApproximateValueFormat(
+        JSON.parse(country_specific_deforestation_yearly)[countryGadm]
+      );
+    } catch (error) {
+      this.logger.error(`error converting json object: ${error}`);
+    }
+
+    let treeCoverLoss = [];
+    try {
+      treeCoverLoss = this.toApproximateValueFormat(
+        JSON.parse(tree_cover_loss_by_country_yearly)[countryGadm]
+      );
+    } catch (error) {
+      this.logger.error(`error converting json object: ${error}`);
+    }
+
     return {
-      country_specific_deforestation: JSON.parse(country_specific_deforestation_yearly)[
-        countryGadm
-      ],
-      tree_cover_loss: JSON.parse(tree_cover_loss_by_country_yearly)[countryGadm],
+      country_specific_deforestation: countrySpecificDeforestation,
+      tree_cover_loss: treeCoverLoss,
     };
   }
 
@@ -87,6 +103,7 @@ export class FCDService {
     const {
       country_specific_deforestation_classified_region_yearly,
       tree_cover_loss_arg_otbn_yearly,
+      arg_otbn_area,
     } = await this.getAnnualLossData({
       clientDatabase,
       locationId,
@@ -94,20 +111,38 @@ export class FCDService {
       sqlFields: [
         AnnualLossFcdFields.COUNTRY_SPECIFIC_DEFORESTATION_CLASSIFIED_REGION_YEARLY,
         AnnualLossFcdFields.TREE_COVER_LOSS_ARG_OTBN_YEARLY,
+        AnnualLossFcdFields.ARG_OTBN_AREA,
       ],
     });
 
-    const country_specific_deforestation = JSON.parse(
-      country_specific_deforestation_classified_region_yearly
-    )[countryGadm];
+    const overlap = JSON.parse(arg_otbn_area);
 
-    const tree_cover_loss = JSON.parse(tree_cover_loss_arg_otbn_yearly);
+    const country_specific_deforestation = {};
+    try {
+      const countrySpecificDeforestation = JSON.parse(
+        country_specific_deforestation_classified_region_yearly
+      )[countryGadm];
+      Object.entries(countrySpecificDeforestation).forEach(([key, value]) => {
+        country_specific_deforestation[key] = this.toApproximateValueFormat(value);
+      });
+    } catch (error) {
+      this.logger.error(`error converting json object: ${error}`);
+    }
+
+    const tree_cover_loss = {};
+    try {
+      const treeCoverLoss = JSON.parse(tree_cover_loss_arg_otbn_yearly);
+      Object.entries(treeCoverLoss).forEach(([key, value]) => {
+        tree_cover_loss[key] = this.toApproximateValueFormat(value);
+      });
+    } catch (error) {
+      this.logger.error(`error converting json object: ${error}`);
+    }
 
     return {
-      classified_region: {
-        country_specific_deforestation,
-        tree_cover_loss,
-      },
+      overlap,
+      country_specific_deforestation: { ...country_specific_deforestation },
+      tree_cover_loss: { ...tree_cover_loss },
     };
   }
 
@@ -162,17 +197,30 @@ export class FCDService {
         ],
       });
 
-    const country_specific_deforestation = this.getFullyAndLessRestrictedData(
+    const countrySpecificDeforestation = this.getFullyAndLessRestrictedData(
       country_specific_deforestation_wdpa_yearly,
       countryGadm
     );
+    const country_specific_deforestation = {
+      fullyRestrictive: this.toApproximateValueFormat(
+        countrySpecificDeforestation.fullyRestrictive
+      ),
+      lessRestricted: this.toApproximateValueFormat(countrySpecificDeforestation.lessRestricted),
+    };
 
-    const tree_cover_loss = this.getFullyAndLessRestrictedData(
+    const treeCoverLoss = this.getFullyAndLessRestrictedData(
       tree_cover_loss_by_country_wdpa_yearly,
       countryGadm
     );
+    const tree_cover_loss = {
+      fullyRestrictive: this.toApproximateValueFormat(treeCoverLoss.fullyRestrictive),
+      lessRestricted: this.toApproximateValueFormat(treeCoverLoss.lessRestricted),
+    };
 
-    return { country_specific_deforestation, tree_cover_loss };
+    return {
+      country_specific_deforestation,
+      tree_cover_loss,
+    };
   }
 
   private getFullyAndLessRestrictedData(dataJsonString: string, countryGadm: string) {
@@ -213,10 +261,10 @@ export class FCDService {
         nonIndigenous: 0,
       },
       country_specific_deforestation: {
-        indigenous: {},
+        indigenous: [],
       },
       tree_cover_loss: {
-        indigenous: {},
+        indigenous: [],
       },
     };
 
@@ -263,8 +311,10 @@ export class FCDService {
 
       landmark = {
         ...landmark,
-        country_specific_deforestation: { indigenous: countrySpecificDeforestation },
-        tree_cover_loss: { indigenous: treeCoverLoss },
+        country_specific_deforestation: {
+          indigenous: this.toApproximateValueFormat(countrySpecificDeforestation),
+        },
+        tree_cover_loss: { indigenous: this.toApproximateValueFormat(treeCoverLoss) },
       };
     } catch (error) {
       this.logger.error(`error converting json object: ${error}`);
@@ -347,5 +397,15 @@ export class FCDService {
       category.toLowerCase().includes(item.toLowerCase())
     );
     return !!found;
+  }
+
+  private toApproximateValueFormat(obj: unknown) {
+    return Object.entries(obj)
+      .map(([key, value]) => ({
+        year: Number(key.substring(0, 4)),
+        value,
+        approximateValue: /approx/.test(key),
+      }))
+      .sort((a, b) => a.year - b.year);
   }
 }

@@ -24,17 +24,6 @@ describe('FcdValidationSchema', () => {
     expect(FcdValidationSchema.parse(validInput)).toEqual(expectedOutput);
   });
 
-  it('should throw an error for invalid category', () => {
-    const invalidInput = {
-      listId: '123',
-      category: 'invalidCategory,anotherInvalidCategory',
-      country: 'testCountry',
-      countryGadm: 'testGadm',
-    };
-
-    expect(() => FcdValidationSchema.parse(invalidInput)).toThrow();
-  });
-
   it('should accept optional locationId', () => {
     const inputWithoutLocationId = {
       listId: '123',

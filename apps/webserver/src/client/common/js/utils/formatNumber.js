@@ -3,7 +3,7 @@ export function formatNumber(number) {
     return addComma((number / 1000000)) + 'M';
   }
 
-  addComma(number);
+  return addComma(number);
 }
 
 function addComma() {

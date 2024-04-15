@@ -1,8 +1,12 @@
 export function formatNumber(number) {
   if (number >= 1000000) {
-    return (number / 1000000).toFixed(2) + 'M';
+    return addComma(number / 1000000) + 'M';
   }
 
+  return addComma(number);
+}
+
+function addComma() {
   return number
     ?.toFixed(2)
     .toString()

@@ -31,10 +31,6 @@ if [ -z "$BASE_URL" ]; then
   exit 1
 fi
 
-echo "$API_TOKEN $USER_EMAIL $BASE_URL"
-
-exit
-
 # Function to make API requests and handle errors
 post_api_request() {
     local response

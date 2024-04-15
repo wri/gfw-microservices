@@ -1,8 +1,39 @@
 #!/bin/bash
+# Load environment variables from .env file
+# This file should be in the same directory as the script
+# The .env file should contain the following variables:
+# BASE_API_URL=https://env.globalforestwatch.org/v1/api/
+# USER_EMAIL=john.c.calhoun@examplepetstore.com
+# API_TOKEN=your-api-token
+
+if [ -f .env ]
+then
+  export $(cat .env | xargs)
+fi
+
 # Define API details
-BASE_URL="https://pro-staging.globalforestwatch.org/api/v1/"
-USER_EMAIL="isma.martinez.5@wriconsultant.org"
-API_TOKEN="5D4IwmiO581yscyLxrVfL822S7wfHea93xbC5PIo"
+BASE_URL=$BASE_API_URL
+USER_EMAIL=$USER_EMAIL
+API_TOKEN=$API_TOKEN
+
+if [ -z "$API_TOKEN" ]; then
+  echo "Error: API_TOKEN is not set"
+  exit 1
+fi
+
+if [ -z "$USER_EMAIL" ]; then
+  echo "Error: USER_EMAIL is not set"
+  exit 1
+fi
+
+if [ -z "$BASE_URL" ]; then
+  echo "Error: BASE_URL is not set"
+  exit 1
+fi
+
+echo "$API_TOKEN $USER_EMAIL $BASE_URL"
+
+exit
 
 # Function to make API requests and handle errors
 post_api_request() {

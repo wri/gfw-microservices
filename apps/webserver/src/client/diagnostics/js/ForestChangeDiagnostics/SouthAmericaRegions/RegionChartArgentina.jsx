@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
+import InfoIcon from 'material-ui/svg-icons/action/info';
 import CardContent from '@mui/material/CardContent';
 import DateRangeSilder from './DateRangeSlider';
 import BarChart from '../../common/BarChart';
@@ -217,6 +218,12 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
           <div className="diagnostics-chart-container">
             <div className="diagnostics-chart-container__chart">
               <BarChart data={barChartData} />
+              {selectedOptionId === argentinaTreeCoverLoss.id && (
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <InfoIcon color="gray" />
+                  Bars with lower opacity indicate that the year is approximate.
+                </div>
+              )}
             </div>
 
             <ChartsSelectorArgentina

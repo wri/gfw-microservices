@@ -13,6 +13,9 @@ $mobile-max-width: 1024px;
 $mobile-width: 95%;
 $width-third: calc(100% / 3);
 
+// Dialog base styles
+$min-dialog-height: 600px;
+
 // Defaults
 html {
   height: 100%;

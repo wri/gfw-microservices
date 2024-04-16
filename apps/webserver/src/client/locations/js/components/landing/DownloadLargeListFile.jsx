@@ -6,18 +6,20 @@ import IconTimes from '../../../../common/js/components/icon/IconTimes';
 import IconButton from '../../../../common/js/components/IconButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 
+import './DownloadLargeListFile.scss';
+
 function DownloadLarleListFile({ onCancel }) {
-  const chooser = locationsPage.landing.addLocationChooser;
+  const title = locationsPage.upload.errors.uploadErrorDialogDownloadMessageTitle;
 
   return (
-    <div className="dialog add-location-chooser">
+    <div className="dialog error-file-downloader-container">
       <div className="dialog__header">
-        <h1 className="dialog__title">{chooser.title}</h1>
+        <h1 className="dialog__title">{title}</h1>
         <IconButton icon={<IconTimes />} onClick={() => onCancel()} size="large" />
       </div>
 
-      <div className="add-location-chooser__filedrop_process_end">
-        <div className="add-location-chooser__filedrop_text">
+      <div className="error-file-downloader-container__full_description">
+        <div className="error-file-downloader-container__text">
           <WarningTwoToneIcon
             size={256}
             style={{ color: '#F24E1E', width: '4em', height: '4em', opacity: '0.3' }}

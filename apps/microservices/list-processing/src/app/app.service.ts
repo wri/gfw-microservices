@@ -141,7 +141,7 @@ export class AppService {
       const listRepository = connection.getRepository(List);
       const listFounded = await listRepository.findOne({ where: { id: list_id } });
       if (!listFounded) {
-        throw new NotFoundException();
+        throw new NotFoundException(`List id ${list_id} not found.`);
       }
       const { lockStatus, lockUserId, listTableName, listAnalysisTableName, listName } =
         listFounded;

@@ -188,17 +188,14 @@ describe('ListAnalysisService', () => {
       status: 'Completed',
       errorsDetails: [],
       s3URL: 'https://example.com/results',
-      updateTime : new Date().toLocaleDateString('en-US'),
-      expirationTime : new Date('11/28/2999').toLocaleDateString('en-US'),
+      updateTime: new Date().toLocaleDateString('en-US'),
+      expirationTime: new Date('11/28/2999').toLocaleDateString('en-US'),
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
-        findOne: jest
-            .fn()
-            .mockReturnValue(expectedRes )
-        })
-      })
-    
+        findOne: jest.fn().mockReturnValue(expectedRes),
+      }),
+    });
 
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
       id: 1,
@@ -208,7 +205,7 @@ describe('ListAnalysisService', () => {
       organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
-  
+
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
 
     const resultWithDatesTransformed = {};

@@ -104,7 +104,7 @@ export class ListAnalysisService {
     if (!listAnalysisStatus) {
       throw new NotFoundException('Analysis status not found.');
     }
-    
+
     const analysisStatus: ListAnalysisResponse = {
       listId: listAnalysisStatus.listId.toString(),
       status: this.getEAPIListStatus(listAnalysisStatus),

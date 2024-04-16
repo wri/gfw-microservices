@@ -150,11 +150,26 @@ export class AppService {
         //Lock list
         await this.lockList(organizationDatabase, list_id, organization_user_id);
       }
-      if (lockStatus === null || (lockStatus !== null && lockUserId !== organization_user_id)) {
-        // Reject object
-        // Return message that the list is locked to user
+      // Checking once again
+      const { lockStatus: lockStatus_2, lockUserId: lockUserId_2 } = await listRepository.findOne({
+        where: { id: list_id },
+      });
+      if (
+        lockStatus_2 === null ||
+        (lockStatus_2 !== null && lockUserId_2 !== organization_user_id)
+      ) {
         throw { isLocked: true, lockUserId };
       } else {
+        // Try to delete list's attributes
+        try {
+          await connection.query(`DROP TABLE IF EXISTS [${listTableName}]`);
+          await connection.query(`DROP TABLE IF EXISTS [${listAnalysisTableName}]`);
+        } catch (error) {
+          throw new InternalServerErrorException({
+            message: `Failed to delete attributes from list id ${list_id}`,
+            code: 602,
+          });
+        }
         // Delete list
         try {
           await listRepository.delete({ id: list_id });
@@ -164,17 +179,15 @@ export class AppService {
             code: 601,
           });
         }
-        // Try to delete list's attributes
+        // delete Analyses
         try {
-          await connection.query(`DROP TABLE ${listTableName}`);
-          await connection.query(`DROP TABLE ${listAnalysisTableName}`);
+          await connection.query(`DELETE FROM Analyses WHERE list_id = ${list_id}`);
         } catch (error) {
           throw new InternalServerErrorException({
-            message: `Failed to delete attributes from list id ${list_id}`,
+            message: `Failed to delete analyses ${list_id}`,
             code: 602,
           });
         }
-
         const activityLogRepository = connection.getRepository(ActivityLog);
 
         if (!activityLogRepository) {
@@ -201,7 +214,7 @@ export class AppService {
       }
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw error; // Rethrow NotFoundException
+        throw error;
       } else {
         throw new InternalServerErrorException(error);
       }

@@ -1,4 +1,10 @@
-import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { AlertsGenerateBodySchema, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
@@ -367,7 +373,11 @@ export class ListAnalysisService {
       }
     } catch (error) {
       this.logger.warn(error);
-      throw new NotFoundException();
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(error);
+      }
     }
   }
 }

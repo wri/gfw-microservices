@@ -17,12 +17,13 @@ import { ListService } from '../../lists/lists.service';
 import { Lists } from '../../lists/lists.entity';
 import { S3Service } from '@wri-monorepos/aws';
 import { NotFoundException } from '@nestjs/common';
-
+import axios from 'axios';
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
   let organizationService: OrganizationService;
   let module: TestingModule;
   let clientStoreConnection: ClientStoreConnection;
+  let userService: UserService;
 
   beforeAll(async () => {
     sinon
@@ -61,6 +62,7 @@ describe('ListAnalysisService', () => {
   beforeEach(async () => {
     organizationService = module.get<OrganizationService>(OrganizationService);
     service = module.get<ListAnalysisService>(ListAnalysisService);
+    userService = module.get<UserService>(UserService);
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
   });
 
@@ -100,7 +102,7 @@ describe('ListAnalysisService', () => {
   it('should delete a list', async () => {
     const listId = 123;
     const organizationId = 1;
-
+    const userEmail = 'email@email.com';
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
       id: 1,
       organizationName: 'ABC Corp',
@@ -122,13 +124,22 @@ describe('ListAnalysisService', () => {
         delete: () => true,
         findOne: () => mockList,
       }),
+      options: {
+        database: 'mock_db',
+      },
     });
-    const result = await service.deletList(organizationId, listId);
+
+    userService.findUser = jest
+      .fn()
+      .mockResolvedValue({ id: 1, organization_user_id: 1, userEmail: userEmail });
+    axios.delete = jest.fn().mockResolvedValue({ status: 200 });
+    const result = await service.deletList(organizationId, listId, userEmail);
     expect(result).toEqual(true);
   });
   it('should not find a list to delete', async () => {
     const listId = 123;
     const organizationId = 1;
+    const userEmail = 'email@email.com';
 
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
       id: 1,
@@ -145,11 +156,18 @@ describe('ListAnalysisService', () => {
         findOne: () => null,
       }),
     });
-    await expect(service.deletList(organizationId, listId)).rejects.toThrowError(NotFoundException);
+    userService.findUser = jest
+      .fn()
+      .mockResolvedValue({ id: 1, organization_user_id: 1, userEmail: userEmail });
+    axios.delete = jest.fn().mockResolvedValue({ status: 200 });
+    await expect(service.deletList(organizationId, listId, userEmail)).rejects.toThrowError(
+      NotFoundException
+    );
   });
   it('should throw error on trying to delete a list', async () => {
     const listId = 123;
     const organizationId = 1;
+    const userEmail = 'email@email.com';
 
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
       id: 1,
@@ -159,22 +177,14 @@ describe('ListAnalysisService', () => {
       organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
-    const mockList = {
-      listId: 123,
-      status: 'Completed',
-      errorsDetails: [],
-      resultUrl: 'https://example.com/results',
-      creationDate: new Date('2023-09-28'),
-      expirationDate: new Date('2023-09-28'),
-    };
+
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
-        delete: () => {
-          throw new NotFoundException();
-        },
-        findOne: () => mockList,
+        findOne: () => null,
       }),
     });
-    await expect(service.deletList(organizationId, listId)).rejects.toThrowError(NotFoundException);
+    await expect(service.deletList(organizationId, listId, userEmail)).rejects.toThrowError(
+      NotFoundException
+    );
   });
 });

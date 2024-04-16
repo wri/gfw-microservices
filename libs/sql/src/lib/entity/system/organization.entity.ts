@@ -18,6 +18,9 @@ export class Organization {
   @Column({ name: 'organization_activated_time' })
   organizationActivatedTime: Date;
 
+  @Column({ name: 'renewal_time' })
+  renewalTime: Date;
+
   @Column({ name: 'subscription_status_id' })
   subscriptionStatusId: number;
 

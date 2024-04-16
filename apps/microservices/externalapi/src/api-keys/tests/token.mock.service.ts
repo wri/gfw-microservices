@@ -102,6 +102,22 @@ export class TokenMockRepository {
         tokens: [],
       },
     },
+    {
+      awsId: 'VALID_USER_EMAIL',
+      creatorUserId: 24,
+      organizationId: 778,
+      apiKey: 'V4L1DUS3R',
+      apiGroups: 'FCD',
+      updateDateTime: new Date(),
+      user: {
+        id: 123,
+        user_email: 'user1@example.com',
+        organization_id: 1,
+        organization_user_id: 1,
+        organization_user_status_id: 1,
+        tokens: [],
+      },
+    },
   ];
 
   async find(options?: FindManyOptions<ExternalAPIKey>) {
@@ -123,11 +139,7 @@ export class TokenMockRepository {
   async findOne(options?: FindManyOptions<ExternalAPIKey>): Promise<ExternalAPIKey | undefined> {
     const [{ where }] = Array.isArray(options) ? options : [options];
 
-    return this.data.find(
-      (token) =>
-        token.organizationId === where.organizationId &&
-        (where.awsId ? token.awsId === where.awsId : true)
-    );
+    return this.data.find((token) => Object.keys(where).every((key) => token[key] === where[key]));
   }
 
   async save(token: ExternalAPIKey): Promise<ExternalAPIKey> {
@@ -173,14 +185,23 @@ export class UserMockRepository {
       organization_user_status_id: 1,
       tokens: [],
     },
+    {
+      id: 24,
+      user_email: 'user1@valid.com',
+      organization_id: 778,
+      organization_user_id: 7,
+      organization_user_status_id: 1,
+      tokens: [],
+    },
   ];
 
   async findOne(options?: FindManyOptions<UserRoutes>): Promise<UserRoutes | undefined> {
     const [{ where }] = Array.isArray(options) ? options : [options];
 
-    return this.data.find(
-      (user) =>
-        user.id === where.organization_user_id && user.organization_id === where.organization_id
+    return this.data.find((user) =>
+      Object.keys(where).every(
+        (key) => user[key == 'organization_user_id' ? 'id' : key] === where[key]
+      )
     );
   }
 }

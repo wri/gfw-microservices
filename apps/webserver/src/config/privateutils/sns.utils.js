@@ -1,15 +1,16 @@
 /** ******************************************************************
-*   @name: sns.utils.js
-*   @description : A utility file to allow calling various
-* functionality from AWS SDK to create and publish SNS
-*
-*   @function {publish}
-
-********************************************************************/
-const AWS = require('aws-sdk');
+ *   @name: sns.utils.js
+ *   @description : A utility file to allow calling various
+ * functionality from AWS SDK to create and publish SNS
+ *
+ *   @function {publish}
+ * Code example to publish a message to SNS topic from "Developer Guide for SDK Version 3"
+ * - https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/javascript_sns_code_examples.html - Publish a Message to an Amazon SNS Topic
+ ********************************************************************/
+const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
 const config = require('../config');
 
-const SNS = new AWS.SNS({ apiVersion: '2010-03-31 ' });
+const snsClient = new SNSClient();
 
 const factory = (factoryKey, content) => {
   let subject, message;
@@ -31,20 +32,23 @@ const factory = (factoryKey, content) => {
 const publish = (factoryKey, content) => {
   // Generate the appropriate subject and message for SNS
   const { subject, message } = factory(factoryKey, content);
+
   // Parameters for SNS publish API
   const params = {
     Message: message,
     Subject: subject,
     TopicArn: config.AWSVars.sns.topicARN,
   };
+
   // API call
-  SNS.publish(params, (err, data) => {
-    if (err) {
+  snsClient
+    .send(new PublishCommand(params))
+    .then((response) => {
+      console.log('SNS Message published', response);
+    })
+    .catch((err) => {
       console.log('Error: could not publish', err);
-    } else {
-      console.log('Message published');
-    }
-  });
+    });
 };
 
 module.exports = {

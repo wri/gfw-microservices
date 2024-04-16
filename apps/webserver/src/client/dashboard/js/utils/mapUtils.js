@@ -2,10 +2,10 @@ import React from 'react';
 import { render } from 'react-dom';
 import _uniq from 'lodash/uniq';
 import isEmpty from 'lodash/isEmpty';
-import { scaleLinear } from 'd3-scale';
-import Graphic from 'esri/Graphic';
-import Point from 'esri/geometry/Point';
-import FeatureLayer from 'esri/layers/FeatureLayer';
+import Graphic from '@arcgis/core/Graphic';
+import Point from '@arcgis/core/geometry/Point';
+import FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 
 import {
   incrementZoomLevel,
@@ -26,7 +26,6 @@ import {
 } from './dashboard-date.utils';
 
 function initializeMap(view) {
-  // Save view to redux - can be used in other react components if needed
   store.dispatch(saveView(view));
   // Disable certain navigation as detailed in requirements
   view.on('double-click', (evt) => {
@@ -44,10 +43,10 @@ function initializeMap(view) {
       const { zoomLevel } = state;
       const { results } = response;
       const dashboardGraphic = results.find((layer) =>
-        layer.graphic.attributes.hasOwnProperty('numberOfAlerts')
+        Object.hasOwn(layer.graphic.attributes, 'numberOfAlerts')
       );
 
-      if (dashboardGraphic.graphic.attributes.numberOfLocations > 0 && zoomLevel < 3) {
+      if (dashboardGraphic?.graphic?.attributes?.numberOfLocations > 0 && zoomLevel < 3) {
         const selectedAdmin = dashboardGraphic.graphic.attributes[`gadmid_${zoomLevel}`];
         const locationsWithAlert = getAlertsTotal(selectedAdmin, zoomLevel);
         store.dispatch(setZoomLevelTotal(locationsWithAlert));
@@ -58,18 +57,17 @@ function initializeMap(view) {
           event_label:
             'User click on a circle on the Dashboard to zoom the map in to the next level',
         });
-      } else {
-        view.popup.close();
       }
+      view.popup.close();
     });
   });
 
   view.on('pointer-move', (evt) => {
-    // Perform hit text at the screenpoint
+    // Perform hit test at the pointer
     view.hitTest({ x: evt.x, y: evt.y }).then((response) => {
       const { results } = response;
       const dashboardGraphic = results.find((layer) =>
-        layer.graphic.attributes.hasOwnProperty('numberOfAlerts')
+        Object.hasOwn(layer.graphic.attributes, 'numberOfAlerts')
       );
       if (dashboardGraphic) {
         handleFeatureHover(view, dashboardGraphic);
@@ -86,6 +84,7 @@ function initializeMap(view) {
  * @param {Object} graphic
  */
 function handleFeatureHover(view, graphic) {
+  view.popup.viewModel.includeDefaultActions = false; // remove 'Zoom To' icon
   view.popup.open({
     location: graphic.mapPoint,
     content: createPopup(graphic.graphic),
@@ -93,17 +92,11 @@ function handleFeatureHover(view, graphic) {
 }
 
 function returnNameBasedOnZoom(zoomLevel, attributes) {
-  let locationName = '';
-  if (zoomLevel === 0) {
-    locationName = attributes.Country;
-  } else if (zoomLevel === 1) {
-    locationName = attributes.State;
-  } else if (zoomLevel === 2) {
-    locationName = attributes['Sub State'];
-  } else {
-    locationName = attributes.location_name;
+  const adminNames = ['Country', 'State', 'SubState'];
+  if (zoomLevel < 0 || zoomLevel > adminNames.length - 1) {
+    return attributes.location_name;
   }
-  return locationName;
+  return attributes[adminNames[zoomLevel]];
 }
 
 /**
@@ -114,7 +107,7 @@ function returnNameBasedOnZoom(zoomLevel, attributes) {
 function createPopup(graphic) {
   const state = store.getState();
   const { attributes } = graphic;
-  const { zoomLevel, rawData } = state;
+  const { zoomLevel } = state;
 
   const content = (
     <div className="popup__content">
@@ -150,33 +143,20 @@ function createPopup(graphic) {
 
 function handleBaseLayer(map, zoomLevel) {
   const selectedSublayer = dictionary.zoomLevel_basemapLayerId[zoomLevel];
-  // const layer = map.findLayerById('BASEMAP');
   map.basemap.baseLayers.items[0].sublayers.items.forEach((sublayer) => {
     sublayer.visible = sublayer.id === selectedSublayer;
   });
 }
 
-function getCentroidGeometries(gadmids, zoomLevel, data) {
-  const lat_long__mapping = {
-    0: {
-      lat: 'gadmid_0_lat',
-      long: 'gadmid_0_lon',
-    },
-    1: {
-      lat: 'gadmid_1_lat',
-      long: 'gadmid_1_lon',
-    },
-    2: {
-      lat: 'gadmid_2_lat',
-      long: 'gadmid_2_lon',
-    },
-    3: {
-      lat: 'location_lat',
-      long: 'location_lon',
-    },
-  };
+function getCentroidGeometries(zoomLevel, data) {
+  const lat_long__mapping = [
+    { lat: 'gadmid_0_lat', long: 'gadmid_0_lon' },
+    { lat: 'gadmid_1_lat', long: 'gadmid_1_lon' },
+    { lat: 'gadmid_2_lat', long: 'gadmid_2_lon' },
+    { lat: 'location_lat', long: 'location_lon' },
+  ];
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const features = Object.values(data)
       .flat()
       .map((f) => {
@@ -189,79 +169,20 @@ function getCentroidGeometries(gadmids, zoomLevel, data) {
         };
       });
     resolve(features);
-    // Query for centroids if zoom level is below 3
-    // if (zoomLevel < 3) {
-    // query all gadmids and return features
-    // query.where = `gadmid IN (${needToQuery.map(gadmid => `'${gadmid}'`).join(',')})`;
-
-    // each feature should represent esri feature { attributes: gadmid, geometry: geom? > I guess this could be a Point }
-    // const allFeatures = [...features];
-    // const state = store.getState();
-    // const { geometryCache, selectedList } = state;
-    // const { list_name } = selectedList;
-    // // Determine what needs to be queried
-    // const needToQuery = gadmids.filter(gadmid => !Object.keys(geometryCache).includes(gadmid));
-    // // If nothing needs to be queried - everything is in cache
-    // if (isEmpty(needToQuery)) {
-    //     resolve([ ...Object.values(geometryCache).filter(feat => gadmids.includes(feat.attributes.gadmid)) ]);
-    // } else {
-    //     const url = 'https://gis-gfw.wri.org/arcgis/rest/services/admin/MapServer/7';
-    //     const task = new QueryTask({ url });
-    //     const query = new Query();
-    //     query.returnGeometry = true;
-    //     query.outFields = ['*'];
-    //     query.where = `gadmid IN (${needToQuery.map(gadmid => `'${gadmid}'`).join(',')})`;
-    //     task.execute(query).then(response => {
-    //         if (response.hasOwnProperty('features') && response.features.length) {
-    //             const { features } = response;
-    //             // Retrieve geometries from cache
-    //             const cachedGeometries = Object.values(geometryCache).filter(feat => gadmids.includes(feat.attributes.gadmid));
-    //             const allFeatures = [...cachedGeometries, ...features];
-    //             // Save the queried features to cache
-    //             const cache = {};
-    //             features.forEach(feature => {
-    //                 cache[feature.attributes.gadmid] = feature;
-    //             });
-    //             store.dispatch(addGeometryCache(cache));
-    //             resolve(allFeatures);
-    //         } else {
-    //             store.dispatch(toggleDialog({
-    //                 title: 'Dashboard Analysis Failed',
-    //                 body: 'Geojson contain no features to retrieve centroids.'
-    //             }));
-    //             reject(new Error('No features'));
-    //         }
-    //     }).catch(err => {
-    //         store.dispatch(toggleDialog({
-    //             title: `${list_name} alerts failed to load`,
-    //             body: 'Please select the list to try loading alerts again. If alerts continue to fail, email <a href="mailto:gfwprosupport@wri.org">GFWPROsupport@wri.org</a> for assistance.'
-    //         }));
-    //         reject(err);
-    //     });
-    // }
-    // } else {
-    // Object.values(data).forEach(subArray => {
-    //   const [feature] = subArray;
-    //   const esriJson = geojsonUtil.geojsonToArcGIS(feature);
-    //   const esriGeometry = new Polygon({
-    //     rings: esriJson.geometry.rings,
-
-    //     spatialReference: {
-    //       wkid: 4326
-    //     }
-    //   });
-
-    //   const esriFeature = {
-    //     attributes: esriJson.attributes,
-    //     geometry: esriGeometry.centroid
-    //   };
-
-    //   featuresArray.push(esriFeature);
-    // });
-
-    // resolve(featuresArray);
-    // }
   });
+}
+
+function getPercentageOfLocations(totalPopulation, numberOfLocations) {
+  return totalPopulation ? (numberOfLocations / totalPopulation) * 100 : 100;
+}
+
+function getTreeCoverMetrics(originalTreeCoverArea, numberOfAlerts) {
+  const treeCoverArea = originalTreeCoverArea === 0 ? numberOfAlerts : originalTreeCoverArea;
+  const treeDensity = numberOfAlerts / treeCoverArea;
+  return {
+    treeCoverArea,
+    treeDensity,
+  };
 }
 
 function mergeData(
@@ -280,16 +201,14 @@ function mergeData(
   const selectedAdminProperty = dictionary.zoomLevel_gadmidGroupBy[zoomLevel];
   const timeframeProperty = getTimeframeProperty(selectedAlert, selectedTimeframe);
 
-  // --WIP TODO rewrite, this needs major refactoring, right now we check for alert type and then the time fram
+  // --WIP TODO rewrite, this needs major refactoring, right now we check for alert type and then the time frame
   // and we apply different filters based on different timeframes, we need solution that is re-usable and less verbose
-  const filteredFeatures = featuresArray.map((feature) => {
+  return featuresArray.map((feature) => {
     // 1. calculate number of locations within a given admin unit
     // data is and object that has features grouped by admin unit depending on zoom level it can be IDN.[1].[15] (e.g "IDN": [...features], "LKA": [...features])
     const activeAdminId = feature.attributes[selectedAdminProperty];
     const adminUnitData = data[feature.attributes[selectedAdminProperty]];
-    const hasDataForAlert = adminUnitData.some(
-      (f) => f.properties[selectedCoverageProperty] === true
-    );
+    const hasAlerts = adminUnitData.some((f) => f.properties[selectedCoverageProperty] === true);
 
     const numberOfLocations = rawData.geojson.features.reduce((acc, val) => {
       if (val.properties[selectedAdminProperty] === activeAdminId) {
@@ -302,13 +221,11 @@ function mergeData(
         if (ALERTS && !NOALERTS) {
           // With Alerts
           const timeFrameCheck = checkForAlerts(val, selectedTimeframe, timeframeProperty);
-
           return val.properties[selectedCoverageProperty] && timeFrameCheck ? acc + 1 : acc;
         }
         if (!ALERTS && NOALERTS) {
           // With NO Alerts
           const timeFrameCheck = checkForNoAlerts(val, selectedTimeframe, timeframeProperty);
-
           return val.properties[selectedCoverageProperty] && timeFrameCheck ? acc + 1 : acc;
         }
       } else {
@@ -319,98 +236,129 @@ function mergeData(
     // 2. calculate number of alerts within a given admin unit
     const numberOfAlerts = getNumberOfAlerts(adminUnitData, selectedTimeframe, timeframeProperty);
 
-    const percentageOfLocations = (numberOfLocations / zoomLevelTotal) * 100;
+    const percentageOfLocations = getPercentageOfLocations(zoomLevelTotal, numberOfLocations);
     const treeCoverArea = adminUnitData.reduce(
       (totalTree, f) => totalTree + Number(f.properties.umd),
       0
     );
+    const treeCoverMetrics = getTreeCoverMetrics(treeCoverArea, numberOfAlerts);
 
     return {
       ...feature,
       attributes: {
         ...feature.attributes,
-        hasAlerts: hasDataForAlert,
-        numberOfLocations,
         percentageOfLocations,
         numberOfAlerts,
-        treeCoverArea,
-        treeDensity: numberOfAlerts / treeCoverArea,
+        numberOfLocations,
+        ...treeCoverMetrics,
+        hasAlerts,
       },
     };
   });
-
-  return filteredFeatures;
 }
 
 function summarizeFeatures(featuresArray, selectedAlert, selectedTimeframe) {
   const timeframeAttributeField = getTimeframeProperty(selectedAlert, selectedTimeframe);
 
-  const summarizedFeaturesArray = featuresArray.map((feature) => {
-    const treeCoverArea = Number(feature.attributes.umd);
+  return featuresArray.map((feature) => {
     const selectedTimeframeValues = feature.attributes[timeframeAttributeField];
     const numberOfAlerts = selectedTimeframeValues.reduce((total, curent) => {
       return TIMEFRAME_RANGE[selectedTimeframe].includes(curent.day) ? total + curent.count : total;
     }, 0);
 
+    const treeCoverArea = Number(feature.attributes.umd);
+    const treeCoverMetrics = getTreeCoverMetrics(treeCoverArea, numberOfAlerts);
+
     const numberOfLocations = 1;
     const selectedCoverageProperty = dictionary.alertType_featureCoverageProperty[selectedAlert];
     const totalLocations = featuresArray.length;
-    const hasDataForAlert = feature.attributes[selectedCoverageProperty];
-    feature.attributes.percentageOfLocations = (numberOfLocations / totalLocations) * 100;
-    feature.attributes.numberOfAlerts = numberOfAlerts;
-    feature.attributes.numberOfLocations = numberOfLocations;
-    feature.attributes.treeCoverArea = treeCoverArea;
-    feature.attributes.treeDensity = numberOfAlerts / treeCoverArea;
-    feature.attributes.hasAlerts = hasDataForAlert;
-    return feature;
-  });
+    const hasAlerts = feature.attributes[selectedCoverageProperty];
+    const percentageOfLocations = getPercentageOfLocations(totalLocations, numberOfLocations);
 
-  return summarizedFeaturesArray;
+    return {
+      ...feature,
+      attributes: {
+        ...feature.attributes,
+        percentageOfLocations,
+        numberOfAlerts,
+        numberOfLocations,
+        ...treeCoverMetrics,
+        hasAlerts,
+      },
+    };
+  });
 }
 
 /**
  * Get Symbol size
- * @param {number} percentageOfLocations - Percentage of Locations
- * @returns {number} - Size of Symbol
+ * @returns {array} - ArcGIS class-break infos
  */
-function getSymbolSize(percentageOfLocations) {
-  if (percentageOfLocations > 75) {
-    return 50;
-  }
-  if (percentageOfLocations > 50) {
-    return 40;
-  }
-  if (percentageOfLocations > 25) {
-    return 30;
-  }
-  return 20;
+function getSymbolSize() {
+  const markerWithSize = (size) => ({
+    type: 'simple-marker',
+    size,
+    outline: {
+      width: 0,
+      color: [0, 0, 0, 0],
+    },
+  });
+
+  return [
+    {
+      minValue: 0,
+      maxValue: 25,
+      symbol: markerWithSize('20px'),
+    },
+    {
+      minValue: 25.09,
+      maxValue: 50,
+      symbol: markerWithSize('40px'),
+    },
+    {
+      minValue: 50.09,
+      maxValue: 75,
+      symbol: markerWithSize('60px'),
+    },
+    {
+      minValue: 75.09,
+      maxValue: 100,
+      symbol: markerWithSize('80px'),
+    },
+  ];
 }
 
 /**
  * Get symbol color
- * @param {Object} feature - Feature object
- * @param {number} maxDensity - Features Density Max value
- * @returns {string} - Color RGBA value
+ * features with values between 0.01 - 1.0 will be assigned
+ * a color on a ramp between green and orange proportional
+ * to where the value falls between 0.001 and 1.0.
+ *
+ * features with no alerts will have treeDensity of -1 and will appear gray
+ * @returns {object} - ArcGIS visual variable configuration
  */
-function getSymbolColor(feature, maxDensity) {
-  const { treeDensity, hasAlerts } = feature.attributes;
-  const orange = 'rgba(255, 165, 0, 0.75)';
-  const green = 'rgba(0, 128, 0, 0.75)';
-  const gray = 'rgba(153, 153, 153, 0.75)';
-
-  // Determine color
-  if (hasAlerts) {
-    if (isNaN(treeDensity)) {
-      return green;
-    }
-    if (!isFinite(treeDensity)) {
-      return orange;
-    }
-    // Create scale
-    const scale = scaleLinear().domain([0, maxDensity]).range([green, orange]);
-    return scale(treeDensity);
-  }
-  return gray;
+function getSymbolColor() {
+  return {
+    type: 'color', // indicates this is a color visual variable
+    field: 'treeDensity',
+    normalizationField: 'maxTreeDensity',
+    stops: [
+      {
+        value: -1.0, // features where hasAlerts == false
+        opacity: '0.75',
+        color: '#999999', // will be assigned this color (gray)
+      },
+      {
+        value: 0.0, // features where < 1% of tree density
+        opacity: '0.75',
+        color: '#008000', // will be assigned this color (green)
+      },
+      {
+        value: 1.0, // features where 100% tree density
+        opacity: '0.75',
+        color: '#FFA500', // will be assigned this color (orange)
+      },
+    ],
+  };
 }
 
 /**
@@ -436,36 +384,108 @@ function getAlertsTotal(selectedAdmin = '', zoomLevel = -1) {
   return totalLocations.length;
 }
 
-/**
- * Create graphics for feature
- * @param {Array} features - List of features
- * @param {Object} locationFilters - Location Filters (ALERTS, FLAGGED, NOALERTS)
- * @param {number} zoomLevel - Zoom level
- * @returns {Array} - List of graphics
- */
-function createGraphics(features, locationFilters, zoomLevel) {
+function findMaxTreeDensity(features) {
   const densityArray = features
     .map((feature) => feature.attributes.treeDensity)
     .filter((density) => !isNaN(density));
-  const maxDensity = Math.max(...densityArray);
+  const maxTreeDensity = Math.max(...densityArray);
+  return maxTreeDensity && maxTreeDensity !== -Infinity ? maxTreeDensity : 1;
+}
+
+/**
+ * Create graphics for feature
+ * @param {Array} features - List of features
+ * @returns {Array} - List of graphics
+ */
+function createGraphics(features) {
+  const maxTreeDensity = findMaxTreeDensity(features);
 
   return features.map((feature) => {
-    const { percentageOfLocations } = feature.attributes;
-    const size = zoomLevel < 3 ? getSymbolSize(percentageOfLocations) : 20;
     return new Graphic({
-      attributes: feature.attributes,
-      geometry: feature.geometry,
-      symbol: {
-        type: 'simple-marker',
-        color: getSymbolColor(feature, maxDensity),
-        size,
-        outline: {
-          width: 0,
-          color: [0, 0, 0, 0],
-        },
+      attributes: {
+        ...feature.attributes,
+        SubState: feature.attributes['Sub State'],
+        treeDensity: feature.attributes.hasAlerts ? feature.attributes.treeDensity : -1,
+        maxTreeDensity,
       },
+      geometry: feature.geometry,
     });
   });
+}
+
+function getFields() {
+  return [
+    {
+      name: 'ObjectID',
+      alias: 'ObjectID',
+      type: 'oid',
+    },
+    {
+      name: 'type',
+      alias: 'Type',
+      type: 'string',
+    },
+    {
+      name: 'numberOfAlerts',
+      alias: 'numberOfAlerts',
+      type: 'integer',
+    },
+    {
+      name: 'treeDensity',
+      alias: 'treeDensity',
+      type: 'double',
+    },
+    {
+      name: 'maxTreeDensity',
+      alias: 'maxTreeDensity',
+      type: 'double',
+    },
+    {
+      name: 'numberOfLocations',
+      alias: 'numberOfLocations',
+      type: 'integer',
+    },
+    {
+      name: 'percentageOfLocations',
+      alias: 'percentageOfLocations',
+      type: 'double',
+    },
+    {
+      name: 'gadmid_0',
+      alias: 'gadmid_0',
+      type: 'string',
+    },
+    {
+      name: 'gadmid_1',
+      alias: 'gadmid_1',
+      type: 'string',
+    },
+    {
+      name: 'gadmid_2',
+      alias: 'gadmid_2',
+      type: 'string',
+    },
+    {
+      name: 'Country',
+      alias: 'Country',
+      type: 'string',
+    },
+    {
+      name: 'State',
+      alias: 'State',
+      type: 'string',
+    },
+    {
+      name: 'SubState',
+      alias: 'SubState',
+      type: 'string',
+    },
+    {
+      name: 'location_name',
+      alias: 'location_name',
+      type: 'string',
+    },
+  ];
 }
 
 /**
@@ -475,35 +495,27 @@ function createGraphics(features, locationFilters, zoomLevel) {
 function createLayer(graphics) {
   return new FeatureLayer({
     id: 'DASHBOARDLAYER',
-    fields: [
-      {
-        name: 'ObjectID',
-        alias: 'ObjectID',
-        type: 'oid',
-      },
-      {
-        name: 'type',
-        alias: 'Type',
-        type: 'string',
-      },
-    ],
+    fields: getFields(),
+    outFields: ['*'],
     objectIdField: 'ObjectID',
     geometryType: 'point',
-    spatialReference: { wkid: 4326 },
+    spatialReference: SpatialReference.WGS84,
     source: graphics,
+    renderer: {
+      type: 'class-breaks',
+      field: 'percentageOfLocations',
+      defaultSymbol: {
+        type: 'simple-marker', // autocasts as new SimpleFillSymbol()
+        color: '#999999',
+        outline: {
+          width: 0,
+          color: [0, 0, 0, 0],
+        },
+      },
+      classBreakInfos: getSymbolSize(),
+      visualVariables: [getSymbolColor()],
+    },
   });
-}
-
-function parseGADMId(id, zoomLevel) {
-  const adminIDs = id.split('.');
-  switch (zoomLevel) {
-    case 0:
-      return adminIDs[0];
-    case 1:
-      return [adminIDs[0], adminIDs[1]].join('.');
-    default:
-      return id;
-  }
 }
 
 function updateLayer(
@@ -516,8 +528,6 @@ function updateLayer(
   zoomLevel,
   rawData
 ) {
-  // Clone for mutation sake
-  // const clonedData = cloneDeep(data);
   const clonedData = data;
   // If no features, delete the key/value
   if (zoomLevel < 3) {
@@ -535,8 +545,7 @@ function updateLayer(
       map.remove(oldLayer);
     }
   } else {
-    const processedGADMIds = Object.keys(clonedData);
-    getCentroidGeometries(processedGADMIds, zoomLevel, clonedData)
+    getCentroidGeometries(zoomLevel, clonedData)
       .then((featuresArray) => {
         // depending on the zoom level we either merge data? or summarize features?
         let features;
@@ -560,7 +569,7 @@ function updateLayer(
 
         handleBaseLayer(map, zoomLevel);
 
-        const graphics = createGraphics(features, locationFilters, zoomLevel);
+        const graphics = createGraphics(features);
         const layer = createLayer(graphics);
         map.add(layer);
 
@@ -625,7 +634,6 @@ module.exports = {
   getAlertsTotal,
   updateLayer,
   getLayerGraphicsJSON,
-  parseGADMId,
   getExtent,
   getMapExtent,
 };

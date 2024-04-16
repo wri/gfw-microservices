@@ -1,4 +1,4 @@
-export * from './getAccountActivatedTime';
+export * from './getAccountRenewalTime';
 export * from './getAccountAnalysisLimits';
 export * from './getAccountAnalysisUsage';
 export * from './getAccountUsersAnalysisUsage';

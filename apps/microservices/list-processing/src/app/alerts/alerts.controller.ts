@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UsePipes } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { z } from 'zod';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { DatabaseQueryParam, PaginatedQueryRequest } from '../../models';
@@ -24,14 +24,15 @@ export class AlertsController {
   constructor(private readonly alertsService: AlertsService) {}
 
   @Get(':listID/dashboardData')
-  @UsePipes(new ZodValidationPipe(DatabaseQuerySchema))
-  async getDashboardData(@Param('listID') listID: number, @Query() query: DatabaseQueryParam) {
+  async getDashboardData(
+    @Param('listID') listID: number,
+    @Query(new ZodValidationPipe(DatabaseQuerySchema)) query: DatabaseQueryParam
+  ) {
     const { clientDatabase } = query;
     return await this.alertsService.getDashboardData(listID, clientDatabase);
   }
 
   @Get(':listID/GFWListDashboardData')
-  @UsePipes(new ZodValidationPipe(DatabaseQuerySchema))
   async getGFWListDashboardData(@Param('listID') listID: number) {
     return await this.alertsService.getGFWListDashboardData(listID);
   }
@@ -42,8 +43,10 @@ export class AlertsController {
   }
 
   @Get(':listID/dashboardDataTimestamp')
-  @UsePipes(new ZodValidationPipe(DatabaseQuerySchema))
-  getDashboardTimestamp(@Param('listID') listID: number, @Query() query: DatabaseQueryParam) {
+  getDashboardTimestamp(
+    @Param('listID') listID: number,
+    @Query(new ZodValidationPipe(DatabaseQuerySchema)) query: DatabaseQueryParam
+  ) {
     const { clientDatabase } = query;
     return this.alertsService.getDashboardTimestamp(listID, clientDatabase);
   }
@@ -54,27 +57,27 @@ export class AlertsController {
   }
 
   @Get(':listID/dashboardGFWDataPaginated')
-  @UsePipes(new ZodValidationPipe(GFWPaginatedQuerySchema))
   async getGFWDashboardDataPaginated(
     @Param('listID') listID: number,
-    @Query() query: PaginatedQueryRequest
+    @Query(new ZodValidationPipe(GFWPaginatedQuerySchema)) query: PaginatedQueryRequest
   ) {
     const { pageNumber, rowsPerPage } = query;
     return await this.alertsService.getGFWDashboardDataPaginated(listID, pageNumber, rowsPerPage);
   }
 
   @Get(':listID/countDashboardData')
-  @UsePipes(new ZodValidationPipe(DatabaseQuerySchema))
-  async countDashboardData(@Param('listID') listID: number, @Query() query: DatabaseQueryParam) {
+  async countDashboardData(
+    @Param('listID') listID: number,
+    @Query(new ZodValidationPipe(DatabaseQuerySchema)) query: DatabaseQueryParam
+  ) {
     const { clientDatabase } = query;
     return await this.alertsService.countDashboardData(listID, clientDatabase);
   }
 
   @Get(':listID/dashboardDataPaginated')
-  @UsePipes(new ZodValidationPipe(PaginatedQuerySchema))
   async getDashboardDataPaginated(
     @Param('listID') listID: number,
-    @Query() query: PaginatedQueryRequest
+    @Query(new ZodValidationPipe(PaginatedQuerySchema)) query: PaginatedQueryRequest
   ) {
     const { clientDatabase, pageNumber, rowsPerPage } = query;
     return await this.alertsService.getDashboardDataPaginated(

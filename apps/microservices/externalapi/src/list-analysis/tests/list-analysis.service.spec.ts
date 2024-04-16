@@ -66,39 +66,6 @@ describe('ListAnalysisService', () => {
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
   });
 
-  it('should get analysis status', async () => {
-    const listId = 123;
-    const organizationId = 1;
-    const expectedResult = {
-      listId: listId.toString(),
-      status: 'Completed',
-      errorsDetails: [],
-      resultUrl: 'https://example.com/results',
-      creationDate: new Date().toLocaleDateString('en-US'),
-      expirationDate: new Date('11/28/2999').toLocaleDateString('en-US'),
-    };
-
-    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
-      id: 1,
-      organizationName: 'ABC Corp',
-      organizationDb: ':memory:',
-      organizationStatusId: 1,
-      organizationActivatedTime: new Date(),
-      subscriptionStatusId: 1,
-    });
-
-    const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
-
-    const resultWithDatesTransformed = {};
-    for (const prop in result) {
-      const value = result[prop];
-      resultWithDatesTransformed[prop] =
-        value instanceof Date ? value.toLocaleDateString('en-US') : value;
-    }
-
-    expect(resultWithDatesTransformed).toEqual(expectedResult);
-  });
-
   it('should delete a list', async () => {
     const listId = 123;
     const organizationId = 1;
@@ -186,5 +153,71 @@ describe('ListAnalysisService', () => {
     await expect(service.deletList(organizationId, listId, userEmail)).rejects.toThrowError(
       NotFoundException
     );
+  });
+  it('should create a prepare upload list', async () => {
+    const organizationId = 1;
+    const organization_user_id = 1;
+    const fileType = 'csv';
+    const expectedResult = {
+      organizationId: organizationId.toString(),
+      organization_user_id: organization_user_id.toString(),
+      fileType,
+    };
+    service.prepareUpload = jest.fn().mockResolvedValue(expectedResult);
+    const result = await service.prepareUpload({
+      organizationId,
+      organization_user_id,
+      fileType,
+    });
+
+    expect(result).toEqual(expectedResult);
+  });
+  it('should get analysis status', async () => {
+    const listId = 123;
+    const organizationId = 1;
+    const expectedResult = {
+      listId: listId.toString(),
+      status: 'Invalid Status',
+      errorsDetails: [],
+      resultUrl: 'https://example.com/results',
+      creationDate: new Date().toLocaleDateString('en-US'),
+      expirationDate: new Date('11/28/2999').toLocaleDateString('en-US'),
+    };
+    const expectedRes = {
+      listId: listId.toString(),
+      status: 'Completed',
+      errorsDetails: [],
+      s3URL: 'https://example.com/results',
+      updateTime : new Date().toLocaleDateString('en-US'),
+      expirationTime : new Date('11/28/2999').toLocaleDateString('en-US'),
+    };
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: jest
+            .fn()
+            .mockReturnValue(expectedRes )
+        })
+      })
+    
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+  
+    const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
+
+    const resultWithDatesTransformed = {};
+    for (const prop in result) {
+      const value = result[prop];
+      resultWithDatesTransformed[prop] =
+        value instanceof Date ? value.toLocaleDateString('en-US') : value;
+    }
+
+    expect(resultWithDatesTransformed).toEqual(expectedResult);
   });
 });

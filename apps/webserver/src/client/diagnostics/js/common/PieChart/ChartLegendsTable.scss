@@ -23,4 +23,12 @@
     margin-right: 12px;
     display: inline-block;
   }
+  &__label {
+    padding-left: 30px;
+    label {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+  }
 }

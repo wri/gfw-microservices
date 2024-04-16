@@ -207,7 +207,7 @@ export class AppService {
         } catch (error) {
           // If some problem occurs, return message that the list was not deleted to user
           throw new InternalServerErrorException({
-            message: `Failed to delete locations from list id ${list_id}`,
+            message: `Failed to save logs from list id ${list_id}`,
             code: 603,
           });
         }

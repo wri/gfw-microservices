@@ -45,7 +45,6 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
   };
 
   function handleDateRangeChange(newDateRange) {
-    // Update the date range
     setDateRange(newDateRange);
 
     // Call getTreeCoverLossArgOtbnYearlyData with the new date range
@@ -62,7 +61,6 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       chartsConfiguration[0].chartLabels[2].checked
     );
 
-    // Update the state with the new data
     updateLoss('otbnArgentina', totalLossByCategory, otbnTotalLoss);
     setOtbnBarChartData(newOtbnBarChartData);
   }
@@ -97,11 +95,9 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
         updatedOptions[0].chartLabels[2].checked
       );
 
-      // Update the state with the new data
       updateLoss('otbnArgentina', totalLossByCategory, otbnTotalLoss);
       setOtbnBarChartData(newOtbnBarChartData);
 
-      // Return the updated options
       return updatedOptions;
     });
   };
@@ -153,45 +149,38 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
     });
   };
 
-  const hansenTreeCoverLoss = argentinaPieChartsData.country?.data?.tree_cover_loss;
+  const hansenTreeCoverLoss = argentinaPieChartsData.country?.tree_cover_loss;
 
   const filteredHansenTreeCoverLoss = hansenTreeCoverLoss
     ? [
         {
           id: 'tree cover loss',
           data: filterDataByYearRange(
-            Object.entries(hansenTreeCoverLoss)?.map(([year, value]) => ({
-              x: parseInt(year),
+            hansenTreeCoverLoss.map(({ year, value }) => ({
+              x: year,
               y: value,
             })),
             dateRange.startYear,
             dateRange.endYear
           ),
-          color: 'rgb(238,37,33)',
+          color: 'rgb(239,102,154)',
         },
       ]
     : [];
 
   const country_specific_deforestation =
-    argentinaPieChartsData.country?.data?.country_specific_deforestation;
+    argentinaPieChartsData.country?.country_specific_deforestation;
+
   const filteredCountrySpecificDeforestation = country_specific_deforestation
     ? [
         {
           id: 'argentina deforestation',
           data: filterDataByYearRange(
-            Object.entries(country_specific_deforestation)?.map(([year, value]) => {
-              // Check if the key ends with "approx"
-              const isApprox = year.endsWith('approx');
-              // Determine color based on the condition
-              const color = isApprox ? 'pink' : 'blue';
-              // Remove "approx" from the year for display
-              const displayYear = isApprox ? year.slice(0, -6) : year;
-              return {
-                x: parseInt(displayYear),
-                y: value,
-                color,
-              };
-            }),
+            country_specific_deforestation.map(({ year, value, approximateValue }) => ({
+              x: year,
+              y: value,
+              color: approximateValue ? 'rgba(34,153,102,0.5)' : 'rgba(34,153,102,1)',
+            })),
             dateRange.startYear,
             dateRange.endYear
           ),

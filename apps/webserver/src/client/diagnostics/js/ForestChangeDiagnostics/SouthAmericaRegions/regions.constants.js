@@ -40,14 +40,14 @@ export const chartDatasetConfigs = {
       {
         id: 'country_specific_deforestation',
         legend: 'argentina deforestation',
-        color: '#ff00ff',
+        color: 'rgba(34,153,102,1)',
         checked: false,
         totalLossByCategory: null,
       },
       {
         id: 'hansenTreeCoverLoss',
         legend: 'tree cover loss',
-        color: '#00ffff',
+        color: 'rgb(239,102,154)',
         checked: true,
         totalLossByCategory: null,
       },

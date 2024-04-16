@@ -5,7 +5,6 @@ function ChartsSelectorArgentina({
   selectedOptionId,
   onOptionChange,
   chartsConfiguration,
-
   updateCheckedLabels,
 }) {
   return (
@@ -42,7 +41,7 @@ function ChartsSelectorArgentina({
               {selectedOptionId === option.id &&
                 option?.chartLabels.map(({ id, legend, color, checked, totalLossByCategory }) => (
                   <tr key={id}>
-                    <td style={{ paddingLeft: '30px' }}>
+                    <td className="chart-legends-table__label">
                       <input
                         id={id}
                         type="checkbox"
@@ -52,16 +51,17 @@ function ChartsSelectorArgentina({
                           updateCheckedLabels(option.id, id, isChecked);
                         }}
                       />
-                      <label htmlFor={id} className="legend-square-label">
-                        <span
-                          className="otbn-checkbox"
-                          style={{
-                            opacity: checked ? 1 : 0.2,
-                            background: color,
-                          }}
-                        />
-                        {legend}
-                      </label>
+                      <div>
+                        {/* adding an extra div to avoid the styling from a declared selector with low specificity in _base.scss: */}
+                        {/* input[type='checkbox'].column-checkbox:checked + label  */}
+                        <label htmlFor={id}>
+                          <span
+                            className="chart-legends-table__checkbox"
+                            style={{ background: color, opacity: checked ? 1 : 0.2 }}
+                          />
+                          {legend}
+                        </label>
+                      </div>
                     </td>
                     <td className="right">
                       {(totalLossByCategory && prettifyNum(formatNum(totalLossByCategory))) || ''}

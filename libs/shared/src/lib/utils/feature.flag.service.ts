@@ -90,12 +90,13 @@ export const featureFlagsService = async () => {
 
   async function validateFeatureFlagFields(data: Partial<FeatureFlag>): Promise<string[]> {
     const missingOrInvalidFields = [];
+    const allFeatureFlags = await getAllFeaturesNames();
 
-    if (!data.flagId || typeof data.flagId !== 'string') {
+    if (!data.flagId || typeof data.flagId !== 'string' || !allFeatureFlags.includes(data.flagId)) {
       missingOrInvalidFields.push('flagId');
     }
 
-    if (data.orgId !== null && typeof data.orgId !== 'number') {
+    if (!data.orgId && typeof data.orgId !== 'number') {
       missingOrInvalidFields.push('orgId');
     }
 

@@ -3,10 +3,13 @@ import { Organization } from './organization.entity';
 
 @Entity({ name: 'FeatureFlags' })
 export class FeatureFlag {
-  @PrimaryColumn('text', { name: 'flag_id' })
+  @PrimaryColumn()
+  id: number;
+
+  @Column('text', { name: 'flag_id' })
   flagId: string;
 
-  @PrimaryColumn('int', { name: 'org_id' })
+  @Column('int', { name: 'org_id', nullable: true })
   orgId: number;
 
   // flag_state is bit in mssql, but test env uses sqlite, which requires int because it doesn't support bit

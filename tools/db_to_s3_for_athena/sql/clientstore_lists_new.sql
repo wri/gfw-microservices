@@ -111,7 +111,7 @@ BEGIN
 														
 							-- Construct the dynamic SQL query string to check if the AFI table has values
 							DECLARE @afi_has_vals INT
-							SET @sql = 'SELECT @afi_has_vals = CASE WHEN EXISTS(SELECT 1 FROM [' + @db_name + '].[dbo].[AFIAnalysis]) THEN 1 ELSE 0 END'
+							SET @sql = 'SELECT @afi_has_vals = CASE WHEN EXISTS(SELECT 1 FROM [' + @db_name + '].[dbo].[AFIAnalysis] WHERE list_id = ' + CAST(@list_id AS NVARCHAR(50))  +') THEN 1 ELSE 0 END'
 							EXEC sp_executesql @sql, N'@afi_has_vals INT OUTPUT', @afi_has_vals OUTPUT
 
 							-- Construct the dynamic SQL query string to check if the analysis table exists
@@ -144,7 +144,7 @@ BEGIN
 											) AS lat
 											JOIN(
 												SELECT list_id
-													,SUM(total_area_ha) AS total_area_ha
+												,SUM(total_area_ha) AS total_area_ha
 												FROM [{DB_NAME}].dbo.[AFIAnalysis] 
 												GROUP BY list_id
 											) AS afi

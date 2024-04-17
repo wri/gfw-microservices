@@ -1,0 +1,19 @@
+@import '../../../../common/css/baseGFW';
+
+.error-file-downloader-container {
+  height: $min-dialog-height;
+
+  &__full_description {
+    width: 100%;
+    text-align: center;
+  }
+
+  &__text {
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    width: 100%;
+  }
+}

@@ -13,6 +13,5 @@ SET
   ErrorInfo = @ErrorInfo,
   UpdateTime = GETDATE()
 WHERE 
-  ListID = @ListID 
-  AND (AnalysisID = @AnalysisID OR @AnalysisID IS NULL);
+  ListID = @ListID;
 `;

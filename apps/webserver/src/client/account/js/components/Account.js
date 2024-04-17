@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Grid from '@mui/material/Grid';
 import Page from '../../../common/js/components/Page';
 import Select from 'react-select';
 import Dialog from 'material-ui/Dialog';
@@ -7,8 +8,9 @@ import Button from '../../../common/js/components/Button';
 import LinkButton from '../../../common/js/components/LinkButton';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import { fieldValidations } from '../../../profile/js/utils/validations';
-import { termsAndConditions, privacyPolicy, profilePage } from '../../../common/js/config';
+import { termsAndConditions, privacyPolicy, profilePage, licenseAgreement } from '../../../common/js/config';
 import '../../css/account.scss';
+import LegalBanner from './LegalBanner';
 
 export default class Account extends Component {
   constructor(props) {
@@ -273,28 +275,6 @@ export default class Account extends Component {
     });
   };
 
-  updatePolicy = (evt) => {
-    const policyList = [];
-    const policyNameList = [];
-    for (const key of Object.keys(evt.target.files)) {
-      policyNameList.push(evt.target.files[key].name);
-      const reader = new FileReader();
-      reader.readAsDataURL(evt.target.files[key]);
-      reader.onload = function () {
-        policyList.push(
-          reader.result.match(/base64,(.*)/)[1] ? reader.result.match(/base64,(.*)/)[1] : ''
-        );
-      };
-      reader.onerror = function (error) {
-        console.log('Error: ', error);
-      };
-    }
-    this.setState({
-      policyList: policyList,
-      policyName: policyNameList,
-    });
-  };
-
   updateName = (evt) => {
     this.setState({
       user_first_name: evt.target.value,
@@ -409,292 +389,275 @@ export default class Account extends Component {
           subHeader="Please complete all mandatory fields * below and submit."
         />
         <div className="account">
-          <section>
-            <h2 className="section-title-large">Account Information</h2>
-            <div>
+        <Grid container spacing={2}>
+          <Grid item xs={7}>
+            <section>
+              <h2 className="section-title-large">Account Information</h2>
+              <div>
+                <div className="input-field__block-container">
+                  <label htmlFor="org_name" className="block-label profile-label required-param">
+                    Organization Name
+                  </label>
+                  <input
+                    required
+                    id="org_name"
+                    name="org_name"
+                    value={this.state.org_name}
+                    onChange={this.updateOrganization}
+                    onBlur={this.removeExtraSpaces}
+                  />
+                </div>
+
+                <div className="input-field__block-container">
+                  <span className="profile-label"></span>
+                  <input
+                    id="isSubsidiary"
+                    name="is_subsidiary"
+                    value={this.state.is_subsidiary}
+                    type="checkbox"
+                    className="hidden"
+                    onChange={this.updateSubsidary}
+                  />
+                  <label htmlFor="isSubsidiary" className="profile-label">
+                    Subsidiary?
+                  </label>
+                </div>
+
+                <div className="input-field__block-container">
+                  <label htmlFor="org_address" className="block-label profile-label required-param">
+                    Organization Address
+                  </label>
+                  <input
+                    required
+                    name="org_address"
+                    id="org_address"
+                    value={this.state.org_address}
+                    onChange={this.updateAddress}
+                    onBlur={this.removeExtraSpaces}
+                  />
+                </div>
+                <div className="input-field__block-container">
+                  <label
+                    htmlFor="arr_org_classification_ids"
+                    className="block-label profile-label required-param"
+                  >
+                    Organization Classifications
+                  </label>
+                  <Select
+                    placeholder={profilePage.profileManager.multiselectPrompt}
+                    isMulti={true}
+                    isSearchable={true}
+                    maxMenuHeight={150}
+                    options={options}
+                    name="arr_org_classification_ids"
+                    id="arr_org_classification_ids"
+                    onChange={this.orgChange}
+                    value={this.state.arr_org_classification_ids}
+                  />
+                </div>
+                <div className="input-field__block-container">
+                  <label htmlFor="org_website" className="block-label profile-label required-param">
+                    Organization Website
+                  </label>
+                  <input
+                    required
+                    name="org_website"
+                    id="org_website"
+                    value={this.state.org_website}
+                    onChange={this.updateWebsite}
+                  />
+                </div>
+                <div className="input-field__block-container">
+                  <label
+                    htmlFor="parent_org_name"
+                    className={`block-label profile-label ${
+                      this.state.is_subsidiary === true ? 'required-param' : ''
+                    }`}
+                  >
+                    Parent Organization
+                  </label>
+                  <input
+                    id="parent_org_name"
+                    required={this.state.is_subsidiary === true}
+                    name="parent_org_name"
+                    value={this.state.parent_org_name}
+                    onChange={this.updateParentOrg}
+                    className="account-info-input required-param"
+                    onBlur={this.removeExtraSpaces}
+                  />
+                </div>
+              </div>
+            </section>
+            <section>
+              <h2 className="section-title-large">Account Manager Contact Information</h2>
+
               <div className="input-field__block-container">
-                <label htmlFor="org_name" className="block-label profile-label required-param">
-                  Organization Name
+                <label htmlFor="user_first_name" className="block-label profile-label required-param">
+                  First Name
                 </label>
                 <input
+                  id="user_first_name"
                   required
-                  id="org_name"
-                  name="org_name"
-                  value={this.state.org_name}
-                  onChange={this.updateOrganization}
+                  name="user_first_name"
+                  value={this.state.user_first_name}
+                  onChange={this.updateName}
                   onBlur={this.removeExtraSpaces}
                 />
               </div>
 
               <div className="input-field__block-container">
-                <span className="profile-label"></span>
-                <input
-                  id="isSubsidiary"
-                  name="is_subsidiary"
-                  value={this.state.is_subsidiary}
-                  type="checkbox"
-                  className="hidden"
-                  onChange={this.updateSubsidary}
-                />
-                <label htmlFor="isSubsidiary" className="profile-label">
-                  Subsidiary?
-                </label>
-              </div>
-
-              <div className="input-field__block-container">
-                <label htmlFor="org_address" className="block-label profile-label required-param">
-                  Organization Address
+                <label htmlFor="user_last_name" className="block-label profile-label required-param">
+                  Last Name
                 </label>
                 <input
+                  id="user_last_name"
                   required
-                  name="org_address"
-                  id="org_address"
-                  value={this.state.org_address}
-                  onChange={this.updateAddress}
+                  name="user_last_name"
+                  value={this.state.user_last_name}
+                  onChange={this.updateLastName}
+                  maxLength="35"
                   onBlur={this.removeExtraSpaces}
                 />
               </div>
+
               <div className="input-field__block-container">
+                <label htmlFor="user_email" className="block-label profile-label required-param">
+                  E-mail
+                </label>
+                <input
+                  id="user_email"
+                  required
+                  name="user_email"
+                  value={this.state.user_email}
+                  onChange={this.updateEmail}
+                  maxLength="50"
+                />
+              </div>
+
+              <div className="input-field__block-container">
+                <label htmlFor="user_phone" className="block-label profile-label required-param">
+                  Phone
+                </label>
+                <input
+                  id="user_phone"
+                  required
+                  name="user_phone"
+                  value={this.state.user_phone}
+                  onChange={this.updatePhone}
+                  maxLength="50"
+                />
+              </div>
+
+              <div className="input-field__block-container">
+                <label htmlFor="title-select" className="block-label profile-label required-param">
+                  Title
+                </label>
+                <GfwSelect
+                  if="title-select"
+                  options={titleOptions}
+                  value={user_title}
+                  onChange={(evt) => this.titleChange(evt)}
+                  style={{ width: '100%', maxWidth: '400px' }}
+                />
+              </div>
+
+              <div
+                className={`input-field__block-container${
+                  this.state.user_title_id === 10 ? '' : ' hidden'
+                }`}
+              >
                 <label
-                  htmlFor="arr_org_classification_ids"
+                  htmlFor="alternative_title"
                   className="block-label profile-label required-param"
                 >
-                  Organization Classifications
+                  Alternative Title
+                </label>
+                <input
+                  id="alternative_title"
+                  required
+                  name="alternative_title"
+                  value={this.state.otherTitle}
+                  onChange={this.updateOther}
+                />
+              </div>
+
+              <div className="input-field__block-container">
+                <label htmlFor="arr_user_commodity_ids" className="block-label profile-label-select">
+                  Geographies of Interest
                 </label>
                 <Select
                   placeholder={profilePage.profileManager.multiselectPrompt}
                   isMulti={true}
                   isSearchable={true}
                   maxMenuHeight={150}
-                  options={options}
-                  name="arr_org_classification_ids"
-                  id="arr_org_classification_ids"
-                  onChange={this.orgChange}
-                  value={this.state.arr_org_classification_ids}
+                  options={geogOptions}
+                  id="arr_user_commodity_ids"
+                  name="arr_user_commodity_ids"
+                  onChange={this.geogChange}
+                  value={this.state.arr_user_geography_ids}
                 />
               </div>
+
               <div className="input-field__block-container">
-                <label htmlFor="org_website" className="block-label profile-label required-param">
-                  Organization Website
+                <label htmlFor="arr_user_geography_ids" className="block-label profile-label-select">
+                  Commodities of Interest
                 </label>
-                <input
-                  required
-                  name="org_website"
-                  id="org_website"
-                  value={this.state.org_website}
-                  onChange={this.updateWebsite}
+                <Select
+                  placeholder={profilePage.profileManager.multiselectPrompt}
+                  isMulti={true}
+                  isSearchable={true}
+                  maxMenuHeight={150}
+                  options={commOptions}
+                  onChange={this.commChange}
+                  value={this.state.arr_user_commodity_ids}
                 />
               </div>
+
               <div className="input-field__block-container">
-                <label
-                  htmlFor="parent_org_name"
-                  className={`block-label profile-label ${
-                    this.state.is_subsidiary === true ? 'required-param' : ''
-                  }`}
-                >
-                  Parent Organization
+                <input
+                  id="checkBox"
+                  checked={this.state.checked}
+                  onChange={this.updateChecked}
+                  type="checkbox"
+                />
+                <label htmlFor="checkBox">
+                  I have read and accept the{' '}
+                  <a href={termsAndConditions} className="gfw-green" target="_blank">
+                    Terms of Service
+                  </a>
+                  ,{' '}
+                  <a href={privacyPolicy} className="gfw-green" target="_blank">
+                    Privacy Policy
+                  </a>{' '}
+                  and{' '}
+                  <a href={licenseAgreement} className="gfw-green" target="_blank">
+                    License Agreement
+                  </a>
+                  .
                 </label>
-                <input
-                  id="parent_org_name"
-                  required={this.state.is_subsidiary === true}
-                  name="parent_org_name"
-                  value={this.state.parent_org_name}
-                  onChange={this.updateParentOrg}
-                  className="account-info-input required-param"
-                  onBlur={this.removeExtraSpaces}
+              </div>
+            </section>
+            <section>
+              <div>
+                <Button
+                  variant="primary"
+                  style={{ maringRight: '15px' }}
+                  onClick={this.submitOrg}
+                  label="Submit"
+                />
+                <LinkButton
+                  onClick={() => {
+                    window.location.href = '/';
+                  }}
+                  label="Cancel"
                 />
               </div>
-              <div className="input-field__block-container">
-                <label className="block-label profile-label">Organization Policy</label>
-                <span className="hint-text">
-                  Upload policy document to reference within the system (.doc, .pdf)
-                </span>
-                <div className="upload-policy-container">
-                  <form className="policies-form" method="post" encType="multipart/form-data">
-                    <label htmlFor="uploadPolicy" className="gfw-button btn-green">
-                      {'Upload policy'}{' '}
-                      <span>{`${
-                        this.state.policyName.length === 0
-                          ? ''
-                          : this.state.policyName.length === 1
-                          ? ': 1 document'
-                          : `: ${this.state.policyName.length} documents`
-                      }`}</span>
-                      <input
-                        id="uploadPolicy"
-                        name="org_policy"
-                        type="file"
-                        onChange={this.updatePolicy}
-                        className="hidden"
-                        multiple
-                      />
-                    </label>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </section>
-          <section>
-            <h2 className="section-title-large">Account Manager Contact Information</h2>
-
-            <div className="input-field__block-container">
-              <label htmlFor="user_first_name" className="block-label profile-label required-param">
-                First Name
-              </label>
-              <input
-                id="user_first_name"
-                required
-                name="user_first_name"
-                value={this.state.user_first_name}
-                onChange={this.updateName}
-                onBlur={this.removeExtraSpaces}
-              />
-            </div>
-
-            <div className="input-field__block-container">
-              <label htmlFor="user_last_name" className="block-label profile-label required-param">
-                Last Name
-              </label>
-              <input
-                id="user_last_name"
-                required
-                name="user_last_name"
-                value={this.state.user_last_name}
-                onChange={this.updateLastName}
-                maxLength="35"
-                onBlur={this.removeExtraSpaces}
-              />
-            </div>
-
-            <div className="input-field__block-container">
-              <label htmlFor="user_email" className="block-label profile-label required-param">
-                E-mail
-              </label>
-              <input
-                id="user_email"
-                required
-                name="user_email"
-                value={this.state.user_email}
-                onChange={this.updateEmail}
-                maxLength="50"
-              />
-            </div>
-
-            <div className="input-field__block-container">
-              <label htmlFor="user_phone" className="block-label profile-label required-param">
-                Phone
-              </label>
-              <input
-                id="user_phone"
-                required
-                name="user_phone"
-                value={this.state.user_phone}
-                onChange={this.updatePhone}
-                maxLength="50"
-              />
-            </div>
-
-            <div className="input-field__block-container">
-              <label htmlFor="title-select" className="block-label profile-label required-param">
-                Title
-              </label>
-              <GfwSelect
-                if="title-select"
-                options={titleOptions}
-                value={user_title}
-                onChange={(evt) => this.titleChange(evt)}
-                style={{ width: '100%', maxWidth: '400px' }}
-              />
-            </div>
-
-            <div
-              className={`input-field__block-container${
-                this.state.user_title_id === 10 ? '' : ' hidden'
-              }`}
-            >
-              <label
-                htmlFor="alternative_title"
-                className="block-label profile-label required-param"
-              >
-                Alternative Title
-              </label>
-              <input
-                id="alternative_title"
-                required
-                name="alternative_title"
-                value={this.state.otherTitle}
-                onChange={this.updateOther}
-              />
-            </div>
-
-            <div className="input-field__block-container">
-              <label htmlFor="arr_user_commodity_ids" className="block-label profile-label-select">
-                Geographies of Interest
-              </label>
-              <Select
-                placeholder={profilePage.profileManager.multiselectPrompt}
-                isMulti={true}
-                isSearchable={true}
-                maxMenuHeight={150}
-                options={geogOptions}
-                id="arr_user_commodity_ids"
-                name="arr_user_commodity_ids"
-                onChange={this.geogChange}
-                value={this.state.arr_user_geography_ids}
-              />
-            </div>
-
-            <div className="input-field__block-container">
-              <label htmlFor="arr_user_geography_ids" className="block-label profile-label-select">
-                Commodities of Interest
-              </label>
-              <Select
-                placeholder={profilePage.profileManager.multiselectPrompt}
-                isMulti={true}
-                isSearchable={true}
-                maxMenuHeight={150}
-                options={commOptions}
-                onChange={this.commChange}
-                value={this.state.arr_user_commodity_ids}
-              />
-            </div>
-
-            <div className="input-field__block-container">
-              <input
-                id="checkBox"
-                checked={this.state.checked}
-                onChange={this.updateChecked}
-                type="checkbox"
-              />
-              <label htmlFor="checkBox">
-                I have read and accept the{' '}
-                <a href={termsAndConditions} className="gfw-green" target="_blank">
-                  GFW Pro Terms & Conditions
-                </a>{' '}
-                and{' '}
-                <a href={privacyPolicy} className="gfw-green" target="_blank">
-                  Privacy Policy
-                </a>
-                .
-              </label>
-            </div>
-          </section>
-          <section>
-            <div>
-              <Button
-                variant="primary"
-                style={{ maringRight: '15px' }}
-                onClick={this.submitOrg}
-                label="Submit"
-              />
-              <LinkButton
-                onClick={() => {
-                  window.location.href = '/';
-                }}
-                label="Cancel"
-              />
-            </div>
-          </section>
+            </section>
+          </Grid>
+          <Grid item xs={5}>
+            <LegalBanner />
+          </Grid>
+        </Grid>
         </div>
       </Page>
     );

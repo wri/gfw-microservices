@@ -4,10 +4,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Icon from '@material-ui/core/Icon';
+import BillingInfo from './BillingInfo';
 import './SideBarMenu.scss';
 
 function ProfileSideBar({
@@ -28,6 +28,8 @@ function ProfileSideBar({
       item.suscriptionStatus.includes(accountSubscriptionStatus);
     });
   }
+
+  const showBillingInfo = selectedTab === 'account-usage';
 
   return (
     <Box id="sidebar">
@@ -53,28 +55,7 @@ function ProfileSideBar({
         </List>
       </Card>
 
-      <Card variant="outlined" style={{ marginTop: '20px' }}>
-        <CardContent>
-          <p style={{ textAlign: 'center' }}>
-            Contact our sales team to purchase additional Usage units or other available services
-          </p>
-          <a className="gfw-button btn-green btn-width-full" href="mailto:youremail@example.com">
-            Email Sales
-          </a>
-          <a
-            className="side-bar-link"
-            href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/"
-          >
-            Price List
-          </a>
-          <a
-            className="side-bar-link"
-            href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model/"
-          >
-            Fee Model FAQ
-          </a>
-        </CardContent>
-      </Card>
+      {showBillingInfo && <BillingInfo />}
     </Box>
   );
 }

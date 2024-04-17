@@ -35,7 +35,7 @@ export default function ListDiagnosticStatusDraft({ submitForAnalysis, showSubmi
         />
       </span>
 
-      { showSubmit && 
+      {showSubmit && (
         <Button
           onClick={(evt) => handleRerunDialogState(evt)}
           className="locations-list__submit-button"
@@ -43,7 +43,7 @@ export default function ListDiagnosticStatusDraft({ submitForAnalysis, showSubmi
           size="small"
           variant="primary"
         />
-      }
+      )}
 
       {dialogOpen && (
         <CustomDraftDialog

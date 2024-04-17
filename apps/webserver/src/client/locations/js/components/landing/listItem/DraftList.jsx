@@ -153,7 +153,10 @@ function DraftList({
         <div className="locations-list__controls">
           <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
-          <ListDiagnosticStatusDraft submitForAnalysis={submitForAnalysis} showSubmit={showRerunOpt} />
+          <ListDiagnosticStatusDraft
+            submitForAnalysis={submitForAnalysis}
+            showSubmit={showRerunOpt}
+          />
           {showNonOwnerDraft && (
             <span className="DiagnosticStatusDraft__label">
               <CustomTooltip

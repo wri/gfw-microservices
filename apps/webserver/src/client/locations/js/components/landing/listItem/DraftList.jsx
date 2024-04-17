@@ -128,7 +128,7 @@ function DraftList({
       )}
       <li
         className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
-        title={locationsPage.landing.pendingMessage}
+        title={locationsPage.landing.draftMessage}
         onClick={clickLocationRow}
       >
         <div className="locations-list__title">

@@ -1074,6 +1074,8 @@ export const locationsPage = {
     failedMessage: 'Analysis for this list failed. Please click update to try again.',
     pendingMessage:
       'List is analyzing. You will receive an email once analysis is complete and can reload the page to access the results.',
+    draftMessage:
+      'This list contains unanalyzed locations. Please click the submit button to run analysis. Once submitted, your list will not be accessible until analysis is complete.',
     addLocationsPrompt:
       '<p>Upload or enter locations by clicking the <strong>ADD LOCATIONS</strong> button. If you need help, read our <a target="_blank" class="no-lists__how-to" href="https://d1ps9kreypzu9a.cloudfront.net/Training%20Guides/GFW%20Pro%20Tutorials/GFW_Pro_UserGuide.pdf">how-to guide</a>.</p>',
     clearSearch: 'Clear search',

@@ -1,4 +1,10 @@
-import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { AlertsGenerateBodySchema, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
@@ -15,6 +21,7 @@ import {
   ListUploadNewRequestSchema,
   ListUploadNewResponse,
   PrepareUploadRequestSchema,
+  listInfoResponse,
 } from './list-upload-new.dto';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
@@ -24,6 +31,7 @@ import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAlertsSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
+import { Lists } from '../lists/lists.entity';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -323,5 +331,30 @@ export class ListAnalysisService {
       delaySeconds: 0,
       groupId: 'default',
     });
+  }
+  async getListInfo(organizationId, listId) {
+    try {
+      const organization = await this.getOrganizationDetails(organizationId);
+      const connection = await this.createOrganizationConnection(organization);
+      const listAnalysisStatusRepository = connection.getRepository(Lists);
+      const listFound = await listAnalysisStatusRepository.findOne({
+        where: { id: listId },
+      });
+      if (!listFound) {
+        throw new NotFoundException(`List ${listId} status not found.`);
+      }
+      const listResponse: listInfoResponse = {
+        listId: listFound.id,
+        listName: listFound.listName,
+        locationCount: listFound.listLocationsCount,
+      };
+      return listResponse;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException(error);
+      }
+    }
   }
 }

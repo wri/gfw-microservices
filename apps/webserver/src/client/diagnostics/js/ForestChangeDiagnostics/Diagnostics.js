@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Popover from 'material-ui/Popover';
 import EsriMap from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import Graphic from '@arcgis/core/Graphic';
@@ -32,7 +31,6 @@ import InfoBubble from '../../../common/js/components/InfoBubble';
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import redirectToPage from '../../../common/js/utils/redirect';
-import { closePopover } from '../../../locations/js/utils/togglePopover';
 import {
   formatNum,
   formatPct,

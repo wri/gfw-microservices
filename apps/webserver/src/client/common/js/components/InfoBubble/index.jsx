@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import IconButton from 'material-ui/IconButton';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import InfoBubbleBase from './InfoBubbleBase';
 import InfoBubbleContent from './InfoBubbleContent';
+import Popover from '@mui/material/Popover';
 import './infoBubble.scss';
 
 export default function InfoBubble({ children, infoBubbleId }) {
   const [showBubble, setShowBubble] = useState(false);
-  const handleOpen = () => {
+  const [anchorEl, setAnchorEl] = useState();
+
+  const handleOpen = (event) => {
+    setAnchorEl(event.currentTarget);
     setShowBubble(true);
   };
 
@@ -25,14 +29,21 @@ export default function InfoBubble({ children, infoBubbleId }) {
       >
         <InfoIcon color="gray" />
       </IconButton>
-      {showBubble &&
-        (infoBubbleId ? (
+      <Popover
+        open={showBubble}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+        targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+      >
+        {infoBubbleId ? (
           <InfoBubbleBase closeBubble={handleClose}>
             <InfoBubbleContent infoBubbleId={infoBubbleId} />
           </InfoBubbleBase>
         ) : (
           <InfoBubbleBase closeBubble={handleClose}>{children}</InfoBubbleBase>
-        ))}
+        )}
+      </Popover>
     </div>
   );
 }

@@ -95,10 +95,13 @@ const analyzeList = async (req, list) => {
     req.list = list;
 
     if (err.message === `Analysis limit reached`) {
-      return AWSSES.sendErrorNotificatonEmail(req, config.platformVars.emailType.ANALYSIS_LIMIT_REACHED)
+      return AWSSES.sendErrorNotificatonEmail(
+        req,
+        config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
+      );
     }
-    
-    return AWSSES.sendErrorNotificatonEmail(req, config.platformVars.emailType.LIST_ANALYSIS_ERROR)
+
+    return AWSSES.sendErrorNotificatonEmail(req, config.platformVars.emailType.LIST_ANALYSIS_ERROR);
   }
 };
 

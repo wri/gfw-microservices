@@ -247,26 +247,21 @@ const sendErrorNotificatonEmail = (req, type) => {
 
   const errorNotificationsConfig = {
     [config.platformVars.emailType.LIST_ANALYSIS_ERROR]: {
-        subject: 'Error Submitting for Analysis',
-        emailTemplate: config.platformVars.emailType.LIST_ANALYSIS_ERROR,
-        level: 'error'
+      subject: 'Error Submitting for Analysis',
+      emailTemplate: config.platformVars.emailType.LIST_ANALYSIS_ERROR,
+      level: 'error',
     },
     [config.platformVars.emailType.ANALYSIS_LIMIT_REACHED]: {
-        subject: 'Analysis limit reached',
-        emailTemplate: config.platformVars.emailType.ANALYSIS_LIMIT_REACHED,
-        level: 'limit'
-    }
+      subject: 'Analysis limit reached',
+      emailTemplate: config.platformVars.emailType.ANALYSIS_LIMIT_REACHED,
+      level: 'limit',
+    },
   };
 
   const errorType = errorNotificationsConfig[type] || errorNotificationsConfig.default;
   const { subject, emailTemplate, level } = errorType;
 
-  const msg = createBodyContent(
-    req,
-    emailTemplate,
-    list,
-    level
-  );
+  const msg = createBodyContent(req, emailTemplate, list, level);
 
   return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
 };

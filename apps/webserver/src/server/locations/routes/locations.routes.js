@@ -1172,10 +1172,13 @@ module.exports = (app, limiter) => {
 
           if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
             req.list = {
-              list_name: listName
+              list_name: listName,
             };
 
-            await AWSSES.sendErrorNotificatonEmail(req, config.platformVars.emailType.ANALYSIS_LIMIT_REACHED);
+            await AWSSES.sendErrorNotificatonEmail(
+              req,
+              config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
+            );
           }
 
           res.status(status).send({

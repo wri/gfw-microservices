@@ -155,7 +155,7 @@ function DraftList({
 
           <ListDiagnosticStatusDraft
             submitForAnalysis={submitForAnalysis}
-            showSubmit={showRerunOpt}
+            hideSubmit={showRerunOpt}
           />
           {showNonOwnerDraft && (
             <span className="DiagnosticStatusDraft__label">

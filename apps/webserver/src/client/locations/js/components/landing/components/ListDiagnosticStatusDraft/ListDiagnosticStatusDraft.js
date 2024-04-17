@@ -13,7 +13,7 @@ const DIALOG_TITLE = 'Confirm Submission';
 const DIALOG_MESSAGE =
   'Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete.';
 
-export default function ListDiagnosticStatusDraft({ submitForAnalysis, showSubmit }) {
+export default function ListDiagnosticStatusDraft({ submitForAnalysis, hideSubmit }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const handleRerunDialogState = (evt) => {
@@ -35,7 +35,7 @@ export default function ListDiagnosticStatusDraft({ submitForAnalysis, showSubmi
         />
       </span>
 
-      {showSubmit && (
+      {hideSubmit && (
         <Button
           onClick={(evt) => handleRerunDialogState(evt)}
           className="locations-list__submit-button"

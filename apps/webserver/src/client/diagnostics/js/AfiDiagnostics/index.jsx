@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-import Popover from 'material-ui/Popover';
 import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -10,15 +8,11 @@ import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
-import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 import { locationsPage } from '../../../common/js/config';
-import { closePopover } from '../../../locations/js/utils/togglePopover';
-import InfoBubbleContent from '../../../common/js/components/InfoBubbleContent';
+import InfoBubble from '../../../common/js/components/InfoBubble';
 import '../common/DiagnosticsContainer.scss';
 
-const mapStateToProps = ({ infoBubbleCache, popover }) => ({ infoBubbleCache, popover });
-
-function AfiDiagnostics({ popover }) {
+function AfiDiagnostics() {
   const [isLoading, setIsLoading] = useState(true);
   const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
   const [tableData, setTableData] = useState({});
@@ -97,15 +91,6 @@ function AfiDiagnostics({ popover }) {
 
   return (
     <>
-      <Popover
-        open={popover?.displayPopover}
-        anchorEl={popover?.anchorEl}
-        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-        targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-        onRequestClose={closePopover}
-      >
-        <InfoBubbleContent bubbleData={popover?.bubbleData} closeBubble={closePopover} />
-      </Popover>
       {isLoading && (
         <div
           style={{
@@ -137,12 +122,12 @@ function AfiDiagnostics({ popover }) {
             <div className="locations-diagnostics__body">
               <h2 className="locations-diagnostics__subtitle">
                 {list_name}
-                <IconButtonWrapper id={locationsPage.infoBubbleConfig.analysisOverview} />
+                <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.analysisOverview} />
               </h2>
               <AfiDiagnosticsTable data={tableData} />
               <h2 className="locations-diagnostics__subtitle">
                 Administrative Areas Overlap
-                <IconButtonWrapper id={locationsPage.infoBubbleConfig.landcoverCalc} />
+                <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.landcoverCalc} />
               </h2>
               <Card>
                 <CardContent>
@@ -158,4 +143,4 @@ function AfiDiagnostics({ popover }) {
   );
 }
 
-export default connect(mapStateToProps)(AfiDiagnostics);
+export default AfiDiagnostics;

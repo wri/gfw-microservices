@@ -1,0 +1,51 @@
+.info-bubble-content {
+  color: rgba(0, 0, 0, 0.87);
+  background-color: rgb(255, 255, 255);
+  font-family: 'Fira Sans', sans-serif;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px;
+  border-radius: 2px;
+  width: 500px;
+  position: fixed;
+  padding: 15px;
+  z-index: 99999;
+  width: 500px;
+  padding: 15px;
+  text-align: left;
+
+  h3,
+  h4 {
+    text-transform: uppercase;
+    color: #404041;
+    margin: 7.5px 0;
+  }
+
+  p {
+    font-size: 12px;
+    margin: 7.5px 0;
+    white-space: normal;
+    line-height: 1.2;
+    font-weight: normal;
+  }
+
+  a {
+    color: #8bae3b;
+  }
+
+  .bubble-title {
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+
+  &__icon {
+    display: flex;
+    height: 26px;
+    width: 26px;
+    float: right;
+    cursor: pointer;
+  }
+
+  &__view {
+    font-family: 'Fira Sans', sans-serif;
+    padding: 0 20px;
+  }
+}

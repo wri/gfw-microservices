@@ -18,8 +18,6 @@ import DeforestationTrends from './DeforestationTrends';
 import MillPrioritySummary from './MillPrioritySummary';
 import PalmRiskAnalysis from './PalmRiskAnalysis';
 import PalmRiskList from './PalmRiskList';
-import InfoBubbleContent from '../../../common/js/components/InfoBubbleContent';
-import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import SingleLocationDiagnosticsHeaderInfo from './DiagnosticsHeaderInfo/SingleLocationDiagnosticsHeaderInfo';
 import FullListDiagnosticsHeaderInfo from './DiagnosticsHeaderInfo/FullListDiagnosticsHeaderInfo';
@@ -28,6 +26,7 @@ import downloadRequest from '../../../locations/js/components/lists/download/dow
 import DiagnosticsBreadCrums from '../common/DiagnosticsBreadCrums';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
 import RegionChartsContainer from './SouthAmericaRegions/RegionChartsContainer';
+import InfoBubble from '../../../common/js/components/InfoBubble';
 
 // Utils
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
@@ -696,15 +695,6 @@ export default class Diagnostics extends Component {
 
     return (
       <div className="landing-diagnostics">
-        <Popover
-          open={displayPopover}
-          anchorEl={anchorEl}
-          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={closePopover}
-        >
-          <InfoBubbleContent bubbleData={bubbleData} closeBubble={closePopover} />
-        </Popover>
         <ModalLoader open={isLoading} />
         <div className="locations-diagnostics__header">
           <div className="locations-diagnostics__header-container">
@@ -750,8 +740,8 @@ export default class Diagnostics extends Component {
                           <span className="locations-historic-characteristics">
                             Historic Site Characteristics
                           </span>
-                          <IconButtonWrapper
-                            id={locationsPage.infoBubbleConfig.bannerHistoricSite}
+                          <InfoBubble
+                            infoBubbleId={locationsPage.infoBubbleConfig.bannerHistoricSite}
                           />
                         </div>
                       </th>
@@ -920,8 +910,8 @@ export default class Diagnostics extends Component {
                           <span className="locations-diagnostics-statistics__title locations-historic-characteristics">
                             List Attributes
                           </span>
-                          <IconButtonWrapper
-                            id={locationsPage.infoBubbleConfig.bannerListAttributes}
+                          <InfoBubble
+                            infoBubbleId={locationsPage.infoBubbleConfig.bannerListAttributes}
                           />
                         </div>
                       </th>

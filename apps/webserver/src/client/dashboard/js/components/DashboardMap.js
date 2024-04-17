@@ -22,7 +22,6 @@ import {
 } from '../actions/dashboardActions';
 
 // Components
-import InfoBubbleContent from '../../../common/js/components/InfoBubbleContent';
 import SvgLinearGradients from '../../../common/js/components/SvgLinearGradients';
 
 // Utils
@@ -245,16 +244,6 @@ export default class DashboardMap extends Component {
 
     return (
       <div className="dashboard-map-legend__container">
-        {/* Overlay ontop of the map */}
-        <Popover
-          open={displayPopover}
-          anchorEl={anchorEl}
-          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={this.closePopover}
-        >
-          <InfoBubbleContent bubbleData={bubbleData} closeBubble={this.closePopover} />
-        </Popover>
         <div className="flex-grid space-between dashboard-map__title">
           <div className="flex-grid-column pad-left">
             <div className="flex-grid align-center space-between title">

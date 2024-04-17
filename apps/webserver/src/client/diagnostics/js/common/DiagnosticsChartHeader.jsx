@@ -1,6 +1,6 @@
 import React from 'react';
 import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
-import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import InfoBubble from '../../../common/js/components/InfoBubble';
 import './DiagnosticsChartHeader.scss';
 
 function DiagnosticsChartHeader({
@@ -16,7 +16,7 @@ function DiagnosticsChartHeader({
         {title}
       </div>
       {subtitle && <span>{subtitle}</span>}
-      {informationBubbleId && <IconButtonWrapper id={informationBubbleId} />}
+      {informationBubbleId && <InfoBubble infoBubbleId={informationBubbleId} />}
       {downloadId && (
         <DownloadForOfflineIcon
           className="diagnostics-chart-header__download_icon"

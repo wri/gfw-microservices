@@ -61,7 +61,7 @@ export default function AccountUsage({ label, usedValue, maxValue }) {
 
         <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
           <Grid item>
-            <CardLabel variant="span" display="block">
+            <CardLabel variant="caption" display="block">
               Used
             </CardLabel>
             <ProgressLabel variant="span">{formatNumber(usedValue)}</ProgressLabel>

@@ -28,6 +28,14 @@ exports.geoTrellisAnalyzeListController = async (req, res) => {
       success: true,
     });
   } catch (e) {
+    req.list = list;
+
+    if (err.message === `Analysis limit reached`) {
+      await AWSSES.sendErrorNotificatonEmail(req, config.platformVars.emailType.ANALYSIS_LIMIT_REACHED)
+    } else {
+      await AWSSES.sendErrorNotificatonEmail(req, config.platformVars.emailType.LIST_ANALYSIS_ERROR)
+    }
+
     res.json({
       message: e,
       success: false,

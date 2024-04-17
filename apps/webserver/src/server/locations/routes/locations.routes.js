@@ -28,6 +28,7 @@ const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
 const { HttpStatus } = require('@nestjs/common');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+const config = require('../../../config/config');
 
 const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
@@ -1161,7 +1162,7 @@ module.exports = (app, limiter) => {
           console.log(response);
           res.send(response);
         })
-        .catch(({ response }) => {
+        .catch(async ({ response }) => {
           logger.info(`Error /locations/process-list`);
           const {
             status = 500,
@@ -1170,8 +1171,11 @@ module.exports = (app, limiter) => {
           } = response;
 
           if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
-            const { user_email } = req.session;
-            return AWSSES.sendEmail__ListAnalysisFailedByLimitException(req, user_email);
+            req.list = {
+              list_name: listName
+            };
+
+            await AWSSES.sendErrorNotificatonEmail(req, config.platformVars.emailType.ANALYSIS_LIMIT_REACHED);
           }
 
           res.status(status).send({

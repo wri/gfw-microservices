@@ -37,7 +37,7 @@ const defineIcon = (type) => {
     case 'warning':
       return 'https://dpptfqp76xood.cloudfront.net/images/warning_black_24dp.png';
     case 'limit':
-      return 'https://gfwpro-site-assets.s3.amazonaws.com/images/speed_black_24dp.png';
+      return 'https://dpptfqp76xood.cloudfront.net/images/speed_black_24dp.png';
     default:
   }
 };
@@ -241,26 +241,40 @@ const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => 
   return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
 };
 
-const sendEmail__ListAnalysisFailedByLimitException = (req, userEmail) => {
-  const subject = `Error: Analysis Limit Reached`;
-  const emailTemplate = config.platformVars.emailType.ANALYSIS_LIMIT_REACHED;
-  const level = 'limit';
+const sendErrorNotificatonEmail = (req, type) => {
+  const { user_email } = req.session;
+  const { list } = req;
+
+  const errorNotificationsConfig = {
+    [config.platformVars.emailType.LIST_ANALYSIS_ERROR]: {
+        subject: 'Error Submitting for Analysis',
+        emailTemplate: config.platformVars.emailType.LIST_ANALYSIS_ERROR,
+        level: 'error'
+    },
+    [config.platformVars.emailType.ANALYSIS_LIMIT_REACHED]: {
+        subject: 'Analysis limit reached',
+        emailTemplate: config.platformVars.emailType.ANALYSIS_LIMIT_REACHED,
+        level: 'limit'
+    }
+  };
+
+  const errorType = errorNotificationsConfig[type] || errorNotificationsConfig.default;
+  const { subject, emailTemplate, level } = errorType;
 
   const msg = createBodyContent(
     req,
     emailTemplate,
-    {
-      list_name,
-    },
+    list,
     level
   );
-  return sendEmail(req, config.AWSVars.ses.sender, [userEmail], subject, msg);
+
+  return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
 };
 
 module.exports = {
   initialize,
   sendEmail,
   createBodyContent,
+  sendErrorNotificatonEmail,
   sendEmail__ListSubmittedForAnalysis,
-  sendEmail__ListAnalysisFailedByLimitException,
 };

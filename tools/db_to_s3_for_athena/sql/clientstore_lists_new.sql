@@ -9,9 +9,7 @@ CREATE TABLE #list_data(
 	list_name NVARCHAR(MAX),
 	country NVARCHAR(50),
 	commodity NVARCHAR(100),	
-	list_tbl_area FLOAT,
-	analysis_tbl_area FLOAT,
-	afi_tbl_area FLOAT,
+	analysis_area FLOAT,
 	locations_count INT,
 	list_status NVARCHAR(25)
 );
@@ -123,32 +121,31 @@ BEGIN
 								-- Analysis table exists
 								-- AFI table has values
 								SET @sql = N'INSERT INTO #temp_grouped_list_info
-											SELECT lat.list_id
+											SELECT
+												{LIST_ID} AS list_id
 												,lat.Country
 												,lat.Commodity
-												,lat.list_table_area
-												,lat.analysis_table_area
-												,afi.total_area_ha
-												,lat.location_count
+												,SUM(analysis_table_area) AS analysis_area
+												,COUNT(lat.location_id) AS loc_count
 											FROM (
-												SELECT {LIST_ID} AS list_id
+												SELECT
+													{LIST_ID} AS list_id
+													,at.location_id
 													,lt.Country
 													,lt.Commodity
-													,SUM(lt.[Analysis Area]) AS list_table_area
-													,SUM(at.total_area) AS analysis_table_area
-													,COUNT(lt.location_id) AS location_count
 												FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}] AS lt
-												JOIN [{DB_NAME}].dbo.[{ANALYSIS_TABLE_NAME}] AS at
+												LEFT JOIN [{DB_NAME}].dbo.[{ANALYSIS_TABLE_NAME}] AS at
 												ON lt.location_id = at.location_id
-												GROUP BY lt.Country, lt.Commodity
 											) AS lat
-											JOIN(
-												SELECT list_id
-												,SUM(total_area_ha) AS total_area_ha
+											LEFT JOIN (
+												SELECT
+													location_id
+													,list_id
+													,total_area_ha
 												FROM [{DB_NAME}].dbo.[AFIAnalysis] 
-												GROUP BY list_id
 											) AS afi
-											ON lat.list_id = afi.list_id';
+											ON lat.location_id = afi.location_id AND lat.list_id = afi.list_id
+											GROUP BY Country, Commodity';
 							END
 							ELSE IF OBJECT_ID(@sql, 'U') IS NOT NULL AND @afi_has_vals = 0
 							BEGIN
@@ -158,9 +155,7 @@ BEGIN
 											SELECT {LIST_ID} AS list_id
 												,lt.Country
 												,lt.Commodity
-												,SUM(lt.[Analysis Area]) AS list_table_area
-												,SUM(at.total_area) AS analysis_table_area
-												,0.0 AS afi_table_area
+												,SUM(at.total_area) AS analysis_area
 												,COUNT(lt.location_id) AS location_count
 											FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}] AS lt
 											JOIN [{DB_NAME}].dbo.[{ANALYSIS_TABLE_NAME}] AS at
@@ -174,9 +169,7 @@ BEGIN
 								SET @sql = N'INSERT INTO #temp_grouped_list_info
 											SELECT lt.Country
 												,lt.Commodity
-												,SUM(lt.[Analysis Area]) AS list_table_area
-												,0.0 AS analysis_table_area
-												,0.0 AS afi_table_area
+												,SUM(lt.[Analysis Area]) AS analysis_area
 												,COUNT(lt.location_id) AS location_count
 											FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}] AS lt
 											GROUP BY lt.Country, lt.Commodity';
@@ -191,20 +184,19 @@ BEGIN
 							EXEC sp_executesql @sql;
 							
 							-- inserts the collected data into #list_data
-							INSERT into #list_data (organization, list_name, country, commodity, list_tbl_area, analysis_tbl_area, afi_tbl_area, locations_count, list_status)
+							INSERT into #list_data (organization, list_name, country, commodity, analysis_area, locations_count, list_status )
 							SELECT @org_name		
-								,@list_table_name	
-								,gli.country					
-								,gli.commodity					
-								,gli.list_table_area
-								,gli.analysis_table_area
-								,gli.afi_table_area
-								,gli.locations_count
-								,CASE
+								, @list_table_name	
+								, gli.country					
+								, gli.commodity					
+								, gli.analysis_area
+								, gli.locations_count
+								, CASE
 									WHEN @list_status_id = 2 THEN 'SUCCEEDED'
 									WHEN @list_status_id = 3 THEN 'FAILED'
 									ELSE 'PENDING' END
 							FROM #temp_grouped_list_info gli
+
 							SET @list_item = @list_item + 1
 					END;				
 		

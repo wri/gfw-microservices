@@ -27,6 +27,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { checkProcessingLimits, getFinalGeojson } from '@wri-monorepos/shared';
 import { SPSListCreation } from './listCreation';
 import { GeoJson } from './type';
+import { listStatus } from '@wri-monorepos/constants';
 
 const EMPTY_CUSTOM_ATTRIBUTES = [];
 
@@ -211,7 +212,7 @@ export class LocationService {
           await updateListsAnalysisStatus(clientDatabase, {
             listId: createdListId,
             errorInfo: 'Exceeded Analysis Limit',
-            status: 3,
+            status: listStatus.Inactive,
           });
           throw new Error(`Analysis limit reached`);
         }
@@ -276,7 +277,7 @@ export class LocationService {
           await updateListsAnalysisStatus(clientDatabase, {
             listId: moveToList.id,
             errorInfo: 'Exceeded Analysis Limit',
-            status: 3,
+            status: listStatus.Inactive,
           });
           throw new Error(`Analysis limit reached`);
         }

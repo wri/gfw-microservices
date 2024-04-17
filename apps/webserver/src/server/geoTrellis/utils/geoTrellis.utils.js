@@ -15,6 +15,7 @@ const {
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
 import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
+import { listStatus } from '@wri-monorepos/constants';
 
 /**
  * Submitting Analyze List request to step function for list to be processed by GeoTrellis
@@ -58,7 +59,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
     await updateListsAnalysisStatus(databaseName, {
       listId: listID,
       errorInfo: 'Exceeded Analysis Limit',
-      status: 3,
+      status: listStatus.Inactive,
     });
     throw new Error(`Analysis limit reached`);
   }

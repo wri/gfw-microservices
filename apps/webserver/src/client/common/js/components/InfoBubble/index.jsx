@@ -3,7 +3,7 @@ import IconButton from 'material-ui/IconButton';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import InfoBubbleBase from './InfoBubbleBase';
 import InfoBubbleContent from './InfoBubbleContent';
-import Popover from '@mui/material/Popover';
+import Popover from 'material-ui/Popover';
 import './infoBubble.scss';
 
 export default function InfoBubble({ children, infoBubbleId }) {
@@ -32,9 +32,9 @@ export default function InfoBubble({ children, infoBubbleId }) {
       <Popover
         open={showBubble}
         anchorEl={anchorEl}
-        onClose={handleClose}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+        onRequestClose={handleClose}
       >
         {infoBubbleId ? (
           <InfoBubbleBase closeBubble={handleClose}>

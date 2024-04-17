@@ -4,7 +4,7 @@ import CardContent from '@mui/material/CardContent';
 import Highcharts from 'highcharts';
 import _range from 'lodash/range';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
-import IconButtonWrapper from '../../../locations/js/components/IconButtonWrapper';
+import InfoBubble from '../../../common/js/components/InfoBubble';
 
 import {
   formatNum,
@@ -611,7 +611,7 @@ export default class SensitiveAreas extends Component {
                       <th />
                       <th className="label loss-label right">
                         {lossTableLabel}
-                        <IconButtonWrapper id={locationsPage.infoBubbleConfig.lossAllYears} />
+                        <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.lossAllYears} />
                       </th>
                       <th className="label percent-loss right">
                         <span className="percent-loss__label">% of TCL</span>

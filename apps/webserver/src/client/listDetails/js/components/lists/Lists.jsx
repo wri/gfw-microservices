@@ -17,7 +17,6 @@ import Button from 'common/js/components/Button';
 import LinkButton from 'common/js/components/LinkButton';
 import GfwSelect from 'common/js/components/GfwSelect';
 import ModalLoader from 'common/js/components/Loaders/ModalLoader';
-import InfoBubbleContent from 'common/js/components/InfoBubbleContent';
 import IconButton from 'common/js/components/IconButton';
 import IconTimes from 'common/js/components/icon/IconTimes';
 import IconShare from 'common/js/components/icon/IconShare';
@@ -2175,15 +2174,6 @@ export default class Lists extends Component {
             <span>{bannerContent}</span>
           </Banner>
         )}
-        <Popover
-          open={displayPopover}
-          anchorEl={anchorEl}
-          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={closePopover}
-        >
-          <InfoBubbleContent bubbleData={bubbleData} closeBubble={closePopover} />
-        </Popover>
 
         {dialogOpen && (
           <Dialog

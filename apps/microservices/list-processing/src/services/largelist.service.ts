@@ -11,6 +11,7 @@ import { getListByFilters } from '@wri-monorepos/sql';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { ProcessingLimitException } from '../app/app.exceptions';
 import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import { listStatus } from '@wri-monorepos/constants';
 
 interface CreateListResult {
   list_id: number;
@@ -47,7 +48,7 @@ export class LargeListService {
       await updateListsAnalysisStatus(request.organization_database, {
         listId: request.list_id,
         errorInfo: 'Exceeded Analysis Limit',
-        status: 3,
+        status: listStatus.Inactive,
       });
       throw new ProcessingLimitException();
     }

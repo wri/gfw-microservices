@@ -1552,6 +1552,7 @@ export const locationsPage = {
         '• One or more of the failed locations may be on water. Please remove or correct those locations and re-upload your list.',
         '• If the issue above has been addressed, and your locations are on land, a system interruption may have occurred. Please re-upload your list.',
       ],
+      uploadErrorDialogDownloadMessageTitle: 'Download error file',
     },
     maximumLocations: 'Maximum locations:',
     maximumFilesize: 'Maximum filesize:',

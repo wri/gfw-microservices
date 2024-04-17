@@ -6,7 +6,7 @@ export function formatNumber(number) {
   return addComma(number);
 }
 
-function addComma() {
+function addComma(number) {
   return number
     ?.toFixed(2)
     .toString()

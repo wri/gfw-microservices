@@ -8,9 +8,7 @@ export default function UsageReachedLimitBanner({ onBannerClose }) {
       <div>
         <strong>{locationsPage.usegeReachedLimitBanner.title}</strong>
       </div>
-      <div>
-        {locationsPage.usegeReachedLimitBanner.text}
-      </div>
+      <div>{locationsPage.usegeReachedLimitBanner.text}</div>
     </Banner>
   );
 }

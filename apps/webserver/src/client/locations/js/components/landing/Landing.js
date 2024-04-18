@@ -298,8 +298,6 @@ class Landing extends Component {
       this.setState({ selectedTab: newSelectedTab });
     };
 
-    console.log(isReachedAccountUsageLimit, 'isReachedAccountUsageLimit')
-
     return (
       <div className={`${view === 'landing' ? '' : 'hidden'}`}>
         {isReachingAccountUsageLimit ? (

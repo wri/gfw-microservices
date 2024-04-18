@@ -1139,46 +1139,48 @@ module.exports = (app, limiter) => {
 
     const { LISTS_MICROSERVICE_URL } = process.env;
 
-      axios
-        .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
-          organization_id,
-          list_id,
-          organization_database,
-          subscription_status_id,
-          path: pathLocal,
-          template_type,
-          user_id: organization_user_id,
-          startAnalysis,
-          analysis_types: analysisTypes,
-        })
-        .then((response) => {
-          console.log(response.data);
-          // Send email to user that list is submitted to be analysed
-          return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
-        })
-        .then((response) => {
-          console.log(response);
-          res.send(response);
-        })
-        .catch(async (error) => {
-          logger.info(`Error ${LISTS_MICROSERVICE_URL}/process-list`, error);
-          const { response } = error;
-          const {
-            status = 500,
-            statusText: reason = 'Error /locations/process-list',
-            data = {},
-          } = response;
+    axios
+      .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
+        organization_id,
+        list_id,
+        organization_database,
+        subscription_status_id,
+        path: pathLocal,
+        template_type,
+        user_id: organization_user_id,
+        startAnalysis,
+        analysis_types: analysisTypes,
+      })
+      .then(async (response) => {
+        console.log(response.data);
+        const listAnalysisStatusData = await getListAnalysisStatus(organization_database, list_id);
+        const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+        // Send email to user that list is submitted to be analysed
+        return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
+      })
+      .then((response) => {
+        console.log(response);
+        res.send(response);
+      })
+      .catch(async (error) => {
+        logger.info(`Error ${LISTS_MICROSERVICE_URL}/process-list`, error);
+        const { response } = error;
+        const {
+          status = 500,
+          statusText: reason = 'Error /locations/process-list',
+          data = {},
+        } = response;
 
-          if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
-            req.list = {
-              list_name: listName,
-            };
+        if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
+          req.list = {
+            list_name: listName,
+          };
 
-            await AWSSES.sendErrorNotificatonEmail(
-              req,
-              config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
-            );
-          }
+          await AWSSES.sendErrorNotificatonEmail(
+            req,
+            config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
+          );
+        }
 
         res.status(status).send({
           reason,

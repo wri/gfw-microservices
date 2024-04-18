@@ -1,7 +1,6 @@
 /**
  * update status row for specific list
  * @ListID INT
- * @AnalysisID VARCHAR(30) | null
  * @Status INT
  * @ErrorInfo VARCHAR(2000)
  */

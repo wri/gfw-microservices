@@ -3,7 +3,6 @@ import * as sql from 'mssql';
 
 interface UpdateListsAnalysisStatusParams {
   listId: number;
-  analysisId?: string;
   errorInfo: string;
   status: number;
 }
@@ -12,12 +11,11 @@ interface UpdateListsAnalysisStatusParams {
  */
 export async function updateListsAnalysisStatus(
   databaseName: string,
-  { listId, analysisId, errorInfo, status }: UpdateListsAnalysisStatusParams
+  { listId, errorInfo, status }: UpdateListsAnalysisStatusParams
 ) {
   try {
     const parameters = [
       { field: 'ListID', type: sql.Int, value: listId },
-      { field: 'AnalysisID', type: sql.VarChar(30), value: analysisId || null },
       { field: 'ErrorInfo', type: sql.VarChar(2000), value: errorInfo },
       { field: 'Status', type: sql.Int, value: status },
     ];

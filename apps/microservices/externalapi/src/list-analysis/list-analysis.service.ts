@@ -352,11 +352,7 @@ export class ListAnalysisService {
             'Content-Type': 'application/json',
           },
         });
-        if (result) {
-          return true;
-        } else {
-          return false;
-        }
+        return !!result;
       } else {
         throw new NotFoundException();
       }

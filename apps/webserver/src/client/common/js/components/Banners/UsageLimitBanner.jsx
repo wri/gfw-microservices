@@ -2,13 +2,7 @@ import React from 'react';
 import Banner from './Banner';
 import { locationsPage } from '../../../../common/js/config';
 
-export default function UsageLimitBanner({ onBannerClose, onCtaClick = () => void 0 }) {
-  const cta = (
-    <a className="notice-cta" onClick={onCtaClick}>
-      Click Here
-    </a>
-  );
-
+export default function UsageLimitBanner({onBannerClose}) {
   return (
     <Banner className="landing-banner" intent="notice" onBannerClose={() => onBannerClose()}>
       <>
@@ -16,7 +10,7 @@ export default function UsageLimitBanner({ onBannerClose, onCtaClick = () => voi
           <strong>{locationsPage.accountIsReachingLimitBanner}</strong>
         </div>
         <div>
-          {locationsPage.accountReachingLimitBannerText} {cta}.
+          {locationsPage.accountReachingLimitBannerText}.
         </div>
       </>
     </Banner>

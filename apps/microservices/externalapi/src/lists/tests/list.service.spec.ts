@@ -15,7 +15,7 @@ import { OrganizationService } from '../../list-analysis/organization.service';
 import { ListRepositoryMock } from './lists.repository.mock';
 import { ListAnalysisService } from '../../list-analysis/list-analysis.service';
 import { S3Service } from '@wri-monorepos/aws';
-import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
 describe('ListService', () => {
   let organizationService: OrganizationService;

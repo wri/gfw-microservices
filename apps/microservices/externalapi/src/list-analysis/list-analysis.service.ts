@@ -1,10 +1,4 @@
-import {
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AlertsGenerateBodySchema, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
@@ -21,7 +15,6 @@ import {
   ListUploadNewRequestSchema,
   ListUploadNewResponse,
   PrepareUploadRequestSchema,
-  listInfoResponse,
 } from './list-upload-new.dto';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
@@ -31,7 +24,6 @@ import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAlertsSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
-import { Lists } from '../lists/lists.entity';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;

@@ -72,11 +72,9 @@ const analyzeLocation = (req, organization_database, list, geojson) => {
  * @function analyzeList
  * @summary Sends list level messages to the AWS SQS queue
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
- * @param {String} organization_database - The organization DB
  * @param {Object} list - Object containg all info about a list (schema)
  */
-const analyzeList = async (req, organization_database, list) => {
-  const { user_email } = req.session;
+const analyzeList = async (req, list) => {
   const { list_id, dest_list_id, list_status_id } = req.body;
   const { id: listID, list_name } = list;
 
@@ -94,24 +92,16 @@ const analyzeList = async (req, organization_database, list) => {
       `Error sending (${list_name}) to be analysed. Error: ${err}`
     );
 
-    let subject = 'Error Submitting for Analysis';
-    let emailTemplate = config.platformVars.emailType.LIST_ANALYSIS_ERROR;
-    let level = 'error';
+    req.list = list;
+
     if (err.message === `Analysis limit reached`) {
-      subject = `Analysis limit reached`;
-      emailTemplate = config.platformVars.emailType.ANALYSIS_LIMIT_REACHED;
-      level = 'limit';
+      return AWSSES.sendErrorNotificatonEmail(
+        req,
+        config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
+      );
     }
 
-    const msg = AWSSES.createBodyContent(
-      req,
-      emailTemplate,
-      {
-        list_name,
-      },
-      level
-    );
-    return AWSSES.sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
+    return AWSSES.sendErrorNotificatonEmail(req, config.platformVars.emailType.LIST_ANALYSIS_ERROR);
   }
 };
 

@@ -65,8 +65,7 @@ BEGIN
 						SELECT list_table_name,
                                list_analysis_table_name,
 							   id
-                        FROM [{DB_NAME}].dbo.Lists
-						WHERE list_status_id IN (2, 3)';
+                        FROM [{DB_NAME}].dbo.Lists';
 			
 			SET @sql = REPLACE(@sql, '{DB_NAME}', @db_name)
 			--PRINT (@sql);
@@ -101,9 +100,7 @@ BEGIN
 								list_id INT,
 								country NVARCHAR(50),
 								commodity NVARCHAR(100),
-								list_table_area FLOAT,
-								analysis_table_area FLOAT,
-								afi_table_area FLOAT,
+								analysis_area FLOAT,
 								locations_count INT
 							);
 														
@@ -125,7 +122,7 @@ BEGIN
 												{LIST_ID} AS list_id
 												,lat.Country
 												,lat.Commodity
-												,SUM(analysis_table_area) AS analysis_area
+												,SUM(afi.total_area_ha) AS analysis_area
 												,COUNT(lat.location_id) AS loc_count
 											FROM (
 												SELECT
@@ -146,13 +143,15 @@ BEGIN
 											) AS afi
 											ON lat.location_id = afi.location_id AND lat.list_id = afi.list_id
 											GROUP BY Country, Commodity';
+								SET @sql = REPLACE(@sql, '{ANALYSIS_TABLE_NAME}', @analysis_table_name);	
 							END
 							ELSE IF OBJECT_ID(@sql, 'U') IS NOT NULL AND @afi_has_vals = 0
 							BEGIN
 								-- Analysis table exists
 								-- AFI Table has no values
 								SET @sql = N'INSERT INTO #temp_grouped_list_info
-											SELECT {LIST_ID} AS list_id
+											SELECT
+												 {LIST_ID} AS list_id
 												,lt.Country
 												,lt.Commodity
 												,SUM(at.total_area) AS analysis_area
@@ -161,30 +160,31 @@ BEGIN
 											JOIN [{DB_NAME}].dbo.[{ANALYSIS_TABLE_NAME}] AS at
 											ON lt.location_id = at.location_id
 											GROUP BY lt.Country, lt.Commodity';
+								SET @sql = REPLACE(@sql, '{ANALYSIS_TABLE_NAME}', @analysis_table_name);	
 							END
 							ELSE
 							BEGIN
 								-- Analysis table does not exist
 								-- AFI Table has no values
 								SET @sql = N'INSERT INTO #temp_grouped_list_info
-											SELECT lt.Country
-												,lt.Commodity
-												,SUM(lt.[Analysis Area]) AS analysis_area
-												,COUNT(lt.location_id) AS location_count
-											FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}] AS lt
-											GROUP BY lt.Country, lt.Commodity';
-							END
+										SELECT
+											 {LIST_ID} AS list_id
+											,Country
+											,Commodity
+											,SUM([Analysis Area])
+											,COUNT(location_id)
+										FROM [{DB_NAME}].dbo.[{LIST_TABLE_NAME}]
+										GROUP BY Country, Commodity';
+						END
 
 							SET @sql = REPLACE(@sql, '{DB_NAME}', @db_name);
 							SET @sql = REPLACE(@sql, '{LIST_ID}', @list_id);
-							SET @sql = REPLACE(@sql, '{LIST_TABLE_NAME}', @list_table_name);
-							SET @sql = REPLACE(@sql, '{ANALYSIS_TABLE_NAME}', @analysis_table_name);
-							SET @sql = REPLACE(@sql, '{LOCATION_STATUS}', @list_status_id);							
+							SET @sql = REPLACE(@sql, '{LIST_TABLE_NAME}', @list_table_name);					
 							--PRINT @sql;
 							EXEC sp_executesql @sql;
 							
 							-- inserts the collected data into #list_data
-							INSERT into #list_data (organization, list_name, country, commodity, analysis_area, locations_count, list_status )
+							INSERT into #list_data (organization, list_name, country, commodity, analysis_area, locations_count, list_status)
 							SELECT @org_name		
 								, @list_table_name	
 								, gli.country					

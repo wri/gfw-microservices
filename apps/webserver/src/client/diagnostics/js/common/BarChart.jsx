@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Highcharts from 'highcharts';
 import { getFormatedTooltipForDiagnosticsChart } from '../../../common/js/utils/diagnostics.utils';
 import useHookWithRefCallback from './useHookWithRefCallback';
@@ -69,6 +69,12 @@ function BarChart({ data, plotBands = [], plotLines = [] }) {
   };
 
   const [ref] = useHookWithRefCallback(renderChart);
+
+  useEffect(() => {
+    if (ref.current && data) {
+      renderChart(ref.current);
+    }
+  }, [data]); // Re-run effect when data changes
 
   return <div data-testid="bar-chart" ref={ref} />;
 }

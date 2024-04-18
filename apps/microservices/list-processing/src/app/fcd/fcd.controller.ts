@@ -1,58 +1,46 @@
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  Logger,
-  NotImplementedException,
-  Param,
-  Post,
-  UsePipes,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Logger, Param, Post } from '@nestjs/common';
 import { FCDService } from './fcd.service';
 import { FcdControllerRequestBody } from '../../models';
 import { z } from 'zod';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
-import { fcdCategoriesMap } from '@wri-monorepos/constants';
 
-const DatabaseQuerySchema = z.object({
+const databaseQuerySchema = z.object({
   clientDatabase: z.string(),
+  country: z.string().optional(),
+  countryGadm: z.string().optional(),
+  locationId: z.coerce.number().optional(),
 });
+
+const fcdServiceFunctionsMap = Object.freeze({
+  WDPA: 'handleWDPACategoryForList',
+  landmark: 'handleLandmarkCategoryForList',
+  country: 'handleCountryCategoryForList',
+  classified_region: 'handleClassifiedRegionCategoryForList',
+});
+
+const fcdServiceFunctionsInputArray = Object.keys(fcdServiceFunctionsMap) as [
+  keyof typeof fcdServiceFunctionsMap
+];
+
+const fcdServiceFunctionsInputArraySchema = z.enum(fcdServiceFunctionsInputArray);
 
 @Controller('fcd')
 export class FCDController {
   constructor(private readonly fcdService: FCDService) {}
 
-  private readonly logger = new Logger(FCDService.name);
+  private readonly logger = new Logger(FCDController.name);
 
   @Post('/:listId/:category')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ZodValidationPipe(DatabaseQuerySchema))
-  getFCDCategoryDataForListId(
+  async getFCDCategoryDataForListId(
     @Param('listId') listId: number,
-    @Param('category') category: string,
-    @Body() bodyPayload: FcdControllerRequestBody
+    @Param('category', new ZodValidationPipe(fcdServiceFunctionsInputArraySchema))
+    category: keyof typeof fcdServiceFunctionsMap,
+    @Body(new ZodValidationPipe(databaseQuerySchema)) bodyPayload: FcdControllerRequestBody
   ) {
-    const categoryFor = fcdCategoriesMap[category];
     this.logger.log('POST /:listId/:category', listId, category);
 
-    switch (categoryFor) {
-      case fcdCategoriesMap.WDPA:
-        return this.fcdService.handleWDPACategoryForList(listId, bodyPayload);
-
-      case fcdCategoriesMap.landmark:
-        return this.fcdService.handleLandmarkCategoryForList(listId, bodyPayload);
-
-      case fcdCategoriesMap.country:
-        return this.fcdService.handleCountryCategoryForList(listId, bodyPayload);
-
-      case fcdCategoriesMap.classified_region:
-        return this.fcdService.handleClassifiedRegionCategoryForList(listId, bodyPayload);
-
-      default:
-        throw new NotImplementedException(
-          `getFCDCategoryDataForListId: category ['${category}'] not implemented`
-        );
-    }
+    const fcdFunctionName = fcdServiceFunctionsMap[category];
+    return await this.fcdService[fcdFunctionName](listId, bodyPayload);
   }
 }

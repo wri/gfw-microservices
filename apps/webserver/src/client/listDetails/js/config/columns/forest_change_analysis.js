@@ -1,5 +1,5 @@
 import React from 'react';
-import IconButtonWrapper from '../../../../locations/js/components/IconButtonWrapper';
+import InfoBubble from '../../../../common/js/components/InfoBubble';
 import { columnHeaders, locationsPage } from '../../../../common/js/config';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
@@ -56,7 +56,7 @@ const forest_change_analysis = [
       <div className="react-table-tree-cover-loss">
         <span className="title-text" title={transifex(columnHeaders.treeCoverLossInHa)}>
           {transifex(columnHeaders.treeCoverLoss)} <span className="title-text__units">(ha)</span>
-          <IconButtonWrapper id={locationsPage.infoBubbleConfig.lossAllYears} />
+          <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.lossAllYears} />
         </span>
       </div>
     ),

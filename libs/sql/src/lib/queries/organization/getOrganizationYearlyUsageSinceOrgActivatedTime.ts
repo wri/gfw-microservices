@@ -7,8 +7,8 @@
 export const getOrganizationYearlyUsageSinceOrgActivatedTime = `
 SELECT 
     years_since_activation,
-    SUM(area_analyzed_locations_ha) as totalAreaPerLocationsAnalyzedYearly,
-    SUM(locations_analyzed) AS totalLocationsYearly
+    ISNULL(SUM(area_analyzed_locations_ha),0) as totalAreaPerLocationsAnalyzedYearly,
+    ISNULL(SUM(locations_analyzed),0) AS totalLocationsYearly
 FROM (
     SELECT
         DATEDIFF(YEAR, @orgActivatedTime, lp.analysis_start_time) AS years_since_activation,

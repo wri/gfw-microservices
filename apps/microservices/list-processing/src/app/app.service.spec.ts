@@ -96,9 +96,7 @@ describe('AppService', () => {
             .mockReturnValueOnce(mockList)
             .mockReturnValue({ ...mockList, ...mockListUpdated }),
         }),
-        query: () => {
-          true;
-        },
+        query: () => true,
       });
       const result = await service.deleteList(
         listId,
@@ -121,9 +119,7 @@ describe('AppService', () => {
           delete: () => true,
           findOne: jest.fn().mockReturnValue(null),
         }),
-        query: () => {
-          true;
-        },
+        query: () => true,
       });
       await expect(
         service.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
@@ -154,9 +150,7 @@ describe('AppService', () => {
           delete: () => true,
           findOne: jest.fn().mockReturnValue(mockList),
         }),
-        query: () => {
-          true;
-        },
+        query: () => true,
       });
       await expect(
         service.deleteList(listId, organizationDatabase, organization_user_id, userEmail)

@@ -63,7 +63,7 @@ export class ListAnalysisController {
     });
   }
   @Delete(':listId/delete/list')
-  async deletList(
+  async deleteList(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest,
     @Req() request: RequestSchema
@@ -73,6 +73,6 @@ export class ListAnalysisController {
       user: { organizationId },
     } = request;
     const { userEmail } = deleteBodyList;
-    return await this.listAnalysisService.deletList(listId, organizationId, userEmail);
+    return await this.listAnalysisService.deleteList(listId, organizationId, userEmail);
   }
 }

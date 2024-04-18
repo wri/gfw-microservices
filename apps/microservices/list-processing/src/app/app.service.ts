@@ -139,12 +139,11 @@ export class AppService {
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(List);
-      const listFounded = await listRepository.findOne({ where: { id: list_id } });
-      if (!listFounded) {
+      const listFound = await listRepository.findOne({ where: { id: list_id } });
+      if (!listFound) {
         throw new NotFoundException(`List id ${list_id} not found.`);
       }
-      const { lockStatus, lockUserId, listTableName, listAnalysisTableName, listName } =
-        listFounded;
+      const { lockStatus, lockUserId, listTableName, listAnalysisTableName, listName } = listFound;
 
       if (lockStatus === null) {
         //Lock list

@@ -64,7 +64,7 @@ describe('ListAnalysisController', () => {
           useValue: {
             getAnalysisStatus: jest.fn(() => expectedResult),
             getAnalysisStatusWithErrorFileStoragePath: jest.fn(() => expectedResultWithErroPath),
-            deletList: jest.fn(() => true),
+            deleteList: jest.fn(() => true),
           },
         },
         {
@@ -150,10 +150,10 @@ describe('ListAnalysisController', () => {
       },
     });
     const deleteBodyList = { userEmail: 'email@email.com' };
-    const result = await controller.deletList(listId, deleteBodyList, requestMock);
+    const result = await controller.deleteList(listId, deleteBodyList, requestMock);
     expect(result).toBe(true);
   });
-  it('should return unauthorizate when no provide a valid userEmail', async () => {
+  it('should return unauthorized exception when userEmail is not valid', async () => {
     const listId = 123;
 
     // Mock the request object with the 'x-api-key' header
@@ -169,7 +169,7 @@ describe('ListAnalysisController', () => {
       },
     });
     const deleteBodyList = { userEmail: 'email@email.com' };
-    await expect(controller.deletList(listId, deleteBodyList, requestMock)).rejects.toThrowError(
+    await expect(controller.deleteList(listId, deleteBodyList, requestMock)).rejects.toThrowError(
       BadRequestException
     );
   });

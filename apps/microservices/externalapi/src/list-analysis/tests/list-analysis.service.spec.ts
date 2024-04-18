@@ -100,7 +100,7 @@ describe('ListAnalysisService', () => {
       .fn()
       .mockResolvedValue({ id: 1, organization_user_id: 1, userEmail: userEmail });
     axios.delete = jest.fn().mockResolvedValue({ status: 200 });
-    const result = await service.deletList(organizationId, listId, userEmail);
+    const result = await service.deleteList(organizationId, listId, userEmail);
     expect(result).toEqual(true);
   });
   it('should not find a list to delete', async () => {
@@ -127,7 +127,7 @@ describe('ListAnalysisService', () => {
       .fn()
       .mockResolvedValue({ id: 1, organization_user_id: 1, userEmail: userEmail });
     axios.delete = jest.fn().mockResolvedValue({ status: 200 });
-    await expect(service.deletList(organizationId, listId, userEmail)).rejects.toThrowError(
+    await expect(service.deleteList(organizationId, listId, userEmail)).rejects.toThrowError(
       NotFoundException
     );
   });
@@ -150,7 +150,7 @@ describe('ListAnalysisService', () => {
         findOne: () => null,
       }),
     });
-    await expect(service.deletList(organizationId, listId, userEmail)).rejects.toThrowError(
+    await expect(service.deleteList(organizationId, listId, userEmail)).rejects.toThrowError(
       NotFoundException
     );
   });

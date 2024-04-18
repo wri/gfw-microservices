@@ -330,7 +330,7 @@ export class ListAnalysisService {
       groupId: 'default',
     });
   }
-  async deletList(listId: number, organizationId: number, userEmail: string): Promise<boolean> {
+  async deleteList(listId: number, organizationId: number, userEmail: string): Promise<boolean> {
     try {
       const connection = await this.getOrganizationConnection(organizationId);
       const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
@@ -341,15 +341,15 @@ export class ListAnalysisService {
         const user = await this.userService.findUser(organizationId, userEmail);
 
         const URL_DELETE_LIST = `${this.LLP_BASE_URL}/api/delete/list/${listId}`;
+
         const result = await axios.delete(URL_DELETE_LIST, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          params: {
+          data: {
             organization_user_id: user.organization_user_id,
             userEmail: userEmail,
             organizationDatabase: connection.options.database,
-            listId: listId,
+          },
+          headers: {
+            'Content-Type': 'application/json',
           },
         });
         if (result) {

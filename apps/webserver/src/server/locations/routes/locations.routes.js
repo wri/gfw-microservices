@@ -26,7 +26,9 @@ const { saveAsDraftListConfig } = require('../../../config/config/locations.conf
 const { removeExistingVectorTileFromS3 } = require('../../vectorTiles/utils/vectorTile.utils');
 const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
+const { HttpStatus } = require('@nestjs/common');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+const config = require('../../../config/config');
 
 const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
@@ -1147,6 +1149,7 @@ module.exports = (app, limiter) => {
         template_type,
         user_id: organization_user_id,
         startAnalysis,
+        analysis_types: analysisTypes,
       })
       .then(async (response) => {
         console.log(response.data);
@@ -1159,7 +1162,7 @@ module.exports = (app, limiter) => {
         console.log(response);
         res.send(response);
       })
-      .catch((error) => {
+      .catch(async (error) => {
         logger.info(`Error ${LISTS_MICROSERVICE_URL}/process-list`, error);
         const { response } = error;
         const {
@@ -1167,6 +1170,17 @@ module.exports = (app, limiter) => {
           statusText: reason = 'Error /locations/process-list',
           data = {},
         } = response;
+
+        if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
+          req.list = {
+            list_name: listName,
+          };
+
+          await AWSSES.sendErrorNotificatonEmail(
+            req,
+            config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
+          );
+        }
 
         res.status(status).send({
           reason,

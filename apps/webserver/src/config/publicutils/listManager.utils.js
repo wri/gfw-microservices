@@ -496,12 +496,11 @@ const rerunExistingList = (req) => {
   return new Promise((resolve, reject) => {
     console.log('listManager --->>> rerunExistingList');
     const { list_id, list_name, list_locations_count } = req.body;
-    const { organization_database } = req.session;
 
     // Returns list_name, list_table, analysis_table
     const list = listUtils.createListNameSchema(list_name);
     analysisUtils
-      .analyzeList(req, organization_database, list)
+      .analyzeList(req, list)
       .then(async () => {
         // Set list status ID to Pending
         await setListStatus(req, list_id, listStatus.Pending);

@@ -1,13 +1,15 @@
-import { getAccountAnalysisLimits } from '@wri-monorepos/sql';
+import { AnalysisLimit, getAccountAnalysisLimits } from '@wri-monorepos/sql';
 import { combineOrganizationLimits } from '../utils';
 import { getAccountRolloverLimits } from './getAccountRolloverLimits';
 
 export async function getAccountSubscriptionLimits(organizationType: number) {
-  return await getAccountAnalysisLimits({ organizationType });
+  const analysisLimit = await getAccountAnalysisLimits({ organizationType });
+  return transformData(analysisLimit);
 }
 
 export async function getAccountExtraLimits(organizationId: number) {
-  return await getAccountAnalysisLimits({ organizationId });
+  const analysisLimit = await getAccountAnalysisLimits({ organizationId });
+  return transformData(analysisLimit);
 }
 
 export async function getAccountLimits(organizationId: number, organizationType: number) {
@@ -20,4 +22,11 @@ export async function getAccountLimits(organizationId: number, organizationType:
   );
 
   return combineOrganizationLimits(organizationSubscriptionLimits, organizationRolloverLimits);
+}
+
+function transformData(analysisLimit: AnalysisLimit) {
+  return {
+    ...analysisLimit,
+    max_locations_per_year: Number(analysisLimit.max_locations_per_year),
+  };
 }

@@ -102,12 +102,12 @@ export default function AccountProfileLimitsSetting() {
   };
 
   const formatInputValue = (value) => {
-    if(value){
-      return parseInt(value).toLocaleString()
+    if (value) {
+      return parseInt(value).toLocaleString();
     }
-  
+
     return 0;
-  }
+  };
 
   return (
     <Fragment>

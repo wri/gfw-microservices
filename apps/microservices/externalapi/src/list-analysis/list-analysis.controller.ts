@@ -2,11 +2,10 @@ import { Controller, Get, Post, Param, Req, Body } from '@nestjs/common';
 import {
   AlertsGenerateRequest,
   ListAnalysisResponse,
-  UserEmailDto,
   alertsGenerateBodySchema,
-  getListInfo,
   listIdSchema,
 } from './list-analysis.dto';
+import { ListService } from '../lists/lists.service';
 import { ListAnalysisService } from './list-analysis.service';
 import { ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { requestSchema, RequestSchema } from '../types/request-schema';
@@ -16,7 +15,10 @@ import { listInfoResponse } from './list-upload-new.dto';
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
 export class ListAnalysisController {
-  constructor(private readonly listAnalysisService: ListAnalysisService) {}
+  constructor(
+    private readonly listAnalysisService: ListAnalysisService,
+    private readonly list: ListService
+  ) {}
 
   @ApiResponse({ status: 200, type: ListAnalysisResponse })
   @Get(':listId/analysis/:analysisId/status')
@@ -66,13 +68,12 @@ export class ListAnalysisController {
   @Get(':listId')
   async getListInfo(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
-    @Body(new ZodValidationPipe(getListInfo)) listInfoDto: UserEmailDto,
     @Req() request: RequestSchema
   ): Promise<listInfoResponse> {
     const {
       user: { organizationId },
     } = request;
 
-    return await this.listAnalysisService.getListInfo(organizationId, listId);
+    return await this.list.getListInfo(organizationId, listId);
   }
 }

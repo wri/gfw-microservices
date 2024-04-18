@@ -15,6 +15,7 @@ import { OrganizationService } from '../../list-analysis/organization.service';
 import { ListRepositoryMock } from './lists.repository.mock';
 import { ListAnalysisService } from '../../list-analysis/list-analysis.service';
 import { S3Service } from '@wri-monorepos/aws';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 
 describe('ListService', () => {
   let organizationService: OrganizationService;
@@ -176,5 +177,48 @@ describe('ListService', () => {
 
     const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });
     expect(result).toEqual(null);
+  });
+  it('Should get info from list', async () => {
+    const organizationId = 1;
+    const listInformationExpected = {
+      listId: expectedResult.id,
+      listName: expectedResult.listName,
+      locationCount: expectedResult.listLocationsCount,
+    };
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue(listInformationExpected);
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: () => ({ ...expectedResult }),
+      }),
+    });
+
+    const result = await listService.getListInfo(organizationId, listId);
+
+    const resultWithDatesTransformed = {};
+    for (const prop in result) {
+      const value = result[prop];
+      resultWithDatesTransformed[prop] =
+        value instanceof Date ? value.toLocaleDateString('en-US') : value;
+    }
+
+    expect(resultWithDatesTransformed).toEqual(listInformationExpected);
+  });
+  it('Should no found info list', async () => {
+    const organizationId = 1;
+    const listInformationExpected = {
+      listId: expectedResult.id,
+      listName: expectedResult.listName,
+      locationCount: expectedResult.listLocationsCount,
+    };
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue(listInformationExpected);
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: () => null,
+      }),
+    });
+
+    await expect(listService.getListInfo(organizationId, listId)).rejects.toThrowError(
+      NotFoundException
+    );
   });
 });

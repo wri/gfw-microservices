@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Lists } from './lists.entity';
 import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
+import { listInfoResponse } from '../list-analysis/list-upload-new.dto';
 @Injectable()
 export class ListService {
   constructor(
@@ -77,6 +78,31 @@ export class ListService {
       );
     } catch (error) {
       throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
+    }
+  }
+  async getListInfo(organizationId, listId) {
+    try {
+      const organization = await this.getOrganizationDetails(organizationId);
+      const connection = await this.createOrganizationConnection(organization);
+      const listAnalysisStatusRepository = connection.getRepository(Lists);
+      const listFound = await listAnalysisStatusRepository.findOne({
+        where: { id: listId },
+      });
+      if (!listFound) {
+        throw new NotFoundException(`List ${listId} status not found.`);
+      }
+      const listResponse: listInfoResponse = {
+        listId: listFound.id,
+        listName: listFound.listName,
+        locationCount: listFound.listLocationsCount,
+      };
+      return listResponse;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException(error);
+      }
     }
   }
 }

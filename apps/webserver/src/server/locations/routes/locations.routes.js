@@ -31,7 +31,8 @@ const { listStatus } = require(path.resolve('./config/env/listStatuses.constants
 const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
 ));
-const extractAnalysisTypes = require(path.resolve('./server/analytics/utils/extractAnalysisTypes'));
+import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+
 /**
  * @name exports
  * @static
@@ -1136,44 +1137,42 @@ module.exports = (app, limiter) => {
 
     const { LISTS_MICROSERVICE_URL } = process.env;
 
-    getListAnalysisStatusByListId(req, list_id).then((listAnalysisStatusData) => {
-      const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+    axios
+      .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
+        organization_id,
+        list_id,
+        organization_database,
+        subscription_status_id,
+        path: pathLocal,
+        template_type,
+        user_id: organization_user_id,
+        startAnalysis,
+      })
+      .then(async (response) => {
+        console.log(response.data);
+        const listAnalysisStatusData = await getListAnalysisStatus(organization_database, list_id);
+        const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+        // Send email to user that list is submitted to be analysed
+        return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
+      })
+      .then((response) => {
+        console.log(response);
+        res.send(response);
+      })
+      .catch((error) => {
+        logger.info(`Error ${LISTS_MICROSERVICE_URL}/process-list`, error);
+        const { response } = error;
+        const {
+          status = 500,
+          statusText: reason = 'Error /locations/process-list',
+          data = {},
+        } = response;
 
-      axios
-        .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
-          organization_id,
-          list_id,
-          organization_database,
-          subscription_status_id,
-          path: pathLocal,
-          template_type,
-          user_id: organization_user_id,
-          startAnalysis,
-          analysis_types: analysisTypes,
-        })
-        .then((response) => {
-          console.log(response.data);
-          // Send email to user that list is submitted to be analysed
-          return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
-        })
-        .then((response) => {
-          console.log(response);
-          res.send(response);
-        })
-        .catch(({ response }) => {
-          logger.info(`Error /locations/process-list`);
-          const {
-            status = 500,
-            statusText: reason = 'Error /locations/process-list',
-            data = {},
-          } = response;
-
-          res.status(status).send({
-            reason,
-            ...data,
-          });
+        res.status(status).send({
+          reason,
+          ...data,
         });
-    });
+      });
   });
 
   /**
@@ -1194,11 +1193,12 @@ module.exports = (app, limiter) => {
         client_database: req.session.organization_database,
       })
       .then((response) => {
-        console.log(response.data);
+        logger.info(response.data);
         res.send(response.data);
       })
       .catch((err) => {
-        res.send(500, err);
+        logger.info(`Error ${LISTS_MICROSERVICE_URL}/save-list-to-process`, err);
+        res.status(500).send(err);
       });
   });
 

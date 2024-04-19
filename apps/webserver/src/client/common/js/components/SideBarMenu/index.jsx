@@ -7,6 +7,7 @@ import Card from '@mui/material/Card';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Icon from '@material-ui/core/Icon';
+import BillingInfo from './BillingInfo';
 import './SideBarMenu.scss';
 
 function ProfileSideBar({
@@ -27,6 +28,8 @@ function ProfileSideBar({
       item.suscriptionStatus.includes(accountSubscriptionStatus);
     });
   }
+
+  const showBillingInfo = selectedTab === 'account-usage';
 
   return (
     <Box id="sidebar">
@@ -51,6 +54,8 @@ function ProfileSideBar({
           })}
         </List>
       </Card>
+
+      {showBillingInfo && <BillingInfo />}
     </Box>
   );
 }

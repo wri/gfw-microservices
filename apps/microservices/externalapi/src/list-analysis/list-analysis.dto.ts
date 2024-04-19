@@ -57,3 +57,14 @@ export class AlertsGenerateRequest {
   @ApiProperty()
   userEmail: string;
 }
+
+export const getListInfo = z.object({
+  userEmail: z.string().email(),
+});
+
+export type GetLisUsertInfo = z.infer<typeof getListInfo>;
+
+export class UserEmailDto {
+  @ApiProperty()
+  userEmail: string;
+}

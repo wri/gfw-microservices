@@ -52,3 +52,9 @@ export class PrepareUploadRequest {
   @ApiProperty()
   fileType: string;
 }
+
+export class listInfoResponse {
+  listId: number;
+  listName: string;
+  locationCount: number;
+}

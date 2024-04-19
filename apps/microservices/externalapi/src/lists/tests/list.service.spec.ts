@@ -203,7 +203,7 @@ describe('ListService', () => {
 
     expect(resultWithDatesTransformed).toEqual(listInformationExpected);
   });
-  it('Should no found info list', async () => {
+  it('Should not find info list', async () => {
     const organizationId = 1;
     const listInformationExpected = {
       listId: expectedResult.id,

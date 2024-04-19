@@ -3,9 +3,11 @@ import { USER_LIST_LOCATIONS_VECTOR_TILE_LAYER__LOCATIONS_HIGHLIGHT } from '../c
 
 // Utils
 import tileQuery from './queryVectorTile/tileQuery';
+import { getVectorTileLayerHighLightFilter } from './userListLocationsMapVectorTiles.util';
+import { createGraphicFromGeojson } from './userListLocationsMap.util';
 
 // Services
-import { getVectorTileLayerHighLightFilter } from './userListLocationsMapVectorTiles.util';
+import { getListLocationGeometry } from '../services/userListMbtileInfo.service';
 
 /**
  * @description - Get Longitude/Latitude from mouse pointer x and y
@@ -112,4 +114,25 @@ export function getCurrentlySelectedList(joinAllLists, pageParams) {
   return joinAllLists.find((list) => {
     return list.list_name === pageParams.name && list.id === parseInt(pageParams.i, 10);
   });
+}
+
+/**
+ * @description - Get selected Popup Feature ESRI Graphic
+ *
+ * @param {string} listTableName - Selected Popup Feature list table name
+ * @param {Object} selectedPopupFeature - Selected Popup Feature
+ * @return {Object} - Selected Popup Feature ESRI Graphic
+ */
+export async function getSelectedPopupFeatureEsriGraphic(listTableName, selectedPopupFeature) {
+  const { geojson } = await getListLocationGeometry(
+    listTableName,
+    selectedPopupFeature.attributes.location_id
+  );
+
+  const selectedPopupFeatureGraphic = createGraphicFromGeojson(
+    geojson,
+    selectedPopupFeature.attributes
+  );
+
+  return selectedPopupFeatureGraphic;
 }

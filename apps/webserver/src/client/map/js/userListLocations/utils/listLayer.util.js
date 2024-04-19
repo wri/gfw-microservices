@@ -1,35 +1,12 @@
 import {
-  getListLocationGeometry,
   getListMbtileInfo,
 } from '../../../../common/js/userListLocations/services/userListMbtileInfo.service';
 import {
-  createGraphicFromGeojson,
   goToUserListLocations,
   setUserListLocationsVectorTileLayer,
 } from './userListLocationsMap.util';
 import { USER_LIST_LOCATIONS_VECTOR_TILE_LAYER_ID } from '../../config/map.config';
 import { generateUserListLocationsVectorTileLayerStyle } from '../../../../common/js/userListLocations/utils/userListLocationsMapVectorTiles.util';
-
-/**
- * @description - Get selected Popup Feature ESRI Graphic
- *
- * @param {string} listTableName - Selected Popup Feature list table name
- * @param {Object} selectedPopupFeature - Selected Popup Feature
- * @return {Object} - Selected Popup Feature ESRI Graphic
- */
-export async function getSelectedPopupFeatureEsriGraphic(listTableName, selectedPopupFeature) {
-  const { geojson } = await getListLocationGeometry(
-    listTableName,
-    selectedPopupFeature.attributes.location_id
-  );
-
-  const selectedPopupFeatureGraphic = createGraphicFromGeojson(
-    geojson,
-    selectedPopupFeature.attributes
-  );
-
-  return selectedPopupFeatureGraphic;
-}
 
 /**
  * @description - Handle user list locations Vector Tile Layer

@@ -52,7 +52,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
     listId: listID,
   });
 
-  const listAnalysisStatusData = await getListAnalysisStatus(listID);
+  const listAnalysisStatusData = await getListAnalysisStatus(databaseName, listID);
   const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
 
   if (isListLocationOverLimit) {

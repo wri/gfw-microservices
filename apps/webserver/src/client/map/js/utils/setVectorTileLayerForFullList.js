@@ -1,9 +1,7 @@
 import Extent from '@arcgis/core/geometry/Extent';
 import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
 import { USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID } from '../config/map.config';
-import {
-  handleUserListLocationsVectorTileLayer
-} from '../../../common/js/userListLocations/utils/userListLocations.util';
+import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userListLocations/utils/userListLocations.util';
 
 const setVectorTileLayerForFullList = async (listData, transitionListData, view) => {
   const listID = listData[0].features[0].properties.list_id;

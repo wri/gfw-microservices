@@ -6,12 +6,12 @@ import { USER_LIST_LOCATIONS_VECTOR_TILE_LAYER_ID } from '../../../../map/js/con
 import tileQuery from './queryVectorTile/tileQuery';
 import {
   generateUserListLocationsVectorTileLayerStyle,
-  getVectorTileLayerHighLightFilter
+  getVectorTileLayerHighLightFilter,
 } from './userListLocationsMapVectorTiles.util';
 import {
   createGraphicFromGeojson,
   goToUserListLocations,
-  setUserListLocationsVectorTileLayer
+  setUserListLocationsVectorTileLayer,
 } from './userListLocationsMap.util';
 
 // Services

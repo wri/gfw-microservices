@@ -4,7 +4,7 @@ import _isEmpty from 'lodash/isEmpty';
 import { isGfwList } from '../../../common/js/utils/gfw.utils';
 import {
   getCurrentlySelectedList,
-  getSelectedPopupFeatureEsriGraphic
+  getSelectedPopupFeatureEsriGraphic,
 } from '../../../common/js/userListLocations/utils/userListLocations.util';
 
 /**

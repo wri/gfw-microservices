@@ -133,11 +133,11 @@ export default function AccountUsageContainer() {
   };
 
   const getAreasPercentage = (area) => {
-    return ((area / usageData.total_area_analyzed) * 100).toFixed(3);
+    return ((area / usageData.total_area_analyzed) * 100).toFixed(2);
   };
 
   const getAnalysesPercentage = (locations) => {
-    return ((locations / usageData.locations_analyzed) * 100).toFixed(3);
+    return ((locations / usageData.locations_analyzed) * 100).toFixed(2);
   };
 
   return usageData === null ? (

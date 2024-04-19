@@ -101,6 +101,14 @@ export default function AccountProfileLimitsSetting() {
     dialog.setDialogMessage(dialogMessage);
   };
 
+  const formatInputValue = (value) => {
+    if (value) {
+      return parseInt(value).toLocaleString();
+    }
+
+    return 0;
+  };
+
   return (
     <Fragment>
       {/* Subscription Limits */}
@@ -118,7 +126,7 @@ export default function AccountProfileLimitsSetting() {
               {accountProfileStrings.accountLimitsSetting.locationsPerYear}
             </FieldLabel>
             <TextField
-              value={subscriptionLimits?.max_locations_per_year || 0}
+              value={formatInputValue(subscriptionLimits?.max_locations_per_year)}
               disabled={true}
               size="small"
               variant="outlined"
@@ -131,7 +139,7 @@ export default function AccountProfileLimitsSetting() {
               {accountProfileStrings.accountLimitsSetting.areaPerYear}
             </FieldLabel>
             <TextField
-              value={subscriptionLimits?.MaxAreaAnalyzeablePerYear || 0}
+              value={formatInputValue(subscriptionLimits?.MaxAreaAnalyzeablePerYear)}
               disabled={true}
               size="small"
               variant="outlined"
@@ -153,7 +161,7 @@ export default function AccountProfileLimitsSetting() {
               {accountProfileStrings.accountLimitsSetting.locationsPerYear}
             </FieldLabel>
             <TextField
-              value={extraLimits?.max_locations_per_year || 0}
+              value={formatInputValue(extraLimits?.max_locations_per_year)}
               disabled={true}
               size="small"
               variant="outlined"
@@ -166,7 +174,7 @@ export default function AccountProfileLimitsSetting() {
               {accountProfileStrings.accountLimitsSetting.areaPerYear}
             </FieldLabel>
             <TextField
-              value={extraLimits?.MaxAreaAnalyzeablePerYear || 0}
+              value={formatInputValue(extraLimits?.MaxAreaAnalyzeablePerYear)}
               disabled={true}
               size="small"
               variant="outlined"

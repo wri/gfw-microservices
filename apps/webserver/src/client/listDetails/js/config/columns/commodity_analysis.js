@@ -1,5 +1,5 @@
 import React from 'react';
-import IconButtonWrapper from '../../../../locations/js/components/IconButtonWrapper';
+import InfoBubble from '../../../../common/js/components/InfoBubble';
 import { columnHeaders, locationsPage } from '../../../../common/js/config';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
 import {
@@ -47,7 +47,7 @@ const commodity_analysis = [
       <div className="react-table-commodity-risk">
         <span className="title-text" title={transifex(columnHeaders.threatsAndValues)}>
           {transifex(columnHeaders.threatsAndValuesAbbr)}{' '}
-          <IconButtonWrapper id={locationsPage.infoBubbleConfig.threatsAndValues} />
+          <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.threatsAndValues} />
         </span>
       </div>
     ),
@@ -93,7 +93,7 @@ const commodity_analysis = [
       <div className="react-table-commodity-risk">
         <span className="title-text" title={transifex(columnHeaders.threats)}>
           {transifex(columnHeaders.threats)}{' '}
-          <IconButtonWrapper id={locationsPage.infoBubbleConfig.threats} />
+          <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.threats} />
         </span>
       </div>
     ),
@@ -241,7 +241,7 @@ const commodity_analysis = [
       <div className="react-table-commodity-risk">
         <span className="title-text" title={transifex(columnHeaders.values)}>
           {transifex(columnHeaders.values)}{' '}
-          <IconButtonWrapper id={locationsPage.infoBubbleConfig.values} />
+          <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.values} />
         </span>
       </div>
     ),

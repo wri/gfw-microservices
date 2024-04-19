@@ -4,11 +4,9 @@ import Basemap from '@arcgis/core/Basemap';
 import MapView from '@arcgis/core/views/MapView';
 import MapImageLayer from '@arcgis/core/layers/MapImageLayer';
 import Button from '../../../common/js/components/Button';
-import IconButton from 'material-ui/IconButton';
-import InfoIcon from 'material-ui/svg-icons/action/info';
 import ZoomIcon from 'material-ui/svg-icons/action/zoom-out';
-import Popover from 'material-ui/Popover';
 import isEqual from 'lodash/isEqual';
+import InfoBubble from '../../../common/js/components/InfoBubble';
 
 // REDUX - Store
 import store from '../store';
@@ -16,13 +14,11 @@ import {
   decrementZoomLevel,
   saveMap,
   setZoomLevelTotal,
-  updateInfoBubbleCache,
   updateLocationFilter,
   selectAdmin,
 } from '../actions/dashboardActions';
 
 // Components
-import InfoBubbleContent from '../../../common/js/components/InfoBubbleContent';
 import SvgLinearGradients from '../../../common/js/components/SvgLinearGradients';
 
 // Utils
@@ -179,104 +175,17 @@ export default class DashboardMap extends Component {
     );
   };
 
-  checkInfoBubbleCache = (id) => {
-    return this.props.infoBubbleCache.hasOwnProperty(id) && this.props.infoBubbleCache[id] !== null;
-  };
-
-  togglePopover = (evt) => {
-    evt.preventDefault();
-    const target = evt.currentTarget;
-    const infoBubbleId = target.id;
-
-    const { infoBubbleCache } = this.props;
-
-    this.setState({
-      popoverLoading: infoBubbleId,
-    });
-
-    if (this.checkInfoBubbleCache(infoBubbleId)) {
-      this.setState({
-        displayPopover: true,
-        bubbleData: infoBubbleCache[infoBubbleId],
-        popoverLoading: '',
-        anchorEl: target,
-      });
-      // early return if we have the info in cache
-      return;
-    }
-
-    // if the info is not in the cache, go get it
-    const request = new XMLHttpRequest();
-    request.addEventListener('load', () => {
-      const resp = JSON.parse(request.response);
-
-      store.dispatch(updateInfoBubbleCache(infoBubbleId, resp.data));
-
-      this.setState({
-        displayPopover: true,
-        bubbleData: resp.data,
-        popoverLoading: '',
-        anchorEl: target,
-      });
-    });
-
-    request.onerror = () => {
-      Promise.resolve(false);
-    };
-
-    request.open('POST', `${DATA_API_URL}/dataApi/getInfoBubbleData/${infoBubbleId}`);
-    request.send();
-
-    gtag('event', 'info button clicked', {
-      event_category: 'Dashboard Click',
-      event_label: `user clicked on the info button for ${infoBubbleId}`,
-    });
-  };
-
-  closePopover = () => {
-    this.setState({
-      displayPopover: false,
-    });
-  };
-
   render() {
     const { mapTitle, locationFilters, zoomLevelTotal } = this.props;
-    const { showLegendTooltip, bubbleData, popoverLoading, displayPopover, anchorEl } = this.state;
+    const { showLegendTooltip, popoverLoading } = this.state;
 
     return (
       <div className="dashboard-map-legend__container">
-        {/* Overlay ontop of the map */}
-        <Popover
-          open={displayPopover}
-          anchorEl={anchorEl}
-          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={this.closePopover}
-        >
-          <InfoBubbleContent bubbleData={bubbleData} closeBubble={this.closePopover} />
-        </Popover>
         <div className="flex-grid space-between dashboard-map__title">
           <div className="flex-grid-column pad-left">
             <div className="flex-grid align-center space-between title">
               <span>Location Alert Map</span>
-              <IconButton
-                style={{ padding: 0, width: 34 }}
-                className={`metadata-info-button ${
-                  popoverLoading === dashboardPage.infoBubbleConfig.locationsAlertMap
-                    ? 'metadata-icon-loading'
-                    : ''
-                }`}
-                id={dashboardPage.infoBubbleConfig.locationsAlertMap}
-                onClick={this.togglePopover}
-              >
-                <InfoIcon
-                  color={`${
-                    this.props.popoverLoading === dashboardPage.infoBubbleConfig.locationsAlertMap
-                      ? '#262626'
-                      : 'gray'
-                  }`}
-                />
-              </IconButton>
+              <InfoBubble infoBubbleId={dashboardPage.infoBubbleConfig.locationsAlertMap} />
             </div>
             <div className="subtitle">{mapTitle}</div>
           </div>

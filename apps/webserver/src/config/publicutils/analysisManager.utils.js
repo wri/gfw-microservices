@@ -355,7 +355,7 @@ const requestAnalysis = async (req, list_name, geojson = {}, isEdit = false) => 
   // Determine if we're request location or list analysis
   if (typeof geojson === 'object' && Object.keys(geojson).length === 0) {
     // Perform a list analysis
-    analysisUtils.analyzeList(req, organization_database, list);
+    analysisUtils.analyzeList(req, list);
   } else if (
     typeof geojson === 'object' &&
     geojson.hasOwnProperty('type') &&

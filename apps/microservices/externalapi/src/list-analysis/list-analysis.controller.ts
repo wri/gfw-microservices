@@ -7,15 +7,20 @@ import {
   deleteListBodySchema,
   listIdSchema,
 } from './list-analysis.dto';
+import { ListService } from '../lists/lists.service';
 import { ListAnalysisService } from './list-analysis.service';
 import { ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { requestSchema, RequestSchema } from '../types/request-schema';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
 import { analysisIdSchema } from '../types/analysis-id';
+import { listInfoResponse } from './list-upload-new.dto';
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
 export class ListAnalysisController {
-  constructor(private readonly listAnalysisService: ListAnalysisService) {}
+  constructor(
+    private readonly listAnalysisService: ListAnalysisService,
+    private readonly list: ListService
+  ) {}
 
   @ApiResponse({ status: 200, type: ListAnalysisResponse })
   @Get(':listId/analysis/:analysisId/status')
@@ -74,5 +79,16 @@ export class ListAnalysisController {
     } = request;
     const { userEmail } = deleteBodyList;
     return await this.listAnalysisService.deleteList(listId, organizationId, userEmail);
+  }
+  @Get(':listId')
+  async getListInfo(
+    @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
+    @Req() request: RequestSchema
+  ): Promise<listInfoResponse> {
+    const {
+      user: { organizationId },
+    } = request;
+
+    return await this.list.getListInfo(organizationId, listId);
   }
 }

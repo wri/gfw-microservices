@@ -11,7 +11,6 @@ import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { generateRandomFilename } from '@wri-monorepos/shared';
-import { getAnalysisTypesFromIds } from '@wri-monorepos/geo';
 import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from './organization.service';
 import { ListsAnalysisStatus } from './list-analysis-status.entity';
@@ -290,7 +289,6 @@ export class ListAnalysisService {
       template_type: newListDetails.templateId,
       user_id: externalUpload.userId,
       startAnalysis: true,
-      analysis_types: getAnalysisTypesFromIds(newListDetails.analysisIDs),
       isExternalAPIProcess: true,
     });
 

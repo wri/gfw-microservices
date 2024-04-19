@@ -128,7 +128,7 @@ function DraftList({
       )}
       <li
         className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
-        title={locationsPage.landing.pendingMessage}
+        title={locationsPage.landing.draftMessage}
         onClick={clickLocationRow}
       >
         <div className="locations-list__title">
@@ -153,7 +153,10 @@ function DraftList({
         <div className="locations-list__controls">
           <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
 
-          {showRerunOpt && <ListDiagnosticStatusDraft submitForAnalysis={submitForAnalysis} />}
+          <ListDiagnosticStatusDraft
+            submitForAnalysis={submitForAnalysis}
+            hideSubmit={showRerunOpt}
+          />
           {showNonOwnerDraft && (
             <span className="DiagnosticStatusDraft__label">
               <CustomTooltip

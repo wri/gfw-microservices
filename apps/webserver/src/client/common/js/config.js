@@ -1074,6 +1074,8 @@ export const locationsPage = {
     failedMessage: 'Analysis for this list failed. Please click update to try again.',
     pendingMessage:
       'List is analyzing. You will receive an email once analysis is complete and can reload the page to access the results.',
+    draftMessage:
+      'This list contains unanalyzed locations. Please click the submit button to run analysis. Once submitted, your list will not be accessible until analysis is complete.',
     addLocationsPrompt:
       '<p>Upload or enter locations by clicking the <strong>ADD LOCATIONS</strong> button. If you need help, read our <a target="_blank" class="no-lists__how-to" href="https://d1ps9kreypzu9a.cloudfront.net/Training%20Guides/GFW%20Pro%20Tutorials/GFW_Pro_UserGuide.pdf">how-to guide</a>.</p>',
     clearSearch: 'Clear search',
@@ -1550,6 +1552,7 @@ export const locationsPage = {
         '• One or more of the failed locations may be on water. Please remove or correct those locations and re-upload your list.',
         '• If the issue above has been addressed, and your locations are on land, a system interruption may have occurred. Please re-upload your list.',
       ],
+      uploadErrorDialogDownloadMessageTitle: 'Download error file',
     },
     maximumLocations: 'Maximum locations:',
     maximumFilesize: 'Maximum filesize:',
@@ -2693,9 +2696,9 @@ export const locationsPage = {
     tooltipMessage:
       'This location has failed analysis. To receive results, resubmit this list for analysis.',
   },
-  accountIsReachingLimitBanner: 'You have reached over 90% of your usage limits.',
+  accountIsReachingLimitBanner: 'You have reached over 90% of your free usage limits.',
   accountReachingLimitBannerText:
-    'To continue parsing your lists, you need to increase the usage limit.',
+    'After hitting your account limit, new and updated analyses will be unavailable until your account administrator purchases additional usage, or until your free usage limits renew on your annual account renewal date. Administrators may review the Usage dashboard for more information and to place an order.',
 };
 
 export const folderDetailPage = {

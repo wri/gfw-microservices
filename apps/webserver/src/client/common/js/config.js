@@ -2696,9 +2696,9 @@ export const locationsPage = {
     tooltipMessage:
       'This location has failed analysis. To receive results, resubmit this list for analysis.',
   },
-  accountIsReachingLimitBanner: 'You have reached over 90% of your usage limits.',
+  accountIsReachingLimitBanner: 'You have reached over 90% of your free usage limits.',
   accountReachingLimitBannerText:
-    'To continue parsing your lists, you need to increase the usage limit.',
+    'After hitting your account limit, new and updated analyses will be unavailable until your account administrator purchases additional usage, or until your free usage limits renew on your annual account renewal date. Administrators may review the Usage dashboard for more information and to place an order.',
 };
 
 export const folderDetailPage = {

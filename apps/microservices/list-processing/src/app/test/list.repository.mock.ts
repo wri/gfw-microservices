@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 
 export class ListRepositoryMock {
-  findOne = jest.fn(async () => {
+  findOne = jest.fn(() => {
     return {
       listId: 123,
       analysisId: 'FCD',

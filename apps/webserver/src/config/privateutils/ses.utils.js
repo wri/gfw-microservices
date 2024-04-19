@@ -1,7 +1,6 @@
 /* eslint-disable consistent-return */
 /* eslint-disable camelcase */
 /* eslint-disable default-case */
-/* eslint-disable import/no-dynamic-require */
 /** ******************************************************************
 *   @name: ses.utils.js
 *   @description : A utility file to allow calling various
@@ -134,7 +133,7 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
       break;
     case config.platformVars.emailType.ANALYSIS_LIMIT_REACHED:
       title = 'Analysis Limit Exceeded';
-      msg = `<p>You have reached your organization's GFW Pro analysis limit. Please Contact GFW Pro support at <a href="mailto:gfwprosupport@wri.org">gfwprosupport@wri.org</a> for further information. Your list will appear saved in your account as a draft.</p>`;
+      msg = `<p>Please contact our sales team at <a href="mailto:gfwprosales@wri.org">gfwprosales@wri.org</a> to purchase additional usage. You can also refer to our <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet">price list</a> or <a href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model">fee model FAQ page</a> for more information.</p>`;
       hasClosing = false;
       break;
     case config.platformVars.emailType.ORGANIZATION_APPROVED:
@@ -241,7 +240,7 @@ const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => 
   return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
 };
 
-const sendErrorNotificatonEmail = (req, type) => {
+const sendErrorNotificationEmail = (req, type) => {
   const { user_email } = req.session;
   const { list } = req;
 
@@ -270,6 +269,6 @@ module.exports = {
   initialize,
   sendEmail,
   createBodyContent,
-  sendErrorNotificatonEmail,
+  sendErrorNotificationEmail,
   sendEmail__ListSubmittedForAnalysis,
 };

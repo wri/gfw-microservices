@@ -1,5 +1,4 @@
 /* eslint-disable no-shadow */
-/* eslint-disable import/no-dynamic-require */
 /* eslint-disable camelcase */
 const path = require('path');
 const archiver = require('archiver');
@@ -1176,7 +1175,7 @@ module.exports = (app, limiter) => {
             list_name: listName,
           };
 
-          await AWSSES.sendErrorNotificatonEmail(
+          await AWSSES.sendErrorNotificationEmail(
             req,
             config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
           );

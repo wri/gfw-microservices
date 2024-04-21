@@ -33,9 +33,7 @@ const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
-const { getAdministrativeAreasDataByLocation } = require(path.resolve(
-  './queries/system/getAdministrativeAreasDataByLocation'
-));
+import { getAdministrativeAreasDataByLocation } from '@wri-monorepos/sql';
 import { gfwListsIds, gfwListsNames } from '@wri-monorepos/constants';
 
 let adminInfo = [];

@@ -430,6 +430,22 @@ export default class UserProfile extends Component {
     </td>
   );
 
+  createFormaOption = (option, j) => (
+    <td key={j}>
+      <input
+        type="radio"
+        id={option.id + 'forma'}
+        value={option.id}
+        key={j + 'forma'}
+        checked={this.state.formaAlerts === option.id}
+        onChange={(evt) => this.setState({ formaAlerts: parseInt(evt.target.value) })}
+      />
+      <label htmlFor={option.id + 'forma'} className="profile-label">
+        {option.name}
+      </label>
+    </td>
+  );
+
   render() {
     const { dialogOpen, dialogTitle, dialogMessage, updating } = this.state;
     const dialogContent =

@@ -1,4 +1,10 @@
-import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { AlertsGenerateBodySchema, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
@@ -40,7 +46,7 @@ export class ListAnalysisService {
   private readonly AWS_REGION: string;
   private readonly AWS_SECRET_ACCESS_KEY: string;
   private readonly LARGE_PROCESING_LIST_BUCKET: string;
-
+  private readonly logger = new Logger(ListAnalysisResponse.name);
   constructor(
     private config: ConfigService,
     private userService: UserService,
@@ -253,7 +259,7 @@ export class ListAnalysisService {
         throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
       }
 
-      Logger.error('create large list internal error');
+      this.logger.error('create large list internal error');
       throwCustomErrorResponse('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     const listId = largeListCreated.data.list_id;
@@ -286,7 +292,7 @@ export class ListAnalysisService {
       isExternalAPIProcess: true,
     });
 
-    Logger.log('Event analysis response: ', processListResponse.data);
+    this.logger.log('Event analysis response: ', processListResponse.data);
 
     const response: ListUploadNewResponse = {
       uploadId: newListDetails.uploadId,
@@ -321,5 +327,40 @@ export class ListAnalysisService {
       delaySeconds: 0,
       groupId: 'default',
     });
+  }
+  async deleteList(listId: number, organizationId: number, userEmail: string): Promise<boolean> {
+    try {
+      const connection = await this.getOrganizationConnection(organizationId);
+      const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+      const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
+        where: { listId },
+      });
+      if (listAnalysisStatus) {
+        const user = await this.userService.findUser(organizationId, userEmail);
+
+        const URL_DELETE_LIST = `${this.LLP_BASE_URL}/api/delete/list/${listId}`;
+
+        const result = await axios.delete(URL_DELETE_LIST, {
+          data: {
+            organization_user_id: user.organization_user_id,
+            userEmail: userEmail,
+            organizationDatabase: connection.options.database,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        return !!result;
+      } else {
+        throw new NotFoundException();
+      }
+    } catch (error) {
+      this.logger.warn(error);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(error);
+      }
+    }
   }
 }

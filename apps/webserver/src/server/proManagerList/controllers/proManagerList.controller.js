@@ -9,6 +9,7 @@ import {
   getAccountSubscriptionLimits,
   getAccountExtraLimits,
   combineOrganizationLimits,
+  getAccountRolloverLimits,
 } from '@wri-monorepos/shared';
 /**
  * @function proManagerList
@@ -100,16 +101,22 @@ exports.proManagerListAccountDetailData = async (req, res) => {
      */
     if (selectedAccount) {
       if (selectedAccount.organization_status_id !== orgAccountStatus.Pending) {
-        const subscriptionLimits = await getAccountSubscriptionLimits(
+        const subscribed = await getAccountSubscriptionLimits(
           selectedAccount.subscription_status_id
         );
-        const extraLimits = await getAccountExtraLimits(selectedAccount.organization_id);
-        const limits = combineOrganizationLimits(subscriptionLimits, extraLimits);
+        const extended = await getAccountExtraLimits(selectedAccount.organization_id);
+        const rollover = await getAccountRolloverLimits(
+          selectedAccount.organization_id,
+          subscribed,
+          extended
+        );
+
+        const limits = combineOrganizationLimits(subscribed, rollover);
 
         selectedAccount.analysis_limits = {
           limits,
-          subscriptionLimits,
-          extraLimits,
+          subscriptionLimits: subscribed,
+          extraLimits: rollover,
         };
       } else {
         selectedAccount.analysis_limits = null;

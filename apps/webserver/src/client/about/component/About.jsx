@@ -5,8 +5,8 @@ import './About.scss';
 
 const SECTION_LIST = ['About GFW Pro', 'Fees', 'History', 'Tutorials'];
 
-export default function About () {
-  const [sectionOpen, setSectionOpen] = useState('About GFW Pro')
+export default function About() {
+  const [sectionOpen, setSectionOpen] = useState('About GFW Pro');
 
   return (
     <Page>
@@ -32,50 +32,43 @@ export default function About () {
             </ul>
           </aside>
           <div className="page-body__content">
-            {
-              sectionOpen === 'About GFW Pro' && 
+            {sectionOpen === 'About GFW Pro' && (
               <section className="about-gfw-pro">
                 <h3>{aboutPage.aboutTitle}</h3>
                 <div dangerouslySetInnerHTML={{ __html: aboutPage.aboutDescription }} />
               </section>
-            }
-            {
-              sectionOpen === 'Fees' && 
+            )}
+            {sectionOpen === 'Fees' && (
               <section className="fees">
                 <h3>{aboutPage.feesTitle}</h3>
-                {
-                  aboutPage.feesDescription.map((paragraph) => {
-                    return <p dangerouslySetInnerHTML={{ __html: paragraph }} />
-                  })
-                }
+                {aboutPage.feesDescription.map((paragraph) => {
+                  return <p dangerouslySetInnerHTML={{ __html: paragraph }} />;
+                })}
               </section>
-            }
-            {
-              sectionOpen === 'History' && 
+            )}
+            {sectionOpen === 'History' && (
               <section className="history">
                 <h3>{aboutPage.historyTitle}</h3>
                 <div dangerouslySetInnerHTML={{ __html: aboutPage.historyDescription }} />
               </section>
-            }
-            {
-              sectionOpen === 'Tutorials' && 
+            )}
+            {sectionOpen === 'Tutorials' && (
               <section className="tutorials">
                 <h3>{aboutPage.tutorialsTitle}</h3>
-                <p>
-                  {aboutPage.tutorialsDescription}
-                </p>
+                <p>{aboutPage.tutorialsDescription}</p>
                 <p>
                   Visit our{' '}
                   <a
                     href="https://www.globalforestwatch.org/help/gfw-pro/"
                     target="_blank"
-                    rel="noreferrer">
+                    rel="noreferrer"
+                  >
                     Help Center
                   </a>{' '}
                   to see all tutorials.
                 </p>
               </section>
-            }
+            )}
           </div>
         </div>
       </div>

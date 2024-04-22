@@ -189,14 +189,15 @@ export const aboutPage = {
   historyDescription:
     '<p>Anyone with an internet connection can now monitor deforestation in near real-time, in areas as small as a soccer penalty box. The Global Forest Watch (GFW) partnership, convened by World Resources Institute (WRI), has ushered in a new era of radical transparency for forests, enabled by cutting edge satellite imagery, data analysis and communication technologies.</p><p>Since 2014, WRI has been working with companies and financial institutions at the forefront of sustainability to understand how GFW can support implementation of zero-deforestation commitments and promote sustainable commodities production and trade. The GFW Commodities (scheduled to be decommissioned in 2018) application surfaced geospatial data for monitoring and analyzing deforestation risk in oil palm and soy supply chains. In 2016, following consultations with more than 60 finance sector professionals, WRI released a prototype of a GFW Finance application. Many commodity companies and financial institutions showed tremendous interest in and demand for both applications.</p><p>In 2017, WRI proposed to integrate GFW Commodities and Finance functionality into GFW Pro – a common platform built specifically to provide an internal management and decision-support system for companies operating in agricultural supply chains. GFW Pro promises to provide business-ready insights about land-related sustainability performance – starting with, but not limited to, deforestation-free compliance analysis – through a secure and customizable workflow application.</p><p>More than 15 leading companies, financial institutions and NGOs officially endorsed the GFW Pro vision, which was <a href="https://www.wri.org/news/2017/01/release-partnership-launches-increase-transparency-and-traceability-across-supply" target="_blank">formally launched</a> at the World Economic Forum Annual Meeting in January 2017.</p>',
   tutorialsTitle: 'Tutorials',
-  tutorialsDescription: 'Global Forest Watch Pro offers a wide range of content and capabilities to serve a variety of users and purposes. Whether you arrive at GFW Pro with a clear purpose or are simply exploring different features, we can help you learn to use the platform.',
+  tutorialsDescription:
+    'Global Forest Watch Pro offers a wide range of content and capabilities to serve a variety of users and purposes. Whether you arrive at GFW Pro with a clear purpose or are simply exploring different features, we can help you learn to use the platform.',
   feesTitle: 'Fees',
   feesDescription: [
     'Creating and maintaining an account on GFW Pro is free. Our goal is to make GFW Pro available as a public good accessible by all supply chain actors and thereby foster more sustainable commodity sourcing decisions. An annual free grant of 5,000 per-location analyses and 100 million hectares of processing is provided to each organization. For most organizations, this is sufficient for internal operational and sustainability assessments as well as direct reporting to government regulators and nonprofit administrators of voluntary commitments.',
     'To support rapid user growth and increased demand for product upgrades, both of which drive up operational costs, we charge fees for usage that exceeds the free annual allowance, and for licenses to publish, distribute or resell GFW Pro content to third parties.',
     'To maintain GFW Pro as a widely accessible public good, we ask our users to support the platform by paying a fair fee to share analyses and for usage that exceeds the free use limit.',
-    'For more information on GFW Pro packages and prices, please refer to our <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/">price list</a>&nbsp;and <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">license agreement</a>. If you have an existing GFW Pro account, the&nbsp;<a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model/">fee model FAQ page</a>&nbsp;offers additional information and some relevant examples. Otherwise, please <a data-testid="link-with-safety" href="mailto:GFWPROsales@wri.org">contact our sales team for more information</a>'
-  ]
+    'For more information on GFW Pro packages and prices, please refer to our <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/">price list</a>&nbsp;and <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">license agreement</a>. If you have an existing GFW Pro account, the&nbsp;<a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model/">fee model FAQ page</a>&nbsp;offers additional information and some relevant examples. Otherwise, please <a data-testid="link-with-safety" href="mailto:GFWPROsales@wri.org">contact our sales team for more information</a>',
+  ],
 };
 
 export const loginPage = {
@@ -389,7 +390,8 @@ export const loginPage = {
           },
           {
             title: 'Collaborate',
-            description: 'Send aggregated risk and progress assessments to colleagues and generate reports for buyers. Integrate into due diligence processes for the EUDR.',
+            description:
+              'Send aggregated risk and progress assessments to colleagues and generate reports for buyers. Integrate into due diligence processes for the EUDR.',
           },
           {
             title: 'Manage',

@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import { withRouter } from 'react-router-dom';
 import Banner from '../../../../common/js/components/Banners/Banner';
-import UsageLimitBanner from '../../../../common/js/components/Banners/UsageLimitBanner';
+import UsageNearLimitBanner from '../../../../common/js/components/Banners/UsageNearLimitBanner';
+import UsageReachedLimitBanner from '../../../../common/js/components/Banners/UsageReachedLimitBanner';
 import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
@@ -61,6 +62,7 @@ class Landing extends Component {
       mySharedLists: [],
       listsSharedWithMe: [],
       isReachingAccountUsageLimit: false,
+      isReachedAccountUsageLimit: false,
     };
   }
 
@@ -90,8 +92,8 @@ class Landing extends Component {
       const { accountUsagePercentage } = accountUsagePercentageResponse;
 
       this.setState({
-        /* if the account has reached over 90% of usage limit, show the usage limit notice banner */
-        isReachingAccountUsageLimit: accountUsagePercentage >= 90,
+        isReachingAccountUsageLimit: accountUsagePercentage >= 90 && accountUsagePercentage !== 100,
+        isReachedAccountUsageLimit: accountUsagePercentage == 100,
       });
     });
   }
@@ -237,6 +239,7 @@ class Landing extends Component {
       mySharedLists,
       listsSharedWithMe,
       isReachingAccountUsageLimit,
+      isReachedAccountUsageLimit,
     } = this.state;
     const {
       locationCount: counts,
@@ -298,7 +301,7 @@ class Landing extends Component {
     return (
       <div className={`${view === 'landing' ? '' : 'hidden'}`}>
         {isReachingAccountUsageLimit ? (
-          <UsageLimitBanner
+          <UsageNearLimitBanner
             onBannerClose={() =>
               this.setState((prevState) => ({
                 isReachingAccountUsageLimit: !prevState.isReachingAccountUsageLimit,
@@ -306,6 +309,16 @@ class Landing extends Component {
             }
           />
         ) : null}
+
+        {isReachedAccountUsageLimit && (
+          <UsageReachedLimitBanner
+            onBannerClose={() =>
+              this.setState((prevState) => ({
+                isReachingAccountUsageLimit: !prevState.isReachingAccountUsageLimit,
+              }))
+            }
+          />
+        )}
         {bannerContent && (
           <Banner
             className="landing-banner"

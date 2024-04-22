@@ -23,6 +23,8 @@ import {
 import { AppService } from './app.service';
 import { LocationService } from '@wri-monorepos/geo';
 import { ListService } from '../services/list.service';
+import { ZodValidationPipe } from '@wri-monorepos/shared';
+import { deleteListBodySchema } from './types/deleteListRequestSchema';
 @Controller()
 export class AppController {
   constructor(
@@ -161,17 +163,9 @@ export class AppController {
   @Delete('/delete/list/:listId')
   deleteList(
     @Param('listId') listId: number,
-    @Body() deleteBodyList: DeleteListRequest
+    @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest
   ): Promise<string> {
     const { organizationDatabase, organization_user_id, userEmail } = deleteBodyList;
-    if (
-      typeof organizationDatabase === 'undefined' ||
-      typeof organization_user_id === 'undefined' ||
-      typeof userEmail === 'undefined' ||
-      typeof listId === 'undefined'
-    ) {
-      throw new BadRequestException('some parameters are required');
-    }
     return this.appService.deleteList(
       listId,
       organizationDatabase,

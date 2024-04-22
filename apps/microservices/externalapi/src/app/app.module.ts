@@ -44,6 +44,7 @@ export class AppModule {
       .forRoutes(
         '/v1/list/:listId/analysis/:analysisId/status',
         '/v1/list/:listId/analysis/ALERTS/generate',
+        '/v1/list/:listId/delete/list',
         '/v1/list/:listId',
         '/v1/list/upload_new',
         '/v1/prepare_upload'

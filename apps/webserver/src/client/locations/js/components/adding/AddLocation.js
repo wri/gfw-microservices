@@ -64,9 +64,42 @@ muiTheme.fontFamily = 'Fira Sans, sans-serif';
 
 let originalState;
 
+const navigateToFeeInformationPage = () => {
+  window.location.href = '/about#fees';
+};
+
 const DIALOG__SUBMIT_TITLE = 'Confirm Submission';
-const DIALOG__SUBMIT_CONTENT =
-  'Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete.';
+const DIALOG__SUBMIT_CONTENT = (
+  <p>
+    You have successfully created a list in Pro. Please confirm that you wish to submit this list to
+    analysis. Note that running analysis counts towards your account usage limits. See more
+    information{' '}
+    <LinkButton
+      target="_blank"
+      onClick={() => {
+        navigateToFeeInformationPage();
+      }}
+    >
+      here
+    </LinkButton>
+  </p>
+);
+const DIALOG_DRAFT_CONTENT = (
+  <p>
+    You have successfully created a draft list in Pro. Click OKAY to close this window and be
+    navigated back to the Locations page. Your list will be in draft state until you choose to run
+    analysis on it. Note that running analysis counts towards your account usage limits. See more
+    information{' '}
+    <LinkButton
+      target="_blank"
+      onClick={() => {
+        navigateToFeeInformationPage();
+      }}
+    >
+      here
+    </LinkButton>
+  </p>
+);
 
 const generateType = (gfwInfo) => {
   if (!gfwInfo.gfwData.hasOwnProperty('listName')) {
@@ -1882,8 +1915,10 @@ export default class AddLocation extends Component {
     const dropdownOptionsInvestmentCommodity = buildDropdownOptions(
       locationsPage.add.dropdownOptions
     );
+    console.log(`typeof dialogMessage: ${typeof dialogMessage}`, dialogMessage);
+    // debugger;
     const dialogContent =
-      typeof dialogMessage === 'string'
+      typeof dialogMessage === 'string' || React.isValidElement(dialogMessage)
         ? [dialogMessage]
         : dialogMessage.map(this.generateMessages);
     const investmentTemplateTypes = this.state.investmentTemplates.filter((t) => t.id == 6)[0];
@@ -2272,6 +2307,7 @@ export default class AddLocation extends Component {
         <section className="add-single-location__footer">
           <div className="add-single-location__action-buttons">
             <SaveAsDraftButtonWithDialog
+              dialogMessage={DIALOG_DRAFT_CONTENT}
               saveLocations={() => this.saveItem({ isSaveAsDraft: true })}
               disabled={selectedAnalysis.length <= 0}
             />

@@ -19,49 +19,14 @@ import moment from 'moment';
 
 function AccountDetailUsage() {
   const { currentAccount } = useAccountDetail();
+  const accountUsageData = useAccountUsageData();
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
   const [endDate, setEndDate] = useState(endDayIncludingToday);
   const [isLoading, setIsLoading] = useState(true);
-  const [usageData, setUsageData] = useState({});
-  const [accountUsageData, setAccountUsageData] = useState(null);
+  const [dateRangeAccountData, setDateRangeAccountData] = useState({});
 
   const { organization_id: organizationId } = currentAccount;
-  const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = usageData;
-
-  const accountActivationDate = moment(currentAccount.renewalTime);
-  const accountLatestYearStartDate = moment(endDayIncludingToday).subtract(
-    moment().diff(accountActivationDate, 'days') % 365,
-    'days'
-  );
-
-  useEffect(() => {
-    fetch(
-      `/analytics/usage?startDate=${accountLatestYearStartDate.format(
-        'YYYY-MM-DD'
-      )}&endDate=${endDayIncludingToday}&organizationId=${organizationId}`,
-      {
-        method: 'GET',
-        credentials: 'same-origin',
-        headers: {
-          'Content-type': 'application/json',
-        },
-      }
-    )
-      .then((res) => res.json())
-      .then(([data]) => {
-        const { limits: accountLimits } = currentAccount.analysis_limits;
-
-        setAccountUsageData({
-          total_area_analyzed: data.total_area_analyzed,
-          locations_analyzed: data.locations_analyzed,
-          maxLocations: accountLimits.max_locations_per_year,
-          maxArea: accountLimits.MaxAreaAnalyzeablePerYear,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
+  const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = dateRangeAccountData;
 
   useEffect(() => {
     setIsLoading(true);
@@ -77,7 +42,7 @@ function AccountDetailUsage() {
     )
       .then((res) => res.json())
       .then(([data]) => {
-        setUsageData(data);
+        setDateRangeAccountData(data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -122,6 +87,48 @@ function AccountDetailUsage() {
       )}
     </section>
   );
+}
+
+function useAccountUsageData() {
+  const { currentAccount } = useAccountDetail();
+  const { organization_id: organizationId, renewal_time: renewalTime } = currentAccount;
+  const [accountUsageData, setAccountUsageData] = useState(null);
+  const accountActivationDate = moment(renewalTime);
+  const accountLatestYearStartDate = moment(endDayIncludingToday).subtract(
+    moment().diff(accountActivationDate, 'days') % 365,
+    'days'
+  );
+
+  useEffect(() => {
+    fetch(
+      `/analytics/usage?startDate=${accountLatestYearStartDate.format(
+        'YYYY-MM-DD'
+      )}&endDate=${endDayIncludingToday}&organizationId=${organizationId}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then(([data]) => {
+        const { limits: accountLimits } = currentAccount.analysis_limits;
+
+        setAccountUsageData({
+          total_area_analyzed: data.total_area_analyzed,
+          locations_analyzed: data.locations_analyzed,
+          maxLocations: accountLimits.max_locations_per_year,
+          maxArea: accountLimits.MaxAreaAnalyzeablePerYear,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  return accountUsageData;
 }
 
 export default AccountDetailUsage;

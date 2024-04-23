@@ -25,6 +25,7 @@ import { LocationService } from '@wri-monorepos/geo';
 import { ListService } from '../services/list.service';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { deleteListBodySchema } from './types/deleteListRequestSchema';
+import { RequestPreSignedURLSchema } from './validators';
 @Controller()
 export class AppController {
   constructor(
@@ -41,7 +42,9 @@ export class AppController {
    * @returns ResponsePreSignedURLModel
    */
   @Post('/create-presigned-url')
-  generatePreSignedUrl(@Body() request: RequestPreSignedURLModel) {
+  generatePreSignedUrl(
+    @Body(new ZodValidationPipe(RequestPreSignedURLSchema)) request: RequestPreSignedURLModel
+  ) {
     return this.appService.generatePreSignedUrl(
       request.key,
       request.contentType,

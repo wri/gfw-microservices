@@ -341,9 +341,8 @@ const getListAnalyses = (req, list_id) => {
  *   @param  {Object}    req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {String}    list_name - Name of the list
  *   @param  {Object}    geojson - A geojson used for the analysis
- *   @param  {Boolean}   isEdit - A boolean used to determine if we are running a list edit (either a move or copy location)
  */
-const requestAnalysis = async (req, list_name, geojson = {}, isEdit = false) => {
+const requestAnalysis = async (req, list_name, geojson = {}) => {
   // Required to request analysis
   const organization_database = req.session.organization_database;
 
@@ -357,7 +356,7 @@ const requestAnalysis = async (req, list_name, geojson = {}, isEdit = false) => 
   } else if (
     typeof geojson === 'object' &&
     geojson.hasOwnProperty('type') &&
-    geojson.type === 'FeatureCollection'
+    geojson['type'] === 'FeatureCollection'
   ) {
     // Perform a location analysis
     analysisUtils.analyzeLocation(req, organization_database, list, geojson);

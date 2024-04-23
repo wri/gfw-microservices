@@ -14,7 +14,7 @@ import { gfwListsIds } from '@wri-monorepos/constants';
  * @summary Get the corresponding analysis function for this list.
  * @note Each of these function receives the express request object and the current list in context.
  * @param {boolean} isGfwList
- * @param {Number|Int} listId listid
+ * @param {Number} listId
  * @returns {Function}
  */
 const getDiagnosticsAnalysisFunction = (isGfwList, listId) => {

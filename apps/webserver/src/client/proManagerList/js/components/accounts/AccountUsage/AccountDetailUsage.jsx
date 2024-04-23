@@ -52,7 +52,7 @@ function AccountDetailUsage() {
 
   return (
     <section>
-      <AccountUsage {...accountUsageData} />
+      {accountUsageData && <AccountUsage {...accountUsageData} />}
       <Divider sx={{ margin: '1.5rem 0' }} />
       <DateRangeSelector
         startDate={startDate}
@@ -94,10 +94,9 @@ function useAccountUsageData() {
   const { organization_id: organizationId, renewal_time: renewalTime } = currentAccount;
   const [accountUsageData, setAccountUsageData] = useState(null);
   const accountActivationDate = moment(renewalTime);
-  const accountLatestYearStartDate = moment(endDayIncludingToday).subtract(
-    moment().diff(accountActivationDate, 'days') % 365,
-    'days'
-  );
+  const accountLatestYearStartDate = moment(endDayIncludingToday)
+    .clone()
+    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
 
   useEffect(() => {
     fetch(
@@ -113,14 +112,19 @@ function useAccountUsageData() {
       }
     )
       .then((res) => res.json())
-      .then(([data]) => {
+      .then((data) => {
+        if (data?.success === false) {
+          console.warn(data);
+        }
+
+        const [accountUsage = {}] = data;
         const { limits: accountLimits } = currentAccount.analysis_limits;
 
         setAccountUsageData({
-          total_area_analyzed: data.total_area_analyzed,
-          locations_analyzed: data.locations_analyzed,
-          maxLocations: accountLimits.max_locations_per_year,
-          maxArea: accountLimits.MaxAreaAnalyzeablePerYear,
+          total_area_analyzed: accountUsage.total_area_analyzed ?? 0,
+          locations_analyzed: accountUsage.locations_analyzed ?? 0,
+          maxLocations: accountLimits.max_locations_per_year ?? 0,
+          maxArea: accountLimits.MaxAreaAnalyzeablePerYear ?? 0,
         });
       })
       .catch((error) => {

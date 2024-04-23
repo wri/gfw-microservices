@@ -47,29 +47,39 @@ const checkStartBeforeEnd = (startDate, endDate) => {
 };
 
 const getAnalysisUsageData = async ({ startDate, endDate, organizationId }) => {
-  const { error } = validateQueryParams({
-    startDate,
-    endDate,
-  });
-  if (error) {
+  try {
+    const { error } = validateQueryParams({
+      startDate,
+      endDate,
+    });
+    if (error) {
+      return {
+        status: 400,
+        message: {
+          error,
+          success: false,
+        },
+      };
+    }
+    const result = await getOrganizationAnalysisUsage({
+      startDate,
+      endDate,
+      organizationId,
+    });
+
     return {
-      status: 400,
+      status: 200,
+      message: result,
+    };
+  } catch (error) {
+    return {
+      status: 500,
       message: {
-        error,
+        error: error.message,
         success: false,
       },
     };
   }
-  const result = await getOrganizationAnalysisUsage({
-    startDate,
-    endDate,
-    organizationId,
-  });
-
-  return {
-    status: 200,
-    message: result,
-  };
 };
 
 exports.getOrganizationAnalysisUsage = async (req, res) => {

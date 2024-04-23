@@ -1,12 +1,10 @@
 const path = require('path');
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const sql = require('mssql');
-const { getAllListsAnalysisStatus: getAllListsAnalysisStatusQuery } = require(path.resolve(
-  './queries/organization/getAllListsAnalysisStatus'
-));
-const { getListAnalysisStatusById } = require(path.resolve(
-  './queries/organization/getListAnalysisStatusById'
-));
+import {
+  getAllListsAnalysisStatus as getAllListsAnalysisStatusQuery,
+  getListAnalysisStatusById,
+} from '@wri-monorepos/sql';
 
 const getAllListsAnalysisStatus = async (req) => {
   const [response] = await sqlUtils.executeOrganizationQuery(req, getAllListsAnalysisStatusQuery);

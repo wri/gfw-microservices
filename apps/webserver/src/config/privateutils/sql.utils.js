@@ -18,7 +18,7 @@ const sqlite3 = require('sqlite3');
 const sqlite = require('sqlite');
 const winston = require('winston');
 const config = require('../config');
-const sqlQueries = require('./sqlQueries.utils');
+import { getQueryStr } from '@wri-monorepos/sql';
 
 // basic logger without sql transport
 const logger = winston.createLogger({ transports: [new winston.transports.Console()] });
@@ -207,7 +207,8 @@ const mssqlExecuteWithRetries = async (
     if (queryStrParam) {
       baseQuery = queryStrParam;
     } else {
-      baseQuery = sqlQueries.getQueryStr(connectConfig, storedProcedureName);
+      const isSystemQuery = connectConfig.database === process.env.MSSQL_DATABASE;
+      baseQuery = getQueryStr(isSystemQuery, storedProcedureName);
     }
 
     const pool = await getPool(connectConfig);

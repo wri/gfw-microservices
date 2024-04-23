@@ -35,12 +35,12 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
-const { setOrganizationCustomAnalysisLimits } = require(path.resolve(
-  './queries/system/setOrganizationCustomAnalysisLimits'
-));
-const { setGlobalAnalysisLimit } = require(path.resolve('./queries/system/setGlobalAnalysisLimit'));
+import {
+  setOrganizationCustomAnalysisLimits,
+  setGlobalAnalysisLimit,
+  setOrganizationRenewalTime,
+} from '@wri-monorepos/sql';
 const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
-const { setOrganizationRenewalTime } = require('@wri-monorepos/sql');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 
 /**

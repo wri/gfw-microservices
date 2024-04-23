@@ -21,9 +21,7 @@ const sql = require('mssql');
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
-const { getAnalysisDataForProtectedAreasByLocation } = require(path.resolve(
-  './queries/system/getAnalysisDataForProtectedAreasByLocation'
-));
+import { getAnalysisDataForProtectedAreasByLocation } from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
  *   @summary Function to return analysis data for a user list.

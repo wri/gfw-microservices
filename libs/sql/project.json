@@ -14,12 +14,6 @@
         "assets": ["libs/sql/*.md"]
       }
     },
-    "makesql": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx nx run sql:build && cp -r dist/libs/sql/src/lib/queries apps/webserver/src/queries"
-      }
-    },
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],

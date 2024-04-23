@@ -2,7 +2,6 @@ const path = require('path');
 const moment = require('moment');
 const logger = require('../../../config/privateutils/logger.utils');
 const { compiledAssets } = require(path.resolve('./config/config'));
-const { getOrganizationAnalysisUsage } = require('../service/analytics.service');
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 import {
   getAccountExtraLimits,
@@ -15,6 +14,7 @@ import {
   getAccountUsersAnalysisUsage,
   getAccountRenewalTime,
   getAccountAnalysisLimits,
+  getAccountAnalysisUsage,
 } from '@wri-monorepos/sql';
 import { analysisTypes } from '@wri-monorepos/constants';
 const { sendMessageToQueue } = require('../../downloader');
@@ -61,7 +61,7 @@ const getAnalysisUsageData = async ({ startDate, endDate, organizationId }) => {
         },
       };
     }
-    const result = await getOrganizationAnalysisUsage({
+    const result = await getAccountAnalysisUsage({
       startDate,
       endDate,
       organizationId,

@@ -9,7 +9,9 @@ import {
   getAccountSubscriptionLimits,
   getAccountExtraLimits,
   combineOrganizationLimits,
+  getAccountRolloverLimits,
 } from '@wri-monorepos/shared';
+import { getAccountRenewalTime } from '@wri-monorepos/sql';
 /**
  * @function proManagerList
  * @summary
@@ -99,17 +101,25 @@ exports.proManagerListAccountDetailData = async (req, res) => {
      * @see GPV-2228
      */
     if (selectedAccount) {
+      selectedAccount.renewal_time = await getAccountRenewalTime(selectedAccount.organization_id);
+
       if (selectedAccount.organization_status_id !== orgAccountStatus.Pending) {
-        const subscriptionLimits = await getAccountSubscriptionLimits(
+        const subscribed = await getAccountSubscriptionLimits(
           selectedAccount.subscription_status_id
         );
-        const extraLimits = await getAccountExtraLimits(selectedAccount.organization_id);
-        const limits = combineOrganizationLimits(subscriptionLimits, extraLimits);
+        const extended = await getAccountExtraLimits(selectedAccount.organization_id);
+        const rollover = await getAccountRolloverLimits(
+          selectedAccount.organization_id,
+          subscribed,
+          extended
+        );
+
+        const limits = combineOrganizationLimits(subscribed, rollover);
 
         selectedAccount.analysis_limits = {
           limits,
-          subscriptionLimits,
-          extraLimits,
+          subscriptionLimits: subscribed,
+          extraLimits: rollover,
         };
       } else {
         selectedAccount.analysis_limits = null;

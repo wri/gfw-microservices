@@ -59,8 +59,7 @@ export default function AccountUsageContainer() {
       }
     )
       .then((res) => res.json())
-      .then((data) => {
-        const [usageData] = data;
+      .then((usageData) => {
         setUsageData(usageData);
       })
       .catch((error) => {

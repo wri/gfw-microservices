@@ -15,15 +15,18 @@ import { accountProfileStrings } from '../../../../../common/js/config';
 import { useAccountDetail } from '../AccountDetailSection';
 import AccountUsage from '../../../../../profile/js/components/AccountUsage/AccountUsage.jsx';
 import Divider from '@mui/material/Divider';
+import moment from 'moment';
 
 function AccountDetailUsage() {
+  const { currentAccount } = useAccountDetail();
+  const accountUsageData = useAccountUsageData();
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
   const [endDate, setEndDate] = useState(endDayIncludingToday);
   const [isLoading, setIsLoading] = useState(true);
-  const [usageData, setUsageData] = useState({});
-  const { currentAccount } = useAccountDetail();
+  const [dateRangeAccountData, setDateRangeAccountData] = useState({});
+
   const { organization_id: organizationId } = currentAccount;
-  const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = usageData;
+  const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = dateRangeAccountData;
 
   useEffect(() => {
     setIsLoading(true);
@@ -38,8 +41,8 @@ function AccountDetailUsage() {
       }
     )
       .then((res) => res.json())
-      .then(([data]) => {
-        setUsageData(data);
+      .then((data) => {
+        setDateRangeAccountData(data);
         setIsLoading(false);
       })
       .catch((error) => {
@@ -47,17 +50,9 @@ function AccountDetailUsage() {
       });
   }, [startDate, endDate]);
 
-  const accountLimits = currentAccount.analysis_limits.limits;
-  const accountUsageData = {
-    total_area_analyzed,
-    locations_analyzed: number_of_lists_analyzed,
-    maxLocations: accountLimits.max_locations_per_year,
-    maxArea: accountLimits.MaxAreaAnalyzeablePerYear,
-  };
-
   return (
     <section>
-      <AccountUsage {...accountUsageData} />
+      {accountUsageData && <AccountUsage {...accountUsageData} />}
       <Divider sx={{ margin: '1.5rem 0' }} />
       <DateRangeSelector
         startDate={startDate}
@@ -92,6 +87,50 @@ function AccountDetailUsage() {
       )}
     </section>
   );
+}
+
+function useAccountUsageData() {
+  const { currentAccount } = useAccountDetail();
+  const { organization_id: organizationId, renewal_time: renewalTime } = currentAccount;
+  const [accountUsageData, setAccountUsageData] = useState(null);
+  const accountActivationDate = moment(renewalTime);
+  const accountLatestYearStartDate = moment(endDayIncludingToday)
+    .clone()
+    .subtract(moment().diff(accountActivationDate, 'days') % 365, 'days');
+
+  useEffect(() => {
+    fetch(
+      `/analytics/usage?startDate=${accountLatestYearStartDate.format(
+        'YYYY-MM-DD'
+      )}&endDate=${endDayIncludingToday}&organizationId=${organizationId}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then((accountUsage) => {
+        if (accountUsage?.success === false) {
+          console.warn(accountUsage);
+        }
+        const { limits: accountLimits } = currentAccount.analysis_limits;
+
+        setAccountUsageData({
+          total_area_analyzed: accountUsage.total_area_analyzed ?? 0,
+          locations_analyzed: accountUsage.locations_analyzed ?? 0,
+          maxLocations: accountLimits.max_locations_per_year ?? 0,
+          maxArea: accountLimits.MaxAreaAnalyzeablePerYear ?? 0,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  return accountUsageData;
 }
 
 export default AccountDetailUsage;

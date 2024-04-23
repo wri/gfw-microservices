@@ -7,13 +7,20 @@ export default function LegalBanner() {
   return (
     <Card>
       <CardContent>
-        <p>GFW Pro offers a significant annual grant of free annual usage that may be shared across entities in the same organization or enterprise.​</p>
-        <p>Usage beyond that annual grant or external sharing of output analyses with other organizations requires purchase of additional usage or licenses.​</p>
-        <p>For more information, please consult the 
-          {' '}
+        <p>
+          GFW Pro offers a significant annual grant of free annual usage that may be shared across
+          entities in the same organization or enterprise.​
+        </p>
+        <p>
+          Usage beyond that annual grant or external sharing of output analyses with other
+          organizations requires purchase of additional usage or licenses.​
+        </p>
+        <p>
+          For more information, please consult the{' '}
           <a href={priceSheet} className="gfw-green" target="_blank">
             Price Sheet
-          </a> and{' '}
+          </a>{' '}
+          and{' '}
           <a href={licenseAgreement} className="gfw-green" target="_blank">
             License Agreement
           </a>

@@ -115,16 +115,8 @@ export default class UserProfile extends Component {
     );
   };
 
-  assignState = (state) => {
-    this.setState(state);
-  };
-
   updateFirst = (evt) => {
     this.setState({ first_name: evt.target.value });
-  };
-
-  updateMiddle = (evt) => {
-    this.setState({ middle_initial: evt.target.value });
   };
 
   updateLastName = (evt) => {
@@ -167,11 +159,6 @@ export default class UserProfile extends Component {
 
   updateEmailPrefs = () => {
     this.setState({ enableAlerts: !this.state.enableAlerts });
-  };
-
-  updateSecondAuth = (evt) => {
-    const authId = evt.target.id === 'secondLevelAuthenticationEmail' ? 'email' : 'google';
-    this.setState({ secondAuth: authId });
   };
 
   activateUser = () => {
@@ -217,10 +204,6 @@ export default class UserProfile extends Component {
   back = () => {
     window.location.href = '/pro-manager-list?tab=users';
   };
-
-  // createClassOptions = (option, i) => {
-  //   return <option value={option.id} id={option.id} key={i} className='classifications-option'>{option.classification_name}</option>;
-  // }
 
   createGeogOptions = (option) => {
     return { label: option.geography_name, value: option.id };
@@ -414,38 +397,6 @@ export default class UserProfile extends Component {
     </td>
   );
 
-  createGranChacoOption = (option, j) => (
-    <td key={j}>
-      <input
-        type="radio"
-        id={option.id + 'granChaco'}
-        value={option.id}
-        key={j + 'granChaco'}
-        checked={this.state.granChacoAlerts === option.id}
-        onChange={(evt) => this.setState({ granChacoAlerts: parseInt(evt.target.value) })}
-      />
-      <label htmlFor={option.id + 'granChaco'} className="profile-label">
-        {option.name}
-      </label>
-    </td>
-  );
-
-  createFormaOption = (option, j) => (
-    <td key={j}>
-      <input
-        type="radio"
-        id={option.id + 'forma'}
-        value={option.id}
-        key={j + 'forma'}
-        checked={this.state.formaAlerts === option.id}
-        onChange={(evt) => this.setState({ formaAlerts: parseInt(evt.target.value) })}
-      />
-      <label htmlFor={option.id + 'forma'} className="profile-label">
-        {option.name}
-      </label>
-    </td>
-  );
-
   render() {
     const { dialogOpen, dialogTitle, dialogMessage, updating } = this.state;
     const dialogContent =
@@ -464,18 +415,10 @@ export default class UserProfile extends Component {
 
     const viirsOptions = profilePage.userProfile.viirsEmailFrequencies.map(this.createViirsOption);
     const gladOptions = profilePage.userProfile.gladEmailFrequencies.map(this.createGladOption);
-    const formaOptions = profilePage.userProfile.formaEmailFrequencies.map(this.createFormaOption);
-    const granChacoOptions = profilePage.userProfile.granChacoEmailFrequencies.map(
-      this.createGranChacoOption
-    );
-
     const commOptions = this.props.commoditiesData.map(this.createCommOptions);
     const geogOptions = this.props.geographiesData.map(this.createGeogOptions);
     const titleOptions = this.props.titlesData.map(this.createTitleOptions);
-    const hiddenAccess =
-      this.props.currentUser.org_status === 1 && this.props.currentUser.user_status_id === 1
-        ? 'hidden'
-        : '';
+
     return (
       <div className="profile-body">
         <Dialog
@@ -702,10 +645,6 @@ export default class UserProfile extends Component {
                   <tr>
                     <td>GLAD Alerts</td>
                     {gladOptions}
-                  </tr>
-                  <tr>
-                    <td>FORMA Alerts</td>
-                    {formaOptions}
                   </tr>
                 </tbody>
               </table>

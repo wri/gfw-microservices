@@ -11,6 +11,7 @@ import {
   combineOrganizationLimits,
   getAccountRolloverLimits,
 } from '@wri-monorepos/shared';
+import { getAccountRenewalTime } from '@wri-monorepos/sql';
 /**
  * @function proManagerList
  * @summary
@@ -100,6 +101,8 @@ exports.proManagerListAccountDetailData = async (req, res) => {
      * @see GPV-2228
      */
     if (selectedAccount) {
+      selectedAccount.renewalTime = await getAccountRenewalTime(selectedAccount.organization_id);
+
       if (selectedAccount.organization_status_id !== orgAccountStatus.Pending) {
         const subscribed = await getAccountSubscriptionLimits(
           selectedAccount.subscription_status_id

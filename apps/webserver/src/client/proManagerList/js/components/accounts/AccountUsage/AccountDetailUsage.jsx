@@ -15,15 +15,53 @@ import { accountProfileStrings } from '../../../../../common/js/config';
 import { useAccountDetail } from '../AccountDetailSection';
 import AccountUsage from '../../../../../profile/js/components/AccountUsage/AccountUsage.jsx';
 import Divider from '@mui/material/Divider';
+import moment from 'moment';
 
 function AccountDetailUsage() {
+  const { currentAccount } = useAccountDetail();
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
   const [endDate, setEndDate] = useState(endDayIncludingToday);
   const [isLoading, setIsLoading] = useState(true);
   const [usageData, setUsageData] = useState({});
-  const { currentAccount } = useAccountDetail();
+  const [accountUsageData, setAccountUsageData] = useState(null);
+
   const { organization_id: organizationId } = currentAccount;
   const { number_of_lists_analyzed, max_area_analyzed, total_area_analyzed } = usageData;
+
+  const accountActivationDate = moment(currentAccount.renewalTime);
+  const accountLatestYearStartDate = moment(endDayIncludingToday).subtract(
+    moment().diff(accountActivationDate, 'days') % 365,
+    'days'
+  );
+
+  useEffect(() => {
+    fetch(
+      `/analytics/usage?startDate=${accountLatestYearStartDate.format(
+        'YYYY-MM-DD'
+      )}&endDate=${endDayIncludingToday}&organizationId=${organizationId}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+    )
+      .then((res) => res.json())
+      .then(([data]) => {
+        const { limits: accountLimits } = currentAccount.analysis_limits;
+
+        setAccountUsageData({
+          total_area_analyzed: data.total_area_analyzed,
+          locations_analyzed: data.locations_analyzed,
+          maxLocations: accountLimits.max_locations_per_year,
+          maxArea: accountLimits.MaxAreaAnalyzeablePerYear,
+        });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -46,14 +84,6 @@ function AccountDetailUsage() {
         console.log(error);
       });
   }, [startDate, endDate]);
-
-  const accountLimits = currentAccount.analysis_limits.limits;
-  const accountUsageData = {
-    total_area_analyzed,
-    locations_analyzed: number_of_lists_analyzed,
-    maxLocations: accountLimits.max_locations_per_year,
-    maxArea: accountLimits.MaxAreaAnalyzeablePerYear,
-  };
 
   return (
     <section>

@@ -10,6 +10,8 @@ import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
 import { locationsPage } from '../../../common/js/config';
 import InfoBubble from '../../../common/js/components/InfoBubble';
+import getAnalysisAvailabilityMessage from '../common/getAnalysisAvailabilityMessage';
+
 import '../common/DiagnosticsContainer.scss';
 
 function AfiDiagnostics() {
@@ -87,7 +89,12 @@ function AfiDiagnostics() {
       });
   }, [listId]);
 
-  const { list_name } = selectedList;
+  const { list_name, list_status_id, listAnalysesStatus } = selectedList;
+
+  const { DiagnosticsStatusMessage, isListBeingAnalyzed } = getAnalysisAvailabilityMessage(
+    list_status_id,
+    listAnalysesStatus
+  );
 
   return (
     <>
@@ -104,7 +111,8 @@ function AfiDiagnostics() {
           <CircularProgress color="success" />
         </div>
       )}
-      {!isLoading && (
+      {!isLoading && DiagnosticsStatusMessage && DiagnosticsStatusMessage}
+      {!isLoading && !isListBeingAnalyzed && (
         <div style={{ backgroundColor: 'rgb(250, 250, 250)' }}>
           <DiagnosticsMenuBar
             listId={listId}

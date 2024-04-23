@@ -4,6 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Diagnostics from './Diagnostics';
 import { diagnosticsStrings } from '../../../common/js/config';
 import { useQuery } from '../../../common/js/hooks';
+import getAnalysisAvailabilityMessage from '../common/getAnalysisAvailabilityMessage';
 
 const mapStateToProps = ({ infoBubbleCache, popover }) => ({ infoBubbleCache, popover });
 
@@ -72,6 +73,13 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
 
   const { displayPopover, bubbleData, popoverLoading, anchorEl } = popover;
 
+  const { list_status_id, listAnalysesStatus } = selectedList;
+
+  const { DiagnosticsStatusMessage, isListBeingAnalyzed } = getAnalysisAvailabilityMessage(
+    list_status_id,
+    listAnalysesStatus
+  );
+
   return (
     <>
       {isLoading && (
@@ -87,6 +95,7 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
           <CircularProgress color="success" />
         </div>
       )}
+      {!isLoading && DiagnosticsStatusMessage && DiagnosticsStatusMessage}
       {!isLoading && !selectedList && !processedListData && (
         <div
           style={{
@@ -100,7 +109,7 @@ function ForestChangeDiagnostics({ popover, infoBubbleCache }) {
           <h2>{diagnosticsStrings.listOrLocationNotFound}</h2>
         </div>
       )}
-      {!isLoading && selectedList && processedListData && (
+      {!isLoading && selectedList && processedListData && !isListBeingAnalyzed && (
         <Diagnostics
           selectedList={selectedList}
           listId={listId}

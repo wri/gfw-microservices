@@ -87,7 +87,6 @@ import {
   updateRegularListActiveTemplate,
 } from '../../utils/lists-redux.utils';
 import LargeListEditing from './EditList/LargeListEditing/LargeListEditing';
-import { closePopover } from '../../../../locations/js/utils/togglePopover';
 import ShareList from '../../../../locations/js/components/ShareList/ShareList';
 import { EditList } from './EditList/EditList';
 import redirectToPage from '../../../../common/js/utils/redirect';

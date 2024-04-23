@@ -47,20 +47,20 @@ const checkStartBeforeEnd = (startDate, endDate) => {
 };
 
 const getAnalysisUsageData = async ({ startDate, endDate, organizationId }) => {
-  const { error } = validateQueryParams({
-    startDate,
-    endDate,
-  });
-  if (error) {
-    return {
-      status: 400,
-      message: {
-        error,
-        success: false,
-      },
-    };
-  }
   try {
+    const { error } = validateQueryParams({
+      startDate,
+      endDate,
+    });
+    if (error) {
+      return {
+        status: 400,
+        message: {
+          error,
+          success: false,
+        },
+      };
+    }
     const result = await getAccountAnalysisUsage({
       startDate,
       endDate,
@@ -71,11 +71,13 @@ const getAnalysisUsageData = async ({ startDate, endDate, organizationId }) => {
       status: 200,
       message: result,
     };
-  } catch (err) {
-    logger.error('Error in getAnalysisUsageData', err);
+  } catch (error) {
     return {
       status: 500,
-      message: err,
+      message: {
+        error: error.message,
+        success: false,
+      },
     };
   }
 };

@@ -41,7 +41,7 @@ function AccountDetailUsage() {
       }
     )
       .then((res) => res.json())
-      .then(([data]) => {
+      .then((data) => {
         setDateRangeAccountData(data);
         setIsLoading(false);
       })
@@ -112,12 +112,10 @@ function useAccountUsageData() {
       }
     )
       .then((res) => res.json())
-      .then((data) => {
-        if (data?.success === false) {
-          console.warn(data);
+      .then((accountUsage) => {
+        if (accountUsage?.success === false) {
+          console.warn(accountUsage);
         }
-
-        const [accountUsage = {}] = data;
         const { limits: accountLimits } = currentAccount.analysis_limits;
 
         setAccountUsageData({

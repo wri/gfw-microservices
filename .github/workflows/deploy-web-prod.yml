@@ -75,7 +75,6 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         run: |
-          npx nx run sql:makesql
           npx nx run webserver:build
           SHORT_SHA_COMMIT=$(git rev-parse --short HEAD)
           docker build --build-arg NODE_ENV=${{ env.NODE_ENV }} --build-arg LATEST_COMMIT=$SHORT_SHA_COMMIT -f apps/webserver/Dockerfile  -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .

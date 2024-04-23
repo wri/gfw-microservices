@@ -134,14 +134,19 @@ exports.getMyOrganizationUsersAnalysisUsage = async (req, res) => {
 exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
   let { organization_id, subscription_status_id } = req.session;
 
-  const accountUsagePercentage = await getAccountUsagePercentage({
-    organizationId: organization_id,
-    subscriptionStatusId: subscription_status_id,
-  });
+  try {
+    const accountUsagePercentage = await getAccountUsagePercentage({
+      organizationId: organization_id,
+      subscriptionStatusId: subscription_status_id,
+    });
 
-  res.status(200).send({
-    accountUsagePercentage,
-  });
+    res.status(200).send({
+      accountUsagePercentage,
+    });
+  } catch (error) {
+    logger.error('Error in getMyOrganizationAnalysisUsagePercentage', error);
+    res.status(500).send(error);
+  }
 };
 
 exports.getMyOrganizationAnalysisLimit = async (req, res) => {

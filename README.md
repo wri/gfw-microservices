@@ -44,26 +44,6 @@ another host if your redis confguration requires a different IP address.
 REDIS_HOST=127.0.0.1
 ```
 
-##### Stored procedures
-
-This step was previously necessary because the webserver component didn't support typescript,
-but webserver can use typescript now, so this could be removed soon with some changes on how
-the queries are imported. In the meantime, the following command needs to be run to typescript
-queries into regular javascript code and placed in a directory webserver knows to consume.
-
-> run the following command for a one-time query conversion
-
-```sh
-npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries
-```
-
-When actively modifying stored procedures, it will be useful to continuously convert the queries
-with the following command
-
-```sh
-npx tsc ./libs/sql/src/lib/queries/index.ts --outDir ./apps/webserver/src/queries --watch
-```
-
 ##### Tippecanoe
 
 Tippecanoe is a software package that is used to generate mapbox vector tiles for lists.

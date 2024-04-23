@@ -5,7 +5,7 @@ import { licenseAgreement, priceSheet } from '../../../common/js/config';
 
 export default function LegalBanner() {
   return (
-    <Card>
+    <Card style={{marginTop: '29px'}}>
       <CardContent>
         <p>
           GFW Pro offers a significant annual grant of free annual usage that may be shared across

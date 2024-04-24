@@ -6,7 +6,7 @@ import IconDraftNote from '../icon/IconDraftNote';
 const BORDER = '1px solid #ccc';
 const BACKGROUND_COLOR = '#fcfcfc';
 
-const LightTooltip = withStyles((theme) => ({
+const LightTooltip = withStyles(() => ({
   arrow: {
     '&::before': {
       border: BORDER,
@@ -29,15 +29,19 @@ export default function CustomTooltip({
   placement,
   iconWidth = 15,
   iconHeight = 18,
+  style,
+  children,
 }) {
   return (
-    <div>
-      <LightTooltip title={tooltipMessage} placement={placement} arrow>
+    <LightTooltip title={tooltipMessage} placement={placement} style={style} arrow>
+      {children ? (
+        children
+      ) : (
         <span style={{ color: '#97bd3d', display: 'flex', alignItems: 'center', gap: 5 }}>
           {label && label}
           {<IconDraftNote width={iconWidth} height={iconHeight} />}
         </span>
-      </LightTooltip>
-    </div>
+      )}
+    </LightTooltip>
   );
 }

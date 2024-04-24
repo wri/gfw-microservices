@@ -32,7 +32,8 @@
     "serve": {
       "executor": "@nx/js:node",
       "options": {
-        "buildTarget": "microservices-list-processing:build"
+        "buildTarget": "microservices-list-processing:build",
+        "runBuildTargetDependencies": true
       }
     },
     "lint": {

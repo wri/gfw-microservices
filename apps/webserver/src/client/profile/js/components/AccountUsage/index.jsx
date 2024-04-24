@@ -139,11 +139,11 @@ export default function AccountUsageContainer() {
     return ((locations / usageData.locations_analyzed) * 100).toFixed(2);
   };
 
-  return usageData === null ? (
+  return usageData === null || usageLimitsData === null ? (
     <InlineLoader />
   ) : (
     <>
-      <Alert severity={messageType}>{messageText}</Alert>
+      {messageType !== '' && <Alert severity={messageType}>{messageText}</Alert>}
       <p style={renewalTextStyle}>Account renewal on {subscriptionYearEnd}</p>
 
       <AccountUsageDropMenu export={exportUsage} />

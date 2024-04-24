@@ -172,8 +172,6 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
         chartsConfiguration[2].chartLabels
       );
       break;
-    default:
-      break;
   }
 
   return (

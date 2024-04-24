@@ -67,7 +67,7 @@ export class ListAnalysisController {
       listId,
     });
   }
-  @Delete(':listId/delete/list')
+  @Delete(':listId')
   async deleteList(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest,

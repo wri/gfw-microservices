@@ -10,18 +10,25 @@ import getTreeCoverLossArgOtbnYearlyData from '../OtbnCharts/TreeCoverLossArgent
 import DiagnosticsChartHeader from '../../common/DiagnosticsChartHeader';
 import { formatDecimals } from '../../../../common/js/utils/diagnostics.utils';
 import { chartDatasetConfigs } from './regions.constants';
-import '../../common/DiagnosticsChartContainer.scss';
+import { getBarChartData } from './getBarChartData';
 import { useQuery } from '../../../../common/js/hooks';
+import '../../common/DiagnosticsChartContainer.scss';
 
 function RegionChartArgentina({ listId, data, fireDownload }) {
   const query = useQuery();
   const locationId = query.get('locationId');
-  const { argentinaOtbn, argentinaTreeCoverLoss, wdpaOverlapCountry, landmarkOverlapCountry } =
-    chartDatasetConfigs;
+  const {
+    argentinaOtbn,
+    argentinaTreeCoverLoss,
+    protectedAreas,
+    wdpaOverlapCountry,
+    landmarkOverlapCountry,
+  } = chartDatasetConfigs;
 
   const [chartsConfiguration, setChartsConfiguration] = useState([
     argentinaOtbn,
     argentinaTreeCoverLoss,
+    protectedAreas,
   ]);
 
   const [selectedOptionId, setSelectedOptionId] = useState(chartsConfiguration[0].id);
@@ -143,67 +150,29 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       });
   }, [listId]);
 
-  const filterDataByYearRange = (data, startYear, endYear) => {
-    return data.filter((entry) => {
-      const year = entry.x; // 'x' represents the year
-      return year >= startYear && year <= endYear;
-    });
-  };
-
-  const hansenTreeCoverLoss = argentinaPieChartsData.country?.tree_cover_loss;
-
-  const filteredHansenTreeCoverLoss = hansenTreeCoverLoss
-    ? [
-        {
-          id: 'tree cover loss',
-          data: filterDataByYearRange(
-            hansenTreeCoverLoss.map(({ year, value }) => ({
-              x: year,
-              y: value,
-            })),
-            dateRange.startYear,
-            dateRange.endYear
-          ),
-          color: 'rgb(239,102,154)',
-        },
-      ]
-    : [];
-
-  const country_specific_deforestation =
-    argentinaPieChartsData.country?.country_specific_deforestation;
-
-  const filteredCountrySpecificDeforestation = country_specific_deforestation
-    ? [
-        {
-          id: 'argentina deforestation',
-          data: filterDataByYearRange(
-            country_specific_deforestation.map(({ year, value, approximateValue }) => ({
-              x: year,
-              y: value,
-              color: approximateValue ? 'rgba(34,153,102,0.5)' : 'rgba(34,153,102,1)',
-            })),
-            dateRange.startYear,
-            dateRange.endYear
-          ),
-        },
-      ]
-    : [];
-
   const WDPA = formatDecimals(argentinaPieChartsData.WDPA);
   const landmark = formatDecimals(argentinaPieChartsData.landmark);
 
-  const treeCoverLossBarChartData = chartsConfiguration[1].chartLabels
-    .filter((label) => label.checked) // Filter out checked chart labels
-    .flatMap((label) => {
-      // Map over filtered labels to push corresponding data
-      if (label.id === 'hansenTreeCoverLoss') return filteredHansenTreeCoverLoss;
-      if (label.id === 'country_specific_deforestation')
-        return filteredCountrySpecificDeforestation;
-      return []; // Return empty array for labels not matching any condition
-    });
-
-  const barChartData =
-    selectedOptionId === argentinaOtbn.id ? otbnBarChartData : treeCoverLossBarChartData;
+  let barChartData = [];
+  switch (selectedOptionId) {
+    case argentinaOtbn.id:
+      barChartData = otbnBarChartData;
+      break;
+    case argentinaTreeCoverLoss.id:
+      barChartData = getBarChartData(
+        argentinaPieChartsData,
+        dateRange,
+        chartsConfiguration[1].chartLabels
+      );
+      break;
+    case protectedAreas.id:
+      barChartData = getBarChartData(
+        argentinaPieChartsData,
+        dateRange,
+        chartsConfiguration[2].chartLabels
+      );
+      break;
+  }
 
   return (
     <>

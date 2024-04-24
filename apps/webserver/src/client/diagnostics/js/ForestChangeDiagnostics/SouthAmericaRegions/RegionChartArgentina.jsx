@@ -153,7 +153,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
   const WDPA = formatDecimals(argentinaPieChartsData.WDPA);
   const landmark = formatDecimals(argentinaPieChartsData.landmark);
 
-  let barChartData;
+  let barChartData = [];
   switch (selectedOptionId) {
     case argentinaOtbn.id:
       barChartData = otbnBarChartData;
@@ -173,7 +173,6 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       );
       break;
     default:
-      barChartData = [];
       break;
   }
 

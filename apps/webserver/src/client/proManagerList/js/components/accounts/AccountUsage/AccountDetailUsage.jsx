@@ -112,8 +112,8 @@ function AccountUsageInfoBubbles() {
     )
       .then((res) => res.json())
       .then((data) => {
-        if (accountUsage?.success === false) {
-          console.warn(accountUsage);
+        if (data?.success === false) {
+          console.warn(data);
         }
 
         const [accountUsage = {}] = data;

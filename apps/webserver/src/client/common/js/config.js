@@ -203,10 +203,9 @@ export const loginPage = {
       buttonText: 'Contact us',
     },
     subscribe: {
-      paragraphText:
-        'Follow us on LinkedIn to see the latest news and updates from GFW Pro',
+      paragraphText: 'Follow us on LinkedIn to see the latest news and updates from GFW Pro',
       buttonText: 'GFW LinkedIn page',
-      link: 'https://www.linkedin.com/showcase/globalforestwatch/'
+      link: 'https://www.linkedin.com/showcase/globalforestwatch/',
     },
   },
   latestResearchTitle: 'Latest Research and Insights',

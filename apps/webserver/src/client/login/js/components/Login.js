@@ -494,10 +494,11 @@ export default class Login extends Component {
             </div>
             <div className="split__right">
               <p>{loginPage.moreInfo.subscribe.paragraphText}</p>
-              <a 
+              <a
                 href={loginPage.moreInfo.subscribe.link}
                 target="_blank"
-                className="button button--secondary">
+                className="button button--secondary"
+              >
                 {loginPage.moreInfo.subscribe.buttonText}
               </a>
             </div>

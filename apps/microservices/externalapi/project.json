@@ -27,7 +27,8 @@
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "microservices-externalapi:build"
+        "buildTarget": "microservices-externalapi:build",
+        "runBuildTargetDependencies": true
       },
       "configurations": {
         "development": {

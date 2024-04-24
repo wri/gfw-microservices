@@ -1,9 +1,16 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Organization } from './organization.entity';
 
 @Entity({ name: 'FeatureFlags' })
 export class FeatureFlag {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column('text', { name: 'flag_id' })

@@ -1,19 +1,20 @@
-> Do not use a single quote when writing PR message, it will break our pipeline scripts
-
 ### Description
-
-Add a short description of the change. If this is related to an issue, please add a reference to the issue.
+_Please replace this..._
 
 #### Testing
+##### Manual testing
+_Please replace this with how you tested it..._
 
-- What manual testing did you do?
-- How should QA/product test this?
-- What's the impact of this PR and any automated tests on code coverage?
+##### Authomated testing
+_We encourage you to keep the code coverage percentage at 80% and above.
+Please ask for help if unsure what to do._
+
+Does this PR have automated tests?
+- [ ] Yes
+- [ ] No, because _please replace this_
 
 #### Demo
-
-Optional. Screenshots, examples, etc.
+Optional: _Please replace with Screenshots, examples, etc._
 
 #### Notes
-
-Optional. Ancillary topics, caveats, alternative strategies that did not work out, anything else.
+Optional: _Please replace this_

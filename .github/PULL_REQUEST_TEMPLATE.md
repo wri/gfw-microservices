@@ -8,7 +8,7 @@ _Please replace this..._
 
 _Please replace this with how you tested it..._
 
-##### Authomated testing
+##### Automated testing
 
 _We encourage you to keep the code coverage percentage at 80% and above.
 Please ask for help if unsure what to do._

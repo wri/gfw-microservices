@@ -32,7 +32,8 @@
     "serve": {
       "executor": "@nrwl/js:node",
       "options": {
-        "buildTarget": "microservices-list-downloader:build"
+        "buildTarget": "microservices-list-downloader:build",
+        "runBuildTargetDependencies": true
       },
       "configurations": {
         "production": {

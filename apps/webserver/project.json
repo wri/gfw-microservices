@@ -54,7 +54,8 @@
       "dependsOn": ["build"],
       "options": {
         "buildTarget": "webserver:build",
-        "runtimeArgs": ["--max-old-space-size=4096"]
+        "runtimeArgs": ["--max-old-space-size=4096"],
+        "runBuildTargetDependencies": true
       }
     },
     // "lint": {

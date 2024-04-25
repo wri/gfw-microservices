@@ -21,3 +21,12 @@ export const getDataFromPath = (data, dataPath) => {
   }
   return result;
 };
+
+export const getDataAndCheckIfAllYearsZero = (argentinaPieChartsData, dataPath) => {
+  if (!dataPath) {
+    return false;
+  }
+
+  const barChartData = getDataFromPath(argentinaPieChartsData, dataPath);
+  return allYearsHaveZeroValue(barChartData);
+};

@@ -81,7 +81,7 @@ describe('Feature Flag Service', () => {
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
       expect(error.message).toBe(
-        'Could not create FeatureFlag record. The following fields are missing or invalid: flagId, orgId'
+        'Could not create FeatureFlag record. The following fields are missing or invalid: flagId'
       );
     }
   });

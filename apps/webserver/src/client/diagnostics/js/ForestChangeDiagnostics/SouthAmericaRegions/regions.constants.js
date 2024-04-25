@@ -79,6 +79,24 @@ export const chartDatasetConfigs = {
       },
     ],
   },
+
+  indigenousTerritories: {
+    id: 'indigenousTerritories',
+    dataCy: 'argentina-indigenous-territories',
+    chartsSelectorTitle: 'Indigenous Territories',
+    totalLoss: null,
+    chartLabels: [
+      {
+        id: 'Indigenous Territories',
+        dataPath: 'landmark.country_specific_deforestation.indigenous',
+        legend: 'Indigenous Territories',
+        color: 'rgb(146,37,100)',
+        checked: true,
+        totalLossByCategory: null,
+      },
+    ],
+  },
+
   wdpaOverlapCountry: {
     diagnosticTitle: 'Protected Areas Percent Overlap',
     informationBubbleId: 'regions_arg_pa_landcover_calc',

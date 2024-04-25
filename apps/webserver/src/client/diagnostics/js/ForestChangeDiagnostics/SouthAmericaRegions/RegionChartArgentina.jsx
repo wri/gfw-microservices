@@ -23,12 +23,14 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
     protectedAreas,
     wdpaOverlapCountry,
     landmarkOverlapCountry,
+    indigenousTerritories,
   } = chartDatasetConfigs;
 
   const [chartsConfiguration, setChartsConfiguration] = useState([
     argentinaOtbn,
     argentinaTreeCoverLoss,
     protectedAreas,
+    indigenousTerritories,
   ]);
 
   const [selectedOptionId, setSelectedOptionId] = useState(chartsConfiguration[0].id);
@@ -170,6 +172,13 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
         argentinaPieChartsData,
         dateRange,
         chartsConfiguration[2].chartLabels
+      );
+      break;
+    case indigenousTerritories.id:
+      barChartData = getBarChartData(
+        argentinaPieChartsData,
+        dateRange,
+        chartsConfiguration[3].chartLabels
       );
       break;
   }

@@ -25,7 +25,7 @@ function ChartsSelectorArgentina({
               const allZeroValue = chartLabels?.every(({ dataPath }) =>
                 getDataAndCheckIfAllYearsZero(argentinaPieChartsData, dataPath)
               );
-
+              const disableCheckbox = chartLabels?.length === 1;
               return (
                 <>
                   <tr>
@@ -47,7 +47,7 @@ function ChartsSelectorArgentina({
                     <td className="right">{totalLoss && prettifyNum(formatNum(totalLoss))}</td>
                   </tr>
                   {selectedOptionId === optionId &&
-                    chartLabels.map(
+                    chartLabels?.map(
                       ({ id, legend, color, checked, totalLossByCategory, dataPath }) => {
                         const disabled = getDataAndCheckIfAllYearsZero(
                           argentinaPieChartsData,
@@ -64,8 +64,8 @@ function ChartsSelectorArgentina({
                               <input
                                 id={id}
                                 type="checkbox"
-                                disabled={disabled}
-                                checked={checked}
+                                disabled={disableCheckbox || disabled} // Disable if there's only one chartLabels
+                                checked={disableCheckbox || checked} // Keep checked if there's only one chartLabels
                                 onChange={(e) => {
                                   const isChecked = e.target.checked;
                                   updateCheckedLabels(optionId, id, isChecked);

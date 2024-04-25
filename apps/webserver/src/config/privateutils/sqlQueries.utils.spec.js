@@ -37,7 +37,8 @@ describe('Test New Raw Queries', () => {
   };
 
   it('Check a non existing query', () => {
-    const Query = getQueryStr(true, 'NonExistingQuery');
+    const isSystemQuery = true;
+    const Query = getQueryStr(isSystemQuery, 'NonExistingQuery');
     expect(Query).toBe(null);
   });
 

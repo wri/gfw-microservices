@@ -42,7 +42,7 @@ export const chartDatasetConfigs = {
         dataPath: 'country.country_specific_deforestation',
         legend: 'argentina deforestation',
         color: 'rgb(34,153,102)',
-        checked: false,
+        checked: true,
         totalLossByCategory: null,
       },
       {
@@ -74,7 +74,7 @@ export const chartDatasetConfigs = {
         dataPath: 'WDPA.country_specific_deforestation.lessRestricted',
         legend: 'less restricted',
         color: 'rgb(255,64,0)',
-        checked: false,
+        checked: true,
         totalLossByCategory: null,
       },
     ],

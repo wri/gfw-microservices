@@ -1,19 +1,9 @@
-const filterDataByYearRange = (data, startYear, endYear) => {
-  return data.filter((entry) => {
-    const year = entry.x; // 'x' represents the year
-    return year >= startYear && year <= endYear;
-  });
-};
+import { getDataFromPath, filterDataByYearRange } from './barChart.utils';
 
 export const getBarChartData = (argentinaPieChartsData, dateRange, chartLabels) => {
   const filteredData = chartLabels.flatMap((label) => {
     if (!label.checked) return [];
-    const dataPathArray = label.dataPath.split('.');
-    let data = argentinaPieChartsData;
-    for (const path of dataPathArray) {
-      data = data?.[path];
-      if (!data) break;
-    }
+    const data = getDataFromPath(argentinaPieChartsData, label.dataPath);
 
     if (data) {
       return [

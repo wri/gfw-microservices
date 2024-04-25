@@ -42,6 +42,7 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
         } else {
           setSelectedFeatureFlag(upsertedFeatureFlag);
         }
+        return upsertedFeatureFlag;
       });
     },
     [selectedFeatureFlag]

@@ -22,10 +22,15 @@ export const featureFlagsService = async () => {
   }
 
   async function insertOrSaveFeatureFlag(data: Partial<FeatureFlag>) {
+    const { orgId: orgIdReceived, flagId } = data;
     const fieldsWithErrors = await validateFeatureFlagFields(data);
 
     if (fieldsWithErrors.length < 1) {
-      const featureFlag = repository.create(data);
+      const orgId = orgIdReceived === null ? IsNull() : orgIdReceived;
+      const [result] = await getFeatureFlagsWhere({ orgId, flagId });
+      const dataToInsert = { ...result, ...data };
+      const featureFlag = repository.create(dataToInsert);
+
       await repository.save(featureFlag);
       return featureFlag;
     }
@@ -96,7 +101,8 @@ export const featureFlagsService = async () => {
       missingOrInvalidFields.push('flagId');
     }
 
-    if (!data.orgId && typeof data.orgId !== 'number') {
+    const orgType = typeof data.orgId;
+    if (!['object', 'number'].includes(orgType)) {
       missingOrInvalidFields.push('orgId');
     }
 

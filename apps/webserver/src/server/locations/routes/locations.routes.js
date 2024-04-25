@@ -1080,6 +1080,7 @@ module.exports = (app, limiter) => {
         res.send(response.data);
       })
       .catch((error) => {
+        logger.error(`Error ${LISTS_MICROSERVICE_URL}/create-presigned-url`, error);
         const errorParsed = errorUtils.errorHandler(error);
         res.send(errorParsed, errorParsed.status);
       });
@@ -1100,6 +1101,7 @@ module.exports = (app, limiter) => {
         res.send(response.data);
       })
       .catch((error) => {
+        logger.error(`Error ${LISTS_MICROSERVICE_URL}/get-object-presigned-url`, error);
         const errorParsed = errorUtils.errorHandler(error);
         res.send(errorParsed, errorParsed.status);
       });
@@ -1123,7 +1125,7 @@ module.exports = (app, limiter) => {
         res.send({ user_id: userId, list_id: response.data.list_id });
       })
       .catch((err) => {
-        console.log(err);
+        logger.error(`Error ${LISTS_MICROSERVICE_URL}/create-large-list`, err);
         res.status(500).send(err);
       });
   });
@@ -1131,12 +1133,14 @@ module.exports = (app, limiter) => {
   /**
    * Send request to S3 Endpoint to start list processing
    */
-  app.post('/locations/process-list', (req, res) => {
+  app.post('/locations/process-list', async (req, res) => {
     const { list_id, path: pathLocal, template_type, startAnalysis, listName } = req.body;
     const { organization_user_id, organization_id, subscription_status_id, organization_database } =
       req.session;
 
     const { LISTS_MICROSERVICE_URL } = process.env;
+    const listAnalysisStatusData = await getListAnalysisStatus(organization_database, list_id);
+    const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
 
     axios
       .post(`${LISTS_MICROSERVICE_URL}/process-list`, {
@@ -1150,19 +1154,17 @@ module.exports = (app, limiter) => {
         startAnalysis,
         analysis_types: analysisTypes,
       })
-      .then(async (response) => {
-        console.log(response.data);
-        const listAnalysisStatusData = await getListAnalysisStatus(organization_database, list_id);
-        const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+      .then((response) => {
+        logger.info('ProcessList LP response.data', response.data);
         // Send email to user that list is submitted to be analysed
         return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes);
       })
       .then((response) => {
-        console.log(response);
+        logger.info('ProcessList SES response', response);
         res.send(response);
       })
       .catch(async (error) => {
-        logger.info(`Error ${LISTS_MICROSERVICE_URL}/process-list`, error);
+        logger.error(`Error ${LISTS_MICROSERVICE_URL}/process-list`, error);
         const { response } = error;
         const {
           status = 500,
@@ -1206,7 +1208,7 @@ module.exports = (app, limiter) => {
         client_database: req.session.organization_database,
       })
       .then((response) => {
-        logger.info(response.data);
+        logger.info('SaveListToPrcess LP response.data', response.data);
         res.send(response.data);
       })
       .catch((err) => {
@@ -1256,7 +1258,7 @@ module.exports = (app, limiter) => {
       subscriptionStatusId: subscription_status_id,
     };
 
-    console.log('copyOrMoveRequestBody: ', copyOrMoveRequestBody);
+    logger.info('copyOrMoveRequestBody: ', copyOrMoveRequestBody);
 
     if (listType === 'existing') {
       listName = targetList.list_name;
@@ -1276,20 +1278,20 @@ module.exports = (app, limiter) => {
             // Send email to user that list is submitted to be analysed
             return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes)
               .then(() => {
-                console.log('List submitted for analysis details: ', response.data);
+                logger.info('List submitted for analysis details: ', response.data);
                 res.send(response.data);
               })
               .catch((err) => {
-                console.log(`Error sendEmail__ListSubmittedForAnalysis`, err);
+                logger.error(`Error sendEmail__ListSubmittedForAnalysis`, err);
               });
           })
           .catch((err) => {
-            console.log('Error LISTS_MICROSERVICE_URL/CopyOrMoveLargeList', err);
+            logger.error('Error LISTS_MICROSERVICE_URL/CopyOrMoveLargeList', err);
             res.status(500).send(err);
           });
       })
       .catch((err) => {
-        console.log('Error: getListAnalysisStatusByListId', err);
+        logger.error('Error: getListAnalysisStatusByListId', err);
         res.status(500).send(err);
       });
   });

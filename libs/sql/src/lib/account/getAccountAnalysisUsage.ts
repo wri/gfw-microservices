@@ -19,7 +19,7 @@ export async function getAccountAnalysisUsage({
     { field: 'endDate', type: sql.NVarChar(255), value: endDate },
     { field: 'organization', type: sql.Int, value: organizationId },
   ];
-  return SQLUtils.queryDBFirstRow<OrganizationAnalysisUsageResponse>(
+  return SQLUtils.queryDB<OrganizationAnalysisUsageResponse[]>(
     databaseName,
     'uspGetOrganizationAnalysisUsage',
     parameters

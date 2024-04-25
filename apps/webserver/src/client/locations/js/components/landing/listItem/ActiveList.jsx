@@ -26,6 +26,8 @@ import AnalysisListChips from './AnalysisListChips';
 import { locationsPage, nav, treeCoverLossID } from '../../../../../common/js/config';
 import featureFlags from '../../../../../../utils/general.utils';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
+import CustomTooltip from '../../../../../common/js/components/CustomTooltip/CustomTooltip';
+import moment from 'moment';
 
 function ActiveList({
   list,
@@ -65,6 +67,14 @@ function ActiveList({
   const hasErrorFile = !!error_file_storage_path;
   const isEmptyList = locations === 0;
   const showDiagnosticOpt = !is_shared && !isEmptyList && getActiveAnalysisType(listAnalysesStatus);
+
+  const getAnalysisUpdateTime = () => {
+    const analysisUpdateTime =
+      Array.isArray(listAnalysesStatus) && listAnalysesStatus[0]?.updateTime;
+    moment.locale(navigator.language || navigator.userLanguage);
+
+    return analysisUpdateTime ? `Analysis updated: ${moment(analysisUpdateTime).format('L')}` : '';
+  };
 
   const clickLocationRow = () => {
     if (isEmptyList) {
@@ -127,16 +137,22 @@ function ActiveList({
         className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
         onClick={clickLocationRow}
       >
-        <div className="locations-list__title">
-          {showListSharedWithMeIcon && <PublicIcon />}
-          {list_name}
-          {is_shared && <IconUsers className="locations-list__shared-icon" />}
-          <Chip
-            label={numberWithCommas(locations || 0)}
-            size="small"
-            style={{ height: '17px', marginLeft: '10px' }}
-          />
-        </div>
+        <CustomTooltip
+          placement="bottom-end"
+          tooltipMessage={getAnalysisUpdateTime()}
+          style={{ minWidth: '250px' }}
+        >
+          <div className="locations-list__title">
+            {showListSharedWithMeIcon && <PublicIcon />}
+            {list_name}
+            {is_shared && <IconUsers className="locations-list__shared-icon" />}
+            <Chip
+              label={numberWithCommas(locations || 0)}
+              size="small"
+              style={{ height: '17px', marginLeft: '10px' }}
+            />
+          </div>
+        </CustomTooltip>
 
         {showSharedColumn && (
           <div className="locations-list__shared">
@@ -229,9 +245,7 @@ function ActiveList({
 
               <Divider />
               <MenuItem
-                primaryText={
-                  !!folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
-                }
+                primaryText={folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
                 leftIcon={<FolderIcon />}
                 onClick={() => {
                   setManageListFolderOpen();

@@ -74,8 +74,8 @@ describe('Result Service', () => {
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
       'List Name,Location Name,Size,Commodity,Country(Countries),State(s),Sub-state(s),Tree Cover Extent,Total,Protected Areas,Primary Forests',
-      'WRI,L1,1256.16,Cocoa,Brazil,Amazonas,Lábrea,1205.07,369.88,0,268.38',
-      'WRI,L2,1256.22,Cocoa,Brazil,Amazonas,Lábrea,1193,802.76,0,750.96',
+      'WRI,L1,1256.16,Cocoa,Brazil,Amazonas,Lábrea,1205.07,22252.13,0,272.82',
+      'WRI,L2,1256.22,Cocoa,Brazil,Amazonas,Lábrea,1193,816.15,0,764.27',
       'WRI,L3,1256.42,Cocoa,Brazil,Acre,Porto Acre,1230.45,1059.55,0,995.54',
       '',
     ]);

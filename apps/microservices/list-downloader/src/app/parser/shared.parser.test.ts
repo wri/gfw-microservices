@@ -127,12 +127,12 @@ describe('Accumulate Yearly Parser', () => {
     expect(total).toEqual(7);
   });
 
-  test('Receive array {"2019": 1,"2020": 2,"2021": 3,"2022": 4} and get 10', () => {
+  test('Receive array {"2019": 1,"2020": 2,"2021": 3,"2022": 4,"2023": 5} and get 10', () => {
     const total = accumulateYearlyParser(
-      { year: '{"2019": 1,"2020": 2,"2021": 3,"2022": 4}' },
+      { year: '{"2019": 1,"2020": 2,"2021": 3,"2022": 4,"2023": 5}' },
       'year'
     );
-    expect(total).toEqual(10);
+    expect(total).toEqual(15);
   });
 });
 
@@ -172,13 +172,13 @@ describe('Pie Chart Parser', () => {
       dataRow,
       data: {
         tree_cover_loss:
-          '{"cat1": {"2019": 1,"2020": 2,"2021": 3,"2022": 4}, "cat2": {"2019": 2,"2020": 3,"2021": 4,"2022": 5}}',
+          '{"cat1": {"2019": 1,"2020": 2,"2021": 3,"2022": 4,"2023": 5}, "cat2": {"2019": 2,"2020": 3,"2021": 4,"2022": 5}}',
       },
       csvData,
     });
     expect(csvData.length).toEqual(2);
-    expect(csvData[0]).toEqual(['Land Cover Southeast Asia', 'cat1', '41.67']);
-    expect(csvData[1]).toEqual(['Land Cover Southeast Asia', 'cat2', '58.33']);
+    expect(csvData[0]).toEqual(['Land Cover Southeast Asia', 'cat1', '51.72']);
+    expect(csvData[1]).toEqual(['Land Cover Southeast Asia', 'cat2', '48.28']);
   });
 
   test('Receive 1 Category without label and Return Summary for that', () => {

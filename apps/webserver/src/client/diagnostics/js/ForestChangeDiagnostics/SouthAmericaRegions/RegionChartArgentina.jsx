@@ -200,6 +200,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
               chartsConfiguration={chartsConfiguration}
               onOptionChange={setSelectedOptionId}
               selectedOptionId={selectedOptionId}
+              argentinaPieChartsData={argentinaPieChartsData}
             />
           </div>
         </CardContent>

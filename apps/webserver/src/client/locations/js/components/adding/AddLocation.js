@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
-import DatePicker from 'material-ui/DatePicker';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Point from '@arcgis/core/geometry/Point';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
@@ -11,7 +9,6 @@ import AreasAndLengthsParameters from '@arcgis/core/rest/support/AreasAndLengths
 import Upload from './Upload';
 import AddLocationMap from './AddLocationMap';
 import SelectAddress from './SelectAddress';
-import SearchCoordinates from './SearchCoordinates';
 import DescribeInvestment from './DescribeInvestment';
 import DescribeLocation from './DescribeLocation';
 import AddLocationCard from './AddLocationCard';
@@ -952,7 +949,6 @@ export default class AddLocation extends Component {
       if (
         !this.state.isAreaCalculated &&
         (this.props.addMethod === 'byAddress' ||
-          this.props.addMethod === 'byCoordinates' ||
           this.props.addMethod === 'byPalmMill')
       ) {
         errorMessages.push([1, 'You must set an area around your point']);
@@ -1634,17 +1630,7 @@ export default class AddLocation extends Component {
   };
 
   populateMethodOptions = (options) => {
-    const { isPolygonCoordinatesInputAvailable } = featureFlags;
-
-    let filteredOptions = options.filter(
-      (option) => option.type === this.props.addType || option.type === 'both'
-    );
-
-    if (isPolygonCoordinatesInputAvailable) {
-      filteredOptions = options.filter((option) => option.id !== 'byCoordinates');
-    }
-
-    const actionItems = filteredOptions
+    const actionItems = options
       .sort((a, b) =>
         a.investmentOrder > b.investmentOrder ? 1 : b.investmentOrder > a.investmentOrder ? -1 : 0
       )
@@ -1855,7 +1841,7 @@ export default class AddLocation extends Component {
   };
 
   render() {
-    const { isAfiAvailable, isPolygonCoordinatesInputAvailable } = featureFlags;
+    const { isAfiAvailable } = featureFlags;
     const defaultAction =
       this.state.dialogTitle === 'Location Added' ||
       this.state.dialogTitle === 'Location Appended!' ||
@@ -2195,24 +2181,6 @@ export default class AddLocation extends Component {
                   addMethod={addMethod}
                   hasGeometry={hasGeometry}
                 />
-              ) : addMethod === 'byCoordinates' ? (
-                <SearchCoordinates
-                  lat={lat}
-                  lng={lng}
-                  setLat={this.setLat}
-                  setLng={this.setLng}
-                  measurementUnit={measurementUnit}
-                  setMeasurementUnit={this.setMeasurementUnit}
-                  setArea={this.setArea}
-                  customArea={customArea}
-                  calculatedArea={calculatedArea}
-                  substate={substate}
-                  state={state}
-                  country={country}
-                  setGeometry={this.setGeometry}
-                  addMethod={addMethod}
-                  hasGeometry={hasGeometry}
-                />
               ) : (
                 <></>
               )}
@@ -2220,51 +2188,6 @@ export default class AddLocation extends Component {
           </section>
         </AddLocationCard>
 
-        {!isPolygonCoordinatesInputAvailable && (
-          <AddLocationCard>
-            <h2 className="add-location-card__title">
-              {locationsPage.add.timeframe}
-              <span className="add-location-card__optional-indicator">
-                {locationsPage.add.optional}
-              </span>
-            </h2>
-            <p className="add-location-card__prompt">{locationsPage.add.timeframeDesc}</p>
-            <div className="add-location-card__radio-group">
-              {locationsPage.add.timeHorizonOptions.map((option, i) => {
-                return this.createTimeframeRadio(option.label, option.id, i);
-              })}
-            </div>
-
-            {timeframe === 'Time Horizon' && (
-              <div className="location-date-input__container">
-                <div className="location-date-input__start-container">
-                  <label className="label-block">{locationsPage.add.startDate}</label>
-                  <MuiThemeProvider muiTheme={muiTheme}>
-                    <DatePicker
-                      hintText="mm/dd/yyyy"
-                      className="locations-timeframe-start gfw-datepicker"
-                      value={startDate}
-                      onChange={this.updateStartDate}
-                      formatDate={this.formatDate}
-                    />
-                  </MuiThemeProvider>
-                </div>
-                <div className="location-date-input__end-container">
-                  <label className="label-block">{locationsPage.add.endDate}</label>
-                  <MuiThemeProvider muiTheme={muiTheme}>
-                    <DatePicker
-                      hintText="mm/dd/yyyy"
-                      className="locations-timeframe-end gfw-datepicker"
-                      value={endDate}
-                      onChange={this.updateEndDate}
-                      formatDate={this.formatDate}
-                    />
-                  </MuiThemeProvider>
-                </div>
-              </div>
-            )}
-          </AddLocationCard>
-        )}
         {this.props.addType === 'commodity' && (
           <AddLocationCard>
             <h2 className="add-location-card__title">

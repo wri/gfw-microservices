@@ -58,14 +58,14 @@ function ChartsSelectorArgentina({
                           <tr key={id}>
                             <td
                               className={`chart-legends-table__label ${
-                                disabled && 'chart-legends-table__label--disabled'
+                                isEveryChartYearValueZero && 'chart-legends-table__label--disabled'
                               }`}
                             >
                               <input
                                 id={id}
                                 type="checkbox"
-                                disabled={disableCheckbox || disabled} // Disable if there's only one chartLabels
-                                checked={disableCheckbox || checked} // Keep checked if there's only one chartLabels
+                                disabled={isSingleChartPresent || isEveryChartYearValueZero} // Disable if there's only one chartLabels
+                                checked={isSingleChartPresent || checked} // Keep checked if there's only one chartLabels
                                 onChange={(e) => {
                                   const isChecked = e.target.checked;
                                   updateCheckedLabels(optionId, id, isChecked);
@@ -78,7 +78,7 @@ function ChartsSelectorArgentina({
                                   <span
                                     className="chart-legends-table__checkbox"
                                     style={{
-                                      background: disabled ? 'gray' : color,
+                                      background: isEveryChartYearValueZero ? 'gray' : color,
                                       opacity: checked ? 1 : 0.2,
                                     }}
                                   />

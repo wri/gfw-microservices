@@ -948,8 +948,7 @@ export default class AddLocation extends Component {
       }
       if (
         !this.state.isAreaCalculated &&
-        (this.props.addMethod === 'byAddress' ||
-          this.props.addMethod === 'byPalmMill')
+        (this.props.addMethod === 'byAddress' || this.props.addMethod === 'byPalmMill')
       ) {
         errorMessages.push([1, 'You must set an area around your point']);
       }

@@ -8,7 +8,6 @@ import { locationsPage } from '../../../../common/js/config';
 import DrawIcon from '@mui/icons-material/Draw';
 import './LocationMapDrawer.scss';
 
-
 const DrawShapeMode = {
   Active: 'active',
   Inactive: 'inactive',

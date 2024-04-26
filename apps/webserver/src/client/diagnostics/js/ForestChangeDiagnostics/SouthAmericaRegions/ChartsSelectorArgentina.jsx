@@ -49,7 +49,7 @@ function ChartsSelectorArgentina({
                   {selectedOptionId === optionId &&
                     chartLabels?.map(
                       ({ id, legend, color, checked, totalLossByCategory, dataPath }) => {
-                        const disabled = getDataAndCheckIfAllYearsZero(
+                        const isEveryChartYearValueZero = getDataAndCheckIfAllYearsZero(
                           argentinaPieChartsData,
                           dataPath
                         );

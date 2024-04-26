@@ -13,7 +13,6 @@ describe('Test New Raw Queries', () => {
     'uspGetUserAuthenticationPreferences',
     'uspGetUsersAuthenticationPreferences',
     'uspGetLocationsCount',
-    'uspGetGfwLists',
   ];
 
   const OrganizationStoredProcedures = [
@@ -26,6 +25,7 @@ describe('Test New Raw Queries', () => {
     'uspGetFolders',
     'uspGetAllFolderItems',
     'uspGetActivityLog',
+    'uspGetGfwLists',
   ];
 
   const checkQuery = (storedProcedureName, isSystemQuery = true) => {

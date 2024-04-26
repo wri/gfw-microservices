@@ -67,7 +67,7 @@ const getGFWLists = (req) => {
  * @function {getGFWListsByListId}
  * @summary Function to find GFWList by Id using getGFWLists
  * @param {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- * @param {Int} listId - GFWList Id to find
+ * @param {Number} listId - GFWList Id to find
  * @return {Promise} Returns promise object. If successful, list object, otherwise, error object
  */
 const getGFWListsByListId = async (req, listId) => {
@@ -612,7 +612,7 @@ const copyGFWLocationsToList = async (
  * @function isGfwList
  * Note this is necessary but not sufficient check.  All GFW lists Ids have specific IDs,
  * but non-GFW lists can use the same ID value.
- * @param {Int/Number} listId
+ * @param {Number} listId
  * @return {Boolean}
  */
 const isGfwList = (listId) => {

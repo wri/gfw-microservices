@@ -8,7 +8,7 @@ const UserManager = require(path.resolve('./config/publicutils/userManager.utils
  * @name exports.change
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
 exports.change = (req, res) => {
   const userEmail = UserManager.getUserEmail(req);

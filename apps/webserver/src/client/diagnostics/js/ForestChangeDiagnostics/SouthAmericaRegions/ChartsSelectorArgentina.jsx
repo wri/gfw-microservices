@@ -25,7 +25,7 @@ function ChartsSelectorArgentina({
               const allZeroValue = chartLabels?.every(({ dataPath }) =>
                 getDataAndCheckIfAllYearsZero(argentinaPieChartsData, dataPath)
               );
-              const disableCheckbox = chartLabels?.length === 1;
+              const isSingleChartPresent = chartLabels?.length === 1;
               return (
                 <>
                   <tr>

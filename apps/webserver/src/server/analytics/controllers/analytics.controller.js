@@ -21,13 +21,11 @@ const { sendMessageToQueue } = require('../../downloader');
 
 /**
  * @function analytics
- * @summary
- * @name exports.analytics
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
-exports.analytics = (req, res) => {
+export const analytics = (req, res) => {
   res.render('analytics', {
     common: compiledAssets.js.common,
     analyticsjs: compiledAssets.js.analytics,
@@ -37,7 +35,7 @@ exports.analytics = (req, res) => {
 
 const isValidDate = (dateString) => {
   const date = new Date(dateString);
-  return date instanceof Date && !isNaN(date);
+  return date instanceof Date && !isNaN(date.valueOf());
 };
 
 const checkStartBeforeEnd = (startDate, endDate) => {
@@ -82,7 +80,7 @@ const getAnalysisUsageData = async ({ startDate, endDate, organizationId }) => {
   }
 };
 
-exports.getOrganizationAnalysisUsage = async (req, res) => {
+export const getOrganizationAnalysisUsage = async (req, res) => {
   let { startDate, endDate, organizationId } = req.query;
 
   const { status, message } = await getAnalysisUsageData({
@@ -94,7 +92,7 @@ exports.getOrganizationAnalysisUsage = async (req, res) => {
   res.status(status).send(message);
 };
 
-exports.getMyOrganizationAnalysisUsage = async (req, res) => {
+export const getMyOrganizationAnalysisUsage = async (req, res) => {
   let { startDate, endDate } = req.query;
 
   const { status, message } = await getAnalysisUsageData({
@@ -106,7 +104,7 @@ exports.getMyOrganizationAnalysisUsage = async (req, res) => {
   res.status(status).send(message);
 };
 
-exports.getMyOrganizationUsersAnalysisUsage = async (req, res) => {
+export const getMyOrganizationUsersAnalysisUsage = async (req, res) => {
   const { organization_database: orgDbName, organization_id } = req.session;
 
   const orgActivatedTime = await getAccountRenewalTime(organization_id);
@@ -131,7 +129,7 @@ exports.getMyOrganizationUsersAnalysisUsage = async (req, res) => {
   });
 };
 
-exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
+export const getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
   let { organization_id, subscription_status_id } = req.session;
 
   try {
@@ -149,7 +147,7 @@ exports.getMyOrganizationAnalysisUsagePercentage = async (req, res) => {
   }
 };
 
-exports.getMyOrganizationAnalysisLimit = async (req, res) => {
+export const getMyOrganizationAnalysisLimit = async (req, res) => {
   const { organization_id, subscription_status_id } = req.session;
 
   try {
@@ -170,7 +168,7 @@ exports.getMyOrganizationAnalysisLimit = async (req, res) => {
   }
 };
 
-exports.getOrganizationAnalysisLimit = async (req, res) => {
+export const getOrganizationAnalysisLimit = async (req, res) => {
   const { organizationId, organizationType } = req.query;
 
   const response = await getAccountAnalysisLimits({
@@ -181,11 +179,11 @@ exports.getOrganizationAnalysisLimit = async (req, res) => {
   res.status(200).send([response]);
 };
 
-exports.getMyOrganizationAnalysisOptions = (req, res) => {
+export const getMyOrganizationAnalysisOptions = (req, res) => {
   res.status(200).send(Object.values(analysisTypes));
 };
 
-exports.downladOrganizationUsersUsageExport = async (req, res) => {
+export const downladOrganizationUsersUsageExport = async (req, res) => {
   const {
     organization_database: organizationDatabase,
     user_email: userEmail,

@@ -2,8 +2,8 @@ const { sendMessageToQueue } = require('../../downloader');
 
 /**
  * @summary handles afi analysis endpoint
- * @param {Object} req Express Request
- * @param {Object} res Express Respond
+ * @param {Object} request Express Request
+ * @param {Object} response Express Respond
  */
 
 module.exports = async (request, response) => {

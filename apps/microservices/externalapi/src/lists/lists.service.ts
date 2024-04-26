@@ -119,10 +119,9 @@ export class ListService {
         skip,
         take,
       });
-      // If list not found, return null
       if (!paginatedList.length || !count) {
         console.warn('Lists not found.');
-        throw new NotFoundException(`pageNum ${pageNum} or pageSize ${pageSize} out of range`);
+        throw new NotFoundException(`pageNum ${pageNum} or pageSize ${pageSize} is out of range`);
       }
 
       const paginatedListInfo: paginatedListInfoResponse = {

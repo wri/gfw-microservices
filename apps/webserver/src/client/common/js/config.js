@@ -110,7 +110,7 @@ export const oversizedUploadText =
 export const latestTreeCoverLossYearFC = 2023; // Forest Change
 export const latestTreeCoverLossYearCommodityRisk = 2022;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
-export const latestTreeCoverLossYearSensitiveAreas = 2022; // Sensitive Areas
+export const latestTreeCoverLossYearSensitiveAreas = 2023; // Sensitive Areas
 
 export const soyPlantedYearsRange = [2001, 2022];
 

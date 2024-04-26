@@ -314,7 +314,7 @@ class Landing extends Component {
           <UsageReachedLimitBanner
             onBannerClose={() =>
               this.setState((prevState) => ({
-                isReachingAccountUsageLimit: !prevState.isReachingAccountUsageLimit,
+                isReachedAccountUsageLimit: !prevState.isReachedAccountUsageLimit,
               }))
             }
           />

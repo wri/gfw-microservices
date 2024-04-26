@@ -69,37 +69,62 @@ const navigateToFeeInformationPage = () => {
 };
 
 const DIALOG__SUBMIT_TITLE = 'Confirm Submission';
-const DIALOG__SUBMIT_CONTENT = (
-  <p>
-    You have successfully created a list in Pro. Please confirm that you wish to submit this list to
-    analysis. Note that running analysis counts towards your account usage limits. See more
-    information{' '}
-    <LinkButton
-      target="_blank"
-      onClick={() => {
-        navigateToFeeInformationPage();
-      }}
-    >
-      here
-    </LinkButton>
-  </p>
-);
-const DIALOG_DRAFT_CONTENT = (
-  <p>
-    You have successfully created a draft list in Pro. Click OKAY to close this window and be
-    navigated back to the Locations page. Your list will be in draft state until you choose to run
-    analysis on it. Note that running analysis counts towards your account usage limits. See more
-    information{' '}
-    <LinkButton
-      target="_blank"
-      onClick={() => {
-        navigateToFeeInformationPage();
-      }}
-    >
-      here
-    </LinkButton>
-  </p>
-);
+const DialogSubmitContent = ({ listName = 'Create New List' }) => {
+  const listConditionalText =
+    listName !== 'Create New List' ? (
+      <span>
+        You have added a location to <strong>{listName}</strong>, as defined above.
+      </span>
+    ) : (
+      <>You have successfully created a list in Pro.</>
+    );
+
+  return (
+    <p>
+      {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
+      running analysis counts towards your account usage limits. See more information{' '}
+      <LinkButton
+        target="_blank"
+        onClick={() => {
+          navigateToFeeInformationPage();
+        }}
+      >
+        here
+      </LinkButton>
+      .
+    </p>
+  );
+};
+
+const DialogDraftContent = ({ listName = 'Create New List' }) => {
+  const listConditionalText =
+    listName !== 'Create New List' ? (
+      <>
+        You have added a location to <strong>{listName}</strong>, as defined above. Click OKAY to
+        save this updated list as a draft. Your list will stay
+      </>
+    ) : (
+      <>
+        You have successfully created a draft list in Pro. Click OKAY to close this window and be
+        navigated back to the Locations page. Your list will be
+      </>
+    );
+
+  return (
+    <p>
+      {listConditionalText} in draft state until you choose to run analysis on it. Note that running
+      analysis counts towards your account usage limits. See more information about usage & fees{' '}
+      <LinkButton
+        target="_blank"
+        onClick={() => {
+          navigateToFeeInformationPage();
+        }}
+      >
+        here
+      </LinkButton>
+    </p>
+  );
+};
 
 const generateType = (gfwInfo) => {
   if (!gfwInfo.gfwData.hasOwnProperty('listName')) {
@@ -806,13 +831,14 @@ export default class AddLocation extends Component {
   };
 
   saveAndAddAnother = () => {
+    const { selectedList } = this.state;
     if (this.state.saved === true) {
       this.discardItem();
     } else {
       this.setState({
         dialogOpen: true,
         dialogTitle: DIALOG__SUBMIT_TITLE,
-        dialogMessage: DIALOG__SUBMIT_CONTENT,
+        dialogMessage: <DialogSubmitContent listName={selectedList} />,
       });
     }
   };
@@ -1912,11 +1938,10 @@ export default class AddLocation extends Component {
       listPlaceholderValue = 'Recent Other';
     }
 
+    // TODO: this is unused, can we delete?
     const dropdownOptionsInvestmentCommodity = buildDropdownOptions(
       locationsPage.add.dropdownOptions
     );
-    console.log(`typeof dialogMessage: ${typeof dialogMessage}`, dialogMessage);
-    // debugger;
     const dialogContent =
       typeof dialogMessage === 'string' || React.isValidElement(dialogMessage)
         ? [dialogMessage]
@@ -2307,7 +2332,7 @@ export default class AddLocation extends Component {
         <section className="add-single-location__footer">
           <div className="add-single-location__action-buttons">
             <SaveAsDraftButtonWithDialog
-              dialogMessage={DIALOG_DRAFT_CONTENT}
+              dialogMessage={<DialogDraftContent listName={this.state.selectedList} />}
               saveLocations={() => this.saveItem({ isSaveAsDraft: true })}
               disabled={selectedAnalysis.length <= 0}
             />

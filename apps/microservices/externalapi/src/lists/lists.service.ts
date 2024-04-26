@@ -4,7 +4,7 @@ import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
-import { listInfoResponse } from '../list-analysis/list-upload-new.dto';
+import { listInfoResponse, paginatedListInfoResponse } from '../list-analysis/list-upload-new.dto';
 @Injectable()
 export class ListService {
   constructor(
@@ -80,7 +80,7 @@ export class ListService {
       throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
     }
   }
-  async getListInfo(organizationId, listId) {
+  async getListInfo(organizationId: number, listId: number): Promise<listInfoResponse> {
     try {
       const organization = await this.getOrganizationDetails(organizationId);
       const connection = await this.createOrganizationConnection(organization);
@@ -102,6 +102,43 @@ export class ListService {
         throw new NotFoundException(error.message);
       } else {
         throw new InternalServerErrorException(error);
+      }
+    }
+  }
+  async getPaginatedListInfo(
+    pageSize: number,
+    pageNum: number,
+    organizationId: number
+  ): Promise<paginatedListInfoResponse> {
+    const skip = pageNum > 0 ? (pageNum - 1) * pageSize : 0;
+    const take = pageSize == 0 ? 10 : pageSize;
+    try {
+      const connection = await this.getOrganizationConnection(organizationId);
+      const listRepository = connection.getRepository(Lists);
+      const [paginatedList, count] = await listRepository.findAndCount({
+        skip,
+        take,
+      });
+      // If list not found, return null
+      if (!paginatedList.length || !count) {
+        console.warn('Lists not found.');
+        throw new NotFoundException(`pageNum ${pageNum} or pageSize ${pageSize} out of range`);
+      }
+
+      const paginatedListInfo: paginatedListInfoResponse = {
+        totalResults: count,
+        listInfo: paginatedList.map((list) => ({
+          listId: list.id,
+          listName: list.listName,
+          locationCount: list.listLocationsCount,
+        })),
+      };
+      return paginatedListInfo;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException(error.message);
       }
     }
   }

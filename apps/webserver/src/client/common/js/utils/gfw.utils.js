@@ -1,6 +1,8 @@
 // Configs
 import { proLayers } from '../config';
 import { GFW_LIST_NAME, gfwListNames } from '../constants/lists.constants';
+import { fetchGfwProLayers } from '../service/gfw.service';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 
 /**
  * @description - Check if the list is a GFW list
@@ -47,4 +49,25 @@ export function getGfwProMapLayerName(layerID) {
   }
 
   return discernGfwID(layerID);
+}
+
+/**
+ * @description - Get the Vector Tile layer from the list name
+ * @param {Object} esriMap - Esri map
+ * @param {string} listName - List name
+ */
+export async function handleGfwProListVectorTileLayer(esriMap, listName) {
+  const layersData = await fetchGfwProLayers();
+  const mapLayer = getGfwProMapLayerName(listName);
+  const gfwLayer = layersData.find((layer) => {
+    return layer.attributes.name === mapLayer;
+  });
+
+  const gfwProVectorTileStyleURL = gfwLayer.attributes.layerConfig.body.url;
+  const gfwProVectorTileLayer = new VectorTileLayer({
+    id: 'GFW_PRO_VECTOR_TILE_LAYER',
+    url: gfwProVectorTileStyleURL,
+  });
+
+  esriMap.add(gfwProVectorTileLayer);
 }

@@ -5,13 +5,8 @@ import Polygon from '@arcgis/core/geometry/Polygon';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import { locationsPage } from '../../../../common/js/config';
-import Button from '../../../../common/js/components/Button';
-import { numberWithCommas } from '../../utils/locationsTableUtils';
-import featureFlags from '../../../../../utils/general.utils';
 import DrawIcon from '@mui/icons-material/Draw';
 import './LocationMapDrawer.scss';
-
-const { isPolygonCoordinatesInputAvailable } = featureFlags;
 
 const DrawShapeMode = {
   Active: 'active',
@@ -22,7 +17,6 @@ const DrawShapeMode = {
 
 const LocationMapDrawer = (props) => {
   const { geomFromMap, mapView, sketchViewModel, setSketchViewModel } = props;
-  const [geometry, setGeometry] = useState(undefined);
   const [mode, setMode] = useState(DrawShapeMode.Inactive);
 
   useEffect(() => {
@@ -73,7 +67,6 @@ const LocationMapDrawer = (props) => {
       mapView.graphics.removeAll();
       sketchViewModel.delete();
       sketchViewModel.create('polygon');
-      setGeometry(undefined);
       setMode(DrawShapeMode.Drawing);
     } else {
       console.warn(`No defined action for MODE ${mode}`);
@@ -109,7 +102,6 @@ const LocationMapDrawer = (props) => {
       }, 500);
     }
 
-    setGeometry(polygon);
     setMode(DrawShapeMode.Complete);
 
     props.setGeometry(polygon);
@@ -134,43 +126,11 @@ const LocationMapDrawer = (props) => {
       buttonTitle = 'INVALID STATE';
   }
 
-  let userMessage;
-  switch (mode) {
-    case DrawShapeMode.Drawing:
-      userMessage = locationsPage.add.draw.help;
-      break;
-    case DrawShapeMode.Complete: {
-      const areaKm = geometry ? geometryEngine.geodesicArea(geometry, 'square-kilometers') : 0;
-      const areaHa = geometry ? geometryEngine.geodesicArea(geometry, 'hectares') : 0;
-      userMessage = `Area: ${numberWithCommas(parseInt(areaKm.toFixed(0)))} km (${numberWithCommas(
-        parseInt(areaHa.toFixed(0))
-      )} ha)`;
-      break;
-    }
-    default:
-      userMessage = '';
-  }
-
   return (
-    <>
-      {!isPolygonCoordinatesInputAvailable && (
-        <>
-          <div className="location-map-drawer__message">{userMessage}</div>
-          <Button
-            className="location-map-drawer__draw-button"
-            onClick={onDrawButtonClick}
-            label={buttonTitle}
-          />
-        </>
-      )}
-
-      {isPolygonCoordinatesInputAvailable && (
-        <button className="draw-shape__draw-button" onClick={onDrawButtonClick}>
-          <DrawIcon />
-          <span>{buttonTitle}</span>
-        </button>
-      )}
-    </>
+    <button className="draw-shape__draw-button" onClick={onDrawButtonClick}>
+      <DrawIcon />
+      <span>{buttonTitle}</span>
+    </button>
   );
 };
 

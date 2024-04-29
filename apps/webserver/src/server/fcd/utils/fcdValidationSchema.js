@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const FcdValidationSchema = z.object({
+export const FcdValidationSchema = z.object({
   listId: z.coerce.number({
     message: 'Missing listId',
   }),
@@ -15,5 +15,3 @@ const FcdValidationSchema = z.object({
   }),
   locationId: z.optional(z.coerce.number()).catch(undefined),
 });
-
-module.exports = FcdValidationSchema;

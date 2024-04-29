@@ -59,7 +59,6 @@ const getListDataFilterValues = (request, listID) => {
 /**
  * @summary this function is an extraction of the getListDataFilterValues for formatting filter countries
  * @param {Array} listLocations array of locations with fields [Country, State, 'Sub State']
- * @returns {Array} array of locations of [Country, [State, [SubState]]]
  */
 const formatListLocationDataForFilter = (listLocations) => {
   let listRecord = {};

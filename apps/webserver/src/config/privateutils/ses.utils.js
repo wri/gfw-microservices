@@ -56,7 +56,7 @@ const generateEmailTemplate = (level, title, msg, closing) => {
     `;
 };
 
-const createBodyContent = (req, type, content = {}, level = 'info') => {
+export const createBodyContent = (req, type, content = {}, level = 'info') => {
   let title = '';
   let msg = '';
   let hasClosing = true;
@@ -173,7 +173,7 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
   return emailUtil.createPage(bodyContent);
 };
 
-const initialize = () => {
+export const initialize = () => {
   const objTemp = {
     accessKeyId: config.AWSVars.credentials.accessKey,
     secretAccessKey: config.AWSVars.credentials.secretKey,
@@ -183,7 +183,7 @@ const initialize = () => {
   AWS.config.update(objTemp);
 };
 
-const sendEmail = (req, sender, receivers, subject, content) => {
+export const sendEmail = (req, sender, receivers, subject, content) => {
   const promise = new Promise((resolve, reject) => {
     const parameters = {
       Destination: {
@@ -226,7 +226,7 @@ const sendEmail = (req, sender, receivers, subject, content) => {
   return promise;
 };
 
-const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => {
+export const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => {
   const { user_email } = req.session;
   const enabledAnalyses = analysisTypesOptions.filter((analysis) => analysis_types[analysis.id]);
   const content = {
@@ -240,7 +240,7 @@ const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => 
   return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
 };
 
-const sendErrorNotificationEmail = (req, type) => {
+export const sendErrorNotificationEmail = (req, type) => {
   const { user_email } = req.session;
   const { list } = req;
 
@@ -263,12 +263,4 @@ const sendErrorNotificationEmail = (req, type) => {
   const msg = createBodyContent(req, emailTemplate, list, level);
 
   return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
-};
-
-module.exports = {
-  initialize,
-  sendEmail,
-  createBodyContent,
-  sendErrorNotificationEmail,
-  sendEmail__ListSubmittedForAnalysis,
 };

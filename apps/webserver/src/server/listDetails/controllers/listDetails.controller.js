@@ -21,8 +21,8 @@ const logger = require('../../../config/privateutils/logger.utils');
  * @summary
  * @name exports.listDetails
  * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param req - Express request object
+ * @param res - Express response object
  */
 exports.listDetails = (req, res, data) => {
   const isAdministrator = UserManager.isAdministrator(req);

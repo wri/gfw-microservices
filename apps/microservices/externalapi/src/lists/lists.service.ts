@@ -4,7 +4,7 @@ import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
-import { listInfoResponse, paginatedListInfoResponse } from '../list-analysis/list-upload-new.dto';
+import { listInfoResponse } from '../list-analysis/list-upload-new.dto';
 @Injectable()
 export class ListService {
   constructor(
@@ -109,9 +109,9 @@ export class ListService {
     pageSize: number,
     pageNum: number,
     organizationId: number
-  ): Promise<paginatedListInfoResponse> {
-    const skip = pageNum > 0 ? (pageNum - 1) * pageSize : 0;
+  ): Promise<listInfoResponse[]> {
     const take = pageSize == 0 ? 10 : pageSize;
+    const skip = pageNum > 0 ? (pageNum - 1) * take : 0;
     try {
       const connection = await this.getOrganizationConnection(organizationId);
       const listRepository = connection.getRepository(Lists);
@@ -124,14 +124,12 @@ export class ListService {
         throw new NotFoundException(`pageNum ${pageNum} or pageSize ${pageSize} is out of range`);
       }
 
-      const paginatedListInfo: paginatedListInfoResponse = {
-        totalResults: count,
-        listInfo: paginatedList.map((list) => ({
-          listId: list.id,
-          listName: list.listName,
-          locationCount: list.listLocationsCount,
-        })),
-      };
+      const paginatedListInfo: listInfoResponse[] = paginatedList.map((list) => ({
+        listId: list.id,
+        listName: list.listName,
+        locationCount: list.listLocationsCount,
+      }));
+
       return paginatedListInfo;
     } catch (error) {
       if (error instanceof NotFoundException) {

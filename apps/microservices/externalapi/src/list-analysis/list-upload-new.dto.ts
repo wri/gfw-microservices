@@ -58,7 +58,3 @@ export class listInfoResponse {
   listName: string;
   locationCount: number;
 }
-export class paginatedListInfoResponse {
-  listInfo: listInfoResponse[];
-  totalResults: number;
-}

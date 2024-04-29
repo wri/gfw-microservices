@@ -11,7 +11,7 @@ const getListProcessingUrl = ({ listId, category }) => {
 /**
  * @summary issues request to list-processing api, handles errors
  *
- * @parma {object} params
+ * @param {object} params
  * param {String} clientDatabase
  * param {Number} listId
  * param {String} category

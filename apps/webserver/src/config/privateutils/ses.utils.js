@@ -133,7 +133,7 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
       break;
     case config.platformVars.emailType.ANALYSIS_LIMIT_REACHED:
       title = 'Analysis Limit Exceeded';
-      msg = `<p>Please contact our sales team at <a href="mailto:gfwprosales@wri.org">gfwprosales@wri.org</a> to purchase additional usage. You can also refer to our <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet">price list</a> or <a href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model">fee model FAQ page</a> for more information.</p>`;
+      msg = `<p>You have reached your organization’s GFW Pro analysis limit. Please contact our sales team at <a href="mailto:gfwprosales@wri.org">gfwprosales@wri.org</a> to purchase additional usage. You can also refer to our <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet">price list</a> or <a href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model">fee model FAQ page</a> for more information. Your list will appear saved in your account as a draft.</p>`;
       hasClosing = false;
       break;
     case config.platformVars.emailType.ORGANIZATION_APPROVED:

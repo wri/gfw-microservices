@@ -113,7 +113,7 @@ import {
 } from '../config/map.config';
 
 // Services
-import { fetchGfwProLayers } from '../service/gfw.service';
+import { fetchGfwProLayers } from '../../../common/js/service/gfw.service';
 
 // Style
 import '../../css/map.scss';

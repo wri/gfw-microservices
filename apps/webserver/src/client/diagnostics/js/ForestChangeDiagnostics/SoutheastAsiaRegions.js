@@ -9,7 +9,11 @@ import {
   validatePct,
 } from '../../../common/js/utils/diagnostics.utils';
 import { numberWithCommas } from '../../../locations/js/utils/locationsTableUtils';
-import { locationsPage, mapPage, latestTreeCoverLossYearFC } from '../../../common/js/config';
+import {
+  locationsPage,
+  mapPage,
+  latestTreeCoverLossYearForTclDataInMap,
+} from '../../../common/js/config';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 import '../../css/locations.scss';
 import '../../../common/css/_irsBase.scss';
@@ -23,7 +27,7 @@ export default class SoutheastAsiaRegions extends Component {
     this.state = {
       activeSlider: false,
       startYear: 2001,
-      endYear: latestTreeCoverLossYearFC,
+      endYear: latestTreeCoverLossYearForTclDataInMap,
       tclChecked: true,
       seaChecked: false,
       idnChecked: false,
@@ -42,11 +46,11 @@ export default class SoutheastAsiaRegions extends Component {
         values: mapPage.treeCoverLossYearsFC,
         hide_min_max: true,
         from_min: 0,
-        from_max: latestTreeCoverLossYearFC - 2001,
+        from_max: latestTreeCoverLossYearForTclDataInMap - 2001,
         grid: true,
         grid_snap: true,
         from: 0,
-        to: latestTreeCoverLossYearFC - 2001,
+        to: latestTreeCoverLossYearForTclDataInMap - 2001,
         onChange: this.setSliderActive,
         onFinish: this.setSliderRange,
         prettify: (value) => value,

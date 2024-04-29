@@ -1,6 +1,6 @@
 import BaseTileLayer from '@arcgis/core/layers/BaseTileLayer';
 import esriRequest from '@arcgis/core/request';
-import { latestTreeCoverLossYearFC } from '../../../common/js/config';
+import { latestTreeCoverLossYearForTclDataInMap } from '../../../common/js/config';
 
 // Power function to determine intensity
 const getScalePowFunc = (exp) => {
@@ -36,7 +36,7 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
   properties: {
     threshold: 30,
     minYear: 2001,
-    maxYear: latestTreeCoverLossYearFC,
+    maxYear: latestTreeCoverLossYearForTclDataInMap,
   },
 
   getTileUrl: function (level, row, column) {

@@ -1,6 +1,8 @@
 // Configs
 import { proLayers } from '../config';
 import { GFW_LIST_NAME, gfwListNames } from '../constants/lists.constants';
+import { fetchGfwProLayers } from '../service/gfw.service';
+import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 
 /**
  * @description - Check if the list is a GFW list

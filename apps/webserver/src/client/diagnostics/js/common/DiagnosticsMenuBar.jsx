@@ -4,7 +4,6 @@ import Button from '../../../common/js/components/Button';
 import IconReport from '../../../common/js/components/icon/IconReport';
 import IconDownload from '../../../common/js/components/icon/IconDownload';
 import printDiagnosticsReport from './printDiagnosticsReport';
-import featureFlags from '../../../../utils/general.utils';
 import {
   analysisTypes,
   analysisTypesOptions,
@@ -21,8 +20,7 @@ function DiagnosticsMenuBar({
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [activeAnalysesIds, setActiveAnalysesIds] = useState([]);
-  const { isAfiAvailable } = featureFlags;
-  const { DEFORESTATION_KPIS, ALERTS } = analysisTypes;
+  const { ALERTS } = analysisTypes;
 
   useEffect(() => {
     if (isGfwList) {
@@ -42,13 +40,6 @@ function DiagnosticsMenuBar({
 
         // removing Alerts from this menu because that analysis is not linked from here
         activeAnalysesIds = activeAnalysesIds.filter((analysisId) => analysisId !== ALERTS);
-
-        if (!isAfiAvailable) {
-          // remove AFI option if feature flag is off
-          activeAnalysesIds = activeAnalysesIds.filter(
-            (analysisId) => analysisId !== DEFORESTATION_KPIS
-          );
-        }
 
         setActiveAnalysesIds(activeAnalysesIds);
         setIsLoading(false);

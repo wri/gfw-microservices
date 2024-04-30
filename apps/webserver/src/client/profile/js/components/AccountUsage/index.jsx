@@ -14,7 +14,7 @@ import AccountUsage from './AccountUsage';
 import moment from 'moment';
 import { useProfileContext } from '../../ProfileStateContext';
 import AccountUsageDropMenu from './AccountUsageDropMenu';
-import { formatNumber } from '../../../../common/js/utils/formatNumber';
+import { formatNumber } from '../../../../common/js/utils/format';
 
 export default function AccountUsageContainer() {
   const { accountRenewalTime } = useProfileContext();

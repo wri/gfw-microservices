@@ -2,7 +2,7 @@
 /* eslint-disable camelcase */
 const path = require('path');
 const archiver = require('archiver');
-const axios = require('axios');
+import axios from 'axios';
 const _ = require('lodash');
 
 const controller = require('../controllers/locations.controller');
@@ -970,7 +970,8 @@ module.exports = (app, limiter) => {
             outputFileName,
             outputFileFormat,
             archive,
-            includedColumns.split(',')
+            includedColumns.split(','),
+            list_name
           );
         })
         .catch((e) => {

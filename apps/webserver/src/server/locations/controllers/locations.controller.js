@@ -31,8 +31,8 @@ const { sendMessageToQueue } = require('../../downloader');
  * @summary
  * @name exports.locations
  * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param req - Express request object
+ * @param res - Express response object
  */
 exports.locations = (req, res, data) => {
   const isAdministrator = UserManager.isAdministrator(req);
@@ -364,7 +364,7 @@ exports.downloadErrorFile = async (req, res) => {
  * @param {number} listID - List ID (e.g. 2038)
  * @param {[]} locationIDs - Location IDs (e.g. [1, 2, 3])
  * @param {[]} attributes - Attributes (e.g. [{'Investment Name': 'ID 30', ...}])
- * @return {Promise<{locationsEditedMessageFailed: string, error}|{locationsEditedMessageSuccessfully: string}>}
+ * @return {Promise<>}
  */
 exports.handleEditLocations = async (req, listID, locationIDs, attributes) => {
   try {
@@ -383,8 +383,7 @@ exports.handleEditLocations = async (req, listID, locationIDs, attributes) => {
     return { locationsEditedMessageSuccessfully };
   } catch (editError) {
     const locationsEditedMessageFailed = `Error editing list locations for List ID ${listID}: Failed`;
-    logger.error(locationsEditedMessageFailed);
-    logger.error(editError);
+    logger.error(locationsEditedMessageFailed, editError);
 
     // Un-Lock selected list
     await ListManager.setListUnlocked(req, listID);

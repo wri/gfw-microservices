@@ -16,8 +16,8 @@ const {
  * @summary
  * @name exports.map
  * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param req - Express request object
+ * @param res - Express response object
  */
 exports.map = (req, res) => {
   // Set in the response to not cache the page

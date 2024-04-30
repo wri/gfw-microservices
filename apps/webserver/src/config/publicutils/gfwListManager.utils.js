@@ -44,7 +44,7 @@ let protectedInfo = [];
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getGFWLists = (req) => {
+export const getGFWLists = (req) => {
   return new Promise((resolve, reject) => {
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetGfwLists')
@@ -70,7 +70,7 @@ const getGFWLists = (req) => {
  * @param {Number} listId - GFWList Id to find
  * @return {Promise} Returns promise object. If successful, list object, otherwise, error object
  */
-const getGFWListsByListId = async (req, listId) => {
+export const getGFWListsByListId = async (req, listId) => {
   try {
     const gfwListCollection = await getGFWLists(req);
     return gfwListCollection.find((gfwListData) => gfwListData.id === Number(listId));
@@ -85,7 +85,7 @@ const getGFWListsByListId = async (req, listId) => {
  *   @param  {Number} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
-const getGFWListLocations = (req, list_id) => {
+export const getGFWListLocations = (req, list_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'listID', type: sql.Int, value: list_id }];
     sqlUtils
@@ -113,7 +113,7 @@ const getGFWListLocations = (req, list_id) => {
  *   @param {[]} location_ids - Array of location ids.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
+export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
   return new Promise((resolve, reject) => {
     const parameters =
       Array.isArray(location_ids) && location_ids.length
@@ -174,7 +174,7 @@ const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
   });
 };
 
-const getGFWListLocationsGeom = (req, list_id, location_ids = []) => {
+export const getGFWListLocationsGeom = (req, list_id, location_ids = []) => {
   return new Promise((resolve, reject) => {
     const parameters = location_ids.length
       ? [{ field: 'location_ids', type: sql.VarChar(sql.MAX), value: location_ids.toString() }]
@@ -236,7 +236,7 @@ const getGFWListLocationsGeom = (req, list_id, location_ids = []) => {
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise<any>} Returns admin info
  */
-const getAdministrativeAreasInfo = (req) => {
+export const getAdministrativeAreasInfo = (req) => {
   return new Promise((resolve) => resolve(adminInfo));
 };
 
@@ -245,7 +245,7 @@ const getAdministrativeAreasInfo = (req) => {
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise<any>} Returns admin info
  */
-const getProtectedAreasInfo = (req) => {
+export const getProtectedAreasInfo = (req) => {
   return new Promise((resolve) => resolve(protectedInfo));
 };
 
@@ -255,7 +255,7 @@ const getProtectedAreasInfo = (req) => {
  *   @param  {Object} filters - Filter info to filter the admin area data by.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getAdministrativeAreasData = (req, filters) => {
+export const getAdministrativeAreasData = (req, filters) => {
   // TODO: HANDLE FILTERING DATA PROPERLY
   return new Promise((resolve, reject) => {
     const parameters = [
@@ -290,7 +290,7 @@ const getAdministrativeAreasData = (req, filters) => {
  *   @param  {Object} locationId - locationId
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getAdministrativeAreasDataByLocationId = (req, locationId) => {
+export const getAdministrativeAreasDataByLocationId = (req, locationId) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'location_id', type: sql.Int, value: locationId }];
 
@@ -318,7 +318,7 @@ const getAdministrativeAreasDataByLocationId = (req, locationId) => {
  *   @param  {Object} filters - Filter info to filter the admin area data by.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getProtectedAreasData = (req, filters) => {
+export const getProtectedAreasData = (req, filters) => {
   // TODO: HANDLE FILTERING DATA PROPERLY
   return new Promise((resolve, reject) => {
     const parameters = [
@@ -363,7 +363,7 @@ const getProtectedAreasData = (req, filters) => {
  * @param {Array} list_ids lists IDs
  * @returns {Array<string>} list_ids names mapped
  */
-const getGFWListNames = (list_ids) => {
+export const getGFWListNames = (list_ids) => {
   return list_ids.map((id) => gfwListsNames[id]);
 };
 
@@ -373,7 +373,7 @@ const getGFWListNames = (list_ids) => {
  *   @param  {Array} list_ids - Array of list ids
  *   @return
  */
-const updateGFWLists = (req, list_ids) => {
+export const updateGFWLists = (req, list_ids) => {
   return new Promise((resolve, reject) => {
     const promises = [];
     const organization_database = config.SQLConnection.database;
@@ -407,7 +407,7 @@ const updateGFWLists = (req, list_ids) => {
   });
 };
 
-const getGFWListLocationsGlobalId = (req, list_id, global_ids = []) => {
+export const getGFWListLocationsGlobalId = (req, list_id, global_ids = []) => {
   return new Promise((resolve, reject) => {
     const parameters = global_ids.length
       ? [
@@ -484,7 +484,7 @@ const getGFWListLocationsGlobalId = (req, list_id, global_ids = []) => {
  * @param {number} gfw_list_id - GFW list ID
  * @return {Promise<*>} - - GFW source list schema
  */
-async function getGFWListSchema(req, gfw_list_id) {
+export async function getGFWListSchema(req, gfw_list_id) {
   const gwfLists = await getGFWLists(req);
   const src_list = gwfLists.find((list) => list.id === gfw_list_id);
   src_list.list_analysis_table_name = `gfwpro.dbo.[${src_list.list_analysis_table_name}]`;
@@ -498,7 +498,7 @@ async function getGFWListSchema(req, gfw_list_id) {
  * @param {number} gfw_list_id - GFW list ID
  * @return {Promise<*>} - GFW Analysis table Columns
  */
-async function getGFWAnalysisTableColumns(req, gfw_list_id) {
+export async function getGFWAnalysisTableColumns(req, gfw_list_id) {
   const params_src = [{ field: 'list_id', type: sql.Int, value: gfw_list_id }];
   const gfw_analysis_table_columns = await sqlUtils.executeSystemStoredProcedure(
     req,
@@ -516,7 +516,7 @@ async function getGFWAnalysisTableColumns(req, gfw_list_id) {
  * @param {Number} dest_location_id - location_id of destination location
  * @return {string} - SQL Statement
  */
-function getGFWAnalysisTableColumnsStatement(
+export function getGFWAnalysisTableColumnsStatement(
   src_list,
   gfw_analysis_table_columns,
   dest_location_id
@@ -543,7 +543,7 @@ function getGFWAnalysisTableColumnsStatement(
  * @param {Object[]} gfw_analysis_table_columns - GFW Analysis table Columns
  * @return {Promise} Returns true if successful, else error object
  */
-const copyGFWSingleLocation = (
+export const copyGFWSingleLocation = (
   req,
   src_list,
   dest_list,
@@ -587,7 +587,7 @@ const copyGFWSingleLocation = (
  * @param {number[]} dest_location_ids - Destination list IDs
  * @return {Promise<void>}
  */
-const copyGFWLocationsToList = async (
+export const copyGFWLocationsToList = async (
   req,
   src_list,
   dest_list,
@@ -615,7 +615,7 @@ const copyGFWLocationsToList = async (
  * @param {Number} listId
  * @return {Boolean}
  */
-const isGfwList = (listId) => {
+export const isGfwList = (listId) => {
   return Object.values(gfwListsIds).includes(listId);
 };
 
@@ -624,7 +624,7 @@ const isGfwList = (listId) => {
  * @summary Initializes the GFW List Manager.
  *           Loads all the lists needed for the application.
  */
-function initialize() {
+export function initialize() {
   // Create a new Promise object to return.
   return new Promise((resolve, reject) => {
     Promise.all([
@@ -640,26 +640,3 @@ function initialize() {
       });
   });
 }
-
-module.exports = {
-  getGFWLists,
-  getGFWListsByListId,
-  getGFWListLocations,
-  getGFWListLocationsNoGeom,
-  getGFWListLocationsGeom,
-  getGFWListLocationsGlobalId,
-  getGFWListNames,
-  updateGFWLists,
-  getAdministrativeAreasInfo,
-  getAdministrativeAreasData,
-  getAdministrativeAreasDataByLocationId,
-  getProtectedAreasInfo,
-  getProtectedAreasData,
-  getGFWListSchema,
-  getGFWAnalysisTableColumns,
-  getGFWAnalysisTableColumnsStatement,
-  copyGFWSingleLocation,
-  copyGFWLocationsToList,
-  isGfwList,
-  initialize,
-};

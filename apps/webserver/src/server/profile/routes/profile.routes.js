@@ -1,7 +1,7 @@
 const path = require('path');
 const controller = require('../controllers/profile.controller');
 const express = require('express');
-const axios = require('axios');
+import axios from 'axios';
 
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));

@@ -7,7 +7,7 @@ const { compiledAssets } = require(path.resolve('./config/config'));
  * @name exports.manager
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
 exports.manager = (req, res) => {
   res.render('manager', {

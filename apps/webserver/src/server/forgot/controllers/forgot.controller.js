@@ -7,7 +7,7 @@ const { compiledAssets } = require(path.resolve('./config/config'));
  * @name exports.forgot
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
 exports.forgot = (req, res) => {
   res.render('forgot', {

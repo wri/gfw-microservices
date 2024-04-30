@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-const FcdValidationSchema = require('./fcdValidationSchema');
+import { FcdValidationSchema } from './fcdValidationSchema';
 
 describe('FcdValidationSchema', () => {
   it('should validate and transform a valid input successfully', () => {

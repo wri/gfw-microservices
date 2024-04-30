@@ -1,7 +1,7 @@
 const logger = require('../../../config/privateutils/logger.utils');
 import { featureFlagsService } from '@wri-monorepos/shared';
 
-module.exports = async function (request, response) {
+export default async function (request, response) {
   const { flagId } = request.params;
   const { orgId } = request.body;
   const { deleteFeatureFlag } = await featureFlagsService();
@@ -23,4 +23,4 @@ module.exports = async function (request, response) {
       error: 'An error occurred while processing the deleteFeatureFlag request.',
     });
   }
-};
+}

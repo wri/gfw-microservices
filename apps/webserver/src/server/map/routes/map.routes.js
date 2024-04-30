@@ -1,5 +1,5 @@
 const path = require('path');
-const axios = require('axios');
+import axios from 'axios';
 
 const controller = require('../controllers/map.controller');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));

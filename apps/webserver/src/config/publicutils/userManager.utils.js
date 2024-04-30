@@ -98,7 +98,7 @@ const lstAccessLevels = [
  * @summary Provides a list of titles for the user to choose from.
  * @return  An array of strings containing all the Titles.
  */
-function getTitles() {
+export function getTitles() {
   return lstTitles;
 }
 
@@ -107,7 +107,7 @@ function getTitles() {
  * @summary Provides a list of commodities for the user to choose from.
  * @return  An array of strings containing all the Commodities.
  */
-function getCommodities() {
+export function getCommodities() {
   return lstCommodities;
 }
 
@@ -116,7 +116,7 @@ function getCommodities() {
  * @summary Provides a list of Geographies for the user to choose from.
  * @return  An array of strings containing all the Geographies.
  */
-function getGeographies() {
+export function getGeographies() {
   return lstGeographies;
 }
 
@@ -125,7 +125,7 @@ function getGeographies() {
  * @summary Provides a list of Access Levels for the admin to choose from.
  * @return  An array of strings containing all the Access Levels.
  */
-function getAccessLevels() {
+export function getAccessLevels() {
   return lstAccessLevels;
 }
 
@@ -134,7 +134,7 @@ function getAccessLevels() {
  * @summary Provides a list of Statuses for the admin to choose from.
  * @return  An array of strings containing all the Statuses.
  */
-function getStatuses() {
+export function getStatuses() {
   return listStatusDescriptions;
 }
 
@@ -144,7 +144,7 @@ function getStatuses() {
  * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return  String of user_email
  */
-function getUserEmail(req) {
+export function getUserEmail(req) {
   return req.session.user_email;
 }
 
@@ -154,7 +154,7 @@ function getUserEmail(req) {
  * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return  true if administrator, false otherwise.
  */
-function isAdministrator(req) {
+export function isAdministrator(req) {
   if (req.session.user_access_level_id === config.platformVars.accessLevel.Administrator) {
     return true;
   }
@@ -166,7 +166,7 @@ function isAdministrator(req) {
  * @summary Checks if the current user is an Editor.
  * @return  true if Editor, false otherwise.
  */
-function isEditor(req) {
+export function isEditor(req) {
   if (req.session.user_access_level_id === config.platformVars.accessLevel.Editor) {
     return true;
   }
@@ -179,7 +179,7 @@ function isEditor(req) {
  * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return  true if Pro Manager, false otherwise.
  */
-function isProManager(req) {
+export function isProManager(req) {
   if (req.session.ispromanager !== undefined && req.session.ispromanager === true) {
     return true;
   }
@@ -194,7 +194,14 @@ function isProManager(req) {
  * @param  {String}   user_email A string containing the user email of the user you want to activate.
  * @return  A promise that resolves to true if user is successfully, rejected otherwise.
  */
-const activateUser = (req, user_id, user_email, first_name, last_name, unit_test = false) => {
+export const activateUser = (
+  req,
+  user_id,
+  user_email,
+  first_name,
+  last_name,
+  unit_test = false
+) => {
   return new Promise((resolve, reject) => {
     let organizationName;
     // Make sure the user is an Administrator before making the call.
@@ -288,7 +295,7 @@ const activateUser = (req, user_id, user_email, first_name, last_name, unit_test
  * @param  {Number}   user_id A number containing the user ID of the user you want to deactivate.
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
-const deactivateUser = (req, user_id) => {
+export const deactivateUser = (req, user_id) => {
   return new Promise((resolve, reject) => {
     // Make sure the user is an Administrator before making the call.
     if (!isAdministrator(req)) {
@@ -361,7 +368,7 @@ const deactivateUser = (req, user_id) => {
  * @param  {Number}  gran_chaco_email_frequency
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
-const createNewUser = (
+export const createNewUser = (
   req,
   user_first_name,
   user_middle_initial,
@@ -527,7 +534,7 @@ const createNewUser = (
  * @param  {Number}  user_auth_preference_id
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
-const updateUserInfo = (
+export const updateUserInfo = (
   req,
   user_id,
   user_first_name,
@@ -616,7 +623,7 @@ const updateUserInfo = (
  * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  * @return  true if successfull, false otherwise.
  */
-const setStatus = (req, status_id) => {
+export const setStatus = (req, status_id) => {
   return new Promise((resolve, reject) => {
     // Setup Parameters to pass to set status SP.
     const params = [
@@ -647,7 +654,7 @@ const setStatus = (req, status_id) => {
  * @param {Object} req
  * @return {Promise<String>} - base32 image to use as <img src=BASE32IMG />
  */
-const getUserSecret = (req, email) => {
+export const getUserSecret = (req, email) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       {
@@ -686,26 +693,6 @@ const getUserSecret = (req, email) => {
  * @function initialize
  * @summary Initializes the Account Manager module.
  */
-const initialize = () => {
+export const initialize = () => {
   return AWSCognito.initialize();
-};
-
-// exporting the functions.
-module.exports = {
-  initialize,
-  getCommodities,
-  getGeographies,
-  getTitles,
-  isAdministrator,
-  isEditor,
-  isProManager,
-  getAccessLevels,
-  getStatuses,
-  getUserEmail,
-  deactivateUser,
-  activateUser,
-  createNewUser,
-  updateUserInfo,
-  setStatus,
-  getUserSecret,
 };

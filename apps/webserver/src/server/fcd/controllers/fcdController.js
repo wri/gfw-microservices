@@ -8,7 +8,7 @@ const FcdParamsSchema = require('../utils/fcdValidationSchema');
  * @param {Object} req Express Request
  * @param {Object} res Express Respond
  */
-module.exports = async (req, res) => {
+export default async (req, res) => {
   try {
     const { organization_database: clientDatabase } = req.session;
 

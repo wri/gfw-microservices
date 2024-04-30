@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 import { styled } from '@mui/material/styles';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-import { formatNumber } from '../../../../common/js/utils/formatNumber';
+import { formatNumber } from '../../../../common/js/utils/format';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
 
 export default function AccountUsage({ label, usedValue, maxValue, InfoBubbleContent }) {

@@ -26,7 +26,8 @@ import AnalysisListChips from './AnalysisListChips';
 import { locationsPage, nav, treeCoverLossID } from '../../../../../common/js/config';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
 import CustomTooltip from '../../../../../common/js/components/CustomTooltip/CustomTooltip';
-import moment from 'moment';
+
+import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
 
 function ActiveList({
   list,
@@ -65,12 +66,13 @@ function ActiveList({
   const isEmptyList = locations === 0;
   const showDiagnosticOpt = !is_shared && !isEmptyList && getActiveAnalysisType(listAnalysesStatus);
 
-  const getAnalysisUpdateTime = () => {
+  const getAnalysisLastUpdatedDate = () => {
     const analysisUpdateTime =
       Array.isArray(listAnalysesStatus) && listAnalysesStatus[0]?.updateTime;
-    moment.locale(navigator.language || navigator.userLanguage);
 
-    return analysisUpdateTime ? `Analysis updated: ${moment(analysisUpdateTime).format('L')}` : '';
+    return analysisUpdateTime
+      ? `Analysis updated: ${formatDateForCurrentBrowserLanguage(analysisUpdateTime)}`
+      : '';
   };
 
   const clickLocationRow = () => {
@@ -135,7 +137,7 @@ function ActiveList({
       >
         <CustomTooltip
           placement="bottom-end"
-          tooltipMessage={getAnalysisUpdateTime()}
+          tooltipMessage={getAnalysisLastUpdatedDate()}
           style={{ minWidth: '250px' }}
         >
           <div className="locations-list__title">

@@ -1893,9 +1893,7 @@ export default class Lists extends Component {
   getAnalysisLastUpdatedDate(listAnalysesStatus) {
     const updateTime = listAnalysesStatus[0]?.updateTime;
 
-    return updateTime
-      ? `Analysis updated: ${formatDateForCurrentBrowserLanguage(updateTime)}`
-      : '';
+    return updateTime ? `Analysis updated: ${formatDateForCurrentBrowserLanguage(updateTime)}` : '';
   }
 
   render() {

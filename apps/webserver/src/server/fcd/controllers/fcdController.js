@@ -1,7 +1,7 @@
 const path = require('path');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 import makeListProcessingRequest from '../utils/makeListProcessingRequest';
-const FcdParamsSchema = require('../utils/fcdValidationSchema');
+import { FcdValidationSchema } from '../utils/fcdValidationSchema';
 
 /**
  * @summary manage requests for list-processing api
@@ -13,7 +13,7 @@ export default async (req, res) => {
     const { organization_database: clientDatabase } = req.session;
 
     // validate params and throw error if something's missing
-    const zodValidationResult = FcdParamsSchema.parse(req.query);
+    const zodValidationResult = FcdValidationSchema.parse(req.query);
 
     // note: category is transformed by zod from string => string[]
     const { listId, category: categories, country, countryGadm, locationId } = zodValidationResult;

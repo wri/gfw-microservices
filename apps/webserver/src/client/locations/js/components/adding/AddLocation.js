@@ -1840,7 +1840,6 @@ export default class AddLocation extends Component {
   };
 
   render() {
-    const { isAfiAvailable } = featureFlags;
     const defaultAction =
       this.state.dialogTitle === 'Location Added' ||
       this.state.dialogTitle === 'Location Appended!' ||
@@ -2239,16 +2238,15 @@ export default class AddLocation extends Component {
           </AddLocationCard>
         )}
 
-        {isAfiAvailable && (
-          <AddLocationCard>
-            <h2 className="add-location-card__title">Analysis</h2>
+        <AddLocationCard>
+          <h2 className="add-location-card__title">Analysis</h2>
 
-            <AnalysisTypesSelector
-              selectedAnalyses={selectedAnalysis}
-              setSelectedAnalyses={this.handleAnalyzesSelection}
-            />
-          </AddLocationCard>
-        )}
+          <AnalysisTypesSelector
+            selectedAnalyses={selectedAnalysis}
+            setSelectedAnalyses={this.handleAnalyzesSelection}
+          />
+        </AddLocationCard>
+
         <SaveAsDraftNote />
 
         <section className="add-single-location__footer">

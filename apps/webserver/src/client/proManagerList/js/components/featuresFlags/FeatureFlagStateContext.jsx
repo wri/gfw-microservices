@@ -26,6 +26,7 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
         flagState,
         orgId,
       }).then((upsertedFeatureFlag) => {
+        setIsLoading(true);
         if (orgId) {
           setFeatureFlagsListByFlagId((prevFeatureFlagListValues) => {
             return prevFeatureFlagListValues.map((flag) => {
@@ -76,6 +77,7 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
   }, [selectedFeatureFlag]);
 
   useEffect(() => {
+    setIsLoading(false);
     setAccountsWithFeatureFlagsByFlagId(
       featureFlagsListByFlagId
         .filter((flag) => flag.orgId)

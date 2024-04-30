@@ -15,7 +15,7 @@ function addComma(number) {
     .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-export const formatDateForCurrentBrowserLanguage = (date, format) => {
+export const formatDateForCurrentBrowserLanguage = (date, format = 'L') => {
   moment.locale(navigator.language || navigator.userLanguage);
   return moment(date).format(format);
 };

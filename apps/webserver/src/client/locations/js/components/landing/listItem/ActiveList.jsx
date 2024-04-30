@@ -71,7 +71,7 @@ function ActiveList({
       Array.isArray(listAnalysesStatus) && listAnalysesStatus[0]?.updateTime;
 
     return analysisUpdateTime
-      ? `Analysis updated: ${formatDateForCurrentBrowserLanguage(analysisUpdateTime, 'L')}`
+      ? `Analysis updated: ${formatDateForCurrentBrowserLanguage(analysisUpdateTime)}`
       : '';
   };
 

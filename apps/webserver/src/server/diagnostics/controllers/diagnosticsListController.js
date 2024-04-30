@@ -3,7 +3,7 @@ const logger = require('../../../config/privateutils/logger.utils');
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
 const SharedListManager = require(path.resolve('./config/publicutils/shareManager.utils'));
-const getAnalysisFromAdministrativeAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromAdministrativeAreasList');
+import getAnalysisFromAdministrativeAreasList from './gfwListsDiagnosticsFunctions/getAnalysisFromAdministrativeAreasList';
 const getAnalysisFromProtectedAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromProtectedAreasList');
 const getAnalysisFromGFWList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromGFWList');
 const getAnalysisFromUserList = require('./orgListDiagnosticsFunctions/getAnalysisFromUserList');

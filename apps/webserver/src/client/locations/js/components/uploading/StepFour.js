@@ -8,7 +8,6 @@ import {
   filterValidTemplates,
   filterValidCustom,
 } from '../../../../listDetails/js/utils/moveLocations';
-import featureFlags from '../../../../../utils/general.utils';
 
 export default class StepFour extends Component {
   constructor(props) {
@@ -133,12 +132,10 @@ export default class StepFour extends Component {
       <div className={'locations-upload-step'}>
         <h2 className="locations-upload-step__step-title">{locationsPage.upload.stepFourTitle}</h2>
 
-        {featureFlags.isAfiAvailable && (
-          <AnalysisTypesSelector
-            selectedAnalyses={selectedAnalyses}
-            setSelectedAnalyses={setSelectedAnalyses}
-          />
-        )}
+        <AnalysisTypesSelector
+          selectedAnalyses={selectedAnalyses}
+          setSelectedAnalyses={setSelectedAnalyses}
+        />
 
         <fieldset className="locations-upload-save">
           <legend className="locations-upload-save__legend">{locationsPage.upload.list}</legend>

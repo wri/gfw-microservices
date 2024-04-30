@@ -8,13 +8,10 @@ const PolicyManager = require(path.resolve('./config/publicutils/policyManager.u
 import { getAccountRenewalTime } from '@wri-monorepos/sql';
 /**
  * @function profile
- * @summary
- * @name exports.profile
- * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
-exports.profile = (req, res) => {
+export const profile = (req, res) => {
   res.render('profile', {
     common: compiledAssets.js.common,
     profilejs: compiledAssets.js.profile,
@@ -22,7 +19,7 @@ exports.profile = (req, res) => {
   });
 };
 
-exports.profileInfo = (req, res) => {
+export const profileInfo = (req, res) => {
   const classes = AccountManager.getClassifications(req);
   const isAdministrator = UserManager.isAdministrator(req);
 

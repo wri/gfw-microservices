@@ -1,5 +1,5 @@
 const path = require('path');
-const axios = require('axios');
+import axios from 'axios';
 
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));

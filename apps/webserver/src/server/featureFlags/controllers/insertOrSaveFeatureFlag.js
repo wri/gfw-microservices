@@ -2,7 +2,7 @@ const logger = require('../../../config/privateutils/logger.utils');
 
 import { featureFlagsService } from '@wri-monorepos/shared';
 
-module.exports = async function (request, response) {
+export default async function (request, response) {
   const { body: featureFlagData, session } = request;
   const { user_id: modifierUserId } = session;
   const { insertOrSaveFeatureFlag } = await featureFlagsService();
@@ -26,4 +26,4 @@ module.exports = async function (request, response) {
       error: 'An error occurred while processing the insertOrSaveFeatureFlag request.',
     });
   }
-};
+}

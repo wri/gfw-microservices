@@ -4,7 +4,7 @@ const { renderToString } = require('react-dom/server');
 const { compiledAssets } = require(path.resolve('./config/config'));
 const page = 'more';
 
-exports[page] = (req, res) => {
+export const more = (req, res) => {
   const markup = compiledAssets.js['login-component']
     ? renderToString(createElement(compiledAssets.js['login-component'].default))
     : '';

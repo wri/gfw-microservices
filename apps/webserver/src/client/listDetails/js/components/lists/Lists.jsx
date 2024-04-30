@@ -115,7 +115,6 @@ import {
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from './getListFilterValues';
 import getAllColumnNames from './getAllColumnNames';
-import featureFlags from '../../../../../utils/general.utils';
 import { formatDateForCurrentBrowserLanguage } from '../../../../common/js/utils/format';
 
 // STYLE
@@ -2163,7 +2162,7 @@ export default class Lists extends Component {
 
     return (
       <div>
-        {featureFlags?.isAfiAvailable && !isGfwList && (
+        {!isGfwList && (
           <ChangeTypeOfAnalysisModal
             listId={listID}
             listName={listName}
@@ -2283,7 +2282,7 @@ export default class Lists extends Component {
               >
                 <div style={{ display: 'flex', justifyContent: 'end' }}>
                   <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
-                  {featureFlags?.isAfiAvailable && !isGfwList && (
+                  {!isGfwList && (
                     <Button
                       icon={<SettingsIcon fontSize="17px" />}
                       style={{ height: '17px', width: '40px', minWidth: '0px' }}

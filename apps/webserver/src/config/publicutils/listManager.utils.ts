@@ -63,7 +63,7 @@ const analyticsService = require(path.resolve('./server/analytics/service/analyt
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
-import { SqlParamType } from '@wri-monorepos/sql';
+import { SqlParamType, AnalysisDataType, ListsType } from '@wri-monorepos/sql';
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -406,7 +406,7 @@ const saveAsDraftList = (
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const getUserLists = (req): Promise<[{ id; list_name }]> => {
+export const getUserLists = (req): Promise<ListsType[]> => {
   return new Promise((resolve, reject) => {
     let promise;
     const parameters = [];
@@ -511,7 +511,7 @@ export const rerunExistingList = (req) => {
  *   @summary Function to returns all the list names tied to the organization.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const getAllLists = (req): Promise<[{ id; list_name }]> => {
+export const getAllLists = (req): Promise<ListsType[]> => {
   return new Promise((resolve, reject) => {
     // call organizational stored procedure to return all lists tied to the organization.
     sqlUtils
@@ -642,9 +642,9 @@ export const getSimplifiedListLocations = (req, list_id) => {
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {Number} listID - Unique list id of the list.
  * @param {String} columnsToReturn - Comma separated list of columns to return.
- * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+ * @return {Promise<[]>} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const getListLocationsNoGeom = (req, listID, columnsToReturn = null) => {
+export const getListLocationsNoGeom = (req, listID, columnsToReturn = null): Promise<[]> => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
@@ -688,9 +688,13 @@ export const getListLocationsNoGeom = (req, listID, columnsToReturn = null) => {
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {Number} listID - Unique list id of the list.
  * @param {Filters} filters - Array of filters to apply to the query.
- * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+ * @return {Promise<[]>} Returns promise object. If successful, recordsets, otherwise, error object
  */
-export const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
+export const getPaginatedAnalysisDataForUserList = (
+  req,
+  listID,
+  filters
+): Promise<AnalysisDataType[]> => {
   let { searchString, country, state, subState } = filters;
   const {
     page,

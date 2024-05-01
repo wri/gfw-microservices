@@ -23,7 +23,8 @@ export default function LegalBanner() {
           and{' '}
           <a href={licenseAgreement} className="gfw-green" target="_blank">
             License Agreement
-          </a>.
+          </a>
+          .
         </p>
       </CardContent>
     </Card>

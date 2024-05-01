@@ -26,11 +26,16 @@ import { ListService } from '../services/list.service';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { deleteListBodySchema } from './types/deleteListRequestSchema';
 import { RequestPreSignedURLSchema } from './validators';
+
+/*
+  This controller will be deprecated in the future
+  We are moving this to /v1/ API routes
+*/
 @Controller()
 export class AppController {
   constructor(
-    private readonly appService: AppService,
-    private readonly largeListService: LargeListService,
+    protected readonly appService: AppService,
+    protected readonly largeListService: LargeListService,
     private readonly locationService: LocationService,
     private readonly listService: ListService
   ) {}
@@ -74,7 +79,7 @@ export class AppController {
 
   @Post('/create-large-list')
   triggerProcessLargeList(@Body() request: RequestTriggerProcessLargeList) {
-    return this.largeListService.createNewLargeListProcess(
+    return this.largeListService.createListTables(
       request.list_name,
       request.user_id,
       request.client_database,

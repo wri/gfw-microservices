@@ -82,7 +82,7 @@ export class LargeListService {
     return respondeBody;
   }
 
-  async createNewLargeListProcess(
+  async createListTables(
     list_name: string,
     user_id: number,
     clientDatabase: string,

@@ -10,6 +10,7 @@ import { PLANET_BASEMAP } from '../../map/js/config/map.config';
 // We are using names in the api to map out the layers
 // key is universal id we use within the app, values is layer NAME in the API
 export const proLayers = {
+  jrcGlobalForestCover: 'jrc_global_forest_cover',
   sBTNNaturalForest: 'SBTN Natural Forest',
   negligibleRisk: 'Negligible Risk',
   cocoaDeforestationRisk: 'cocoa_deforestation_risk',
@@ -3268,6 +3269,13 @@ export const mapPage = {
       group: 'land-cover',
       order: 211,
     },
+
+    {
+      id: proLayers.jrcGlobalForestCover,
+      group: 'land-cover',
+      order: 212,
+    },
+
     // Land-Use
     {
       id: proLayers.rspoConcessions,

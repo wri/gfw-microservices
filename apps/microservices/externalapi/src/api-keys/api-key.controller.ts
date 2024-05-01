@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, UsePipes } from '@nestjs/common';
 
 import { TokenService } from './token.service';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { CreateApiKeyRequest, ViewApiKeyResponse } from './dtos';
 import { z } from 'zod';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
@@ -17,6 +17,7 @@ export class APIKeyController {
 
   //Get all tokens for one organization
   @ApiResponse({ type: [ViewApiKeyResponse] })
+  @ApiUnauthorizedResponse({ status: 401, description: 'Unauthorized' })
   @Get('/:organizationId')
   async getTokens(@Param('organizationId') orgId: string): Promise<ViewApiKeyResponse[]> {
     const organizationId = z.coerce.number().parse(orgId);

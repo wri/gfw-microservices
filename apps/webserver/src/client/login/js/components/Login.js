@@ -117,7 +117,7 @@ export default class Login extends Component {
   };
 
   requestDemo = () => {
-    window.open(loginPage.learnMoreURL.help.link, '_blank');
+    window.open(loginPage.moreInfo.help.link, '_blank');
   };
 
   requestMoreInfo = () => {

@@ -196,7 +196,7 @@ export const loginPage = {
   appTitleText: 'Achieve supply chain sustainability with data that delivers impact.',
   appRequestAccount: 'Request an Account',
   appLearnMore: 'Learn more about Pro',
-  learnMoreURL: {
+  moreInfo: {
     help: {
       paragraphText: 'Find out how GFW Pro can help you and your organization.',
       buttonText: 'Contact us',

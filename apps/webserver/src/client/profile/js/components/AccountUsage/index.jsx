@@ -64,6 +64,7 @@ export default function AccountUsageContainer() {
       })
       .catch((error) => {
         console.log(error);
+        setUsageData({});
       });
   }, []);
 

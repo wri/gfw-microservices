@@ -38,12 +38,6 @@ const isValidDate = (dateString) => {
   return date instanceof Date && !isNaN(date.valueOf());
 };
 
-const checkStartBeforeEnd = (startDate, endDate) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  return start < end;
-};
-
 const getAnalysisUsageData = async ({ startDate, endDate, organizationId }) => {
   try {
     const { error } = validateQueryParams({
@@ -223,10 +217,6 @@ export const downladOrganizationUsersUsageExport = async (req, res) => {
 const validateQueryParams = ({ startDate, endDate }) => {
   if (!isValidDate(startDate) || !isValidDate(endDate)) {
     return { error: 'Invalid date' };
-  }
-
-  if (!checkStartBeforeEnd(startDate, endDate)) {
-    return { error: 'Start date must be before end date' };
   }
 
   return {};

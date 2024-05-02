@@ -126,7 +126,7 @@ export class ListService {
         skip,
         take,
         order: {
-          dashboardLastResults: 'DESC',
+          id: 'DESC',
         },
       });
       if (!paginatedList.length || !count) {

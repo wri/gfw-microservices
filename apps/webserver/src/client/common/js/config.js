@@ -212,16 +212,16 @@ export const loginPage = {
   appTitleText: 'Achieve supply chain sustainability with analytics that deliver impact.',
   appRequestAccount: 'Request an Account',
   appLearnMore: 'Learn more about Pro',
-  learnMoreURL: 'https://www.globalforestwatch.org/help/gfw-pro/',
   moreInfo: {
     help: {
       paragraphText: 'Find out how GFW Pro can help you and your organization.',
-      buttonText: 'Find out more',
+      buttonText: 'Contact us',
+      link: 'mailto:GFWPROsales@wri.org',
     },
     subscribe: {
-      paragraphText:
-        'Subscribe to the Global Forest Watch newsletter for general application information and updates.',
-      buttonText: 'Stay updated',
+      paragraphText: 'Follow us on LinkedIn to see the latest news and updates from GFW Pro',
+      buttonText: 'GFW LinkedIn page',
+      link: 'https://www.linkedin.com/showcase/globalforestwatch/',
     },
   },
   latestResearchTitle: 'Latest Research and Insights',

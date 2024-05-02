@@ -109,11 +109,11 @@ export const convertURL = 'https://production-api.globalforestwatch.org/v2/ogr/c
 export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
 export const latestTreeCoverLossYearForTclDataInMap = 2023;
-export const latestTreeCoverLossYearCommodityRisk = 2022;
+export const latestTreeCoverLossYearCommodityRisk = 2023;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearForTclDataInAnalyses = 2023;
 
-export const soyPlantedYearsRange = [2001, 2022];
+export const soyPlantedYearsRange = [2001, 2023];
 
 export const treeCoverLossTilesUrl =
   'https://tiles.globalforestwatch.org/umd_tree_cover_loss/v1.11/tcd_{thresh}/{z}/{x}/{y}.png';
@@ -204,7 +204,7 @@ export const aboutPage = {
     'Creating and maintaining an account on GFW Pro is free. Our goal is to make GFW Pro available as a public good accessible by all supply chain actors and thereby foster more sustainable commodity sourcing decisions. An annual free grant of 5,000 per-location analyses and 100 million hectares of processing is provided to each organization. For most organizations, this is sufficient for internal operational and sustainability assessments as well as direct reporting to government regulators and nonprofit administrators of voluntary commitments.',
     'To support rapid user growth and increased demand for product upgrades, both of which drive up operational costs, we charge fees for usage that exceeds the free annual allowance, and for licenses to publish, distribute or resell GFW Pro content to third parties.',
     'To maintain GFW Pro as a widely accessible public good, we ask our users to support the platform by paying a fair fee to share analyses and for usage that exceeds the free use limit.',
-    'For more information on GFW Pro packages and prices, please refer to our <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/">price list</a>&nbsp;and <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">license agreement</a>. If you have an existing GFW Pro account, the&nbsp;<a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model/">fee model FAQ page</a>&nbsp;offers additional information and some relevant examples. Otherwise, please <a data-testid="link-with-safety" href="mailto:GFWPROsales@wri.org">contact our sales team for more information</a>',
+    'For more information on GFW Pro packages and prices, please refer to our <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/">price list</a>&nbsp;and <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">license agreement</a>. If you have an existing GFW Pro account, the&nbsp;<a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model/">fee model FAQ page</a>&nbsp;offers additional information and some relevant examples. Otherwise, please <a data-testid="link-with-safety" href="mailto:GFWPROsales@wri.org">contact our sales team for more information</a>.',
   ],
 };
 
@@ -212,16 +212,16 @@ export const loginPage = {
   appTitleText: 'Achieve supply chain sustainability with analytics that deliver impact.',
   appRequestAccount: 'Request an Account',
   appLearnMore: 'Learn more about Pro',
-  learnMoreURL: 'https://www.globalforestwatch.org/help/gfw-pro/',
   moreInfo: {
     help: {
       paragraphText: 'Find out how GFW Pro can help you and your organization.',
-      buttonText: 'Find out more',
+      buttonText: 'Contact us',
+      link: 'mailto:GFWPROsales@wri.org',
     },
     subscribe: {
-      paragraphText:
-        'Subscribe to the Global Forest Watch newsletter for general application information and updates.',
-      buttonText: 'Stay updated',
+      paragraphText: 'Follow us on LinkedIn to see the latest news and updates from GFW Pro',
+      buttonText: 'GFW LinkedIn page',
+      link: 'https://www.linkedin.com/showcase/globalforestwatch/',
     },
   },
   latestResearchTitle: 'Latest Research and Insights',
@@ -1079,7 +1079,7 @@ export const locationsPage = {
     soySilo: { value: 'Supply Shed' },
   },
   diagnostics: {
-    lastDataYear: 2022,
+    lastDataYear: 2023,
   },
   landing: {
     foldersFeatureFlag: false,

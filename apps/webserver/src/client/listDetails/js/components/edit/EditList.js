@@ -579,7 +579,7 @@ export default class EditList extends Component {
             variant="primary"
             onClick={this.updateLocations}
             disabled={!this.state.edited || !selectedLocationData.length || !this.isValid()}
-            label="Update"
+            label="Update Analysis"
           />
           <LinkButton onClick={this.cancelAdd} label={locationsPage.add.cancel} />
         </section>

@@ -2458,7 +2458,7 @@ export default class Lists extends Component {
                             className="RerunList__button"
                             onClick={this.handleRerunDialogState}
                             icon={<IconRerun height="14px" />}
-                            label="Update"
+                            label="Update Analysis"
                           />
                           <Dialog
                             title={locationsPage.lists.confirmListUpdate}
@@ -2514,7 +2514,7 @@ export default class Lists extends Component {
                             variant="primary"
                             className="ShareList__button"
                             onClick={(e) => this.handleDraftSubmit(e)}
-                            label="Submit"
+                            label="Submit Analysis"
                           />
                         </div>
                       ) : null}

@@ -824,9 +824,10 @@ export const locationsPage = {
     applyFilters: 'Apply filters',
     resetFilters: 'Reset',
     rerunListDialog: {
-      title: 'Confirm update',
-      text: `Select ‘OK’ to update your list. Your list will not be available while the update is processing.
-      You will receive an email notification when the update is completed.`,
+      title: 'Confirm analysis update',
+      text: `<p>Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete.
+      You will receive an email notification when the update is completed.</p>
+      <p>Note that running analysis counts towards your account usage limits. See more information <a href="/about#fees">here.</p>`,
     },
     cancel: 'Cancel',
     confirm: 'Confirm',

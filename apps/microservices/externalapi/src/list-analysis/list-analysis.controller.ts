@@ -123,6 +123,12 @@ export class ListAnalysisController {
   }
 
   @Get()
+  @ApiResponse({
+    description: 'Paginated info List',
+    status: 200,
+    type: listInfoResponse,
+    isArray: true,
+  })
   async getPaginatedLists(
     @Query('pageSize', new ZodValidationPipe(pageSizeSchema)) pageSize: number,
     @Query('pageNum', new ZodValidationPipe(numPageSchema)) pageNum: number,

@@ -1,5 +1,10 @@
 import { IsNull } from 'typeorm';
-import { ClientStoreConnection, FeatureFlag, systemEntities } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  FeatureFlag,
+  Organization,
+  systemEntities,
+} from '@wri-monorepos/sql';
 
 const DEFAULT_GLOBAL_FEATURE_FLAG_STATE = false;
 
@@ -133,6 +138,20 @@ export const featureFlagsService = async () => {
     return result.map((flag) => flag.flag_id);
   }
 
+  async function getClientIdByClientStoreDatabaseName(
+    clientStoreDatabase: string
+  ): Promise<number> {
+    const repository = connection.getRepository(Organization);
+    const organization = await repository.findOne({
+      where: { organizationDb: clientStoreDatabase },
+    });
+
+    if (!organization) {
+      throw new Error('Error in getClientIdByClientStoreDatabaseName: Organization not found.');
+    }
+    return organization.id;
+  }
+
   return {
     getAllFeatureFlags,
     getFeatureFlagsWhere,
@@ -141,5 +160,6 @@ export const featureFlagsService = async () => {
     deleteFeatureFlag,
     getFeatureFlagsForCurrentOrg,
     getAllFeaturesNames,
+    getClientIdByClientStoreDatabaseName,
   };
 };

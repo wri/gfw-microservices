@@ -9,10 +9,10 @@ import { config } from 'aws-sdk';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LargeListService } from './../services/largelist.service';
+import { ListService } from '../services/list.service';
 import { GeoService, LocationService } from '@wri-monorepos/geo';
 import { SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
-import { ListService } from '../services/list.service';
+import { ListPaginationService } from '../services/list.pagination.service';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';
 import { AFIModule } from './afi';
@@ -41,6 +41,6 @@ config.update({
     ListUploadModule,
   ],
   controllers: [AppController, ListController],
-  providers: [AppService, LargeListService, LocationService, GeoService, ListService],
+  providers: [AppService, ListPaginationService, LocationService, GeoService, ListService],
 })
 export class AppModule {}

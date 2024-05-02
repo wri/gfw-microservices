@@ -24,6 +24,7 @@ export default function LegalBanner() {
           <a href={licenseAgreement} className="gfw-green" target="_blank">
             License Agreement
           </a>
+          .
         </p>
       </CardContent>
     </Card>

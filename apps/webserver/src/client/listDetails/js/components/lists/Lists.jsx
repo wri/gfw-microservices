@@ -2514,7 +2514,7 @@ export default class Lists extends Component {
                             variant="primary"
                             className="ShareList__button"
                             onClick={(e) => this.handleDraftSubmit(e)}
-                            label="Submit Analysis"
+                            label="Submit"
                           />
                         </div>
                       ) : null}

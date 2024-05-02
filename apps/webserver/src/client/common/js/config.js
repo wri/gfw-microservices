@@ -806,7 +806,7 @@ export const locationsPage = {
     listsFilterPlaceholder: 'Search lists...',
     listsFilterClear: 'Clear search',
     listsFilterNoMatch: 'Sorry, your search returned no results.',
-    update: 'Update',
+    update: 'Update Analysis',
     submit: 'Submit For Analysis',
     selectPlaceholder: 'Select...',
     selectCountry: 'Country',

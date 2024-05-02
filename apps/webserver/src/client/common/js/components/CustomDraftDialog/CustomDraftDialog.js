@@ -34,7 +34,7 @@ export default function CustomDraftDialog({
       ]}
       onRequestClose={closeAction}
     >
-      {dialogMessage}
+      <div dangerouslySetInnerHTML={{ __html: dialogMessage }}></div>
     </Dialog>
   );
 }

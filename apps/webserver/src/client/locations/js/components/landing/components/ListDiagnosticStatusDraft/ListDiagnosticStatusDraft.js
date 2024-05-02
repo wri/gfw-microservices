@@ -11,7 +11,7 @@ const TOOLTIP__MESSAGE =
 
 const DIALOG_TITLE = 'Confirm analysis submission';
 const DIALOG_MESSAGE =
-  '<p>Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete. You will receive an email notification when the update is completed.</p><p>Note that running analysis counts towards your account usage limits. See more information <a href="/about#fees">here.</p>.</p>';
+  '<p>Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete. You will receive an email notification when the update is completed.</p><p>Note that running analysis counts towards your account usage limits. See more information <a href="/about#fees">here</a>.</p>';
 
 export default function ListDiagnosticStatusDraft({ submitForAnalysis, hideSubmit }) {
   const [dialogOpen, setDialogOpen] = useState(false);

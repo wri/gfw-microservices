@@ -29,7 +29,7 @@ export const chartDatasetConfigs = {
       { id: 'Category III', color: 'rgb(151,189,61)', legend: 'Category III', checked: true },
     ],
     startYear: 2008,
-    endYear: 2022,
+    endYear: 2023,
   },
   argentinaTreeCoverLoss: {
     id: 'argentinaTreeCoverLoss',

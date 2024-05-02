@@ -168,7 +168,7 @@ export class AppService {
           } catch (error) {
             throw new InternalServerErrorException({
               message: `Failed to delete attributes from list id ${list_id}`,
-              code: 602,
+              code: 603,
             });
           }
           // Delete list
@@ -177,7 +177,7 @@ export class AppService {
           } catch (error) {
             throw new InternalServerErrorException({
               message: `Failed to delete list ${list_id}`,
-              code: 601,
+              code: 603,
             });
           }
           // delete Analyses
@@ -186,7 +186,7 @@ export class AppService {
           } catch (error) {
             throw new InternalServerErrorException({
               message: `Failed to delete analyses ${list_id}`,
-              code: 602,
+              code: 603,
             });
           }
           // delete AFIAnalysis
@@ -195,7 +195,7 @@ export class AppService {
           } catch (error) {
             throw new InternalServerErrorException({
               message: `Failed to delete AFIAnalysis ${list_id}`,
-              code: 602,
+              code: 603,
             });
           }
           // delete ListsAnalysisStatus
@@ -204,7 +204,7 @@ export class AppService {
           } catch (error) {
             throw new InternalServerErrorException({
               message: `Failed to delete ListsAnalysisStatus ${list_id}`,
-              code: 602,
+              code: 603,
             });
           }
           // delete Analyses-Dashboard
@@ -213,7 +213,7 @@ export class AppService {
           } catch (error) {
             throw new InternalServerErrorException({
               message: `Failed to delete Analyses-Dashboard ${list_id}`,
-              code: 602,
+              code: 603,
             });
           }
           if (!activityLogRepository) {
@@ -223,7 +223,7 @@ export class AppService {
             // Salve log at ActivityLog table
             const activityLog = new ActivityLog();
             activityLog.userId = organization_user_id;
-            activityLog.activityTypeId = 1;
+            activityLog.activityTypeId = 21;
             activityLog.activityDescription = `User '${userEmail}' has deleted list (${listName}).`;
             activityLog.activityTime = new Date();
             await activityLogRepository.save(activityLog);
@@ -241,7 +241,7 @@ export class AppService {
           // Salve log at ActivityLog table
           const activityLog = new ActivityLog();
           activityLog.userId = organization_user_id;
-          activityLog.activityTypeId = 1;
+          activityLog.activityTypeId = 21;
           activityLog.activityDescription = `User '${userEmail}' has tried to delete list (${listName}) but some error occurs ${error.message}.`;
           activityLog.activityTime = new Date();
           await activityLogRepository.save(activityLog);
@@ -282,7 +282,7 @@ export class AppService {
     } catch (error) {
       throw new InternalServerErrorException({
         message: `Failed to lock list ${list_id}`,
-        code: 601,
+        code: 610,
       });
     }
   }
@@ -307,7 +307,7 @@ export class AppService {
     } catch (error) {
       throw new InternalServerErrorException({
         message: `Failed to unlock list ${list_id}`,
-        code: 601,
+        code: 610,
       });
     }
   }

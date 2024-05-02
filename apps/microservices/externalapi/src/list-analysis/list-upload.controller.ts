@@ -9,12 +9,25 @@ import {
   PrepareUploadRequestSchema,
   ListUploadNewRequestSchema,
 } from './list-upload-new.dto';
-import { ApiSecurity, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiSecurity,
+  ApiResponse,
+  ApiUnauthorizedResponse,
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+} from '@nestjs/swagger';
 import { ListAnalysisService } from './list-analysis.service';
 import { PrepareUploadResponse } from './dtos';
 import { requestSchema } from '../types/request-schema';
 import { Request } from 'express';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
+import {
+  BadRequestResponse,
+  ForbiddenResponse,
+  NotFoundResponse,
+  UnauthorizedResponse,
+} from './dtos/apiResponse';
 
 @ApiSecurity('x-api-key')
 @Controller('/v1')
@@ -22,6 +35,10 @@ export class ListUploadController {
   constructor(private listAnalysisService: ListAnalysisService) {}
 
   @ApiResponse({ status: 200, type: ListUploadNewResponse })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
   @Post('/list/upload_new')
   @UsePipes(new ZodValidationPipe(listUploadNewRequestSchema))
   async uploadNewList(
@@ -40,6 +57,10 @@ export class ListUploadController {
   }
 
   @ApiResponse({ status: 200, type: PrepareUploadResponse })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
   @Post('/prepare_upload')
   @UsePipes(new ZodValidationPipe(prepareUploadRequestSchema))
   // We must require the userEmail from the user to validate it in the API middleware

@@ -2,6 +2,18 @@ import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { ApiKeyGuard } from '../api-keys/auth.guard';
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import {
+  BadRequestResponse,
+  ForbiddenResponse,
+  NotFoundResponse,
+  UnauthorizedResponse,
+} from '../list-analysis/dtos/apiResponse';
 
 @Controller()
 export class AppController {
@@ -10,11 +22,18 @@ export class AppController {
   /**
    * Healthcheck for fargate
    */
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
   @Get('/HealthCheck')
   getHealthCheck(): string {
     return this.appService.getHealthCheck();
   }
-
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
   @Get('/protected')
   @UseGuards(ApiKeyGuard)
   protectedEndpoint(@Request() req) {
@@ -25,6 +44,10 @@ export class AppController {
   /**
    * Latest commit hash
    */
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
   @Get('/latest_commit')
   getLatestCommit(): string {
     return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;

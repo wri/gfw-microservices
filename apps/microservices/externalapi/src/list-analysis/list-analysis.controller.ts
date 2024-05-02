@@ -9,12 +9,24 @@ import {
 } from './list-analysis.dto';
 import { ListService } from '../lists/lists.service';
 import { ListAnalysisService } from './list-analysis.service';
-import { ApiBadRequestResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiResponse, ApiSecurity, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiResponse,
+  ApiSecurity,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { requestSchema, RequestSchema } from '../types/request-schema';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
 import { analysisIdSchema } from '../types/analysis-id';
 import { listInfoResponse } from './list-upload-new.dto';
-import {  UnauthorizedResponse, NotFoundResponse, ForbiddenResponse, BadRequestResponse } from './dtos/apiResponse'
+import {
+  UnauthorizedResponse,
+  NotFoundResponse,
+  ForbiddenResponse,
+  BadRequestResponse,
+} from './dtos/apiResponse';
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
 export class ListAnalysisController {
@@ -24,10 +36,10 @@ export class ListAnalysisController {
   ) {}
 
   @ApiResponse({ status: 200, type: ListAnalysisResponse })
-  @ApiUnauthorizedResponse({ status: 401,type:UnauthorizedResponse })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
-  @ApiForbiddenResponse({ type: ForbiddenResponse})
-  @ApiNotFoundResponse({ type: NotFoundResponse})
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
   @Get(':listId/analysis/:analysisId/status')
   async getAnalysisStatus(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -49,7 +61,10 @@ export class ListAnalysisController {
 
     return analysisStatus;
   }
-
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
   @Post(':listId/analysis/Alerts/generate')
   async createAnalysisStatus(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -72,6 +87,10 @@ export class ListAnalysisController {
       listId,
     });
   }
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
   @Delete(':listId')
   async deleteList(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -85,6 +104,10 @@ export class ListAnalysisController {
     const { userEmail } = deleteBodyList;
     return await this.listAnalysisService.deleteList(listId, organizationId, userEmail);
   }
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
   @Get(':listId')
   async getListInfo(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,

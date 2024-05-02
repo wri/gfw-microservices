@@ -8,7 +8,7 @@
  * - https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/javascript_sns_code_examples.html - Publish a Message to an Amazon SNS Topic
  ********************************************************************/
 const { SNSClient, PublishCommand } = require('@aws-sdk/client-sns');
-const config = require('../config');
+import config from '../config';
 
 const snsClient = new SNSClient();
 

@@ -1,8 +1,8 @@
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
-const makeWebpackConfig = require('../webpack.config');
+import makeWebpackConfig from '../webpack.config';
 const logger = require('../privateutils/logger.utils');
-const config = require('../config');
+import config from '../config';
 const webpack = require('webpack');
 
 /**

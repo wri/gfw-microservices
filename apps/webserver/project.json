@@ -92,7 +92,7 @@
         "commands": [
           "rm -rf public/*",
           {
-            "command": "node ../../../node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.js --config ./config/webpack.production.config.js",
+            "command": "NODE_OPTIONS=--max-old-space-size=4096 ts-node -T ../../../node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.ts --config ./config/webpack.production.config.js",
             "forwardAllArgs": false
           },
           "node ./test/prepare-jest"

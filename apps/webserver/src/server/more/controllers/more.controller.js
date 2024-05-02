@@ -1,7 +1,7 @@
-const path = require('path');
 const { createElement } = require('react');
 const { renderToString } = require('react-dom/server');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const page = 'more';
 
 export const more = (req, res) => {

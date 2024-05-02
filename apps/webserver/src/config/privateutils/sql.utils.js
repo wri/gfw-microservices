@@ -17,7 +17,7 @@ const sql = require('mssql');
 const sqlite3 = require('sqlite3');
 const sqlite = require('sqlite');
 const winston = require('winston');
-const config = require('../config');
+import config from '../config';
 import { getQueryStr } from '@wri-monorepos/sql';
 
 // basic logger without sql transport

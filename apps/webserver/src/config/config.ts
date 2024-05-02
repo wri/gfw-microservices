@@ -1,8 +1,9 @@
-const winston = require('winston');
-const assets = require('./assets');
-const path = require('path');
-const glob = require('glob');
-const common = require('./env/common');
+import * as winston from 'winston';
+import * as assets from './assets';
+import * as path from 'path';
+import * as glob from 'glob';
+import * as common from './env/common';
+import * as clientConfigs from './client.configs';
 
 // basic logger without sql transport
 const logger = winston.createLogger({ transports: [new winston.transports.Console()] });
@@ -17,12 +18,6 @@ const getFilePaths = () => ({
     mocha: glob.sync(assets.mocha),
     // Get views
     views: glob.sync(assets.views),
-  },
-});
-
-const getClientConfig = () => ({
-  client: {
-    build: glob.sync(assets.build).map((conf) => require(path.resolve(conf))),
   },
 });
 
@@ -54,7 +49,137 @@ function getAllCssJSFiles() {
   };
 }
 
-const make = () => {
+interface Config {
+  // common config
+  app: {
+    author: string;
+    title: string;
+    keywords: string;
+    description: string;
+  };
+  SQLConnection: {
+    host: string;
+    port: string;
+    username: string;
+    password: string;
+    database: string;
+    logDatabase: string;
+  };
+  sessionVars: {
+    secret: string;
+  };
+  AWSVars: {
+    credentials: {
+      accessKey: string;
+      secretKey: string;
+      region: string;
+    };
+    cognito: {
+      userpoolId: string;
+      clientId: string;
+      region: string;
+    };
+    ses: {
+      sender: string;
+    };
+    policyParams: {
+      bucket: string;
+      key: string;
+      keyPending: string;
+    };
+    sns: {
+      topicARN: string;
+    };
+    sqs: {
+      location_queue_url: string;
+      list_queue_url: string;
+    };
+    s3: {
+      analysisBucket: string;
+    };
+  };
+  platformVars: {
+    accessLevel: {
+      Administrator: number;
+      Editor: number;
+      Viewer: number;
+    };
+    authenticationStatus: {
+      Authenticated: number;
+      Unauthenticated: number;
+      RequireNewPassword: number;
+      ConfirmPassword: number;
+      Disabled: number;
+      ResetRequired: number;
+      ForceReset: number;
+      ResendPassword: number;
+    };
+    authenticationPreference: {
+      Email: number;
+      GoogleAuthenticator: number;
+    };
+    emailFrequency: {
+      never: number;
+      everyQuarter: number;
+      everyMonth: number;
+      everyWeek: number;
+      everyDay: number;
+    };
+    emailType: {
+      NEW_ORGANIZATION: string;
+      REQUEST_ORGANIZATION: string;
+      ORGANIZATION_ACTIVATED: string;
+      VERIFY_AUTHENTICATION: string;
+      INVITATION: string;
+      LIST_ANALYSIS_STARTED: string;
+      LIST_ANALYSIS_SUCCESS: string;
+      LIST_ANALYSIS_RERUN_SUCCESS: string;
+      LIST_ANALYSIS_ERROR: string;
+      ANALYSIS_LIMIT_REACHED: string;
+      // Sharing
+      INTERNAL_LIST_DISABLE: string;
+      INTERNAL_LIST_ENABLE: string;
+      EXTERNAL_LIST_DISABLE: string;
+      EXTERNAL_LIST_ENABLE: string;
+      ORGANIZATION_APPROVED: string;
+      // GFW Lists
+      UPDATE_GFWLISTS: string;
+    };
+    snsType: {
+      NEW_ORGANIZATION: string;
+      UPDATE_GFWLIST: string;
+    };
+    maxUserLoginRetries: number;
+  };
+
+  // environment config
+  port: number;
+  compiledAssets: {
+    css: any;
+    js: any;
+  };
+  webpack: {
+    mode: 'none' | 'development' | 'production';
+    plugins: any[];
+    devtool: string;
+  };
+  devTestUserAuthSecret: string;
+
+  // getFilePaths()
+  files: {
+    scripts: string[];
+    routes: string[];
+    mocha: string[];
+    views: string[];
+  };
+
+  // getClientConfig()
+  client: {
+    build: any[];
+  };
+}
+
+const make = (): Config => {
   // Validate the NODE_ENV and set a default if not provided
   if (process.env.NODE_ENV === null || process.env.NODE_ENV === undefined) {
     logger.warn('NODE_ENV is not set, setting to "development"');
@@ -71,7 +196,7 @@ const make = () => {
     console.log('Matching Config found: ', process.env.NODE_ENV);
     // console.log('environmentConfig', environmentConfig);
   } catch (err) {
-    logger.warn(`No configuration files found matching environment ${process.env.NODE_ENV}`);
+    logger.error(`No configuration files found matching environment ${process.env.NODE_ENV}`, err);
   }
   // Get assets config
   const filesConfig = getFilePaths();
@@ -84,7 +209,11 @@ const make = () => {
   // webpack compile speed has been improved.
 
   // Get the client config
-  const clientConfig = getClientConfig();
+  const clientConfig = {
+    client: {
+      build: clientConfigs.clientBuild,
+    },
+  };
 
   let compiledAssets = {};
   if (process.env.NODE_ENV !== 'development') {
@@ -113,4 +242,4 @@ const make = () => {
   return Object.assign({}, common, environmentConfig, filesConfig, clientConfig, compiledAssets);
 };
 
-module.exports = make();
+export default make();

@@ -166,10 +166,6 @@ module.exports = (app, limiter) => {
       enableAlerts,
       geographies,
       commodities,
-      viirsAlerts,
-      gladAlerts,
-      terraIAlerts,
-      granChacoAlerts,
       auth_preference_id,
     } = req.body;
 
@@ -187,10 +183,6 @@ module.exports = (app, limiter) => {
       email_subscription: enableAlerts,
       arr_user_geography_ids: geographies,
       arr_user_commodity_ids: commodities,
-      viirs_email_frequency: viirsAlerts,
-      glad_email_frequency: gladAlerts,
-      terrai_email_frequency: terraIAlerts,
-      gran_chaco_email_frequency: granChacoAlerts,
       user_auth_preference_id: auth_preference_id,
       loggedUserAccessLevelId: req.session.user_access_level_id,
     })

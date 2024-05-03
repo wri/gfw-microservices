@@ -361,11 +361,6 @@ export const deactivateUser = (req, user_id) => {
  * @param  {Number}   email_subscription - An integer that is either 1 or 0.
  * @param  {Array}   arr_user_geography_ids - An array of geography Ids that the user is interested in.
  * @param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
- * @param  {Number}  viirs_email_frequency
- * @param  {Number}  glad_email_frequency
- * @param  {Number}  forma_email_frequency
- * @param  {Number}  terrai_email_frequency
- * @param  {Number}  gran_chaco_email_frequency
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
 export const createNewUser = (
@@ -548,11 +543,6 @@ export const updateUserInfo = ({
   email_subscription,
   arr_user_geography_ids = [],
   arr_user_commodity_ids = [],
-  viirs_email_frequency = 0,
-  glad_email_frequency = 0,
-  forma_email_frequency = 0,
-  terrai_email_frequency = 0,
-  gran_chaco_email_frequency = 0,
   user_auth_preference_id = 0,
   loggedUserAccessLevelId,
 }) => {
@@ -569,11 +559,6 @@ export const updateUserInfo = ({
       { field: 'email_subscription', type: sql.Bit, value: email_subscription },
       { field: 'commodity_ids', type: sql.VarChar(200), value: arr_user_commodity_ids.toString() },
       { field: 'geography_ids', type: sql.VarChar(200), value: arr_user_geography_ids.toString() },
-      { field: 'viirs_email_frequency', type: sql.Int, value: viirs_email_frequency },
-      { field: 'glad_email_frequency', type: sql.Int, value: glad_email_frequency },
-      { field: 'forma_email_frequency', type: sql.Int, value: forma_email_frequency },
-      { field: 'terrai_email_frequency', type: sql.Int, value: terrai_email_frequency },
-      { field: 'gran_chaco_email_frequency', type: sql.Int, value: gran_chaco_email_frequency },
     ];
     const isUserAdmin = loggedUserAccessLevelId === UserAccessLevel.ADMIN;
 

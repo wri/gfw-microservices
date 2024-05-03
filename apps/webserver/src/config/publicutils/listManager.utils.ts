@@ -440,7 +440,7 @@ export const getUserLists = (req): Promise<ListsType[]> => {
   });
 };
 
-const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
+export const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
   lists.forEach((list) => {
     const listAnalysesStatus = listAnalysisStatuses.filter(
       (analysis) => analysis.listId == list.id

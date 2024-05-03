@@ -80,14 +80,9 @@ const DialogSubmitContent = ({ listName = 'Create New List' }) => {
     <p>
       {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
       running analysis counts towards your account usage limits. See more information{' '}
-      <LinkButton
-        target="_blank"
-        onClick={() => {
-          navigateToFeeInformationPage();
-        }}
-      >
+      <a href="/about" target="_blank" style={{ color: '#4a4a4a' }}>
         here
-      </LinkButton>
+      </a>
       .
     </p>
   );
@@ -110,15 +105,11 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
   return (
     <p>
       {listConditionalText} in draft state until you choose to run analysis on it. Note that running
-      analysis counts towards your account usage limits. See more information about usage & fees{' '}
-      <LinkButton
-        target="_blank"
-        onClick={() => {
-          navigateToFeeInformationPage();
-        }}
-      >
+      analysis counts towards your account usage limits. See more information{' '}
+      <a href="/about" target="_blank" style={{ color: '#4a4a4a' }}>
         here
-      </LinkButton>
+      </a>
+      .
     </p>
   );
 };

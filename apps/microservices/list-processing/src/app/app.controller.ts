@@ -26,6 +26,13 @@ import { ListService } from '../services/list.service';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { deleteListBodySchema } from './types/deleteListRequestSchema';
 import { RequestPreSignedURLSchema } from './validators';
+import {
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { BadRequestExceptionResponse } from './types/apiResponses';
 
 /*
   This controller will be deprecated in the future
@@ -168,6 +175,10 @@ export class AppController {
   getLatestCommit(): string {
     return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;
   }
+  @ApiResponse({ status: 200, type: String })
+  @ApiNotFoundResponse({ status: 404, type: BadRequestExceptionResponse })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
   @Delete('/delete/list/:listId')
   deleteList(
     @Param('listId') listId: number,

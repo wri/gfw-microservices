@@ -159,54 +159,94 @@ export class AppService {
       ) {
         throw { isLocked: true, lockUserId };
       } else {
-        // Try to delete list's attributes
-        try {
-          await connection.query(`DROP TABLE IF EXISTS [${listTableName}]`);
-          await connection.query(`DROP TABLE IF EXISTS [${listAnalysisTableName}]`);
-        } catch (error) {
-          throw new InternalServerErrorException({
-            message: `Failed to delete attributes from list id ${list_id}`,
-            code: 602,
-          });
-        }
-        // Delete list
-        try {
-          await listRepository.delete({ id: list_id });
-        } catch (error) {
-          throw new InternalServerErrorException({
-            message: `Failed to delete list ${list_id}`,
-            code: 601,
-          });
-        }
-        // delete Analyses
-        try {
-          await connection.query(`DELETE FROM Analyses WHERE list_id = ${list_id}`);
-        } catch (error) {
-          throw new InternalServerErrorException({
-            message: `Failed to delete analyses ${list_id}`,
-            code: 602,
-          });
-        }
         const activityLogRepository = connection.getRepository(ActivityLog);
-
-        if (!activityLogRepository) {
-          throw new InternalServerErrorException('Failed to get repository for ActivityLog');
-        }
         try {
+          // Try to delete list's attributes
+          try {
+            await connection.query(`DROP TABLE IF EXISTS [${listTableName}]`);
+            await connection.query(`DROP TABLE IF EXISTS [${listAnalysisTableName}]`);
+          } catch (error) {
+            throw new InternalServerErrorException({
+              message: `Failed to delete attributes from list id ${list_id}`,
+              code: 603,
+            });
+          }
+          // Delete list
+          try {
+            await listRepository.delete({ id: list_id });
+          } catch (error) {
+            throw new InternalServerErrorException({
+              message: `Failed to delete list ${list_id}`,
+              code: 603,
+            });
+          }
+          // delete Analyses
+          try {
+            await connection.query(`DELETE FROM Analyses WHERE list_id = ${list_id}`);
+          } catch (error) {
+            throw new InternalServerErrorException({
+              message: `Failed to delete analyses ${list_id}`,
+              code: 603,
+            });
+          }
+          // delete AFIAnalysis
+          try {
+            await connection.query(`DELETE FROM AFIAnalysis WHERE list_id = ${list_id}`);
+          } catch (error) {
+            throw new InternalServerErrorException({
+              message: `Failed to delete AFIAnalysis ${list_id}`,
+              code: 603,
+            });
+          }
+          // delete ListsAnalysisStatus
+          try {
+            await connection.query(`DELETE FROM ListsAnalysisStatus WHERE ListID = ${list_id}`);
+          } catch (error) {
+            throw new InternalServerErrorException({
+              message: `Failed to delete ListsAnalysisStatus ${list_id}`,
+              code: 603,
+            });
+          }
+          // delete Analyses-Dashboard
+          try {
+            await connection.query(`DELETE FROM [Analyses-Dashboard] WHERE list_id = ${list_id}`);
+          } catch (error) {
+            throw new InternalServerErrorException({
+              message: `Failed to delete Analyses-Dashboard ${list_id}`,
+              code: 603,
+            });
+          }
+          if (!activityLogRepository) {
+            throw new InternalServerErrorException('Failed to get repository for ActivityLog');
+          }
+          try {
+            // Salve log at ActivityLog table
+            const activityLog = new ActivityLog();
+            activityLog.userId = organization_user_id;
+            activityLog.activityTypeId = 21;
+            activityLog.activityDescription = `User '${userEmail}' has deleted list (${listName}).`;
+            activityLog.activityTime = new Date();
+            await activityLogRepository.save(activityLog);
+
+            // Return message that the list was deleted to user
+            return `User '${userEmail}' has deleted list (${listName}).`;
+          } catch (error) {
+            // If some problem occurs, return message that the list was not deleted to user
+            throw new InternalServerErrorException({
+              message: `Failed to save logs from list id ${list_id}`,
+              code: 603,
+            });
+          }
+        } catch (error) {
           // Salve log at ActivityLog table
           const activityLog = new ActivityLog();
           activityLog.userId = organization_user_id;
-          activityLog.activityTypeId = 1;
-          activityLog.activityDescription = `User '${userEmail}' has deleted list (${listName}).`;
+          activityLog.activityTypeId = 21;
+          activityLog.activityDescription = `User '${userEmail}' has tried to delete list (${listName}) but some error occurs ${error.message}.`;
           activityLog.activityTime = new Date();
           await activityLogRepository.save(activityLog);
-
-          // Return message that the list was deleted to user
-          return `User '${userEmail}' has deleted list (${listName}).`;
-        } catch (error) {
-          // If some problem occurs, return message that the list was not deleted to user
           throw new InternalServerErrorException({
-            message: `Failed to save logs from list id ${list_id}`,
+            message: `User '${userEmail}' has tried to delete list (${listName}) but some error occurs ${error.message}.`,
             code: 603,
           });
         }
@@ -242,7 +282,7 @@ export class AppService {
     } catch (error) {
       throw new InternalServerErrorException({
         message: `Failed to lock list ${list_id}`,
-        code: 601,
+        code: 610,
       });
     }
   }
@@ -267,7 +307,7 @@ export class AppService {
     } catch (error) {
       throw new InternalServerErrorException({
         message: `Failed to unlock list ${list_id}`,
-        code: 601,
+        code: 610,
       });
     }
   }

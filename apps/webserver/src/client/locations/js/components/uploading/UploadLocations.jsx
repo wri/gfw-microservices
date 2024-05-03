@@ -66,23 +66,19 @@ import '../../../css/locations.scss';
 
 // keeping the message local
 const DialogConfirmSubmitContent = ({ listName }) => {
-  const listConditionalText =
-    listName ? (
-      <span>
-        You have added a location to <strong>{listName}</strong>, as defined above.
-      </span>
-    ) : (
-      <>You have successfully created a list in Pro.</>
-    );
+  const listConditionalText = listName ? (
+    <span>
+      You have added a location to <strong>{listName}</strong>, as defined above.
+    </span>
+  ) : (
+    <>You have successfully created a list in Pro.</>
+  );
 
   return (
     <p>
       {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
       running analysis counts towards your account usage limits. See more information{' '}
-      <a
-        target="_blank"
-        href="/about"
-      >
+      <a class="link-button" target="_blank" href="/about" style={{ color: '#4a4a4a' }}>
         here
       </a>
       .
@@ -497,6 +493,7 @@ class UploadLocations extends Component {
 
     this.setState(
       {
+        dialogOpen: false,
         isSaving: true,
       },
       () => {
@@ -1304,8 +1301,8 @@ class UploadLocations extends Component {
   };
 
   isExistingList = () => {
-    return this.state.selectedList !== "";
-  }
+    return this.state.selectedList !== '';
+  };
 
   confirmBeforeSubmit = () => {
     this.setState({
@@ -1328,14 +1325,14 @@ class UploadLocations extends Component {
             }}
           />
           <LinkButton label={locationsPage.add.cancel} onClick={this.shouldCloseDialog} />
-        </div>
-      ]
+        </div>,
+      ],
     });
   };
 
   confirmBeforeRefresh = () => {
     this.shouldRefresh();
-  }
+  };
 
   render() {
     const { view, activeTemplate, templateDropdowns, templateData, userLists, orgLists } =
@@ -1365,7 +1362,8 @@ class UploadLocations extends Component {
 
     const dialogContent =
       dialogTitle === locationsPage.add.errors.notAllLocationsValid.title ||
-      typeof dialogMessage === 'string' || React.isValidElement(dialogMessage)
+      typeof dialogMessage === 'string' ||
+      React.isValidElement(dialogMessage)
         ? dialogMessage
         : dialogMessage.map(this.generateMessages);
 
@@ -1551,7 +1549,11 @@ class UploadLocations extends Component {
                       variant="primary"
                       onClick={isSaving ? null : this.confirmBeforeSubmit}
                       disabled={!canGoNext || selectedAnalyses.length <= 0}
-                      label={this.isExistingList() ? locationsPage.upload.submitForExisting : locationsPage.upload.submit}
+                      label={
+                        this.isExistingList()
+                          ? locationsPage.upload.submitForExisting
+                          : locationsPage.upload.submit
+                      }
                     />
                   </div>
                   <div className="cancel-upload-wizard">

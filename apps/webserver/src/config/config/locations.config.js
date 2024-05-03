@@ -47,7 +47,7 @@ const saveListConfig = {
         return `You have successfully added locations and saved ${listName} as a draft`;
       },
     },
-  }
+  },
 };
 
 const appendListConfig = {

@@ -1,5 +1,5 @@
 const path = require('path');
-const axios = require('axios');
+import axios from 'axios';
 const express = require('express');
 
 const { compiledAssets } = require(path.resolve('./config/config'));

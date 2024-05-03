@@ -18,7 +18,7 @@ import { analysisTypes } from '@wri-monorepos/constants';
  * @param {Object} res - Express response
  * @return {Promise} - request Promise
  */
-exports.listData = async (req, res) => {
+export const listData = async (req, res) => {
   logger.info(`/listData - Request => Query PARAMS: ${JSON.stringify(req.query)}`);
   const {
     list_id: listID,
@@ -78,7 +78,7 @@ exports.listData = async (req, res) => {
  * @param {Object} res - Express response
  * @return {Promise} - request Promise
  */
-exports.listDataCustom = async (req, res) => {
+export const listDataCustom = async (req, res) => {
   logger.info(`/listDataCustom - Request => Body PARAMS: ${JSON.stringify(req.body)}`);
 
   const DEFAULT_COLUMNS_TO_RETURN = 'Latitude,Longitude,location_id';
@@ -130,7 +130,7 @@ exports.listDataCustom = async (req, res) => {
  * @param {Object} res - Express response
  * @return {Promise} - request Promise
  */
-exports.getSelectedAnalyses = async (req, res) => {
+export const getSelectedAnalyses = async (req, res) => {
   const { listId } = req.params;
   try {
     await listUtils.getListNameSchema(req, listId);
@@ -142,7 +142,7 @@ exports.getSelectedAnalyses = async (req, res) => {
   }
 };
 
-exports.setSelectedAnalyses = async (req, res) => {
+export const setSelectedAnalysesCtrl = async (req, res) => {
   const { listId } = req.params;
 
   const { analysisIds } = req.body;

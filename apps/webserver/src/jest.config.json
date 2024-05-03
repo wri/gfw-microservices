@@ -53,6 +53,7 @@
     "@wri-monorepos/constants": "<rootDir>/../../../libs/constants/src/index.ts",
     "@wri-monorepos/shared": "<rootDir>/../../../libs/shared/src/index.ts",
     "@wri-monorepos/sql": "<rootDir>/../../../libs/sql/src/index.ts",
+    "@wri-monorepos/geo": "<rootDir>/../../../libs/geo/src/index.ts",
     "^about(.*)$": "<rootDir>/client/about$1",
     "^account(.*)$": "<rootDir>/client/account$1",
     "^activityLog(.*)$": "<rootDir>/client/activityLog$1",

@@ -11,16 +11,14 @@ import {
   combineOrganizationLimits,
   getAccountRolloverLimits,
 } from '@wri-monorepos/shared';
+import { getAccountRenewalTime } from '@wri-monorepos/sql';
 /**
  * @function proManagerList
- * @summary
- * @name exports.proManagerList
- * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
 
-exports.proManagerList = (req, res) => {
+export const proManagerList = (req, res) => {
   res.render('proManagerList', {
     common: compiledAssets.js.common,
     proManagerListjs: compiledAssets.js.proManagerList,
@@ -50,7 +48,7 @@ const getAccounFromQuery = (organizationName, organizationId, accounts) => {
   return selectedAccount || null;
 };
 
-exports.proManagerListAccountsData = (req, res) => {
+export const proManagerListAccountsData = (req, res) => {
   const classes = AccountManager.getClassifications(req);
   const statusData = UserManager.getStatuses(req);
 
@@ -70,7 +68,7 @@ exports.proManagerListAccountsData = (req, res) => {
     });
 };
 
-exports.proManagerListAccountDetailData = async (req, res) => {
+export const proManagerListAccountDetailData = async (req, res) => {
   const { organizationId: organizationIdParam, organizationName } = req.params;
 
   const organizationId = parseInt(organizationIdParam, 10);
@@ -100,6 +98,8 @@ exports.proManagerListAccountDetailData = async (req, res) => {
      * @see GPV-2228
      */
     if (selectedAccount) {
+      selectedAccount.renewal_time = await getAccountRenewalTime(selectedAccount.organization_id);
+
       if (selectedAccount.organization_status_id !== orgAccountStatus.Pending) {
         const subscribed = await getAccountSubscriptionLimits(
           selectedAccount.subscription_status_id
@@ -137,7 +137,7 @@ exports.proManagerListAccountDetailData = async (req, res) => {
   }
 };
 
-exports.proManagerListUsersData = (req, res) => {
+export const proManagerListUsersData = (req, res) => {
   const accessData = UserManager.getAccessLevels(req);
   const statusData = UserManager.getStatuses(req);
 
@@ -157,7 +157,7 @@ exports.proManagerListUsersData = (req, res) => {
     });
 };
 
-exports.proManagerListUserDetailData = (req, res) => {
+export const proManagerListUserDetailData = (req, res) => {
   const classes = AccountManager.getClassifications(req);
   const commoditiesData = UserManager.getCommodities(req);
   const geographiesData = UserManager.getGeographies(req);

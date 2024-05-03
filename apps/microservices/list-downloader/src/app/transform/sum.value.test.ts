@@ -27,11 +27,11 @@ describe('SumValue', () => {
     const total = new SumValue(['yearly']);
     total._transform(
       {
-        yearly: '{"2020": 1, "2021": 2}',
+        yearly: '{"2020": 1, "2021": 2, "2023": 2}',
       },
       '',
       (err, data) => {
-        expect(data).toEqual({ yearly: 3 });
+        expect(data).toEqual({ yearly: 5 });
       }
     );
   });

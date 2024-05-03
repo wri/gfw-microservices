@@ -29,7 +29,7 @@ export const chartDatasetConfigs = {
       { id: 'Category III', color: 'rgb(151,189,61)', legend: 'Category III', checked: true },
     ],
     startYear: 2008,
-    endYear: 2022,
+    endYear: 2023,
   },
   argentinaTreeCoverLoss: {
     id: 'argentinaTreeCoverLoss',
@@ -38,14 +38,16 @@ export const chartDatasetConfigs = {
     totalLoss: null,
     chartLabels: [
       {
-        id: 'country_specific_deforestation',
+        id: 'country specific deforestation',
+        dataPath: 'country.country_specific_deforestation',
         legend: 'argentina deforestation',
-        color: 'rgba(34,153,102,1)',
-        checked: false,
+        color: 'rgb(34,153,102)',
+        checked: true,
         totalLossByCategory: null,
       },
       {
-        id: 'hansenTreeCoverLoss',
+        id: 'hansen tree cover loss',
+        dataPath: 'country.tree_cover_loss',
         legend: 'tree cover loss',
         color: 'rgb(239,102,154)',
         checked: true,
@@ -53,6 +55,48 @@ export const chartDatasetConfigs = {
       },
     ],
   },
+  protectedAreas: {
+    id: 'protectedAreas',
+    dataCy: 'argentina-protected-areas',
+    chartsSelectorTitle: 'Protected Areas',
+    totalLoss: null,
+    chartLabels: [
+      {
+        id: 'fully restrictive',
+        dataPath: 'WDPA.country_specific_deforestation.fullyRestrictive',
+        legend: 'fully restrictive',
+        color: 'rgb(146,37,0)',
+        checked: true,
+        totalLossByCategory: null,
+      },
+      {
+        id: 'less restricted',
+        dataPath: 'WDPA.country_specific_deforestation.lessRestricted',
+        legend: 'less restricted',
+        color: 'rgb(255,64,0)',
+        checked: true,
+        totalLossByCategory: null,
+      },
+    ],
+  },
+
+  indigenousTerritories: {
+    id: 'indigenousTerritories',
+    dataCy: 'argentina-indigenous-territories',
+    chartsSelectorTitle: 'Indigenous Territories',
+    totalLoss: null,
+    chartLabels: [
+      {
+        id: 'Indigenous Territories',
+        dataPath: 'landmark.country_specific_deforestation.indigenous',
+        legend: 'Indigenous Territories',
+        color: 'rgb(146,37,100)',
+        checked: true,
+        totalLossByCategory: null,
+      },
+    ],
+  },
+
   wdpaOverlapCountry: {
     diagnosticTitle: 'Protected Areas Percent Overlap',
     informationBubbleId: 'regions_arg_pa_landcover_calc',

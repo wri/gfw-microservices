@@ -1,11 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { Lists } from './lists.entity';
 import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
+import { listInfoResponse } from '../list-analysis/list-upload-new.dto';
 @Injectable()
 export class ListService {
+  public readonly logger = new Logger(ListService.name);
   constructor(
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,
@@ -29,7 +36,7 @@ export class ListService {
 
       // If list not found, return null
       if (!listStatus) {
-        console.warn('List status not found.');
+        this.logger.error('List status not found.');
         return null;
       }
       // There is some trash in DevCo db that has the errorFileStoragePath as 'none' so we need to check if it is different from 'none'
@@ -42,7 +49,7 @@ export class ListService {
       }
       return listStatus;
     } catch (e) {
-      console.warn('List status not found.', e);
+      this.logger.error('List status not found.', e);
       return null;
     }
   }
@@ -77,6 +84,69 @@ export class ListService {
       );
     } catch (error) {
       throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
+    }
+  }
+  async getListInfo(organizationId: number, listId: number): Promise<listInfoResponse> {
+    try {
+      const organization = await this.getOrganizationDetails(organizationId);
+      const connection = await this.createOrganizationConnection(organization);
+      const listAnalysisStatusRepository = connection.getRepository(Lists);
+      const listFound = await listAnalysisStatusRepository.findOne({
+        where: { id: listId },
+      });
+      if (!listFound) {
+        throw new NotFoundException(`List ${listId} status not found.`);
+      }
+      const listResponse: listInfoResponse = {
+        listId: listFound.id,
+        listName: listFound.listName,
+        locationCount: listFound.listLocationsCount,
+      };
+      return listResponse;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException(error);
+      }
+    }
+  }
+  async getPaginatedListInfo(
+    pageSize: number,
+    pageNum: number,
+    organizationId: number
+  ): Promise<listInfoResponse[]> {
+    const take = pageSize === 0 ? 10 : pageSize;
+    const skip = pageNum > 0 ? (pageNum - 1) * take : 0;
+    try {
+      const connection = await this.getOrganizationConnection(organizationId);
+      const listRepository = connection.getRepository(Lists);
+
+      const [paginatedList, count] = await listRepository.findAndCount({
+        skip,
+        take,
+        order: {
+          id: 'DESC',
+        },
+      });
+      if (!paginatedList.length || !count) {
+        this.logger.error('Lists not found.');
+        throw new NotFoundException(`pageNum ${pageNum} or pageSize ${pageSize} is out of range`);
+      }
+
+      const paginatedListInfo: listInfoResponse[] = paginatedList.map((list) => ({
+        listId: list.id,
+        listName: list.listName,
+        locationCount: list.listLocationsCount,
+      }));
+
+      return paginatedListInfo;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException(error.message);
+      }
     }
   }
 }

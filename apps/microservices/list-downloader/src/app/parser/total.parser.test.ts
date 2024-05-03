@@ -33,13 +33,13 @@ describe('Total Parser', () => {
     expect(dataRow).toEqual([7]);
   });
 
-  test('Receive array {"2019": 1,"2020": 2,"2021": 3,"2022": 4} and get 10', () => {
+  test('Receive array {"2019": 1,"2020": 2,"2021": 3,"2022": 4,"2022": 5} and get 15', () => {
     const dataRow = [];
     totalParser({
       operation: { name: 'year' },
-      data: { year: '{"2019": 1,"2020": 2,"2021": 3,"2022": 4}' },
+      data: { year: '{"2019": 1,"2020": 2,"2021": 3,"2022": 4,"2023": 5}' },
       dataRow,
     });
-    expect(dataRow).toEqual([10]);
+    expect(dataRow).toEqual([15]);
   });
 });

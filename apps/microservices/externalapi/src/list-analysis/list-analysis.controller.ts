@@ -1,19 +1,28 @@
-import { Controller, Get, Post, Param, Req, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Req, Body, Delete, Query } from '@nestjs/common';
 import {
   AlertsGenerateRequest,
+  DeleteListRequest,
   ListAnalysisResponse,
   alertsGenerateBodySchema,
+  deleteListBodySchema,
   listIdSchema,
+  numPageSchema,
+  pageSizeSchema,
 } from './list-analysis.dto';
+import { ListService } from '../lists/lists.service';
 import { ListAnalysisService } from './list-analysis.service';
 import { ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { requestSchema, RequestSchema } from '../types/request-schema';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
 import { analysisIdSchema } from '../types/analysis-id';
+import { listInfoResponse } from './list-upload-new.dto';
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
 export class ListAnalysisController {
-  constructor(private readonly listAnalysisService: ListAnalysisService) {}
+  constructor(
+    private readonly listAnalysisService: ListAnalysisService,
+    private readonly list: ListService
+  ) {}
 
   @ApiResponse({ status: 200, type: ListAnalysisResponse })
   @Get(':listId/analysis/:analysisId/status')
@@ -59,5 +68,41 @@ export class ListAnalysisController {
       userEmail,
       listId,
     });
+  }
+  @Delete(':listId')
+  async deleteList(
+    @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
+    @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest,
+    @Req() request: RequestSchema
+  ) {
+    new ZodValidationPipe(requestSchema).transform(request);
+    const {
+      user: { organizationId },
+    } = request;
+    const { userEmail } = deleteBodyList;
+    return await this.listAnalysisService.deleteList(listId, organizationId, userEmail);
+  }
+  @Get(':listId')
+  async getListInfo(
+    @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
+    @Req() request: RequestSchema
+  ): Promise<listInfoResponse> {
+    const {
+      user: { organizationId },
+    } = request;
+
+    return await this.list.getListInfo(organizationId, listId);
+  }
+
+  @Get()
+  async getPaginatedLists(
+    @Query('pageSize', new ZodValidationPipe(pageSizeSchema)) pageSize: number,
+    @Query('pageNum', new ZodValidationPipe(numPageSchema)) pageNum: number,
+    @Req() request: RequestSchema
+  ) {
+    const {
+      user: { organizationId },
+    } = request;
+    return await this.list.getPaginatedListInfo(pageSize, pageNum, organizationId);
   }
 }

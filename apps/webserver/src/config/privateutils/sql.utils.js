@@ -18,7 +18,7 @@ const sqlite3 = require('sqlite3');
 const sqlite = require('sqlite');
 const winston = require('winston');
 const config = require('../config');
-const sqlQueries = require('./sqlQueries.utils');
+import { getQueryStr } from '@wri-monorepos/sql';
 
 // basic logger without sql transport
 const logger = winston.createLogger({ transports: [new winston.transports.Console()] });
@@ -207,7 +207,8 @@ const mssqlExecuteWithRetries = async (
     if (queryStrParam) {
       baseQuery = queryStrParam;
     } else {
-      baseQuery = sqlQueries.getQueryStr(connectConfig, storedProcedureName);
+      const isSystemQuery = connectConfig.database === process.env.MSSQL_DATABASE;
+      baseQuery = getQueryStr(isSystemQuery, storedProcedureName);
     }
 
     const pool = await getPool(connectConfig);
@@ -267,7 +268,7 @@ const mssqlExecute = async (connectConfig, queryStrParam, storedProcedureName, p
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
  * @return {Promise<any[]>} An array of record sets
  */
-const executeSystemStoredProcedureAllRecords = async (req, storedProcedureName, params) => {
+export const executeSystemStoredProcedureAllRecords = async (req, storedProcedureName, params) => {
   return mssqlExecute(SQLSYSTEMCONFIG, null, storedProcedureName, params);
 };
 
@@ -280,7 +281,7 @@ const executeSystemStoredProcedureAllRecords = async (req, storedProcedureName, 
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
  * @return {Promise<any>} First entry of record sets array
  */
-const executeSystemStoredProcedure = async (req, storedProcedureName, params) => {
+export const executeSystemStoredProcedure = async (req, storedProcedureName, params) => {
   const recordsets = await mssqlExecute(SQLSYSTEMCONFIG, null, storedProcedureName, params);
   return recordsets[0];
 };
@@ -294,7 +295,7 @@ const executeSystemStoredProcedure = async (req, storedProcedureName, params) =>
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
  * @return {Promise<any>} First entry of record sets array
  */
-const executeOrganizationStoredProcedure = async (req, storedProcedureName, params) => {
+export const executeOrganizationStoredProcedure = async (req, storedProcedureName, params) => {
   // Create SQL Connection Config based on session database.
   const connectConfig = { ...SQLSYSTEMCONFIG, database: req.session.organization_database };
   const recordsets = await mssqlExecute(connectConfig, null, storedProcedureName, params);
@@ -310,7 +311,7 @@ const executeOrganizationStoredProcedure = async (req, storedProcedureName, para
  * @param {Array} columnNames - An array specifying the names of each of the columns in the table.
  * @param {Array} columnTypes - An array specifying the type of each of the columns in the table.
  */
-const executeOrganizationBulkUpload = async (
+export const executeOrganizationBulkUpload = async (
   req,
   listTableName,
   createTable,
@@ -362,7 +363,7 @@ const executeOrganizationBulkUpload = async (
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
  * @return {Promise<any>} Result of the SQL query
  */
-const executeSystemQuery = async (sqlQuery, params = []) => {
+export const executeSystemQuery = async (sqlQuery, params = []) => {
   return mssqlExecute(SQLSYSTEMCONFIG, sqlQuery, null, params);
 };
 
@@ -374,12 +375,12 @@ const executeSystemQuery = async (sqlQuery, params = []) => {
  * @param {Array} params - An array of parameters to pass to the stored procedure (OPTIONAL)
  * @return {Promise<any>} Result of the SQL query
  */
-const executeOrganizationQuery = async (req, sqlQuery, params = []) => {
+export const executeOrganizationQuery = async (req, sqlQuery, params = []) => {
   const connectConfig = { ...SQLSYSTEMCONFIG, database: req.session.organization_database };
   return mssqlExecute(connectConfig, sqlQuery, null, params);
 };
 
-const appendLog = async (logDB, sqlQueryName, params) => {
+export const appendLog = async (logDB, sqlQueryName, params) => {
   const connectConfig = { ...SQLSYSTEMCONFIG, database: logDB };
   return await mssqlExecute(connectConfig, null, sqlQueryName, params);
 };
@@ -391,7 +392,7 @@ const appendLog = async (logDB, sqlQueryName, params) => {
  * @param {String} type - the text type to convert and return
  * @return {Object} the SQL data type
  */
-const getDataType = (req, type) => {
+export const getDataType = (req, type) => {
   let dataType = null;
   switch (type) {
     case 'geometry':
@@ -441,15 +442,4 @@ const getDataType = (req, type) => {
     // dataType = {};
   }
   return dataType;
-};
-
-module.exports = {
-  executeSystemStoredProcedure,
-  executeOrganizationStoredProcedure,
-  executeSystemStoredProcedureAllRecords,
-  executeOrganizationBulkUpload,
-  appendLog,
-  getDataType,
-  executeSystemQuery,
-  executeOrganizationQuery,
 };

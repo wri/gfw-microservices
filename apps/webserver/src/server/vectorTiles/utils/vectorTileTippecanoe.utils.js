@@ -12,10 +12,11 @@ const { MBTILE_EXTENSION } = require('../config/vectorTiles.config');
 /**
  * @description - Create MBTiles
  *
- * @param {number} listID - List ID (e.g. 1385)
- * @param {number} numberOfLocations - Number of locations in list (e.g. 64)
- * @param {string} tempFilesPath - Temp files path (e.g. '/tmp/list-1385/')
- * @param {string} uuidString - UUID String (e.g. '6073ee57_7ce4_45a3_84e7_b7403b958b5c')
+ * @param {object} params
+ * param {number} listID - List ID (e.g. 1385)
+ * param {number} numberOfLocations - Number of locations in list (e.g. 64)
+ * param {string} tempFilesPath - Temp files path (e.g. '/tmp/list-1385/')
+ * param {string} uuidString - UUID String (e.g. '6073ee57_7ce4_45a3_84e7_b7403b958b5c')
  * @return {Promise<any>} - Promise resolved with { mbtileOutputFilePath }/rejected with error message
  */
 exports.createTippecanoeMBTiles = async ({

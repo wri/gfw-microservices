@@ -82,6 +82,7 @@ describe('Mill Priority Service', () => {
       'WRI,L2,Medium,2018',
       'WRI,L2,Medium,2019',
       'WRI,L2,Medium,2020',
+      'WRI,L2,High,2023',
       'WRI,L3,Medium,2002',
       'WRI,L3,Medium,2003',
       'WRI,L3,Medium,2004',

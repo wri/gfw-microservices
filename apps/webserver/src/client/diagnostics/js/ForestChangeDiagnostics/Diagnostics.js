@@ -37,10 +37,10 @@ import {
   prettifyNum,
   validatePct,
 } from '../../../common/js/utils/diagnostics.utils';
-import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userListLocations/utils/listLayer.util';
+import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userListLocations/utils/userListLocations.util';
 import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
-import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/vectorTileLayer';
 import getAvailableDiagnostics from './getAvailableDiagnostics';
+import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/gfw.utils';
 
 // Configs
 import {
@@ -643,10 +643,7 @@ export default class Diagnostics extends Component {
       selectedLocations,
       listData,
       selectedLocationData,
-      displayPopover,
-      bubbleData,
       popoverLoading,
-      anchorEl,
       diagnosticView,
       isSharedList,
       isGfwList,

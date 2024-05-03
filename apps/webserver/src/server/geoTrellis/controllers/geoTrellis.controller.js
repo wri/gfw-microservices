@@ -3,6 +3,8 @@ const ListManager = require('../../../config/publicutils/listManager.utils');
 const { handleGeoTrellisAnalyzeListRequest } = require('../utils/geoTrellis.utils');
 const { GEO_TRELLIS_ANALYZE_LIST } = require('../../../config/config/locations.config');
 const { listStatus } = require('../../../config/env/listStatuses.constants');
+const AWSSES = require('../../../config/privateutils/ses.utils');
+const config = require('../../../config/config');
 
 /**
  * Handling GeoTrellis Submit Edits request
@@ -30,13 +32,13 @@ exports.geoTrellisAnalyzeListController = async (req, res) => {
   } catch (e) {
     req.list = list;
 
-    if (err.message === `Analysis limit reached`) {
-      await AWSSES.sendErrorNotificatonEmail(
+    if (e.message === 'Analysis limit reached') {
+      await AWSSES.sendErrorNotificationEmail(
         req,
         config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
       );
     } else {
-      await AWSSES.sendErrorNotificatonEmail(
+      await AWSSES.sendErrorNotificationEmail(
         req,
         config.platformVars.emailType.LIST_ANALYSIS_ERROR
       );

@@ -57,3 +57,15 @@ export class AlertsGenerateRequest {
   @ApiProperty()
   userEmail: string;
 }
+
+export const deleteListBodySchema = z.object({
+  userEmail: z.string().email(),
+});
+
+export class DeleteListRequest {
+  @ApiProperty()
+  userEmail: string;
+}
+
+export const numPageSchema = z.coerce.number();
+export const pageSizeSchema = z.coerce.number();

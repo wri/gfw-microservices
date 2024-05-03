@@ -87,7 +87,6 @@ import {
   updateRegularListActiveTemplate,
 } from '../../utils/lists-redux.utils';
 import LargeListEditing from './EditList/LargeListEditing/LargeListEditing';
-import { closePopover } from '../../../../locations/js/utils/togglePopover';
 import ShareList from '../../../../locations/js/components/ShareList/ShareList';
 import { EditList } from './EditList/EditList';
 import redirectToPage from '../../../../common/js/utils/redirect';
@@ -116,7 +115,7 @@ import {
 import { listStatus } from '../../../../../config/env/listStatuses.constants';
 import { getListFilterValues } from './getListFilterValues';
 import getAllColumnNames from './getAllColumnNames';
-import featureFlags from '../../../../../utils/general.utils';
+import { formatDateForCurrentBrowserLanguage } from '../../../../common/js/utils/format';
 
 // STYLE
 import '../../../../locations/css/lists.scss';
@@ -1891,6 +1890,12 @@ export default class Lists extends Component {
     }
   }
 
+  getAnalysisLastUpdatedDate(listAnalysesStatus) {
+    const updateTime = Array.isArray(listAnalysesStatus) && listAnalysesStatus[0]?.updateTime;
+
+    return updateTime ? `Analysis updated: ${formatDateForCurrentBrowserLanguage(updateTime)}` : '';
+  }
+
   render() {
     const {
       activeTemplate,
@@ -2006,6 +2011,7 @@ export default class Lists extends Component {
     const flagOptions = columns.flags.map(this.createFlagList);
     const listName = selectedList ? selectedList.list_name : '';
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
+
     const isGfwList = gfwListNames.includes(listName);
     // user lists are paginated in the backend, gfw lists search works in the front end
     const filteredLists = isGfwList
@@ -2154,7 +2160,7 @@ export default class Lists extends Component {
 
     return (
       <div>
-        {featureFlags?.isAfiAvailable && !isGfwList && (
+        {!isGfwList && (
           <ChangeTypeOfAnalysisModal
             listId={listID}
             listName={listName}
@@ -2264,17 +2270,27 @@ export default class Lists extends Component {
                 {shareView && <span>{locationsPage.lists.share}</span>}
               </Breadcrumbs>
 
-              <div style={{ marginLeft: 'auto', display: 'flex' }}>
-                <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
-                {featureFlags?.isAfiAvailable && !isGfwList && (
-                  <Button
-                    icon={<SettingsIcon fontSize="17px" />}
-                    style={{ height: '17px', width: '40px', minWidth: '0px' }}
-                    onClick={() => {
-                      this.setState({ isChangeTypeOfAnalysisModalOpen: true });
-                    }}
-                  />
-                )}
+              <div
+                style={{
+                  marginLeft: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.25rem',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'end' }}>
+                  <AnalysisListChips listAnalysesStatus={listAnalysesStatus} />
+                  {!isGfwList && (
+                    <Button
+                      icon={<SettingsIcon fontSize="17px" />}
+                      style={{ height: '17px', width: '40px', minWidth: '0px' }}
+                      onClick={() => {
+                        this.setState({ isChangeTypeOfAnalysisModalOpen: true });
+                      }}
+                    />
+                  )}
+                </div>
+                <span>{this.getAnalysisLastUpdatedDate(listAnalysesStatus)}</span>
               </div>
             </div>
           )}

@@ -36,7 +36,7 @@ export default function AccountUsage({
   const InfoBubbleAreaAnalyzed = () => {
     return (
       <>
-        <h3 class="bubble-title"># of Analyses</h3>
+        <h3 class="bubble-title">Area analyzed (HA)</h3>
         <p>
           Enterprises receive a free annual allotment of hectares and may purchase additional
           quantities. Free quantities are consumed before paid quantities. Any remaining free

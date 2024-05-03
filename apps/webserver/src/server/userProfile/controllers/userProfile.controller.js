@@ -11,7 +11,7 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
  * @name exports.userProfile
  * @static
  * @param {Object} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
 exports.userProfile = (req, res) => {
   const userID = req.query.user_id ?? null;

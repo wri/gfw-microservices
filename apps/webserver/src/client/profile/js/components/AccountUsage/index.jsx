@@ -14,7 +14,7 @@ import AccountUsage from './AccountUsage';
 import moment from 'moment';
 import { useProfileContext } from '../../ProfileStateContext';
 import AccountUsageDropMenu from './AccountUsageDropMenu';
-import { formatNumber } from '../../../../common/js/utils/formatNumber';
+import { formatNumber } from '../../../../common/js/utils/format';
 
 export default function AccountUsageContainer() {
   const { accountRenewalTime } = useProfileContext();
@@ -59,12 +59,12 @@ export default function AccountUsageContainer() {
       }
     )
       .then((res) => res.json())
-      .then((data) => {
-        const [usageData] = data;
+      .then(([usageData]) => {
         setUsageData(usageData);
       })
       .catch((error) => {
         console.log(error);
+        setUsageData({});
       });
   }, []);
 
@@ -133,18 +133,18 @@ export default function AccountUsageContainer() {
   };
 
   const getAreasPercentage = (area) => {
-    return ((area / usageData.total_area_analyzed) * 100).toFixed(3);
+    return ((area / usageData.total_area_analyzed) * 100).toFixed(2);
   };
 
   const getAnalysesPercentage = (locations) => {
-    return ((locations / usageData.locations_analyzed) * 100).toFixed(3);
+    return ((locations / usageData.locations_analyzed) * 100).toFixed(2);
   };
 
-  return usageData === null ? (
+  return usageData === null || usageLimitsData === null ? (
     <InlineLoader />
   ) : (
     <>
-      <Alert severity={messageType}>{messageText}</Alert>
+      {messageType !== '' && <Alert severity={messageType}>{messageText}</Alert>}
       <p style={renewalTextStyle}>Account renewal on {subscriptionYearEnd}</p>
 
       <AccountUsageDropMenu export={exportUsage} />

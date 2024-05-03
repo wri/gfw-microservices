@@ -24,8 +24,10 @@ import { numberWithCommas } from '../../../utils/locationsTableUtils';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 import AnalysisListChips from './AnalysisListChips';
 import { locationsPage, nav, treeCoverLossID } from '../../../../../common/js/config';
-import featureFlags from '../../../../../../utils/general.utils';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
+import CustomTooltip from '../../../../../common/js/components/CustomTooltip/CustomTooltip';
+
+import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
 
 function ActiveList({
   list,
@@ -48,8 +50,6 @@ function ActiveList({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isChangeTypeOfAnalysisModalOpen, setIsChangeTypeOfAnalysisModalOpen] = useState(false);
 
-  const { isAfiAvailable } = featureFlags;
-
   const {
     list_name,
     id,
@@ -65,6 +65,15 @@ function ActiveList({
   const hasErrorFile = !!error_file_storage_path;
   const isEmptyList = locations === 0;
   const showDiagnosticOpt = !is_shared && !isEmptyList && getActiveAnalysisType(listAnalysesStatus);
+
+  const getAnalysisLastUpdatedDate = () => {
+    const analysisUpdateTime =
+      Array.isArray(listAnalysesStatus) && listAnalysesStatus[0]?.updateTime;
+
+    return analysisUpdateTime
+      ? `Analysis updated: ${formatDateForCurrentBrowserLanguage(analysisUpdateTime)}`
+      : '';
+  };
 
   const clickLocationRow = () => {
     if (isEmptyList) {
@@ -114,29 +123,34 @@ function ActiveList({
 
   return (
     <>
-      {isAfiAvailable && (
-        <ChangeTypeOfAnalysisModal
-          listId={id}
-          listName={list_name}
-          listAnalysesStatus={listAnalysesStatus}
-          setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
-          isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
-        />
-      )}
+      <ChangeTypeOfAnalysisModal
+        listId={id}
+        listName={list_name}
+        listAnalysesStatus={listAnalysesStatus}
+        setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
+        isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
+      />
+
       <li
         className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
         onClick={clickLocationRow}
       >
-        <div className="locations-list__title">
-          {showListSharedWithMeIcon && <PublicIcon />}
-          {list_name}
-          {is_shared && <IconUsers className="locations-list__shared-icon" />}
-          <Chip
-            label={numberWithCommas(locations || 0)}
-            size="small"
-            style={{ height: '17px', marginLeft: '10px' }}
-          />
-        </div>
+        <CustomTooltip
+          placement="bottom-end"
+          tooltipMessage={getAnalysisLastUpdatedDate()}
+          style={{ minWidth: '250px' }}
+        >
+          <div className="locations-list__title">
+            {showListSharedWithMeIcon && <PublicIcon />}
+            {list_name}
+            {is_shared && <IconUsers className="locations-list__shared-icon" />}
+            <Chip
+              label={numberWithCommas(locations || 0)}
+              size="small"
+              style={{ height: '17px', marginLeft: '10px' }}
+            />
+          </div>
+        </CustomTooltip>
 
         {showSharedColumn && (
           <div className="locations-list__shared">
@@ -229,25 +243,23 @@ function ActiveList({
 
               <Divider />
               <MenuItem
-                primaryText={
-                  !!folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder
-                }
+                primaryText={folder ? locationsPage.lists.manage : locationsPage.lists.addToFolder}
                 leftIcon={<FolderIcon />}
                 onClick={() => {
                   setManageListFolderOpen();
                   setIsMenuOpen(false);
                 }}
               />
-              {isAfiAvailable && (
-                <MenuItem
-                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
-                  leftIcon={<SettingsIcon />}
-                  onClick={() => {
-                    setIsChangeTypeOfAnalysisModalOpen(true);
-                    setIsMenuOpen(false);
-                  }}
-                />
-              )}
+
+              <MenuItem
+                primaryText={locationsPage.lists.changeTypeOfAnalysis}
+                leftIcon={<SettingsIcon />}
+                onClick={() => {
+                  setIsChangeTypeOfAnalysisModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+              />
+
               {showDelete && (
                 <>
                   <Divider />

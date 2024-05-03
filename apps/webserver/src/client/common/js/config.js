@@ -10,6 +10,7 @@ import { PLANET_BASEMAP } from '../../map/js/config/map.config';
 // We are using names in the api to map out the layers
 // key is universal id we use within the app, values is layer NAME in the API
 export const proLayers = {
+  jrcGlobalForestCover: 'jrc_global_forest_cover',
   sBTNNaturalForest: 'SBTN Natural Forest',
   negligibleRisk: 'Negligible Risk',
   cocoaDeforestationRisk: 'cocoa_deforestation_risk',
@@ -107,10 +108,10 @@ export const convertURL = 'https://production-api.globalforestwatch.org/v2/ogr/c
 
 export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
-export const latestTreeCoverLossYearFC = 2023; // Forest Change
+export const latestTreeCoverLossYearForTclDataInMap = 2023;
 export const latestTreeCoverLossYearCommodityRisk = 2022;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
-export const latestTreeCoverLossYearSensitiveAreas = 2022; // Sensitive Areas
+export const latestTreeCoverLossYearForTclDataInAnalyses = 2023;
 
 export const soyPlantedYearsRange = [2001, 2022];
 
@@ -127,8 +128,15 @@ const aws_templates = `${pro_AWS_base}/templates/`;
 export const termsAndConditions =
   'https://d1ps9kreypzu9a.cloudfront.net/Training%20Guides/GFW%20Pro%20Landing%20Page/World%20Resources%20Institute%20-%20GFW%20Pro%20-%20Terms%20of%20Service%207_2_2018.pdf';
 
-export const privacyPolicy =
-  'https://d1ps9kreypzu9a.cloudfront.net/Training%20Guides/GFW%20Pro%20Landing%20Page/World%20Resources%20Institute%20-%20GFW%20Pro%20-%20Privacy%20Policy%207_2_2018.pdf';
+export const termsOfServices = 'https://www.wri.org/about/wri-data-platforms-tos';
+
+export const privacyPolicy = 'https://www.wri.org/about/privacy-policy';
+
+export const licenseAgreement =
+  'https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/';
+
+export const priceSheet =
+  'https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/';
 
 export const sharedUrlDict = {
   gfwHeaderUrl: `${pro_AWS_base}/js/gfw-assets.nightly.js`,
@@ -189,23 +197,31 @@ export const aboutPage = {
   historyDescription:
     '<p>Anyone with an internet connection can now monitor deforestation in near real-time, in areas as small as a soccer penalty box. The Global Forest Watch (GFW) partnership, convened by World Resources Institute (WRI), has ushered in a new era of radical transparency for forests, enabled by cutting edge satellite imagery, data analysis and communication technologies.</p><p>Since 2014, WRI has been working with companies and financial institutions at the forefront of sustainability to understand how GFW can support implementation of zero-deforestation commitments and promote sustainable commodities production and trade. The GFW Commodities (scheduled to be decommissioned in 2018) application surfaced geospatial data for monitoring and analyzing deforestation risk in oil palm and soy supply chains. In 2016, following consultations with more than 60 finance sector professionals, WRI released a prototype of a GFW Finance application. Many commodity companies and financial institutions showed tremendous interest in and demand for both applications.</p><p>In 2017, WRI proposed to integrate GFW Commodities and Finance functionality into GFW Pro – a common platform built specifically to provide an internal management and decision-support system for companies operating in agricultural supply chains. GFW Pro promises to provide business-ready insights about land-related sustainability performance – starting with, but not limited to, deforestation-free compliance analysis – through a secure and customizable workflow application.</p><p>More than 15 leading companies, financial institutions and NGOs officially endorsed the GFW Pro vision, which was <a href="https://www.wri.org/news/2017/01/release-partnership-launches-increase-transparency-and-traceability-across-supply" target="_blank">formally launched</a> at the World Economic Forum Annual Meeting in January 2017.</p>',
   tutorialsTitle: 'Tutorials',
-  tutorialsDescription: `<p>Global Forest Watch PRO offers a wide range of content and capabilities to serve a variety of users and purposes. Whether you arrive at GFW Pro with a clear purpose or are simply exploring different features, we can help you learn to use the platform.</p><p>Visit our <a href=${GFW_PRO_USER_GUIDE} target="_blank">How to Portal</a> to see all tutorials.</p>`,
+  tutorialsDescription:
+    'Global Forest Watch Pro offers a wide range of content and capabilities to serve a variety of users and purposes. Whether you arrive at GFW Pro with a clear purpose or are simply exploring different features, we can help you learn to use the platform.',
+  feesTitle: 'Fees',
+  feesDescription: [
+    'Creating and maintaining an account on GFW Pro is free. Our goal is to make GFW Pro available as a public good accessible by all supply chain actors and thereby foster more sustainable commodity sourcing decisions. An annual free grant of 5,000 per-location analyses and 100 million hectares of processing is provided to each organization. For most organizations, this is sufficient for internal operational and sustainability assessments as well as direct reporting to government regulators and nonprofit administrators of voluntary commitments.',
+    'To support rapid user growth and increased demand for product upgrades, both of which drive up operational costs, we charge fees for usage that exceeds the free annual allowance, and for licenses to publish, distribute or resell GFW Pro content to third parties.',
+    'To maintain GFW Pro as a widely accessible public good, we ask our users to support the platform by paying a fair fee to share analyses and for usage that exceeds the free use limit.',
+    'For more information on GFW Pro packages and prices, please refer to our <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/">price list</a>&nbsp;and <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">license agreement</a>. If you have an existing GFW Pro account, the&nbsp;<a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model/">fee model FAQ page</a>&nbsp;offers additional information and some relevant examples. Otherwise, please <a data-testid="link-with-safety" href="mailto:GFWPROsales@wri.org">contact our sales team for more information</a>.',
+  ],
 };
 
 export const loginPage = {
-  appTitleText: 'Achieve supply chain sustainability with data that delivers impact.',
+  appTitleText: 'Achieve supply chain sustainability with analytics that deliver impact.',
   appRequestAccount: 'Request an Account',
   appLearnMore: 'Learn more about Pro',
-  learnMoreURL: 'https://www.globalforestwatch.org/help/gfw-pro/',
   moreInfo: {
     help: {
       paragraphText: 'Find out how GFW Pro can help you and your organization.',
-      buttonText: 'Find out more',
+      buttonText: 'Contact us',
+      link: 'mailto:GFWPROsales@wri.org',
     },
     subscribe: {
-      paragraphText:
-        'Subscribe to the Global Forest Watch newsletter for general application information and updates.',
-      buttonText: 'Stay updated',
+      paragraphText: 'Follow us on LinkedIn to see the latest news and updates from GFW Pro',
+      buttonText: 'GFW LinkedIn page',
+      link: 'https://www.linkedin.com/showcase/globalforestwatch/',
     },
   },
   latestResearchTitle: 'Latest Research and Insights',
@@ -236,11 +252,11 @@ export const loginPage = {
         image: 'icon-lg-share.svg',
       },
       {
-        text: 'Demonstrate compliance with commitments and policies',
+        text: 'Verify and demonstrate compliance with commitments and regulations like the European Union’s deforestation regulation (EUDR).',
         image: 'icon-lg-monitor.svg',
       },
       {
-        text: 'Share data and analyses with colleagues, clients and customers through secure workflows',
+        text: 'Share data and analyses across teams and the broader organization via secure workflows.',
         image: 'icon-lg-compliance.svg',
       },
     ],
@@ -378,16 +394,17 @@ export const loginPage = {
           {
             title: 'Analyze & Monitor',
             description:
-              'Identify areas at risk within your supply chain and assess progress towards zero-deforestation commitments.',
+              'Identify areas at risk within your supply chain and assess compliance with the EUDR or progress towards zero-deforestation commitments.',
           },
           {
             title: 'Collaborate',
-            description: 'Send aggregated risk and progress assessments to colleagues and buyers.',
+            description:
+              'Send aggregated risk and progress assessments to colleagues and generate reports for buyers. Integrate into due diligence processes for the EUDR.',
           },
           {
             title: 'Manage',
             description:
-              'Identify priority areas in your supply chain for adhering to zero-deforestation commitments.',
+              'Identify priority areas in your supply chain for complying with the EUDR and adhering to zero-deforestation commitments.',
           },
         ],
       },
@@ -404,17 +421,17 @@ export const loginPage = {
           {
             title: 'Upload & Save',
             description:
-              'Receive and monitor production location portfolios from your suppliers within GFW Pro.',
+              'Upload and monitor production location portfolios received from suppliers.',
           },
           {
             title: 'Analyze & Monitor',
             description:
-              'Identify areas at risk throughout your supply base and monitor progress towards suppliers’ zero-deforestation goals.',
+              "Identify areas at risk throughout your supply base and monitor compliance with EUDR and progress towards suppliers' zero-deforestation goals.",
           },
           {
             title: 'Collaborate',
             description:
-              'Receive aggregated risk and progress assessments from individual suppliers within GFW Pro.',
+              'Share portfolios and coordinate sourcing decisions across the organization. Integrate into due diligence processes for the EUDR.',
           },
           {
             title: 'Manage',
@@ -1062,7 +1079,7 @@ export const locationsPage = {
     soySilo: { value: 'Supply Shed' },
   },
   diagnostics: {
-    lastDataYear: 2022,
+    lastDataYear: 2023,
   },
   landing: {
     foldersFeatureFlag: false,
@@ -1088,14 +1105,6 @@ export const locationsPage = {
         label: 'By Address',
         landingLabel: 'Enter Address',
         id: 'byAddress',
-        type: 'both',
-      },
-      {
-        commodityOrder: 4,
-        investmentOrder: 2,
-        label: 'By Coordinates',
-        landingLabel: 'Enter Coordinates',
-        id: 'byCoordinates',
         type: 'both',
       },
       // {commodityOrder: 5, investmentOrder: 5, label: 'By Selecting Administrative Region', landingLabel: 'Select Administrative Area', id: 'bySelection', type: 'both'},
@@ -2696,9 +2705,14 @@ export const locationsPage = {
     tooltipMessage:
       'This location has failed analysis. To receive results, resubmit this list for analysis.',
   },
-  accountIsReachingLimitBanner: 'You have reached over 90% of your usage limits.',
-  accountReachingLimitBannerText:
-    'To continue parsing your lists, you need to increase the usage limit.',
+  usageReachingLimitBanner: {
+    title: 'You have reached over 90% of your free usage limits.',
+    text: 'After hitting your account limit, new and updated analyses will be unavailable until your account administrator purchases additional usage, or until your free usage limits renew on your annual account renewal date. Administrators may review the Usage dashboard for more information and to place an order.',
+  },
+  usegeReachedLimitBanner: {
+    title: 'This account has consumed available use quantities.',
+    text: 'New and updated analyses will be unavailable until your account administrator purchases additional usage, or until your free usage limits renew on your annual account renewal date. Administrators may review the Usage dashboard for more information and to place an order.',
+  },
 };
 
 export const folderDetailPage = {
@@ -3038,7 +3052,7 @@ export const mapPage = {
     2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
   ],
   // treeCoverLossYears: [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
-  treeCoverLossYearsFC: fillYears(2001, latestTreeCoverLossYearFC),
+  treeCoverLossYearsFC: fillYears(2001, latestTreeCoverLossYearForTclDataInMap),
   granChacoLossYears: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018],
   prodesLossYears: _range(2001, 2020 + 1),
   layers: [
@@ -3255,6 +3269,13 @@ export const mapPage = {
       group: 'land-cover',
       order: 211,
     },
+
+    {
+      id: proLayers.jrcGlobalForestCover,
+      group: 'land-cover',
+      order: 212,
+    },
+
     // Land-Use
     {
       id: proLayers.rspoConcessions,

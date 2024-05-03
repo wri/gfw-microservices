@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
-const PRIVACY_POLICY_LINK =
-  'https://d1ps9kreypzu9a.cloudfront.net/Training%20Guides/GFW%20Pro%20Landing%20Page/World%20Resources%20Institute%20-%20GFW%20Pro%20-%20Privacy%20Policy%207_2_2018.pdf';
+const PRIVACY_POLICY_LINK = 'https://www.wri.org/about/privacy-policy';
 
 export class PrivacyPolicyBanner extends Component {
   constructor() {

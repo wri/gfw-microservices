@@ -534,7 +534,7 @@ export const createNewUser = (
  * @param  {Number}  user_auth_preference_id
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
-export const updateUserInfo = (
+export const updateUserInfo = ({
   req,
   user_id,
   user_first_name,
@@ -554,8 +554,8 @@ export const updateUserInfo = (
   terrai_email_frequency = 0,
   gran_chaco_email_frequency = 0,
   user_auth_preference_id = 0,
-  loggedUserAccessLevelId
-) => {
+  loggedUserAccessLevelId,
+}) => {
   return new Promise((resolve, reject) => {
     const params = [
       { field: 'userId', type: sql.Int, value: user_id },

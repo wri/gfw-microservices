@@ -355,7 +355,7 @@ export class ListAnalysisService {
         throw new NotFoundException();
       }
     } catch (error) {
-      this.logger.warn(error);
+      this.logger.warn('DeleteList failed', error);
       if (error instanceof NotFoundException) {
         throw error;
       } else {

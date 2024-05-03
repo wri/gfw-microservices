@@ -162,7 +162,11 @@ export async function handleUserListLocationsVectorTileLayer(
   const listMbtileInfo = await getListMbtileInfo(listID);
   const { bounds, listMbtileFileNameOnly } = listMbtileInfo;
 
-  goToUserListLocations(esriMapView, bounds);
+  if (!locationIDs.length) {
+    // if a location is selcted from the list, the zoom level will be handled in setVectorTileLayerForFilteredList()
+
+    goToUserListLocations(esriMapView, bounds);
+  }
 
   // Attach Vector Tile Layer if is not already attached otherwise just update vector tile layer style
   const userListLocationsVectorTileLayer = esriMapView.map.findLayerById(

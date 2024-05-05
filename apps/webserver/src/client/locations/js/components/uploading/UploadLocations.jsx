@@ -1321,11 +1321,10 @@ class UploadLocations extends Component {
             label={'OK'}
             variant="primary"
             onClick={(e) => {
-              // TODO: to be determined
-              // gtag('event', 'Save button clicked', {
-              //   event_category: 'Upload Locations Click',
-              //   event_label: 'User saves list with invalid locations',
-              // });
+              gtag('event', 'Save button clicked', {
+                event_category: 'Upload Locations Click',
+                event_label: 'User clicks save list after confirming',
+              });
               this.saveLocations(e);
             }}
           />

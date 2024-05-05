@@ -79,7 +79,6 @@ const DialogConfirmSubmitContent = ({ listName }) => {
       {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
       running analysis counts towards your account usage limits. See more information{' '}
       <a
-        class="link-button"
         target="_blank"
         href="/about?section=Fees"
         style={{ color: '#4a4a4a' }}

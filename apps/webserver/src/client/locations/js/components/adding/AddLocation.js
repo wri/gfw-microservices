@@ -37,7 +37,6 @@ import {
   saveAsDraftListConfig,
   saveListConfig,
 } from '../../../../../config/config/locations.config';
-import featureFlags from '../../../../../utils/general.utils';
 import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
@@ -61,10 +60,6 @@ muiTheme.fontFamily = 'Fira Sans, sans-serif';
 
 let originalState;
 
-const navigateToFeeInformationPage = () => {
-  window.location.href = '/about#fees';
-};
-
 const DIALOG__SUBMIT_TITLE = 'Confirm Submission';
 const DialogSubmitContent = ({ listName = 'Create New List' }) => {
   const listConditionalText =
@@ -80,7 +75,7 @@ const DialogSubmitContent = ({ listName = 'Create New List' }) => {
     <p>
       {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
       running analysis counts towards your account usage limits. See more information{' '}
-      <a href="/about" target="_blank" style={{ color: '#4a4a4a' }}>
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#4a4a4a' }}>
         here
       </a>
       .
@@ -106,7 +101,7 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
     <p>
       {listConditionalText} in draft state until you choose to run analysis on it. Note that running
       analysis counts towards your account usage limits. See more information{' '}
-      <a href="/about" target="_blank" style={{ color: '#4a4a4a' }}>
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#4a4a4a' }}>
         here
       </a>
       .

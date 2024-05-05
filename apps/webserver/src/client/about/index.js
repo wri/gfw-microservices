@@ -5,6 +5,7 @@ import { render } from 'react-dom';
 import React, { useEffect, useState } from 'react';
 import About from './component/About';
 import { GFW_PRO_USER_GUIDE } from '../common/js/config';
+import { BrowserRouter } from 'react-router-dom';
 
 const App = () => {
   const [languageCode, setLanguageCode] = useState('en');
@@ -21,7 +22,9 @@ const App = () => {
 
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-      <About key={languageCode} userGuideLink={userGuideLink} />
+      <BrowserRouter>
+        <About key={languageCode} userGuideLink={userGuideLink} />
+      </BrowserRouter>
     </MuiThemeProvider>
   );
 };

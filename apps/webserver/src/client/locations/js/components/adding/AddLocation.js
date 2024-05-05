@@ -75,7 +75,7 @@ const DialogSubmitContent = ({ listName = 'Create New List' }) => {
     <p>
       {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
       running analysis counts towards your account usage limits. See more information{' '}
-      <a href="/about?section=Fees" target="_blank" style={{ color: '#4a4a4a' }}>
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
         here
       </a>
       .

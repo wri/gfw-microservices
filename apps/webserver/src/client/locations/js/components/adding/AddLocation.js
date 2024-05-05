@@ -79,7 +79,7 @@ const DialogSubmitContent = ({ listName = 'Create New List' }) => {
         class="link-button"
         target="_blank"
         href="/about?section=Fees"
-        style={{ color: '#4a4a4a' }}
+        style={{ color: '#97bd3d' }}
       >
         here
       </a>

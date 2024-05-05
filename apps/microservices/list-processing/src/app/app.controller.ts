@@ -26,11 +26,23 @@ import { ListService } from '../services/list.service';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { deleteListBodySchema } from './types/deleteListRequestSchema';
 import { RequestPreSignedURLSchema } from './validators';
+import {
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { BadRequestExceptionResponse } from './types/apiResponses';
+
+/*
+  This controller will be deprecated in the future
+  We are moving this to /v1/ API routes
+*/
 @Controller()
 export class AppController {
   constructor(
-    private readonly appService: AppService,
-    private readonly largeListService: LargeListService,
+    protected readonly appService: AppService,
+    protected readonly largeListService: LargeListService,
     private readonly locationService: LocationService,
     private readonly listService: ListService
   ) {}
@@ -74,7 +86,7 @@ export class AppController {
 
   @Post('/create-large-list')
   triggerProcessLargeList(@Body() request: RequestTriggerProcessLargeList) {
-    return this.largeListService.createNewLargeListProcess(
+    return this.largeListService.createListTables(
       request.list_name,
       request.user_id,
       request.client_database,
@@ -163,6 +175,10 @@ export class AppController {
   getLatestCommit(): string {
     return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;
   }
+  @ApiResponse({ status: 200, type: String })
+  @ApiNotFoundResponse({ status: 404, type: BadRequestExceptionResponse })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
   @Delete('/delete/list/:listId')
   deleteList(
     @Param('listId') listId: number,

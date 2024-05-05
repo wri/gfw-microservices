@@ -10,7 +10,7 @@ function BillingInfo() {
         <p style={{ textAlign: 'center' }}>
           Contact our sales team to purchase additional Usage units or other available services
         </p>
-        <a className="gfw-button btn-green btn-width-full" href="mailto:youremail@example.com">
+        <a className="gfw-button btn-green btn-width-full" href="mailto:gfwprosales@wri.org">
           Email Sales
         </a>
         <a

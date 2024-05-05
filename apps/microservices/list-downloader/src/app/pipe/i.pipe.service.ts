@@ -91,6 +91,7 @@ export abstract class IPipeService {
     const parameters = toSqlParameter({
       location,
       expirationDate: moment(new Date()).add(this.EXPIRE_IN_FIVE_DAYS, 'days').toDate(),
+      bundleCreationTime: new Date(),
       listId,
       analysisId: type === 'afi' ? 'AFI' : type === 'alerts' ? 'ALERTS' : 'FCD',
     });

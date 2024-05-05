@@ -4,7 +4,7 @@ const logger = require('../../../config/privateutils/logger.utils');
 
 // Get all flags for current org and transform them to availability properties
 // suitable for the frontend
-module.exports = async function (request, response) {
+export default async function (request, response) {
   const { organization_id } = request.session;
   const { getAllFeatureFlags } = await featureFlagsService();
 
@@ -23,4 +23,4 @@ module.exports = async function (request, response) {
       error: 'An error occurred while processing the getAllFeatureFlags request.',
     });
   }
-};
+}

@@ -21,6 +21,7 @@ const sql = require('mssql');
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
+const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 import { getAnalysisDataForProtectedAreasByLocation } from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
@@ -29,7 +30,7 @@ import { getAnalysisDataForProtectedAreasByLocation } from '@wri-monorepos/sql';
  *   @param  {Number}  list_id - ID of the user list in the database
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getAnalysisDataForUserList = (req, list_id) => {
+export const getAnalysisDataForUserList = (req, list_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'listID', type: sql.Int, value: list_id }];
     sqlUtils
@@ -55,7 +56,7 @@ const getAnalysisDataForUserList = (req, list_id) => {
  *   @param  {Number}  list_id - ID of the GFW list in the database
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
+export const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
 
@@ -92,7 +93,7 @@ const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
  * @param {Object} filters - Selected filters for Protected Areas
  * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getAnalysisDataForProtectedAreas = (req, list_id, filters) => {
+export const getAnalysisDataForProtectedAreas = (req, list_id, filters) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
@@ -173,7 +174,7 @@ const getAnalysisDataForProtectedAreas = (req, list_id, filters) => {
  * @param {Object} location_id - Selected location for Protected Areas
  * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, location_id) => {
+export const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, location_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
@@ -234,7 +235,7 @@ const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, location_id)
  *   @param  {Number}  list_id - ID of list
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getGFWListAnalyses = (req, list_id) => {
+export const getGFWListAnalyses = (req, list_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     sqlUtils
@@ -262,7 +263,7 @@ const getGFWListAnalyses = (req, list_id) => {
  * @param {Number} listId – List ID input
  * @returns {Promise<Object>}
  */
-const getAFIAnalysisForListId = (req, listId) => {
+export const getAFIAnalysisForListId = (req, listId) => {
   return new Promise((resolve, reject) => {
     const queryParams = [{ field: 'listId', type: sql.Int, value: listId }];
     sqlUtils
@@ -289,7 +290,7 @@ const getAFIAnalysisForListId = (req, listId) => {
  * @param {Number} listId – List ID input
  * @returns {Promise<Object>}
  */
-const getAFINegligibleStatsForListId = (req, listId) => {
+export const getAFINegligibleStatsForListId = (req, listId) => {
   return new Promise((resolve, reject) => {
     const queryParams = [{ field: 'listId', type: sql.Int, value: listId }];
     sqlUtils
@@ -315,7 +316,7 @@ const getAFINegligibleStatsForListId = (req, listId) => {
  *   @param  {Number}  list_id - ID of list
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getListAnalyses = (req, list_id) => {
+export const getListAnalyses = (req, list_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     sqlUtils
@@ -341,9 +342,8 @@ const getListAnalyses = (req, list_id) => {
  *   @param  {Object}    req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @param  {String}    list_name - Name of the list
  *   @param  {Object}    geojson - A geojson used for the analysis
- *   @param  {Boolean}   isEdit - A boolean used to determine if we are running a list edit (either a move or copy location)
  */
-const requestAnalysis = async (req, list_name, geojson = {}, isEdit = false) => {
+export const requestAnalysis = async (req, list_name, geojson = {}) => {
   // Required to request analysis
   const organization_database = req.session.organization_database;
 
@@ -357,7 +357,7 @@ const requestAnalysis = async (req, list_name, geojson = {}, isEdit = false) => 
   } else if (
     typeof geojson === 'object' &&
     geojson.hasOwnProperty('type') &&
-    geojson.type === 'FeatureCollection'
+    geojson['type'] === 'FeatureCollection'
   ) {
     // Perform a location analysis
     analysisUtils.analyzeLocation(req, organization_database, list, geojson);
@@ -371,7 +371,7 @@ const requestAnalysis = async (req, list_name, geojson = {}, isEdit = false) => 
   }
 };
 
-const formatNumber = (data, decimals = 2) => {
+export const formatNumber = (data, decimals = 2) => {
   const isFloat = (n) => Number(n) === n && n % 1 !== 0;
 
   if (data === undefined || data === null) return data;
@@ -396,19 +396,3 @@ const formatNumber = (data, decimals = 2) => {
   }
   return newData;
 };
-
-module.exports = {
-  formatNumber,
-  getAnalysisDataForUserList,
-  getAnalysisDataForGFWList,
-  getAnalysisDataForProtectedAreas,
-  getAnalysisDataForProtectedAreasByLocationId,
-  getGFWListAnalyses,
-  getListAnalyses,
-  requestAnalysis,
-  getAFIAnalysisForListId,
-  getAFINegligibleStatsForListId,
-};
-
-// Require after modules have been exported so the module can be fully loaded
-const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));

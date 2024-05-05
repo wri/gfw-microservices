@@ -1,5 +1,5 @@
 const path = require('path');
-const axios = require('axios');
+import axios from 'axios';
 
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
@@ -24,7 +24,7 @@ import { listStatus } from '@wri-monorepos/constants';
  * @param {Object} list - List info
  * @return {Promise} - request Promise
  */
-exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
+export const handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   const {
     organization_user_id,
     organization_id: organizationId,

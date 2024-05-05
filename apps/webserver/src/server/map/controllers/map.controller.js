@@ -7,17 +7,14 @@ const { createElement } = require('react');
 const { renderToString } = require('react-dom/server');
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const ShareManager = require('../../../config/publicutils/shareManager.utils');
-const {
-  findSharedListsInsideOrganization,
-} = require('../../../config/publicutils/shareManager.utils');
 
 /**
  * @function map
  * @summary
  * @name exports.map
  * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param req - Express request object
+ * @param res - Express response object
  */
 exports.map = (req, res) => {
   // Set in the response to not cache the page
@@ -33,18 +30,18 @@ exports.map = (req, res) => {
     ListManager.getLocationsCount(req),
     GFWlistManager.getGFWLists(req),
     AuthManager.getUserInfo(req),
-    ListManager.getAllListsWithAnalysisId(req),
-    ShareManager.getUserInternalShareLists(req, req.session.organization_user_id),
+    ShareManager.getSharedListDataByUserWithAnalysisStatus(req, req.session.organization_user_id),
   ];
 
   Promise.all(promises)
     .then((results) => {
-      const [userLists, locationCount, gfwLists, userInfo, orgLists, sharedListsRecords] = results;
+      const [userLists, locationCount, gfwLists, userInfo, userSharedLists] = results;
       const listStatuses = UserManager.getStatuses();
 
-      const userSharedLists = findSharedListsInsideOrganization(sharedListsRecords, orgLists);
+      const filteredUserList = removeUnusedKeysFromUserList(userLists);
+
       res.render('map', {
-        userLists,
+        userLists: filteredUserList,
         locationCount,
         gfwLists,
         userInfo,
@@ -68,4 +65,29 @@ exports.map = (req, res) => {
         markup: markup,
       });
     });
+};
+
+const removeUnusedKeysFromUserList = (userList) => {
+  const usedKeys = [
+    'id',
+    'list_name',
+    'list_status_id',
+    'lock_status',
+    'vlock_user_id',
+    'associated_gfwlist',
+    'list_locations_count',
+    'user_id',
+    'listAnalysesStatus',
+    'vector_tiles_storage_path',
+    'list_table_name',
+  ];
+
+  return userList.map((user) =>
+    Object.keys(user)
+      .filter((key) => usedKeys.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = user[key];
+        return obj;
+      }, {})
+  );
 };

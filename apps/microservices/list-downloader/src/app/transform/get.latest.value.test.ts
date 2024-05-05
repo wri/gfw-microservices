@@ -27,11 +27,11 @@ describe('GetLatestValue', () => {
     const getLatestValue = new GetLatestValue(['yearly']);
     getLatestValue._transform(
       {
-        yearly: '{"2020": 1, "2021": 2}',
+        yearly: '{"2020": 1, "2021": 2, "2023": 3}',
       },
       '',
       (err, data) => {
-        expect(data).toEqual({ yearly: 2 });
+        expect(data).toEqual({ yearly: 3 });
       }
     );
   });

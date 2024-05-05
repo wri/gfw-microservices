@@ -26,7 +26,6 @@ import CircularProgressWithLabel from './CircularProgressWithLabel';
 import ExistingListSelector from './ExistingListSelector';
 import { deduceActiveId } from '../../../../common/js/utils/templateUtils';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
-import featureFlags from '../../../../../utils/general.utils';
 import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 
@@ -365,12 +364,11 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
             </div>
           </section>
 
-          {featureFlags.isAfiAvailable && (
-            <AnalysisTypesSelector
-              selectedAnalyses={selectedAnalysis}
-              setSelectedAnalyses={setSelectedAnalysis}
-            />
-          )}
+          <AnalysisTypesSelector
+            selectedAnalyses={selectedAnalysis}
+            setSelectedAnalyses={setSelectedAnalysis}
+          />
+
           {/* Temporary removed: GPV-1233
           <hr className="section-divisor" />
           <section className="add-location-chooser__general-section">
@@ -415,10 +413,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         <div className="dialog__footer add-location-chooser__footer" style={{ right: '0' }}>
           <Button
             className="dialog__primary-action"
-            disabled={
-              (!listName && !existingListName) ||
-              (selectedAnalysis.length <= 0 && featureFlags.isAfiAvailable)
-            }
+            disabled={(!listName && !existingListName) || selectedAnalysis.length <= 0}
             label={locationsPage.add.submit}
             onClick={() => createUploadProcess()}
             variant="primary"

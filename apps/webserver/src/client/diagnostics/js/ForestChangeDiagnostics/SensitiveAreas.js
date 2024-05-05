@@ -12,13 +12,16 @@ import {
   prettifyNum,
   validatePct,
 } from '../../../common/js/utils/diagnostics.utils';
-import { locationsPage, latestTreeCoverLossYearSensitiveAreas } from '../../../common/js/config';
+import {
+  locationsPage,
+  latestTreeCoverLossYearForTclDataInAnalyses,
+} from '../../../common/js/config';
 
 import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
 
 const START_YEAR = 2001;
-const END_YEAR = latestTreeCoverLossYearSensitiveAreas; // Assembla ticket: 2057 - Update FC Diagnostic Charts and CSVs to show 2019 data
+const END_YEAR = latestTreeCoverLossYearForTclDataInAnalyses; // Assembla ticket: 2057 - Update FC Diagnostic Charts and CSVs to show 2019 data
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
 
 export default class SensitiveAreas extends Component {

@@ -27,7 +27,7 @@ jest.mock('../../../config/publicutils/shareManager.utils', () => ({
 }));
 
 const logger = require('../../../config/privateutils/logger.utils');
-const getAnalysisFromAdministrativeAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromAdministrativeAreasList');
+import getAnalysisFromAdministrativeAreasList from './gfwListsDiagnosticsFunctions/getAnalysisFromAdministrativeAreasList';
 const getAnalysisFromProtectedAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromProtectedAreasList');
 const getAnalysisFromGFWList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromGFWList');
 const getAnalysisFromUserList = require('./orgListDiagnosticsFunctions/getAnalysisFromUserList');

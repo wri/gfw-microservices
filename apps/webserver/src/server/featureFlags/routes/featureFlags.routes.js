@@ -2,11 +2,11 @@ const path = require('path');
 const express = require('express');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
-const insertOrSaveFeatureFlag = require('../controllers/insertOrSaveFeatureFlag');
-const getTransformedFeatureFlags = require('../controllers/getTransformedFeatureFlags');
-const getAllFeatureFlags = require('../controllers/getAllFeatureFlags');
-const getFeatureFlagByFlagId = require('../controllers/getFeatureFlagByFlagId');
-const deleteFeatureFlag = require('../controllers/deleteFeatureFlag');
+import insertOrSaveFeatureFlag from '../controllers/insertOrSaveFeatureFlag';
+import getTransformedFeatureFlags from '../controllers/getTransformedFeatureFlags';
+import getAllFeatureFlags from '../controllers/getAllFeatureFlags';
+import getFeatureFlagByFlagId from '../controllers/getFeatureFlagByFlagId';
+import deleteFeatureFlag from '../controllers/deleteFeatureFlag';
 
 const featureFlagRoutes = express.Router();
 const superAdminFeatureFlagsRoutes = express.Router();

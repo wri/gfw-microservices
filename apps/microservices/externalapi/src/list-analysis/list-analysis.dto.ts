@@ -66,3 +66,6 @@ export class DeleteListRequest {
   @ApiProperty()
   userEmail: string;
 }
+
+export const numPageSchema = z.coerce.number();
+export const pageSizeSchema = z.coerce.number();

@@ -3,7 +3,7 @@ const logger = require('../../../config/privateutils/logger.utils');
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
 const SharedListManager = require(path.resolve('./config/publicutils/shareManager.utils'));
-const getAnalysisFromAdministrativeAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromAdministrativeAreasList');
+import getAnalysisFromAdministrativeAreasList from './gfwListsDiagnosticsFunctions/getAnalysisFromAdministrativeAreasList';
 const getAnalysisFromProtectedAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromProtectedAreasList');
 const getAnalysisFromGFWList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromGFWList');
 const getAnalysisFromUserList = require('./orgListDiagnosticsFunctions/getAnalysisFromUserList');
@@ -14,7 +14,7 @@ import { gfwListsIds } from '@wri-monorepos/constants';
  * @summary Get the corresponding analysis function for this list.
  * @note Each of these function receives the express request object and the current list in context.
  * @param {boolean} isGfwList
- * @param {Number|Int} listId listid
+ * @param {Number} listId
  * @returns {Function}
  */
 const getDiagnosticsAnalysisFunction = (isGfwList, listId) => {

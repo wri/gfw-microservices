@@ -29,7 +29,7 @@ export const chartDatasetConfigs = {
       { id: 'Category III', color: 'rgb(151,189,61)', legend: 'Category III', checked: true },
     ],
     startYear: 2008,
-    endYear: 2022,
+    endYear: 2023,
   },
   argentinaTreeCoverLoss: {
     id: 'argentinaTreeCoverLoss',
@@ -42,7 +42,7 @@ export const chartDatasetConfigs = {
         dataPath: 'country.country_specific_deforestation',
         legend: 'argentina deforestation',
         color: 'rgb(34,153,102)',
-        checked: false,
+        checked: true,
         totalLossByCategory: null,
       },
       {
@@ -74,11 +74,29 @@ export const chartDatasetConfigs = {
         dataPath: 'WDPA.country_specific_deforestation.lessRestricted',
         legend: 'less restricted',
         color: 'rgb(255,64,0)',
-        checked: false,
+        checked: true,
         totalLossByCategory: null,
       },
     ],
   },
+
+  indigenousTerritories: {
+    id: 'indigenousTerritories',
+    dataCy: 'argentina-indigenous-territories',
+    chartsSelectorTitle: 'Indigenous Territories',
+    totalLoss: null,
+    chartLabels: [
+      {
+        id: 'Indigenous Territories',
+        dataPath: 'landmark.country_specific_deforestation.indigenous',
+        legend: 'Indigenous Territories',
+        color: 'rgb(146,37,100)',
+        checked: true,
+        totalLossByCategory: null,
+      },
+    ],
+  },
+
   wdpaOverlapCountry: {
     diagnosticTitle: 'Protected Areas Percent Overlap',
     informationBubbleId: 'regions_arg_pa_landcover_calc',

@@ -1,3 +1,5 @@
+import { mergeListsWithAnalysisId } from './listManager.utils';
+
 /** ******************************************************************
  *   @name : shareManager.utils.js
  *   @description : A utility file to allow GFW Pro to share
@@ -19,6 +21,9 @@ const langResources = require(path.resolve('./config/langResources'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
+const analyticsService = require(path.resolve('./server/analytics/service/analytics.service'));
+
+import { getSharedListByUser as getSharedListByUserQuery } from '@wri-monorepos/sql';
 
 /** @function {shareInternalList}
  *  @summary Adding user to internal shared DB table
@@ -312,6 +317,61 @@ const getUserInternalShareLists = (req, user_id) => {
   return getUserInternalShareListsResult;
 };
 
+/** @function {getSharedListDataByUser}
+ *   @summary Get shared lists for a specific user
+ *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *   @param {number} user_id - The sharing user's id
+ *   @return {Promise<GetSharedListByUserType[]>} Returns list of user shared lists
+ */
+const getSharedListDataByUser = (req, user_id) => {
+  let hasError = false;
+  // Create promise object to return
+  return new Promise((resolve, reject) => {
+    Q.fcall(() => {
+      // parameters for stored procedure
+      const params = [
+        {
+          field: 'userID',
+          type: sql.Int,
+          value: user_id,
+        },
+      ];
+      return sqlUtils.executeOrganizationQuery(req, getSharedListByUserQuery, params);
+    })
+      .catch((errorMessage) => {
+        hasError = true;
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToGetShared,
+          'Failed get user shared lists',
+          errorMessage
+        );
+        reject(errorObject);
+      })
+      .done((recordsets) => {
+        if (!hasError) {
+          resolve(recordsets);
+        }
+      });
+  });
+};
+
+const getSharedListDataByUserWithAnalysisStatus = (req, user_id) => {
+  return new Promise((resolve, reject) => {
+    const promises = [
+      getSharedListDataByUser(req, user_id),
+      analyticsService.getAllListsAnalysisStatus(req),
+    ];
+    Promise.all(promises)
+      .then((results) => {
+        const [orgLists, listAnalysisStatuses] = results;
+        mergeListsWithAnalysisId(orgLists, listAnalysisStatuses);
+        resolve(orgLists);
+      })
+      .catch((error) => reject(error));
+  });
+};
+
 /** @function {getUserPendingInternalShareLists}
  *   @summary Get pending shared lists for a specific user
  *   @param  {Object}  req - Manadatory first parameter to pass the request object into the function in case session info is required.
@@ -459,4 +519,6 @@ module.exports = {
   getAdminInternalLists,
   getAllUsersForSharedList,
   findSharedListsInsideOrganization,
+  getSharedListDataByUser,
+  getSharedListDataByUserWithAnalysisStatus,
 };

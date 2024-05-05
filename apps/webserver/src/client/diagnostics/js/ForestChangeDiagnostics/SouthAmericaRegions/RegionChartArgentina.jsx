@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import CardContent from '@mui/material/CardContent';
-import DateRangeSilder from './DateRangeSlider';
+import DateRangeSlider from './DateRangeSlider';
 import BarChart from '../../common/BarChart';
 import PieChart from '../../common/PieChart';
 import ChartsSelectorArgentina from './ChartsSelectorArgentina';
@@ -23,12 +23,14 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
     protectedAreas,
     wdpaOverlapCountry,
     landmarkOverlapCountry,
+    indigenousTerritories,
   } = chartDatasetConfigs;
 
   const [chartsConfiguration, setChartsConfiguration] = useState([
     argentinaOtbn,
     argentinaTreeCoverLoss,
     protectedAreas,
+    indigenousTerritories,
   ]);
 
   const [selectedOptionId, setSelectedOptionId] = useState(chartsConfiguration[0].id);
@@ -172,6 +174,13 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
         chartsConfiguration[2].chartLabels
       );
       break;
+    case indigenousTerritories.id:
+      barChartData = getBarChartData(
+        argentinaPieChartsData,
+        dateRange,
+        chartsConfiguration[3].chartLabels
+      );
+      break;
   }
 
   return (
@@ -200,12 +209,13 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
               chartsConfiguration={chartsConfiguration}
               onOptionChange={setSelectedOptionId}
               selectedOptionId={selectedOptionId}
+              argentinaPieChartsData={argentinaPieChartsData}
             />
           </div>
         </CardContent>
       </Card>
 
-      <DateRangeSilder
+      <DateRangeSlider
         id={argentinaOtbn.id}
         dateRange={dateRange}
         setDateRange={handleDateRangeChange}

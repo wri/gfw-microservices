@@ -19,7 +19,6 @@ import moment from 'moment';
 
 function AccountDetailUsage() {
   const { currentAccount } = useAccountDetail();
-  const accountUsageData = useAccountUsageData();
   const [startDate, setStartDate] = useState(oneMonthAgoDate);
   const [endDate, setEndDate] = useState(endDayIncludingToday);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,7 +51,7 @@ function AccountDetailUsage() {
 
   return (
     <section>
-      {accountUsageData && <AccountUsage {...accountUsageData} />}
+      <AccountUsageInfoBubbles />
       <Divider sx={{ margin: '1.5rem 0' }} />
       <DateRangeSelector
         startDate={startDate}
@@ -89,7 +88,7 @@ function AccountDetailUsage() {
   );
 }
 
-function useAccountUsageData() {
+function AccountUsageInfoBubbles() {
   const { currentAccount } = useAccountDetail();
   const { organization_id: organizationId, renewal_time: renewalTime } = currentAccount;
   const [accountUsageData, setAccountUsageData] = useState(null);
@@ -112,10 +111,12 @@ function useAccountUsageData() {
       }
     )
       .then((res) => res.json())
-      .then((accountUsage) => {
-        if (accountUsage?.success === false) {
-          console.warn(accountUsage);
+      .then((data) => {
+        if (data?.success === false) {
+          console.warn(data);
         }
+
+        const [accountUsage = {}] = data;
         const { limits: accountLimits } = currentAccount.analysis_limits;
 
         setAccountUsageData({
@@ -130,7 +131,11 @@ function useAccountUsageData() {
       });
   }, []);
 
-  return accountUsageData;
+  if (!accountUsageData) {
+    return <CircularProgress color="success" />;
+  }
+
+  return <AccountUsage {...accountUsageData} />;
 }
 
 export default AccountDetailUsage;

@@ -71,7 +71,7 @@ const DialogConfirmSubmitContent = ({ listName }) => {
       You have added a location to <strong>{listName}</strong>, as defined above.
     </span>
   ) : (
-    <>You have successfully created a list in Pro.</>
+    <span>You have successfully created a list in Pro.</span>
   );
 
   return (

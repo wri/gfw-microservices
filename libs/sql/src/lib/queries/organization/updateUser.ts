@@ -10,12 +10,7 @@ phone = @phone,
 title_id = @titleId,
 other_title = @other_title,
 access_level_id = ISNULL(@accessLevelId, access_level_id),
-email_subscription = @email_subscription,
-viirs_email_frequency = @viirs_email_frequency,
-glad_email_frequency = @glad_email_frequency,
-forma_email_frequency = @forma_email_frequency,
-terrai_email_frequency = @terrai_email_frequency,
-gran_chaco_email_frequency = @gran_chaco_email_frequency
+email_subscription = @email_subscription
 WHERE id = @userId
 
 -- DELETE Old Commodity Data.

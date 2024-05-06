@@ -2,8 +2,9 @@ import { z } from 'zod';
 
 // Define the allowed content types
 export const allowedContentTypes = [
-  'application/zip',
   'text/csv',
+  'application/zip',
+  'application/x-zip-compressed',
   'application/vnd.google-earth.kml+xml',
   'application/vnd.ms-excel',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

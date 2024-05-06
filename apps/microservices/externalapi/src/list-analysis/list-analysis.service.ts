@@ -338,18 +338,19 @@ export class ListAnalysisService {
       if (listAnalysisStatus) {
         const user = await this.userService.findUser(organizationId, userEmail);
 
-        const URL_DELETE_LIST = `${this.LLP_BASE_URL}/api/delete/list/${listId}`;
-
-        const result = await axios.delete(URL_DELETE_LIST, {
-          data: {
+        const result = await axios.post(
+          `${this.LLP_BASE_URL}/api/list/${listId}/delete`,
+          {
             organization_user_id: user.organization_user_id,
             userEmail: userEmail,
             organizationDatabase: connection.options.database,
           },
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
         return !!result;
       } else {
         throw new NotFoundException();

@@ -16,7 +16,6 @@ import {
   Body,
   Query,
   BadRequestException,
-  Delete,
   Param,
 } from '@nestjs/common';
 
@@ -179,7 +178,7 @@ export class AppController {
   @ApiNotFoundResponse({ status: 404, type: BadRequestExceptionResponse })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  @Delete('/delete/list/:listId')
+  @Post('/list/:listId/delete')
   deleteList(
     @Param('listId') listId: number,
     @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest

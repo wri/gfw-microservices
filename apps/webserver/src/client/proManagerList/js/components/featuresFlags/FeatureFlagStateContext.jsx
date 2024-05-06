@@ -21,12 +21,12 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
 
   const upsertFeatureFlagByFlagId = useCallback(
     (flagState, orgId = null) => {
+      setIsLoading(true);
       return upsertFeatureFlag({
         flagId: selectedFeatureFlag?.flagId,
         flagState,
         orgId,
       }).then((upsertedFeatureFlag) => {
-        setIsLoading(true);
         if (orgId) {
           setFeatureFlagsListByFlagId((prevFeatureFlagListValues) => {
             return prevFeatureFlagListValues.map((flag) => {

@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  Logger,
+} from '@nestjs/common';
 import { S3 } from 'aws-sdk';
 import { DataSource } from 'typeorm';
 import * as uniqId from 'uniqid';
@@ -19,6 +24,8 @@ class MyObject {
 
 @Injectable()
 export class AppService {
+  private readonly logger = new Logger('List processing service');
+
   constructor(
     private dataSource: DataSource,
     private readonly clientStoreConnection: ClientStoreConnection
@@ -111,7 +118,7 @@ export class AppService {
       };
       return dataResult;
     } catch (error) {
-      console.log(error);
+      this.logger.error('SaveListToProcess failed', error);
     }
   }
 
@@ -141,6 +148,7 @@ export class AppService {
       const listRepository = connection.getRepository(List);
       const listFound = await listRepository.findOne({ where: { id: list_id } });
       if (!listFound) {
+        this.logger.error('DeleteList: list not found');
         throw new NotFoundException(`List id ${list_id} not found.`);
       }
       const { lockStatus, lockUserId, listTableName, listAnalysisTableName, listName } = listFound;
@@ -157,6 +165,7 @@ export class AppService {
         lockStatus_2 === null ||
         (lockStatus_2 !== null && lockUserId_2 !== organization_user_id)
       ) {
+        this.logger.error('DeleteList failure locked', lockUserId);
         throw { isLocked: true, lockUserId };
       } else {
         const activityLogRepository = connection.getRepository(ActivityLog);
@@ -166,6 +175,7 @@ export class AppService {
             await connection.query(`DROP TABLE IF EXISTS [${listTableName}]`);
             await connection.query(`DROP TABLE IF EXISTS [${listAnalysisTableName}]`);
           } catch (error) {
+            this.logger.error('DeleteList failure drop tables', error);
             throw new InternalServerErrorException({
               message: `Failed to delete attributes from list id ${list_id}`,
               code: 603,
@@ -175,6 +185,7 @@ export class AppService {
           try {
             await listRepository.delete({ id: list_id });
           } catch (error) {
+            this.logger.error('DeleteList failure Lists', error);
             throw new InternalServerErrorException({
               message: `Failed to delete list ${list_id}`,
               code: 603,
@@ -184,6 +195,7 @@ export class AppService {
           try {
             await connection.query(`DELETE FROM Analyses WHERE list_id = ${list_id}`);
           } catch (error) {
+            this.logger.error('DeleteList failure Analyses', error);
             throw new InternalServerErrorException({
               message: `Failed to delete analyses ${list_id}`,
               code: 603,
@@ -193,6 +205,7 @@ export class AppService {
           try {
             await connection.query(`DELETE FROM AFIAnalysis WHERE list_id = ${list_id}`);
           } catch (error) {
+            this.logger.error('DeleteList failure AFIAnalysis', error);
             throw new InternalServerErrorException({
               message: `Failed to delete AFIAnalysis ${list_id}`,
               code: 603,
@@ -202,6 +215,7 @@ export class AppService {
           try {
             await connection.query(`DELETE FROM ListsAnalysisStatus WHERE ListID = ${list_id}`);
           } catch (error) {
+            this.logger.error('DeleteList failure ListsAnalysisStatus', error);
             throw new InternalServerErrorException({
               message: `Failed to delete ListsAnalysisStatus ${list_id}`,
               code: 603,
@@ -211,6 +225,7 @@ export class AppService {
           try {
             await connection.query(`DELETE FROM [Analyses-Dashboard] WHERE list_id = ${list_id}`);
           } catch (error) {
+            this.logger.error('DeleteList failure Analyses-Dashboard', error);
             throw new InternalServerErrorException({
               message: `Failed to delete Analyses-Dashboard ${list_id}`,
               code: 603,
@@ -232,12 +247,14 @@ export class AppService {
             return `User '${userEmail}' has deleted list (${listName}).`;
           } catch (error) {
             // If some problem occurs, return message that the list was not deleted to user
+            this.logger.error('DeleteList failure ActivityLog', error);
             throw new InternalServerErrorException({
               message: `Failed to save logs from list id ${list_id}`,
               code: 603,
             });
           }
         } catch (error) {
+          this.logger.error('DeleteList failure with deletions', error);
           // Salve log at ActivityLog table
           const activityLog = new ActivityLog();
           activityLog.userId = organization_user_id;
@@ -252,6 +269,7 @@ export class AppService {
         }
       }
     } catch (error) {
+      this.logger.error('DeleteList failure', error);
       if (error instanceof NotFoundException) {
         throw error;
       } else {

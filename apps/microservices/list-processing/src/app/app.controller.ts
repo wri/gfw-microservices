@@ -9,15 +9,7 @@ import {
   getNumberOfPagesPaginatedListDataRequest,
   getPaginatedListDataRequest,
 } from './../models/index';
-import {
-  Controller,
-  Post,
-  Get,
-  Body,
-  Query,
-  BadRequestException,
-  Param,
-} from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, BadRequestException, Param } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { LocationService } from '@wri-monorepos/geo';

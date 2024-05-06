@@ -176,7 +176,7 @@ export default function AccountUsageContainer() {
                   {row.first_name} {row.last_name}
                 </TableCell>
                 <TableCell align="right">
-                  {row.total_locations_analyzed} (
+                  {formatNumber(row.total_locations_analyzed)} (
                   {getAnalysesPercentage(row.total_locations_analyzed)}%)
                 </TableCell>
                 <TableCell align="right">

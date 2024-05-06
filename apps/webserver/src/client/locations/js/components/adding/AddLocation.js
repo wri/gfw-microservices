@@ -37,7 +37,6 @@ import {
   saveAsDraftListConfig,
   saveListConfig,
 } from '../../../../../config/config/locations.config';
-import featureFlags from '../../../../../utils/general.utils';
 import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
@@ -61,10 +60,6 @@ muiTheme.fontFamily = 'Fira Sans, sans-serif';
 
 let originalState;
 
-const navigateToFeeInformationPage = () => {
-  window.location.href = '/about#fees';
-};
-
 const DIALOG__SUBMIT_TITLE = 'Confirm Submission';
 const DialogSubmitContent = ({ listName = 'Create New List' }) => {
   const listConditionalText =
@@ -80,14 +75,14 @@ const DialogSubmitContent = ({ listName = 'Create New List' }) => {
     <p>
       {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
       running analysis counts towards your account usage limits. See more information{' '}
-      <LinkButton
+      <a
+        class="link-button"
         target="_blank"
-        onClick={() => {
-          navigateToFeeInformationPage();
-        }}
+        href="/about?section=Fees"
+        style={{ color: '#97bd3d' }}
       >
         here
-      </LinkButton>
+      </a>
       .
     </p>
   );
@@ -110,15 +105,16 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
   return (
     <p>
       {listConditionalText} in draft state until you choose to run analysis on it. Note that running
-      analysis counts towards your account usage limits. See more information about usage & fees{' '}
-      <LinkButton
+      analysis counts towards your account usage limits. See more information{' '}
+      <a
+        class="link-button"
         target="_blank"
-        onClick={() => {
-          navigateToFeeInformationPage();
-        }}
+        href="/about?section=Fees"
+        style={{ color: '#4a4a4a' }}
       >
         here
-      </LinkButton>
+      </a>
+      .
     </p>
   );
 };

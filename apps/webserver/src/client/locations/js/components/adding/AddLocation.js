@@ -1912,7 +1912,7 @@ export default class AddLocation extends Component {
     const dropdownOptionsInvestmentCommodity = buildDropdownOptions(
       locationsPage.add.dropdownOptions
     );
-    console.log(`typeof dialogMessage: ${typeof dialogMessage}`, dialogMessage);
+
     // debugger;
     const dialogContent =
       typeof dialogMessage === 'string' || React.isValidElement(dialogMessage)

@@ -1620,6 +1620,7 @@ export const locationsPage = {
     },
     stepFourTitle: 'Save',
     submit: 'Submit',
+    submitForExisting: 'Submit For Analysis',
     successBanner:
       'New locations have been added. You will receive an email once analysis of the locations is complete, and can reload the page to access the data.',
     list: 'List',

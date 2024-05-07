@@ -30,7 +30,7 @@ export class ListController extends AppController {
   @Post('/create-list-tables')
   @UseGuards(new FeatureFlagEnabledGuard('UploadListLp'))
   createListTables(@Body() request: RequestTriggerProcessLargeList, @Request() req) {
-    if (req.featureFlag.featureFlagEnabled) {
+    if (req.featureFlag.enabled) {
       return this.listCreationService.createNewList(
         request.list_name,
         request.user_id,

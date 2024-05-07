@@ -70,7 +70,7 @@ export class ListCreationService {
     const payloadBody = {
       ...llpRequest,
       environment: microserviceEnvironment,
-      send_email: isExternalAPIProcess === true ? false : true,
+      send_email: !isExternalAPIProcess,
       processing_limit: processingLimit,
       analysis_types,
     };

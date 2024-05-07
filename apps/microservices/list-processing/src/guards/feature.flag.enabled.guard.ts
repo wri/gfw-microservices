@@ -16,10 +16,10 @@ export class FeatureFlagEnabledGuard implements CanActivate {
     const organizationId = await getClientIdByClientStoreDatabaseName(clientStoreDatabase);
     const flags = await getFeatureFlagsForCurrentOrg(organizationId);
 
-    const hasFlagForExternalApiEnabled = flags.some((f) => f.flagId === this.flag);
+    const hasFlagEnabled = flags.some((f) => f.flagId === this.flag);
 
     // Modify the request body to add a new parameter
-    request.featureFlag.featureFlagEnabled = hasFlagForExternalApiEnabled;
+    request.featureFlag.enabled = hasFlagEnabled;
 
     return true;
   }

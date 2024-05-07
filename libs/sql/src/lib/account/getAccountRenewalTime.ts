@@ -11,7 +11,7 @@ export async function getAccountRenewalTime(organizationId: number) {
       'uspGetOrganizationRenewalTime',
       parameters
     );
-    const { orgRenewalTime } = recordset;
+    const { orgRenewalTime } = recordset || {};
     return orgRenewalTime;
   } catch (error) {
     throw new Error(error);

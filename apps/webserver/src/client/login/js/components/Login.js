@@ -499,7 +499,7 @@ export default class Login extends Component {
                 target="_blank"
                 className="button button--secondary"
               >
-                {loginPage.moreInfo.subscribe.buttonText}
+                <LinkedInIcon /> {loginPage.moreInfo.subscribe.buttonText}
               </a>
             </div>
           </div>

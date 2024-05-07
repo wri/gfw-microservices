@@ -27,7 +27,7 @@ function ChartsSelectorArgentina({
               );
               const isSingleChartPresent = chartLabels?.length === 1;
               return (
-                <>
+                <React.Fragment key={optionId}>
                   <tr>
                     <th data-cy={dataCy}>
                       <input
@@ -95,7 +95,7 @@ function ChartsSelectorArgentina({
                         );
                       }
                     )}
-                </>
+                </React.Fragment>
               );
             }
           )}

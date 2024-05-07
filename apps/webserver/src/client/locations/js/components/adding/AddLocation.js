@@ -75,12 +75,7 @@ const DialogSubmitContent = ({ listName = 'Create New List' }) => {
     <p>
       {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
       running analysis counts towards your account usage limits. See more information{' '}
-      <a
-        class="link-button"
-        target="_blank"
-        href="/about?section=Fees"
-        style={{ color: '#97bd3d' }}
-      >
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
         here
       </a>
       .
@@ -106,12 +101,7 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
     <p>
       {listConditionalText} in draft state until you choose to run analysis on it. Note that running
       analysis counts towards your account usage limits. See more information{' '}
-      <a
-        class="link-button"
-        target="_blank"
-        href="/about?section=Fees"
-        style={{ color: '#4a4a4a' }}
-      >
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#4a4a4a' }}>
         here
       </a>
       .
@@ -1922,6 +1912,8 @@ export default class AddLocation extends Component {
     const dropdownOptionsInvestmentCommodity = buildDropdownOptions(
       locationsPage.add.dropdownOptions
     );
+
+    // debugger;
     const dialogContent =
       typeof dialogMessage === 'string' || React.isValidElement(dialogMessage)
         ? [dialogMessage]

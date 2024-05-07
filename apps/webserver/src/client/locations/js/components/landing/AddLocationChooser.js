@@ -427,7 +427,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
             <Button
               className="dialog__primary-action"
               disabled={(!listName && !existingListName) || selectedAnalysis.length <= 0}
-              label={"locationsPage.add.submit"}
+              label={locationsPage.add.submit}
               onClick={() => setAlertDialogOpen(true)}
               variant="primary"
             />

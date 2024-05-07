@@ -62,6 +62,7 @@ const buildSQSMessage = ({ request, file }) => {
     type,
     listView,
     aggregate,
+    isGFWList,
   } = request.query;
 
   const tmpPath = tmp.tmpNameSync();
@@ -80,6 +81,7 @@ const buildSQSMessage = ({ request, file }) => {
       combinedColumns,
       order,
       sortByAttribute: sortByAttribute?.replaceAll('"', ''),
+      isGFWList,
     }),
     list: JSON.stringify({ listId, listFilterStr, listView, selectedLocations }),
   };

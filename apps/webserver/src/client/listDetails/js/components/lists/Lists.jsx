@@ -2721,6 +2721,7 @@ export default class Lists extends Component {
                             isLoading={(loading) => {
                               this.setState({ isLoading: loading });
                             }}
+                            isGfwList={isGfwList}
                           />
                         )}
                         {canDelete && (

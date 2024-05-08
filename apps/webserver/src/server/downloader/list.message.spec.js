@@ -28,6 +28,7 @@ describe('Check build sqs message function', () => {
           state: 'Rio de Janeiro',
           subState: 'Taquara',
           type: 'result',
+          isGFWList: true,
         },
         session: {
           user_email: 'teste@wri.com',

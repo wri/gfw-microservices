@@ -27,7 +27,7 @@ const downloadRequest = ({
     listFilterStr,
     aggregate: aggregate ?? true,
     listView,
-    isGfwList,
+    isGFWList: isGfwList,
     analysisAreaMin: filters.selectedAreaMin || 0,
     ...(filters.selectedAreaMax ? { analysisAreaMax: filters.selectedAreaMax } : {}),
     ...(filters.selectedCountry ? { country: filters.selectedCountry } : {}),
@@ -36,7 +36,6 @@ const downloadRequest = ({
     combinedColumns: combinedColumns?.join(','),
     selectedLocations: allLocationsSelected ? 'all' : selectedLocations?.join(','),
   };
-
   return axios({
     url: `/locations/${format}/${listID}`,
     method: 'GET',

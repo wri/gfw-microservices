@@ -81,9 +81,8 @@ const buildSQSMessage = ({ request, file }) => {
       combinedColumns,
       order,
       sortByAttribute: sortByAttribute?.replaceAll('"', ''),
-      isGFWList,
     }),
-    list: JSON.stringify({ listId, listFilterStr, listView, selectedLocations }),
+    list: JSON.stringify({ listId, listFilterStr, listView, selectedLocations, isGFWList }),
   };
   const filtersClean = _.pickBy(filters, _.identity);
 

@@ -2537,8 +2537,8 @@ export default class Lists extends Component {
                                 event_category: 'Submit',
                                 event_label: 'User submits a list from listview page',
                               });
-                              // TODO: Get details what to do after list is submitted
                               this.setState({ isListSubmittedForAnalysis: true });
+                              window.location = '/locations';
                             })
                             .catch((error) => {
                               // TODO: Get details what to do after list submission fails

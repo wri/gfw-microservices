@@ -30,16 +30,12 @@ import {
   UPDATE_SOY_YEAR,
   TOGGLE_HIGH_CONFIDENCE_ALERTS_FOR_DEFORESTATION_ALERTS_LAYERS,
 } from '../constants/actionTypes';
-import {
-  mapPage,
-  PLANET_TILE_LAYER_INITIAL,
-  proLayers,
-  soyPlantedYearsRange,
-} from '../../../common/js/config';
+import { PLANET_TILE_LAYER_INITIAL, soyPlantedYearsRange } from '../../../common/js/config';
+import { proLayers, exclusiveLayers, visibleLayers } from '../../../common/js/proLayers.config';
 
 const initialLocationState = {
   mapLayers: [],
-  visibleLayers: mapPage.visibleLayers,
+  visibleLayers,
   addType: 'investment',
   iconLoading: '',
   listLoading: false,
@@ -84,7 +80,7 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
     const newLayers = [];
 
     state.forEach((layer) => {
-      if (!mapPage.exclusiveLayers.includes(layer)) {
+      if (!exclusiveLayers.includes(layer)) {
         newLayers.push(layer);
       }
     });
@@ -95,9 +91,9 @@ export function toggleLayer(state = initialLocationState.visibleLayers, action) 
       return action.data;
     } else {
       const newLayers = [];
-      if (mapPage.exclusiveLayers.includes(action.data)) {
+      if (exclusiveLayers.includes(action.data)) {
         state.forEach((layer) => {
-          if (layer !== action.data && !mapPage.exclusiveLayers.includes(layer)) {
+          if (layer !== action.data && !exclusiveLayers.includes(layer)) {
             newLayers.push(layer);
           }
 

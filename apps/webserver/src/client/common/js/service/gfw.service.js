@@ -1,7 +1,8 @@
 import esriRequest from '@arcgis/core/request';
 
 // Configs
-import { mapPage, proLayers } from '../config';
+import { mapPage } from '../config';
+import { proLayers } from '../proLayers.config';
 import { PRODUCTION_ENVIRONMENTS } from '../../../../config/config/environments.config';
 
 // eslint-disable-next-line import/prefer-default-export

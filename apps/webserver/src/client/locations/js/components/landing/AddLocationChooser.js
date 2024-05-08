@@ -416,14 +416,15 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
 
       {isLargeListUpload && llpStep2 && (
         <div className="dialog__footer add-location-chooser__footer" style={{ right: '0' }}>
-          {!existingListName ?
+          {!existingListName ? (
             <Button
               className="dialog__primary-action"
               disabled={(!listName && !existingListName) || selectedAnalysis.length <= 0}
               label={locationsPage.add.submit}
               onClick={() => createUploadProcess()}
               variant="primary"
-            /> :
+            />
+          ) : (
             <Button
               className="dialog__primary-action"
               disabled={(!listName && !existingListName) || selectedAnalysis.length <= 0}
@@ -431,7 +432,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
               onClick={() => setAlertDialogOpen(true)}
               variant="primary"
             />
-          }
+          )}
           <LinkButton label={locationsPage.add.cancel} onClick={() => onCancel()} />
         </div>
       )}
@@ -452,7 +453,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
       >
         <div dangerouslySetInnerHTML={{ __html: dialogMessage }} />
       </Dialog>
-      {existingListName &&
+      {existingListName && (
         <Dialog
           paperClassName="dialog-paper"
           open={alertDialogOpen}
@@ -468,10 +469,15 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
           ]}
           onRequestClose={shouldCloseAlertDialog}
         >
-          You have successfully added locations to { existingListName.list_name }. Please confirm that you wish to  submit this updated list to analysis. 
-          Note that running analysis counts towards your account usage limits. See more information about usage & fees <a style={{color: '#789631'}} href="/about#fees">here</a>.
+          You have successfully added locations to {existingListName.list_name}. Please confirm that
+          you wish to submit this updated list to analysis. Note that running analysis counts
+          towards your account usage limits. See more information about usage & fees{' '}
+          <a style={{ color: '#789631' }} href="/about#fees">
+            here
+          </a>
+          .
         </Dialog>
-      }
+      )}
       <ModalLoader open={isSaving} />
     </div>
   );

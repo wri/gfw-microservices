@@ -1909,12 +1909,6 @@ export default class AddLocation extends Component {
       listPlaceholderValue = 'Recent Other';
     }
 
-    // TODO: this is unused, can we delete?
-    const dropdownOptionsInvestmentCommodity = buildDropdownOptions(
-      locationsPage.add.dropdownOptions
-    );
-
-    // debugger;
     const dialogContent =
       typeof dialogMessage === 'string' || React.isValidElement(dialogMessage)
         ? [dialogMessage]

@@ -47,9 +47,9 @@ import {
   DATA_API_URL,
   highchartColorsIndonesiaLegalClassification2020,
   locationsPage,
-  proLayers,
   treeCoverLossTilesUrl,
 } from '../../../common/js/config';
+import { proLayers } from '../../../common/js/proLayers.config';
 import { centroidSymbol, fillSymbolDefault } from '../../../common/js/map.config';
 import AnalysisListChips from '../../../locations/js/components/landing/listItem/AnalysisListChips';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';

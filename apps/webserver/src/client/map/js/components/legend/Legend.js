@@ -5,7 +5,7 @@ import RegionLegend from './RegionLegend';
 import '../../../css/map.scss';
 import React, { Component } from 'react';
 import LegendSection from './LegendSection';
-import { proLayers } from '../../../../common/js/config';
+import { proLayers } from '../../../../common/js/proLayers.config';
 
 export default class Legend extends Component {
   constructor(props) {

@@ -31,7 +31,9 @@ import {
   saveGfwListLocations,
 } from '../../utils/moveLocations';
 import store from '../../../../locations/js/store';
-import { locationsPage, proLayers, userAccessLevel } from '../../../../common/js/config';
+import { locationsPage, userAccessLevel } from '../../../../common/js/config';
+import { proLayers } from '../../../../common/js/proLayers.config';
+
 import {
   addList,
   changeListView,

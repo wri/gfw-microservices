@@ -44,10 +44,17 @@ import {
   DATA_API_URL,
   locationsPage,
   mapPage,
-  proLayers,
   supportedGeostoreAnalysis,
-  vectorEnabledLayers,
 } from '../../../common/js/config';
+import {
+  proLayers,
+  vectorEnabledLayers,
+  noLocationLayers,
+  exclusiveDrawLayers,
+  exclusiveLayers,
+  visibleLayers as visibleLayersConstants,
+} from '../../../common/js/proLayers.config';
+import { mapLayersMenu } from '../../../common/js/mapLayersMenu.config';
 import {
   centroidHighlightSymb,
   centroidSymbol,
@@ -136,6 +143,7 @@ const {
   userLocations,
   viirsActiveFiresID,
   soyPlantedArea,
+  argentineanNativeForestsLoss,
 } = proLayers;
 
 let layersToAdd;
@@ -300,7 +308,7 @@ export default class Map extends Component {
           }
         }
 
-        if (mapPage.exclusiveLayers.includes(nowVisibleLayer)) {
+        if (exclusiveLayers.includes(nowVisibleLayer)) {
           this.view.popup.actions.forEach((action) => {
             if (action.id === 'ANALYZE') {
               action.visible = true;
@@ -331,7 +339,7 @@ export default class Map extends Component {
           }
         }
 
-        if (mapPage.exclusiveLayers.includes(nowHiddenLayer)) {
+        if (exclusiveLayers.includes(nowHiddenLayer)) {
           this.view.popup.actions.forEach((action) => {
             if (action.id === 'ANALYZE') {
               action.visible = false;
@@ -365,9 +373,7 @@ export default class Map extends Component {
       // This is only for toggling between forest change layers
       if (visibleLayers.length > 0) {
         visibleLayers.forEach((visibleLayer) => {
-          const [mapLayerConfig] = mapPage.layers.filter(
-            (mapLayer) => mapLayer.id === visibleLayer
-          );
+          const [mapLayerConfig] = mapLayersMenu.filter((mapLayer) => mapLayer.id === visibleLayer);
           const nowVisibleId = visibleLayers.filter(
             (layer) => prevState.visibleLayers.indexOf(layer) === -1
           );
@@ -485,7 +491,7 @@ export default class Map extends Component {
         activeAnalysis === 'region')
     ) {
       const disablePolygon = !visibleLayers.some(
-        (visibleLayer) => mapPage.exclusiveDrawLayers.indexOf(visibleLayer) !== -1
+        (visibleLayer) => exclusiveDrawLayers.indexOf(visibleLayer) !== -1
       );
       if (disablePolygon && (drawnGraphic.length === 0 || activeAnalysis === 'region')) {
         if (drawnGraphic.length === 0) {
@@ -697,7 +703,7 @@ export default class Map extends Component {
       const analyzeAction = this.view.popup.actions.items.find((item) => item.id === 'ANALYZE');
       if (analyzeAction) {
         const analysisEnabledLayerExists = this.state.visibleLayers.some((l) =>
-          mapPage.exclusiveLayers.includes(l)
+          exclusiveLayers.includes(l)
         );
         analyzeAction.visible = analysisEnabledLayerExists;
       }
@@ -855,7 +861,7 @@ export default class Map extends Component {
 
     allLayers.forEach((layer) => {
       if (layer.visible) {
-        const layerConfig = utils.getObject(mapPage.layers, 'id', layer.id);
+        const layerConfig = utils.getObject(mapLayersMenu, 'id', layer.id);
         if (layerConfig && layerConfig.popupTemplate) {
           deferreds.push(identifyPoints(layer, evt, this.view));
         }
@@ -865,7 +871,7 @@ export default class Map extends Component {
       const popFeats = [];
       response.forEach((layer) => {
         layer?.response?.results?.forEach((result) => {
-          const popupTemplate = utils.getObject(mapPage.layers, 'id', layer.layer).popupTemplate;
+          const popupTemplate = utils.getObject(mapLayersMenu, 'id', layer.layer).popupTemplate;
           result.feature.popupTemplate = popupTemplate;
           result.feature.layerName = layer.layer;
           popFeats.push(result.feature);
@@ -973,7 +979,7 @@ export default class Map extends Component {
         }
 
         //get the popup config info
-        const vectorLayerPopupInfo = mapPage.layers.find((l) => l.id === layerID);
+        const vectorLayerPopupInfo = mapLayersMenu.find((l) => l.id === layerID);
         if (vectorLayerPopupInfo) {
           const popContent = {
             title: vectorLayerPopupInfo.popupTemplate.title,
@@ -1715,9 +1721,7 @@ export default class Map extends Component {
     this.view.popup.watch('selectedFeatureIndex', (index) => {
       const selectedFeat = this.view.popup.features[index];
       if (selectedFeat) {
-        const currentForestChange = visibleLayers.some((layer) =>
-          mapPage.exclusiveLayers.includes(layer)
-        );
+        const currentForestChange = visibleLayers.some((layer) => exclusiveLayers.includes(layer));
         this.view.popup.actions.forEach((action) => {
           if (selectedFeat.layerName === viirsActiveFiresID) {
             action.visible = false;
@@ -1725,7 +1729,7 @@ export default class Map extends Component {
             action.visible =
               (action.id === 'ANALYZE' && currentForestChange) ||
               (action.id === 'ADD LOCATION' &&
-                mapPage.noLocationLayers.indexOf(selectedFeat.layerName) === -1);
+                noLocationLayers.indexOf(selectedFeat.layerName) === -1);
           }
         });
       }
@@ -1737,7 +1741,7 @@ export default class Map extends Component {
     );
 
     const initialLayers = layersToAdd
-      .filter((layer) => mapPage.visibleLayers.includes(layer.id))
+      .filter((layer) => visibleLayersConstants.includes(layer.id))
       .sort((layerA, layerB) => {
         if (layerA.order > layerB.order) {
           return -1;
@@ -2497,7 +2501,10 @@ export default class Map extends Component {
 
         <LossControls
           loaded={this.view && this.view.ready}
-          visible={visibleLayers.indexOf(treeCoverLossID) > -1}
+          visible={
+            visibleLayers.includes(treeCoverLossID) ||
+            visibleLayers.includes(argentineanNativeForestsLoss)
+          }
           setLossTimeline={this.setLossTimeline}
         />
 

@@ -9,16 +9,7 @@ import {
   getNumberOfPagesPaginatedListDataRequest,
   getPaginatedListDataRequest,
 } from './../models/index';
-import {
-  Controller,
-  Post,
-  Get,
-  Body,
-  Query,
-  BadRequestException,
-  Delete,
-  Param,
-} from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, BadRequestException, Param } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { LocationService } from '@wri-monorepos/geo';
@@ -179,7 +170,7 @@ export class AppController {
   @ApiNotFoundResponse({ status: 404, type: BadRequestExceptionResponse })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  @Delete('/delete/list/:listId')
+  @Post('/list/:listId/delete')
   deleteList(
     @Param('listId') listId: number,
     @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest

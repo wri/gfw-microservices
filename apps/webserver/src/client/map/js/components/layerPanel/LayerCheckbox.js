@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import store from '../../store';
 import { toggleLayer, showLoading, getLayerInfo } from '../../actions/mapActions';
 import { toggleClarkLabsLayers } from '../../actions/analysisActions';
-import { proLayers } from '../../../../common/js/config';
+import { proLayers } from '../../../../common/js/proLayers.config';
 import BetaTag from '../../../../common/js/components/BetaTag';
 
 const { clarkLabsAquacultureLandCover, clarkLabsAquacultureLandChange } = proLayers;

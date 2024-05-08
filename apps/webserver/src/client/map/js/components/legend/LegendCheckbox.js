@@ -15,7 +15,8 @@ import {
 } from '../../actions/mapActions';
 import { setBiomassMinRange, setBiomassMaxRange } from '../../actions/analysisActions';
 import utils from '../../utils/AppUtils';
-import { proLayers, mapPage, soyPlantedYearsRange } from '../../../../common/js/config';
+import { mapPage, soyPlantedYearsRange } from '../../../../common/js/config';
+import { proLayers, densityDisplayLayers } from '../../../../common/js/proLayers.config';
 const {
   viirsActiveFiresID,
   aboveGroundBiomassId,
@@ -324,7 +325,7 @@ export default class LegendCheckbox extends Component {
             {mapPage.densityLossEnd}
           </p>
         ) : null}
-        {mapPage.densityDisplayLayers.indexOf(layer.id) > -1 ? (
+        {densityDisplayLayers.indexOf(layer.id) > -1 ? (
           <p className="layer-legend-message">
             {mapPage.densityLossStart}
             <span

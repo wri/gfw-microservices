@@ -22,7 +22,8 @@ import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import AboveGroundLayer from '../layers/AboveGroundLayer';
 import viirsLayer from '../layers/VIIRSLayerUtil';
 
-import { proLayers, treeCoverLossTilesUrl, soyPlantedYearsRange } from '../../../common/js/config';
+import { treeCoverLossTilesUrl, soyPlantedYearsRange } from '../../../common/js/config';
+import { proLayers } from '../../../common/js/proLayers.config';
 const { viirsActiveFiresID, granChacoDeforestationID } = proLayers;
 
 /**
@@ -323,9 +324,12 @@ export const layerFactory = function LayersFactory(layersArray, view) {
           new TreeCoverLossLayer({
             id: layer.id,
             visible: layer.visible || false,
-            order: layer.order || undefined,
+            order: layer?.order,
             urlTemplate: treeCoverLossTilesUrl,
             view: view,
+            properties: {
+              baseRGB: [220, 0, 185],
+            },
           })
         );
         break;
@@ -362,9 +366,24 @@ export const layerFactory = function LayersFactory(layersArray, view) {
           })
         );
         break;
+
+      case 'argentinean-native-forests-loss':
+        layers.push(
+          new TreeCoverLossLayer({
+            id: layer.id,
+            visible: layer.visible || false,
+            order: layer?.order,
+            urlTemplate: layer.url,
+            view: view,
+            properties: {
+              baseRGB: [240, 250, 0],
+            },
+          })
+        );
+        break;
+
       default:
         console.log('no matching layer type: ', layer.id);
-      // throw new Error(errors.incorrectLayerConfig(layer.type));
     }
   });
   return layers;

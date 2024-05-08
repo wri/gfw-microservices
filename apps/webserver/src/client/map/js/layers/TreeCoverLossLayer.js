@@ -18,7 +18,7 @@ function clamp(value) {
   return Math.max(0, Math.min(255, value));
 }
 
-const populateIntensityBank = (baseRGB) => {
+const populateIntensityBank = (baseRGB = [220, 0, 185]) => {
   const [baseValue1, baseValue2, baseValue3] = baseRGB;
   const intensityBank = {};
   for (let z = 1; z < 21; z++) {
@@ -45,7 +45,7 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
   },
 
   initialize: function () {
-    this.intensityBank = populateIntensityBank(this.properties.baseRGB);
+    this.intensityBank = populateIntensityBank(this?.properties?.baseRGB);
   },
 
   getTileUrl: function (level, row, column) {

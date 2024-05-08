@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Req, Body, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Req, Body, Query } from '@nestjs/common';
 import {
   AlertsGenerateRequest,
   DeleteListRequest,
@@ -69,7 +69,7 @@ export class ListAnalysisController {
       listId,
     });
   }
-  @Delete(':listId')
+  @Post(':listId/delete')
   async deleteList(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest,

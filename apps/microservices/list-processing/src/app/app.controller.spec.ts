@@ -1,13 +1,26 @@
-import { LocationService } from '@wri-monorepos/geo';
-import { CopyOrMoveLargeListRequest, RequestTriggerProcessLargeList } from './../models/index';
-import { TestingModule } from '@nestjs/testing';
+import { GeoService, LocationService } from '@wri-monorepos/geo';
+import {
+  CopyOrMoveLargeListRequest,
+  DeleteListRequest,
+  RequestTriggerProcessLargeList,
+} from './../models/index';
+import { Test, TestingModule } from '@nestjs/testing';
 import fetch from 'node-fetch';
 import { AppController } from './app.controller';
 import * as fs from 'fs';
 import * as uniqId from 'uniqid';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppService } from './app.service';
+import { LargeListService } from '../services/largelist.service';
+import { ConfigModule } from '@nestjs/config';
+import { ListService } from '../services/list.service';
+import { INestApplication } from '@nestjs/common';
+import * as request from 'supertest';
+import { ClientStoreConnection } from '@wri-monorepos/sql';
 
 describe('AppController', () => {
-  let app: TestingModule;
+  let app: INestApplication;
+  let appService: AppService;
   const targetDatabase = 'DevCo'; // change if the database where you want to perform the test is different
 
   beforeEach((): void => {
@@ -24,6 +37,48 @@ describe('AppController', () => {
         TypeOrmModule.forRootAsync({ useClass: DatabaseService }),
       ],
     }).compile();*/
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        TypeOrmModule.forRoot({
+          name: 'default',
+          type: 'sqlite',
+          database: ':memory:',
+          synchronize: true,
+          logging: true,
+        }),
+        ConfigModule.forRoot({
+          envFilePath: ['.env', '.env.production'],
+          isGlobal: true,
+        }),
+      ],
+      controllers: [AppController],
+      providers: [
+        LargeListService,
+        LocationService,
+        GeoService,
+        ClientStoreConnection,
+        {
+          provide: ListService,
+          useValue: {
+            deleteList: jest.fn(() => {
+              'list deleted';
+            }),
+          },
+        },
+        {
+          provide: AppService,
+          useValue: {
+            deleteList: jest.fn(() => {
+              'list deleted';
+            }),
+          },
+        },
+      ],
+    }).compile();
+
+    appService = module.get<AppService>(AppService);
+    app = module.createNestApplication();
+    await app.init();
   });
 
   describe('Upload a single file with a presigned url', () => {
@@ -731,6 +786,56 @@ describe('AppController', () => {
         request.filters,
         request.srcListAnalysisTable
       );
+    });
+  });
+  describe('Delete list process', () => {
+    it('Should delete a list with POST Method', async () => {
+      const listId = 123;
+
+      const deleteBodyList: DeleteListRequest = {
+        userEmail: 'email@email.com',
+        organization_user_id: 0,
+        organizationDatabase: 'MyDb',
+      };
+
+      appService.deleteList = jest.fn().mockResolvedValue('list deleted');
+      const response = await request(app.getHttpServer())
+        .post(`/list/${listId}/delete`)
+        .send(deleteBodyList);
+
+      expect(response.status).toEqual(201);
+    });
+    it('Should return 404 when try to delete a list with DELETE Method', async () => {
+      const listId = 123;
+
+      const deleteBodyList: DeleteListRequest = {
+        userEmail: 'email@email.com',
+        organization_user_id: 0,
+        organizationDatabase: 'MyDb',
+      };
+
+      appService.deleteList = jest.fn().mockResolvedValue('list deleted');
+      const response = await request(app.getHttpServer())
+        .delete(`/list/${listId}/delete`)
+        .send(deleteBodyList);
+
+      expect(response.status).toEqual(404);
+    });
+    it('Should return 404 when try to delete a list with GET Method', async () => {
+      const listId = 123;
+
+      const deleteBodyList: DeleteListRequest = {
+        userEmail: 'email@email.com',
+        organization_user_id: 0,
+        organizationDatabase: 'MyDb',
+      };
+
+      appService.deleteList = jest.fn().mockResolvedValue('list deleted');
+      const response = await request(app.getHttpServer())
+        .get(`/list/${listId}/delete`)
+        .send(deleteBodyList);
+
+      expect(response.status).toEqual(404);
     });
   });
 

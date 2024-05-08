@@ -23,16 +23,18 @@
   }
 }
 
-.list-diagnostics-status-draft__dialog-actions {
-  display: flex;
-  width: 100%;
-  flex: 1;
-  padding: 0.5rem;
-}
+.list-diagnostics-status-draft {
+  &__dialog-actions {
+    display: flex;
+    width: 100%;
+    flex: 1;
+    padding: 0.5rem;
+  }
 
-.list-diagnostics-status-draft__dialog {
-  a {
-    color: #97bd3d;
-    text-decoration: underline;
+  &__dialog {
+    a {
+      color: #97bd3d;
+      text-decoration: underline;
+    }
   }
 }

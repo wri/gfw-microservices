@@ -279,7 +279,10 @@ export default class LocationList extends Component {
               <h1 className="dialog__title">{locationsPage.lists.rerunListDialog.title}</h1>
               <IconButton icon={<IconTimes />} onClick={this.handleRerunDialogState} size="large" />
             </div>
-            <div className="dialog__prompt">{locationsPage.lists.rerunListDialog.text}</div>
+            <div
+              className="dialog__prompt"
+              dangerouslySetInnerHTML={{ __html: locationsPage.lists.rerunListDialog.text }}
+            ></div>
           </Dialog>
         )}
         {showDownloadOpt && (

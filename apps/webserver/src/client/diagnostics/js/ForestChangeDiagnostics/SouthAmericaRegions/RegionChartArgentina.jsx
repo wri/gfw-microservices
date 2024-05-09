@@ -6,73 +6,45 @@ import DateRangeSlider from './DateRangeSlider';
 import BarChart from '../../common/BarChart';
 import PieChart from '../../common/PieChart';
 import ChartsSelectorArgentina from './ChartsSelectorArgentina';
-import getTreeCoverLossArgOtbnYearlyData from '../OtbnCharts/TreeCoverLossArgentinaOtbnYearly/getTreeCoverLossArgOtbnYearlyData';
 import DiagnosticsChartHeader from '../../common/DiagnosticsChartHeader';
 import { formatDecimals } from '../../../../common/js/utils/diagnostics.utils';
-import { chartDatasetConfigs } from './regions.constants';
+import { chartDatasetConfigs, regionConstants, otbnChartLabels } from './regions.constants';
 import { getBarChartData } from './getBarChartData';
 import { useQuery } from '../../../../common/js/hooks';
+import { getDataAndCheckIfAllYearsZero } from './barChart.utils';
 import '../../common/DiagnosticsChartContainer.scss';
 
 function RegionChartArgentina({ listId, data, fireDownload }) {
   const query = useQuery();
   const locationId = query.get('locationId');
   const {
-    argentinaOtbn,
     argentinaTreeCoverLoss,
     protectedAreas,
+    indigenousTerritories,
+    otbn,
+
     wdpaOverlapCountry,
     landmarkOverlapCountry,
-    indigenousTerritories,
   } = chartDatasetConfigs;
 
   const [chartsConfiguration, setChartsConfiguration] = useState([
-    argentinaOtbn,
     argentinaTreeCoverLoss,
     protectedAreas,
     indigenousTerritories,
+    otbn,
   ]);
 
   const [selectedOptionId, setSelectedOptionId] = useState(chartsConfiguration[0].id);
 
-  const [dateRange, setDateRange] = useState();
+  const [dateRange, setDateRange] = useState({
+    startYear: regionConstants.startYear,
+    endYear: regionConstants.endYear,
+  });
 
   const [argentinaPieChartsData, setArgentinaPieChartsData] = useState({});
-  const [otbnBarChartData, setOtbnBarChartData] = useState({});
-
-  const updateLoss = (optionId, totalLossByCategory, otbnTotalLoss) => {
-    setChartsConfiguration((prevOptions) => {
-      return prevOptions.map((option) => {
-        if (option.id === optionId) {
-          const updatedChartLabels = option.chartLabels.map((label) => {
-            return { ...label, totalLossByCategory: totalLossByCategory[label.id] };
-          });
-          return { ...option, chartLabels: updatedChartLabels, totalLoss: otbnTotalLoss };
-        }
-        return option;
-      });
-    });
-  };
 
   function handleDateRangeChange(newDateRange) {
     setDateRange(newDateRange);
-
-    // Call getTreeCoverLossArgOtbnYearlyData with the new date range
-    const {
-      totalLossByCategory,
-      otbnTotalLoss,
-      chartData: newOtbnBarChartData,
-    } = getTreeCoverLossArgOtbnYearlyData(
-      data,
-      newDateRange.startYear,
-      newDateRange.endYear,
-      chartsConfiguration[0].chartLabels[0].checked,
-      chartsConfiguration[0].chartLabels[1].checked,
-      chartsConfiguration[0].chartLabels[2].checked
-    );
-
-    updateLoss('otbnArgentina', totalLossByCategory, otbnTotalLoss);
-    setOtbnBarChartData(newOtbnBarChartData);
   }
 
   const updateCheckedLabels = (optionId, labelId, isChecked) => {
@@ -91,31 +63,14 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
         return option;
       });
 
-      // Call getTreeCoverLossArgOtbnYearlyData with the updated chart configuration
-      const {
-        totalLossByCategory,
-        otbnTotalLoss,
-        chartData: newOtbnBarChartData,
-      } = getTreeCoverLossArgOtbnYearlyData(
-        data,
-        dateRange.startYear,
-        dateRange.endYear,
-        updatedOptions[0].chartLabels[0].checked,
-        updatedOptions[0].chartLabels[1].checked,
-        updatedOptions[0].chartLabels[2].checked
-      );
-
-      updateLoss('otbnArgentina', totalLossByCategory, otbnTotalLoss);
-      setOtbnBarChartData(newOtbnBarChartData);
-
       return updatedOptions;
     });
   };
 
   useEffect(() => {
     handleDateRangeChange({
-      startYear: argentinaOtbn.startYear,
-      endYear: argentinaOtbn.endYear,
+      startYear: regionConstants.startYear,
+      endYear: regionConstants.endYear,
     });
   }, []);
 
@@ -128,6 +83,8 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
     countryGadm: 'ARG',
     category: ['WDPA', 'landmark', 'country', 'classified_region'],
   };
+
+  const [isAllDataEmpty, setIsAllDataEmpty] = useState(false);
 
   useEffect(() => {
     fetch(`/api/fcd?${new URLSearchParams(fcdParams).toString()}`, {
@@ -145,6 +102,11 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       .then((data) => {
         if (!data.WDPA?.error || !data.landmark?.error) {
           setArgentinaPieChartsData(data);
+
+          const isAllEmpty = chartsConfiguration.every((config) =>
+            config.chartLabels.every((label) => getDataAndCheckIfAllYearsZero(data, label.dataPath))
+          );
+          setIsAllDataEmpty(isAllEmpty);
         }
       })
       .catch((e) => {
@@ -156,47 +118,33 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
   const landmark = formatDecimals(argentinaPieChartsData.landmark);
 
   let barChartData = [];
-  switch (selectedOptionId) {
-    case argentinaOtbn.id:
-      barChartData = otbnBarChartData;
-      break;
-    case argentinaTreeCoverLoss.id:
-      barChartData = getBarChartData(
-        argentinaPieChartsData,
-        dateRange,
-        chartsConfiguration[1].chartLabels
-      );
-      break;
-    case protectedAreas.id:
-      barChartData = getBarChartData(
-        argentinaPieChartsData,
-        dateRange,
-        chartsConfiguration[2].chartLabels
-      );
-      break;
-    case indigenousTerritories.id:
-      barChartData = getBarChartData(
-        argentinaPieChartsData,
-        dateRange,
-        chartsConfiguration[3].chartLabels
-      );
-      break;
+
+  if (!isAllDataEmpty) {
+    barChartData = getBarChartData(
+      argentinaPieChartsData,
+      dateRange,
+      chartsConfiguration.find((config) => config.id === selectedOptionId).chartLabels
+    );
   }
 
   return (
     <>
       <DiagnosticsChartHeader
-        title={argentinaOtbn.chartsSelectorTitle}
-        informationBubbleId={argentinaOtbn.informationBubbleId}
+        title={regionConstants.chartsSelectorTitle}
+        informationBubbleId={regionConstants.informationBubbleId}
         fireDownload={fireDownload}
-        downloadId={argentinaOtbn.downloadId}
+        downloadId={regionConstants.downloadId}
       />
       <Card>
         <CardContent>
           <div className="diagnostics-chart-container">
             <div className="diagnostics-chart-container__chart">
-              <BarChart data={barChartData} />
-              {selectedOptionId === argentinaTreeCoverLoss.id && (
+              {isAllDataEmpty ? (
+                <div>No data available for any chart selection.</div>
+              ) : (
+                <BarChart data={barChartData} />
+              )}
+              {selectedOptionId === argentinaTreeCoverLoss.id && !isAllDataEmpty && (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <InfoIcon color="gray" />
                   Bars with lower opacity indicate that the year is approximate.
@@ -216,18 +164,18 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       </Card>
 
       <DateRangeSlider
-        id={argentinaOtbn.id}
+        id={regionConstants.id}
         dateRange={dateRange}
         setDateRange={handleDateRangeChange}
-        startYear={argentinaOtbn.startYear}
-        endYear={argentinaOtbn.endYear}
+        startYear={regionConstants.startYear}
+        endYear={regionConstants.endYear}
       />
 
       <PieChart
         data={argentinaOtbnAreaData}
-        chartLabels={argentinaOtbn.chartLabels}
-        title={argentinaOtbn.diagnosticTitle}
-        informationBubbleId={argentinaOtbn.informationBubbleId}
+        chartLabels={chartDatasetConfigs.otbn.chartLabels}
+        title={regionConstants.diagnosticTitle}
+        informationBubbleId={regionConstants.informationBubbleId}
       />
 
       {WDPA?.overlap && (

@@ -106,7 +106,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
           const allEmpty = chartsConfiguration.every((config) =>
             config.chartLabels.every((label) => getDataAndCheckIfAllYearsZero(data, label.dataPath))
           );
-          setAllDataEmpty(allEmpty);
+          setIsAllDataEmpty(isAllEmpty);
         }
       })
       .catch((e) => {

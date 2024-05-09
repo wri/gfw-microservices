@@ -103,7 +103,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
         if (!data.WDPA?.error || !data.landmark?.error) {
           setArgentinaPieChartsData(data);
 
-          const allEmpty = chartsConfiguration.every((config) =>
+          const isAllEmpty = chartsConfiguration.every((config) =>
             config.chartLabels.every((label) => getDataAndCheckIfAllYearsZero(data, label.dataPath))
           );
           setIsAllDataEmpty(isAllEmpty);

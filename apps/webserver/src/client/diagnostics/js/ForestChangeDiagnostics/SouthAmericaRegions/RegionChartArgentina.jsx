@@ -119,7 +119,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
 
   let barChartData = [];
 
-  if (!allDataEmpty) {
+  if (!isAllDataEmpty) {
     barChartData = getBarChartData(
       argentinaPieChartsData,
       dateRange,

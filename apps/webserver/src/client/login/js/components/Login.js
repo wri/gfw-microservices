@@ -24,7 +24,7 @@ import photoMoray from '../../images/headshot_moray_mcleish.jpg';
 import photoPlaceholder from '../../images/testimonial-placeholder.svg';
 import photoProducer from '../../images/producer.jpg';
 import photoTrader from '../../images/trader.jpg';
-
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 export default class Login extends Component {
@@ -486,7 +486,7 @@ export default class Login extends Component {
                 target="_blank"
                 className="button button--secondary"
               >
-                {loginPage.moreInfo.subscribe.buttonText}
+                <LinkedInIcon /> {loginPage.moreInfo.subscribe.buttonText}
               </a>
             </div>
           </div>

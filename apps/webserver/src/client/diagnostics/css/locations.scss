@@ -220,7 +220,7 @@
   .locations-list__failed {
     display: flex;
     justify-content: flex-end;
-    min-width: 100px;
+    min-width: 65px;
     align-content: center;
     align-items: center;
     gap: 5px;
@@ -285,6 +285,7 @@
   &__update-button,
   &__submit-button {
     margin-right: $space-normal;
+    white-space: nowrap;
   }
 
   &__draft-button {

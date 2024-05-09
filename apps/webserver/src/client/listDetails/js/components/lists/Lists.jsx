@@ -2460,7 +2460,7 @@ export default class Lists extends Component {
                             className="RerunList__button"
                             onClick={this.handleRerunDialogState}
                             icon={<IconRerun height="14px" />}
-                            label="Update"
+                            label="Update Analysis"
                           />
                           <Dialog
                             title={locationsPage.lists.confirmListUpdate}

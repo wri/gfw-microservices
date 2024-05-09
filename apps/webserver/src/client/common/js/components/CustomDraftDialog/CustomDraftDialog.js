@@ -12,11 +12,11 @@ export default function CustomDraftDialog({
 }) {
   return (
     <Dialog
-      paperClassName="ListDiagnosticStatusDraft__dialog dialog-paper"
+      paperClassName="list-diagnostics-status-draft__dialog dialog-paper"
       open={open}
       title={dialogTitle}
       actions={[
-        <div className="ListDiagnosticStatusDraft__dialog-actions">
+        <div className="list-diagnostics-status-draft__dialog-actions">
           <Button
             className="dialog__primary-action"
             variant="primary"
@@ -34,7 +34,7 @@ export default function CustomDraftDialog({
       ]}
       onRequestClose={closeAction}
     >
-      {dialogMessage}
+      <div dangerouslySetInnerHTML={{ __html: dialogMessage }}></div>
     </Dialog>
   );
 }

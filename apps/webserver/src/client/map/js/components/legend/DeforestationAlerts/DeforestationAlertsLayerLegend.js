@@ -6,7 +6,7 @@ import {
 } from '../../../actions/mapActions';
 import IntegratedAlertsMapLegends from './IntegratedAlertsMapLegends';
 import DeforestationAlertsMapLegends from './DeforestationAlertsMapLegends';
-import { proLayers } from '../../../../../common/js/config';
+import { proLayers } from '../../../../../common/js/proLayers.config';
 import { deforestationAlertsLayerToCoverageMap } from './deforestationAlerts.constants';
 const { integratedDeforestationAlertsID } = proLayers;
 

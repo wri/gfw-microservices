@@ -1,10 +1,9 @@
-/* eslint-disable object-shorthand */
-
 // Utils
 import utils from '../../../map/js/utils/AppUtils';
 
 // Config
-import { mapPage, proLayers } from '../config';
+import { mapLayersMenu } from '../mapLayersMenu.config';
+import { proLayers } from '../proLayers.config';
 
 /**
  * @description - Get construct Layer Object
@@ -13,7 +12,7 @@ import { mapPage, proLayers } from '../config';
  * @param {Object} layer - Layer object
  * @return {Object} - Construct Layer Object
  */
-/* eslint-disable-next-line import/prefer-default-export */
+
 export const constructLayerObject = (visibleLayers, layer) => {
   let urlSegments;
   let layerUrl;
@@ -80,6 +79,7 @@ export const constructLayerObject = (visibleLayers, layer) => {
       treeCoverGainID,
       treeCoverID,
       treeCoverLossID,
+      argentineanNativeForestsLoss,
     } = proLayers;
 
     switch (layerName) {
@@ -125,13 +125,16 @@ export const constructLayerObject = (visibleLayers, layer) => {
       case indonesiaLandCover:
         type = 'indonesia-land-cover';
         break;
+      case argentineanNativeForestsLoss:
+        type = 'argentinean-native-forests-loss';
+        break;
       default:
         type = 'tileLayer';
         break;
     }
   }
 
-  const layerConf = utils.getObject(mapPage.layers, 'id', layerName);
+  const layerConf = utils.getObject(mapLayersMenu, 'id', layerName);
   if (layerConf && type) {
     layerObject = {
       url: layerUrl,

@@ -269,6 +269,10 @@ $button-height: 35px;
   color: $gfw-x-dark-gray;
   box-shadow: none !important;
 
+  &:hover {
+    text-decoration: none;
+  }
+
   button {
     background-color: $gfw-light-gray !important;
 
@@ -293,6 +297,12 @@ $button-height: 35px;
         opacity: 0.5 !important;
       }
     }
+  }
+
+  svg {
+    vertical-align: middle;
+    width: 0.8em;
+    margin-top: -2px;
   }
 
   // Sizes

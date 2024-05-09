@@ -3,7 +3,7 @@ import { toggleLayer } from '../../actions/mapActions';
 import AppBar from 'material-ui/AppBar';
 import LayerCheckbox from './LayerCheckbox';
 import React, { Component } from 'react';
-import { proLayers } from '../../../../common/js/config';
+import { proLayers } from '../../../../common/js/proLayers.config';
 import { deforestationAlertsGeographicCoverageIds } from '../legend/DeforestationAlerts/deforestationAlerts.constants';
 import '../../../css/map.scss';
 

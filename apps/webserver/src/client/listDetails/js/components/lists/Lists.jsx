@@ -31,7 +31,9 @@ import {
   saveGfwListLocations,
 } from '../../utils/moveLocations';
 import store from '../../../../locations/js/store';
-import { locationsPage, proLayers, userAccessLevel } from '../../../../common/js/config';
+import { locationsPage, userAccessLevel } from '../../../../common/js/config';
+import { proLayers } from '../../../../common/js/proLayers.config';
+
 import {
   addList,
   changeListView,
@@ -2537,8 +2539,8 @@ export default class Lists extends Component {
                                 event_category: 'Submit',
                                 event_label: 'User submits a list from listview page',
                               });
-                              // TODO: Get details what to do after list is submitted
                               this.setState({ isListSubmittedForAnalysis: true });
+                              window.location = '/locations';
                             })
                             .catch((error) => {
                               // TODO: Get details what to do after list submission fails

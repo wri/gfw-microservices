@@ -77,4 +77,24 @@ describe('RequestPreSignedURLSchema', () => {
     expect(validationResult.success).toBe(true);
     expect(validationResult.data).toEqual(requestBodyWithoutReplaceFile);
   });
+
+  [
+    'text/csv',
+    'application/x-zip-compressed',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  ].forEach((eapiContentType) => {
+    it(`should allow contentType ${eapiContentType} from EAPI prepare_upload`, () => {
+      const requestBody: RequestPreSignedURLModel = {
+        key: 'example.zip',
+        contentType: eapiContentType,
+      };
+
+      const validationResult = RequestPreSignedURLSchema.safeParse(
+        requestBody
+      ) as SafeParseSuccess<RequestPreSignedURLModel>;
+
+      expect(validationResult.success).toBe(true);
+      expect(validationResult.data).toEqual(requestBody);
+    });
+  });
 });

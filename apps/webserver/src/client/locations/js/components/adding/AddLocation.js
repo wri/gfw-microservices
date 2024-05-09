@@ -25,7 +25,8 @@ import LinkButton from '../../../../common/js/components/LinkButton';
 import SaveAsDraftNote from '../../../../common/js/components/SaveAsDraft/SaveAsDraftNote';
 import SaveAsDraftButtonWithDialog from '../../../../common/js/components/SaveAsDraft/SaveAsDraftButtonWithDialog';
 import { resetScroll } from '../../utils/scroll.utils';
-import { locationsPage, proLayers } from '../../../../common/js/config';
+import { locationsPage } from '../../../../common/js/config';
+import { proLayers } from '../../../../common/js/proLayers.config';
 import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 import store from '../../store';
@@ -37,7 +38,6 @@ import {
   saveAsDraftListConfig,
   saveListConfig,
 } from '../../../../../config/config/locations.config';
-import featureFlags from '../../../../../utils/general.utils';
 import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
@@ -61,10 +61,6 @@ muiTheme.fontFamily = 'Fira Sans, sans-serif';
 
 let originalState;
 
-const navigateToFeeInformationPage = () => {
-  window.location.href = '/about#fees';
-};
-
 const DIALOG__SUBMIT_TITLE = 'Confirm Submission';
 const DialogSubmitContent = ({ listName = 'Create New List' }) => {
   const listConditionalText =
@@ -80,14 +76,9 @@ const DialogSubmitContent = ({ listName = 'Create New List' }) => {
     <p>
       {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
       running analysis counts towards your account usage limits. See more information{' '}
-      <LinkButton
-        target="_blank"
-        onClick={() => {
-          navigateToFeeInformationPage();
-        }}
-      >
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
         here
-      </LinkButton>
+      </a>
       .
     </p>
   );
@@ -110,15 +101,11 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
   return (
     <p>
       {listConditionalText} in draft state until you choose to run analysis on it. Note that running
-      analysis counts towards your account usage limits. See more information about usage & fees{' '}
-      <LinkButton
-        target="_blank"
-        onClick={() => {
-          navigateToFeeInformationPage();
-        }}
-      >
+      analysis counts towards your account usage limits. See more information{' '}
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#4a4a4a' }}>
         here
-      </LinkButton>
+      </a>
+      .
     </p>
   );
 };
@@ -1922,10 +1909,6 @@ export default class AddLocation extends Component {
       listPlaceholderValue = 'Recent Other';
     }
 
-    // TODO: this is unused, can we delete?
-    const dropdownOptionsInvestmentCommodity = buildDropdownOptions(
-      locationsPage.add.dropdownOptions
-    );
     const dialogContent =
       typeof dialogMessage === 'string' || React.isValidElement(dialogMessage)
         ? [dialogMessage]

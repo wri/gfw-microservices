@@ -258,7 +258,7 @@ Run nx g @nrwl/nest:lib my-lib to generate a library.
 
 Run `nx serve my-app` for a dev server. Navigate to http://localhost:3333/. The app will automatically reload if you change any of the source files.
 
-
 ### Debugging in VS Code
+
 - To debug `Webserver` you need to copy `websocketAddress` value from terminal and paste in on launch.json.
 - For Microservices though, you don't need `websocketAddress`. You just need to have the `.env` file in the root of the microservice you want to debug.

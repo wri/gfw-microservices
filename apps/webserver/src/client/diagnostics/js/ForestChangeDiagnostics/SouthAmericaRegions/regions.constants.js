@@ -14,8 +14,19 @@ export const regionsTabs = [
   },
 ];
 
+export const regionConstants = {
+  id: 'otbnArgentina',
+  chartsSelectorTitle: 'Tree Cover Loss on Argentina OTBN',
+  informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
+  downloadId: 'southAmericaTCL',
+  diagnosticTitle: 'OTBN Percent Overlap',
+  startYear: 2008,
+  endYear: 2023,
+};
+
 export const chartDatasetConfigs = {
   argentinaOtbn: {
+    // delete when isArgentinaDeforestationAvailable feature flag is deleted
     id: 'otbnArgentina',
     chartsSelectorTitle: 'Tree Cover Loss on Argentina OTBN',
     dataCy: 'tree-cover-loss-OTBN',
@@ -31,11 +42,40 @@ export const chartDatasetConfigs = {
     startYear: 2008,
     endYear: 2023,
   },
+
+  otbn: {
+    id: 'otbn',
+    chartsSelectorTitle: 'Argentina OTBN',
+    dataCy: 'annual-loss-OTBN',
+    informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
+    chartLabels: [
+      {
+        id: 'Category I',
+        dataPath: 'classified_region.country_specific_deforestation.Category I',
+        legend: 'Category I',
+        color: 'rgb(238,37,33)',
+        checked: true,
+      },
+      {
+        id: 'Category II',
+        dataPath: 'classified_region.country_specific_deforestation.Category II',
+        legend: 'Category II',
+        color: 'rgb(255,204,51)',
+        checked: true,
+      },
+      {
+        id: 'Category III',
+        dataPath: 'classified_region.country_specific_deforestation.Category III',
+        legend: 'Category III',
+        color: 'rgb(151,189,61)',
+        checked: true,
+      },
+    ],
+  },
   argentinaTreeCoverLoss: {
     id: 'argentinaTreeCoverLoss',
     dataCy: 'argentina-tree-cover-loss',
     chartsSelectorTitle: 'Tree cover loss',
-    totalLoss: null,
     chartLabels: [
       {
         id: 'country specific deforestation',
@@ -43,7 +83,6 @@ export const chartDatasetConfigs = {
         legend: 'argentina deforestation',
         color: 'rgb(34,153,102)',
         checked: true,
-        totalLossByCategory: null,
       },
       {
         id: 'hansen tree cover loss',
@@ -51,7 +90,6 @@ export const chartDatasetConfigs = {
         legend: 'tree cover loss',
         color: 'rgb(239,102,154)',
         checked: true,
-        totalLossByCategory: null,
       },
     ],
   },
@@ -59,7 +97,6 @@ export const chartDatasetConfigs = {
     id: 'protectedAreas',
     dataCy: 'argentina-protected-areas',
     chartsSelectorTitle: 'Protected Areas',
-    totalLoss: null,
     chartLabels: [
       {
         id: 'fully restrictive',
@@ -67,7 +104,6 @@ export const chartDatasetConfigs = {
         legend: 'fully restrictive',
         color: 'rgb(146,37,0)',
         checked: true,
-        totalLossByCategory: null,
       },
       {
         id: 'less restricted',
@@ -75,7 +111,6 @@ export const chartDatasetConfigs = {
         legend: 'less restricted',
         color: 'rgb(255,64,0)',
         checked: true,
-        totalLossByCategory: null,
       },
     ],
   },
@@ -84,7 +119,6 @@ export const chartDatasetConfigs = {
     id: 'indigenousTerritories',
     dataCy: 'argentina-indigenous-territories',
     chartsSelectorTitle: 'Indigenous Territories',
-    totalLoss: null,
     chartLabels: [
       {
         id: 'Indigenous Territories',
@@ -92,7 +126,6 @@ export const chartDatasetConfigs = {
         legend: 'Indigenous Territories',
         color: 'rgb(146,37,100)',
         checked: true,
-        totalLossByCategory: null,
       },
     ],
   },

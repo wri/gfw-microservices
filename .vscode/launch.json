@@ -11,7 +11,7 @@
       "websocketAddress": ""
     },
     {
-      "name": "Externalapi",
+      "name": "External API",
       "request": "launch",
       "type": "node",
       "runtimeExecutable": "npx",
@@ -20,7 +20,7 @@
       "cwd": "${workspaceFolder}/apps/microservices/externalapi"
     },
     {
-      "name": "Listprocessing",
+      "name": "List processing",
       "request": "launch",
       "type": "node",
       "runtimeExecutable": "npx",

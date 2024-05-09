@@ -153,27 +153,32 @@ export class ListAnalysisService {
     fileType,
   }: PrepareUploadRequestSchema & { organizationId: number; organization_user_id: number }) {
     const fileKey = generateRandomFilename(fileType);
-    const presignedURLResponse = await axios.post<{
-      url: string;
-      keyFile: string;
-      fileS3Route: string;
-    }>(`${this.LLP_BASE_URL}/api/create-presigned-url`, {
-      key: fileKey,
-      contentType: contentType[fileType],
-    });
-    const { url, keyFile } = presignedURLResponse.data;
+    try {
+      const presignedURLResponse = await axios.post<{
+        url: string;
+        keyFile: string;
+        fileS3Route: string;
+      }>(`${this.LLP_BASE_URL}/api/create-presigned-url`, {
+        key: fileKey,
+        contentType: contentType[fileType],
+      });
+      const { url, keyFile } = presignedURLResponse.data;
 
-    const connection = await this.getOrganizationConnection(organizationId);
-    const externalUploadRepository = connection.getRepository(ExternalUpload);
+      const connection = await this.getOrganizationConnection(organizationId);
+      const externalUploadRepository = connection.getRepository(ExternalUpload);
 
-    const externalUpload = new ExternalUpload();
-    externalUpload.userId = organization_user_id;
-    externalUpload.uploadKeyFile = keyFile;
-    externalUpload.uploadUrl = url;
-    externalUpload.uploadDateTime = new Date();
+      const externalUpload = new ExternalUpload();
+      externalUpload.userId = organization_user_id;
+      externalUpload.uploadKeyFile = keyFile;
+      externalUpload.uploadUrl = url;
+      externalUpload.uploadDateTime = new Date();
 
-    const newExternalUploadObject = await externalUploadRepository.save(externalUpload);
-    return transformExternalUpload(newExternalUploadObject);
+      const newExternalUploadObject = await externalUploadRepository.save(externalUpload);
+      return transformExternalUpload(newExternalUploadObject);
+    } catch (error) {
+      this.logger.error('prepareUpload error', error, error?.response?.data);
+      throw error;
+    }
   }
 
   private async getOrganizationConnection(organizationId: number) {
@@ -338,24 +343,25 @@ export class ListAnalysisService {
       if (listAnalysisStatus) {
         const user = await this.userService.findUser(organizationId, userEmail);
 
-        const URL_DELETE_LIST = `${this.LLP_BASE_URL}/api/delete/list/${listId}`;
-
-        const result = await axios.delete(URL_DELETE_LIST, {
-          data: {
+        const result = await axios.post(
+          `${this.LLP_BASE_URL}/api/list/${listId}/delete`,
+          {
             organization_user_id: user.organization_user_id,
             userEmail: userEmail,
             organizationDatabase: connection.options.database,
           },
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
         return !!result;
       } else {
         throw new NotFoundException();
       }
     } catch (error) {
-      this.logger.warn(error);
+      this.logger.warn('DeleteList failed', error);
       if (error instanceof NotFoundException) {
         throw error;
       } else {

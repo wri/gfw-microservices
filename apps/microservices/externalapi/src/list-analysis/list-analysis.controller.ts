@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Req, Body, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Param, Req, Body, Query } from '@nestjs/common';
 import {
   AlertsGenerateRequest,
   DeleteListRequest,
@@ -22,12 +22,13 @@ import {
 import { requestSchema, RequestSchema } from '../types/request-schema';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
 import { analysisIdSchema } from '../types/analysis-id';
-import { listInfoResponse } from './list-upload-new.dto';
+import { ListInfoResponse } from './list-upload-new.dto';
 import {
   UnauthorizedResponse,
   NotFoundResponse,
   ForbiddenResponse,
   BadRequestResponse,
+  ErroResponseWithErroMessage,
 } from './dtos/apiResponse';
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
@@ -41,7 +42,7 @@ export class ListAnalysisController {
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
   @Get(':listId/analysis/:analysisId/status')
   async getAnalysisStatus(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -63,6 +64,7 @@ export class ListAnalysisController {
 
     return analysisStatus;
   }
+  @ApiResponse({ status: 200, type: ListAnalysisResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
@@ -89,11 +91,12 @@ export class ListAnalysisController {
       listId,
     });
   }
+  @ApiResponse({ status: 200, description: 'true' })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: NotFoundResponse })
-  @Delete(':listId')
+  @Post(':listId/delete')
   async deleteList(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest,
@@ -104,17 +107,19 @@ export class ListAnalysisController {
       user: { organizationId },
     } = request;
     const { userEmail } = deleteBodyList;
+
     return await this.listAnalysisService.deleteList(listId, organizationId, userEmail);
   }
+  @ApiResponse({ status: 200, type: ListInfoResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
   @Get(':listId')
   async getListInfo(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Req() request: RequestSchema
-  ): Promise<listInfoResponse> {
+  ): Promise<ListInfoResponse> {
     const {
       user: { organizationId },
     } = request;
@@ -126,9 +131,13 @@ export class ListAnalysisController {
   @ApiResponse({
     description: 'Paginated info List',
     status: 200,
-    type: listInfoResponse,
+    type: ListInfoResponse,
     isArray: true,
   })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
   async getPaginatedLists(
     @Query('pageSize', new ZodValidationPipe(pageSizeSchema)) pageSize: number,
     @Query('pageNum', new ZodValidationPipe(numPageSchema)) pageNum: number,

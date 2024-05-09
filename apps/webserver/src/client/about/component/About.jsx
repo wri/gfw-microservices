@@ -1,12 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { aboutPage } from '../../common/js/config';
 import Page from '../../common/js/components/Page';
+import { useQuery } from '../../common/js/hooks';
+import { useLocation, useHistory } from 'react-router-dom';
 import './About.scss';
 
 const SECTION_LIST = ['About GFW Pro', 'Fees', 'History', 'Tutorials'];
 
 export default function About() {
-  const [sectionOpen, setSectionOpen] = useState('About GFW Pro');
+  const query = useQuery();
+  const location = useLocation();
+  const history = useHistory();
+  const [sectionOpen, setSectionOpen] = useState(query.get('section') || 'About GFW Pro');
+
+  useEffect(() => {
+    const sectionParam = new URLSearchParams(location.search).get('section');
+    if (sectionParam && SECTION_LIST.includes(sectionParam)) {
+      setSectionOpen(sectionParam);
+    }
+  }, [location.search]);
+
+  const handleTabClick = (section) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('section', section);
+    history.replace({ search: searchParams.toString() });
+  };
 
   return (
     <Page>
@@ -22,10 +40,10 @@ export default function About() {
         <div className="page-body">
           <aside className="page-body__sidebar">
             <ul>
-              {SECTION_LIST.map((listItem) => (
-                <li key={listItem} className={sectionOpen === listItem ? 'selected' : null}>
-                  <button type="button" onClick={() => setSectionOpen(listItem)}>
-                    {listItem}
+              {SECTION_LIST.map((section) => (
+                <li key={section} className={sectionOpen === section ? 'selected' : null}>
+                  <button type="button" onClick={() => handleTabClick(section)}>
+                    {section}
                   </button>
                 </li>
               ))}

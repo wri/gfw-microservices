@@ -9,16 +9,7 @@ import {
   getNumberOfPagesPaginatedListDataRequest,
   getPaginatedListDataRequest,
 } from './../models/index';
-import {
-  Controller,
-  Post,
-  Get,
-  Body,
-  Query,
-  BadRequestException,
-  Delete,
-  Param,
-} from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, BadRequestException, Param } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { LocationService } from '@wri-monorepos/geo';
@@ -26,6 +17,13 @@ import { ListService } from '../services/list.service';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { deleteListBodySchema } from './types/deleteListRequestSchema';
 import { RequestPreSignedURLSchema } from './validators';
+import {
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { BadRequestExceptionResponse } from './types/apiResponses';
 
 /*
   This controller will be deprecated in the future
@@ -168,7 +166,11 @@ export class AppController {
   getLatestCommit(): string {
     return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;
   }
-  @Delete('/delete/list/:listId')
+  @ApiResponse({ status: 200, type: String })
+  @ApiNotFoundResponse({ status: 404, type: BadRequestExceptionResponse })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @Post('/list/:listId/delete')
   deleteList(
     @Param('listId') listId: number,
     @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest

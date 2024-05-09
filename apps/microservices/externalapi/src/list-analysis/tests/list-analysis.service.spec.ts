@@ -99,7 +99,7 @@ describe('ListAnalysisService', () => {
     userService.findUser = jest
       .fn()
       .mockResolvedValue({ id: 1, organization_user_id: 1, userEmail: userEmail });
-    axios.delete = jest.fn().mockResolvedValue({ status: 200 });
+    axios.post = jest.fn().mockResolvedValue({ status: 200 });
     const result = await service.deleteList(organizationId, listId, userEmail);
     expect(result).toEqual(true);
   });

@@ -13,8 +13,8 @@ import { z } from 'zod';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
 import {
   BadRequestResponse,
+  ErroResponseWithErroMessage,
   ForbiddenResponse,
-  NotFoundResponse,
   UnauthorizedResponse,
 } from '../list-analysis/dtos/apiResponse';
 
@@ -28,11 +28,11 @@ export class APIKeyController {
   constructor(private readonly tokenService: TokenService) {}
 
   //Get all tokens for one organization
-  @ApiResponse({ type: [ViewApiKeyResponse] })
+  @ApiResponse({ status: 200, type: [ViewApiKeyResponse] })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
   @Get('/:organizationId')
   async getTokens(@Param('organizationId') orgId: string): Promise<ViewApiKeyResponse[]> {
     const organizationId = z.coerce.number().parse(orgId);
@@ -43,11 +43,11 @@ export class APIKeyController {
   }
 
   // Create a new Token
-  @ApiResponse({ type: ViewApiKeyResponse })
+  @ApiResponse({ status: 200, type: ViewApiKeyResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
   @Post()
   @UsePipes(new ZodValidationPipe(apiKeyRequestSchema))
   token(@Body() apiKeyRequest: CreateApiKeyRequest) {
@@ -60,7 +60,8 @@ export class APIKeyController {
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiResponse({ status: 204, type: String })
   @Delete('/:organizationId/:tokenId')
   deleteToken(@Param('organizationId') orgId: string, @Param('tokenId') tokenId: string) {
     const organizationId = z.coerce.number().parse(orgId);

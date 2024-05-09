@@ -109,11 +109,11 @@ export const convertURL = 'https://production-api.globalforestwatch.org/v2/ogr/c
 export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
 export const latestTreeCoverLossYearForTclDataInMap = 2023;
-export const latestTreeCoverLossYearCommodityRisk = 2023;
+export const latestTreeCoverLossYearCommodityRisk = 2022;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
 export const latestTreeCoverLossYearForTclDataInAnalyses = 2023;
 
-export const soyPlantedYearsRange = [2001, 2023];
+export const soyPlantedYearsRange = [2001, 2022];
 
 export const treeCoverLossTilesUrl =
   'https://tiles.globalforestwatch.org/umd_tree_cover_loss/v1.11/tcd_{thresh}/{z}/{x}/{y}.png';
@@ -1620,6 +1620,7 @@ export const locationsPage = {
     },
     stepFourTitle: 'Save',
     submit: 'Submit',
+    submitForExisting: 'Submit For Analysis',
     successBanner:
       'New locations have been added. You will receive an email once analysis of the locations is complete, and can reload the page to access the data.',
     list: 'List',

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import CardContent from '@mui/material/CardContent';
-import DateRangeSilder from './DateRangeSlider';
+import DateRangeSlider from './DateRangeSlider';
 import BarChart from '../../common/BarChart';
 import PieChart from '../../common/PieChart';
 import ChartsSelectorArgentina from './ChartsSelectorArgentina';
@@ -215,7 +215,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
         </CardContent>
       </Card>
 
-      <DateRangeSilder
+      <DateRangeSlider
         id={argentinaOtbn.id}
         dateRange={dateRange}
         setDateRange={handleDateRangeChange}

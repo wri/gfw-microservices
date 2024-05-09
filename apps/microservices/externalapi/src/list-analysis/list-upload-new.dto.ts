@@ -53,7 +53,7 @@ export class PrepareUploadRequest {
   fileType: string;
 }
 
-export class listInfoResponse {
+export class ListInfoResponse {
   @ApiProperty()
   listId: number;
   @ApiProperty()

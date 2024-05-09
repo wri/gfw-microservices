@@ -84,7 +84,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
     category: ['WDPA', 'landmark', 'country', 'classified_region'],
   };
 
-  const [allDataEmpty, setAllDataEmpty] = useState(false);
+  const [isAllDataEmpty, setIsAllDataEmpty] = useState(false);
 
   useEffect(() => {
     fetch(`/api/fcd?${new URLSearchParams(fcdParams).toString()}`, {

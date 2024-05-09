@@ -139,12 +139,12 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
         <CardContent>
           <div className="diagnostics-chart-container">
             <div className="diagnostics-chart-container__chart">
-              {allDataEmpty ? (
+              {isAllDataEmpty ? (
                 <div>No data available for any chart selection.</div>
               ) : (
                 <BarChart data={barChartData} />
               )}
-              {selectedOptionId === argentinaTreeCoverLoss.id && !allDataEmpty && (
+              {selectedOptionId === argentinaTreeCoverLoss.id && !isAllDataEmpty && (
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <InfoIcon color="gray" />
                   Bars with lower opacity indicate that the year is approximate.

@@ -80,6 +80,11 @@
   &__prompt {
     @include text(300);
     padding-top: $space-normal;
+
+    a {
+      color: #97bd3d;
+      text-decoration: underline;
+    }
   }
 
   &__body {

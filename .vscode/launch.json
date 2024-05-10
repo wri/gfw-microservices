@@ -5,10 +5,28 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Webserver",
       "type": "node",
       "request": "attach",
-      "name": "Debug for Tasks MS",
-      "websocketAddress": "ws://localhost:9229/80250ee4-1323-49c1-abca-29701fe095f9"
+      "websocketAddress": ""
+    },
+    {
+      "name": "External API",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "serve", "microservices-externalapi"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/apps/microservices/externalapi"
+    },
+    {
+      "name": "List processing",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "serve", "microservices-list-processing"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/apps/microservices/list-processing"
     }
   ]
 }

@@ -217,9 +217,9 @@ describe('ListAnalysisService', () => {
       listId: listId.toString(),
       status: 'Invalid Status',
       errorsDetails: [],
-      resultUrl: 'https://example.com/results',
-      creationDate: new Date().toLocaleDateString('en-US'),
-      expirationDate: new Date('11-28-2999 02:00:22.895'),
+      resultUrl: null,
+      creationDate: null,
+      expirationDate: null,
     };
     const expectedRes = {
       listId: listId.toString(),
@@ -245,11 +245,6 @@ describe('ListAnalysisService', () => {
     });
 
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
-
-    expect(result.listId).toEqual(expectedResult.listId);
-    expect(result.errorsDetails).toEqual(expectedResult.errorsDetails);
-    expect(result.resultUrl).toEqual(null);
-    expect(result.creationDate).toEqual(null);
-    expect(result.expirationDate).toEqual(null);
+    expect(result).toEqual(expectedResult);
   });
 });

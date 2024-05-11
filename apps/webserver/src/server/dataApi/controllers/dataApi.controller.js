@@ -74,7 +74,6 @@ export const getMetadataTaskData = (req, res) => {
   const config = {
     method: 'get',
     url: `${GFW_API_URL__GFW_METADATA}/${metadataID}`,
-    headers: HEADERS_API_KEY,
   };
 
   axios(config)
@@ -482,7 +481,6 @@ export const analysisAdminRegion = (req, res) => {
   const config = {
     method: 'get',
     url: `${GFW_API_URL__GFW_GEOSTORE}/admin/${admin}/${region}?thresh=${thresh}`,
-    headers: HEADERS_API_KEY,
   };
 
   axios(config)

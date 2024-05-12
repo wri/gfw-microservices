@@ -102,7 +102,7 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
     <p>
       {listConditionalText} in draft state until you choose to run analysis on it. Note that running
       analysis counts towards your account usage limits. See more information{' '}
-      <a href="/about?section=Fees" target="_blank" style={{ color: '#4a4a4a' }}>
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
         here
       </a>
       .

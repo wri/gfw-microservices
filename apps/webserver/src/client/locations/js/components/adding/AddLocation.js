@@ -19,7 +19,6 @@ import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import httpRequest from '../../../../common/js/utils/httpRequest';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import SaveAsDraftNote from '../../../../common/js/components/SaveAsDraft/SaveAsDraftNote';

@@ -183,7 +183,7 @@ describe('ListAnalysisService', () => {
       creationDate: new Date().toLocaleDateString('en-US'),
       expirationDate: new Date('11-28-2999 02:00:22.895'),
     };
-    const expectedRes = {
+    const mockListsAnalysisStatus = {
       listId: listId.toString(),
       status: 'Completed',
       errorInfo: '',
@@ -193,7 +193,7 @@ describe('ListAnalysisService', () => {
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
-        findOne: jest.fn().mockReturnValue(expectedRes),
+        findOne: jest.fn().mockReturnValue(mockListsAnalysisStatus),
       }),
     });
 
@@ -221,7 +221,7 @@ describe('ListAnalysisService', () => {
       creationDate: null,
       expirationDate: null,
     };
-    const expectedRes = {
+    const mockListsAnalysisStatus = {
       listId: listId.toString(),
       status: 'Completed',
       errorInfo: '',
@@ -231,7 +231,7 @@ describe('ListAnalysisService', () => {
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
-        findOne: jest.fn().mockReturnValue(expectedRes),
+        findOne: jest.fn().mockReturnValue(mockListsAnalysisStatus),
       }),
     });
 
@@ -258,7 +258,7 @@ describe('ListAnalysisService', () => {
       creationDate: null,
       expirationDate: null,
     };
-    const expectedRes = {
+    const mockListsAnalysisStatus = {
       listId: listId.toString(),
       status: 3,
       errorInfo: '',
@@ -268,7 +268,7 @@ describe('ListAnalysisService', () => {
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
-        findOne: jest.fn().mockReturnValue(expectedRes),
+        findOne: jest.fn().mockReturnValue(mockListsAnalysisStatus),
       }),
     });
 
@@ -295,7 +295,7 @@ describe('ListAnalysisService', () => {
       creationDate: null,
       expirationDate: null,
     };
-    const expectedRes = {
+    const mockListsAnalysisStatus = {
       listId: listId.toString(),
       status: 3,
       errorInfo: 'Exceeded Analysis Limit',
@@ -305,7 +305,7 @@ describe('ListAnalysisService', () => {
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
-        findOne: jest.fn().mockReturnValue(expectedRes),
+        findOne: jest.fn().mockReturnValue(mockListsAnalysisStatus),
       }),
     });
 

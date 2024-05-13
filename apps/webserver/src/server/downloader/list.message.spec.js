@@ -39,10 +39,14 @@ describe('Check build sqs message function', () => {
     });
 
     const { MessageAttributes } = message;
+    const { list } = MessageAttributes;
+    const { StringValue } = list;
 
     expect(key).not.toBeUndefined();
     // cant send more than 10 parameters using SQS
     expect(Object.keys(MessageAttributes).length).toBeLessThanOrEqual(6);
+
+    expect(StringValue).toContain('"isGFWList":true');
   });
 
   it('AnalysisArea should be sent as string inside the MessageAttributes', () => {

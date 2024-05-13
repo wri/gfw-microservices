@@ -1,4 +1,5 @@
 import React from 'react';
+import Checkbox from '@mui/material/Checkbox';
 import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.utils';
 import { getDataAndCheckIfAllYearsZero } from './barChart.utils';
 
@@ -15,17 +16,20 @@ function ChartsSelectorArgentina({
         <thead>
           <tr>
             <th />
-            <th className="label right">Total Loss (ha)</th>
+            <th className="label right"></th>
           </tr>
         </thead>
         <tbody>
           {chartsConfiguration.map(
             ({ dataCy, chartLabels, id: optionId, chartsSelectorTitle, totalLoss }) => {
-              // Check if all chartLabels have zero value
-              const allZeroValue = chartLabels?.every(({ dataPath }) =>
-                getDataAndCheckIfAllYearsZero(argentinaPieChartsData, dataPath)
-              );
-              const isSingleChartPresent = chartLabels?.length === 1;
+              // Determine the count of options with non-zero data
+              const nonZeroOptions = chartLabels?.filter(
+                ({ dataPath }) => !getDataAndCheckIfAllYearsZero(argentinaPieChartsData, dataPath)
+              ).length;
+
+              const disableCheckbox = nonZeroOptions === 1;
+              const disableRadio = nonZeroOptions === 0;
+
               return (
                 <React.Fragment key={optionId}>
                   <tr>
@@ -36,7 +40,7 @@ function ChartsSelectorArgentina({
                         value={optionId}
                         checked={selectedOptionId === optionId}
                         onChange={() => onOptionChange(optionId)}
-                        disabled={allZeroValue} // Disable the option if all chartLabels have zero value
+                        disabled={disableRadio} // Disable the option if all chartLabels have zero value
                       />
 
                       <label htmlFor={optionId} className="legend-square-label">
@@ -46,7 +50,8 @@ function ChartsSelectorArgentina({
 
                     <td className="right">{totalLoss && prettifyNum(formatNum(totalLoss))}</td>
                   </tr>
-                  {selectedOptionId === optionId &&
+                  {!disableRadio &&
+                    selectedOptionId === optionId &&
                     chartLabels?.map(
                       ({ id, legend, color, checked, totalLossByCategory, dataPath }) => {
                         const isEveryChartYearValueZero = getDataAndCheckIfAllYearsZero(
@@ -61,30 +66,25 @@ function ChartsSelectorArgentina({
                                 isEveryChartYearValueZero && 'chart-legends-table__label--disabled'
                               }`}
                             >
-                              <input
-                                id={id}
-                                type="checkbox"
-                                disabled={isSingleChartPresent || isEveryChartYearValueZero} // Disable if there's only one chartLabels
-                                checked={isSingleChartPresent || checked} // Keep checked if there's only one chartLabels
-                                onChange={(e) => {
-                                  const isChecked = e.target.checked;
-                                  updateCheckedLabels(optionId, id, isChecked);
-                                }}
-                              />
-                              <div>
-                                {/* adding an extra div to avoid the styling from a declared selector with low specificity in _base.scss: */}
-                                {/* input[type='checkbox'].column-checkbox:checked + label  */}
-                                <label htmlFor={id}>
-                                  <span
-                                    className="chart-legends-table__checkbox"
-                                    style={{
-                                      background: isEveryChartYearValueZero ? 'gray' : color,
-                                      opacity: checked ? 1 : 0.2,
-                                    }}
-                                  />
-                                  {legend}
-                                </label>
-                              </div>
+                              <label htmlFor={id}>
+                                <Checkbox
+                                  id={id}
+                                  disabled={disableCheckbox || isEveryChartYearValueZero}
+                                  checked={checked} // Keep checked if there's only one chartLabels
+                                  onChange={(e) => {
+                                    const isChecked = e.target.checked;
+                                    updateCheckedLabels(optionId, id, isChecked);
+                                  }}
+                                  sx={{
+                                    padding: 0,
+                                    color,
+                                    '&.Mui-checked': {
+                                      color,
+                                    },
+                                  }}
+                                />
+                                {legend}
+                              </label>
                             </td>
                             <td className="right">
                               {(totalLossByCategory &&

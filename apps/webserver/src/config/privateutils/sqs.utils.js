@@ -8,7 +8,7 @@
 
 ********************************************************************/
 const AWS = require('@aws-sdk/client-sqs');
-const config = require('../config');
+import config from '../config';
 
 const sqs = new AWS.SQS();
 

@@ -16,7 +16,7 @@ const AWS = require('aws-sdk');
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const moment = require('moment');
 
-const config = require('../config');
+import config from '../config';
 
 const langResources = require(path.resolve('./config/langResources'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));

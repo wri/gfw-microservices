@@ -27,7 +27,7 @@ const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
 const { HttpStatus } = require('@nestjs/common');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
-const config = require('../../../config/config');
+import config from '../../../config/config';
 
 const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'

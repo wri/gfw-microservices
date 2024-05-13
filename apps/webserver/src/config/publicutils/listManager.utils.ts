@@ -47,7 +47,7 @@ const sql = require('mssql');
 const _ = require('lodash');
 
 // Configs
-const config = require('../config');
+import config from '../config';
 const { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } = require('../config/locations.config');
 
 // Utils

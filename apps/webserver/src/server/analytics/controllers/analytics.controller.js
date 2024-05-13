@@ -1,7 +1,7 @@
-const path = require('path');
 const moment = require('moment');
 const logger = require('../../../config/privateutils/logger.utils');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const { getCurrentDateTimeFormatted } = require('../../vectorTiles/utils/vectorTile.utils');
 import {
   getAccountExtraLimits,

@@ -42,7 +42,7 @@ loadenv
 
     // Initialize all neccesary modules.
     return Promise.all([
-      require('./config/config'),
+      require('./config/config').default,
       require('./config/lib/express').initialize(app),
       require(path.resolve('./config/publicutils/accountManager.utils')).initialize(),
       require(path.resolve('./config/publicutils/gfwListManager.utils')).initialize(),

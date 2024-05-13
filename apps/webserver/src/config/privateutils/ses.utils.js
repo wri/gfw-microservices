@@ -46,10 +46,10 @@ const generateEmailTemplate = (level, title, msg, closing) => {
     <div style="padding-top: 2rem; text-align: center;">
       <img src="${defineIcon(level)}" border="0" align="center" class="g-img">
     </div>
-    <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 600; font-size: 1.3rem; text-align: center; letter-spacing: 0.4px; color: rgba(0, 0, 0, 0.73);  padding: 35px;">
+    <div style="font-family: 'Fira Sans,Arial,sans-serif'; font-style: normal; font-weight: 600; font-size: 1.3rem; text-align: center; letter-spacing: 0.4px; color: rgba(0, 0, 0, 0.73);  padding: 35px;">
       ${title}
     </div>
-    <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.6rem; text-align: center; letter-spacing: 0.25px; color: rgba(0, 0, 0, 0.54);">
+    <div style="font-family: 'Fira Sans,Arial,sans-serif'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.6rem; text-align: center; letter-spacing: 0.25px; color: rgba(0, 0, 0, 0.54);">
       ${msg}
     </div>
     ${closing}

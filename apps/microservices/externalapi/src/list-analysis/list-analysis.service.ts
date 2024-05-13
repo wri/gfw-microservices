@@ -122,7 +122,9 @@ export class ListAnalysisService {
 
     //Verify if has error for status equals inactive
     if (analysisStatus.status === getListStatusString(listStatus.Inactive)) {
-      analysisStatus.errorsDetails.push(analysisStatus.status);
+      if (analysisStatus.errorsDetails.length === 0) {
+        analysisStatus.errorsDetails.push(analysisStatus.status);
+      }
       analysisStatus.status = 'Error';
     }
 

@@ -19,13 +19,13 @@ import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import httpRequest from '../../../../common/js/utils/httpRequest';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import SaveAsDraftNote from '../../../../common/js/components/SaveAsDraft/SaveAsDraftNote';
 import SaveAsDraftButtonWithDialog from '../../../../common/js/components/SaveAsDraft/SaveAsDraftButtonWithDialog';
 import { resetScroll } from '../../utils/scroll.utils';
-import { locationsPage, proLayers } from '../../../../common/js/config';
+import { locationsPage } from '../../../../common/js/config';
+import { proLayers } from '../../../../common/js/proLayers.config';
 import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 import store from '../../store';
@@ -101,7 +101,7 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
     <p>
       {listConditionalText} in draft state until you choose to run analysis on it. Note that running
       analysis counts towards your account usage limits. See more information{' '}
-      <a href="/about?section=Fees" target="_blank" style={{ color: '#4a4a4a' }}>
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
         here
       </a>
       .
@@ -1908,12 +1908,6 @@ export default class AddLocation extends Component {
       listPlaceholderValue = 'Recent Other';
     }
 
-    // TODO: this is unused, can we delete?
-    const dropdownOptionsInvestmentCommodity = buildDropdownOptions(
-      locationsPage.add.dropdownOptions
-    );
-
-    // debugger;
     const dialogContent =
       typeof dialogMessage === 'string' || React.isValidElement(dialogMessage)
         ? [dialogMessage]

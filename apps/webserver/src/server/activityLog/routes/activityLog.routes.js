@@ -1,6 +1,7 @@
 const path = require('path');
 
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const ActivityLogger = require(path.resolve('./config/privateutils/logger.utils'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));

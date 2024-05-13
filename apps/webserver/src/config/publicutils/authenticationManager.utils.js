@@ -40,7 +40,7 @@
 // Imports required for this module
 const path = require('path');
 const sql = require('mssql');
-const config = require('../config');
+import config from '../config';
 
 const langResources = require(path.resolve('./config/langResources'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
@@ -121,7 +121,7 @@ const unsafeDevOnlyLogin = async (req, username, secret, promanagerLogin) => {
  *                   authentication info if resolved, otherwise returns an
  *                   error object.
  */
-const login = async (req, username, password, promanager_login = false) => {
+export const login = async (req, username, password, promanager_login = false) => {
   if (isDevTestUser(username, password)) {
     return unsafeDevOnlyLogin(req, username, password, promanager_login);
   }
@@ -312,7 +312,7 @@ const login = async (req, username, password, promanager_login = false) => {
  *   @param {Object}   org - organization to set user session variables for
  *   @return {Promise} A promise object that returns true, otherwise error object
  */
-const setOrgSessions = (req, org) => {
+export const setOrgSessions = (req, org) => {
   return new Promise((resolve, reject) => {
     // Save Org ID Info.
     req.session.organization_id = parseInt(org.organization_id, 10);
@@ -393,7 +393,7 @@ const unsafeDevOnlyVerify = async (req, user, secret) => {
  *   @param {String} userToken - The user's token input to be compared to the secret key
  *   @return {Promise} A promise object that returns true if verified otherwise and error object
  */
-const verifyLogin = (req, userToken) => {
+export const verifyLogin = (req, userToken) => {
   if (isDevTestUser(req.session.user_email, userToken)) {
     return unsafeDevOnlyVerify(req, req.session.user_email, userToken);
   }
@@ -488,7 +488,7 @@ const verifyLogin = (req, userToken) => {
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise} A promise object that returns list of orgs, otherwise error object
  */
-const getOrganizations = (req) => {
+export const getOrganizations = (req) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'userEmail', type: sql.NVarChar(50), value: req.session.user_email },
@@ -521,7 +521,7 @@ const getOrganizations = (req) => {
  *   @param  {String}  new_password - User's new password
  *   @return {Promise} A promise object that returns true password changed, otherwise error object
  */
-const setInitialPassword = (req, old_password, new_password) => {
+export const setInitialPassword = (req, old_password, new_password) => {
   return new Promise((resolve, reject) => {
     // Get User Info and complete the new password challenge
     AWSCognito.completeNewPasswordChallenge(req, old_password, new_password)
@@ -547,7 +547,7 @@ const setInitialPassword = (req, old_password, new_password) => {
  *   @param {String} user_email - User's email/username
  *   @return {Promise} A promise object that returns true if successful, otherwise error object
  */
-const requestPasswordReset = (req, user_email) => {
+export const requestPasswordReset = (req, user_email) => {
   const normalizeUsername = user_email.toLocaleLowerCase();
   return new Promise((resolve, reject) => {
     const checkUserEmailParameters = [
@@ -590,7 +590,7 @@ const requestPasswordReset = (req, user_email) => {
   });
 };
 
-const adminResetUserPassword = (req, user_email) => {
+export const adminResetUserPassword = (req, user_email) => {
   return new Promise((resolve, reject) => {
     const checkUserEmailParameters = [
       { field: 'email', type: sql.NVarChar(50), value: user_email },
@@ -636,7 +636,7 @@ const adminResetUserPassword = (req, user_email) => {
  *   @param {String} user_email - User's email/username
  *   @return {Promise} A promise object that returns true if successful, otherwise error object
  */
-const confirmPasswordReset = async (req, verification_code, new_password, user_email) => {
+export const confirmPasswordReset = async (req, verification_code, new_password, user_email) => {
   const normalizeUsername = user_email.toLocaleLowerCase();
   return new Promise((resolve, reject) => {
     AWSCognito.confirmForgotPassword(req, verification_code, new_password, normalizeUsername)
@@ -669,7 +669,7 @@ const confirmPasswordReset = async (req, verification_code, new_password, user_e
  *   @param  {String} proposedPassword - User's new password
  *   @return {Promise} A promise object that returns true if successful, otherwise error object
  */
-const changePassword = (req, previousPassword, proposedPassword) => {
+export const changePassword = (req, previousPassword, proposedPassword) => {
   return new Promise((resolve, reject) => {
     AWSCognito.changePassword(req, previousPassword, proposedPassword)
       .then(() => {
@@ -693,7 +693,7 @@ const changePassword = (req, previousPassword, proposedPassword) => {
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Object} JSON object providing the user info.
  */
-const getUserInfo = (req) => {
+export const getUserInfo = (req) => {
   return new Promise((resolve, reject) => {
     // Retrieve organization user information and System Auth pref information
     const organizationParameters = [
@@ -736,7 +736,7 @@ const getUserInfo = (req) => {
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Object} JSON object providing the user info.
  */
-const getUserOrganizationStatus = (req) => {
+export const getUserOrganizationStatus = (req) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'user_id', type: sql.Int, value: req.session.organization_user_id },
@@ -760,7 +760,7 @@ const getUserOrganizationStatus = (req) => {
   });
 };
 
-const getOrganizationStatus = (request) => {
+export const getOrganizationStatus = (request) => {
   return new Promise((resolve, reject) => {
     const { organization_id } = request.session;
     const parameters = [{ field: 'organizationId', type: sql.Int, value: organization_id }];
@@ -788,7 +788,7 @@ const getOrganizationStatus = (request) => {
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise} A promise object that returns true if successful, otherwise error object
  */
-const resendVerifyToken = (req) => {
+export const resendVerifyToken = (req) => {
   return new Promise((resolve, reject) => {
     SpeakEasy.createTotp(req, req.session.user_secret)
       .then((verificationCode) => {
@@ -827,7 +827,7 @@ const resendVerifyToken = (req) => {
  *   @summary Removes all session variables, effectively logging out the user
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  */
-const logout = (req) => {
+export const logout = (req) => {
   if (req.session.ispromanager === false) {
     logger
       .logActivity(
@@ -843,21 +843,4 @@ const logout = (req) => {
     // Delete session variables
     req.session.destroy();
   }
-};
-
-module.exports = {
-  login,
-  verifyLogin,
-  setOrgSessions,
-  getOrganizations,
-  logout,
-  getUserInfo,
-  setInitialPassword,
-  changePassword,
-  requestPasswordReset,
-  resendVerifyToken,
-  confirmPasswordReset,
-  adminResetUserPassword,
-  getUserOrganizationStatus,
-  getOrganizationStatus,
 };

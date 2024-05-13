@@ -22,7 +22,7 @@
 // Imports required for this module.
 const path = require('path');
 const sql = require('mssql');
-const config = require('../config');
+import config from '../config';
 
 const langResources = require(path.resolve('./config/langResources'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));

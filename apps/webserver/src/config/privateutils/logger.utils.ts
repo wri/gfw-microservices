@@ -14,7 +14,7 @@ const sql = require('mssql');
 const winston = require('winston');
 import { Request } from 'express';
 const Transport = require('winston-transport');
-const config = require('../config');
+import config from '../config';
 
 const sqlUtils = require('./sql.utils');
 // Important variables

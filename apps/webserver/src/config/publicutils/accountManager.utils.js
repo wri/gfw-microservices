@@ -21,7 +21,7 @@
 const path = require('path');
 const sql = require('mssql');
 const AWS = require('aws-sdk');
-const config = require('../config');
+import config from '../config';
 
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
@@ -66,7 +66,7 @@ const lstClassifications = [
  *   @param  {Array}   policyNames - array of policy names
  *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
-const requestNewAccount = (
+export const requestNewAccount = (
   req,
   org_name,
   org_address,
@@ -290,7 +290,7 @@ const requestNewAccount = (
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Object} Returns recordsets if successful otherwise, error object
  */
-const getAccountProfile = (req) => {
+export const getAccountProfile = (req) => {
   return new Promise((resolve, reject) => {
     const params = [
       { field: 'orgID', type: sql.Int, value: req.session.organization_id },
@@ -325,7 +325,7 @@ const getAccountProfile = (req) => {
  *   @param  {Array} arr_org_classification_ids - Classification(s) of the organizations.
  *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
-const updateAccountProfile = (
+export const updateAccountProfile = (
   req,
   org_name,
   org_address,
@@ -386,7 +386,7 @@ const updateAccountProfile = (
  *   @summary Provides a list of classifications for the organization.
  *   @return  An array of strings containing all the Classifications.
  */
-const getClassifications = () => {
+export const getClassifications = () => {
   return lstClassifications;
 };
 
@@ -395,7 +395,7 @@ const getClassifications = () => {
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return  An array of objects containing all the user info.
  */
-const getUsersList = (req) => {
+export const getUsersList = (req) => {
   let usersList = [];
   return new Promise((resolve, reject) => {
     sqlUtils
@@ -447,7 +447,7 @@ const getUsersList = (req) => {
  * @param  {Array}    arr_org_classification_ids - Classification(s) of the organizations.
  * @return {Promise<Boolean>} True if successful, false otherwise.
  */
-const updatePendingAccount = (
+export const updatePendingAccount = (
   req,
   org_id,
   org_name,
@@ -502,7 +502,7 @@ const updatePendingAccount = (
  *   @param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
  *   @return {Promise<Boolean>} True if successful, false otherwise.
  */
-const updatePendingAccountUser = (
+export const updatePendingAccountUser = (
   req,
   user_id,
   user_first_name,
@@ -546,7 +546,7 @@ const updatePendingAccountUser = (
 /** @function {initialize}
  * @summary Initializes the Account Manager module. Loads all the lists needed for the application.
  */
-const initialize = () => {
+export const initialize = () => {
   const objTemp = {
     accessKeyId: config.AWSVars.credentials.accessKey,
     secretAccessKey: config.AWSVars.credentials.secretKey,
@@ -554,16 +554,4 @@ const initialize = () => {
   };
   // Setup the AWS Config with the proper credentials.
   AWS.config.update(objTemp);
-};
-
-// Exporting the functions.
-module.exports = {
-  requestNewAccount,
-  updateAccountProfile,
-  getClassifications,
-  getUsersList,
-  getAccountProfile,
-  initialize,
-  updatePendingAccount,
-  updatePendingAccountUser,
 };

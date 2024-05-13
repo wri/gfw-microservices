@@ -218,7 +218,7 @@ function DraftList({
               {showRerunOpt && (
                 <MenuItem
                   leftIcon={<KeyboardArrowUpIcon />}
-                  primaryText="Submit"
+                  primaryText="Submit Analysis"
                   onClick={() => {
                     setIsMenuOpen(false);
                     setShowSubmitModal(true);

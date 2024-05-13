@@ -103,15 +103,30 @@ export class ListAnalysisService {
     if (!listAnalysisStatus) {
       throw new NotFoundException('Analysis status not found.');
     }
-
+    // Verify if expiration time is in the past
+    let listStatusExpired = false;
+    if (
+      listAnalysisStatus.expirationTime &&
+      Date.now() > listAnalysisStatus.expirationTime.getTime()
+    ) {
+      listStatusExpired = true;
+    }
     const analysisStatus: ListAnalysisResponse = {
       listId: listAnalysisStatus.listId.toString(),
       status: this.getEAPIListStatus(listAnalysisStatus),
       errorsDetails: (listAnalysisStatus.errorInfo || '').split('\n').filter((e) => e),
-      resultUrl: listAnalysisStatus.s3URL || null,
-      creationDate: listAnalysisStatus.updateTime,
-      expirationDate: listAnalysisStatus.expirationTime || null,
+      resultUrl: listStatusExpired ? null : listAnalysisStatus.s3URL || null,
+      creationDate: listStatusExpired ? null : listAnalysisStatus.updateTime,
+      expirationDate: listStatusExpired ? null : listAnalysisStatus.expirationTime || null,
     };
+
+    //Verify if has error for status equals inactive
+    if (analysisStatus.status === getListStatusString(listStatus.Inactive)) {
+      if (analysisStatus.errorsDetails.length === 0) {
+        analysisStatus.errorsDetails.push(analysisStatus.status);
+      }
+      analysisStatus.status = 'Error';
+    }
 
     return analysisStatus;
   }

@@ -10,7 +10,7 @@
  *
  ******************************************************************* */
 const path = require('path');
-const config = require('../config');
+import config from '../config';
 
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
 const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));

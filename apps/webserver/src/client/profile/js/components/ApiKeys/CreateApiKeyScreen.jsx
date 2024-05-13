@@ -3,7 +3,7 @@ import Icon from '@material-ui/core/Icon';
 import Button from '../../../../common/js/components/Button';
 import IconPlus from '../../../../common/js/components/icon/IconPlus';
 
-export default function CreateApiKeyScreen({ setKeys, setIsLoading }) {
+export default function CreateApiKeyScreen({ fetchApiKeys, setIsLoading }) {
   const createApiKey = () => {
     setIsLoading(true);
     fetch('api/profile/api-keys', {
@@ -13,7 +13,7 @@ export default function CreateApiKeyScreen({ setKeys, setIsLoading }) {
       },
     })
       .then((response) => response.json())
-      .then(setKeys)
+      .then(fetchApiKeys)
       .catch((error) => {
         console.error('Error', error);
       });
@@ -32,7 +32,7 @@ export default function CreateApiKeyScreen({ setKeys, setIsLoading }) {
         className="users-section__action-button"
         onClick={createApiKey}
         icon={<IconPlus height="10px" />}
-        label={'Create'}
+        label="Create"
       />
     </div>
   );

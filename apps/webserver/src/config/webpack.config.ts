@@ -4,29 +4,16 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const webpack = require('webpack');
 const path = require('path');
-const config = require('./config');
+import config from './config';
+const clientConfig = require('./client.configs');
 
-// Grab all the build.config.js files
-const configs = config.client.build;
-
-// Merge all the entries together
-const entries = configs.reduce((all, conf) => Object.assign(all, conf.webpack.entry), {});
-
-// Merge all the aliases together
-const aliases = configs.reduce((all, conf) => Object.assign(all, conf.webpack.alias), {});
-
-// Resolve their paths
-for (const key in entries) {
-  entries[key] = path.resolve(entries[key]);
-}
-for (const key in aliases) {
-  aliases[key] = path.resolve(aliases[key]);
-}
+const entries = clientConfig.entries;
+const aliases = clientConfig.aliases;
 
 /**
  * @summary Make a webpack config for whatever environment/purpose needed
  */
-module.exports = () => {
+export default () => {
   // Add environment specific rules that need to get values from configs
   const excludes = [];
   const plugins = [];

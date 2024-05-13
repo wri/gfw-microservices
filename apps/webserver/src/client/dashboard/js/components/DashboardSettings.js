@@ -6,7 +6,7 @@ import dictionary from '../utils/dictionary';
 import { prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import { selectAlert, selectTimeframe } from '../actions/dashboardActions';
 import GfwSelect from '../../../common/js/components/GfwSelect';
-import { proLayers } from '../../../common/js/config';
+import { proLayers } from '../../../common/js/proLayers.config';
 import redirectToPage from '../../../common/js/utils/redirect';
 
 const timeframeOptions = [

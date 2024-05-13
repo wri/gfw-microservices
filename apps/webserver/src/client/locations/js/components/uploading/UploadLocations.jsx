@@ -68,7 +68,7 @@ import '../../../css/locations.scss';
 const DialogConfirmSubmitContent = ({ listName }) => {
   const listConditionalText = listName ? (
     <span>
-      You have added a location to <strong>{listName}</strong>, as defined above.
+      You have added locations to <strong>{listName}</strong>, as defined above.
     </span>
   ) : (
     <span>You have successfully created a list in Pro.</span>
@@ -79,6 +79,32 @@ const DialogConfirmSubmitContent = ({ listName }) => {
       {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
       running analysis counts towards your account usage limits. See more information{' '}
       <a target="_blank" href="/about?section=Fees" style={{ color: '#97bd3d' }}>
+        here
+      </a>
+      .
+    </p>
+  );
+};
+
+const DialogDraftContent = ({ listName = 'Create New List' }) => {
+  const listConditionalText =
+    listName !== 'Create New List' ? (
+      <>
+        You have added locations to <strong>{listName}</strong>, as defined above. Click OKAY to
+        save this updated list as a draft. Your list will stay
+      </>
+    ) : (
+      <>
+        You have successfully created a draft list in Pro. Click OKAY to close this window and be
+        navigated back to the Locations page. Your list will be
+      </>
+    );
+
+  return (
+    <p>
+      {listConditionalText} in draft state until you choose to run analysis on it. Note that running
+      analysis counts towards your account usage limits. See more information{' '}
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
         here
       </a>
       .
@@ -1526,6 +1552,7 @@ class UploadLocations extends Component {
 
                     {step === 4 && (
                       <SaveAsDraftButtonWithDialog
+                        dialogMessage={<DialogDraftContent listName={this.state.selectedList} />}
                         disabled={!canGoNext || selectedAnalyses.length <= 0}
                         saveLocations={() => this.saveLocations({ isSaveAsDraft: true })}
                       />

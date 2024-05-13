@@ -34,7 +34,11 @@ export default function CustomDraftDialog({
       ]}
       onRequestClose={closeAction}
     >
-      <div dangerouslySetInnerHTML={{ __html: dialogMessage }}></div>
+      {React.isValidElement(dialogMessage) ? (
+        <>{dialogMessage}</>
+      ) : (
+        <div dangerouslySetInnerHTML={{ __html: dialogMessage }}></div>
+      )}
     </Dialog>
   );
 }

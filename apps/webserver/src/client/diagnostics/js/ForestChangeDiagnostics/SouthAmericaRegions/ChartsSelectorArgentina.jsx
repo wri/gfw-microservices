@@ -27,8 +27,8 @@ function ChartsSelectorArgentina({
                 ({ dataPath }) => !getDataAndCheckIfAllYearsZero(argentinaPieChartsData, dataPath)
               ).length;
 
-              const disableCheckbox = nonZeroOptions === 1;
-              const disableRadio = nonZeroOptions === 0;
+              const isCheckboxDisabled = nonZeroOptions === 1;
+              const isRadioButtonDisabled = nonZeroOptions === 0;
 
               return (
                 <React.Fragment key={optionId}>
@@ -40,7 +40,7 @@ function ChartsSelectorArgentina({
                         value={optionId}
                         checked={selectedOptionId === optionId}
                         onChange={() => onOptionChange(optionId)}
-                        disabled={disableRadio} // Disable the option if all chartLabels have zero value
+                        disabled={isRadioButtonDisabled} // Disable the option if all chartLabels have zero value
                       />
 
                       <label htmlFor={optionId} className="legend-square-label">
@@ -50,7 +50,7 @@ function ChartsSelectorArgentina({
 
                     <td className="right">{totalLoss && prettifyNum(formatNum(totalLoss))}</td>
                   </tr>
-                  {!disableRadio &&
+                  {!isRadioButtonDisabled &&
                     selectedOptionId === optionId &&
                     chartLabels?.map(
                       ({ id, legend, color, checked, totalLossByCategory, dataPath }) => {
@@ -69,7 +69,7 @@ function ChartsSelectorArgentina({
                               <label htmlFor={id}>
                                 <Checkbox
                                   id={id}
-                                  disabled={disableCheckbox || isEveryChartYearValueZero}
+                                  disabled={isCheckboxDisabled || isEveryChartYearValueZero}
                                   checked={checked} // Keep checked if there's only one chartLabels
                                   onChange={(e) => {
                                     const isChecked = e.target.checked;

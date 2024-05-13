@@ -53,6 +53,14 @@ export interface RequestTriggerProcessLargeList {
   analysisIds: Array<string>;
 }
 
+export interface CreateListRequest {
+  listName: string;
+  userId: number;
+  clientDatabase: string;
+  analysisIds: Array<string>;
+  filename: string;
+}
+
 export interface CopyOrMoveLargeListRequest {
   listId: number;
   selectedListLocationClasification: string;

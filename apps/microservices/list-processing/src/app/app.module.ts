@@ -19,7 +19,6 @@ import { AFIModule } from './afi';
 import { AlertsModule } from './alerts';
 import { ListUploadModule } from './list-upload';
 import { ListController } from './v1/list.controller';
-import { ListCreationService } from '../services/list.creation.service';
 
 config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -42,13 +41,6 @@ config.update({
     ListUploadModule,
   ],
   controllers: [AppController, ListController],
-  providers: [
-    AppService,
-    ListPaginationService,
-    LocationService,
-    GeoService,
-    ListService,
-    ListCreationService,
-  ],
+  providers: [AppService, ListPaginationService, LocationService, GeoService, ListService],
 })
 export class AppModule {}

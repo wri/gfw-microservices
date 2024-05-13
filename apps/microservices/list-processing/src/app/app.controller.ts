@@ -67,7 +67,7 @@ export class AppController {
 
   @Post('/save-list-to-process')
   saveListToProcess(@Body() request: RequestSaveLargeListProcessModel) {
-    return this.appService.saveListToProcess(request);
+    return this.listService.saveListToProcess(request);
   }
 
   @Post('/process-list')

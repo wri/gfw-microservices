@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Modal from '@mui/material/Modal';
@@ -23,17 +23,25 @@ function ChangeTypeOfAnalysisModal({
 
   const [selectedAnalysis, setSelectedAnalysis] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const previousSelectedAnalysis = useRef([]);
   // if there is no listId, the analyses selection is for the creation of a new list
-  const updatingAnalysesSelectionForExistingList = !!listId;
+  const isUpdatingForExistingList = !!listId;
 
   useEffect(() => {
-    if (updatingAnalysesSelectionForExistingList) {
+    if (isUpdatingForExistingList) {
       setSelectedAnalysis(getSelectedAnalysesIds());
     }
   }, [listAnalysesStatus, listId]);
 
+  useEffect(() => {
+    previousSelectedAnalysis.current = selectedAnalysis;
+  }, [selectedAnalysis]);
+
   const updateSelectedAnalysis = () => {
     setIsLoading(true);
+    const isAddingAnalysis = selectedAnalysis.some(
+      (analysis) => !previousSelectedAnalysis.current.includes(analysis)
+    );
     fetch(`/api/list/${listId}/selectedAnalyses`, {
       method: 'POST',
       credentials: 'same-origin',
@@ -41,7 +49,11 @@ function ChangeTypeOfAnalysisModal({
       body: JSON.stringify({ analysisIds: selectedAnalysis }),
     })
       .then(() => {
-        return requestGeoTrellisAnalyzeList({ id: listId, list_name: listName }, true);
+        // Check if any analysis was added (not removed)
+        if (isUpdatingForExistingList && isAddingAnalysis) {
+          return requestGeoTrellisAnalyzeList({ id: listId, list_name: listName }, true);
+        }
+        return Promise.resolve();
       })
       .then(() => {
         if (selectedAnalysis.includes(analysisTypes.DEFORESTATION_KPIS)) {
@@ -76,8 +88,8 @@ function ChangeTypeOfAnalysisModal({
           />
           <br />
 
-          {updatingAnalysesSelectionForExistingList && isLoading && <InlineLoader />}
-          {updatingAnalysesSelectionForExistingList && !isLoading && (
+          {isUpdatingForExistingList && isLoading && <InlineLoader />}
+          {isUpdatingForExistingList && !isLoading && (
             <Button
               variant="primary"
               disabled={!selectedAnalysis.length}

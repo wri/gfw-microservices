@@ -6,7 +6,6 @@ import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
 import { requestGeoTrellisAnalyzeList } from '../../../utils/request.utils';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
-import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import './ChangeTypeOfAnalysisModal.scss';
 

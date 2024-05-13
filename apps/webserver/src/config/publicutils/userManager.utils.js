@@ -29,7 +29,7 @@
 // Imports required for this module.
 const sql = require('mssql');
 const path = require('path');
-const config = require('../config');
+import config from '../config';
 
 const langResources = require(path.resolve('./config/langResources'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
@@ -508,25 +508,21 @@ export const createNewUser = (
 /**
  * @function updateUserInfo
  * @summary Updates user information.
- * @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
- * @param  {Number}   user_id - Number specifying the user id. Need to provide to set user info.
- * @param  {String}   user_first_name - First Name of the user
- * @param  {String}   user_middle_initial - Middle Initial of the new user
- * @param  {String}   user_last_name - Last Name of the new user
- * @param  {String}   user_email - Email for the new user
- * @param  {String}   user_phone - Phone for the new user
- * @param  {Number}   user_title_id - Title for the new user
- * @param  {String}   other_title - Title text for Other title id
- * @param  {Number}   access_level_id - An ID representing the level of access allowed for this user.
- * @param  {Number}   email_subscription - An integer that is either 1 or 0.
- * @param  {Array}   arr_user_geography_ids - An array of geography Ids that the user is interested in.
- * @param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
- * @param  {Number}  viirs_email_frequency
- * @param  {Number}  glad_email_frequency
- * @param  {Number}  forma_email_frequency
- * @param  {Number}  terrai_email_frequency
- * @param  {Number}  gran_chaco_email_frequency
- * @param  {Number}  user_auth_preference_id
+ * @param  {Object}   params
+ *  param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
+ *  param  {Number}   user_id - Number specifying the user id. Need to provide to set user info.
+ *  param  {String}   user_first_name - First Name of the user
+ *  param  {String}   user_middle_initial - Middle Initial of the new user
+ *  param  {String}   user_last_name - Last Name of the new user
+ *  param  {String}   user_email - Email for the new user
+ *  param  {String}   user_phone - Phone for the new user
+ *  param  {Number}   user_title_id - Title for the new user
+ *  param  {String}   other_title - Title text for Other title id
+ *  param  {Number}   access_level_id - An ID representing the level of access allowed for this user.
+ *  param  {Number}   email_subscription - An integer that is either 1 or 0.
+ *  param  {Array}   arr_user_geography_ids - An array of geography Ids that the user is interested in.
+ *  param  {Array}   arr_user_commodity_ids - An array of commodities (ids) that the user in interested in.
+ *  param  {Number}  user_auth_preference_id
  * @return  A promise that resolves to true if user is successfully deactivated, rejected otherwise.
  */
 export const updateUserInfo = ({

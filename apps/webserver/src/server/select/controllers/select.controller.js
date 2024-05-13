@@ -1,5 +1,6 @@
 const path = require('path');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 /**
  * @function select

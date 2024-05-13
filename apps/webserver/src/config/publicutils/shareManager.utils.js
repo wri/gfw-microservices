@@ -33,7 +33,7 @@ import { getSharedListByUser as getSharedListByUserQuery } from '@wri-monorepos/
  *  @param {number} list_id - The list of interest
  *  return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const shareInternalList = (req, admin_id, user_id, list_id) => {
+export const shareInternalList = (req, admin_id, user_id, list_id) => {
   let hasError = false;
   const shareInternalListResult = new Promise((resolve, reject) => {
     Q.fcall(() => {
@@ -100,7 +100,7 @@ const shareInternalList = (req, admin_id, user_id, list_id) => {
  *   @param {Date} datetime - Date list was created
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const activateShareInternalList = (req, admin_id, user_id, list_id, datetime) => {
+export const activateShareInternalList = (req, admin_id, user_id, list_id, datetime) => {
   let hasError = false;
   // Create promise object to return
   const activateShareInternalListResult = new Promise((resolve, reject) => {
@@ -160,7 +160,7 @@ const activateShareInternalList = (req, admin_id, user_id, list_id, datetime) =>
  *   @param  {number} list_id - The list of interest
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const deactivateShareInternalList = (req, user_id, list_id) => {
+export const deactivateShareInternalList = (req, user_id, list_id) => {
   let hasError = false;
   // Create promise object to return
   const deactivateShareInternalListResult = new Promise((resolve, reject) => {
@@ -220,7 +220,7 @@ const deactivateShareInternalList = (req, user_id, list_id) => {
  *   @param  {number} list_id - The list of interest
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const deactivateAllShareInternalList = (req, users_id, list_id) => {
+export const deactivateAllShareInternalList = (req, users_id, list_id) => {
   let hasError = false;
   // Create promise object to return
   const deactivateShareInternalListResult = new Promise((resolve, reject) => {
@@ -279,7 +279,7 @@ const deactivateAllShareInternalList = (req, users_id, list_id) => {
  *   @param {number} user_id - The sharing user's id
  *   @return {Promise<any[]>} Returns list of user shared lists
  */
-const getUserInternalShareLists = (req, user_id) => {
+export const getUserInternalShareLists = (req, user_id) => {
   let hasError = false;
   // Create promise object to return
   const getUserInternalShareListsResult = new Promise((resolve, reject) => {
@@ -321,9 +321,9 @@ const getUserInternalShareLists = (req, user_id) => {
  *   @summary Get shared lists for a specific user
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @param {number} user_id - The sharing user's id
- *   @return {Promise<GetSharedListByUserType[]>} Returns list of user shared lists
+ *   @return {Promise<>} Returns list of user shared lists
  */
-const getSharedListDataByUser = (req, user_id) => {
+export const getSharedListDataByUser = (req, user_id) => {
   let hasError = false;
   // Create promise object to return
   return new Promise((resolve, reject) => {
@@ -356,7 +356,7 @@ const getSharedListDataByUser = (req, user_id) => {
   });
 };
 
-const getSharedListDataByUserWithAnalysisStatus = (req, user_id) => {
+export const getSharedListDataByUserWithAnalysisStatus = (req, user_id) => {
   return new Promise((resolve, reject) => {
     const promises = [
       getSharedListDataByUser(req, user_id),
@@ -378,7 +378,7 @@ const getSharedListDataByUserWithAnalysisStatus = (req, user_id) => {
  *   @param  {number} user_id - The sharing user's id
  *   @return {Promise<any[]>} Returns list of user shared lists
  */
-const getUserPendingInternalShareLists = (req, user_id) => {
+export const getUserPendingInternalShareLists = (req, user_id) => {
   let hasError = false;
   // Create promise object to return
   const getUserPendingInternalShareListsResult = new Promise((resolve, reject) => {
@@ -421,7 +421,7 @@ const getUserPendingInternalShareLists = (req, user_id) => {
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise<any[]>} Returns list of all shared lists
  */
-const getAdminInternalLists = (req) => {
+export const getAdminInternalLists = (req) => {
   let hasError = false;
   // Create promise object to return
   const getAdminInternalListsResult = new Promise((resolve, reject) => {
@@ -457,7 +457,7 @@ const getAdminInternalLists = (req) => {
  *   @param {number} list_id -  The list of interest
  *   @return {Promise<any>} Returns all users for shared list
  */
-const getAllUsersForSharedList = (req, list_id) => {
+export const getAllUsersForSharedList = (req, list_id) => {
   let hasError = false;
   // Create promise object to return
   return new Promise((resolve, reject) => {
@@ -504,21 +504,7 @@ const getAllUsersForSharedList = (req, list_id) => {
  * @param {Array} allLists - All organization lists
  * @returns {Array} - All user shared lists
  */
-const findSharedListsInsideOrganization = (sharedListsRecords, allLists) => {
+export const findSharedListsInsideOrganization = (sharedListsRecords, allLists) => {
   const sharedListsIDs = sharedListsRecords.map((list) => list.list_id);
   return allLists.filter((list) => sharedListsIDs.includes(list.id));
-};
-
-module.exports = {
-  shareInternalList,
-  activateShareInternalList,
-  deactivateShareInternalList,
-  deactivateAllShareInternalList,
-  getUserInternalShareLists,
-  getUserPendingInternalShareLists,
-  getAdminInternalLists,
-  getAllUsersForSharedList,
-  findSharedListsInsideOrganization,
-  getSharedListDataByUser,
-  getSharedListDataByUserWithAnalysisStatus,
 };

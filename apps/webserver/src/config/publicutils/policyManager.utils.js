@@ -20,7 +20,7 @@ const AWS = require('aws-sdk');
 const { S3 } = require('@aws-sdk/client-s3');
 const { Upload } = require('@aws-sdk/lib-storage');
 
-const config = require('../config');
+import config from '../config';
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const langResources = require(path.resolve('./config/langResources'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));

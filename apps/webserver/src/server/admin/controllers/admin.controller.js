@@ -1,5 +1,7 @@
 import axios from 'axios';
-const { compiledAssets } = require('../../../config/config');
+import config from '../../../config/config';
+const { compiledAssets } = config;
+
 const logger = require('../../../config/privateutils/logger.utils');
 
 /**

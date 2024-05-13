@@ -1,7 +1,7 @@
 const { renderToString } = require('react-dom/server');
 const { createElement } = require('react');
-const path = require('path');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 
 /**
  * @function login

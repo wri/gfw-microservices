@@ -186,7 +186,7 @@ describe('ListAnalysisService', () => {
     const expectedRes = {
       listId: listId.toString(),
       status: 'Completed',
-      errorsDetails: [],
+      errorInfo: '',
       s3URL: 'https://example.com/results',
       updateTime: new Date().toLocaleDateString('en-US'),
       expirationTime: new Date('11-28-2999 02:00:22.895'),
@@ -224,10 +224,84 @@ describe('ListAnalysisService', () => {
     const expectedRes = {
       listId: listId.toString(),
       status: 'Completed',
-      errorsDetails: [],
+      errorInfo: '',
       s3URL: 'https://example.com/results',
       updateTime: new Date().toLocaleDateString('en-US'),
       expirationTime: new Date('11-28-2000 02:00:22.895'),
+    };
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: jest.fn().mockReturnValue(expectedRes),
+      }),
+    });
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
+    expect(result).toEqual(expectedResult);
+  });
+  it('Should return inactive as error when errorDetails is empty', async () => {
+    const listId = 123;
+    const organizationId = 1;
+    const expectedResult = {
+      listId: listId.toString(),
+      status: 'Inactive',
+      errorsDetails: ['Inactive'],
+      resultUrl: null,
+      creationDate: null,
+      expirationDate: null,
+    };
+    const expectedRes = {
+      listId: listId.toString(),
+      status: 3,
+      errorInfo: '',
+      s3URL: null,
+      updateTime: null,
+      expirationTime: null,
+    };
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: jest.fn().mockReturnValue(expectedRes),
+      }),
+    });
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
+    expect(result).toEqual(expectedResult);
+  });
+  it('Should not override status when status is inactive but errorDetails is not empty', async () => {
+    const listId = 123;
+    const organizationId = 1;
+    const expectedResult = {
+      listId: listId.toString(),
+      status: 'Inactive',
+      errorsDetails: ['Exceeded Analysis Limit'],
+      resultUrl: null,
+      creationDate: null,
+      expirationDate: null,
+    };
+    const expectedRes = {
+      listId: listId.toString(),
+      status: 3,
+      errorInfo: 'Exceeded Analysis Limit',
+      s3URL: null,
+      updateTime: null,
+      expirationTime: null,
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({

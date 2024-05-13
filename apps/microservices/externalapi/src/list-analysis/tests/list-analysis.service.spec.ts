@@ -252,7 +252,7 @@ describe('ListAnalysisService', () => {
     const organizationId = 1;
     const expectedResult = {
       listId: listId.toString(),
-      status: 'Inactive',
+      status: 'Error',
       errorsDetails: ['Inactive'],
       resultUrl: null,
       creationDate: null,

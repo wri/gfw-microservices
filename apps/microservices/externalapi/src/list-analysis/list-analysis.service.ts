@@ -126,6 +126,7 @@ export class ListAnalysisService {
       analysisStatus.errorsDetails.length === 0
     ) {
       analysisStatus.errorsDetails.push(analysisStatus.status);
+      analysisStatus.status = 'Error';
     }
 
     return analysisStatus;

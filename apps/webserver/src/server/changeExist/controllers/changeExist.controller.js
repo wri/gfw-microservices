@@ -11,7 +11,7 @@ const UserManager = require(path.resolve('./config/publicutils/userManager.utils
  * @param {Express.Request} req - Express request object
  * @param res - Express response object
  */
-exports.changeExist = (req, res) => {
+export const changeExist = (req, res) => {
   const userEmail = UserManager.getUserEmail(req);
   res.render('changeExist', {
     userEmail: userEmail,

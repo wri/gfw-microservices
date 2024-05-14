@@ -17,7 +17,7 @@
 const path = require('path');
 const sql = require('mssql');
 const AWS = require('aws-sdk');
-const { S3 } = require('@aws-sdk/client-s3');
+const { S3, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { Upload } = require('@aws-sdk/lib-storage');
 
 import config from '../config';
@@ -256,28 +256,27 @@ const getPendingPolicyList = (req) => {
  *   @param  {String} policy - name of policy to download
  *   @return {Promise} Return file stream from s3.
  */
-const downloadPolicy = (req, policy, orgID) => {
-  return new Promise((resolve, reject) => {
-    const params = {
-      Bucket: config.AWSVars.policyParams.bucket,
-      Key: `${config.AWSVars.policyParams.key}/${
-        req.session.organization_id ? req.session.organization_id : orgID
-      }/${policy}`,
-    };
-    const fileStream = s3.getObject(params).createReadStream();
-    if (!fileStream) {
-      const userMessage = langResources.getResourceString('failedToDownloadFile');
-      const sysMessage = 'CRITICAL ERROR: Failed to download policy ' + policy;
-      const eo = errorUtils.createErrorMessage(
-        req,
-        errorUtils.errorCodes.failedToDownload,
-        userMessage,
-        sysMessage
-      );
-      reject(eo);
-    }
-    resolve(fileStream);
-  });
+const downloadPolicy = async (req, policy, orgID) => {
+  const params = {
+    Bucket: config.AWSVars.policyParams.bucket,
+    Key: `${config.AWSVars.policyParams.key}/${
+      req.session.organization_id ? req.session.organization_id : orgID
+    }/${policy}`,
+  };
+  const cmd = new GetObjectCommand(params);
+  const s3response = await s3.send(cmd);
+  const fileStream = s3response.Body;
+  if (!fileStream) {
+    const userMessage = langResources.getResourceString('failedToDownloadFile');
+    const sysMessage = 'CRITICAL ERROR: Failed to download policy ' + policy;
+    throw errorUtils.createErrorMessage(
+      req,
+      errorUtils.errorCodes.failedToDownload,
+      userMessage,
+      sysMessage
+    );
+  }
+  return fileStream;
 };
 
 /** @function {deletePolicies}

@@ -15,7 +15,7 @@ const config = require('../../../config/config');
  */
 exports.geoTrellisAnalyzeListController = async (req, res) => {
   logger.info(`POST ${GEO_TRELLIS_ANALYZE_LIST.route}`);
-  const { list } = req.body;
+  const { list, analysiTypes } = req.body;
   const { id: listID } = list;
 
   try {
@@ -23,7 +23,7 @@ exports.geoTrellisAnalyzeListController = async (req, res) => {
     await ListManager.setListStatus(req, listID, listStatus.Pending);
 
     // Send request to GeoTrellis step function
-    const { data } = await handleGeoTrellisAnalyzeListRequest(req, list);
+    const { data } = await handleGeoTrellisAnalyzeListRequest(req, list, analysiTypes);
 
     res.json({
       message: data,

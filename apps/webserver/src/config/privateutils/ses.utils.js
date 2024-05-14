@@ -12,7 +12,6 @@
 ******************************************************************* */
 // Imports for this module.
 const path = require('path');
-const AWS = require('aws-sdk');
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const moment = require('moment');
 
@@ -171,16 +170,6 @@ export const createBodyContent = (req, type, content = {}, level = 'info') => {
   const closing = hasClosing ? '<p>Sincerely,<br>Global Forest Watch Pro</p>' : '';
   const bodyContent = generateEmailTemplate(level, title, msg, closing);
   return emailUtil.createPage(bodyContent);
-};
-
-export const initialize = () => {
-  const objTemp = {
-    accessKeyId: config.AWSVars.credentials.accessKey,
-    secretAccessKey: config.AWSVars.credentials.secretKey,
-    region: config.AWSVars.cognito.region,
-  };
-  // Setup the AWS Config with the proper credentials.
-  AWS.config.update(objTemp);
 };
 
 export const sendEmail = (req, sender, receivers, subject, content) => {

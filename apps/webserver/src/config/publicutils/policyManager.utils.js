@@ -16,7 +16,6 @@
 // Imports required for this module
 const path = require('path');
 const sql = require('mssql');
-const AWS = require('aws-sdk');
 const { S3 } = require('@aws-sdk/client-s3');
 const { Upload } = require('@aws-sdk/lib-storage');
 
@@ -386,22 +385,8 @@ const movePolicy = (req, pendingaccount_id, organizationId) => {
   });
 };
 
-/** @function {initialize}
- * @summary Initializes the Account Manager module. Loads all the lists needed for the application.
- */
-const initialize = () => {
-  const objTemp = {
-    accessKeyId: config.AWSVars.credentials.accessKey,
-    secretAccessKey: config.AWSVars.credentials.secretKey,
-    region: config.AWSVars.cognito.region,
-  };
-  //Setup the AWS Config with the proper credentials.
-  AWS.config.update(objTemp);
-};
-
 // Exporting the functions.
 module.exports = {
-  initialize,
   uploadPolicies,
   uploadPendingPolicies,
   getPolicyList,

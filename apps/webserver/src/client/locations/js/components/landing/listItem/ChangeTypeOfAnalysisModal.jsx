@@ -9,6 +9,20 @@ import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoad
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import './ChangeTypeOfAnalysisModal.scss';
 
+const DialogSubmitSuccessContent = () => {
+  return (
+    <p>
+      You've successfully added new analyses to your list. Your list will be in draft state until
+      you re-run analysis to account for your changes. Note that running analysis counts towards
+      your account usage limits. See more information{' '}
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
+        here
+      </a>
+      .
+    </p>
+  );
+};
+
 function ChangeTypeOfAnalysisModal({
   listId,
   listName,
@@ -23,6 +37,8 @@ function ChangeTypeOfAnalysisModal({
   const [selectedAnalysis, setSelectedAnalysis] = useState([]);
   const [prevSelectedAnalysis, setPrevSelectedAnalysis] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDialogSuccessOpen, setIsDialogSuccessOpen] = useState(false);
+
   // if there is no listId, the analyses selection is for the creation of a new list
   const isUpdatingForExistingList = !!listId;
 
@@ -62,53 +78,76 @@ function ChangeTypeOfAnalysisModal({
             newlyAddedAnalysisTypes.join()
           );
         }
-        return Promise.resolve();
+        return Promise.resolve(false);
       })
-      .then(() => {
+      .then((isAddingAnalysisForList) => {
         if (selectedAnalysis.includes(analysisTypes.DEFORESTATION_KPIS)) {
           gtag('event', 'User changes the selected analyses from landing page', {
             event_category: 'Deforestation Reporting KPIs',
           });
         }
+        if (isAddingAnalysisForList) {
+          setIsDialogSuccessOpen(true);
+        }
       })
       .catch((error) => {
         console.warn(error);
         setIsLoading(false);
-      })
-      .finally(() => {
-        setIsChangeTypeOfAnalysisModalOpen(false);
-        // we don't have a way to reload the list of lists so we reload the page
-        window.location.href = '/locations';
       });
   };
 
-  return (
-    <Modal
-      open={isChangeTypeOfAnalysisModalOpen}
-      onClose={() => setIsChangeTypeOfAnalysisModalOpen(false)}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
-    >
-      <Card sx={{ minWidth: 275 }} className="change-type-of-analysis-modal">
-        <CardContent>
-          <AnalysisTypesSelector
-            selectedAnalyses={selectedAnalysis}
-            setSelectedAnalyses={setSelectedAnalysis}
-          />
-          <br />
+  const handleDialogClose = () => {
+    setIsChangeTypeOfAnalysisModalOpen(false);
+    // we don't have a way to reload the list of lists so we reload the page
+    window.location.href = '/locations';
+  };
 
-          {isUpdatingForExistingList && isLoading && <InlineLoader />}
-          {isUpdatingForExistingList && !isLoading && (
-            <Button
-              variant="primary"
-              disabled={!selectedAnalysis.length}
-              onClick={updateSelectedAnalysis}
-              label="Submit"
-            />
-          )}
-        </CardContent>
-      </Card>
-    </Modal>
+  const analysisTypeSelectionForm = (
+    <>
+      <AnalysisTypesSelector
+        selectedAnalyses={selectedAnalysis}
+        setSelectedAnalyses={setSelectedAnalysis}
+      />
+      <br />
+      {isUpdatingForExistingList && isLoading && <InlineLoader />}
+      {isUpdatingForExistingList && !isLoading && (
+        <Button
+          variant="primary"
+          disabled={!selectedAnalysis.length}
+          onClick={updateSelectedAnalysis}
+          label="Submit"
+        />
+      )}
+    </>
+  );
+
+  const analisysRequestSuccess = (
+    <>
+      <DialogSubmitSuccessContent />
+      <Button
+        variant="primary"
+        disabled={!selectedAnalysis.length}
+        onClick={handleDialogClose}
+        label={`OK`}
+      />
+    </>
+  );
+
+  return (
+    <>
+      <Modal
+        open={isChangeTypeOfAnalysisModalOpen}
+        onClose={() => setIsChangeTypeOfAnalysisModalOpen(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Card sx={{ minWidth: 275 }} className="change-type-of-analysis-modal">
+          <CardContent>
+            {isDialogSuccessOpen ? analisysRequestSuccess : analysisTypeSelectionForm}
+          </CardContent>
+        </Card>
+      </Modal>
+    </>
   );
 }
 

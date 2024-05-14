@@ -14,7 +14,7 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
  * @param {Object} req - Express request object
  * @param res - Express response object
  */
-exports.userProfile = (req, res) => {
+export const userProfile = (req, res) => {
   const userID = req.query.user_id ?? null;
   res.render('userProfile', {
     userID,
@@ -24,7 +24,7 @@ exports.userProfile = (req, res) => {
   });
 };
 
-exports.userProfileData = (req, res) => {
+export const userProfileData = (req, res) => {
   const user_id = Number(req.params.user_id);
   const classes = AccountManager.getClassifications(req);
   const commoditiesData = UserManager.getCommodities(req);
@@ -78,7 +78,7 @@ exports.userProfileData = (req, res) => {
   }
 };
 
-exports.createNewUserProfile = (req, res) => {
+export const createNewUserProfile = (req, res) => {
   const classes = AccountManager.getClassifications(req);
   const commoditiesData = UserManager.getCommodities(req);
   const geographiesData = UserManager.getGeographies(req);

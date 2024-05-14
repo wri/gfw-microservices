@@ -11,7 +11,7 @@ const { compiledAssets } = config;
  * @param {Express.Request} req - Express request object
  * @param res - Express response object
  */
-exports.login = (req, res) => {
+export const login = (req, res) => {
   // Get the markup from our component
   const markup = compiledAssets.js['login-component']
     ? renderToString(createElement(compiledAssets.js['login-component'].default))

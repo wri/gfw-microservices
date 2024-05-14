@@ -6,7 +6,6 @@ import Button from '../../../../../common/js/components/Button';
 import AnalysisTypesSelector from '../../../../../common/js/components/AnalysisTypesSelector';
 import { requestGeoTrellisAnalyzeList } from '../../../utils/request.utils';
 import InlineLoader from '../../../../../common/js/components/Loaders/InlineLoader';
-import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
 import './ChangeTypeOfAnalysisModal.scss';
 
@@ -22,18 +21,26 @@ function ChangeTypeOfAnalysisModal({
   };
 
   const [selectedAnalysis, setSelectedAnalysis] = useState([]);
+  const [prevSelectedAnalysis, setPrevSelectedAnalysis] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   // if there is no listId, the analyses selection is for the creation of a new list
-  const updatingAnalysesSelectionForExistingList = !!listId;
+  const isUpdatingForExistingList = !!listId;
 
   useEffect(() => {
-    if (updatingAnalysesSelectionForExistingList) {
-      setSelectedAnalysis(getSelectedAnalysesIds());
+    if (isUpdatingForExistingList) {
+      const initialSelection = getSelectedAnalysesIds();
+      setSelectedAnalysis(initialSelection);
+      setPrevSelectedAnalysis(initialSelection);
     }
   }, [listAnalysesStatus, listId]);
 
   const updateSelectedAnalysis = () => {
     setIsLoading(true);
+
+    const isAddingAnalysis = selectedAnalysis.some(
+      (analysis) => !prevSelectedAnalysis.includes(analysis)
+    );
+
     fetch(`/api/list/${listId}/selectedAnalyses`, {
       method: 'POST',
       credentials: 'same-origin',
@@ -41,7 +48,17 @@ function ChangeTypeOfAnalysisModal({
       body: JSON.stringify({ analysisIds: selectedAnalysis }),
     })
       .then(() => {
-        return requestGeoTrellisAnalyzeList({ id: listId, list_name: listName }, true);
+        // Check if any analysis was added (not removed)
+        if (isUpdatingForExistingList && isAddingAnalysis) {
+          return requestGeoTrellisAnalyzeList(
+            {
+              id: listId,
+              list_name: listName,
+            },
+            true
+          );
+        }
+        return Promise.resolve();
       })
       .then(() => {
         if (selectedAnalysis.includes(analysisTypes.DEFORESTATION_KPIS)) {
@@ -76,8 +93,8 @@ function ChangeTypeOfAnalysisModal({
           />
           <br />
 
-          {updatingAnalysesSelectionForExistingList && isLoading && <InlineLoader />}
-          {updatingAnalysesSelectionForExistingList && !isLoading && (
+          {isUpdatingForExistingList && isLoading && <InlineLoader />}
+          {isUpdatingForExistingList && !isLoading && (
             <Button
               variant="primary"
               disabled={!selectedAnalysis.length}

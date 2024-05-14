@@ -50,12 +50,16 @@ function ChangeTypeOfAnalysisModal({
       .then(() => {
         // Check if any analysis was added (not removed)
         if (isUpdatingForExistingList && isAddingAnalysis) {
+          const newlyAddedAnalysisTypes = selectedAnalysis.filter(
+            (analysis) => !prevSelectedAnalysis.includes(analysis)
+          );
           return requestGeoTrellisAnalyzeList(
             {
               id: listId,
               list_name: listName,
             },
-            true
+            true,
+            newlyAddedAnalysisTypes.join()
           );
         }
         return Promise.resolve();

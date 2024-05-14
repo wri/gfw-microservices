@@ -9,20 +9,16 @@ import { GEO_TRELLIS_ANALYZE_LIST } from '../../../../config/config/locations.co
  * @param {boolean} [reanalyze=false] - Set to true if list needs to be reanalyzed
  * @return {AxiosPromise} - Promise
  */
-export const requestGeoTrellisAnalyzeList = (list, reanalyze = false) => {
-  const userId = window.userInfo.id;
-  const organizationID = parseInt(window.organizationId);
-
+export const requestGeoTrellisAnalyzeList = (list, reanalyze = false, analysisTypes = '') => {
   const data = {
-    list: list,
-    user_id: userId,
-    organizationID: organizationID,
-    reanalyze: reanalyze,
+    list,
+    reanalyze,
+    analysisTypes,
   };
 
   return axios({
     method: 'post',
     url: GEO_TRELLIS_ANALYZE_LIST.route,
-    data: data,
+    data,
   });
 };

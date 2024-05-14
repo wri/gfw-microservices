@@ -97,10 +97,14 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
       </>
     );
 
+  const listContidiontalDraftMessage =
+    listName !== 'Create New List' ? <> about usage & fees</> : null;
+
   return (
     <p>
       {listConditionalText} in draft state until you choose to run analysis on it. Note that running
-      analysis counts towards your account usage limits. See more information{' '}
+      analysis counts towards your account usage limits. See more information
+      {listContidiontalDraftMessage}{' '}
       <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
         here
       </a>

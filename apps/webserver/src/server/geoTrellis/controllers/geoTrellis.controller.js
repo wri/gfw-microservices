@@ -15,7 +15,7 @@ import config from '../../../config/config';
  */
 export const geoTrellisAnalyzeListController = async (req, res) => {
   logger.info(`POST ${GEO_TRELLIS_ANALYZE_LIST.route}`);
-  const { list, analysiTypes } = req.body;
+  const { list, analysisTypes } = req.body;
   const { id: listID } = list;
 
   try {
@@ -23,7 +23,7 @@ export const geoTrellisAnalyzeListController = async (req, res) => {
     await ListManager.setListStatus(req, listID, listStatus.Pending);
 
     // Send request to GeoTrellis step function
-    const { data } = await handleGeoTrellisAnalyzeListRequest(req, list, analysiTypes);
+    const { data } = await handleGeoTrellisAnalyzeListRequest(req, list, analysisTypes);
 
     res.json({
       message: data,

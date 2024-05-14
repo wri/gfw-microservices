@@ -53,14 +53,17 @@ export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisType
   });
 
   const listAnalysisStatusData = await getListAnalysisStatus(databaseName, listID);
-
+  console.log("• ~ listAnalysisStatusData:", listAnalysisStatusData)
+  console.log("• ~ analysisTypesToProcess:", analysisTypesToProcess)
+  
   const analysiTypes = extractAnalysisTypes(
     analysisTypesToProcess
-      ? listAnalysisStatusData.filter(({ analysisId }) =>
-          analysisTypesToProcess.includes(analysisId)
-        )
-      : listAnalysisStatusData
-  );
+    ? listAnalysisStatusData.filter(({ analysisId }) =>
+      analysisTypesToProcess.includes(analysisId)
+  )
+  : listAnalysisStatusData
+);
+console.log("• ~ analysiTypes:", analysiTypes)
 
   if (isListLocationOverLimit) {
     await updateListsAnalysisStatus(databaseName, {

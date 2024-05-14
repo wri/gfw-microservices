@@ -2,7 +2,8 @@ const path = require('path');
 import axios from 'axios';
 const express = require('express');
 
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));

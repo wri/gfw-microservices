@@ -110,24 +110,38 @@ export function createPage(bodyContent: {
                     : ''
                 }
                 <tr>
-                  <td style='padding:30px 30px 10px 30px;background:#ffffff'>
-                    <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;'>
+                  <td style='background:#ffffff'>
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 600px;">
                       <tr>
-                        <td align='center' style='padding:0 82px 10px 82px;'>
-                          <p style="font-style:normal;font-weight:400;font-size:12px;line-height:16px;mso-line-height-rule:exactly;font-family:'Fira Sans',Arial,sans-serif;color:rgb(128,128,128);margin:0;">
-                            Global Forest Watch Pro is a project of the World Resources Institute<br>
-                            10 G Street NE Suite 800, Washington DC, 20002, USA<br>
-                            +1 (202) 729-7600<br>
-                            <a href='https://www.wri.org/' style='text-decoration: none; color: #97BD3D;'>www.wri.org</a>
-                          </p>
+                        <td style="padding: 15px 10px; font-family: 'Fira Sans', sans-serif; font-size: 12px; line-height: 140%; text-align: center; color: #888888;">
+                          <br><br>
+                          Global Forest Watch Pro is a project of the World Resources Institute<br>
+                          <span class="unstyle-auto-detected-links">
+                            10 G Street NE Suite 800, Washington DC, 20002, USA<br>+1 (202) 729-7600<br>
+                            <a href="https://www.wri.org">www.wri.org</a>
+                          </span>
                         </td>
                       </tr>
+              
                       <tr>
-                        <td align='center' style='padding:0;height:1px;border-top:1px solid rgb(128,128,128);'></td>
+                        <td style="padding: 10px 10px 20px; font-family: 'Fira Sans', sans-serif; font-size: 12px; line-height: 140%; text-align: center; color: #888888; border: 1px solid #ccc">
+                          <span style="font-size: 20px; color: #0288D1;line-height: 2;">World Resources Institute | Making Big Ideas Happen</span><br>
+                          <span class="unstyle-auto-detected-links">
+                          A global research nonprofit working on critical goals that the world must achieve<br> 
+                          this decade in order to secure a sustainable future: climate, energy, food, forests, water, <br>
+                          cities and transport.
+                          </span><br>
+                          <a style="text-decoration:none; color:#808080" href="https://www.wri.org">www.wri.org</a>
+                        </td>
                       </tr>
+              
                       <tr>
-                        <td align='center' style='padding:10px 0 0 0;'>
-                          <p style="font-style:normal;font-weight:400;font-size:12px;line-height:16px;mso-line-height-rule:exactly;font-family:'Fira Sans',Arial,sans-serif;color:rgb(128,128,128);margin:0;">Privacy Policy | Terms and Conditions</p>
+                        <td style="padding: 15px 10px; font-family: 'Fira Sans', sans-serif; font-size: 12px; line-height: 140%; text-align: center; color: #888888;">
+                          <br><br>  
+                          <hr />
+                          <span>
+                            <a style="text-decoration:none; color:#808080" href="https://www.wri.org/about/privacy-policy">Privacy Policy</a> | <a style="text-decoration:none; color:#808080" href="https://www.wri.org/about/wri-data-platforms-tos">Terms of Service</a> | <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">License Agreement</a>
+                          </span>
                         </td>
                       </tr>
                     </table>

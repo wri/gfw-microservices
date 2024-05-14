@@ -120,6 +120,14 @@ export class ListAnalysisService {
       expirationDate: listStatusExpired ? null : listAnalysisStatus.expirationTime || null,
     };
 
+    //Verify if has error for status equals inactive
+    if (analysisStatus.status === getListStatusString(listStatus.Inactive)) {
+      if (analysisStatus.errorsDetails.length === 0) {
+        analysisStatus.errorsDetails.push(analysisStatus.status);
+      }
+      analysisStatus.status = 'Error';
+    }
+
     return analysisStatus;
   }
 

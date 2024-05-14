@@ -1,12 +1,15 @@
 import jsdom from 'jest-environment-jsdom';
 import renderer from 'react-test-renderer';
+import { jest } from '@jest/globals';
 
 const isClient = !!global.window;
 
 if (isClient) {
   global.renderer = renderer;
   global.jsdom = jsdom;
+  // @ts-ignore
   global.location = {};
+  // @ts-ignore
   global.document = {};
 
   global.Transifex = {

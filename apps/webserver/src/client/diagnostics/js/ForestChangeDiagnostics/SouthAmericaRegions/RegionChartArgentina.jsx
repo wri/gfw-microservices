@@ -8,7 +8,7 @@ import PieChart from '../../common/PieChart';
 import ChartsSelectorArgentina from './ChartsSelectorArgentina';
 import DiagnosticsChartHeader from '../../common/DiagnosticsChartHeader';
 import { formatDecimals } from '../../../../common/js/utils/diagnostics.utils';
-import { chartDatasetConfigs, regionConstants, otbnChartLabels } from './regions.constants';
+import { chartDatasetConfigs, regionConstants } from './regions.constants';
 import { getBarChartData } from './getBarChartData';
 import { useQuery } from '../../../../common/js/hooks';
 import { getDataAndCheckIfAllYearsZero } from './barChart.utils';

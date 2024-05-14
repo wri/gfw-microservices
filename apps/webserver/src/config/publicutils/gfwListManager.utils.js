@@ -27,7 +27,7 @@
 // Imports required for this module.
 const path = require('path');
 const sql = require('mssql');
-const config = require('../config');
+import config from '../config';
 
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));

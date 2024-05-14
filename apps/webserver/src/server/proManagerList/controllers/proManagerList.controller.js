@@ -1,5 +1,6 @@
 const path = require('path');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const ProManager = require(path.resolve('./config/publicutils/proManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));

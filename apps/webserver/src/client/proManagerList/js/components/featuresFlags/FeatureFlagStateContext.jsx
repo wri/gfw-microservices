@@ -67,6 +67,7 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
   }, []);
 
   useEffect(() => {
+    setIsLoading(true);
     Promise.all([getFeatureFlagsByFlagId(selectedFeatureFlag?.flagId), getAccountListData()]).then(
       ([featureFlagsListByFlagIdData, accountListData]) => {
         const { accounts } = accountListData;
@@ -77,7 +78,7 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
   }, [selectedFeatureFlag]);
 
   useEffect(() => {
-    setIsLoading(false);
+    featureFlagsListByFlagId.length > 0 && setIsLoading(false);
     setAccountsWithFeatureFlagsByFlagId(
       featureFlagsListByFlagId
         .filter((flag) => flag.orgId)

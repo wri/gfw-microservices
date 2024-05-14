@@ -4,7 +4,7 @@ const { handleGeoTrellisAnalyzeListRequest } = require('../utils/geoTrellis.util
 const { GEO_TRELLIS_ANALYZE_LIST } = require('../../../config/config/locations.config');
 const { listStatus } = require('../../../config/env/listStatuses.constants');
 const AWSSES = require('../../../config/privateutils/ses.utils');
-const config = require('../../../config/config');
+import config from '../../../config/config';
 
 /**
  * Handling GeoTrellis Submit Edits request
@@ -13,7 +13,7 @@ const config = require('../../../config/config');
  * @param {Object} res - Express response
  * @return {Promise} - request Promise
  */
-exports.geoTrellisAnalyzeListController = async (req, res) => {
+export const geoTrellisAnalyzeListController = async (req, res) => {
   logger.info(`POST ${GEO_TRELLIS_ANALYZE_LIST.route}`);
   const { list, analysiTypes } = req.body;
   const { id: listID } = list;

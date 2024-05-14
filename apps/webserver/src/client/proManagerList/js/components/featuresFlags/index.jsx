@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import FeatureFlagContextProvider from './FeatureFlagStateContext';
 import PageHeader from './PageHeader';
 import FeatureFlagsList from './FeatureFlagsList';

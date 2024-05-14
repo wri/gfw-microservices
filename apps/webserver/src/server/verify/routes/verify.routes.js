@@ -1,5 +1,5 @@
 const path = require('path');
-const controller = require('../controllers/verify.controller');
+import { verify } from '../controllers/verify.controller';
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
@@ -22,7 +22,7 @@ module.exports = (app, limiter) => {
     routeMiddlewares.push(limiter(middlewares.rateLimitAuthenticated));
   }
 
-  app.get('/verify', routeMiddlewares, controller.verify);
+  app.get('/verify', routeMiddlewares, verify);
 
   app.post('/auth/verifyLogin', function (req, res) {
     console.log('POST /auth/verifyLogin');

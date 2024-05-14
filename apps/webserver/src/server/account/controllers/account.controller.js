@@ -12,7 +12,7 @@ const UserManager = require(path.resolve('./config/publicutils/userManager.utils
  * @param {Express.Request} req - Express request object
  * @param res - Express response object
  */
-exports.account = (req, res) => {
+export const account = (req, res) => {
   const classes = AccountManager.getClassifications(req);
   const commoditiesData = UserManager.getCommodities(req);
   const geographiesData = UserManager.getGeographies(req);

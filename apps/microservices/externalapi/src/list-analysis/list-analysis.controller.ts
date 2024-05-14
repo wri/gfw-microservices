@@ -29,6 +29,7 @@ import {
   ForbiddenResponse,
   BadRequestResponse,
   ErroResponseWithErroMessage,
+  DeleteListMessageResponse,
 } from './dtos/apiResponse';
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
@@ -91,7 +92,7 @@ export class ListAnalysisController {
       listId,
     });
   }
-  @ApiResponse({ status: 200, description: 'true' })
+  @ApiResponse({ status: 200, type: DeleteListMessageResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
@@ -108,7 +109,8 @@ export class ListAnalysisController {
     } = request;
     const { userEmail } = deleteBodyList;
 
-    return await this.listAnalysisService.deleteList(listId, organizationId, userEmail);
+    const message = await this.listAnalysisService.deleteList(listId, organizationId, userEmail);
+    return { message };
   }
   @ApiResponse({ status: 200, type: ListInfoResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })

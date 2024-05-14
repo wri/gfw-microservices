@@ -4,16 +4,20 @@ const UNAUTHORIZED_ENUM = ['Unauthorized'];
 const FORBIDDEN_ENUM = ['Forbidden'];
 const NOT_FOUND_ENUM = ['Not Found'];
 const BAD_REQUEST_ENUM = ['Bad Request'];
-export class UnauthorizedResponse {
+const DELETE_LIST_ENUM = ["User 'email@email' has deleted list (listName)"];
+export class MessageResponse {
   @ApiProperty()
+  message: string;
+}
+export class UnauthorizedResponse extends MessageResponse {
   @ApiProperty({ enum: UNAUTHORIZED_ENUM })
   message: string;
 }
-export class ForbiddenResponse {
+export class ForbiddenResponse extends MessageResponse {
   @ApiProperty({ enum: FORBIDDEN_ENUM })
   message: string;
 }
-export class NotFoundResponseString {
+export class NotFoundResponseString extends MessageResponse {
   @ApiProperty({ enum: NOT_FOUND_ENUM })
   message: string;
 }
@@ -29,4 +33,9 @@ export class BadRequestResponse {
 export class ErroResponseWithErroMessage extends NotFoundResponse {
   @ApiProperty()
   error: string;
+}
+
+export class DeleteListMessageResponse extends MessageResponse {
+  @ApiProperty({ enum: DELETE_LIST_ENUM })
+  message: string;
 }

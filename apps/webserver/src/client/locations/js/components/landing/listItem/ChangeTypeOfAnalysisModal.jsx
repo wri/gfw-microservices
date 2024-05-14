@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Modal from '@mui/material/Modal';
@@ -21,26 +21,26 @@ function ChangeTypeOfAnalysisModal({
   };
 
   const [selectedAnalysis, setSelectedAnalysis] = useState([]);
+  const [prevSelectedAnalysis, setPrevSelectedAnalysis] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const previousSelectedAnalysis = useRef([]);
   // if there is no listId, the analyses selection is for the creation of a new list
   const isUpdatingForExistingList = !!listId;
 
   useEffect(() => {
     if (isUpdatingForExistingList) {
-      setSelectedAnalysis(getSelectedAnalysesIds());
+      const initialSelection = getSelectedAnalysesIds();
+      setSelectedAnalysis(initialSelection);
+      setPrevSelectedAnalysis(initialSelection);
     }
   }, [listAnalysesStatus, listId]);
 
-  useEffect(() => {
-    previousSelectedAnalysis.current = selectedAnalysis;
-  }, [selectedAnalysis]);
-
   const updateSelectedAnalysis = () => {
     setIsLoading(true);
+
     const isAddingAnalysis = selectedAnalysis.some(
-      (analysis) => !previousSelectedAnalysis.current.includes(analysis)
+      (analysis) => !prevSelectedAnalysis.includes(analysis)
     );
+
     fetch(`/api/list/${listId}/selectedAnalyses`, {
       method: 'POST',
       credentials: 'same-origin',
@@ -50,7 +50,13 @@ function ChangeTypeOfAnalysisModal({
       .then(() => {
         // Check if any analysis was added (not removed)
         if (isUpdatingForExistingList && isAddingAnalysis) {
-          return requestGeoTrellisAnalyzeList({ id: listId, list_name: listName }, true);
+          return requestGeoTrellisAnalyzeList(
+            {
+              id: listId,
+              list_name: listName,
+            },
+            true
+          );
         }
         return Promise.resolve();
       })

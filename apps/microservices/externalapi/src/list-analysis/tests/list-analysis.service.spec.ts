@@ -334,7 +334,7 @@ describe('ListAnalysisService', () => {
       creationDate: null,
       expirationDate: null,
     };
-  
+
     service.getAnalysisStatus = jest.fn().mockResolvedValue({
       status: 'Draft',
       listId: listId.toString(),
@@ -346,10 +346,14 @@ describe('ListAnalysisService', () => {
     listService.getList = jest.fn().mockResolvedValue({
       errorFileStoragePath: 's3://gfwpro-geotrellis-pre-data/example.com/errors',
     });
-    
-    const result = await service.getAnalysisStatusWithErrorFileStoragePath({ organizationId, listId, analysisId: 'FCD' });
+
+    const result = await service.getAnalysisStatusWithErrorFileStoragePath({
+      organizationId,
+      listId,
+      analysisId: 'FCD',
+    });
     expect(result).toEqual(expectedResult);
-  })
+  });
   it('should not translate Draft status from Error Status when there are not errorFileStoragePath', async () => {
     const listId = 123;
     const organizationId = 1;
@@ -361,7 +365,7 @@ describe('ListAnalysisService', () => {
       creationDate: null,
       expirationDate: null,
     };
-  
+
     service.getAnalysisStatus = jest.fn().mockResolvedValue({
       status: 'Draft',
       listId: listId.toString(),
@@ -372,9 +376,17 @@ describe('ListAnalysisService', () => {
     });
     listService.getList = jest.fn().mockResolvedValue({
       id: listId.toString(),
+      listAnalysisTableName: 'analysis-list_name',
+      listErrorMessage: null,
+      listName: 'list_name',
+      listStatusId: 4,
     });
-    
-    const result = await service.getAnalysisStatusWithErrorFileStoragePath({ organizationId, listId, analysisId: 'FCD' });
+
+    const result = await service.getAnalysisStatusWithErrorFileStoragePath({
+      organizationId,
+      listId,
+      analysisId: 'FCD',
+    });
     expect(result).toEqual(expectedResult);
-  })
+  });
 });

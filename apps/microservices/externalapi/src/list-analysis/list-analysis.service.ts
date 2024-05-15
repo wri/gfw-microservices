@@ -157,7 +157,6 @@ export class ListAnalysisService {
         // Add the error file storage path to the errorsDetails array
         if (list.errorFileStoragePath) {
           analysisStatus.errorsDetails.push(list.errorFileStoragePath);
-          // Change the status to Error
           analysisStatus.status = 'Error';
         }
       }

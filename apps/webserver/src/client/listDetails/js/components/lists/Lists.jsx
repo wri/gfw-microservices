@@ -513,6 +513,10 @@ export default class Lists extends Component {
     this.setState({ selectedListMove: e.value, dialogChildren: true });
   };
 
+  replaceWithCurrentListName = (text, listName) => {
+    return text.replace('[list-name]', listName);
+  };
+
   // Whenever the user deletes all locations... delete the list
   deleteList = (selectedLists) => {
     const { filters } = this.props;
@@ -524,7 +528,8 @@ export default class Lists extends Component {
       dialogActions: null,
       isLoading: true,
     });
-    const list_id = selectedLists[0].id;
+    const selectedList = selectedLists[0];
+    const { id: list_id, list_name: listName } = selectedList;
 
     httpRequest
       .fetchJSON('/locations/lockList', { list_id })
@@ -535,7 +540,10 @@ export default class Lists extends Component {
               this.setState({
                 dialogOpen: true,
                 dialogTitle: locationsPage.lists.deleteLocationsMessages.success.title,
-                dialogContent: locationsPage.lists.deleteLocationsMessages.success.message,
+                dialogContent: this.replaceWithCurrentListName(
+                  locationsPage.lists.deleteLocationsMessages.success.message,
+                  listName
+                ),
                 refreshPage: true,
                 isLoading: false,
               });
@@ -595,9 +603,8 @@ export default class Lists extends Component {
       this.deleteList(selectedLists);
       return;
     }
-
-    const listId = selectedLists[0].id;
-    const gwfListId = selectedLists[0].associated_gfwlist;
+    const selectedList = selectedLists[0];
+    const { id: listId, list_name: listName, associated_gfwlist: gwfListId } = selectedList;
 
     // Ensure list is unlocked before attempting to delete locations from it
     httpRequest.fetchJSON('/locations/lockList', { list_id: listId }).then(() => {
@@ -612,7 +619,10 @@ export default class Lists extends Component {
             this.setState({
               dialogOpen: true,
               dialogTitle: locationsPage.lists.deleteLocationsMessages.success.title,
-              dialogContent: locationsPage.lists.deleteLocationsMessages.success.message,
+              dialogContent: this.replaceWithCurrentListName(
+                locationsPage.lists.deleteLocationsMessages.success.message,
+                listName
+              ),
               refreshPage: true,
               isLoading: false,
             });

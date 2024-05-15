@@ -37,6 +37,7 @@ function ListDownload({
   tableSortedDesc,
   listView,
   allLocationsSelected,
+  isGfwList,
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -57,6 +58,7 @@ function ListDownload({
       selectedLocations,
       allLocationsSelected,
       listView,
+      isGfwList,
     })
       .then(() => {
         isLoading(false);

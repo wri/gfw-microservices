@@ -30,7 +30,9 @@ export class ListGeneratorService extends IFileGenerator {
   }
 
   public async makeFile(filters: ListFieldsFileRequest) {
-    const { organizationDatabase, listId, combinedColumns, selectedLocations, file } = filters;
+    const { organizationDatabase, listId, combinedColumns, selectedLocations, file, isGFWList } =
+      filters;
+    filters.organizationDatabase = isGFWList ? process.env.MSSQL_DATABASE : organizationDatabase;
 
     const numberOfPages = await this.analysisDataService.getNumberOfPages(filters);
     this.logger.log(`(${listId}) - Number of pages: ${numberOfPages}`);

@@ -1,5 +1,5 @@
-const path = require('path');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 
 /**
  * @function reset
@@ -7,9 +7,9 @@ const { compiledAssets } = require(path.resolve('./config/config'));
  * @name exports.reset
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
-exports.reset = (req, res) => {
+export const reset = (req, res) => {
   res.render('reset', {
     common: compiledAssets.js.common,
     resetjs: compiledAssets.js.reset,

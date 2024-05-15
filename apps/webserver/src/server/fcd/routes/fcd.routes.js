@@ -3,7 +3,7 @@ const express = require('express');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 const fcdRoutes = express.Router();
-const fcdController = require('../controllers/fcdController');
+import fcdController from '../controllers/fcdController';
 
 /**
  * @name exports

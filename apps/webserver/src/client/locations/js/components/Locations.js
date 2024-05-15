@@ -5,7 +5,7 @@ import Page from '../../../common/js/components/Page';
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
 import httpRequest from '../../../common/js/utils/httpRequest';
 import GFW_LIST_NAME from '../../../common/js/constants/lists.constants';
-import { proLayers } from '../../../common/js/config';
+import { proLayers } from '../../../common/js/proLayers.config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import Landing from './landing/Landing';
 import FolderDetail from './landing/FolderDetail';

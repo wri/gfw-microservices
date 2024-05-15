@@ -4,6 +4,12 @@ import { ParameterType } from './types';
 import { getQueryStr } from '../queries';
 import { SQL_CONFIG } from '../config/config';
 
+export interface SqlParamType {
+  field: string;
+  type: sql.ISqlType;
+  value: any;
+}
+
 export class SQLUtils {
   config: sql.config;
   connection: sql.ConnectionPool;
@@ -92,7 +98,9 @@ export class SQLUtils {
       return allRows as T;
     } catch (error) {
       connection.disconnect();
-      throw new Error(error);
+      // can't use logger because libs is included in both webserver and microservices
+      console.log('Error in queryDB', queryName.slice(0, 100), error);
+      throw error;
     }
   }
 

@@ -1,5 +1,7 @@
-const axios = require('axios');
-const { compiledAssets } = require('../../../config/config');
+import axios from 'axios';
+import config from '../../../config/config';
+const { compiledAssets } = config;
+
 const logger = require('../../../config/privateutils/logger.utils');
 
 /**
@@ -8,9 +10,9 @@ const logger = require('../../../config/privateutils/logger.utils');
  * @name exports.admin
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
-const admin = (req, res) => {
+export const admin = (req, res) => {
   res.render('admin', {
     common: compiledAssets.js.common,
     adminjs: compiledAssets.js.admin,
@@ -19,7 +21,7 @@ const admin = (req, res) => {
 };
 
 // Get the latest commit for given service
-const getCommitForSerivce = async (serviceUrl) => {
+export const getCommitForSerivce = async (serviceUrl) => {
   if (!serviceUrl) {
     return 'N/A';
   }
@@ -34,7 +36,7 @@ const getCommitForSerivce = async (serviceUrl) => {
 };
 
 // get all commits for all services
-const getAllCommits = async () => ({
+export const getAllCommits = async () => ({
   WEB:
     process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
       ? 'dev'
@@ -45,18 +47,6 @@ const getAllCommits = async () => ({
 });
 
 // report all commits via express route
-const latestCommit = async (req, res) => {
+export const latestCommit = async (req, res) => {
   res.send(await getAllCommits());
 };
-
-module.exports = {
-  admin,
-  latestCommit,
-};
-if (process.env.NODE_ENV === 'test') {
-  module.exports = {
-    ...module.exports,
-    getCommitForSerivce,
-    getAllCommits,
-  };
-}

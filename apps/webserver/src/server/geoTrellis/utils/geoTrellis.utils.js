@@ -1,5 +1,5 @@
 const path = require('path');
-const axios = require('axios');
+import axios from 'axios';
 
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
@@ -24,7 +24,7 @@ import { listStatus } from '@wri-monorepos/constants';
  * @param {Object} list - List info
  * @return {Promise} - request Promise
  */
-exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
+export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisTypesToProcess) => {
   const {
     organization_user_id,
     organization_id: organizationId,
@@ -53,7 +53,14 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   });
 
   const listAnalysisStatusData = await getListAnalysisStatus(databaseName, listID);
-  const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+
+  const analysiTypes = extractAnalysisTypes(
+    analysisTypesToProcess
+      ? listAnalysisStatusData.filter(({ analysisId }) =>
+          analysisTypesToProcess.includes(analysisId)
+        )
+      : listAnalysisStatusData
+  );
 
   if (isListLocationOverLimit) {
     await updateListsAnalysisStatus(databaseName, {
@@ -70,7 +77,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
     organization_id: parseInt(organizationId),
     reanalyze,
     processing_limit: processingLimit,
-    analysis_types: analysisTypes,
+    analysis_types: analysiTypes,
   };
 
   return await axios({
@@ -89,7 +96,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
       );
 
       // Send email to user that list is submitted to be analysed
-      await AWSSES.sendEmail__ListSubmittedForAnalysis(req, list_name, analysisTypes);
+      await AWSSES.sendEmail__ListSubmittedForAnalysis(req, list_name, analysiTypes);
 
       return result;
     })

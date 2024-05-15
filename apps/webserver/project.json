@@ -54,7 +54,8 @@
       "dependsOn": ["build"],
       "options": {
         "buildTarget": "webserver:build",
-        "runtimeArgs": ["--max-old-space-size=4096"]
+        "runtimeArgs": ["--max-old-space-size=4096"],
+        "runBuildTargetDependencies": true
       }
     },
     // "lint": {
@@ -79,14 +80,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/webserver/src",
-        "commands": [
-          "node ./test/prepare-jest",
-          {
-            "command": "npx tsc ../../../libs/sql/src/lib/queries/index.ts --outDir ./queries",
-            "forwardAllArgs": false
-          },
-          "nx run webserver:testweb"
-        ],
+        "commands": ["node ./test/prepare-jest", "nx run webserver:testweb"],
         "verbose": true,
         "parallel": false
       }
@@ -98,11 +92,7 @@
         "commands": [
           "rm -rf public/*",
           {
-            "command": "npx tsc ../../../libs/sql/src/lib/queries/index.ts --outDir ./queries",
-            "forwardAllArgs": false
-          },
-          {
-            "command": "node ../../../node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.js --config ./config/webpack.production.config.js",
+            "command": "NODE_OPTIONS=--max-old-space-size=4096 ts-node -T ../../../node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.ts --config ./config/webpack.production.config.js",
             "forwardAllArgs": false
           },
           "node ./test/prepare-jest"

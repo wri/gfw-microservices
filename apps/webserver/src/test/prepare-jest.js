@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const winston = require('winston');
 
-const makeWebpackConfig = require('../config/webpack.config');
+const clientConfigs = require('../config/client.configs');
 const assets = require('../config/assets');
 
 // basic logger without sql transport
@@ -24,11 +24,9 @@ const replacePathWithRootDir = (fixedPath) => {
 try {
   // Read in our base jest config
   const jestConfig = JSON.parse(fs.readFileSync(jestConfigPath, 'utf-8'));
-  // Grab our aliases
-  const { alias } = makeWebpackConfig().resolve;
   // Update our aliases to use the correct expression, like ^js(.*)$": "<rootDir>/src/js$1"
-  Object.keys(alias).forEach((namespace) => {
-    aliases[`^${namespace}(.*)$`] = replacePathWithRootDir(`${alias[namespace]}$1`);
+  Object.keys(clientConfigs.aliases).forEach((namespace) => {
+    aliases[`^${namespace}(.*)$`] = replacePathWithRootDir(`${clientConfigs.aliases[namespace]}$1`);
   });
   // Update it based on our aliases, and mocks
   jestConfig.moduleNameMapper = {
@@ -53,6 +51,7 @@ try {
     '@wri-monorepos/constants': '<rootDir>/../../../libs/constants/src/index.ts',
     '@wri-monorepos/shared': '<rootDir>/../../../libs/shared/src/index.ts',
     '@wri-monorepos/sql': '<rootDir>/../../../libs/sql/src/index.ts',
+    '@wri-monorepos/geo': '<rootDir>/../../../libs/geo/src/index.ts',
     ...aliases,
   };
   (jestConfig.modulePathIgnorePatterns = [
@@ -71,5 +70,5 @@ try {
   fs.writeFileSync(jestConfigPath, JSON.stringify(jestConfig, null, 2), 'utf-8');
 } catch (err) {
   logger.error('Error preparing jest configuration file', err);
-  throw new Error('Error preparing jest configuration file', err);
+  throw new Error(`Error preparing jest configuration file ${err}`);
 }

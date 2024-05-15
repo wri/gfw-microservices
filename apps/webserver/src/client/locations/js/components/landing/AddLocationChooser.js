@@ -26,7 +26,6 @@ import CircularProgressWithLabel from './CircularProgressWithLabel';
 import ExistingListSelector from './ExistingListSelector';
 import { deduceActiveId } from '../../../../common/js/utils/templateUtils';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
-import featureFlags from '../../../../../utils/general.utils';
 import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 
@@ -45,6 +44,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
   const [llpStep2, setLlpStep2] = useState(false);
   const [llpStep3, setLlpStep3] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [alertDialogOpen, setAlertDialogOpen] = useState(false);
   const [largeListFile, setLargeListFile] = useState(undefined);
   const [stringDate, setStringDate] = useState('');
   const [fileBytesUploaded, setFileBytesUploaded] = useState('');
@@ -65,6 +65,10 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
 
   const shouldCloseDialog = () => {
     setDialogOpen(false);
+  };
+
+  const shouldCloseAlertDialog = () => {
+    setAlertDialogOpen(false);
   };
 
   function calculatePercentaje(loaded, total) {
@@ -365,12 +369,11 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
             </div>
           </section>
 
-          {featureFlags.isAfiAvailable && (
-            <AnalysisTypesSelector
-              selectedAnalyses={selectedAnalysis}
-              setSelectedAnalyses={setSelectedAnalysis}
-            />
-          )}
+          <AnalysisTypesSelector
+            selectedAnalyses={selectedAnalysis}
+            setSelectedAnalyses={setSelectedAnalysis}
+          />
+
           {/* Temporary removed: GPV-1233
           <hr className="section-divisor" />
           <section className="add-location-chooser__general-section">
@@ -413,16 +416,23 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
 
       {isLargeListUpload && llpStep2 && (
         <div className="dialog__footer add-location-chooser__footer" style={{ right: '0' }}>
-          <Button
-            className="dialog__primary-action"
-            disabled={
-              (!listName && !existingListName) ||
-              (selectedAnalysis.length <= 0 && featureFlags.isAfiAvailable)
-            }
-            label={locationsPage.add.submit}
-            onClick={() => createUploadProcess()}
-            variant="primary"
-          />
+          {!existingListName ? (
+            <Button
+              className="dialog__primary-action"
+              disabled={(!listName && !existingListName) || selectedAnalysis.length <= 0}
+              label={locationsPage.add.submit}
+              onClick={() => createUploadProcess()}
+              variant="primary"
+            />
+          ) : (
+            <Button
+              className="dialog__primary-action"
+              disabled={(!listName && !existingListName) || selectedAnalysis.length <= 0}
+              label={locationsPage.add.submit}
+              onClick={() => setAlertDialogOpen(true)}
+              variant="primary"
+            />
+          )}
           <LinkButton label={locationsPage.add.cancel} onClick={() => onCancel()} />
         </div>
       )}
@@ -443,6 +453,31 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
       >
         <div dangerouslySetInnerHTML={{ __html: dialogMessage }} />
       </Dialog>
+      {existingListName && (
+        <Dialog
+          paperClassName="dialog-paper"
+          open={alertDialogOpen}
+          title={'Confirm Submit to Analisys'}
+          actions={[
+            <LinkButton label={locationsPage.add.cancel} onClick={shouldCloseAlertDialog} />,
+            <Button
+              className="dialog__primary-action"
+              variant="primary"
+              label="Comfirm"
+              onClick={createUploadProcess}
+            />,
+          ]}
+          onRequestClose={shouldCloseAlertDialog}
+        >
+          You have successfully added locations to {existingListName.list_name}. Please confirm that
+          you wish to submit this updated list to analysis. Note that running analysis counts
+          towards your account usage limits. See more information about usage & fees{' '}
+          <a style={{ color: '#789631' }} href="/about#fees">
+            here
+          </a>
+          .
+        </Dialog>
+      )}
       <ModalLoader open={isSaving} />
     </div>
   );

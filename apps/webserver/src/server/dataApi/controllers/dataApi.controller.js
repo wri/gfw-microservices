@@ -1,6 +1,6 @@
 /* eslint-disable object-shorthand */
 /* eslint-disable camelcase */
-const axios = require('axios');
+import axios from 'axios';
 const axiosRetry = require('axios-retry');
 
 const logger = require('../../../config/privateutils/logger.utils');
@@ -25,7 +25,7 @@ axiosRetry(axios, { retries: 2 });
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.getInfoBubbleDataController = (req, res) => {
+export const getInfoBubbleDataController = (req, res) => {
   const { infoBubbleId } = req.params;
   logger.info(`/dataApi/getInfoBubbleData/ - Request => PARAMS: ${JSON.stringify(req.params)}`);
 
@@ -67,14 +67,13 @@ exports.getInfoBubbleDataController = (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.getMetadataTaskData = (req, res) => {
+export const getMetadataTaskData = (req, res) => {
   const { metadataID } = req.params;
   logger.info(`/dataApi/getMetadataTaskData/ - Request => PARAMS: ${JSON.stringify(req.params)}`);
 
   const config = {
     method: 'get',
     url: `${GFW_API_URL__GFW_METADATA}/${metadataID}`,
-    headers: HEADERS_API_KEY,
   };
 
   axios(config)
@@ -110,7 +109,7 @@ exports.getMetadataTaskData = (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.getAnalysisGLAD = (req, res) => {
+export const getAnalysisGLAD = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, group_by, start_date, end_date } = req.query;
   logger.info(`/dataApi/getAnalysisGLAD/ - Request => QUERY: ${JSON.stringify(req.query)}`);
 
@@ -157,7 +156,7 @@ exports.getAnalysisGLAD = (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.getAnalysisVIIRS = (req, res) => {
+export const getAnalysisVIIRS = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, fireDayStart } = req.query;
   logger.info(`/dataApi/getAnalysisVIIRS/ - Request => QUERY: ${JSON.stringify(req.query)}`);
 
@@ -206,7 +205,7 @@ exports.getAnalysisVIIRS = (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.getAnalysisPRODES = (req, res) => {
+export const getAnalysisPRODES = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, startYear, endYear } = req.query;
   logger.info(`/dataApi/getAnalysisPRODES/ - Request => QUERY: ${JSON.stringify(req.query)}`);
 
@@ -255,7 +254,7 @@ exports.getAnalysisPRODES = (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.analysisTreeCoverLoss = (req, res) => {
+export const analysisTreeCoverLoss = (req, res) => {
   const {
     geostore_origin = 'rw',
     geostoreID,
@@ -315,7 +314,7 @@ exports.analysisTreeCoverLoss = (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.analysisTreeCoverGain = (req, res) => {
+export const analysisTreeCoverGain = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, sum } = req.query;
   logger.info(`/dataApi/analysisTreeCoverGain/ - Request => QUERY: ${JSON.stringify(req.query)}`);
 
@@ -364,7 +363,7 @@ exports.analysisTreeCoverGain = (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.analysisTreeBiomassLoss = (req, res) => {
+export const analysisTreeBiomassLoss = (req, res) => {
   const {
     geostore_origin = 'rw',
     geostoreID,
@@ -424,7 +423,7 @@ exports.analysisTreeBiomassLoss = (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.analysisTreeBiomassTotal = (req, res) => {
+export const analysisTreeBiomassTotal = (req, res) => {
   const { geostore_origin = 'rw', geostoreID, sum } = req.query;
   logger.info(
     `/dataApi/analysisTreeBiomassTotal/ - Request => QUERY: ${JSON.stringify(req.query)}`
@@ -475,14 +474,13 @@ exports.analysisTreeBiomassTotal = (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.analysisAdminRegion = (req, res) => {
+export const analysisAdminRegion = (req, res) => {
   const { admin, region = '', thresh } = req.query;
   logger.info(`/dataApi/analysisAdminRegion/ - Request => PARAMS: ${JSON.stringify(req.params)}`);
 
   const config = {
     method: 'get',
     url: `${GFW_API_URL__GFW_GEOSTORE}/admin/${admin}/${region}?thresh=${thresh}`,
-    headers: HEADERS_API_KEY,
   };
 
   axios(config)
@@ -546,7 +544,7 @@ const getPalmOilMillLatLongChunk = async (millsChunk) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.getPalmOilMillLatLong = async (req, res) => {
+export const getPalmOilMillLatLong = async (req, res) => {
   const { palmOilMillIDs } = req.body;
   logger.info(`getPalmOilMillLatLong - total ${palmOilMillIDs?.length} locations`);
 
@@ -584,7 +582,7 @@ exports.getPalmOilMillLatLong = async (req, res) => {
  * @param {Object} req - Express request
  * @param {Object} res - Express response
  */
-exports.getBBoxAndGeostoreIDs = (req, res) => {
+export const getBBoxAndGeostoreIDs = (req, res) => {
   const { GFW_LIST, QUERY_FIELD, IDs, date } = req.query;
   logger.info(`/dataApi/getBBoxAndGeostoreIDs/ - Request => QUERY: ${JSON.stringify(req.query)}`);
 

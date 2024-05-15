@@ -22,7 +22,7 @@ export async function getAccountSubscriptionData({
     organizationId,
   };
 
-  const accountUsage = await getAccountAnalysisUsage(accountUsageOptions);
+  const [accountUsage] = await getAccountAnalysisUsage(accountUsageOptions);
   const accountLimits = await getAccountLimits(organizationId, subscriptionStatusId);
 
   return {

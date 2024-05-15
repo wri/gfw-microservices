@@ -1,4 +1,4 @@
-import { proLayers } from '../../../../../common/js/config';
+import { proLayers } from '../../../../../common/js/proLayers.config';
 const {
   integratedDeforestationAlertsID,
   raddAlertsID,

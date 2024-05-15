@@ -15,7 +15,7 @@ import { Application, Request, Response, NextFunction } from 'express';
 const helmet = require('helmet');
 const path = require('path');
 const rateLimiterUtil = require('./limiter-util');
-const config = require('../config');
+import config from '../config';
 const { PRODUCTION_ENVIRONMENTS } = require('../config/environments.config');
 import * as expressRateLimit from 'express-rate-limit';
 import * as redisRateLimit from 'rate-limit-redis';

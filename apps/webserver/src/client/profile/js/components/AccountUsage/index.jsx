@@ -14,7 +14,7 @@ import AccountUsage from './AccountUsage';
 import moment from 'moment';
 import { useProfileContext } from '../../ProfileStateContext';
 import AccountUsageDropMenu from './AccountUsageDropMenu';
-import { formatNumber } from '../../../../common/js/utils/formatNumber';
+import { formatNumber } from '../../../../common/js/utils/format';
 
 export default function AccountUsageContainer() {
   const { accountRenewalTime } = useProfileContext();
@@ -59,12 +59,12 @@ export default function AccountUsageContainer() {
       }
     )
       .then((res) => res.json())
-      .then((data) => {
-        const [usageData] = data;
+      .then(([usageData]) => {
         setUsageData(usageData);
       })
       .catch((error) => {
         console.log(error);
+        setUsageData({});
       });
   }, []);
 
@@ -140,11 +140,11 @@ export default function AccountUsageContainer() {
     return ((locations / usageData.locations_analyzed) * 100).toFixed(2);
   };
 
-  return usageData === null ? (
+  return usageData === null || usageLimitsData === null ? (
     <InlineLoader />
   ) : (
     <>
-      <Alert severity={messageType}>{messageText}</Alert>
+      {messageType !== '' && <Alert severity={messageType}>{messageText}</Alert>}
       <p style={renewalTextStyle}>Account renewal on {subscriptionYearEnd}</p>
 
       <AccountUsageDropMenu export={exportUsage} />
@@ -176,7 +176,7 @@ export default function AccountUsageContainer() {
                   {row.first_name} {row.last_name}
                 </TableCell>
                 <TableCell align="right">
-                  {row.total_locations_analyzed} (
+                  {formatNumber(row.total_locations_analyzed)} (
                   {getAnalysesPercentage(row.total_locations_analyzed)}%)
                 </TableCell>
                 <TableCell align="right">

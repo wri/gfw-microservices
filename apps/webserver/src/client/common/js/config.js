@@ -5,85 +5,7 @@ import _range from 'lodash/range';
 import { fillYears } from './utils/configPopulation';
 import { saveAsDraftListConfig } from '../../../config/config/locations.config';
 import { PLANET_BASEMAP } from '../../map/js/config/map.config';
-
-// ---Layers START
-// We are using names in the api to map out the layers
-// key is universal id we use within the app, values is layer NAME in the API
-export const proLayers = {
-  sBTNNaturalForest: 'SBTN Natural Forest',
-  negligibleRisk: 'Negligible Risk',
-  cocoaDeforestationRisk: 'cocoa_deforestation_risk',
-  otbn: 'Land Planning Classification of Native Forests',
-  clarkLabsAquacultureLandCover: 'Clark Labs Aquaculture Land Cover 2018',
-  clarkLabsAquacultureLandChange: 'Clark Labs Aquaculture Land Change',
-  treeCoverLossID: 'Tree cover loss',
-  treeCoverGainID: 'Tree cover gain',
-  prodesDeforestationID: 'PRODES Deforestation Vizz',
-  treeBiomassLossID: 'Tree biomass loss',
-  gladAlertsID: 'GLAD-L alerts',
-  gladLGeographicCoverageID: 'GLAD-L Alerts Geographic Coverage',
-  gladS2AlertsID: 'GLAD-S2 alerts',
-  gladS2GeographicCoverageID: 'GLAD-S2 alerts geographic coverage',
-  raddAlertsID: 'RADD alerts',
-  raddCoverageID: 'RADD Coverage',
-  integratedDeforestationAlertsID: 'Integrated Deforestation Alerts',
-  integratedAlertsGeographicCoverageID: 'integrated alerts geographic coverage',
-  viirsActiveFiresID: 'VIIRS Global Fires',
-  treeCoverID: 'Tree cover 2000',
-  congoPrimaryForestsID: 'Congo Primary Forests',
-  cameroonAgroIndustrialZonesID: 'Cameroon agro-industrial zones',
-  republicOfTheCongoOilPalmConcessionsID: 'Republic of the Congo Oil Palm Concessions',
-  universalMillList: 'Universal Mill List',
-  administrativeAreas: 'administrative-areas', // this layer does not seem to exist in PROD api
-  oilPalmConcessions: 'Oil Palm Concessions',
-  soyPlantedArea: 'Soy Planted Area',
-  aboveGroundBiomassId: 'Aboveground live woody biomass density',
-  primaryForest: 'Primary Forest',
-  // treePlantationsType: 'Tree Plantations by type',
-  treePlantationsSpecies: 'Tree Plantations by species',
-  brazilBiomesID: 'Brazil Biomes',
-  rspoConcessions: 'RSPO Concessions',
-  rspoPalmOilMills: 'rspo-palm-oil-mills', // this layer does not seem to exist in PROD api
-  protectedAreas: 'WDPA Esri',
-  adminAreas: 'admin-areas', // this layer does not seem to exist in PROD api
-  AZESites: 'Alliance for Zero Extinction Sites',
-  landRights: 'Land Rights (Esri)',
-  indoTreePlantationsSpecies: 'indonesia-tree-plantations-by-species', // this layer does not seem to exist in PROD api
-  indoTreePlantationsType: 'indonesia-tree-plantations-by-type', // this layer does not seem to exist in PROD api
-  intactForestLandscapesID: 'Intact Forest Landscapes',
-  globalPeatlandsID: 'Global Peatlands',
-  landCoverID: 'Land cover',
-  liberiaOilPalmConcessions: 'Liberia Oil Palm Concessions',
-  liberiaTreePlantationsByType: 'liberia-tree-plantations-by-type', // does not exist in prod
-  liberiaTreePlantationsBySpecies: 'liberia-tree-plantations-by-species', // does not exist in prod
-  prodesDeforestationVizzBrazil: 'PRODES Deforestation Vizz Brazil',
-  brazilRSPOOilPalmID: 'Brazil RSPO Certified Oil Palm Concessions',
-  brazilTreeByTypeID: 'brazil-tree-plantations-by-type', // does not exist
-  brazilTreeBySpeciesID: 'brazil-tree-plantations-by-species', // does not exist
-  landCoverSEAsiaID: 'Land Cover Southeast Asia',
-  indonesiaForestMoratorium: 'Indonesia Forest Moratorium',
-  indonesiaLegalClass: 'Indonesia Forest Area',
-  indonesiaOilPalmClass: 'Indonesia Oil Palm Concessions',
-  indonesiaPeatLands: 'Indonesia Peat Lands',
-  indonesiaPrimaryForest: 'Indonesia Primary Forests',
-  indonesiaRSPO: 'RSPO Concessions (Indonesia)',
-  indonesiaRSPOPalmOil: 'Indonesia RSPO palm oil mills',
-  indonesiaLandCover: 'Indonesia Land Cover',
-  malaysiaRSPO: 'RSPO Concessions (Malaysia)',
-  sarawakOilPalm: 'Sarawak oil palm concessions',
-  papuaNewGRSPO: 'RSPO Concessions (Papua New Guinea)',
-  userLocations: 'user-locations',
-};
-// ----layers END
-
-// Array that holds all vector tile cache layers that require their separate endpoint to fetch the features on click
-export const vectorEnabledLayers = [
-  proLayers.viirsActiveFiresID,
-  proLayers.rspoConcessions,
-  proLayers.protectedAreas,
-  proLayers.oilPalmConcessions,
-  proLayers.universalMillList,
-];
+import { proLayers } from './proLayers.config';
 
 export const DATA_API_URL = location.origin;
 
@@ -107,10 +29,10 @@ export const convertURL = 'https://production-api.globalforestwatch.org/v2/ogr/c
 
 export const oversizedUploadText =
   'Lists are limited to a maximum of 1,500 locations. Please cancel this edit and ensure your final list will contain no more than 1,500 locations.';
-export const latestTreeCoverLossYearFC = 2023; // Forest Change
+export const latestTreeCoverLossYearForTclDataInMap = 2023;
 export const latestTreeCoverLossYearCommodityRisk = 2022;
 export const earliestTreeCoverLossYearCommodityRisk = 2002;
-export const latestTreeCoverLossYearSensitiveAreas = 2022; // Sensitive Areas
+export const latestTreeCoverLossYearForTclDataInAnalyses = 2023;
 
 export const soyPlantedYearsRange = [2001, 2022];
 
@@ -127,8 +49,15 @@ const aws_templates = `${pro_AWS_base}/templates/`;
 export const termsAndConditions =
   'https://d1ps9kreypzu9a.cloudfront.net/Training%20Guides/GFW%20Pro%20Landing%20Page/World%20Resources%20Institute%20-%20GFW%20Pro%20-%20Terms%20of%20Service%207_2_2018.pdf';
 
-export const privacyPolicy =
-  'https://d1ps9kreypzu9a.cloudfront.net/Training%20Guides/GFW%20Pro%20Landing%20Page/World%20Resources%20Institute%20-%20GFW%20Pro%20-%20Privacy%20Policy%207_2_2018.pdf';
+export const termsOfServices = 'https://www.wri.org/about/wri-data-platforms-tos';
+
+export const privacyPolicy = 'https://www.wri.org/about/privacy-policy';
+
+export const licenseAgreement =
+  'https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/';
+
+export const priceSheet =
+  'https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/';
 
 export const sharedUrlDict = {
   gfwHeaderUrl: `${pro_AWS_base}/js/gfw-assets.nightly.js`,
@@ -189,23 +118,31 @@ export const aboutPage = {
   historyDescription:
     '<p>Anyone with an internet connection can now monitor deforestation in near real-time, in areas as small as a soccer penalty box. The Global Forest Watch (GFW) partnership, convened by World Resources Institute (WRI), has ushered in a new era of radical transparency for forests, enabled by cutting edge satellite imagery, data analysis and communication technologies.</p><p>Since 2014, WRI has been working with companies and financial institutions at the forefront of sustainability to understand how GFW can support implementation of zero-deforestation commitments and promote sustainable commodities production and trade. The GFW Commodities (scheduled to be decommissioned in 2018) application surfaced geospatial data for monitoring and analyzing deforestation risk in oil palm and soy supply chains. In 2016, following consultations with more than 60 finance sector professionals, WRI released a prototype of a GFW Finance application. Many commodity companies and financial institutions showed tremendous interest in and demand for both applications.</p><p>In 2017, WRI proposed to integrate GFW Commodities and Finance functionality into GFW Pro – a common platform built specifically to provide an internal management and decision-support system for companies operating in agricultural supply chains. GFW Pro promises to provide business-ready insights about land-related sustainability performance – starting with, but not limited to, deforestation-free compliance analysis – through a secure and customizable workflow application.</p><p>More than 15 leading companies, financial institutions and NGOs officially endorsed the GFW Pro vision, which was <a href="https://www.wri.org/news/2017/01/release-partnership-launches-increase-transparency-and-traceability-across-supply" target="_blank">formally launched</a> at the World Economic Forum Annual Meeting in January 2017.</p>',
   tutorialsTitle: 'Tutorials',
-  tutorialsDescription: `<p>Global Forest Watch PRO offers a wide range of content and capabilities to serve a variety of users and purposes. Whether you arrive at GFW Pro with a clear purpose or are simply exploring different features, we can help you learn to use the platform.</p><p>Visit our <a href=${GFW_PRO_USER_GUIDE} target="_blank">How to Portal</a> to see all tutorials.</p>`,
+  tutorialsDescription:
+    'Global Forest Watch Pro offers a wide range of content and capabilities to serve a variety of users and purposes. Whether you arrive at GFW Pro with a clear purpose or are simply exploring different features, we can help you learn to use the platform.',
+  feesTitle: 'Fees',
+  feesDescription: [
+    'Creating and maintaining an account on GFW Pro is free. Our goal is to make GFW Pro available as a public good accessible by all supply chain actors and thereby foster more sustainable commodity sourcing decisions. An annual free grant of 5,000 per-location analyses and 100 million hectares of processing is provided to each organization. For most organizations, this is sufficient for internal operational and sustainability assessments as well as direct reporting to government regulators and nonprofit administrators of voluntary commitments.',
+    'To support rapid user growth and increased demand for product upgrades, both of which drive up operational costs, we charge fees for usage that exceeds the free annual allowance, and for licenses to publish, distribute or resell GFW Pro content to third parties.',
+    'To maintain GFW Pro as a widely accessible public good, we ask our users to support the platform by paying a fair fee to share analyses and for usage that exceeds the free use limit.',
+    'For more information on GFW Pro packages and prices, please refer to our <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/">price list</a>&nbsp;and <a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">license agreement</a>. If you have an existing GFW Pro account, the&nbsp;<a data-testid="link-with-safety" href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model/">fee model FAQ page</a>&nbsp;offers additional information and some relevant examples. Otherwise, please <a data-testid="link-with-safety" href="mailto:GFWPROsales@wri.org">contact our sales team for more information</a>.',
+  ],
 };
 
 export const loginPage = {
-  appTitleText: 'Achieve supply chain sustainability with data that delivers impact.',
+  appTitleText: 'Achieve supply chain sustainability with analytics that deliver impact.',
   appRequestAccount: 'Request an Account',
   appLearnMore: 'Learn more about Pro',
-  learnMoreURL: 'https://www.globalforestwatch.org/help/gfw-pro/',
   moreInfo: {
     help: {
       paragraphText: 'Find out how GFW Pro can help you and your organization.',
-      buttonText: 'Find out more',
+      buttonText: 'Contact us',
+      link: 'mailto:GFWPROsales@wri.org',
     },
     subscribe: {
-      paragraphText:
-        'Subscribe to the Global Forest Watch newsletter for general application information and updates.',
-      buttonText: 'Stay updated',
+      paragraphText: 'Follow us on LinkedIn to see the latest news and updates from GFW Pro',
+      buttonText: 'GFW LinkedIn page',
+      link: 'https://www.linkedin.com/showcase/globalforestwatch/',
     },
   },
   latestResearchTitle: 'Latest Research and Insights',
@@ -236,11 +173,11 @@ export const loginPage = {
         image: 'icon-lg-share.svg',
       },
       {
-        text: 'Demonstrate compliance with commitments and policies',
+        text: 'Verify and demonstrate compliance with commitments and regulations like the European Union’s deforestation regulation (EUDR).',
         image: 'icon-lg-monitor.svg',
       },
       {
-        text: 'Share data and analyses with colleagues, clients and customers through secure workflows',
+        text: 'Share data and analyses across teams and the broader organization via secure workflows.',
         image: 'icon-lg-compliance.svg',
       },
     ],
@@ -378,16 +315,17 @@ export const loginPage = {
           {
             title: 'Analyze & Monitor',
             description:
-              'Identify areas at risk within your supply chain and assess progress towards zero-deforestation commitments.',
+              'Identify areas at risk within your supply chain and assess compliance with the EUDR or progress towards zero-deforestation commitments.',
           },
           {
             title: 'Collaborate',
-            description: 'Send aggregated risk and progress assessments to colleagues and buyers.',
+            description:
+              'Send aggregated risk and progress assessments to colleagues and generate reports for buyers. Integrate into due diligence processes for the EUDR.',
           },
           {
             title: 'Manage',
             description:
-              'Identify priority areas in your supply chain for adhering to zero-deforestation commitments.',
+              'Identify priority areas in your supply chain for complying with the EUDR and adhering to zero-deforestation commitments.',
           },
         ],
       },
@@ -404,17 +342,17 @@ export const loginPage = {
           {
             title: 'Upload & Save',
             description:
-              'Receive and monitor production location portfolios from your suppliers within GFW Pro.',
+              'Upload and monitor production location portfolios received from suppliers.',
           },
           {
             title: 'Analyze & Monitor',
             description:
-              'Identify areas at risk throughout your supply base and monitor progress towards suppliers’ zero-deforestation goals.',
+              "Identify areas at risk throughout your supply base and monitor compliance with EUDR and progress towards suppliers' zero-deforestation goals.",
           },
           {
             title: 'Collaborate',
             description:
-              'Receive aggregated risk and progress assessments from individual suppliers within GFW Pro.',
+              'Share portfolios and coordinate sourcing decisions across the organization. Integrate into due diligence processes for the EUDR.',
           },
           {
             title: 'Manage',
@@ -790,8 +728,8 @@ export const locationsPage = {
     listsFilterPlaceholder: 'Search lists...',
     listsFilterClear: 'Clear search',
     listsFilterNoMatch: 'Sorry, your search returned no results.',
-    update: 'Update',
-    submit: 'Submit',
+    update: 'Update Analysis',
+    submit: 'Submit For Analysis',
     selectPlaceholder: 'Select...',
     selectCountry: 'Country',
     selectState: 'State',
@@ -808,9 +746,10 @@ export const locationsPage = {
     applyFilters: 'Apply filters',
     resetFilters: 'Reset',
     rerunListDialog: {
-      title: 'Confirm update',
-      text: `Select ‘OK’ to update your list. Your list will not be available while the update is processing.
-      You will receive an email notification when the update is completed.`,
+      title: 'Confirm Analysis Update',
+      text: `<p>Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete.
+      You will receive an email notification when the update is completed.</p>
+      <p>Note that running analysis counts towards your account usage limits. See more information <a target="_blank" href="/about?section=Fees">here</a>.</p>`,
     },
     cancel: 'Cancel',
     confirm: 'Confirm',
@@ -1062,7 +1001,7 @@ export const locationsPage = {
     soySilo: { value: 'Supply Shed' },
   },
   diagnostics: {
-    lastDataYear: 2022,
+    lastDataYear: 2023,
   },
   landing: {
     foldersFeatureFlag: false,
@@ -1088,14 +1027,6 @@ export const locationsPage = {
         label: 'By Address',
         landingLabel: 'Enter Address',
         id: 'byAddress',
-        type: 'both',
-      },
-      {
-        commodityOrder: 4,
-        investmentOrder: 2,
-        label: 'By Coordinates',
-        landingLabel: 'Enter Coordinates',
-        id: 'byCoordinates',
         type: 'both',
       },
       // {commodityOrder: 5, investmentOrder: 5, label: 'By Selecting Administrative Region', landingLabel: 'Select Administrative Area', id: 'bySelection', type: 'both'},
@@ -1448,7 +1379,7 @@ export const locationsPage = {
     invalidLocation: ' invalid location',
     invalidLocations: ' invalid locations',
     saveAndAddAnother: 'Save and add another',
-    submit: 'Submit',
+    submit: 'Submit For Analysis',
     upload: 'Upload File:',
     uploadError: 'Upload error',
     sizeOfInvestment: 'Size of Investment',
@@ -1611,6 +1542,7 @@ export const locationsPage = {
     },
     stepFourTitle: 'Save',
     submit: 'Submit',
+    submitForExisting: 'Submit For Analysis',
     successBanner:
       'New locations have been added. You will receive an email once analysis of the locations is complete, and can reload the page to access the data.',
     list: 'List',
@@ -2696,9 +2628,14 @@ export const locationsPage = {
     tooltipMessage:
       'This location has failed analysis. To receive results, resubmit this list for analysis.',
   },
-  accountIsReachingLimitBanner: 'You have reached over 90% of your free usage limits.',
-  accountReachingLimitBannerText:
-    'After hitting your account limit, new and updated analyses will be unavailable until your account administrator purchases additional usage, or until your free usage limits renew on your annual account renewal date. Administrators may review the Usage dashboard for more information and to place an order.',
+  usageReachingLimitBanner: {
+    title: 'You have reached over 90% of your free usage limits.',
+    text: 'After hitting your account limit, new and updated analyses will be unavailable until your account administrator purchases additional usage, or until your free usage limits renew on your annual account renewal date. Administrators may review the Usage dashboard for more information and to place an order.',
+  },
+  usegeReachedLimitBanner: {
+    title: 'This account has consumed available use quantities.',
+    text: 'New and updated analyses will be unavailable until your account administrator purchases additional usage, or until your free usage limits renew on your annual account renewal date. Administrators may review the Usage dashboard for more information and to place an order.',
+  },
 };
 
 export const folderDetailPage = {
@@ -3038,668 +2975,9 @@ export const mapPage = {
     2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
   ],
   // treeCoverLossYears: [2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017],
-  treeCoverLossYearsFC: fillYears(2001, latestTreeCoverLossYearFC),
+  treeCoverLossYearsFC: fillYears(2001, latestTreeCoverLossYearForTclDataInMap),
   granChacoLossYears: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018],
   prodesLossYears: _range(2001, 2020 + 1),
-  layers: [
-    // Forest-change
-    {
-      id: proLayers.treeCoverLossID,
-      group: 'forest-change',
-      subGroup: 'tree-cover-change',
-      order: 100,
-    },
-    {
-      id: proLayers.treeCoverGainID,
-      group: 'forest-change',
-      subGroup: 'tree-cover-change',
-      order: 101,
-    },
-    {
-      id: proLayers.prodesDeforestationID,
-      group: 'forest-change',
-      subGroup: 'tree-cover-change',
-      order: 102,
-    },
-    {
-      id: proLayers.treeBiomassLossID,
-      group: 'forest-change',
-      subGroup: 'tree-cover-change',
-      order: 104,
-    },
-    {
-      id: proLayers.negligibleRisk,
-      group: 'forest-change',
-      subGroup: 'tree-cover-change',
-      order: 105,
-    },
-    {
-      id: proLayers.cocoaDeforestationRisk,
-      group: 'forest-change',
-      subGroup: 'tree-cover-change',
-      order: 106,
-    },
-
-    {
-      id: proLayers.gladAlertsID,
-      group: 'forest-change',
-      subGroup: 'deforestation-alerts',
-      order: 107,
-    },
-    {
-      id: proLayers.gladLGeographicCoverageID,
-      group: 'forest-change',
-      subGroup: 'deforestation-alerts',
-      order: 108,
-    },
-    {
-      id: proLayers.gladS2AlertsID,
-      group: 'forest-change',
-      subGroup: 'deforestation-alerts',
-      order: 108,
-    },
-    {
-      id: proLayers.gladS2GeographicCoverageID,
-      group: 'forest-change',
-      subGroup: 'deforestation-alerts',
-      order: 110,
-    },
-    {
-      id: proLayers.raddAlertsID,
-      group: 'forest-change',
-      subGroup: 'deforestation-alerts',
-      order: 111,
-    },
-    {
-      id: proLayers.raddCoverageID,
-      group: 'forest-change',
-      subGroup: 'deforestation-alerts',
-      ignored: true,
-      order: 112,
-    },
-    {
-      id: proLayers.integratedDeforestationAlertsID,
-      group: 'forest-change',
-      subGroup: 'deforestation-alerts',
-      order: 113,
-    },
-    {
-      id: proLayers.integratedAlertsGeographicCoverageID,
-      group: 'forest-change',
-      subGroup: 'deforestation-alerts',
-      order: 114,
-      ignored: true,
-    },
-    {
-      id: proLayers.viirsActiveFiresID,
-      group: 'forest-change',
-      subGroup: 'fire-alerts',
-      order: 115,
-      popupTemplate: {
-        title: null,
-        // LATITUDE, LONGITUDE, BRIGHTNESS, CONFIDENCE, ACQ_DATE, ACQ_TIME
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">LATITUDE:</p> <p class="popup-text-value">{LATITUDE}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">LONGITUDE:</p> <p class="popup-text-value">{LONGITUDE}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">BRIGHTNESS:</p> <p class="popup-text-value">{BRIGHT_TI4}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">CONFIDENCE:</p> <p class="popup-text-value">{CONFIDENCE}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">ACQUISITION DATE:</p> <p class="popup-text-value">{ACQ_DATE:DateFormat(selector: "date", datePattern: "d MMMM, YYYY")}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">ACQUISITION TIME:</p> <p class="popup-text-value">{ACQ_TIME}</p></div>',
-      },
-      fields: [
-        { id: 'BRIGHT_TI5', text: 'Bright TI5' },
-        { id: 'CONFIDENCE', text: 'Confidence' },
-      ],
-    },
-    // land-cover
-    {
-      id: proLayers.treeCoverID,
-      group: 'land-cover',
-      order: 200,
-    },
-    {
-      id: proLayers.intactForestLandscapesID,
-      group: 'land-cover',
-      order: 201,
-      fields: [
-        { id: 'class_name', text: 'Class name' },
-        { id: 'objectid', text: 'Object Id' },
-      ],
-    },
-    {
-      id: proLayers.primaryForest,
-      group: 'land-cover',
-      order: 202,
-    },
-    {
-      id: proLayers.globalPeatlandsID,
-      group: 'land-cover',
-      // subGroup: '',
-      // region: 'southeast-asia',
-      // country: 'Indonesia',
-      // countryCode: 'IDN',
-      order: 203,
-    },
-    {
-      id: proLayers.aboveGroundBiomassId,
-      group: 'land-cover',
-      order: 204,
-    },
-    /* {
-      id: proLayers.treePlantationsType,
-      group: 'land-cover',
-      order: 205,
-      popupTemplate: {
-        // PLANTATION TYPE, species, percent plantation coverage, area ha
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">PLANTATION TYPE:</p> <p class="popup-text-value">{type_text}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">SPECIES:</p> <p class="popup-text-value">{spec_org}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">PERCENT<br /> PLANTATION<br /> COVERAGE:</p> <p class="popup-text-value">{percent}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">AREA HA:</p> <p class="popup-text-value">{area_ha:NumberFormat(places:1)}</p></div>',
-      },
-      fields: [
-        {
-          id: 'gfw_gfw_intact_forest_landscape',
-          text: 'Intact forect landscape',
-        },
-        { id: 'ifl_id', text: 'Ifl Id' },
-        { id: 'perimeter', text: 'Perimeter' },
-      ],
-    }, */
-    {
-      id: proLayers.treePlantationsSpecies,
-      group: 'land-cover',
-      order: 206,
-      popupTemplate: {
-        // PLANTATION TYPE, species, percent plantation coverage, area ha
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">PLANTATION TYPE:</p> <p class="popup-text-value">{type_text}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">SPECIES:</p> <p class="popup-text-value">{spec_org}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">PERCENT<br /> PLANTATION<br /> COVERAGE:</p> <p class="popup-text-value">{percent}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">AREA HA:</p> <p class="popup-text-value">{area_ha:NumberFormat(places:1)}</p></div>',
-      },
-      fields: [],
-    },
-    {
-      id: proLayers.landCoverID,
-      group: 'land-cover',
-      order: 207,
-    },
-    {
-      id: proLayers.clarkLabsAquacultureLandCover,
-      group: 'land-cover',
-      order: 208,
-    },
-    {
-      id: proLayers.clarkLabsAquacultureLandChange,
-      group: 'land-cover',
-      order: 209,
-    },
-    {
-      id: proLayers.oilPalmConcessions,
-      group: 'land-use',
-      subGroup: 'concessions',
-      order: 210,
-      popupTemplate: {
-        title: '{name}',
-        // company, country, area ha
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">Company:</p> <p class="popup-text-value">{company}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">Country:</p> <p class="popup-text-value">{country}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">Area:</p> <p class="popup-text-value">{area_ha}</p></div>',
-      },
-      fields: [],
-    },
-    {
-      id: proLayers.sBTNNaturalForest,
-      group: 'land-cover',
-      order: 211,
-    },
-    // Land-Use
-    {
-      id: proLayers.rspoConcessions,
-      group: 'land-use',
-      subGroup: 'concessions',
-      order: 301,
-      popupTemplate: {
-        title: '{plantation}',
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">Company:</p> <p class="popup-text-value">{company}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">Country:</p> <p class="popup-text-value">{country}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">Area:</p> <p class="popup-text-value">{shape_area}</p></div>',
-      },
-      fields: [],
-    },
-    {
-      id: proLayers.soyPlantedArea,
-      group: 'land-use',
-      subGroup: 'crop-production',
-      order: 302,
-    },
-    {
-      id: proLayers.universalMillList,
-      group: 'land-use',
-      subGroup: 'infrastructure',
-      order: 305,
-      popupTemplate: {
-        title: '{mill_name}',
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">MILL ID:</p> <p class="popup-text-value">{uml_id}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">CERTIFICATION:</p> <p class="popup-text-value">{rspo_statu}</p></div>',
-      },
-      fields: [],
-    },
-    {
-      id: proLayers.rspoPalmOilMills,
-      group: 'land-use',
-      subGroup: 'infrastructure',
-      order: 306,
-      popupTemplate: {
-        title: '{mill_name_}',
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">MILL ID:</p> <p class="popup-text-value">{wri_id}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">COMPANY:</p> <p class="popup-text-value">{company_na}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">GROUP:</p> <p class="popup-text-value">{group_name}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">CERTIFICATION:</p> <p class="popup-text-value">{certificat}</p></div>',
-      },
-      fields: [],
-      // }, {
-      //   id: 'wdpa-carto',
-      //   group: 'conservation',
-      //   order: 400
-    },
-    // Conservation
-    {
-      id: proLayers.protectedAreas,
-      group: 'conservation',
-      order: 401,
-      popupTemplate: {
-        title: '{name}',
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">LEGAL DESIGNATION:</p> <p class="popup-text-value">{desig}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">ID:</p> <p class="popup-text-value">{wdpaid}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">COUNTRY:</p> <p class="popup-text-value">{iso3}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">IUCN CATEGORY:</p> <p class="popup-text-value">{iucn_cat}</p></div>',
-      },
-    },
-    {
-      id: proLayers.landRights,
-      group: 'people',
-      order: 501,
-      popupTemplate: {
-        title: '{name}',
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">COUNTRY:</p> <p class="popup-text-value">{Country}</p></div>' +
-          '<div class="popup-text-container"><p class="popup-text-key">LEGAL RECOGNITION:</p> <p class="popup-text-value">{Legal recognition}</p></div>',
-      },
-    },
-    // Region and Country Data
-    // Central Africa
-    {
-      id: proLayers.cameroonAgroIndustrialZonesID,
-      group: 'region',
-      subGroup: '',
-      region: 'central-africa',
-      country: 'Cameroon',
-      countryCode: 'CMR',
-      order: 600,
-    },
-    // {
-    //   id: proLayers.congoPrimaryForestsID,
-    //   group: 'region',
-    //   subGroup: 'land-cover',
-    //   region: 'central-africa',
-    //   country: 'Democratic Republic of the Congo',
-    //   countryCode: 'COD',
-    //   order: 610,
-    // },
-    // {
-    //   id: proLayers.liberiaOilPalmConcessions,
-    //   group: 'region',
-    //   subGroup: 'land-use',
-    //   region: 'central-africa',
-    //   country: 'Liberia',
-    //   countryCode: 'LBR',
-    //   order: 620,
-    // },
-    {
-      id: proLayers.liberiaTreePlantationsByType,
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'central-africa',
-      country: 'Liberia',
-      countryCode: 'LBR',
-      order: 621,
-      fields: [],
-    },
-    {
-      id: proLayers.liberiaTreePlantationsBySpecies,
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'central-africa',
-      country: 'Liberia',
-      countryCode: 'LBR',
-      order: 622,
-      fields: [],
-      // popupTemplate: {
-      //   title: 'Title: {title}',
-      //   // Four fields are used in this template. The value of the selected feature will be
-      //   // inserted in the location of each field name below
-      //   content: '<p>Company: {company}</p>' +
-      //     '<p>Agency: {agency}</p>' +
-      //     '<p>Resources: {resources}</p>'
-      // },
-      // outFields: ['title', 'company']
-    },
-    // {
-    //   id: 'Tree-Plantations-by-type_1',
-    //   group: 'region',
-    //   subGroup: 'land-cover',
-    //   region: 'central-africa',
-    //   country: 'Liberia',
-    //   countryCode: 'LBR',
-    //   order: 622,
-    //   fields: []
-    //   // popupTemplate: {
-    //   //   title: 'Title: {title}',
-    //   //   // Four fields are used in this template. The value of the selected feature will be
-    //   //   // inserted in the location of each field name below
-    //   //   content: '<p>Company: {company}</p>' +
-    //   //     '<p>Agency: {agency}</p>' +
-    //   //     '<p>Resources: {resources}</p>'
-    //   // },
-    //   // outFields: ['title', 'company']
-    // }, {
-    //   id: proLayers.republicOfTheCongoOilPalmConcessionsID,
-    //   group: 'region',
-    //   subGroup: 'land-use',
-    //   region: 'central-africa',
-    //   country: 'Republic of the Congo',
-    //   countryCode: 'COG',
-    //   order: 630,
-    // },
-    // South America
-
-    // Argentia - 630
-    // Bolivia - 640
-    {
-      id: proLayers.brazilBiomesID,
-      group: 'region',
-      subGroup: '',
-      region: 'south-america',
-      country: 'Brazil',
-      countryCode: 'BRA',
-      order: 650,
-      popupTemplate: {
-        title: '{name}',
-        content: '<p>AREA HA: {shape_Area}</p>',
-      },
-    },
-    {
-      id: proLayers.prodesDeforestationVizzBrazil,
-      group: 'region',
-      subGroup: 'forest-change',
-      region: 'south-america',
-      country: 'Brazil',
-      countryCode: 'BRA',
-      order: 652,
-    },
-    // {
-    //   id: proLayers.brazilRSPOOilPalmID,
-    //   group: 'region',
-    //   subGroup: 'land-use',
-    //   region: 'south-america',
-    //   country: 'Brazil',
-    //   countryCode: 'BRA',
-    //   order: 653,
-    // },
-    {
-      id: proLayers.brazilTreeByTypeID,
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'south-america',
-      country: 'Brazil',
-      countryCode: 'BRA',
-      order: 654,
-    },
-    {
-      id: proLayers.brazilTreeBySpeciesID,
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'south-america',
-      country: 'Brazil',
-      countryCode: 'BRA',
-      order: 655,
-    },
-    {
-      id: proLayers.otbn,
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'south-america',
-      country: 'Argentina',
-      countryCode: 'AR',
-      order: 656,
-    },
-    {
-      //   id: proLayers.soyInCerradoBiome,
-      //   group: 'region',
-      //   subGroup: 'land-use',
-      //   country: 'Brazil',
-      //   countryCode: 'BRA',
-      //   order: 657
-      // }, {
-      id: 'colombia-tree-plantations-by-type', // does not exist in api
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'south-america',
-      country: 'Colombia',
-      countryCode: 'COL',
-      order: 661,
-    },
-    {
-      id: 'colombia-tree-plantations-by-species', // does not exist in api
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'south-america',
-      country: 'Colombia',
-      countryCode: 'COL',
-      order: 662,
-    },
-    {
-      id: 'peru-tree-plantations-by-type', // does not exist in api
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'south-america',
-      country: 'Peru',
-      countryCode: 'PER',
-      order: 671,
-    },
-    {
-      id: 'peru-tree-plantations-by-species', // does not exist in api
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'south-america',
-      country: 'Peru',
-      countryCode: 'PER',
-      order: 672,
-    },
-
-    // Southeast Asia
-    {
-      id: proLayers.landCoverSEAsiaID,
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'southeast-asia',
-      country: 'Southeast Asia',
-      countryCode: '',
-      order: 680,
-    },
-    {
-      id: 'cambodia-tree-plantations-by-type', // does not exist in api
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'southeast-asia',
-      country: 'Cambodia',
-      countryCode: 'KHM',
-      order: 691,
-    },
-    {
-      id: 'cambodia-tree-plantations-by-species', // does not exist in api
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'southeast-asia',
-      country: 'Cambodia',
-      countryCode: 'KHM',
-      order: 692,
-    },
-    {
-      id: proLayers.indonesiaForestMoratorium,
-      group: 'region',
-      subGroup: '',
-      region: 'southeast-asia',
-      country: 'Indonesia',
-      countryCode: 'IDN',
-      order: 701,
-    },
-    {
-      id: proLayers.indonesiaLegalClass,
-      group: 'region',
-      subGroup: '',
-      region: 'southeast-asia',
-      country: 'Indonesia',
-      countryCode: 'IDN',
-      order: 702,
-    },
-    // {
-    //   id: proLayers.indonesiaOilPalmClass,
-    //   group: 'region',
-    //   subGroup: 'land-use',
-    //   region: 'southeast-asia',
-    //   country: 'Indonesia',
-    //   countryCode: 'IDN',
-    //   order: 703,
-    // },
-    {
-      id: proLayers.indonesiaPeatLands,
-      group: 'region',
-      subGroup: '',
-      region: 'southeast-asia',
-      country: 'Indonesia',
-      countryCode: 'IDN',
-      order: 704,
-    },
-    // {
-    //   id: proLayers.indonesiaPrimaryForest,
-    //   group: 'region',
-    //   subGroup: 'land-cover',
-    //   region: 'southeast-asia',
-    //   country: 'Indonesia',
-    //   countryCode: 'IDN',
-    //   order: 705,
-    // },
-    // {
-    //   id: proLayers.indonesiaRSPO,
-    //   group: 'region',
-    //   subGroup: 'land-use',
-    //   region: 'southeast-asia',
-    //   country: 'Indonesia',
-    //   countryCode: 'IDN',
-    //   order: 706,
-    // },
-    // {
-    //   id: proLayers.indonesiaRSPOPalmOil,
-    //   group: 'region',
-    //   subGroup: 'land-use',
-    //   region: 'southeast-asia',
-    //   country: 'Indonesia',
-    //   countryCode: 'IDN',
-    //   order: 707,
-    // },
-    {
-      id: proLayers.indoTreePlantationsType,
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'southeast-asia',
-      country: 'Indonesia',
-      countryCode: 'IDN',
-      order: 708,
-    },
-    {
-      id: proLayers.indoTreePlantationsSpecies,
-      group: 'region',
-      popupTemplate: {
-        title: '{name}',
-        // PLANTATION TYPE, species, percent plantation coverage, area ha
-        content:
-          '<div class="popup-text-container"><p class="popup-text-key">Arae HA:</p> <p class="popup-text-value">{shape_Area}</p></div>',
-      },
-      subGroup: 'land-cover',
-      region: 'southeast-asia',
-      country: 'Indonesia',
-      countryCode: 'IDN',
-      order: 709,
-    },
-    {
-      id: proLayers.indonesiaLandCover,
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'southeast-asia',
-      country: 'Indonesia',
-      countryCode: 'IDN',
-      order: 710,
-    },
-    // {
-    //   id: proLayers.malaysiaRSPO,
-    //   group: 'region',
-    //   subGroup: 'land-use',
-    //   region: 'southeast-asia',
-    //   country: 'Malaysia',
-    //   countryCode: 'MYS',
-    //   order: 721,
-    //   fields: [],
-    // },
-    {
-      id: 'malaysia-tree-plantations-by-type', // does not exist in api
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'southeast-asia',
-      country: 'Malaysia',
-      countryCode: 'MYS',
-      order: 722,
-      fields: [],
-    },
-    {
-      id: 'malaysia-tree-plantations-by-species', // does not exist in api
-      group: 'region',
-      subGroup: 'land-cover',
-      region: 'southeast-asia',
-      country: 'Malaysia',
-      countryCode: 'MYS',
-      order: 723,
-      fields: [],
-    },
-    // {
-    //   id: proLayers.sarawakOilPalm,
-    //   group: 'region',
-    //   subGroup: 'land-use',
-    //   region: 'southeast-asia',
-    //   country: 'Malaysia',
-    //   countryCode: 'MYS',
-    //   order: 724,
-    //   fields: [],
-    // },
-    // {
-    //   id: proLayers.papuaNewGRSPO,
-    //   group: 'region',
-    //   subGroup: 'land-use',
-    //   region: 'other',
-    //   country: 'Papua New Guinea',
-    //   countryCode: 'PNG',
-    //   order: 738,
-    //   fields: [],
-    // },
-  ],
-  visibleLayers: [proLayers.treeCoverLossID, proLayers.treeCoverGainID, proLayers.treeCoverID],
   share: {
     title: 'Share this view',
     linkInstructions:
@@ -3712,11 +2990,6 @@ export const mapPage = {
     twitterUrl: (url) => `https://twitter.com/share?url=${url}&via=gfw-water`,
     facebookUrl: (url) => `https://www.facebook.com/sharer.php?u=${url}`,
   },
-  densityDisplayLayers: [
-    proLayers.treeCoverID,
-    proLayers.lreeCoverLossID,
-    proLayers.treeBiomassLossID,
-  ],
   groundBiomassStart: 'Displaying above ground biomass',
   densityLossStart: 'Displaying loss with ',
   densityLossEnd: ' canopy density.',
@@ -3730,26 +3003,7 @@ export const mapPage = {
         'the “loss” will eventually show up as “gain”, as young trees get large enough to achieve canopy closure.</p>',
     },
   ],
-  exclusiveLayers: [
-    proLayers.treeCoverLossID,
-    proLayers.treeCoverGainID,
-    proLayers.prodesDeforestationID,
-    proLayers.treeBiomassLossID,
-    proLayers.gladAlertsID,
-    proLayers.gladS2AlertsID,
-    proLayers.raddAlertsID,
-    proLayers.integratedDeforestationAlertsID,
-    proLayers.viirsActiveFiresID,
-  ],
-  exclusiveDrawLayers: [
-    proLayers.treeCoverLossID,
-    proLayers.treeCoverGainID,
-    proLayers.prodesDeforestationID,
-    proLayers.treeBiomassLossID,
-    proLayers.gladAlertsID,
-    proLayers.viirsActiveFiresID,
-  ],
-  noLocationLayers: [proLayers.brazilBiomesID],
+
   basemaps: [
     {
       id: 'custom-default',

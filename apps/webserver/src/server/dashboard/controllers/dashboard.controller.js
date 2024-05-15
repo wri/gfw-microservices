@@ -1,5 +1,6 @@
 const path = require('path');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
 const GFWlistManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
@@ -17,7 +18,7 @@ const {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.dashboard = (req, res, data) => {
+export const dashboard = (req, res, data) => {
   const isAdministrator = UserManager.isAdministrator(req);
   const { session } = req;
   const fromMap = data ? true : false;

@@ -1,6 +1,7 @@
 const path = require('path');
 
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
@@ -11,9 +12,9 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
  * @name exports.userProfile
  * @static
  * @param {Object} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
-exports.userProfile = (req, res) => {
+export const userProfile = (req, res) => {
   const userID = req.query.user_id ?? null;
   res.render('userProfile', {
     userID,
@@ -23,7 +24,7 @@ exports.userProfile = (req, res) => {
   });
 };
 
-exports.userProfileData = (req, res) => {
+export const userProfileData = (req, res) => {
   const user_id = Number(req.params.user_id);
   const classes = AccountManager.getClassifications(req);
   const commoditiesData = UserManager.getCommodities(req);
@@ -77,7 +78,7 @@ exports.userProfileData = (req, res) => {
   }
 };
 
-exports.createNewUserProfile = (req, res) => {
+export const createNewUserProfile = (req, res) => {
   const classes = AccountManager.getClassifications(req);
   const commoditiesData = UserManager.getCommodities(req);
   const geographiesData = UserManager.getGeographies(req);

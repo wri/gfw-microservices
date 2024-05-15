@@ -1,15 +1,15 @@
-const path = require('path');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 
 /**
  * @summary
  * @name exports.diagnosticsRenderer
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
 
-exports.diagnosticsRenderer = (req, res) => {
+export const diagnosticsRenderer = (req, res) => {
   res.render('diagnostics', {
     common: compiledAssets.js.common,
     compiledJs: compiledAssets.js.diagnostics,

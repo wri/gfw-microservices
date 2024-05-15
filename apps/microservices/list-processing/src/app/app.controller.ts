@@ -1,6 +1,7 @@
 import { LargeListService } from './../services/largelist.service';
 import {
   CopyOrMoveLargeListRequest,
+  DeleteListRequest,
   RequestLargeListProcess,
   RequestPreSignedURLModel,
   RequestSaveLargeListProcessModel,
@@ -8,16 +9,31 @@ import {
   getNumberOfPagesPaginatedListDataRequest,
   getPaginatedListDataRequest,
 } from './../models/index';
-import { Controller, Post, Get, Body, Query, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, BadRequestException, Param } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { LocationService } from '@wri-monorepos/geo';
 import { ListService } from '../services/list.service';
+import { ZodValidationPipe } from '@wri-monorepos/shared';
+import { deleteListBodySchema } from './types/deleteListRequestSchema';
+import { RequestPreSignedURLSchema } from './validators';
+import {
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { BadRequestExceptionResponse } from './types/apiResponses';
+
+/*
+  This controller will be deprecated in the future
+  We are moving this to /v1/ API routes
+*/
 @Controller()
 export class AppController {
   constructor(
-    private readonly appService: AppService,
-    private readonly largeListService: LargeListService,
+    protected readonly appService: AppService,
+    protected readonly largeListService: LargeListService,
     private readonly locationService: LocationService,
     private readonly listService: ListService
   ) {}
@@ -29,7 +45,9 @@ export class AppController {
    * @returns ResponsePreSignedURLModel
    */
   @Post('/create-presigned-url')
-  generatePreSignedUrl(@Body() request: RequestPreSignedURLModel) {
+  generatePreSignedUrl(
+    @Body(new ZodValidationPipe(RequestPreSignedURLSchema)) request: RequestPreSignedURLModel
+  ) {
     return this.appService.generatePreSignedUrl(
       request.key,
       request.contentType,
@@ -59,7 +77,7 @@ export class AppController {
 
   @Post('/create-large-list')
   triggerProcessLargeList(@Body() request: RequestTriggerProcessLargeList) {
-    return this.largeListService.createNewLargeListProcess(
+    return this.largeListService.createListTables(
       request.list_name,
       request.user_id,
       request.client_database,
@@ -147,5 +165,22 @@ export class AppController {
   @Get('/latest_commit')
   getLatestCommit(): string {
     return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;
+  }
+  @ApiResponse({ status: 200, type: String })
+  @ApiNotFoundResponse({ status: 404, type: BadRequestExceptionResponse })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  @Post('/list/:listId/delete')
+  deleteList(
+    @Param('listId') listId: number,
+    @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest
+  ): Promise<string> {
+    const { organizationDatabase, organization_user_id, userEmail } = deleteBodyList;
+    return this.appService.deleteList(
+      listId,
+      organizationDatabase,
+      organization_user_id,
+      userEmail
+    );
   }
 }

@@ -2,8 +2,7 @@ const logger = require('../../../config/privateutils/logger.utils');
 import { featureFlagsService } from '@wri-monorepos/shared';
 
 // Get all flags for SuperAdmin (no org)
-module.exports = async function (request, response) {
-  console.table(featureFlagsService());
+export default async function (request, response) {
   const { getAllFeatureFlags } = await featureFlagsService();
 
   try {
@@ -20,4 +19,4 @@ module.exports = async function (request, response) {
       error: 'An error occurred while processing the getAllFeatureFlags request.',
     });
   }
-};
+}

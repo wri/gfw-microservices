@@ -12,7 +12,12 @@ import {
 import * as analysisActions from '../../actions/analysisActions';
 import { executeQueryJSON } from '@arcgis/core/rest/query';
 import Query from '@arcgis/core/rest/support/Query';
-import { mapPage, proLayers } from '../../../../common/js/config';
+import { mapPage } from '../../../../common/js/config';
+import {
+  proLayers,
+  exclusiveLayers,
+  visibleLayers as visibleLayersConstants,
+} from '../../../../common/js/proLayers.config';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import FlatButton from 'material-ui/FlatButton';
 import SelectAdmin from './SelectAdmin';
@@ -41,7 +46,7 @@ export default class AnalysisPanel extends Component {
   constructor(props) {
     super(props);
     const initalAnalysisLayersVisible =
-      mapPage.visibleLayers.some((layer) => mapPage.exclusiveLayers.includes(layer)) &&
+      visibleLayersConstants.some((layer) => exclusiveLayers.includes(layer)) &&
       props.userInfo.access_level_id !== 3;
     this.state = {
       analysisDisabled: !initalAnalysisLayersVisible,
@@ -56,7 +61,7 @@ export default class AnalysisPanel extends Component {
 
   componentDidMount() {
     const initalAnalysisLayersVisible =
-      mapPage.visibleLayers.some((layer) => mapPage.exclusiveLayers.includes(layer)) &&
+      visibleLayersConstants.some((layer) => exclusiveLayers.includes(layer)) &&
       this.props.userInfo.access_level_id !== 3;
     if (initalAnalysisLayersVisible) {
       store.dispatch(analysisActions.setAnalysis('analysis'));
@@ -67,10 +72,10 @@ export default class AnalysisPanel extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const previousForestChange = prevProps.visibleLayers.some((layer) =>
-      mapPage.exclusiveLayers.includes(layer)
+      exclusiveLayers.includes(layer)
     );
     const currentForestChange = this.props.visibleLayers.some((layer) =>
-      mapPage.exclusiveLayers.includes(layer)
+      exclusiveLayers.includes(layer)
     );
 
     //TODO: Remove all radd layer checks when we have OTF analysis ready

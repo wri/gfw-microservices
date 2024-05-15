@@ -1,5 +1,5 @@
-const path = require('path');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 
 /**
  * @function forgot
@@ -7,9 +7,9 @@ const { compiledAssets } = require(path.resolve('./config/config'));
  * @name exports.forgot
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
-exports.forgot = (req, res) => {
+export const forgot = (req, res) => {
   res.render('forgot', {
     common: compiledAssets.js.common,
     forgotjs: compiledAssets.js.forgot,

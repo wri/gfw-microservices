@@ -1,9 +1,13 @@
-import { Controller, Get, Post, Param, Req, Body } from '@nestjs/common';
+import { Controller, Get, Post, Param, Req, Body, Query } from '@nestjs/common';
 import {
   AlertsGenerateRequest,
+  DeleteListRequest,
   ListAnalysisResponse,
   alertsGenerateBodySchema,
+  deleteListBodySchema,
   listIdSchema,
+  numPageSchema,
+  pageSizeSchema,
 } from './list-analysis.dto';
 import { ListService } from '../lists/lists.service';
 import { ListAnalysisService } from './list-analysis.service';
@@ -65,6 +69,19 @@ export class ListAnalysisController {
       listId,
     });
   }
+  @Post(':listId/delete')
+  async deleteList(
+    @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
+    @Body(new ZodValidationPipe(deleteListBodySchema)) deleteBodyList: DeleteListRequest,
+    @Req() request: RequestSchema
+  ) {
+    new ZodValidationPipe(requestSchema).transform(request);
+    const {
+      user: { organizationId },
+    } = request;
+    const { userEmail } = deleteBodyList;
+    return await this.listAnalysisService.deleteList(listId, organizationId, userEmail);
+  }
   @Get(':listId')
   async getListInfo(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -75,5 +92,17 @@ export class ListAnalysisController {
     } = request;
 
     return await this.list.getListInfo(organizationId, listId);
+  }
+
+  @Get()
+  async getPaginatedLists(
+    @Query('pageSize', new ZodValidationPipe(pageSizeSchema)) pageSize: number,
+    @Query('pageNum', new ZodValidationPipe(numPageSchema)) pageNum: number,
+    @Req() request: RequestSchema
+  ) {
+    const {
+      user: { organizationId },
+    } = request;
+    return await this.list.getPaginatedListInfo(pageSize, pageNum, organizationId);
   }
 }

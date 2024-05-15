@@ -111,7 +111,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.874Z",
+        "createdAt": "2024-05-08T14:13:36.484Z",
         "updatedAt": "2017-10-12T11:36:55.807Z"
       }
     },
@@ -731,14 +731,14 @@
         "default": true,
         "protected": false,
         "published": true,
-        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/de6326e0-7006-44cf-a768-8bb4709af364-1701274194262.png",
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/de6326e0-7006-44cf-a768-8bb4709af364-1712067863504.png",
         "env": "production",
         "layerConfig": {
           "type": "Vector.Layer",
           "body": {
             "useCors": true,
             "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/wdpa_licensed_protected_areas",
-            "url": "https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202310/default/root.json"
+            "url": "https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202402/default/root.json"
           }
         },
         "legendConfig": {
@@ -801,7 +801,7 @@
         "applicationConfig": {},
         "staticImageConfig": {},
         "createdAt": "2020-11-25T20:47:08.196Z",
-        "updatedAt": "2023-11-29T16:09:54.179Z"
+        "updatedAt": "2024-04-02T14:24:23.419Z"
       }
     },
     {
@@ -1008,78 +1008,6 @@
         "staticImageConfig": {},
         "createdAt": "2021-12-06T22:20:34.353Z",
         "updatedAt": "2021-12-06T22:20:34.354Z"
-      }
-    },
-    {
-      "id": "a110a1a8-3d2f-4696-babc-6c54d0b7b459",
-      "type": "layer",
-      "attributes": {
-        "name": "cocoa_deforestation_risk",
-        "slug": "cocoa_deforestation_risk",
-        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
-        "description": "Cocoa Deforestation Risk Assessment",
-        "application": ["gfw-pro"],
-        "iso": [],
-        "provider": "leaflet",
-        "userId": "62601518cdc846001a7756b5",
-        "default": true,
-        "protected": false,
-        "published": true,
-        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/a110a1a8-3d2f-4696-babc-6c54d0b7b459-1708623020970.png",
-        "env": "production",
-        "layerConfig": {
-          "type": "tileLayer",
-          "body": {
-            "options": {
-              "color": [220, 102, 153]
-            },
-            "coverage-options": {
-              "opacity": 0.3,
-              "color": "#f69"
-            },
-            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
-            "url": "https://tiles.globalforestwatch.org/gfw_west_africa_cocoa_deforestation_risk/v202312/default/{z}/{x}/{y}.png",
-            "useCors": true,
-            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/gfw_west_africa_cocoa_deforestation_risk"
-          }
-        },
-        "legendConfig": {
-          "items": [
-            {
-              "categories": [
-                {
-                  "color": "#3900b3ff",
-                  "name": "High"
-                },
-                {
-                  "color": "#714dbfff",
-                  "name": "Mid-high"
-                },
-                {
-                  "color": "#9e6b90ff",
-                  "name": "Medium"
-                },
-                {
-                  "color": "#cf9270ff",
-                  "name": "Mid-low"
-                },
-                {
-                  "color": "#ebb698ff",
-                  "name": "Low"
-                }
-              ],
-              "name": "Cocoa Deforestation Risk Assessment (Cocoa DRA)",
-              "source": "World Resources Institute",
-              "color": "#dc6699"
-            }
-          ],
-          "type": "basic"
-        },
-        "interactionConfig": {},
-        "applicationConfig": {},
-        "staticImageConfig": {},
-        "createdAt": "2024-02-14T18:45:29.776Z",
-        "updatedAt": "2024-02-22T17:30:20.873Z"
       }
     },
     {
@@ -1317,7 +1245,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.876Z",
+        "createdAt": "2024-05-08T14:13:36.487Z",
         "updatedAt": "2017-11-13T15:44:40.770Z"
       }
     },
@@ -1678,7 +1606,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.877Z",
+        "createdAt": "2024-05-08T14:13:36.487Z",
         "updatedAt": "2017-11-03T15:42:33.672Z"
       }
     },
@@ -1784,7 +1712,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.878Z",
+        "createdAt": "2024-05-08T14:13:36.488Z",
         "updatedAt": "2017-10-12T11:36:57.080Z"
       }
     },
@@ -1840,7 +1768,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.878Z",
+        "createdAt": "2024-05-08T14:13:36.488Z",
         "updatedAt": "2017-11-13T15:44:42.098Z"
       }
     },
@@ -1989,7 +1917,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.878Z",
+        "createdAt": "2024-05-08T14:13:36.488Z",
         "updatedAt": "2017-10-20T14:18:54.913Z"
       }
     },
@@ -2033,7 +1961,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.878Z",
+        "createdAt": "2024-05-08T14:13:36.488Z",
         "updatedAt": "2017-10-20T14:42:05.859Z"
       }
     },
@@ -2161,7 +2089,7 @@
         "default": true,
         "protected": false,
         "published": true,
-        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/43751eb3-3934-4e16-86bb-43bb37002489-1655214566438.png",
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/43751eb3-3934-4e16-86bb-43bb37002489-1712067530687.png",
         "env": "production",
         "layerConfig": {
           "type": "tileLayer",
@@ -2176,7 +2104,7 @@
             "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
             "useCors": true,
             "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/umd_soy_planted_area",
-            "url": "https://tiles.globalforestwatch.org/umd_soy_planted_area/v2/{year}/{z}/{x}/{y}.png"
+            "url": "https://tiles.globalforestwatch.org/umd_soy_planted_area/v3/{year}/{z}/{x}/{y}.png"
           }
         },
         "legendConfig": {
@@ -2199,7 +2127,7 @@
         "applicationConfig": {},
         "staticImageConfig": {},
         "createdAt": "2021-04-16T10:59:13.147Z",
-        "updatedAt": "2022-06-14T13:49:26.373Z"
+        "updatedAt": "2024-04-02T14:18:50.595Z"
       }
     },
     {
@@ -2238,7 +2166,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.878Z",
+        "createdAt": "2024-05-08T14:13:36.488Z",
         "updatedAt": "2017-10-12T11:36:56.014Z"
       }
     },
@@ -2279,7 +2207,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.878Z",
+        "createdAt": "2024-05-08T14:13:36.488Z",
         "updatedAt": "2017-10-20T14:18:55.130Z"
       }
     },
@@ -2448,7 +2376,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.879Z",
+        "createdAt": "2024-05-08T14:13:36.489Z",
         "updatedAt": "2017-11-03T17:12:42.185Z"
       }
     },
@@ -2488,7 +2416,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.879Z",
+        "createdAt": "2024-05-08T14:13:36.490Z",
         "updatedAt": "2018-05-19T18:41:46.405Z"
       }
     },
@@ -2528,7 +2456,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.879Z",
+        "createdAt": "2024-05-08T14:13:36.490Z",
         "updatedAt": "2017-10-12T11:36:47.461Z"
       }
     },
@@ -2578,7 +2506,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.879Z",
+        "createdAt": "2024-05-08T14:13:36.490Z",
         "updatedAt": "2017-10-13T12:07:04.638Z"
       }
     },
@@ -2618,7 +2546,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.879Z",
+        "createdAt": "2024-05-08T14:13:36.490Z",
         "updatedAt": "2017-10-12T11:36:53.349Z"
       }
     },
@@ -2659,7 +2587,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.879Z",
+        "createdAt": "2024-05-08T14:13:36.490Z",
         "updatedAt": "2017-10-20T14:18:55.755Z"
       }
     },
@@ -2733,6 +2661,7 @@
         "default": true,
         "protected": false,
         "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/c3bf6eb4-4d36-441a-8935-67a15d618397-1713454638519.png",
         "env": "production",
         "layerConfig": {
           "type": "tileLayer",
@@ -2744,7 +2673,7 @@
             },
             "css-url": "https://github.com/Vizzuality/gfw/blob/3be365eadf2ce0c58a8bb65b5a187abe27482a6e/app/assets/javascripts/map/views/layers/LossLayer.js",
             "useCors": true,
-            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/tree_cover_loss",
+            "metadata": "http://api.resourcewatch.org/v1/gfw-metadata/umd_tree_cover_loss_v1.11",
             "url": "https://storage.googleapis.com/wri-public/Hansen_16/tiles/hansen_world/v1/tc{thresh}/{z}/{x}/{y}.png"
           }
         },
@@ -2766,7 +2695,7 @@
         "applicationConfig": {},
         "staticImageConfig": {},
         "createdAt": "2017-09-14T18:45:21.831Z",
-        "updatedAt": "2018-09-12T12:45:24.971Z"
+        "updatedAt": "2024-04-18T15:37:18.277Z"
       }
     },
     {
@@ -2805,7 +2734,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.879Z",
+        "createdAt": "2024-05-08T14:13:36.494Z",
         "updatedAt": "2017-10-12T11:36:47.972Z"
       }
     },
@@ -2845,7 +2774,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.879Z",
+        "createdAt": "2024-05-08T14:13:36.496Z",
         "updatedAt": "2017-10-12T11:36:56.419Z"
       }
     },
@@ -3215,7 +3144,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.880Z",
+        "createdAt": "2024-05-08T14:13:36.497Z",
         "updatedAt": "2018-04-02T19:32:30.375Z"
       }
     },
@@ -3255,7 +3184,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.880Z",
+        "createdAt": "2024-05-08T14:13:36.497Z",
         "updatedAt": "2017-10-20T14:18:53.509Z"
       }
     },
@@ -3354,7 +3283,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.881Z",
+        "createdAt": "2024-05-08T14:13:36.497Z",
         "updatedAt": "2017-10-12T11:36:48.524Z"
       }
     },
@@ -3394,7 +3323,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.881Z",
+        "createdAt": "2024-05-08T14:13:36.498Z",
         "updatedAt": "2017-10-12T11:36:51.604Z"
       }
     },
@@ -3496,7 +3425,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.881Z",
+        "createdAt": "2024-05-08T14:13:36.498Z",
         "updatedAt": "2018-04-02T19:32:32.427Z"
       }
     },
@@ -3552,7 +3481,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.882Z",
+        "createdAt": "2024-05-08T14:13:36.498Z",
         "updatedAt": "2017-11-13T15:44:40.485Z"
       }
     },
@@ -3653,7 +3582,7 @@
         "interactionConfig": {},
         "applicationConfig": {},
         "staticImageConfig": {},
-        "createdAt": "2024-02-22T17:32:31.882Z",
+        "createdAt": "2024-05-08T14:13:36.498Z",
         "updatedAt": "2018-07-19T08:43:49.261Z"
       }
     },
@@ -3963,6 +3892,46 @@
       }
     },
     {
+      "id": "df72f8eb-2466-405d-8501-70eded5c47f2",
+      "type": "layer",
+      "attributes": {
+        "name": "jrc_global_forest_cover",
+        "slug": "jrc_global_forest_cover",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "JRC Forest Cover",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/df72f8eb-2466-405d-8501-70eded5c47f2-1714575424492.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/jrc_global_forest_cover/v2020/default/{z}/{x}/{y}.png",
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/jrc_global_forest_cover"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "color": "#7266F9",
+              "name": "JRC Forest Cover",
+              "source": "Joint Research Center"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2024-05-01T14:35:32.979Z",
+        "updatedAt": "2024-05-01T14:57:04.389Z"
+      }
+    },
+    {
       "id": "7b0b2472-d411-4bc2-a603-8922ff48be61",
       "type": "layer",
       "attributes": {
@@ -4085,7 +4054,7 @@
         "default": true,
         "protected": false,
         "published": true,
-        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/825c9a3d-054f-45f4-b055-f4a95991a036-1685039529943.png",
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/825c9a3d-054f-45f4-b055-f4a95991a036-1712067710592.png",
         "env": "production",
         "layerConfig": {
           "type": "tileLayer",
@@ -4100,15 +4069,15 @@
               "categories": [
                 {
                   "name": "I",
-                  "color": "#FF0000"
+                  "color": "#EE2521"
                 },
                 {
                   "name": "II",
-                  "color": "#FFFF00"
+                  "color": "#FFCC33"
                 },
                 {
                   "name": "III",
-                  "color": "#008000"
+                  "color": "#97BD3D"
                 }
               ],
               "name": "Territorial Planning of Native Forests"
@@ -4120,7 +4089,7 @@
         "applicationConfig": {},
         "staticImageConfig": {},
         "createdAt": "2023-03-06T16:19:32.380Z",
-        "updatedAt": "2023-05-25T18:32:09.890Z"
+        "updatedAt": "2024-04-02T14:21:50.458Z"
       }
     },
     {
@@ -4245,6 +4214,120 @@
       }
     },
     {
+      "id": "b2f5542d-d442-42ee-9cb5-4c8d2bd47526",
+      "type": "layer",
+      "attributes": {
+        "name": "argentinean-native-forests-loss",
+        "slug": "argentinean_native-forests_loss",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "National Monitoring System of Native Forests",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/b2f5542d-d442-42ee-9cb5-4c8d2bd47526-1715009087581.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/arg_otbn_forest_loss/v2022/year/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/arg_otbn_forest_loss"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "National Monitoring System of Native Forests",
+              "source": "Ministery of the Environment and Sustainable Development",
+              "color": "#6699dc"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2024-05-03T17:50:48.422Z",
+        "updatedAt": "2024-05-06T15:24:47.469Z"
+      }
+    },
+    {
+      "id": "a110a1a8-3d2f-4696-babc-6c54d0b7b459",
+      "type": "layer",
+      "attributes": {
+        "name": "cocoa_deforestation_risk",
+        "slug": "cocoa_deforestation_risk",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Cocoa Deforestation Risk Assessment",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/a110a1a8-3d2f-4696-babc-6c54d0b7b459-1709565090746.png",
+        "env": "production",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "color": [220, 102, 153]
+            },
+            "coverage-options": {
+              "opacity": 0.3,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/gfw_west_africa_cocoa_deforestation_risk/v202312/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/gfw_west_africa_cocoa_deforestation_risk"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "color": "#3900b3ff",
+                  "name": "High"
+                },
+                {
+                  "color": "#714dbfff",
+                  "name": "Mid-high"
+                },
+                {
+                  "color": "#9e6b90ff",
+                  "name": "Medium"
+                },
+                {
+                  "color": "#cf9270ff",
+                  "name": "Mid-low"
+                },
+                {
+                  "color": "#ebb698ff",
+                  "name": "Low"
+                }
+              ],
+              "name": "Cocoa Deforestation Risk Assessment (Cocoa DRA)",
+              "source": "World Resources Institute",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2024-02-14T18:45:29.776Z",
+        "updatedAt": "2024-03-04T15:11:30.613Z"
+      }
+    },
+    {
       "id": "e045c55c-3455-4a19-8ee8-e0cbe9926085",
       "type": "layer",
       "attributes": {
@@ -4310,7 +4393,7 @@
   },
   "meta": {
     "total-pages": 1,
-    "total-items": 77,
+    "total-items": 79,
     "size": 1000
   }
 }

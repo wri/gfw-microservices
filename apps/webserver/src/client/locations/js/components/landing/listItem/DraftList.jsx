@@ -21,7 +21,6 @@ import sharedColumnText from './sharedColumnText';
 import redirectToPage from '../../../../../common/js/utils/redirect';
 import LandingDownload from '../../lists/download/LandingDownload';
 import { numberWithCommas } from '../../../utils/locationsTableUtils';
-import featureFlags from '../../../../../../utils/general.utils';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 import AnalysisListChips from './AnalysisListChips';
 import CustomDraftDialog from '../../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
@@ -53,7 +52,6 @@ function DraftList({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [isChangeTypeOfAnalysisModalOpen, setIsChangeTypeOfAnalysisModalOpen] = useState(false);
-  const { isAfiAvailable } = featureFlags;
   const {
     list_name,
     id,
@@ -117,15 +115,14 @@ function DraftList({
 
   return (
     <>
-      {isAfiAvailable && (
-        <ChangeTypeOfAnalysisModal
-          listId={id}
-          listName={list_name}
-          listAnalysesStatus={listAnalysesStatus}
-          setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
-          isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
-        />
-      )}
+      <ChangeTypeOfAnalysisModal
+        listId={id}
+        listName={list_name}
+        listAnalysesStatus={listAnalysesStatus}
+        setIsChangeTypeOfAnalysisModalOpen={setIsChangeTypeOfAnalysisModalOpen}
+        isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
+      />
+
       <li
         className={`locations-list ${isEmptyList ? 'locations-list--inactive' : ''}`}
         title={locationsPage.landing.draftMessage}
@@ -221,7 +218,7 @@ function DraftList({
               {showRerunOpt && (
                 <MenuItem
                   leftIcon={<KeyboardArrowUpIcon />}
-                  primaryText="Submit"
+                  primaryText="Submit Analysis"
                   onClick={() => {
                     setIsMenuOpen(false);
                     setShowSubmitModal(true);
@@ -229,16 +226,16 @@ function DraftList({
                 />
               )}
               <Divider />
-              {isAfiAvailable && (
-                <MenuItem
-                  primaryText={locationsPage.lists.changeTypeOfAnalysis}
-                  leftIcon={<SettingsIcon />}
-                  onClick={() => {
-                    setIsChangeTypeOfAnalysisModalOpen(true);
-                    setIsMenuOpen(false);
-                  }}
-                />
-              )}
+
+              <MenuItem
+                primaryText={locationsPage.lists.changeTypeOfAnalysis}
+                leftIcon={<SettingsIcon />}
+                onClick={() => {
+                  setIsChangeTypeOfAnalysisModalOpen(true);
+                  setIsMenuOpen(false);
+                }}
+              />
+
               <MenuItem
                 primaryText={
                   isInFolder ? locationsPage.lists.manage : locationsPage.lists.addToFolder

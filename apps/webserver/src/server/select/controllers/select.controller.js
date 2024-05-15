@@ -1,5 +1,6 @@
 const path = require('path');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 /**
  * @function select
@@ -9,7 +10,7 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.select = (req, res) => {
+export const select = (req, res) => {
   // Set in the response to not cache the page
   res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
   res.header('Expires', '-1');

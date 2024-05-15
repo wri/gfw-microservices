@@ -1,5 +1,5 @@
-const path = require('path');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 
 /**
  * @function manager
@@ -7,9 +7,9 @@ const { compiledAssets } = require(path.resolve('./config/config'));
  * @name exports.manager
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
-exports.manager = (req, res) => {
+export const manager = (req, res) => {
   res.render('manager', {
     common: compiledAssets.js.common,
     managerjs: compiledAssets.js.manager,

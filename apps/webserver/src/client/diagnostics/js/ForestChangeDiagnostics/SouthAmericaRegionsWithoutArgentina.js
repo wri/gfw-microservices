@@ -13,7 +13,7 @@ import {
   validatePct,
   getFormatedTooltipForDiagnosticsChart,
 } from '../../../common/js/utils/diagnostics.utils';
-import { latestTreeCoverLossYearFC, locationsPage } from '../../../common/js/config';
+import { latestTreeCoverLossYearForTclDataInMap, locationsPage } from '../../../common/js/config';
 import { PRODES_HIGHCHARTS_BAR_CONFIGS } from './SouthAmericaRegions/SouthAmericaRegions.config';
 import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
@@ -22,7 +22,7 @@ const PRIMARY_FOREST_COLOR = '#818181';
 const PROTECTED_AREAS_COLOR = '#818181';
 
 const START_YEAR = 2001;
-const END_YEAR = latestTreeCoverLossYearFC;
+const END_YEAR = latestTreeCoverLossYearForTclDataInMap;
 const HARVEST_YEAR = END_YEAR - 1;
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
 let isMounted = false;

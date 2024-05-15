@@ -1,5 +1,4 @@
 const path = require('path');
-const https = require('https');
 const AWS = require('@aws-sdk/client-sqs');
 const { Consumer } = require('sqs-consumer');
 
@@ -59,13 +58,7 @@ function initialize() {
           logger.error('VECTOR TILE GENERATION FAILED', response.message);
         });
     },
-    sqs: new AWS.SQS({
-      httpOptions: {
-        agent: new https.Agent({
-          keepAlive: true,
-        }),
-      },
-    }),
+    sqs: new AWS.SQS(),
     batchSize: 5,
   });
   sqsListener.on('error', (err) => {

@@ -9,7 +9,7 @@
 
 ********************************************************************/
 const AWS = require('@aws-sdk/client-s3');
-const config = require('../config');
+import config from '../config';
 const logger = require('./logger.utils');
 
 const s3 = new AWS.S3();

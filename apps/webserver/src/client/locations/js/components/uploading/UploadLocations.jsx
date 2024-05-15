@@ -64,6 +64,54 @@ import { listStatus } from '../../../../../config/env/listStatuses.constants';
 // Style
 import '../../../css/locations.scss';
 
+// keeping the message local
+const DialogConfirmSubmitContent = ({ listName }) => {
+  const listConditionalText = listName ? (
+    <span>
+      You have added locations to <strong>{listName}</strong>, as defined above.
+    </span>
+  ) : (
+    <span>You have successfully created a list in Pro.</span>
+  );
+
+  return (
+    <p>
+      {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
+      running analysis counts towards your account usage limits. See more information{' '}
+      <a target="_blank" href="/about?section=Fees" style={{ color: '#97bd3d' }}>
+        here
+      </a>
+      .
+    </p>
+  );
+};
+
+const DialogDraftContent = ({ listName = 'Create New List' }) => {
+  const listConditionalText =
+    listName !== 'Create New List' ? (
+      <>
+        You have added locations to <strong>{listName}</strong>, as defined above. Click OKAY to
+        save this updated list as a draft. Your list will stay
+      </>
+    ) : (
+      <>
+        You have successfully created a draft list in Pro. Click OKAY to close this window and be
+        navigated back to the Locations page. Your list will be
+      </>
+    );
+
+  return (
+    <p>
+      {listConditionalText} in draft state until you choose to run analysis on it. Note that running
+      analysis counts towards your account usage limits. See more information{' '}
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
+        here
+      </a>
+      .
+    </p>
+  );
+};
+
 class UploadLocations extends Component {
   historyUnblock = undefined;
 
@@ -87,6 +135,7 @@ class UploadLocations extends Component {
       dialogOpen: false,
       dialogTitle: '',
       dialogMessage: '',
+      dialogConfirmAction: null,
       dialogEmail: false,
       step: 1,
       canGoNext: true,
@@ -470,6 +519,7 @@ class UploadLocations extends Component {
 
     this.setState(
       {
+        dialogOpen: false,
         isSaving: true,
       },
       () => {
@@ -808,6 +858,7 @@ class UploadLocations extends Component {
                     customList: listName,
                     dialogTitle,
                     dialogMessage,
+                    dialogConfirmAction: null,
                   };
 
                   this.setState(finalState);
@@ -1219,7 +1270,7 @@ class UploadLocations extends Component {
   };
 
   shouldCloseDialog = () => {
-    this.setState({ dialogOpen: false });
+    this.setState({ dialogOpen: false, dialogConfirmAction: null });
   };
 
   setUploading = (uploading) => {
@@ -1275,6 +1326,39 @@ class UploadLocations extends Component {
     this.setState({ addType });
   };
 
+  isExistingList = () => {
+    return this.state.selectedList !== '';
+  };
+
+  confirmBeforeSubmit = () => {
+    this.setState({
+      dialogOpen: true,
+      dialogTitle: 'Are you sure?',
+      dialogMessage: <DialogConfirmSubmitContent listName={this.state.selectedList} />,
+      dialogConfirmAction: [
+        <div className="dialog__footer" data-button-action="shouldCloseDialog">
+          <Button
+            className="dialog__primary-action"
+            label={'OK'}
+            variant="primary"
+            onClick={(e) => {
+              gtag('event', 'Save button clicked', {
+                event_category: 'Upload Locations Click',
+                event_label: 'User clicks save list after confirming',
+              });
+              this.saveLocations(e);
+            }}
+          />
+          <LinkButton label={locationsPage.add.cancel} onClick={this.shouldCloseDialog} />
+        </div>,
+      ],
+    });
+  };
+
+  confirmBeforeRefresh = () => {
+    this.shouldRefresh();
+  };
+
   render() {
     const { view, activeTemplate, templateDropdowns, templateData, userLists, orgLists } =
       this.props;
@@ -1298,11 +1382,13 @@ class UploadLocations extends Component {
       customAttributeHeaders,
       showError,
       selectedAnalyses,
+      dialogConfirmAction,
     } = this.state;
 
     const dialogContent =
       dialogTitle === locationsPage.add.errors.notAllLocationsValid.title ||
-      typeof dialogMessage === 'string'
+      typeof dialogMessage === 'string' ||
+      React.isValidElement(dialogMessage)
         ? dialogMessage
         : dialogMessage.map(this.generateMessages);
 
@@ -1322,7 +1408,7 @@ class UploadLocations extends Component {
                 className="dialog__primary-action"
                 label="OK"
                 variant="primary"
-                onClick={this.shouldRefresh}
+                onClick={this.confirmBeforeRefresh}
               />
             </div>,
           ]
@@ -1355,13 +1441,14 @@ class UploadLocations extends Component {
               />
             </div>,
           ];
+
     return (
       <div className={`locations-body ${view === 'upload' ? '' : 'hidden'}`}>
         <Dialog
           paperClassName="dialog-paper"
           open={dialogOpen}
           title={dialogTitle}
-          actions={defaultAction}
+          actions={dialogConfirmAction === null ? defaultAction : dialogConfirmAction}
           onRequestClose={step !== 4 ? this.shouldCloseDialog : null}
         >
           {dialogContent}
@@ -1465,6 +1552,7 @@ class UploadLocations extends Component {
 
                     {step === 4 && (
                       <SaveAsDraftButtonWithDialog
+                        dialogMessage={<DialogDraftContent listName={this.state.selectedList} />}
                         disabled={!canGoNext || selectedAnalyses.length <= 0}
                         saveLocations={() => this.saveLocations({ isSaveAsDraft: true })}
                       />
@@ -1485,9 +1573,13 @@ class UploadLocations extends Component {
                         step === 4 ? '' : 'hidden'
                       }`}
                       variant="primary"
-                      onClick={isSaving ? null : this.saveLocations}
+                      onClick={isSaving ? null : this.confirmBeforeSubmit}
                       disabled={!canGoNext || selectedAnalyses.length <= 0}
-                      label={locationsPage.upload.submit}
+                      label={
+                        this.isExistingList()
+                          ? locationsPage.upload.submitForExisting
+                          : locationsPage.upload.submit
+                      }
                     />
                   </div>
                   <div className="cancel-upload-wizard">

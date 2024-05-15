@@ -7,7 +7,7 @@ const AuthManager = require(path.resolve('./config/publicutils/authenticationMan
  * @name exports.signout
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
 exports.signout = (req, res) => {
   // req.logout();

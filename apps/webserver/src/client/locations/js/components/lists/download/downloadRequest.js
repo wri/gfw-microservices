@@ -13,6 +13,7 @@ const downloadRequest = ({
   combinedColumns,
   selectedLocations,
   allLocationsSelected,
+  isGfwList = false,
 }) => {
   // 'Location Name' is named 'Investment Name' in the backend
   // adding quotation marks (stringify) to the column name as some of the field names in the database contain spaces
@@ -26,6 +27,7 @@ const downloadRequest = ({
     listFilterStr,
     aggregate: aggregate ?? true,
     listView,
+    isGFWList: isGfwList,
     analysisAreaMin: filters.selectedAreaMin || 0,
     ...(filters.selectedAreaMax ? { analysisAreaMax: filters.selectedAreaMax } : {}),
     ...(filters.selectedCountry ? { country: filters.selectedCountry } : {}),
@@ -34,7 +36,6 @@ const downloadRequest = ({
     combinedColumns: combinedColumns?.join(','),
     selectedLocations: allLocationsSelected ? 'all' : selectedLocations?.join(','),
   };
-
   return axios({
     url: `/locations/${format}/${listID}`,
     method: 'GET',

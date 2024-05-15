@@ -47,7 +47,7 @@ const sql = require('mssql');
 const _ = require('lodash');
 
 // Configs
-const config = require('../config');
+import config from '../config';
 const { DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED } = require('../config/locations.config');
 
 // Utils
@@ -63,6 +63,7 @@ const analyticsService = require(path.resolve('./server/analytics/service/analyt
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
+import { SqlParamType, AnalysisDataType, ListsType } from '@wri-monorepos/sql';
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -140,11 +141,14 @@ const createList = (
         uspAddListToAnalysesExecuted = true;
 
         // Create table query String
-        const params = [{ field: 'template_id', type: sql.NVarChar(150), value: template_id }];
+        const params: SqlParamType[] = [
+          { field: 'template_id', type: sql.NVarChar(150), value: template_id },
+        ];
         for (let i = 0; i < custom_attributes.length; i++) {
           const columnNameParameter = {
             field: `custom_attribute_${i + 1}`,
             type: sql.NVarChar(50),
+            value: null,
           };
 
           if (Helper.isUndefined(custom_attributes[i].column_name)) {
@@ -304,11 +308,14 @@ const saveAsDraftList = (
         uspAddListToAnalysesExecuted = true;
 
         // Create table query String
-        const params = [{ field: 'template_id', type: sql.Int, value: template_id }];
+        const params: SqlParamType[] = [
+          { field: 'template_id', type: sql.Int, value: template_id },
+        ];
         for (let i = 0; i < custom_attributes.length; i++) {
           const columnNameParameter = {
             field: `custom_attribute_${i + 1}`,
             type: sql.NVarChar(50),
+            value: null,
           };
           if (Helper.isUndefined(custom_attributes[i].column_name)) {
             columnNameParameter.value = null;
@@ -399,7 +406,7 @@ const saveAsDraftList = (
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getUserLists = (req) => {
+export const getUserLists = (req): Promise<ListsType[]> => {
   return new Promise((resolve, reject) => {
     let promise;
     const parameters = [];
@@ -433,7 +440,7 @@ const getUserLists = (req) => {
   });
 };
 
-const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
+export const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
   lists.forEach((list) => {
     const listAnalysesStatus = listAnalysisStatuses.filter(
       (analysis) => analysis.listId == list.id
@@ -449,7 +456,7 @@ const mergeListsWithAnalysisId = (lists, listAnalysisStatuses) => {
   });
 };
 
-const getUserListsWithAnalysisId = (req) => {
+export const getUserListsWithAnalysisId = (req): Promise<[{ id; list_name }]> => {
   return new Promise((resolve, reject) => {
     const promises = [getUserLists(req), analyticsService.getAllListsAnalysisStatus(req)];
 
@@ -463,37 +470,12 @@ const getUserListsWithAnalysisId = (req) => {
   });
 };
 
-/**
- * @summary Creates location analyses messages
- * @param {Number} locationId
- * @param {Object} req Manadatory first parameter to pass the request object into the function in case session info is required.
- * @param {Object} session
- * @return {Object} Returns an object containing all the info necessary for successfull processing of location based analyses
- */
-const createLocationMessages = (locationId, req, session) => {
-  return {
-    AnalysisTable: req.body.list_analysis_table_name,
-    Analyses: [],
-    Database: session.organization_database,
-    Environment: process.env.NODE_ENV,
-    ListName: req.body.list_name,
-    ListTable: req.body.list_table_name,
-    LocationId: locationId,
-    Retries: 0,
-    UserEmail: session.user_email,
-    FirstName: session.user_first_name,
-    LastName: session.user_last_name,
-    UserId: session.organization_user_id,
-    OrganizationId: session.organization_id,
-  };
-};
-
 /** @function {rerunExistingList}
  *   @summary Function to rerun location and list analyses
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const rerunExistingList = (req) => {
-  return new Promise((resolve, reject) => {
+export const rerunExistingList = (req) => {
+  return new Promise<void>((resolve, reject) => {
     console.log('listManager --->>> rerunExistingList');
     const { list_id, list_name, list_locations_count } = req.body;
 
@@ -529,7 +511,7 @@ const rerunExistingList = (req) => {
  *   @summary Function to returns all the list names tied to the organization.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getAllLists = (req) => {
+export const getAllLists = (req): Promise<ListsType[]> => {
   return new Promise((resolve, reject) => {
     // call organizational stored procedure to return all lists tied to the organization.
     sqlUtils
@@ -549,7 +531,7 @@ const getAllLists = (req) => {
   });
 };
 
-const getAllListsWithAnalysisId = (req) => {
+export const getAllListsWithAnalysisId = (req) => {
   return new Promise((resolve, reject) => {
     const promises = [getAllLists(req), analyticsService.getAllListsAnalysisStatus(req)];
 
@@ -563,7 +545,7 @@ const getAllListsWithAnalysisId = (req) => {
   });
 };
 
-const getWorstStatusId = (analysisIds) => {
+export const getWorstStatusId = (analysisIds) => {
   // get all status from the analysis list
   const analysisStatus = analysisIds.map((analysisId) => analysisId.status);
 
@@ -586,7 +568,7 @@ const getWorstStatusId = (analysisIds) => {
  *   @param  {Number} rowsRequested
  *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
-const getListLocations = (
+export const getListLocations = (
   req,
   list_id,
   location_id = 0,
@@ -633,7 +615,7 @@ const getListLocations = (
  *   @param  {Number} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, an array of geojson, otherwise, error object
  */
-const getSimplifiedListLocations = (req, list_id) => {
+export const getSimplifiedListLocations = (req, list_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'listID', type: sql.Int, value: list_id }];
     sqlUtils
@@ -660,9 +642,9 @@ const getSimplifiedListLocations = (req, list_id) => {
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {Number} listID - Unique list id of the list.
  * @param {String} columnsToReturn - Comma separated list of columns to return.
- * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+ * @return {Promise<[]>} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getListLocationsNoGeom = (req, listID, columnsToReturn = null) => {
+export const getListLocationsNoGeom = (req, listID, columnsToReturn = null): Promise<[]> => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'listID', type: sql.Int, value: listID },
@@ -706,9 +688,13 @@ const getListLocationsNoGeom = (req, listID, columnsToReturn = null) => {
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {Number} listID - Unique list id of the list.
  * @param {Filters} filters - Array of filters to apply to the query.
- * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
+ * @return {Promise<[]>} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
+export const getPaginatedAnalysisDataForUserList = (
+  req,
+  listID,
+  filters
+): Promise<AnalysisDataType[]> => {
   let { searchString, country, state, subState } = filters;
   const {
     page,
@@ -808,7 +794,7 @@ const getPaginatedAnalysisDataForUserList = (req, listID, filters) => {
  *   @param  {Number} list_id - Unique list id of the list.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getNumberPagesForAnalysisDataUserList = (req, list_id, filters) => {
+export const getNumberPagesForAnalysisDataUserList = (req, list_id, filters) => {
   return new Promise((resolve, reject) => {
     const {
       pageSize,
@@ -900,7 +886,7 @@ const getNumberPagesForAnalysisDataUserList = (req, list_id, filters) => {
  *   @param  {Object} req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
-const getLocationsCount = (req) => {
+export const getLocationsCount = (req) => {
   return new Promise((resolve, reject) => {
     let promise;
     // Retrieve user access level
@@ -943,7 +929,7 @@ const getLocationsCount = (req) => {
  *   @param  {Object} geojson - a geojson object with array of features that contain geometry and properties
  *   @return
  */
-const uploadToExistingList = (req, list_id, list_name, geojson, commodity) => {
+export const uploadToExistingList = (req, list_id, list_name, geojson, commodity) => {
   return new Promise((resolve, reject) => {
     listUtils
       .uploadBulkLocations(req, list_id, list_name, geojson, commodity)
@@ -967,7 +953,7 @@ const uploadToExistingList = (req, list_id, list_name, geojson, commodity) => {
  *   @param {Boolean} is_edit - Boolean to check if this call has been initiated by an edit list function
  *   @return
  */
-const uploadToNewList = (
+export const uploadToNewList = (
   req,
   list_name,
   template_id,
@@ -1033,7 +1019,7 @@ const uploadToNewList = (
  *   @param {string} gfw_list_id - The ID of the GFW List that this new list is associated with
  *   @return {Promise}
  */
-const uploadToNewListAndSaveAsDraft = (
+export const uploadToNewListAndSaveAsDraft = (
   req,
   list_name,
   template_id,
@@ -1109,7 +1095,7 @@ const uploadToNewListAndSaveAsDraft = (
  * @param {number } location_status_id - Location status ID (eg. 4)
  * @return {Promise}
  */
-const updateIndividualLocationsStatusID = (
+export const updateIndividualLocationsStatusID = (
   req,
   list_analysis_table_name,
   location_id,
@@ -1157,7 +1143,7 @@ const updateIndividualLocationsStatusID = (
  *   @param  {Number} gfw_list_id
  *   @return {Promise}
  */
-const deleteLocations = (req, list_id, location_ids, gfw_list_id) => {
+export const deleteLocations = (req, list_id, location_ids, gfw_list_id) => {
   let promiseResolver = Promise.resolve();
   return new Promise((resolve, reject) => {
     // Important variables
@@ -1229,7 +1215,7 @@ const deleteLocations = (req, list_id, location_ids, gfw_list_id) => {
  *   @param  {Number} gfw_list_id
  *   @return {Promise}
  */
-const deleteFilteredLocations = (req, list_id, filters, gfw_list_id) => {
+export const deleteFilteredLocations = (req, list_id, filters, gfw_list_id) => {
   return new Promise((resolve, reject) => {
     // Important variables
     let list;
@@ -1295,7 +1281,7 @@ const deleteFilteredLocations = (req, list_id, filters, gfw_list_id) => {
  *   @param {Array} arrayAttributes - Array of objects containing key:value pairs of column: value
  *   @return {Promise}
  */
-const editLocations = (req, list_id, location_ids, arrayAttributes) => {
+export const editLocations = (req, list_id, location_ids, arrayAttributes) => {
   const EDIT_EXCLUDED_COLUMNS = [
     'list_id',
     'location name',
@@ -1337,7 +1323,7 @@ const editLocations = (req, list_id, location_ids, arrayAttributes) => {
                 location,
                 (result, val, key) => {
                   // eslint-disable-next-line no-param-reassign
-                  result[key.toLowerCase()] = val;
+                  result[String(key).toLowerCase()] = val;
                 }
               );
               const locationAttributesFiltered = _.omit(
@@ -1386,7 +1372,7 @@ const editLocations = (req, list_id, location_ids, arrayAttributes) => {
  *   @param  {Number} gfw_list_id
  *   @return {Promise}
  */
-const copyLocations = (
+export const copyLocations = (
   req,
   src_list_id,
   src_location_ids,
@@ -1533,7 +1519,7 @@ const copyLocations = (
  *   @param  {Boolean} delete_src_list - Delete list signal (TRUE/FALSE)
  *   @return {Promise} - Returns resolve TRUE or reject error message
  */
-const moveLocations = (
+export const moveLocations = (
   req,
   src_list_id,
   src_location_ids,
@@ -1610,7 +1596,7 @@ const moveLocations = (
  *   @param {Number} list_id - id of list to be locked
  *   @return {Promise}
  */
-const getListLockStatus = (req, list_id) => {
+export const getListLockStatus = (req, list_id): Promise<{ lock_status; lock_user_id }> => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     sqlUtils
@@ -1639,7 +1625,7 @@ const getListLockStatus = (req, list_id) => {
  * @param {string} list_name - List Name
  * @return {Promise<*>} - Filtered list from array of all lists
  */
-const getListByListName = async (req, list_name) => {
+export const getListByListName = async (req, list_name) => {
   try {
     const allLists = await getAllLists(req);
     return allLists.find((list) => list.list_name === list_name);
@@ -1655,7 +1641,7 @@ const getListByListName = async (req, list_name) => {
  * @param {string} listId - List Name
  * @return {Promise<*>} - Filtered list from array of all lists
  */
-const getListByIdWithAnalysisId = async (req, listId) => {
+export const getListByIdWithAnalysisId = async (req, listId) => {
   try {
     const allLists = await getUserListsWithAnalysisId(req);
     return allLists.find((list) => list.id === Number(listId));
@@ -1671,7 +1657,7 @@ const getListByIdWithAnalysisId = async (req, listId) => {
  *   @param {Object} record - Result of ListManager.getListLockStatus
  *   @return {Promise}
  */
-const checkListLockStatus = (req, list_id, record) => {
+export const checkListLockStatus = (req, list_id, record) => {
   return new Promise((resolve, reject) => {
     const { lock_status, lock_user_id } = record;
     // List is unlocked
@@ -1696,7 +1682,7 @@ const checkListLockStatus = (req, list_id, record) => {
     } else {
       // Check if the list has be locked for more than 15 minutes (in ms)
       const fifteenMinutes = 900000;
-      const now = new Date();
+      const now = new Date().getTime();
       const pastFifteen = now - lock_status > fifteenMinutes;
       if (pastFifteen) {
         setListUnlocked(req, list_id)
@@ -1734,7 +1720,7 @@ const checkListLockStatus = (req, list_id, record) => {
  *   @param {Number} list_id - id of list to be locked
  *   @return {Promise}
  */
-const setListLocked = (req, list_id) => {
+export const setListLocked = (req, list_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
@@ -1763,7 +1749,7 @@ const setListLocked = (req, list_id) => {
  *   @param {Number} list_id - id of list to be unlocked
  *   @return {Promise}
  */
-const setListUnlocked = (req, list_id) => {
+export const setListUnlocked = (req, list_id) => {
   return new Promise((resolve, reject) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
@@ -1794,7 +1780,7 @@ const setListUnlocked = (req, list_id) => {
  *   @param {number} [list_status_id = listStatus.Draft] list_status_id - List status ID (eg. 2, 4)
  *   @return {Promise} A promise object that returns true, otherwise error object
  */
-const resetListStatus = (req, list_id, gfw_list_id, list_status_id = listStatus.Draft) => {
+export const resetListStatus = (req, list_id, gfw_list_id, list_status_id = listStatus.Draft) => {
   return new Promise(async (resolve, reject) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
@@ -1832,7 +1818,7 @@ const resetListStatus = (req, list_id, gfw_list_id, list_status_id = listStatus.
  *   @param {Number} list_id - id of list
  *   @return {Promise}
  */
-const deleteList = (req, list_id) => {
+export const deleteList = (req, list_id) => {
   let list;
   return new Promise((resolve, reject) => {
     getListLockStatus(req, list_id)
@@ -1877,7 +1863,7 @@ const deleteList = (req, list_id) => {
   });
 };
 
-const setListStatus = (req, list_id, newStatus) => {
+export const setListStatus = (req, list_id, newStatus) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     switch (newStatus) {
@@ -1923,7 +1909,7 @@ const setListStatus = (req, list_id, newStatus) => {
  * @param {number} statusId - Status ID
  * @return {string} - List status Common Name
  */
-const getListStatusCommonName = (statusId) => {
+export const getListStatusCommonName = (statusId) => {
   let listStatusCommonName;
 
   for (const item in listStatus) {
@@ -1941,7 +1927,7 @@ const getListStatusCommonName = (statusId) => {
  * @param {Object} GeoJSON - GeoJSON
  * @return {number[]} - List of IDs
  */
-function getLocationIdsFromGeoJSON(GeoJSON) {
+export function getLocationIdsFromGeoJSON(GeoJSON) {
   return GeoJSON.features.map((item) => item.properties.location_id);
 }
 
@@ -1950,7 +1936,7 @@ function getLocationIdsFromGeoJSON(GeoJSON) {
  *
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  */
-function getListLocationGeometry(req) {
+export function getListLocationGeometry(req) {
   const { listTableName, locationID } = req.body;
 
   const parameters = [
@@ -1976,7 +1962,7 @@ function getListLocationGeometry(req) {
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {number} listID - List Id to be deleted if empty
  */
-function deleteListIfEmpty(req, listID) {
+export function deleteListIfEmpty(req, listID) {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'list_id', type: sql.Int, value: listID }];
 
@@ -2023,10 +2009,10 @@ function deleteListIfEmpty(req, listID) {
 /**
  * @function {getListAdminAreasOrderedByCountry}
  * @summary - Gets lists locations for filter values
- * @param {Object} req - Mandatory express request
- * @return {Promise<ListsRecords>}
+ * @param {Object} request - Mandatory express request
+ * @return {Promise<>}
  */
-const getListAdminAreasOrderedByCountry = (request, listId) => {
+export const getListAdminAreasOrderedByCountry = (request, listId) => {
   return new Promise((resolve, reject) => {
     const parameters = [{ field: 'listID', type: sql.Int, value: listId }];
     sqlUtils
@@ -2042,44 +2028,6 @@ const getListAdminAreasOrderedByCountry = (request, listId) => {
         reject(errorObject);
       });
   });
-};
-
-module.exports = {
-  getUserLists,
-  getUserListsWithAnalysisId,
-  rerunExistingList,
-  getAllLists,
-  getListLocations,
-  getSimplifiedListLocations,
-  getListLocationsNoGeom,
-  getListAdminAreasOrderedByCountry,
-  getLocationsCount,
-  uploadToExistingList,
-  uploadToNewList,
-  uploadToNewListAndSaveAsDraft,
-  updateIndividualLocationsStatusID,
-  deleteLocations,
-  deleteFilteredLocations,
-  editLocations,
-  copyLocations,
-  moveLocations,
-  getListLockStatus,
-  getListByListName,
-  getListByIdWithAnalysisId,
-  setListLocked,
-  setListUnlocked,
-  checkListLockStatus,
-  deleteList,
-  resetListStatus,
-  setListStatus,
-  getListStatusCommonName,
-  getLocationIdsFromGeoJSON,
-  getPaginatedAnalysisDataForUserList,
-  getNumberPagesForAnalysisDataUserList,
-  getListLocationGeometry,
-  deleteListIfEmpty,
-  getAllListsWithAnalysisId,
-  getWorstStatusId,
 };
 
 // Require after modules have been exported so the module can be fully loaded

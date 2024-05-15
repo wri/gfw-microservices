@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import EsriMap from '@arcgis/core/Map';
 import MapView from '@arcgis/core/views/MapView';
 import PolygonCoordinatesInput from './PolygonCoordinates/PolygonCoordinatesInput';
-import featureFlags from '../../../../../utils/general.utils';
-import LocationMapDrawer from './LocationMapDrawer';
 import './AddLocationMap.scss';
 
 const AddLocationMap = (props) => {
@@ -38,20 +36,10 @@ const AddLocationMap = (props) => {
     });
   };
 
-  const { isPolygonCoordinatesInputAvailable } = featureFlags;
-
   return (
     <div className="add-location-map">
       <div className="add-location-map__map-container">
-        {mapView && !isPolygonCoordinatesInputAvailable && (
-          <LocationMapDrawer
-            mapView={mapView}
-            sketchViewModel={sketchViewModel}
-            setSketchViewModel={setSketchViewModel}
-            setGeometry={props.setGeometry}
-          />
-        )}
-        {isPolygonCoordinatesInputAvailable && mapView && (
+        {mapView && (
           <PolygonCoordinatesInput
             mapView={mapView}
             sketchViewModel={sketchViewModel}

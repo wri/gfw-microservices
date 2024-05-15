@@ -22,7 +22,7 @@
 // Imports required for this module.
 const path = require('path');
 const sql = require('mssql');
-const config = require('../config');
+import config from '../config';
 
 const langResources = require(path.resolve('./config/langResources'));
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
@@ -35,12 +35,12 @@ const rollbackUtils = require(path.resolve('./config/privateutils/rollback.utils
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 const PolicyManager = require(path.resolve('./config/publicutils/policyManager.utils'));
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
-const { setOrganizationCustomAnalysisLimits } = require(path.resolve(
-  './queries/system/setOrganizationCustomAnalysisLimits'
-));
-const { setGlobalAnalysisLimit } = require(path.resolve('./queries/system/setGlobalAnalysisLimit'));
+import {
+  setOrganizationCustomAnalysisLimits,
+  setGlobalAnalysisLimit,
+  setOrganizationRenewalTime,
+} from '@wri-monorepos/sql';
 const { orgAccountStatus } = require(path.resolve('./config/env/orgAccountStatus.constants'));
-const { setOrganizationRenewalTime } = require('@wri-monorepos/sql');
 const logger = require(path.resolve('./config/privateutils/logger.utils'));
 
 /**

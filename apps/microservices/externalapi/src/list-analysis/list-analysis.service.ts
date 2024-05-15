@@ -1,4 +1,10 @@
-import { HttpStatus, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { AlertsGenerateBodySchema, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
@@ -40,7 +46,7 @@ export class ListAnalysisService {
   private readonly AWS_REGION: string;
   private readonly AWS_SECRET_ACCESS_KEY: string;
   private readonly LARGE_PROCESING_LIST_BUCKET: string;
-
+  private readonly logger = new Logger(ListAnalysisResponse.name);
   constructor(
     private config: ConfigService,
     private userService: UserService,
@@ -97,15 +103,30 @@ export class ListAnalysisService {
     if (!listAnalysisStatus) {
       throw new NotFoundException('Analysis status not found.');
     }
-
+    // Verify if expiration time is in the past
+    let listStatusExpired = false;
+    if (
+      listAnalysisStatus.expirationTime &&
+      Date.now() > listAnalysisStatus.expirationTime.getTime()
+    ) {
+      listStatusExpired = true;
+    }
     const analysisStatus: ListAnalysisResponse = {
       listId: listAnalysisStatus.listId.toString(),
       status: this.getEAPIListStatus(listAnalysisStatus),
       errorsDetails: (listAnalysisStatus.errorInfo || '').split('\n').filter((e) => e),
-      resultUrl: listAnalysisStatus.s3URL || null,
-      creationDate: listAnalysisStatus.updateTime,
-      expirationDate: listAnalysisStatus.expirationTime || null,
+      resultUrl: listStatusExpired ? null : listAnalysisStatus.s3URL || null,
+      creationDate: listStatusExpired ? null : listAnalysisStatus.updateTime,
+      expirationDate: listStatusExpired ? null : listAnalysisStatus.expirationTime || null,
     };
+
+    //Verify if has error for status equals inactive
+    if (analysisStatus.status === getListStatusString(listStatus.Inactive)) {
+      if (analysisStatus.errorsDetails.length === 0) {
+        analysisStatus.errorsDetails.push(analysisStatus.status);
+      }
+      analysisStatus.status = 'Error';
+    }
 
     return analysisStatus;
   }
@@ -147,27 +168,32 @@ export class ListAnalysisService {
     fileType,
   }: PrepareUploadRequestSchema & { organizationId: number; organization_user_id: number }) {
     const fileKey = generateRandomFilename(fileType);
-    const presignedURLResponse = await axios.post<{
-      url: string;
-      keyFile: string;
-      fileS3Route: string;
-    }>(`${this.LLP_BASE_URL}/api/create-presigned-url`, {
-      key: fileKey,
-      contentType: contentType[fileType],
-    });
-    const { url, keyFile } = presignedURLResponse.data;
+    try {
+      const presignedURLResponse = await axios.post<{
+        url: string;
+        keyFile: string;
+        fileS3Route: string;
+      }>(`${this.LLP_BASE_URL}/api/create-presigned-url`, {
+        key: fileKey,
+        contentType: contentType[fileType],
+      });
+      const { url, keyFile } = presignedURLResponse.data;
 
-    const connection = await this.getOrganizationConnection(organizationId);
-    const externalUploadRepository = connection.getRepository(ExternalUpload);
+      const connection = await this.getOrganizationConnection(organizationId);
+      const externalUploadRepository = connection.getRepository(ExternalUpload);
 
-    const externalUpload = new ExternalUpload();
-    externalUpload.userId = organization_user_id;
-    externalUpload.uploadKeyFile = keyFile;
-    externalUpload.uploadUrl = url;
-    externalUpload.uploadDateTime = new Date();
+      const externalUpload = new ExternalUpload();
+      externalUpload.userId = organization_user_id;
+      externalUpload.uploadKeyFile = keyFile;
+      externalUpload.uploadUrl = url;
+      externalUpload.uploadDateTime = new Date();
 
-    const newExternalUploadObject = await externalUploadRepository.save(externalUpload);
-    return transformExternalUpload(newExternalUploadObject);
+      const newExternalUploadObject = await externalUploadRepository.save(externalUpload);
+      return transformExternalUpload(newExternalUploadObject);
+    } catch (error) {
+      this.logger.error('prepareUpload error', error, error?.response?.data);
+      throw error;
+    }
   }
 
   private async getOrganizationConnection(organizationId: number) {
@@ -253,7 +279,7 @@ export class ListAnalysisService {
         throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
       }
 
-      Logger.error('create large list internal error');
+      this.logger.error('create large list internal error');
       throwCustomErrorResponse('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     const listId = largeListCreated.data.list_id;
@@ -286,7 +312,7 @@ export class ListAnalysisService {
       isExternalAPIProcess: true,
     });
 
-    Logger.log('Event analysis response: ', processListResponse.data);
+    this.logger.log('Event analysis response: ', processListResponse.data);
 
     const response: ListUploadNewResponse = {
       uploadId: newListDetails.uploadId,
@@ -321,5 +347,41 @@ export class ListAnalysisService {
       delaySeconds: 0,
       groupId: 'default',
     });
+  }
+  async deleteList(listId: number, organizationId: number, userEmail: string): Promise<boolean> {
+    try {
+      const connection = await this.getOrganizationConnection(organizationId);
+      const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+      const listAnalysisStatus = await listAnalysisStatusRepository.findOne({
+        where: { listId },
+      });
+      if (listAnalysisStatus) {
+        const user = await this.userService.findUser(organizationId, userEmail);
+
+        const result = await axios.post(
+          `${this.LLP_BASE_URL}/api/list/${listId}/delete`,
+          {
+            organization_user_id: user.organization_user_id,
+            userEmail: userEmail,
+            organizationDatabase: connection.options.database,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        return !!result;
+      } else {
+        throw new NotFoundException();
+      }
+    } catch (error) {
+      this.logger.warn('DeleteList failed', error);
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(error);
+      }
+    }
   }
 }

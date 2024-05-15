@@ -51,6 +51,6 @@ export default function ApiKeys() {
   return keys.length ? (
     <ApiKeysTable keys={keys} deleteKey={deleteKey} />
   ) : (
-    <CreateApiKeyScreen setKeys={setKeys} setIsLoading={setIsLoading} />
+    <CreateApiKeyScreen fetchApiKeys={fetchApiKeys} setIsLoading={setIsLoading} />
   );
 }

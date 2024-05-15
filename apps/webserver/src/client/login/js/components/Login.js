@@ -1,19 +1,6 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-restricted-globals */
-/* eslint-disable no-param-reassign */
-/* eslint-disable react/jsx-filename-extension */
-/* eslint-disable react/no-children-prop */
-/* eslint-disable jsx-a11y/alt-text */
-/* eslint-disable react/no-string-refs */
-/* eslint-disable react/button-has-type */
-/* eslint-disable jsx-a11y/media-has-caption */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/img-redundant-alt */
 import React, { Component } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import Dialog from 'material-ui/Dialog';
-import Header from '../../../common/js/components/Header';
 import { loginPage } from '../../../common/js/config';
 import { PrivacyPolicyBanner } from './PrivacyPolicyBanner';
 import Button from '../../../common/js/components/Button';
@@ -37,7 +24,7 @@ import photoMoray from '../../images/headshot_moray_mcleish.jpg';
 import photoPlaceholder from '../../images/testimonial-placeholder.svg';
 import photoProducer from '../../images/producer.jpg';
 import photoTrader from '../../images/trader.jpg';
-
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 export default class Login extends Component {
@@ -117,7 +104,7 @@ export default class Login extends Component {
   };
 
   requestDemo = () => {
-    window.open(loginPage.learnMoreURL, '_blank');
+    window.open(loginPage.moreInfo.help.link, '_blank');
   };
 
   requestMoreInfo = () => {
@@ -494,8 +481,12 @@ export default class Login extends Component {
             </div>
             <div className="split__right">
               <p>{loginPage.moreInfo.subscribe.paragraphText}</p>
-              <a href="/?show_newsletter=true" target="_blank" className="button button--secondary">
-                {loginPage.moreInfo.subscribe.buttonText}
+              <a
+                href={loginPage.moreInfo.subscribe.link}
+                target="_blank"
+                className="button button--secondary"
+              >
+                <LinkedInIcon /> {loginPage.moreInfo.subscribe.buttonText}
               </a>
             </div>
           </div>

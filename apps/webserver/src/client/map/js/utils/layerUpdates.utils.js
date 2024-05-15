@@ -2,7 +2,7 @@ import {
   deforestationAlertsIds,
   layersWithCanopyDensityThresholdControl,
 } from '../components/legend/DeforestationAlerts/deforestationAlerts.constants';
-import { proLayers } from '../../../common/js/config';
+import { proLayers } from '../../../common/js/proLayers.config';
 
 // Function to remove and add a layer
 const removeAndAddLayer = (map, layer) => {
@@ -25,6 +25,8 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     treeCoverLossDateRange,
   } = state;
 
+  const { treeBiomassLossID, argentineanNativeForestsLoss, treeCoverLossID } = proLayers;
+
   // Update biomass layer
   if (
     prevState.biomassRange?.min !== biomassRange?.min ||
@@ -32,7 +34,7 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     prevState.biomassLossDateRange?.startYear !== biomassLossDateRange?.startYear ||
     prevState.biomassLossDateRange?.endYear !== biomassLossDateRange?.endYear
   ) {
-    const mapLayer = map.findLayerById(proLayers.treeBiomassLossID);
+    const mapLayer = map.findLayerById(treeBiomassLossID);
     if (mapLayer) {
       mapLayer.minRange = biomassRange.min;
       mapLayer.maxRange = biomassRange.max;
@@ -43,16 +45,19 @@ export const updateInteractiveLayers = (map, prevState, state) => {
     }
   }
 
+  // update argentineanNativeForestsLoss and treeCoverLossID
   if (
     prevState.treeCoverLossDateRange?.startYear !== treeCoverLossDateRange?.startYear ||
     prevState.treeCoverLossDateRange?.endYear !== treeCoverLossDateRange?.endYear
   ) {
-    const mapLayer = map.findLayerById(proLayers.treeCoverLossID);
-    if (mapLayer) {
-      mapLayer.minYear = treeCoverLossDateRange.startYear;
-      mapLayer.maxYear = treeCoverLossDateRange.endYear;
-      removeAndAddLayer(map, mapLayer);
-    }
+    [argentineanNativeForestsLoss, treeCoverLossID].forEach((treeCoverLossLayer) => {
+      const mapLayer = map.findLayerById(treeCoverLossLayer);
+      if (mapLayer) {
+        mapLayer.minYear = treeCoverLossDateRange.startYear;
+        mapLayer.maxYear = treeCoverLossDateRange.endYear;
+        removeAndAddLayer(map, mapLayer);
+      }
+    });
   }
 
   if (prevState.canopyDensity !== canopyDensity) {

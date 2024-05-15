@@ -2,7 +2,8 @@ const path = require('path');
 const Papa = require('papaparse');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
-const { compiledAssets } = require('../../../config/config');
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const { createElement } = require('react');
 const { renderToString } = require('react-dom/server');
 
@@ -31,10 +32,10 @@ const { sendMessageToQueue } = require('../../downloader');
  * @summary
  * @name exports.locations
  * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param req - Express request object
+ * @param res - Express response object
  */
-exports.locations = (req, res, data) => {
+export const locations = (req, res, data) => {
   const isAdministrator = UserManager.isAdministrator(req);
 
   const mapData = data && data.mapData ? data.mapData : false;
@@ -121,7 +122,7 @@ exports.locations = (req, res, data) => {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.getUserLists = (req, res) => {
+export const getUserLists = (req, res) => {
   const { templateId } = req.query;
   ListManager.getUserLists(req)
     .then((result) => {
@@ -145,7 +146,7 @@ exports.getUserLists = (req, res) => {
  * @param {Object} response - Express response
  * @return {Promise} - request Promise
  */
-exports.listFilterValues = async (request, response) => {
+export const listFilterValues = async (request, response) => {
   const { id } = request.params;
 
   try {
@@ -188,15 +189,15 @@ const startTaskToCreateFile = async (request, response, file) => {
   }
 };
 
-exports.generateShapefile = async (request, response) => {
+export const generateShapefile = async (request, response) => {
   await startTaskToCreateFile(request, response, 'shapefile');
 };
 
-exports.generateCSV = async (request, response) => {
+export const generateCSV = async (request, response) => {
   await startTaskToCreateFile(request, response, 'csv');
 };
 
-exports.getListLocationGeometry = (req, res) => {
+export const getListLocationGeometry = (req, res) => {
   ListManager.getListLocationGeometry(req)
     .then((result) => {
       const { WKTGeometry } = result[0];
@@ -221,7 +222,7 @@ exports.getListLocationGeometry = (req, res) => {
  * @param {Object} response - Express response
  * @return {Promise<void>}
  */
-exports.downloadingSelectedLocations = async (request, response) => {
+export const downloadingSelectedLocations = async (request, response) => {
   logger.info('POST /locations/downloadingSelectedLocations');
   const {
     listID,
@@ -283,7 +284,7 @@ exports.downloadingSelectedLocations = async (request, response) => {
  * @param {Object} response - Express response
  * @return {Promise<void>}
  */
-exports.downloadingSelectedLocationsJson = async (request, response) => {
+export const downloadingSelectedLocationsJson = async (request, response) => {
   logger.info('POST /locations/downloadingSelectedLocations/json');
   const {
     listID,
@@ -328,7 +329,7 @@ exports.downloadingSelectedLocationsJson = async (request, response) => {
   }
 };
 
-exports.downloadErrorFile = async (req, res) => {
+export const downloadErrorFile = async (req, res) => {
   try {
     const { fileKey } = req.query;
     // Example of fileKey - `s3://gfwpro-geotrellis-pre-data/development/failed/20221104051534_iizo1ewdla21ee1s-input_cocoageneric_random_50k_r25.csv`
@@ -347,6 +348,7 @@ exports.downloadErrorFile = async (req, res) => {
     const s3command = new GetObjectCommand(parameters);
     const s3response = await s3client.send(s3command);
     const fileStream = s3response.Body;
+    // @ts-ignore
     fileStream.pipe(res);
     res.attachment(basename);
   } catch (err) {
@@ -364,9 +366,9 @@ exports.downloadErrorFile = async (req, res) => {
  * @param {number} listID - List ID (e.g. 2038)
  * @param {[]} locationIDs - Location IDs (e.g. [1, 2, 3])
  * @param {[]} attributes - Attributes (e.g. [{'Investment Name': 'ID 30', ...}])
- * @return {Promise<{locationsEditedMessageFailed: string, error}|{locationsEditedMessageSuccessfully: string}>}
+ * @return {Promise<>}
  */
-exports.handleEditLocations = async (req, listID, locationIDs, attributes) => {
+export const handleEditLocations = async (req, listID, locationIDs, attributes) => {
   try {
     const locationsEditedMessageSuccessfully = `List locations Edited for List ID ${listID}: Successfully`;
 
@@ -383,8 +385,7 @@ exports.handleEditLocations = async (req, listID, locationIDs, attributes) => {
     return { locationsEditedMessageSuccessfully };
   } catch (editError) {
     const locationsEditedMessageFailed = `Error editing list locations for List ID ${listID}: Failed`;
-    logger.error(locationsEditedMessageFailed);
-    logger.error(editError);
+    logger.error(locationsEditedMessageFailed, editError);
 
     // Un-Lock selected list
     await ListManager.setListUnlocked(req, listID);

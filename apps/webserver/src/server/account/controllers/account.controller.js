@@ -1,5 +1,6 @@
 const path = require('path');
-const { compiledAssets } = require(path.resolve('./config/config'));
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const AccountManager = require(path.resolve('./config/publicutils/accountManager.utils'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
 
@@ -9,9 +10,9 @@ const UserManager = require(path.resolve('./config/publicutils/userManager.utils
  * @name exports.account
  * @static
  * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param res - Express response object
  */
-exports.account = (req, res) => {
+export const account = (req, res) => {
   const classes = AccountManager.getClassifications(req);
   const commoditiesData = UserManager.getCommodities(req);
   const geographiesData = UserManager.getGeographies(req);

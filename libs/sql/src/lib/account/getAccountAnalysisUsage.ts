@@ -13,19 +13,21 @@ export async function getAccountAnalysisUsage({
   endDate,
   organizationId,
 }: GetAccountAnalysisUsage) {
-  try {
-    const { database: databaseName } = SQL_CONFIG;
-    const parameters = [
-      { field: 'startDate', type: sql.NVarChar(255), value: startDate },
-      { field: 'endDate', type: sql.NVarChar(255), value: endDate },
-      { field: 'organization', type: sql.Int, value: organizationId },
-    ];
-    return SQLUtils.queryDBFirstRow<OrganizationAnalysisUsageResponse>(
-      databaseName,
-      'uspGetOrganizationAnalysisUsage',
-      parameters
-    );
-  } catch (error) {
-    throw new Error(error);
-  }
+  const { database: databaseName } = SQL_CONFIG;
+  const parameters = [
+    { field: 'startDate', type: sql.NVarChar(255), value: startDate },
+    { field: 'endDate', type: sql.NVarChar(255), value: endDate },
+    { field: 'organization', type: sql.Int, value: organizationId },
+  ];
+  const usageDataBigintAsString = await SQLUtils.queryDB<OrganizationAnalysisUsageResponse[]>(
+    databaseName,
+    'uspGetOrganizationAnalysisUsage',
+    parameters
+  );
+  // convert bigint values that DB returns as string back to number
+  return usageDataBigintAsString.map((item) => ({
+    ...item,
+    total_area_analyzed: Number(item.total_area_analyzed),
+    max_area_analyzed: Number(item.max_area_analyzed),
+  }));
 }

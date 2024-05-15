@@ -1,7 +1,7 @@
 const path = require('path');
 const controller = require('../controllers/profile.controller');
 const express = require('express');
-const axios = require('axios');
+import axios from 'axios';
 
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
@@ -166,34 +166,26 @@ module.exports = (app, limiter) => {
       enableAlerts,
       geographies,
       commodities,
-      viirsAlerts,
-      gladAlerts,
-      terraIAlerts,
-      granChacoAlerts,
       auth_preference_id,
     } = req.body;
 
-    UserManager.updateUserInfo(
+    UserManager.updateUserInfo({
       req,
-      id,
-      first_name,
-      middle_initial,
-      last_name,
-      email,
-      phone,
-      title_id,
+      user_id: id,
+      user_first_name: first_name,
+      user_middle_initial: middle_initial,
+      user_last_name: last_name,
+      user_email: email,
+      user_phone: phone,
+      user_title_id: title_id,
       other_title,
       access_level_id,
-      enableAlerts,
-      geographies,
-      commodities,
-      viirsAlerts,
-      gladAlerts,
-      terraIAlerts,
-      granChacoAlerts,
-      auth_preference_id,
-      req.session.user_access_level_id
-    )
+      email_subscription: enableAlerts,
+      arr_user_geography_ids: geographies,
+      arr_user_commodity_ids: commodities,
+      user_auth_preference_id: auth_preference_id,
+      loggedUserAccessLevelId: req.session.user_access_level_id,
+    })
       .then((result) => {
         res.send(result);
       })

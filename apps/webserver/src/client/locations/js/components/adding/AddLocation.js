@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
-import DatePicker from 'material-ui/DatePicker';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Point from '@arcgis/core/geometry/Point';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
@@ -11,7 +9,6 @@ import AreasAndLengthsParameters from '@arcgis/core/rest/support/AreasAndLengths
 import Upload from './Upload';
 import AddLocationMap from './AddLocationMap';
 import SelectAddress from './SelectAddress';
-import SearchCoordinates from './SearchCoordinates';
 import DescribeInvestment from './DescribeInvestment';
 import DescribeLocation from './DescribeLocation';
 import AddLocationCard from './AddLocationCard';
@@ -22,13 +19,13 @@ import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import httpRequest from '../../../../common/js/utils/httpRequest';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownOptions';
 import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import SaveAsDraftNote from '../../../../common/js/components/SaveAsDraft/SaveAsDraftNote';
 import SaveAsDraftButtonWithDialog from '../../../../common/js/components/SaveAsDraft/SaveAsDraftButtonWithDialog';
 import { resetScroll } from '../../utils/scroll.utils';
-import { locationsPage, proLayers } from '../../../../common/js/config';
+import { locationsPage } from '../../../../common/js/config';
+import { proLayers } from '../../../../common/js/proLayers.config';
 import AnalysisTypesSelector from '../../../../common/js/components/AnalysisTypesSelector';
 import { analysisTypes } from '../../../../../config/env/analysisTypes.constants';
 import store from '../../store';
@@ -40,7 +37,6 @@ import {
   saveAsDraftListConfig,
   saveListConfig,
 } from '../../../../../config/config/locations.config';
-import featureFlags from '../../../../../utils/general.utils';
 import getAnalysesSelectedByDefault from '../../../../../utils/getAnalysesSelectedByDefault';
 import { getDialogContent, getDialogTitle } from '../../utils/dialogMessage.utils';
 import { getGadmService } from '../../../../common/js/utils/getGadmService.utils';
@@ -65,8 +61,53 @@ muiTheme.fontFamily = 'Fira Sans, sans-serif';
 let originalState;
 
 const DIALOG__SUBMIT_TITLE = 'Confirm Submission';
-const DIALOG__SUBMIT_CONTENT =
-  'Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete.';
+const DialogSubmitContent = ({ listName = 'Create New List' }) => {
+  const listConditionalText =
+    listName !== 'Create New List' ? (
+      <span>
+        You have added a location to <strong>{listName}</strong>, as defined above.
+      </span>
+    ) : (
+      <>You have successfully created a list in Pro.</>
+    );
+
+  return (
+    <p>
+      {listConditionalText} Please confirm that you wish to submit this list to analysis. Note that
+      running analysis counts towards your account usage limits. See more information{' '}
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
+        here
+      </a>
+      .
+    </p>
+  );
+};
+
+const DialogDraftContent = ({ listName = 'Create New List' }) => {
+  const listConditionalText =
+    listName !== 'Create New List' ? (
+      <>
+        You have added a location to <strong>{listName}</strong>, as defined above. Click OKAY to
+        save this updated list as a draft. Your list will stay
+      </>
+    ) : (
+      'You have successfully created a draft list in Pro. Click OKAY to close this window and be navigated back to the Locations page. Your list will be'
+    );
+
+  const listContidiontalDraftMessage = listName !== 'Create New List' ? 'about usage & fees' : null;
+
+  return (
+    <p>
+      {listConditionalText} in draft state until you choose to run analysis on it. Note that running
+      analysis counts towards your account usage limits. See more information
+      {listContidiontalDraftMessage}{' '}
+      <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
+        here
+      </a>
+      .
+    </p>
+  );
+};
 
 const generateType = (gfwInfo) => {
   if (!gfwInfo.gfwData.hasOwnProperty('listName')) {
@@ -773,13 +814,14 @@ export default class AddLocation extends Component {
   };
 
   saveAndAddAnother = () => {
+    const { selectedList } = this.state;
     if (this.state.saved === true) {
       this.discardItem();
     } else {
       this.setState({
         dialogOpen: true,
         dialogTitle: DIALOG__SUBMIT_TITLE,
-        dialogMessage: DIALOG__SUBMIT_CONTENT,
+        dialogMessage: <DialogSubmitContent listName={selectedList} />,
       });
     }
   };
@@ -892,9 +934,7 @@ export default class AddLocation extends Component {
       }
       if (
         !this.state.isAreaCalculated &&
-        (this.props.addMethod === 'byAddress' ||
-          this.props.addMethod === 'byCoordinates' ||
-          this.props.addMethod === 'byPalmMill')
+        (this.props.addMethod === 'byAddress' || this.props.addMethod === 'byPalmMill')
       ) {
         errorMessages.push([1, 'You must set an area around your point']);
       }
@@ -1575,17 +1615,7 @@ export default class AddLocation extends Component {
   };
 
   populateMethodOptions = (options) => {
-    const { isPolygonCoordinatesInputAvailable } = featureFlags;
-
-    let filteredOptions = options.filter(
-      (option) => option.type === this.props.addType || option.type === 'both'
-    );
-
-    if (isPolygonCoordinatesInputAvailable) {
-      filteredOptions = options.filter((option) => option.id !== 'byCoordinates');
-    }
-
-    const actionItems = filteredOptions
+    const actionItems = options
       .sort((a, b) =>
         a.investmentOrder > b.investmentOrder ? 1 : b.investmentOrder > a.investmentOrder ? -1 : 0
       )
@@ -1796,7 +1826,6 @@ export default class AddLocation extends Component {
   };
 
   render() {
-    const { isAfiAvailable, isPolygonCoordinatesInputAvailable } = featureFlags;
     const defaultAction =
       this.state.dialogTitle === 'Location Added' ||
       this.state.dialogTitle === 'Location Appended!' ||
@@ -1879,11 +1908,8 @@ export default class AddLocation extends Component {
       listPlaceholderValue = 'Recent Other';
     }
 
-    const dropdownOptionsInvestmentCommodity = buildDropdownOptions(
-      locationsPage.add.dropdownOptions
-    );
     const dialogContent =
-      typeof dialogMessage === 'string'
+      typeof dialogMessage === 'string' || React.isValidElement(dialogMessage)
         ? [dialogMessage]
         : dialogMessage.map(this.generateMessages);
     const investmentTemplateTypes = this.state.investmentTemplates.filter((t) => t.id == 6)[0];
@@ -2135,24 +2161,6 @@ export default class AddLocation extends Component {
                   addMethod={addMethod}
                   hasGeometry={hasGeometry}
                 />
-              ) : addMethod === 'byCoordinates' ? (
-                <SearchCoordinates
-                  lat={lat}
-                  lng={lng}
-                  setLat={this.setLat}
-                  setLng={this.setLng}
-                  measurementUnit={measurementUnit}
-                  setMeasurementUnit={this.setMeasurementUnit}
-                  setArea={this.setArea}
-                  customArea={customArea}
-                  calculatedArea={calculatedArea}
-                  substate={substate}
-                  state={state}
-                  country={country}
-                  setGeometry={this.setGeometry}
-                  addMethod={addMethod}
-                  hasGeometry={hasGeometry}
-                />
               ) : (
                 <></>
               )}
@@ -2160,51 +2168,6 @@ export default class AddLocation extends Component {
           </section>
         </AddLocationCard>
 
-        {!isPolygonCoordinatesInputAvailable && (
-          <AddLocationCard>
-            <h2 className="add-location-card__title">
-              {locationsPage.add.timeframe}
-              <span className="add-location-card__optional-indicator">
-                {locationsPage.add.optional}
-              </span>
-            </h2>
-            <p className="add-location-card__prompt">{locationsPage.add.timeframeDesc}</p>
-            <div className="add-location-card__radio-group">
-              {locationsPage.add.timeHorizonOptions.map((option, i) => {
-                return this.createTimeframeRadio(option.label, option.id, i);
-              })}
-            </div>
-
-            {timeframe === 'Time Horizon' && (
-              <div className="location-date-input__container">
-                <div className="location-date-input__start-container">
-                  <label className="label-block">{locationsPage.add.startDate}</label>
-                  <MuiThemeProvider muiTheme={muiTheme}>
-                    <DatePicker
-                      hintText="mm/dd/yyyy"
-                      className="locations-timeframe-start gfw-datepicker"
-                      value={startDate}
-                      onChange={this.updateStartDate}
-                      formatDate={this.formatDate}
-                    />
-                  </MuiThemeProvider>
-                </div>
-                <div className="location-date-input__end-container">
-                  <label className="label-block">{locationsPage.add.endDate}</label>
-                  <MuiThemeProvider muiTheme={muiTheme}>
-                    <DatePicker
-                      hintText="mm/dd/yyyy"
-                      className="locations-timeframe-end gfw-datepicker"
-                      value={endDate}
-                      onChange={this.updateEndDate}
-                      formatDate={this.formatDate}
-                    />
-                  </MuiThemeProvider>
-                </div>
-              </div>
-            )}
-          </AddLocationCard>
-        )}
         {this.props.addType === 'commodity' && (
           <AddLocationCard>
             <h2 className="add-location-card__title">
@@ -2257,21 +2220,21 @@ export default class AddLocation extends Component {
           </AddLocationCard>
         )}
 
-        {isAfiAvailable && (
-          <AddLocationCard>
-            <h2 className="add-location-card__title">Analysis</h2>
+        <AddLocationCard>
+          <h2 className="add-location-card__title">Analysis</h2>
 
-            <AnalysisTypesSelector
-              selectedAnalyses={selectedAnalysis}
-              setSelectedAnalyses={this.handleAnalyzesSelection}
-            />
-          </AddLocationCard>
-        )}
+          <AnalysisTypesSelector
+            selectedAnalyses={selectedAnalysis}
+            setSelectedAnalyses={this.handleAnalyzesSelection}
+          />
+        </AddLocationCard>
+
         <SaveAsDraftNote />
 
         <section className="add-single-location__footer">
           <div className="add-single-location__action-buttons">
             <SaveAsDraftButtonWithDialog
+              dialogMessage={<DialogDraftContent listName={this.state.selectedList} />}
               saveLocations={() => this.saveItem({ isSaveAsDraft: true })}
               disabled={selectedAnalysis.length <= 0}
             />

@@ -11,13 +11,14 @@ const getListProcessingUrl = ({ listId, category }) => {
 /**
  * @summary issues request to list-processing api, handles errors
  *
- * @param {String} clientDatabase
- * @param {Number} listId
- * @param {String} category
- * @param {String} country
- * @param {String} countryGadm
- * @param {Number} locationId
- * @returns {Object} result
+ * @param {object} params
+ * param {String} clientDatabase
+ * param {Number} listId
+ * param {String} category
+ * param {String} country
+ * param {String} countryGadm
+ * param {Number} locationId
+ * @returns {Promise<Object>} result
  */
 export default async ({
   clientDatabase,

@@ -1,4 +1,5 @@
-const { compiledAssets } = require('../../../config/config');
+import config from '../../../config/config';
+const { compiledAssets } = config;
 const { createElement } = require('react');
 const { renderToString } = require('react-dom/server');
 
@@ -21,10 +22,10 @@ const logger = require('../../../config/privateutils/logger.utils');
  * @summary
  * @name exports.listDetails
  * @static
- * @param {Express.Request} req - Express request object
- * @param {Express.Response} res - Express response object
+ * @param req - Express request object
+ * @param res - Express response object
  */
-exports.listDetails = (req, res, data) => {
+export const listDetails = (req, res, data) => {
   const isAdministrator = UserManager.isAdministrator(req);
 
   const mapData = data && data.mapData ? data.mapData : false;

@@ -40,7 +40,7 @@ function DesktopHeader({ isLoggedIn, active }) {
             <HeaderNavLink active={active} link="/about" label="About" />
             <HeaderNavLink
               active={active}
-              link="https://www.globalforestwatch.org/blog/tag/gfw-pro"
+              link="https://www.globalforestwatch.org/blog/category-and-topics/?topic=commodities"
               label="Blog"
             />
             <HeaderNavLink

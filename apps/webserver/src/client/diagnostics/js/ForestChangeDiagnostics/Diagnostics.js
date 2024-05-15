@@ -37,19 +37,19 @@ import {
   prettifyNum,
   validatePct,
 } from '../../../common/js/utils/diagnostics.utils';
-import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userListLocations/utils/listLayer.util';
+import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userListLocations/utils/userListLocations.util';
 import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
-import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/vectorTileLayer';
 import getAvailableDiagnostics from './getAvailableDiagnostics';
+import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/gfw.utils';
 
 // Configs
 import {
   DATA_API_URL,
   highchartColorsIndonesiaLegalClassification2020,
   locationsPage,
-  proLayers,
   treeCoverLossTilesUrl,
 } from '../../../common/js/config';
+import { proLayers } from '../../../common/js/proLayers.config';
 import { centroidSymbol, fillSymbolDefault } from '../../../common/js/map.config';
 import AnalysisListChips from '../../../locations/js/components/landing/listItem/AnalysisListChips';
 import { analysisTypes } from '../../../../config/env/analysisTypes.constants';
@@ -538,7 +538,7 @@ export default class Diagnostics extends Component {
   };
 
   fireDownload = (table, aggregate) => {
-    const { selectedList } = this.props;
+    const { selectedList, isGfwList } = this.props;
     const { listView } = this.state;
     const filteredLocations = this.getFilteredLocations().map((fd) => fd.location_id) ?? [];
 
@@ -553,11 +553,11 @@ export default class Diagnostics extends Component {
       listView,
       aggregate,
       selectedLocations: filteredLocations,
+      isGfwList,
     })
       .then(() => {
         this.setState({
           isLoading: false,
-          openDownloadDialog: false,
         });
       })
       .catch((err) => {
@@ -643,10 +643,7 @@ export default class Diagnostics extends Component {
       selectedLocations,
       listData,
       selectedLocationData,
-      displayPopover,
-      bubbleData,
       popoverLoading,
-      anchorEl,
       diagnosticView,
       isSharedList,
       isGfwList,

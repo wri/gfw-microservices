@@ -16,7 +16,7 @@ const AWS = require('aws-sdk');
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const moment = require('moment');
 
-const config = require('../config');
+import config from '../config';
 
 const langResources = require(path.resolve('./config/langResources'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
@@ -46,17 +46,17 @@ const generateEmailTemplate = (level, title, msg, closing) => {
     <div style="padding-top: 2rem; text-align: center;">
       <img src="${defineIcon(level)}" border="0" align="center" class="g-img">
     </div>
-    <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 600; font-size: 1.3rem; text-align: center; letter-spacing: 0.4px; color: rgba(0, 0, 0, 0.73);  padding: 35px;">
+    <div style="font-family: 'Fira Sans,Arial,sans-serif'; font-style: normal; font-weight: 600; font-size: 1.3rem; text-align: center; letter-spacing: 0.4px; color: rgba(0, 0, 0, 0.73);  padding: 35px;">
       ${title}
     </div>
-    <div style="font-family: 'Fira Sans'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.6rem; text-align: center; letter-spacing: 0.25px; color: rgba(0, 0, 0, 0.54);">
+    <div style="font-family: 'Fira Sans,Arial,sans-serif'; font-style: normal; font-weight: 400; font-size: 1rem; line-height: 1.6rem; text-align: center; letter-spacing: 0.25px; color: rgba(0, 0, 0, 0.54);">
       ${msg}
     </div>
     ${closing}
     `;
 };
 
-const createBodyContent = (req, type, content = {}, level = 'info') => {
+export const createBodyContent = (req, type, content = {}, level = 'info') => {
   let title = '';
   let msg = '';
   let hasClosing = true;
@@ -133,7 +133,7 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
       break;
     case config.platformVars.emailType.ANALYSIS_LIMIT_REACHED:
       title = 'Analysis Limit Exceeded';
-      msg = `<p>Please contact our sales team at <a href="mailto:gfwprosales@wri.org">gfwprosales@wri.org</a> to purchase additional usage. You can also refer to our <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet">price list</a> or <a href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model">fee model FAQ page</a> for more information.</p>`;
+      msg = `<p>You have reached your organization’s GFW Pro analysis limit. Please contact our sales team at <a href="mailto:gfwprosales@wri.org">gfwprosales@wri.org</a> to purchase additional usage. You can also refer to our <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet">price list</a> or <a href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model">fee model FAQ page</a> for more information. Your list will appear saved in your account as a draft.</p>`;
       hasClosing = false;
       break;
     case config.platformVars.emailType.ORGANIZATION_APPROVED:
@@ -173,7 +173,7 @@ const createBodyContent = (req, type, content = {}, level = 'info') => {
   return emailUtil.createPage(bodyContent);
 };
 
-const initialize = () => {
+export const initialize = () => {
   const objTemp = {
     accessKeyId: config.AWSVars.credentials.accessKey,
     secretAccessKey: config.AWSVars.credentials.secretKey,
@@ -183,7 +183,7 @@ const initialize = () => {
   AWS.config.update(objTemp);
 };
 
-const sendEmail = (req, sender, receivers, subject, content) => {
+export const sendEmail = (req, sender, receivers, subject, content) => {
   const promise = new Promise((resolve, reject) => {
     const parameters = {
       Destination: {
@@ -226,7 +226,7 @@ const sendEmail = (req, sender, receivers, subject, content) => {
   return promise;
 };
 
-const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => {
+export const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => {
   const { user_email } = req.session;
   const enabledAnalyses = analysisTypesOptions.filter((analysis) => analysis_types[analysis.id]);
   const content = {
@@ -240,7 +240,7 @@ const sendEmail__ListSubmittedForAnalysis = (req, list_name, analysis_types) => 
   return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
 };
 
-const sendErrorNotificationEmail = (req, type) => {
+export const sendErrorNotificationEmail = (req, type) => {
   const { user_email } = req.session;
   const { list } = req;
 
@@ -263,12 +263,4 @@ const sendErrorNotificationEmail = (req, type) => {
   const msg = createBodyContent(req, emailTemplate, list, level);
 
   return sendEmail(req, config.AWSVars.ses.sender, [user_email], subject, msg);
-};
-
-module.exports = {
-  initialize,
-  sendEmail,
-  createBodyContent,
-  sendErrorNotificationEmail,
-  sendEmail__ListSubmittedForAnalysis,
 };

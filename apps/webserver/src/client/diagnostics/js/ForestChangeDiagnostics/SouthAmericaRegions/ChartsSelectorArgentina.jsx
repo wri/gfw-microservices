@@ -1,11 +1,14 @@
 import React from 'react';
+import Checkbox from '@mui/material/Checkbox';
 import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.utils';
+import { getDataAndCheckIfAllYearsZero } from './barChart.utils';
 
 function ChartsSelectorArgentina({
   selectedOptionId,
   onOptionChange,
   chartsConfiguration,
   updateCheckedLabels,
+  argentinaPieChartsData,
 }) {
   return (
     <div className="chart-legends-table">
@@ -13,63 +16,89 @@ function ChartsSelectorArgentina({
         <thead>
           <tr>
             <th />
-            <th className="label right">Total Loss (ha)</th>
+            <th className="label right"></th>
           </tr>
         </thead>
         <tbody>
-          {chartsConfiguration.map((option) => (
-            <>
-              <tr>
-                <th data-cy={option.dataCy}>
-                  <input
-                    id={option.id}
-                    type="radio"
-                    value={option.id}
-                    checked={selectedOptionId === option.id}
-                    onChange={() => onOptionChange(option.id)}
-                  />
+          {chartsConfiguration.map(
+            ({ dataCy, chartLabels, id: optionId, chartsSelectorTitle, totalLoss }) => {
+              // Determine the count of options with non-zero data
+              const nonZeroOptions = chartLabels?.filter(
+                ({ dataPath }) => !getDataAndCheckIfAllYearsZero(argentinaPieChartsData, dataPath)
+              ).length;
 
-                  <label htmlFor={option.id} className="legend-square-label">
-                    {option.chartsSelectorTitle}
-                  </label>
-                </th>
+              const isCheckboxDisabled = nonZeroOptions === 1;
+              const isRadioButtonDisabled = nonZeroOptions === 0;
 
-                <td className="right">
-                  {option?.totalLoss && prettifyNum(formatNum(option.totalLoss))}
-                </td>
-              </tr>
-              {selectedOptionId === option.id &&
-                option?.chartLabels.map(({ id, legend, color, checked, totalLossByCategory }) => (
-                  <tr key={id}>
-                    <td className="chart-legends-table__label">
+              return (
+                <React.Fragment key={optionId}>
+                  <tr>
+                    <th data-cy={dataCy}>
                       <input
-                        id={id}
-                        type="checkbox"
-                        checked={checked}
-                        onChange={(e) => {
-                          const isChecked = e.target.checked;
-                          updateCheckedLabels(option.id, id, isChecked);
-                        }}
+                        id={optionId}
+                        type="radio"
+                        value={optionId}
+                        checked={selectedOptionId === optionId}
+                        onChange={() => onOptionChange(optionId)}
+                        disabled={isRadioButtonDisabled} // Disable the option if all chartLabels have zero value
                       />
-                      <div>
-                        {/* adding an extra div to avoid the styling from a declared selector with low specificity in _base.scss: */}
-                        {/* input[type='checkbox'].column-checkbox:checked + label  */}
-                        <label htmlFor={id}>
-                          <span
-                            className="chart-legends-table__checkbox"
-                            style={{ background: color, opacity: checked ? 1 : 0.2 }}
-                          />
-                          {legend}
-                        </label>
-                      </div>
-                    </td>
-                    <td className="right">
-                      {(totalLossByCategory && prettifyNum(formatNum(totalLossByCategory))) || ''}
-                    </td>
+
+                      <label htmlFor={optionId} className="legend-square-label">
+                        {chartsSelectorTitle}
+                      </label>
+                    </th>
+
+                    <td className="right">{totalLoss && prettifyNum(formatNum(totalLoss))}</td>
                   </tr>
-                ))}
-            </>
-          ))}
+                  {!isRadioButtonDisabled &&
+                    selectedOptionId === optionId &&
+                    chartLabels?.map(
+                      ({ id, legend, color, checked, totalLossByCategory, dataPath }) => {
+                        const isEveryChartYearValueZero = getDataAndCheckIfAllYearsZero(
+                          argentinaPieChartsData,
+                          dataPath
+                        );
+
+                        return (
+                          <tr key={id}>
+                            <td
+                              className={`chart-legends-table__label ${
+                                isEveryChartYearValueZero && 'chart-legends-table__label--disabled'
+                              }`}
+                            >
+                              <label htmlFor={id}>
+                                <Checkbox
+                                  id={id}
+                                  disabled={isCheckboxDisabled || isEveryChartYearValueZero}
+                                  checked={checked} // Keep checked if there's only one chartLabels
+                                  onChange={(e) => {
+                                    const isChecked = e.target.checked;
+                                    updateCheckedLabels(optionId, id, isChecked);
+                                  }}
+                                  sx={{
+                                    padding: 0,
+                                    color,
+                                    '&.Mui-checked': {
+                                      color,
+                                    },
+                                  }}
+                                />
+                                {legend}
+                              </label>
+                            </td>
+                            <td className="right">
+                              {(totalLossByCategory &&
+                                prettifyNum(formatNum(totalLossByCategory))) ||
+                                ''}
+                            </td>
+                          </tr>
+                        );
+                      }
+                    )}
+                </React.Fragment>
+              );
+            }
+          )}
         </tbody>
       </table>
     </div>

@@ -3,17 +3,11 @@ const { listStatus } = require(path.resolve('./config/env/listStatuses.constants
 import * as sql from 'mssql';
 const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 
-const { createListAnalysisStatus: createListAnalysisStatusQuery } = require(path.resolve(
-  './queries/organization/createListAnalysisStatus'
-));
-
-const { getListAnalysisStatusById: getListAnalysisStatusByIdQuery } = require(path.resolve(
-  './queries/organization/getListAnalysisStatusById'
-));
-
-const {
-  dropListAnalysisStatusByListIdAndAnalysisId: dropListAnalysisStatusByListIdAndAnalysisIdQuery,
-} = require(path.resolve('./queries/organization/dropListAnalysisStatusByListIdAndAnalysisId'));
+import {
+  createListAnalysisStatus as createListAnalysisStatusQuery,
+  getListAnalysisStatusById as getListAnalysisStatusByIdQuery,
+  dropListAnalysisStatusByListIdAndAnalysisId as dropListAnalysisStatusByListIdAndAnalysisIdQuery,
+} from '@wri-monorepos/sql';
 
 const getListAnalysisStatusById = async (req, listId) => {
   const parameters = [{ field: 'listID', type: sql.Int, value: listId }];

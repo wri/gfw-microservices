@@ -538,7 +538,7 @@ export default class Diagnostics extends Component {
   };
 
   fireDownload = (table, aggregate) => {
-    const { selectedList } = this.props;
+    const { selectedList, isGfwList } = this.props;
     const { listView } = this.state;
     const filteredLocations = this.getFilteredLocations().map((fd) => fd.location_id) ?? [];
 
@@ -553,6 +553,7 @@ export default class Diagnostics extends Component {
       listView,
       aggregate,
       selectedLocations: filteredLocations,
+      isGfwList,
     })
       .then(() => {
         this.setState({

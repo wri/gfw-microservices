@@ -91,16 +91,16 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
         save this updated list as a draft. Your list will stay
       </>
     ) : (
-      <>
-        You have successfully created a draft list in Pro. Click OKAY to close this window and be
-        navigated back to the Locations page. Your list will be
-      </>
+      'You have successfully created a draft list in Pro. Click OKAY to close this window and be navigated back to the Locations page. Your list will be'
     );
+
+  const listContidiontalDraftMessage = listName !== 'Create New List' ? 'about usage & fees' : null;
 
   return (
     <p>
       {listConditionalText} in draft state until you choose to run analysis on it. Note that running
-      analysis counts towards your account usage limits. See more information{' '}
+      analysis counts towards your account usage limits. See more information
+      {listContidiontalDraftMessage}{' '}
       <a href="/about?section=Fees" target="_blank" style={{ color: '#97bd3d' }}>
         here
       </a>

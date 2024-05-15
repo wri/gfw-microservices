@@ -17,7 +17,7 @@ const ShareManager = require('../../../config/publicutils/shareManager.utils');
  * @param req - Express request object
  * @param res - Express response object
  */
-exports.map = (req, res) => {
+export const map = (req, res) => {
   // Set in the response to not cache the page
   res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
   res.header('Expires', '-1');

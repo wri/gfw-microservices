@@ -9,7 +9,7 @@ const { compiledAssets } = config;
  * @param {Express.Request} req - Express request object
  * @param res - Express response object
  */
-exports.reset = (req, res) => {
+export const reset = (req, res) => {
   res.render('reset', {
     common: compiledAssets.js.common,
     resetjs: compiledAssets.js.reset,

@@ -558,7 +558,6 @@ export default class Diagnostics extends Component {
       .then(() => {
         this.setState({
           isLoading: false,
-          openDownloadDialog: false,
         });
       })
       .catch((err) => {

@@ -9,7 +9,7 @@ const { compiledAssets } = config;
  * @param {Express.Request} req - Express request object
  * @param res - Express response object
  */
-exports.forgot = (req, res) => {
+export const forgot = (req, res) => {
   res.render('forgot', {
     common: compiledAssets.js.common,
     forgotjs: compiledAssets.js.forgot,

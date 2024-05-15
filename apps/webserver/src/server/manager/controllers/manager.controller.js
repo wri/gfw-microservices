@@ -9,7 +9,7 @@ const { compiledAssets } = config;
  * @param {Express.Request} req - Express request object
  * @param res - Express response object
  */
-exports.manager = (req, res) => {
+export const manager = (req, res) => {
   res.render('manager', {
     common: compiledAssets.js.common,
     managerjs: compiledAssets.js.manager,

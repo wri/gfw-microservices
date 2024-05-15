@@ -348,6 +348,7 @@ export const downloadErrorFile = async (req, res) => {
     const s3command = new GetObjectCommand(parameters);
     const s3response = await s3client.send(s3command);
     const fileStream = s3response.Body;
+    // @ts-ignore
     fileStream.pipe(res);
     res.attachment(basename);
   } catch (err) {

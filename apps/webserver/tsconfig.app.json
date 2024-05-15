@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "allowJs": true,
-    // "checkJs": true,
+    "checkJs": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "outDir": "../../dist/out-tsc",

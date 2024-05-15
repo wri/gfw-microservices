@@ -9,7 +9,7 @@ const { compiledAssets } = config;
  * @param res - Express response object
  */
 
-exports.diagnosticsRenderer = (req, res) => {
+export const diagnosticsRenderer = (req, res) => {
   res.render('diagnostics', {
     common: compiledAssets.js.common,
     compiledJs: compiledAssets.js.diagnostics,

@@ -18,7 +18,7 @@ const {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.dashboard = (req, res, data) => {
+export const dashboard = (req, res, data) => {
   const isAdministrator = UserManager.isAdministrator(req);
   const { session } = req;
   const fromMap = data ? true : false;

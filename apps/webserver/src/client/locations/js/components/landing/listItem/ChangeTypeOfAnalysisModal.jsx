@@ -109,15 +109,17 @@ function ChangeTypeOfAnalysisModal({
         setSelectedAnalyses={setSelectedAnalysis}
       />
       <br />
-      {isUpdatingForExistingList && isLoading && <InlineLoader />}
-      {isUpdatingForExistingList && !isLoading && (
-        <Button
-          variant="primary"
-          disabled={!selectedAnalysis.length}
-          onClick={updateSelectedAnalysis}
-          label="Submit"
-        />
-      )}
+      {isUpdatingForExistingList &&
+        (isLoading ? (
+          <InlineLoader />
+        ) : (
+          <Button
+            variant="primary"
+            disabled={!selectedAnalysis.length}
+            onClick={updateSelectedAnalysis}
+            label="Submit"
+          />
+        ))}
     </>
   );
 
@@ -128,7 +130,7 @@ function ChangeTypeOfAnalysisModal({
         variant="primary"
         disabled={!selectedAnalysis.length}
         onClick={handleDialogClose}
-        label={`OK`}
+        label="OK"
       />
     </>
   );

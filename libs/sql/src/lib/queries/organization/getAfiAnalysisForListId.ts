@@ -1,11 +1,13 @@
 export const getAfiAnalysisForListId = `
-  SELECT TOP 100 
+  SELECT TOP 100
     AF.list_id as listId,
     AF.gadm_id AS gadmId,
-    AF.natural_land_area AS coverageHA,
-    AF.natural_land_deforested_area AS naturalForestLossHA,
-    AF.total_area_ha AS totalAreaHa,
-    CASE 
+    ISNULL(AF.natural_land_area,0) AS coverageHA,
+    ISNULL(AF.natural_land_deforested_area,0) AS naturalForestLossHA,
+    ISNULL(AF.total_area_ha,0) AS totalAreaHa,
+    ISNULL(AF.jrc_land_area,0) AS jrcLandArea,
+    ISNULL(AF.jrc_land_deforested_area,0) AS jrcLandDeforestedArea,
+    CASE
       WHEN AF.negligible_risk < 0.5 THEN CAST(0 AS BIT)  -- false
       WHEN AF.negligible_risk > 99.5 THEN CAST(1 AS BIT)  -- true
       ELSE NULL  -- anything else means is errored
@@ -31,6 +33,8 @@ export interface AfiAnalysisRowForList {
   country: string;
   state: string;
   subState: string;
+  jrcLandArea: number;
+  jrcLandDeforestedArea: number;
 }
 
 export type AfiAnalysisDataForList = AfiAnalysisRowForList[];

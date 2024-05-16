@@ -94,7 +94,8 @@ const DialogDraftContent = ({ listName = 'Create New List' }) => {
       'You have successfully created a draft list in Pro. Click OKAY to close this window and be navigated back to the Locations page. Your list will be'
     );
 
-  const listContidiontalDraftMessage = listName !== 'Create New List' ? ' about usage & fees' : null;
+  const listContidiontalDraftMessage =
+    listName !== 'Create New List' ? ' about usage & fees' : null;
 
   return (
     <p>

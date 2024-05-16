@@ -257,10 +257,17 @@
   }
 }
 
+.dialog__body a {
+  color: #9ebc52;
+}
+
 .RerunList__dialog-buttons {
   display: flex;
-  justify-content: space-between;
   padding: 0 1rem 0.5rem 1rem;
+
+  .RerunList__button {
+    margin-right: 20px;
+  }
 }
 
 @media screen and (max-width: 1023px) {

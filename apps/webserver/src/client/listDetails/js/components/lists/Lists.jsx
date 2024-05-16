@@ -2473,7 +2473,7 @@ export default class Lists extends Component {
                             label="Update Analysis"
                           />
                           <Dialog
-                            title={locationsPage.lists.confirmListUpdate}
+                            title={locationsPage.lists.rerunListDialog.title}
                             actions={
                               <div className="RerunList__dialog-buttons">
                                 <Button
@@ -2495,7 +2495,7 @@ export default class Lists extends Component {
                             bodyClassName="dialog__body"
                             contentClassName="dialog__content"
                           >
-                            {rerunListDialog}
+                            <div dangerouslySetInnerHTML={{ __html: locationsPage.lists.rerunListDialog.text}}></div>
                           </Dialog>
                         </div>
                       ) : null}
@@ -2526,7 +2526,7 @@ export default class Lists extends Component {
                             variant="primary"
                             className="ShareList__button"
                             onClick={(e) => this.handleDraftSubmit(e)}
-                            label="Submit"
+                            label="Submit Analysis"
                           />
                         </div>
                       ) : null}
@@ -2536,8 +2536,8 @@ export default class Lists extends Component {
                         closeAction={() => {
                           this.setState({ draftSubmitDialogOpen: false });
                         }}
-                        dialogTitle={locationsPage.lists.confirmListSubmission}
-                        dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
+                        dialogTitle={locationsPage.lists.submitListDialog.title}
+                        dialogMessage={locationsPage.lists.submitListDialog.message}
                         dialogActionConfirm={() => {
                           requestGeoTrellisAnalyzeList(selectedList)
                             .then(() => {
@@ -2553,7 +2553,6 @@ export default class Lists extends Component {
                               window.location = '/locations';
                             })
                             .catch((error) => {
-                              // TODO: Get details what to do after list submission fails
                               console.log(error);
                             })
                             .finally(() => {

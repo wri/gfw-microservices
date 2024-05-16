@@ -22,6 +22,7 @@ import {
   SetListDrafStatus,
   UnlockListAndSaveAsDraft,
   updateListsAnalysisStatus,
+  CopyOrMoveLargeListRequest,
 } from '@wri-monorepos/sql';
 import { Logger, Injectable } from '@nestjs/common';
 import { checkProcessingLimits, getFinalGeojson } from '@wri-monorepos/shared';
@@ -30,6 +31,16 @@ import { GeoJson } from './type';
 import { listStatus } from '@wri-monorepos/constants';
 
 const EMPTY_CUSTOM_ATTRIBUTES = [];
+
+enum ActionType {
+  Move = 'move',
+  Copy = 'copy',
+}
+
+enum ListType {
+  New = 'new',
+  Existing = 'existing',
+}
 
 @Injectable()
 export class LocationService {
@@ -67,271 +78,353 @@ export class LocationService {
     });
   };
 
-  MoveLocations = async (
-    selectedListId,
+  MoveLocations = async ({
+    listId: selectedListId,
     selectedListLocationClasification,
     customAttributesNames,
     userListNames,
-    selectedMoveOrCopy,
-    selectedNewOrExisting,
-    newListName,
-    moveToList,
+    action,
+    listType,
+    listName: newListName,
+    targetList: moveToList,
     selectedLocations,
     addType,
-    activeTemplate,
+    // activeTemplate,
     commodityType,
     templateData,
-    isSaveAsDraft,
+    saveAsDraft: isSaveAsDraft,
     userId,
     clientDatabase,
     organizationId,
     subscriptionStatusId,
     gfwListId,
     allLocationsSelected = false,
-    filters: ListFilters,
-    srcListAnalysisTable
-  ) => {
-    Logger.log(`Applied Filters ${JSON.stringify(filters)}`);
+    filters,
+    srcListAnalysisTable,
+  }: CopyOrMoveLargeListRequest) => {
+    const unlock = [];
+    try {
+      Logger.log(`Applied Filters ${JSON.stringify(filters)}`);
 
-    let createdListId = 0;
-    let destLocationIds = [];
-    const listsToUnlock = Array<number>();
+      // Validate list name
+      const listName = listType === ListType.New ? newListName : moveToList?.list_name;
+      CheckListNameIsValid(listType, listName, userListNames);
 
-    const isFiltered = ListHasFiltersApplies(filters);
-    const listName = selectedNewOrExisting === 'new' ? newListName : moveToList.list_name;
+      // Gather location data
+      Logger.log('Gathering information for locations');
+      const locationData = await new UspGetLocationsFilteredToCopy().run(clientDatabase, {
+        listID: selectedListId,
+        selectedLocations: allLocationsSelected ? null : selectedLocations.join(),
+        country: filters.country,
+        state: filters.state,
+        subState: filters.subState,
+        analysisAreaMin: filters.analysisAreaMin,
+        analysisAreaMax: filters.analysisAreaMax,
+        searchString: filters.searchString,
+      });
 
-    CheckListNameIsValid(selectedNewOrExisting, listName, userListNames);
-
-    Logger.log('Gathering information for locations');
-    const locationData = await new UspGetLocationsFilteredToCopy().run(clientDatabase, {
-      listID: selectedListId,
-      selectedLocations: allLocationsSelected ? null : selectedLocations.join(),
-      country: filters.country,
-      state: filters.state,
-      subState: filters.subState,
-      analysisAreaMin: filters.analysisAreaMin,
-      analysisAreaMax: filters.analysisAreaMax,
-      searchString: filters.searchString,
-    });
-
-    if (selectedMoveOrCopy === 'move') {
-      Logger.log(
-        `Changing source list (${selectedListId}) status to draft because is going to move locations`
-      );
-      // Lock source and target list and set source list to draft
-      await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
-    }
-
-    // Map the location ids to an array in the order they were returned
-    selectedLocations = [];
-    selectedLocations = locationData.map(
-      (location: { location_id: number }) => location.location_id
-    );
-
-    await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
-    if (moveToList) {
-      await new UspSetListLocked().run(clientDatabase, moveToList.id, userId);
-    }
-
-    Logger.log('Creating Feature Props object');
-    let featProps = [];
-    const templateId = GetTemplateId(templateData);
-    featProps = createFeatureProps(locationData, addType, templateData, customAttributesNames);
-
-    Logger.log('Assemble GEO JSON');
-    const geojson = await this.assembleGeojson(featProps, locationData);
-
-    deleteGeoJSONFeatureProperties(geojson);
-
-    const location_classification = selectedListLocationClasification;
-    const gfw_list_id = 0;
-    const template_id = templateId;
-    const listAnalyses = await getListAnalysisStatus(clientDatabase, selectedListId);
-    const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
-
-    Logger.log('Creating final GEO JSON for database insertion');
-    const finalGeojson = getFinalGeojson(gfw_list_id, geojson);
-    if (selectedNewOrExisting === 'new') {
-      Logger.log('Performing copy for new list');
-      const lockResult = await PerformGetLockStatus(clientDatabase, selectedListId);
-
-      Logger.log(`Lock status result: ${JSON.stringify(lockResult)}`);
-      const { lock_status } = lockResult;
-      if (lock_status === null /*|| lock_status !== null*/) {
-        throw new Error('LIST_NOT_LOCKED');
-      }
-      const listCreation = new SPSListCreation();
-      const createdUserList = await listCreation.createNewList(
-        newListName,
-        template_id,
-        location_classification,
-        userId,
-        EMPTY_CUSTOM_ATTRIBUTES,
-        clientDatabase,
-        analysisIds,
-        null,
-        isSaveAsDraft
-      );
-
-      createdListId = createdUserList.list_id;
-      await new UspSetListLocked().run(clientDatabase, createdListId, userId);
-
-      Logger.log(`Performing bulk copy for List ID: ${createdUserList.list_id} to ${newListName}`);
-
-      destLocationIds = await PerformLocationsBulkCopy(
-        createdUserList.list_id,
-        newListName,
-        true,
-        finalGeojson,
-        commodityType,
-        clientDatabase
-      );
-
-      Logger.log(`Copy location analysis for new list`);
-
-      await PerformCopyAnalysis(
-        clientDatabase,
-        srcListAnalysisTable,
-        selectedListId,
-        createdListId,
-        selectedLocations,
-        destLocationIds
-      );
-
-      Logger.log(`Copy analysis complete`, 'LocationsService');
-
-      if (!isSaveAsDraft) {
-        const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
-          organizationDb: clientDatabase,
-          organizationId,
-          subscriptionStatusId,
-          listId: createdListId,
-        });
-
-        if (isListLocationOverLimit) {
-          await updateListsAnalysisStatus(clientDatabase, {
-            listId: createdListId,
-            errorInfo: 'Exceeded Analysis Limit',
-            status: listStatus.Inactive,
-          });
-          throw new Error(`Analysis limit reached`);
-        }
-
-        const postData = {
-          list_id: createdListId,
-          user_id: userId,
-          organization_id: organizationId,
-          reanalyze: false,
-          processing_limit: processingLimit,
-          analysis_types: getAnalysisTypesFromIds(analysisIds),
-        };
-        const analysisRequestResponse = await requestAnalysisProcess(postData);
-        const jsonResponse = await analysisRequestResponse.json();
-        Logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
-      }
-
-      Logger.log(`Unlocking lists`, 'LocationsService');
-
-      listsToUnlock.push(selectedListId);
-      listsToUnlock.push(createdListId);
-      await UnlockLists(clientDatabase, listsToUnlock);
-
-      Logger.log(`Lists unlocked ${selectedListId}, ${createdListId}`, 'LocationsService');
-    } else {
-      // copy or move to existing list
-      Logger.log(`Performing ${selectedMoveOrCopy} for existing list`);
-
-      destLocationIds = await PerformLocationsBulkCopy(
-        moveToList.id,
-        listName,
-        false,
-        finalGeojson,
-        commodityType,
-        clientDatabase
-      );
-
-      Logger.log(`Copy location analysis for existing list`);
-
-      await PerformCopyAnalysis(
-        clientDatabase,
-        srcListAnalysisTable,
-        selectedListId,
-        moveToList.id,
-        selectedLocations,
-        destLocationIds
-      );
-
-      Logger.log(`Copy analysis complete`, 'LocationsService');
-
-      if (isSaveAsDraft) {
-        await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
-      } else {
-        const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
-          organizationDb: clientDatabase,
-          organizationId,
-          subscriptionStatusId,
-          listId: moveToList.id,
-        });
-
-        if (isListLocationOverLimit) {
-          await updateListsAnalysisStatus(clientDatabase, {
-            listId: moveToList.id,
-            errorInfo: 'Exceeded Analysis Limit',
-            status: listStatus.Inactive,
-          });
-          throw new Error(`Analysis limit reached`);
-        }
-
-        const postData = {
-          list_id: moveToList.id,
-          user_id: userId,
-          organization_id: organizationId,
-          reanalyze: false,
-          processing_limit: processingLimit,
-          analysis_types: getAnalysisTypesFromIds(analysisIds),
-        };
-        const analysisRequestResponse = await requestAnalysisProcess(postData);
-        const jsonResponse = await analysisRequestResponse.json();
-        Logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
-      }
-      listsToUnlock.push(selectedListId);
-      listsToUnlock.push(moveToList.id);
-      await UnlockLists(clientDatabase, listsToUnlock);
-      Logger.log(
-        `Lists unlocked, source list: ${selectedListId}, target list: ${moveToList.id}`,
-        'LocationsService'
-      );
-    }
-
-    // Delete locations from source list if move action was selected
-    // this needs to occur when new list or existing list is selected
-    Logger.log('Checking if source list needs to be deleted when move action is selected');
-    if (selectedMoveOrCopy === 'move') {
-      await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
-
-      if (allLocationsSelected && !isFiltered) {
-        Logger.log(`Delete list ${selectedListId} because all locations were moved.`);
-        await DeleteList(clientDatabase, selectedListId, userId);
-      } else {
+      if (action === ActionType.Move) {
         Logger.log(
-          `Deleting selected locations from source list ${selectedListId}, locations: ${selectedLocations.join()}.`
+          `Changing source list (${selectedListId}) status to draft because locations will be moved`
         );
-        await BulkDeleteLocations(
+        await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
+      }
+
+      // Map the location ids
+      selectedLocations = locationData.map(
+        (location: { location_id: number }) => location.location_id
+      );
+
+      // Lock the source and target lists
+      await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
+      unlock.push(selectedListId);
+      if (moveToList) {
+        await new UspSetListLocked().run(clientDatabase, moveToList.id, userId);
+        unlock.push(moveToList.id);
+      }
+
+      // Create Feature Props object
+      Logger.log('Creating Feature Props object');
+      const templateId = GetTemplateId(templateData);
+      const featProps = createFeatureProps(
+        locationData,
+        addType,
+        templateData,
+        customAttributesNames.join()
+      );
+
+      // Assemble GEO JSON
+      Logger.log('Assembling GEO JSON');
+      const geojson = await this.assembleGeojson(featProps, locationData);
+      deleteGeoJSONFeatureProperties(geojson);
+
+      // Create final GEO JSON
+      Logger.log('Creating final GEO JSON for database insertion');
+      const finalGeojson = getFinalGeojson(0, geojson);
+      const listAnalyses = await getListAnalysisStatus(clientDatabase, selectedListId);
+      const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
+
+      if (listType === ListType.New) {
+        // Handle new list creation
+        await this.handleNewListCreation({
+          newListName,
+          templateId,
+          selectedListLocationClasification,
+          userId,
+          customAttributesNames: EMPTY_CUSTOM_ATTRIBUTES,
+          clientDatabase,
+          analysisIds,
+          isSaveAsDraft,
+          finalGeojson,
+          commodityType,
+          selectedListId,
+          srcListAnalysisTable,
+          selectedLocations,
+          organizationId,
+          subscriptionStatusId,
+        });
+      } else {
+        // Handle existing list copy or move
+        await this.handleExistingListUpdate({
+          action,
+          moveToList,
+          finalGeojson,
+          commodityType,
+          clientDatabase,
+          selectedListId,
+          selectedLocations,
+          srcListAnalysisTable,
+          isSaveAsDraft,
+          gfwListId,
+          organizationId,
+          subscriptionStatusId,
+          userId,
+        });
+      }
+
+      // Delete locations from the source list if action is move
+      if (action === ActionType.Move) {
+        await this.handleSourceListDeletion({
           clientDatabase,
           selectedListId,
           userId,
           gfwListId,
-          allLocationsSelected ? null : selectedLocations.join(),
-          filters.country,
-          filters.state,
-          filters.subState,
-          filters.analysisAreaMin,
-          filters.analysisAreaMax,
-          filters.searchString
-        );
-        // If just a couple of locations were moved, we need to set the list to draft
-        await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
+          allLocationsSelected,
+          filters,
+          selectedLocations,
+        });
       }
+    } catch (error) {
+      Logger.error(`in MoveLocations: ${error.message}`);
+      // TODO: should we unlock lists?
+      if (unlock.length > 0) {
+        await UnlockLists(clientDatabase, unlock);
+        Logger.log(`Lists unlocked: ${unlock.join()}`, 'LocationsService');
+      }
+      // back to Nest
+      throw error;
     }
+  };
+
+  handleNewListCreation = async ({
+    newListName,
+    templateId,
+    selectedListLocationClasification,
+    userId,
+    customAttributesNames,
+    clientDatabase,
+    analysisIds,
+    isSaveAsDraft,
+    finalGeojson,
+    commodityType,
+    selectedListId,
+    srcListAnalysisTable,
+    selectedLocations,
+    organizationId,
+    subscriptionStatusId,
+  }) => {
+    Logger.log('Performing copy for new list');
+    const lockResult = await PerformGetLockStatus(clientDatabase, selectedListId);
+    if (lockResult.lock_status === null) {
+      throw new Error('LIST_NOT_LOCKED');
+    }
+
+    const listCreation = new SPSListCreation();
+    const createdUserList = await listCreation.createNewList(
+      newListName,
+      templateId,
+      selectedListLocationClasification,
+      userId,
+      customAttributesNames,
+      clientDatabase,
+      analysisIds,
+      null,
+      isSaveAsDraft
+    );
+
+    const createdListId = createdUserList.list_id;
+    await new UspSetListLocked().run(clientDatabase, createdListId, userId);
+
+    Logger.log(`Performing bulk copy for List ID: ${createdUserList.list_id} to ${newListName}`);
+    const destLocationIds = await PerformLocationsBulkCopy(
+      createdUserList.list_id,
+      newListName,
+      true,
+      finalGeojson,
+      commodityType,
+      clientDatabase
+    );
+
+    Logger.log(`Copy location analysis for new list`);
+    await PerformCopyAnalysis(
+      clientDatabase,
+      srcListAnalysisTable,
+      selectedListId,
+      createdListId,
+      selectedLocations,
+      destLocationIds
+    );
+
+    if (!isSaveAsDraft) {
+      await this.handleProcessingLimits({
+        clientDatabase,
+        organizationId,
+        subscriptionStatusId,
+        listId: createdListId,
+        userId,
+        analysisIds,
+      });
+    }
+
+    await UnlockLists(clientDatabase, [selectedListId, createdListId]);
+    Logger.log(`Lists unlocked ${selectedListId}, ${createdListId}`, 'LocationsService');
+  };
+
+  handleExistingListUpdate = async ({
+    action,
+    moveToList,
+    finalGeojson,
+    commodityType,
+    clientDatabase,
+    selectedListId,
+    selectedLocations,
+    srcListAnalysisTable,
+    isSaveAsDraft,
+    gfwListId,
+    organizationId,
+    subscriptionStatusId,
+    userId,
+  }) => {
+    Logger.log(`Performing ${action} for existing list`);
+    const destLocationIds = await PerformLocationsBulkCopy(
+      moveToList.id,
+      moveToList.list_name,
+      false,
+      finalGeojson,
+      commodityType,
+      clientDatabase
+    );
+
+    Logger.log(`Copy location analysis for existing list`);
+    await PerformCopyAnalysis(
+      clientDatabase,
+      srcListAnalysisTable,
+      selectedListId,
+      moveToList.id,
+      selectedLocations,
+      destLocationIds
+    );
+
+    if (isSaveAsDraft) {
+      await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
+    } else {
+      await this.handleProcessingLimits({
+        clientDatabase,
+        organizationId,
+        subscriptionStatusId,
+        listId: moveToList.id,
+        userId,
+        analysisIds: getAnalysisTypesFromIds(selectedLocations), // Adjusted to use selectedLocations for analysis
+      });
+    }
+
+    await UnlockLists(clientDatabase, [selectedListId, moveToList.id]);
+    Logger.log(
+      `Lists unlocked, source list: ${selectedListId}, target list: ${moveToList.id}`,
+      'LocationsService'
+    );
+  };
+
+  handleSourceListDeletion = async ({
+    clientDatabase,
+    selectedListId,
+    userId,
+    gfwListId,
+    allLocationsSelected,
+    filters,
+    selectedLocations,
+  }) => {
+    Logger.log('Checking if source list needs to be deleted when move action is selected');
+    await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
+
+    if (allLocationsSelected && !ListHasFiltersApplies(filters)) {
+      Logger.log(`Delete list ${selectedListId} because all locations were moved.`);
+      await DeleteList(clientDatabase, selectedListId, userId);
+    } else {
+      Logger.log(
+        `Deleting selected locations from source list ${selectedListId}, locations: ${selectedLocations.join()}.`
+      );
+      await BulkDeleteLocations(
+        clientDatabase,
+        selectedListId,
+        userId,
+        gfwListId,
+        allLocationsSelected ? null : selectedLocations.join(),
+        filters.country,
+        filters.state,
+        filters.subState,
+        filters.analysisAreaMin,
+        filters.analysisAreaMax,
+        filters.searchString
+      );
+      await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
+    }
+  };
+
+  handleProcessingLimits = async ({
+    clientDatabase,
+    organizationId,
+    subscriptionStatusId,
+    listId,
+    userId,
+    analysisIds,
+  }) => {
+    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+      organizationDb: clientDatabase,
+      organizationId,
+      subscriptionStatusId,
+      listId,
+    });
+
+    if (isListLocationOverLimit) {
+      await updateListsAnalysisStatus(clientDatabase, {
+        listId,
+        errorInfo: 'Exceeded Analysis Limit',
+        status: listStatus.Inactive,
+      });
+      throw new Error(`Analysis limit reached`);
+    }
+
+    const postData = {
+      list_id: listId,
+      user_id: userId,
+      organization_id: organizationId,
+      reanalyze: false,
+      processing_limit: processingLimit,
+      analysis_types: getAnalysisTypesFromIds(analysisIds),
+    };
+    const analysisRequestResponse = await requestAnalysisProcess(postData);
+    const jsonResponse = await analysisRequestResponse.json();
+    Logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
   };
 }

@@ -1,6 +1,5 @@
 import { LargeListService } from './../services/largelist.service';
 import {
-  CopyOrMoveLargeListRequest,
   DeleteListRequest,
   RequestLargeListProcess,
   RequestPreSignedURLModel,
@@ -24,6 +23,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { BadRequestExceptionResponse } from './types/apiResponses';
+import { CopyOrMoveLargeListRequest } from '@wri-monorepos/sql';
 
 /*
   This controller will be deprecated in the future
@@ -87,31 +87,7 @@ export class AppController {
 
   @Post('/CopyOrMoveLargeList')
   CopyOrMoveLargeList(@Body() request: CopyOrMoveLargeListRequest) {
-    this.locationService.MoveLocations(
-      request.listId,
-      request.selectedListLocationClasification,
-      request.customAttributesNames,
-      request.userListNames,
-      request.action,
-      request.listType,
-      request.listName,
-      request.targetList,
-      request.selectedLocations,
-      request.addType,
-      request.activeTemplate,
-      request.commodityType,
-      request.templateData,
-      request.saveAsDraft,
-      request.userId,
-      request.clientDatabase,
-      request.organizationId,
-      request.subscriptionStatusId,
-      request.gfwListId,
-      request.allLocationsSelected,
-      request.filters,
-      request.srcListAnalysisTable
-    );
-    return 'processing';
+    return this.locationService.MoveLocations(request);
   }
 
   @Get('/paginated-list-data')

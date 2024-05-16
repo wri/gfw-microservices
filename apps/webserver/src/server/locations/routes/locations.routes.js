@@ -1272,6 +1272,7 @@ module.exports = (app, limiter) => {
         axios
           .post(`${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`, copyOrMoveRequestBody)
           .then((response) => {
+            console.log(`• /CopyOrMoveLargeList Response`, response);
             if (saveAsDraft) {
               return res.send(response.data);
             }
@@ -1286,9 +1287,30 @@ module.exports = (app, limiter) => {
                 logger.error(`Error sendEmail__ListSubmittedForAnalysis`, err);
               });
           })
-          .catch((err) => {
-            logger.error('Error LISTS_MICROSERVICE_URL/CopyOrMoveLargeList', err);
-            res.status(500).send(err);
+          .catch(async (error) => {
+            logger.error(`Error ${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`, error);
+            const { response } = error;
+            const {
+              status = 500,
+              statusText: reason = 'Error /locations/cm-large-list',
+              data = {},
+            } = response;
+
+            if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
+              req.list = {
+                list_name: listName,
+              };
+
+              await AWSSES.sendErrorNotificationEmail(
+                req,
+                config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
+              );
+            }
+
+            res.status(status).send({
+              reason,
+              ...data,
+            });
           });
       })
       .catch((err) => {

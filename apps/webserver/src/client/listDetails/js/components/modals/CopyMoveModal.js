@@ -72,7 +72,7 @@ export default function CopyMoveModal(props) {
         )}
         <div
           className={
-            selectedMoveOrCopy === 'move'
+            selectedMoveOrCopy === 'copy'
               ? 'move-or-copy__selection move-or-copy__selection--selected'
               : 'move-or-copy__selection'
           }

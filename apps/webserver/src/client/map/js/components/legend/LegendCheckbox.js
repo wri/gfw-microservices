@@ -14,9 +14,12 @@ import {
   updateSoyYear,
 } from '../../actions/mapActions';
 import { setBiomassMinRange, setBiomassMaxRange } from '../../actions/analysisActions';
-import utils from '../../utils/AppUtils';
 import { mapPage, soyPlantedYearsRange } from '../../../../common/js/config';
-import { proLayers, densityDisplayLayers } from '../../../../common/js/proLayers.config';
+import {
+  proLayers,
+  densityDisplayLayers,
+  layerWarnings,
+} from '../../../../common/js/proLayers.config';
 const {
   viirsActiveFiresID,
   aboveGroundBiomassId,
@@ -176,7 +179,8 @@ export default class LegendCheckbox extends Component {
   };
 
   displayWarning = () => {
-    const layerWarning = utils.getObject(mapPage.layerWarnings, 'id', this.props.layer.id);
+    const layerWarning = layerWarnings.find((warning) => warning.id === this.props.layer.id);
+
     store.dispatch(showBasemapInfo(layerWarning.content));
   };
 
@@ -211,7 +215,7 @@ export default class LegendCheckbox extends Component {
       symbolsLength === 1 && layer.legendConfig.items[0].categories
         ? layer.legendConfig.items[0].categories.length
         : 0;
-    const layerWarning = utils.getObject(mapPage.layerWarnings, 'id', layer.id);
+    const layerWarning = layerWarnings.find((warning) => warning.id === layer.id);
 
     const symbolStyle = {
       fill: 'green',

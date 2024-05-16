@@ -5,7 +5,6 @@ import _range from 'lodash/range';
 import { fillYears } from './utils/configPopulation';
 import { saveAsDraftListConfig } from '../../../config/config/locations.config';
 import { PLANET_BASEMAP } from '../../map/js/config/map.config';
-import { proLayers } from './proLayers.config';
 
 export const DATA_API_URL = location.origin;
 
@@ -2952,19 +2951,7 @@ export const mapPage = {
   noteDisclaimerText: ' Learn more.',
   noteDisclaimerLink:
     'https://www.globalforestwatch.org/map/5/13.60/97.91/ARG/grayscale/loss/582,573,556?tab=analysis-tab&geostore=a794f8f3f3e57373910c40cb95625f28&begin=2001-01-01&end=2016-01-01&threshold=30&dont_analyze=true#',
-  downloadLinks: {
-    [proLayers.treeCoverLossID]:
-      'https://earthenginepartners.appspot.com/science-2013-global-forest',
-    [proLayers.treeCoverGainID]:
-      'https://earthenginepartners.appspot.com/science-2013-global-forest',
-    [proLayers.prodesDeforestationID]:
-      'http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes',
-    [proLayers.treeBiomassLossID]:
-      'https://data.globalforestwatch.org/datasets/d33587b6aee248faa2f388aaac96f92c_0',
-    [proLayers.gladAlertsID]: 'http://glad-forest-alert.appspot.com/',
-    [proLayers.viirsActiveFiresID]:
-      'https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/active-fire-data',
-  },
+
   uploadLabel: 'CLICK TO PICK A FILE OR DROP ONE HERE',
   otherSteps: [
     'Use the tabs above the map to turn on a data layer',
@@ -2998,17 +2985,6 @@ export const mapPage = {
   groundBiomassStart: 'Displaying above ground biomass',
   densityLossStart: 'Displaying loss with ',
   densityLossEnd: ' canopy density.',
-  layerWarnings: [
-    {
-      id: proLayers.treeCoverLossID,
-      title: 'Tree cover loss is not always deforestation',
-      content:
-        '<p class="basemap-modal-title">Tree cover loss is not always deforestation.</p><p>Loss of tree cover may occur for many reasons, including deforestation, fire, and ' +
-        'logging within the course of sustainable forestry operations. In sustainably managed forests, ' +
-        'the “loss” will eventually show up as “gain”, as young trees get large enough to achieve canopy closure.</p>',
-    },
-  ],
-
   basemaps: [
     {
       id: 'custom-default',

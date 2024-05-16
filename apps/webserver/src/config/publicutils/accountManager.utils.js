@@ -20,7 +20,6 @@
 // Imports required for this module
 const path = require('path');
 const sql = require('mssql');
-const AWS = require('aws-sdk');
 import config from '../config';
 
 const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
@@ -541,17 +540,4 @@ export const updatePendingAccountUser = (
         reject(errorObject);
       });
   });
-};
-
-/** @function {initialize}
- * @summary Initializes the Account Manager module. Loads all the lists needed for the application.
- */
-export const initialize = () => {
-  const objTemp = {
-    accessKeyId: config.AWSVars.credentials.accessKey,
-    secretAccessKey: config.AWSVars.credentials.secretKey,
-    region: config.AWSVars.cognito.region,
-  };
-  // Setup the AWS Config with the proper credentials.
-  AWS.config.update(objTemp);
 };

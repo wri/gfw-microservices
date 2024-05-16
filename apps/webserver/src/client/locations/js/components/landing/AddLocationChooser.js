@@ -465,7 +465,7 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
               locations to {existingListName.list_name}. Please confirm that
               you wish to submit this updated list to analysis. Note that running analysis counts
               towards your account usage limits. See more information about usage & fees{' '}
-              <a style={{ color: '#789631' }} href="/about#fees">
+              <a style={{ color: '#789631' }} href="/about?section=Fees">
                 here
               </a>
               .

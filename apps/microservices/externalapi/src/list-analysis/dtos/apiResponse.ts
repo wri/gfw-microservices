@@ -4,6 +4,7 @@ const UNAUTHORIZED_ENUM = ['Unauthorized'];
 const FORBIDDEN_ENUM = ['Forbidden'];
 const NOT_FOUND_ENUM = ['Not Found'];
 const BAD_REQUEST_ENUM = ['Bad Request'];
+const INTERNAL_SERVER_ERROR_ENUM = ['Internal Server Error'];
 const DELETE_LIST_ENUM = ["User 'email@email' has deleted list (listName)"];
 export class MessageResponse {
   @ApiProperty()
@@ -37,5 +38,10 @@ export class ErroResponseWithErroMessage extends NotFoundResponse {
 
 export class DeleteListMessageResponse extends MessageResponse {
   @ApiProperty({ enum: DELETE_LIST_ENUM })
+  message: string;
+}
+
+export class InternalServerErrorResponse extends MessageResponse {
+  @ApiProperty({ enum: INTERNAL_SERVER_ERROR_ENUM })
   message: string;
 }

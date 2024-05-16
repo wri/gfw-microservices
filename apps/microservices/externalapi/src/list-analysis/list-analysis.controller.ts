@@ -14,6 +14,7 @@ import { ListAnalysisService } from './list-analysis.service';
 import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiResponse,
   ApiSecurity,
@@ -30,6 +31,7 @@ import {
   BadRequestResponse,
   ErroResponseWithErroMessage,
   DeleteListMessageResponse,
+  InternalServerErrorResponse,
 } from './dtos/apiResponse';
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
@@ -97,6 +99,7 @@ export class ListAnalysisController {
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Post(':listId/delete')
   async deleteList(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -117,6 +120,7 @@ export class ListAnalysisController {
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Get(':listId')
   async getListInfo(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -140,6 +144,7 @@ export class ListAnalysisController {
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   async getPaginatedLists(
     @Query('pageSize', new ZodValidationPipe(pageSizeSchema)) pageSize: number,
     @Query('pageNum', new ZodValidationPipe(numPageSchema)) pageNum: number,

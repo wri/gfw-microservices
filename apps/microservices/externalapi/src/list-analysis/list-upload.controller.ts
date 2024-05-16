@@ -16,6 +16,7 @@ import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
+  ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
 import { ListAnalysisService } from './list-analysis.service';
 import { PrepareUploadResponse } from './dtos';
@@ -25,6 +26,7 @@ import { ZodValidationPipe } from '../middleware/zod.middleware';
 import {
   BadRequestResponse,
   ForbiddenResponse,
+  InternalServerErrorResponse,
   NotFoundResponse,
   UnauthorizedResponse,
 } from './dtos/apiResponse';
@@ -39,6 +41,7 @@ export class ListUploadController {
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Post('/list/upload_new')
   @UsePipes(new ZodValidationPipe(listUploadNewRequestSchema))
   async uploadNewList(
@@ -58,7 +61,6 @@ export class ListUploadController {
 
   @ApiResponse({ status: 200, type: PrepareUploadResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
-  @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: NotFoundResponse })
   @Post('/prepare_upload')

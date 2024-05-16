@@ -190,7 +190,7 @@ describe('ListAnalysisService', () => {
       status: 'Completed',
       errorInfo: '',
       s3URL: 'https://example.com/results',
-      updateTime: new Date().toLocaleDateString('en-US'),
+      bundleCreationTime: new Date().toLocaleDateString('en-US'),
       expirationTime: new Date('11-28-2999 02:00:22.895'),
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({

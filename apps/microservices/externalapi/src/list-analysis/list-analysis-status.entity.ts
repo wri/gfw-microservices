@@ -22,4 +22,7 @@ export class ListsAnalysisStatus {
 
   @Column({ name: 'expiration_time' })
   expirationTime: Date;
+
+  @Column({ name: 'bundle_creation_time' })
+  bundleCreationTime: Date;
 }

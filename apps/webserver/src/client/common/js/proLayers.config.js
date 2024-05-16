@@ -108,3 +108,33 @@ export const visibleLayers = [
   proLayers.treeCoverGainID,
   proLayers.treeCoverID,
 ];
+
+export const layerWarnings = [
+  {
+    id: proLayers.treeCoverLossID,
+    title: 'Tree cover loss is not always deforestation',
+    content:
+      '<p class="basemap-modal-title">Tree cover loss is not always deforestation.</p><p>Loss of tree cover may occur for many reasons, including deforestation, fire, and ' +
+      'logging within the course of sustainable forestry operations. In sustainably managed forests, ' +
+      'the “loss” will eventually show up as “gain”, as young trees get large enough to achieve canopy closure.</p>',
+  },
+  {
+    id: proLayers.argentineanNativeForestsLoss,
+    title:
+      '2007-2017 data not fully annualized; interpret with caution. See info bubble for details.',
+    content:
+      'The original data of the National Monitoring System of Native Forests is not completely annualized and reports forest loss for certain Argentinean regions pre-2017 in a series of date ranges that span multiple years. To visualize this data, multi-year ranges were transformed into annualized values by assigning the deforestation total to the final year of each range. Annual deforestation data from 2007-2017 should be interpreted with caution. The original data files can be accessed on the <a href="https://www.argentina.gob.ar/ambiente/bosques/monitoreo-bosques-nativos" target="_blank">Ministry of the Environment and Sustainable Development’s website</a>',
+  },
+];
+
+export const downloadLinks = {
+  [proLayers.treeCoverLossID]: 'https://earthenginepartners.appspot.com/science-2013-global-forest',
+  [proLayers.treeCoverGainID]: 'https://earthenginepartners.appspot.com/science-2013-global-forest',
+  [proLayers.prodesDeforestationID]:
+    'http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/prodes',
+  [proLayers.treeBiomassLossID]:
+    'https://data.globalforestwatch.org/datasets/d33587b6aee248faa2f388aaac96f92c_0',
+  [proLayers.gladAlertsID]: 'http://glad-forest-alert.appspot.com/',
+  [proLayers.viirsActiveFiresID]:
+    'https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/active-fire-data',
+};

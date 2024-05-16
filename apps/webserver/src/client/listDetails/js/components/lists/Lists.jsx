@@ -2467,7 +2467,7 @@ export default class Lists extends Component {
                       !selectedList.globalForestWatchList ? (
                         <div id="RerunList" className="selected-rerun-list">
                           <Button
-                            className="RerunList__button"
+                            className="rerun-list__button"
                             onClick={this.handleRerunDialogState}
                             icon={<IconRerun height="14px" />}
                             label="Update Analysis"
@@ -2475,15 +2475,15 @@ export default class Lists extends Component {
                           <Dialog
                             title={locationsPage.lists.rerunListDialog.title}
                             actions={
-                              <div className="RerunList__dialog-buttons">
+                              <div className="rerun-list__footer">
                                 <Button
                                   variant="primary"
-                                  className="RerunList__button"
+                                  className="rerun-list__button"
                                   label="OK"
                                   onClick={this.rerunList}
                                 />
                                 <LinkButton
-                                  className="RerunList__button"
+                                  className="rerun-list__button"
                                   label="Cancel"
                                   onClick={this.handleRerunDialogState}
                                 />

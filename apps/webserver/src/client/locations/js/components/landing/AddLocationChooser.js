@@ -19,6 +19,7 @@ import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import IconButton from '../../../../common/js/components/IconButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
+import CustomDraftDialog from '../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
 import { containsPunctuation } from '../../utils/lists.utils';
 import uploadProcess from './uploadProcess';
 import { formatBytes } from '../../utils/upload.utils';
@@ -454,29 +455,23 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         <div dangerouslySetInnerHTML={{ __html: dialogMessage }} />
       </Dialog>
       {existingListName && (
-        <Dialog
-          paperClassName="dialog-paper"
+        <CustomDraftDialog
           open={alertDialogOpen}
-          title={'Confirm Submit to Analisys'}
-          actions={[
-            <LinkButton label={locationsPage.add.cancel} onClick={shouldCloseAlertDialog} />,
-            <Button
-              className="dialog__primary-action"
-              variant="primary"
-              label="Comfirm"
-              onClick={createUploadProcess}
-            />,
-          ]}
-          onRequestClose={shouldCloseAlertDialog}
-        >
-          You have successfully added locations to {existingListName.list_name}. Please confirm that
-          you wish to submit this updated list to analysis. Note that running analysis counts
-          towards your account usage limits. See more information about usage & fees{' '}
-          <a style={{ color: '#789631' }} href="/about#fees">
-            here
-          </a>
-          .
-        </Dialog>
+          dialogTitle={'Confirm Submit to Analisys'}
+          dialogActionConfirm={createUploadProcess}
+          closeAction={shouldCloseAlertDialog}
+          dialogMessage={
+            <>
+              locations to {existingListName.list_name}. Please confirm that
+              you wish to submit this updated list to analysis. Note that running analysis counts
+              towards your account usage limits. See more information about usage & fees{' '}
+              <a style={{ color: '#789631' }} href="/about#fees">
+                here
+              </a>
+              .
+            </>
+          }
+        />
       )}
       <ModalLoader open={isSaving} />
     </div>

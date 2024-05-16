@@ -11,7 +11,8 @@ export default function ConfirmDialog({ open, setDialogOpen, CustomDownloadConfi
   const DOWNLOAD_MESSAGE =
     "You have selected a list file for download. Please check your email for your data's download link.";
 
-  const isValudCustomConfirmationMessage = CustomDownloadConfirmationMessage && React.isValidElement(CustomDownloadConfirmationMessage());
+  const isValudCustomConfirmationMessage =
+    CustomDownloadConfirmationMessage && React.isValidElement(CustomDownloadConfirmationMessage());
 
   return (
     <Dialog open={open} onRequestClose={() => setDialogOpen(false)}>
@@ -19,9 +20,11 @@ export default function ConfirmDialog({ open, setDialogOpen, CustomDownloadConfi
         <h1 className="dialog__title">{transifex(DOWNLOAD_TITLE)}</h1>
         <IconButton icon={<IconTimes />} onClick={() => setDialogOpen(false)} size="large" />
       </div>
-      {isValudCustomConfirmationMessage ?
-      <CustomDownloadConfirmationMessage /> :
-      <div className="dialog__prompt">{transifex(DOWNLOAD_MESSAGE)}</div>}
+      {isValudCustomConfirmationMessage ? (
+        <CustomDownloadConfirmationMessage />
+      ) : (
+        <div className="dialog__prompt">{transifex(DOWNLOAD_MESSAGE)}</div>
+      )}
     </Dialog>
   );
 }

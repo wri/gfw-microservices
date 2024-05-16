@@ -66,13 +66,21 @@ let polyLayer;
 
 const { treeCoverLossID } = proLayers;
 
-
 const ArgentinaDownloadConfirmationMessage = () => (
   <div>
-    You are downloading results that include analysis based on the <a style={{color: '#97bd3d'}} href="https://www.argentina.gob.ar/ambiente/bosques/monitoreo-bosques-nativos" target="_blank" rel="noopener noreferrer">Argentinian National Monitoring System of Native Forests dataset</a>.
-    Please note that the years 2007-2013 of this dataset contain approximate data for annual Argentinian deforestation values, due to how the original dataset is structured.
-    For this reason, interpretation of this data requires caution.
-    For more information, see the info-bubbles of the Argentina analysis panel.
+    You are downloading results that include analysis based on the{' '}
+    <a
+      style={{ color: '#97bd3d' }}
+      href="https://www.argentina.gob.ar/ambiente/bosques/monitoreo-bosques-nativos"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Argentinian National Monitoring System of Native Forests dataset
+    </a>
+    . Please note that the years 2007-2013 of this dataset contain approximate data for annual
+    Argentinian deforestation values, due to how the original dataset is structured. For this
+    reason, interpretation of this data requires caution. For more information, see the info-bubbles
+    of the Argentina analysis panel.
   </div>
 );
 export default class Diagnostics extends Component {
@@ -696,7 +704,9 @@ export default class Diagnostics extends Component {
       (location) => location.southeast_asia_presence === 'true'
     );
 
-    const CustomDownloadConfirmationMessage = isArgentinaPresence ? ArgentinaDownloadConfirmationMessage : null;
+    const CustomDownloadConfirmationMessage = isArgentinaPresence
+      ? ArgentinaDownloadConfirmationMessage
+      : null;
 
     // TODO: refactor all callsites of getAvailableDiagnostics to use selectedList instead of the first element of its plural
     const availableDiagnostics = getAvailableDiagnostics(listData, [selectedList]);
@@ -1119,7 +1129,11 @@ export default class Diagnostics extends Component {
             ) : null}
           </div>
         </div>
-        <ConfirmDialog open={openDownloadDialog} setDialogOpen={this.setOpenDownloadDialog} CustomDownloadConfirmationMessage={CustomDownloadConfirmationMessage} />
+        <ConfirmDialog
+          open={openDownloadDialog}
+          setDialogOpen={this.setOpenDownloadDialog}
+          CustomDownloadConfirmationMessage={CustomDownloadConfirmationMessage}
+        />
       </div>
     );
   }

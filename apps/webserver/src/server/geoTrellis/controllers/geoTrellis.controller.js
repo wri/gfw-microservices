@@ -25,14 +25,15 @@ export const geoTrellisAnalyzeListController = async (req, res) => {
     // Send request to GeoTrellis step function
     const { data } = await handleGeoTrellisAnalyzeListRequest(req, list, analysisTypes);
 
-    res.json({
+    res.status(200).send({
       message: data,
       success: true,
     });
-  } catch (e) {
+  } catch (error) {
+    logger.error(`Post ${GEO_TRELLIS_ANALYZE_LIST.route}`, error);
     req.list = list;
 
-    if (e.message === 'Analysis limit reached') {
+    if (error.message === 'Analysis limit reached') {
       await AWSSES.sendErrorNotificationEmail(
         req,
         config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
@@ -44,8 +45,8 @@ export const geoTrellisAnalyzeListController = async (req, res) => {
       );
     }
 
-    res.json({
-      message: e,
+    res.status(500).send({
+      message: error,
       success: false,
     });
   }

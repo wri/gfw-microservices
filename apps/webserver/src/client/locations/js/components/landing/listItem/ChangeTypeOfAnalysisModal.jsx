@@ -89,6 +89,7 @@ function ChangeTypeOfAnalysisModal({
         if (isAddingAnalysisForList) {
           setIsDialogSuccessOpen(true);
         }
+        setIsLoading(false);
       })
       .catch((error) => {
         console.warn(error);

@@ -862,7 +862,8 @@ export const locationsPage = {
     deleteLocationsMessages: {
       confirm: {
         title: 'Confirm deletion',
-        message: 'Are you sure you want to delete the selected location(s)?',
+        message:
+          'Are you sure you want to delete the selected location(s)? After saving, your list will be in draft state until you re-run analysis to account for your changes. Note that running analysis counts towards your account usage limits. See more information about usage & fees <a href="/about?section=Fees" target="_blank">here</a>.',
       },
       error: {
         title: 'Location(s) not deleted',
@@ -873,7 +874,11 @@ export const locationsPage = {
         message:
           'The list that you have selected is currently being edited by another user. Please try again later',
       },
-      success: { title: 'Location(s) Deleted', message: 'Successfully deleted the location(s).' },
+      success: {
+        title: 'Location(s) Deleted',
+        message:
+          'You have successfully deleted location(s) from [list-name]. Your list will now be in draft state until you re-run analysis to account for your changes. Note that running analysis counts towards your account usage limits. See more information about usage & fees <a href="/about?section=Fees" target="_blank">here</a>.',
+      },
     },
     moveLocationsMessages: {
       error: {

@@ -24,6 +24,7 @@ describe('ListAnalysisService', () => {
   let module: TestingModule;
   let clientStoreConnection: ClientStoreConnection;
   let userService: UserService;
+  let listService: ListService;
 
   beforeAll(async () => {
     sinon
@@ -64,6 +65,7 @@ describe('ListAnalysisService', () => {
     service = module.get<ListAnalysisService>(ListAnalysisService);
     userService = module.get<UserService>(UserService);
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
+    listService = module.get<ListService>(ListService);
   });
 
   it('should delete a list', async () => {
@@ -319,6 +321,72 @@ describe('ListAnalysisService', () => {
     });
 
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
+    expect(result).toEqual(expectedResult);
+  });
+  it('should translate Draft status from Error Status when there are errorFileStoragePath', async () => {
+    const listId = 123;
+    const organizationId = 1;
+    const expectedResult = {
+      listId: listId.toString(),
+      status: 'Error',
+      errorsDetails: ['s3://gfwpro-geotrellis-pre-data/example.com/errors'],
+      resultUrl: null,
+      creationDate: null,
+      expirationDate: null,
+    };
+
+    service.getAnalysisStatus = jest.fn().mockResolvedValue({
+      status: 'Draft',
+      listId: listId.toString(),
+      errorsDetails: [],
+      resultUrl: null,
+      creationDate: null,
+      expirationDate: null,
+    });
+    listService.getList = jest.fn().mockResolvedValue({
+      errorFileStoragePath: 's3://gfwpro-geotrellis-pre-data/example.com/errors',
+    });
+
+    const result = await service.getAnalysisStatusWithErrorFileStoragePath({
+      organizationId,
+      listId,
+      analysisId: 'FCD',
+    });
+    expect(result).toEqual(expectedResult);
+  });
+  it('should not translate Draft status from Error Status when there are not errorFileStoragePath', async () => {
+    const listId = 123;
+    const organizationId = 1;
+    const expectedResult = {
+      listId: listId.toString(),
+      status: 'Draft',
+      errorsDetails: [],
+      resultUrl: null,
+      creationDate: null,
+      expirationDate: null,
+    };
+
+    service.getAnalysisStatus = jest.fn().mockResolvedValue({
+      status: 'Draft',
+      listId: listId.toString(),
+      errorsDetails: [],
+      resultUrl: null,
+      creationDate: null,
+      expirationDate: null,
+    });
+    listService.getList = jest.fn().mockResolvedValue({
+      id: listId.toString(),
+      listAnalysisTableName: 'analysis-list_name',
+      listErrorMessage: null,
+      listName: 'list_name',
+      listStatusId: 4,
+    });
+
+    const result = await service.getAnalysisStatusWithErrorFileStoragePath({
+      organizationId,
+      listId,
+      analysisId: 'FCD',
+    });
     expect(result).toEqual(expectedResult);
   });
 });

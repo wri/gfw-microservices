@@ -2495,7 +2495,11 @@ export default class Lists extends Component {
                             bodyClassName="dialog__body"
                             contentClassName="dialog__content"
                           >
-                            <div dangerouslySetInnerHTML={{ __html: locationsPage.lists.rerunListDialog.text}}></div>
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: locationsPage.lists.rerunListDialog.text,
+                              }}
+                            ></div>
                           </Dialog>
                         </div>
                       ) : null}

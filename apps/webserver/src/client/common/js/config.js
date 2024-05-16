@@ -950,8 +950,9 @@ export const locationsPage = {
     selectedSubStates: 'Sub States',
     submitListDialog: {
       title: 'Confirm Analysis Submission',
-      message: '<p>Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete. You will receive an email notification when the update is completed.</p><p>Note that running analysis counts towards your account usage limits. See more information <a target="_blank" href="/about?section=Fees">here</a>.</p>',
-    }
+      message:
+        '<p>Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete. You will receive an email notification when the update is completed.</p><p>Note that running analysis counts towards your account usage limits. See more information <a target="_blank" href="/about?section=Fees">here</a>.</p>',
+    },
   },
   diagnosticsTitles: {
     TREE_COVER_LOSS: 'TREE COVER LOSS',

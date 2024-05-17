@@ -89,6 +89,7 @@ function ChangeTypeOfAnalysisModal({
         if (isAddingAnalysisForList) {
           setIsDialogSuccessOpen(true);
         }
+        setPrevSelectedAnalysis(selectedAnalysis);
         setIsLoading(false);
       })
       .catch((error) => {

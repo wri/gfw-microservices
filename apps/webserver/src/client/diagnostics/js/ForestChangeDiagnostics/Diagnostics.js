@@ -66,6 +66,23 @@ let polyLayer;
 
 const { treeCoverLossID } = proLayers;
 
+const ArgentinaDownloadConfirmationMessage = () => (
+  <div>
+    You are downloading results that include analysis based on the{' '}
+    <a
+      style={{ color: '#97bd3d' }}
+      href="https://www.argentina.gob.ar/ambiente/bosques/monitoreo-bosques-nativos"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Argentinian National Monitoring System of Native Forests dataset
+    </a>
+    . Please note that the years 2007-2013 of this dataset contain approximate data for annual
+    Argentinian deforestation values, due to how the original dataset is structured. For this
+    reason, interpretation of this data requires caution. For more information, see the info-bubbles
+    of the Argentina analysis panel.
+  </div>
+);
 export default class Diagnostics extends Component {
   constructor(props) {
     super(props);
@@ -674,12 +691,23 @@ export default class Diagnostics extends Component {
     } = this.state;
 
     const filteredLocations = this.getFilteredLocations();
-    const asiaPresence = filteredLocations.some(
-      (location) => location.southeast_asia_presence === 'true'
+
+    const hasArgentinaPresence = filteredLocations.some(
+      (location) => location.argentina_presence === 'true'
     );
-    const isAmericaPresence = filteredLocations.some(
+
+    const hasAmericaPresence = filteredLocations.some(
       (location) => location.south_america_presence === 'true'
     );
+
+    const hasAsiaPresence = filteredLocations.some(
+      (location) => location.southeast_asia_presencee === 'true'
+    );
+
+    const CustomDownloadConfirmationMessage = hasArgentinaPresence
+      ? ArgentinaDownloadConfirmationMessage
+      : null;
+
     // TODO: refactor all callsites of getAvailableDiagnostics to use selectedList instead of the first element of its plural
     const availableDiagnostics = getAvailableDiagnostics(listData, [selectedList]);
 
@@ -1006,7 +1034,7 @@ export default class Diagnostics extends Component {
             />
           </div>
           <div className="print-no-break" data-cy="diagnotcs-regions">
-            {isAmericaPresence && listView === 'forest_change' && (
+            {hasAmericaPresence && listView === 'forest_change' && (
               <RegionChartsContainer
                 listId={selectedList.id}
                 fireDownload={this.fireDownload}
@@ -1023,7 +1051,7 @@ export default class Diagnostics extends Component {
               />
             )}
 
-            {asiaPresence ? (
+            {hasAsiaPresence ? (
               <SoutheastAsiaRegions
                 diagnosticView={diagnosticView}
                 listView={listView}
@@ -1101,7 +1129,11 @@ export default class Diagnostics extends Component {
             ) : null}
           </div>
         </div>
-        <ConfirmDialog open={openDownloadDialog} setDialogOpen={this.setOpenDownloadDialog} />
+        <ConfirmDialog
+          open={openDownloadDialog}
+          setDialogOpen={this.setOpenDownloadDialog}
+          CustomDownloadConfirmationMessage={CustomDownloadConfirmationMessage}
+        />
       </div>
     );
   }

@@ -20,14 +20,14 @@ export const geoTrellisAnalyzeListController = async (req, res) => {
 
   try {
     // Set list status ID to be Pending
-    await ListManager.setListStatus(req, listID, listStatus.Draft);
-
-    // Send request to GeoTrellis step function
-    const { data } = await handleGeoTrellisAnalyzeListRequest(
+    await ListManager.setListStatus(
       req,
-      list,
+      listID,
       analysisTypes ? listStatus.Draft : listStatus.Pending
     );
+
+    // Send request to GeoTrellis step function
+    const { data } = await handleGeoTrellisAnalyzeListRequest(req, list, analysisTypes);
 
     res.status(200).send({
       message: data,

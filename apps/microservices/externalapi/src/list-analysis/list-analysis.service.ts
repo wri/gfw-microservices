@@ -162,6 +162,7 @@ export class ListAnalysisService {
     }
     return analysisStatus;
   }
+
   async prepareUpload({
     organizationId,
     organization_user_id,
@@ -235,7 +236,7 @@ export class ListAnalysisService {
       const response = await s3.send(obj);
       contentLength = response?.ContentLength;
     } catch (error) {
-      throwCustomErrorResponse('File not found', HttpStatus.FORBIDDEN);
+      throwCustomErrorResponse('File not found', HttpStatus.NOT_FOUND);
     }
 
     if (contentLength < MIN_FILE_SIZE_IN_BYTES) {

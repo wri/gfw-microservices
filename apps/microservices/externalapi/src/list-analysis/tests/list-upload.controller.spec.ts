@@ -312,7 +312,7 @@ describe('ListUploadController', () => {
       response: {
         errorDetails: 'File not found',
       },
-      status: 403,
+      status: 404,
     };
 
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);

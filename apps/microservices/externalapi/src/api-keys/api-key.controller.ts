@@ -4,6 +4,7 @@ import { TokenService } from './token.service';
 import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiResponse,
   ApiUnauthorizedResponse,
@@ -15,6 +16,7 @@ import {
   BadRequestResponse,
   ErroResponseWithErroMessage,
   ForbiddenResponse,
+  InternalServerErrorResponse,
   UnauthorizedResponse,
 } from '../list-analysis/dtos/apiResponse';
 
@@ -48,6 +50,7 @@ export class APIKeyController {
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Post()
   @UsePipes(new ZodValidationPipe(apiKeyRequestSchema))
   token(@Body() apiKeyRequest: CreateApiKeyRequest) {
@@ -61,6 +64,7 @@ export class APIKeyController {
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @ApiResponse({ status: 204, type: String })
   @Delete('/:organizationId/:tokenId')
   deleteToken(@Param('organizationId') orgId: string, @Param('tokenId') tokenId: string) {

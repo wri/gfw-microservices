@@ -62,7 +62,6 @@ export class ListUploadController {
   @ApiResponse({ status: 200, type: PrepareUploadResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
-  @ApiNotFoundResponse({ type: NotFoundResponse })
   @Post('/prepare_upload')
   @UsePipes(new ZodValidationPipe(prepareUploadRequestSchema))
   // We must require the userEmail from the user to validate it in the API middleware

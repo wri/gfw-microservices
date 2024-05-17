@@ -20,8 +20,8 @@ function RegionChartsContainer({
   getYearlyHighchartSeries,
   getCategoricalHighchartSeries,
 }) {
-  //  const { isArgentinaDeforestationAvailable } = featureFlags;
-  const isArgentinaDeforestationAvailable = true;
+  const { isArgentinaDeforestationAvailable } = featureFlags;
+
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);
 
   const argentinaOtnbDataNotAvailable =

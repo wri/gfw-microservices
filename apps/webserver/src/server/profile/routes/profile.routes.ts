@@ -254,7 +254,7 @@ module.exports = (app, limiter) => {
       });
       return response.status(200).send(result);
     } catch (err) {
-      const { status: statusCode, data: error } = err.response;
+      const { status: statusCode = 500, data: error = err } = err.response || {};
       return response.status(statusCode).send(error);
     }
   };

@@ -462,9 +462,9 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
           closeAction={shouldCloseAlertDialog}
           dialogMessage={
             <>
-              You have successfully added locations to {existingListName.list_name}. Please confirm that you wish to submit this
-              updated list to analysis. Note that running analysis counts towards your account usage
-              limits. See more information about usage & fees{' '}
+              You have successfully added locations to {existingListName.list_name}. Please confirm
+              that you wish to submit this updated list to analysis. Note that running analysis
+              counts towards your account usage limits. See more information about usage & fees{' '}
               <a target="_blank" style={{ color: '#789631' }} href="/about?section=Fees">
                 here
               </a>

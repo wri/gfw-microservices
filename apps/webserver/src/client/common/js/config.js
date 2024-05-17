@@ -728,7 +728,7 @@ export const locationsPage = {
     listsFilterClear: 'Clear search',
     listsFilterNoMatch: 'Sorry, your search returned no results.',
     update: 'Update Analysis',
-    submit: 'Submit For Analysis',
+    submit: 'Submit Analysis',
     selectPlaceholder: 'Select...',
     selectCountry: 'Country',
     selectState: 'State',
@@ -947,6 +947,11 @@ export const locationsPage = {
     selectedMillPriority: 'Mill Priority',
     selectedStates: 'States',
     selectedSubStates: 'Sub States',
+    submitListDialog: {
+      title: 'Confirm Analysis Submission',
+      message:
+        '<p>Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete. You will receive an email notification when the update is completed.</p><p>Note that running analysis counts towards your account usage limits. See more information <a target="_blank" href="/about?section=Fees">here</a>.</p>',
+    },
   },
   diagnosticsTitles: {
     TREE_COVER_LOSS: 'TREE COVER LOSS',
@@ -1383,7 +1388,7 @@ export const locationsPage = {
     invalidLocation: ' invalid location',
     invalidLocations: ' invalid locations',
     saveAndAddAnother: 'Save and add another',
-    submit: 'Submit For Analysis',
+    submit: 'Submit Analysis',
     upload: 'Upload File:',
     uploadError: 'Upload error',
     sizeOfInvestment: 'Size of Investment',
@@ -1546,7 +1551,7 @@ export const locationsPage = {
     },
     stepFourTitle: 'Save',
     submit: 'Submit',
-    submitForExisting: 'Submit For Analysis',
+    submitForExisting: 'Submit Analysis',
     successBanner:
       'New locations have been added. You will receive an email once analysis of the locations is complete, and can reload the page to access the data.',
     list: 'List',

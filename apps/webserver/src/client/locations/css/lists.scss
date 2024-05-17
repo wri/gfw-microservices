@@ -257,10 +257,15 @@
   }
 }
 
-.RerunList__dialog-buttons {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 1rem 0.5rem 1rem;
+.rerun-list {
+  &__footer {
+    display: flex;
+    padding: 0 1rem 0.5rem 1rem;
+  }
+
+  &__button {
+    margin-right: 20px;
+  }
 }
 
 @media screen and (max-width: 1023px) {

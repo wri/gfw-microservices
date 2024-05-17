@@ -117,7 +117,7 @@ function ChangeTypeOfAnalysisModal({
             variant="primary"
             disabled={!selectedAnalysis.length}
             onClick={updateSelectedAnalysis}
-            label="Submit"
+            label="Submit Analysis"
           />
         ))}
     </>

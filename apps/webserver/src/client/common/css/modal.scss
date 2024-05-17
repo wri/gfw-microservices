@@ -91,6 +91,11 @@
     padding: $space-spacious;
     max-height: 100%;
     overflow-y: auto;
+
+    a {
+      color: #97bd3d;
+      text-decoration: underline;
+    }
   }
 
   &__footer {

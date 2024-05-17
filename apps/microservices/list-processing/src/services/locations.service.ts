@@ -1,34 +1,34 @@
-import { GeoService } from './geo.service';
+import { Injectable, Logger } from '@nestjs/common';
+import { listStatus } from '@wri-monorepos/constants';
 import {
-  deleteGeoJSONFeatureProperties,
-  ListFilters,
-  ListHasFiltersApplies,
   CheckListNameIsValid,
+  GeoService,
   GetTemplateId,
-  createFeatureProps,
-  UnlockLists,
+  ListHasFiltersApplies,
   PerformCopyAnalysis,
   PerformLocationsBulkCopy,
-  getListAnalysisStatus,
+  UnlockLists,
+  createFeatureProps,
+  deleteGeoJSONFeatureProperties,
   getAnalysisTypesFromIds,
-} from '../utils/list.utils';
+  getListAnalysisStatus,
+  SPSListCreation,
+  GeoJson,
+} from '@wri-monorepos/geo';
+import { checkProcessingLimits, getFinalGeojson } from '@wri-monorepos/shared';
 import {
-  requestAnalysisProcess,
-  PerformGetLockStatus,
-  UspGetLocationsFilteredToCopy,
   BulkDeleteLocations,
-  UspSetListLocked,
+  CopyOrMoveLargeListRequest,
   DeleteList,
+  PerformGetLockStatus,
   SetListDrafStatus,
   UnlockListAndSaveAsDraft,
+  UspGetLocationsFilteredToCopy,
+  UspSetListLocked,
+  requestAnalysisProcess,
   updateListsAnalysisStatus,
-  CopyOrMoveLargeListRequest,
 } from '@wri-monorepos/sql';
-import { Logger, Injectable } from '@nestjs/common';
-import { checkProcessingLimits, getFinalGeojson } from '@wri-monorepos/shared';
-import { SPSListCreation } from './listCreation';
-import { GeoJson } from './type';
-import { listStatus } from '@wri-monorepos/constants';
+import { ProcessingLimitException } from '../app/app.exceptions';
 
 const EMPTY_CUSTOM_ATTRIBUTES = [];
 
@@ -412,7 +412,7 @@ export class LocationService {
         errorInfo: 'Exceeded Analysis Limit',
         status: listStatus.Inactive,
       });
-      throw new Error(`Analysis limit reached`);
+      throw new ProcessingLimitException();
     }
 
     const postData = {

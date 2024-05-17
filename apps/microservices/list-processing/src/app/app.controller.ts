@@ -1,4 +1,5 @@
 import { LargeListService } from './../services/largelist.service';
+import { LocationService } from './../services/locations.service';
 import {
   DeleteListRequest,
   RequestLargeListProcess,
@@ -11,7 +12,6 @@ import {
 import { Controller, Post, Get, Body, Query, BadRequestException, Param } from '@nestjs/common';
 
 import { AppService } from './app.service';
-import { LocationService } from '@wri-monorepos/geo';
 import { ListService } from '../services/list.service';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { deleteListBodySchema } from './types/deleteListRequestSchema';

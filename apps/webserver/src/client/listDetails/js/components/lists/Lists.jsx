@@ -800,8 +800,22 @@ export default class Lists extends Component {
           filters: myFilters,
         };
 
-        httpRequest.fetchJSON('/locations/cm-large-list', copyLocationsRequestBody).then(
-          () => {
+        fetch({
+          url: `locations/cm-large-list`,
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
+          },
+          body: copyLocationsRequestBody,
+        })
+          .then((res) => {
+            if (res.ok) {
+              return res.json();
+            }
+            throw new Error('Something Went Wrong');
+          })
+          .then((res) => {
+            console.log('• res', res);
             const dialogTitle = 'Locations Moved';
             const dialogContent =
               'Location move process starts, this can take a while, please be patient.';
@@ -813,11 +827,21 @@ export default class Lists extends Component {
               dialogTitle,
               dialogContent,
             });
-          },
-          (moveError) => {
-            this.handleMoveError(moveError);
-          }
-        );
+          })
+          .catch((error) => {
+            console.log('• error', error);
+
+            const dialogTitle = 'Something Went Wrong';
+            const dialogContent = `We could not process your request. Reason: ${error.message}.`;
+
+            this.setState({
+              dialogOpen: true,
+              refreshPage: true,
+              isLoading: false,
+              dialogTitle,
+              dialogContent,
+            });
+          });
       });
     } else {
       const result = saveGfwListLocations(

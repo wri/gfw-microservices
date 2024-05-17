@@ -1,4 +1,4 @@
-import { ListsType } from "../queries";
+import { ListsType } from '../queries';
 
 export interface BasicFieldsFileRequest {
   file?: string;

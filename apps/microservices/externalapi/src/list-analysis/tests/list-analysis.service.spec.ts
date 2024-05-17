@@ -177,12 +177,13 @@ describe('ListAnalysisService', () => {
   it('should get analysis status', async () => {
     const listId = 123;
     const organizationId = 1;
+    const MockedDateTimeNow = new Date().toLocaleDateString('en-US');
     const expectedResult = {
       listId: listId.toString(),
       status: 'Invalid Status',
       errorsDetails: [],
       resultUrl: 'https://example.com/results',
-      creationDate: new Date().toLocaleDateString('en-US'),
+      creationDate: MockedDateTimeNow,
       expirationDate: new Date('11-28-2999 02:00:22.895'),
     };
     const mockListsAnalysisStatus = {
@@ -190,7 +191,7 @@ describe('ListAnalysisService', () => {
       status: 'Completed',
       errorInfo: '',
       s3URL: 'https://example.com/results',
-      bundleCreationTime: new Date().toLocaleDateString('en-US'),
+      bundleCreationTime: MockedDateTimeNow,
       expirationTime: new Date('11-28-2999 02:00:22.895'),
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
@@ -228,7 +229,7 @@ describe('ListAnalysisService', () => {
       status: 'Completed',
       errorInfo: '',
       s3URL: 'https://example.com/results',
-      updateTime: new Date().toLocaleDateString('en-US'),
+      bundleCreationTime: new Date().toLocaleDateString('en-US'),
       expirationTime: new Date('11-28-2000 02:00:22.895'),
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
@@ -265,7 +266,7 @@ describe('ListAnalysisService', () => {
       status: 3,
       errorInfo: '',
       s3URL: null,
-      updateTime: null,
+      bundleCreationTime: null,
       expirationTime: null,
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
@@ -302,7 +303,7 @@ describe('ListAnalysisService', () => {
       status: 3,
       errorInfo: 'Exceeded Analysis Limit',
       s3URL: null,
-      updateTime: null,
+      bundleCreationTime: null,
       expirationTime: null,
     };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({

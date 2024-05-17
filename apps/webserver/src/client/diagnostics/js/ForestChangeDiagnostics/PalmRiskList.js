@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { locationsPage } from '../../../common/js/config';
+import { locationsPage, latestTreeCoverLossYearCommodityRisk } from '../../../common/js/config';
 import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import { getLastValue, getLastYear } from '../../../locations/js/utils/locationsTableUtils';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 
-const lastYear = locationsPage.diagnostics.lastDataYear;
+const lastYear = latestTreeCoverLossYearCommodityRisk;
 
 const attributeValues = [
   { attribute: 'location_id', type: 'string' },
@@ -53,7 +53,7 @@ export default class PalmRiskList extends Component {
   };
 
   filterUpToYear = (lastYear, ax) => {
-    const input = JSON.parse(ax);
+    const input = JSON.parse(ax) || {};
     const output = Object.entries(input).reduce((acc, [key, value]) => {
       if (parseInt(key, 10) <= lastYear) {
         acc[key] = value;
@@ -99,6 +99,9 @@ export default class PalmRiskList extends Component {
         ) {
           millValue = this.assignRiskPriority(value);
         } else {
+          if (!attributeValue) {
+            console.error(`No data found for ${attr.attribute}`);
+          }
           const yearlyData = getLastYear(this.filterUpToYear(lastYear, attributeValue));
           millValue = Number.isNaN(yearlyData) ? '--' : prettifyNum(formatNum(yearlyData));
         }

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import { locationsPage } from '../../../common/js/config';
+import { locationsPage, latestTreeCoverLossYearCommodityRisk } from '../../../common/js/config';
 import { formatNum, prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 
-const lastYear = locationsPage.diagnostics.lastDataYear;
+const lastYear = latestTreeCoverLossYearCommodityRisk;
 
 export default class PalmRiskAnalysis extends Component {
   render() {

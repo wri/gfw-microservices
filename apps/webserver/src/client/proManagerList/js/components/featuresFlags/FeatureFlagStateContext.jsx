@@ -42,6 +42,12 @@ export default function FeatureFlagContextProvider({ children, setIsLoading }) {
           });
         } else {
           setSelectedFeatureFlag(upsertedFeatureFlag);
+          setFeatureFlagsList((prev) => {
+            const { flagId } = upsertedFeatureFlag;
+            const idx = prev.findIndex((featureFlag) => featureFlag.flagId == flagId);
+            prev[idx] = upsertedFeatureFlag;
+            return prev;
+          });
         }
         return upsertedFeatureFlag;
       });

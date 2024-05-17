@@ -70,21 +70,6 @@ if (isClient) {
   });
 } else {
   // isServer
-  jest.mock('aws-sdk', () => {
-    return {
-      config: {
-        update: () => {},
-      },
-      S3: () => {},
-      SQS: () => {},
-      SES: () => {},
-      SNS: () => {},
-      CognitoIdentityServiceProvider: () => {},
-      DynamoDB: () => {},
-      Lambda: () => {},
-    };
-  });
-
   jest.mock('sqs-consumer', () => {
     return {
       Consumer: {

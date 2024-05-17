@@ -692,19 +692,19 @@ export default class Diagnostics extends Component {
 
     const filteredLocations = this.getFilteredLocations();
 
-    const isArgentinaPresence = filteredLocations.some(
+    const hasArgentinaPresence = filteredLocations.some(
       (location) => location.argentina_presence === 'true'
     );
 
-    const isAmericaPresence = filteredLocations.some(
+    const hasAmericaPresence = filteredLocations.some(
       (location) => location.south_america_presence === 'true'
     );
 
-    const asiaPresence = filteredLocations.some(
-      (location) => location.southeast_asia_presence === 'true'
+    const hasAsiaPresence = filteredLocations.some(
+      (location) => location.southeast_asia_presencee === 'true'
     );
 
-    const CustomDownloadConfirmationMessage = isArgentinaPresence
+    const CustomDownloadConfirmationMessage = hasArgentinaPresence
       ? ArgentinaDownloadConfirmationMessage
       : null;
 
@@ -1034,7 +1034,7 @@ export default class Diagnostics extends Component {
             />
           </div>
           <div className="print-no-break" data-cy="diagnotcs-regions">
-            {isAmericaPresence && listView === 'forest_change' && (
+            {hasAmericaPresence && listView === 'forest_change' && (
               <RegionChartsContainer
                 listId={selectedList.id}
                 fireDownload={this.fireDownload}
@@ -1051,7 +1051,7 @@ export default class Diagnostics extends Component {
               />
             )}
 
-            {asiaPresence ? (
+            {hasAsiaPresence ? (
               <SoutheastAsiaRegions
                 diagnosticView={diagnosticView}
                 listView={listView}

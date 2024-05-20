@@ -1,4 +1,4 @@
-import { LargeListService } from './../services/largelist.service';
+import { ListService } from '../services/list.service';
 import {
   CopyOrMoveLargeListRequest,
   DeleteListRequest,
@@ -13,7 +13,7 @@ import { Controller, Post, Get, Body, Query, BadRequestException, Param } from '
 
 import { AppService } from './app.service';
 import { LocationService } from '@wri-monorepos/geo';
-import { ListService } from '../services/list.service';
+import { ListPaginationService } from '../services/list.pagination.service';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { deleteListBodySchema } from './types/deleteListRequestSchema';
 import { RequestPreSignedURLSchema } from './validators';
@@ -33,9 +33,9 @@ import { BadRequestExceptionResponse } from './types/apiResponses';
 export class AppController {
   constructor(
     protected readonly appService: AppService,
-    protected readonly largeListService: LargeListService,
-    private readonly locationService: LocationService,
-    private readonly listService: ListService
+    protected readonly listService: ListService,
+    protected readonly locationService: LocationService,
+    protected readonly listPaginationService: ListPaginationService
   ) {}
 
   /**
@@ -67,17 +67,17 @@ export class AppController {
 
   @Post('/save-list-to-process')
   saveListToProcess(@Body() request: RequestSaveLargeListProcessModel) {
-    return this.appService.saveListToProcess(request);
+    return this.listService.saveListToProcess(request);
   }
 
   @Post('/process-list')
   processLargeList(@Body() request: RequestLargeListProcess) {
-    return this.largeListService.startAnalisysProcessForList(request);
+    return this.listService.startAnalisysProcessForList(request);
   }
 
   @Post('/create-large-list')
   triggerProcessLargeList(@Body() request: RequestTriggerProcessLargeList) {
-    return this.largeListService.createListTables(
+    return this.listService.createListTables(
       request.list_name,
       request.user_id,
       request.client_database,
@@ -117,7 +117,7 @@ export class AppController {
   @Get('/paginated-list-data')
   async getPaginatedListData(@Query() queryParam: getPaginatedListDataRequest) {
     this.validatePaginatedRequest(queryParam);
-    const result = await this.listService.getPaginatedListData(queryParam);
+    const result = await this.listPaginationService.getPaginatedListData(queryParam);
     return result;
   }
 
@@ -126,14 +126,14 @@ export class AppController {
     @Query() queryParam: getNumberOfPagesPaginatedListDataRequest
   ) {
     this.validatePaginatedRequest(queryParam);
-    const result = await this.listService.getNumberOfPagesPaginatedListData(queryParam);
+    const result = await this.listPaginationService.getNumberOfPagesPaginatedListData(queryParam);
     return result;
   }
 
   @Get('/paginated-list-data-with-pages')
   async getPaginatedListDataWithPages(@Query() queryParam: getPaginatedListDataRequest) {
     this.validatePaginatedRequest(queryParam);
-    const result = this.listService.getPaginatedListDataWithPages(queryParam);
+    const result = this.listPaginationService.getPaginatedListDataWithPages(queryParam);
     return result;
   }
 

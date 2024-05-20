@@ -9,10 +9,6 @@ const TOOLTIP__LABEL = 'DRAFT';
 const TOOLTIP__MESSAGE =
   'This list contains unanalyzed locations. Please click the submit button to run analysis. Once submitted, your list will not be accessible until analysis is complete.';
 
-const DIALOG_TITLE = 'Confirm Analysis Submission';
-const DIALOG_MESSAGE =
-  '<p>Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete. You will receive an email notification when the update is completed.</p><p>Note that running analysis counts towards your account usage limits. See more information <a target="_blank" href="/about?section=Fees">here</a>.</p>';
-
 export default function ListDiagnosticStatusDraft({ submitForAnalysis, hideSubmit }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -49,8 +45,8 @@ export default function ListDiagnosticStatusDraft({ submitForAnalysis, hideSubmi
         <CustomDraftDialog
           open={true}
           closeAction={() => setDialogOpen(false)}
-          dialogTitle={DIALOG_TITLE}
-          dialogMessage={DIALOG_MESSAGE}
+          dialogTitle={locationsPage.lists.submitListDialog.title}
+          dialogMessage={locationsPage.lists.submitListDialog.message}
           dialogActionConfirm={() => {
             setDialogOpen(false);
             submitForAnalysis();

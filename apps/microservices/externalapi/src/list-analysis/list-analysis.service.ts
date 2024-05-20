@@ -116,7 +116,7 @@ export class ListAnalysisService {
       status: this.getEAPIListStatus(listAnalysisStatus),
       errorsDetails: (listAnalysisStatus.errorInfo || '').split('\n').filter((e) => e),
       resultUrl: listStatusExpired ? null : listAnalysisStatus.s3URL || null,
-      creationDate: listStatusExpired ? null : listAnalysisStatus.updateTime,
+      creationDate: listStatusExpired ? null : listAnalysisStatus.bundleCreationTime || null,
       expirationDate: listStatusExpired ? null : listAnalysisStatus.expirationTime || null,
     };
 

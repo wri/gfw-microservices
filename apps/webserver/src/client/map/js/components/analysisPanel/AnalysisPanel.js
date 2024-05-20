@@ -17,6 +17,7 @@ import {
   proLayers,
   exclusiveLayers,
   visibleLayers as visibleLayersConstants,
+  downloadLinks,
 } from '../../../../common/js/proLayers.config';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import FlatButton from 'material-ui/FlatButton';
@@ -250,10 +251,10 @@ export default class AnalysisPanel extends Component {
   openDownload = () => {
     //Find the layer that we are running analysis on and open said layer's download link
     //In the case of tree cover loss and gain we may have two layers active so we always access the 0 index just to be on the safe side
-    const analysisLayers = Object.keys(mapPage.downloadLinks);
+    const analysisLayers = Object.keys(downloadLinks);
     const activeAnalysisLayers = _intersection(analysisLayers, this.props.visibleLayers);
     if (activeAnalysisLayers.length) {
-      window.open(mapPage.downloadLinks[activeAnalysisLayers[0]], '_blank');
+      window.open(downloadLinks[activeAnalysisLayers[0]], '_blank');
     }
   };
 

@@ -65,7 +65,7 @@ function ChangeTypeOfAnalysisModal({
     });
   };
 
-  const requestListForAnalysis = () => {
+  const requestAnalysisForSelectedTypes = () => {
     const analysisTypesForRequest = selectedAnalysis.filter(
       (analysis) => !intialAnalysisSelection.includes(analysis)
     );
@@ -93,7 +93,7 @@ function ChangeTypeOfAnalysisModal({
     const promises = [saveSelectedAnalysis()];
 
     if (isAddingAnalysis) {
-      promises.push(requestListForAnalysis());
+      promises.push(requestAnalysisForSelectedTypes());
     }
 
     Promise.all(promises)

@@ -7,10 +7,16 @@ import TableRow from '@mui/material/TableRow';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import BetaTag from '../../../common/js/components/BetaTag';
-import { locationsPage } from '../../../common/js/config';
 import InfoBubble from '../../../common/js/components/InfoBubble';
+import { locationsPage } from '../../../common/js/config';
+import { forestLossDatasetIds } from './forestLossDatasets.constants';
 
-function AfiDiagnosticsTable({ data }) {
+function AfiDiagnosticsTable({ data, forestLossDataset = forestLossDatasetIds.STBN }) {
+  const isStbnSelected = forestLossDataset === forestLossDatasetIds.STBN;
+  /*
+    if STBN is selected, the rows displayed should be coverageHA and naturalForestLossHA
+    if JRC is selected the rows should be jrcCoverageHA and jrcNaturalForestLossHA and Negligible Risk should be hidden
+  */
   return (
     <Card>
       <CardContent>
@@ -29,10 +35,12 @@ function AfiDiagnosticsTable({ data }) {
                 <BetaTag>(Beta)</BetaTag>
                 <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.naturalForestLoss} />
               </TableCell>
-              <TableCell align="right">
-                Negligible Risk
-                <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.negligibleRisk} />
-              </TableCell>
+              {isStbnSelected && (
+                <TableCell align="right">
+                  Negligible Risk
+                  <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.negligibleRisk} />
+                </TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -40,9 +48,20 @@ function AfiDiagnosticsTable({ data }) {
               <TableRow key={row.subState}>
                 <TableCell align="right">{row.country}</TableCell>
                 <TableCell align="right">{row.subState}</TableCell>
-                <TableCell align="right">{row.coverageHA}</TableCell>
-                <TableCell align="right">{row.naturalForestLossHA}</TableCell>
-                <TableCell align="right">{row.negligibleRisk ? 'YES' : 'No'}</TableCell>
+                {isStbnSelected ? (
+                  <>
+                    <TableCell align="right">{row.coverageHA}</TableCell>
+                    <TableCell align="right">{row.naturalForestLossHA}</TableCell>
+                  </>
+                ) : (
+                  <>
+                    <TableCell align="right">{row.jrcCoverageHA}</TableCell>
+                    <TableCell align="right">{row.jrcNaturalForestLossHA}</TableCell>
+                  </>
+                )}
+                {isStbnSelected && (
+                  <TableCell align="right">{row.negligibleRisk ? 'YES' : 'No'}</TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

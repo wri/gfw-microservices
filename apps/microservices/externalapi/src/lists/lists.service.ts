@@ -9,7 +9,7 @@ import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
-import { listInfoResponse } from '../list-analysis/list-upload-new.dto';
+import { ListInfoResponse } from '../list-analysis/list-upload-new.dto';
 @Injectable()
 export class ListService {
   public readonly logger = new Logger(ListService.name);
@@ -86,7 +86,7 @@ export class ListService {
       throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
     }
   }
-  async getListInfo(organizationId: number, listId: number): Promise<listInfoResponse> {
+  async getListInfo(organizationId: number, listId: number): Promise<ListInfoResponse> {
     try {
       const organization = await this.getOrganizationDetails(organizationId);
       const connection = await this.createOrganizationConnection(organization);
@@ -97,7 +97,7 @@ export class ListService {
       if (!listFound) {
         throw new NotFoundException(`List ${listId} status not found.`);
       }
-      const listResponse: listInfoResponse = {
+      const listResponse: ListInfoResponse = {
         listId: listFound.id,
         listName: listFound.listName,
         locationCount: listFound.listLocationsCount,
@@ -115,7 +115,7 @@ export class ListService {
     pageSize: number,
     pageNum: number,
     organizationId: number
-  ): Promise<listInfoResponse[]> {
+  ): Promise<ListInfoResponse[]> {
     const take = pageSize === 0 ? 10 : pageSize;
     const skip = pageNum > 0 ? (pageNum - 1) * take : 0;
     try {
@@ -134,7 +134,7 @@ export class ListService {
         throw new NotFoundException(`pageNum ${pageNum} or pageSize ${pageSize} is out of range`);
       }
 
-      const paginatedListInfo: listInfoResponse[] = paginatedList.map((list) => ({
+      const paginatedListInfo: ListInfoResponse[] = paginatedList.map((list) => ({
         listId: list.id,
         listName: list.listName,
         locationCount: list.listLocationsCount,

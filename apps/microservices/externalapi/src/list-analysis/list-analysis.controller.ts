@@ -11,11 +11,28 @@ import {
 } from './list-analysis.dto';
 import { ListService } from '../lists/lists.service';
 import { ListAnalysisService } from './list-analysis.service';
-import { ApiResponse, ApiSecurity } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiResponse,
+  ApiSecurity,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { requestSchema, RequestSchema } from '../types/request-schema';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
 import { analysisIdSchema } from '../types/analysis-id';
-import { listInfoResponse } from './list-upload-new.dto';
+import { ListInfoResponse } from './list-upload-new.dto';
+import {
+  UnauthorizedResponse,
+  NotFoundResponse,
+  ForbiddenResponse,
+  BadRequestResponse,
+  ErroResponseWithErroMessage,
+  DeleteListMessageResponse,
+  InternalServerErrorResponse,
+} from './dtos/apiResponse';
 @ApiSecurity('x-api-key')
 @Controller('/v1/list')
 export class ListAnalysisController {
@@ -25,6 +42,10 @@ export class ListAnalysisController {
   ) {}
 
   @ApiResponse({ status: 200, type: ListAnalysisResponse })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
   @Get(':listId/analysis/:analysisId/status')
   async getAnalysisStatus(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -46,7 +67,12 @@ export class ListAnalysisController {
 
     return analysisStatus;
   }
-
+  @ApiResponse({ status: 200, type: ListAnalysisResponse })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Post(':listId/analysis/Alerts/generate')
   async createAnalysisStatus(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -69,6 +95,12 @@ export class ListAnalysisController {
       listId,
     });
   }
+  @ApiResponse({ status: 200, type: DeleteListMessageResponse })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Post(':listId/delete')
   async deleteList(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
@@ -80,13 +112,21 @@ export class ListAnalysisController {
       user: { organizationId },
     } = request;
     const { userEmail } = deleteBodyList;
-    return await this.listAnalysisService.deleteList(listId, organizationId, userEmail);
+
+    const message = await this.listAnalysisService.deleteList(listId, organizationId, userEmail);
+    return { message };
   }
+  @ApiResponse({ status: 200, type: ListInfoResponse })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Get(':listId')
   async getListInfo(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Req() request: RequestSchema
-  ): Promise<listInfoResponse> {
+  ): Promise<ListInfoResponse> {
     const {
       user: { organizationId },
     } = request;
@@ -95,6 +135,17 @@ export class ListAnalysisController {
   }
 
   @Get()
+  @ApiResponse({
+    description: 'Paginated info List',
+    status: 200,
+    type: ListInfoResponse,
+    isArray: true,
+  })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   async getPaginatedLists(
     @Query('pageSize', new ZodValidationPipe(pageSizeSchema)) pageSize: number,
     @Query('pageNum', new ZodValidationPipe(numPageSchema)) pageNum: number,

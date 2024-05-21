@@ -53,6 +53,19 @@ export interface RequestTriggerProcessLargeList {
   analysisIds: Array<string>;
 }
 
+export class CreateListRequest {
+  @ApiProperty()
+  listName: string;
+  @ApiProperty()
+  userId: number;
+  @ApiProperty()
+  clientDatabase: string;
+  @ApiProperty()
+  analysisIds: Array<string>;
+  @ApiProperty()
+  filename: string;
+}
+
 export interface CopyOrMoveLargeListRequest {
   listId: number;
   selectedListLocationClasification: string;

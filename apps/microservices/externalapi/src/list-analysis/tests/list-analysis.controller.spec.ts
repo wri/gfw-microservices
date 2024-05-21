@@ -39,6 +39,7 @@ describe('ListAnalysisController', () => {
     creationDate: new Date('2023-09-28'),
     expirationDate: new Date('2023-09-28'),
   };
+  const mockResponseDeleteList = 'User email@email has deleted list listName';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -64,7 +65,7 @@ describe('ListAnalysisController', () => {
           useValue: {
             getAnalysisStatus: jest.fn(() => expectedResult),
             getAnalysisStatusWithErrorFileStoragePath: jest.fn(() => expectedResultWithErroPath),
-            deleteList: jest.fn(() => true),
+            deleteList: jest.fn(() => mockResponseDeleteList),
           },
         },
         {
@@ -149,9 +150,10 @@ describe('ListAnalysisController', () => {
         userEmail: 'email@email.com',
       },
     });
+    const mockObjectDeleteListResponse = { message: mockResponseDeleteList };
     const deleteBodyList = { userEmail: 'email@email.com' };
     const result = await controller.deleteList(listId, deleteBodyList, requestMock);
-    expect(result).toBe(true);
+    expect(result).toEqual(mockObjectDeleteListResponse);
   });
   it('should return unauthorized exception when userEmail is not valid', async () => {
     const listId = 123;

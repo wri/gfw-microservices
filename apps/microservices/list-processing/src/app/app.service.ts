@@ -7,14 +7,8 @@ import {
 import { S3 } from 'aws-sdk';
 import { DataSource } from 'typeorm';
 import * as uniqId from 'uniqid';
-import {
-  ResponsePreSignedURLModel,
-  ResponseObjectPresignedURLModel,
-  RequestSaveLargeListProcessModel,
-  CreateListInsertResultModel,
-} from '../models';
-import { SQLUtils, ClientStoreConnection, List, ActivityLog } from '@wri-monorepos/sql';
-import * as sql from 'mssql';
+import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
+import { ClientStoreConnection, List, ActivityLog } from '@wri-monorepos/sql';
 
 class MyObject {
   id: number;
@@ -69,57 +63,6 @@ export class AppService {
     });
 
     return { url };
-  }
-
-  /**
-   * @param name Save list to process
-   * @returns
-   */
-  async saveListToProcess(
-    listDetails: RequestSaveLargeListProcessModel
-  ): Promise<CreateListInsertResultModel> {
-    const fileS3Route = `s3://${process.env.LARGE_PROCESING_LIST_BUCKET}/${listDetails.key}`;
-
-    try {
-      await SQLUtils.queryDB(
-        listDetails.client_database,
-        `INSERT INTO LargeLists(list_id, organization_user_id, list_name, s3_filename, s3_location, list_status, creation_date) VALUES(@list_id,@organization_user_id,@list_name,@s3_filename,@s3_location,'Created', GETDATE());`,
-        [
-          {
-            field: 'list_id',
-            type: sql.Int,
-            value: listDetails.list_id,
-          },
-          {
-            field: 'organization_user_id',
-            type: sql.Int,
-            value: listDetails.userId,
-          },
-          {
-            field: 'list_name',
-            type: sql.NVarChar(255),
-            value: listDetails.listName,
-          },
-          {
-            field: 's3_filename',
-            type: sql.NVarChar(255),
-            value: listDetails.key,
-          },
-          {
-            field: 's3_location',
-            type: sql.NVarChar(255),
-            value: fileS3Route,
-          },
-        ]
-      );
-      const dataResult: CreateListInsertResultModel = {
-        list_id: listDetails.list_id, //result.records[0].id,
-        s3_location: fileS3Route,
-      };
-      return dataResult;
-    } catch (error) {
-      this.logger.error('SaveListToProcess failed', error);
-    }
   }
 
   async getFilenameForUser(): Promise<MyObject[]> {

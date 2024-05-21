@@ -8,12 +8,12 @@ import * as fs from 'fs';
 import * as uniqId from 'uniqid';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from './app.service';
-import { LargeListService } from '../services/largelist.service';
 import { ConfigModule } from '@nestjs/config';
 import { ListService } from '../services/list.service';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { ClientStoreConnection, CopyOrMoveLargeListRequest } from '@wri-monorepos/sql';
+import { ClientStoreConnection, SqlModule, CopyOrMoveLargeListRequest } from '@wri-monorepos/sql';
+import { ListPaginationService } from '../services/list.pagination.service';
 
 describe('AppController', () => {
   let app: INestApplication;
@@ -47,10 +47,10 @@ describe('AppController', () => {
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,
         }),
+        SqlModule,
       ],
       controllers: [AppController],
       providers: [
-        LargeListService,
         LocationService,
         GeoService,
         ClientStoreConnection,
@@ -70,6 +70,7 @@ describe('AppController', () => {
             }),
           },
         },
+        ListPaginationService,
       ],
     }).compile();
 

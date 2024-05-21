@@ -11,7 +11,7 @@ import InfoBubble from '../../../common/js/components/InfoBubble';
 import { locationsPage } from '../../../common/js/config';
 import { forestLossDatasetIds } from './forestLossDatasets.constants';
 
-function AfiDiagnosticsTable({ data, forestLossDataset }) {
+function AfiDiagnosticsTable({ data, forestLossDataset = forestLossDatasetIds.STBN }) {
   const isStbnSelected = forestLossDataset === forestLossDatasetIds.STBN;
   /*
     if STBN is selected, the rows displayed should be coverageHA and naturalForestLossHA

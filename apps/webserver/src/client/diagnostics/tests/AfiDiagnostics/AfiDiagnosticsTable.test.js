@@ -2,6 +2,7 @@ import React from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import AfiDiagnosticsTable from '../../js/AfiDiagnostics/AfiDiagnosticsTable';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import { forestLossDatasetIds } from '../../js/AfiDiagnostics/forestLossDatasets.constants';
 
 const mockData = [
   {
@@ -40,6 +41,26 @@ test('renders table with correct headers', () => {
   expect(coverageHeader).toBeInTheDocument();
   expect(lossHeader).toBeInTheDocument();
   expect(riskHeader).toBeInTheDocument();
+});
+
+test('hides Negligible Risk if JRC dataset is selected', () => {
+  render(
+    <MuiThemeProvider>
+      <AfiDiagnosticsTable data={mockData} forestLossDataset={forestLossDatasetIds.JRC} />
+    </MuiThemeProvider>
+  );
+
+  const countryHeader = screen.getByText('Country');
+  const subStateHeader = screen.getByText('Sub-state');
+  const coverageHeader = screen.getByText('Natural Forest Coverage (HA)');
+  const lossHeader = screen.getByText('Natural Forest Loss (HA)');
+  const riskHeader = screen.getByText('Negligible Risk');
+
+  expect(countryHeader).toBeInTheDocument();
+  expect(subStateHeader).toBeInTheDocument();
+  expect(coverageHeader).toBeInTheDocument();
+  expect(lossHeader).toBeInTheDocument();
+  expect(riskHeader).not.toBeInTheDocument();
 });
 
 test('renders table rows with data', () => {

@@ -1,10 +1,24 @@
 import { Body, Controller, Delete, Get, Param, Post, UsePipes } from '@nestjs/common';
 
 import { TokenService } from './token.service';
-import { ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CreateApiKeyRequest, ViewApiKeyResponse } from './dtos';
 import { z } from 'zod';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
+import {
+  BadRequestResponse,
+  ErroResponseWithErroMessage,
+  ForbiddenResponse,
+  InternalServerErrorResponse,
+  UnauthorizedResponse,
+} from '../list-analysis/dtos/apiResponse';
 
 const apiKeyRequestSchema = z.object({
   organizationId: z.number(),
@@ -16,7 +30,11 @@ export class APIKeyController {
   constructor(private readonly tokenService: TokenService) {}
 
   //Get all tokens for one organization
-  @ApiResponse({ type: [ViewApiKeyResponse] })
+  @ApiResponse({ status: 200, type: [ViewApiKeyResponse] })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
   @Get('/:organizationId')
   async getTokens(@Param('organizationId') orgId: string): Promise<ViewApiKeyResponse[]> {
     const organizationId = z.coerce.number().parse(orgId);
@@ -27,7 +45,12 @@ export class APIKeyController {
   }
 
   // Create a new Token
-  @ApiResponse({ type: ViewApiKeyResponse })
+  @ApiResponse({ status: 200, type: ViewApiKeyResponse })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Post()
   @UsePipes(new ZodValidationPipe(apiKeyRequestSchema))
   token(@Body() apiKeyRequest: CreateApiKeyRequest) {
@@ -37,6 +60,12 @@ export class APIKeyController {
   }
 
   // Delete a token for a organization
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: ErroResponseWithErroMessage })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
+  @ApiResponse({ status: 204, type: String })
   @Delete('/:organizationId/:tokenId')
   deleteToken(@Param('organizationId') orgId: string, @Param('tokenId') tokenId: string) {
     const organizationId = z.coerce.number().parse(orgId);

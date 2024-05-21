@@ -163,6 +163,7 @@ export class ListAnalysisService {
     }
     return analysisStatus;
   }
+
   async prepareUpload({
     organizationId,
     organization_user_id,
@@ -236,7 +237,7 @@ export class ListAnalysisService {
       const response = await s3.send(obj);
       contentLength = response?.ContentLength;
     } catch (error) {
-      throwCustomErrorResponse('File not found', HttpStatus.FORBIDDEN);
+      throwCustomErrorResponse('File not found', HttpStatus.NOT_FOUND);
     }
 
     if (contentLength < MIN_FILE_SIZE_IN_BYTES) {
@@ -349,7 +350,7 @@ export class ListAnalysisService {
       groupId: 'default',
     });
   }
-  async deleteList(listId: number, organizationId: number, userEmail: string): Promise<boolean> {
+  async deleteList(listId: number, organizationId: number, userEmail: string): Promise<string> {
     try {
       const connection = await this.getOrganizationConnection(organizationId);
       const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
@@ -359,7 +360,7 @@ export class ListAnalysisService {
       if (listAnalysisStatus) {
         const user = await this.userService.findUser(organizationId, userEmail);
 
-        const result = await axios.post(
+        const { data } = await axios.post(
           `${this.LLP_BASE_URL}/api/list/${listId}/delete`,
           {
             organization_user_id: user.organization_user_id,
@@ -372,7 +373,7 @@ export class ListAnalysisService {
             },
           }
         );
-        return !!result;
+        return data;
       } else {
         throw new NotFoundException();
       }

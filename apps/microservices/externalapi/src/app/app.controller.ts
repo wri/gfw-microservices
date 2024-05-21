@@ -13,6 +13,7 @@ export class AppController {
   /**
    * Healthcheck for fargate
    */
+
   @Get('/HealthCheck')
   getHealthCheck(): string {
     return this.appService.getHealthCheck();
@@ -28,6 +29,7 @@ export class AppController {
   /**
    * Latest commit hash
    */
+
   @Get('/latest_commit')
   getLatestCommit(): string {
     return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;

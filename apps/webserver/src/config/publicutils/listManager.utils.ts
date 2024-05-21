@@ -1841,13 +1841,9 @@ export const deleteList = (req, list_id) => {
         // 1. Get the table schema
         list = result;
         // 2. Remove from Organization's List table
-        const parameters = [{ field: 'list_id', type: sql.Int, value: list.id }];
-
-        // return sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteList', parameters);
         const userEmail = req.session.user_email;
         const organization_user_id = req.session.organization_user_id;
         const organizationDatabase = req.session.organization_database;
-        //Fetch apiKey
 
         return axios({
           method: 'POST',

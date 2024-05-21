@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import AfiDiagnosticsTable from './AfiDiagnosticsTable';
 import AfiPieChart from './AfiPieChart';
 import DiagnosticsMenuBar from '../common/DiagnosticsMenuBar';
@@ -11,7 +14,7 @@ import ConfirmDialog from '../../../locations/js/components/lists/download/confi
 import { locationsPage } from '../../../common/js/config';
 import InfoBubble from '../../../common/js/components/InfoBubble';
 import getAnalysisAvailabilityMessage from '../common/getAnalysisAvailabilityMessage';
-
+import { forestLossDatasetIds, forestLossDatasets } from './forestLossDatasets.constants';
 import '../common/DiagnosticsContainer.scss';
 
 function AfiDiagnostics() {
@@ -19,6 +22,12 @@ function AfiDiagnostics() {
   const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
   const [tableData, setTableData] = useState({});
   const [chartData, setChartData] = useState({});
+
+  const [forestLossDataset, setForestLossDataset] = useState(forestLossDatasetIds.STBN);
+
+  const handleChange = (event) => {
+    setForestLossDataset(event.target.value);
+  };
 
   const listId = parseInt(new URLSearchParams(location.search).get('listId'), 10);
   const isSharedList = Boolean(new URLSearchParams(location.search).get('shared'));
@@ -56,7 +65,6 @@ function AfiDiagnostics() {
       .then(([afiAnalysisData, diagnosticsData]) => {
         const { regionalInfo, negligibleRiskStats } = afiAnalysisData;
         const { selectedList } = diagnosticsData;
-
         setTableData(regionalInfo);
         setChartData(negligibleRiskStats);
         setSelectedList(selectedList);
@@ -96,6 +104,7 @@ function AfiDiagnostics() {
     listAnalysesStatus
   );
 
+  const isNegligibleRiskAvailable = forestLossDataset !== forestLossDatasetIds.JRC;
   return (
     <>
       {isLoading && (
@@ -123,7 +132,7 @@ function AfiDiagnostics() {
             {selectedList && (
               <DiagnosticsBreadCrums
                 selectedList={selectedList}
-                diagnosticName={'Afi'}
+                diagnosticName="Deforestation Reporting"
                 isSharedList={isSharedList}
               />
             )}
@@ -132,16 +141,37 @@ function AfiDiagnostics() {
                 {list_name}
                 <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.analysisOverview} />
               </h2>
-              <AfiDiagnosticsTable data={tableData} />
-              <h2 className="locations-diagnostics__subtitle">
-                Administrative Areas Overlap
-                <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.landcoverCalc} />
-              </h2>
-              <Card>
-                <CardContent>
-                  <AfiPieChart data={chartData} />
-                </CardContent>
-              </Card>
+
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{ marginRight: '10px' }}>Forest Loss Dataset:</span>
+                <FormControl>
+                  <Select
+                    id="forest-loss-dataset-selector"
+                    value={forestLossDataset}
+                    onChange={handleChange}
+                  >
+                    {forestLossDatasets.map(({ id, label }) => (
+                      <MenuItem key={id} value={id}>
+                        {label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+              <AfiDiagnosticsTable data={tableData} forestLossDataset={forestLossDataset} />
+              {isNegligibleRiskAvailable && (
+                <>
+                  <h2 className="locations-diagnostics__subtitle">
+                    Administrative Areas Overlap
+                    <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.landcoverCalc} />
+                  </h2>
+                  <Card>
+                    <CardContent>
+                      <AfiPieChart data={chartData} />
+                    </CardContent>
+                  </Card>
+                </>
+              )}
             </div>
           </div>
         </div>

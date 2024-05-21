@@ -33,7 +33,7 @@ export interface AfiAnalysisRowForList {
   country: string;
   state: string;
   subState: string;
-  jrcTotalAreaHa: number;
+  jrcCoverageHA: number;
   jrcNaturalForestLossHA: number;
 }
 

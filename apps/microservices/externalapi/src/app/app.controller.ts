@@ -2,7 +2,10 @@ import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { ApiKeyGuard } from '../api-keys/auth.guard';
+import { ApiExcludeController } from '@nestjs/swagger'
 
+//We need this annotation to avoid this controller to be shown on Swagger docs
+@ApiExcludeController()
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}

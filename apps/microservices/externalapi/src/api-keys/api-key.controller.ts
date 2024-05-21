@@ -1,7 +1,15 @@
 import { Body, Controller, Delete, Get, Param, Post, UsePipes } from '@nestjs/common';
 
 import { TokenService } from './token.service';
-import { ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiExcludeController,
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { CreateApiKeyRequest, ViewApiKeyResponse } from './dtos';
 import { z } from 'zod';
 import { ZodValidationPipe } from '../middleware/zod.middleware';
@@ -11,6 +19,8 @@ const apiKeyRequestSchema = z.object({
   userId: z.number(),
 });
 
+//We need this annotation to avoid this controller to be shown on Swagger docs
+@ApiExcludeController()
 @Controller('/api-keys')
 export class APIKeyController {
   constructor(private readonly tokenService: TokenService) {}

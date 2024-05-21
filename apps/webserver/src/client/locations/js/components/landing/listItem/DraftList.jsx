@@ -67,7 +67,7 @@ function DraftList({
   const hasErrorFile = !!error_file_storage_path;
   const isInFolder = !!folder;
   const isEmptyList = locations === 0;
-  const showDiagnosticOpt = !!list.dashboard_last_results;
+  const isDiagnosticAvaliable = !!list.dashboard_last_results;
 
   const clickLocationRow = () => {
     if (isEmptyList) {
@@ -190,7 +190,7 @@ function DraftList({
             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <Menu className="context-menu">
-              {showDiagnosticOpt && (
+              {isDiagnosticAvaliable && (
                 <MenuItem
                   primaryText={locationsPage.lists.diagnostic}
                   leftIcon={<QueryStatsIcon />}

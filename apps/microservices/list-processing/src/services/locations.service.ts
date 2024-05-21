@@ -218,8 +218,6 @@ export class LocationService {
       return {
         success: true,
         action,
-        sourceListId: selectedListId,
-        targetList: moveToList.id,
       };
     } catch (error) {
       Logger.error(`in MoveLocations: ${error.message}`);

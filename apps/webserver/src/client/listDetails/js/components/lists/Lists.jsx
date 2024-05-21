@@ -809,13 +809,6 @@ export default class Lists extends Component {
           body: copyLocationsRequestBody,
         })
           .then((res) => {
-            if (res.ok) {
-              return res.json();
-            }
-            throw new Error('Something Went Wrong');
-          })
-          .then((res) => {
-            console.log('• res', res);
             const dialogTitle = 'Locations Moved';
             const dialogContent =
               'Location move process starts, this can take a while, please be patient.';
@@ -829,10 +822,10 @@ export default class Lists extends Component {
             });
           })
           .catch((error) => {
-            console.log('• error', error);
+            console.warn(`/locations/cm-large-list`, error);
 
             const dialogTitle = 'Something Went Wrong';
-            const dialogContent = `We could not process your request. Reason: ${error.message}.`;
+            const dialogContent = `An error ocurred while processing your request`;
 
             this.setState({
               dialogOpen: true,
@@ -2184,7 +2177,7 @@ export default class Lists extends Component {
         },
       };
     }
-
+    console.log('• dialogActions', dialogActions);
     const allDialogActions = dialogActions || [
       <Button
         className="all-dialog-actions"

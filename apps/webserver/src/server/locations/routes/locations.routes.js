@@ -25,7 +25,6 @@ const { saveAsDraftListConfig } = require('../../../config/config/locations.conf
 const { removeExistingVectorTileFromS3 } = require('../../vectorTiles/utils/vectorTile.utils');
 const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
-const { HttpStatus } = require('@nestjs/common');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 import config from '../../../config/config';
 
@@ -1165,29 +1164,15 @@ module.exports = (app, limiter) => {
         res.send(response);
       })
       .catch(async (error) => {
-        logger.error(`Error ${LISTS_MICROSERVICE_URL}/process-list`, error);
-        const { response } = error;
-        const {
-          status = 500,
-          statusText: reason = 'Error /locations/process-list',
-          data = {},
-        } = response;
-
-        if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
-          req.list = {
-            list_name: listName,
-          };
-
-          await AWSSES.sendErrorNotificationEmail(
-            req,
-            config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
-          );
-        }
-
-        res.status(status).send({
-          reason,
-          ...data,
-        });
+        await controller.handleListProcessingError(
+          error,
+          req,
+          res,
+          listName,
+          'Error /locations/process-list',
+          `${LISTS_MICROSERVICE_URL}/process-list`,
+          config
+        );
       });
   });
 
@@ -1245,7 +1230,7 @@ module.exports = (app, limiter) => {
    * Start list copy or move operation
    */
   app.post('/locations/cm-large-list', (req, res) => {
-    console.log('POST /locations/cm-large-list');
+    logger.info('POST /locations/cm-large-list');
     const { listType, targetList, listId } = req.body;
     let { listName, saveAsDraft } = req.body;
 
@@ -1272,7 +1257,6 @@ module.exports = (app, limiter) => {
         axios
           .post(`${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`, copyOrMoveRequestBody)
           .then((response) => {
-            console.log(`• /CopyOrMoveLargeList Response`, response);
             if (saveAsDraft) {
               return res.send(response.data);
             }
@@ -1288,29 +1272,15 @@ module.exports = (app, limiter) => {
               });
           })
           .catch(async (error) => {
-            logger.error(`Error ${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`, error);
-            const { response } = error;
-            const {
-              status = 500,
-              statusText: reason = 'Error /locations/cm-large-list',
-              data = {},
-            } = response;
-
-            if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
-              req.list = {
-                list_name: listName,
-              };
-
-              await AWSSES.sendErrorNotificationEmail(
-                req,
-                config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
-              );
-            }
-
-            res.status(status).send({
-              reason,
-              ...data,
-            });
+            await controller.handleListProcessingError(
+              error,
+              req,
+              res,
+              listName,
+              'Error /locations/cm-large-list',
+              `${LISTS_MICROSERVICE_URL}/CopyOrMoveLargeList`,
+              config
+            );
           });
       })
       .catch((err) => {

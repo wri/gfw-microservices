@@ -214,6 +214,13 @@ export class LocationService {
           selectedLocations,
         });
       }
+
+      return {
+        success: true,
+        action,
+        sourceListId: selectedListId,
+        targetList: moveToList.id,
+      };
     } catch (error) {
       Logger.error(`in MoveLocations: ${error.message}`);
       // TODO: should we unlock lists?
@@ -338,13 +345,15 @@ export class LocationService {
     if (isSaveAsDraft) {
       await UnlockListAndSaveAsDraft(clientDatabase, moveToList.id, gfwListId);
     } else {
+      const listAnalyses = await getListAnalysisStatus(clientDatabase, moveToList.id);
+      const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
       await this.handleProcessingLimits({
         clientDatabase,
         organizationId,
         subscriptionStatusId,
         listId: moveToList.id,
         userId,
-        analysisIds: getAnalysisTypesFromIds(selectedLocations), // Adjusted to use selectedLocations for analysis
+        analysisIds,
       });
     }
 
@@ -414,14 +423,14 @@ export class LocationService {
       });
       throw new ProcessingLimitException();
     }
-
+    const analysis_types = getAnalysisTypesFromIds(analysisIds);
     const postData = {
       list_id: listId,
       user_id: userId,
       organization_id: organizationId,
       reanalyze: false,
       processing_limit: processingLimit,
-      analysis_types: getAnalysisTypesFromIds(analysisIds),
+      analysis_types,
     };
     const analysisRequestResponse = await requestAnalysisProcess(postData);
     const jsonResponse = await analysisRequestResponse.json();

@@ -1,7 +1,7 @@
 const path = require('path');
 const Papa = require('papaparse');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
-
+const { HttpStatus } = require('@nestjs/common');
 import config from '../../../config/config';
 const { compiledAssets } = config;
 const { createElement } = require('react');
@@ -26,6 +26,7 @@ const { getGeoJSONGeometry } = require('../../../config/privateutils/location.ut
 // Logging
 const logger = require('../../../config/privateutils/logger.utils');
 const { sendMessageToQueue } = require('../../downloader');
+const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
 
 /**
  * @function locations
@@ -391,4 +392,36 @@ export const handleEditLocations = async (req, listID, locationIDs, attributes) 
     await ListManager.setListUnlocked(req, listID);
     return { error: editError, locationsEditedMessageFailed };
   }
+};
+
+export const handleListProcessingError = async (
+  error,
+  req,
+  res,
+  listName,
+  errorMessage,
+  url,
+  config
+) => {
+  logger.error(`Error ${url}`, error);
+  const { response } = error;
+  const { status = 500, statusText: reason = errorMessage, data = {} } = response;
+
+  if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
+    req.list = {
+      list_name: listName,
+    };
+
+    await AWSSES.sendErrorNotificationEmail(
+      req,
+      config.platformVars.emailType.ANALYSIS_LIMIT_REACHED
+    );
+  } else {
+    await AWSSES.sendErrorNotificationEmail(req, config.platformVars.emailType.LIST_ANALYSIS_ERROR);
+  }
+
+  res.status(status).send({
+    reason,
+    ...data,
+  });
 };

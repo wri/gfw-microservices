@@ -54,12 +54,14 @@ test('hides Negligible Risk if JRC dataset is selected', () => {
   const subStateHeader = screen.getByText('Sub-state');
   const coverageHeader = screen.getByText('Natural Forest Coverage (HA)');
   const lossHeader = screen.getByText('Natural Forest Loss (HA)');
-  const riskHeader = screen.getByText('Negligible Risk');
 
   expect(countryHeader).toBeInTheDocument();
   expect(subStateHeader).toBeInTheDocument();
   expect(coverageHeader).toBeInTheDocument();
   expect(lossHeader).toBeInTheDocument();
+
+  const riskHeader = screen.queryByText('Negligible Risk');
+
   expect(riskHeader).not.toBeInTheDocument();
 });
 

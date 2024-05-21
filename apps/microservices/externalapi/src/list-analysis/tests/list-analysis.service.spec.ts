@@ -88,9 +88,10 @@ describe('ListAnalysisService', () => {
       creationDate: new Date('2023-09-28'),
       expirationDate: new Date('2023-09-28'),
     };
+    const mockResponseDeleteList = 'User email@email has deleted list listName';
+    const mockObjectDeleteListResponse = { message: mockResponseDeleteList };
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
-        delete: () => true,
         findOne: () => mockList,
       }),
       options: {
@@ -101,9 +102,11 @@ describe('ListAnalysisService', () => {
     userService.findUser = jest
       .fn()
       .mockResolvedValue({ id: 1, organization_user_id: 1, userEmail: userEmail });
-    axios.post = jest.fn().mockResolvedValue({ status: 200 });
+    axios.post = jest
+      .fn()
+      .mockResolvedValue({ status: 200, data: { message: mockResponseDeleteList } });
     const result = await service.deleteList(organizationId, listId, userEmail);
-    expect(result).toEqual(true);
+    expect(result).toEqual(mockObjectDeleteListResponse);
   });
   it('should not find a list to delete', async () => {
     const listId = 123;

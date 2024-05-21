@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, Param, Post, UsePipes } from '@nestjs/co
 import { TokenService } from './token.service';
 import {
   ApiBadRequestResponse,
+  ApiExcludeController,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,

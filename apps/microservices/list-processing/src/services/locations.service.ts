@@ -19,6 +19,8 @@ import { checkProcessingLimits, getFinalGeojson } from '@wri-monorepos/shared';
 import {
   BulkDeleteLocations,
   CopyOrMoveLargeListRequest,
+  ActionType,
+  ListType,
   DeleteList,
   PerformGetLockStatus,
   SetListDrafStatus,
@@ -31,16 +33,6 @@ import {
 import { ProcessingLimitException } from '../app/app.exceptions';
 
 const EMPTY_CUSTOM_ATTRIBUTES = [];
-
-enum ActionType {
-  Move = 'move',
-  Copy = 'copy',
-}
-
-enum ListType {
-  New = 'new',
-  Existing = 'existing',
-}
 
 @Injectable()
 export class LocationService {
@@ -104,14 +96,14 @@ export class LocationService {
   }: CopyOrMoveLargeListRequest) => {
     const unlock = [];
     try {
-      Logger.log(`Applied Filters ${JSON.stringify(filters)}`);
+      this.logger.log(`Applied Filters ${JSON.stringify(filters)}`);
 
       // Validate list name
       const listName = listType === ListType.New ? newListName : moveToList?.list_name;
       CheckListNameIsValid(listType, listName, userListNames);
 
       // Gather location data
-      Logger.log('Gathering information for locations');
+      this.logger.log('Gathering information for locations');
       const locationData = await new UspGetLocationsFilteredToCopy().run(clientDatabase, {
         listID: selectedListId,
         selectedLocations: allLocationsSelected ? null : selectedLocations.join(),
@@ -124,7 +116,7 @@ export class LocationService {
       });
 
       if (action === ActionType.Move) {
-        Logger.log(
+        this.logger.log(
           `Changing source list (${selectedListId}) status to draft because locations will be moved`
         );
         await SetListDrafStatus(clientDatabase, selectedListId, gfwListId);
@@ -144,7 +136,7 @@ export class LocationService {
       }
 
       // Create Feature Props object
-      Logger.log('Creating Feature Props object');
+      this.logger.log('Creating Feature Props object');
       const templateId = GetTemplateId(templateData);
       const featProps = createFeatureProps(
         locationData,
@@ -154,12 +146,12 @@ export class LocationService {
       );
 
       // Assemble GEO JSON
-      Logger.log('Assembling GEO JSON');
+      this.logger.log('Assembling GEO JSON');
       const geojson = await this.assembleGeojson(featProps, locationData);
       deleteGeoJSONFeatureProperties(geojson);
 
       // Create final GEO JSON
-      Logger.log('Creating final GEO JSON for database insertion');
+      this.logger.log('Creating final GEO JSON for database insertion');
       const finalGeojson = getFinalGeojson(0, geojson);
       const listAnalyses = await getListAnalysisStatus(clientDatabase, selectedListId);
       const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
@@ -220,11 +212,10 @@ export class LocationService {
         action,
       };
     } catch (error) {
-      Logger.error(`in MoveLocations: ${error.message}`);
-      // TODO: should we unlock lists?
+      this.logger.error(`in MoveLocations: ${error.message}`);
       if (unlock.length > 0) {
         await UnlockLists(clientDatabase, unlock);
-        Logger.log(`Lists unlocked: ${unlock.join()}`, 'LocationsService');
+        this.logger.log(`Lists unlocked: ${unlock.join()}`, 'LocationsService');
       }
       // back to Nest
       throw error;
@@ -248,7 +239,7 @@ export class LocationService {
     organizationId,
     subscriptionStatusId,
   }) => {
-    Logger.log('Performing copy for new list');
+    this.logger.log('Performing copy for new list');
     const lockResult = await PerformGetLockStatus(clientDatabase, selectedListId);
     if (lockResult.lock_status === null) {
       throw new Error('LIST_NOT_LOCKED');
@@ -270,7 +261,9 @@ export class LocationService {
     const createdListId = createdUserList.list_id;
     await new UspSetListLocked().run(clientDatabase, createdListId, userId);
 
-    Logger.log(`Performing bulk copy for List ID: ${createdUserList.list_id} to ${newListName}`);
+    this.logger.log(
+      `Performing bulk copy for List ID: ${createdUserList.list_id} to ${newListName}`
+    );
     const destLocationIds = await PerformLocationsBulkCopy(
       createdUserList.list_id,
       newListName,
@@ -280,7 +273,7 @@ export class LocationService {
       clientDatabase
     );
 
-    Logger.log(`Copy location analysis for new list`);
+    this.logger.log(`Copy location analysis for new list`);
     await PerformCopyAnalysis(
       clientDatabase,
       srcListAnalysisTable,
@@ -302,7 +295,7 @@ export class LocationService {
     }
 
     await UnlockLists(clientDatabase, [selectedListId, createdListId]);
-    Logger.log(`Lists unlocked ${selectedListId}, ${createdListId}`, 'LocationsService');
+    this.logger.log(`Lists unlocked ${selectedListId}, ${createdListId}`, 'LocationsService');
   };
 
   handleExistingListUpdate = async ({
@@ -320,7 +313,7 @@ export class LocationService {
     subscriptionStatusId,
     userId,
   }) => {
-    Logger.log(`Performing ${action} for existing list`);
+    this.logger.log(`Performing ${action} for existing list`);
     const destLocationIds = await PerformLocationsBulkCopy(
       moveToList.id,
       moveToList.list_name,
@@ -330,7 +323,7 @@ export class LocationService {
       clientDatabase
     );
 
-    Logger.log(`Copy location analysis for existing list`);
+    this.logger.log(`Copy location analysis for existing list`);
     await PerformCopyAnalysis(
       clientDatabase,
       srcListAnalysisTable,
@@ -356,7 +349,7 @@ export class LocationService {
     }
 
     await UnlockLists(clientDatabase, [selectedListId, moveToList.id]);
-    Logger.log(
+    this.logger.log(
       `Lists unlocked, source list: ${selectedListId}, target list: ${moveToList.id}`,
       'LocationsService'
     );
@@ -371,14 +364,14 @@ export class LocationService {
     filters,
     selectedLocations,
   }) => {
-    Logger.log('Checking if source list needs to be deleted when move action is selected');
+    this.logger.log('Checking if source list needs to be deleted when move action is selected');
     await new UspSetListLocked().run(clientDatabase, selectedListId, userId);
 
     if (allLocationsSelected && !ListHasFiltersApplies(filters)) {
-      Logger.log(`Delete list ${selectedListId} because all locations were moved.`);
+      this.logger.log(`Delete list ${selectedListId} because all locations were moved.`);
       await DeleteList(clientDatabase, selectedListId, userId);
     } else {
-      Logger.log(
+      this.logger.log(
         `Deleting selected locations from source list ${selectedListId}, locations: ${selectedLocations.join()}.`
       );
       await BulkDeleteLocations(
@@ -432,6 +425,6 @@ export class LocationService {
     };
     const analysisRequestResponse = await requestAnalysisProcess(postData);
     const jsonResponse = await analysisRequestResponse.json();
-    Logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
+    this.logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
   };
 }

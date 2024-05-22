@@ -69,13 +69,23 @@ export type ListFilters = {
   searchString?: string;
 };
 
+export enum ActionType {
+  Move = 'move',
+  Copy = 'copy',
+}
+
+export enum ListType {
+  New = 'new',
+  Existing = 'existing',
+}
+
 export interface CopyOrMoveLargeListRequest {
   listId: number;
   selectedListLocationClasification: string;
   customAttributesNames: string[];
   userListNames: string[];
-  action: string; // move or copy
-  listType: string; // new or existing
+  action: ActionType;
+  listType: ListType;
   listName: string;
   targetList?: ListsType;
   selectedLocations: number[];

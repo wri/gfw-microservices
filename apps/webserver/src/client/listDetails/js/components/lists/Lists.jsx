@@ -800,41 +800,38 @@ export default class Lists extends Component {
           filters: myFilters,
         };
 
-        fetch({
-          url: `locations/cm-large-list`,
-          method: 'POST',
-          headers: {
-            'Content-type': 'application/json',
-          },
-          body: copyLocationsRequestBody,
-        })
-          .then(() => {
-            const dialogTitle = 'Locations Moved';
-            const dialogContent =
-              'Location move process starts, this can take a while, please be patient.';
-
-            this.setState({
-              dialogOpen: true,
-              refreshPage: true,
-              isLoading: false,
-              dialogTitle,
-              dialogContent,
-            });
+        new Promise((resolve) => {
+          fetch({
+            url: `locations/cm-large-list`,
+            method: 'POST',
+            headers: {
+              'Content-type': 'application/json',
+            },
+            body: copyLocationsRequestBody,
           })
-          .catch((error) => {
-            console.warn(`/locations/cm-large-list`, error);
-
-            const dialogTitle = 'Something Went Wrong';
-            const dialogContent = `An error ocurred while processing your request.`;
-
-            this.setState({
-              dialogOpen: true,
-              refreshPage: true,
-              isLoading: false,
-              dialogTitle,
-              dialogContent,
+            .then(() => {
+              resolve({
+                dialogTitle: 'Locations Moved',
+                dialogContent:
+                  'Location move process starts, this can take a while, please be patient.',
+              });
+            })
+            .catch((error) => {
+              console.warn(`/locations/cm-large-list`, error);
+              resolve({
+                dialogTitle: 'Something Went Wrong',
+                dialogContent: 'An error ocurred while processing your request.',
+              });
             });
+        }).then(({ dialogTitle, dialogContent }) => {
+          this.setState({
+            dialogOpen: true,
+            refreshPage: true,
+            isLoading: false,
+            dialogTitle,
+            dialogContent,
           });
+        });
       });
     } else {
       const result = saveGfwListLocations(

@@ -1236,6 +1236,8 @@ module.exports = (app, limiter) => {
 
     const { organization_user_id, organization_id, organization_database, subscription_status_id } =
       req.session;
+    logger.info('copyOrMoveRequestBody: ', req.body);
+
     const copyOrMoveRequestBody = {
       ...req.body,
       userId: organization_user_id,
@@ -1243,8 +1245,6 @@ module.exports = (app, limiter) => {
       organizationId: organization_id,
       subscriptionStatusId: subscription_status_id,
     };
-
-    logger.info('copyOrMoveRequestBody: ', copyOrMoveRequestBody);
 
     if (listType === 'existing') {
       listName = targetList.list_name;
@@ -1264,7 +1264,6 @@ module.exports = (app, limiter) => {
             // Send email to user that list is submitted to be analysed
             return AWSSES.sendEmail__ListSubmittedForAnalysis(req, listName, analysisTypes)
               .then(() => {
-                logger.info('List submitted for analysis details: ', response.data);
                 res.send(response.data);
               })
               .catch((err) => {

@@ -1841,39 +1841,8 @@ export const deleteList = (req, list_id) => {
         // 1. Get the table schema
         list = result;
         // 2. Remove from Organization's List table
-        const userEmail = req.session.user_email;
-        const organization_user_id = req.session.organization_user_id;
-        const organizationDatabase = req.session.organization_database;
-
-        return axios({
-          method: 'POST',
-          url: `${process.env.LLP_BASE_URL}/api/list/${list.id}/delete`,
-          data: {
-            userEmail,
-            organization_user_id,
-            organizationDatabase,
-          },
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-          .then(() => {
-            logger.logActivity(
-              req,
-              logger.listActivityTypes.List.ListDeleted,
-              `User '${req.session.user_email}' has deleted list (${list.list_name}).`
-            );
-            resolve(true);
-          })
-          .catch((err) => {
-            const errorObject = errorUtils.createErrorMessage(
-              req,
-              errorUtils.errorCodes.failedToDeleteList,
-              `Failed to delete list id ${list_id}`,
-              err
-            );
-            reject(errorObject);
-          });
+        deleteListWithLLP(req, list)  
+        resolve(true);  
       })
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
@@ -2055,3 +2024,46 @@ export const getListAdminAreasOrderedByCountry = (request, listId) => {
 };
 // Require after modules have been exported so the module can be fully loaded
 const AnalysisManager = require('./analysisManager.utils');
+/**
+ * @function {deleteListWithLLP}
+ * @summary Deletes a list from Lists table, list's attribute and analysis table, and fires an axios request using a promise
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Number} list_id - id of list
+ * @return {Promise} - Returns a promise that resolves with the axios response or rejects with an error
+ */
+export const deleteListWithLLP = (req, list) => {
+  const userEmail = req.session.user_email;
+        const organization_user_id = req.session.organization_user_id;
+        const organizationDatabase = req.session.organization_database;
+  return new Promise((resolve, reject) => {
+    return axios({
+      method: 'POST',
+      url: `${process.env.LLP_BASE_URL}/api/list/${list.id}/delete`,
+      data: {
+        userEmail,
+        organization_user_id,
+        organizationDatabase,
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(() => {
+        logger.logActivity(
+          req,
+          logger.listActivityTypes.List.ListDeleted,
+          `User '${req.session.user_email}' has deleted list (${list.list_name}).`
+        );
+        resolve(true);
+      })
+      .catch((err) => {
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToDeleteList,
+          `Failed to delete list id ${list.id}`,
+          err
+        );
+        reject(errorObject);
+      });
+  });
+};

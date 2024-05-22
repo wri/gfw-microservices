@@ -1821,29 +1821,13 @@ export const resetListStatus = (req, list_id, gfw_list_id, list_status_id = list
  *   @return {Promise}
  */
 export const deleteList = (req, list_id) => {
-  let list;
+  // let list
   return new Promise((resolve, reject) => {
-    getListLockStatus(req, list_id)
-      .then((record) => {
-        const { lock_status, lock_user_id } = record;
-        // List is unlocked
-        if (
-          lock_status === null ||
-          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
-        ) {
-          // Reject object
-          throw { isLocked: true, lock_user_id };
-        } else {
-          return listUtils.getListNameSchema(req, list_id);
-        }
-      })
-      .then((result) => {
-        // 1. Get the table schema
-        list = result;
-        // 2. Remove from Organization's List table
-        deleteListWithLLP(req, list);
+    deleteListWithLLP(req, list_id)
+      .then(() => {
         resolve(true);
       })
+      // })
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
@@ -1853,7 +1837,7 @@ export const deleteList = (req, list_id) => {
         );
         reject(errorObject);
       });
-  });
+  }); // end promisse
 };
 
 export const setListStatus = (req, list_id, newStatus) => {
@@ -1966,28 +1950,25 @@ export function deleteListIfEmpty(req, listID) {
         const { isListEmpty } = resultset;
 
         if (isListEmpty) {
-          try {
-            const list = {
-              id: listID,
-              list_name: resultset.list_name || listID,
-            };
-            await deleteListWithLLP(req, list);
-            logger.logActivity(
-              req,
-              logger.listActivityTypes.List.ListDeleted,
-              `Deleted empty list with id (${listID}).`
-            );
-          } catch (error) {
-            const errorObject = errorUtils.createErrorMessage(
-              req,
-              errorUtils.errorCodes.failedToDeleteList,
-              `Failed to delete list with id (${listID}). List not empty`,
-              error
-            );
-            reject(errorObject);
-          }
+          deleteListWithLLP(req, listID)
+            .then(() => {
+              logger.logActivity(
+                req,
+                logger.listActivityTypes.List.ListDeleted,
+                `Deleted empty list with id (${listID}).`
+              );
+              resolve(true);
+            })
+            .catch((error) => {
+              const errorObject = errorUtils.createErrorMessage(
+                req,
+                errorUtils.errorCodes.failedToDeleteList,
+                `Failed to delete list with id (${listID}). List not empty`,
+                error
+              );
+              reject(errorObject);
+            });
         }
-
         resolve(isListEmpty);
       })
       .catch((error) => {
@@ -2034,39 +2015,56 @@ const AnalysisManager = require('./analysisManager.utils');
  * @param {Number} list_id - id of list
  * @return {Promise} - Returns a promise that resolves with the axios response or rejects with an error
  */
-export const deleteListWithLLP = (req, list) => {
+export const deleteListWithLLP = (req, list_id) => {
   const userEmail = req.session.user_email;
   const organization_user_id = req.session.organization_user_id;
   const organizationDatabase = req.session.organization_database;
   return new Promise((resolve, reject) => {
-    return axios({
-      method: 'POST',
-      url: `${process.env.LLP_BASE_URL}/api/list/${list.id}/delete`,
-      data: {
-        userEmail,
-        organization_user_id,
-        organizationDatabase,
-      },
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.ListDeleted,
-          `User '${req.session.user_email}' has deleted list (${list.list_name}).`
-        );
-        resolve(true);
+    getListLockStatus(req, list_id)
+      .then((record) => {
+        const { lock_status, lock_user_id } = record;
+        // List is unlocked
+        if (
+          lock_status === null ||
+          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
+        ) {
+          // Reject object
+          throw { isLocked: true, lock_user_id };
+        } else {
+          return listUtils.getListNameSchema(req, list_id);
+        }
       })
-      .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
-          req,
-          errorUtils.errorCodes.failedToDeleteList,
-          `Failed to delete list id ${list.id}`,
-          err
-        );
-        reject(errorObject);
+      .then((result) => {
+        const list = result;
+        return axios({
+          method: 'POST',
+          url: `${process.env.LLP_BASE_URL}/api/list/${list.id}/delete`,
+          data: {
+            userEmail,
+            organization_user_id,
+            organizationDatabase,
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+          .then(() => {
+            logger.logActivity(
+              req,
+              logger.listActivityTypes.List.ListDeleted,
+              `User '${req.session.user_email}' has deleted list (${list.list_name}).`
+            );
+            resolve(true);
+          })
+          .catch((err) => {
+            const errorObject = errorUtils.createErrorMessage(
+              req,
+              errorUtils.errorCodes.failedToDeleteList,
+              `Failed to delete list id ${list.id}`,
+              err
+            );
+            reject(errorObject);
+          });
       });
   });
 };

@@ -1841,8 +1841,8 @@ export const deleteList = (req, list_id) => {
         // 1. Get the table schema
         list = result;
         // 2. Remove from Organization's List table
-        deleteListWithLLP(req, list)  
-        resolve(true);  
+        deleteListWithLLP(req, list);
+        resolve(true);
       })
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
@@ -1967,8 +1967,11 @@ export function deleteListIfEmpty(req, listID) {
 
         if (isListEmpty) {
           try {
-            await sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteList', parameters);
-
+            const list = {
+              id: listID,
+              list_name: resultset.list_name || listID,
+            };
+            await deleteListWithLLP(req, list);
             logger.logActivity(
               req,
               logger.listActivityTypes.List.ListDeleted,
@@ -2033,8 +2036,8 @@ const AnalysisManager = require('./analysisManager.utils');
  */
 export const deleteListWithLLP = (req, list) => {
   const userEmail = req.session.user_email;
-        const organization_user_id = req.session.organization_user_id;
-        const organizationDatabase = req.session.organization_database;
+  const organization_user_id = req.session.organization_user_id;
+  const organizationDatabase = req.session.organization_database;
   return new Promise((resolve, reject) => {
     return axios({
       method: 'POST',

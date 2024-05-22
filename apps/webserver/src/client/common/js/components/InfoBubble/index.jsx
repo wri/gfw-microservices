@@ -41,7 +41,9 @@ export default function InfoBubble({ children, infoBubbleId }) {
             <InfoBubbleContent infoBubbleId={infoBubbleId} />
           </InfoBubbleBase>
         ) : (
-          <InfoBubbleBase closeBubble={handleClose}>{children}</InfoBubbleBase>
+          <InfoBubbleBase closeBubble={handleClose}>
+            <div dangerouslySetInnerHTML={{ __html: children }}></div>
+          </InfoBubbleBase>
         )}
       </Popover>
     </div>

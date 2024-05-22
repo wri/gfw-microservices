@@ -1,6 +1,7 @@
 import React from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.utils';
+import InfoBubble from '../../../../common/js/components/InfoBubble';
 import { getDataAndCheckIfAllYearsZero } from './barChart.utils';
 
 function ChartsSelectorArgentina({
@@ -21,7 +22,14 @@ function ChartsSelectorArgentina({
         </thead>
         <tbody>
           {chartsConfiguration.map(
-            ({ dataCy, chartLabels, id: optionId, chartsSelectorTitle, totalLoss }) => {
+            ({
+              dataCy,
+              chartLabels,
+              id: optionId,
+              chartsSelectorTitle,
+              infoBubbleId,
+              totalLoss,
+            }) => {
               // Determine the count of options with non-zero data
               const nonZeroOptions = chartLabels?.filter(
                 ({ dataPath }) => !getDataAndCheckIfAllYearsZero(argentinaPieChartsData, dataPath)
@@ -45,6 +53,7 @@ function ChartsSelectorArgentina({
 
                       <label htmlFor={optionId} className="legend-square-label">
                         {chartsSelectorTitle}
+                        {infoBubbleId && <InfoBubble infoBubbleId={infoBubbleId} />}
                       </label>
                     </th>
 

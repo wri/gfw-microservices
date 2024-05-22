@@ -24,7 +24,9 @@ export default function InfoBubbleContent({ infoBubbleId }) {
           <h3 className="bubble-title">{bubbleData.Title}</h3>
 
           {bubbleData['Why this Analysis?'] && <h4>Why this Analysis?</h4>}
-          {bubbleData['Why this Analysis?'] && <p>{bubbleData['Why this Analysis?']}</p>}
+          {bubbleData['Why this Analysis?'] && (
+            <p dangerouslySetInnerHTML={{ __html: bubbleData['Why this Analysis?'] }}></p>
+          )}
 
           {bubbleData['What this Section Explains'] && <h4>What this Section Explains</h4>}
           {bubbleData['What this Section Explains'] && (

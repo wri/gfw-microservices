@@ -48,6 +48,7 @@ export const chartDatasetConfigs = {
     chartsSelectorTitle: 'Argentina OTBN',
     dataCy: 'annual-loss-OTBN',
     informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
+    infoBubbleId: 'regions_arg_deforestation_pa_it',
     chartLabels: [
       {
         id: 'Category I',
@@ -76,6 +77,7 @@ export const chartDatasetConfigs = {
     id: 'argentinaTreeCoverLoss',
     dataCy: 'argentina-tree-cover-loss',
     chartsSelectorTitle: 'Tree cover loss',
+    infoBubbleId: 'regions_arg_deforestation',
     chartLabels: [
       {
         id: 'country specific deforestation',
@@ -97,6 +99,7 @@ export const chartDatasetConfigs = {
     id: 'protectedAreas',
     dataCy: 'argentina-protected-areas',
     chartsSelectorTitle: 'Protected Areas',
+    infoBubbleId: 'regions_arg_deforestation_pa_it',
     chartLabels: [
       {
         id: 'fully restrictive',
@@ -119,6 +122,7 @@ export const chartDatasetConfigs = {
     id: 'indigenousTerritories',
     dataCy: 'argentina-indigenous-territories',
     chartsSelectorTitle: 'Indigenous Territories',
+    infoBubbleId: 'regions_arg_deforestation_pa_it',
     chartLabels: [
       {
         id: 'Indigenous Territories',

@@ -405,7 +405,7 @@ export const handleListProcessingError = async (
 ) => {
   logger.error(`Error ${url}`, error);
   const { response } = error;
-  const { status = 500, statusText: reason = errorMessage, data = {} } = response;
+  const { status = 500, statusText: reason = errorMessage, data = {} } = response || {};
 
   if (status === HttpStatus.UNPROCESSABLE_ENTITY) {
     req.list = {

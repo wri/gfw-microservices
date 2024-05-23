@@ -9,9 +9,10 @@ import { config } from 'aws-sdk';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ListService } from '../services/list.service';
-import { GeoService, LocationService } from '@wri-monorepos/geo';
 import { SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
+import { LocationService } from '../services/locations.service';
+import { ListService } from '../services/list.service';
+import { GeoService } from '@wri-monorepos/geo';
 import { ListPaginationService } from '../services/list.pagination.service';
 import { FCDModule } from './fcd';
 import { SchedulerModule } from './scheduler';

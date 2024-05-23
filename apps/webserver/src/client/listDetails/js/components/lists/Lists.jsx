@@ -800,24 +800,38 @@ export default class Lists extends Component {
           filters: myFilters,
         };
 
-        httpRequest.fetchJSON('/locations/cm-large-list', copyLocationsRequestBody).then(
-          () => {
-            const dialogTitle = 'Locations Moved';
-            const dialogContent =
-              'Location move process starts, this can take a while, please be patient.';
-
-            this.setState({
-              dialogOpen: true,
-              refreshPage: true,
-              isLoading: false,
-              dialogTitle,
-              dialogContent,
+        new Promise((resolve) => {
+          fetch({
+            url: `locations/cm-large-list`,
+            method: 'POST',
+            headers: {
+              'Content-type': 'application/json',
+            },
+            body: copyLocationsRequestBody,
+          })
+            .then(() => {
+              resolve({
+                dialogTitle: 'Locations Moved',
+                dialogContent:
+                  'Location move process starts, this can take a while, please be patient.',
+              });
+            })
+            .catch((error) => {
+              console.warn(`/locations/cm-large-list`, error);
+              resolve({
+                dialogTitle: 'Something Went Wrong',
+                dialogContent: 'An error ocurred while processing your request.',
+              });
             });
-          },
-          (moveError) => {
-            this.handleMoveError(moveError);
-          }
-        );
+        }).then(({ dialogTitle, dialogContent }) => {
+          this.setState({
+            dialogOpen: true,
+            refreshPage: true,
+            isLoading: false,
+            dialogTitle,
+            dialogContent,
+          });
+        });
       });
     } else {
       const result = saveGfwListLocations(
@@ -2160,7 +2174,6 @@ export default class Lists extends Component {
         },
       };
     }
-
     const allDialogActions = dialogActions || [
       <Button
         className="all-dialog-actions"

@@ -1,9 +1,6 @@
-import { GeoService, LocationService } from '@wri-monorepos/geo';
-import {
-  CopyOrMoveLargeListRequest,
-  DeleteListRequest,
-  RequestTriggerProcessLargeList,
-} from './../models/index';
+import { GeoService } from '@wri-monorepos/geo';
+import { LocationService } from '../services/locations.service';
+import { DeleteListRequest, RequestTriggerProcessLargeList } from './../models/index';
 import { Test, TestingModule } from '@nestjs/testing';
 import fetch from 'node-fetch';
 import { AppController } from './app.controller';
@@ -15,7 +12,13 @@ import { ConfigModule } from '@nestjs/config';
 import { ListService } from '../services/list.service';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { ClientStoreConnection, SqlModule } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  SqlModule,
+  CopyOrMoveLargeListRequest,
+  ActionType,
+  TargetListType,
+} from '@wri-monorepos/sql';
 import { ListPaginationService } from '../services/list.pagination.service';
 
 describe('AppController', () => {
@@ -285,8 +288,8 @@ describe('AppController', () => {
         selectedListLocationClasification: 'Supply Shed',
         customAttributesNames: [],
         userListNames: [],
-        action: 'copy',
-        listType: 'new',
+        action: ActionType.Copy,
+        listType: TargetListType.New,
         listName: listName,
         targetList: null,
         selectedLocations: [
@@ -763,30 +766,7 @@ describe('AppController', () => {
         ],
       };
 
-      await locationService.MoveLocations(
-        request.listId,
-        request.selectedListLocationClasification,
-        request.customAttributesNames,
-        request.userListNames,
-        request.action,
-        request.listType,
-        request.listName,
-        request.targetList,
-        request.selectedLocations,
-        request.addType,
-        request.activeTemplate,
-        request.commodityType,
-        request.templateData,
-        request.saveAsDraft,
-        request.userId,
-        request.clientDatabase,
-        request.organizationId,
-        request.subscriptionStatusId,
-        request.gfwListId,
-        request.allLocationsSelected,
-        request.filters,
-        request.srcListAnalysisTable
-      );
+      await locationService.MoveLocations(request);
     });
   });
   describe('Delete list process', () => {

@@ -9,6 +9,16 @@ import { buildDropdownOptions } from '../../../../common/js/utils/buildDropdownO
 
 import './CopyMoveModal.scss';
 
+const ActionType = {
+  Move: 'move',
+  Copy: 'copy',
+};
+
+const ListType = {
+  New: 'new',
+  Existing: 'existing',
+};
+
 export default function CopyMoveModal(props) {
   const {
     isGfwList,
@@ -49,7 +59,7 @@ export default function CopyMoveModal(props) {
         {!isGfwList && dropdownOptions.length > 0 && (
           <div
             className={
-              selectedMoveOrCopy === 'move'
+              selectedMoveOrCopy === ActionType.Move
                 ? 'move-or-copy__selection move-or-copy__selection--selected'
                 : 'move-or-copy__selection'
             }
@@ -59,7 +69,7 @@ export default function CopyMoveModal(props) {
               id="move-selection"
               name="move-or-copy"
               value="move"
-              checked={selectedMoveOrCopy === 'move'}
+              checked={selectedMoveOrCopy === ActionType.Move}
               onChange={(e) => {
                 setMoveOrCopy(e);
                 updateSelectedMove(selectedExistingList);
@@ -72,7 +82,7 @@ export default function CopyMoveModal(props) {
         )}
         <div
           className={
-            selectedMoveOrCopy === 'move'
+            selectedMoveOrCopy === ActionType.Copy
               ? 'move-or-copy__selection move-or-copy__selection--selected'
               : 'move-or-copy__selection'
           }
@@ -82,7 +92,7 @@ export default function CopyMoveModal(props) {
             id="copy-selection"
             name="move-or-copy"
             value="copy"
-            checked={selectedMoveOrCopy === 'copy'}
+            checked={selectedMoveOrCopy === ActionType.Copy}
             onChange={setMoveOrCopy}
           />
           <label className="filter-label" htmlFor="copy-selection">
@@ -91,7 +101,7 @@ export default function CopyMoveModal(props) {
         </div>
       </div>
 
-      {selectedMoveOrCopy === 'move' && (
+      {selectedMoveOrCopy === ActionType.Move && (
         <p className="dialog__prompt">
           Remove{' '}
           <strong>
@@ -102,7 +112,7 @@ export default function CopyMoveModal(props) {
         </p>
       )}
 
-      {selectedMoveOrCopy === 'copy' && (
+      {selectedMoveOrCopy === ActionType.Copy && (
         <p className="dialog__prompt">
           Copy{' '}
           <strong>
@@ -121,7 +131,7 @@ export default function CopyMoveModal(props) {
                 id="existing-selection"
                 name="existing-or-new"
                 value="existing"
-                checked={selectedNewOrExisting === 'existing'}
+                checked={selectedNewOrExisting === ListType.Existing}
                 onChange={setNewOrExisting}
               />
               <label className="filter-label" htmlFor="existing-selection">
@@ -129,7 +139,7 @@ export default function CopyMoveModal(props) {
               </label>
             </div>
 
-            {selectedNewOrExisting === 'existing' && (
+            {selectedNewOrExisting === ListType.Existing && (
               <div className="move-or-copy__suboption">
                 <span className="move-or-copy__hint">
                   {locationsPage.lists.moveExistingDescription}
@@ -149,14 +159,14 @@ export default function CopyMoveModal(props) {
           </>
         )}
 
-        {selectedMoveOrCopy === 'copy' && (
+        {selectedMoveOrCopy === ActionType.Copy && (
           <div className="move-or-copy__option">
             <input
               type="radio"
               id="new-selection"
               name="existing-or-new"
               value="new"
-              checked={selectedNewOrExisting === 'new'}
+              checked={selectedNewOrExisting === ListType.New}
               onChange={setNewOrExisting}
             />
             <label className="filter-label" htmlFor="new-selection">
@@ -165,7 +175,7 @@ export default function CopyMoveModal(props) {
           </div>
         )}
 
-        {selectedNewOrExisting === 'new' && (
+        {selectedNewOrExisting === ListType.New && (
           <div className="move-or-copy__suboption">
             <label className="filter-label block-label" htmlFor="new-list-name">
               {locationsPage.lists.moveToNewListLabel}

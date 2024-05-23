@@ -2,11 +2,11 @@ import { CreateListRequest } from './../../models/index';
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AppController } from '../app.controller';
 import { ApiTags } from '@nestjs/swagger';
-import { LocationService } from '@wri-monorepos/geo';
 import { ListPaginationService } from '../../services/list.pagination.service';
 import { AppService } from '../app.service';
 import { ListService } from '../../services/list.service';
 import { FeatureFlagCheckGuard } from '../../guards/feature.flag.enabled.guard';
+import { LocationService } from '../../services/locations.service';
 /*
 Because this controler extends AppController there are some duplicated endpoints 
 that comes from base Controller, in order to completely deprecate those endpoints

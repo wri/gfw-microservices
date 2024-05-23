@@ -12,7 +12,13 @@ import { ConfigModule } from '@nestjs/config';
 import { ListService } from '../services/list.service';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { ClientStoreConnection, SqlModule, CopyOrMoveLargeListRequest } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection,
+  SqlModule,
+  CopyOrMoveLargeListRequest,
+  ActionType,
+  TargetListType,
+} from '@wri-monorepos/sql';
 import { ListPaginationService } from '../services/list.pagination.service';
 
 describe('AppController', () => {
@@ -282,8 +288,8 @@ describe('AppController', () => {
         selectedListLocationClasification: 'Supply Shed',
         customAttributesNames: [],
         userListNames: [],
-        action: 'copy',
-        listType: 'new',
+        action: ActionType.Copy,
+        listType: TargetListType.New,
         listName: listName,
         targetList: null,
         selectedLocations: [

@@ -1,3 +1,4 @@
+import { TargetList } from 'aws-sdk/clients/cloudwatchevents';
 import { ListsType } from '../queries';
 
 export interface BasicFieldsFileRequest {

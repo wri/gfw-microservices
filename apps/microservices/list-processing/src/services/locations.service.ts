@@ -20,7 +20,7 @@ import {
   BulkDeleteLocations,
   CopyOrMoveLargeListRequest,
   ActionType,
-  ListType,
+  TargetListType,
   DeleteList,
   PerformGetLockStatus,
   SetListDrafStatus,
@@ -99,7 +99,7 @@ export class LocationService {
       this.logger.log(`Applied Filters ${JSON.stringify(filters)}`);
 
       // Validate list name
-      const listName = listType === ListType.New ? newListName : moveToList?.list_name;
+      const listName = listType === TargetListType.New ? newListName : moveToList?.list_name;
       CheckListNameIsValid(listType, listName, userListNames);
 
       // Gather location data
@@ -156,7 +156,7 @@ export class LocationService {
       const listAnalyses = await getListAnalysisStatus(clientDatabase, selectedListId);
       const analysisIds = listAnalyses.map((analysis) => analysis.analysisId);
 
-      if (listType === ListType.New) {
+      if (listType === TargetListType.New) {
         // Handle new list creation
         await this.handleNewListCreation({
           newListName,

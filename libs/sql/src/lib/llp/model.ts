@@ -74,7 +74,7 @@ export enum ActionType {
   Copy = 'copy',
 }
 
-export enum ListType {
+export enum TargetListType {
   New = 'new',
   Existing = 'existing',
 }
@@ -85,7 +85,7 @@ export interface CopyOrMoveLargeListRequest {
   customAttributesNames: string[];
   userListNames: string[];
   action: ActionType;
-  listType: ListType;
+  listType: TargetListType;
   listName: string;
   targetList?: ListsType;
   selectedLocations: number[];

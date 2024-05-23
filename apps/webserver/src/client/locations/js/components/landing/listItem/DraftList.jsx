@@ -6,6 +6,7 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import PlaceIcon from '@mui/icons-material/Place';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import ShareIcon from '@mui/icons-material/Share';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import FolderIcon from '@mui/icons-material/Folder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -66,6 +67,7 @@ function DraftList({
   const hasErrorFile = !!error_file_storage_path;
   const isInFolder = !!folder;
   const isEmptyList = locations === 0;
+  const isDiagnosticAvaliable = !!list.dashboard_last_results;
 
   const clickLocationRow = () => {
     if (isEmptyList) {
@@ -188,6 +190,15 @@ function DraftList({
             targetOrigin={{ vertical: 'top', horizontal: 'right' }}
           >
             <Menu className="context-menu">
+              {isDiagnosticAvaliable && (
+                <MenuItem
+                  primaryText={locationsPage.lists.diagnostic}
+                  leftIcon={<QueryStatsIcon />}
+                  onClick={() => {
+                    window.location = `/diagnostics?listId=${id}`;
+                  }}
+                />
+              )}
               {showMapOpt && (
                 <MenuItem
                   leftIcon={<PlaceIcon />}

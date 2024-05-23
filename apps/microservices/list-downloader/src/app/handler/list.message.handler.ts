@@ -3,6 +3,7 @@ import { SqsMessageHandler } from '@ssut/nestjs-sqs';
 import * as AWS from 'aws-sdk';
 
 import { PipeService } from '../pipe/pipe.service';
+import { messageSchema } from './message.schema';
 
 const awsConfig = {
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -89,7 +90,8 @@ export class ListMessageHandler {
     if (getValues(type)) {
       filters.type = getValues(type);
     }
-    return {
+
+    const plainMessage = {
       ...filters,
       // avoid logging sensitive data
       userEmail: getValues(userEmail),
@@ -98,5 +100,7 @@ export class ListMessageHandler {
       startDate: getValues(startDate),
       endDate: getValues(endDate),
     };
+
+    return messageSchema.parse(plainMessage);
   }
 }

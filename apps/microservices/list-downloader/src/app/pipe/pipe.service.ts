@@ -49,7 +49,7 @@ export class PipeService {
   private async getListName(filters: BasicFieldsFileRequest) {
     console.log(filters);
     const { organizationDatabase, listId, isGFWList } = filters;
-    if ((typeof isGFWList === 'string' && isGFWList === 'false') || !isGFWList) {
+    if (!isGFWList) {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(List);
       const { listName } = await listRepository.findOne({ where: { id: listId } });

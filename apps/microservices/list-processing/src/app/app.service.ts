@@ -8,7 +8,7 @@ import { S3 } from 'aws-sdk';
 import { DataSource } from 'typeorm';
 import * as uniqId from 'uniqid';
 import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
-import { ClientStoreConnection, List, DeleteList, ActivityLog } from '@wri-monorepos/sql';
+import { ClientStoreConnection, List, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
 class MyObject {
   id: number;
   list_name: string;
@@ -21,7 +21,8 @@ export class AppService {
 
   constructor(
     private dataSource: DataSource,
-    private readonly clientStoreConnection: ClientStoreConnection
+    private readonly clientStoreConnection: ClientStoreConnection,
+    private readonly deleteListTypeOrm: DeleteListTypeOrm
   ) {}
 
   /**
@@ -86,7 +87,6 @@ export class AppService {
     userEmail: string
   ): Promise<string> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const activityLogRepository = connection.getRepository(ActivityLog);
     const listRepository = connection.getRepository(List);
     const listFound = await listRepository.findOne({ where: { id: list_id } });
     if (!listFound) {
@@ -98,18 +98,31 @@ export class AppService {
       //Lock list
       await this.lockList(organizationDatabase, list_id, organization_user_id);
     }
+    const activityLogRepository = connection.getRepository(ActivityLog);
     try {
-      await DeleteList(organizationDatabase, list_id, organization_user_id);
-      // Salve log at ActivityLog table
-      const activityLog = new ActivityLog();
-      activityLog.userId = organization_user_id;
-      activityLog.activityTypeId = 21;
-      activityLog.activityDescription = `User '${userEmail}' has deleted list (${listName}).`;
-      activityLog.activityTime = new Date();
-      await activityLogRepository.save(activityLog);
+      // await DeleteList(organizationDatabase, list_id, organization_user_id);
+      const deleteResult = await this.deleteListTypeOrm.delete(
+        organizationDatabase,
+        list_id,
+        organization_user_id
+      );
+      if (deleteResult) {
+        // Salve log at ActivityLog table
+        const activityLog = new ActivityLog();
+        activityLog.userId = organization_user_id;
+        activityLog.activityTypeId = 21;
+        activityLog.activityDescription = `User '${userEmail}' has deleted list (${listName}).`;
+        activityLog.activityTime = new Date();
+        await activityLogRepository.save(activityLog);
 
-      // Return message that the list was deleted to user
-      return `User '${userEmail}' has deleted list (${listName}) - (${list_id}).`;
+        // Return message that the list was deleted to user
+        return `User '${userEmail}' has deleted list (${listName}) - (${list_id}).`;
+      } else {
+        throw new InternalServerErrorException({
+          message: `Failed to delete list ${list_id}`,
+          code: 610,
+        });
+      }
     } catch (error) {
       this.logger.error('DeleteList failure', error);
       const activityLog = new ActivityLog();

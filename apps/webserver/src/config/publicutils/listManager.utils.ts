@@ -63,9 +63,7 @@ const analyticsService = require(path.resolve('./server/analytics/service/analyt
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
-import { SqlParamType, AnalysisDataType, ListsType, DeleteList } from '@wri-monorepos/sql';
-import axios from 'axios';
-import { response } from '../../server';
+import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -2021,6 +2019,7 @@ export const deleteListSqlLib = (req, list_id) => {
     organization_user_id,
     organization_database: organizationDatabase,
   } = req.session;
+  const deleteListTypeOrm = new DeleteListTypeOrm();
   return new Promise((resolve, reject) => {
     getListLockStatus(req, list_id)
       .then((record) => {
@@ -2038,7 +2037,8 @@ export const deleteListSqlLib = (req, list_id) => {
       })
       .then((result) => {
         const list = result;
-        DeleteList(organizationDatabase, list_id, organization_user_id)
+        deleteListTypeOrm
+          .delete(organizationDatabase, list_id, organization_user_id)
           .then(() => {
             logger.logActivity(
               req,

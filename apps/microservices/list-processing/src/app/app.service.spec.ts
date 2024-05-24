@@ -2,16 +2,17 @@ import { AppService } from './app.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
-import { ClientStoreConnection, List, SQLUtils } from '@wri-monorepos/sql';
+import { ClientStoreConnection, DeleteListTypeOrm, List, SQLUtils } from '@wri-monorepos/sql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListRepositoryMock } from './test/list.repository.mock';
 import { ConfigModule } from '@nestjs/config';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { UspGetListLockStatus, UspDeleteList } from '@wri-monorepos/sql';
+import { UspGetListLockStatus } from '@wri-monorepos/sql';
 describe('AppService', () => {
   let service: AppService;
   let module: TestingModule;
   let clientStoreConnection: ClientStoreConnection;
+  let deleteListTypeOrm: DeleteListTypeOrm;
   beforeAll(async () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
@@ -33,13 +34,14 @@ describe('AppService', () => {
           isGlobal: true,
         }),
       ],
-      providers: [AppService, ClientStoreConnection],
+      providers: [AppService, ClientStoreConnection, DeleteListTypeOrm],
     }).compile();
   });
 
   beforeEach(async () => {
     service = module.get<AppService>(AppService);
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
+    deleteListTypeOrm = module.get<DeleteListTypeOrm>(DeleteListTypeOrm);
   });
   describe('getData', () => {
     xit('should return object with presigned URL', () => {
@@ -194,11 +196,12 @@ describe('AppService', () => {
         }),
         query: () => true,
       });
-      jest
-        .spyOn(UspGetListLockStatus.prototype, 'run')
-        .mockResolvedValue({ lock_status: 1234, lock_user_id: 1 });
-      SQLUtils.queryDBFirstRow = jest.fn().mockResolvedValue(true);
-      jest.spyOn(UspDeleteList.prototype, 'run').mockResolvedValue();
+      jest;
+      //   .spyOn(UspGetListLockStatus.prototype, 'run')
+      //   .mockResolvedValue({ lock_status: 1234, lock_user_id: 1 });
+      // SQLUtils.queryDBFirstRow = jest.fn().mockResolvedValue(true);
+      // jest.spyOn(UspDeleteList.prototype, 'run').mockResolvedValue();
+      deleteListTypeOrm.delete = jest.fn().mockResolvedValue(true);
       const result = await service.deleteList(
         listId,
         organizationDatabase,

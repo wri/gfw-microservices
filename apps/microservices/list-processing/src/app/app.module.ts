@@ -9,7 +9,7 @@ import { config } from 'aws-sdk';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
+import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
 import { LocationService } from '../services/locations.service';
 import { ListService } from '../services/list.service';
 import { GeoService } from '@wri-monorepos/geo';
@@ -42,6 +42,13 @@ config.update({
     ListUploadModule,
   ],
   controllers: [AppController, ListController],
-  providers: [AppService, ListPaginationService, LocationService, GeoService, ListService],
+  providers: [
+    AppService,
+    ListPaginationService,
+    LocationService,
+    GeoService,
+    ListService,
+    DeleteListTypeOrm,
+  ],
 })
 export class AppModule {}

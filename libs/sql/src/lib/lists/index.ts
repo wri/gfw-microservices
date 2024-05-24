@@ -9,4 +9,3 @@ export * from './uspGetListAnalysis';
 export * from './getListLocationsCountById';
 export * from './getListByFilters';
 export * from './updateListsAnalysisStatus';
-export * from './uspDeleteList';

@@ -58,13 +58,19 @@
         "runBuildTargetDependencies": true
       }
     },
-    // "lint": {
-    //   "executor": "@nrwl/linter:eslint",
-    //   "outputs": ["{options.outputFile}"],
-    //   "options": {
-    //     "lintFilePatterns": ["apps/webserver/src/**/*.ts", "apps/webserver/src/**/*.js"]
-    //   }
-    // },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "apps/webserver/src/server/a[a-c]*/**/*.ts",
+          "apps/webserver/src/server/a[a-c]*/**/*.js"
+          // The goal is to lint all the files in the project, but starting with the above
+          // "apps/webserver/src/**/*.ts",
+          // "apps/webserver/src/**/*.js"
+        ]
+      }
+    },
     "testweb": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/webserver"],

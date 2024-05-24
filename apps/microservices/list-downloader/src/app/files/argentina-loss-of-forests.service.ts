@@ -6,7 +6,7 @@ import { generateCSV } from '../shared/generate.csv';
 import { argentinaLossOfForests } from '../parser/argentina-loss-of-forests-parser';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 
-const VALID_TYPES = ['argentinaTCL', 'everything'];
+const VALID_TYPES = ['argentinaDeforestation', 'everything'];
 
 @Injectable()
 export class ArgentinaLossOfForestsService extends DashboardHandleDownload {

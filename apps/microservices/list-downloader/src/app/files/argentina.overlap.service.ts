@@ -7,7 +7,7 @@ import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { argentinaLayers } from '../parser/argentina.layers.parser';
 import { FormatNumber } from '../transform/format.number';
 
-const VALID_TYPES = ['argentinaOverlap', 'argentinaTCL', 'everything'];
+const VALID_TYPES = ['argentinaOverlap', 'argentinaDeforestation', 'everything'];
 
 @Injectable()
 export class ArgentinaOverlapService extends DashboardHandleDownload {

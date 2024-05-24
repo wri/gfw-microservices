@@ -66,7 +66,7 @@ export class PipeService {
       afi: this.afiGeneratorService,
       alerts: this.alertsGeneratorService,
       argentinaOverlap: this.listGeneratorService,
-      argentinaTCL: this.listGeneratorService,
+      argentinaDeforestation: this.listGeneratorService,
       commodityRiskDiagnosticLocationSummary: this.listGeneratorService,
       deforestationTrends: this.listGeneratorService,
       everything: this.listGeneratorService,

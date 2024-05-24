@@ -2,7 +2,7 @@ import { AppService } from './app.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
-import { ClientStoreConnection, List, DeleteList } from '@wri-monorepos/sql';
+import { ClientStoreConnection, List } from '@wri-monorepos/sql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListRepositoryMock } from './test/list.repository.mock';
 import { ConfigModule } from '@nestjs/config';

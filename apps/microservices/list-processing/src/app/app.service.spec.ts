@@ -7,8 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListRepositoryMock } from './test/list.repository.mock';
 import { ConfigModule } from '@nestjs/config';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { UspGetListLockStatus } from '@wri-monorepos/sql';
-import { UspDeleteList } from 'libs/sql/src/lib/lists/uspDeleteList';
+import { UspGetListLockStatus, UspDeleteList } from '@wri-monorepos/sql';
 describe('AppService', () => {
   let service: AppService;
   let module: TestingModule;

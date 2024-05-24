@@ -177,62 +177,6 @@ class MapPage {
   clickOnEyeTreeCover() {
     this.elements.eyeTreeCoverBtn().click();
   }
-  // verifyTreeCoverLossInMap() {
-  //   let canvasScreenshot;
-
-  //   cy.get('canvas')
-  //     .should('be.visible')
-  //     .then(($canvas) => {
-  //       cy.wrap($canvas)
-  //         .screenshot({
-  //           capture: 'runner',
-  //           clip: {
-  //             x: $canvas[0].getBoundingClientRect().left,
-  //             y: $canvas[0].getBoundingClientRect().top,
-  //             width: $canvas[0].width,
-  //             height: $canvas[0].height,
-  //           },
-  //         })
-  //         .then((dataUrl) => {
-  //           canvasScreenshot = dataUrl;
-  //         });
-  //     });
-
-  //   cy.wrap(null).should(() => {
-  //     const img = new Image();
-  //     img.src = canvasScreenshot;
-  //     img.onload = () => {
-  //       const canvas = document.createElement('canvas');
-  //       canvas.width = img.width;
-  //       canvas.height = img.height;
-  //       const ctx = canvas.getContext('2d');
-  //       ctx.drawImage(img, 0, 0);
-
-  //       const imageData = ctx.getImageData(0, 0, img.width, img.height).data;
-
-  //       const expectedColor = { r: 220, g: 108, b: 154, a: 255 };
-  //       let colorFound = false;
-  //       for (let i = 0; i < imageData.length; i += 4) {
-  //         const r = imageData[i];
-  //         const g = imageData[i + 1];
-  //         const b = imageData[i + 2];
-  //         const a = imageData[i + 3];
-
-  //         if (
-  //           r === expectedColor.r &&
-  //           g === expectedColor.g &&
-  //           b === expectedColor.b &&
-  //           a === expectedColor.a
-  //         ) {
-  //           colorFound = true;
-  //           break;
-  //         }
-  //       }
-
-  //       expect(colorFound).to.be.true;
-  //     };
-  //   });
-  // }
 
   wait(number: number) {
     cy.wait(number);

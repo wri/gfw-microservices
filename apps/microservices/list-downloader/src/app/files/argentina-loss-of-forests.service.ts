@@ -47,7 +47,7 @@ export class ArgentinaLossOfForestsService extends DashboardHandleDownload {
   async finish(filters: ListFieldsFileRequest) {
     const { selectedLocationsList } = filters;
     if (this.isForestLossFile(filters)) {
-      this.logger.log('Loss of forest finish');
+      this.logger.log('Argentina loss of forest finish');
       if (selectedLocationsList.length != 1) {
         generateCSV(
           filters,

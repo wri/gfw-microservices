@@ -2,6 +2,7 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 
 import Button from '../Button';
+import './CustomDraftDialog.scss';
 
 export default function CustomDraftDialog({
   open,
@@ -12,11 +13,11 @@ export default function CustomDraftDialog({
 }) {
   return (
     <Dialog
-      paperClassName="list-diagnostics-status-draft__dialog dialog-paper"
+      paperClassName="list-diagnostics-dialog dialog-paper"
       open={open}
       title={dialogTitle}
       actions={[
-        <div className="list-diagnostics-status-draft__dialog-actions">
+        <div className="list-diagnostics-dialog__actions">
           <Button
             className="dialog__primary-action"
             variant="primary"

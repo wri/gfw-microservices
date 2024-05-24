@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
 import { getIsDiagnosticStatusDraft } from '../../../../listDetails/js/utils/draft.utils';
 import { locationsPage, userAccessLevel, SAVED_LOCATIONS } from '../../../../common/js/config';
-import Button from '../../../../common/js/components/Button';
-import LinkButton from '../../../../common/js/components/LinkButton';
-import IconButton from '../../../../common/js/components/IconButton';
-import IconTimes from '../../../../common/js/components/icon/IconTimes';
+
+import CustomDraftDialog from '../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
+
 import fetch from '../../../../common/js/utils/fetch';
 import { addList, changeView, resetList } from '../../actions/locationActions';
 import ManageListFolderDialog from './ManageListFolderDialog';
@@ -254,36 +252,13 @@ export default class LocationList extends Component {
           />
         )}
         {rerunDialogState && (
-          <Dialog
-            actions={
-              <div className="dialog__footer">
-                <Button
-                  className="dialog__primary-action"
-                  label={locationsPage.lists.ok}
-                  onClick={this.rerunList}
-                  variant="primary"
-                />
-                <LinkButton
-                  label={locationsPage.lists.cancel}
-                  onClick={this.handleRerunDialogState}
-                />
-              </div>
-            }
-            modal={false}
+          <CustomDraftDialog
             open={rerunDialogState}
-            onRequestClose={this.handleRerunDialogState}
-            bodyClassName="dialog__body"
-            contentClassName="dialog__content"
-          >
-            <div className="dialog__header">
-              <h1 className="dialog__title">{locationsPage.lists.rerunListDialog.title}</h1>
-              <IconButton icon={<IconTimes />} onClick={this.handleRerunDialogState} size="large" />
-            </div>
-            <div
-              className="dialog__prompt"
-              dangerouslySetInnerHTML={{ __html: locationsPage.lists.rerunListDialog.text }}
-            ></div>
-          </Dialog>
+            closeAction={this.handleRerunDialogState}
+            dialogTitle={locationsPage.lists.rerunListDialog.title}
+            dialogMessage={locationsPage.lists.rerunListDialog.text}
+            dialogActionConfirm={this.rerunList}
+          />
         )}
         {showDownloadOpt && (
           <ConfirmDialog

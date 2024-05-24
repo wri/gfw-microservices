@@ -2485,35 +2485,13 @@ export default class Lists extends Component {
                             icon={<IconRerun height="14px" />}
                             label="Update Analysis"
                           />
-                          <Dialog
-                            title={locationsPage.lists.rerunListDialog.title}
-                            actions={
-                              <div className="rerun-list__footer">
-                                <Button
-                                  variant="primary"
-                                  className="rerun-list__button"
-                                  label="OK"
-                                  onClick={this.rerunList}
-                                />
-                                <LinkButton
-                                  className="rerun-list__button"
-                                  label="Cancel"
-                                  onClick={this.handleRerunDialogState}
-                                />
-                              </div>
-                            }
-                            modal={false}
+                          <CustomDraftDialog
                             open={rerunDialogState}
-                            onRequestClose={this.handleRerunDialogState}
-                            bodyClassName="dialog__body"
-                            contentClassName="dialog__content"
-                          >
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: locationsPage.lists.rerunListDialog.text,
-                              }}
-                            ></div>
-                          </Dialog>
+                            closeAction={this.handleRerunDialogState}
+                            dialogTitle={locationsPage.lists.rerunListDialog.title}
+                            dialogMessage={locationsPage.lists.rerunListDialog.text}
+                            dialogActionConfirm={this.rerunList}
+                          />
                         </div>
                       ) : null}
 

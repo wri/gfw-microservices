@@ -62,9 +62,11 @@ export class PipeService {
 
   private getGeneratorBaseOnType = () => {
     return {
+      accountUsersUsage: this.accountUsersUsageGeneratorService,
       afi: this.afiGeneratorService,
       alerts: this.alertsGeneratorService,
       argentinaOverlap: this.listGeneratorService,
+      argentinaTCL: this.listGeneratorService,
       commodityRiskDiagnosticLocationSummary: this.listGeneratorService,
       deforestationTrends: this.listGeneratorService,
       everything: this.listGeneratorService,
@@ -80,7 +82,6 @@ export class PipeService {
       southAmericaTCL: this.listGeneratorService,
       southEastAsiaOverlap: this.listGeneratorService,
       southEastAsiaTCL: this.listGeneratorService,
-      accountUsersUsage: this.accountUsersUsageGeneratorService,
     };
   };
 

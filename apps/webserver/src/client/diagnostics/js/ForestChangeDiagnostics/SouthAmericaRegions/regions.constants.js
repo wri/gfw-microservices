@@ -18,7 +18,7 @@ export const regionConstants = {
   id: 'otbnArgentina',
   chartsSelectorTitle: 'Tree Cover Loss on Argentina OTBN',
   informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
-  downloadId: 'southAmericaTCL',
+  downloadId: 'argentinaTCL',
   diagnosticTitle: 'OTBN Percent Overlap',
   startYear: 2008,
   endYear: 2023,

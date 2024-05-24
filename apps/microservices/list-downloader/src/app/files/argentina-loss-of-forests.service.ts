@@ -6,6 +6,8 @@ import { generateCSV } from '../shared/generate.csv';
 import { argentinaLossOfForests } from '../parser/argentina-loss-of-forests-parser';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 
+const VALID_TYPES = ['argentinaTCL', 'everything'];
+
 @Injectable()
 export class ArgentinaLossOfForestsService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
@@ -39,9 +41,6 @@ export class ArgentinaLossOfForestsService extends DashboardHandleDownload {
       }
     });
 
-    // const formatter = new FormatNumber();
-    // csvData = formatter.run(csvData);
-
     return csvData;
   }
 
@@ -61,8 +60,7 @@ export class ArgentinaLossOfForestsService extends DashboardHandleDownload {
     }
   }
 
-  isForestLossFile(filters: ListFieldsFileRequest) {
-    const { listView, type } = filters;
-    return listView === 'forest_change' && (type === 'southAmericaTCL' || type === 'everything');
+  isForestLossFile({ listView, type }: ListFieldsFileRequest) {
+    return listView === 'forest_change' && VALID_TYPES.includes(type);
   }
 }

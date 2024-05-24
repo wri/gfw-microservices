@@ -1381,6 +1381,11 @@ $print-width: 95%;
 
   .highcharts-container {
     margin: 0 auto;
+    width: 100% !important;
+
+    svg {
+      width: 100% !important;
+    }
   }
 
   .chart-container__pie-chart {

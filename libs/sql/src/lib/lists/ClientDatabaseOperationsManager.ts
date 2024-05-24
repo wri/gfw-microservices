@@ -12,7 +12,7 @@ import { UspResetListStatus } from './uspResetListStatus';
 import { UspDeleteList } from './uspDeleteList';
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { UspDeleteLocationIdsFilteredDataForUserList } from './uspDeleteLocationIdsFilteredDataForUserList';
-import { ActivityLog, List } from '../entity'
+import { ActivityLog, List } from '../entity';
 const logger = new Logger('ClientDatabaseOperationsManager');
 
 const DEFAULT_ROWS_REQUESTED = 200000;
@@ -317,8 +317,12 @@ export const SetListDrafStatus = (clientDatabase, listId, gfwListId) => {
 export class DeleteListTypeOrm {
   private readonly logger = new Logger('List processing service');
   private readonly clientStoreConnection = new ClientStoreConnection();
-  
-  async delete(organizationDatabase: string, list_id: number, organization_user_id:number):Promise<boolean> {
+
+  async delete(
+    organizationDatabase: string,
+    list_id: number,
+    organization_user_id: number
+  ): Promise<boolean> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
     const listRepository = connection.getRepository(List);
     const listFound = await listRepository.findOne({ where: { id: list_id } });
@@ -336,10 +340,7 @@ export class DeleteListTypeOrm {
     const { lockStatus: lockStatus_2, lockUserId: lockUserId_2 } = await listRepository.findOne({
       where: { id: list_id },
     });
-    if (
-      lockStatus_2 === null ||
-      (lockStatus_2 !== null && lockUserId_2 !== organization_user_id)
-    ) {
+    if (lockStatus_2 === null || (lockStatus_2 !== null && lockUserId_2 !== organization_user_id)) {
       this.logger.error('DeleteList failure locked', lockUserId);
       throw { isLocked: true, lockUserId };
     } else {

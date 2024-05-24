@@ -63,7 +63,7 @@ const analyticsService = require(path.resolve('./server/analytics/service/analyt
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
-import { SqlParamType, AnalysisDataType, ListsType } from '@wri-monorepos/sql';
+import { SqlParamType, AnalysisDataType, ListsType, DeleteList } from '@wri-monorepos/sql';
 import axios from 'axios';
 import { response } from '../../server';
 
@@ -1823,7 +1823,7 @@ export const resetListStatus = (req, list_id, gfw_list_id, list_status_id = list
 export const deleteList = (req, list_id) => {
   // let list
   return new Promise((resolve, reject) => {
-    deleteListWithLLP(req, list_id)
+    deleteListSqlLib(req, list_id)
       .then(() => {
         resolve(true);
       })
@@ -1950,7 +1950,7 @@ export function deleteListIfEmpty(req, listID) {
         const { isListEmpty } = resultset;
 
         if (isListEmpty) {
-          deleteListWithLLP(req, listID)
+          deleteListSqlLib(req, listID)
             .then(() => {
               logger.logActivity(
                 req,
@@ -2009,16 +2009,18 @@ export const getListAdminAreasOrderedByCountry = (request, listId) => {
 // Require after modules have been exported so the module can be fully loaded
 const AnalysisManager = require('./analysisManager.utils');
 /**
- * @function {deleteListWithLLP}
- * @summary Deletes a list from Lists table, list's attribute and analysis table, and fires an axios request using a promise
+ * @function {deleteListSqlLib}
+ * @summary Deletes a list from Lists table, list's attribute and analysis table using a promise
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {Number} list_id - id of list
- * @return {Promise} - Returns a promise that resolves with the axios response or rejects with an error
+ * @return {Promise} - Returns a promise that resolves or rejects with an error
  */
-export const deleteListWithLLP = (req, list_id) => {
-  const userEmail = req.session.user_email;
-  const organization_user_id = req.session.organization_user_id;
-  const organizationDatabase = req.session.organization_database;
+export const deleteListSqlLib = (req, list_id) => {
+  const {
+    user_email: userEmail,
+    organization_user_id,
+    organization_database: organizationDatabase,
+  } = req.session;
   return new Promise((resolve, reject) => {
     getListLockStatus(req, list_id)
       .then((record) => {
@@ -2026,7 +2028,7 @@ export const deleteListWithLLP = (req, list_id) => {
         // List is unlocked
         if (
           lock_status === null ||
-          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
+          (lock_status !== null && lock_user_id !== organization_user_id)
         ) {
           // Reject object
           throw { isLocked: true, lock_user_id };
@@ -2036,23 +2038,12 @@ export const deleteListWithLLP = (req, list_id) => {
       })
       .then((result) => {
         const list = result;
-        return axios({
-          method: 'POST',
-          url: `${process.env.LLP_BASE_URL}/api/list/${list.id}/delete`,
-          data: {
-            userEmail,
-            organization_user_id,
-            organizationDatabase,
-          },
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
+        DeleteList(organizationDatabase, list_id, organization_user_id)
           .then(() => {
             logger.logActivity(
               req,
               logger.listActivityTypes.List.ListDeleted,
-              `User '${req.session.user_email}' has deleted list (${list.list_name}).`
+              `User '${userEmail}' has deleted list (${list.list_name}).`
             );
             resolve(true);
           })
@@ -2060,11 +2051,20 @@ export const deleteListWithLLP = (req, list_id) => {
             const errorObject = errorUtils.createErrorMessage(
               req,
               errorUtils.errorCodes.failedToDeleteList,
-              `Failed to delete list id ${list.id}`,
+              `Failed to delete list id ${list_id}`,
               err
             );
             reject(errorObject);
           });
+      })
+      .catch((err) => {
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToDeleteList,
+          `Failed to delete list id ${list_id}`,
+          err
+        );
+        reject(errorObject);
       });
   });
 };

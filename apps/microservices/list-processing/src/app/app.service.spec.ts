@@ -2,11 +2,13 @@ import { AppService } from './app.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
-import { ClientStoreConnection, List } from '@wri-monorepos/sql';
+import { ClientStoreConnection, List, SQLUtils } from '@wri-monorepos/sql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListRepositoryMock } from './test/list.repository.mock';
 import { ConfigModule } from '@nestjs/config';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { UspGetListLockStatus } from '@wri-monorepos/sql';
+import { UspDeleteList } from 'libs/sql/src/lib/lists/uspDeleteList';
 describe('AppService', () => {
   let service: AppService;
   let module: TestingModule;
@@ -108,6 +110,9 @@ describe('AppService', () => {
         }),
         query: () => true,
       });
+      jest
+        .spyOn(UspGetListLockStatus.prototype, 'run')
+        .mockResolvedValue({ lock_status: null, lock_user_id: null });
       await expect(
         service.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
       ).rejects.toThrowError(InternalServerErrorException);
@@ -148,6 +153,10 @@ describe('AppService', () => {
           throw new InternalServerErrorException();
         },
       });
+      jest
+        .spyOn(UspGetListLockStatus.prototype, 'run')
+        .mockResolvedValue({ lock_status: 1234, lock_user_id: 1 });
+      SQLUtils.queryDBFirstRow = jest.fn().mockRejectedValue(true);
       await expect(
         service.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
       ).rejects.toThrowError(InternalServerErrorException);
@@ -186,16 +195,20 @@ describe('AppService', () => {
         }),
         query: () => true,
       });
-      service.deleteList = jest
-        .fn()
-        .mockResolvedValue(`User '${userEmail}' has deleted list (${mockList.listName}).`);
+      jest
+        .spyOn(UspGetListLockStatus.prototype, 'run')
+        .mockResolvedValue({ lock_status: 1234, lock_user_id: 1 });
+      SQLUtils.queryDBFirstRow = jest.fn().mockResolvedValue(true);
+      jest.spyOn(UspDeleteList.prototype, 'run').mockResolvedValue();
       const result = await service.deleteList(
         listId,
         organizationDatabase,
         organization_user_id,
         userEmail
       );
-      expect(result).toEqual(`User '${userEmail}' has deleted list (${mockList.listName}).`);
+      expect(result).toEqual(
+        `User '${userEmail}' has deleted list (${mockList.listName}) - (${mockList.listId}).`
+      );
     });
   });
 });

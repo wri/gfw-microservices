@@ -15,9 +15,9 @@ class DiagnosticsPage {
     tclInfoBubble: () => cy.get('#regions_sa_annual'),
     brazilBiomesPercentOverlapInfoBubble: () => cy.get('#regions_sa_biomes_calc'),
     tclArgentinaOTBNInfoBubble: () => cy.get('#tree_cover_loss_arg_otbn_yearly'),
-    infoBubbleContainer: () => cy.get('.locations-diagnostics-bubble-view'),
+    infoBubbleContainer: () => cy.get('.info-bubble-content'),
     diagnosticsRegions: () => cy.get('[data-cy="diagnotcs-regions"]'),
-    closeButton: () => cy.get('.app__modal-close-icon-container'),
+    closeButton: () => cy.get('.info-bubble-content__icon'),
     infoBubbleTitle: () => cy.get('.bubble-title'),
   };
 

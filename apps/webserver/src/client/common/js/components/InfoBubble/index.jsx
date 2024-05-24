@@ -26,6 +26,7 @@ export default function InfoBubble({ children, infoBubbleId }) {
         iconStyle={{ padding: 0, width: 15, height: 15 }}
         className="metadata-info-button"
         onClick={handleOpen}
+        id={infoBubbleId}
       >
         <InfoIcon color="gray" />
       </IconButton>

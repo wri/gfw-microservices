@@ -42,7 +42,7 @@ import { AlertsGeneratorService } from './alerts.generator.service';
 import { AlertsFileService } from '../files/alerts.file.service';
 import { AlertsLocationsHistoryService } from '../files/alerts.locations.history.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ArgentinaLossOfForestsService } from '../files';
+import { ArgentinaDeforestationService } from '../files';
 
 @Module({
   imports: [envModule, AwsModule, SqlModule, TypeOrmModule.forFeature([GFWList], 'default')],
@@ -81,7 +81,7 @@ import { ArgentinaLossOfForestsService } from '../files';
     AlertsGeneratorService,
     AlertsFileService,
     AlertsLocationsHistoryService,
-    ArgentinaLossOfForestsService,
+    ArgentinaDeforestationService,
   ],
   exports: [PipeService],
 })

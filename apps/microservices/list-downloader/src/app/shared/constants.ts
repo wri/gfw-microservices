@@ -1302,7 +1302,7 @@ export const EXCEL_TEMPLATES = {
       ],
     },
   ],
-  argentinaLossOfForests: [
+  argentinaDeforestation: [
     {
       name: 'list_name',
       parsed: 'overhead',
@@ -1312,7 +1312,7 @@ export const EXCEL_TEMPLATES = {
       parsed: 'overhead',
     },
     {
-      name: 'argentinaLossOfForests',
+      name: 'argentinaDeforestation',
       parsed: 'overhead',
       composites: [
         {
@@ -1331,13 +1331,13 @@ export const EXCEL_TEMPLATES = {
       ],
     },
   ],
-  argentinaLossOfForestsAggregate: [
+  argentinaDeforestationAggregate: [
     {
       name: 'list_name',
       parsed: 'overhead',
     },
     {
-      name: 'argentinaLossOfForests',
+      name: 'argentinaDeforestation',
       parsed: 'yearly',
       composites: [
         {
@@ -1581,7 +1581,7 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Overlap with Sub-layer (Ha)',
     'Overlap with Sub-Layer (%)',
   ],
-  argentinaLossOfForests: [
+  argentinaDeforestation: [
     'List Name',
     'Location Name',
     'Data Layer Name',
@@ -1591,7 +1591,7 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Loss (all years) (ha)',
     '% of Forest Loss',
   ],
-  argentinaLossOfForestsAggregate: [
+  argentinaDeforestationAggregate: [
     'List Name',
     'Data Layer Name',
     'Sub-Layer',

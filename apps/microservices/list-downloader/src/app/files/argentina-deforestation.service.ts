@@ -3,16 +3,16 @@ import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
-import { argentinaLossOfForests } from '../parser/argentina-loss-of-forests-parser';
+import { argentinaDeforestationParser } from '../parser/argentina-deforestation-parser';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 
 const VALID_TYPES = ['argentinaDeforestation', 'everything'];
 
 @Injectable()
-export class ArgentinaLossOfForestsService extends DashboardHandleDownload {
+export class ArgentinaDeforestationService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
     if (this.isForestLossFile(filters)) {
-      super.start(filters, 'argentinaLossOfForests', 'argentina_loss_of_forests');
+      super.start(filters, 'argentinaDeforestation', 'argentina_loss_of_forests');
     }
   }
 
@@ -32,7 +32,7 @@ export class ArgentinaLossOfForestsService extends DashboardHandleDownload {
       if (name === 'list_name') {
         dataRow.push(list_name);
       } else {
-        argentinaLossOfForests({
+        argentinaDeforestationParser({
           operation: column,
           dataRow,
           data: listLevelAnalysis,
@@ -51,7 +51,7 @@ export class ArgentinaLossOfForestsService extends DashboardHandleDownload {
       if (selectedLocationsList.length != 1) {
         generateCSV(
           filters,
-          'argentinaLossOfForestsAggregate',
+          'argentinaDeforestationAggregate',
           'argentina_loss_of_forests_aggregate',
           this.generateAggregate
         );

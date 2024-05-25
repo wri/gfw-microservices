@@ -8,7 +8,7 @@ export * from './alerts.priorities.admin.areas.level.service';
 export * from './alerts.priorities.admin.areas.level.service';
 export * from './alerts.priorities.locations.level.service';
 export * from './alerts.summary.service';
-export * from './argentina-loss-of-forests.service';
+export * from './argentina-deforestation.service';
 export * from './argentina.overlap.service';
 export * from './commodity.risk.diagnostic.location.summary.service';
 export * from './deforestation.trends.service';

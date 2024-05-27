@@ -2,20 +2,24 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 import { IPipeService } from './i.pipe.service';
 
-import { ForestLossService } from '../files/forest.loss.service';
-import { HistoricPercentService } from '../files/historic.percent.service';
-import { ForestChangeDiagnosticLocationSummaryService } from '../files/forest.change.diagnostic.location.summary.service';
-import { ForestChangeDiagnosticListSummaryService } from '../files/forest.change.diagnostic.list.summary.service';
-import { CommodityRiskDiagnosticLocationSummaryService } from '../files/commodity.risk.diagnostic.location.summary.service';
-import { DeforestationTrendsService } from '../files/deforestation.trends.service';
-import { MillPriorityService } from '../files/mill.priority.service';
-import { PalmRiskAnalysisService } from '../files/palm.risk.analysis.service';
-import { SouthAmericaBiomesService } from '../files/south.america.biomes.service';
-import { SouthAmericaLossService } from '../files/south.america.loss.service';
-import { SouthEastAsiaOverlapService } from '../files/south.east.asia.overlap.service';
-import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
+import {
+  ArgentinaDeforestationService,
+  ArgentinaOverlapService,
+  CommodityRiskDiagnosticLocationSummaryService,
+  DeforestationTrendsService,
+  ForestChangeDiagnosticListSummaryService,
+  ForestChangeDiagnosticLocationSummaryService,
+  ForestLossService,
+  HistoricPercentService,
+  MillPriorityService,
+  PalmRiskAnalysisService,
+  SouthAmericaBiomesService,
+  SouthAmericaLossService,
+  SouthEastAsiaOverlapService,
+  SouthEastAsiaTCLService,
+} from '../files';
+
 import { getAllFilesAndZip } from '../shared/file.utils';
-import { ArgentinaOverlapService } from '../files/argentina.overlap.service';
 
 @Injectable()
 export class DashboardService extends IPipeService {
@@ -60,6 +64,9 @@ export class DashboardService extends IPipeService {
   @Inject(ArgentinaOverlapService)
   private readonly argentinaOverlap: ArgentinaOverlapService;
 
+  @Inject(ArgentinaDeforestationService)
+  private readonly argentinaDeforestation: ArgentinaDeforestationService;
+
   async start(filters: ListFieldsFileRequest) {
     await this.startEmail(filters);
 
@@ -76,6 +83,7 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaOverlapService.start(filters);
     this.southEastAsiaTCLService.start(filters);
     this.argentinaOverlap.start(filters);
+    this.argentinaDeforestation.start(filters);
   }
 
   process(data, filters: ListFieldsFileRequest) {
@@ -92,6 +100,7 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaOverlapService.process(data, filters);
     this.southEastAsiaTCLService.process(data, filters);
     this.argentinaOverlap.process(data, filters);
+    this.argentinaDeforestation.process(data, filters);
   }
 
   async finish(filters: ListFieldsFileRequest) {
@@ -111,6 +120,7 @@ export class DashboardService extends IPipeService {
     await this.southEastAsiaOverlapService.finish(filters);
     await this.southEastAsiaTCLService.finish(filters);
     await this.argentinaOverlap.finish(filters);
+    await this.argentinaDeforestation.finish(filters);
 
     this.logger.log(`(${key}) - Zipping files`);
     await getAllFilesAndZip(filters);

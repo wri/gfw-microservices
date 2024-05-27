@@ -7,6 +7,8 @@ import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { argentinaLayers } from '../parser/argentina.layers.parser';
 import { FormatNumber } from '../transform/format.number';
 
+const VALID_TYPES = ['argentinaOverlap', 'argentinaDeforestation', 'everything'];
+
 @Injectable()
 export class ArgentinaOverlapService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
@@ -62,8 +64,7 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
     }
   }
 
-  isArgentinaOverlapFile(filters: ListFieldsFileRequest) {
-    const { type } = filters;
-    return type === 'argentinaOverlap' || type === 'everything';
+  isArgentinaOverlapFile({ type }: ListFieldsFileRequest) {
+    return VALID_TYPES.includes(type);
   }
 }

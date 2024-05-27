@@ -646,6 +646,10 @@ export const argentinaLocationData = [
     argentina_presence: 'true',
     protected_areas_by_category_area: '{}',
     landmark_by_category_area: '{"Not Reported":313.0648}',
+    country_specific_deforestation_classified_region_yearly: '{"ARG":{"Category II":{}}}',
+    country_specific_deforestation_wdpa_yearly: '{"ARG":{}}',
+    country_specific_deforestation_landmark_yearly: '{"ARG":{"Not Reported":{}}}',
+    country_specific_deforestation_yearly: '{"ARG":{}}',
   },
   {
     list_id: 5692,
@@ -778,6 +782,13 @@ export const argentinaLocationData = [
     protected_areas_by_category_area:
       '{"Category Ia":1620.7222,"Category II":156.9743,"Category VI":0.2748}',
     landmark_by_category_area: '{"Not Reported":909.8068}',
+    country_specific_deforestation_classified_region_yearly:
+      '{"ARG":{"Category III":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011approx":4679.3454,"2012":0.0,"2013approx":2262.6501,"2014":34.5098,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":0.0}}}',
+    country_specific_deforestation_wdpa_yearly: '{"ARG":{}}',
+    country_specific_deforestation_landmark_yearly:
+      '{"ARG":{"Not Reported":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011approx":1572.3204,"2012":0.0,"2013approx":854.8599,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":0.0}}}',
+    country_specific_deforestation_yearly:
+      '{"ARG":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011approx":4684.0759,"2012":0.0,"2013approx":2267.5881,"2014":34.5098,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":0.0}}',
   },
   {
     list_id: 5692,
@@ -907,6 +918,10 @@ export const argentinaLocationData = [
     argentina_presence: 'true',
     protected_areas_by_category_area: '{}',
     landmark_by_category_area: '{}',
+    country_specific_deforestation_classified_region_yearly: '{"ARG":{"Category II":{}}}',
+    country_specific_deforestation_wdpa_yearly: '{"ARG":{"Category II":{}}}',
+    country_specific_deforestation_landmark_yearly: '{"ARG":{"Not Reported":{}}}',
+    country_specific_deforestation_yearly: '{"ARG":{}}',
   },
   {
     list_id: 5692,
@@ -1039,6 +1054,14 @@ export const argentinaLocationData = [
     argentina_presence: 'true',
     protected_areas_by_category_area: '{}',
     landmark_by_category_area: '{}',
+    country_specific_deforestation_classified_region_yearly:
+      '{"ARG":{"Category II":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":714.7155},"Category III":{}}}',
+    country_specific_deforestation_wdpa_yearly:
+      '{"ARG":{"Not Reported":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":527.781}}}',
+    country_specific_deforestation_landmark_yearly:
+      '{"ARG":{"Not Reported":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":739.9427}}}',
+    country_specific_deforestation_yearly:
+      '{"ARG":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":739.9427}}',
   },
   {
     list_id: 5692,
@@ -1172,6 +1195,11 @@ export const argentinaLocationData = [
     argentina_presence: 'false',
     protected_areas_by_category_area: '{}',
     landmark_by_category_area: '{}',
+    country_specific_deforestation_classified_region_yearly:
+      '{"ARG":{"Category I":{},"Category II":{}}}',
+    country_specific_deforestation_wdpa_yearly: '{"ARG":{}}',
+    country_specific_deforestation_landmark_yearly: '{"ARG":{}}',
+    country_specific_deforestation_yearly: '{"ARG":{}}',
   },
   {
     list_id: 5692,
@@ -1307,6 +1335,11 @@ export const argentinaLocationData = [
     argentina_presence: 'false',
     protected_areas_by_category_area: '{}',
     landmark_by_category_area: '{}',
+    country_specific_deforestation_classified_region_yearly: '{"ARG":{"Category I":{}}}',
+    country_specific_deforestation_wdpa_yearly:
+      '{"ARG":{"Category Ia":{},"Category VI":{},"Category II":{}}}',
+    country_specific_deforestation_landmark_yearly: '{"ARG":{"Not Reported":{}}}',
+    country_specific_deforestation_yearly: '{"ARG":{}}',
   },
 ];
 
@@ -1402,6 +1435,14 @@ export const argentinaListLevelData = {
   protected_areas_by_category_area:
     '{"Category Ia":1620.7222,"Category II":156.9743,"Category VI, Category V":0.2748}',
   landmark_by_category_area: '{"Not Reported":1222.8716}',
+  country_specific_deforestation_classified_region_yearly:
+    '{"ARG":{"Category I":{},"Category II":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":714.7155},"Category III":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011approx":4679.3454,"2012":0.0,"2013approx":2262.6501,"2014":34.5098,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":0.0}}}',
+  country_specific_deforestation_wdpa_yearly:
+    '{"ARG":{"Not Reported":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011":0.0,"2012":0.0,"2013":0.0,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":527.781},"Category Ia":{},"Category VI":{},"Category II":{}},"BRA":{}}',
+  country_specific_deforestation_landmark_yearly:
+    '{"ARG":{"Not Reported":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011approx":1572.3204,"2012":0.0,"2013approx":854.8599,"2014":0.0,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":739.9427}},"BRA":{}}',
+  country_specific_deforestation_yearly:
+    '{"ARG":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":0.0,"2010":0.0,"2011approx":4684.0759,"2012":0.0,"2013approx":2267.5881,"2014":34.5098,"2015":0.0,"2016":0.0,"2017":0.0,"2018":0.0,"2019":0.0,"2020":0.0,"2021":0.0,"2022":739.9427},"BRA":{"2001":0.0,"2002":0.0,"2003":0.0,"2004":0.0,"2005":0.0,"2006":0.0,"2007":0.0,"2008":0.0,"2009":20.6088,"2010":8.6718,"2011":6.6941,"2012":0.0,"2013":19.9258,"2014":0.0,"2015":2.5103,"2016":43.4358,"2017":17.2588,"2018":0.0,"2019":2.4343,"2020":0.0,"2021":0.0,"2022":0.0}}',
 };
 
 export const commodityRiskData = [

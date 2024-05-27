@@ -1302,6 +1302,60 @@ export const EXCEL_TEMPLATES = {
       ],
     },
   ],
+  argentinaDeforestation: [
+    {
+      name: 'list_name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'Location Name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'argentinaDeforestation',
+      parsed: 'overhead',
+      composites: [
+        {
+          attribute: 'country_specific_deforestation_classified_region_yearly',
+          label: 'OTBN',
+        },
+        {
+          attribute: 'country_specific_deforestation_wdpa_yearly',
+          label: 'Argentina Protected Areas',
+        },
+        {
+          attribute: 'country_specific_deforestation_landmark_yearly',
+          label: 'Indigenous territories',
+        },
+        { attribute: 'country_specific_deforestation_yearly', label: 'Country' },
+      ],
+    },
+  ],
+  argentinaDeforestationAggregate: [
+    {
+      name: 'list_name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'argentinaDeforestation',
+      parsed: 'yearly',
+      composites: [
+        {
+          attribute: 'country_specific_deforestation_classified_region_yearly',
+          label: 'OTBN',
+        },
+        {
+          attribute: 'country_specific_deforestation_wdpa_yearly',
+          label: 'Argentina Protected Areas',
+        },
+        {
+          attribute: 'country_specific_deforestation_landmark_yearly',
+          label: 'Indigenous territories',
+        },
+        { attribute: 'country_specific_deforestation_yearly', label: 'Country' },
+      ],
+    },
+  ],
 };
 
 export const EXCEL_TEMPLATE_HEADERS = {
@@ -1526,6 +1580,25 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Sub-Layer',
     'Overlap with Sub-layer (Ha)',
     'Overlap with Sub-Layer (%)',
+  ],
+  argentinaDeforestation: [
+    'List Name',
+    'Location Name',
+    'Data Layer Name',
+    'Sub-Layer',
+    'Forest Loss (ha)',
+    'Year',
+    'Loss (all years) (ha)',
+    '% of Forest Loss',
+  ],
+  argentinaDeforestationAggregate: [
+    'List Name',
+    'Data Layer Name',
+    'Sub-Layer',
+    'Forest Loss (ha)',
+    'Year',
+    'Loss (all years) (ha)',
+    '% of Forest Loss',
   ],
 };
 

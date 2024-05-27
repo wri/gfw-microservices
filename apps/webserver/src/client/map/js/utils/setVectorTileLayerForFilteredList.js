@@ -1,5 +1,4 @@
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
-import Extent from '@arcgis/core/geometry/Extent';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import Graphic from '@arcgis/core/Graphic';
@@ -35,9 +34,7 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
 
   userLayer.addMany([...centroidGraphics]);
 
-  const dashboard_map_extent = transitionListData?.dashboard_map_extent
-    ? transitionListData.dashboard_map_extent
-    : null;
+  const alertsMapExtent = transitionListData?.alertsMapExtent;
 
   const selectedLocationCoordinates = locationData[0]?.geometry?.coordinates;
 
@@ -60,9 +57,8 @@ const setVectorTileLayerForFilteredList = async (listData, transitionListData, v
       symbol,
     });
     view.goTo(graphic);
-  } else if (dashboard_map_extent) {
-    const extent = new Extent(dashboard_map_extent);
-    view.goTo(extent);
+  } else if (alertsMapExtent) {
+    view.goTo(alertsMapExtent);
   }
 };
 

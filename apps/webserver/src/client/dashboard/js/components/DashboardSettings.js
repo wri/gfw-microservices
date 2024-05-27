@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import store from '../store';
 import mapUtils from '../utils/mapUtils';
 import { calculateAlerts } from '../utils/dashboard.utils';
-import dictionary from '../utils/dictionary';
 import { prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import { selectAlert, selectTimeframe } from '../actions/dashboardActions';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import { proLayers } from '../../../common/js/proLayers.config';
-import redirectToPage from '../../../common/js/utils/redirect';
+import redirectToMap from '../../../common/js/utils/redirect';
 
 const timeframeOptions = [
   {
@@ -55,7 +54,6 @@ export default class DashboardSettings extends Component {
       selectedList,
       selectedTimeframe,
       locationFilters,
-      gfwLists,
       zoomLevel,
       geoJSON,
       failedGeoJSON,
@@ -66,18 +64,13 @@ export default class DashboardSettings extends Component {
       return;
     }
 
-    // const {   } = this.state;
     const layers =
       selectedAlert === 'GLAD'
         ? [proLayers.integratedDeforestationAlertsID]
         : [proLayers.viirsActiveFiresID];
-    let numLocations,
-      filteredIDs,
-      filterCount = 0;
+    let numLocations, filteredIDs;
 
     const viewCenter = mapUtils.getExtent();
-    const mapExtent = mapUtils.getMapExtent();
-    const zScale = dictionary.zoomLevel_scale[zoomLevel];
 
     const { withAlerts, totalLocations, locationIdsWithAlerts, locationIdsWithoutAlerts } =
       calculateAlerts(
@@ -110,36 +103,26 @@ export default class DashboardSettings extends Component {
       });
     }
 
-    for (const alert in locationFilters) {
-      if (locationFilters[alert]) {
-        filterCount++;
-      }
-    }
-
     const sendData = {
-      a: ALERTS,
-      t: selectedTimeframe,
-      l: layers,
-      i: selectedList.id,
-      numLocations: prettifyNum(numLocations),
-      name: selectedList.list_name,
-      // listView: ,
-      filterCount,
-      filteredLists: filteredIDs,
-      canopyDensity: '',
-      path: 'dashboard',
-      gfwlist: gfwLists.includes(selectedList),
-      dashboard_map_extent: mapExtent,
-      showFullListMap: true,
-      totalNumberOfLocationsInList: selectedList.list_locations_count,
-      ...(gfwLists.includes(selectedList) && {
-        lat: viewCenter.latitude,
-        lng: viewCenter.longitude,
-        z: zScale,
-      }),
+      listId: selectedList.id,
+      // a: ALERTS, // not read
+      selectedTimeframe,
+      visibleLayers: layers,
+
+      numberOfSelectedLocations: prettifyNum(numLocations), //  if we always show the full list what is this for?
+      // selectedLocations: filteredIDs, //  if we always show the full list what is this for?
+      isGfwList: selectedList.globalForestWatchList,
+      latitude: viewCenter.latitude,
+      longitude: viewCenter.longitude,
+      zoom: zoomLevel,
+
+      xmin: view.extent.xmin,
+      ymin: view.extent.ymin,
+      xmax: view.extent.xmax,
+      ymax: view.extent.ymax,
     };
 
-    redirectToPage('/map', sendData);
+    redirectToMap(sendData);
     gtag('event', 'view map clicked', {
       event_category: 'Dashboard Click',
       event_label: 'user is re-directed to the map page via a Dashboard View Map click',

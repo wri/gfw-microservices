@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import Dialog from 'material-ui/Dialog';
-
+import { withRouter } from 'react-router-dom';
 // ESRI Imports
 import EsriMap from '@arcgis/core/Map';
 import Extent from '@arcgis/core/geometry/Extent';
@@ -17,6 +17,7 @@ import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
 import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import esriConfig from '@arcgis/core/config';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 
 import store from '../store';
 import {
@@ -81,6 +82,7 @@ import { constructLayerObject } from '../../../common/js/utils/layer.utils';
 import { getGfwProMapLayerName, isGfwList } from '../../../common/js/utils/gfw.utils';
 import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
 import sortMapArray from './sortMapArray';
+import getQueryParams from './getQueryParams';
 
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
@@ -128,7 +130,6 @@ import '../../css/map.scss';
 // import all layer names that we will be using directly
 const {
   adminAreas,
-  administrativeAreas,
   brazilBiomesID,
   gladAlertsID,
   oilPalmConcessions,
@@ -166,7 +167,7 @@ const mapStyle = {
 
 let currentAnalysisCall;
 
-export default class Map extends Component {
+class Map extends Component {
   constructor(props) {
     super(props);
 
@@ -238,9 +239,8 @@ export default class Map extends Component {
 
     const esriMap = new EsriMap();
 
-    const { listData } = this.props;
-
-    const { x, y, z } = listData;
+    const queryParams = getQueryParams(this.props.location.search);
+    const { latitude, longitude, zoom } = queryParams;
 
     esriMap.add(
       new VectorTileLayer(mapPage.basemaps[0].customVectorUrl, {
@@ -248,11 +248,11 @@ export default class Map extends Component {
       })
     );
 
-    const mapviewCenter = x && y ? [x, y] : DEFAULT_MAPVIEW_CENTER;
+    const mapviewCenter = latitude && longitude ? [longitude, latitude] : DEFAULT_MAPVIEW_CENTER;
     const mapView = new MapView({
       container: this.refs.mapView,
       center: mapviewCenter,
-      zoom: z ? z - 1 : 3,
+      zoom: zoom ? zoom - 1 : 3,
       map: esriMap,
       ui: {
         components: ['attribution'],
@@ -280,8 +280,8 @@ export default class Map extends Component {
       planetTileColor,
     } = this.state;
 
-    const { listData } = this.props;
-    const { gfwListName } = listData;
+    const queryParams = getQueryParams(this.props.location.search);
+    const { gfwListName } = queryParams;
 
     updateInteractiveLayers(this.view.map, prevState, this.state);
 
@@ -440,7 +440,7 @@ export default class Map extends Component {
       const activeLayerId = Object.keys(prevState.gfwListDef)[0];
       const activeGFWLayer = this.view.map.findLayerById(activeLayerId);
 
-      if (activeGFWLayer.sublayers) {
+      if (activeGFWLayer?.sublayers) {
         const defExpression = '1=1';
         activeGFWLayer.sublayers.items.forEach((sublayer) => {
           sublayer.definitionExpression = defExpression;
@@ -459,7 +459,7 @@ export default class Map extends Component {
       this.activeGFWLayer = activeGFWLayer;
       const locationsIDs = gfwListDef[activeLayerId];
 
-      if (activeGFWLayer.sublayers) {
+      if (activeGFWLayer?.sublayers) {
         const defExpression =
           activeLayerId === oilPalmConcessions || activeLayerId === universalMillList
             ? locationDefaultID + ' IN (' + locationsIDs.map((id) => "'" + id + "'") + ')'
@@ -478,7 +478,7 @@ export default class Map extends Component {
         // Active GFW Layer "activeGFWLayer" is Tile Layer. No sublayers on selected layer
         // In that case we need to add Custom Vector Tile Layer
 
-        activeGFWLayer.when((gfwLayer) => {
+        activeGFWLayer?.when((gfwLayer) => {
           this._setCustomGfwVectorTileLayer(locationsIDs, gfwListName, gfwLayer);
         });
       }
@@ -1830,48 +1830,49 @@ export default class Map extends Component {
   };
 
   applyStateFromUrl = () => {
-    const { listData, gfwLists } = this.props;
+    const queryParams = getQueryParams(this.props.location.search);
+
+    const { gfwLists } = this.props;
     const {
-      l,
-      i,
-      filteredLists,
-      path,
-      filterCount,
-      numLocations,
-      name,
-      dashboard_map_extent,
-      gfwlist,
-      g,
-      showFullListMap,
-      totalNumberOfLocationsInList,
-    } = listData;
+      visibleLayers,
+      listId,
+      selectedLocations,
+      isGfwList,
+      selectedTimeframe,
+      latitude,
+      longitude,
+      zoom,
+      xmin,
+      ymin,
+      xmax,
+      ymax,
+    } = queryParams;
+
+    if (!listId) {
+      return; // if there is no list id in the get params, exit this function
+    }
+
+    let alertsMapExtent;
+    if (xmin && ymin && xmax && ymax) {
+      alertsMapExtent = new Extent({
+        xmin,
+        ymin,
+        xmax,
+        ymax,
+        spatialReference: SpatialReference.WGS84,
+      });
+    } else {
+      alertsMapExtent = null; // Handle the case where extent cannot be calculated
+    }
 
     const gfwListDefinitions = {};
     const hashLayersToAdd = [];
 
-    if (numLocations) {
-      // only set this if we are coming from the map or diagnostics
-      // if we set it always, we will see 'undefined' in the banner
-      this.setState({
-        transitionListData: {
-          id: i,
-          numLocations: showFullListMap ? totalNumberOfLocationsInList : numLocations,
-          name,
-          filterCount,
-          path,
-          dashboard_map_extent,
-        },
-      });
-    }
-    if (l) {
-      hashLayersToAdd.push(...l);
-    }
-
-    if (g) {
-      const gfwLocations = filteredLists;
-      if (g === administrativeAreas) {
-        if (gfwLocations.length > 0) {
-          queryAdmin(gfwLocations[0]).then((adminArea) => {
+    if (isGfwList) {
+      if (listId === 1) {
+        // administrative areas
+        if (selectedLocations?.length > 0) {
+          queryAdmin(selectedLocations[0]).then((adminArea) => {
             store.dispatch(analysisActions.setAnalysis('analysis'));
             store.dispatch(analysisActions.setActiveAnalysis('region'));
             store.dispatch(
@@ -1893,25 +1894,46 @@ export default class Map extends Component {
           });
         }
       } else {
-        if (gfwLocations && gfwLocations.length > 0) {
-          gfwListDefinitions[g] = [];
-          gfwLocations.forEach((gfwLocation) => {
-            gfwListDefinitions[g].push(gfwLocation);
+        if (selectedLocations?.length) {
+          gfwListDefinitions[isGfwList] = [];
+          selectedLocations.forEach((gfwLocation) => {
+            gfwListDefinitions[isGfwList].push(gfwLocation);
           });
         } else {
-          const [listToSelect] = gfwLists.filter((gfwList) => gfwList.list_name === name);
+          const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
+
           if (listToSelect) {
             this.updateSelectedLists(listToSelect);
           }
         }
-        hashLayersToAdd.push(g); //gfwList from Lists
       }
-    } else if (i && !gfwlist) {
+
+      if (selectedLocations?.length) {
+        // set name and selected locations in banner
+        this.setState({
+          transitionListData: {
+            id: listId,
+            numLocations: selectedLocations.length,
+            alertsMapExtent,
+          },
+        });
+      }
+    } else if (!isGfwList) {
       const { userLists, userSharedLists } = this.props;
       const combinedUserLists = [...userLists, ...userSharedLists];
       store.dispatch(showMapLoader(true));
-      const list_ids = [i];
+      const list_ids = [listId];
       const userList = combinedUserLists.find((list) => list.id === list_ids[0]);
+
+      // set name and selected locations in banner
+      this.setState({
+        transitionListData: {
+          id: listId,
+          numLocations: selectedLocations?.length || userList?.list_locations_count,
+          name: userList.list_name,
+          alertsMapExtent,
+        },
+      });
 
       const request = new XMLHttpRequest();
       request.onload = () => {
@@ -1921,28 +1943,22 @@ export default class Map extends Component {
         } else {
           const selectedListData = JSON.parse(request.responseText);
 
-          if (!showFullListMap && filteredLists) {
-            if (filteredLists && filteredLists.length > 0) {
-              const feats = selectedListData[0].features;
+          if (selectedLocations?.length) {
+            const feats = selectedListData[0].features;
 
-              const filteredLocations = feats.filter((location) => {
-                return filteredLists.indexOf(location.properties.location_id) > -1;
-              });
-              const selectedLocationsData = [
-                {
-                  type: 'FeatureCollection',
-                  features: filteredLocations,
-                },
-              ];
-              const { transitionListData } = this.state;
-              setVectorTileLayerForFilteredList(
-                selectedLocationsData,
-                transitionListData,
-                this.view
-              );
-              store.dispatch(addList(userList));
-              return;
-            }
+            const filteredLocations = feats.filter((location) => {
+              return selectedLocations.indexOf(location.properties.location_id) > -1;
+            });
+            const selectedLocationsData = [
+              {
+                type: 'FeatureCollection',
+                features: filteredLocations,
+              },
+            ];
+            const { transitionListData } = this.state;
+            setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
+            store.dispatch(addList(userList));
+            return;
           }
           const { transitionListData } = this.state;
           setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
@@ -1964,51 +1980,13 @@ export default class Map extends Component {
         event_category: 'Map Load',
         event_label: `user added locations from the ${userList.list_name} list`,
       });
-    } else if (i && gfwlist) {
-      const id = GFWLists[i - 1];
-      let mapLayer;
-
-      switch (id) {
-        case 'Oil Palm Concessions':
-          mapLayer = oilPalmConcessions;
-          break;
-        case 'Palm Oil Mills':
-          mapLayer = universalMillList;
-          break;
-        case 'Protected Areas':
-          mapLayer = protectedAreas;
-          break;
-        case 'RSPO Palm Concessions':
-          mapLayer = rspoConcessions;
-          break;
-        default:
-      }
-
-      if (mapLayer) {
-        const { lat, lng, z } = listData;
-        const pt = new Point({
-          latitude: lat,
-          longitude: lng,
-        });
-
-        this.view
-          .goTo({
-            target: pt,
-            scale: z - 1,
-          })
-          .then(() => {
-            store.dispatch(toggleLayer(mapLayer));
-          });
-      }
     }
 
-    const { t } = listData; //a: locationFilters.ALERTS
-
-    if (t) {
-      if (l && l === gladAlertsID) {
+    if (selectedTimeframe) {
+      if (visibleLayers?.includes(gladAlertsID)) {
         const startDate = new Date();
         const firstDayOfThisMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-        switch (t) {
+        switch (selectedTimeframe) {
           case 'WEEK':
             startDate.setDate(startDate.getDate() - 7);
             break;
@@ -2030,14 +2008,14 @@ export default class Map extends Component {
           resolve();
         });
         promise.then(() => {
-          if (t === 'QUARTER') {
+          if (selectedTimeframe === 'QUARTER') {
             store.dispatch(analysisActions.setGLADEndDate(firstDayOfThisMonth));
           }
           store.dispatch(analysisActions.setGLADStartDate(startDate));
         });
-      } else if (l && l === viirsActiveFiresID) {
+      } else if (visibleLayers?.includes(viirsActiveFiresID)) {
         let fireDays = 1;
-        if (t === 'WEEK') {
+        if (selectedTimeframe === 'WEEK') {
           fireDays = 7;
         }
 
@@ -2055,13 +2033,29 @@ export default class Map extends Component {
       }
     }
 
+    if (latitude && longitude && zoom) {
+      const point = new Point({
+        latitude,
+        longitude,
+      });
+
+      this.view.goTo({
+        target: point,
+        scale: zoom - 1,
+      });
+    }
+
+    if (visibleLayers?.length) {
+      hashLayersToAdd.push(...visibleLayers);
+    }
     if (hashLayersToAdd.length > 0) {
-      //TODO: Could we do this twice?! why are the 'hashLayersToAdd' getting checked and toggled twice?
-      store.dispatch(toggleLayer(hashLayersToAdd));
+      hashLayersToAdd.forEach((layer) => {
+        store.dispatch(toggleLayer(layer));
+      });
       if (
         gfwListDefinitions &&
         Object.keys(gfwListDefinitions).length > 0 &&
-        gfwListDefinitions[g].length > 0
+        gfwListDefinitions[isGfwList].length > 0
       ) {
         store.dispatch(updateGFWLocations(gfwListDefinitions));
       }
@@ -2404,7 +2398,7 @@ export default class Map extends Component {
       selectedList,
     } = this.state;
 
-    const { userLists, locationCount, gfwLists, listData, userSharedLists } = this.props;
+    const { userLists, locationCount, gfwLists, userSharedLists } = this.props;
 
     return (
       <Page links={pageOptions.links} active="map">
@@ -2467,7 +2461,6 @@ export default class Map extends Component {
               locationCount={locationCount}
               gfwLists={gfwLists}
               selectedLists={selectedList}
-              listData={selectedListFromDropdown ? null : listData}
               transitionListData={!selectedListFromDropdown ? transitionListData : {}}
               view={this.view}
               selectedListCallback={this.updateSelectedLists}
@@ -2605,3 +2598,5 @@ export default class Map extends Component {
     );
   }
 }
+
+export default withRouter(Map);

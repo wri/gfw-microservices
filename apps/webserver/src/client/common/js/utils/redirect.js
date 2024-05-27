@@ -1,21 +1,20 @@
-/**
- * Send user to page and pass related data
- * @param {String} url - Local page to redirect (eg. "/map")
- * @param {Object} data - Related data for redirected page
- */
-const redirectToPage = (url, data) => {
-  const form = document.createElement('form');
-  form.method = 'post';
-  form.action = url;
+const createQueryString = (params) => {
+  const searchParams = new URLSearchParams();
 
-  const input = document.createElement('input');
-  input.type = 'hidden';
-  input.name = 'data';
-  input.value = JSON.stringify(data);
-  form.appendChild(input);
-
-  document.body.appendChild(form);
-  form.submit();
+  for (const key in params) {
+    if (Array.isArray(params[key])) {
+      params[key].forEach((value) => searchParams.append(key, value));
+    } else {
+      searchParams.append(key, params[key]);
+    }
+  }
+  return searchParams.toString();
 };
 
-export default redirectToPage;
+const redirectToMap = (data) => {
+  const queryString = createQueryString(data);
+  const urlWithQuery = `map?${queryString}`;
+  window.location.href = urlWithQuery;
+};
+
+export default redirectToMap;

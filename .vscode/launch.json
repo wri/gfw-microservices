@@ -27,6 +27,15 @@
       "runtimeArgs": ["nx", "serve", "microservices-list-processing"],
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}/apps/microservices/list-processing"
+    },
+    {
+      "name": "List downloader",
+      "request": "launch",
+      "type": "node",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "serve", "microservices-list-downloader"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/apps/microservices/list-downloader"
     }
   ]
 }

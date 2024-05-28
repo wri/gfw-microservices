@@ -1819,13 +1819,11 @@ export const resetListStatus = (req, list_id, gfw_list_id, list_status_id = list
  *   @return {Promise}
  */
 export const deleteList = (req, list_id) => {
-  // let list
   return new Promise((resolve, reject) => {
     deleteListSqlLib(req, list_id)
       .then(() => {
         resolve(true);
       })
-      // })
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,

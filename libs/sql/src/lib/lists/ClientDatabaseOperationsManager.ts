@@ -471,29 +471,4 @@ export class DeleteListTypeOrm {
       });
     }
   }
-  private async unlockList(
-    organizationDatabase: string,
-    list_id: number,
-    organization_user_id: number
-  ): Promise<boolean> {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
-    const { lockStatus, lockUserId } = await listRepository.findOne({ where: { id: list_id } });
-
-    if (lockStatus !== null && lockUserId !== organization_user_id) {
-      return false;
-    }
-    try {
-      await listRepository.update(
-        { id: list_id },
-        { lockStatus: null, lockUserId: organization_user_id }
-      );
-      return true;
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message: `Failed to unlock list ${list_id}`,
-        code: 610,
-      });
-    }
-  }
 }

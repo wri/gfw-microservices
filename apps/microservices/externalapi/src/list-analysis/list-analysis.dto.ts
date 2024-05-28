@@ -62,10 +62,20 @@ export const deleteListBodySchema = z.object({
   userEmail: z.string().email(),
 });
 
-export class DeleteListRequest {
+export class requestEmailBody {
   @ApiProperty()
   userEmail: string;
 }
+export class DeleteListRequest extends requestEmailBody {}
+export class GenerateFCDDefReportAnalyseBody extends requestEmailBody {}
+export const generateFCDDefReportAnalyseBodySchema = z.object({ userEmail: z.string().email() });
 
 export const numPageSchema = z.coerce.number();
 export const pageSizeSchema = z.coerce.number();
+
+export interface FDCDefReportAnalysesRequest {
+  listId: number;
+  analysisId: string;
+  organizationId: number;
+  userEmail: string;
+}

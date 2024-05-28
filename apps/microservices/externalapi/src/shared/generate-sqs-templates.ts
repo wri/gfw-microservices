@@ -52,3 +52,47 @@ export const generateAlertsSqsTemplate = ({
     },
   };
 };
+
+export const generateFDCDefReportAnalysesSqsTemplate = ({
+  organization,
+  listId,
+  analysisId,
+  userEmail,
+}: {
+  organization: Organization;
+  listId: number;
+  analysisId: string;
+  userEmail: string;
+}) => {
+  const fileName = generateRandomFilename('');
+
+  const tmpPath = tmp.tmpNameSync();
+  const key = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
+
+  return {
+    list: {
+      DataType: 'String',
+      StringValue: `{"listId":${listId}}`,
+    },
+    organizationDatabase: {
+      DataType: 'String',
+      StringValue: organization.organizationDb,
+    },
+    analysisId: {
+      DataType: 'String',
+      StringValue: analysisId,
+    },
+    userEmail: {
+      DataType: 'String',
+      StringValue: userEmail,
+    },
+    file: {
+      DataType: 'String',
+      StringValue: `{"type":"fdc-def-report","key":"${fileName}","file":"csv"}`,
+    },
+    key: {
+      DataType: 'String',
+      StringValue: key,
+    },
+  };
+};

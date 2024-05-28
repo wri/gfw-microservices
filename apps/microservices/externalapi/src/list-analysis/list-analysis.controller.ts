@@ -2,9 +2,11 @@ import { Controller, Get, Post, Param, Req, Body, Query } from '@nestjs/common';
 import {
   AlertsGenerateRequest,
   DeleteListRequest,
+  GenerateFCDDefReportAnalyseBody,
   ListAnalysisResponse,
   alertsGenerateBodySchema,
   deleteListBodySchema,
+  generateFCDDefReportAnalyseBodySchema,
   listIdSchema,
   numPageSchema,
   pageSizeSchema,
@@ -74,6 +76,7 @@ export class ListAnalysisController {
   @ApiNotFoundResponse({ type: NotFoundResponse })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
   @Post(':listId/analysis/Alerts/generate')
+  // list/{listID}/analysis/{analysisID}/generate
   async createAnalysisStatus(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Body(new ZodValidationPipe(alertsGenerateBodySchema)) alertsGenerate: AlertsGenerateRequest,
@@ -95,6 +98,34 @@ export class ListAnalysisController {
       listId,
     });
   }
+
+  @ApiResponse({ status: 200, type: ListAnalysisResponse })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
+  @Post('list/:listID/analysis/:analysisID:/generate')
+  async CreateFDCDefReportAnalyses(
+    @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
+    @Param('analysisId', new ZodValidationPipe(analysisIdSchema)) analysisId: string,
+    @Body(new ZodValidationPipe(generateFCDDefReportAnalyseBodySchema))
+    generateFCDDefReportAnalyseBody: GenerateFCDDefReportAnalyseBody,
+    @Req() request: RequestSchema
+  ) {
+    new ZodValidationPipe(requestSchema).transform(request);
+    const {
+      user: { organizationId },
+    } = request;
+
+    await this.listAnalysisService.createFDCDefReportAnalyses({
+      organizationId,
+      listId,
+      analysisId,
+      userEmail: generateFCDDefReportAnalyseBody.userEmail,
+    });
+  }
+
   @ApiResponse({ status: 200, type: DeleteListMessageResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })

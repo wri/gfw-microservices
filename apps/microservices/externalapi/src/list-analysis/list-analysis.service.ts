@@ -5,7 +5,11 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { AlertsGenerateBodySchema, ListAnalysisResponse } from './list-analysis.dto';
+import {
+  AlertsGenerateBodySchema,
+  FDCDefReportAnalysesRequest,
+  ListAnalysisResponse,
+} from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
@@ -27,7 +31,10 @@ import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
-import { generateAlertsSqsTemplate } from '../shared/generate-sqs-templates';
+import {
+  generateAlertsSqsTemplate,
+  generateFDCDefReportAnalysesSqsTemplate,
+} from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
 
 const LIST_INITIAL_STATUS = 'Pending';
@@ -350,6 +357,31 @@ export class ListAnalysisService {
       groupId: 'default',
     });
   }
+
+  async createFDCDefReportAnalyses({
+    organizationId,
+    listId,
+    analysisId,
+    userEmail,
+  }: FDCDefReportAnalysesRequest) {
+    const organization = await this.getOrganizationDetails(organizationId);
+
+    const sqsMessage = generateFDCDefReportAnalysesSqsTemplate({
+      listId,
+      analysisId,
+      organization,
+      userEmail,
+    });
+
+    await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
+      id: 'dl' + listId,
+      body: sqsMessage,
+      messageAttributes: sqsMessage,
+      delaySeconds: 0,
+      groupId: 'default',
+    });
+  }
+
   async deleteList(listId: number, organizationId: number, userEmail: string): Promise<string> {
     try {
       const connection = await this.getOrganizationConnection(organizationId);

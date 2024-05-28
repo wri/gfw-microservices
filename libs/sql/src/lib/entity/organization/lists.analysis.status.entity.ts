@@ -3,19 +3,19 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity({ name: 'ListsAnalysisStatus' })
 export class ListsAnalysisStatus {
   @PrimaryGeneratedColumn({ name: 'ListID' })
-  ListID: number;
+  listId: number;
 
   @PrimaryGeneratedColumn({ name: 'AnalysisID' })
-  AnalysisID: string;
+  analysisId: string;
 
   @Column({ name: 'Status' })
-  Status: number;
+  status: number;
 
   @Column({ name: 'ErrorInfo' })
-  ErrorInfo: string;
+  errorInfo: string;
 
   @Column({ name: 'UpdateTime' })
-  UpdateTime: string;
+  updateTime: string;
 
   @Column({ name: 's3_url' })
   s3Url: string;

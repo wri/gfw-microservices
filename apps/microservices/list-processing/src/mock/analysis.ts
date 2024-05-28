@@ -6,9 +6,11 @@ import {
   List,
   ListSchema,
   ListSchemaType,
+  ListsAnalysisStatus
 } from '@wri-monorepos/sql';
 import { EntitySchema, In } from 'typeorm';
 import { mockData } from './data';
+import * as moment from 'moment';
 
 //TODO avoid creating a lot of connections
 const repository = () => {
@@ -60,11 +62,11 @@ const repository = () => {
     return allLocation;
   };
 
-  const getAnalysisAndListTableName = async (organizationDatabase: string, list_id: number) => {
+  const getAnalysisAndListTableName = async (organizationDatabase: string, listId: number) => {
     const connection = await clientStoreConnection.getConnection(organizationDatabase, [List]);
     const listRepository = connection.getRepository(List);
     const { listAnalysisTableName, listTableName } = (await listRepository.findOne({
-      where: { id: list_id },
+      where: { id: listId },
     })) ?? {
       listAnalysisTableName: undefined,
       listTableName: undefined,
@@ -75,10 +77,10 @@ const repository = () => {
     };
   };
 
-  const getListLevelAnalysisId = async (organizationDatabase: string, list_id: number) => {
+  const getListLevelAnalysisId = async (organizationDatabase: string, listId: number) => {
     const connection = await clientStoreConnection.getConnection(organizationDatabase, [Analysis]);
     const analysisRepository = connection.getRepository(Analysis);
-    const { id } = (await analysisRepository.findOne({ where: { listId: list_id } })) ?? {
+    const { id } = (await analysisRepository.findOne({ where: { listId: listId } })) ?? {
       id: undefined,
     };
     return id;
@@ -116,6 +118,25 @@ const repository = () => {
     analysisEntity.insert(analysis);
   };
 
+
+  const insertListAnalysisStatus = async (organizationDatabase: string, listId: number) => {
+    const connection = await clientStoreConnection.getConnection(organizationDatabase, [ListsAnalysisStatus]);
+    const listsAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+    const { analysisId } =  await listsAnalysisStatusRepository.findOne({ where: { listId: listId, analysisId: 'FCD' }}) ?? {analysisId : undefined}
+    if(analysisId){
+      listsAnalysisStatusRepository.update({
+        listId: listId, analysisId: 'FCD'
+      },{
+        updateTime: moment().format('YYYY-MM-DD'),
+      })
+    }
+    listsAnalysisStatusRepository.insert({
+      listId,
+      analysisId: 'FCD',
+      updateTime: moment().format('YYYY-MM-DD'),
+    })
+  }
+
   return {
     deleteAllLocationsAnalysis,
     deleteListLevelAnalysisId,
@@ -125,6 +146,7 @@ const repository = () => {
     getListLevelAnalysisId,
     insertAllLocationAnalysis,
     insertListLevelAnalysis,
+    insertListAnalysisStatus
   };
 };
 
@@ -186,4 +208,5 @@ export const mockAnalysisFlow = async ({
     listId: list_id,
   };
   await repository().insertListLevelAnalysis(organization_database, newListLevelAnalysis);
+  await repository().insertListAnalysisStatus(organization_database, list_id)
 };

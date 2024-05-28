@@ -1869,6 +1869,10 @@ class Map extends Component {
     const hashLayersToAdd = [];
 
     if (isGfwList) {
+      if (listId < 1 || listId > 5) {
+        return; // if the list is not found, exit this function
+      }
+
       if (listId === 1) {
         // administrative areas
         if (selectedLocations?.length > 0) {
@@ -1921,10 +1925,11 @@ class Map extends Component {
     } else {
       const { userLists, userSharedLists } = this.props;
       const combinedUserLists = [...userLists, ...userSharedLists];
+      const userList = combinedUserLists.find((list) => list.id === listId);
+      if (!userList) {
+        return; // if the list is not found, exit this function
+      }
       store.dispatch(showMapLoader(true));
-      const list_ids = [listId];
-      const userList = combinedUserLists.find((list) => list.id === list_ids[0]);
-
       // set name and selected locations in banner
       this.setState({
         transitionListData: {
@@ -1975,7 +1980,7 @@ class Map extends Component {
       request.open('POST', '/map/getUserListLocationData-map', true);
       request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
-      request.send(`list_ids=${list_ids}`);
+      request.send(`list_ids=${[listId]}`);
       gtag('event', 'locations add', {
         event_category: 'Map Load',
         event_label: `user added locations from the ${userList.list_name} list`,

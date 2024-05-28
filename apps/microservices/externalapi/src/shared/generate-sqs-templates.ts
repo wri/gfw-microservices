@@ -53,7 +53,7 @@ export const generateAlertsSqsTemplate = ({
   };
 };
 
-export const generateFDCDefReportAnalysesSqsTemplate = ({
+export const generateFCDDefReportAnalysesSqsTemplate = ({
   organization,
   listId,
   analysisId,

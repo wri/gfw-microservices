@@ -5,11 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  AlertsGenerateBodySchema,
-  FDCDefReportAnalysesRequest,
-  ListAnalysisResponse,
-} from './list-analysis.dto';
+import { AnalysesGenerateRequest, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
@@ -33,7 +29,7 @@ import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import {
   generateAlertsSqsTemplate,
-  generateFDCDefReportAnalysesSqsTemplate,
+  generateFCDDefReportAnalysesSqsTemplate,
 } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
 
@@ -339,40 +335,27 @@ export class ListAnalysisService {
     endDate,
     organizationId,
     listId,
-  }: AlertsGenerateBodySchema & { organizationId: number; listId: number }) {
-    const organization = await this.getOrganizationDetails(organizationId);
-
-    const sqsMessage = generateAlertsSqsTemplate({
-      startDate,
-      listId,
-      organization,
-      endDate,
-    });
-
-    await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
-      id: 'dl' + listId,
-      body: sqsMessage,
-      messageAttributes: sqsMessage,
-      delaySeconds: 0,
-      groupId: 'default',
-    });
-  }
-
-  async createFDCDefReportAnalyses({
-    organizationId,
-    listId,
-    analysisId,
     userEmail,
-  }: FDCDefReportAnalysesRequest) {
+    analysisId,
+  }: AnalysesGenerateRequest) {
     const organization = await this.getOrganizationDetails(organizationId);
 
-    const sqsMessage = generateFDCDefReportAnalysesSqsTemplate({
-      listId,
-      analysisId,
-      organization,
-      userEmail,
-    });
-
+    let sqsMessage = {};
+    if (analysisId === 'Alerts') {
+      sqsMessage = generateAlertsSqsTemplate({
+        startDate,
+        listId,
+        organization,
+        endDate,
+      });
+    } else {
+      sqsMessage = generateFCDDefReportAnalysesSqsTemplate({
+        listId,
+        analysisId,
+        organization,
+        userEmail,
+      });
+    }
     await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
       id: 'dl' + listId,
       body: sqsMessage,

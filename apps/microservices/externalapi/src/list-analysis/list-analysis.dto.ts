@@ -73,9 +73,11 @@ export const generateFCDDefReportAnalyseBodySchema = z.object({ userEmail: z.str
 export const numPageSchema = z.coerce.number();
 export const pageSizeSchema = z.coerce.number();
 
-export interface FDCDefReportAnalysesRequest {
+export interface AnalysesGenerateRequest {
   listId: number;
   analysisId: string;
   organizationId: number;
   userEmail: string;
+  startDate: Date;
+  endDate: Date;
 }

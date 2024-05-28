@@ -131,7 +131,7 @@ function ChangeTypeOfAnalysisModal({
               <InlineLoader />
             ) : isAddingAnalysis ? (
               <ButtonWithConfirmationPrompt
-                buttonLabel="Submit"
+                buttonLabel="Submit Analysis"
                 confirmationMessage={<AddAnalysisTypeConfirmationMessage />}
                 disabled={selectedAnalysis.every((analysis) =>
                   intialAnalysisSelection.includes(analysis)
@@ -144,7 +144,7 @@ function ChangeTypeOfAnalysisModal({
                 variant="primary"
                 disabled={selectedAnalysis.length === intialAnalysisSelection.length}
                 onClick={updateSelectedAnalysis}
-                label="Submit"
+                label="Submit Analysis"
               />
             )}
           </CardActions>

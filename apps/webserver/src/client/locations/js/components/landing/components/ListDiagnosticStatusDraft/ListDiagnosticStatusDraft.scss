@@ -22,19 +22,3 @@
     margin: 0px;
   }
 }
-
-.list-diagnostics-status-draft {
-  &__dialog-actions {
-    display: flex;
-    width: 100%;
-    flex: 1;
-    padding: 0.5rem;
-  }
-
-  &__dialog {
-    a {
-      color: #97bd3d;
-      text-decoration: underline;
-    }
-  }
-}

@@ -244,17 +244,6 @@ const getGFWListLocationIDs = (gfwList, location) => {
 };
 
 /**
- * TODO: check call sites, could be deprecated since list_name property is the same for GFWList and Lists
- * Get check and return GFW Lists Name or `FALSE` in case that list is not GFW List
- * @param {String} selectedLists - Selected list name
- * @returns {string|boolean}
- */
-const getGfwListName = (selectedLists) => {
-  const listName = selectedLists[0].list_name;
-  return selectedLists.length > 0 && GFWLists.indexOf(listName) > -1 ? listName : false;
-};
-
-/**
  * Find if list is excluded list based on list `id or associated_gfwlist` number
  * @param {Object} selectedList - Selected List
  * @return {boolean} - [ true/false ] value in case that list is excluded GFW list or not
@@ -407,7 +396,6 @@ module.exports = {
   getListFilteredLocations,
   compareSelectedAndVisibleLocations,
   getGFWListLocationIDs,
-  getGfwListName,
   isDownloadDisabledForThisList,
   removeReturnCharacters,
   dataCleanup,

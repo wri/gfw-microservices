@@ -30,7 +30,7 @@ import InfoBubble from '../../../common/js/components/InfoBubble';
 // Utils
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
 import httpRequest from '../../../common/js/utils/httpRequest';
-import redirectToPage from '../../../common/js/utils/redirect';
+import redirectToMap from '../../../common/js/utils/redirect';
 import {
   formatNum,
   formatPct,
@@ -301,35 +301,20 @@ export default class Diagnostics extends Component {
   };
 
   viewMap = (evt) => {
-    const { selectedLocations, selectedList, isGfwList } = this.props;
-    const { listView } = this.state;
-    const {
-      id: listId,
-      list_name: listName,
-      list_locations_count: totalNumberOfLocationsInList,
-    } = selectedList;
-    const showFullListMap = selectedLocations.length !== 1; // if there is no specific location selected, then show the full map
+    const { selectedLocations, selectedList } = this.props;
+    const { id: listId, globalForestWatchList } = selectedList;
 
     const sendData = {
-      l: [treeCoverLossID],
-      i: listId,
-      name: listName,
-      gfwListName: listName,
-      numLocations: showFullListMap ? totalNumberOfLocationsInList : 1,
-      filterCount: 0, // TODO: maybe don't hardcode this
-      listView,
-      canopyDensity: 30, // TODO: maybe don't hardcode this
-      filteredLists: showFullListMap ? [] : selectedLocations,
-      g: isGfwList,
-      x: evt.mapPoint.longitude,
-      y: evt.mapPoint.latitude,
-      z: this.mapView.zoom,
-      path: 'diagnostic',
-      showFullListMap,
-      totalNumberOfLocationsInList,
+      visibleLayers: [treeCoverLossID],
+      listId,
+      selectedLocations: selectedLocations,
+      isGfwList: globalForestWatchList,
+      longitude: evt.mapPoint.longitude,
+      latitude: evt.mapPoint.latitude,
+      zoom: this.mapView.zoom,
     };
 
-    redirectToPage('/map', sendData);
+    redirectToMap(sendData);
     gtag('event', 'map click', {
       event_category: 'Diagnostics Click',
       event_label: 'user is re-directed to the map page via a Diagnostics Header map click',

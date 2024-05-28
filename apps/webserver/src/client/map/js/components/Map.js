@@ -1918,7 +1918,7 @@ class Map extends Component {
           },
         });
       }
-    } else if (!isGfwList) {
+    } else {
       const { userLists, userSharedLists } = this.props;
       const combinedUserLists = [...userLists, ...userSharedLists];
       store.dispatch(showMapLoader(true));

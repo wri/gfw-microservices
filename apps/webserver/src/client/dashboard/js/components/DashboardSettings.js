@@ -1,121 +1,34 @@
 import React, { Component } from 'react';
 import store from '../store';
 import mapUtils from '../utils/mapUtils';
-import { calculateAlerts } from '../utils/dashboard.utils';
-import { prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import { selectAlert, selectTimeframe } from '../actions/dashboardActions';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import { proLayers } from '../../../common/js/proLayers.config';
 import redirectToMap from '../../../common/js/utils/redirect';
-
-const timeframeOptions = [
-  {
-    label: 'Day',
-    value: 'DAY',
-    category: ['VIIRS'],
-  },
-  {
-    label: 'Week',
-    value: 'WEEK',
-    category: ['GLAD', 'VIIRS'],
-  },
-  {
-    label: 'Month',
-    value: 'MONTH',
-    category: ['GLAD'],
-  },
-  {
-    label: 'Quarter',
-    value: 'QUARTER',
-    category: ['GLAD'],
-  },
-  {
-    label: 'Year',
-    value: 'YEAR',
-    category: ['GLAD'],
-  },
-];
-
-const alertsShownOptions = [
-  {
-    value: 'GLAD',
-    label: 'Deforestation (Integrated Alerts)',
-  },
-  {
-    value: 'VIIRS',
-    label: 'Fires (VIIRS)',
-  },
-];
+import { timeframeOptions, alertsShownOptions } from './alerts.constants';
 
 export default class DashboardSettings extends Component {
   handleViewMap = () => {
-    const {
-      selectedAlert,
-      selectedList,
-      selectedTimeframe,
-      locationFilters,
-      zoomLevel,
-      geoJSON,
-      failedGeoJSON,
-      filteredLocationGeoJSON,
-      filteredDissolvedGeoJSON,
-    } = this.props;
+    const { selectedAlert, selectedList, selectedTimeframe, zoomLevel } = this.props;
     if (!selectedList || !selectedList.id) {
       return;
     }
 
-    const layers =
+    const visibleLayers =
       selectedAlert === 'GLAD'
         ? [proLayers.integratedDeforestationAlertsID]
         : [proLayers.viirsActiveFiresID];
-    let numLocations, filteredIDs;
 
     const viewCenter = mapUtils.getExtent();
 
-    const { withAlerts, totalLocations, locationIdsWithAlerts, locationIdsWithoutAlerts } =
-      calculateAlerts(
-        geoJSON,
-        failedGeoJSON,
-        selectedAlert,
-        filteredLocationGeoJSON.features,
-        filteredDissolvedGeoJSON
-      );
-
-    const { ALERTS, NOALERTS } = locationFilters;
-
-    if (ALERTS) {
-      if (NOALERTS) {
-        numLocations = totalLocations;
-        filteredIDs = filteredLocationGeoJSON.features.map((feature) => {
-          return feature.properties.location_id;
-        });
-      } else {
-        numLocations = withAlerts;
-        filteredIDs = locationIdsWithAlerts;
-      }
-    } else if (NOALERTS) {
-      numLocations = totalLocations - withAlerts;
-      filteredIDs = locationIdsWithoutAlerts;
-    } else {
-      numLocations = totalLocations;
-      filteredIDs = filteredLocationGeoJSON.features.map((feature) => {
-        return feature.properties.location_id;
-      });
-    }
-
     const sendData = {
       listId: selectedList.id,
-      // a: ALERTS, // not read
       selectedTimeframe,
-      visibleLayers: layers,
-
-      numberOfSelectedLocations: prettifyNum(numLocations), //  if we always show the full list what is this for?
-      // selectedLocations: filteredIDs, //  if we always show the full list what is this for?
+      visibleLayers,
       isGfwList: selectedList.globalForestWatchList,
       latitude: viewCenter.latitude,
       longitude: viewCenter.longitude,
       zoom: zoomLevel,
-
       xmin: view.extent.xmin,
       ymin: view.extent.ymin,
       xmax: view.extent.xmax,

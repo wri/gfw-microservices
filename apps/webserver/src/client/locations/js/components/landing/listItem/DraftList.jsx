@@ -25,12 +25,8 @@ import { numberWithCommas } from '../../../utils/locationsTableUtils';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 import AnalysisListChips from './AnalysisListChips';
 import CustomDraftDialog from '../../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
-import {
-  locationsPage,
-  draftTooltipMessages,
-  nav,
-  treeCoverLossID,
-} from '../../../../../common/js/config';
+import { locationsPage, draftTooltipMessages, nav } from '../../../../../common/js/config';
+import { proLayers } from '../../../../../common/js/proLayers.config';
 
 function DraftList({
   list,
@@ -96,7 +92,7 @@ function DraftList({
     }
 
     const sendData = {
-      visibleLayers: [treeCoverLossID],
+      visibleLayers: [proLayers.treeCoverLossID],
       listId: id,
     };
 

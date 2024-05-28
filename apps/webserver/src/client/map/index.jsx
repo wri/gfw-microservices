@@ -1,6 +1,7 @@
 import React from 'react';
 import moment from 'moment';
 import { render } from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -41,17 +42,17 @@ Date.prototype.getJulian = function () {
 };
 
 function App() {
-  const parsedListData = Object.keys(listData).length ? JSON.parse(listData) : {};
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-      <Map
-        userLists={userLists}
-        locationCount={locationCount}
-        gfwLists={gfwLists}
-        listData={parsedListData}
-        userInfo={userInfo}
-        userSharedLists={userSharedLists}
-      />
+      <BrowserRouter>
+        <Map
+          userLists={userLists}
+          locationCount={locationCount}
+          gfwLists={gfwLists}
+          userInfo={userInfo}
+          userSharedLists={userSharedLists}
+        />
+      </BrowserRouter>
     </MuiThemeProvider>
   );
 }

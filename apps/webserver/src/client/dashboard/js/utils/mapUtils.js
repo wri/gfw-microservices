@@ -625,15 +625,10 @@ function getExtent() {
   return { latitude, longitude };
 }
 
-function getMapExtent() {
-  return view.extent;
-}
-
 module.exports = {
   initializeMap,
   getAlertsTotal,
   updateLayer,
   getLayerGraphicsJSON,
   getExtent,
-  getMapExtent,
 };

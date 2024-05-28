@@ -74,7 +74,6 @@ import {
   checkValidViewCommodity,
   discernGfwID,
   getGFWListLocationIDs,
-  getGfwListName,
   getListFilteredLocations,
   dataCleanup,
   getTemplateData,
@@ -91,7 +90,7 @@ import {
 import LargeListEditing from './EditList/LargeListEditing/LargeListEditing';
 import ShareList from '../../../../locations/js/components/ShareList/ShareList';
 import { EditList } from './EditList/EditList';
-import redirectToPage from '../../../../common/js/utils/redirect';
+import redirectToMap from '../../../../common/js/utils/redirect';
 import { FailedPopupDialog } from '../../../../locations/js/components/landing/FailedPopupDialog';
 import { getIsDiagnosticStatusDraft } from '../../utils/draft.utils';
 import { requestGeoTrellisAnalyzeList } from '../../../../locations/js/utils/request.utils';
@@ -1430,13 +1429,12 @@ export default class Lists extends Component {
       selectedLocations,
       selectedLists,
       filterCount,
-      listView,
-      filters,
       filteredLocationData,
     } = this.props;
     const { filterString, combinedColumns, allLocationsSelected } = this.state;
     let locationIds = [];
-    const gfwList = getGfwListName(selectedLists);
+
+    const gfwList = selectedLists[0]?.globalForestWatchList ? selectedLists[0]?.list_name : false;
 
     if (selectedLocations.length > 0) {
       // If the user has checked any checkboxes, we are using
@@ -1501,7 +1499,7 @@ export default class Lists extends Component {
       locationIds = filteredData;
     }
 
-    if (gfwList && gfwList === 'Administrative Areas' && locationIds.length > 1) {
+    if (gfwList === 'Administrative Areas' && locationIds.length > 1) {
       this.setState({
         dialogOpen: true,
         dialogTitle: 'Map View Not Available',
@@ -1513,22 +1511,12 @@ export default class Lists extends Component {
     }
 
     const sendData = {
-      l: [proLayers.treeCoverLossID],
-      i: selectedLists[0].id,
-      name: selectedLists[0].list_name,
-      gfwListName: gfwList,
-      filterCount,
-      listView,
-      numLocations: locationIds.length,
-      canopyDensity: filters.canopyDensity ? filters.canopyDensity : '',
-      filteredLists: locationIds,
-      g: gfwList ? discernGfwID(gfwList) : false,
-      path: 'lists',
-      showFullListMap: allLocationsSelected || showFullListMap,
-      totalNumberOfLocationsInList: selectedLists[0].list_locations_count,
+      listId: selectedLists[0].id,
+      isGfwList: selectedLists[0].globalForestWatchList,
+      selectedLocations: allLocationsSelected || showFullListMap ? [] : locationIds,
     };
 
-    redirectToPage('/map', sendData);
+    redirectToMap(sendData);
     gtag('event', 'Header button click', {
       event_category: 'Lists Click',
       event_label: 'user is re-directed to the map page via a Lists Header button click',
@@ -1926,12 +1914,9 @@ export default class Lists extends Component {
     const {
       activeTemplate,
       addType,
-      anchorEl,
-      bubbleData,
       canopyModalVisible,
       commodityType,
       currentUser,
-      displayPopover,
       filterCount,
       filteredLocationData,
       filters,

@@ -1,0 +1,52 @@
+const getQueryParams = (queryString) => {
+  const queryParams = new URLSearchParams(queryString);
+  const params = {};
+
+  // Define the expected data types for the keys
+  const keyTypes = {
+    visibleLayers: 'array',
+    listId: 'number',
+    selectedLocations: 'array-int-or-string',
+    isGfwList: 'boolean',
+    latitude: 'number',
+    longitude: 'number',
+    zoom: 'number',
+    selectedTimeframe: 'string',
+
+    xmin: 'number',
+    ymin: 'number',
+    xmax: 'number',
+    ymax: 'number',
+  };
+
+  queryParams.forEach((value, key) => {
+    if (key in keyTypes) {
+      switch (keyTypes[key]) {
+        case 'array':
+          if (!params[key]) params[key] = [];
+          params[key].push(value);
+          break;
+        case 'array-int-or-string':
+          if (!params[key]) params[key] = [];
+          if (params[key].length === 0) {
+            // Determine type based on the first element
+            params[key].type = isNaN(value) ? 'string' : 'int';
+          }
+          params[key].push(params[key].type === 'int' ? parseInt(value, 10) : value);
+          break;
+        case 'number':
+          params[key] = parseFloat(value);
+          break;
+        case 'boolean':
+          params[key] = value === 'true';
+          break;
+        default:
+          params[key] = value;
+      }
+    }
+  });
+
+  return params;
+};
+
+export default getQueryParams;

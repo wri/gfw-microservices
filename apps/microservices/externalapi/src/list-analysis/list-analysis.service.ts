@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
@@ -341,7 +342,11 @@ export class ListAnalysisService {
     const organization = await this.getOrganizationDetails(organizationId);
 
     let sqsMessage = {};
-    if (analysisId === 'Alerts') {
+    try{
+    if (analysisId === 'ALERTS') {
+      if (!startDate || !endDate) {
+        throw new BadRequestException('Missing start date or end date');
+      }
       sqsMessage = generateAlertsSqsTemplate({
         startDate,
         listId,
@@ -349,6 +354,9 @@ export class ListAnalysisService {
         endDate,
       });
     } else {
+      if(!userEmail) {
+        throw new BadRequestException('Missing user email');
+      }
       sqsMessage = generateFCDDefReportAnalysesSqsTemplate({
         listId,
         analysisId,
@@ -356,6 +364,7 @@ export class ListAnalysisService {
         userEmail,
       });
     }
+    
     await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
       id: 'dl' + listId,
       body: sqsMessage,
@@ -363,6 +372,14 @@ export class ListAnalysisService {
       delaySeconds: 0,
       groupId: 'default',
     });
+  } catch (error) {
+    this.logger.error('generateAlert error', error);
+    if (error instanceof BadRequestException) {
+      throw error;
+    } else {
+      throw new InternalServerErrorException(error);
+    }
+  }
   }
 
   async deleteList(listId: number, organizationId: number, userEmail: string): Promise<string> {

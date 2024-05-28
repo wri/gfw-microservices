@@ -73,8 +73,7 @@ export class ListAnalysisController {
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: NotFoundResponse })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
-  @Post(':listId/analysis/:analysisID/generate')
-  // list/{listID}/analysis/{analysisID}/generate
+  @Post(':listId/analysis/:analysisId/generate')
   async createAnalysisStatus(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Param('analysisId', new ZodValidationPipe(analysisIdSchema)) analysisId: string,

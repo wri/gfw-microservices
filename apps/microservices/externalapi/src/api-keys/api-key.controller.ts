@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, Param, Post, UsePipes } from '@nestjs/co
 import { TokenService } from './token.service';
 import {
   ApiBadRequestResponse,
+  ApiExcludeController,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
@@ -25,6 +26,8 @@ const apiKeyRequestSchema = z.object({
   userId: z.number(),
 });
 
+//We need this annotation to avoid this controller to be shown on Swagger docs
+@ApiExcludeController()
 @Controller('/api-keys')
 export class APIKeyController {
   constructor(private readonly tokenService: TokenService) {}

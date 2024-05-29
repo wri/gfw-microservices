@@ -63,7 +63,7 @@ const analyticsService = require(path.resolve('./server/analytics/service/analyt
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
-import { SqlParamType, AnalysisDataType, ListsType } from '@wri-monorepos/sql';
+import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -1819,36 +1819,9 @@ export const resetListStatus = (req, list_id, gfw_list_id, list_status_id = list
  *   @return {Promise}
  */
 export const deleteList = (req, list_id) => {
-  let list;
   return new Promise((resolve, reject) => {
-    getListLockStatus(req, list_id)
-      .then((record) => {
-        const { lock_status, lock_user_id } = record;
-        // List is unlocked
-        if (
-          lock_status === null ||
-          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
-        ) {
-          // Reject object
-          throw { isLocked: true, lock_user_id };
-        } else {
-          return listUtils.getListNameSchema(req, list_id);
-        }
-      })
-      .then((result) => {
-        // 1. Get the table schema
-        list = result;
-        // 2. Remove from Organization's List table
-        const parameters = [{ field: 'list_id', type: sql.Int, value: list.id }];
-
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteList', parameters);
-      })
+    deleteListSqlLib(req, list_id)
       .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.ListDeleted,
-          `User '${req.session.user_email}' has deleted list (${list.list_name}).`
-        );
         resolve(true);
       })
       .catch((err) => {
@@ -1860,7 +1833,7 @@ export const deleteList = (req, list_id) => {
         );
         reject(errorObject);
       });
-  });
+  }); // end promisse
 };
 
 export const setListStatus = (req, list_id, newStatus) => {
@@ -1973,25 +1946,25 @@ export function deleteListIfEmpty(req, listID) {
         const { isListEmpty } = resultset;
 
         if (isListEmpty) {
-          try {
-            await sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteList', parameters);
-
-            logger.logActivity(
-              req,
-              logger.listActivityTypes.List.ListDeleted,
-              `Deleted empty list with id (${listID}).`
-            );
-          } catch (error) {
-            const errorObject = errorUtils.createErrorMessage(
-              req,
-              errorUtils.errorCodes.failedToDeleteList,
-              `Failed to delete list with id (${listID}). List not empty`,
-              error
-            );
-            reject(errorObject);
-          }
+          deleteListSqlLib(req, listID)
+            .then(() => {
+              logger.logActivity(
+                req,
+                logger.listActivityTypes.List.ListDeleted,
+                `Deleted empty list with id (${listID}).`
+              );
+              resolve(true);
+            })
+            .catch((error) => {
+              const errorObject = errorUtils.createErrorMessage(
+                req,
+                errorUtils.errorCodes.failedToDeleteList,
+                `Failed to delete list with id (${listID}). List not empty`,
+                error
+              );
+              reject(errorObject);
+            });
         }
-
         resolve(isListEmpty);
       })
       .catch((error) => {
@@ -2029,6 +2002,67 @@ export const getListAdminAreasOrderedByCountry = (request, listId) => {
       });
   });
 };
-
 // Require after modules have been exported so the module can be fully loaded
 const AnalysisManager = require('./analysisManager.utils');
+/**
+ * @function {deleteListSqlLib}
+ * @summary Deletes a list from Lists table, list's attribute and analysis table using a promise
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Number} list_id - id of list
+ * @return {Promise} - Returns a promise that resolves or rejects with an error
+ */
+export const deleteListSqlLib = (req, list_id) => {
+  const {
+    user_email: userEmail,
+    organization_user_id,
+    organization_database: organizationDatabase,
+  } = req.session;
+  const deleteListTypeOrm = new DeleteListTypeOrm();
+  return new Promise((resolve, reject) => {
+    getListLockStatus(req, list_id)
+      .then((record) => {
+        const { lock_status, lock_user_id } = record;
+        // List is unlocked
+        if (
+          lock_status === null ||
+          (lock_status !== null && lock_user_id !== organization_user_id)
+        ) {
+          // Reject object
+          throw { isLocked: true, lock_user_id };
+        } else {
+          return listUtils.getListNameSchema(req, list_id);
+        }
+      })
+      .then((result) => {
+        const list = result;
+        deleteListTypeOrm
+          .delete(organizationDatabase, list_id, organization_user_id)
+          .then(() => {
+            logger.logActivity(
+              req,
+              logger.listActivityTypes.List.ListDeleted,
+              `User '${userEmail}' has deleted list (${list.list_name}).`
+            );
+            resolve(true);
+          })
+          .catch((err) => {
+            const errorObject = errorUtils.createErrorMessage(
+              req,
+              errorUtils.errorCodes.failedToDeleteList,
+              `Failed to delete list id ${list_id}`,
+              err
+            );
+            reject(errorObject);
+          });
+      })
+      .catch((err) => {
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.errorCodes.failedToDeleteList,
+          `Failed to delete list id ${list_id}`,
+          err
+        );
+        reject(errorObject);
+      });
+  });
+};

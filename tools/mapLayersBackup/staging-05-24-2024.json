@@ -1,0 +1,92 @@
+{
+  "data": {
+      "id": "21375165-a520-4d35-8b39-8c94c939c173",
+      "type": "layer",
+      "attributes": {
+          "name": "WDPA Esri",
+          "slug": "WDPA-Esri_2",
+          "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+          "description": "WDPA Esri",
+          "application": [
+              "gfw-pro"
+          ],
+          "iso": [],
+          "provider": "featureservice",
+          "userId": "62601518cdc846001a7756b5",
+          "default": true,
+          "protected": false,
+          "published": true,
+          "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/21375165-a520-4d35-8b39-8c94c939c173-1709132762912.png",
+          "env": "staging",
+          "layerConfig": {
+              "type": "Vector.Layer",
+              "body": {
+                  "useCors": true,
+                  "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/wdpa_licensed_protected_areas",
+                  "url": "https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202402/default/root.json"
+              }
+          },
+          "legendConfig": {
+              "type": "basic",
+              "items": [
+                  {
+                      "name": "Protected Areas",
+                      "categories": [
+                          {
+                              "name": "Ia - Strict Nature Reserve",
+                              "color": "#5ca2d1"
+                          },
+                          {
+                              "name": "Ib - Wilderness Area",
+                              "color": "#3e7bb6"
+                          },
+                          {
+                              "name": "II - National Park",
+                              "color": "#0f3b82"
+                          },
+                          {
+                              "name": "III - National Monument or Feature",
+                              "color": "#c9ddff"
+                          },
+                          {
+                              "name": "IV - Habitat and Species Management Area",
+                              "color": "#b9b2a1"
+                          },
+                          {
+                              "name": "V - Protected Landscape or Seascape",
+                              "color": "#ae847e"
+                          },
+                          {
+                              "name": "VI - Protected Area with Sustainable Use of Natural Resources",
+                              "color": "#daa89b"
+                          },
+                          {
+                              "name": "Not Applicable",
+                              "color": "#eed54c"
+                          },
+                          {
+                              "name": "Not Assigned",
+                              "color": "#e7ab36"
+                          },
+                          {
+                              "name": "Not Reported",
+                              "color": "#fa894b"
+                          }
+                      ],
+                      "color": "#6087af"
+                  }
+              ]
+          },
+          "interactionConfig": {
+              "type": "info",
+              "config": {
+                  "url": "https://data-api.globalforestwatch.org/dataset/wdpa_protected_areas/v202310/features"
+              }
+          },
+          "applicationConfig": {},
+          "staticImageConfig": {},
+          "createdAt": "2022-05-02T12:45:28.885Z",
+          "updatedAt": "2024-02-28T15:06:02.827Z"
+      }
+  }
+}

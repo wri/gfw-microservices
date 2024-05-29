@@ -2106,8 +2106,15 @@ export default class Lists extends Component {
       }
     });
 
-    const rerunListDialog = `Select OK to update your list. Your list will not be available while the update is processing.
-    You will receive an email notification when the update is completed.`;
+    const isSelectedLocationActive = () => {
+      const selectedLocation = filteredLocationData.filter(
+        (x) => x.location_id === selectedLocations[0]
+      );
+
+      if (selectedLocation?.length !== 1) return false;
+
+      return selectedLocation[0].location_status_id === listStatus.Active;
+    };
 
     const [REACT_TABLE__LOCATION_NAME] = cloneDeep(columns.react_table__location_name);
 
@@ -2659,7 +2666,7 @@ export default class Lists extends Component {
                       </div>
                       <div className="list-detail-action-bar">
                         {selectedLocations.length === 1 &&
-                          (isGfwList || getActiveAnalysisType(listAnalysesStatus)) && (
+                          (isGfwList || isSelectedLocationActive()) && (
                             <Button
                               variant="primary"
                               data-cy="location-diagnostics"

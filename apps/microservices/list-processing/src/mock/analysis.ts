@@ -6,7 +6,7 @@ import {
   List,
   ListSchema,
   ListSchemaType,
-  ListsAnalysisStatus
+  ListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 import { EntitySchema, In } from 'typeorm';
 import { mockData } from './data';
@@ -118,24 +118,31 @@ const repository = () => {
     analysisEntity.insert(analysis);
   };
 
-
   const insertListAnalysisStatus = async (organizationDatabase: string, listId: number) => {
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [ListsAnalysisStatus]);
+    const connection = await clientStoreConnection.getConnection(organizationDatabase, [
+      ListsAnalysisStatus,
+    ]);
     const listsAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
-    const { analysisId } =  await listsAnalysisStatusRepository.findOne({ where: { listId: listId, analysisId: 'FCD' }}) ?? {analysisId : undefined}
-    if(analysisId){
-      listsAnalysisStatusRepository.update({
-        listId: listId, analysisId: 'FCD'
-      },{
-        updateTime: moment().format('YYYY-MM-DD'),
-      })
+    const { analysisId } = (await listsAnalysisStatusRepository.findOne({
+      where: { listId: listId, analysisId: 'FCD' },
+    })) ?? { analysisId: undefined };
+    if (analysisId) {
+      listsAnalysisStatusRepository.update(
+        {
+          listId: listId,
+          analysisId: 'FCD',
+        },
+        {
+          updateTime: moment().format('YYYY-MM-DD'),
+        }
+      );
     }
     listsAnalysisStatusRepository.insert({
       listId,
       analysisId: 'FCD',
       updateTime: moment().format('YYYY-MM-DD'),
-    })
-  }
+    });
+  };
 
   return {
     deleteAllLocationsAnalysis,
@@ -146,7 +153,7 @@ const repository = () => {
     getListLevelAnalysisId,
     insertAllLocationAnalysis,
     insertListLevelAnalysis,
-    insertListAnalysisStatus
+    insertListAnalysisStatus,
   };
 };
 
@@ -208,5 +215,5 @@ export const mockAnalysisFlow = async ({
     listId: list_id,
   };
   await repository().insertListLevelAnalysis(organization_database, newListLevelAnalysis);
-  await repository().insertListAnalysisStatus(organization_database, list_id)
+  await repository().insertListAnalysisStatus(organization_database, list_id);
 };

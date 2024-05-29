@@ -2,36 +2,22 @@ import BaseTileLayer from '@arcgis/core/layers/BaseTileLayer';
 import esriRequest from '@arcgis/core/request';
 import { latestTreeCoverLossYearForTclDataInMap } from '../../../common/js/config';
 
-// Power function to determine intensity
-const getScalePowFunc = (exp) => {
-  const domain = [0, 256];
-  const range = [0, 256];
-  const b = range[0] - domain[0];
-  const m = (range[1] - b) / Math.pow(domain[1], exp);
-
-  return (x) => {
-    return Math.pow(x, exp) * m + b;
-  };
+const createScalePowerFunction = (exponent) => {
+  const intercept = 0;
+  const slope = 256 / Math.pow(256, exponent);
+  return (value) => Math.pow(value, exponent) * slope + intercept;
 };
 
-function clamp(value) {
-  return Math.max(0, Math.min(255, value));
-}
+const clamp = (value) => Math.max(0, Math.min(255, value));
 
-const populateIntensityBank = (baseRGB = [220, 0, 185]) => {
-  const [baseValue1, baseValue2, baseValue3] = baseRGB;
+const populateIntensityBank = () => {
   const intensityBank = {};
-  for (let z = 1; z < 21; z++) {
-    intensityBank[z] = [];
-    const exp = z < 11 ? 0.3 + (z - 3) / 20 : 1;
-    const lMoney = getScalePowFunc(exp);
-    for (let f = 0; f < 256; f++) {
-      intensityBank[z][f] = [];
-      intensityBank[z][f].push(clamp(baseValue1));
-      intensityBank[z][f].push(clamp(baseValue2 - z - (3 * lMoney(f)) / z));
-      intensityBank[z][f].push(clamp(baseValue3 - z - lMoney(f) / z));
-      intensityBank[z][f].push(clamp(z < 13 ? lMoney(f) : f));
-    }
+  for (let zoom = 1; zoom < 21; zoom++) {
+    const exponent = zoom < 11 ? 0.3 + (zoom - 3) / 20 : 1;
+    const intensityScaleFunction = createScalePowerFunction(exponent);
+    intensityBank[zoom] = Array.from({ length: 256 }, (_, intensity) =>
+      clamp(intensityScaleFunction(intensity))
+    );
   }
   return intensityBank;
 };
@@ -44,11 +30,11 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
     maxYear: latestTreeCoverLossYearForTclDataInMap,
   },
 
-  initialize: function () {
-    this.intensityBank = populateIntensityBank(this?.properties?.baseRGB);
+  initialize() {
+    this.intensityBank = populateIntensityBank();
   },
 
-  getTileUrl: function (level, row, column) {
+  getTileUrl(level, row, column) {
     return this.urlTemplate
       .replace('{z}', level)
       .replace('{x}', column)
@@ -56,7 +42,7 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
       .replace('{thresh}', this.threshold);
   },
 
-  fetchTile: function (level, row, column) {
+  fetchTile(level, row, column) {
     // call getTileUrl() method to construct the URL to tiles
     // for a given level, row and col provided by the LayerView
     const url = this.getTileUrl(level, row, column);
@@ -66,68 +52,70 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
     return esriRequest(url, {
       responseType: 'image',
       allowImageDataAccess: true,
-    }).then(
-      function (response) {
-        // We use a promise because we can't return an empty canvas before the image data has loaded, been filtered, and properly colored
-        const promise = new Promise((resolve) => {
-          // when esri request resolves successfully
-          // get the image from the response
-          const image = response.data;
-          const width = this.tileInfo.size[0];
-          const height = this.tileInfo.size[0];
-          // create a canvas with 2D rendering context
-          const canvas = document.createElement('canvas');
-          const context = canvas.getContext('2d');
-          canvas.width = width;
-          canvas.height = height;
-          // Draw the blended image onto the canvas.
-          context.drawImage(image, 0, 0, width, height);
-          const imageObject = new Image();
-          imageObject.crossOrigin = 'Anonymous';
-          imageObject.onload = () => {
-            context.drawImage(imageObject, 0, 0, width, height);
-            const imageData = context.getImageData(0, 0, width, height);
-            imageData.data.set(this.filter(imageData.data));
-            context.putImageData(imageData, 0, 0);
-            resolve(canvas);
-          };
-          imageObject.src = image.src;
-        });
-        return promise;
-      }.bind(this)
-    );
+    }).then((response) => this.processTileImage(response.data));
   },
 
-  filter: function (data) {
+  processTileImage(image) {
+    const [width, height] = this.tileInfo.size;
+    // create a canvas with 2D rendering context
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = width;
+    canvas.height = height;
+    // Draw the blended image onto the canvas.
+    context.drawImage(image, 0, 0, width, height);
+    // We use a promise because we can't return an empty canvas before the image data has loaded, been filtered, and properly colored
+    return new Promise((resolve) => {
+      const imageObject = new Image();
+      imageObject.crossOrigin = 'Anonymous';
+      imageObject.onload = () => {
+        context.drawImage(imageObject, 0, 0, width, height);
+        const imageData = context.getImageData(0, 0, width, height);
+        const filteredData = this.filter(imageData.data);
+        imageData.data.set(filteredData);
+        context.putImageData(imageData, 0, 0);
+        resolve(canvas);
+      };
+      imageObject.src = image.src;
+    });
+  },
+
+  filter(data) {
     // intensityBank indexes are integers for each zoom level
-    const z = Math.round(this.view.zoom);
+    const zoom = Math.round(this.view.zoom);
+    const [red, green, blue] = this.properties.baseRGB;
+
+    const newData = new Uint8ClampedArray(data.length);
     for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      const a = data[i + 3];
       // Decode the rgba/pixel so I can filter on date ranges
-      const slice = [data[i], data[i + 1], data[i + 2], data[i + 3]];
-      const values = this.decodeDate(slice);
+      const { intensity, year } = this.decodeDate([r, g, b, a]);
       //if data is under the year range
       // and it's avaiable for this zoom level
-      if (values.year >= this.minYear - 2000 && values.year <= this.maxYear - 2000) {
-        const intensityData = this.intensityBank[z]?.[values.intensity];
-        if (intensityData) {
-          data[i] = intensityData[0];
-          data[i + 1] = intensityData[1];
-          data[i + 2] = intensityData[2];
-          data[i + 3] = intensityData[3];
-        }
+      if (year >= this.minYear - 2000 && year <= this.maxYear - 2000) {
+        const alpha = this.intensityBank[zoom]?.[intensity];
+        newData[i] = red;
+        newData[i + 1] = green;
+        newData[i + 2] = blue;
+        newData[i + 3] = alpha;
       } else {
         // Hide the pixel
-        data[i] = 0;
-        data[i + 1] = 0;
-        data[i + 2] = 0;
-        data[i + 3] = 0;
+        newData[i] = newData[i + 1] = newData[i + 2] = newData[i + 3] = 0;
       }
     }
-    return data;
+    return newData;
   },
 
-  decodeDate: function (pixel) {
-    return { intensity: pixel[0] || 0, year: pixel[2] };
+  /**
+   * Decodes the date from the RGBA pixel values.
+   * @param {number[]} pixel - The RGBA values of a pixel.
+   * @returns {Object} The decoded intensity and year.
+   */
+  decodeDate([red, , blue]) {
+    return { intensity: red || 0, year: blue };
   },
 });
 

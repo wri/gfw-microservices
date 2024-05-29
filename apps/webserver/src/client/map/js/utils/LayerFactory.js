@@ -328,7 +328,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
             urlTemplate: treeCoverLossTilesUrl,
             view: view,
             properties: {
-              baseRGB: [220, 0, 185],
+              baseRGB: [220, 0, 130],
             },
           })
         );
@@ -376,7 +376,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
             urlTemplate: layer.url,
             view: view,
             properties: {
-              baseRGB: [240, 250, 0],
+              baseRGB: [196, 125, 2],
             },
           })
         );

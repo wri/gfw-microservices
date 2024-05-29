@@ -1,11 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'ListsAnalysisStatus' })
 export class ListsAnalysisStatus {
-  @PrimaryGeneratedColumn({ name: 'ListID' })
+  @PrimaryColumn('int', { name: 'ListID' })
   listId: number;
 
-  @PrimaryGeneratedColumn({ name: 'AnalysisID' })
+  @PrimaryColumn('varchar', { name: 'AnalysisID' })
   analysisId: string;
 
   @Column({ name: 'Status' })

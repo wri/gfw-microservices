@@ -12,73 +12,53 @@ import { EntitySchema, In } from 'typeorm';
 import { mockData } from './data';
 import * as moment from 'moment';
 
-//TODO avoid creating a lot of connections
-const repository = () => {
+const repository = async (organizationDatabase: string, listId: number) => {
   const clientStoreConnection = new ClientStoreConnection();
+  let connection = await clientStoreConnection.getConnection(organizationDatabase, [List]);
+  const listRepository = connection.getRepository(List);
+  const { listAnalysisTableName, listTableName } = (await listRepository.findOne({
+    where: { id: listId },
+  })) ?? {
+    listAnalysisTableName: undefined,
+    listTableName: undefined,
+  };
+  const AnalysisEntity = new EntitySchema<AnalysisSchemaType>({
+    ...AnalysisSchema,
+    name: listAnalysisTableName,
+  });
+  const ListEntity = new EntitySchema<ListSchemaType>({
+    ...ListSchema,
+    name: listTableName,
+  });
 
-  const getAllLocations = async (organizationDatabase: string, listTableName: string) => {
-    const ListEntity = new EntitySchema<ListSchemaType>({
-      ...ListSchema,
-      name: listTableName,
-    });
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [
-      ListEntity,
-    ]);
+  clientStoreConnection.clearCache(organizationDatabase);
+  connection = await clientStoreConnection.getConnection(organizationDatabase, [
+    List,
+    Analysis,
+    ListEntity,
+    AnalysisEntity,
+    ListsAnalysisStatus,
+  ]);
+
+  const getAllLocations = async () => {
     const listEntity = connection.getRepository(ListEntity);
     const allLocation = await listEntity.find();
     return allLocation;
   };
 
-  const getAllLocationAnalysis = async (
-    organizationDatabase: string,
-    listAnalysisTableName: string
-  ) => {
-    const AnalysisEntity = new EntitySchema<AnalysisSchemaType>({
-      ...AnalysisSchema,
-      name: listAnalysisTableName,
-    });
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [
-      AnalysisEntity,
-    ]);
+  const getAllLocationAnalysis = async () => {
     const listEntity = connection.getRepository(AnalysisEntity);
     const allLocation = await listEntity.find();
     return allLocation;
   };
 
-  const deleteAllLocationsAnalysis = async (
-    organizationDatabase: string,
-    listAnalysisTableName: string,
-    analysisIds: Array<number>
-  ) => {
-    const AnalysisEntity = new EntitySchema<AnalysisSchemaType>({
-      ...AnalysisSchema,
-      name: listAnalysisTableName,
-    });
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [
-      AnalysisEntity,
-    ]);
+  const deleteAllLocationsAnalysis = async (analysisIds: Array<number>) => {
     const listEntity = connection.getRepository(AnalysisEntity);
     const allLocation = await listEntity.delete({ id: In(analysisIds) });
     return allLocation;
   };
 
-  const getAnalysisAndListTableName = async (organizationDatabase: string, listId: number) => {
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [List]);
-    const listRepository = connection.getRepository(List);
-    const { listAnalysisTableName, listTableName } = (await listRepository.findOne({
-      where: { id: listId },
-    })) ?? {
-      listAnalysisTableName: undefined,
-      listTableName: undefined,
-    };
-    return {
-      listAnalysisTableName,
-      listTableName,
-    };
-  };
-
-  const getListLevelAnalysisId = async (organizationDatabase: string, listId: number) => {
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [Analysis]);
+  const getListLevelAnalysisId = async () => {
     const analysisRepository = connection.getRepository(Analysis);
     const { id } = (await analysisRepository.findOne({ where: { listId: listId } })) ?? {
       id: undefined,
@@ -86,24 +66,14 @@ const repository = () => {
     return id;
   };
 
-  const deleteListLevelAnalysisId = async (organizationDatabase: string, analysisId: number) => {
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [Analysis]);
+  const deleteListLevelAnalysisId = async (analysisId: number) => {
     const analysisEntity = connection.getRepository(Analysis);
     await analysisEntity.delete({ id: analysisId });
   };
 
   const insertAllLocationAnalysis = async (
-    organizationDatabase: string,
-    listAnalysisTableName: string,
     locationLevelAnalysisData: Array<AnalysisSchemaType>
   ) => {
-    const AnalysisEntity = new EntitySchema<AnalysisSchemaType>({
-      ...AnalysisSchema,
-      name: listAnalysisTableName,
-    });
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [
-      AnalysisEntity,
-    ]);
     await connection
       .createQueryBuilder()
       .insert()
@@ -112,16 +82,13 @@ const repository = () => {
       .execute();
   };
 
-  const insertListLevelAnalysis = async (organizationDatabase: string, analysis: Analysis) => {
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [Analysis]);
+  const insertListLevelAnalysis = async (analysis: Analysis) => {
     const analysisEntity = connection.getRepository(Analysis);
     analysisEntity.insert(analysis);
   };
 
-  const insertListAnalysisStatus = async (organizationDatabase: string, listId: number) => {
-    const connection = await clientStoreConnection.getConnection(organizationDatabase, [
-      ListsAnalysisStatus,
-    ]);
+  const insertListAnalysisStatus = async () => {
+    const updateTime = moment().format('YYYY-MM-DD');
     const listsAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
     const { analysisId } = (await listsAnalysisStatusRepository.findOne({
       where: { listId: listId, analysisId: 'FCD' },
@@ -133,23 +100,26 @@ const repository = () => {
           analysisId: 'FCD',
         },
         {
-          updateTime: moment().format('YYYY-MM-DD'),
+          updateTime,
+          status: 2,
         }
       );
+    } else {
+      listsAnalysisStatusRepository.insert({
+        listId,
+        analysisId: 'FCD',
+        updateTime,
+        status: 2,
+      });
     }
-    listsAnalysisStatusRepository.insert({
-      listId,
-      analysisId: 'FCD',
-      updateTime: moment().format('YYYY-MM-DD'),
-    });
   };
 
   return {
+    connection,
     deleteAllLocationsAnalysis,
     deleteListLevelAnalysisId,
     getAllLocationAnalysis,
     getAllLocations,
-    getAnalysisAndListTableName,
     getListLevelAnalysisId,
     insertAllLocationAnalysis,
     insertListLevelAnalysis,
@@ -169,51 +139,58 @@ export const mockAnalysisFlow = async ({
   list_id,
   template_type = 'cocoa_generic',
 }: MockAnalysisFlowType) => {
-  const { listAnalysisTableName, listTableName } = await repository().getAnalysisAndListTableName(
-    organization_database,
-    list_id
-  );
-  const allLocations = await repository().getAllLocations(organization_database, listTableName);
-  const allLocationAnalysis = await repository().getAllLocationAnalysis(
-    organization_database,
-    listAnalysisTableName
-  );
+  const {
+    connection,
+    deleteAllLocationsAnalysis,
+    deleteListLevelAnalysisId,
+    getAllLocationAnalysis,
+    getAllLocations,
+    getListLevelAnalysisId,
+    insertAllLocationAnalysis,
+    insertListAnalysisStatus,
+    insertListLevelAnalysis,
+  } = await repository(organization_database, list_id);
 
-  if (allLocationAnalysis.length > 0) {
-    const analysisIds = allLocationAnalysis.map((l) => l.id);
-    await repository().deleteAllLocationsAnalysis(
-      organization_database,
-      listAnalysisTableName,
-      analysisIds
-    );
+  const queryRunner = connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+  try {
+    const allLocations = await getAllLocations();
+    const allLocationAnalysis = await getAllLocationAnalysis();
+
+    if (allLocationAnalysis.length > 0) {
+      const analysisIds = allLocationAnalysis.map((l) => l.id);
+      await deleteAllLocationsAnalysis(analysisIds);
+    }
+    const mockedLocationAnalysis = mockData[template_type].locationLevel;
+    const mockedListAnalysis = mockData[template_type].analysisLevel;
+
+    const newLocationLevelAnalysisData = [];
+    for (let i = 0; i < allLocations.length; i++) {
+      const location = allLocations[i];
+      newLocationLevelAnalysisData.push({
+        ...mockedLocationAnalysis,
+        locationId: location.locationId,
+        id: i + 1,
+      });
+    }
+
+    await insertAllLocationAnalysis(newLocationLevelAnalysisData);
+    const analysisId = await getListLevelAnalysisId();
+    if (analysisId) {
+      await deleteListLevelAnalysisId(analysisId);
+    }
+
+    const newListLevelAnalysis = {
+      ...mockedListAnalysis,
+      listId: list_id,
+    };
+    await insertListLevelAnalysis(newListLevelAnalysis);
+    await insertListAnalysisStatus();
+    await queryRunner.commitTransaction();
+  } catch (err) {
+    await queryRunner.rollbackTransaction();
+  } finally {
+    await queryRunner.release();
   }
-  const mockedLocationAnalysis = mockData[template_type].locationLevel;
-  const mockedListAnalysis = mockData[template_type].analysisLevel;
-
-  const newLocationLevelAnalysisData = [];
-  for (let i = 0; i < allLocations.length; i++) {
-    const location = allLocations[i];
-    newLocationLevelAnalysisData.push({
-      ...mockedLocationAnalysis,
-      locationId: location.locationId,
-      id: i + 1,
-    });
-  }
-
-  await repository().insertAllLocationAnalysis(
-    organization_database,
-    listAnalysisTableName,
-    newLocationLevelAnalysisData
-  );
-  const analysisId = await repository().getListLevelAnalysisId(organization_database, list_id);
-  if (analysisId) {
-    await repository().deleteListLevelAnalysisId(organization_database, analysisId);
-  }
-
-  const newListLevelAnalysis = {
-    ...mockedListAnalysis,
-    listId: list_id,
-  };
-  await repository().insertListLevelAnalysis(organization_database, newListLevelAnalysis);
-  await repository().insertListAnalysisStatus(organization_database, list_id);
 };

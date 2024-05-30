@@ -23,7 +23,7 @@ describe('Alerts page', () => {
 
   Then('I should be able to view the alerts on the map and interact with the features', () => {
     alertsPage.elements.pageTitle().should('have.text', 'Alerts 787 Locations');
-    alertsPage.elements.listInfo().should('have.text', '787 - AAT Argentina Points Generic ');
+    alertsPage.elements.listInfo().should('have.text', '787 - AAT Argentina Points Generic');
     alertsPage.elements.subtitle().should('have.text', 'Last Week');
     alertsPage.elements.monthRadioBtn().click();
     alertsPage.elements.subtitle().should('have.text', 'Last Month');
@@ -47,6 +47,6 @@ describe('Alerts page', () => {
     alertsPage.elements.downloadConfirmationCloseBtn().click();
     alertsPage.navigateToListMap();
     cy.url().should('include', '/map');
-    alertsPage.elements.listInfo().should('have.text', '787 - AAT Argentina Points Generic ');
+    alertsPage.elements.listInfo().should('have.text', '787 - AAT Argentina Points Generic');
   });
 });

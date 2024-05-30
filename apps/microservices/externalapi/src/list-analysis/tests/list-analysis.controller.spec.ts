@@ -178,7 +178,7 @@ describe('ListAnalysisController', () => {
   it('should failed zod validations when receiving an unknown alerts type', async () => {
     const listId = 5828;
     const analysisId = 'unknown_type';
-    const alertsGenerate = {};
+    const alertsGenerate = { userEmail: 'email@email.com' };
     const expectedResult = [
       {
         code: 'invalid_enum_value',

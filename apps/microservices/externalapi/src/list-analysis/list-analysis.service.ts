@@ -28,7 +28,7 @@ import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
-import { generateAlertsSqsTemplate } from '../shared/generate-sqs-templates';
+import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
 
 const LIST_INITIAL_STATUS = 'Pending';
@@ -347,7 +347,7 @@ export class ListAnalysisService {
         if (!startDate || !endDate) {
           throw new BadRequestException('Missing start date or end date');
         }
-        sqsMessage = generateAlertsSqsTemplate({
+        sqsMessage = generateAnalysisSqsTemplate({
           startDate,
           listId,
           organization,
@@ -355,11 +355,10 @@ export class ListAnalysisService {
           analysisId,
         });
       } else {
-        sqsMessage = generateAlertsSqsTemplate({
+        sqsMessage = generateAnalysisSqsTemplate({
           listId,
           analysisId,
           organization,
-          userEmail,
         });
       }
 

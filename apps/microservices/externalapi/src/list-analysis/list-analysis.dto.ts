@@ -38,7 +38,7 @@ const dateFormat = z.string().transform((value) => {
 export const alertsGenerateBodySchema = z.object({
   startDate: dateFormat.optional(),
   endDate: dateFormat.optional(),
-  userEmail: z.string().email().optional(),
+  userEmail: z.string().email(),
 });
 
 export type AlertsGenerateBodySchema = z.infer<typeof alertsGenerateBodySchema>;

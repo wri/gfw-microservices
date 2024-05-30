@@ -404,7 +404,7 @@ describe('ListAnalysisService', () => {
     const endDate = new Date('2021-09-28');
 
     jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateAlertsSqsTemplate: jest.fn().mockResolvedValue(true),
+      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     await expect(
@@ -473,7 +473,7 @@ describe('ListAnalysisService', () => {
     const endDate = null;
 
     jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateAlertsSqsTemplate: jest.fn().mockResolvedValue(true),
+      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     await expect(

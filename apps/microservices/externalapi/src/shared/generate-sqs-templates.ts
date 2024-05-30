@@ -2,20 +2,18 @@ import { generateRandomFilename } from '@wri-monorepos/shared';
 import { Organization } from '../api-keys/organization.entity';
 import * as tmp from 'tmp';
 
-export const generateAlertsSqsTemplate = ({
+export const generateAnalysisSqsTemplate = ({
   startDate,
   endDate,
   organization,
   listId,
   analysisId = 'ALERTS',
-  userEmail = null,
 }: {
   startDate?: Date;
   endDate?: Date;
   organization: Organization;
   listId: number;
   analysisId?: string;
-  userEmail?: string;
 }) => {
   const fileName = generateRandomFilename('');
 
@@ -35,28 +33,12 @@ export const generateAlertsSqsTemplate = ({
               ? `{"listId":${listId},"listView":"forest_change"}`
               : `{"listId":${listId}}`,
         },
-        organizationDatabase: {
-          DataType: 'String',
-          StringValue: organization.organizationDb,
-        },
-        analysisId: {
-          DataType: 'String',
-          StringValue: analysisId,
-        },
-        userEmail: {
-          DataType: 'String',
-          StringValue: userEmail,
-        },
         file: {
           DataType: 'String',
           StringValue:
             analysisId === 'FCD'
               ? `{"type":"everything","key":"${fileName}","file":"csv"}`
               : `{"type":"afi","key":"${fileName}"}`,
-        },
-        key: {
-          DataType: 'String',
-          StringValue: key,
         },
       };
       break;
@@ -71,10 +53,6 @@ export const generateAlertsSqsTemplate = ({
           DataType: 'String',
           StringValue: `{"listId":${listId}}`,
         },
-        organizationDatabase: {
-          DataType: 'String',
-          StringValue: organization.organizationDb,
-        },
         file: {
           DataType: 'String',
           StringValue: `{"type":"alerts","key":"${fileName}","file":"csv"}`,
@@ -86,10 +64,6 @@ export const generateAlertsSqsTemplate = ({
         selectedAlert: {
           DataType: 'String',
           StringValue: 'Integrated',
-        },
-        key: {
-          DataType: 'String',
-          StringValue: key,
         },
         startDate: {
           DataType: 'String',
@@ -105,6 +79,10 @@ export const generateAlertsSqsTemplate = ({
     default:
       return;
   }
-
+  sqsMessage = {
+    ...sqsMessage,
+    key: { DataType: 'String', StringValue: key },
+    organizationDatabase: { DataType: 'String', StringValue: organization.organizationDb },
+  };
   return sqsMessage;
 };

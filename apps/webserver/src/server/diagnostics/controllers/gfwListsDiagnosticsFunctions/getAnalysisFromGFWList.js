@@ -1,7 +1,12 @@
-const path = require('path');
-const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
-const AnalysisManager = require(path.resolve('./config/publicutils/analysisManager.utils'));
-const LocationManager = require(path.resolve('./config/publicutils/locationManager.utils'));
+import {
+  getGFWListLocationsNoGeom,
+  getGFWListLocationsGeom,
+} from '../../../../config/publicutils/gfwListManager.utils';
+import {
+  getAnalysisDataForGFWList,
+  getGFWListAnalyses,
+} from '../../../../config/publicutils/analysisManager.utils';
+import { getLocationAttributesList } from '../../../../config/publicutils/locationManager.utils';
 
 export const getAnalysisFromGFWList = async (req) => {
   const listId = Number(req.params.listId);
@@ -13,23 +18,15 @@ export const getAnalysisFromGFWList = async (req) => {
   let locationAnalysisArray = [];
 
   try {
-    const noGeomListLocationData = await GFWListManager.getGFWListLocationsNoGeom(
-      req,
-      listId,
-      listLocationsIds
-    );
-    const gfwListAnalysesData = await AnalysisManager.getAnalysisDataForGFWList(
-      req,
-      listId,
-      listLocationsIds
-    );
-    const gfwLocationsAnalysesData = await AnalysisManager.getGFWListAnalyses(req, listId);
+    const noGeomListLocationData = await getGFWListLocationsNoGeom(req, listId, listLocationsIds);
+    const gfwListAnalysesData = await getAnalysisDataForGFWList(req, listId, listLocationsIds);
+    const gfwLocationsAnalysesData = await getGFWListAnalyses(req, listId);
 
     locationAttributeArray.push(...noGeomListLocationData);
     locationAnalysisArray.push(...gfwListAnalysesData);
     listAnalysis.push(...gfwLocationsAnalysesData);
 
-    const locationAttributeList = await LocationManager.getLocationAttributesList(
+    const locationAttributeList = await getLocationAttributesList(
       req,
       locationAttributeArray,
       true
@@ -38,18 +35,10 @@ export const getAnalysisFromGFWList = async (req) => {
     let spatialData;
 
     if (locationId) {
-      const locationsData = await GFWListManager.getGFWListLocationsGeom(
-        req,
-        listId,
-        listLocationsIds
-      );
+      const locationsData = await getGFWListLocationsGeom(req, listId, listLocationsIds);
       spatialData = locationsData?.features || [];
     } else {
-      const listLocations = await GFWListManager.getGFWListLocationsNoGeom(
-        req,
-        listId,
-        listLocationsIds
-      );
+      const listLocations = await getGFWListLocationsNoGeom(req, listId, listLocationsIds);
       listLocationsIds = listLocations.map((location) => {
         return location.location_id;
       });

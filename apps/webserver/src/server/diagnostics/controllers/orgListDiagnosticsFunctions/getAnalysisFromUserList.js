@@ -1,8 +1,7 @@
-const path = require('path');
 const _ = require('lodash');
-const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
-const AnalysisManager = require(path.resolve('./config/publicutils/analysisManager.utils'));
-const LocationManager = require(path.resolve('./config/publicutils/locationManager.utils'));
+import * as ListManager from '../../../../config/publicutils/listManager.utils';
+import * as AnalysisManager from '../../../../config/publicutils/analysisManager.utils';
+import * as LocationManager from '../../../../config/publicutils/locationManager.utils';
 
 export const getAnalysisFromUserList = async (req, selectedList) => {
   const listId = Number(req.params.listId);

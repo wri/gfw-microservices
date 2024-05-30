@@ -8,13 +8,12 @@
  *
  ********************************************************************/
 // Imports required for this module.
-const path = require('path');
 const _ = require('lodash');
 const mapshaper = require('mapshaper');
-const s3Utils = require(path.resolve('./config/privateutils/s3.utils'));
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
+import * as s3Utils from '../privateutils/s3.utils';
+import * as sqlUtils from '../privateutils/sql.utils';
+import * as errorUtils from '../privateutils/error.utils';
+import * as lambdaUtils from '../privateutils/lambda.utils';
 const ListManager = require('./listManager.utils');
 const ShareManager = require('./shareManager.utils');
 
@@ -23,18 +22,18 @@ const ShareManager = require('./shareManager.utils');
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise} Returns promise object. If successful, resolves to array of template metadata, error object otherwise
  */
-const getAllTemplateData = (req) => {
+export const getAllTemplateData = (req) => {
   return new Promise((resolve, reject) => {
     // Get list of template metadata
     sqlUtils
-      .executeSystemStoredProcedure(req, 'uspGetTemplateMetadata')
+      .executeSystemStoredProcedure(req, 'uspGetTemplateMetadata', null)
       .then((recordsets) => {
         resolve(recordsets);
       })
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetData,
+          errorUtils.ERROR_CODES.failedToGetData,
           'Failed to get Template Metadata',
           errorMessage
         );
@@ -48,17 +47,17 @@ const getAllTemplateData = (req) => {
  *   @param  {Object}   req - Manadatory first parameter to pass the request object into the function in case session info is required.
  *   @return {Promise} Returns promise object. If successful, resolves to array of template metadata, error object otherwise
  */
-const getAllTemplateDropdowns = (req) => {
+export const getAllTemplateDropdowns = (req) => {
   return new Promise((resolve, reject) => {
     sqlUtils
-      .executeSystemStoredProcedure(req, 'uspGetTemplatesDropdown')
+      .executeSystemStoredProcedure(req, 'uspGetTemplatesDropdown', null)
       .then((recordsets) => {
         resolve(recordsets);
       })
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetData,
+          errorUtils.ERROR_CODES.failedToGetData,
           'Failed to get Template Dropdown',
           errorMessage
         );
@@ -67,7 +66,7 @@ const getAllTemplateDropdowns = (req) => {
   });
 };
 
-const getGADM = (req, geojson) => {
+export const getGADM = (req, geojson) => {
   return new Promise((resolve, reject) => {
     const s3ObjectsToDelete = [];
     const objectName = `gadm-${new Date().getTime()}`;
@@ -131,7 +130,7 @@ const _handlingCertification = (column, properties) => {
  * @param {String} list_name - List name
  * @returns {Object} - Filtered Geojson object based on included Columns
  */
-const getFilterListLocationsGeojson = (
+export const getFilterListLocationsGeojson = (
   listGeojson,
   locationIDsArray,
   includedColumns,
@@ -181,7 +180,7 @@ const getFilterListLocationsGeojson = (
  * @param {Array} includedColumns - List of Columns included in location attributes
  * @param {String} list_name - List name
  */
-const generateZipShapefile = (
+export const generateZipShapefile = (
   listFeaturesGeojson,
   locationIDsArray,
   outputFileName,
@@ -253,7 +252,7 @@ const coordinateDecoder = (coordinate) => {
  * @param {Array} locations - List of locations
  * @return {Array} - List of locations with salted LAT/LONG values
  */
-const getLocationsAttributesSalted = (locations) => {
+export const getLocationsAttributesSalted = (locations) => {
   return locations.map((location) => {
     const latitude = location.Latitude;
     const longitude = location.Longitude;
@@ -273,7 +272,7 @@ const getLocationsAttributesSalted = (locations) => {
  * @param {Boolean} isGfwList - Boolean to determine if we need to filter GFW Lists
  * @return {Promise<Array>} - List of locations original or with salted LAT/LONG values if list is excluded GFW list
  */
-const getLocationAttributesList = async (req, locations, isGfwList) => {
+export const getLocationAttributesList = async (req, locations, isGfwList) => {
   let selectedList;
 
   if (isGfwList) {
@@ -315,7 +314,7 @@ const getLocationAttributesList = async (req, locations, isGfwList) => {
  * @param {Object} geojson - Geojson value
  * @return {*} - Original Geojson list or list with decoded LAT/LONG values in case that list is excluded GFW list
  */
-const getFinalGeojson = (gfw_list_id, geojson) => {
+export const getFinalGeojson = (gfw_list_id, geojson) => {
   if (EXCLUDE_GFW_LIST_IDS.includes(gfw_list_id)) {
     // Geojson Decoder that will process geojson file and return original LAT/LONG values
     geojson.features = geojson.features.map((location) => {
@@ -345,15 +344,4 @@ const getFinalGeojson = (gfw_list_id, geojson) => {
     });
   }
   return geojson;
-};
-
-module.exports = {
-  getAllTemplateData,
-  getAllTemplateDropdowns,
-  getGADM,
-  getFilterListLocationsGeojson,
-  generateZipShapefile,
-  getLocationAttributesList,
-  getFinalGeojson,
-  getLocationsAttributesSalted,
 };

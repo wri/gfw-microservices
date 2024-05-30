@@ -37,7 +37,7 @@ const getDiagnosticsAnalysisFunction = (isGfwList, listId) => {
   return getAnalysisFromUserList;
 };
 
-module.exports = async function (req, res) {
+export const diagnosticsListController = async (req, res) => {
   const listId = Number(req.params.listId);
   const { isGfwList, isSharedList } = req.body;
   logger.info(`POST /diagnostics/${listId}`);

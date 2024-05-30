@@ -14,14 +14,13 @@
  * @function {getAFINegligibleStatsForListId}
  *
  ********************************************************************/
-const _ = require('lodash');
-const path = require('path');
-const sql = require('mssql');
+import _ from 'lodash';
+import sql from 'mssql';
 
-const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
-const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const analysisUtils = require(path.resolve('./config/privateutils/analysis.utils'));
-const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
+import * as sqlUtils from '../privateutils/sql.utils';
+import { createErrorMessage, ERROR_CODES } from '../privateutils/error.utils';
+import * as analysisUtils from '../privateutils/analysis.utils';
+import * as ListManager from '../publicutils/listManager.utils';
 import { getAnalysisDataForProtectedAreasByLocation } from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
@@ -39,9 +38,9 @@ export const getAnalysisDataForUserList = (req, list_id) => {
         resolve(recordsets);
       })
       .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
+        const errorObject = createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          ERROR_CODES.failedToGetList,
           'Failed to get user list analysis data',
           errorMessage
         );
@@ -57,8 +56,8 @@ export const getAnalysisDataForUserList = (req, list_id) => {
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 export const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
-  return new Promise((resolve, reject) => {
-    const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
+  return new Promise<any>((resolve, reject) => {
+    const parameters: any = [{ field: 'list_id', type: sql.Int, value: list_id }];
 
     if (Array.isArray(location_ids) && location_ids.length) {
       parameters.push({
@@ -74,9 +73,9 @@ export const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
         resolve(recordsets);
       })
       .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
+        const errorObject = createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          ERROR_CODES.failedToGetList,
           'Failed to get GFW list analysis data',
           err
         );
@@ -155,9 +154,9 @@ export const getAnalysisDataForProtectedAreas = (req, list_id, filters) => {
         resolve({ listData, protectedLocationResult });
       })
       .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
+        const errorObject = createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          ERROR_CODES.failedToGetList,
           'Failed to get GFW list analysis data',
           err
         );
@@ -175,7 +174,7 @@ export const getAnalysisDataForProtectedAreas = (req, list_id, filters) => {
  * @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 export const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, location_id) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<any>((resolve, reject) => {
     const parameters = [
       { field: 'list_id', type: sql.Int, value: list_id },
       { field: 'location_id', type: sql.Int, value: location_id },
@@ -218,9 +217,9 @@ export const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, locat
         resolve({ listData, protectedLocationResult });
       })
       .catch((err) => {
-        const errorObject = errorUtils.createErrorMessage(
+        const errorObject = createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          ERROR_CODES.failedToGetList,
           'Failed to get GFW list analysis data',
           err
         );
@@ -236,7 +235,7 @@ export const getAnalysisDataForProtectedAreasByLocationId = (req, list_id, locat
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 export const getGFWListAnalyses = (req, list_id) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<any>((resolve, reject) => {
     const parameters = [{ field: 'list_id', type: sql.Int, value: list_id }];
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetListAnalysis', parameters)
@@ -245,9 +244,9 @@ export const getGFWListAnalyses = (req, list_id) => {
       })
       .catch((errorMessage) => {
         console.log('Error retrieving gfw list analysis', errorMessage);
-        const message = errorUtils.createErrorMessage(
+        const message = createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          ERROR_CODES.failedToGetList,
           'Failed to get gfw list analysis',
           errorMessage
         );
@@ -272,9 +271,9 @@ export const getAFIAnalysisForListId = (req, listId) => {
         resolve(recordsets);
       })
       .catch((error) => {
-        const errorMessage = errorUtils.createErrorMessage(
+        const errorMessage = createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetAFIAnalysisForListId,
+          ERROR_CODES.failedToGetAFIAnalysisForListId,
           `Failed to get afi analysis for list id = ${listId}`,
           error
         );
@@ -299,9 +298,9 @@ export const getAFINegligibleStatsForListId = (req, listId) => {
         resolve(recordsets[0]);
       })
       .catch((error) => {
-        const errorMessage = errorUtils.createErrorMessage(
+        const errorMessage = createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetAFINegligibleStatsForListId,
+          ERROR_CODES.failedToGetAFINegligibleStatsForListId,
           `Failed to get afi negligible stats for list id = ${listId}`,
           error
         );
@@ -326,9 +325,9 @@ export const getListAnalyses = (req, list_id) => {
       })
       .catch((errorMessage) => {
         console.log('Error retrieving list analysis', errorMessage);
-        const message = errorUtils.createErrorMessage(
+        const message = createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          ERROR_CODES.failedToGetList,
           'Failed to get list analysis',
           errorMessage
         );
@@ -362,12 +361,7 @@ export const requestAnalysis = async (req, list_name, geojson = {}) => {
     // Perform a location analysis
     analysisUtils.analyzeLocation(req, organization_database, list, geojson);
   } else {
-    errorUtils.createErrorMessage(
-      req,
-      errorUtils.errorCodes.failedToGetList,
-      'Requesting unexpected analysis',
-      ''
-    );
+    createErrorMessage(req, ERROR_CODES.failedToGetList, 'Requesting unexpected analysis', '');
   }
 };
 

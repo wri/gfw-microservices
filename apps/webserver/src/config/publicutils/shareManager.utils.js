@@ -42,7 +42,7 @@ export const shareInternalList = (req, admin_id, user_id, list_id) => {
         const errMessage = langResources.getResourceString('userisNotAnAdmin');
         throw new errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.userNotAdmin,
+          errorUtils.ERROR_CODES.userNotAdmin,
           errMessage,
           errMessage
         );
@@ -76,7 +76,7 @@ export const shareInternalList = (req, admin_id, user_id, list_id) => {
         hasError = true;
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToShareInternal,
+          errorUtils.ERROR_CODES.failedToShareInternal,
           'Failed request to share list',
           errorMessage
         );
@@ -138,7 +138,7 @@ export const activateShareInternalList = (req, admin_id, user_id, list_id, datet
         hasError = true;
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToShareInternal,
+          errorUtils.ERROR_CODES.failedToShareInternal,
           'Failed to activate list share',
           errorMessage
         );
@@ -169,7 +169,7 @@ export const deactivateShareInternalList = (req, user_id, list_id) => {
         const errMessage = langResources.getResourceString('userisNotAnAdmin');
         throw new errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.userNotAdmin,
+          errorUtils.ERROR_CODES.userNotAdmin,
           errMessage,
           errMessage
         );
@@ -198,7 +198,7 @@ export const deactivateShareInternalList = (req, user_id, list_id) => {
         hasError = true;
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToShareInternal,
+          errorUtils.ERROR_CODES.failedToShareInternal,
           'Failed to deactivate list share',
           errorMessage
         );
@@ -229,7 +229,7 @@ export const deactivateAllShareInternalList = (req, users_id, list_id) => {
         const errMessage = langResources.getResourceString('userisNotAnAdmin');
         throw new errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.userNotAdmin,
+          errorUtils.ERROR_CODES.userNotAdmin,
           errMessage,
           errMessage
         );
@@ -258,7 +258,7 @@ export const deactivateAllShareInternalList = (req, users_id, list_id) => {
         hasError = true;
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToShareInternal,
+          errorUtils.ERROR_CODES.failedToShareInternal,
           'Failed to deactivate list share',
           errorMessage
         );
@@ -302,7 +302,7 @@ export const getUserInternalShareLists = (req, user_id) => {
         hasError = true;
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetShared,
+          errorUtils.ERROR_CODES.failedToGetShared,
           'Failed get user shared lists',
           errorMessage
         );
@@ -342,7 +342,7 @@ export const getSharedListDataByUser = (req, user_id) => {
         hasError = true;
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetShared,
+          errorUtils.ERROR_CODES.failedToGetShared,
           'Failed get user shared lists',
           errorMessage
         );
@@ -401,7 +401,7 @@ export const getUserPendingInternalShareLists = (req, user_id) => {
         hasError = true;
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetShared,
+          errorUtils.ERROR_CODES.failedToGetShared,
           'Failed get user pending shared lists',
           errorMessage
         );
@@ -430,7 +430,7 @@ export const getAdminInternalLists = (req) => {
         const errMessage = langResources.getResourceString('userisNotAnAdmin');
         throw new errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.userNotAdmin,
+          errorUtils.ERROR_CODES.userNotAdmin,
           errMessage,
           errMessage
         );
@@ -466,7 +466,7 @@ export const getAllUsersForSharedList = (req, list_id) => {
         const errMessage = langResources.getResourceString('userisNotAnAdmin');
         throw new errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.userNotAdmin,
+          errorUtils.ERROR_CODES.userNotAdmin,
           errMessage,
           errMessage
         );

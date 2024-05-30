@@ -1,8 +1,7 @@
-const path = require('path');
-const middlewares = require(path.resolve('./config/publicutils/middlewares'));
-const renderController = require('../controllers/diagnosticsRenderer.controller');
-const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
-const diagnosticsListController = require('../controllers/diagnosticsListController');
+import middlewares from '../../../config/publicutils/middlewares';
+import { diagnosticsRenderer } from '../controllers/diagnosticsRenderer.controller';
+import * as rateLimiterUtil from '../../../config/lib/limiter-util';
+import { diagnosticsListController } from '../controllers/diagnosticsListController';
 
 module.exports = (app, limiter) => {
   const routeMiddlewares = [
@@ -17,7 +16,7 @@ module.exports = (app, limiter) => {
   }
 
   app.use('/diagnostics', routeMiddlewares);
-  app.get('/diagnostics', renderController.diagnosticsRenderer);
+  app.get('/diagnostics', diagnosticsRenderer);
 
   app.post('/diagnostics/:listId', diagnosticsListController);
 };

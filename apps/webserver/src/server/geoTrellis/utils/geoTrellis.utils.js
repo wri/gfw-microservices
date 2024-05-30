@@ -1,8 +1,7 @@
-const path = require('path');
 import axios from 'axios';
 
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
-const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
+import * as logger from '../../../config/privateutils/logger.utils';
+import * as AWSSES from '../../../config/privateutils/ses.utils';
 
 const {
   GEO_TRELLIS__ANALYZE_LIST_DEV,

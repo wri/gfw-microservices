@@ -88,7 +88,7 @@ export class ListAnalysisController {
 
     const { startDate, endDate, userEmail } = alertsGenerate;
 
-    await this.listAnalysisService.generateAlert({
+    await this.listAnalysisService.generateDownloadBundle({
       organizationId,
       startDate,
       endDate,

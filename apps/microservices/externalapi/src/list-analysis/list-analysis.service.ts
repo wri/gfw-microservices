@@ -28,10 +28,7 @@ import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
-import {
-  generateAlertsSqsTemplate,
-  generateFCDDefReportAnalysesSqsTemplate,
-} from '../shared/generate-sqs-templates';
+import { generateAlertsSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
 
 const LIST_INITIAL_STATUS = 'Pending';
@@ -331,7 +328,7 @@ export class ListAnalysisService {
     return response;
   }
 
-  async generateAlert({
+  async generateDownloadBundle({
     startDate,
     endDate,
     organizationId,
@@ -343,6 +340,9 @@ export class ListAnalysisService {
 
     let sqsMessage = {};
     try {
+      if (!userEmail) {
+        throw new BadRequestException('Missing user email');
+      }
       if (analysisId === 'ALERTS') {
         if (!startDate || !endDate) {
           throw new BadRequestException('Missing start date or end date');
@@ -352,12 +352,10 @@ export class ListAnalysisService {
           listId,
           organization,
           endDate,
+          analysisId,
         });
       } else {
-        if (!userEmail) {
-          throw new BadRequestException('Missing user email');
-        }
-        sqsMessage = generateFCDDefReportAnalysesSqsTemplate({
+        sqsMessage = generateAlertsSqsTemplate({
           listId,
           analysisId,
           organization,
@@ -373,7 +371,7 @@ export class ListAnalysisService {
         groupId: 'default',
       });
     } catch (error) {
-      this.logger.error('generateAlert error', error);
+      this.logger.error('generateDownloadBundle error', error);
       if (error instanceof BadRequestException) {
         throw error;
       } else {

@@ -1,6 +1,5 @@
 import { generateRandomFilename } from '@wri-monorepos/shared';
 import { Organization } from '../api-keys/organization.entity';
-import { AlertsGenerateBodySchema } from '../list-analysis/list-analysis.dto';
 import * as tmp from 'tmp';
 
 export const generateAlertsSqsTemplate = ({
@@ -8,91 +7,148 @@ export const generateAlertsSqsTemplate = ({
   endDate,
   organization,
   listId,
-}: Omit<AlertsGenerateBodySchema, 'userEmail'> & {
-  organization: Organization;
-  listId: number;
-}) => {
-  const fileName = generateRandomFilename('');
-
-  const tmpPath = tmp.tmpNameSync();
-  const key = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
-
-  return {
-    list: {
-      DataType: 'String',
-      StringValue: `{"listId":${listId}}`,
-    },
-    organizationDatabase: {
-      DataType: 'String',
-      StringValue: organization.organizationDb,
-    },
-    file: {
-      DataType: 'String',
-      StringValue: `{"type":"alerts","key":"${fileName}","file":"csv"}`,
-    },
-    selectedTimeframe: {
-      DataType: 'String',
-      StringValue: 'DAY',
-    },
-    selectedAlert: {
-      DataType: 'String',
-      StringValue: 'Integrated',
-    },
-    key: {
-      DataType: 'String',
-      StringValue: key,
-    },
-    startDate: {
-      DataType: 'String',
-      StringValue: startDate.toISOString(),
-    },
-    endDate: {
-      DataType: 'String',
-      StringValue: endDate.toISOString(),
-    },
-  };
-};
-
-export const generateFCDDefReportAnalysesSqsTemplate = ({
-  organization,
-  listId,
-  analysisId,
-  userEmail,
+  analysisId = 'ALERTS',
+  userEmail = null,
 }: {
+  startDate?: Date;
+  endDate?: Date;
   organization: Organization;
   listId: number;
-  analysisId: string;
-  userEmail: string;
+  analysisId?: string;
+  userEmail?: string;
 }) => {
   const fileName = generateRandomFilename('');
 
   const tmpPath = tmp.tmpNameSync();
   const key = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
 
-  return {
-    list: {
-      DataType: 'String',
-      StringValue: `{"listId":${listId}}`,
-    },
-    organizationDatabase: {
-      DataType: 'String',
-      StringValue: organization.organizationDb,
-    },
-    analysisId: {
-      DataType: 'String',
-      StringValue: analysisId,
-    },
-    userEmail: {
-      DataType: 'String',
-      StringValue: userEmail,
-    },
-    file: {
-      DataType: 'String',
-      StringValue: `{"type":"fdc-def-report","key":"${fileName}","file":"csv"}`,
-    },
-    key: {
-      DataType: 'String',
-      StringValue: key,
-    },
-  };
+  let sqsMessage = {};
+
+  switch (analysisId) {
+    case 'FCD':
+    case 'AFI': {
+      sqsMessage = {
+        list: {
+          DataType: 'String',
+          StringValue:
+            analysisId === 'FCD'
+              ? `{"listId":${listId},"listView":"forest_change"}`
+              : `{"listId":${listId}}`,
+        },
+        organizationDatabase: {
+          DataType: 'String',
+          StringValue: organization.organizationDb,
+        },
+        analysisId: {
+          DataType: 'String',
+          StringValue: analysisId,
+        },
+        userEmail: {
+          DataType: 'String',
+          StringValue: userEmail,
+        },
+        file: {
+          DataType: 'String',
+          StringValue:
+            analysisId === 'FCD'
+              ? `{"type":"everything","key":"${fileName}","file":"csv"}`
+              : `{"type":"afi","key":"${fileName}"}`,
+        },
+        key: {
+          DataType: 'String',
+          StringValue: key,
+        },
+      };
+      break;
+    }
+    case 'ALERTS': {
+      const currentDate = new Date();
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(currentDate.getDate() - 30);
+
+      sqsMessage = {
+        list: {
+          DataType: 'String',
+          StringValue: `{"listId":${listId}}`,
+        },
+        organizationDatabase: {
+          DataType: 'String',
+          StringValue: organization.organizationDb,
+        },
+        file: {
+          DataType: 'String',
+          StringValue: `{"type":"alerts","key":"${fileName}","file":"csv"}`,
+        },
+        selectedTimeframe: {
+          DataType: 'String',
+          StringValue: 'DAY',
+        },
+        selectedAlert: {
+          DataType: 'String',
+          StringValue: 'Integrated',
+        },
+        key: {
+          DataType: 'String',
+          StringValue: key,
+        },
+        startDate: {
+          DataType: 'String',
+          StringValue: startDate.toISOString() || currentDate.toISOString(),
+        },
+        endDate: {
+          DataType: 'String',
+          StringValue: endDate.toISOString() || thirtyDaysAgo.toISOString(),
+        },
+      };
+      break;
+    }
+    default:
+      return;
+  }
+
+  return sqsMessage;
 };
+
+// export const generateFCDDefReportAnalysesSqsTemplate = ({
+//   organization,
+//   listId,
+//   analysisId,
+//   userEmail,
+// }: {
+//   organization: Organization;
+//   listId: number;
+//   analysisId: string;
+//   userEmail: string;
+// }) => {
+//   const fileName = generateRandomFilename('');
+
+//   const tmpPath = tmp.tmpNameSync();
+//   const key = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
+
+//   return {
+//     list: {
+//       DataType: 'String',
+//       StringValue: `{"listId":${listId}}`,
+//     },
+//     organizationDatabase: {
+//       DataType: 'String',
+//       StringValue: organization.organizationDb,
+//     },
+//     analysisId: {
+//       DataType: 'String',
+//       StringValue: analysisId,
+//     },
+//     userEmail: {
+//       DataType: 'String',
+//       StringValue: userEmail,
+//     },
+//     file: {
+//       DataType: 'String',
+//       StringValue: `{"type":"fdc-def-report","key":"${fileName}","file":"csv"}`,
+//     },
+//     key: {
+//       DataType: 'String',
+//       StringValue: key,
+//     },
+//   };
+// };

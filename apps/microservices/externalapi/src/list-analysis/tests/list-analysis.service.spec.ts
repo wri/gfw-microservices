@@ -396,7 +396,7 @@ describe('ListAnalysisService', () => {
     expect(result).toEqual(expectedResult);
   });
   it('Should generate an alert for Alert type', async () => {
-    const userEmail = null;
+    const userEmail = 'email@email.com';
     const organizationId = 1;
     const listId = 123;
     const analysisId = 'ALERTS';
@@ -408,7 +408,7 @@ describe('ListAnalysisService', () => {
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     await expect(
-      service.generateAlert({
+      service.generateDownloadBundle({
         organizationId,
         listId,
         analysisId,
@@ -431,7 +431,7 @@ describe('ListAnalysisService', () => {
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     await expect(
-      service.generateAlert({
+      service.generateDownloadBundle({
         organizationId,
         listId,
         analysisId,
@@ -454,7 +454,7 @@ describe('ListAnalysisService', () => {
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     await expect(
-      service.generateAlert({
+      service.generateDownloadBundle({
         organizationId,
         listId,
         analysisId,
@@ -477,7 +477,7 @@ describe('ListAnalysisService', () => {
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     await expect(
-      service.generateAlert({
+      service.generateDownloadBundle({
         organizationId,
         listId,
         analysisId,
@@ -500,7 +500,7 @@ describe('ListAnalysisService', () => {
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     await expect(
-      service.generateAlert({
+      service.generateDownloadBundle({
         organizationId,
         listId,
         analysisId,

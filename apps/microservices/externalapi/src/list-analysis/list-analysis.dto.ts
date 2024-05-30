@@ -47,12 +47,12 @@ export class AlertsGenerateRequest {
   @ApiProperty({
     example: 'mm-dd-yyyy',
   })
-  startDate: Date;
+  startDate?: Date;
 
   @ApiProperty({
     example: 'mm-dd-yyyy',
   })
-  endDate: Date;
+  endDate?: Date;
 
   @ApiProperty()
   userEmail: string;

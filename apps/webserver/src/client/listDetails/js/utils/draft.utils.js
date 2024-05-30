@@ -10,7 +10,7 @@ export function getIsDiagnosticStatusDraft(list) {
 }
 
 export function getIsDraftWithoutDiagnostic(list) {
-  if (getIsDiagnosticStatusDraft(list) && list?.dashboard_last_results === '') {
+  if (getIsDiagnosticStatusDraft(list) && !list.dashboard_last_results) {
     return true;
   }
 

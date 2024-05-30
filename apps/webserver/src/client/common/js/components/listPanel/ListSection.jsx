@@ -31,7 +31,6 @@ function ListSection({
         />
         <SelectedListDescription
           totalNumberOfLocationsInAccount={locationCount?.TotalCount}
-          currentView={listContext}
           selectedLists={selectedLists}
           transitionListData={transitionListData}
           userSharedLists={userSharedLists}

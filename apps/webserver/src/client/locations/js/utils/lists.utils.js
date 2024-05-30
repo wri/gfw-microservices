@@ -2,7 +2,6 @@ import difference from 'lodash/difference';
 import intersection from 'lodash/intersection';
 import { proLayers } from '../../../common/js/proLayers.config';
 import { gfwListsLocationID } from '../../../listDetails/js/components/lists/Lists.config';
-import { GFWLists } from '../config/listNames';
 import {
   FILTER_STRING_VARIABLES,
   FILTER_ARRAY_VARIABLES,

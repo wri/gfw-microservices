@@ -32,7 +32,6 @@ import {
 } from '../../utils/moveLocations';
 import store from '../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../common/js/config';
-import { proLayers } from '../../../../common/js/proLayers.config';
 
 import {
   addList,
@@ -72,7 +71,6 @@ import {
   checkColumnListPA,
   checkValidView,
   checkValidViewCommodity,
-  discernGfwID,
   getGFWListLocationIDs,
   getListFilteredLocations,
   dataCleanup,
@@ -1510,9 +1508,19 @@ export default class Lists extends Component {
       return;
     }
 
+    if (gfwList === 'Administrative Areas' && locationIds.length === 1) {
+      // only for 'Administrative Areas', the selectedLocations is not an array but an object:
+      // const { gadmid, serverLayerId } = location;
+      // see the function queryAdmin in /src/client/map/js/utils/LayerUtils.js
+      // TODO: send the location ids only, and get gadmid / serverLayerId in the map view
+      // or use another property in sendData to send these
+      locationIds = JSON.stringify(locationIds);
+    }
+    const isGfwList = selectedLists[0].globalForestWatchList;
+
     const sendData = {
       listId: selectedLists[0].id,
-      isGfwList: selectedLists[0].globalForestWatchList,
+      isGfwList,
       selectedLocations: allLocationsSelected || showFullListMap ? [] : locationIds,
     };
 

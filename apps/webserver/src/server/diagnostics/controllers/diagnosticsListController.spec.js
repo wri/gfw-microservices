@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import { diagnosticsController } from './diagnosticsListController';
+import { diagnosticsListController } from './diagnosticsListController';
 import { getGFWListsByListId } from '../../../config/publicutils/gfwListManager.utils';
 import {
   getAllListsWithAnalysisId,
@@ -96,7 +96,7 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/${1}`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromAdministrativeAreasList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/1');
@@ -141,7 +141,7 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/4`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromProtectedAreasList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/4');
@@ -185,7 +185,7 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/2`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/2');
@@ -229,7 +229,7 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/2`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/2');
@@ -273,7 +273,7 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/3`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/3');
@@ -317,7 +317,7 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/3`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/3');
@@ -382,7 +382,7 @@ describe('diagnosticsController', () => {
     };
     getListByIdWithAnalysisId.mockResolvedValue(selectedList);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/5583');
     expect(getListByIdWithAnalysisId).toHaveBeenCalledWith(req, 5583);
@@ -447,7 +447,7 @@ describe('diagnosticsController', () => {
     };
     getListByIdWithAnalysisId.mockResolvedValue(selectedList);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/5583');
     expect(getListByIdWithAnalysisId).toHaveBeenCalledWith(req, 5583);
@@ -504,7 +504,7 @@ describe('diagnosticsController', () => {
     getUserInternalShareLists.mockResolvedValue([]);
     getAnalysisFromUserList.mockResolvedValue(req, selectedList);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/5730');
     expect(getAllListsWithAnalysisId).toHaveBeenCalledWith(req);
@@ -525,7 +525,7 @@ describe('diagnosticsController', () => {
     };
     getGFWListsByListId.mockRejectedValue(new Error('Mocked error'));
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(logger.error).toHaveBeenCalledWith('POST /diagnostics/1', expect.any(Error));
     expect(res.status).toHaveBeenCalledWith(500);
@@ -544,7 +544,7 @@ describe('diagnosticsController', () => {
     };
     getListByIdWithAnalysisId.mockRejectedValue(new Error('Mocked error'));
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(logger.error).toHaveBeenCalledWith('POST /diagnostics/5583', expect.any(Error));
     expect(res.status).toHaveBeenCalledWith(500);

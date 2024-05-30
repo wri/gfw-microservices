@@ -3,7 +3,7 @@ const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager
 const AnalysisManager = require(path.resolve('./config/publicutils/analysisManager.utils'));
 const LocationManager = require(path.resolve('./config/publicutils/locationManager.utils'));
 
-module.exports = async function (req) {
+export const getAnalysisFromGFWList = async (req) => {
   const listId = Number(req.params.listId);
   const locationId = Number(req.body.locationId);
   let listLocationsIds = locationId ? [locationId] : [];

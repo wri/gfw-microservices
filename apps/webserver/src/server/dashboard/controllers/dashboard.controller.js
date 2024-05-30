@@ -58,6 +58,6 @@ export const dashboard = (req, res, data) => {
       });
     })
     .catch((error) => {
-      console.log('Failed to render Dashboard page');
+      console.log(`Failed to render Dashboard page: ', ${error}`);
     });
 };

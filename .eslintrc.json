@@ -1,6 +1,9 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
+  "env": {
+    "jest": true
+  },
   "plugins": ["@nrwl/nx"],
   "overrides": [
     {

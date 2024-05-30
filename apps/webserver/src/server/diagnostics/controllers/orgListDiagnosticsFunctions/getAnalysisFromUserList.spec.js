@@ -5,7 +5,6 @@ const getAnalysisFromUserList = require('./getAnalysisFromUserList');
 const ListManager = require('../../../../config/publicutils/listManager.utils');
 const AnalysisManager = require('../../../../config/publicutils/analysisManager.utils');
 const LocationManager = require('../../../../config/publicutils/locationManager.utils');
-const _ = require('lodash');
 
 // Mock ListManager
 jest.mock('../../../../config/publicutils/listManager.utils', () => ({

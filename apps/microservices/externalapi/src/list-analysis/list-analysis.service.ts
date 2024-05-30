@@ -342,44 +342,44 @@ export class ListAnalysisService {
     const organization = await this.getOrganizationDetails(organizationId);
 
     let sqsMessage = {};
-    try{
-    if (analysisId === 'ALERTS') {
-      if (!startDate || !endDate) {
-        throw new BadRequestException('Missing start date or end date');
+    try {
+      if (analysisId === 'ALERTS') {
+        if (!startDate || !endDate) {
+          throw new BadRequestException('Missing start date or end date');
+        }
+        sqsMessage = generateAlertsSqsTemplate({
+          startDate,
+          listId,
+          organization,
+          endDate,
+        });
+      } else {
+        if (!userEmail) {
+          throw new BadRequestException('Missing user email');
+        }
+        sqsMessage = generateFCDDefReportAnalysesSqsTemplate({
+          listId,
+          analysisId,
+          organization,
+          userEmail,
+        });
       }
-      sqsMessage = generateAlertsSqsTemplate({
-        startDate,
-        listId,
-        organization,
-        endDate,
+
+      await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
+        id: 'dl' + listId,
+        body: sqsMessage,
+        messageAttributes: sqsMessage,
+        delaySeconds: 0,
+        groupId: 'default',
       });
-    } else {
-      if(!userEmail) {
-        throw new BadRequestException('Missing user email');
+    } catch (error) {
+      this.logger.error('generateAlert error', error);
+      if (error instanceof BadRequestException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(error);
       }
-      sqsMessage = generateFCDDefReportAnalysesSqsTemplate({
-        listId,
-        analysisId,
-        organization,
-        userEmail,
-      });
     }
-    
-    await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
-      id: 'dl' + listId,
-      body: sqsMessage,
-      messageAttributes: sqsMessage,
-      delaySeconds: 0,
-      groupId: 'default',
-    });
-  } catch (error) {
-    this.logger.error('generateAlert error', error);
-    if (error instanceof BadRequestException) {
-      throw error;
-    } else {
-      throw new InternalServerErrorException(error);
-    }
-  }
   }
 
   async deleteList(listId: number, organizationId: number, userEmail: string): Promise<string> {

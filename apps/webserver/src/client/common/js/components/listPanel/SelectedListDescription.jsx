@@ -5,7 +5,6 @@ function SelectedListDescription({
   selectedLists = {},
   transitionListData = {},
   totalNumberOfLocationsInAccount = 0,
-  currentView,
   userSharedLists = {},
 }) {
   // list data comming from previous view (dashboard or list view)
@@ -15,7 +14,7 @@ function SelectedListDescription({
     Object.keys(selectedLists).length || Object.keys(transitionListData).length;
 
   // if a list is selected and we are in the map view, make it a link
-  const isLinkToList = isListSelected && currentView === 'map';
+  const isLinkToList = isListSelected;
 
   let numberOfLocations;
   let listName;
@@ -51,12 +50,15 @@ function SelectedListDescription({
   };
 
   const goToList = (id) => {
+    const { isGfwList } = transitionListData;
     const selectedListIsShared =
       transitionListData &&
       userSharedLists &&
       userSharedLists.map((userSharedList) => userSharedList.id).includes(transitionListData.id);
     const addShared = selectedListIsShared ? `&shared=true` : ``;
-    window.location = `/list-details?id=${id}${addShared}`;
+    const gfwListFlag = isGfwList ? '&gfw=true' : '';
+
+    window.location = `/list-details?id=${id}${addShared}${gfwListFlag}`;
   };
 
   const handleBack = () => {

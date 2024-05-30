@@ -12,12 +12,14 @@ const getQueryParams = (queryString) => {
     longitude: 'number',
     zoom: 'number',
     selectedTimeframe: 'string',
-
     xmin: 'number',
     ymin: 'number',
     xmax: 'number',
     ymax: 'number',
   };
+
+  // Store the type separately from the params object
+  const arrayIntOrStringTypes = {};
 
   queryParams.forEach((value, key) => {
     if (key in keyTypes) {
@@ -27,12 +29,12 @@ const getQueryParams = (queryString) => {
           params[key].push(value);
           break;
         case 'array-int-or-string':
-          if (!params[key]) params[key] = [];
-          if (params[key].length === 0) {
+          if (!params[key]) {
+            params[key] = [];
             // Determine type based on the first element
-            params[key].type = isNaN(value) ? 'string' : 'int';
+            arrayIntOrStringTypes[key] = isNaN(value) ? 'string' : 'int';
           }
-          params[key].push(params[key].type === 'int' ? parseInt(value, 10) : value);
+          params[key].push(arrayIntOrStringTypes[key] === 'int' ? parseInt(value, 10) : value);
           break;
         case 'number':
           params[key] = parseFloat(value);

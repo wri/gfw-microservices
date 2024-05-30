@@ -301,14 +301,15 @@ export default class Diagnostics extends Component {
   };
 
   viewMap = (evt) => {
-    const { selectedLocations, selectedList } = this.props;
-    const { id: listId, globalForestWatchList } = selectedList;
+    const { isSingleLocation } = this.state;
+    const { selectedLocations, selectedList, isGfwList } = this.props;
+    const { id: listId } = selectedList;
 
     const sendData = {
       visibleLayers: [treeCoverLossID],
       listId,
-      selectedLocations: selectedLocations,
-      isGfwList: globalForestWatchList,
+      selectedLocations: isSingleLocation ? selectedLocations : [],
+      isGfwList,
       longitude: evt.mapPoint.longitude,
       latitude: evt.mapPoint.latitude,
       zoom: this.mapView.zoom,

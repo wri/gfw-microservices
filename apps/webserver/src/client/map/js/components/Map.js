@@ -83,6 +83,7 @@ import { getGfwProMapLayerName, isGfwList } from '../../../common/js/utils/gfw.u
 import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
 import sortMapArray from './sortMapArray';
 import getQueryParams from './getQueryParams';
+import { discernGfwID } from '../../../locations/js/utils/lists.utils';
 
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
@@ -1872,11 +1873,21 @@ class Map extends Component {
       if (listId < 1 || listId > 5) {
         return; // if the list is not found, exit this function
       }
+      const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
+      const listName = listToSelect.list_name;
+      const gfwListVisibleMapLayer = discernGfwID(listName);
 
+      hashLayersToAdd.push(gfwListVisibleMapLayer);
       if (listId === 1) {
         // administrative areas
         if (selectedLocations?.length > 0) {
-          queryAdmin(selectedLocations[0]).then((adminArea) => {
+          // only for 'Administrative Areas', the selectedLocations is not an array but an object:
+          // const { gadmid, serverLayerId } = location;
+          // see the function queryAdmin in /src/client/map/js/utils/LayerUtils.js
+          // TODO: send the location ids only, and get gadmid / serverLayerId in the map view
+          // or use another property in sendData to send these
+          const parsedSelectedLocations = JSON.parse(selectedLocations[0])[0];
+          queryAdmin(parsedSelectedLocations).then((adminArea) => {
             store.dispatch(analysisActions.setAnalysis('analysis'));
             store.dispatch(analysisActions.setActiveAnalysis('region'));
             store.dispatch(
@@ -1899,30 +1910,30 @@ class Map extends Component {
         }
       } else {
         if (selectedLocations?.length) {
-          gfwListDefinitions[isGfwList] = [];
+          gfwListDefinitions[listName] = [];
           selectedLocations.forEach((gfwLocation) => {
-            gfwListDefinitions[isGfwList].push(gfwLocation);
+            gfwListDefinitions[listName].push(gfwLocation);
           });
         } else {
-          const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
-
           if (listToSelect) {
             this.updateSelectedLists(listToSelect);
           }
         }
       }
 
-      if (selectedLocations?.length) {
-        // set name and selected locations in banner
-        this.setState({
-          transitionListData: {
-            id: listId,
-            numLocations: selectedLocations.length,
-            alertsMapExtent,
-          },
-        });
-      }
+      const transitionListData = {
+        id: listId,
+        numLocations: selectedLocations?.length || listToSelect?.list_locations_count,
+        alertsMapExtent,
+        name: listName,
+        isGfwList: true,
+      };
+      // set name and selected locations in banner
+      this.setState({
+        transitionListData,
+      });
     } else {
+      // if it is user list
       const { userLists, userSharedLists } = this.props;
       const combinedUserLists = [...userLists, ...userSharedLists];
       const userList = combinedUserLists.find((list) => list.id === listId);
@@ -2057,11 +2068,7 @@ class Map extends Component {
       hashLayersToAdd.forEach((layer) => {
         store.dispatch(toggleLayer(layer));
       });
-      if (
-        gfwListDefinitions &&
-        Object.keys(gfwListDefinitions).length > 0 &&
-        gfwListDefinitions[isGfwList].length > 0
-      ) {
+      if (gfwListDefinitions && Object.keys(gfwListDefinitions).length > 0) {
         store.dispatch(updateGFWLocations(gfwListDefinitions));
       }
     }
@@ -2117,7 +2124,9 @@ class Map extends Component {
           const url = `${activeGFWLayer.url}/${activeGFWLayer.layerId}`;
 
           queryExtent(url).then((extent) => {
-            this.view.goTo(extent);
+            if (extent) {
+              this.view.goTo(extent);
+            }
           });
         }
 
@@ -2395,7 +2404,6 @@ class Map extends Component {
       sketchTool,
       gfwListDef,
       userInfo,
-      selectedListFromDropdown,
       transitionListData,
       isMapLoading,
       listNotAccessible,
@@ -2466,7 +2474,7 @@ class Map extends Component {
               locationCount={locationCount}
               gfwLists={gfwLists}
               selectedLists={selectedList}
-              transitionListData={!selectedListFromDropdown ? transitionListData : {}}
+              transitionListData={transitionListData}
               view={this.view}
               selectedListCallback={this.updateSelectedLists}
               userSharedLists={userSharedLists}

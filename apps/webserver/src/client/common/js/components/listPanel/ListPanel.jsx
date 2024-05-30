@@ -95,7 +95,7 @@ function ListPanel({
     } else if (
       !list?.GFWList &&
       (!hasAlertsAnalysisActive || listDraftStatus) &&
-      listContext === 'dashboard'
+      listContext === 'dashboard' // TODO: unreachable code: listContext is always 'map'
     ) {
       // Draft in Dashboard
       className = 'locations-list-name__dash_draft';

@@ -6,7 +6,6 @@
  *
  ********************************************************************/
 //Imports required for this module.
-// import path from ('path');
 import * as logger from '../privateutils/logger.utils';
 
 export const ERROR_CODES = {

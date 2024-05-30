@@ -21,7 +21,7 @@ import * as sqlUtils from '../privateutils/sql.utils';
 import { createErrorMessage, ERROR_CODES } from '../privateutils/error.utils';
 import * as analysisUtils from '../privateutils/analysis.utils';
 import * as ListManager from '../publicutils/listManager.utils';
-import { getAnalysisDataForProtectedAreasByLocation } from '@wri-monorepos/sql';
+import { getAnalysisDataForProtectedAreasByLocation, SqlParamType } from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
  *   @summary Function to return analysis data for a user list.
@@ -57,7 +57,7 @@ export const getAnalysisDataForUserList = (req, list_id) => {
  */
 export const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
   return new Promise<any>((resolve, reject) => {
-    const parameters: any = [{ field: 'list_id', type: sql.Int, value: list_id }];
+    const parameters: SqlParamType[] = [{ field: 'list_id', type: sql.Int(), value: list_id }];
 
     if (Array.isArray(location_ids) && location_ids.length) {
       parameters.push({

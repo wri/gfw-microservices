@@ -1876,7 +1876,7 @@ class Map extends Component {
       const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
       const listName = listToSelect.list_name;
       const gfwListVisibleMapLayerId = discernGfwID(listName);
-      console.log({ gfwListVisibleMapLayerId, listName });
+
       hashLayersToAdd.push(gfwListVisibleMapLayerId);
       if (listId === 1) {
         // administrative areas

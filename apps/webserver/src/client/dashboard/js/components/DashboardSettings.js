@@ -1,145 +1,41 @@
 import React, { Component } from 'react';
 import store from '../store';
 import mapUtils from '../utils/mapUtils';
-import { calculateAlerts } from '../utils/dashboard.utils';
-import dictionary from '../utils/dictionary';
-import { prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import { selectAlert, selectTimeframe } from '../actions/dashboardActions';
 import GfwSelect from '../../../common/js/components/GfwSelect';
 import { proLayers } from '../../../common/js/proLayers.config';
-import redirectToPage from '../../../common/js/utils/redirect';
-
-const timeframeOptions = [
-  {
-    label: 'Day',
-    value: 'DAY',
-    category: ['VIIRS'],
-  },
-  {
-    label: 'Week',
-    value: 'WEEK',
-    category: ['GLAD', 'VIIRS'],
-  },
-  {
-    label: 'Month',
-    value: 'MONTH',
-    category: ['GLAD'],
-  },
-  {
-    label: 'Quarter',
-    value: 'QUARTER',
-    category: ['GLAD'],
-  },
-  {
-    label: 'Year',
-    value: 'YEAR',
-    category: ['GLAD'],
-  },
-];
-
-const alertsShownOptions = [
-  {
-    value: 'GLAD',
-    label: 'Deforestation (Integrated Alerts)',
-  },
-  {
-    value: 'VIIRS',
-    label: 'Fires (VIIRS)',
-  },
-];
+import redirectToMap from '../../../common/js/utils/redirect';
+import { timeframeOptions, alertsShownOptions } from './alerts.constants';
 
 export default class DashboardSettings extends Component {
   handleViewMap = () => {
-    const {
-      selectedAlert,
-      selectedList,
-      selectedTimeframe,
-      locationFilters,
-      gfwLists,
-      zoomLevel,
-      geoJSON,
-      failedGeoJSON,
-      filteredLocationGeoJSON,
-      filteredDissolvedGeoJSON,
-    } = this.props;
+    const { selectedAlert, selectedList, selectedTimeframe, zoomLevel } = this.props;
     if (!selectedList || !selectedList.id) {
       return;
     }
 
-    // const {   } = this.state;
-    const layers =
+    const visibleLayers =
       selectedAlert === 'GLAD'
         ? [proLayers.integratedDeforestationAlertsID]
         : [proLayers.viirsActiveFiresID];
-    let numLocations,
-      filteredIDs,
-      filterCount = 0;
 
     const viewCenter = mapUtils.getExtent();
-    const mapExtent = mapUtils.getMapExtent();
-    const zScale = dictionary.zoomLevel_scale[zoomLevel];
-
-    const { withAlerts, totalLocations, locationIdsWithAlerts, locationIdsWithoutAlerts } =
-      calculateAlerts(
-        geoJSON,
-        failedGeoJSON,
-        selectedAlert,
-        filteredLocationGeoJSON.features,
-        filteredDissolvedGeoJSON
-      );
-
-    const { ALERTS, NOALERTS } = locationFilters;
-
-    if (ALERTS) {
-      if (NOALERTS) {
-        numLocations = totalLocations;
-        filteredIDs = filteredLocationGeoJSON.features.map((feature) => {
-          return feature.properties.location_id;
-        });
-      } else {
-        numLocations = withAlerts;
-        filteredIDs = locationIdsWithAlerts;
-      }
-    } else if (NOALERTS) {
-      numLocations = totalLocations - withAlerts;
-      filteredIDs = locationIdsWithoutAlerts;
-    } else {
-      numLocations = totalLocations;
-      filteredIDs = filteredLocationGeoJSON.features.map((feature) => {
-        return feature.properties.location_id;
-      });
-    }
-
-    for (const alert in locationFilters) {
-      if (locationFilters[alert]) {
-        filterCount++;
-      }
-    }
 
     const sendData = {
-      a: ALERTS,
-      t: selectedTimeframe,
-      l: layers,
-      i: selectedList.id,
-      numLocations: prettifyNum(numLocations),
-      name: selectedList.list_name,
-      // listView: ,
-      filterCount,
-      filteredLists: filteredIDs,
-      canopyDensity: '',
-      path: 'dashboard',
-      gfwlist: gfwLists.includes(selectedList),
-      dashboard_map_extent: mapExtent,
-      showFullListMap: true,
-      totalNumberOfLocationsInList: selectedList.list_locations_count,
-      ...(gfwLists.includes(selectedList) && {
-        lat: viewCenter.latitude,
-        lng: viewCenter.longitude,
-        z: zScale,
-      }),
+      listId: selectedList.id,
+      selectedTimeframe,
+      visibleLayers,
+      isGfwList: selectedList.globalForestWatchList,
+      latitude: viewCenter.latitude,
+      longitude: viewCenter.longitude,
+      zoom: zoomLevel,
+      xmin: view.extent.xmin,
+      ymin: view.extent.ymin,
+      xmax: view.extent.xmax,
+      ymax: view.extent.ymax,
     };
 
-    redirectToPage('/map', sendData);
+    redirectToMap(sendData);
     gtag('event', 'view map clicked', {
       event_category: 'Dashboard Click',
       event_label: 'user is re-directed to the map page via a Dashboard View Map click',

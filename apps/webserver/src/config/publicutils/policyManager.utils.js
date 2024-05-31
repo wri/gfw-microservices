@@ -99,7 +99,7 @@ const uploadPolicies = (req, policyList, policyNames, overwrite = false) => {
         }
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUploadPolicies,
+          errorUtils.ERROR_CODES.failedToUploadPolicies,
           'Failed to upload policies',
           err
         );
@@ -156,7 +156,7 @@ const uploadPendingPolicies = (req, organizationId, policyList, policyNames) => 
         }
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUploadPendingPolicies,
+          errorUtils.ERROR_CODES.failedToUploadPendingPolicies,
           'Failed to upload pending policies',
           err
         );
@@ -180,7 +180,7 @@ const getPolicyList = (req) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetPolicyList,
+          errorUtils.ERROR_CODES.failedToGetPolicyList,
           'Failed to get policy list',
           err
         );
@@ -201,7 +201,7 @@ const getAllPolicyList = (req) => {
       const sysMessage = 'UserEmail: ' + req.session.user_email + ' is not a GFW Pro Root User.';
       const eo = errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotProManager,
+        errorUtils.ERROR_CODES.userNotProManager,
         userMessage,
         sysMessage
       );
@@ -215,7 +215,7 @@ const getAllPolicyList = (req) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetPolicyList,
+          errorUtils.ERROR_CODES.failedToGetPolicyList,
           'Failed to get all policies',
           err
         );
@@ -240,7 +240,7 @@ const getPendingPolicyList = (req) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetPendingPolicyList,
+          errorUtils.ERROR_CODES.failedToGetPendingPolicyList,
           'Failed to get pending policy list',
           err
         );
@@ -270,7 +270,7 @@ const downloadPolicy = async (req, policy, orgID) => {
     const sysMessage = 'CRITICAL ERROR: Failed to download policy ' + policy;
     throw errorUtils.createErrorMessage(
       req,
-      errorUtils.errorCodes.failedToDownload,
+      errorUtils.ERROR_CODES.failedToDownload,
       userMessage,
       sysMessage
     );
@@ -313,7 +313,7 @@ const deletePolicies = (req, policyList) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeletePolicies,
+          errorUtils.ERROR_CODES.failedToDeletePolicies,
           'Failed to upload policies',
           err
         );
@@ -375,7 +375,7 @@ const movePolicy = (req, pendingaccount_id, organizationId) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToMovePolicies,
+          errorUtils.ERROR_CODES.failedToMovePolicies,
           'Failed to move policies',
           err
         );

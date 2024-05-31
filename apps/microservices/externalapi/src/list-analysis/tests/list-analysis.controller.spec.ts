@@ -175,4 +175,24 @@ describe('ListAnalysisController', () => {
       BadRequestException
     );
   });
+  it('should failed zod validations when receiving an unknown alerts type', async () => {
+    const listId = 5828;
+    const analysisId = 'unknown_type';
+    const alertsGenerate = { userEmail: 'email@email.com' };
+    const expectedResult = [
+      {
+        code: 'invalid_enum_value',
+        message: `Invalid enum value. Expected 'Alerts' | 'FCD' | 'DefReport', received '${analysisId}'`,
+        options: ['Alerts', 'FCD', 'DefReport'],
+        path: [],
+        received: 'unknown_type',
+      },
+    ];
+    const {
+      body: { details: response },
+    } = await request(app.getHttpServer())
+      .post(`/v1/list/${listId}/analysis/${analysisId}/generate`)
+      .send(alertsGenerate);
+    expect(response).toEqual(expectedResult);
+  });
 });

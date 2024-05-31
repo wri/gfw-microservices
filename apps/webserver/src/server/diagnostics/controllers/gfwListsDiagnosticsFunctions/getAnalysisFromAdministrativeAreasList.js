@@ -1,6 +1,9 @@
-const path = require('path');
-const AnalysisManager = require(path.resolve('./config/publicutils/analysisManager.utils'));
-const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
+import { getAnalysisDataForGFWList } from '../../../../config/publicutils/analysisManager.utils';
+import {
+  getAdministrativeAreasDataByLocationId,
+  getGFWListLocationsGeom,
+  getGFWListLocationsNoGeom,
+} from '../../../../config/publicutils/gfwListManager.utils';
 import { gfwListsIds } from '@wri-monorepos/constants';
 
 export default async function (req) {
@@ -9,29 +12,17 @@ export default async function (req) {
   let listLocationsIds = locationId ? [locationId] : [];
 
   try {
-    const listData = await GFWListManager.getAdministrativeAreasDataByLocationId(req, locationId);
+    const listData = await getAdministrativeAreasDataByLocationId(req, locationId);
 
-    const protectedLocationResult = await AnalysisManager.getAnalysisDataForGFWList(
-      req,
-      listId,
-      listLocationsIds
-    );
+    const protectedLocationResult = await getAnalysisDataForGFWList(req, listId, listLocationsIds);
 
     let spatialData;
 
     if (locationId) {
-      const locationsData = await GFWListManager.getGFWListLocationsGeom(
-        req,
-        listId,
-        listLocationsIds
-      );
+      const locationsData = await getGFWListLocationsGeom(req, listId, listLocationsIds);
       spatialData = locationsData?.features || [];
     } else {
-      const listLocations = await GFWListManager.getGFWListLocationsNoGeom(
-        req,
-        listId,
-        listLocationsIds
-      );
+      const listLocations = await getGFWListLocationsNoGeom(req, listId, listLocationsIds);
       listLocationsIds = listLocations.map((location) => {
         return location.location_id;
       });

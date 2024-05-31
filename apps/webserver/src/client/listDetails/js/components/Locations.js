@@ -33,11 +33,17 @@ class Locations extends Component {
   }
 
   componentDidMount() {
-    const { location, userLists, gfwLists, canopyModalVisible } = this.props;
+    const {
+      location,
+      userLists,
+      gfwLists,
+      canopyModalVisible,
+      locationName,
+      fromMap,
+      userSharedLists,
+    } = this.props;
 
     this.unsubscribe = store.subscribe(this.storeDidUpdate);
-
-    const { locationName, fromMap, userSharedLists } = this.props;
 
     let listToRedirect;
     const redirectedFromMap = fromMap && locationName;

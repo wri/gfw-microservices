@@ -32,7 +32,6 @@ import {
 } from '../../utils/moveLocations';
 import store from '../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../common/js/config';
-import { proLayers } from '../../../../common/js/proLayers.config';
 
 import {
   addList,
@@ -72,9 +71,7 @@ import {
   checkColumnListPA,
   checkValidView,
   checkValidViewCommodity,
-  discernGfwID,
   getGFWListLocationIDs,
-  getGfwListName,
   getListFilteredLocations,
   dataCleanup,
   getTemplateData,
@@ -91,7 +88,7 @@ import {
 import LargeListEditing from './EditList/LargeListEditing/LargeListEditing';
 import ShareList from '../../../../locations/js/components/ShareList/ShareList';
 import { EditList } from './EditList/EditList';
-import redirectToPage from '../../../../common/js/utils/redirect';
+import redirectToMap from '../../../../common/js/utils/redirect';
 import { FailedPopupDialog } from '../../../../locations/js/components/landing/FailedPopupDialog';
 import { getIsDiagnosticStatusDraft } from '../../utils/draft.utils';
 import { requestGeoTrellisAnalyzeList } from '../../../../locations/js/utils/request.utils';
@@ -1430,13 +1427,12 @@ export default class Lists extends Component {
       selectedLocations,
       selectedLists,
       filterCount,
-      listView,
-      filters,
       filteredLocationData,
     } = this.props;
     const { filterString, combinedColumns, allLocationsSelected } = this.state;
     let locationIds = [];
-    const gfwList = getGfwListName(selectedLists);
+
+    const gfwList = selectedLists[0]?.globalForestWatchList ? selectedLists[0]?.list_name : false;
 
     if (selectedLocations.length > 0) {
       // If the user has checked any checkboxes, we are using
@@ -1501,7 +1497,7 @@ export default class Lists extends Component {
       locationIds = filteredData;
     }
 
-    if (gfwList && gfwList === 'Administrative Areas' && locationIds.length > 1) {
+    if (gfwList === 'Administrative Areas' && locationIds.length > 1) {
       this.setState({
         dialogOpen: true,
         dialogTitle: 'Map View Not Available',
@@ -1512,23 +1508,23 @@ export default class Lists extends Component {
       return;
     }
 
+    if (gfwList === 'Administrative Areas' && locationIds.length === 1) {
+      // only for 'Administrative Areas', the selectedLocations is not an array but an object:
+      // const { gadmid, serverLayerId } = location;
+      // see the function queryAdmin in /src/client/map/js/utils/LayerUtils.js
+      // TODO: send the location ids only, and get gadmid / serverLayerId in the map view
+      // or use another property in sendData to send these
+      locationIds = JSON.stringify(locationIds);
+    }
+    const isGfwList = selectedLists[0].globalForestWatchList;
+
     const sendData = {
-      l: [proLayers.treeCoverLossID],
-      i: selectedLists[0].id,
-      name: selectedLists[0].list_name,
-      gfwListName: gfwList,
-      filterCount,
-      listView,
-      numLocations: locationIds.length,
-      canopyDensity: filters.canopyDensity ? filters.canopyDensity : '',
-      filteredLists: locationIds,
-      g: gfwList ? discernGfwID(gfwList) : false,
-      path: 'lists',
-      showFullListMap: allLocationsSelected || showFullListMap,
-      totalNumberOfLocationsInList: selectedLists[0].list_locations_count,
+      listId: selectedLists[0].id,
+      isGfwList,
+      selectedLocations: allLocationsSelected || showFullListMap ? [] : locationIds,
     };
 
-    redirectToPage('/map', sendData);
+    redirectToMap(sendData);
     gtag('event', 'Header button click', {
       event_category: 'Lists Click',
       event_label: 'user is re-directed to the map page via a Lists Header button click',
@@ -1926,12 +1922,9 @@ export default class Lists extends Component {
     const {
       activeTemplate,
       addType,
-      anchorEl,
-      bubbleData,
       canopyModalVisible,
       commodityType,
       currentUser,
-      displayPopover,
       filterCount,
       filteredLocationData,
       filters,
@@ -2121,8 +2114,15 @@ export default class Lists extends Component {
       }
     });
 
-    const rerunListDialog = `Select OK to update your list. Your list will not be available while the update is processing.
-    You will receive an email notification when the update is completed.`;
+    const isSelectedLocationActive = () => {
+      const selectedLocation = filteredLocationData.filter(
+        (x) => x.location_id === selectedLocations[0]
+      );
+
+      if (selectedLocation?.length !== 1) return false;
+
+      return selectedLocation[0].location_status_id === listStatus.Active;
+    };
 
     const [REACT_TABLE__LOCATION_NAME] = cloneDeep(columns.react_table__location_name);
 
@@ -2485,35 +2485,13 @@ export default class Lists extends Component {
                             icon={<IconRerun height="14px" />}
                             label="Update Analysis"
                           />
-                          <Dialog
-                            title={locationsPage.lists.rerunListDialog.title}
-                            actions={
-                              <div className="rerun-list__footer">
-                                <Button
-                                  variant="primary"
-                                  className="rerun-list__button"
-                                  label="OK"
-                                  onClick={this.rerunList}
-                                />
-                                <LinkButton
-                                  className="rerun-list__button"
-                                  label="Cancel"
-                                  onClick={this.handleRerunDialogState}
-                                />
-                              </div>
-                            }
-                            modal={false}
+                          <CustomDraftDialog
                             open={rerunDialogState}
-                            onRequestClose={this.handleRerunDialogState}
-                            bodyClassName="dialog__body"
-                            contentClassName="dialog__content"
-                          >
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: locationsPage.lists.rerunListDialog.text,
-                              }}
-                            ></div>
-                          </Dialog>
+                            closeAction={this.handleRerunDialogState}
+                            dialogTitle={locationsPage.lists.rerunListDialog.title}
+                            dialogMessage={locationsPage.lists.rerunListDialog.text}
+                            dialogActionConfirm={this.rerunList}
+                          />
                         </div>
                       ) : null}
 
@@ -2696,7 +2674,7 @@ export default class Lists extends Component {
                       </div>
                       <div className="list-detail-action-bar">
                         {selectedLocations.length === 1 &&
-                          (isGfwList || getActiveAnalysisType(listAnalysesStatus)) && (
+                          (isGfwList || isSelectedLocationActive()) && (
                             <Button
                               variant="primary"
                               data-cy="location-diagnostics"

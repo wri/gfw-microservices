@@ -18,15 +18,15 @@ import IconUsers from '../../../../../common/js/components/icon/IconUsers';
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
 import sharedColumnText from './sharedColumnText';
-import redirectToPage from '../../../../../common/js/utils/redirect';
+import redirectToMap from '../../../../../common/js/utils/redirect';
 import LandingDownload from '../../lists/download/LandingDownload';
 import { numberWithCommas } from '../../../utils/locationsTableUtils';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 import AnalysisListChips from './AnalysisListChips';
-import { locationsPage, nav, treeCoverLossID } from '../../../../../common/js/config';
+import { locationsPage, nav } from '../../../../../common/js/config';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
 import CustomTooltip from '../../../../../common/js/components/CustomTooltip/CustomTooltip';
-
+import { proLayers } from '../../../../../common/js/proLayers.config';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
 
 function ActiveList({
@@ -55,7 +55,6 @@ function ActiveList({
     id,
     is_shared,
     folder,
-    list_locations_count,
     error_file_storage_path,
     large_list_id,
     listAnalysesStatus,
@@ -103,22 +102,11 @@ function ActiveList({
     }
 
     const sendData = {
-      l: [treeCoverLossID],
-      i: id,
-      name: list_name,
-      gfwListName: false,
-      filterCount: 0,
-      listView: '',
-      numLocations: list_locations_count,
-      canopyDensity: '',
-      filteredLists: '',
-      g: false,
-      path: 'lists',
-      showFullListMap: true,
-      totalNumberOfLocationsInList: list_locations_count,
+      visibleLayers: [proLayers.treeCoverLossID],
+      listId: id,
     };
 
-    redirectToPage('/map', sendData);
+    redirectToMap(sendData);
   };
 
   return (

@@ -36,8 +36,8 @@ const dateFormat = z.string().transform((value) => {
 });
 
 export const alertsGenerateBodySchema = z.object({
-  startDate: dateFormat,
-  endDate: dateFormat,
+  startDate: dateFormat.optional(),
+  endDate: dateFormat.optional(),
   userEmail: z.string().email(),
 });
 
@@ -47,12 +47,12 @@ export class AlertsGenerateRequest {
   @ApiProperty({
     example: 'mm-dd-yyyy',
   })
-  startDate: Date;
+  startDate?: Date;
 
   @ApiProperty({
     example: 'mm-dd-yyyy',
   })
-  endDate: Date;
+  endDate?: Date;
 
   @ApiProperty()
   userEmail: string;
@@ -62,10 +62,22 @@ export const deleteListBodySchema = z.object({
   userEmail: z.string().email(),
 });
 
-export class DeleteListRequest {
+export class requestEmailBody {
   @ApiProperty()
   userEmail: string;
 }
+export class DeleteListRequest extends requestEmailBody {}
+export class GenerateFCDDefReportAnalyseBody extends requestEmailBody {}
+export const generateFCDDefReportAnalyseBodySchema = z.object({ userEmail: z.string().email() });
 
 export const numPageSchema = z.coerce.number();
 export const pageSizeSchema = z.coerce.number();
+
+export interface AnalysesGenerateRequest {
+  listId: number;
+  analysisId: string;
+  organizationId: number;
+  userEmail: string;
+  startDate: Date;
+  endDate: Date;
+}

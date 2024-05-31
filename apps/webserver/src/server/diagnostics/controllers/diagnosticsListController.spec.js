@@ -1,10 +1,16 @@
 /**
  * @jest-environment node
  */
-const diagnosticsController = require('./diagnosticsListController');
-const GFWListManager = require('../../../config/publicutils/gfwListManager.utils');
-const ListManager = require('../../../config/publicutils/listManager.utils');
-const SharedListManager = require('../../../config/publicutils/shareManager.utils');
+import { diagnosticsListController } from './diagnosticsListController';
+import { getGFWListsByListId } from '../../../config/publicutils/gfwListManager.utils';
+import {
+  getAllListsWithAnalysisId,
+  getListByIdWithAnalysisId,
+} from '../../../config/publicutils/listManager.utils';
+import {
+  getUserInternalShareLists,
+  findSharedListsInsideOrganization,
+} from '../../../config/publicutils/shareManager.utils';
 
 // Mock GFWListManager
 jest.mock('../../../config/publicutils/gfwListManager.utils', () => ({
@@ -26,12 +32,12 @@ jest.mock('../../../config/publicutils/shareManager.utils', () => ({
   findSharedListsInsideOrganization: jest.fn(),
 }));
 
-const logger = require('../../../config/privateutils/logger.utils');
+import * as logger from '../../../config/privateutils/logger.utils';
 import getAnalysisFromAdministrativeAreasList from './gfwListsDiagnosticsFunctions/getAnalysisFromAdministrativeAreasList';
-const getAnalysisFromProtectedAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromProtectedAreasList');
-const getAnalysisFromGFWList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromGFWList');
-const getAnalysisFromUserList = require('./orgListDiagnosticsFunctions/getAnalysisFromUserList');
-const setListData = require('../../../config/publicutils/setListData');
+import { getAnalysisFromProtectedAreasList } from './gfwListsDiagnosticsFunctions/getAnalysisFromProtectedAreasList';
+import { getAnalysisFromGFWList } from './gfwListsDiagnosticsFunctions/getAnalysisFromGFWList';
+import { getAnalysisFromUserList } from './orgListDiagnosticsFunctions/getAnalysisFromUserList';
+import { setListData } from '../../../config/publicutils/setListData';
 
 // Mock Functions
 
@@ -76,7 +82,7 @@ describe('diagnosticsController', () => {
       dashboard_last_submit: null,
       dashboard_last_results: null,
     };
-    GFWListManager.getGFWListsByListId.mockResolvedValue(selectedList);
+    getGFWListsByListId.mockResolvedValue(selectedList);
 
     // mock list analysis data
     const analysisData = {
@@ -90,11 +96,11 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/${1}`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromAdministrativeAreasList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/1');
-    expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 1);
+    expect(getGFWListsByListId).toHaveBeenCalledWith(req, 1);
     expect(setListData).toHaveBeenCalled();
   });
 
@@ -121,7 +127,7 @@ describe('diagnosticsController', () => {
       dashboard_last_submit: null,
       dashboard_last_results: null,
     };
-    GFWListManager.getGFWListsByListId.mockResolvedValue(selectedList);
+    getGFWListsByListId.mockResolvedValue(selectedList);
 
     // mock list analysis data
     const analysisData = {
@@ -135,11 +141,11 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/4`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromProtectedAreasList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/4');
-    expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 4);
+    expect(getGFWListsByListId).toHaveBeenCalledWith(req, 4);
   });
 
   it('should handle GFW OIL_PALM_CONCESSIONS list level', async () => {
@@ -165,7 +171,7 @@ describe('diagnosticsController', () => {
       dashboard_last_submit: '2023-09-12T19:45:22.064Z',
       dashboard_last_results: '2023-09-12T20:01:30.363Z',
     };
-    GFWListManager.getGFWListsByListId.mockResolvedValue(selectedList);
+    getGFWListsByListId.mockResolvedValue(selectedList);
 
     // mock list analysis data
     const analysisData = {
@@ -179,11 +185,11 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/2`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/2');
-    expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 2);
+    expect(getGFWListsByListId).toHaveBeenCalledWith(req, 2);
   });
 
   it('should handle GFW OIL_PALM_CONCESSIONS list with locationId [117]', async () => {
@@ -209,7 +215,7 @@ describe('diagnosticsController', () => {
       dashboard_last_submit: '2023-09-12T19:45:22.064Z',
       dashboard_last_results: '2023-09-12T20:01:30.363Z',
     };
-    GFWListManager.getGFWListsByListId.mockResolvedValue(selectedList);
+    getGFWListsByListId.mockResolvedValue(selectedList);
 
     // mock list analysis data
     const analysisData = {
@@ -223,11 +229,11 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/2`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/2');
-    expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 2);
+    expect(getGFWListsByListId).toHaveBeenCalledWith(req, 2);
   });
 
   it('should handle GFW PALM_OIL_MILLS list level', async () => {
@@ -253,7 +259,7 @@ describe('diagnosticsController', () => {
       dashboard_last_submit: '2023-09-12T19:45:22.064Z',
       dashboard_last_results: '2023-09-12T20:01:30.363Z',
     };
-    GFWListManager.getGFWListsByListId.mockResolvedValue(selectedList);
+    getGFWListsByListId.mockResolvedValue(selectedList);
 
     // mock list analysis data
     const analysisData = {
@@ -267,11 +273,11 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/3`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/3');
-    expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 3);
+    expect(getGFWListsByListId).toHaveBeenCalledWith(req, 3);
   });
 
   it('should handle GFW PALM_OIL_MILLS list level with locationId [1914]', async () => {
@@ -297,7 +303,7 @@ describe('diagnosticsController', () => {
       dashboard_last_submit: '2023-09-12T19:45:22.064Z',
       dashboard_last_results: '2023-09-12T20:01:30.363Z',
     };
-    GFWListManager.getGFWListsByListId.mockResolvedValue(selectedList);
+    getGFWListsByListId.mockResolvedValue(selectedList);
 
     // mock list analysis data
     const analysisData = {
@@ -311,11 +317,11 @@ describe('diagnosticsController', () => {
     // mock logger call
     logger.info.mockResolvedValue(`POST /diagnostics/3`);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(getAnalysisFromGFWList).toHaveBeenCalledWith(req, selectedList);
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/3');
-    expect(GFWListManager.getGFWListsByListId).toHaveBeenCalledWith(req, 3);
+    expect(getGFWListsByListId).toHaveBeenCalledWith(req, 3);
   });
 
   it('should handle GFWPro list [5583] analysis levels for users', async () => {
@@ -374,12 +380,12 @@ describe('diagnosticsController', () => {
         },
       ],
     };
-    ListManager.getListByIdWithAnalysisId.mockResolvedValue(selectedList);
+    getListByIdWithAnalysisId.mockResolvedValue(selectedList);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/5583');
-    expect(ListManager.getListByIdWithAnalysisId).toHaveBeenCalledWith(req, 5583);
+    expect(getListByIdWithAnalysisId).toHaveBeenCalledWith(req, 5583);
     expect(getAnalysisFromUserList).toHaveBeenCalledWith(req, selectedList);
   });
 
@@ -439,12 +445,12 @@ describe('diagnosticsController', () => {
         },
       ],
     };
-    ListManager.getListByIdWithAnalysisId.mockResolvedValue(selectedList);
+    getListByIdWithAnalysisId.mockResolvedValue(selectedList);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/5583');
-    expect(ListManager.getListByIdWithAnalysisId).toHaveBeenCalledWith(req, 5583);
+    expect(getListByIdWithAnalysisId).toHaveBeenCalledWith(req, 5583);
     expect(getAnalysisFromUserList).toHaveBeenCalledWith(req, selectedList);
   });
 
@@ -494,19 +500,16 @@ describe('diagnosticsController', () => {
         },
       ],
     };
-    ListManager.getAllListsWithAnalysisId.mockResolvedValue([]);
-    SharedListManager.getUserInternalShareLists.mockResolvedValue([]);
+    getAllListsWithAnalysisId.mockResolvedValue([]);
+    getUserInternalShareLists.mockResolvedValue([]);
     getAnalysisFromUserList.mockResolvedValue(req, selectedList);
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(logger.info).toHaveBeenCalledWith('POST /diagnostics/5730');
-    expect(ListManager.getAllListsWithAnalysisId).toHaveBeenCalledWith(req);
-    expect(SharedListManager.findSharedListsInsideOrganization).toHaveBeenCalledWith([], []);
-    expect(SharedListManager.getUserInternalShareLists).toHaveBeenCalledWith(
-      req,
-      req.session.organization_user_id
-    );
+    expect(getAllListsWithAnalysisId).toHaveBeenCalledWith(req);
+    expect(findSharedListsInsideOrganization).toHaveBeenCalledWith([], []);
+    expect(getUserInternalShareLists).toHaveBeenCalledWith(req, req.session.organization_user_id);
     // expect(getAnalysisFromUserList).toHaveBeenCalledWith(req, selectedList);
   });
 
@@ -520,9 +523,9 @@ describe('diagnosticsController', () => {
         isGfwList: true,
       },
     };
-    GFWListManager.getGFWListsByListId.mockRejectedValue(new Error('Mocked error'));
+    getGFWListsByListId.mockRejectedValue(new Error('Mocked error'));
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(logger.error).toHaveBeenCalledWith('POST /diagnostics/1', expect.any(Error));
     expect(res.status).toHaveBeenCalledWith(500);
@@ -539,9 +542,9 @@ describe('diagnosticsController', () => {
         isSharedList: 'false',
       },
     };
-    ListManager.getListByIdWithAnalysisId.mockRejectedValue(new Error('Mocked error'));
+    getListByIdWithAnalysisId.mockRejectedValue(new Error('Mocked error'));
 
-    await diagnosticsController(req, res);
+    await diagnosticsListController(req, res);
 
     expect(logger.error).toHaveBeenCalledWith('POST /diagnostics/5583', expect.any(Error));
     expect(res.status).toHaveBeenCalledWith(500);

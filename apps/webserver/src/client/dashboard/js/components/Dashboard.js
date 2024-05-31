@@ -398,7 +398,6 @@ export default class Dashboard extends Component {
         <div className="profile-body">
           <div>
             <DashboardSettings
-              gfwLists={gfwLists}
               selectedAlert={selectedAlert}
               selectedList={selectedList}
               selectedTimeframe={selectedTimeframe}

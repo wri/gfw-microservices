@@ -275,7 +275,7 @@ export const requestNewAccount = (
         }
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToRequestAccount,
+          errorUtils.ERROR_CODES.failedToRequestAccount,
           `Failed to request account for ${org_name}`,
           errorMessage
         );
@@ -304,7 +304,7 @@ export const getAccountProfile = (req) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetAccountProfile,
+          errorUtils.ERROR_CODES.failedToGetAccountProfile,
           'Failed to get account profile',
           errorMessage
         );
@@ -372,7 +372,7 @@ export const updateAccountProfile = (
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUpdateAccount,
+          errorUtils.ERROR_CODES.failedToUpdateAccount,
           `Failed to update ${org_name}`,
           errorMessage
         );
@@ -425,7 +425,7 @@ export const getUsersList = (req) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetUsersList,
+          errorUtils.ERROR_CODES.failedToGetUsersList,
           "Failed to get User's List",
           errorMessage
         );
@@ -478,7 +478,7 @@ export const updatePendingAccount = (
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUpdateAccount,
+          errorUtils.ERROR_CODES.failedToUpdateAccount,
           `Failed to update ${org_name}`,
           errorMessage
         );
@@ -533,7 +533,7 @@ export const updatePendingAccountUser = (
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUpdateUser,
+          errorUtils.ERROR_CODES.failedToUpdateUser,
           `Failed to update ${user_first_name}`,
           errorMessage
         );

@@ -1,4 +1,3 @@
-import Extent from '@arcgis/core/geometry/Extent';
 import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
 import { USER_LIST_LOCATIONS_GRAPHICS_LAYER_ID } from '../config/map.config';
 import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userListLocations/utils/userListLocations.util';
@@ -31,13 +30,10 @@ const setVectorTileLayerForFullList = async (listData, transitionListData, view)
 
   userLayer.addMany([...centroidGraphics]);
 
-  const dashboard_map_extent = transitionListData?.dashboard_map_extent
-    ? transitionListData.dashboard_map_extent
-    : null;
+  const alertsMapExtent = transitionListData?.alertsMapExtent;
 
-  if (dashboard_map_extent) {
-    const extent = new Extent(dashboard_map_extent);
-    view.goTo(extent);
+  if (alertsMapExtent) {
+    view.goTo(alertsMapExtent);
   }
 };
 

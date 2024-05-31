@@ -19,18 +19,14 @@ import CustomTooltip from '../../../../../common/js/components/CustomTooltip/Cus
 import IconButton from '../../../../../common/js/components/IconButton';
 import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots';
 import sharedColumnText from './sharedColumnText';
-import redirectToPage from '../../../../../common/js/utils/redirect';
+import redirectToMap from '../../../../../common/js/utils/redirect';
 import LandingDownload from '../../lists/download/LandingDownload';
 import { numberWithCommas } from '../../../utils/locationsTableUtils';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 import AnalysisListChips from './AnalysisListChips';
 import CustomDraftDialog from '../../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
-import {
-  locationsPage,
-  draftTooltipMessages,
-  nav,
-  treeCoverLossID,
-} from '../../../../../common/js/config';
+import { locationsPage, draftTooltipMessages, nav } from '../../../../../common/js/config';
+import { proLayers } from '../../../../../common/js/proLayers.config';
 
 function DraftList({
   list,
@@ -58,7 +54,6 @@ function DraftList({
     id,
     is_shared,
     folder,
-    list_locations_count,
     error_file_storage_path,
     large_list_id,
     listAnalysesStatus,
@@ -97,22 +92,11 @@ function DraftList({
     }
 
     const sendData = {
-      l: [treeCoverLossID],
-      i: id,
-      name: list_name,
-      gfwListName: false,
-      filterCount: 0,
-      listView: '',
-      numLocations: list_locations_count,
-      canopyDensity: '',
-      filteredLists: '',
-      g: false,
-      path: 'lists',
-      showFullListMap: true,
-      totalNumberOfLocationsInList: list_locations_count,
+      visibleLayers: [proLayers.treeCoverLossID],
+      listId: id,
     };
 
-    redirectToPage('/map', sendData);
+    redirectToMap(sendData);
   };
 
   return (

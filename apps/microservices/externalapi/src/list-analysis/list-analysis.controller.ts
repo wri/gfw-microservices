@@ -73,9 +73,10 @@ export class ListAnalysisController {
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: NotFoundResponse })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
-  @Post(':listId/analysis/Alerts/generate')
+  @Post(':listId/analysis/:analysisId/generate')
   async createAnalysisStatus(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
+    @Param('analysisId', new ZodValidationPipe(analysisIdSchema)) analysisId: string,
     @Body(new ZodValidationPipe(alertsGenerateBodySchema)) alertsGenerate: AlertsGenerateRequest,
     @Req() request: RequestSchema
   ) {
@@ -87,14 +88,16 @@ export class ListAnalysisController {
 
     const { startDate, endDate, userEmail } = alertsGenerate;
 
-    await this.listAnalysisService.generateAlert({
+    await this.listAnalysisService.generateDownloadBundle({
       organizationId,
       startDate,
       endDate,
       userEmail,
       listId,
+      analysisId,
     });
   }
+
   @ApiResponse({ status: 200, type: DeleteListMessageResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })

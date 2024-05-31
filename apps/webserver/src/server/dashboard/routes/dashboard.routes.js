@@ -1,6 +1,5 @@
 const path = require('path');
 const controller = require('../controllers/dashboard.controller');
-const AnalysisManager = require(path.resolve('./config/publicutils/analysisManager.utils'));
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 

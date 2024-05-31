@@ -24,7 +24,6 @@ export const map = (req, res) => {
   res.header('Pragma', 'no-cache');
 
   const isAdministrator = UserManager.isAdministrator(req);
-  const listData = req?.body?.data || {};
 
   const promises = [
     ListManager.getUserListsWithAnalysisId(req),
@@ -46,7 +45,6 @@ export const map = (req, res) => {
         locationCount,
         gfwLists,
         userInfo,
-        listData,
         mapjs: compiledAssets.js.map,
         mapcss: compiledAssets.css.map,
         userSharedLists: isAdministrator ? [] : userSharedLists,

@@ -63,7 +63,7 @@ const analyticsService = require(path.resolve('./server/analytics/service/analyt
 const listDataService = require(path.resolve('./server/listData/service/listData.service'));
 const { listStatusOrderByWorse } = require(path.resolve('./config/env/listStatuses.constants'));
 import { listStatus } from '@wri-monorepos/constants';
-import { SqlParamType, AnalysisDataType, ListsType } from '@wri-monorepos/sql';
+import { SqlParamType, AnalysisDataType, ListsType, DeleteListTypeOrm } from '@wri-monorepos/sql';
 
 /** @function {createList}
  *   @summary Create a new list within Organization DB
@@ -225,7 +225,7 @@ const createList = (
         // Create Error Object and reject the error
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToCreateList,
+          errorUtils.ERROR_CODES.failedToCreateList,
           `Failed to create ${list.list_name}`,
           errorMessage
         );
@@ -392,7 +392,7 @@ const saveAsDraftList = (
         // Create Error Object and reject the error
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToCreateList,
+          errorUtils.ERROR_CODES.failedToCreateList,
           `Failed to create ${list.list_name}`,
           errorMessage
         );
@@ -431,7 +431,7 @@ export const getUserLists = (req): Promise<ListsType[]> => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           'Failed to get lists for user',
           errorMessage
         );
@@ -498,7 +498,7 @@ export const rerunExistingList = (req) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           'Failed to run the re-run stored procedure...',
           errorMessage
         );
@@ -522,7 +522,7 @@ export const getAllLists = (req): Promise<ListsType[]> => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           'Failed to get all lists for the organization.',
           errorMessage
         );
@@ -574,7 +574,7 @@ export const getListLocations = (
   location_id = 0,
   rowsRequested = DEFAULT_LIST_LOCATIONS_ROWS_REQUESTED
 ) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<any>((resolve, reject) => {
     const parameters = [
       { field: 'listID', type: sql.Int, value: list_id },
       { field: 'locationID', type: sql.Int, value: location_id },
@@ -590,7 +590,7 @@ export const getListLocations = (
         } else {
           const errorObject = errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.failedToGetList,
+            errorUtils.ERROR_CODES.failedToGetList,
             `Failed to get list locations for List ${list_id}`,
             JSON.stringify({ errorLocation: 'getListLocations()' })
           );
@@ -600,7 +600,7 @@ export const getListLocations = (
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to get list locations for List ${list_id}`,
           errorMessage
         );
@@ -627,7 +627,7 @@ export const getSimplifiedListLocations = (req, list_id) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to get list locations for List ${list_id}`,
           errorMessage
         );
@@ -658,7 +658,7 @@ export const getListLocationsNoGeom = (req, listID, columnsToReturn = null): Pro
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to get list location (no Geom) for List ${listID}`,
           errorMessage
         );
@@ -779,7 +779,7 @@ export const getPaginatedAnalysisDataForUserList = (
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to get paginated list location for List ${listID}`,
           errorMessage
         );
@@ -872,7 +872,7 @@ export const getNumberPagesForAnalysisDataUserList = (req, list_id, filters) => 
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to get number of pages for List ${list_id}`,
           errorMessage
         );
@@ -912,7 +912,7 @@ export const getLocationsCount = (req) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetLocationsCount,
+          errorUtils.ERROR_CODES.failedToGetLocationsCount,
           'Failed to get list locations count',
           errorMessage
         );
@@ -998,7 +998,7 @@ export const uploadToNewList = (
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUploadToNewList,
+          errorUtils.ERROR_CODES.failedToUploadToNewList,
           `Failed to append to upload new list ${list.list_name}.`,
           errorMessage
         );
@@ -1077,7 +1077,7 @@ export const uploadToNewListAndSaveAsDraft = (
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUploadToNewList,
+          errorUtils.ERROR_CODES.failedToUploadToNewList,
           `Failed to append to upload new list ${list.list_name}.`,
           errorMessage
         );
@@ -1113,7 +1113,7 @@ export const updateIndividualLocationsStatusID = (
         'uspUpdateLocationAnalysisStatusInBulk',
         sqlParameters
       )
-      .then((result) => {
+      .then(() => {
         logger.logActivity(
           req,
           logger.listActivityTypes.List.ListUpdateNew,
@@ -1124,9 +1124,9 @@ export const updateIndividualLocationsStatusID = (
         resolve(true);
       })
       .catch((errorMessage) => {
-        const errorObject = errorUtils.createErrorMessage(
+        errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUploadToNewList,
+          errorUtils.ERROR_CODES.failedToUploadToNewList,
           `Updating list locations status IDs failed for analysis table (${list_analysis_table_name}).`,
           errorMessage
         );
@@ -1198,7 +1198,7 @@ export const deleteLocations = (req, list_id, location_ids, gfw_list_id) => {
         console.log('Error in deleting location', err);
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeleteList,
+          errorUtils.ERROR_CODES.failedToDeleteList,
           `Failed to delete locations from list id ${list_id}`,
           err
         );
@@ -1264,7 +1264,7 @@ export const deleteFilteredLocations = (req, list_id, filters, gfw_list_id) => {
         console.log('Error in deleting location', err);
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeleteList,
+          errorUtils.ERROR_CODES.failedToDeleteList,
           `Failed to delete locations from list id ${list_id}`,
           err
         );
@@ -1353,7 +1353,7 @@ export const editLocations = (req, list_id, location_ids, arrayAttributes) => {
         console.log('Error editing location', err);
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUpdateLists,
+          errorUtils.ERROR_CODES.failedToUpdateLists,
           `Failed to update locations from list id ${list_id}`,
           err
         );
@@ -1386,14 +1386,13 @@ export const copyLocations = (
     // Important variables
     let src_list;
     let dest_list;
-    let dest_location_id;
     let dest_location_ids;
 
     // Confirm length of features and src_location_ids match
     if (src_location_ids.length !== src_geojson.features.length) {
       const errorObject = errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.failedTocopyLocations,
+        errorUtils.ERROR_CODES.failedTocopyLocations,
         `Failed to copy locations from list id ${src_list_id} to list id ${dest_list_id}`,
         {}
       );
@@ -1497,7 +1496,7 @@ export const copyLocations = (
           () => {
             const errorObject = errorUtils.createErrorMessage(
               req,
-              errorUtils.errorCodes.failedTocopyLocations,
+              errorUtils.ERROR_CODES.failedTocopyLocations,
               `Failed to copy locations from list id ${src_list_id} to list id ${dest_list_id}`,
               err
             );
@@ -1581,7 +1580,7 @@ export const moveLocations = (
         console.log('Error moving location', err);
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToMoveLocations,
+          errorUtils.ERROR_CODES.failedToMoveLocations,
           `Failed to move locations from list id ${src_list_id} to list id ${dest_list_id}`,
           err
         );
@@ -1609,7 +1608,7 @@ export const getListLockStatus = (req, list_id): Promise<{ lock_status; lock_use
         console.log('Issue getting list lock status', err);
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetLockStatus,
+          errorUtils.ERROR_CODES.failedToGetLockStatus,
           `Failed to get lock state for list id ${list_id}`,
           err
         );
@@ -1672,7 +1671,7 @@ export const checkListLockStatus = (req, list_id, record) => {
         .catch((err) => {
           const errorMessage = errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.failedToGetLockStatus,
+            errorUtils.ERROR_CODES.failedToGetLockStatus,
             `Failed to set lock list ${list_id}`,
             err
           );
@@ -1696,9 +1695,9 @@ export const checkListLockStatus = (req, list_id, record) => {
             });
           })
           .catch((err) => {
-            const eo = errorUtils.createErrorMessage(
+            errorUtils.createErrorMessage(
               req,
-              errorUtils.errorCodes.failedToGetLockStatus,
+              errorUtils.ERROR_CODES.failedToGetLockStatus,
               `Failed to set lock list ${list_id}`,
               err
             );
@@ -1734,7 +1733,7 @@ export const setListLocked = (req, list_id) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetLockStatus,
+          errorUtils.ERROR_CODES.failedToGetLockStatus,
           `Failed to lock list id ${list_id}`,
           err
         );
@@ -1763,7 +1762,7 @@ export const setListUnlocked = (req, list_id) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetLockStatus,
+          errorUtils.ERROR_CODES.failedToGetLockStatus,
           `Failed to unlock list id ${list_id}`,
           err
         );
@@ -1804,7 +1803,7 @@ export const resetListStatus = (req, list_id, gfw_list_id, list_status_id = list
       .catch((error) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetLockStatus,
+          errorUtils.ERROR_CODES.failedToGetLockStatus,
           `Error sending ${list_name} to analysis: ${error}`
         );
         reject(errorObject);
@@ -1819,48 +1818,21 @@ export const resetListStatus = (req, list_id, gfw_list_id, list_status_id = list
  *   @return {Promise}
  */
 export const deleteList = (req, list_id) => {
-  let list;
   return new Promise((resolve, reject) => {
-    getListLockStatus(req, list_id)
-      .then((record) => {
-        const { lock_status, lock_user_id } = record;
-        // List is unlocked
-        if (
-          lock_status === null ||
-          (lock_status !== null && lock_user_id !== req.session.organization_user_id)
-        ) {
-          // Reject object
-          throw { isLocked: true, lock_user_id };
-        } else {
-          return listUtils.getListNameSchema(req, list_id);
-        }
-      })
-      .then((result) => {
-        // 1. Get the table schema
-        list = result;
-        // 2. Remove from Organization's List table
-        const parameters = [{ field: 'list_id', type: sql.Int, value: list.id }];
-
-        return sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteList', parameters);
-      })
+    deleteListSqlLib(req, list_id)
       .then(() => {
-        logger.logActivity(
-          req,
-          logger.listActivityTypes.List.ListDeleted,
-          `User '${req.session.user_email}' has deleted list (${list.list_name}).`
-        );
         resolve(true);
       })
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeleteList,
+          errorUtils.ERROR_CODES.failedToDeleteList,
           `Failed to delete list id ${list_id}`,
           err
         );
         reject(errorObject);
       });
-  });
+  }); // end promisse
 };
 
 export const setListStatus = (req, list_id, newStatus) => {
@@ -1973,31 +1945,31 @@ export function deleteListIfEmpty(req, listID) {
         const { isListEmpty } = resultset;
 
         if (isListEmpty) {
-          try {
-            await sqlUtils.executeOrganizationStoredProcedure(req, 'uspDeleteList', parameters);
-
-            logger.logActivity(
-              req,
-              logger.listActivityTypes.List.ListDeleted,
-              `Deleted empty list with id (${listID}).`
-            );
-          } catch (error) {
-            const errorObject = errorUtils.createErrorMessage(
-              req,
-              errorUtils.errorCodes.failedToDeleteList,
-              `Failed to delete list with id (${listID}). List not empty`,
-              error
-            );
-            reject(errorObject);
-          }
+          deleteListSqlLib(req, listID)
+            .then(() => {
+              logger.logActivity(
+                req,
+                logger.listActivityTypes.List.ListDeleted,
+                `Deleted empty list with id (${listID}).`
+              );
+              resolve(true);
+            })
+            .catch((error) => {
+              const errorObject = errorUtils.createErrorMessage(
+                req,
+                errorUtils.ERROR_CODES.failedToDeleteList,
+                `Failed to delete list with id (${listID}). List not empty`,
+                error
+              );
+              reject(errorObject);
+            });
         }
-
         resolve(isListEmpty);
       })
       .catch((error) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeleteListIsNotEmpty,
+          errorUtils.ERROR_CODES.failedToDeleteListIsNotEmpty,
           `Failed to delete list is not empty ${listID}`,
           error
         );
@@ -2021,7 +1993,7 @@ export const getListAdminAreasOrderedByCountry = (request, listId) => {
       .catch((error) => {
         const errorObject = errorUtils.createErrorMessage(
           request,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to Get list admin areas ordered by country for list ${listId}`,
           error
         );
@@ -2029,6 +2001,67 @@ export const getListAdminAreasOrderedByCountry = (request, listId) => {
       });
   });
 };
-
 // Require after modules have been exported so the module can be fully loaded
 const AnalysisManager = require('./analysisManager.utils');
+/**
+ * @function {deleteListSqlLib}
+ * @summary Deletes a list from Lists table, list's attribute and analysis table using a promise
+ * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
+ * @param {Number} list_id - id of list
+ * @return {Promise} - Returns a promise that resolves or rejects with an error
+ */
+export const deleteListSqlLib = (req, list_id) => {
+  const {
+    user_email: userEmail,
+    organization_user_id,
+    organization_database: organizationDatabase,
+  } = req.session;
+  const deleteListTypeOrm = new DeleteListTypeOrm();
+  return new Promise((resolve, reject) => {
+    getListLockStatus(req, list_id)
+      .then((record) => {
+        const { lock_status, lock_user_id } = record;
+        // List is unlocked
+        if (
+          lock_status === null ||
+          (lock_status !== null && lock_user_id !== organization_user_id)
+        ) {
+          // Reject object
+          throw { isLocked: true, lock_user_id };
+        } else {
+          return listUtils.getListNameSchema(req, list_id);
+        }
+      })
+      .then((result) => {
+        const list = result;
+        deleteListTypeOrm
+          .delete(organizationDatabase, list_id, organization_user_id)
+          .then(() => {
+            logger.logActivity(
+              req,
+              logger.listActivityTypes.List.ListDeleted,
+              `User '${userEmail}' has deleted list (${list.list_name}).`
+            );
+            resolve(true);
+          })
+          .catch((err) => {
+            const errorObject = errorUtils.createErrorMessage(
+              req,
+              errorUtils.ERROR_CODES.failedToDeleteList,
+              `Failed to delete list id ${list_id}`,
+              err
+            );
+            reject(errorObject);
+          });
+      })
+      .catch((err) => {
+        const errorObject = errorUtils.createErrorMessage(
+          req,
+          errorUtils.ERROR_CODES.failedToDeleteList,
+          `Failed to delete list id ${list_id}`,
+          err
+        );
+        reject(errorObject);
+      });
+  });
+};

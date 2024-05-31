@@ -1,11 +1,13 @@
 /**
  * @jest-environment node
  */
-const getAnalysisFromUserList = require('./getAnalysisFromUserList');
-const ListManager = require('../../../../config/publicutils/listManager.utils');
-const AnalysisManager = require('../../../../config/publicutils/analysisManager.utils');
-const LocationManager = require('../../../../config/publicutils/locationManager.utils');
-const _ = require('lodash');
+import { getAnalysisFromUserList } from './getAnalysisFromUserList';
+import {
+  getListLocations,
+  getPaginatedAnalysisDataForUserList,
+} from '../../../../config/publicutils/listManager.utils';
+import { getListAnalyses } from '../../../../config/publicutils/analysisManager.utils';
+import { getLocationAttributesList } from '../../../../config/publicutils/locationManager.utils';
 
 // Mock ListManager
 jest.mock('../../../../config/publicutils/listManager.utils', () => ({
@@ -56,7 +58,7 @@ describe('getAnalysisFromUserList', () => {
     const locationId = Number(req.body.locationId);
 
     // Mock getListLocations
-    ListManager.getListLocations.mockResolvedValue([
+    getListLocations.mockResolvedValue([
       {
         features: [],
       },
@@ -65,7 +67,7 @@ describe('getAnalysisFromUserList', () => {
     await getAnalysisFromUserList(req, selectedList);
 
     const SINGLE_LOCATION_ROW_REQUESTED = 1;
-    expect(ListManager.getListLocations).toHaveBeenCalledWith(
+    expect(getListLocations).toHaveBeenCalledWith(
       req,
       listId,
       locationId,
@@ -85,7 +87,7 @@ describe('getAnalysisFromUserList', () => {
     const listId = Number(req.params.listId);
     const { list_locations_count: rowsRequested } = selectedList;
     // Mock ListManager
-    ListManager.getPaginatedAnalysisDataForUserList.mockResolvedValue([]);
+    getPaginatedAnalysisDataForUserList.mockResolvedValue([]);
 
     await getAnalysisFromUserList(req, selectedList);
 
@@ -108,7 +110,7 @@ describe('getAnalysisFromUserList', () => {
       columnsToReturn: DEFAULT_COLUMNS_TO_RETURN,
       pageSize: rowsRequested,
     };
-    expect(ListManager.getPaginatedAnalysisDataForUserList).toHaveBeenNthCalledWith(
+    expect(getPaginatedAnalysisDataForUserList).toHaveBeenNthCalledWith(
       1,
       req,
       listId,
@@ -127,12 +129,12 @@ describe('getAnalysisFromUserList', () => {
     };
     const listId = Number(req.params.listId);
 
-    ListManager.getPaginatedAnalysisDataForUserList.mockResolvedValue([]);
-    AnalysisManager.getListAnalyses.mockResolvedValue([]);
+    getPaginatedAnalysisDataForUserList.mockResolvedValue([]);
+    getListAnalyses.mockResolvedValue([]);
 
     await getAnalysisFromUserList(req, selectedList);
 
-    expect(AnalysisManager.getListAnalyses).toHaveBeenLastCalledWith(req, listId);
+    expect(getListAnalyses).toHaveBeenLastCalledWith(req, listId);
   });
 
   it('should handle list analisis data and call ListManager.getPaginatedAnalysisDataForUserList with no results', async () => {
@@ -148,9 +150,9 @@ describe('getAnalysisFromUserList', () => {
     const { list_locations_count: rowsRequested } = selectedList;
 
     // mock values from previous former functions
-    ListManager.getPaginatedAnalysisDataForUserList.mockResolvedValue([]);
-    AnalysisManager.getListAnalyses.mockResolvedValue([]);
-    ListManager.getPaginatedAnalysisDataForUserList.mockResolvedValue([]);
+    getPaginatedAnalysisDataForUserList.mockResolvedValue([]);
+    getListAnalyses.mockResolvedValue([]);
+    getPaginatedAnalysisDataForUserList.mockResolvedValue([]);
 
     await getAnalysisFromUserList(req, selectedList);
 
@@ -161,12 +163,7 @@ describe('getAnalysisFromUserList', () => {
       sortByAttribute: 'Investment Name',
       searchString: '',
     };
-    expect(ListManager.getPaginatedAnalysisDataForUserList).toHaveBeenNthCalledWith(
-      2,
-      req,
-      listId,
-      filters
-    );
+    expect(getPaginatedAnalysisDataForUserList).toHaveBeenNthCalledWith(2, req, listId, filters);
   });
 
   it('should handle list analisis data and call ListManager.getPaginatedAnalysisDataForUserList with results and call LocationManager.getLocationAttributesList', async () => {
@@ -182,7 +179,7 @@ describe('getAnalysisFromUserList', () => {
     const { list_locations_count: rowsRequested } = selectedList;
 
     // mock values from previous former functions
-    AnalysisManager.getListAnalyses.mockResolvedValue([]);
+    getListAnalyses.mockResolvedValue([]);
     const paginatedAnalysisDataSecondCallResolveValue = [
       {
         list_id: 5583,
@@ -313,10 +310,10 @@ describe('getAnalysisFromUserList', () => {
         landmark_by_category_area: '{}',
       },
     ];
-    ListManager.getPaginatedAnalysisDataForUserList.mockResolvedValue(
+    getPaginatedAnalysisDataForUserList.mockResolvedValue(
       paginatedAnalysisDataSecondCallResolveValue
     );
-    LocationManager.getLocationAttributesList.mockResolvedValue([]);
+    getLocationAttributesList.mockResolvedValue([]);
 
     await getAnalysisFromUserList(req, selectedList);
 
@@ -327,12 +324,8 @@ describe('getAnalysisFromUserList', () => {
       sortByAttribute: 'Investment Name',
       searchString: '',
     };
-    expect(ListManager.getPaginatedAnalysisDataForUserList).toHaveBeenCalledWith(
-      req,
-      listId,
-      filters
-    );
-    expect(LocationManager.getLocationAttributesList).toHaveBeenCalledWith(
+    expect(getPaginatedAnalysisDataForUserList).toHaveBeenCalledWith(req, listId, filters);
+    expect(getLocationAttributesList).toHaveBeenCalledWith(
       req,
       paginatedAnalysisDataSecondCallResolveValue,
       false
@@ -349,8 +342,8 @@ describe('getAnalysisFromUserList', () => {
       },
     };
     const errorMessage = 'Some error message';
-    ListManager.getListLocations.mockRejectedValue(new Error(errorMessage));
-    ListManager.getPaginatedAnalysisDataForUserList.mockResolvedValue([]);
+    getListLocations.mockRejectedValue(new Error(errorMessage));
+    getPaginatedAnalysisDataForUserList.mockResolvedValue([]);
 
     const result = await getAnalysisFromUserList(req, selectedList);
 

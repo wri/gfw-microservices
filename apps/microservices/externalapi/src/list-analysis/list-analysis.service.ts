@@ -1,11 +1,12 @@
 import {
+  BadRequestException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { AlertsGenerateBodySchema, ListAnalysisResponse } from './list-analysis.dto';
+import { AnalysesGenerateRequest, ListAnalysisResponse } from './list-analysis.dto';
 import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
@@ -27,7 +28,7 @@ import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
-import { generateAlertsSqsTemplate } from '../shared/generate-sqs-templates';
+import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
 
 const LIST_INITIAL_STATUS = 'Pending';
@@ -327,29 +328,57 @@ export class ListAnalysisService {
     return response;
   }
 
-  async generateAlert({
+  async generateDownloadBundle({
     startDate,
     endDate,
     organizationId,
     listId,
-  }: AlertsGenerateBodySchema & { organizationId: number; listId: number }) {
+    userEmail,
+    analysisId,
+  }: AnalysesGenerateRequest) {
     const organization = await this.getOrganizationDetails(organizationId);
 
-    const sqsMessage = generateAlertsSqsTemplate({
-      startDate,
-      listId,
-      organization,
-      endDate,
-    });
+    let sqsMessage = {};
+    try {
+      if (!userEmail) {
+        throw new BadRequestException('Missing user email');
+      }
+      if (analysisId === 'ALERTS') {
+        if (!startDate || !endDate) {
+          throw new BadRequestException('Missing start date or end date');
+        }
+        sqsMessage = generateAnalysisSqsTemplate({
+          startDate,
+          listId,
+          organization,
+          endDate,
+          analysisId,
+        });
+      } else {
+        sqsMessage = generateAnalysisSqsTemplate({
+          listId,
+          analysisId,
+          organization,
+        });
+      }
 
-    await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
-      id: 'dl' + listId,
-      body: sqsMessage,
-      messageAttributes: sqsMessage,
-      delaySeconds: 0,
-      groupId: 'default',
-    });
+      await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
+        id: 'dl' + listId,
+        body: sqsMessage,
+        messageAttributes: sqsMessage,
+        delaySeconds: 0,
+        groupId: 'default',
+      });
+    } catch (error) {
+      this.logger.error('generateDownloadBundle error', error);
+      if (error instanceof BadRequestException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException(error);
+      }
+    }
   }
+
   async deleteList(listId: number, organizationId: number, userEmail: string): Promise<string> {
     try {
       const connection = await this.getOrganizationConnection(organizationId);

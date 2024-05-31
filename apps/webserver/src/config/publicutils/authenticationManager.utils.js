@@ -155,7 +155,7 @@ export const login = async (req, username, password, promanager_login = false) =
           const sysMessage = `UserEmail: ${email}   Authentication Status: ${authenticationStatus}`;
           throw new errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.userNotAdmin,
+            errorUtils.ERROR_CODES.userNotAdmin,
             userMessage,
             sysMessage
           );
@@ -166,7 +166,7 @@ export const login = async (req, username, password, promanager_login = false) =
           const sysMessage = [`Error User Authentication: Account disabled for ${email}`];
           throw new errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.failedToAuthenticate,
+            errorUtils.ERROR_CODES.failedToAuthenticate,
             userMessage,
             sysMessage
           );
@@ -176,7 +176,7 @@ export const login = async (req, username, password, promanager_login = false) =
           const sysMessage = [`Error User Authentication: Account disabled for ${email}`];
           throw new errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.failedToAuthenticate,
+            errorUtils.ERROR_CODES.failedToAuthenticate,
             userMessage,
             sysMessage
           );
@@ -188,7 +188,7 @@ export const login = async (req, username, password, promanager_login = false) =
           const sysMessage = [`Error User Authentication: Password expired for ${email}`];
           throw new errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.failedToAuthenticate,
+            errorUtils.ERROR_CODES.failedToAuthenticate,
             userMessage,
             sysMessage
           );
@@ -209,7 +209,7 @@ export const login = async (req, username, password, promanager_login = false) =
           const sysMessage = `UserEmail: ${username} is a user, but not found for the requested site`;
           throw new errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.userNotAdmin,
+            errorUtils.ERROR_CODES.userNotAdmin,
             userMessage,
             sysMessage
           );
@@ -254,7 +254,7 @@ export const login = async (req, username, password, promanager_login = false) =
             const sysMessage = `UserEmail: ${username} is a user, but not found for the requested site`;
             throw new errorUtils.createErrorMessage(
               req,
-              errorUtils.errorCodes.userNotAdmin,
+              errorUtils.ERROR_CODES.userNotAdmin,
               userMessage,
               sysMessage
             );
@@ -339,7 +339,7 @@ export const setOrgSessions = (req, org) => {
             const sysMessage = `CRITICAL ERROR: Obtaining user access level for ${req.session.user_email}`;
             throw new errorUtils.createErrorMessage(
               req,
-              errorUtils.errorCodes.userNotAdmin,
+              errorUtils.ERROR_CODES.userNotAdmin,
               userMessage,
               sysMessage
             );
@@ -404,7 +404,7 @@ export const verifyLogin = (req, userToken) => {
       const userMessage = langResources.getResourceString('InvalidSession');
       throw new errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotAdmin,
+        errorUtils.ERROR_CODES.userNotAdmin,
         userMessage,
         userMessage
       );
@@ -418,7 +418,7 @@ export const verifyLogin = (req, userToken) => {
           const sysMessage = `UserEmail: ${req.session.user_email}   Verification Code: ${userToken}`;
           throw new errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.userNotAdmin,
+            errorUtils.ERROR_CODES.userNotAdmin,
             userMessage,
             sysMessage
           );
@@ -445,7 +445,7 @@ export const verifyLogin = (req, userToken) => {
             const sysMessage = `CRITICAL ERROR: Obtaining user info for ${req.session.user_email}`;
             throw new errorUtils.createErrorMessage(
               req,
-              errorUtils.errorCodes.userNotAdmin,
+              errorUtils.ERROR_CODES.userNotAdmin,
               userMessage,
               sysMessage
             );
@@ -458,7 +458,7 @@ export const verifyLogin = (req, userToken) => {
               const sysMessage = `${organization.organization_name} is deactivated`;
               throw new errorUtils.createErrorMessage(
                 req,
-                errorUtils.errorCodes.userNotAdmin,
+                errorUtils.ERROR_CODES.userNotAdmin,
                 userMessage,
                 sysMessage
               );
@@ -504,7 +504,7 @@ export const getOrganizations = (req) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetOrganizations,
+          errorUtils.ERROR_CODES.failedToGetOrganizations,
           `Failed to get organizations for ${req.session.user_email}`,
           errorMessage
         );
@@ -531,7 +531,7 @@ export const setInitialPassword = (req, old_password, new_password) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToSetPassword,
+          errorUtils.ERROR_CODES.failedToSetPassword,
           'Failed to set initial password',
           errorMessage
         );
@@ -561,7 +561,7 @@ export const requestPasswordReset = (req, user_email) => {
           const sysMessage = `CRITICAL ERROR: User not found - ${normalizeUsername}`;
           errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.userNotFound,
+            errorUtils.ERROR_CODES.userNotFound,
             userMessage,
             sysMessage
           );
@@ -581,7 +581,7 @@ export const requestPasswordReset = (req, user_email) => {
         console.log(err);
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToSetPassword,
+          errorUtils.ERROR_CODES.failedToSetPassword,
           'Failed to Request Password Reset',
           err
         );
@@ -603,7 +603,7 @@ export const adminResetUserPassword = (req, user_email) => {
           const sysMessage = `CRITICAL ERROR: User not found - ${user_email}`;
           errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.userNotFound,
+            errorUtils.ERROR_CODES.userNotFound,
             userMessage,
             sysMessage
           );
@@ -618,7 +618,7 @@ export const adminResetUserPassword = (req, user_email) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToSetPassword,
+          errorUtils.ERROR_CODES.failedToSetPassword,
           'Admin Failed to Request Password Reset',
           err
         );
@@ -652,7 +652,7 @@ export const confirmPasswordReset = async (req, verification_code, new_password,
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToSetPassword,
+          errorUtils.ERROR_CODES.failedToSetPassword,
           'Failed to confirm password reset',
           err
         );
@@ -678,7 +678,7 @@ export const changePassword = (req, previousPassword, proposedPassword) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToSetPassword,
+          errorUtils.ERROR_CODES.failedToSetPassword,
           'Failed to change password',
           errorMessage
         );
@@ -721,7 +721,7 @@ export const getUserInfo = (req) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetUserInfo,
+          errorUtils.ERROR_CODES.failedToGetUserInfo,
           'Failed to get user info',
           errorMessage
         );
@@ -751,7 +751,7 @@ export const getUserOrganizationStatus = (req) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetUserInfo,
+          errorUtils.ERROR_CODES.failedToGetUserInfo,
           'Failed to get user status',
           err
         );
@@ -814,7 +814,7 @@ export const resendVerifyToken = (req) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToResendVerifyToken,
+          errorUtils.ERROR_CODES.failedToResendVerifyToken,
           'Could not resend verify token',
           errorMessage
         );

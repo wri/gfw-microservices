@@ -1,5 +1,4 @@
 /* eslint-disable consistent-return */
-/* eslint-disable import/no-dynamic-require */
 /* eslint-disable camelcase */
 /** ******************************************************************
  *  @name : analysis.utils.js
@@ -9,19 +8,16 @@
  *  @function {analyzeList}
  *
  ******************************************************************* */
-const path = require('path');
 import config from '../config';
 
-const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
-const sqsUtils = require(path.resolve('./config/privateutils/sqs.utils'));
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
-const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const {
-  handleGeoTrellisAnalyzeListRequest,
-} = require('../../server/geoTrellis/utils/geoTrellis.utils');
-const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
+import * as AWSSES from './ses.utils';
+import * as sqsUtils from './sqs.utils';
+import * as logger from './logger.utils';
+import { createErrorMessage, ERROR_CODES } from './error.utils';
+import { handleGeoTrellisAnalyzeListRequest } from '../../server/geoTrellis/utils/geoTrellis.utils';
+import { listStatus } from '../env/listStatuses.constants';
 
-const analyzeLocation = (req, organization_database, list, geojson) => {
+export const analyzeLocation = (req, organization_database, list, geojson) => {
   const { organization_user_id, organization_id, user_first_name, user_last_name, user_email } =
     req.session;
   const { appendLocations } = req.body;
@@ -59,9 +55,9 @@ const analyzeLocation = (req, organization_database, list, geojson) => {
     })
     .catch((err) => {
       console.log('Error sending location to queue', err);
-      errorUtils.createErrorMessage(
+      createErrorMessage(
         req,
-        errorUtils.errorCodes.SQSError,
+        ERROR_CODES.SQSError,
         `Failed to sending locations in ${list.list_name} to queue`,
         err
       );
@@ -74,7 +70,7 @@ const analyzeLocation = (req, organization_database, list, geojson) => {
  * @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  * @param {Object} list - Object containg all info about a list (schema)
  */
-const analyzeList = async (req, list) => {
+export const analyzeList = async (req, list) => {
   const { list_id, dest_list_id, list_status_id } = req.body;
   const { id: listID, list_name } = list;
 
@@ -106,9 +102,4 @@ const analyzeList = async (req, list) => {
       config.platformVars.emailType.LIST_ANALYSIS_ERROR
     );
   }
-};
-
-module.exports = {
-  analyzeLocation,
-  analyzeList,
 };

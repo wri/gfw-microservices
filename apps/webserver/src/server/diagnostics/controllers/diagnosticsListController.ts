@@ -1,13 +1,18 @@
-const path = require('path');
-const logger = require('../../../config/privateutils/logger.utils');
-const ListManager = require(path.resolve('./config/publicutils/listManager.utils'));
-const GFWListManager = require(path.resolve('./config/publicutils/gfwListManager.utils'));
-const SharedListManager = require(path.resolve('./config/publicutils/shareManager.utils'));
+import * as logger from '../../../config/privateutils/logger.utils';
+import {
+  getAllListsWithAnalysisId,
+  getListByIdWithAnalysisId,
+} from '../../../config/publicutils/listManager.utils';
+import { getGFWListsByListId } from '../../../config/publicutils/gfwListManager.utils';
+import {
+  getUserInternalShareLists,
+  findSharedListsInsideOrganization,
+} from '../../../config/publicutils/shareManager.utils';
 import getAnalysisFromAdministrativeAreasList from './gfwListsDiagnosticsFunctions/getAnalysisFromAdministrativeAreasList';
-const getAnalysisFromProtectedAreasList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromProtectedAreasList');
-const getAnalysisFromGFWList = require('./gfwListsDiagnosticsFunctions/getAnalysisFromGFWList');
-const getAnalysisFromUserList = require('./orgListDiagnosticsFunctions/getAnalysisFromUserList');
-const setListData = require(path.resolve('./config/publicutils/setListData'));
+import { getAnalysisFromProtectedAreasList } from './gfwListsDiagnosticsFunctions/getAnalysisFromProtectedAreasList';
+import { getAnalysisFromGFWList } from './gfwListsDiagnosticsFunctions/getAnalysisFromGFWList';
+import { getAnalysisFromUserList } from './orgListDiagnosticsFunctions/getAnalysisFromUserList';
+import { setListData } from '../../../config/publicutils/setListData';
 import { gfwListsIds } from '@wri-monorepos/constants';
 
 /**
@@ -32,7 +37,7 @@ const getDiagnosticsAnalysisFunction = (isGfwList, listId) => {
   return getAnalysisFromUserList;
 };
 
-module.exports = async function (req, res) {
+export const diagnosticsListController = async (req, res) => {
   const listId = Number(req.params.listId);
   const { isGfwList, isSharedList } = req.body;
   logger.info(`POST /diagnostics/${listId}`);
@@ -41,18 +46,15 @@ module.exports = async function (req, res) {
     let selectedList;
 
     if (isGfwList) {
-      selectedList = await GFWListManager.getGFWListsByListId(req, listId);
+      selectedList = await getGFWListsByListId(req, listId);
     } else {
       if (isSharedList) {
         const { organization_user_id: userId } = req.session;
 
-        const allLists = await ListManager.getAllListsWithAnalysisId(req);
-        const orgSharedLists = await SharedListManager.getUserInternalShareLists(req, userId);
+        const allLists = (await getAllListsWithAnalysisId(req)) as Array<{ id: number }>;
+        const orgSharedLists = await getUserInternalShareLists(req, userId);
 
-        const filteredSharedLists = SharedListManager.findSharedListsInsideOrganization(
-          orgSharedLists,
-          allLists
-        );
+        const filteredSharedLists = findSharedListsInsideOrganization(orgSharedLists, allLists);
 
         /**
          * @summary will this path execute
@@ -64,7 +66,7 @@ module.exports = async function (req, res) {
          * contain a list
          *
          */
-        if (!filteredSharedLists.lenth) {
+        if (!filteredSharedLists.length) {
           return res.status(500).json({
             selectedList: null,
           });
@@ -72,7 +74,7 @@ module.exports = async function (req, res) {
 
         selectedList = allLists.find((list) => list.id == listId);
       } else {
-        selectedList = await ListManager.getListByIdWithAnalysisId(req, listId);
+        selectedList = await getListByIdWithAnalysisId(req, listId);
       }
     }
 

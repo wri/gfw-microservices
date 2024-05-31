@@ -1,6 +1,5 @@
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
-/* eslint-disable import/no-dynamic-require */
 /** ******************************************************************
  *   @name: sql.utils.js
  *   @description : A utility file to allow calling stored procedures
@@ -209,7 +208,7 @@ export const activateUser = (
       const errMessage = langResources.getResourceString('userisNotAnAdmin');
       throw new errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotAdmin,
+        errorUtils.ERROR_CODES.userNotAdmin,
         errMessage,
         errMessage
       );
@@ -279,7 +278,7 @@ export const activateUser = (
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToActivateUser,
+          errorUtils.ERROR_CODES.failedToActivateUser,
           'Failed to update activate user',
           errorMessage
         );
@@ -302,7 +301,7 @@ export const deactivateUser = (req, user_id) => {
       const errMessage = langResources.getResourceString('userisNotAnAdmin');
       throw new errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotAdmin,
+        errorUtils.ERROR_CODES.userNotAdmin,
         errMessage,
         errMessage
       );
@@ -337,7 +336,7 @@ export const deactivateUser = (req, user_id) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeactiveUser,
+          errorUtils.ERROR_CODES.failedToDeactiveUser,
           'Failed to deactivate activate user',
           errorMessage
         );
@@ -391,7 +390,7 @@ export const createNewUser = (
       const errMessage = langResources.getResourceString('userisNotAnAdmin');
       throw new errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotAdmin,
+        errorUtils.ERROR_CODES.userNotAdmin,
         errMessage,
         errMessage
       );
@@ -407,7 +406,7 @@ export const createNewUser = (
           const errMessage = langResources.getResourceString('userExistInOrg');
           throw new errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.userExists,
+            errorUtils.ERROR_CODES.userExists,
             errMessage,
             user_email
           );
@@ -468,7 +467,7 @@ export const createNewUser = (
         const errMessage = langResources.getResourceString('userExistInOrg');
         throw new errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.userExists,
+          errorUtils.ERROR_CODES.userExists,
           errMessage,
           user_email
         );
@@ -495,7 +494,7 @@ export const createNewUser = (
         } else {
           const errorObject = errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.failedToCreateNewUser,
+            errorUtils.ERROR_CODES.failedToCreateNewUser,
             'Failed to create new user',
             errorMessage
           );
@@ -589,7 +588,7 @@ export const updateUserInfo = ({
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUpdateUserInfo,
+          errorUtils.ERROR_CODES.failedToUpdateUserInfo,
           'Failed to update user information',
           err
         );
@@ -620,7 +619,7 @@ export const setStatus = (req, status_id) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToSetStatus,
+          errorUtils.ERROR_CODES.failedToSetStatus,
           'Failed to set status ID of user',
           errorMessage
         );
@@ -656,7 +655,7 @@ export const getUserSecret = (req, email) => {
         } else {
           const errorObject = errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.failedToGetSecret,
+            errorUtils.ERROR_CODES.failedToGetSecret,
             'Failed to get user secret.',
             ''
           );

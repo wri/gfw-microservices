@@ -145,7 +145,7 @@ export const DeleteLocations = (databaseName, listId, locationIds, userId, gfwLi
         console.log('Error in deleting location', err);
         /*const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeleteList,
+          errorUtils.ERROR_CODES.failedToDeleteList,
           `Failed to delete locations from list id ${list_id}`,
           err
         );*/
@@ -288,7 +288,7 @@ export const DeleteList = (databaseName, listId, userId) => {
         console.log('Error in deleting location', err);
         /*const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeleteList,
+          errorUtils.ERROR_CODES.failedToDeleteList,
           `Failed to delete locations from list id ${list_id}`,
           err
         );*/

@@ -23,7 +23,7 @@ function partition(array, groupSize) {
 /**
  * @summary Generates a unique string
  */
-const uniqueIdGenerator = () => {
+export const uniqueIdGenerator = () => {
   let uniqueId = '';
   const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
@@ -56,7 +56,7 @@ const uniqueIdGenerator = () => {
  * @param {number} location_id The location id, which is defaulted to 0 here as we are processing list level analyses
  * @param {String} queue_url The queue URL
  */
-const sendMessage = (
+export const sendMessage = (
   organization_user_id,
   user_first_name = '',
   user_last_name = '',
@@ -97,7 +97,7 @@ const sendMessage = (
   return sqs.sendMessage(parameters);
 };
 
-const sendMessageBatch = (entries, queue_url) => {
+export const sendMessageBatch = (entries, queue_url) => {
   // Partition array into groups of ten
   const groups = partition(entries, 10);
   return Promise.all(
@@ -116,10 +116,4 @@ const sendMessageBatch = (entries, queue_url) => {
       return sqs.sendMessageBatch(parameters);
     })
   );
-};
-
-module.exports = {
-  sendMessage,
-  uniqueIdGenerator,
-  sendMessageBatch,
 };

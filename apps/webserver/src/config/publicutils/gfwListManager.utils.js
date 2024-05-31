@@ -1,5 +1,4 @@
 /* eslint-disable no-promise-executor-return */
-/* eslint-disable import/no-dynamic-require */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
@@ -54,7 +53,7 @@ export const getGFWLists = (req) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           'Failed to get gfw lists',
           errorMessage
         );
@@ -97,7 +96,7 @@ export const getGFWListLocations = (req, list_id) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to get list locations for List ${list_id}`,
           errorMessage
         );
@@ -110,7 +109,7 @@ export const getGFWListLocations = (req, list_id) => {
  *   @summary Get function to return json of location metadata without geometry.
  *   @param {Object} req - Mandatory first parameter to pass the request object into the function in case session info is required.
  *   @param {Number} list_id - Unique list id of the list.
- *   @param {[]} location_ids - Array of location ids.
+ *   @param {number[]} location_ids - Array of location ids.
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
@@ -165,7 +164,7 @@ export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to get list location (no Geom) for List ${list_id}`,
           err
         );
@@ -173,7 +172,6 @@ export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
       });
   });
 };
-
 export const getGFWListLocationsGeom = (req, list_id, location_ids = []) => {
   return new Promise((resolve, reject) => {
     const parameters = location_ids.length
@@ -222,7 +220,7 @@ export const getGFWListLocationsGeom = (req, list_id, location_ids = []) => {
       .catch((e) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to get list location (Geom) for List ${parseInt(list_id, 10)}`,
           e
         );
@@ -275,7 +273,7 @@ export const getAdministrativeAreasData = (req, filters) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           'Failed to get Administrative Areas data',
           errorMessage
         );
@@ -303,7 +301,7 @@ export const getAdministrativeAreasDataByLocationId = (req, locationId) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           'Failed to get Administrative Areas data',
           errorMessage
         );
@@ -350,7 +348,7 @@ export const getProtectedAreasData = (req, filters) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           'Failed to get Protected Areas data',
           errorMessage
         );
@@ -398,7 +396,7 @@ export const updateGFWLists = (req, list_ids) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUpdateLists,
+          errorUtils.ERROR_CODES.failedToUpdateLists,
           'Failed to update GFW Lists.',
           errorMessage
         );
@@ -468,7 +466,7 @@ export const getGFWListLocationsGlobalId = (req, list_id, global_ids = []) => {
       .catch((e) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to get list location (No Geom) for List ${parseInt(list_id, 10)}`,
           e
         );

@@ -32,7 +32,7 @@ const dataCleanup = (data) => {
  * @param {Object} selectedList current list context
  * @returns {Array}
  */
-const setListData = (locationData = [], locationAnalysisData = [], selectedList) => {
+export const setListData = (locationData = [], locationAnalysisData = [], selectedList) => {
   const data = [];
   locationData.forEach((loc) => {
     /**
@@ -89,5 +89,3 @@ const setListData = (locationData = [], locationAnalysisData = [], selectedList)
 
   return dataCleanup(data);
 };
-
-module.exports = setListData;

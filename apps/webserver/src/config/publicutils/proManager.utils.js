@@ -1,6 +1,5 @@
 /* eslint-disable new-cap */
 /* eslint-disable camelcase */
-/* eslint-disable import/no-dynamic-require */
 /** ******************************************************************
  *   @name: proManager.utils.js
  *   @description : A utility file to allow GFW Pro Managers to login
@@ -57,7 +56,7 @@ const getAllAccountsList = (req) => {
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
       const eo = errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotProManager,
+        errorUtils.ERROR_CODES.userNotProManager,
         userMessage,
         sysMessage
       );
@@ -72,7 +71,7 @@ const getAllAccountsList = (req) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetAllAccountsList,
+          errorUtils.ERROR_CODES.failedToGetAllAccountsList,
           'Failed to get all accounts list',
           err
         );
@@ -95,7 +94,7 @@ const getAllUsersList = (req) => {
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
       const eo = errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotProManager,
+        errorUtils.ERROR_CODES.userNotProManager,
         userMessage,
         sysMessage
       );
@@ -109,7 +108,7 @@ const getAllUsersList = (req) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToGetAllUsersList,
+          errorUtils.ERROR_CODES.failedToGetAllUsersList,
           'Failed to get all users list',
           err
         );
@@ -163,7 +162,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
         ) {
           throw new errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.failedToActivateAccount,
+            errorUtils.ERROR_CODES.failedToActivateAccount,
             'Organization name already exists',
             {}
           );
@@ -255,7 +254,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
           const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
           throw new errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.userNotProManager,
+            errorUtils.ERROR_CODES.userNotProManager,
             userMessage,
             sysMessage
           );
@@ -325,7 +324,7 @@ const activatePendingAccount = (req, pendingaccount_id, unit_test = false) => {
         }
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToActivateAccount,
+          errorUtils.ERROR_CODES.failedToActivateAccount,
           'Failed to Activate Account',
           error
         );
@@ -386,7 +385,7 @@ const updatePendingAccount = (
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUpdatePendingAccount,
+          errorUtils.ERROR_CODES.failedToUpdatePendingAccount,
           'Failed to update pending account',
           err
         );
@@ -446,7 +445,7 @@ const updatePendingAccountUser = (
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToUpdatePendingAccountUser,
+          errorUtils.ERROR_CODES.failedToUpdatePendingAccountUser,
           'Failed to update pending account user',
           err
         );
@@ -473,7 +472,7 @@ const deletePendingAccountRequest = (req, pendingaccount_id) => {
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
       const eo = errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotProManager,
+        errorUtils.ERROR_CODES.userNotProManager,
         userMessage,
         sysMessage
       );
@@ -489,7 +488,7 @@ const deletePendingAccountRequest = (req, pendingaccount_id) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeletePendingAccountRequest,
+          errorUtils.ERROR_CODES.failedToDeletePendingAccountRequest,
           'Failed to delete pending account request',
           err
         );
@@ -513,7 +512,7 @@ const deleteOrganization = (req, orgName) => {
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
       const eo = errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotProManager,
+        errorUtils.ERROR_CODES.userNotProManager,
         userMessage,
         sysMessage
       );
@@ -528,7 +527,7 @@ const deleteOrganization = (req, orgName) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeleteOrganization,
+          errorUtils.ERROR_CODES.failedToDeleteOrganization,
           'Failed to delete organization',
           err
         );
@@ -553,7 +552,7 @@ const deleteUser = (req, email) => {
       const sysMessage = `UserEmail: ${req.session.user_email} is not a GFW Pro Root User.`;
       const eo = errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotProManager,
+        errorUtils.ERROR_CODES.userNotProManager,
         userMessage,
         sysMessage
       );
@@ -568,7 +567,7 @@ const deleteUser = (req, email) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeleteUser,
+          errorUtils.ERROR_CODES.failedToDeleteUser,
           'Failed to delete user',
           err
         );
@@ -593,7 +592,7 @@ const deletePendingAccount = (req, organization_id) => {
       .catch((err) => {
         const errorObject = errorUtils.createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToDeleteOrganization,
+          errorUtils.ERROR_CODES.failedToDeleteOrganization,
           'Failed to delete pending account.',
           err
         );
@@ -667,7 +666,7 @@ const getAccountSubscriptionStatus = (request, organizationId) => {
       .catch((error) => {
         const errorObject = errorUtils.createErrorMessage(
           request,
-          errorUtils.errorCodes.failedToGetAccountSubscriptionStatus,
+          errorUtils.ERROR_CODES.failedToGetAccountSubscriptionStatus,
           `Failed to retreive account subscription status`,
           error
         );
@@ -699,7 +698,7 @@ const updateAccountSubscriptionStatus = async (
       .catch((error) => {
         const errorObject = errorUtils.createErrorMessage(
           request,
-          errorUtils.errorCodes.failedToUpdateAccountSubscriptionStatus,
+          errorUtils.ERROR_CODES.failedToUpdateAccountSubscriptionStatus,
           `Failed to update account subscription status`,
           error
         );
@@ -736,7 +735,7 @@ const updateGlobalAnalysisLimits = async (request, payload) => {
   } catch (error) {
     const errorObject = errorUtils.createErrorMessage(
       request,
-      errorUtils.errorCodes.failedToUpdateGlobalAnalysisLimit,
+      errorUtils.ERROR_CODES.failedToUpdateGlobalAnalysisLimit,
       `Failed to update global analysis limit`,
       error
     );
@@ -768,7 +767,7 @@ const updateAccountAnalysisLimits = async (request, payload) => {
   } catch (error) {
     const errorObject = errorUtils.createErrorMessage(
       request,
-      errorUtils.errorCodes.failedToUpdateAccountCustomAnalysisLimits,
+      errorUtils.ERROR_CODES.failedToUpdateAccountCustomAnalysisLimits,
       `Failed to update account custom analysis limits`,
       error
     );

@@ -15,13 +15,15 @@ function BillingInfo() {
         </a>
         <a
           className="side-bar-link"
+          target="_blank"
           href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-price-sheet/"
         >
           Price List
         </a>
         <a
           className="side-bar-link"
-          href="https://www.globalforestwatch.org/help/gfw-pro/faq-fee-model/"
+          target="_blank"
+          href="https://www.globalforestwatch.org/help/gfw-pro/faq-subscription-fee-model-faq/"
         >
           Fee Model FAQ
         </a>

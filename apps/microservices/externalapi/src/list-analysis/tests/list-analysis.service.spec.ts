@@ -16,8 +16,9 @@ import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { ListService } from '../../lists/lists.service';
 import { Lists } from '../../lists/lists.entity';
 import { S3Service } from '@wri-monorepos/aws';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
+import { SqsService } from '@ssut/nestjs-sqs';
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
   let organizationService: OrganizationService;
@@ -25,7 +26,7 @@ describe('ListAnalysisService', () => {
   let clientStoreConnection: ClientStoreConnection;
   let userService: UserService;
   let listService: ListService;
-
+  let sqsService: SqsService;
   beforeAll(async () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
@@ -66,6 +67,7 @@ describe('ListAnalysisService', () => {
     userService = module.get<UserService>(UserService);
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
     listService = module.get<ListService>(ListService);
+    sqsService = module.get<SqsService>(SqsService);
   });
 
   it('should delete a list', async () => {
@@ -392,5 +394,120 @@ describe('ListAnalysisService', () => {
       analysisId: 'FCD',
     });
     expect(result).toEqual(expectedResult);
+  });
+  it('Should generate an alert for Alert type', async () => {
+    const userEmail = 'email@email.com';
+    const organizationId = 1;
+    const listId = 123;
+    const analysisId = 'ALERTS';
+    const startDate = new Date('2021-09-28');
+    const endDate = new Date('2021-09-28');
+
+    jest.mock('../../shared/generate-sqs-templates', () => ({
+      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
+    }));
+    sqsService.send = jest.fn().mockResolvedValue(true);
+    await expect(
+      service.generateDownloadBundle({
+        organizationId,
+        listId,
+        analysisId,
+        startDate,
+        endDate,
+        userEmail,
+      })
+    ).resolves.toBeUndefined();
+  });
+  it('Should generate an alert for FCD type', async () => {
+    const userEmail = 'email@email.com';
+    const organizationId = 1;
+    const listId = 123;
+    const analysisId = 'FCD';
+    const startDate = null;
+    const endDate = null;
+
+    jest.mock('../../shared/generate-sqs-templates', () => ({
+      generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
+    }));
+    sqsService.send = jest.fn().mockResolvedValue(true);
+    await expect(
+      service.generateDownloadBundle({
+        organizationId,
+        listId,
+        analysisId,
+        startDate,
+        endDate,
+        userEmail,
+      })
+    ).resolves.toBeUndefined();
+  });
+  it('Should generate an alert for DefReport type', async () => {
+    const userEmail = 'email@email.com';
+    const organizationId = 1;
+    const listId = 123;
+    const analysisId = 'DefReport';
+    const startDate = null;
+    const endDate = null;
+
+    jest.mock('../../shared/generate-sqs-templates', () => ({
+      generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
+    }));
+    sqsService.send = jest.fn().mockResolvedValue(true);
+    await expect(
+      service.generateDownloadBundle({
+        organizationId,
+        listId,
+        analysisId,
+        startDate,
+        endDate,
+        userEmail,
+      })
+    ).resolves.toBeUndefined();
+  });
+  it('Should failed zod validation when missing startDate and endDate for generate Alerts type', async () => {
+    const userEmail = null;
+    const organizationId = 1;
+    const listId = 123;
+    const analysisId = 'ALERTS';
+    const startDate = null;
+    const endDate = null;
+
+    jest.mock('../../shared/generate-sqs-templates', () => ({
+      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
+    }));
+    sqsService.send = jest.fn().mockResolvedValue(true);
+    await expect(
+      service.generateDownloadBundle({
+        organizationId,
+        listId,
+        analysisId,
+        startDate,
+        endDate,
+        userEmail,
+      })
+    ).rejects.toThrowError(BadRequestException);
+  });
+  it('Should failed zod validation when missing userEmail when generate alerts for FCD type', async () => {
+    const userEmail = null;
+    const organizationId = 1;
+    const listId = 123;
+    const analysisId = 'DefReport';
+    const startDate = null;
+    const endDate = null;
+
+    jest.mock('../../shared/generate-sqs-templates', () => ({
+      generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
+    }));
+    sqsService.send = jest.fn().mockResolvedValue(true);
+    await expect(
+      service.generateDownloadBundle({
+        organizationId,
+        listId,
+        analysisId,
+        startDate,
+        endDate,
+        userEmail,
+      })
+    ).rejects.toThrow(BadRequestException);
   });
 });

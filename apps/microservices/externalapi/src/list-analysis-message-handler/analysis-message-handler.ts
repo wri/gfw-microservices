@@ -5,7 +5,7 @@ import * as AWS from '@aws-sdk/client-sqs';
 import { AWS_ANALYSIS_QUEUE_IDENTIFIER, AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { RemoveSQSMessage, generateRandomFilename } from '@wri-monorepos/shared';
-import { generateAlertsSqsTemplate } from '../shared/generate-sqs-templates';
+import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 
 const SUCCESS_STATUS = 2;
 
@@ -72,7 +72,7 @@ export class AnalysisMessageHandler {
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(currentDate.getDate() - 30);
 
-            sqsMessage = generateAlertsSqsTemplate({
+            sqsMessage = generateAnalysisSqsTemplate({
               listId: ListID,
               organization,
               startDate: thirtyDaysAgo,

@@ -371,7 +371,10 @@ export const layerFactory = function LayersFactory(layersArray, view) {
             visible: layer.visible || false,
             order: layer?.order,
             urlTemplate: layer.url,
-            view,
+            view: view,
+            properties: {
+              baseRGB: [196, 125, 2],
+            },
           })
         );
         break;

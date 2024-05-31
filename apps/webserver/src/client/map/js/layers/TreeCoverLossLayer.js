@@ -24,7 +24,6 @@ const populateIntensityBank = () => {
 
 const TreeCoverLossLayer = BaseTileLayer.createSubclass({
   properties: {
-    baseRGB: [100, 100, 100],
     threshold: 30,
     minYear: 2001,
     maxYear: latestTreeCoverLossYearForTclDataInMap,
@@ -32,6 +31,7 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
 
   initialize() {
     this.intensityBank = populateIntensityBank();
+    this.baseRGB = this.properties?.baseRGB || [220, 0, 130];
   },
 
   getTileUrl(level, row, column) {
@@ -83,7 +83,7 @@ const TreeCoverLossLayer = BaseTileLayer.createSubclass({
   filter(data) {
     // intensityBank indexes are integers for each zoom level
     const zoom = Math.round(this.view.zoom);
-    const [red, green, blue] = this.properties.baseRGB;
+    const [red, green, blue] = this.baseRGB;
 
     const newData = new Uint8ClampedArray(data.length);
     for (let i = 0; i < data.length; i += 4) {

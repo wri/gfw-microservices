@@ -327,9 +327,6 @@ export const layerFactory = function LayersFactory(layersArray, view) {
             order: layer?.order,
             urlTemplate: treeCoverLossTilesUrl,
             view: view,
-            properties: {
-              baseRGB: [220, 0, 130],
-            },
           })
         );
         break;
@@ -374,10 +371,7 @@ export const layerFactory = function LayersFactory(layersArray, view) {
             visible: layer.visible || false,
             order: layer?.order,
             urlTemplate: layer.url,
-            view: view,
-            properties: {
-              baseRGB: [196, 125, 2],
-            },
+            view,
           })
         );
         break;

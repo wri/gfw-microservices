@@ -1,54 +1,88 @@
 import { generateRandomFilename } from '@wri-monorepos/shared';
 import { Organization } from '../api-keys/organization.entity';
-import { AlertsGenerateBodySchema } from '../list-analysis/list-analysis.dto';
 import * as tmp from 'tmp';
 
-export const generateAlertsSqsTemplate = ({
+export const generateAnalysisSqsTemplate = ({
   startDate,
   endDate,
   organization,
   listId,
-}: Omit<AlertsGenerateBodySchema, 'userEmail'> & {
+  analysisId = 'ALERTS',
+}: {
+  startDate?: Date;
+  endDate?: Date;
   organization: Organization;
   listId: number;
+  analysisId?: string;
 }) => {
   const fileName = generateRandomFilename('');
 
   const tmpPath = tmp.tmpNameSync();
   const key = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
 
-  return {
-    list: {
-      DataType: 'String',
-      StringValue: `{"listId":${listId}}`,
-    },
-    organizationDatabase: {
-      DataType: 'String',
-      StringValue: organization.organizationDb,
-    },
-    file: {
-      DataType: 'String',
-      StringValue: `{"type":"alerts","key":"${fileName}","file":"csv"}`,
-    },
-    selectedTimeframe: {
-      DataType: 'String',
-      StringValue: 'DAY',
-    },
-    selectedAlert: {
-      DataType: 'String',
-      StringValue: 'Integrated',
-    },
-    key: {
-      DataType: 'String',
-      StringValue: key,
-    },
-    startDate: {
-      DataType: 'String',
-      StringValue: startDate.toISOString(),
-    },
-    endDate: {
-      DataType: 'String',
-      StringValue: endDate.toISOString(),
-    },
+  let sqsMessage = {};
+
+  switch (analysisId) {
+    case 'FCD':
+    case 'AFI': {
+      sqsMessage = {
+        list: {
+          DataType: 'String',
+          StringValue:
+            analysisId === 'FCD'
+              ? `{"listId":${listId},"listView":"forest_change"}`
+              : `{"listId":${listId}}`,
+        },
+        file: {
+          DataType: 'String',
+          StringValue:
+            analysisId === 'FCD'
+              ? `{"type":"everything","key":"${fileName}","file":"csv"}`
+              : `{"type":"afi","key":"${fileName}"}`,
+        },
+      };
+      break;
+    }
+    case 'ALERTS': {
+      const currentDate = new Date();
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(currentDate.getDate() - 30);
+
+      sqsMessage = {
+        list: {
+          DataType: 'String',
+          StringValue: `{"listId":${listId}}`,
+        },
+        file: {
+          DataType: 'String',
+          StringValue: `{"type":"alerts","key":"${fileName}","file":"csv"}`,
+        },
+        selectedTimeframe: {
+          DataType: 'String',
+          StringValue: 'DAY',
+        },
+        selectedAlert: {
+          DataType: 'String',
+          StringValue: 'Integrated',
+        },
+        startDate: {
+          DataType: 'String',
+          StringValue: startDate.toISOString() || currentDate.toISOString(),
+        },
+        endDate: {
+          DataType: 'String',
+          StringValue: endDate.toISOString() || thirtyDaysAgo.toISOString(),
+        },
+      };
+      break;
+    }
+    default:
+      return;
+  }
+  sqsMessage = {
+    ...sqsMessage,
+    key: { DataType: 'String', StringValue: key },
+    organizationDatabase: { DataType: 'String', StringValue: organization.organizationDb },
   };
+  return sqsMessage;
 };

@@ -1875,9 +1875,9 @@ class Map extends Component {
       }
       const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
       const listName = listToSelect.list_name;
-      const gfwListVisibleMapLayer = discernGfwID(listName);
+      const gfwListVisibleMapLayerId = discernGfwID(listName);
 
-      hashLayersToAdd.push(gfwListVisibleMapLayer);
+      hashLayersToAdd.push(gfwListVisibleMapLayerId);
       if (listId === 1) {
         // administrative areas
         if (selectedLocations?.length > 0) {
@@ -1910,9 +1910,9 @@ class Map extends Component {
         }
       } else {
         if (selectedLocations?.length) {
-          gfwListDefinitions[listName] = [];
+          gfwListDefinitions[gfwListVisibleMapLayerId] = [];
           selectedLocations.forEach((gfwLocation) => {
-            gfwListDefinitions[listName].push(gfwLocation);
+            gfwListDefinitions[gfwListVisibleMapLayerId].push(gfwLocation);
           });
         } else {
           if (listToSelect) {

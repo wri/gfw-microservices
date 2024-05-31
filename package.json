@@ -4,6 +4,9 @@
   "license": "MIT",
   "scripts": {
     "start": "nx serve",
+    "start:lp": "nx serve microservices-list-processing",
+    "start:ld": "nx serve microservices-list-downloader",
+    "start:eapi": "nx serve microservices-externalapi",
     "build": "nx build",
     "test": "nx test",
     "prepare": "husky install"

@@ -14,7 +14,7 @@ const logger = require('./logger.utils');
 
 const s3 = new AWS.S3();
 
-function get(bucket, key) {
+export function get(bucket, key) {
   return new Promise((resolve, reject) => {
     const parameters = {
       Bucket: bucket,
@@ -39,7 +39,7 @@ function get(bucket, key) {
   });
 }
 
-function put(objectName, object) {
+export function put(objectName, object) {
   return new Promise((resolve, reject) => {
     const filePath = `${process.env.NODE_ENV}/${objectName}.geojson`;
     const parameters = {
@@ -63,7 +63,7 @@ function put(objectName, object) {
   });
 }
 
-function del(bucket, key) {
+export function del(bucket, key) {
   return new Promise((resolve, reject) => {
     const parameters = {
       Bucket: bucket,
@@ -80,9 +80,3 @@ function del(bucket, key) {
     });
   });
 }
-
-module.exports = {
-  get,
-  put,
-  del,
-};

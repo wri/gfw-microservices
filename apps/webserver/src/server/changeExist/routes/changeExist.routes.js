@@ -35,7 +35,7 @@ module.exports = (app, limiter) => {
   app.post('/auth/updateExistingPass', middlewares.checkAuthentication, (req, res) => {
     const { currentPass, newPass } = req.body;
     AuthManager.changePassword(req, currentPass, newPass)
-      .then((result) => res.send('PasswordChanged'))
+      .then(() => res.send('PasswordChanged'))
       .catch((err) => res.send(err));
   });
 };

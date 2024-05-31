@@ -33,7 +33,7 @@ const getAllFolders = async (req) => {
     console.log(`${errMessage} ${error}`);
     throw new errorUtils.createErrorMessage(
       req,
-      errorUtils.errorCodes.failedToGetAllFolders,
+      errorUtils.ERROR_CODES.failedToGetAllFolders,
       errMessage,
       error
     );
@@ -69,7 +69,7 @@ const getFolderDetails = async (req, folder_id) => {
       console.log(errMessage);
       throw new errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.folderDoesNotExist,
+        errorUtils.ERROR_CODES.folderDoesNotExist,
         errMessage,
         error
       );
@@ -78,7 +78,7 @@ const getFolderDetails = async (req, folder_id) => {
       console.log(`Error fetching folder details: ${error}`);
       throw new errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.failedToGetFolderDetails,
+        errorUtils.ERROR_CODES.failedToGetFolderDetails,
         errMessage,
         error
       );
@@ -115,7 +115,7 @@ const createNewFolder = async (req, folder_name) => {
       console.log(`${errMessage}: ${error}`);
       throw new errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.failedToCreateNewFolder,
+        errorUtils.ERROR_CODES.failedToCreateNewFolder,
         errMessage,
         error
       );
@@ -124,7 +124,7 @@ const createNewFolder = async (req, folder_name) => {
       const errMessage = langResources.getResourceString('failedToCreateNewFolder');
       throw new errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.failedToCreateNewFolder,
+        errorUtils.ERROR_CODES.failedToCreateNewFolder,
         errMessage,
         error
       );
@@ -164,7 +164,7 @@ const deleteFolder = async (req, folder_id) => {
     console.log(`errMessage: ${error}`);
     throw new errorUtils.createErrorMessage(
       req,
-      errorUtils.errorCodes.failedToDeleteFolder,
+      errorUtils.ERROR_CODES.failedToDeleteFolder,
       errMessage,
       error
     );
@@ -217,7 +217,7 @@ const addListToFolder = async (req, folder_id, list_ids) => {
     );
     throw new errorUtils.createErrorMessage(
       req,
-      errorUtils.errorCodes.failedToAddListsToFolder,
+      errorUtils.ERROR_CODES.failedToAddListsToFolder,
       errMessage,
       error
     );
@@ -252,7 +252,7 @@ const removeListFromFolder = async (req, folder_id, list_ids) => {
     console.log(errMessage);
     throw new errorUtils.createErrorMessage(
       req,
-      errorUtils.errorCodes.folderDoesNotExist,
+      errorUtils.ERROR_CODES.folderDoesNotExist,
       errMessage,
       error
     );
@@ -283,7 +283,7 @@ const updateFolderName = async (req, folder_id, folder_name) => {
     console.log(errMessage);
     throw new errorUtils.createErrorMessage(
       req,
-      errorUtils.errorCodes.folderDoesNotExist,
+      errorUtils.ERROR_CODES.folderDoesNotExist,
       errMessage,
       error
     );
@@ -329,7 +329,7 @@ const moveListToFolder = async (req, from_folder_id, to_folder_id, list_ids) => 
     }
     throw new errorUtils.createErrorMessage(
       req,
-      errorUtils.errorCodes.failedToAddListsToFolder,
+      errorUtils.ERROR_CODES.failedToAddListsToFolder,
       errMessage,
       error
     );
@@ -361,7 +361,7 @@ const updateFolderAccessTime = async (req, folder_id) => {
     console.log(errMessage);
     throw new errorUtils.createErrorMessage(
       req,
-      errorUtils.errorCodes.failedToUpdateFolderAccessTime,
+      errorUtils.ERROR_CODES.failedToUpdateFolderAccessTime,
       errMessage,
       error
     );

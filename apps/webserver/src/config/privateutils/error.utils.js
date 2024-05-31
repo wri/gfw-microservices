@@ -6,10 +6,9 @@
  *
  ********************************************************************/
 //Imports required for this module.
-const path = require('path');
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
+import * as logger from '../privateutils/logger.utils';
 
-const ERROR_CODES = {
+export const ERROR_CODES = {
   // Authentication
   userNotAdmin: 100,
   userNotEditor: 101,
@@ -110,7 +109,7 @@ const ERROR_CODES = {
  * @param {String} system_msg - The more detailed system message for logging or debugging.
  * @return {Object} An error message object containing the above parameters.
  */
-function createErrorMessage(req, error_code, user_msg, system_msg) {
+export function createErrorMessage(req, error_code, user_msg, system_msg) {
   const objError = {
     errorCode: error_code,
     userMessage: user_msg,
@@ -121,7 +120,7 @@ function createErrorMessage(req, error_code, user_msg, system_msg) {
   return objError;
 }
 
-function errorHandler(error) {
+export function errorHandler(error) {
   if (error.response) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
@@ -146,9 +145,3 @@ function errorHandler(error) {
   console.log('Error', error.message);
   return { status: error.response.status, data: { message: error.message } };
 }
-
-module.exports = {
-  errorCodes: ERROR_CODES,
-  createErrorMessage,
-  errorHandler,
-};

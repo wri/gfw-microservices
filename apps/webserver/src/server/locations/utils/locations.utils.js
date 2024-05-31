@@ -47,7 +47,7 @@ const getListDataFilterValues = (request, listID) => {
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
           request,
-          errorUtils.errorCodes.failedToGetList,
+          errorUtils.ERROR_CODES.failedToGetList,
           `Failed to build fiter data for list location for List ${listID}`,
           errorMessage
         );

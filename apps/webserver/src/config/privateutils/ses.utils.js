@@ -11,15 +11,14 @@
 
 ******************************************************************* */
 // Imports for this module.
-const path = require('path');
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const moment = require('moment');
 
 import config from '../config';
 
-const langResources = require(path.resolve('./config/langResources'));
-const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
-const emailUtil = require(path.resolve('./config/emailTemplates'));
+import langResources from '../langResources';
+import { createErrorMessage, ERROR_CODES } from '../privateutils/error.utils';
+import emailUtil from '../emailTemplates';
 
 const sesClient = new SESClient();
 import { analysisTypesOptions } from '@wri-monorepos/constants';
@@ -203,9 +202,9 @@ export const sendEmail = (req, sender, receivers, subject, content) => {
         console.log('Error sending email', err);
         const userMessage = langResources.getResourceString('failedToSendEmail');
         const sysMessage = `Error Send Email: ${err}`;
-        const errObj = errorUtils.createErrorMessage(
+        const errObj = createErrorMessage(
           req,
-          errorUtils.errorCodes.failedToSendEmail,
+          ERROR_CODES.failedToSendEmail,
           userMessage,
           sysMessage
         );

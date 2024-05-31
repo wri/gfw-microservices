@@ -1,8 +1,6 @@
 const path = require('path');
 
-// eslint-disable-next-line import/no-dynamic-require
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
-// eslint-disable-next-line import/no-dynamic-require
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 
 const controller = require('../controllers/dataApi.controller');

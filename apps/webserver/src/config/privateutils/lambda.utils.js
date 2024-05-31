@@ -19,7 +19,7 @@ const client = new LambdaClient({
   }),
 });
 
-const invoke = async (FunctionName, payload = '') => {
+const invoke = async (FunctionName, payload = {}) => {
   const functionName = `${FunctionName}-${process.env.NODE_ENV}`;
   const payloadString = JSON.stringify(payload);
   const parameters = {

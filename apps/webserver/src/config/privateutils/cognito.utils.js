@@ -412,7 +412,7 @@ const authenticateUser = async (req, email, password, userInfoAttributes) => {
           ].join('\n');
           const errObj = errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.failedToAuthenticate,
+            errorUtils.ERROR_CODES.failedToAuthenticate,
             userMessage,
             sysMessage
           );
@@ -503,7 +503,7 @@ const completeNewPasswordChallenge = (req, old_password, new_password) => {
           const sysMessage = langResources.getResourceString('invaidInitialPasswordChange');
           const errObj = errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.userAlreadyConfirmed,
+            errorUtils.ERROR_CODES.userAlreadyConfirmed,
             userMessage,
             sysMessage
           );
@@ -514,7 +514,7 @@ const completeNewPasswordChallenge = (req, old_password, new_password) => {
           const sysMessage = err;
           const errObj = errorUtils.createErrorMessage(
             req,
-            errorUtils.errorCodes.userNotAuthenticated,
+            errorUtils.ERROR_CODES.userNotAuthenticated,
             userMessage,
             sysMessage
           );
@@ -540,7 +540,7 @@ const completeNewPasswordChallenge = (req, old_password, new_password) => {
       const sysMessage = e;
       const errObj = errorUtils.createErrorMessage(
         req,
-        errorUtils.errorCodes.userNotAuthenticated,
+        errorUtils.ERROR_CODES.userNotAuthenticated,
         userMessage,
         sysMessage
       );

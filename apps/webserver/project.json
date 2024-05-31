@@ -64,7 +64,9 @@
       "options": {
         "lintFilePatterns": [
           "apps/webserver/src/server/a[a-c]*/**/*.ts",
-          "apps/webserver/src/server/a[a-c]*/**/*.js"
+          "apps/webserver/src/server/a[a-c]*/**/*.js",
+          "apps/webserver/src/server/[cd]*/**/*.ts",
+          "apps/webserver/src/server/[cd]*/**/*.js"
           // The goal is to lint all the files in the project, but starting with the above
           // "apps/webserver/src/**/*.ts",
           // "apps/webserver/src/**/*.js"

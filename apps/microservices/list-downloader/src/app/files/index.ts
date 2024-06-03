@@ -1,4 +1,3 @@
-export * from './afi.file.service';
 export * from './alerts.admin.areas.level.service';
 export * from './alerts.file.service';
 export * from './alerts.history.service';
@@ -11,10 +10,11 @@ export * from './alerts.summary.service';
 export * from './argentina-deforestation.service';
 export * from './argentina.overlap.service';
 export * from './commodity.risk.diagnostic.location.summary.service';
+export * from './deforestation.kpis.service';
 export * from './deforestation.trends.service';
-export * from './forest.loss.service';
 export * from './forest.change.diagnostic.list.summary.service';
 export * from './forest.change.diagnostic.location.summary.service';
+export * from './forest.loss.service';
 export * from './historic.percent.service';
 export * from './input.service';
 export * from './mill.priority.service';

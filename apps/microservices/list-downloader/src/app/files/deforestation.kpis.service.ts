@@ -5,7 +5,10 @@ import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql'
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
 import * as Chain from 'stream-chain';
-import { AFI_HEADER, AFI_HEADER_AGGREGATE } from '../shared/constants';
+import {
+  DEFORESTATION_KPIS_HEADER,
+  DEFORESTATION_KPIS_HEADER_AGGREGATE,
+} from '../shared/constants';
 
 import { FilterObject } from '../transform/filter.object';
 import { NegligibleRiskDiscretize } from '../transform/negligible.risk.discretize';
@@ -13,8 +16,8 @@ import { FormatNumber } from '../transform/format.number';
 import { IPipeService } from '../pipe/i.pipe.service';
 
 @Injectable()
-export class AfiFileService extends IPipeService {
-  private readonly logger = new Logger(AfiFileService.name);
+export class DeforestationKpisService extends IPipeService {
+  private readonly logger = new Logger(DeforestationKpisService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
@@ -23,7 +26,9 @@ export class AfiFileService extends IPipeService {
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
-    const header = suffix.includes('aggregated') ? AFI_HEADER_AGGREGATE : AFI_HEADER;
+    const header = suffix.includes('aggregated')
+      ? DEFORESTATION_KPIS_HEADER_AGGREGATE
+      : DEFORESTATION_KPIS_HEADER;
 
     this.organizeStream(filters, Object.keys(header), suffix);
     fs.writeFileSync(

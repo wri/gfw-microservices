@@ -27,7 +27,7 @@ import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 import { ListGeneratorService } from './list.generator.service';
 import { AfiGeneratorService } from './afi.generator.service';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
-import { AfiFileService } from '../files/afi.file.service';
+import { AfiFileService } from '../files/deforestation.kpis.service';
 import { ArgentinaOverlapService } from '../files/argentina.overlap.service';
 import { AnalysisDataService } from '../data/analysis.data.service';
 import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';

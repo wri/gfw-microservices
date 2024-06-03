@@ -1,4 +1,4 @@
-import { AfiFileService } from '../files/afi.file.service';
+import { DeforestationKpisService } from '../files/deforestation.kpis.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
@@ -13,18 +13,18 @@ export class AfiGeneratorService extends IFileGenerator {
   private readonly logger = new Logger(AfiGeneratorService.name);
 
   constructor(
-    private readonly afiFileService: AfiFileService,
+    private readonly deforestationKpisService: DeforestationKpisService,
     private readonly analysisAfiDataService: AnalysisAfiDataService
   ) {
     super();
   }
 
   public async makeFile(filters: BasicFieldsFileRequest) {
-    await this.afiFileService.startEmail(filters);
+    await this.deforestationKpisService.startEmail(filters);
     await this.runAfiFileGeneration(filters);
     await this.runAfiFileGeneration(filters, 1, 'deforestation_kpis_aggregated');
     await getAllFilesAndZip(filters);
-    await this.afiFileService.finishProcess(filters);
+    await this.deforestationKpisService.finishProcess(filters);
   }
 
   private async runAfiFileGeneration(
@@ -38,7 +38,7 @@ export class AfiGeneratorService extends IFileGenerator {
 
     const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
-    await this.afiFileService.start(filters, suffix);
+    await this.deforestationKpisService.start(filters, suffix);
 
     const composeResults = async (i: number) => {
       const newFilter = { ...filters, page: i };
@@ -46,7 +46,7 @@ export class AfiGeneratorService extends IFileGenerator {
         newFilter,
         isListLevel
       );
-      this.afiFileService.process(analysisData);
+      this.deforestationKpisService.process(analysisData);
       return i;
     };
 
@@ -54,6 +54,6 @@ export class AfiGeneratorService extends IFileGenerator {
       this.logger.log(`(${listId}) - Get page of number ${localPage} from database`);
     }
 
-    await this.afiFileService.finish(filters);
+    await this.deforestationKpisService.finish(filters);
   }
 }

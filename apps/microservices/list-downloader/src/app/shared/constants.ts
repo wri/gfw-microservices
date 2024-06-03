@@ -1629,7 +1629,7 @@ export const DATA_LAYER = {
   brazil_biomes: 'Brazil Biomes',
 };
 
-export const AFI_HEADER_AGGREGATE = {
+export const DEFORESTATION_KPIS_HEADER_AGGREGATE = {
   listName: 'List Name',
   country: 'Country',
   state: 'State',
@@ -1639,7 +1639,7 @@ export const AFI_HEADER_AGGREGATE = {
   negligibleRisk: 'Negligible Risk',
 };
 
-export const AFI_HEADER = {
+export const DEFORESTATION_KPIS_HEADER = {
   listName: 'List Name',
   locationName: 'Location Name',
   country: 'Country',

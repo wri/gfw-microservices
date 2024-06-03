@@ -158,7 +158,6 @@ export const mockAnalysisFlow = async ({
     await insertAllLocationAnalysis(newLocationLevelAnalysisData);
     await deleteListLevelAnalysisId();
 
-
     const newListLevelAnalysis = {
       ...mockedListAnalysis,
       listId: list_id,

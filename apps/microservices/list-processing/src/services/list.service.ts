@@ -74,7 +74,7 @@ export class ListService {
     let listName = '';
     let userEmail = '';
 
-    if(environmentAllowTestFlow.includes(microserviceEnvironment)) {
+    if (environmentAllowTestFlow.includes(microserviceEnvironment)) {
       listName = await this.getListName(request.organization_database, request.list_id);
       userEmail = await this.getUserEmail(request.organization_database, request.user_id);
     }

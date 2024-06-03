@@ -1,13 +1,10 @@
 import '../../../css/map.scss';
 import React, { Component } from 'react';
 import LegendCheckbox from './LegendCheckbox';
-import {
-  congoPrimaryForestsID,
-  cameroonAgroIndustrialZonesID,
-  republicOfTheCongoOilPalmConcessionsID,
-} from '../../../../common/js/config';
+import { proLayers } from '../../../../common/js/proLayers.config';
 import LegendSection from './LegendSection';
 
+const { cameroonAgroIndustrialZonesID } = proLayers;
 export default class RegionLegend extends Component {
   constructor(props) {
     super(props);
@@ -66,17 +63,8 @@ export default class RegionLegend extends Component {
 
   showForestAtlas = (country) => {
     return (
-      (this.props.visibleLayers.indexOf(congoPrimaryForestsID) !== -1 ||
-        this.props.visibleLayers.indexOf(cameroonAgroIndustrialZonesID) !== -1) &&
-      (country === 'Democratic Republic of the Congo' || country === 'Cameroon') &&
-      this.state.countries.indexOf(country) !== -1
-    );
-  };
-
-  showForestAtlasCongo = (country) => {
-    return (
-      this.props.visibleLayers.indexOf(republicOfTheCongoOilPalmConcessionsID) !== -1 &&
-      country === 'Republic of the Congo' &&
+      this.props.visibleLayers.indexOf(cameroonAgroIndustrialZonesID) !== -1 &&
+      country === 'Cameroon' &&
       this.state.countries.indexOf(country) !== -1
     );
   };
@@ -130,7 +118,6 @@ export default class RegionLegend extends Component {
       const visibleNormal = this.isVisible(normalLayers);
 
       const showForest = this.showForestAtlas(country);
-      const showForestCongo = this.showForestAtlasCongo(country);
       const showWRI = this.showWRI(country);
       return (
         <div key={j}>
@@ -151,18 +138,6 @@ export default class RegionLegend extends Component {
                 href={`http://www.wri.org/applications/maps/forestatlas/${countryGroup[
                   country
                 ][0].countryCode.toLowerCase()}/index.htm`}
-                target="_blank"
-                className="layer-legend-link link-forest-atlas"
-              >
-                Visit Forest Atlas
-                <svg>
-                  <use xlinkHref="#icon-navigate" />
-                </svg>
-              </a>
-            </p>
-            <p className={`layer-legend-message-country ${showForestCongo ? '' : 'hidden'}`}>
-              <a
-                href={'http://www.wri.org/tools/atlas/map.php?maptheme=congoforest'}
                 target="_blank"
                 className="layer-legend-link link-forest-atlas"
               >

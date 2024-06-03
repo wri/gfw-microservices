@@ -2,3 +2,21 @@
 ### Get Data Analysis For Large List Processing
 GET http://localhost:3334/api/paginated-list-data?listId=5642&rowsPerPage=10&pageNumber=0&organizationDatabase=clientstore-DevCo
 Content-Type: application/json
+
+### send an event to start analysis for specific list
+POST http://localhost:3334/api/process-list
+Content-Type: application/json
+
+{
+   "organization_id":1,
+   "subscription_status_id":2,
+   "organization_database": "clientstore-DevCo",
+   "list_id":5408,
+   "path":"teste",
+   "template_type":"cocoa_generic",
+   "user_id":10048,
+   "startAnalysis":"false",
+   "isExternalAPIProcess":"false"
+}
+
+

@@ -72,7 +72,7 @@ export class AppController {
 
   @Post('/process-list')
   processLargeList(@Body() request: RequestLargeListProcess) {
-    return this.listService.startAnalisysProcessForList(request);
+    return this.listService.startAnalysisProcessForList(request);
   }
 
   @Post('/create-large-list')

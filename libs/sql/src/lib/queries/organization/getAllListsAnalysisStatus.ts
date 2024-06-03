@@ -7,11 +7,3 @@ SELECT
     las.UpdateTime AS updateTime
 FROM dbo.[ListsAnalysisStatus] las
 `;
-
-export interface ListsAnalysisStatus {
-  listId: number;
-  analysisId: string;
-  status: number;
-  errorInfo: string | null; // Assuming ErrorInfo can be null
-  updateTime: string;
-}

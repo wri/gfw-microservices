@@ -8,7 +8,7 @@ import { S3 } from 'aws-sdk';
 import { DataSource } from 'typeorm';
 import * as uniqId from 'uniqid';
 import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
-import { ClientStoreConnection, List, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Lists, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
 class MyObject {
   id: number;
   list_name: string;
@@ -87,7 +87,7 @@ export class AppService {
     userEmail: string
   ): Promise<string> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
+    const listRepository = connection.getRepository(Lists);
     const listFound = await listRepository.findOne({ where: { id: list_id } });
     if (!listFound) {
       this.logger.error('DeleteList: list not found');
@@ -144,7 +144,7 @@ export class AppService {
     organization_user_id: number
   ): Promise<boolean> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
+    const listRepository = connection.getRepository(Lists);
     const { lockStatus } = await listRepository.findOne({ where: { id: list_id } });
 
     if (lockStatus !== null) {
@@ -170,7 +170,7 @@ export class AppService {
     organization_user_id: number
   ): Promise<boolean> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
+    const listRepository = connection.getRepository(Lists);
     const { lockStatus, lockUserId } = await listRepository.findOne({ where: { id: list_id } });
 
     if (lockStatus !== null && lockUserId !== organization_user_id) {

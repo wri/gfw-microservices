@@ -12,7 +12,7 @@ import { UspResetListStatus } from './uspResetListStatus';
 import { UspDeleteList } from './uspDeleteList';
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { UspDeleteLocationIdsFilteredDataForUserList } from './uspDeleteLocationIdsFilteredDataForUserList';
-import { ActivityLog, List } from '../entity';
+import { ActivityLog, Lists } from '../entity';
 const logger = new Logger('ClientDatabaseOperationsManager');
 
 const DEFAULT_ROWS_REQUESTED = 200000;
@@ -324,7 +324,7 @@ export class DeleteListTypeOrm {
     organization_user_id: number
   ): Promise<boolean> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
+    const listRepository = connection.getRepository(Lists);
     const listFound = await listRepository.findOne({ where: { id: list_id } });
     if (!listFound) {
       this.logger.error('DeleteList: list not found');
@@ -451,7 +451,7 @@ export class DeleteListTypeOrm {
     organization_user_id: number
   ): Promise<boolean> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
+    const listRepository = connection.getRepository(Lists);
     const { lockStatus } = await listRepository.findOne({ where: { id: list_id } });
 
     if (lockStatus !== null) {

@@ -1,9 +1,9 @@
 import {
-  Analysis,
+  Analyses,
   AnalysisSchema,
   AnalysisSchemaType,
   ClientStoreConnection,
-  List,
+  Lists,
   ListSchema,
   ListSchemaType,
   ListsAnalysisStatus,
@@ -14,8 +14,8 @@ import * as moment from 'moment';
 
 const repository = async (organizationDatabase: string, listId: number) => {
   const clientStoreConnection = new ClientStoreConnection();
-  let connection = await clientStoreConnection.getConnection(organizationDatabase, [List]);
-  const listRepository = connection.getRepository(List);
+  let connection = await clientStoreConnection.getConnection(organizationDatabase, [Lists]);
+  const listRepository = connection.getRepository(Lists);
   const { listAnalysisTableName, listTableName } = (await listRepository.findOne({
     where: { id: listId },
   })) ?? {
@@ -33,8 +33,8 @@ const repository = async (organizationDatabase: string, listId: number) => {
 
   clientStoreConnection.clearCache(organizationDatabase);
   connection = await clientStoreConnection.getConnection(organizationDatabase, [
-    List,
-    Analysis,
+    Lists,
+    Analyses,
     ListEntity,
     AnalysisEntity,
     ListsAnalysisStatus,
@@ -46,29 +46,15 @@ const repository = async (organizationDatabase: string, listId: number) => {
     return allLocation;
   };
 
-  const getAllLocationAnalysis = async () => {
+  const deleteAllLocationsAnalysis = async (locationIds: Array<number>) => {
     const listEntity = connection.getRepository(AnalysisEntity);
-    const allLocation = await listEntity.find();
+    const allLocation = await listEntity.delete({ locationId: In(locationIds) });
     return allLocation;
   };
 
-  const deleteAllLocationsAnalysis = async (analysisIds: Array<number>) => {
-    const listEntity = connection.getRepository(AnalysisEntity);
-    const allLocation = await listEntity.delete({ id: In(analysisIds) });
-    return allLocation;
-  };
-
-  const getListLevelAnalysisId = async () => {
-    const analysisRepository = connection.getRepository(Analysis);
-    const { id } = (await analysisRepository.findOne({ where: { listId: listId } })) ?? {
-      id: undefined,
-    };
-    return id;
-  };
-
-  const deleteListLevelAnalysisId = async (analysisId: number) => {
-    const analysisEntity = connection.getRepository(Analysis);
-    await analysisEntity.delete({ id: analysisId });
+  const deleteListLevelAnalysisId = async () => {
+    const analysisEntity = connection.getRepository(Analyses);
+    await analysisEntity.delete({ listId: listId });
   };
 
   const insertAllLocationAnalysis = async (
@@ -82,8 +68,8 @@ const repository = async (organizationDatabase: string, listId: number) => {
       .execute();
   };
 
-  const insertListLevelAnalysis = async (analysis: Analysis) => {
-    const analysisEntity = connection.getRepository(Analysis);
+  const insertListLevelAnalysis = async (analysis: Analyses) => {
+    const analysisEntity = connection.getRepository(Analyses);
     analysisEntity.insert(analysis);
   };
 
@@ -118,9 +104,7 @@ const repository = async (organizationDatabase: string, listId: number) => {
     connection,
     deleteAllLocationsAnalysis,
     deleteListLevelAnalysisId,
-    getAllLocationAnalysis,
     getAllLocations,
-    getListLevelAnalysisId,
     insertAllLocationAnalysis,
     insertListLevelAnalysis,
     insertListAnalysisStatus,
@@ -133,7 +117,6 @@ type MockAnalysisFlowType = {
   template_type: string;
 };
 
-//TODO need to figure out a way to use transaction, a lot of changes on the database
 export const mockAnalysisFlow = async ({
   organization_database,
   list_id,
@@ -143,9 +126,7 @@ export const mockAnalysisFlow = async ({
     connection,
     deleteAllLocationsAnalysis,
     deleteListLevelAnalysisId,
-    getAllLocationAnalysis,
     getAllLocations,
-    getListLevelAnalysisId,
     insertAllLocationAnalysis,
     insertListAnalysisStatus,
     insertListLevelAnalysis,
@@ -156,11 +137,10 @@ export const mockAnalysisFlow = async ({
   await queryRunner.startTransaction();
   try {
     const allLocations = await getAllLocations();
-    const allLocationAnalysis = await getAllLocationAnalysis();
 
-    if (allLocationAnalysis.length > 0) {
-      const analysisIds = allLocationAnalysis.map((l) => l.id);
-      await deleteAllLocationsAnalysis(analysisIds);
+    if (allLocations.length > 0) {
+      const locationsIds = allLocations.map((l) => l.locationId);
+      await deleteAllLocationsAnalysis(locationsIds);
     }
     const mockedLocationAnalysis = mockData[template_type].locationLevel;
     const mockedListAnalysis = mockData[template_type].analysisLevel;
@@ -176,10 +156,8 @@ export const mockAnalysisFlow = async ({
     }
 
     await insertAllLocationAnalysis(newLocationLevelAnalysisData);
-    const analysisId = await getListLevelAnalysisId();
-    if (analysisId) {
-      await deleteListLevelAnalysisId(analysisId);
-    }
+    await deleteListLevelAnalysisId();
+
 
     const newListLevelAnalysis = {
       ...mockedListAnalysis,

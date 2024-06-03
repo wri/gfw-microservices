@@ -1,6 +1,6 @@
 import {
   ClientStoreConnection,
-  List,
+  Lists,
   ListsUploadStatus,
   SQLUtils,
   User,
@@ -69,11 +69,15 @@ export class ListService {
   async startAnalysisProcessForList(
     request: RequestLargeListProcess
   ): Promise<ResponseLargeListProcess> {
-    const listName = await this.getListName(request.organization_database, request.list_id);
-    const userEmail = await this.getUserEmail(request.organization_database, request.user_id);
-
     const largeListProcessingEndPoint = this.config.get<string>('LARGE_LIST_PROCESING_ENDPOINT');
     const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
+    let listName = '';
+    let userEmail = '';
+
+    if(environmentAllowTestFlow.includes(microserviceEnvironment)) {
+      listName = await this.getListName(request.organization_database, request.list_id);
+      userEmail = await this.getUserEmail(request.organization_database, request.user_id);
+    }
 
     const isTestFlow =
       environmentAllowTestFlow.includes(microserviceEnvironment) &&
@@ -123,6 +127,7 @@ export class ListService {
       body: requestBody,
     };
 
+    // Flow used by cypress test, mock analysis flow so avoid call lambda functions.
     if (isTestFlow) {
       await mockAnalysisFlow({
         organization_database: request.organization_database,
@@ -142,7 +147,7 @@ export class ListService {
 
   async getListName(organizationDatabase: string, list_id: number) {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
+    const listRepository = connection.getRepository(Lists);
     const { listName } = await listRepository.findOne({ where: { id: list_id } });
     return listName;
   }

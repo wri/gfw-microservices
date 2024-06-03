@@ -2,7 +2,7 @@ import { AppService } from './app.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
-import { ClientStoreConnection, DeleteListTypeOrm, List } from '@wri-monorepos/sql';
+import { ClientStoreConnection, DeleteListTypeOrm, Lists } from '@wri-monorepos/sql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListRepositoryMock } from './test/list.repository.mock';
 import { ConfigModule } from '@nestjs/config';
@@ -15,7 +15,7 @@ describe('AppService', () => {
   beforeAll(async () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
-      .withArgs(List)
+      .withArgs(Lists)
       .returns(new ListRepositoryMock());
     module = await Test.createTestingModule({
       imports: [
@@ -25,9 +25,9 @@ describe('AppService', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [List],
+          entities: [Lists],
         }),
-        TypeOrmModule.forFeature([List], 'default'),
+        TypeOrmModule.forFeature([Lists], 'default'),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,

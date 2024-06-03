@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ClientStoreConnection, List, Organization } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Lists, Organization } from '@wri-monorepos/sql';
 import * as moment from 'moment';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class ListService {
 
     await connection
       .createQueryBuilder()
-      .update(List)
+      .update(Lists)
       .set({
         lockStatus: null,
         lockUserId: null,

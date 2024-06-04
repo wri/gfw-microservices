@@ -8,3 +8,7 @@ import { listStatus } from '../../../../config/env/listStatuses.constants';
 export function getIsDiagnosticStatusDraft(list) {
   return list?.list_status_id === listStatus.Draft;
 }
+
+export function getIsDraftWithoutDiagnostic(list) {
+  return getIsDiagnosticStatusDraft(list) && !list.dashboard_last_results;
+}

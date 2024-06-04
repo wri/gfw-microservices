@@ -1650,6 +1650,44 @@ export const DEFORESTATION_KPIS_HEADER = {
   negligibleRisk: 'Negligible Risk (%)',
 };
 
+export const NATURAL_FOREST_LOST_KPIS_HEADER_AGGREGATE = {
+  listName: 'List Name',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub State',
+  coverageHA: 'Natural Forest Coverage (HA) (Beta)',
+  naturalForestLossHA: 'Natural Forest Loss (ha) (Beta)',
+  negligibleRisk: 'Negligible Risk',
+};
+
+export const NATURAL_FOREST_LOST_KPIS_HEADER = {
+  listName: 'List Name',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub State',
+  naturalForestCoverage: 'Natural Forest Coverage (HA)',
+  naturalForestLossCumulative: 'Natural Forest Loss cumulative (HA)',
+  naturalForestLossAnnual: 'Natural Forest Loss annual (HA)',
+  year: 'Year',
+  naturalForestDataLayer: 'Natural Forest Data Layer',
+};
+
+export const OTHER_KPIS_HEADER_AGGREGATE = {
+  listName: 'List Name',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub State',
+  negligibleRisk: 'Negligible Risk',
+};
+
+export const OTHER_KPIS_HEADER = {
+  listName: 'List Name',
+  locationName: 'Location Name',
+  countryState: 'Country	State',
+  subState: 'Sub State',
+  negligibleRisk: 'Negligible Risk (%)',
+};
+
 export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
   'Username',
   'List ID',

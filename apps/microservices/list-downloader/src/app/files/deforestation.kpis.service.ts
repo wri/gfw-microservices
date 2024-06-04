@@ -21,16 +21,17 @@ export class DeforestationKpisService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  async start(filters: BasicFieldsFileRequest, suffix = 'deforestation_kpis') {
+  async start(filters: BasicFieldsFileRequest, suffix = '') {
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
-    const header = suffix.includes('aggregated')
-      ? DEFORESTATION_KPIS_HEADER_AGGREGATE
-      : DEFORESTATION_KPIS_HEADER;
+    const [header, fileSuffix] =
+      suffix == 'aggregated'
+        ? [DEFORESTATION_KPIS_HEADER_AGGREGATE, 'deforestation_kpis_aggregated']
+        : [DEFORESTATION_KPIS_HEADER, 'deforestation_kpis'];
 
-    this.organizeStream(filters, Object.keys(header), suffix);
+    this.organizeStream(filters, Object.keys(header), fileSuffix);
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}_${suffix}.csv`,
       `${Object.values(header).join(',')}\n`

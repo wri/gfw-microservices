@@ -1,4 +1,4 @@
-import { DeforestationKpisService } from '../files/deforestation.kpis.service';
+import { DeforestationKpisService, NaturalForestLostService, OtherKpisService } from '../files';
 import { Injectable, Logger } from '@nestjs/common';
 import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
@@ -13,8 +13,10 @@ export class AfiGeneratorService extends IFileGenerator {
   private readonly logger = new Logger(AfiGeneratorService.name);
 
   constructor(
+    private readonly analysisAfiDataService: AnalysisAfiDataService,
     private readonly deforestationKpisService: DeforestationKpisService,
-    private readonly analysisAfiDataService: AnalysisAfiDataService
+    private readonly naturalForestLostService: NaturalForestLostService,
+    private readonly otherKpisService: OtherKpisService
   ) {
     super();
   }
@@ -22,7 +24,7 @@ export class AfiGeneratorService extends IFileGenerator {
   public async makeFile(filters: BasicFieldsFileRequest) {
     await this.deforestationKpisService.startEmail(filters);
     await this.runAfiFileGeneration(filters);
-    await this.runAfiFileGeneration(filters, 1, 'deforestation_kpis_aggregated');
+    await this.runAfiFileGeneration(filters, 1, 'aggregated');
     await getAllFilesAndZip(filters);
     await this.deforestationKpisService.finishProcess(filters);
   }
@@ -30,7 +32,7 @@ export class AfiGeneratorService extends IFileGenerator {
   private async runAfiFileGeneration(
     filters: BasicFieldsFileRequest,
     isListLevel = 0,
-    suffix = 'deforestation_kpis'
+    suffix = ''
   ) {
     const numberOfPages = await this.analysisAfiDataService.getNumberOfPages(filters, isListLevel);
     const { listId } = filters;
@@ -39,6 +41,8 @@ export class AfiGeneratorService extends IFileGenerator {
     const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
     await this.deforestationKpisService.start(filters, suffix);
+    await this.naturalForestLostService.start(filters, suffix);
+    await this.otherKpisService.start(filters, suffix);
 
     const composeResults = async (i: number) => {
       const newFilter = { ...filters, page: i };
@@ -47,6 +51,8 @@ export class AfiGeneratorService extends IFileGenerator {
         isListLevel
       );
       this.deforestationKpisService.process(analysisData);
+      this.naturalForestLostService.process(analysisData);
+      this.otherKpisService.process(analysisData);
       return i;
     };
 
@@ -55,5 +61,7 @@ export class AfiGeneratorService extends IFileGenerator {
     }
 
     await this.deforestationKpisService.finish(filters);
+    await this.naturalForestLostService.finish(filters);
+    await this.otherKpisService.finish(filters);
   }
 }

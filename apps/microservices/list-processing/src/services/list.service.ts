@@ -425,6 +425,7 @@ export class ListService {
         existingRecord.lastSuccessfulStage =
           lastSuccessfulStage ?? existingRecord.lastSuccessfulStage;
         existingRecord.updateTime = new Date();
+        existingRecord.workerInstanceId = existingRecord?.workerInstanceId ?? '';
         await repository.save(existingRecord);
       } else {
         const newRecord = new ListsUploadStatus();
@@ -432,6 +433,7 @@ export class ListService {
         newRecord.errorInfo = errorInfo;
         newRecord.lastSuccessfulStage = lastSuccessfulStage ?? newRecord.lastSuccessfulStage;
         newRecord.updateTime = new Date();
+        newRecord.workerInstanceId = '';
         await repository.save(newRecord);
       }
     } catch (error) {

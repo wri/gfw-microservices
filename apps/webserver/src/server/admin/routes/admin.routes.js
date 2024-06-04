@@ -45,8 +45,8 @@ module.exports = (app) => {
           res.send('Login error');
         }
       })
-      .catch((err) => {
-        res.send('Login error');
+      .catch(() => {
+        res.status(500).send('Login error');
       });
   });
 

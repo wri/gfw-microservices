@@ -62,7 +62,7 @@ function createTypeOrmModule(name: string, entities?: Array<Function | string | 
     imports: [ConfigModule, ListAnalysisMessageModule],
     inject: [ConfigService],
     useFactory: async (config: ConfigService<Env, true>) => {
-      const env = config.get('NODE_ENV');
+      const env = config.get('NODE_ENV', { infer: true });
       const MSSQL_DATABASE = config.get('MSSQL_DATABASE', { infer: true });
       const MSSQL_PASSWORD = config.get('MSSQL_PASSWORD', { infer: true });
 

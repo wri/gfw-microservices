@@ -19,7 +19,7 @@ import { Env } from '../env';
           secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY'),
         });
 
-        const env = config.get('NODE_ENV');
+        const env = config.get('NODE_ENV', { infer: true });
         Logger.log(`Configuring queue for NODE_ENV: ${env}`);
         return {
           consumers: [

@@ -37,6 +37,8 @@ export class AppController {
 
   @Get('/latest_commit')
   getLatestCommit(): string {
-    return this.config.get('NODE_ENV') === 'development' ? 'dev' : this.config.get('LATEST_COMMIT');
+    return this.config.get('NODE_ENV', { infer: true }) === 'development'
+      ? 'dev'
+      : this.config.get('LATEST_COMMIT');
   }
 }

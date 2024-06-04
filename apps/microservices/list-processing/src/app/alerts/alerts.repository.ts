@@ -6,7 +6,7 @@ import {
   SQLUtils,
   GFWList,
   ClientStoreConnection,
-  List,
+  Lists,
   getDashboardDataPaginated,
   CountDashboardDataType,
   getCountDashboardData,
@@ -55,7 +55,7 @@ export class AlertsRepository {
 
   async findDashboardTimestampByListId(listID: number, clientDatabase: string) {
     const connection = await this.createOrganizationConnection(clientDatabase);
-    const listRepository = connection.getRepository(List);
+    const listRepository = connection.getRepository(Lists);
     const list = await listRepository.findOne({ where: { id: listID } });
     return {
       dashboardLastResults: list.dashboardLastResults,

@@ -13,14 +13,8 @@ import { ListService } from '../lists/lists.service';
 import { Lists } from '../lists/lists.entity';
 import { OrganizationService } from './organization.service';
 import { S3Service } from '@wri-monorepos/aws';
-
-const awsConfig = {
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-};
-
-AWS.config.update(awsConfig);
+import { ConfigService } from '@nestjs/config';
+import { Env } from '../env';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ExternalAPIKey, UserRoutes, Organization, Lists], 'default')],
@@ -32,6 +26,17 @@ AWS.config.update(awsConfig);
     OrganizationService,
     ListService,
     S3Service,
+    {
+      provide: 'AWS',
+      inject: [ConfigService],
+      useFactory: (config: ConfigService<Env, true>) => {
+        AWS.config.update({
+          accessKeyId: config.get('AWS_ACCESS_KEY_ID'),
+          secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY'),
+          region: config.get('AWS_REGION'),
+        });
+      },
+    },
   ],
   exports: [OrganizationService],
 })

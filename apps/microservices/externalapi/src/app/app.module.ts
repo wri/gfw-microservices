@@ -18,11 +18,13 @@ import {
 } from '../config';
 import { ApiKeyMiddleware } from '../middleware/api.middleware';
 import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
+import { Env, envSchema } from '../env';
 
 // This needs to be at the beginning of the file to ensure that the '.env' file
 // is loaded into process.env before any code reads process.env
 const envModule = ConfigModule.forRoot({
   envFilePath: ['.env', '.env.production'],
+  validate: (env) => envSchema.parse(env),
   isGlobal: true,
 });
 
@@ -59,8 +61,11 @@ function createTypeOrmModule(name: string, entities?: Array<Function | string | 
     name,
     imports: [ConfigModule, ListAnalysisMessageModule],
     inject: [ConfigService],
-    useFactory: async (config: ConfigService) => {
-      const env = config.get<string>('NODE_ENV');
+    useFactory: async (config: ConfigService<Env, true>) => {
+      const env = config.get('NODE_ENV');
+      const MSSQL_DATABASE = config.get('MSSQL_DATABASE', { infer: true });
+      const MSSQL_PASSWORD = config.get('MSSQL_PASSWORD', { infer: true });
+
       return {
         name,
         type: env === TEST_ENVIRONMENT ? CONNECTION_TYPE_SQLITE : CONNECTION_TYPE_MSSQL,
@@ -69,14 +74,14 @@ function createTypeOrmModule(name: string, entities?: Array<Function | string | 
             ? name === 'default'
               ? SYSTEM_DATABASE
               : CLIENT_DATABASE
-            : config.get<string>('MSSQL_DATABASE'),
-        username: config.get<string>('MSSQL_USERNAME'),
-        password: config.get<string>('MSSQL_PASSWORD'),
+            : MSSQL_DATABASE,
+        username: config.get('MSSQL_USERNAME', { infer: true }),
+        password: MSSQL_PASSWORD,
         synchronize: env === TEST_ENVIRONMENT,
         logging: true,
         entities,
-        host: config.get<string>('MSSQL_HOSTNAME'),
-        port: parseInt(config.get<string>('MSSQL_PORT'), 10),
+        host: config.get('MSSQL_HOSTNAME', { infer: true }),
+        port: config.get('MSSQL_PORT', { infer: true }),
         extra: {
           trustServerCertificate: true,
         },

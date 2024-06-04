@@ -7,7 +7,9 @@ export const envSchema = z.object({
   MSSQL_USERNAME: z.string(),
   MSSQL_PASSWORD: z.string(),
 
-  NODE_ENV: z.enum(['development', 'test']),
+  PORT: z.coerce.number().default(3337),
+
+  NODE_ENV: z.enum(['development', 'test', 'staging', 'production']),
 
   AWS_ACCESS_KEY_ID: z.string(),
   AWS_SECRET_ACCESS_KEY: z.string(),

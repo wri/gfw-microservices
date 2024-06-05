@@ -11,7 +11,7 @@ const viewTreeCoverLossForRegions = (name: string) => {
 
 const downloadListData = (list: string) => {
   const id = listIdFromListName[list];
-  const url = `/locations/csv/${id}?type=everything&order=asc&listFilterStr=&aggregate=true&listView=forest_change&analysisAreaMin=0&selectedLocations=`;
+  const url = `/locations/csv/${id}?type=everything&order=asc&listFilterStr=&aggregate=true&listView=forest_change&isGFWList=false&analysisAreaMin=0&selectedLocations=`;
   cy.intercept('GET', url, (req) => {
     req.reply({
       statusCode: 200,
@@ -21,6 +21,7 @@ const downloadListData = (list: string) => {
   }).as('download');
 
   cy.get('[data-cy="download-diagnostics"]').click();
+
   cy.wait('@download');
 };
 

@@ -20,7 +20,7 @@ class DiscretizeData extends Transform {
   }
   _transform(
     data: DataToTransform,
-    _: any,
+    _: unknown,
     next: (arg0: null, arg1: TransformedData | undefined) => void
   ) {
     if (!data) return next(null, undefined);

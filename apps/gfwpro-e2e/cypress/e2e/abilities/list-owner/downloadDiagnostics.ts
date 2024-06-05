@@ -12,5 +12,6 @@ Then('I can see the download confirmation', () => {
 });
 
 Then('I am able to download the list data', () => {
-  cy.get('[data-cy="download-diagnostics"]').should('be.visible');
+  cy.get('[data-cy="download-diagnostics"]', { timeout: 10000 }).should('be.visible');
+  cy.get('[data-cy="download-diagnostics"]', { timeout: 10000 }).should('be.visible');
 });

@@ -687,7 +687,7 @@ export default class Diagnostics extends Component {
     );
 
     const hasAsiaPresence = filteredLocations.some(
-      (location) => location.southeast_asia_presencee === 'true'
+      (location) => location.southeast_asia_presence === 'true'
     );
 
     const CustomDownloadConfirmationMessage = hasArgentinaPresence

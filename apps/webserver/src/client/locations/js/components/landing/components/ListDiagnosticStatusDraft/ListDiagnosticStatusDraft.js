@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from '../../../../../../common/js/components/Button';
 import CustomTooltip from '../../../../../../common/js/components/CustomTooltip/CustomTooltip';
-import CustomDraftDialog from '../../../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
+import CustomDialog from '../../../../../../common/js/components/CustomDialog/CustomDialog';
 import { locationsPage } from '../../../../../../common/js/config';
 import './ListDiagnosticStatusDraft.scss';
 
@@ -42,7 +42,7 @@ export default function ListDiagnosticStatusDraft({ submitForAnalysis, hideSubmi
       )}
 
       {dialogOpen && (
-        <CustomDraftDialog
+        <CustomDialog
           open={true}
           closeAction={() => setDialogOpen(false)}
           dialogTitle={locationsPage.lists.submitListDialog.title}

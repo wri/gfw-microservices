@@ -6,7 +6,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable no-case-declarations */
 import React, { useState, useRef } from 'react';
-import Dialog from 'material-ui/Dialog';
 import LocationOn from '@mui/icons-material/LocationOn';
 import TableChart from '@mui/icons-material/TableChart';
 import TableView from '@mui/icons-material/TableView';
@@ -19,7 +18,7 @@ import Button from '../../../../common/js/components/Button';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import IconButton from '../../../../common/js/components/IconButton';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
-import CustomDraftDialog from '../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
+import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
 import { containsPunctuation } from '../../utils/lists.utils';
 import uploadProcess from './uploadProcess';
 import { formatBytes } from '../../utils/upload.utils';
@@ -438,24 +437,16 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         </div>
       )}
 
-      <Dialog
-        paperClassName="dialog-paper"
+      <CustomDialog
         open={dialogOpen}
-        title={dialogTitle}
-        actions={[
-          <Button
-            className="dialog__primary-action"
-            variant="primary"
-            label="OK"
-            onClick={shouldCloseDialog}
-          />,
-        ]}
-        onRequestClose={shouldCloseDialog}
-      >
-        <div dangerouslySetInnerHTML={{ __html: dialogMessage }} />
-      </Dialog>
+        dialogTitle={dialogTitle}
+        dialogActionConfirm={shouldCloseDialog}
+        closeAction={shouldCloseDialog}
+        dialogMessage={dialogMessage}
+      />
+
       {existingListName && (
-        <CustomDraftDialog
+        <CustomDialog
           open={alertDialogOpen}
           dialogTitle={'Confirm Submit to Analisys'}
           dialogActionConfirm={createUploadProcess}

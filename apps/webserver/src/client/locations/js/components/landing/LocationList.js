@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { getIsDiagnosticStatusDraft } from '../../../../listDetails/js/utils/draft.utils';
 import { locationsPage, userAccessLevel, SAVED_LOCATIONS } from '../../../../common/js/config';
 
-import CustomDraftDialog from '../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
+import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
 
 import fetch from '../../../../common/js/utils/fetch';
 import { addList, changeView, resetList } from '../../actions/locationActions';
@@ -252,7 +252,7 @@ export default class LocationList extends Component {
           />
         )}
         {rerunDialogState && (
-          <CustomDraftDialog
+          <CustomDialog
             open={rerunDialogState}
             closeAction={this.handleRerunDialogState}
             dialogTitle={locationsPage.lists.rerunListDialog.title}

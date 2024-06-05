@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import ReactTable from 'react-table';
 import cloneDeep from 'lodash/cloneDeep';
-import Dialog from 'material-ui/Dialog';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -9,7 +8,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 // Configs
 import { getFolders } from 'locations/js/components/landing/foldersApi';
 import ManageListFolderDialog from 'locations/js/components/landing/ManageListFolderDialog';
-import CustomDraftDialog from 'common/js/components/CustomDraftDialog/CustomDraftDialog';
+import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 
 import Breadcrumbs from 'common/js/components/Breadcrumbs';
@@ -502,7 +501,12 @@ export default class Lists extends Component {
   };
 
   cancelDialog = () => {
-    this.setState({ dialogChildren: null, dialogContent: null, dialogActions: null });
+    this.setState({
+      dialogChildren: null,
+      dialogContent: null,
+      dialogActions: null,
+      closeAction: null,
+    });
     this.handleDialogClose(false);
   };
 
@@ -524,6 +528,7 @@ export default class Lists extends Component {
     this.setState({
       dialogActions: null,
       isLoading: true,
+      closeAction: null,
     });
     const selectedList = selectedLists[0];
     const { id: list_id, list_name: listName } = selectedList;
@@ -586,7 +591,7 @@ export default class Lists extends Component {
   deleteSelectedLocations = () => {
     this.handleDialogClose(false);
     // clear the custom dialog buttons
-    this.setState({ dialogActions: null, isLoading: true });
+    this.setState({ dialogActions: null, isLoading: true, closeAction: null });
     const { selectedLists, selectedLocations } = this.props;
     const { allLocationsSelected } = this.state;
 
@@ -661,19 +666,15 @@ export default class Lists extends Component {
     });
   };
 
+  closeDialog = () => {
+    this.setState({ dialogOpen: false });
+  };
+
   // Prompt to delete the locations currently selected in the list
   promptDeleteSelectedLocations = () => {
     this.setState({
-      dialogActions: [
-        <div className="PromptDeleteSelectedLocations dialog__footer">
-          <Button
-            variant="primary"
-            label={locationsPage.lists.ok}
-            onClick={this.deleteSelectedLocations}
-          />
-          <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
-        </div>,
-      ],
+      dialogActions: this.deleteSelectedLocations,
+      closeAction: this.closeDialog,
       dialogOpen: true,
       dialogTitle: locationsPage.lists.deleteLocationsMessages.confirm.title,
       dialogContent: locationsPage.lists.deleteLocationsMessages.confirm.message,
@@ -712,7 +713,7 @@ export default class Lists extends Component {
   moveSelectedLocations = () => {
     this.handleDialogClose(false);
     // clear the custom dialog content
-    this.setState({ dialogActions: null, dialogChildren: null });
+    this.setState({ dialogActions: null, dialogChildren: null, closeAction: this.closeDialog });
     const {
       activeTemplate,
       addType,
@@ -929,58 +930,54 @@ export default class Lists extends Component {
         dialogContent: locationsPage.lists.copyMoveMessages.ListTooLarge.message,
         isSaving: false,
         refreshPage: false,
+        closeAction: this.closeDialog,
+        dialogActions: null,
       });
     } else {
       this.setState({
         dialogActions: [
-          <div className="PromptMoveSelectedLocations dialog__footer">
-            <div className="PromptMoveSelectedLocations__actions">
-              <SaveAsDraftButton
-                onClick={() => {
-                  this.setState({ isSaveAsDraft: true }, () => {
-                    if (selectedMoveOrCopy === 'copy') {
-                      gtag('event', 'Copy List', {
-                        event_category: 'Copy',
-                        event_label: 'User copies a list to draft',
-                      });
-                    } else {
-                      gtag('event', 'Move List', {
-                        event_category: 'Move',
-                        event_label: 'User moves a list to draft',
-                      });
-                    }
-                    this.moveSelectedLocations();
-                  });
-                }}
-                disabled={
-                  selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)
-                }
-              />
-              <Button
-                variant="primary"
-                label={locationsPage.lists.submit}
-                onClick={() => {
+          <>
+            <SaveAsDraftButton
+              onClick={() => {
+                this.setState({ isSaveAsDraft: true }, () => {
                   if (selectedMoveOrCopy === 'copy') {
                     gtag('event', 'Copy List', {
                       event_category: 'Copy',
-                      event_label: 'User copies a list and submits',
+                      event_label: 'User copies a list to draft',
                     });
                   } else {
                     gtag('event', 'Move List', {
                       event_category: 'Move',
-                      event_label: 'User moves a list and submits',
+                      event_label: 'User moves a list to draft',
                     });
                   }
-                  this.setState({ isSaveAsDraft: false, showSubmitModal: true });
-                }}
-                disabled={
-                  selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)
+                  this.moveSelectedLocations();
+                });
+              }}
+              disabled={selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)}
+            />
+            <Button
+              variant="primary"
+              label={locationsPage.lists.submit}
+              onClick={() => {
+                if (selectedMoveOrCopy === 'copy') {
+                  gtag('event', 'Copy List', {
+                    event_category: 'Copy',
+                    event_label: 'User copies a list and submits',
+                  });
+                } else {
+                  gtag('event', 'Move List', {
+                    event_category: 'Move',
+                    event_label: 'User moves a list and submits',
+                  });
                 }
-              />
-            </div>
-            <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
-          </div>,
+                this.setState({ isSaveAsDraft: false, showSubmitModal: true });
+              }}
+              disabled={selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)}
+            />
+          </>,
         ],
+        closeAction: this.closeDialog,
         dialogOpen: true,
         dialogTitle: locationsPage.lists.moveLocationsDialogHeader,
         dialogContent: '',
@@ -1138,8 +1135,6 @@ export default class Lists extends Component {
     }
 
     if (location_analyses) {
-      // TODO - Talk to Lucas/Patrick, we should not be deleting data that is needed for Edit Lists workflow
-      // If you need to hide the column, use a different method then deleting key/value
       const locationData = location_analyses[0];
       const analysisData = location_analyses[1];
       if (locationData.length > 0) {
@@ -1155,7 +1150,6 @@ export default class Lists extends Component {
         store.dispatch(updateFilteredData(filteredIds));
         store.dispatch(updateListLevelAnalysis(list_analysis));
 
-        // if the checkbox to select all locations is selected, check the checkbox from all rows
         if (allLocationsSelected) {
           store.dispatch(updateSelectedLocations(filteredIds));
         }
@@ -1228,8 +1222,7 @@ export default class Lists extends Component {
 
   getGFWDataFromMap = (gfwList, globalIds) => {
     const { stopLoading } = this.props;
-    // Original check of `gfwList.id` was breaking GFW list ID 3 and cutting first character from string
-    // If we are passing globalIds, they contain brackets ({}) that we removed using slice
+
     const updatedGlobalIds = [1, 2, 3].includes(gfwList.id)
       ? globalIds
       : globalIds.map((id) => id.slice(1, -1));
@@ -1986,6 +1979,7 @@ export default class Lists extends Component {
       visibleColumns,
       allLocationsSelected,
       isListSubmittedForAnalysis,
+      closeAction,
     } = this.state;
 
     const userLists = userListsProps
@@ -2174,14 +2168,7 @@ export default class Lists extends Component {
         },
       };
     }
-    const allDialogActions = dialogActions || [
-      <Button
-        className="all-dialog-actions"
-        variant="primary"
-        label={locationsPage.lists.ok}
-        onClick={() => this.handleDialogClose(refreshPage)}
-      />,
-    ];
+    const dialogConfirm = dialogActions || (() => this.handleDialogClose(refreshPage));
 
     return (
       <div>
@@ -2206,17 +2193,12 @@ export default class Lists extends Component {
           </Banner>
         )}
 
-        {dialogOpen && (
-          <Dialog
-            paperClassName="dialog-paper"
-            title={dialogTitle}
-            actions={allDialogActions}
-            modal={false}
-            open
-            contentStyle={{ padding: '0 24px' }}
-            onRequestClose={() => this.handleDialogClose(refreshPage)}
-          >
-            {dialogChildren ? (
+        <CustomDialog
+          open={dialogOpen}
+          closeAction={closeAction}
+          dialogTitle={dialogTitle}
+          dialogMessage={
+            dialogChildren ? (
               <CopyMoveModal
                 isGfwList={isGfwList}
                 newListName={newListName}
@@ -2232,25 +2214,19 @@ export default class Lists extends Component {
                 validLists={validLists}
               />
             ) : (
-              <div
-                className="dialog-content-email"
-                dangerouslySetInnerHTML={{ __html: dialogContent }}
-              />
-            )}
-          </Dialog>
-        )}
+              dialogContent
+            )
+          }
+          dialogActionConfirm={dialogConfirm}
+        />
 
-        {showSubmitModal && (
-          <CustomDraftDialog
-            open
-            closeAction={() => this.setState({ showSubmitModal: false })}
-            dialogTitle="Confirm Submission"
-            dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
-            dialogActionConfirm={() => {
-              this.moveSelectedLocations();
-            }}
-          />
-        )}
+        <CustomDialog
+          open={showSubmitModal}
+          closeAction={() => this.setState({ showSubmitModal: false })}
+          dialogTitle="Confirm Submission"
+          dialogMessage="Click OK to submit this list for analysis. You will not be able to access the list until analysis is complete."
+          dialogActionConfirm={this.moveSelectedLocations}
+        />
 
         {listNotAccessible && (
           <FailedPopupDialog
@@ -2273,6 +2249,7 @@ export default class Lists extends Component {
         )}
 
         <ModalLoader open={isLoading} />
+
         <section className="locations-body list-detail-page">
           {selectedList && (
             <div className="flex-grid">
@@ -2485,7 +2462,7 @@ export default class Lists extends Component {
                             icon={<IconRerun height="14px" />}
                             label="Update Analysis"
                           />
-                          <CustomDraftDialog
+                          <CustomDialog
                             open={rerunDialogState}
                             closeAction={this.handleRerunDialogState}
                             dialogTitle={locationsPage.lists.rerunListDialog.title}
@@ -2526,7 +2503,7 @@ export default class Lists extends Component {
                         </div>
                       ) : null}
 
-                      <CustomDraftDialog
+                      <CustomDialog
                         open={draftSubmitDialogOpen}
                         closeAction={() => {
                           this.setState({ draftSubmitDialogOpen: false });

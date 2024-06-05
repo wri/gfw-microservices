@@ -1,4 +1,5 @@
 import {
+  CopyOrMoveLargeListRequestLLP,
   DeleteListRequest,
   GetObjectPresigned,
   RequestLargeListProcess,
@@ -16,7 +17,16 @@ import { LocationService } from './../services/locations.service';
 import { ListPaginationService } from '../services/list.pagination.service';
 import { ZodValidationPipe } from '@wri-monorepos/shared';
 import { deleteListBodySchema } from './types/deleteListRequestSchema';
-import { RequestPreSignedURLSchema, GetObjectPresignedSchema, RequestSaveLargeListProcessModelSchema, RequestLargeListProcessSchema, RequestTriggerProcessLargeListSchema, CopyOrMoveLargeListRequestSchema, getPaginatedListDataRequestSchema, getNumberOfPagesPaginatedListDataRequestSchema } from './validators';
+import {
+  RequestPreSignedURLSchema,
+  GetObjectPresignedSchema,
+  RequestSaveLargeListProcessModelSchema,
+  RequestLargeListProcessSchema,
+  RequestTriggerProcessLargeListSchema,
+  CopyOrMoveLargeListRequestSchema,
+  getPaginatedListDataRequestSchema,
+  getNumberOfPagesPaginatedListDataRequestSchema,
+} from './validators';
 import {
   ApiBadRequestResponse,
   ApiNotFoundResponse,
@@ -24,7 +34,6 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { BadRequestExceptionResponse } from './types/apiResponses';
-import { CopyOrMoveLargeListRequest } from '@wri-monorepos/sql';
 
 /*
   This controller will be deprecated in the future
@@ -63,24 +72,21 @@ export class AppController {
    */
   @Post('/get-object-presigned-url')
   getObjectPresignedURL(
-    // @Body() request: Omit<RequestPreSignedURLModel, 'contentType'>) 
     @Body(new ZodValidationPipe(GetObjectPresignedSchema)) request: GetObjectPresigned
-  )
-  {
+  ) {
     return this.appService.getObjectPreSignedUrl(request.key);
   }
 
   @Post('/save-list-to-process')
   saveListToProcess(
-    // @Body() request: RequestSaveLargeListProcessModel
-  @Body(new ZodValidationPipe(RequestSaveLargeListProcessModelSchema)) request: RequestSaveLargeListProcessModel
-) {
+    @Body(new ZodValidationPipe(RequestSaveLargeListProcessModelSchema))
+    request: RequestSaveLargeListProcessModel
+  ) {
     return this.listService.saveListToProcess(request);
   }
 
   @Post('/process-list')
   processLargeList(
-    // @Body() request: RequestLargeListProcess
     @Body(new ZodValidationPipe(RequestLargeListProcessSchema)) request: RequestLargeListProcess
   ) {
     return this.listService.startAnalysisProcessForList(request);
@@ -88,8 +94,8 @@ export class AppController {
 
   @Post('/create-large-list')
   triggerProcessLargeList(
-    // @Body() request: RequestTriggerProcessLargeList
-    @Body(new ZodValidationPipe(RequestTriggerProcessLargeListSchema)) request: RequestTriggerProcessLargeList
+    @Body(new ZodValidationPipe(RequestTriggerProcessLargeListSchema))
+    request: RequestTriggerProcessLargeList
   ) {
     return this.listService.createListTables(
       request.list_name,
@@ -101,16 +107,16 @@ export class AppController {
 
   @Post('/CopyOrMoveLargeList')
   CopyOrMoveLargeList(
-    // @Body() request: CopyOrMoveLargeListRequest
-    @Body(new ZodValidationPipe(CopyOrMoveLargeListRequestSchema)) request: CopyOrMoveLargeListRequest
+    @Body(new ZodValidationPipe(CopyOrMoveLargeListRequestSchema))
+    request: CopyOrMoveLargeListRequestLLP
   ) {
     return this.locationService.MoveLocations(request);
   }
 
   @Get('/paginated-list-data')
   async getPaginatedListData(
-    // @Query() queryParam: getPaginatedListDataRequest
-    @Query(new ZodValidationPipe(getPaginatedListDataRequestSchema)) queryParam: getPaginatedListDataRequest
+    @Query(new ZodValidationPipe(getPaginatedListDataRequestSchema))
+    queryParam: getPaginatedListDataRequest
   ) {
     this.validatePaginatedRequest(queryParam);
     const result = await this.listPaginationService.getPaginatedListData(queryParam);
@@ -119,8 +125,8 @@ export class AppController {
 
   @Get('/pages-paginated-list-data')
   async getNumberOfPagesPaginatedListData(
-    // @Query() queryParam: getNumberOfPagesPaginatedListDataRequest
-    @Query(new ZodValidationPipe(getNumberOfPagesPaginatedListDataRequestSchema)) queryParam: getNumberOfPagesPaginatedListDataRequest
+    @Query(new ZodValidationPipe(getNumberOfPagesPaginatedListDataRequestSchema))
+    queryParam: getNumberOfPagesPaginatedListDataRequest
   ) {
     this.validatePaginatedRequest(queryParam);
     const result = await this.listPaginationService.getNumberOfPagesPaginatedListData(queryParam);
@@ -129,8 +135,8 @@ export class AppController {
 
   @Get('/paginated-list-data-with-pages')
   async getPaginatedListDataWithPages(
-    // @Query() queryParam: getPaginatedListDataRequest
-    @Query(new ZodValidationPipe(getPaginatedListDataRequestSchema)) queryParam: getPaginatedListDataRequest
+    @Query(new ZodValidationPipe(getPaginatedListDataRequestSchema))
+    queryParam: getPaginatedListDataRequest
   ) {
     this.validatePaginatedRequest(queryParam);
     const result = this.listPaginationService.getPaginatedListDataWithPages(queryParam);

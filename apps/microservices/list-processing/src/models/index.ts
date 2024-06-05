@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ListFilters } from '@wri-monorepos/geo';
-import { optional } from 'zod'
+import {
+  ActionType,
+  CopyOrMoveLargeListRequest,
+  ListsType,
+  TargetListType,
+} from '@wri-monorepos/sql';
 export class GetObjectPresigned {
   @ApiProperty()
   key: string;
@@ -90,7 +95,7 @@ export class CreateListRequest {
   filename: string;
 }
 
-export class CopyOrMoveLargeListRequest {
+export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest {
   @ApiProperty()
   listId: number;
   @ApiProperty()
@@ -100,14 +105,14 @@ export class CopyOrMoveLargeListRequest {
   @ApiProperty()
   userListNames: string[];
   @ApiProperty()
-  action: string; // move or copy
-  @ApiProperty()
-  listType: string; // new or existing
+  action: ActionType; // move or copy
   @ApiProperty()
   listName: string;
-  @ApiProperty({ required: false })
-  targetList?: number;
   @ApiProperty()
+  listType: TargetListType;
+  @ApiProperty({ required: false })
+  targetList?: ListsType;
+  @ApiProperty({ example: [1, 2, 3] })
   selectedLocations: number[];
   @ApiProperty()
   addType: string;
@@ -174,13 +179,20 @@ export class getPaginatedListDataRequest {
   searchString?: string;
 }
 
-export interface getNumberOfPagesPaginatedListDataRequest {
+export class getNumberOfPagesPaginatedListDataRequest {
+  @ApiProperty()
   listId: number;
+  @ApiProperty()
   organizationDatabase: string;
+  @ApiProperty({ required: false })
   subState?: string;
+  @ApiProperty()
   rowsPerPage: 1000;
+  @ApiProperty({ required: false })
   analysisAreaMin?: number;
+  @ApiProperty({ required: false })
   analysisAreaMax?: number;
+  @ApiProperty({ required: false })
   searchString?: string;
 }
 

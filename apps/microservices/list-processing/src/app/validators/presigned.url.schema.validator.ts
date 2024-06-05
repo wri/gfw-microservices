@@ -1,3 +1,4 @@
+import { ActionType, TargetListType } from '@wri-monorepos/sql';
 import { z } from 'zod';
 
 // Define the allowed content types
@@ -48,19 +49,55 @@ export const RequestTriggerProcessLargeListSchema = z.object({
 });
 
 export const CopyOrMoveLargeListRequestSchema = z.object({
-  source: z.string(),
-  destination: z.string(),
-  copy: z.boolean(),
+  listId: z.coerce.number(),
+  selectedListLocationClasification: z.string(),
+  customAttributesNames: z.array(z.string()),
+  userListNames: z.array(z.string()),
+  action: z.nativeEnum(ActionType),
+  listType: z.nativeEnum(TargetListType),
+  listName: z.string(),
+  targetList: z.object({}).optional(),
+  selectedLocations: z.array(z.coerce.number()),
+  addType: z.string(),
+  activeTemplate: z.string(),
+  commodityType: z.string().optional(),
+  templateData: z.any(),
+  saveAsDraft: z.coerce.boolean(),
+  userId: z.coerce.number(),
+  clientDatabase: z.string(),
+  organizationId: z.coerce.number(),
+  subscriptionStatusId: z.coerce.number(),
+  gfwListId: z.coerce.number(),
+  allLocationsSelected: z.coerce.boolean(),
+  filters: z.object({}),
+  srcListAnalysisTable: z.string(),
 });
 export const getPaginatedListDataRequestSchema = z.object({
-  page: z.number(),
-  limit: z.number(),
-  search: z.string().optional(),
-  sort: z.string().optional(),
-  order: z.string().optional(),
+  listId: z.coerce.number(),
+  organizationDatabase: z.string(),
+  analysisAreaMax: z.coerce.number().optional(),
+  analysisAreaMin: z.coerce.number().optional(),
+  country: z.string().optional(),
+  geometry: z.coerce.number().optional(),
+  orderType: z.string().optional(),
+  page: z.coerce.number().optional(),
+  rowsPerPage: z.coerce.number().optional(),
+  sortByAttribute: z.string().optional(),
+  state: z.string().optional(),
+  subState: z.string().optional(),
+  locationLogic: z.string().optional(),
+  locationIds: z.string().optional(),
+  locationStatement: z.string().optional(),
+  combinedColumns: z.string().optional(),
+  searchString: z.string().optional(),
 });
 
 export const getNumberOfPagesPaginatedListDataRequestSchema = z.object({
-  limit: z.number(),
-  search: z.string().optional(),
+  listId: z.coerce.number(),
+  organizationDatabase: z.string(),
+  subState: z.string().optional(),
+  rowsPerPage: z.coerce.number(),
+  analysisAreaMin: z.coerce.number().optional(),
+  analysisAreaMax: z.coerce.number().optional(),
+  searchString: z.string().optional(),
 });

@@ -31,7 +31,7 @@ import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
 
-import { Env } from '../env';
+import { ServerConfigType } from '../validators/server-config';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -54,7 +54,7 @@ export class ListAnalysisService {
   private readonly logger = new Logger(ListAnalysisResponse.name);
 
   constructor(
-    private configService: ConfigService<Env, true>,
+    private configService: ConfigService<ServerConfigType, true>,
     private userService: UserService,
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,

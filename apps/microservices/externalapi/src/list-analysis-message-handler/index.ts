@@ -5,14 +5,14 @@ import { ConfigService } from '@nestjs/config';
 import { AnalysisMessageHandler } from './analysis-message-handler';
 import { AWS_ANALYSIS_QUEUE_IDENTIFIER, AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { ListsAnalysisModule } from '../list-analysis';
-import { Env } from '../env';
+import { ServerConfigType } from '../validators/server-config';
 
 @Module({
   imports: [
     ListsAnalysisModule,
     SqsModule.registerAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService<Env, true>) => {
+      useFactory: (config: ConfigService<ServerConfigType, true>) => {
         AWS.config.update({
           region: config.get('AWS_REGION'),
           accessKeyId: config.get('AWS_ACCESS_KEY_ID'),

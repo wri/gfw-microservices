@@ -18,13 +18,13 @@ import {
 } from '../config';
 import { ApiKeyMiddleware } from '../middleware/api.middleware';
 import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
-import { Env, envSchema } from '../env';
+import { ServerConfigType, serverConfigSchema } from '../validators/server-config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: ['.env', '.env.production'],
-      validate: (env) => envSchema.parse(env),
+      validate: (env) => serverConfigSchema.parse(env),
       isGlobal: true,
     }),
     createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes]),
@@ -57,7 +57,7 @@ function createTypeOrmModule(name: string, entities?: Array<Function | string | 
     name,
     imports: [ConfigModule, ListAnalysisMessageModule],
     inject: [ConfigService],
-    useFactory: async (config: ConfigService<Env, true>) => {
+    useFactory: async (config: ConfigService<ServerConfigType, true>) => {
       const env = config.get('NODE_ENV', { infer: true });
       const MSSQL_DATABASE = config.get('MSSQL_DATABASE', { infer: true });
       const MSSQL_PASSWORD = config.get('MSSQL_PASSWORD', { infer: true });

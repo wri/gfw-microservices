@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { ApiKeyGuard } from '../api-keys/auth.guard';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
-import { Env } from '../env';
+import { ServerConfigType } from '../validators/server-config';
 
 //We need this annotation to avoid this controller to be shown on Swagger docs
 @ApiExcludeController()
@@ -12,7 +12,7 @@ import { Env } from '../env';
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private readonly config: ConfigService<Env, true>
+    private readonly config: ConfigService<ServerConfigType, true>
   ) {}
 
   /**

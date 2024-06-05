@@ -9,7 +9,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
 import { SecurityHeaderMiddleware } from './middleware/security-header.middleware';
 import { ConfigService } from '@nestjs/config';
-import { Env } from './env';
+import { ServerConfigType } from './validators/server-config';
 
 const SWAGGER_DISABLED_ENVS: ReadonlyArray<string> = ['staging', 'production'];
 
@@ -19,7 +19,7 @@ async function bootstrap() {
   app.setGlobalPrefix(globalPrefix);
   app.use(new SecurityHeaderMiddleware().use);
 
-  const config = app.get<ConfigService<Env, true>>(ConfigService);
+  const config = app.get<ConfigService<ServerConfigType, true>>(ConfigService);
   const port = config.get('PORT', { infer: true });
 
   if (!SWAGGER_DISABLED_ENVS.includes(config.get('NODE_ENV', { infer: true }))) {

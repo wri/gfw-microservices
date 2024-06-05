@@ -11,7 +11,7 @@ import { Organization } from './organization.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserRoutes } from './user-route.entity';
 import * as AWS from 'aws-sdk';
-import { Env } from '../env';
+import { ServerConfigType } from '../validators/server-config';
 
 @Module({
   imports: [
@@ -24,7 +24,7 @@ import { Env } from '../env';
     {
       provide: '',
       inject: [ConfigService],
-      useFactory: (config: ConfigService<Env, true>) => {
+      useFactory: (config: ConfigService<ServerConfigType, true>) => {
         AWS.config.update({
           accessKeyId: config.get('AWS_ACCESS_KEY_ID'),
           secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY'),

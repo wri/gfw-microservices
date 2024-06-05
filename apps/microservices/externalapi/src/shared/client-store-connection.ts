@@ -5,7 +5,7 @@ import { TEST_ENVIRONMENT, CONNECTION_TYPE_SQLITE, CONNECTION_TYPE_MSSQL } from 
 import { ExternalUpload } from '../list-analysis/external-upload.entity';
 import { ListsAnalysisStatus } from '../list-analysis/list-analysis-status.entity';
 import { Lists } from '../lists/lists.entity';
-import { Env } from '../env';
+import { ServerConfigType } from '../validators/server-config';
 
 export interface ConnectionCacheItem {
   connection: Promise<DataSource>;
@@ -16,7 +16,7 @@ export interface ConnectionCacheItem {
 export class ClientStoreConnection {
   private readonly connections: Map<string, ConnectionCacheItem> = new Map();
 
-  constructor(private config: ConfigService<Env, true>) {}
+  constructor(private config: ConfigService<ServerConfigType, true>) {}
 
   async getConnection(database: string): Promise<DataSource> {
     const connectionId = this.config.get('MSSQL_HOSTNAME') + database;

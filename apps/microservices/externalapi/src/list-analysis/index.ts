@@ -14,7 +14,7 @@ import { Lists } from '../lists/lists.entity';
 import { OrganizationService } from './organization.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
-import { Env } from '../env';
+import { ServerConfigType } from '../validators/server-config';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ExternalAPIKey, UserRoutes, Organization, Lists], 'default')],
@@ -29,7 +29,7 @@ import { Env } from '../env';
     {
       provide: 'AWS',
       inject: [ConfigService],
-      useFactory: (config: ConfigService<Env, true>) => {
+      useFactory: (config: ConfigService<ServerConfigType, true>) => {
         AWS.config.update({
           accessKeyId: config.get('AWS_ACCESS_KEY_ID'),
           secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY'),

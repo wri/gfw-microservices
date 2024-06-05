@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const envSchema = z.object({
+export const serverConfigSchema = z.object({
   MSSQL_HOSTNAME: z.string().ip(),
   MSSQL_PORT: z.coerce.number(),
   MSSQL_DATABASE: z.string(),
@@ -25,4 +25,4 @@ export const envSchema = z.object({
   LATEST_COMMIT: z.string().optional(),
 });
 
-export type Env = z.infer<typeof envSchema>;
+export type ServerConfigType = z.infer<typeof serverConfigSchema>;

@@ -483,17 +483,12 @@ class UploadLocations extends Component {
           });
         }
       }
-      /**
-       * @note
-       * Based on
-       * .../list-upload/validate.location.spec.ts
-       * .../list-upload/validate.location.ts
-       * we validate that fields `Analysis Radius` & `Analysis Area`
-       * are present, not empty nor zero
-       */
+
       if (
-        (analysisFields['Analysis Radius'] === '' || analysisFields['Analysis Radius'] === 0) &&
-        (analysisFields['Analysis Area'] === '' || analysisFields['Analysis Area'] === 0)
+        analysisFields['Analysis Radius'] !== '' &&
+        analysisFields['Analysis Radius'] !== 0 &&
+        analysisFields['Analysis Area'] !== '' &&
+        analysisFields['Analysis Area'] !== 0
       ) {
         feature.valid = false;
         feature.invalidFields.push('Analysis Radius');

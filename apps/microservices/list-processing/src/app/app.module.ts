@@ -12,6 +12,7 @@ import { AppService } from './app.service';
 import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
 import { LocationService } from '../services/locations.service';
 import { ListService } from '../services/list.service';
+import { LockListService } from '../services/lock.list.service';
 import { GeoService } from '@wri-monorepos/geo';
 import { ListPaginationService } from '../services/list.pagination.service';
 import { FCDModule } from './fcd';
@@ -48,6 +49,7 @@ config.update({
     LocationService,
     GeoService,
     ListService,
+    LockListService,
     DeleteListTypeOrm,
   ],
 })

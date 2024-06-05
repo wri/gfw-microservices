@@ -10,15 +10,16 @@ import { Repository } from 'typeorm';
 describe('Feature Flag Service', () => {
   let organizationRepository: Repository<Organization>;
   let featureFlagRepository: Repository<FeatureFlag>;
+  let clientStoreConnection: ClientStoreConnection;
 
   beforeAll(async () => {
     process.env.NODE_ENV = 'test';
-    process.env.MSSQL_DATABASE = 'gfwpro';
+    process.env.MSSQL_DATABASE = ':memory:';
     process.env.MSSQL_USERNAME = 'test';
     process.env.MSSQL_PASSWORD = 'test';
     process.env.MSSQL_HOSTNAME = 'localhost';
 
-    const clientStoreConnection = new ClientStoreConnection();
+    clientStoreConnection = new ClientStoreConnection();
     const database = process.env.MSSQL_DATABASE || 'gfwpro';
     const connection = await clientStoreConnection.getConnection(database, systemEntities);
 
@@ -65,6 +66,10 @@ describe('Feature Flag Service', () => {
 
   afterEach(() => {
     featureFlagRepository.clear();
+  });
+
+  afterAll(() => {
+    clientStoreConnection.clearCache(':memory:');
   });
 
   it('Should return error when try to insert flagId and orgId that is not acceptable', async () => {

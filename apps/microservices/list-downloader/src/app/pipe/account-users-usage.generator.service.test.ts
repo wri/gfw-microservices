@@ -39,7 +39,7 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
       jest
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .spyOn(fileGenerator as any, 'getFileContents')
-        .mockResolvedValue([['data1', 'data2']] as any);
+        .mockResolvedValue([['data1', 'data2']] as string[][]);
       jest
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         .spyOn(fileGenerator as any, 'generateCsvFile')
@@ -68,7 +68,7 @@ describe('AccountUsersAnalysisUsageFileGenerator', () => {
         expect.objectContaining({
           fileName: 'example-file.csv',
           directory: 'example-database'.split('-')[1],
-          fileContents: [['data1', 'data2']] as any,
+          fileContents: [['data1', 'data2']] as string[][],
         })
       );
 

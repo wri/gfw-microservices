@@ -76,20 +76,20 @@ export const chartDatasetConfigs = {
   argentinaTreeCoverLoss: {
     id: 'argentinaTreeCoverLoss',
     dataCy: 'argentina-tree-cover-loss',
-    chartsSelectorTitle: 'Tree cover loss',
+    chartsSelectorTitle: 'Deforestation',
     infoBubbleId: 'regions_arg_deforestation',
     chartLabels: [
       {
         id: 'country specific deforestation',
         dataPath: 'country.country_specific_deforestation',
-        legend: 'argentina deforestation',
+        legend: 'Argentinian government data',
         color: 'rgb(34,153,102)',
         checked: true,
       },
       {
         id: 'hansen tree cover loss',
         dataPath: 'country.tree_cover_loss',
-        legend: 'tree cover loss',
+        legend: 'Hansen tree cover loss data',
         color: 'rgb(239,102,154)',
         checked: true,
       },

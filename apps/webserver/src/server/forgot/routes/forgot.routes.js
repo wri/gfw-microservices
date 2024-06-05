@@ -36,9 +36,9 @@ module.exports = (app) => {
     const { email } = req.body;
 
     AuthManager.adminResetUserPassword(req, email)
-      .then((result) => res.json({ message: 'Success' }))
+      .then(() => res.json({ message: 'Success' }))
       .catch((err) => {
-        res.json(err);
+        res.status(500).send(err);
       });
   });
 };

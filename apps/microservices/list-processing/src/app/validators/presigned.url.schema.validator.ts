@@ -12,24 +12,22 @@ export const allowedContentTypes = [
 ] as const;
 
 // Define a Zod schema for the request body
-export const RequestPreSignedURLSchema = z.object({
+export const getObjectPresignedSchema = z.object({
   key: z.string(),
-  contentType: z.enum(allowedContentTypes),
   replaceFile: z.boolean().optional(),
 });
-export const GetObjectPresignedSchema = z.object({
-  key: z.string(),
-  replaceFile: z.boolean().optional(),
+export const requestPreSignedURLSchema = getObjectPresignedSchema.extend({
+  contentType: z.enum(allowedContentTypes),
 });
 
-export const RequestSaveLargeListProcessModelSchema = z.object({
+export const requestSaveLargeListProcessModelSchema = z.object({
   key: z.string(),
   userId: z.number(),
   list_id: z.number(),
   listName: z.string(),
   client_database: z.string(),
 });
-export const RequestLargeListProcessSchema = z.object({
+export const requestLargeListProcessSchema = z.object({
   organization_id: z.number(),
   subscription_status_id: z.number(),
   organization_database: z.string(),
@@ -41,14 +39,14 @@ export const RequestLargeListProcessSchema = z.object({
   isExternalAPIProcess: z.boolean().optional(),
 });
 
-export const RequestTriggerProcessLargeListSchema = z.object({
+export const requestTriggerProcessLargeListSchema = z.object({
   list_name: z.string(),
   user_id: z.number(),
   client_database: z.string(),
   analysisIds: z.array(z.string()),
 });
 
-export const CopyOrMoveLargeListRequestSchema = z.object({
+export const copyOrMoveLargeListRequestSchema = z.object({
   listId: z.coerce.number(),
   selectedListLocationClasification: z.string(),
   customAttributesNames: z.array(z.string()),

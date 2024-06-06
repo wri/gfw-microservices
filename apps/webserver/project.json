@@ -66,7 +66,7 @@
           // The goal is to lint all the files in the project, but starting with the above
           // "apps/webserver/src/**/*.ts",
           // "apps/webserver/src/**/*.js"
-          "apps/webserver/src/server/[ah]*/**/*.{ts,js}"
+          "apps/webserver/src/server/[a-o]*/**/*.{ts,js}"
         ]
       }
     },

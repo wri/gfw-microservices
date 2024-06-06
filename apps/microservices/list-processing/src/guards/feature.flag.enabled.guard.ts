@@ -10,7 +10,15 @@ abstract class BaseFeatureFlagGuard implements CanActivate {
   constructor(protected readonly flag: string) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request & { body: any; featureFlag?: any }>();
+    const request = context.switchToHttp().getRequest<
+      Request & {
+        body: {
+          client_store?: string;
+          clientDatabase?: string;
+          client_database?: string;
+        };
+      }
+    >();
     const clientStoreDatabase =
       request.body.client_store ?? request.body.clientDatabase ?? request.body.client_database;
 
@@ -48,7 +56,9 @@ abstract class BaseFeatureFlagGuard implements CanActivate {
 export class FeatureFlagEnabledGuard extends BaseFeatureFlagGuard {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const hasFlagEnabled = await super.canActivate(context);
-    const request = context.switchToHttp().getRequest<Request & { featureFlag: any }>();
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { featureFlag: { enabled: boolean } }>();
     // Modify the request body to add a new parameter indicating the feature flag state
     request.featureFlag = { enabled: hasFlagEnabled };
     return true; // Allows request to proceed regardless of flag state

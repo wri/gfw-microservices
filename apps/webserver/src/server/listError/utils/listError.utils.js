@@ -1,5 +1,4 @@
 /* eslint-disable prefer-promise-reject-errors */
-/* eslint-disable import/no-dynamic-require */
 const path = require('path');
 const sql = require('mssql');
 

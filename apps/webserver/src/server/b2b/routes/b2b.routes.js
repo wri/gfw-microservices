@@ -48,7 +48,7 @@ module.exports = (app, limiter) => {
     return B2B_MICROSERVICE_URL;
   };
 
-  const runB2BRequest = async (requestData, request, response, next) => {
+  const runB2BRequest = async (requestData, request, response) => {
     const { method, url, data, mapper } = requestData;
     const newUrl = `${getB2BUrl()}${url}`;
 

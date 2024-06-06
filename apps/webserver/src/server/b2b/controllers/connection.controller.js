@@ -1,9 +1,7 @@
 const path = require('path');
 
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
-const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 const mapper = require('../mappers/invitation-mapper');
-const querystring = require('node:querystring');
 
 exports.getUserOrganizations = async (req, res, next) => {
   const { email } = req.params;

@@ -5,7 +5,6 @@ import CustomDialog from '../js/components/CustomDialog/CustomDialog';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 describe('CustomDialog', () => {
-
   afterEach(() => {
     cleanup();
     jest.clearAllMocks();

@@ -6,12 +6,12 @@ describe('FilterColumnRules', () => {
     const input = {
       'Analysis Radius': '10',
       'Analysis Area': '20',
-      'Other Field': 'value'
+      'Other Field': 'value',
     };
     const expectedOutput = {
       'Analysis Area': '20',
       'Analysis Radius': '',
-      'Other Field': 'value'
+      'Other Field': 'value',
     };
 
     filterColumnRule._transform(input, '', (err, data) => {
@@ -25,7 +25,7 @@ describe('FilterColumnRules', () => {
     const input = {
       'Analysis Radius': '10',
       'Analysis Area': '',
-      'Other Field': 'value'
+      'Other Field': 'value',
     };
     const expectedOutput = { ...input };
 
@@ -40,7 +40,7 @@ describe('FilterColumnRules', () => {
     const input = {
       'Analysis Radius': '',
       'Analysis Area': '',
-      'Other Field': 'value'
+      'Other Field': 'value',
     };
     const expectedOutput = { ...input };
 
@@ -53,7 +53,7 @@ describe('FilterColumnRules', () => {
   test('Should not modify the chunk if neither Analysis Radius nor Analysis Area fields are present', (done) => {
     const filterColumnRule = new FilterColumnRules();
     const input = {
-      'Other Field': 'value'
+      'Other Field': 'value',
     };
     const expectedOutput = { ...input };
 

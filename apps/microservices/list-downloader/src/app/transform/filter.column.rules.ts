@@ -8,13 +8,13 @@ class FilterColumnRules extends Transform {
   run = (chunk) => {
     const analysisRadius = chunk['Analysis Radius'];
     const analysisArea = chunk['Analysis Area'];
-  
+
     if (analysisRadius && analysisArea) {
       chunk['Analysis Radius'] = '';
     }
 
     return chunk;
-  }
+  };
 
   _transform(chunk, _, next) {
     if (!chunk) {

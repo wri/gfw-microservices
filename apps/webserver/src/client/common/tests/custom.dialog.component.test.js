@@ -1,16 +1,16 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import CustomDialog from '../js/components/CustomDialog/CustomDialog';
-import Button from '../Button';
-
-jest.mock('../Button', () => ({ className, variant, label, onClick }) => (
-  <button className={className} onClick={onClick}>
-    {label}
-  </button>
-));
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 describe('CustomDialog', () => {
+
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
+
   const closeAction = jest.fn();
   const dialogActionConfirm = jest.fn();
   const dialogTitle = 'Test Dialog Title';
@@ -18,13 +18,15 @@ describe('CustomDialog', () => {
 
   it('renders correctly when open', () => {
     render(
-      <CustomDialog
-        open={true}
-        closeAction={closeAction}
-        dialogTitle={dialogTitle}
-        dialogMessage={dialogMessage}
-        dialogActionConfirm={dialogActionConfirm}
-      />
+      <MuiThemeProvider>
+        <CustomDialog
+          open={true}
+          closeAction={closeAction}
+          dialogTitle={dialogTitle}
+          dialogMessage={dialogMessage}
+          dialogActionConfirm={dialogActionConfirm}
+        />
+      </MuiThemeProvider>
     );
 
     expect(screen.getByText('Test Dialog Title')).toBeInTheDocument();
@@ -35,13 +37,15 @@ describe('CustomDialog', () => {
 
   it('calls closeAction when Cancel button is clicked', () => {
     render(
-      <CustomDialog
-        open={true}
-        closeAction={closeAction}
-        dialogTitle={dialogTitle}
-        dialogMessage={dialogMessage}
-        dialogActionConfirm={dialogActionConfirm}
-      />
+      <MuiThemeProvider>
+        <CustomDialog
+          open={true}
+          closeAction={closeAction}
+          dialogTitle={dialogTitle}
+          dialogMessage={dialogMessage}
+          dialogActionConfirm={dialogActionConfirm}
+        />
+      </MuiThemeProvider>
     );
 
     fireEvent.click(screen.getByText('Cancel'));
@@ -50,13 +54,15 @@ describe('CustomDialog', () => {
 
   it('calls dialogActionConfirm when OK button is clicked', () => {
     render(
-      <CustomDialog
-        open={true}
-        closeAction={closeAction}
-        dialogTitle={dialogTitle}
-        dialogMessage={dialogMessage}
-        dialogActionConfirm={dialogActionConfirm}
-      />
+      <MuiThemeProvider>
+        <CustomDialog
+          open={true}
+          closeAction={closeAction}
+          dialogTitle={dialogTitle}
+          dialogMessage={dialogMessage}
+          dialogActionConfirm={dialogActionConfirm}
+        />
+      </MuiThemeProvider>
     );
 
     fireEvent.click(screen.getByText('OK'));
@@ -65,13 +71,15 @@ describe('CustomDialog', () => {
 
   it('does not render when open is false', () => {
     render(
-      <CustomDialog
-        open={false}
-        closeAction={closeAction}
-        dialogTitle={dialogTitle}
-        dialogMessage={dialogMessage}
-        dialogActionConfirm={dialogActionConfirm}
-      />
+      <MuiThemeProvider>
+        <CustomDialog
+          open={false}
+          closeAction={closeAction}
+          dialogTitle={dialogTitle}
+          dialogMessage={dialogMessage}
+          dialogActionConfirm={dialogActionConfirm}
+        />
+      </MuiThemeProvider>
     );
 
     expect(screen.queryByText('Test Dialog Title')).not.toBeInTheDocument();

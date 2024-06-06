@@ -48,14 +48,6 @@ describe('api-key', () => {
       ],
     }).compile();
 
-    const awsConfig = {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      region: process.env.AWS_REGION,
-    };
-
-    AWS.config.update(awsConfig);
-
     const dummyGateway = new AWS.APIGateway();
     sandbox.stub(dummyGateway.constructor.prototype, 'createApiKey').returns({
       promise: () => {

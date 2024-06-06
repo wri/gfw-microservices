@@ -13,6 +13,7 @@ import { columnsListName, columnsTemplateId } from '../shared/constants';
 import { FilterSelection } from '../transform/filter.selection';
 import { FilterObject } from '../transform/filter.object';
 import { FormatNumber } from '../transform/format.number';
+import { FilterColumnRules } from '../transform/filter.column.rules';
 
 @Injectable()
 export class InputService extends IPipeService {
@@ -42,6 +43,7 @@ export class InputService extends IPipeService {
   async finish(filters: ListFieldsFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process input data`);
+    console.warn('• this.inputStream', this.inputStream);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
     this.fileStream.destroy();
@@ -61,6 +63,7 @@ export class InputService extends IPipeService {
     this.inputStream
       .pipe(new FilterSelection(selectedLocationsList))
       .pipe(new FilterObject(allFields))
+      .pipe(new FilterColumnRules())
       .pipe(new FormatNumber())
       .pipe(
         csvWriter({

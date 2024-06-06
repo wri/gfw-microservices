@@ -3,12 +3,17 @@ import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiKeyGuard } from '../api-keys/auth.guard';
 import { ApiExcludeController } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from '../validators/server-config';
 
 //We need this annotation to avoid this controller to be shown on Swagger docs
 @ApiExcludeController()
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly config: ConfigService<ServerConfigType, true>
+  ) {}
 
   /**
    * Healthcheck for fargate
@@ -32,6 +37,8 @@ export class AppController {
 
   @Get('/latest_commit')
   getLatestCommit(): string {
-    return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;
+    return this.config.get('NODE_ENV', { infer: true }) === 'development'
+      ? 'dev'
+      : this.config.get('LATEST_COMMIT');
   }
 }

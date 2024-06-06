@@ -31,6 +31,8 @@ import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
 
+import { ServerConfigType } from '../validators/server-config';
+
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
 
@@ -43,24 +45,29 @@ const contentType = {
 @Injectable()
 export class ListAnalysisService {
   private readonly LLP_BASE_URL: string;
-  private readonly AWS_ACCESS_KEY_ID: string;
-  private readonly AWS_REGION: string;
-  private readonly AWS_SECRET_ACCESS_KEY: string;
-  private readonly LARGE_PROCESING_LIST_BUCKET: string;
+  private readonly awsConfig: {
+    accessKeyId: string;
+    region: string;
+    secretAccessKey: string;
+    largeProcessingListBucket: string;
+  };
   private readonly logger = new Logger(ListAnalysisResponse.name);
+
   constructor(
-    private config: ConfigService,
+    private configService: ConfigService<ServerConfigType, true>,
     private userService: UserService,
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,
     private readonly sqsService: SqsService,
     private readonly listService: ListService
   ) {
-    this.LLP_BASE_URL = this.config.get<string>('LLP_BASE_URL');
-    this.AWS_ACCESS_KEY_ID = this.config.get<string>('AWS_ACCESS_KEY_ID');
-    this.AWS_REGION = this.config.get<string>('AWS_REGION');
-    this.AWS_SECRET_ACCESS_KEY = this.config.get<string>('AWS_SECRET_ACCESS_KEY');
-    this.LARGE_PROCESING_LIST_BUCKET = this.config.get<string>('LARGE_PROCESING_LIST_BUCKET');
+    this.LLP_BASE_URL = configService.get('LLP_BASE_URL');
+    this.awsConfig = {
+      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+      region: this.configService.get('AWS_REGION'),
+      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      largeProcessingListBucket: this.configService.get('LARGE_PROCESSING_LIST_BUCKET'),
+    };
   }
 
   private getEAPIListStatus(listAnalysisStatus: ListsAnalysisStatus) {
@@ -218,13 +225,13 @@ export class ListAnalysisService {
   private async checkIfS3FileExists(fileKey: string) {
     const s3 = new S3Client({
       credentials: {
-        accessKeyId: this.AWS_ACCESS_KEY_ID,
-        secretAccessKey: this.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: this.awsConfig.accessKeyId,
+        secretAccessKey: this.awsConfig.secretAccessKey,
       },
-      region: this.AWS_REGION,
+      region: this.awsConfig.region,
     });
 
-    const bucketName = this.LARGE_PROCESING_LIST_BUCKET;
+    const bucketName = this.awsConfig.largeProcessingListBucket;
 
     const params = {
       Bucket: bucketName,

@@ -2,20 +2,23 @@ import { AppService } from './app.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as sinon from 'sinon';
 import { DataSource } from 'typeorm';
-import { ClientStoreConnection, DeleteListTypeOrm, List } from '@wri-monorepos/sql';
+import { ClientStoreConnection, DeleteListTypeOrm, Lists } from '@wri-monorepos/sql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ListRepositoryMock } from './test/list.repository.mock';
 import { ConfigModule } from '@nestjs/config';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { LockListService } from '../services/lock.list.service';
+
 describe('AppService', () => {
-  let service: AppService;
+  let appService: AppService;
+  let lockListService: LockListService;
   let module: TestingModule;
   let clientStoreConnection: ClientStoreConnection;
   let deleteListTypeOrm: DeleteListTypeOrm;
   beforeAll(async () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
-      .withArgs(List)
+      .withArgs(Lists)
       .returns(new ListRepositoryMock());
     module = await Test.createTestingModule({
       imports: [
@@ -25,33 +28,34 @@ describe('AppService', () => {
           database: ':memory:',
           synchronize: true,
           logging: true,
-          entities: [List],
+          entities: [Lists],
         }),
-        TypeOrmModule.forFeature([List], 'default'),
+        TypeOrmModule.forFeature([Lists], 'default'),
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,
         }),
       ],
-      providers: [AppService, ClientStoreConnection, DeleteListTypeOrm],
+      providers: [AppService, ClientStoreConnection, DeleteListTypeOrm, LockListService],
     }).compile();
   });
 
   beforeEach(async () => {
-    service = module.get<AppService>(AppService);
+    appService = module.get<AppService>(AppService);
+    lockListService = module.get<LockListService>(LockListService);
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
     deleteListTypeOrm = module.get<DeleteListTypeOrm>(DeleteListTypeOrm);
   });
   describe('getData', () => {
     xit('should return object with presigned URL', () => {
-      const preSignedUrl = service.generatePreSignedUrl('list.csv', 'text/csv');
+      const preSignedUrl = appService.generatePreSignedUrl('list.csv', 'text/csv');
       expect(preSignedUrl).toHaveProperty('url');
     });
   });
 
   describe('Select query test', () => {
     xit('Should return a list of data', async () => {
-      const result = await service.getFilenameForUser();
+      const result = await appService.getFilenameForUser();
       expect(result.length > 0).toBeTruthy();
     });
   });
@@ -80,7 +84,7 @@ describe('AppService', () => {
         query: () => true,
       });
       await expect(
-        service.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
+        appService.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
       ).rejects.toThrowError(NotFoundException);
     });
     it('should throw error on trying to delete a locked list', async () => {
@@ -88,7 +92,7 @@ describe('AppService', () => {
       const organizationDatabase = 'mockDatabase';
       const organization_user_id = 1;
       const userEmail = 'email@email.com';
-      jest.spyOn(service as any, 'lockList').mockResolvedValue(true);
+      jest.spyOn(lockListService, 'lockList').mockResolvedValue(true);
       const mockList = {
         listId: 123,
         status: 'Completed',
@@ -112,7 +116,7 @@ describe('AppService', () => {
       });
 
       await expect(
-        service.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
+        appService.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
       ).rejects.toThrowError(InternalServerErrorException);
     });
     it('should throw error on trying to drop database', async () => {
@@ -120,7 +124,7 @@ describe('AppService', () => {
       const organizationDatabase = 'mockDatabase';
       const organization_user_id = 1;
       const userEmail = 'email@email.com';
-      jest.spyOn(service as any, 'lockList').mockResolvedValue(true);
+      jest.spyOn(lockListService, 'lockList').mockResolvedValue(true);
       const mockList = {
         listId: 123,
         status: 'Completed',
@@ -153,7 +157,7 @@ describe('AppService', () => {
       });
 
       await expect(
-        service.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
+        appService.deleteList(listId, organizationDatabase, organization_user_id, userEmail)
       ).rejects.toThrowError(InternalServerErrorException);
     });
     it('should delete a list', async () => {
@@ -161,7 +165,7 @@ describe('AppService', () => {
       const organizationDatabase = 'mockDatabase';
       const organization_user_id = 1;
       const userEmail = 'email@email.com';
-      jest.spyOn(service as any, 'lockList').mockResolvedValue(true);
+      jest.spyOn(lockListService, 'lockList').mockResolvedValue(true);
       const mockList = {
         listId: 123,
         status: 'Completed',
@@ -191,7 +195,7 @@ describe('AppService', () => {
         query: () => true,
       });
       deleteListTypeOrm.delete = jest.fn().mockResolvedValue(true);
-      const result = await service.deleteList(
+      const result = await appService.deleteList(
         listId,
         organizationDatabase,
         organization_user_id,

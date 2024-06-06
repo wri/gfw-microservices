@@ -24,11 +24,8 @@ export const proLayers = {
   integratedAlertsGeographicCoverageID: 'integrated alerts geographic coverage',
   viirsActiveFiresID: 'VIIRS Global Fires',
   treeCoverID: 'Tree cover 2000',
-  congoPrimaryForestsID: 'Congo Primary Forests',
   cameroonAgroIndustrialZonesID: 'Cameroon agro-industrial zones',
-  republicOfTheCongoOilPalmConcessionsID: 'Republic of the Congo Oil Palm Concessions',
   universalMillList: 'Universal Mill List',
-  administrativeAreas: 'administrative-areas', // this layer does not seem to exist in PROD api
   oilPalmConcessions: 'Oil Palm Concessions',
   soyPlantedArea: 'Soy Planted Area',
   aboveGroundBiomassId: 'Aboveground live woody biomass density',
@@ -36,35 +33,23 @@ export const proLayers = {
   treePlantationsSpecies: 'Tree Plantations by species',
   brazilBiomesID: 'Brazil Biomes',
   rspoConcessions: 'RSPO Concessions',
-  rspoPalmOilMills: 'rspo-palm-oil-mills', // this layer does not seem to exist in PROD api
+  rspoPalmOilMills: 'rspo-palm-oil-mills',
   protectedAreas: 'WDPA Esri',
-  adminAreas: 'admin-areas', // this layer does not seem to exist in PROD api
-  AZESites: 'Alliance for Zero Extinction Sites',
   landRights: 'Land Rights (Esri)',
-  indoTreePlantationsSpecies: 'indonesia-tree-plantations-by-species', // this layer does not seem to exist in PROD api
-  indoTreePlantationsType: 'indonesia-tree-plantations-by-type', // this layer does not seem to exist in PROD api
   intactForestLandscapesID: 'Intact Forest Landscapes',
   globalPeatlandsID: 'Global Peatlands',
   landCoverID: 'Land cover',
-  liberiaOilPalmConcessions: 'Liberia Oil Palm Concessions',
-  liberiaTreePlantationsByType: 'liberia-tree-plantations-by-type', // does not exist in prod
-  liberiaTreePlantationsBySpecies: 'liberia-tree-plantations-by-species', // does not exist in prod
   prodesDeforestationVizzBrazil: 'PRODES Deforestation Vizz Brazil',
-  brazilRSPOOilPalmID: 'Brazil RSPO Certified Oil Palm Concessions',
-  brazilTreeByTypeID: 'brazil-tree-plantations-by-type', // does not exist
-  brazilTreeBySpeciesID: 'brazil-tree-plantations-by-species', // does not exist
   landCoverSEAsiaID: 'Land Cover Southeast Asia',
   indonesiaForestMoratorium: 'Indonesia Forest Moratorium',
   indonesiaLegalClass: 'Indonesia Forest Area',
-  indonesiaOilPalmClass: 'Indonesia Oil Palm Concessions',
   indonesiaPeatLands: 'Indonesia Peat Lands',
-  indonesiaPrimaryForest: 'Indonesia Primary Forests',
-  indonesiaRSPO: 'RSPO Concessions (Indonesia)',
-  indonesiaRSPOPalmOil: 'Indonesia RSPO palm oil mills',
   indonesiaLandCover: 'Indonesia Land Cover',
-  malaysiaRSPO: 'RSPO Concessions (Malaysia)',
-  sarawakOilPalm: 'Sarawak oil palm concessions',
-  papuaNewGRSPO: 'RSPO Concessions (Papua New Guinea)',
+
+  // the next are not layers present in the map layer API as the previous ones
+  // but they are constants that we use through the application
+  administrativeAreas: 'administrative-areas',
+  adminAreas: 'admin-areas',
   userLocations: 'user-locations',
 };
 // ----layers END

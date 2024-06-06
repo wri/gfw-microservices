@@ -4,7 +4,9 @@ import { listStatus } from '../config/env/listStatuses.constants';
 const getActiveAnalysisType = (listAnalysesStatus = []) => {
   const { FOREST_CHANGE_DIAGNOSTICS, DEFORESTATION_KPIS } = analysisTypes;
   const listAnalysesStatusIds = listAnalysesStatus
-    .filter((analysis) => analysis.status === listStatus.Active)
+    .filter(
+      (analysis) => analysis.status === listStatus.Active || analysis.status === listStatus.Draft
+    )
     .map(({ analysisId }) => analysisId);
 
   const isForestChangeDiagnosticActive = listAnalysesStatusIds.includes(FOREST_CHANGE_DIAGNOSTICS);

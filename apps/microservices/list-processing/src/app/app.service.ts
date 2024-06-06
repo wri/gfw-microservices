@@ -8,7 +8,8 @@ import { S3 } from 'aws-sdk';
 import { DataSource } from 'typeorm';
 import * as uniqId from 'uniqid';
 import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
-import { ClientStoreConnection, List, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Lists, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
+import { LockListService } from '../services/lock.list.service';
 class MyObject {
   id: number;
   list_name: string;
@@ -22,7 +23,8 @@ export class AppService {
   constructor(
     private dataSource: DataSource,
     private readonly clientStoreConnection: ClientStoreConnection,
-    private readonly deleteListTypeOrm: DeleteListTypeOrm
+    private readonly deleteListTypeOrm: DeleteListTypeOrm,
+    private readonly lockListService: LockListService
   ) {}
 
   /**
@@ -87,7 +89,7 @@ export class AppService {
     userEmail: string
   ): Promise<string> {
     const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
+    const listRepository = connection.getRepository(Lists);
     const listFound = await listRepository.findOne({ where: { id: list_id } });
     if (!listFound) {
       this.logger.error('DeleteList: list not found');
@@ -96,7 +98,7 @@ export class AppService {
     const { lockStatus, listName } = listFound;
     if (lockStatus === null) {
       //Lock list
-      await this.lockList(organizationDatabase, list_id, organization_user_id);
+      await this.lockListService.lockList(organizationDatabase, list_id, organization_user_id);
     }
     const activityLogRepository = connection.getRepository(ActivityLog);
     try {
@@ -134,58 +136,6 @@ export class AppService {
       throw new InternalServerErrorException({
         message: `User '${userEmail}' has tried to delete list (${listName}) - (${list_id}) but some error occurs ${error.message}.`,
         code: 603,
-      });
-    }
-  }
-
-  private async lockList(
-    organizationDatabase: string,
-    list_id: number,
-    organization_user_id: number
-  ): Promise<boolean> {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
-    const { lockStatus } = await listRepository.findOne({ where: { id: list_id } });
-
-    if (lockStatus !== null) {
-      return false;
-    }
-
-    try {
-      await listRepository.update(
-        { id: list_id },
-        { lockStatus: new Date(), lockUserId: organization_user_id }
-      );
-      return true;
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message: `Failed to lock list ${list_id}`,
-        code: 610,
-      });
-    }
-  }
-  private async unlockList(
-    organizationDatabase: string,
-    list_id: number,
-    organization_user_id: number
-  ): Promise<boolean> {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(List);
-    const { lockStatus, lockUserId } = await listRepository.findOne({ where: { id: list_id } });
-
-    if (lockStatus !== null && lockUserId !== organization_user_id) {
-      return false;
-    }
-    try {
-      await listRepository.update(
-        { id: list_id },
-        { lockStatus: null, lockUserId: organization_user_id }
-      );
-      return true;
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message: `Failed to unlock list ${list_id}`,
-        code: 610,
       });
     }
   }

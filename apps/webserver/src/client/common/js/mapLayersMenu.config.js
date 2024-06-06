@@ -1,7 +1,6 @@
 import { proLayers } from './proLayers.config';
 
-export const mapLayersMenu = [
-  // Forest-change
+const forestChangeLayers = [
   {
     id: proLayers.treeCoverLossID,
     group: 'forest-change',
@@ -38,7 +37,6 @@ export const mapLayersMenu = [
     subGroup: 'tree-cover-change',
     order: 106,
   },
-
   {
     id: proLayers.gladAlertsID,
     group: 'forest-change',
@@ -96,7 +94,6 @@ export const mapLayersMenu = [
     order: 115,
     popupTemplate: {
       title: null,
-      // LATITUDE, LONGITUDE, BRIGHTNESS, CONFIDENCE, ACQ_DATE, ACQ_TIME
       content:
         '<div class="popup-text-container"><p class="popup-text-key">LATITUDE:</p> <p class="popup-text-value">{LATITUDE}</p></div>' +
         '<div class="popup-text-container"><p class="popup-text-key">LONGITUDE:</p> <p class="popup-text-value">{LONGITUDE}</p></div>' +
@@ -110,7 +107,9 @@ export const mapLayersMenu = [
       { id: 'CONFIDENCE', text: 'Confidence' },
     ],
   },
-  // land-cover
+];
+
+const landCoverLayers = [
   {
     id: proLayers.treeCoverID,
     group: 'land-cover',
@@ -140,13 +139,11 @@ export const mapLayersMenu = [
     group: 'land-cover',
     order: 204,
   },
-
   {
     id: proLayers.treePlantationsSpecies,
     group: 'land-cover',
     order: 206,
     popupTemplate: {
-      // PLANTATION TYPE, species, percent plantation coverage, area ha
       content:
         '<div class="popup-text-container"><p class="popup-text-key">PLANTATION TYPE:</p> <p class="popup-text-value">{type_text}</p></div>' +
         '<div class="popup-text-container"><p class="popup-text-key">SPECIES:</p> <p class="popup-text-value">{spec_org}</p></div>' +
@@ -171,13 +168,25 @@ export const mapLayersMenu = [
     order: 209,
   },
   {
+    id: proLayers.sBTNNaturalForest,
+    group: 'land-cover',
+    order: 211,
+  },
+  {
+    id: proLayers.jrcGlobalForestCover,
+    group: 'land-cover',
+    order: 212,
+  },
+];
+
+const landUseLayers = [
+  {
     id: proLayers.oilPalmConcessions,
     group: 'land-use',
     subGroup: 'concessions',
     order: 210,
     popupTemplate: {
       title: '{name}',
-      // company, country, area ha
       content:
         '<div class="popup-text-container"><p class="popup-text-key">Company:</p> <p class="popup-text-value">{company}</p></div>' +
         '<div class="popup-text-container"><p class="popup-text-key">Country:</p> <p class="popup-text-value">{country}</p></div>' +
@@ -185,19 +194,6 @@ export const mapLayersMenu = [
     },
     fields: [],
   },
-  {
-    id: proLayers.sBTNNaturalForest,
-    group: 'land-cover',
-    order: 211,
-  },
-
-  {
-    id: proLayers.jrcGlobalForestCover,
-    group: 'land-cover',
-    order: 212,
-  },
-
-  // Land-Use
   {
     id: proLayers.rspoConcessions,
     group: 'land-use',
@@ -246,7 +242,9 @@ export const mapLayersMenu = [
     },
     fields: [],
   },
-  // Conservation
+];
+
+const conservationLayers = [
   {
     id: proLayers.protectedAreas,
     group: 'conservation',
@@ -260,6 +258,9 @@ export const mapLayersMenu = [
         '<div class="popup-text-container"><p class="popup-text-key">IUCN CATEGORY:</p> <p class="popup-text-value">{iucn_cat}</p></div>',
     },
   },
+];
+
+const peopleLayers = [
   {
     id: proLayers.landRights,
     group: 'people',
@@ -271,8 +272,9 @@ export const mapLayersMenu = [
         '<div class="popup-text-container"><p class="popup-text-key">LEGAL RECOGNITION:</p> <p class="popup-text-value">{Legal recognition}</p></div>',
     },
   },
-  // Region and Country Data
-  // Central Africa
+];
+
+const regionLayers = [
   {
     id: proLayers.cameroonAgroIndustrialZonesID,
     group: 'region',
@@ -282,32 +284,6 @@ export const mapLayersMenu = [
     countryCode: 'CMR',
     order: 600,
   },
-
-  {
-    id: proLayers.liberiaTreePlantationsByType,
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'central-africa',
-    country: 'Liberia',
-    countryCode: 'LBR',
-    order: 621,
-    fields: [],
-  },
-  {
-    id: proLayers.liberiaTreePlantationsBySpecies,
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'central-africa',
-    country: 'Liberia',
-    countryCode: 'LBR',
-    order: 622,
-    fields: [],
-  },
-
-  // South America
-
-  // Argentia - 630
-  // Bolivia - 640
   {
     id: proLayers.brazilBiomesID,
     group: 'region',
@@ -331,24 +307,6 @@ export const mapLayersMenu = [
     order: 652,
   },
   {
-    id: proLayers.brazilTreeByTypeID,
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'south-america',
-    country: 'Brazil',
-    countryCode: 'BRA',
-    order: 654,
-  },
-  {
-    id: proLayers.brazilTreeBySpeciesID,
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'south-america',
-    country: 'Brazil',
-    countryCode: 'BRA',
-    order: 655,
-  },
-  {
     id: proLayers.otbn,
     group: 'region',
     subGroup: 'land-cover',
@@ -367,44 +325,6 @@ export const mapLayersMenu = [
     order: 657,
   },
   {
-    id: 'colombia-tree-plantations-by-type', // does not exist in api
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'south-america',
-    country: 'Colombia',
-    countryCode: 'COL',
-    order: 661,
-  },
-  {
-    id: 'colombia-tree-plantations-by-species', // does not exist in api
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'south-america',
-    country: 'Colombia',
-    countryCode: 'COL',
-    order: 662,
-  },
-  {
-    id: 'peru-tree-plantations-by-type', // does not exist in api
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'south-america',
-    country: 'Peru',
-    countryCode: 'PER',
-    order: 671,
-  },
-  {
-    id: 'peru-tree-plantations-by-species', // does not exist in api
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'south-america',
-    country: 'Peru',
-    countryCode: 'PER',
-    order: 672,
-  },
-
-  // Southeast Asia
-  {
     id: proLayers.landCoverSEAsiaID,
     group: 'region',
     subGroup: 'land-cover',
@@ -412,24 +332,6 @@ export const mapLayersMenu = [
     country: 'Southeast Asia',
     countryCode: '',
     order: 680,
-  },
-  {
-    id: 'cambodia-tree-plantations-by-type', // does not exist in api
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'southeast-asia',
-    country: 'Cambodia',
-    countryCode: 'KHM',
-    order: 691,
-  },
-  {
-    id: 'cambodia-tree-plantations-by-species', // does not exist in api
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'southeast-asia',
-    country: 'Cambodia',
-    countryCode: 'KHM',
-    order: 692,
   },
   {
     id: proLayers.indonesiaForestMoratorium,
@@ -459,22 +361,12 @@ export const mapLayersMenu = [
     order: 704,
   },
   {
-    id: proLayers.indoTreePlantationsType,
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'southeast-asia',
-    country: 'Indonesia',
-    countryCode: 'IDN',
-    order: 708,
-  },
-  {
     id: proLayers.indoTreePlantationsSpecies,
     group: 'region',
     popupTemplate: {
       title: '{name}',
-      // PLANTATION TYPE, species, percent plantation coverage, area ha
       content:
-        '<div class="popup-text-container"><p class="popup-text-key">Arae HA:</p> <p class="popup-text-value">{shape_Area}</p></div>',
+        '<div class="popup-text-container"><p class="popup-text-key">Area HA:</p> <p class="popup-text-value">{shape_Area}</p></div>',
     },
     subGroup: 'land-cover',
     region: 'southeast-asia',
@@ -491,24 +383,13 @@ export const mapLayersMenu = [
     countryCode: 'IDN',
     order: 710,
   },
-  {
-    id: 'malaysia-tree-plantations-by-type', // does not exist in api
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'southeast-asia',
-    country: 'Malaysia',
-    countryCode: 'MYS',
-    order: 722,
-    fields: [],
-  },
-  {
-    id: 'malaysia-tree-plantations-by-species', // does not exist in api
-    group: 'region',
-    subGroup: 'land-cover',
-    region: 'southeast-asia',
-    country: 'Malaysia',
-    countryCode: 'MYS',
-    order: 723,
-    fields: [],
-  },
+];
+
+export const mapLayersMenu = [
+  ...forestChangeLayers,
+  ...landCoverLayers,
+  ...landUseLayers,
+  ...conservationLayers,
+  ...peopleLayers,
+  ...regionLayers,
 ];

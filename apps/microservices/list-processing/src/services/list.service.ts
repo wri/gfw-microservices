@@ -1,7 +1,9 @@
 import {
   ClientStoreConnection,
+  Lists,
   ListsUploadStatus,
   SQLUtils,
+  User,
   updateListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 import { BadRequestException, Logger, InternalServerErrorException } from '@nestjs/common';
@@ -18,6 +20,9 @@ import { ProcessingLimitException } from '../app/app.exceptions';
 import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
 import { RequestSaveLargeListProcessModel, CreateListInsertResultModel } from '../models';
+import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from './constants';
+import * as moment from 'moment';
+import { mockAnalysisFlow } from '../mock';
 
 interface CreateListResult {
   list_id: number;
@@ -26,6 +31,8 @@ interface CreateListResult {
 interface QueryCreateTableResult {
   query_string: string;
 }
+
+const environmentAllowTestFlow = ['dev', 'qa', 'staging'];
 
 @Injectable()
 export class ListService {
@@ -59,11 +66,23 @@ export class ListService {
     }
   }
 
-  async startAnalisysProcessForList(
+  async startAnalysisProcessForList(
     request: RequestLargeListProcess
   ): Promise<ResponseLargeListProcess> {
-    const largeListProcesingEndPoint = this.config.get<string>('LARGE_LIST_PROCESING_ENDPOINT');
+    const largeListProcessingEndPoint = this.config.get<string>('LARGE_LIST_PROCESING_ENDPOINT');
     const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
+    let listName = '';
+    let userEmail = '';
+
+    if (environmentAllowTestFlow.includes(microserviceEnvironment)) {
+      listName = await this.getListName(request.organization_database, request.list_id);
+      userEmail = await this.getUserEmail(request.organization_database, request.user_id);
+    }
+
+    const isTestFlow =
+      environmentAllowTestFlow.includes(microserviceEnvironment) &&
+      listName.includes(MARK_IS_TEST_LIST) &&
+      userEmail.includes(MARK_IS_TEST_USER);
 
     const { isExternalAPIProcess, ...llpRequest } = request;
     const { organization_id: organizationId, subscription_status_id: subscriptionStatusId } =
@@ -108,10 +127,36 @@ export class ListService {
       body: requestBody,
     };
 
-    const response = await fetch(largeListProcesingEndPoint, options);
-    const respondeBody = await response.json();
+    // Flow used by cypress test, mock analysis flow so avoid call lambda functions.
+    if (isTestFlow) {
+      await mockAnalysisFlow({
+        organization_database: request.organization_database,
+        list_id: request.list_id,
+        template_type: request.template_type,
+      });
+      return Promise.resolve({
+        executionArn: 'e2e_automation_fake_analysis',
+        startDate: moment().format('YYYY-MM-DD'),
+      });
+    }
 
-    return respondeBody;
+    const response = await fetch(largeListProcessingEndPoint, options);
+    const responseBody = await response.json();
+    return responseBody;
+  }
+
+  async getListName(organizationDatabase: string, list_id: number) {
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const listRepository = connection.getRepository(Lists);
+    const { listName } = await listRepository.findOne({ where: { id: list_id } });
+    return listName;
+  }
+
+  async getUserEmail(organizationDatabase: string, user_id: number) {
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const userRepository = connection.getRepository(User);
+    const { email } = await userRepository.findOne({ where: { id: user_id } });
+    return email;
   }
 
   async createListTables(

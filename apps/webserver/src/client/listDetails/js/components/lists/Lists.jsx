@@ -90,7 +90,7 @@ import ShareList from '../../../../locations/js/components/ShareList/ShareList';
 import { EditList } from './EditList/EditList';
 import redirectToMap from '../../../../common/js/utils/redirect';
 import { FailedPopupDialog } from '../../../../locations/js/components/landing/FailedPopupDialog';
-import { getIsDiagnosticStatusDraft } from '../../utils/draft.utils';
+import { getIsDiagnosticStatusDraft, getIsDraftWithoutDiagnostic } from '../../utils/draft.utils';
 import { requestGeoTrellisAnalyzeList } from '../../../../locations/js/utils/request.utils';
 import {
   getDialogContent,
@@ -2652,7 +2652,7 @@ export default class Lists extends Component {
                         </div>
                       </div>
                       <div className="list-detail-action-bar">
-                        {!getIsDiagnosticStatusDraft(selectedList) &&
+                        {!getIsDraftWithoutDiagnostic(selectedList) &&
                           listName !== 'Administrative Areas' &&
                           listName !== 'Protected Areas' &&
                           (isGfwList || getActiveAnalysisType(listAnalysesStatus)) && (

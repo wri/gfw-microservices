@@ -3,7 +3,7 @@ import { AfiGeneratorService } from './afi.generator.service';
 import { ListGeneratorService } from './list.generator.service';
 import { BasicFieldsFileRequest, GFWList } from '@wri-monorepos/sql';
 import { MAX_NUMBER_OF_ROWS_PER_PAGE } from '../shared/constants';
-import { ClientStoreConnection, List } from '@wri-monorepos/sql';
+import { ClientStoreConnection, Lists } from '@wri-monorepos/sql';
 import { createDirectory } from '../shared/file.utils';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
 import { AlertsGeneratorService } from './alerts.generator.service';
@@ -51,7 +51,7 @@ export class PipeService {
     const { organizationDatabase, listId, isGFWList } = filters;
     if (!isGFWList) {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-      const listRepository = connection.getRepository(List);
+      const listRepository = connection.getRepository(Lists);
       const { listName } = await listRepository.findOne({ where: { id: listId } });
       return listName;
     } else {

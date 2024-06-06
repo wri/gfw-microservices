@@ -1,7 +1,6 @@
 const path = require('path');
 
 const UserManager = require(path.resolve('./config/publicutils/userManager.utils'));
-const AuthManager = require(path.resolve('./config/publicutils/authenticationManager.utils'));
 
 exports.createInvitation = async (req, res, next) => {
   const { email, organization } = req.body;

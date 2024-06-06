@@ -9,7 +9,16 @@ import {
   getNumberOfPagesPaginatedListDataRequest,
   getPaginatedListDataRequest,
 } from './../models/index';
-import { Controller, Post, Get, Body, Query, BadRequestException, Param, UsePipes } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Query,
+  BadRequestException,
+  Param,
+  UsePipes,
+} from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { ListService } from '../services/list.service';
@@ -56,9 +65,7 @@ export class AppController {
    */
   @Post('/create-presigned-url')
   @UsePipes(new ZodValidationPipe(requestPreSignedURLSchema))
-  generatePreSignedUrl(
-    @Body() request: RequestPreSignedURLModel
-  ) {
+  generatePreSignedUrl(@Body() request: RequestPreSignedURLModel) {
     return this.appService.generatePreSignedUrl(
       request.key,
       request.contentType,
@@ -73,9 +80,7 @@ export class AppController {
    */
   @Post('/get-object-presigned-url')
   @UsePipes(new ZodValidationPipe(getObjectPresignedSchema))
-  getObjectPresignedURL(
-    @Body() request: GetObjectPresigned
-  ) {
+  getObjectPresignedURL(@Body() request: GetObjectPresigned) {
     return this.appService.getObjectPreSignedUrl(request.key);
   }
 
@@ -90,9 +95,7 @@ export class AppController {
 
   @Post('/process-list')
   @UsePipes(new ZodValidationPipe(requestLargeListProcessSchema))
-  processLargeList(
-    @Body() request: RequestLargeListProcess
-  ) {
+  processLargeList(@Body() request: RequestLargeListProcess) {
     return this.listService.startAnalysisProcessForList(request);
   }
 

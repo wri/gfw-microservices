@@ -9,7 +9,7 @@ import {
   getNumberOfPagesPaginatedListDataRequest,
   getPaginatedListDataRequest,
 } from './../models/index';
-import { Controller, Post, Get, Body, Query, BadRequestException, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, BadRequestException, Param, UsePipes } from '@nestjs/common';
 
 import { AppService } from './app.service';
 import { ListService } from '../services/list.service';
@@ -55,8 +55,9 @@ export class AppController {
    * @returns ResponsePreSignedURLModel
    */
   @Post('/create-presigned-url')
+  @UsePipes(new ZodValidationPipe(requestPreSignedURLSchema))
   generatePreSignedUrl(
-    @Body(new ZodValidationPipe(requestPreSignedURLSchema)) request: RequestPreSignedURLModel
+    @Body() request: RequestPreSignedURLModel
   ) {
     return this.appService.generatePreSignedUrl(
       request.key,
@@ -71,30 +72,34 @@ export class AppController {
    * @returns
    */
   @Post('/get-object-presigned-url')
+  @UsePipes(new ZodValidationPipe(getObjectPresignedSchema))
   getObjectPresignedURL(
-    @Body(new ZodValidationPipe(getObjectPresignedSchema)) request: GetObjectPresigned
+    @Body() request: GetObjectPresigned
   ) {
     return this.appService.getObjectPreSignedUrl(request.key);
   }
 
   @Post('/save-list-to-process')
+  @UsePipes(new ZodValidationPipe(requestSaveLargeListProcessModelSchema))
   saveListToProcess(
-    @Body(new ZodValidationPipe(requestSaveLargeListProcessModelSchema))
+    @Body()
     request: RequestSaveLargeListProcessModel
   ) {
     return this.listService.saveListToProcess(request);
   }
 
   @Post('/process-list')
+  @UsePipes(new ZodValidationPipe(requestLargeListProcessSchema))
   processLargeList(
-    @Body(new ZodValidationPipe(requestLargeListProcessSchema)) request: RequestLargeListProcess
+    @Body() request: RequestLargeListProcess
   ) {
     return this.listService.startAnalysisProcessForList(request);
   }
 
   @Post('/create-large-list')
+  @UsePipes(new ZodValidationPipe(requestTriggerProcessLargeListSchema))
   triggerProcessLargeList(
-    @Body(new ZodValidationPipe(requestTriggerProcessLargeListSchema))
+    @Body()
     request: RequestTriggerProcessLargeList
   ) {
     return this.listService.createListTables(
@@ -106,8 +111,9 @@ export class AppController {
   }
 
   @Post('/CopyOrMoveLargeList')
+  @UsePipes(new ZodValidationPipe(copyOrMoveLargeListRequestSchema))
   CopyOrMoveLargeList(
-    @Body(new ZodValidationPipe(copyOrMoveLargeListRequestSchema))
+    @Body()
     request: CopyOrMoveLargeListRequestLLP
   ) {
     return this.locationService.MoveLocations(request);

@@ -50,7 +50,7 @@ const alphanumeric = (str: string) => {
 };
 
 const analysisCheck = (value: unknown) => {
-  return Number(value) >= 0;
+  return value >= 0 || value === '';
 };
 
 const companyIdCheck = (str: string, template: string) => {

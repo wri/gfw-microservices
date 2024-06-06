@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   DashboardDataType,
   getDashboardData,
@@ -16,14 +16,18 @@ import {
 import * as sql from 'mssql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from '../../../validators/server-config';
 
 @Injectable()
 export class AlertsRepository {
   @InjectRepository(GFWList, 'default')
   private gfwListRepository: Repository<GFWList>;
 
-  @Inject(ClientStoreConnection)
-  private clientStoreConnection: ClientStoreConnection;
+  constructor(
+    private readonly clientStoreConnection: ClientStoreConnection,
+    private readonly config: ConfigService<ServerConfigType, true>
+  ) {}
 
   async findDashboardDataByListId(listID: number, clientDatabase: string) {
     const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
@@ -39,7 +43,7 @@ export class AlertsRepository {
     const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
 
     return await SQLUtils.queryDB<DashboardDataType[]>(
-      process.env.MSSQL_DATABASE,
+      this.config.get('MSSQL_DATABASE', { infer: true }),
       getGFWListsDashboardData,
       parameters
     );
@@ -100,7 +104,7 @@ export class AlertsRepository {
     const parameters = [{ field: 'listID', type: sql.Int, value: listID }];
 
     return await SQLUtils.queryDBFirstRow<CountDashboardDataType>(
-      process.env.MSSQL_DATABASE,
+      this.config.get('MSSQL_DATABASE', { infer: true }),
       getCountGFWListsDashboardData,
       parameters
     );
@@ -118,7 +122,7 @@ export class AlertsRepository {
     ];
 
     return await SQLUtils.queryDB<DashboardDataType[]>(
-      process.env.MSSQL_DATABASE,
+      this.config.get('MSSQL_DATABASE', { infer: true }),
       getGFWListsDashboardDataPaginated,
       parameters
     );

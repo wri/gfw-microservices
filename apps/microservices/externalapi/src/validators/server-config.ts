@@ -7,9 +7,8 @@ export const serverConfigSchema = z.object({
   MSSQL_USERNAME: z.string(),
   MSSQL_PASSWORD: z.string(),
 
-  PORT: z.coerce.number().default(3337),
-
   NODE_ENV: z.enum(['development', 'test', 'staging', 'production']),
+  PORT: z.coerce.number().default(3337),
 
   AWS_ACCESS_KEY_ID: z.string(),
   AWS_SECRET_ACCESS_KEY: z.string(),

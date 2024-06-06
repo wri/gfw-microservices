@@ -7,7 +7,7 @@ import {
   updateListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 import { BadRequestException, Logger, InternalServerErrorException } from '@nestjs/common';
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateListRequest, RequestLargeListProcess, ResponseLargeListProcess } from '../models';
 import fetch from 'node-fetch';
 import { ConfigService } from '@nestjs/config';
@@ -23,6 +23,7 @@ import { RequestSaveLargeListProcessModel, CreateListInsertResultModel } from '.
 import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from './constants';
 import * as moment from 'moment';
 import { mockAnalysisFlow } from '../mock';
+import { ServerConfigType } from '../../validators/server-config';
 
 interface CreateListResult {
   list_id: number;
@@ -36,11 +37,10 @@ const environmentAllowTestFlow = ['dev', 'qa', 'staging'];
 
 @Injectable()
 export class ListService {
-  @Inject(ConfigService)
-  private readonly config: ConfigService;
   constructor(
     private dataSource: DataSource,
-    private readonly clientStoreConnection: ClientStoreConnection
+    private readonly clientStoreConnection: ClientStoreConnection,
+    private readonly config: ConfigService<ServerConfigType, true>
   ) {}
 
   async createNewList(createListRequest: CreateListRequest) {
@@ -69,8 +69,11 @@ export class ListService {
   async startAnalysisProcessForList(
     request: RequestLargeListProcess
   ): Promise<ResponseLargeListProcess> {
-    const largeListProcessingEndPoint = this.config.get<string>('LARGE_LIST_PROCESING_ENDPOINT');
-    const microserviceEnvironment = this.config.get<string>('MICROSERVICES_ENV');
+    const largeListProcessingEndPoint = this.config.get('LARGE_LIST_PROCESSING_ENDPOINT', {
+      infer: true,
+    });
+    const microserviceEnvironment = this.config.get('MICROSERVICES_ENV', { infer: true });
+
     let listName = '';
     let userEmail = '';
 
@@ -183,16 +186,16 @@ export class ListService {
     }
 
     const sqlConfig = {
-      user: process.env.MSSQL_USERNAME,
-      password: process.env.MSSQL_PASSWORD,
+      user: this.config.get('MSSQL_USERNAME', { infer: true }),
+      password: this.config.get('MSSQL_PASSWORD', { infer: true }),
       database: clientDatabase,
-      server: process.env.MSSQL_HOSTNAME,
+      server: this.config.get('MSSQL_HOSTNAME', { infer: true }),
       pool: {
         max: 10,
         min: 0,
         idleTimeoutMillis: 30000,
       },
-      port: parseInt(process.env.MSSQL_PORT),
+      port: this.config.get('MSSQL_PORT', { infer: true }),
       options: {
         //encrypt: true, // for azure
         trustServerCertificate: true, // change to true for local dev / self-signed certs
@@ -491,7 +494,9 @@ export class ListService {
   async saveListToProcess(
     listDetails: RequestSaveLargeListProcessModel
   ): Promise<CreateListInsertResultModel> {
-    const fileS3Route = `s3://${process.env.LARGE_PROCESING_LIST_BUCKET}/${listDetails.key}`;
+    const fileS3Route = `s3://${this.config.get('LARGE_PROCESSING_LIST_BUCKET')}/${
+      listDetails.key
+    }`;
 
     try {
       await SQLUtils.queryDB(

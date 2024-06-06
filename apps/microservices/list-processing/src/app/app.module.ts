@@ -1,11 +1,6 @@
-import { ConfigModule } from '@nestjs/config';
-
-const envModule = ConfigModule.forRoot({
-  isGlobal: true,
-});
-
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common';
-import { config } from 'aws-sdk';
+import { config as awsConfig } from 'aws-sdk';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -21,16 +16,15 @@ import { AFIModule } from './afi';
 import { AlertsModule } from './alerts';
 import { ListUploadModule } from './list-upload';
 import { ListController } from './v1/list.controller';
-
-config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
+import { ServerConfigType, serverConfigSchema } from '../../validators/server-config';
 
 @Module({
   imports: [
-    envModule,
+    ConfigModule.forRoot({
+      envFilePath: ['.env', '.env.production'],
+      validate: (env) => serverConfigSchema.parse(env),
+      isGlobal: true,
+    }),
     TypeOrmSystemModule.create({
       name: 'default',
       imports: [SchedulerModule],
@@ -51,6 +45,17 @@ config.update({
     ListService,
     LockListService,
     DeleteListTypeOrm,
+    {
+      provide: '',
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<ServerConfigType, true>) => {
+        awsConfig.update({
+          accessKeyId: configService.get('AWS_ACCESS_KEY_ID', { infer: true }),
+          secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY', { infer: true }),
+          region: configService.get('AWS_REGION', { infer: true }),
+        });
+      },
+    },
   ],
 })
 export class AppModule {}

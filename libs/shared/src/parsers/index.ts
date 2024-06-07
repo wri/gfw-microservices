@@ -1,2 +1,2 @@
-export * from './csvToGeoJSON.parser';
-export * from './xlsToGeoJSON.parser';
+export * from './csv2GeoJSON.parser';
+export * from './xls2GeoJSON.parser';

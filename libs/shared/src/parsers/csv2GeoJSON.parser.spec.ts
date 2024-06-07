@@ -1,4 +1,4 @@
-import { csv2geojson } from './csvToGeoJSON.parser'; // Adjust the import according to your file structure
+import { csv2geojson } from './csv2GeoJSON.parser'; // Adjust the import according to your file structure
 
 describe('csv2geojson', () => {
   it('should correctly convert CSV data to GeoJSON format', (done) => {

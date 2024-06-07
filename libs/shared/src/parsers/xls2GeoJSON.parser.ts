@@ -1,4 +1,4 @@
-import { csv2geojson } from './csvToGeoJSON.parser';
+import { csv2geojson } from './csv2GeoJSON.parser';
 import * as XLSX from 'xlsx';
 
 export interface XLSParseOptions {

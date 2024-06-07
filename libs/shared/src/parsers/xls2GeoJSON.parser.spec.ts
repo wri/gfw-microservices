@@ -1,4 +1,4 @@
-import { xls2geojson } from './xlsToGeoJSON.parser';
+import { xls2geojson } from './xls2GeoJSON.parser';
 
 describe('xls2geojson', () => {
   it('should correctly convert CSV data to GeoJSON format', (done) => {

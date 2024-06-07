@@ -5,6 +5,7 @@ import { TEST_ENVIRONMENT, CONNECTION_TYPE_SQLITE, CONNECTION_TYPE_MSSQL } from 
 import { ExternalUpload } from '../list-analysis/external-upload.entity';
 import { ListsAnalysisStatus } from '../list-analysis/list-analysis-status.entity';
 import { Lists } from '../lists/lists.entity';
+import { ServerConfigType } from '../validators/server-config';
 
 export interface ConnectionCacheItem {
   connection: Promise<DataSource>;
@@ -13,11 +14,15 @@ export interface ConnectionCacheItem {
 
 @Injectable()
 export class ClientStoreConnection {
-  constructor(private config: ConfigService) {}
   private readonly connections: Map<string, ConnectionCacheItem> = new Map();
+
+  constructor(private config: ConfigService<ServerConfigType, true>) {}
+
   async getConnection(database: string): Promise<DataSource> {
-    const connectionId = process.env.MSSQL_HOSTNAME + database;
-    const env = this.config.get<string>('NODE_ENV');
+    const connectionId = this.config.get('MSSQL_HOSTNAME') + database;
+    const env = this.config.get('NODE_ENV', { infer: true });
+    const password = this.config.get('MSSQL_PASSWORD', { infer: true });
+
     if (!this.connections.has(connectionId)) {
       try {
         const connectionDb = new DataSource({
@@ -26,10 +31,10 @@ export class ClientStoreConnection {
           synchronize: env === TEST_ENVIRONMENT,
           logging: true,
           entities: [ExternalUpload, ListsAnalysisStatus, Lists],
-          username: this.config.get<string>('MSSQL_USERNAME'),
-          password: this.config.get<string>('MSSQL_PASSWORD'),
-          host: this.config.get<string>('MSSQL_HOSTNAME'),
-          port: parseInt(this.config.get<string>('MSSQL_PORT'), 10),
+          username: this.config.get('MSSQL_USERNAME'),
+          password,
+          host: this.config.get('MSSQL_HOSTNAME'),
+          port: this.config.get('MSSQL_PORT'),
           extra: {
             trustServerCertificate: true,
           },

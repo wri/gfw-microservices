@@ -31,6 +31,8 @@ import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
 
+import { ServerConfigType } from '../validators/server-config';
+
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
 
@@ -43,24 +45,29 @@ const contentType = {
 @Injectable()
 export class ListAnalysisService {
   private readonly LLP_BASE_URL: string;
-  private readonly AWS_ACCESS_KEY_ID: string;
-  private readonly AWS_REGION: string;
-  private readonly AWS_SECRET_ACCESS_KEY: string;
-  private readonly LARGE_PROCESING_LIST_BUCKET: string;
+  private readonly awsConfig: {
+    accessKeyId: string;
+    region: string;
+    secretAccessKey: string;
+    largeProcessingListBucket: string;
+  };
   private readonly logger = new Logger(ListAnalysisResponse.name);
+
   constructor(
-    private config: ConfigService,
+    private configService: ConfigService<ServerConfigType, true>,
     private userService: UserService,
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,
     private readonly sqsService: SqsService,
     private readonly listService: ListService
   ) {
-    this.LLP_BASE_URL = this.config.get<string>('LLP_BASE_URL');
-    this.AWS_ACCESS_KEY_ID = this.config.get<string>('AWS_ACCESS_KEY_ID');
-    this.AWS_REGION = this.config.get<string>('AWS_REGION');
-    this.AWS_SECRET_ACCESS_KEY = this.config.get<string>('AWS_SECRET_ACCESS_KEY');
-    this.LARGE_PROCESING_LIST_BUCKET = this.config.get<string>('LARGE_PROCESING_LIST_BUCKET');
+    this.LLP_BASE_URL = configService.get('LLP_BASE_URL');
+    this.awsConfig = {
+      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+      region: this.configService.get('AWS_REGION'),
+      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      largeProcessingListBucket: this.configService.get('LARGE_PROCESSING_LIST_BUCKET'),
+    };
   }
 
   private getEAPIListStatus(listAnalysisStatus: ListsAnalysisStatus) {
@@ -218,13 +225,13 @@ export class ListAnalysisService {
   private async checkIfS3FileExists(fileKey: string) {
     const s3 = new S3Client({
       credentials: {
-        accessKeyId: this.AWS_ACCESS_KEY_ID,
-        secretAccessKey: this.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: this.awsConfig.accessKeyId,
+        secretAccessKey: this.awsConfig.secretAccessKey,
       },
-      region: this.AWS_REGION,
+      region: this.awsConfig.region,
     });
 
-    const bucketName = this.LARGE_PROCESING_LIST_BUCKET;
+    const bucketName = this.awsConfig.largeProcessingListBucket;
 
     const params = {
       Bucket: bucketName,
@@ -282,50 +289,57 @@ export class ListAnalysisService {
         throwCustomErrorResponse(error.response?.data?.message, HttpStatus.BAD_REQUEST);
       }
 
-      this.logger.error('create large list internal error');
+      this.logger.error('create large list internal error', error);
       throwCustomErrorResponse('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     const listId = largeListCreated.data.list_id;
 
-    // save list to process
-    const saveListToProcess = await axios.post<{
-      list_id: number;
-      s3_location: string;
-    }>(`${this.LLP_BASE_URL}/api/save-list-to-process`, {
-      userId: externalUpload.userId,
-      list_id: listId,
-      key: externalUpload.uploadKeyFile,
-      listName: newListDetails.listName,
-      client_database: organizationDetails.organizationDb,
-    });
+    try {
+      // save list to process
+      const saveListToProcess = await axios.post<{
+        list_id: number;
+        s3_location: string;
+      }>(`${this.LLP_BASE_URL}/api/save-list-to-process`, {
+        userId: externalUpload.userId,
+        list_id: listId,
+        key: externalUpload.uploadKeyFile,
+        listName: newListDetails.listName,
+        client_database: organizationDetails.organizationDb,
+      });
 
-    // process list
-    const processListResponse = await axios.post<{
-      executionArn: string;
-      startDate: string;
-    }>(`${this.LLP_BASE_URL}/api/process-list`, {
-      organization_id: organizationDetails.id,
-      list_id: listId,
-      organization_database: organizationDetails.organizationDb,
-      subscription_status_id: organizationDetails.subscriptionStatusId,
-      path: saveListToProcess.data.s3_location,
-      template_type: newListDetails.templateId,
-      user_id: externalUpload.userId,
-      startAnalysis: true,
-      isExternalAPIProcess: true,
-    });
+      // process list
+      const processListResponse = await axios.post<{
+        executionArn: string;
+        startDate: string;
+      }>(`${this.LLP_BASE_URL}/api/process-list`, {
+        organization_id: organizationDetails.id,
+        list_id: listId,
+        organization_database: organizationDetails.organizationDb,
+        subscription_status_id: organizationDetails.subscriptionStatusId,
+        path: saveListToProcess.data.s3_location,
+        // Forcing template_type because only cocoa_generic is supported
+        // LP verifies the field is a string
+        template_type: 'cocoa_generic',
+        user_id: externalUpload.userId,
+        startAnalysis: true,
+        isExternalAPIProcess: true,
+      });
+      this.logger.log('Event analysis response: ', processListResponse.data);
 
-    this.logger.log('Event analysis response: ', processListResponse.data);
+      const response: ListUploadNewResponse = {
+        uploadId: newListDetails.uploadId,
+        listId: listId.toString(),
+        status: LIST_INITIAL_STATUS,
+        errorDetails: '',
+        creationDate: new Date(processListResponse.data.startDate),
+      };
 
-    const response: ListUploadNewResponse = {
-      uploadId: newListDetails.uploadId,
-      listId: listId.toString(),
-      status: LIST_INITIAL_STATUS,
-      errorDetails: '',
-      creationDate: new Date(processListResponse.data.startDate),
-    };
-
-    return response;
+      return response;
+    } catch (error) {
+      // axios returns useful info in error.response.data
+      this.logger.error('UploadNew error', error?.response?.data || error);
+      throw error;
+    }
   }
 
   async generateDownloadBundle({

@@ -819,7 +819,172 @@ describe('AppController', () => {
       expect(response.status).toEqual(404);
     });
   });
+  it('Should failed zod validations when receiving replaceFile as string instead of boolean at create-presigned-url endpoint', async () => {
+    const bodyPost = {
+      key: 'key',
+      replaceFile: 'true',
+      contentType: 'text/csv',
+    };
+    const expectedResult = [
+      {
+        code: 'invalid_type',
+        message: 'Expected boolean, received string',
+        path: ['replaceFile'],
+        received: 'string',
+        expected: 'boolean',
+      },
+    ];
+    const {
+      body: { details: response },
+    } = await request(app.getHttpServer()).post(`/create-presigned-url`).send(bodyPost);
+    expect(response).toEqual(expectedResult);
+  });
+  it('Should failed zod validations when receiving key as number instead of string at get-object-presigned-url endpoint', async () => {
+    const bodyPost = {
+      key: 123456,
+      replaceFile: false,
+    };
+    const expectedResult = [
+      {
+        code: 'invalid_type',
+        message: 'Expected string, received number',
+        path: ['key'],
+        received: 'number',
+        expected: 'string',
+      },
+    ];
+    const {
+      body: { details: response },
+    } = await request(app.getHttpServer()).post(`/get-object-presigned-url`).send(bodyPost);
+    expect(response).toEqual(expectedResult);
+  });
+  it('Should failed zod validations when receiving client_database as number instead of string at save-list-to-process endpoint', async () => {
+    const alertsGenerate = {
+      key: '123456',
+      replaceFile: false,
+      userId: 1,
+      list_id: 0,
+      listName: 'list-name',
+      client_database: 123456,
+    };
+    const expectedResult = [
+      {
+        code: 'invalid_type',
+        message: 'Expected string, received number',
+        path: ['client_database'],
+        received: 'number',
+        expected: 'string',
+      },
+    ];
+    const {
+      body: { details: response },
+    } = await request(app.getHttpServer()).post(`/save-list-to-process`).send(alertsGenerate);
+    expect(response).toEqual(expectedResult);
+  });
+  it('Should require startAnalysis when missing this parameter at process-list endpoint', async () => {
+    const bodyPost = {
+      organization_id: 0,
+      subscription_status_id: 0,
+      organization_database: 'string',
+      list_id: 0,
+      path: 'string',
+      template_type: 'string',
+      user_id: 0,
+      isExternalAPIProcess: true,
+    };
+    const expectedResult = [
+      {
+        code: 'invalid_type',
+        message: 'Required',
+        path: ['startAnalysis'],
+        received: 'undefined',
+        expected: 'boolean',
+      },
+    ];
+    const {
+      body: { details: response },
+    } = await request(app.getHttpServer()).post(`/process-list`).send(bodyPost);
+    expect(response).toEqual(expectedResult);
+  });
+  it('Should failed zod validations when receiving analysisIds as number instead of string at create-large-list endpoint', async () => {
+    const bodyPost = {
+      list_name: 'string',
+      user_id: 0,
+      client_database: 'string',
+      analysisIds: [0],
+    };
+    const expectedResult = [
+      {
+        code: 'invalid_type',
+        message: 'Expected string, received number',
+        path: ['analysisIds', 0],
+        received: 'number',
+        expected: 'string',
+      },
+    ];
+    const {
+      body: { details: response },
+    } = await request(app.getHttpServer()).post(`/create-large-list`).send(bodyPost);
+    expect(response).toEqual(expectedResult);
+  });
+  it('Should failed zod validations when receiving an unknown action type at CopyOrMoveLargeList endpoint', async () => {
+    const bodyPost = {
+      listId: 2,
+      selectedListLocationClasification: 'string',
+      customAttributesNames: ['string'],
+      userListNames: ['string'],
+      action: 'wrong_action',
+      listName: 'string',
+      listType: 'new',
+      targetList: {},
+      selectedLocations: [1, 2, 3],
+      addType: 'string',
+      activeTemplate: 'string',
+      commodityType: 'string',
+      templateData: {},
+      saveAsDraft: true,
+      userId: 0,
+      clientDatabase: 'string',
+      organizationId: 0,
+      subscriptionStatusId: 0,
+      gfwListId: 0,
+      allLocationsSelected: true,
+      filters: {},
+      srcListAnalysisTable: 'string',
+    };
+    const expectedResult = [
+      {
+        code: 'invalid_enum_value',
+        message: "Invalid enum value. Expected 'move' | 'copy', received 'wrong_action'",
+        path: ['action'],
+        received: 'wrong_action',
+        options: ['move', 'copy'],
+      },
+    ];
+    const {
+      body: { details: response },
+    } = await request(app.getHttpServer()).post(`/CopyOrMoveLargeList`).send(bodyPost);
+    expect(response).toEqual(expectedResult);
+  });
+  it('Should failed zod validations when receiving an nan instead of number for listId at paginated-list-data endpoint', async () => {
+    const queryParameters = {
+      organizationDatabase: 'fake_database',
+    };
+    const expectedResult = [
+      {
+        code: 'invalid_type',
+        message: 'Expected number, received nan',
+        path: ['listId'],
+        received: 'nan',
+        expected: 'number',
+      },
+    ];
+    const {
+      body: { details: response },
+    } = await request(app.getHttpServer()).get(`/paginated-list-data`).query(queryParameters);
 
+    expect(response).toEqual(expectedResult);
+  });
   afterAll(() => {
     /**
      * Important close the app and connections

@@ -4,6 +4,9 @@
   "env": {
     "jest": true
   },
+  "globals": {
+    "gtag": "readonly"
+  },
   "plugins": ["@nrwl/nx"],
   "overrides": [
     {

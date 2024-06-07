@@ -8,23 +8,31 @@ import { TokenService } from './token.service';
 import { AuthService } from './auth.service';
 import { APIKeyController } from './api-key.controller';
 import { Organization } from './organization.entity';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserRoutes } from './user-route.entity';
 import * as AWS from 'aws-sdk';
-const awsConfig = {
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-};
-
-AWS.config.update(awsConfig);
+import { ServerConfigType } from '../validators/server-config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Organization, ExternalAPIKey, UserRoutes], 'default'),
     ConfigModule,
   ],
-  providers: [TokenService, AuthService],
+  providers: [
+    TokenService,
+    AuthService,
+    {
+      provide: '',
+      inject: [ConfigService],
+      useFactory: (config: ConfigService<ServerConfigType, true>) => {
+        AWS.config.update({
+          accessKeyId: config.get('AWS_ACCESS_KEY_ID'),
+          secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY'),
+          region: config.get('AWS_REGION'),
+        });
+      },
+    },
+  ],
   exports: [TokenService, AuthService],
   controllers: [APIKeyController],
 })

@@ -43,7 +43,6 @@ export class InputService extends IPipeService {
   async finish(filters: ListFieldsFileRequest) {
     const { listId } = filters;
     this.logger.log(`(${listId}) - Finished to process input data`);
-    console.warn('• this.inputStream', this.inputStream);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
     this.fileStream.destroy();

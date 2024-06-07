@@ -1,3 +1,4 @@
+import { ActionType, TargetListType } from '@wri-monorepos/sql';
 import { z } from 'zod';
 
 // Define the allowed content types
@@ -11,8 +12,90 @@ export const allowedContentTypes = [
 ] as const;
 
 // Define a Zod schema for the request body
-export const RequestPreSignedURLSchema = z.object({
+export const getObjectPresignedSchema = z.object({
   key: z.string(),
-  contentType: z.enum(allowedContentTypes),
   replaceFile: z.boolean().optional(),
+});
+export const requestPreSignedURLSchema = getObjectPresignedSchema.extend({
+  contentType: z.enum(allowedContentTypes),
+});
+
+export const requestSaveLargeListProcessModelSchema = z.object({
+  key: z.string(),
+  userId: z.number(),
+  list_id: z.number(),
+  listName: z.string(),
+  client_database: z.string(),
+});
+export const requestLargeListProcessSchema = z.object({
+  organization_id: z.number(),
+  subscription_status_id: z.number(),
+  organization_database: z.string(),
+  list_id: z.number(),
+  path: z.string(),
+  template_type: z.string(),
+  user_id: z.number(),
+  startAnalysis: z.boolean(),
+  isExternalAPIProcess: z.boolean().optional(),
+});
+
+export const requestTriggerProcessLargeListSchema = z.object({
+  list_name: z.string(),
+  user_id: z.number(),
+  client_database: z.string(),
+  analysisIds: z.array(z.string()),
+});
+
+export const copyOrMoveLargeListRequestSchema = z.object({
+  listId: z.coerce.number(),
+  selectedListLocationClasification: z.string(),
+  customAttributesNames: z.array(z.string()),
+  userListNames: z.array(z.string()),
+  action: z.nativeEnum(ActionType),
+  listType: z.nativeEnum(TargetListType),
+  listName: z.string(),
+  targetList: z.object({}).optional(),
+  selectedLocations: z.array(z.coerce.number()),
+  addType: z.string(),
+  activeTemplate: z.string(),
+  commodityType: z.string().optional(),
+  templateData: z.any(),
+  saveAsDraft: z.coerce.boolean(),
+  userId: z.coerce.number(),
+  clientDatabase: z.string(),
+  organizationId: z.coerce.number(),
+  subscriptionStatusId: z.coerce.number(),
+  gfwListId: z.coerce.number(),
+  allLocationsSelected: z.coerce.boolean(),
+  filters: z.object({}),
+  srcListAnalysisTable: z.string(),
+});
+export const getPaginatedListDataRequestSchema = z.object({
+  listId: z.coerce.number(),
+  organizationDatabase: z.string(),
+  analysisAreaMax: z.coerce.number().optional(),
+  analysisAreaMin: z.coerce.number().optional(),
+  country: z.string().optional(),
+  geometry: z.coerce.number().optional(),
+  orderType: z.string().optional(),
+  page: z.coerce.number().optional(),
+  rowsPerPage: z.coerce.number().optional(),
+  sortByAttribute: z.string().optional(),
+  state: z.string().optional(),
+  subState: z.string().optional(),
+  locationLogic: z.string().optional(),
+  locationIds: z.string().optional(),
+  locationStatement: z.string().optional(),
+  combinedColumns: z.string().optional(),
+  searchString: z.string().optional(),
+});
+
+export const getNumberOfPagesPaginatedListDataRequestSchema = z.object({
+  listId: z.coerce.number(),
+  organizationDatabase: z.string(),
+  subState: z.string().optional(),
+  rowsPerPage: z.coerce.number(),
+  analysisAreaMin: z.coerce.number().optional(),
+  analysisAreaMax: z.coerce.number().optional(),
+  searchString: z.string().optional(),
 });

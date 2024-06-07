@@ -1,16 +1,32 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ListFilters } from '@wri-monorepos/geo';
-export interface RequestPreSignedURLModel {
+import {
+  ActionType,
+  CopyOrMoveLargeListRequest,
+  ListsType,
+  TargetListType,
+} from '@wri-monorepos/sql';
+export class GetObjectPresigned {
+  @ApiProperty()
   key: string;
-  contentType: string;
+  @ApiProperty()
   replaceFile?: boolean;
 }
+export class RequestPreSignedURLModel extends GetObjectPresigned {
+  @ApiProperty()
+  contentType: string;
+}
 
-export interface RequestSaveLargeListProcessModel {
+export class RequestSaveLargeListProcessModel {
+  @ApiProperty()
   key: string;
+  @ApiProperty()
   userId: number;
+  @ApiProperty()
   list_id: number;
+  @ApiProperty()
   listName: string;
+  @ApiProperty()
   client_database: string;
 }
 
@@ -29,15 +45,24 @@ export interface CreateListInsertResultModel {
   s3_location: string;
 }
 
-export interface RequestLargeListProcess {
+export class RequestLargeListProcess {
+  @ApiProperty()
   organization_id: number;
+  @ApiProperty()
   subscription_status_id: number;
+  @ApiProperty()
   organization_database: string;
+  @ApiProperty()
   list_id: number;
+  @ApiProperty()
   path: string;
+  @ApiProperty()
   template_type: string;
+  @ApiProperty()
   user_id: number;
+  @ApiProperty()
   startAnalysis: boolean;
+  @ApiProperty()
   isExternalAPIProcess?: boolean;
 }
 
@@ -46,10 +71,14 @@ export interface ResponseLargeListProcess {
   startDate: string;
 }
 
-export interface RequestTriggerProcessLargeList {
+export class RequestTriggerProcessLargeList {
+  @ApiProperty()
   list_name: string;
+  @ApiProperty()
   user_id: number;
+  @ApiProperty()
   client_database: string;
+  @ApiProperty()
   analysisIds: Array<string>;
 }
 
@@ -66,58 +95,104 @@ export class CreateListRequest {
   filename: string;
 }
 
-export interface CopyOrMoveLargeListRequest {
+export class CopyOrMoveLargeListRequestLLP implements CopyOrMoveLargeListRequest {
+  @ApiProperty()
   listId: number;
+  @ApiProperty()
   selectedListLocationClasification: string;
+  @ApiProperty()
   customAttributesNames: string[];
+  @ApiProperty()
   userListNames: string[];
-  action: string; // move or copy
-  listType: string; // new or existing
+  @ApiProperty()
+  action: ActionType; // move or copy
+  @ApiProperty()
   listName: string;
-  targetList?: number;
+  @ApiProperty()
+  listType: TargetListType;
+  @ApiProperty({ required: false })
+  targetList?: ListsType;
+  @ApiProperty({ example: [1, 2, 3] })
   selectedLocations: number[];
+  @ApiProperty()
   addType: string;
+  @ApiProperty()
   activeTemplate: string;
+  @ApiProperty()
   commodityType?: string;
+  @ApiProperty()
   templateData: unknown;
+  @ApiProperty()
   saveAsDraft: boolean;
+  @ApiProperty()
   userId: number;
+  @ApiProperty()
   clientDatabase: string;
+  @ApiProperty()
   organizationId: number;
+  @ApiProperty()
   subscriptionStatusId: number;
+  @ApiProperty()
   gfwListId: number;
+  @ApiProperty()
   allLocationsSelected: boolean;
+  @ApiProperty()
   filters: ListFilters;
+  @ApiProperty()
   srcListAnalysisTable: string;
 }
 
-export interface getPaginatedListDataRequest {
+export class getPaginatedListDataRequest {
+  @ApiProperty()
   listId: number;
+  @ApiProperty()
   organizationDatabase: string;
+  @ApiProperty({ required: false })
   analysisAreaMax?: number;
+  @ApiProperty()
   analysisAreaMin?: number;
+  @ApiProperty({ required: false })
   country?: string;
+  @ApiProperty({ required: false })
   geometry?: number;
+  @ApiProperty({ required: false })
   orderType?: string;
+  @ApiProperty({ required: false })
   page?: 0;
+  @ApiProperty({ required: false })
   rowsPerPage?: 1000;
+  @ApiProperty({ required: false })
   sortByAttribute?: string;
+  @ApiProperty({ required: false })
   state?: string;
+  @ApiProperty({ required: false })
   subState?: string;
+  @ApiProperty({ required: false })
   locationLogic?: string;
+  @ApiProperty({ required: false })
   locationIds?: string;
+  @ApiProperty({ required: false })
   locationStatement?: string;
+  @ApiProperty({ required: false })
   combinedColumns?: string;
+  @ApiProperty({ required: false })
   searchString?: string;
 }
 
-export interface getNumberOfPagesPaginatedListDataRequest {
+export class getNumberOfPagesPaginatedListDataRequest {
+  @ApiProperty()
   listId: number;
+  @ApiProperty()
   organizationDatabase: string;
+  @ApiProperty({ required: false })
   subState?: string;
+  @ApiProperty()
   rowsPerPage: 1000;
+  @ApiProperty({ required: false })
   analysisAreaMin?: number;
+  @ApiProperty({ required: false })
   analysisAreaMax?: number;
+  @ApiProperty({ required: false })
   searchString?: string;
 }
 

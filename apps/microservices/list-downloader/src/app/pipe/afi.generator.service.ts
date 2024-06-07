@@ -1,4 +1,4 @@
-import { DeforestationKpisService, NaturalForestLostService, OtherKpisService } from '../files';
+import { DeforestationKpisService, NaturalForestLossService, OtherKpisService } from '../files';
 import { Injectable, Logger } from '@nestjs/common';
 import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';
@@ -15,7 +15,7 @@ export class AfiGeneratorService extends IFileGenerator {
   constructor(
     private readonly analysisAfiDataService: AnalysisAfiDataService,
     private readonly deforestationKpisService: DeforestationKpisService,
-    private readonly naturalForestLostService: NaturalForestLostService,
+    private readonly naturalForestLostService: NaturalForestLossService,
     private readonly otherKpisService: OtherKpisService
   ) {
     super();
@@ -23,26 +23,26 @@ export class AfiGeneratorService extends IFileGenerator {
 
   public async makeFile(filters: BasicFieldsFileRequest) {
     await this.deforestationKpisService.startEmail(filters);
-    await this.runAfiFileGeneration(filters);
-    await this.runAfiFileGeneration(filters, 1, 'aggregated');
+    await this.runAfiFileGeneration(filters, 'location');
+    await this.runAfiFileGeneration(filters, 'list');
     await getAllFilesAndZip(filters);
     await this.deforestationKpisService.finishProcess(filters);
   }
 
   private async runAfiFileGeneration(
     filters: BasicFieldsFileRequest,
-    isListLevel = 0,
-    suffix = ''
+    suffix: 'location' | 'list' = 'location'
   ) {
+    const isListLevel = suffix === 'list' ? 1 : 0;
     const numberOfPages = await this.analysisAfiDataService.getNumberOfPages(filters, isListLevel);
     const { listId } = filters;
     this.logger.log(`(${listId}) - Number of pages: ${numberOfPages}`);
 
     const arrayOfPages = Array.from(Array(numberOfPages).keys());
 
-    await this.deforestationKpisService.start(filters, suffix);
-    await this.naturalForestLostService.start(filters, suffix);
-    await this.otherKpisService.start(filters, suffix);
+    this.deforestationKpisService.start(filters, suffix);
+    this.naturalForestLostService.start(filters, suffix);
+    this.otherKpisService.start(filters, suffix);
 
     const composeResults = async (i: number) => {
       const newFilter = { ...filters, page: i };

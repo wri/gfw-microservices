@@ -44,7 +44,7 @@ import { AlertsLocationsHistoryService } from '../files/alerts.locations.history
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   ArgentinaDeforestationService,
-  NaturalForestLostService,
+  NaturalForestLossService,
   OtherKpisService,
 } from '../files';
 
@@ -78,7 +78,7 @@ import {
     InputService,
     ListGeneratorService,
     MillPriorityService,
-    NaturalForestLostService,
+    NaturalForestLossService,
     OtherKpisService,
     PalmRiskAnalysisService,
     PipeService,

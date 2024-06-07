@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
 import { AfiAnalysisByListId } from '@wri-monorepos/sql';
 
-describe('AFI File Service - [Location level]', () => {
+describe('Deforestation File Service - [Location level]', () => {
   const deforestationKpisService = new DeforestationKpisService();
 
   const filters = {
@@ -27,7 +27,7 @@ describe('AFI File Service - [Location level]', () => {
   });
 
   beforeEach(() => {
-    deforestationKpisService.start(filters);
+    deforestationKpisService.start(filters, 'location');
   });
 
   afterEach(() => {
@@ -102,8 +102,8 @@ describe('AFI File Service - [Location level]', () => {
   });
 });
 
-describe('AFI File Service - [List level]', () => {
-  const afiFileService = new DeforestationKpisService();
+describe('Deforestation Kpis File Service - [List level]', () => {
+  const deforestationKpisService = new DeforestationKpisService();
   const filters = {
     listId: 5642,
     listName: 'WRI',
@@ -113,15 +113,15 @@ describe('AFI File Service - [List level]', () => {
   const filePath = `${dir}/${filters.listName}_deforestation_kpis_aggregated.csv`;
 
   beforeAll(() => {
-    afiFileService.startEmail = jest.fn();
-    afiFileService.errorEmail = jest.fn();
-    afiFileService.finishedEmail = jest.fn();
+    deforestationKpisService.startEmail = jest.fn();
+    deforestationKpisService.errorEmail = jest.fn();
+    deforestationKpisService.finishedEmail = jest.fn();
 
     createDirectory(dir);
   });
 
   beforeEach(() => {
-    afiFileService.start(filters, 'deforestation_kpis_aggregated');
+    deforestationKpisService.start(filters, 'list');
   });
 
   afterEach(() => {
@@ -129,9 +129,9 @@ describe('AFI File Service - [List level]', () => {
   });
 
   test('When the input data is ok', async () => {
-    afiFileService.process(afiListLevelData);
+    deforestationKpisService.process(afiListLevelData);
 
-    await afiFileService.finish(filters);
+    await deforestationKpisService.finish(filters);
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
@@ -145,9 +145,9 @@ describe('AFI File Service - [List level]', () => {
   });
 
   test('When receive an empty input array', async () => {
-    afiFileService.process([]);
+    deforestationKpisService.process([]);
 
-    await afiFileService.finish(filters);
+    await deforestationKpisService.finish(filters);
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
@@ -158,9 +158,9 @@ describe('AFI File Service - [List level]', () => {
   });
 
   test('When the input is undefined', async () => {
-    afiFileService.process(undefined);
+    deforestationKpisService.process(undefined);
 
-    await afiFileService.finish(filters);
+    await deforestationKpisService.finish(filters);
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
@@ -181,9 +181,9 @@ describe('AFI File Service - [List level]', () => {
       }, {})
     ) as AfiAnalysisByListId[];
 
-    afiFileService.process(newAfiData);
+    deforestationKpisService.process(newAfiData);
 
-    await afiFileService.finish(filters);
+    await deforestationKpisService.finish(filters);
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');

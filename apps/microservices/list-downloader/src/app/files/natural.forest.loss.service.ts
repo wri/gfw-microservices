@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PassThrough, Transform } from 'stream';
 import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import { finished } from 'stream/promises';
-import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
 import * as Chain from 'stream-chain';
 import {
@@ -11,28 +10,30 @@ import {
 } from '../shared/constants';
 
 import { IPipeService } from '../pipe/i.pipe.service';
-import { FilterObject } from '../transform/filter.object';
+import { OrganizeNaturalForestLostResponse } from '../transform/organize.natural.forest.lost.response';
 import { FormatNumber } from '../transform/format.number';
+import { TotalCreatingNewField } from '../transform/total.creating.new.field';
+import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 
 @Injectable()
-export class NaturalForestLostService extends IPipeService {
-  private readonly logger = new Logger(NaturalForestLostService.name);
+export class NaturalForestLossService extends IPipeService {
+  private readonly logger = new Logger(NaturalForestLossService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  start(filters: BasicFieldsFileRequest, suffix = '') {
+  start(filters: BasicFieldsFileRequest, suffix: 'location' | 'list' = 'location') {
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
     const [header, fileSuffix] =
-      suffix == 'aggregated'
+      suffix == 'list'
         ? [NATURAL_FOREST_LOST_KPIS_HEADER_AGGREGATE, 'natural_forest_loss_aggregated']
         : [NATURAL_FOREST_LOST_KPIS_HEADER, 'natural_forest_loss'];
 
     this.organizeStream(filters, Object.keys(header), fileSuffix);
     fs.writeFileSync(
-      `/tmp/wri-${key}/${listName}_${suffix}.csv`,
+      `/tmp/wri-${key}/${listName}_${fileSuffix}.csv`,
       `${Object.values(header).join(',')}\n`
     );
   }
@@ -50,19 +51,23 @@ export class NaturalForestLostService extends IPipeService {
       flags: 'a',
     });
 
-    let pipeline: Array<Transform> = [new FilterObject(allFields)];
-
-    if (suffix.includes('aggregated')) {
-      pipeline = [...pipeline, new FormatNumber()];
-    } else {
-      pipeline = [...pipeline, new FormatNumber()];
-    }
-
-    pipeline.push(
-      csvWriter({
-        sendHeaders: false,
-      })
-    );
+    const level = suffix.includes('aggregated') ? 'list' : 'location';
+    console.log(level);
+    const pipeline: Array<Transform> = [
+      new TotalCreatingNewField([
+        {
+          input: 'naturalForestLossByYear',
+          output: 'sbtn_total',
+        },
+        {
+          input: 'jrcForestLossByYear',
+          output: 'jrc_total',
+        },
+      ]),
+      new OrganizeNaturalForestLostResponse(level),
+      new FormatNumber(),
+      new ConvertObject2CSV(allFields),
+    ];
 
     this.inputStream.pipe(new Chain(pipeline)).pipe(this.fileStream);
   }

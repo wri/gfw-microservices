@@ -18,7 +18,7 @@ export * from './forest.loss.service';
 export * from './historic.percent.service';
 export * from './input.service';
 export * from './mill.priority.service';
-export * from './natural.forest.lost.service';
+export * from './natural.forest.loss.service';
 export * from './other.kpis.service';
 export * from './palm.risk.analysis.service';
 export * from './result.service';

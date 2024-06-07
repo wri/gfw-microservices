@@ -10,6 +10,7 @@ import { OTHER_KPIS_HEADER, OTHER_KPIS_HEADER_AGGREGATE } from '../shared/consta
 import { IPipeService } from '../pipe/i.pipe.service';
 import { FilterObject } from '../transform/filter.object';
 import { FormatNumber } from '../transform/format.number';
+import { NegligibleRiskDiscretize } from '../transform/negligible.risk.discretize';
 
 @Injectable()
 export class OtherKpisService extends IPipeService {
@@ -17,21 +18,22 @@ export class OtherKpisService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  start(filters: BasicFieldsFileRequest, suffix = '') {
+  start(filters: BasicFieldsFileRequest, suffix: 'location' | 'list' = 'location') {
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
     const [header, fileSuffix] =
-      suffix == 'aggregated'
-        ? [OTHER_KPIS_HEADER_AGGREGATE, 'other_metric_aggregated']
-        : [OTHER_KPIS_HEADER, 'other_metric'];
+      suffix == 'list'
+        ? [OTHER_KPIS_HEADER_AGGREGATE, 'other_metrics_aggregated']
+        : [OTHER_KPIS_HEADER, 'other_metrics'];
 
-    this.organizeStream(filters, Object.keys(header), fileSuffix);
     fs.writeFileSync(
-      `/tmp/wri-${key}/${listName}_${suffix}.csv`,
+      `/tmp/wri-${key}/${listName}_${fileSuffix}.csv`,
       `${Object.values(header).join(',')}\n`
     );
+
+    this.organizeStream(filters, Object.keys(header), fileSuffix);
   }
 
   private organizeStream(filters: BasicFieldsFileRequest, allFields: string[], suffix: string) {
@@ -50,7 +52,7 @@ export class OtherKpisService extends IPipeService {
     let pipeline: Array<Transform> = [new FilterObject(allFields)];
 
     if (suffix.includes('aggregated')) {
-      pipeline = [...pipeline, new FormatNumber()];
+      pipeline = [...pipeline, new NegligibleRiskDiscretize(), new FormatNumber()];
     } else {
       pipeline = [...pipeline, new FormatNumber()];
     }

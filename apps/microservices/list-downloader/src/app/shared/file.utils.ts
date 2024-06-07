@@ -2,6 +2,7 @@ import * as readline from 'readline';
 import * as archiver from 'archiver';
 import * as fs from 'fs';
 import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
+import { Logger } from '@nestjs/common';
 
 const createDirectory = (dir: string) => {
   if (!fs.existsSync(dir)) {
@@ -10,6 +11,7 @@ const createDirectory = (dir: string) => {
 };
 
 const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
+  Logger.log('Started zipping the files');
   return new Promise((resolve, reject) => {
     const { key, listName } = filter;
     const output = fs.createWriteStream(`/tmp/${key}.zip`);

@@ -76,6 +76,62 @@
       }
     },
     {
+      "id": "24a62aa1-b512-4917-98ab-2c857c55216c",
+      "type": "layer",
+      "attributes": {
+        "name": "GLAD-S2 alerts",
+        "slug": "GLAD-S2-alerts_5",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "GLAD-S2 alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/24a62aa1-b512-4917-98ab-2c857c55216c-1716820398641.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "color": [220, 102, 153]
+            },
+            "coverage-options": {
+              "opacity": 0.3,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/umd_glad_sentinel2_alerts/latest/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://www.globalforestwatch.org/api/metadata/umd_glad_sentinel2_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "GLAD-S2 alerts",
+                  "color": "#f69"
+                }
+              ],
+              "name": "GLAD-S2 alerts",
+              "source": "(weekly, 10m, select countries, UMD / GLAD)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2024-05-27T14:33:18.410Z",
+        "updatedAt": "2024-05-27T14:33:18.410Z"
+      }
+    },
+    {
       "id": "ad3c4fdd-d81d-4a43-92d7-f75c7e7c4008",
       "type": "layer",
       "attributes": {
@@ -278,7 +334,7 @@
         "default": true,
         "protected": false,
         "published": true,
-        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/c32c12e5-dd4d-4781-9236-1145e3450032-1699899543406.png",
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/c32c12e5-dd4d-4781-9236-1145e3450032-1717082459121.png",
         "env": "staging",
         "layerConfig": {
           "type": "tileLayer",
@@ -314,7 +370,7 @@
                 }
               ],
               "name": "GLAD alerts",
-              "source": "(weekly, 30m, select countries, UMD/GLAD)",
+              "source": "(weekly, 30m, select countries, UMD / GLAD)",
               "color": "#dc6699"
             }
           ],
@@ -324,7 +380,7 @@
         "applicationConfig": {},
         "staticImageConfig": {},
         "createdAt": "2023-11-13T18:19:03.263Z",
-        "updatedAt": "2023-11-13T18:19:03.263Z"
+        "updatedAt": "2024-05-30T15:20:59.033Z"
       }
     },
     {
@@ -408,6 +464,126 @@
         "staticImageConfig": {},
         "createdAt": "2022-04-28T18:30:06.788Z",
         "updatedAt": "2022-04-28T18:30:06.788Z"
+      }
+    },
+    {
+      "id": "3f0bc888-74be-4cf2-bb96-fd89d80e7797",
+      "type": "layer",
+      "attributes": {
+        "name": "integrated alerts geographic coverage",
+        "slug": "integrated-alerts-geographic-coverage",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Integrated Alerts Geographic Coverage",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/3f0bc888-74be-4cf2-bb96-fd89d80e7797-1717083128876.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "options": {
+              "color": [220, 102, 153]
+            },
+            "coverage-options": {
+              "opacity": 0.3,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/umd_glad_landsat_alerts_coverage/v2024/default/{z}/{x}/{y}.pbf",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Geographic coverage",
+                  "color": "#f69"
+                }
+              ],
+              "name": "Landsat Integrated Alerts Geographic Coverage",
+              "source": "(weekly, 30m, select countries, UMD/GLAD)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2024-05-27T14:40:08.378Z",
+        "updatedAt": "2024-05-30T15:32:08.786Z"
+      }
+    },
+    {
+      "id": "dfbf43ed-6657-4f6f-b259-558bd4013586",
+      "type": "layer",
+      "attributes": {
+        "name": "Integrated Deforestation Alerts",
+        "slug": "Integrated-Deforestation-Alerts_1",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "Integrated deforestation alerts",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/dfbf43ed-6657-4f6f-b259-558bd4013586-1717087852444.png",
+        "env": "staging",
+        "layerConfig": {
+          "type": "tileLayer",
+          "body": {
+            "options": {
+              "color": [220, 102, 153]
+            },
+            "coverage-options": {
+              "opacity": 0.3,
+              "color": "#f69"
+            },
+            "css-url": "https://github.com/Vizzuality/gfw/blob/develop/app/assets/javascripts/map/cartocss/style.cartocss",
+            "url": "https://tiles.globalforestwatch.org/gfw_integrated_alerts/latest/default/{z}/{x}/{y}.png",
+            "useCors": true,
+            "metadata": "https://www.globalforestwatch.org/api/metadata/gfw_integrated_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "categories": [
+                {
+                  "name": "Recent alerts",
+                  "color": "#e4c600"
+                },
+                {
+                  "name": "Show only confirmed alerts",
+                  "color": "#d7668f"
+                },
+                {
+                  "name": "Geographic coverage",
+                  "color": "#f69"
+                }
+              ],
+              "name": "Integrated Deforestation Alerts",
+              "source": "(weekly, 10m, select countries, UMD/GLAD)",
+              "color": "#dc6699"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2024-05-30T16:50:52.253Z",
+        "updatedAt": "2024-05-30T16:50:52.253Z"
       }
     },
     {
@@ -922,6 +1098,47 @@
       }
     },
     {
+      "id": "2fa30bfc-d94e-4c63-b355-02add91522ee",
+      "type": "layer",
+      "attributes": {
+        "name": "GLAD-L Alerts Geographic Coverage",
+        "slug": "GLAD-L-Alerts-Geographic-Coverage_1",
+        "dataset": "e663eb09-04de-4f39-b871-35c6c2ed10b5",
+        "description": "GLAD-L Alerts Geographic Coverage",
+        "application": ["gfw-pro"],
+        "iso": [],
+        "provider": "leaflet",
+        "userId": "62601518cdc846001a7756b5",
+        "default": true,
+        "protected": false,
+        "published": true,
+        "thumbnailUrl": "",
+        "env": "staging",
+        "layerConfig": {
+          "type": "Vector.Layer",
+          "body": {
+            "url": "https://tiles.globalforestwatch.org/umd_glad_landsat_alerts_coverage/v2024/default/root.json",
+            "useCors": true,
+            "metadata": "https://production-api.globalforestwatch.org/v1/gfw-metadata/umd_landsat_alerts"
+          }
+        },
+        "legendConfig": {
+          "items": [
+            {
+              "name": "GLAD-L Alerts Geographic Coverage",
+              "color": "#f69"
+            }
+          ],
+          "type": "basic"
+        },
+        "interactionConfig": {},
+        "applicationConfig": {},
+        "staticImageConfig": {},
+        "createdAt": "2024-06-07T14:25:42.066Z",
+        "updatedAt": "2024-06-07T14:25:42.066Z"
+      }
+    },
+    {
       "id": "21375165-a520-4d35-8b39-8c94c939c173",
       "type": "layer",
       "attributes": {
@@ -936,14 +1153,14 @@
         "default": true,
         "protected": false,
         "published": true,
-        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/21375165-a520-4d35-8b39-8c94c939c173-1709132762912.png",
+        "thumbnailUrl": "https://s3.amazonaws.com/wri-api-backups/resourcewatch/prod/thumbnails/21375165-a520-4d35-8b39-8c94c939c173-1716578295230.png",
         "env": "staging",
         "layerConfig": {
           "type": "Vector.Layer",
           "body": {
             "useCors": true,
             "metadata": "https://api.resourcewatch.org/v1/gfw-metadata/wdpa_licensed_protected_areas",
-            "url": "https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202402/default/root.json"
+            "url": "https://tiles.globalforestwatch.org/wdpa_licensed_protected_areas/v202405/default/root.json"
           }
         },
         "legendConfig": {
@@ -1006,7 +1223,7 @@
         "applicationConfig": {},
         "staticImageConfig": {},
         "createdAt": "2022-05-02T12:45:28.885Z",
-        "updatedAt": "2024-02-28T15:06:02.827Z"
+        "updatedAt": "2024-05-24T19:18:15.136Z"
       }
     }
   ],
@@ -1019,7 +1236,7 @@
   },
   "meta": {
     "total-pages": 1,
-    "total-items": 16,
+    "total-items": 20,
     "size": 1000
   }
 }

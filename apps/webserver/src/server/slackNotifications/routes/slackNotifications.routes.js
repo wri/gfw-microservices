@@ -22,4 +22,14 @@ module.exports = (app, limiter) => {
     slackNotifications.sendNotification(text, data, userInfo);
     res.sendStatus(200);
   });
+
+  app.post('/slack-notification/notify-error', async (req, res) => {
+    const { message } = req.body;
+
+    slackNotifications.sendErrorNotification(message);
+
+    res.status(200).send({
+      success: true,
+    });
+  });
 };

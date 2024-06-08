@@ -9,6 +9,7 @@ import Page from '../common/js/components/Page';
 import Diagnostics from './js/Diagnostics';
 import store from '../locations/js/store';
 import './css/diagnostics.scss';
+import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
 
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 const pageOptions = {
@@ -20,13 +21,15 @@ const pageOptions = {
 function App() {
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-      <Provider store={store}>
-        <BrowserRouter basename="/diagnostics">
-          <Page links={pageOptions.links} active="locations">
-            <Diagnostics />
-          </Page>
-        </BrowserRouter>
-      </Provider>
+      <AppErrorFallback>
+        <Provider store={store}>
+          <BrowserRouter basename="/diagnostics">
+            <Page links={pageOptions.links} active="locations">
+              <Diagnostics />
+            </Page>
+          </BrowserRouter>
+        </Provider>
+      </AppErrorFallback>
     </MuiThemeProvider>
   );
 }

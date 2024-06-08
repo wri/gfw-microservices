@@ -1,6 +1,6 @@
-import { cloneRow, formatPct, validatePct } from '../shared/functions';
+import { cloneRow, formatPct, isJSON, validatePct } from '../shared/functions';
 
-export const argentinaDeforestationParser = ({ operation, data, dataRow, csvData }) => {
+export function argentinaDeforestationParser({ operation, data, dataRow, csvData }) {
   const { composites } = operation;
 
   composites.forEach(({ attribute, label }) => {
@@ -9,7 +9,14 @@ export const argentinaDeforestationParser = ({ operation, data, dataRow, csvData
     const isOverallCountryAttribute = attribute === 'country_specific_deforestation_yearly';
 
     let rowValue = 0;
-    let subLayers = JSON.parse(data[attribute])['ARG'] || {};
+    let subLayers = {};
+
+    if (isJSON(data[attribute])) {
+      const parsedJson = JSON.parse(data[attribute]);
+      if (Object.prototype.hasOwnProperty.call(parsedJson, 'ARG')) {
+        subLayers = parsedJson['ARG'];
+      }
+    }
 
     if (isOverallCountryAttribute) {
       subLayers = { overallCountry: { ...subLayers } };
@@ -48,7 +55,7 @@ export const argentinaDeforestationParser = ({ operation, data, dataRow, csvData
     }
   });
   return csvData;
-};
+}
 
 const removeApproxStringAndSort = (obj): object => {
   if (!obj) return {};

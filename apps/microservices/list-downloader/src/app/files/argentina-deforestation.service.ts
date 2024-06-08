@@ -3,7 +3,7 @@ import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
-import { argentinaDeforestationParser } from '../parser/argentina-deforestation-parser';
+import { argentinaDeforestationParser } from '../parser/argentina.deforestation.parser';
 import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 
 const VALID_TYPES = ['argentinaDeforestation', 'everything'];

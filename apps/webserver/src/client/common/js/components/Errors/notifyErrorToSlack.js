@@ -6,7 +6,7 @@
 export default function notifyErrorToSlack(error) {
   const message = `\`\`\` ${error.stack} \`\`\``;
 
-  return fetch('/', {
+  return fetch('/slack-notification/notify-error', {
     method: 'POST',
     credentials: 'same-origin',
     headers: {

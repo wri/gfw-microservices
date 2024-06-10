@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
-import MenuItem from 'material-ui/MenuItem';
 import fetch from '../../../../common/js/utils/fetch';
 import Button from '../../../../common/js/components/Button';
-import LinkButton from '../../../../common/js/components/LinkButton';
-import IconButton from '../../../../common/js/components/IconButton';
-import IconTimes from '../../../../common/js/components/icon/IconTimes';
+import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
 
 import { locationsPage } from '../../../../common/js/config';
 
@@ -62,116 +58,108 @@ export default class ManageListFolderDialog extends Component {
       .filter((folder) => folder !== null);
 
     return (
-      <React.Fragment>
-        <Dialog
-          open={isOpen}
-          modal={true}
-          bodyClassName="dialog__body"
-          contentClassName="dialog__content"
-          onRequestClose={() => onCancel()}
-          actions={
-            <div className="dialog__footer">
-              <Button
-                className="dialog__primary-action"
-                label={strings.confirm}
-                disabled={confirmDisabled}
-                onClick={() => {
-                  gtag('event', 'User Added List to Folder on Landing Page', {
-                    event_category: 'Landing Page Click',
-                  });
-                  this._confirm();
-                }}
-                variant="primary"
-              />
-              <LinkButton label={strings.cancel} onClick={() => onCancel()} />
+      <CustomDialog
+        open={isOpen}
+        closeAction={() => onCancel()}
+        dialogTitle={isInFolder ? strings.manageTitle : strings.addTitle}
+        dialogMessage={
+          <>
+            <div className="dialog__prompt">
+              {isInFolder ? strings.move1 : strings.add1}{' '}
+              <span className="AddToFolder__dialog-list-name">{list.list_name}</span>{' '}
+              {isInFolder ? strings.move2 : strings.add2}
             </div>
-          }
-        >
-          <div className="dialog__header">
-            <h1 className="dialog__title">{isInFolder ? strings.manageTitle : strings.addTitle}</h1>
-            <IconButton icon={<IconTimes />} onClick={() => onCancel()} size="large" />
-          </div>
-          <div className="dialog__prompt">
-            {isInFolder ? strings.move1 : strings.add1}{' '}
-            <span className="AddToFolder__dialog-list-name">{list.list_name}</span>{' '}
-            {isInFolder ? strings.move2 : strings.add2}
-          </div>
-          <div className="AddToFolder__dialog-options">
-            {folders.length > 0 && (
+            <div className="AddToFolder__dialog-options">
+              {folders.length > 0 && (
+                <div className="AddToFolder__dialog-options__option">
+                  <input
+                    type="radio"
+                    name="addCreateOrRemove"
+                    id="addToExistingFolder"
+                    checked={option === OPTIONS.MOVE}
+                    onChange={(evt) => {
+                      if (evt.target.checked) {
+                        this.setState({ option: OPTIONS.MOVE });
+                      }
+                    }}
+                  />
+                  <label htmlFor="addToExistingFolder">{strings.addToExisting}</label>
+                  {option == OPTIONS.MOVE && (
+                    <select
+                      value={
+                        this.state.existingFolder
+                          ? this.props.folders.indexOf(this.state.existingFolder)
+                          : ''
+                      }
+                      onChange={(evt) =>
+                        this.setState({ existingFolder: this.props.folders[evt.target.value] })
+                      }
+                    >
+                      <option value="">{strings.foldersSelectPlaceholder}</option>
+                      {folderOptions}
+                    </select>
+                  )}
+                </div>
+              )}
               <div className="AddToFolder__dialog-options__option">
-                <input
-                  type="radio"
-                  name="addCreateOrRemove"
-                  id="addToExistingFolder"
-                  checked={option === OPTIONS.MOVE}
-                  onChange={(evt) => {
-                    if (evt.target.checked) {
-                      this.setState({ option: OPTIONS.MOVE });
-                    }
-                  }}
-                />
-                <label htmlFor="addToExistingFolder">{strings.addToExisting}</label>
-                {option == OPTIONS.MOVE && (
-                  <select
-                    value={
-                      this.state.existingFolder
-                        ? this.props.folders.indexOf(this.state.existingFolder)
-                        : ''
-                    }
-                    onChange={(evt) =>
-                      this.setState({ existingFolder: this.props.folders[evt.target.value] })
-                    }
-                  >
-                    <option value="">{strings.foldersSelectPlaceholder}</option>
-                    {folderOptions}
-                  </select>
+                {(isInFolder || folders.length > 0) && (
+                  <input
+                    type="radio"
+                    name="addCreateOrRemove"
+                    id="addToNewFolder"
+                    checked={option === OPTIONS.CREATE}
+                    onChange={(evt) => {
+                      if (evt.target.checked) {
+                        this.setState({ option: OPTIONS.CREATE });
+                      }
+                    }}
+                  />
+                )}
+                <label htmlFor={folders.length > 0 ? 'addToNewFolder' : null}>
+                  {strings.createNew}
+                </label>
+                {option === OPTIONS.CREATE && (
+                  <input
+                    value={folderName}
+                    onChange={(evt) => this.setState({ folderName: evt.target.value })}
+                  />
                 )}
               </div>
-            )}
-            <div className="AddToFolder__dialog-options__option">
-              {(isInFolder || folders.length > 0) && (
-                <input
-                  type="radio"
-                  name="addCreateOrRemove"
-                  id="addToNewFolder"
-                  checked={option === OPTIONS.CREATE}
-                  onChange={(evt) => {
-                    if (evt.target.checked) {
-                      this.setState({ option: OPTIONS.CREATE });
-                    }
-                  }}
-                />
-              )}
-              <label htmlFor={folders.length > 0 ? 'addToNewFolder' : null}>
-                {strings.createNew}
-              </label>
-              {option === OPTIONS.CREATE && (
-                <input
-                  value={folderName}
-                  onChange={(evt) => this.setState({ folderName: evt.target.value })}
-                />
+              {isInFolder && (
+                <div className="AddToFolder__dialog-options__option">
+                  <input
+                    type="radio"
+                    name="addCreateOrRemove"
+                    id="removeFromFolder"
+                    checked={option === OPTIONS.REMOVE}
+                    onChange={(evt) => {
+                      if (evt.target.checked) {
+                        this.setState({ option: OPTIONS.REMOVE });
+                      }
+                    }}
+                  />
+                  <label htmlFor="removeFromFolder">{strings.removeFromFolder}</label>
+                </div>
               )}
             </div>
-            {isInFolder && (
-              <div className="AddToFolder__dialog-options__option">
-                <input
-                  type="radio"
-                  name="addCreateOrRemove"
-                  id="removeFromFolder"
-                  checked={option === OPTIONS.REMOVE}
-                  onChange={(evt) => {
-                    if (evt.target.checked) {
-                      this.setState({ option: OPTIONS.REMOVE });
-                    }
-                  }}
-                />
-                <label htmlFor="removeFromFolder">{strings.removeFromFolder}</label>
-              </div>
-            )}
-          </div>
-          <div className="AddToFolder__dialog-error">{error}</div>
-        </Dialog>
-      </React.Fragment>
+            <div className="AddToFolder__dialog-error">{error}</div>
+          </>
+        }
+        dialogActionConfirm={
+          <Button
+            className="dialog__primary-action"
+            label={strings.confirm}
+            disabled={confirmDisabled}
+            onClick={() => {
+              gtag('event', 'User Added List to Folder on Landing Page', {
+                event_category: 'Landing Page Click',
+              });
+              this._confirm();
+            }}
+            variant="primary"
+          />
+        }
+      />
     );
   }
 

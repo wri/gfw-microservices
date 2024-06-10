@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Dialog from 'material-ui/Dialog';
 
 import store from '../../../../locations/js/store';
 import { changeView } from '../../../../locations/js/actions/locationActions';
@@ -7,6 +6,7 @@ import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
 import StepOneEdit from './StepOneEdit';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import Button from '../../../../common/js/components/Button';
+import CustomDialog from '../../../../common/js/components/CustomDialog/CustomDialog';
 import LinkButton from '../../../../common/js/components/LinkButton';
 import httpRequest from '../../../../common/js/utils/httpRequest';
 import { discernPropValue } from '../../utils/moveLocations';
@@ -512,28 +512,17 @@ export default class EditList extends Component {
     const dialogContent =
       typeof dialogMessage === 'string' ? dialogMessage : dialogMessage.map(this.generateMessages);
 
-    const defaultAction = refreshPage
-      ? [
-          <Button
-            variant="primary"
-            label="OK"
-            keyboardFocused={true}
-            onClick={this.shouldRefresh}
-          />,
-        ]
-      : [<Button label="OK" keyboardFocused={true} onClick={this.shouldCloseDialog} />];
+    const defaultAction = refreshPage ? this.shouldRefresh : this.shouldCloseDialog;
 
     return (
       <div className={`locations-body ${this.props.view === 'edit' ? '' : 'hidden'}`}>
-        <Dialog
-          paperClassName="dialog-paper"
+        <CustomDialog
           open={dialogOpen}
-          title={dialogTitle}
-          actions={defaultAction}
-          onRequestClose={this.shouldCloseDialog}
-        >
-          {dialogContent}
-        </Dialog>
+          closeAction={this.shouldCloseDialog}
+          dialogTitle={dialogTitle}
+          dialogMessage={dialogContent}
+          dialogActionConfirm={defaultAction}
+        />
 
         {listNotAccessible && (
           <FailedPopupDialog

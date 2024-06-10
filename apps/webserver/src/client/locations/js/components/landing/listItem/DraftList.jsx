@@ -24,7 +24,7 @@ import LandingDownload from '../../lists/download/LandingDownload';
 import { numberWithCommas } from '../../../utils/locationsTableUtils';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
 import AnalysisListChips from './AnalysisListChips';
-import CustomDraftDialog from '../../../../../common/js/components/CustomDraftDialog/CustomDraftDialog';
+import CustomDialog from '../../../../../common/js/components/CustomDialog/CustomDialog';
 import { locationsPage, draftTooltipMessages, nav } from '../../../../../common/js/config';
 import { proLayers } from '../../../../../common/js/proLayers.config';
 
@@ -258,7 +258,7 @@ function DraftList({
             </Menu>
           </Popover>
           {showSubmitModal && (
-            <CustomDraftDialog
+            <CustomDialog
               open
               closeAction={() => {
                 setShowSubmitModal(false);

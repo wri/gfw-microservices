@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import SaveAsDraftButton from './SaveAsDraftButton';
-import CustomDraftDialog from '../CustomDraftDialog/CustomDraftDialog';
+import CustomDialog from '../CustomDialog/CustomDialog';
 
 const DIALOG_TITLE = 'Are you sure?';
 const DIALOG_MESSAGE =
@@ -19,7 +19,7 @@ export default function SaveAsDraftButtonWithDialog({
     <>
       <SaveAsDraftButton onClick={() => setDialogOpen(true)} disabled={disabled} />
 
-      <CustomDraftDialog
+      <CustomDialog
         open={dialogOpen}
         closeAction={() => setDialogOpen(false)}
         dialogTitle={dialogTitle}

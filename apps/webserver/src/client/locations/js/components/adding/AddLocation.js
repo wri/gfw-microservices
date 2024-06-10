@@ -1838,6 +1838,7 @@ export default class AddLocation extends Component {
             <Button
               variant="primary"
               label="OK"
+              className="dialog__primary-action"
               keyboardFocused
               onClick={this.state.overrideOnClose ? this.discardItem : this.saveSuccess}
             />,
@@ -1847,6 +1848,7 @@ export default class AddLocation extends Component {
               variant="primary"
               label="OK"
               keyboardFocused
+              className="dialog__primary-action"
               onClick={this.shouldCloseDialog}
             />,
           ];
@@ -1854,12 +1856,12 @@ export default class AddLocation extends Component {
       <div className="dialog__footer">
         <Button
           variant="primary"
-          className="add-location-dialog-action"
+          className="dialog__primary-action"
           label={locationsPage.lists.ok}
           onClick={this.saveItem}
         />
         <LinkButton
-          className="add-location-dialog-action"
+          className="dialog__primary-cancel"
           label="Cancel"
           onClick={this.shouldCloseDialog}
         />

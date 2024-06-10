@@ -79,4 +79,16 @@ const parseListTotals = (property, listLevelAnalysis) => {
   return Math.round(total * 100) / 100;
 };
 
-export { cloneRow, formatPct, prettifyNum, validatePct, parseListData, parseListTotals };
+const isJSON = (text: unknown) => {
+  if (typeof text !== 'string') {
+    return false;
+  }
+  try {
+    JSON.parse(text);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export { cloneRow, formatPct, prettifyNum, validatePct, parseListData, parseListTotals, isJSON };

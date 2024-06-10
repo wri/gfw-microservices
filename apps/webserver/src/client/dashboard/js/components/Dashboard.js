@@ -1,7 +1,7 @@
 import Page from '../../../common/js/components/Page';
 import React, { Component } from 'react';
 import moment from 'moment';
-import Dialog from 'material-ui/Dialog';
+import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 import ReportIcon from 'material-ui/svg-icons/action/description';
 import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import isEmpty from 'lodash/isEmpty';
@@ -40,9 +40,6 @@ import { listStatus } from '../../../../config/env/listStatuses.constants';
 import ConfirmDialog from '../../../locations/js/components/lists/download/confirmDialog';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
-
-//TODO Remove temp file
-// import { data } from './old';
 import fetch from '../../../common/js/utils/fetch';
 
 import '../../css/dashboard.scss';
@@ -52,20 +49,6 @@ const pageOptions = {
     logout: true,
   },
 };
-
-function formatDates(dateString) {
-  if (dateString === '{}') return [];
-  let dayStr = dateString.replace(/{|}/gim, '');
-  dayStr = dayStr.split(',');
-  dayStr = dayStr.map((s) => {
-    const dayCountSplit = s.split(':');
-    return {
-      day: JSON.parse(dayCountSplit[0]),
-      count: Number(dayCountSplit[1]),
-    };
-  });
-  return dayStr;
-}
 
 export default class Dashboard extends Component {
   constructor(props) {
@@ -322,24 +305,12 @@ export default class Dashboard extends Component {
 
     return (
       <Page links={pageOptions.links} active="dashboard">
-        <Dialog
-          paperClassName="dialog-paper Dashboard__dialog"
+        <CustomDialog
           open={showDialog}
-          title={dialogContent.title}
-          actions={[
-            <Button
-              variant="primary"
-              label="OK"
-              keyboardFocused={true}
-              onClick={() => store.dispatch(toggleDialog({}))}
-            />,
-          ]}
-        >
-          <p
-            className="dangerous-dialog"
-            dangerouslySetInnerHTML={{ __html: dialogContent.body }}
-          ></p>
-        </Dialog>
+          dialogTitle={dialogContent.title}
+          dialogMessage={dialogContent.body}
+          dialogActionConfirm={() => store.dispatch(toggleDialog({}))}
+        />
 
         <ModalLoader
           open={showDialog ? false : showLoader}

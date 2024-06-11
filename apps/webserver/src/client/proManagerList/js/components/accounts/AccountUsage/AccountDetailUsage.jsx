@@ -40,7 +40,7 @@ function AccountDetailUsage() {
       }
     )
       .then((res) => res.json())
-      .then((data) => {
+      .then(([data]) => {
         setDateRangeAccountData(data);
         setIsLoading(false);
       })

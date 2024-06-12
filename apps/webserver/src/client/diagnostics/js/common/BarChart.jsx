@@ -53,7 +53,7 @@ function BarChart({ data, plotBands = [], plotLines = [] }) {
           stacking: 'normal',
         },
         column: {
-          stacking: 'normal',
+          stacking: null,
           pointPadding: 0.2,
           borderWidth: 0,
         },

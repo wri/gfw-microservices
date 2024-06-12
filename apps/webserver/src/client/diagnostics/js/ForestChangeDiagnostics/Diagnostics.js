@@ -41,6 +41,7 @@ import { handleUserListLocationsVectorTileLayer } from '../../../common/js/userL
 import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
 import getAvailableDiagnostics from './getAvailableDiagnostics';
 import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/gfw.utils';
+import sendSlackNotification from '../../../common/js/utils/sendSlackNotification';
 
 // Configs
 import {
@@ -143,8 +144,17 @@ export default class Diagnostics extends Component {
       },
     });
 
+    const { listId, isSharedList, isGfwList } = this.props;
     this.mapView.on('click', this.viewMap);
-    this.mapView.when(this.mapLoaded); // TODO: setExtent of the map again after it loads to get rid of those funny dark TCL renders!
+    this.mapView.when(this.mapLoaded, (error) => {
+      console.error('Error loading map:', error);
+      sendSlackNotification('Error loading map in diagnostics view', {
+        error,
+        listId,
+        isSharedList,
+        isGfwList,
+      });
+    });
   }
 
   assignHighchartColor = (legendName) => {

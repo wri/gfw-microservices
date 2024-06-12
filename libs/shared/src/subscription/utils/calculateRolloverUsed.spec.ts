@@ -1,15 +1,26 @@
 import { calculateRolloverUsed, RolloverAnalysisAmounts } from './calculateRolloverUsed';
+import moment = require('moment');
 
 describe('calculateRolloverUsed', () => {
-  test('calculates rollover amounts correctly', () => {
+  test('adds all amounts except current year to rollover', () => {
+    const renewalMoment = moment('2020-01-01');
+    const now = moment();
+    const currentYear = Math.floor(moment.duration(now.diff(renewalMoment)).asYears());
     const yearlyUsageSinceActivation = [
       {
+        years_since_activation: 1,
         totalAreaPerLocationsAnalyzedYearly: 2000000000,
         totalLocationsYearly: 25000,
       },
       {
+        years_since_activation: 2,
         totalAreaPerLocationsAnalyzedYearly: 10000000,
         totalLocationsYearly: 500,
+      },
+      {
+        years_since_activation: currentYear,
+        totalAreaPerLocationsAnalyzedYearly: 100000,
+        totalLocationsYearly: 50,
       },
     ];
 
@@ -20,7 +31,8 @@ describe('calculateRolloverUsed', () => {
 
     const result: RolloverAnalysisAmounts = calculateRolloverUsed(
       yearlyUsageSinceActivation,
-      subscriptionLimits
+      subscriptionLimits,
+      renewalMoment
     );
 
     expect(result.rolloverAnalysisAreaUsed).toBe(1800000000);

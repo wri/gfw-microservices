@@ -2,6 +2,7 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 
 import Button from '../Button';
+import LinkButton from '../LinkButton';
 import './CustomDialog.scss';
 
 export default function CustomDialog({
@@ -28,15 +29,7 @@ export default function CustomDialog({
               onClick={dialogActionConfirm}
             />
           )}
-          {closeAction && (
-            <Button
-              className="dialog__primary-cancel"
-              variant="clear"
-              label={'Cancel'}
-              labelStyle={{ textTransform: 'initial', textDecoration: 'underline' }}
-              onClick={closeAction}
-            />
-          )}
+          {closeAction && <LinkButton onClick={closeAction} label={'Cancel'} />}
         </div>,
       ]}
       onRequestClose={closeAction}

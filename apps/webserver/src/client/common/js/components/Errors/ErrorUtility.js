@@ -17,11 +17,7 @@ export const ErrorDetails = styled('pre')({
 
 function ErrorUtility({ error, children }) {
   if (error) {
-    return (
-      <ErrorDetails>
-        {error.stack}
-      </ErrorDetails>
-    );
+    return <ErrorDetails>{error.stack}</ErrorDetails>;
   }
 
   return <>{children}</>;

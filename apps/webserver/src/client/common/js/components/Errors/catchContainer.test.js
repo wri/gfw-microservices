@@ -24,7 +24,7 @@ const ThrowError = () => {
   useEffect(() => {
     throw new Error('Something went wrong.');
   }, []);
-  
+
   return <>ThrowError</>;
 };
 
@@ -52,7 +52,9 @@ describe('Error Boundary', () => {
       </ErrorBoundary>
     );
 
-    expect(notifyErrorToSlack).toHaveBeenCalledWith(expect.objectContaining({ message: 'Something went wrong.' }));
+    expect(notifyErrorToSlack).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'Something went wrong.' })
+    );
   });
 
   test('renders children without errors', () => {

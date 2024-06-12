@@ -441,7 +441,6 @@ function AddLocationChooser({ onCancel, onChoice, userLists }) {
         open={dialogOpen}
         dialogTitle={dialogTitle}
         dialogActionConfirm={shouldCloseDialog}
-        closeAction={shouldCloseDialog}
         dialogMessage={dialogMessage}
       />
 

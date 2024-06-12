@@ -11,19 +11,20 @@ SELECT
     ISNULL(SUM(locations_analyzed),0) AS totalLocationsYearly
 FROM (
     SELECT
-        DATEDIFF(YEAR, @orgActivatedTime, lp.analysis_start_time) AS years_since_activation,
+        FLOOR(DATEDIFF(day, @orgActivatedTime, lp.analysis_end_time)/365.25) AS years_since_activation,
         lp.area_analyzed_locations_ha,
         lp.locations_analyzed
     FROM
         [dbo].[ListsProcessing] lp
     WHERE
-        lp.analysis_start_time >= @orgActivatedTime
+        lp.analysis_end_time >= @orgActivatedTime
         AND lp.user_id IS NOT NULL
 ) AS YearlyAnalysis
     GROUP BY years_since_activation
 `;
 
 export interface OrganizationYearlyUsageSinceOrgActivation {
+  years_since_activation: number;
   totalAreaPerLocationsAnalyzedYearly: number;
   totalLocationsYearly: number;
 }

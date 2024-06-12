@@ -6,6 +6,7 @@ import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Map from './js/components/Map';
+import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
 
 // *** POPOVER ISSUE FIX ***
 // there is a known issue when using material ui v<1 with React Fiber (React v16).
@@ -44,15 +45,17 @@ Date.prototype.getJulian = function () {
 function App() {
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-      <BrowserRouter>
-        <Map
-          userLists={userLists}
-          locationCount={locationCount}
-          gfwLists={gfwLists}
-          userInfo={userInfo}
-          userSharedLists={userSharedLists}
-        />
-      </BrowserRouter>
+      <AppErrorFallback>
+        <BrowserRouter>
+          <Map
+            userLists={userLists}
+            locationCount={locationCount}
+            gfwLists={gfwLists}
+            userInfo={userInfo}
+            userSharedLists={userSharedLists}
+          />
+        </BrowserRouter>
+      </AppErrorFallback>
     </MuiThemeProvider>
   );
 }

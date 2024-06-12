@@ -1,7 +1,9 @@
 import React from 'react';
-import CatchContainer from './CatchContainer';
+import catchContainer from './catchContainer';
 import { styled } from '@mui/material/styles';
+import BaseButton from '@mui/material/Button';
 import notifyErrorToSlack from './notifyErrorToSlack';
+import { ErrorDetails } from './ErrorUtility';
 
 const isProduction = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
 
@@ -63,34 +65,47 @@ const ErrorMessage = styled('div')({
   },
 });
 
-const ErrorDetails = styled('pre')({
-  fontFamily: 'monospace',
-  padding: '16px',
-  backgroundColor: '#fff4f4',
+const Button = styled(BaseButton)({
+  boxShadow: 'none',
+  borderRadius: 4,
+  borderColor: '#97bd3d',
+  backgroundColor: '#97bd3d',
+  color: '#fff',
+  fontWeight: 'bold',
   fontSize: '14px',
-  whiteSpace: 'pre-wrap',
-  border: '1px solid #f00',
-  wordWrap: 'break-word',
-  marginBottom: '0',
-  maxHeight: '340px',
-  overflowY: 'scroll',
+  '&:hover': {
+    backgroundColor: '#789631',
+    borderColor: '#789631',
+    boxShadow: 'none',
+  },
+  '&:active': {
+    boxShadow: 'none',
+    backgroundColor: '#789631',
+    borderColor: '#789631',
+  },
+  '&:focus': {
+    boxShadow: '0 0 0 0.2rem rgba(0,123,255,.5)',
+  },
+});
+
+const ButtonWrapper = styled('div')({
+  padding: '0 16px 16px',
 });
 
 function AppErrorFallback({ error, children }) {
   if (error) {
-    const strings = errorPage[DEFAULT_LANGUAGE];
+    const page = errorPage[DEFAULT_LANGUAGE];
     return (
       <ErrorPage>
         <ErrorDialog>
-          <ErrorTile>{strings.title}</ErrorTile>
-          <ErrorMessage>{strings.message}</ErrorMessage>
-          {!isProduction && error.stack && (
-            <ErrorDetails>
-              {error.stack}
-              <br />
-              {error.stack}
-            </ErrorDetails>
-          )}
+          <ErrorTile>{page.title}</ErrorTile>
+          <ErrorMessage>{page.message}</ErrorMessage>
+          <ButtonWrapper>
+            <Button variant="primary" onClick={() => (window.location.href = '/')}>
+              Home Page
+            </Button>
+          </ButtonWrapper>
+          {!isProduction && error.stack && <ErrorDetails>{error.stack}</ErrorDetails>}
         </ErrorDialog>
       </ErrorPage>
     );
@@ -99,4 +114,4 @@ function AppErrorFallback({ error, children }) {
   return <>{children}</>;
 }
 
-export default CatchContainer(AppErrorFallback, ErrorHandlerFn);
+export default catchContainer(AppErrorFallback, ErrorHandlerFn);

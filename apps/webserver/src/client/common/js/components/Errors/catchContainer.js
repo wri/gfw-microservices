@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 /**
  * Error Boundary HOC
- * Returns a component type to isolate errors from its child down.
+ * Returns a component type to catch errors from its child down
  * @returns {ComponentType} React Component Type
  */
-const CatchContainer = (ErrorComponent, errorHandler) =>
-  /** Returning a Class Component for this feature */
+const catchContainer = (ErrorComponent, errorHandler) =>
   class ErrorBoundaryClassComponent extends Component {
     constructor(props) {
       super(props);
@@ -30,4 +29,4 @@ const CatchContainer = (ErrorComponent, errorHandler) =>
     }
   };
 
-export default CatchContainer;
+export default catchContainer;

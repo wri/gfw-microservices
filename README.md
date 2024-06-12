@@ -122,7 +122,7 @@ The following command runs the downloader microservice; this microservice has th
 nx serve microservices-list-downloader
 ```
 
-> Check the environment variable `AWS_TMP_QUEUE=` inside pro-temp **.secret** and microservices **.env** are pointing to the same queue.
+> Check the environment variable `AWS_TMP_QUEUE=` inside gfw-microservices **.secret** and microservices **.env** are pointing to the same queue.
 
 #### B2B
 
@@ -130,6 +130,14 @@ The following command runs the b2b microservice; it allows organizations to shar
 
 ```sh
 nx serve microservices-b2b
+```
+
+#### External API
+
+The following command runs the externalapi microservice; it allows organizations to interact with Pro using APIs.
+
+```sh
+nx serve microservices-externalapi
 ```
 
 #### List-Processing
@@ -140,7 +148,7 @@ The following command runs the list-processing microservice; it allows users to 
 nx serve microservices-list-processing
 ```
 
-> Check the environment variable `LISTS_MICROSERVICE_URL=` inside the **.secret** file in the `pro-temp` project. Make sure it is pointing to the right IP address.
+> Check the environment variable `LISTS_MICROSERVICE_URL=` inside the **.secret** file in the `gfw-microservices` project. Make sure it is pointing to the right IP address.
 
 ```sh
 LISTS_MICROSERVICE_URL=http://192.168.5.147:3333/api

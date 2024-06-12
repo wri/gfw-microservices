@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import moment from 'moment';
-import Dialog from 'material-ui/Dialog';
 import { withRouter } from 'react-router-dom';
 // ESRI Imports
 import EsriMap from '@arcgis/core/Map';
@@ -18,6 +17,7 @@ import WebTileLayer from '@arcgis/core/layers/WebTileLayer';
 import esriConfig from '@arcgis/core/config';
 import { webMercatorToGeographic } from '@arcgis/core/geometry/support/webMercatorUtils';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
+import CustomDialog from '../../../common/js/components/CustomDialog/CustomDialog';
 
 import store from '../store';
 import {
@@ -2369,13 +2369,6 @@ class Map extends Component {
   };
 
   render() {
-    const defaultAction = [
-      <GfwButton
-        classNames="AnalysisPanel__dialog-button btn-green"
-        value="OK"
-        onClick={this.shouldCloseDialog}
-      />,
-    ];
     const {
       mapLayers,
       visibleLayers,
@@ -2439,15 +2432,12 @@ class Map extends Component {
           />
         )}
         <Warning visible={analysisWarning} />
-        <Dialog
-          paperClassName="dialog-paper"
+        <CustomDialog
           open={dialogOpen}
-          title={dialogTitle}
-          actions={defaultAction}
-          onRequestClose={this.shouldCloseDialog}
-        >
-          {dialogMessage}
-        </Dialog>
+          dialogTitle={dialogTitle}
+          dialogMessage={dialogMessage}
+          dialogActionConfirm={this.shouldCloseDialog}
+        />
 
         {listNotAccessible && (
           <FailedPopupDialog

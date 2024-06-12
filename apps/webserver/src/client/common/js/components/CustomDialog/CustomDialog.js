@@ -2,11 +2,12 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 
 import Button from '../Button';
-import './CustomDraftDialog.scss';
+import LinkButton from '../LinkButton';
+import './CustomDialog.scss';
 
-export default function CustomDraftDialog({
+export default function CustomDialog({
   open,
-  closeAction,
+  closeAction = null,
   dialogTitle,
   dialogMessage,
   dialogActionConfirm,
@@ -18,19 +19,17 @@ export default function CustomDraftDialog({
       title={dialogTitle}
       actions={[
         <div className="list-diagnostics-dialog__actions">
-          <Button
-            className="dialog__primary-action"
-            variant="primary"
-            label={'OK'}
-            onClick={dialogActionConfirm}
-          />
-          <Button
-            className="dialog__primary-cancel"
-            variant="clear"
-            label={'Cancel'}
-            labelStyle={{ textTransform: 'initial', textDecoration: 'underline' }}
-            onClick={closeAction}
-          />
+          {React.isValidElement(dialogActionConfirm) ? (
+            <>{dialogActionConfirm}</>
+          ) : (
+            <Button
+              className="dialog__primary-action"
+              variant="primary"
+              label={'OK'}
+              onClick={dialogActionConfirm}
+            />
+          )}
+          {closeAction && <LinkButton onClick={closeAction} label={'Cancel'} />}
         </div>,
       ]}
       onRequestClose={closeAction}

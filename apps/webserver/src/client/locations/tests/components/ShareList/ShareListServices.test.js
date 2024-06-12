@@ -36,9 +36,7 @@ describe('Shared List Services', () => {
   });
 
   test('updateSharedListUsersService should update state correctly', async () => {
-    fetch.mockResolvedValue([
-      { user_id: 1, datetime: '2024-01-01T00:00:00Z' },
-    ]);
+    fetch.mockResolvedValue([{ user_id: 1, datetime: '2024-01-01T00:00:00Z' }]);
 
     await updateSharedListUsersService(self);
 
@@ -56,9 +54,7 @@ describe('Shared List Services', () => {
       ],
       listTimestamp: 'formattedDate',
       selectedList: { id: 1 },
-      SharedListUsers: [
-        { user_id: 1, name: 'User1', timestamp: 'formattedDate', disabled: true },
-      ],
+      SharedListUsers: [{ user_id: 1, name: 'User1', timestamp: 'formattedDate', disabled: true }],
     });
   });
 
@@ -66,10 +62,7 @@ describe('Shared List Services', () => {
     fetch.mockResolvedValue({ success: true });
 
     const selectedUser = { id: 4, name: 'New User' };
-    const updatedNotAdminsOwner = [
-      ...self.state.NotAdminsOwner,
-      { user_id: 4, name: 'New User' },
-    ];
+    const updatedNotAdminsOwner = [...self.state.NotAdminsOwner, { user_id: 4, name: 'New User' }];
 
     await addUserToSharedListService(selectedUser, updatedNotAdminsOwner, self);
 
@@ -101,7 +94,12 @@ describe('Shared List Services', () => {
       { user_id: 2, name: 'User2', disabled: false },
     ];
 
-    await removeUserFromSharedListService(userToRemove, updateSharedListUsers, updatedNotAdminsOwner, self);
+    await removeUserFromSharedListService(
+      userToRemove,
+      updateSharedListUsers,
+      updatedNotAdminsOwner,
+      self
+    );
 
     expect(fetch).toHaveBeenCalledWith({
       url: '/locations/shareList/removeUser',

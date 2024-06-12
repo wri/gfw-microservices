@@ -56,7 +56,9 @@ describe('CSV and ZIP Download Utils', () => {
       const names = ['file1'];
 
       const fileMock = jest.spyOn(JSZip.prototype, 'file');
-      const generateAsyncMock = jest.spyOn(JSZip.prototype, 'generateAsync').mockResolvedValue(new Blob());
+      const generateAsyncMock = jest
+        .spyOn(JSZip.prototype, 'generateAsync')
+        .mockResolvedValue(new Blob());
 
       await downloadZIP(csvDataArr, names);
 

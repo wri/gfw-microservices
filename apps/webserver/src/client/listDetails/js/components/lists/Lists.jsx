@@ -501,12 +501,7 @@ export default class Lists extends Component {
   };
 
   cancelDialog = () => {
-    this.setState({
-      dialogChildren: null,
-      dialogContent: null,
-      dialogActions: null,
-      closeAction: null,
-    });
+    this.setState({ dialogChildren: null, dialogContent: null, dialogActions: null });
     this.handleDialogClose(false);
   };
 
@@ -528,7 +523,6 @@ export default class Lists extends Component {
     this.setState({
       dialogActions: null,
       isLoading: true,
-      closeAction: null,
     });
     const selectedList = selectedLists[0];
     const { id: list_id, list_name: listName } = selectedList;
@@ -591,7 +585,7 @@ export default class Lists extends Component {
   deleteSelectedLocations = () => {
     this.handleDialogClose(false);
     // clear the custom dialog buttons
-    this.setState({ dialogActions: null, isLoading: true, closeAction: null });
+    this.setState({ dialogActions: null, isLoading: true });
     const { selectedLists, selectedLocations } = this.props;
     const { allLocationsSelected } = this.state;
 
@@ -666,15 +660,20 @@ export default class Lists extends Component {
     });
   };
 
-  closeDialog = () => {
-    this.setState({ dialogOpen: false });
-  };
-
   // Prompt to delete the locations currently selected in the list
   promptDeleteSelectedLocations = () => {
     this.setState({
-      dialogActions: this.deleteSelectedLocations,
-      closeAction: this.closeDialog,
+      dialogActions: (
+        <>
+          <Button
+            className="dialog__primary-action"
+            variant="primary"
+            label={locationsPage.lists.ok}
+            onClick={this.deleteSelectedLocations}
+          />
+          <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
+        </>
+      ),
       dialogOpen: true,
       dialogTitle: locationsPage.lists.deleteLocationsMessages.confirm.title,
       dialogContent: locationsPage.lists.deleteLocationsMessages.confirm.message,
@@ -713,7 +712,7 @@ export default class Lists extends Component {
   moveSelectedLocations = () => {
     this.handleDialogClose(false);
     // clear the custom dialog content
-    this.setState({ dialogActions: null, dialogChildren: null, closeAction: this.closeDialog });
+    this.setState({ dialogActions: null, dialogChildren: null });
     const {
       activeTemplate,
       addType,
@@ -935,7 +934,7 @@ export default class Lists extends Component {
       });
     } else {
       this.setState({
-        dialogActions: [
+        dialogActions: (
           <>
             <SaveAsDraftButton
               onClick={() => {
@@ -957,6 +956,7 @@ export default class Lists extends Component {
               disabled={selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)}
             />
             <Button
+              className="dialog__primary-action"
               variant="primary"
               label={locationsPage.lists.submit}
               onClick={() => {
@@ -975,9 +975,10 @@ export default class Lists extends Component {
               }}
               disabled={selectedNewOrExisting === 'new' && (!newListName || isNewListNameDuplicate)}
             />
-          </>,
-        ],
-        closeAction: this.closeDialog,
+
+            <LinkButton onClick={this.cancelDialog} label={locationsPage.lists.cancel} />
+          </>
+        ),
         dialogOpen: true,
         dialogTitle: locationsPage.lists.moveLocationsDialogHeader,
         dialogContent: '',
@@ -2168,7 +2169,14 @@ export default class Lists extends Component {
         },
       };
     }
-    const dialogConfirm = dialogActions || (() => this.handleDialogClose(refreshPage));
+    const allDialogActions = dialogActions || (
+      <Button
+        className="dialog__primary-action"
+        variant="primary"
+        label={locationsPage.lists.ok}
+        onClick={() => this.handleDialogClose(refreshPage)}
+      />
+    );
 
     return (
       <div>
@@ -2195,7 +2203,6 @@ export default class Lists extends Component {
 
         <CustomDialog
           open={dialogOpen}
-          closeAction={closeAction}
           dialogTitle={dialogTitle}
           dialogMessage={
             dialogChildren ? (
@@ -2217,7 +2224,7 @@ export default class Lists extends Component {
               dialogContent
             )
           }
-          dialogActionConfirm={dialogConfirm}
+          dialogActionConfirm={allDialogActions}
         />
 
         <CustomDialog

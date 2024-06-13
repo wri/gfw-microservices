@@ -94,6 +94,7 @@ function DraftList({
     const sendData = {
       visibleLayers: [proLayers.treeCoverLossID],
       listId: id,
+      isSharedList: is_shared,
     };
 
     redirectToMap(sendData);

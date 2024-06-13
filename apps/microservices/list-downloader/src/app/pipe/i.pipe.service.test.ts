@@ -30,13 +30,13 @@ describe('IPipeService', () => {
     jest.clearAllMocks();
   });
 
-  it('If is not a userlist should save s3 url on the database', () => {
+  it('If is a userlist should save s3 url on the database', () => {
     const runDbQuery = jest.spyOn(SQLUtils, 'queryDB').mockResolvedValue('ok');
     iPipeServiceStub.saveS3UrlAtDatabase(filter, 'file-location');
     expect(runDbQuery).toHaveBeenCalledTimes(1);
   });
 
-  it('If is gfwlist should save s3 url on the database', () => {
+  it('If is gfwlist should not save s3 url on the database', () => {
     const runDbQuery = jest.spyOn(SQLUtils, 'queryDB').mockResolvedValue('ok');
     iPipeServiceStub.saveS3UrlAtDatabase(
       {

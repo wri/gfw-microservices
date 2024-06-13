@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import catchContainer from './catchContainer';
-import notifyErrorToSlack from './notifyErrorToSlack';
+import sendSlackNotification from '../../../../common/js/utils/sendSlackNotification';
 
-jest.mock('./notifyErrorToSlack');
+jest.mock('../../../../common/js/utils/sendSlackNotification');
 
 const ErrorComponent = ({ error, children }) => {
   if (error) {
@@ -15,7 +15,7 @@ const ErrorComponent = ({ error, children }) => {
 
 const ErrorHandlerFn = (error) => {
   console.error(`GFWProError: ${error.message}`, error.stack);
-  notifyErrorToSlack(error);
+  sendSlackNotification(error);
 };
 
 const ErrorBoundary = catchContainer(ErrorComponent, ErrorHandlerFn);
@@ -52,7 +52,7 @@ describe('Error Boundary', () => {
       </ErrorBoundary>
     );
 
-    expect(notifyErrorToSlack).toHaveBeenCalledWith(
+    expect(sendSlackNotification).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'Something went wrong.' })
     );
   });

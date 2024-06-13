@@ -34,7 +34,6 @@ try {
     '^mapshaper$': replacePathWithRootDir(require.resolve('mapshaper')),
     '\\.(css|scss)$': '<rootDir>/test/__mocks__/object.js',
     '\\.(jpe?g|png|gif|svg)$': '<rootDir>/test/__mocks__/object.js',
-    // 'material-ui/Popover': '<rootDir>/__mocks__/constructor.js',
     '@arcgis/core/symbols/SimpleFillSymbol': '<rootDir>/test/__mocks__/SimpleFillSymbol.js',
     '@arcgis': '<rootDir>/test/__mocks__/object.js',
     'src/client/map/js/layers(.*)$': '<rootDir>/test/__mocks__/constructor.js',

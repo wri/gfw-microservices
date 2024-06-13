@@ -1629,7 +1629,7 @@ export const DATA_LAYER = {
   brazil_biomes: 'Brazil Biomes',
 };
 
-export const AFI_HEADER_AGGREGATE = {
+export const DEFORESTATION_KPIS_HEADER_AGGREGATE = {
   listName: 'List Name',
   country: 'Country',
   state: 'State',
@@ -1639,7 +1639,7 @@ export const AFI_HEADER_AGGREGATE = {
   negligibleRisk: 'Negligible Risk',
 };
 
-export const AFI_HEADER = {
+export const DEFORESTATION_KPIS_HEADER = {
   listName: 'List Name',
   locationName: 'Location Name',
   country: 'Country',
@@ -1647,6 +1647,48 @@ export const AFI_HEADER = {
   subState: 'Sub State',
   coverageHA: 'Natural Forest Coverage (HA) (Beta)',
   naturalForestLossHA: 'Natural Forest Loss (ha) (Beta)',
+  negligibleRisk: 'Negligible Risk (%)',
+};
+
+export const NATURAL_FOREST_LOST_KPIS_HEADER_AGGREGATE = {
+  listName: 'List Name',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub State',
+  coverageHA: 'Natural Forest Coverage (HA)',
+  naturalForestLossCumulative: 'Natural Forest Loss cumulative (HA)',
+  naturalForestLossAnnual: 'Natural Forest Loss annual (HA)',
+  year: 'Year',
+  layer: 'Natural Forest Data Layer',
+};
+
+export const NATURAL_FOREST_LOST_KPIS_HEADER = {
+  listName: 'List Name',
+  locationName: 'Location Name',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub State',
+  coverageHA: 'Natural Forest Coverage (HA)',
+  naturalForestLossCumulative: 'Natural Forest Loss cumulative (HA)',
+  naturalForestLossAnnual: 'Natural Forest Loss annual (HA)',
+  year: 'Year',
+  layer: 'Natural Forest Data Layer',
+};
+
+export const OTHER_KPIS_HEADER_AGGREGATE = {
+  listName: 'List Name',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub State',
+  negligibleRisk: 'Negligible Risk',
+};
+
+export const OTHER_KPIS_HEADER = {
+  listName: 'List Name',
+  locationName: 'Location Name',
+  country: 'Country',
+  state: 'State',
+  subState: 'Sub State',
   negligibleRisk: 'Negligible Risk (%)',
 };
 

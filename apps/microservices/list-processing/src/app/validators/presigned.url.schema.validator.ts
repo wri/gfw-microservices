@@ -54,7 +54,7 @@ export const copyOrMoveLargeListRequestSchema = z.object({
   action: z.nativeEnum(ActionType),
   listType: z.nativeEnum(TargetListType),
   listName: z.string(),
-  targetList: z.object({}).optional(),
+  targetList: z.any(),
   selectedLocations: z.array(z.coerce.number()),
   addType: z.string(),
   activeTemplate: z.string(),
@@ -67,7 +67,7 @@ export const copyOrMoveLargeListRequestSchema = z.object({
   subscriptionStatusId: z.coerce.number(),
   gfwListId: z.coerce.number(),
   allLocationsSelected: z.coerce.boolean(),
-  filters: z.object({}),
+  filters: z.any(),
   srcListAnalysisTable: z.string(),
 });
 export const getPaginatedListDataRequestSchema = z.object({

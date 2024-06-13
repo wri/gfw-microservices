@@ -1236,7 +1236,13 @@ module.exports = (app, limiter) => {
 
     const { organization_user_id, organization_id, organization_database, subscription_status_id } =
       req.session;
-    logger.info('copyOrMoveRequestBody: ', req.body);
+    logger.info(
+      'copyOrMove request: ',
+      req.body.listId,
+      req.body.action,
+      req.body.listType,
+      req.body.targetList
+    );
 
     const copyOrMoveRequestBody = {
       ...req.body,

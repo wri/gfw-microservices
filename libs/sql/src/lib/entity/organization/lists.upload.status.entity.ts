@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'ListsUploadStatus' })
 export class ListsUploadStatus {
-  @PrimaryGeneratedColumn({ name: 'list_id' })
+  @PrimaryColumn({ name: 'list_id' })
   listId: number;
 
   @Column({ name: 'last_successful_stage' })

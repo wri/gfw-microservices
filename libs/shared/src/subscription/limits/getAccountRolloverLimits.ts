@@ -11,15 +11,19 @@ export async function getAccountRolloverLimits(
   subscriptionLimits: AnalysisLimit,
   extendedLimits: AnalysisLimit
 ) {
-  const orgActivatedTime = await getAccountRenewalTime(organizationId);
-  const accountActivationDate = moment(orgActivatedTime);
+  const orgRenewalTime = await getAccountRenewalTime(organizationId);
+  const accountRenewalMoment = moment(orgRenewalTime);
   const yearlyUsageSinceActivation = await getAccountYearlyUsageSinceActivation(
     organizationId,
-    accountActivationDate.format('YYYY-MM-DD')
+    accountRenewalMoment.format('YYYY-MM-DD')
   );
 
   // RolloverUsed = for[y]yearlyUsageSinceActivation =- subscriptionLimits
-  const rolloverUsed = calculateRolloverUsed(yearlyUsageSinceActivation, subscriptionLimits);
+  const rolloverUsed = calculateRolloverUsed(
+    yearlyUsageSinceActivation,
+    subscriptionLimits,
+    accountRenewalMoment
+  );
 
   // RolloverRemaining = extendedLimits - RolloverUsed
   return {

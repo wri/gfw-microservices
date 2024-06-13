@@ -404,7 +404,8 @@ export const handleListProcessingError = async (
   url,
   config
 ) => {
-  logger.error(`Error ${url}`, error);
+  logger.error(`Error ${url}`, error.stack);
+  logger.error(`Error ${url} data`, error.config?.data);
   const { response } = error;
   const { status = 500, statusText: reason = errorMessage, data = {} } = response || {};
 

@@ -6,6 +6,15 @@ type FieldType = {
   output: string;
 };
 
+/**
+ *  This transformation should be used when you want to calculate the total and write it on another field
+ *  Input:
+ *     fields: { input: 'x', output: 'y'}
+ *     chunk: { x: { 2018: 10, 2020: 20} }
+ *  Output:
+ *     chunk: { x: { 2018: 10, 2020: 20}, y: 30 }
+ */
+
 class TotalCreatingNewField extends Transform {
   constructor(private fields: FieldType[]) {
     super({ objectMode: true });

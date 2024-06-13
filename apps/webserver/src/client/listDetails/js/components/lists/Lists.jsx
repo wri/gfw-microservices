@@ -712,7 +712,7 @@ export default class Lists extends Component {
   moveSelectedLocations = () => {
     this.handleDialogClose(false);
     // clear the custom dialog content
-    this.setState({ dialogActions: null, dialogChildren: null });
+    this.setState({ dialogActions: null, dialogChildren: null, showSubmitModal: false });
     const {
       activeTemplate,
       addType,

@@ -1,3 +1,5 @@
+import { AfiAnalysisByListId } from '@wri-monorepos/sql';
+
 export const locationListData = [
   {
     list_id: 5642,
@@ -425,7 +427,7 @@ export const afiLocationLevelData = [
     gadmId: null,
     coverageHA: 742.2031451586759,
     naturalForestLossHA: 8.743208131482211,
-    totalAreaHa: 1256.1646821446757,
+    totalAreaHA: 1256.1646821446757,
     negligibleRisk: 100,
     statusCode: 2,
     locationError: null,
@@ -433,6 +435,8 @@ export const afiLocationLevelData = [
     country: 'Brazil',
     state: 'Amazonas',
     subState: 'Lábrea',
+    jrcForestLossByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+    naturalForestLossByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
   {
     listId: 5642,
@@ -441,7 +445,7 @@ export const afiLocationLevelData = [
     gadmId: null,
     coverageHA: 251.69314385190685,
     naturalForestLossHA: 90.35210599890917,
-    totalAreaHa: 1256.4203696590005,
+    totalAreaHA: 1256.4203696590005,
     negligibleRisk: 100,
     statusCode: 2,
     locationError: null,
@@ -449,6 +453,8 @@ export const afiLocationLevelData = [
     country: 'Brazil',
     state: 'Acre',
     subState: 'Porto Acre',
+    jrcForestLossByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+    naturalForestLossByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
   {
     listId: 5642,
@@ -457,7 +463,7 @@ export const afiLocationLevelData = [
     gadmId: null,
     coverageHA: 419.6845973241104,
     naturalForestLossHA: 13.769003244052165,
-    totalAreaHa: 1256.217339121448,
+    totalAreaHA: 1256.217339121448,
     negligibleRisk: 100,
     statusCode: 2,
     locationError: null,
@@ -465,8 +471,10 @@ export const afiLocationLevelData = [
     country: 'Brazil',
     state: 'Amazonas',
     subState: 'Lábrea',
+    jrcForestLossByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+    naturalForestLossByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
-];
+] as AfiAnalysisByListId[];
 
 export const afiListLevelData = [
   {
@@ -476,13 +484,15 @@ export const afiListLevelData = [
     gadmId: 'BRA.1.14',
     coverageHA: 176.82835752141645,
     naturalForestLossHA: 57.551127668932544,
-    totalAreaHa: 782.2518775502366,
+    totalAreaHA: 782.2518775502366,
     statusCode: 2,
     locationError: null,
     negligibleRisk: 100,
     country: 'Brazil',
     state: 'Acre',
     subState: 'Porto Acre',
+    jrcForestLossByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+    naturalForestLossByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
   {
     listId: 5642,
@@ -491,13 +501,15 @@ export const afiListLevelData = [
     gadmId: 'BRA.4.13',
     coverageHA: 74.8647863304904,
     naturalForestLossHA: 32.800978329976616,
-    totalAreaHa: 474.1684921087639,
+    totalAreaHA: 474.1684921087639,
     statusCode: 2,
     locationError: null,
     negligibleRisk: 100,
     country: 'Brazil',
     state: 'Amazonas',
     subState: 'Boca do Acre',
+    jrcForestLossByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+    naturalForestLossByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
   {
     listId: 5642,
@@ -506,15 +518,17 @@ export const afiListLevelData = [
     gadmId: 'BRA.4.34',
     coverageHA: 1161.887742482786,
     naturalForestLossHA: 22.512211375534378,
-    totalAreaHa: 2512.3820212661235,
+    totalAreaHA: 2512.3820212661235,
     statusCode: 2,
     locationError: null,
     negligibleRisk: 100,
     country: 'Brazil',
     state: 'Amazonas',
     subState: 'Lábrea',
+    jrcForestLossByYear: '{"2021":120.8186,"2022":228.1142,"2023":0.0}',
+    naturalForestLossByYear: '{"2021":148.3792,"2022":243.5327,"2023":0.0}',
   },
-];
+] as AfiAnalysisByListId[];
 
 export const argentinaLocationData = [
   {

@@ -710,9 +710,10 @@ export default class Lists extends Component {
 
   // Move the selected locations after user has confirmed the action.
   moveSelectedLocations = () => {
+    console.log(this.state.newListName, 'this.state.newListName')
     this.handleDialogClose(false);
     // clear the custom dialog content
-    this.setState({ dialogActions: null, dialogChildren: null });
+    this.setState({ dialogActions: null, dialogChildren: null, showSubmitModal: false });
     const {
       activeTemplate,
       addType,

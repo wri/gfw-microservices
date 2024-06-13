@@ -1422,6 +1422,7 @@ export default class Lists extends Component {
       selectedLists,
       filterCount,
       filteredLocationData,
+      userSharedLists,
     } = this.props;
     const { filterString, combinedColumns, allLocationsSelected } = this.state;
     let locationIds = [];
@@ -1511,10 +1512,15 @@ export default class Lists extends Component {
       locationIds = JSON.stringify(locationIds);
     }
     const isGfwList = selectedLists[0].globalForestWatchList;
+    const isSharedList =
+      selectedLists &&
+      userSharedLists &&
+      userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
 
     const sendData = {
       listId: selectedLists[0].id,
       isGfwList,
+      isSharedList,
       selectedLocations: allLocationsSelected || showFullListMap ? [] : locationIds,
     };
 

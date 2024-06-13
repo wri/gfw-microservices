@@ -1839,6 +1839,7 @@ class Map extends Component {
       listId,
       selectedLocations,
       isGfwList,
+      isSharedList,
       selectedTimeframe,
       latitude,
       longitude,
@@ -1848,10 +1849,6 @@ class Map extends Component {
       xmax,
       ymax,
     } = queryParams;
-
-    if (!listId) {
-      return; // if there is no list id in the get params, exit this function
-    }
 
     let alertsMapExtent;
     if (xmin && ymin && xmax && ymax) {
@@ -1870,7 +1867,7 @@ class Map extends Component {
     const hashLayersToAdd = [];
 
     if (isGfwList) {
-      if (listId < 1 || listId > 5) {
+      if (!listId || listId < 1 || listId > 5) {
         return; // if the list is not found, exit this function
       }
       const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
@@ -1933,13 +1930,19 @@ class Map extends Component {
         transitionListData,
       });
     } else {
-      // if it is user list
+      if (!listId) {
+        return; // if there is no list id in the get params, exit this function
+      }
+
       const { userLists, userSharedLists } = this.props;
-      const combinedUserLists = [...userLists, ...userSharedLists];
-      const userList = combinedUserLists.find((list) => list.id === listId);
+
+      const listToSearch = isSharedList ? userSharedLists[0] : userLists;
+      const userList = listToSearch?.find((listData) => listData.id === listId);
+
       if (!userList) {
         return; // if the list is not found, exit this function
       }
+
       store.dispatch(showMapLoader(true));
       // set name and selected locations in banner
       this.setState({

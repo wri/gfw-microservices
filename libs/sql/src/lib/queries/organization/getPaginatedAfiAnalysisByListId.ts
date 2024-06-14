@@ -21,6 +21,12 @@ SET @SQL = ' SELECT afi.list_id as listId, '+
     ' afi.status_code as statusCode, '+
     ' afi.location_error as locationError, '+
     ' afi.negligible_risk AS negligibleRisk,  '+
+    ' afi.jrc_land_area AS jrcLandAreaHA ,'+
+    ' afi.jrc_land_deforested_area AS jrcLandDeforestedAreaHA ,'+
+    ' afi.jrc_forest_loss_by_year AS jrcForestLossByYear ,'+
+    ' afi.natural_forest_loss_by_year AS naturalForestLossByYear ,'+
+    ' afi.protected_areas_area AS protectedAreasArea ,'+
+    ' afi.landmark_area AS landmarkArea ,' +
     ' AA.[Country] as country,  '+
     ' AA.[State] as state,  '+
     ' AA.[Sub State] as subState  '+

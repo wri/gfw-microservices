@@ -98,6 +98,26 @@ export class ListAnalysisController {
     });
   }
 
+  @ApiResponse({ status: 200})
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
+  @Post(':listID}/analysis/:analysisID/analyze')
+  async createAnalysis(
+    @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
+    @Param('analysisId', new ZodValidationPipe(analysisIdSchema)) analysisId: string,
+    @Req() request: RequestSchema
+  ){
+    new ZodValidationPipe(requestSchema).transform(request);
+
+    const {
+      user: { organizationId },
+    } = request;
+  }
+  
+
   @ApiResponse({ status: 200, type: DeleteListMessageResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })

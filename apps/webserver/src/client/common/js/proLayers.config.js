@@ -25,16 +25,11 @@ export const proLayers = {
   viirsActiveFiresID: 'VIIRS Global Fires',
   treeCoverID: 'Tree cover 2000',
   cameroonAgroIndustrialZonesID: 'Cameroon agro-industrial zones',
-  universalMillList: 'Universal Mill List',
-  oilPalmConcessions: 'Oil Palm Concessions',
   soyPlantedArea: 'Soy Planted Area',
   aboveGroundBiomassId: 'Aboveground live woody biomass density',
   primaryForest: 'Primary Forest',
   treePlantationsSpecies: 'Tree Plantations by species',
   brazilBiomesID: 'Brazil Biomes',
-  rspoConcessions: 'RSPO Concessions',
-  rspoPalmOilMills: 'rspo-palm-oil-mills',
-  protectedAreas: 'WDPA Esri',
   landRights: 'Land Rights (Esri)',
   intactForestLandscapesID: 'Intact Forest Landscapes',
   globalPeatlandsID: 'Global Peatlands',
@@ -45,10 +40,16 @@ export const proLayers = {
   indonesiaLegalClass: 'Indonesia Forest Area',
   indonesiaPeatLands: 'Indonesia Peat Lands',
   indonesiaLandCover: 'Indonesia Land Cover',
+  rspoPalmOilMills: 'rspo-palm-oil-mills',
+
+  rspoConcessions: 'RSPO Concessions', // GFW list
+  oilPalmConcessions: 'Oil Palm Concessions', // GFW list
+  protectedAreas: 'WDPA Esri', // GFW list
+  universalMillList: 'Universal Mill List', // GFW list
 
   // the next are not layers present in the map layer API as the previous ones
   // but they are constants that we use through the application
-  administrativeAreas: 'administrative-areas',
+  administrativeAreas: 'administrative-areas', // GFW list
   adminAreas: 'admin-areas',
   userLocations: 'user-locations',
 };

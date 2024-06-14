@@ -4,7 +4,7 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import Page from '../../../common/js/components/Page';
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
 import httpRequest from '../../../common/js/utils/httpRequest';
-import GFW_LIST_NAME from '../../../common/js/constants/lists.constants';
+import { getGFWListNameFromMapLayerId } from '../../../common/js/utils/gfw.utils';
 import { proLayers } from '../../../common/js/proLayers.config';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
 import Landing from './landing/Landing';
@@ -130,7 +130,7 @@ class Locations extends Component {
       }
     } else if (gfwData && gfwData.listName) {
       // GFW Lists: listName, globalIds >> rspo/protected and so on goes here
-      listName = GFW_LIST_NAME[gfwData.listName];
+      listName = getGFWListNameFromMapLayerId(gfwData?.listName);
 
       const gfwInfoFromMap = {
         gfwData,
@@ -171,7 +171,7 @@ class Locations extends Component {
             if (locations) {
               const data = locations.location_analyses[0][0];
               const admin = {
-                substate: data['Sub State'],
+                substate: data?.['Sub State'],
                 state: data.State,
                 country: data.Country,
                 gadmid: data.gadmid,
@@ -232,7 +232,6 @@ class Locations extends Component {
     } else if (drawData) {
       // Drawn/Uploaded poly: geoString
       const drawnGeom = JSON.parse(drawData);
-
       const mapData = {
         geometry: drawnGeom,
         locationName,

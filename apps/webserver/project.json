@@ -94,14 +94,7 @@
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/webserver/src",
-        "commands": [
-          "rm -rf public/*",
-          {
-            "command": "NODE_OPTIONS=--max-old-space-size=4096 ts-node -T ../../../node_modules/webpack/bin/webpack.js --merge --config ./config/webpack.config.ts --config ./config/webpack.production.config.js",
-            "forwardAllArgs": false
-          },
-          "node ./test/prepare-jest"
-        ],
+        "commands": ["echo 'no test fitness prep required'"],
         "parallel": false
       }
     },

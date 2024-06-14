@@ -7,7 +7,6 @@ import * as geometries from './geometries';
 import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
 
 jest.mock('./geometries');
-jest.mock('esri/views/MapView');
 
 jest.mock('@arcgis/core/symbols/SimpleFillSymbol', () => {
   return {

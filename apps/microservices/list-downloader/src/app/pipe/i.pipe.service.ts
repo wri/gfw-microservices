@@ -86,7 +86,7 @@ export abstract class IPipeService {
   }
 
   async saveS3UrlAtDatabase(filters: BasicFieldsFileRequest, location: string) {
-    const { listId, organizationDatabase, type, file } = filters;
+    const { listId, organizationDatabase, type, file, isGFWList } = filters;
 
     const parameters = toSqlParameter({
       location,
@@ -96,7 +96,10 @@ export abstract class IPipeService {
       analysisId: type === 'afi' ? 'AFI' : type === 'alerts' ? 'ALERTS' : 'FCD',
     });
 
-    if (!['input_csv', 'input_shapefile', 'results_csv'].includes(`${type}_${file}`)) {
+    if (
+      !['input_csv', 'input_shapefile', 'results_csv'].includes(`${type}_${file}`) &&
+      !isGFWList
+    ) {
       try {
         this.loggerPipe.log(
           'Saving S3 URL at database for list ' + listId + ' and analysis ' + type

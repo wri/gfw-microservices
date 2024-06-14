@@ -8,6 +8,7 @@ const getQueryParams = (queryString) => {
     listId: 'number',
     selectedLocations: 'array-int-or-string',
     isGfwList: 'boolean',
+    isSharedList: 'boolean',
     latitude: 'number',
     longitude: 'number',
     zoom: 'number',

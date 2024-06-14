@@ -145,6 +145,7 @@ export default class Diagnostics extends Component {
     });
 
     const { listId, isSharedList, isGfwList } = this.props;
+
     this.mapView.on('click', this.viewMap);
     this.mapView.when(this.mapLoaded, (error) => {
       console.error('Error loading map:', error);
@@ -313,13 +314,14 @@ export default class Diagnostics extends Component {
   viewMap = (evt) => {
     const { isSingleLocation } = this.state;
     const { selectedLocations, selectedList, isGfwList } = this.props;
-    const { id: listId } = selectedList;
+    const { id: listId, is_shared } = selectedList;
 
     const sendData = {
       visibleLayers: [treeCoverLossID],
       listId,
       selectedLocations: isSingleLocation ? selectedLocations : [],
       isGfwList,
+      isSharedList: is_shared,
       longitude: evt.mapPoint.longitude,
       latitude: evt.mapPoint.latitude,
       zoom: this.mapView.zoom,

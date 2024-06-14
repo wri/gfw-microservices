@@ -27,7 +27,7 @@ import { SouthEastAsiaTCLService } from '../files/south.east.asia.tcl.service';
 import { ListGeneratorService } from './list.generator.service';
 import { AfiGeneratorService } from './afi.generator.service';
 import { AccountUsersAnalysisUsageFileService } from './account-users-usage.generator.service';
-import { AfiFileService } from '../files/afi.file.service';
+import { DeforestationKpisService } from '../files/deforestation.kpis.service';
 import { ArgentinaOverlapService } from '../files/argentina.overlap.service';
 import { AnalysisDataService } from '../data/analysis.data.service';
 import { AnalysisAfiDataService } from '../data/analysis.afi.data.service';
@@ -42,20 +42,44 @@ import { AlertsGeneratorService } from './alerts.generator.service';
 import { AlertsFileService } from '../files/alerts.file.service';
 import { AlertsLocationsHistoryService } from '../files/alerts.locations.history.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ArgentinaDeforestationService } from '../files';
+import {
+  ArgentinaDeforestationService,
+  NaturalForestLossService,
+  OtherKpisService,
+} from '../files';
 
 @Module({
   imports: [envModule, AwsModule, SqlModule, TypeOrmModule.forFeature([GFWList], 'default')],
   providers: [
+    AccountUsersAnalysisUsageFileService,
+    AfiGeneratorService,
+    AlertsAdminAreasLevelService,
+    AlertsDataService,
+    AlertsFileService,
+    AlertsGeneratorService,
+    AlertsHistoryService,
+    AlertsLocationsHistoryService,
+    AlertsLocationsLevelService,
+    AlertsPrioritiesAdminAreasLevelService,
+    AlertsPrioritiesLocationsLevelService,
+    AlertsSummaryService,
+    AnalysisAfiDataService,
+    AnalysisDataService,
+    ArgentinaDeforestationService,
+    ArgentinaOverlapService,
     CommodityRiskDiagnosticLocationSummaryService,
     DashboardService,
+    DeforestationKpisService,
     DeforestationTrendsService,
     ForestChangeDiagnosticListSummaryService,
     ForestChangeDiagnosticLocationSummaryService,
     ForestLossService,
     HistoricPercentService,
     InputService,
+    ListGeneratorService,
     MillPriorityService,
+    NaturalForestLossService,
+    OtherKpisService,
     PalmRiskAnalysisService,
     PipeService,
     ResultService,
@@ -64,24 +88,6 @@ import { ArgentinaDeforestationService } from '../files';
     SouthAmericaLossService,
     SouthEastAsiaOverlapService,
     SouthEastAsiaTCLService,
-    ListGeneratorService,
-    AfiGeneratorService,
-    AfiFileService,
-    ArgentinaOverlapService,
-    AnalysisDataService,
-    AnalysisAfiDataService,
-    AccountUsersAnalysisUsageFileService,
-    AlertsDataService,
-    AlertsAdminAreasLevelService,
-    AlertsHistoryService,
-    AlertsLocationsLevelService,
-    AlertsPrioritiesAdminAreasLevelService,
-    AlertsPrioritiesLocationsLevelService,
-    AlertsSummaryService,
-    AlertsGeneratorService,
-    AlertsFileService,
-    AlertsLocationsHistoryService,
-    ArgentinaDeforestationService,
   ],
   exports: [PipeService],
 })

@@ -15,6 +15,8 @@ describe('Alerts page', () => {
   When('I navigate to the alerts page', () => {
     basePage.navigateToAlertsPage();
     cy.url().should('include', '/dashboard');
+    alertsPage.clickOnLanguage();
+    alertsPage.selectEnglishLenguage();
   });
 
   When('I select a List from the dropdown', () => {

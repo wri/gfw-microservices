@@ -4,12 +4,11 @@ import { locationsPage } from '../../../../common/js/config';
 import downloaders from '../../../../common/js/utils/downloaders';
 import React, { Component } from 'react';
 import { deduceActiveName } from '../../../../common/js/utils/templateUtils';
-import { GFWLists } from '../../config/listNames';
 import MultiGridTable from '../../../../listDetails/js/components/edit/table/MultiGridTable';
 import { _getFeatures } from '../../../../listDetails/js/components/edit/table/MultiGridTable.util';
 import ModalLoader from '../../../../common/js/components/Loaders/ModalLoader';
 import { isDownloadDisabledForThisList } from '../../utils/lists.utils';
-import { EXCLUDED_COLUMNS } from '../../../../common/js/constants/lists.constants';
+import { EXCLUDED_COLUMNS, gfwListNames } from '../../../../common/js/constants/lists.constants';
 
 const classificationObj = {
   palmPlantation: { value: 'Property', commodity: 'Palm Oil' },
@@ -385,7 +384,9 @@ export default class StepTwoGFW extends Component {
 
     const alwaysUntochable = unTouchables.shared;
     const currentlyUntouchable =
-      selectedLists && selectedLists.length > 0 && GFWLists.indexOf(selectedLists[0].list_name) > -1
+      selectedLists &&
+      selectedLists.length > 0 &&
+      gfwListNames.indexOf(selectedLists[0].list_name) > -1
         ? unTouchables[selectedLists[0].list_name][addType]
         : [];
 

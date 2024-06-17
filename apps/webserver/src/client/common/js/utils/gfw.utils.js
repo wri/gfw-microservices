@@ -1,8 +1,10 @@
-// Configs
-import { proLayers } from '../proLayers.config';
-import { GFW_LIST_NAME, gfwListNames } from '../constants/lists.constants';
-import { fetchGfwProLayers } from '../service/gfw.service';
 import VectorTileLayer from '@arcgis/core/layers/VectorTileLayer';
+import { fetchGfwProLayers } from '../service/gfw.service';
+import {
+  GFW_LISTS_NAMES_TO_MAP_LAYER_IDS,
+  MAP_LAYER_IDS_TO_GFW_LISTS_NAMES,
+  gfwListNames,
+} from '../constants/lists.constants';
 
 /**
  * @description - Check if the list is a GFW list
@@ -13,22 +15,10 @@ export function isGfwList(listName) {
   return gfwListNames.includes(listName);
 }
 
-/**
- * @description - returns gfwLayerId if the list is a GFW list
- * @param {string} gfwListName - List name
- * @return {false || string} - string if the list is a GFW list
- */
-
-export const flipGFWListNames = (obj) => {
-  return Object.fromEntries(Object.entries(obj).map(([key, value]) => [value, key]));
-};
-
-const GFW_LISTS = flipGFWListNames(GFW_LIST_NAME);
-
-export const discernGfwID = (gfwListName) => {
-  const layerName = GFW_LISTS[gfwListName];
-  return layerName ? proLayers[layerName] : false;
-};
+export const getMapLayerIdFromGFWListName = (gfwListName) =>
+  GFW_LISTS_NAMES_TO_MAP_LAYER_IDS[gfwListName];
+export const getGFWListNameFromMapLayerId = (mapLayerId) =>
+  MAP_LAYER_IDS_TO_GFW_LISTS_NAMES[mapLayerId];
 
 /**
  * @description - Check if the list is a user list
@@ -43,13 +33,6 @@ export const isUserList = (selectedList) =>
  * @param {string} layerID - Layer id
  * @return {string} - Layer name
  */
-export function getGfwProMapLayerName(layerID) {
-  if (layerID === 'Administrative Areas') {
-    return;
-  }
-
-  return discernGfwID(layerID);
-}
 
 /**
  * @description - Get the Vector Tile layer from the list name
@@ -58,7 +41,7 @@ export function getGfwProMapLayerName(layerID) {
  */
 export async function handleGfwProListVectorTileLayer(esriMap, listName) {
   const layersData = await fetchGfwProLayers();
-  const mapLayer = getGfwProMapLayerName(listName);
+  const mapLayer = getMapLayerIdFromGFWListName(listName);
   const gfwLayer = layersData.find((layer) => {
     return layer.attributes.name === mapLayer;
   });

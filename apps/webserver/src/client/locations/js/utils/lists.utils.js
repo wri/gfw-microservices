@@ -1,6 +1,5 @@
 import difference from 'lodash/difference';
 import intersection from 'lodash/intersection';
-import { proLayers } from '../../../common/js/proLayers.config';
 import { gfwListsLocationID } from '../../../listDetails/js/components/lists/Lists.config';
 import {
   FILTER_STRING_VARIABLES,
@@ -12,14 +11,6 @@ import {
   GFW_LISTS_NAMES_WITH_DOWNLOAD_OPTION_DISABLED,
 } from '../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
-
-const {
-  administrativeAreas,
-  oilPalmConcessions,
-  protectedAreas,
-  rspoConcessions,
-  universalMillList,
-} = proLayers;
 
 // Check to see which views should be enabled
 const checkValidView = (listData) => {
@@ -69,30 +60,6 @@ const classNameForListStatus = (listStatus) => {
     default:
       return '';
   }
-};
-
-const discernGfwID = (gfwListName) => {
-  let gfwLayerId;
-  switch (gfwListName) {
-    case 'RSPO Palm Concessions':
-      gfwLayerId = rspoConcessions;
-      break;
-    case 'Protected Areas':
-      gfwLayerId = protectedAreas;
-      break;
-    case 'Oil Palm Concessions':
-      gfwLayerId = oilPalmConcessions;
-      break;
-    case 'Palm Oil Mills':
-      gfwLayerId = universalMillList;
-      break;
-    case 'Administrative Areas':
-      gfwLayerId = administrativeAreas;
-      break;
-    default:
-      gfwLayerId = false;
-  }
-  return gfwLayerId;
 };
 
 const checkColumnListCR = (accessor) => {
@@ -391,7 +358,6 @@ module.exports = {
   checkColumnListGFWCR,
   classNameForListStatus,
   containsPunctuation,
-  discernGfwID,
   getListFilteredLocations,
   compareSelectedAndVisibleLocations,
   getGFWListLocationIDs,

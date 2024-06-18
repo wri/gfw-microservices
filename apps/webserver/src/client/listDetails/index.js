@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
+import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
 import Locations from './js/components/Locations';
 
 // *** POPOVER ISSUE FIX ***
@@ -74,24 +74,26 @@ lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 const App = () => {
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-      <BrowserRouter basename="/list-details">
-        <Locations
-          templateData={templateData}
-          userLists={userLists} //Contains all lists that users have created
-          userSharedLists={userSharedLists}
-          locationCount={locationCount}
-          userInfo={userInfo}
-          usersList={usersList} //Contains all users
-          organizationId={organizationId}
-          gfwLists={gfwLists}
-          mapData={mapData}
-          gfwData={gfwData}
-          drawData={drawData}
-          locationName={locationName}
-          listStatuses={listStatuses}
-          fromMap={fromMap}
-        />
-      </BrowserRouter>
+      <AppErrorFallback>
+        <BrowserRouter basename="/list-details">
+          <Locations
+            templateData={templateData}
+            userLists={userLists} //Contains all lists that users have created
+            userSharedLists={userSharedLists}
+            locationCount={locationCount}
+            userInfo={userInfo}
+            usersList={usersList} //Contains all users
+            organizationId={organizationId}
+            gfwLists={gfwLists}
+            mapData={mapData}
+            gfwData={gfwData}
+            drawData={drawData}
+            locationName={locationName}
+            listStatuses={listStatuses}
+            fromMap={fromMap}
+          />
+        </BrowserRouter>
+      </AppErrorFallback>
     </MuiThemeProvider>
   );
 };

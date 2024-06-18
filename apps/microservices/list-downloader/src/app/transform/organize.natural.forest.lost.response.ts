@@ -21,7 +21,7 @@ class OrganizeNaturalForestLostResponse extends Transform {
     } = chunk;
     const csvArray = [];
 
-    let sharedInfo = [listName, country, state, subState, coverageHA, locationName];
+    let sharedInfo = [listName, locationName, country, state, subState, coverageHA];
 
     if (this.level === 'list') {
       sharedInfo = [listName, country, state, subState, coverageHA];

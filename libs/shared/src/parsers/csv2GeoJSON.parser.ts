@@ -1,11 +1,11 @@
 import * as d3Dsv from 'd3-dsv/dist/d3-dsv';
 import sexagesimal from '@mapbox/sexagesimal';
 
-const latRegex = /(Lat)(itude)?/gi;
+const latRegex = /(Lat)(itude)?/i;
 const lonRegex = /(L)(on|ng)(gitude)?/i;
 
 interface Row {
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface GeometryPoint {
@@ -101,13 +101,17 @@ export function csv2geojson(csvContent: string, options: CSVParseOptions): [any,
 
   const numericFields = options.numericFields ? options.numericFields.split(',') : null;
 
+  // When calling d3Dsv.dsvFormat(options.delimiter).parse, we pass a callback function that will be called for each row in the CSV file.
+  // The callback function receives a row as a parameter and should return an object representing the row.
+  // The d3Dsv.dsvFormat(options.delimiter).parse function will return an array of objects, where each object represents a row in the CSV file.
+  // d3Dsv.dsvFormat(options.delimiter).parse("foo,bar\n1,2", (d){ ... }) // [{foo: "1", bar: "2"}]
   const parsed =
     typeof csvContent === 'string'
       ? d3Dsv.dsvFormat(options.delimiter).parse(csvContent, (d) => {
           if (numericFields) {
             for (const key in d) {
               if (numericFields.includes(key)) {
-                d[key] = +d[key];
+                d[key] = Number(d[key]);
               }
             }
           }
@@ -143,6 +147,9 @@ export function csv2geojson(csvContent: string, options: CSVParseOptions): [any,
       let latk = parsed[i][latfield];
       let a: any;
 
+      // Process geographic coordinate data
+      // The sexagesimal function is a utility function for converting geographic coordinates from a sexagesimal format (degrees, minutes, seconds) to a decimal format.
+      // The parameters 'EW' and 'NS' indicate that the function should interpret the longitude (lonk) as being in the East-West direction and the latitude (latk) as being in the North-South direction.
       a = sexagesimal(lonk, 'EW');
       if (a) lonk = a;
       a = sexagesimal(latk, 'NS');
@@ -158,6 +165,7 @@ export function csv2geojson(csvContent: string, options: CSVParseOptions): [any,
           index: i,
         });
       } else {
+        // When the includeLatLon option is set to false, we remove the lat and lon fields from the properties
         if (!options.includeLatLon) {
           delete parsed[i][lonfield];
           delete parsed[i][latfield];

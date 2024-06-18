@@ -8,6 +8,7 @@ describe('xls2geojson', () => {
     );
 
     const [result, err] = xls2geojson(fileBuffer);
+    console.log(JSON.stringify(result, null, 2));
     expect(err).toHaveLength(0);
     expect(result).toBeDefined();
     expect(result.features.length).toBe(3);

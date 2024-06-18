@@ -1,4 +1,3 @@
-const axios = require('axios');
 const Slack = require('@slack/bolt');
 
 /**

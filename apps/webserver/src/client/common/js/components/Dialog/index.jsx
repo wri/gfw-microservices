@@ -1,5 +1,5 @@
 import React, { useState, createContext, useContext } from 'react';
-import Button from '..//Button';
+import Button from '../Button';
 import Dialog from 'material-ui/Dialog';
 
 const DialogContext = createContext();

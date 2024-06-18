@@ -64,7 +64,6 @@ import {
 } from '../../../common/js/map.config';
 import geojsonUtil from '../../../common/js/utils/arcgis-to-geojson';
 import { registerGeometry } from '../../../common/js/utils/gfwAPI';
-import GfwButton from '../../../common/js/components/GfwButton';
 import Page from '../../../common/js/components/Page';
 import ListSection from '../../../common/js/components/listPanel/ListSection';
 import ModalLoader from '../../../common/js/components/Loaders/ModalLoader';
@@ -79,11 +78,10 @@ import setVectorTileLayerForFilteredList from '../utils/setVectorTileLayerForFil
 import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullList';
 import { getLocationGeometry } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';
-import { getGfwProMapLayerName, isGfwList } from '../../../common/js/utils/gfw.utils';
+import { isGfwList, getMapLayerIdFromGFWListName } from '../../../common/js/utils/gfw.utils';
 import { updateInteractiveLayers } from '../utils/layerUpdates.utils';
 import sortMapArray from './sortMapArray';
 import getQueryParams from './getQueryParams';
-import { discernGfwID } from '../../../locations/js/utils/lists.utils';
 
 import AnalysisPanel from './analysisPanel/AnalysisPanel';
 import ControlPanel from './controls/ControlPanel';
@@ -101,7 +99,7 @@ import CanopyModal from './modals/CanopyModal';
 import InfoModal from './modals/InfoModal';
 import LayerModal from './modals/LayerModal';
 import SearchModal from './modals/SearchModal';
-import { GFWLists } from '../../../locations/js/config/listNames';
+import { gfwListNames } from '../../../common/js/constants/lists.constants';
 import { selectList } from '../../../locations/js/actions/locationActions';
 import { gfwListsLocationID } from '../../../listDetails/js/components/lists/Lists.config';
 import { FailedPopupDialog } from '../../../locations/js/components/landing/FailedPopupDialog';
@@ -1839,6 +1837,7 @@ class Map extends Component {
       listId,
       selectedLocations,
       isGfwList,
+      isSharedList,
       selectedTimeframe,
       latitude,
       longitude,
@@ -1848,10 +1847,6 @@ class Map extends Component {
       xmax,
       ymax,
     } = queryParams;
-
-    if (!listId) {
-      return; // if there is no list id in the get params, exit this function
-    }
 
     let alertsMapExtent;
     if (xmin && ymin && xmax && ymax) {
@@ -1870,12 +1865,12 @@ class Map extends Component {
     const hashLayersToAdd = [];
 
     if (isGfwList) {
-      if (listId < 1 || listId > 5) {
+      if (!listId || listId < 1 || listId > 5) {
         return; // if the list is not found, exit this function
       }
       const [listToSelect] = gfwLists.filter((gfwList) => gfwList.id === listId);
       const listName = listToSelect.list_name;
-      const gfwListVisibleMapLayerId = discernGfwID(listName);
+      const gfwListVisibleMapLayerId = getMapLayerIdFromGFWListName(listName);
 
       hashLayersToAdd.push(gfwListVisibleMapLayerId);
       if (listId === 1) {
@@ -1933,13 +1928,19 @@ class Map extends Component {
         transitionListData,
       });
     } else {
-      // if it is user list
+      if (!listId) {
+        return; // if there is no list id in the get params, exit this function
+      }
+
       const { userLists, userSharedLists } = this.props;
-      const combinedUserLists = [...userLists, ...userSharedLists];
-      const userList = combinedUserLists.find((list) => list.id === listId);
+
+      const listToSearch = isSharedList ? userSharedLists[0] : userLists;
+      const userList = listToSearch?.find((listData) => listData.id === listId);
+
       if (!userList) {
         return; // if the list is not found, exit this function
       }
+
       store.dispatch(showMapLoader(true));
       // set name and selected locations in banner
       this.setState({
@@ -2089,13 +2090,10 @@ class Map extends Component {
       (selectedList) => selectedList.list_name === list.list_name
     );
     const list_ids = selectedLists.map((selectedList) => selectedList.id);
-    const GFWindex = GFWLists.indexOf(list.list_name);
 
+    const mapLayer = getMapLayerIdFromGFWListName(list.list_name);
     // If selected list is a GFW list do this logic
-    if (GFWindex !== -1) {
-      const id = GFWLists[GFWindex];
-      const mapLayer = getGfwProMapLayerName(id);
-
+    if (mapLayer) {
       if (index === -1) {
         // We have selected a GFW List
         // need to remove all visible graphics from user list,
@@ -2139,7 +2137,7 @@ class Map extends Component {
       }
     } else {
       // If active list is a GFW list and selected list is a user list then reset selectedLists and grab data
-      if (selectedLists.some((v) => GFWLists.indexOf(v) >= 0)) {
+      if (selectedLists.some((v) => gfwListNames.indexOf(v) >= 0)) {
         store.dispatch(resetList(list));
         this.getUserLocationData([list.id], list.list_name);
       }

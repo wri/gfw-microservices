@@ -21,6 +21,12 @@ SET @SQL = ' SELECT afi.list_id as listId, '+
     ' afi.status_code as statusCode, '+
     ' afi.location_error as locationError, '+
     ' afi.negligible_risk AS negligibleRisk,  '+
+    ' afi.jrc_land_area AS jrcLandAreaHA ,'+
+    ' afi.jrc_land_deforested_area AS jrcLandDeforestedAreaHA ,'+
+    ' afi.jrc_forest_loss_by_year AS jrcForestLossByYear ,'+
+    ' afi.natural_forest_loss_by_year AS naturalForestLossByYear ,'+
+    ' afi.protected_areas_area AS protectedAreasArea ,'+
+    ' afi.landmark_area AS landmarkArea ,' +
     ' AA.[Country] as country,  '+
     ' AA.[State] as state,  '+
     ' AA.[Sub State] as subState  '+
@@ -60,9 +66,15 @@ SET @SQL = 'SELECT  ' +
             ' afi.natural_land_area AS coverageHA, '+
             ' afi.natural_land_deforested_area AS naturalForestLossHA, '+
             ' afi.total_area_ha AS totalAreaHa, '+
-            ' afi.negligible_risk AS negligibleRisk ,'+
             ' afi.status_code as statusCode, '+
             ' afi.location_error as locationError, '+
+            ' afi.negligible_risk AS negligibleRisk ,'+
+            ' afi.jrc_land_area AS jrcLandAreaHA ,'+
+            ' afi.jrc_land_deforested_area AS jrcLandDeforestedAreaHA ,'+
+            ' afi.jrc_forest_loss_by_year AS jrcForestLossByYear ,'+
+            ' afi.natural_forest_loss_by_year AS naturalForestLossByYear ,'+
+            ' afi.protected_areas_area AS protectedAreasArea ,'+
+            ' afi.landmark_area AS landmarkArea ,' +
             ' lt.[Location Name] as locationName, ' +
             ' lt.Country as country ,' +
             ' lt.State as state,' +
@@ -79,18 +91,24 @@ EXEC sp_executesql @SQL,
 `;
 
 export class AfiAnalysisByListId {
+  country: string;
+  coverageHA: number;
+  gadmId: string;
+  jrcForestLossByYear: string;
+  jrcLandArea: number;
+  jrcLandDeforestedArea: number;
+  landmarkArea: number;
   listId: number;
   listName: string;
-  locationId: number;
-  gadmId: string;
-  coverageHA: number;
-  naturalForestLossHA: number;
-  totalAreaHa: number;
-  negligibleRisk: number;
-  statusCode: number;
   locationError: string;
+  locationId: number;
   locationName?: string;
-  country: string;
+  naturalForestLossByYear: string;
+  naturalForestLossHA: number;
+  negligibleRisk: number;
+  protectedAreasArea: number;
   state: string;
+  statusCode: number;
   subState: string;
+  totalAreaHA: number;
 }

@@ -109,15 +109,6 @@ export default () => {
       path: path.join(process.cwd(), 'public'),
       filename: '[name].[contenthash].js',
     },
-    externals: [
-      ({ request }, callback) => {
-        if (/^dojo|^dojox|^dijit|^esri/.test(request)) {
-          callback(null, `umd ${request}`);
-        } else {
-          callback();
-        }
-      },
-    ],
     resolve: {
       extensions: ['*', '.js', '.jsx', '.tsx'],
       alias: aliases,

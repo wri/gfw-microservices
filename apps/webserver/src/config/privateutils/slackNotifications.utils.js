@@ -61,26 +61,6 @@ const sendNotification = async (text, data, userInfo) => {
   });
 };
 
-/**
- * @summary send frontend error message to log channel
- * @param {String} errorMessage
- */
-const sendErrorNotification = async (errorMessage) => {
-  const slackApp = new Slack.App({
-    signingSecret: process.env.SLACK_SIGNING_SECRET,
-    token: process.env.SLACK_BOT_TOKEN,
-  });
-
-  const text = `> *GFW Pro Application Error* \n\n${errorMessage}`;
-
-  await slackApp.client.chat.postMessage({
-    token: process.env.SLACK_BOT_TOKEN,
-    channel: process.env.SLACK_LOG_CHANNEL,
-    text,
-  });
-};
-
 module.exports = {
   sendNotification,
-  sendErrorNotification,
 };

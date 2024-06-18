@@ -6,6 +6,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import ProManagerPanel from './js/components/ProManagerPanel';
 import Page from '../common/js/components/Page';
+import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
 
 lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 const pageOptions = {
@@ -17,11 +18,13 @@ const pageOptions = {
 function App() {
   return (
     <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-      <BrowserRouter basename="/pro-manager-list">
-        <Page links={pageOptions.links} active="pro-manager">
-          <ProManagerPanel />
-        </Page>
-      </BrowserRouter>
+      <AppErrorFallback>
+        <BrowserRouter basename="/pro-manager-list">
+          <Page links={pageOptions.links} active="pro-manager">
+            <ProManagerPanel />
+          </Page>
+        </BrowserRouter>
+      </AppErrorFallback>
     </MuiThemeProvider>
   );
 }

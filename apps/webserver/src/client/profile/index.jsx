@@ -4,6 +4,7 @@ import Page from '../common/js/components/Page';
 import ProfileContextProvider from './js/ProfileStateContext';
 import Profile from './js/Profile';
 import './css/profile.scss';
+import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
 
 const pageOptions = {
   links: {
@@ -13,11 +14,13 @@ const pageOptions = {
 
 function App() {
   return (
-    <Page links={pageOptions.links} active="profile">
-      <ProfileContextProvider>
-        <Profile />
-      </ProfileContextProvider>
-    </Page>
+    <AppErrorFallback>
+      <Page links={pageOptions.links} active="profile">
+        <ProfileContextProvider>
+          <Profile />
+        </ProfileContextProvider>
+      </Page>
+    </AppErrorFallback>
   );
 }
 

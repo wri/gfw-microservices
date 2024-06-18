@@ -8,6 +8,8 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Locations from './js/components/Locations';
 import { NO_MESSAGE } from './js/utils/history.utils';
 
+import AppErrorFallback from '../common/js/components/Errors/AppErrorFallback';
+
 // *** POPOVER ISSUE FIX ***
 // there is a known issue when using material ui v<1 with React Fiber (React v16).
 // the popoverPreReneder file is a workaround that modifies the
@@ -74,35 +76,37 @@ lightBaseTheme.fontFamily = 'Fira Sans, sans-serif';
 
 const App = () => (
   <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
-    <Router
-      basename="/locations"
-      getUserConfirmation={(message, callback) => {
-        if (message !== NO_MESSAGE) {
-          window.alert(message);
-        }
-        callback(false);
-      }}
-    >
-      <Locations
-        templateData={templateData}
-        templateDropdowns={templateDropdowns}
-        userLists={userLists} //Contains all lists that users have created
-        userSharedLists={userSharedLists}
-        locationCount={locationCount}
-        userInfo={userInfo}
-        usersList={usersList} //Contains all users
-        organizationId={organizationId}
-        orgLists={orgLists}
-        gfwLists={gfwLists}
-        mapData={mapData}
-        gfwData={gfwData}
-        goToEditList={goToEditList}
-        drawData={drawData}
-        locationName={locationName}
-        listStatuses={listStatuses}
-        fromMap={fromMap}
-      />
-    </Router>
+    <AppErrorFallback>
+      <Router
+        basename="/locations"
+        getUserConfirmation={(message, callback) => {
+          if (message !== NO_MESSAGE) {
+            window.alert(message);
+          }
+          callback(false);
+        }}
+      >
+        <Locations
+          templateData={templateData}
+          templateDropdowns={templateDropdowns}
+          userLists={userLists} //Contains all lists that users have created
+          userSharedLists={userSharedLists}
+          locationCount={locationCount}
+          userInfo={userInfo}
+          usersList={usersList} //Contains all users
+          organizationId={organizationId}
+          orgLists={orgLists}
+          gfwLists={gfwLists}
+          mapData={mapData}
+          gfwData={gfwData}
+          goToEditList={goToEditList}
+          drawData={drawData}
+          locationName={locationName}
+          listStatuses={listStatuses}
+          fromMap={fromMap}
+        />
+      </Router>
+    </AppErrorFallback>
   </MuiThemeProvider>
 );
 

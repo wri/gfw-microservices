@@ -65,7 +65,7 @@ const createPage = (
             <br><br>  
             <hr />
             <span>
-              <a style="text-decoration:none; color:#808080" href="https://www.wri.org/about/privacy-policy">Privacy Policy</a> | <a style="text-decoration:none; color:#808080" href="https://www.wri.org/about/wri-data-platforms-tos">Terms of Service</a> | <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">License Agreement</a>
+              <a style="text-decoration:none; color:#808080" href="https://www.wri.org/about/privacy-policy">Privacy Policy</a> | <a style="text-decoration:none; color:#808080" href="https://www.wri.org/about/wri-data-platforms-tos">Terms of Service</a> | <a style="text-decoration:none; color:#808080" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">License Agreement</a>
             </span>
           </td>
         </tr>

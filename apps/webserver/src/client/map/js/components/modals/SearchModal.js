@@ -232,8 +232,11 @@ export default class SearchModal extends Component {
       store.dispatch(toggleSearch());
     });
 
-    const searchContainer = document.querySelector('#search-widget .esri-search__container');
+    let searchContainer;
+
     this.searchWidget.on('suggest-start', () => {
+      searchContainer = document.querySelector('#search-widget .esri-search__container');
+
       searchContainer.classList.add('esri-search--loading');
     });
     this.searchWidget.on('suggest-complete', () => {

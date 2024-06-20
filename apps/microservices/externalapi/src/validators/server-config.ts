@@ -9,7 +9,7 @@ export const serverConfigSchema = z.object({
 
   PORT: z.coerce.number().default(3337),
 
-  NODE_ENV: z.enum(['development', 'test', 'staging', 'production', 'qa']),
+  NODE_ENV: z.enum(['development', 'test', 'staging', 'ProdV2', 'qa']),
 
   AWS_ACCESS_KEY_ID: z.string(),
   AWS_SECRET_ACCESS_KEY: z.string(),

@@ -99,7 +99,7 @@ export class ListAnalysisController {
     });
   }
 
-  @ApiResponse({ status: 200})
+  @ApiResponse({ status: 200 })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
   @ApiBadRequestResponse({ type: BadRequestResponse })
   @ApiForbiddenResponse({ type: ForbiddenResponse })
@@ -111,16 +111,20 @@ export class ListAnalysisController {
     @Param('analysisId', new ZodValidationPipe(analysisIdSchema)) analysisId: string,
     @Body('reanalyze', new ZodValidationPipe(reanalyzeAnalysis)) reanalyze: boolean,
     @Req() request: RequestSchema
-  ){
+  ) {
     new ZodValidationPipe(requestSchema).transform(request);
 
     const {
       user: { organizationId },
     } = request;
-    const analysisResult = await this.listAnalysisService.createAnalysis(analysisId,listId,reanalyze, organizationId)
+    const analysisResult = await this.listAnalysisService.createAnalysis(
+      analysisId,
+      listId,
+      reanalyze,
+      organizationId
+    );
     return analysisResult;
   }
-  
 
   @ApiResponse({ status: 200, type: DeleteListMessageResponse })
   @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })

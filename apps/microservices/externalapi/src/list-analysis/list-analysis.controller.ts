@@ -8,6 +8,7 @@ import {
   listIdSchema,
   numPageSchema,
   pageSizeSchema,
+  reanalyzeAnalysis,
 } from './list-analysis.dto';
 import { ListService } from '../lists/lists.service';
 import { ListAnalysisService } from './list-analysis.service';
@@ -108,6 +109,7 @@ export class ListAnalysisController {
   async createAnalysis(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Param('analysisId', new ZodValidationPipe(analysisIdSchema)) analysisId: string,
+    @Body('reanalyze', new ZodValidationPipe(reanalyzeAnalysis)) reanalyze: boolean,
     @Req() request: RequestSchema
   ){
     new ZodValidationPipe(requestSchema).transform(request);
@@ -115,6 +117,8 @@ export class ListAnalysisController {
     const {
       user: { organizationId },
     } = request;
+    const analysisResult = await this.listAnalysisService.createAnalysis(analysisId,listId,reanalyze, organizationId)
+    return analysisResult;
   }
   
 

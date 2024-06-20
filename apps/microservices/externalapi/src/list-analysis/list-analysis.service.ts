@@ -33,6 +33,14 @@ import { ListService } from '../lists/lists.service';
 
 import { ServerConfigType } from '../validators/server-config';
 
+const {
+  GEO_TRELLIS__ANALYZE_LIST_DEV,
+  GEO_TRELLIS__ANALYZE_LIST_QA,
+  GEO_TRELLIS__ANALYZE_LIST_STAGING,
+  GEO_TRELLIS__ANALYZE_LIST_PROD,
+  GEO_TRELLIS__ANALYZE_LIST_PRODV2,
+} = require('./utils/geoTrellis.config');
+
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
 
@@ -428,5 +436,33 @@ export class ListAnalysisService {
         throw new InternalServerErrorException(error);
       }
     }
+  }
+ async createAnalysis(analysisType: string, id: number, reanalyze: boolean, organizationId:number) {
+  // apps/microservices/externalapi/src/list-analysis/list-analysis.service.ts
+
+  const geoTrellisUrlsByEnv = {
+    qa: GEO_TRELLIS__ANALYZE_LIST_QA,
+    staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,
+    production: GEO_TRELLIS__ANALYZE_LIST_PROD,
+    ProdV2: GEO_TRELLIS__ANALYZE_LIST_PRODV2,
+    default: GEO_TRELLIS__ANALYZE_LIST_DEV,
+  };
+
+  const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
+  // Create URL
+
+  //checkProcessingLimits
+
+  //getListAnalysisStatus
+
+  //extractAnalysisTypes
+
+  //isListLocationOverLimit
+
+  //AWSSES.sendEmail__ListSubmittedForAnalysis
+
+
+  // Save logActivity
+    throw new Error('Method not implemented.')
   }
 }

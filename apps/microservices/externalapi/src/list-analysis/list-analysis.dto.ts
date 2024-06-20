@@ -81,3 +81,4 @@ export interface AnalysesGenerateRequest {
   startDate: Date;
   endDate: Date;
 }
+export const reanalyzeAnalysis = z.coerce.boolean();

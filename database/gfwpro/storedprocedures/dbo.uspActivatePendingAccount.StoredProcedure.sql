@@ -1,6 +1,6 @@
 USE [gfwpro]
 GO
-/****** Object:  StoredProcedure [dbo].[uspActivatePendingAccount]    Script Date: 5/9/2024 1:09:23 PM ******/
+/****** Object:  StoredProcedure [dbo].[uspActivatePendingAccount]    Script Date: 6/20/2024 1:57:38 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -46,11 +46,13 @@ AS
 		********************************************************/
 		SET @TEMPLATE = 'CREATE TABLE [{DATABASENAME}].[dbo].[ListsUploadStatus]
 		(
-			[list_id] INT PRIMARY KEY,
-			[last_successful_stage] NVARCHAR(128),
-			[error_info] NVARCHAR(512),
+			[id] INT IDENTITY(1, 1) NOT NULL,
+			[list_id] INT,
+			[last_successful_stage] NVARCHAR(128) DEFAULT ''{}'',
+			[error_info] NVARCHAR(512) DEFAULT ''{}'',
 			[update_time] DATETIME,
-			[worker_instance_id] NVARCHAR(128),
+			[worker_instance_id] NVARCHAR(128) DEFAULT ''{}'',
+			CONSTRAINT [PK_ListsUploadStatus] PRIMARY KEY CLUSTERED(id)
 		 )'
 		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
 		EXEC sp_executesql @SQL
@@ -215,13 +217,24 @@ AS
 			[list_id] INT NOT NULL,
 			[location_id] INT NULL,
 			[gadm_id] NVARCHAR(25) NULL,
-
 			[glad_alerts_coverage] NVARCHAR(MAX) NULL,
 			[glad_alerts_daily] NVARCHAR(MAX) NULL,
 			[glad_alerts_weekly] NVARCHAR(MAX) NULL,
 			[glad_alerts_monthly] NVARCHAR(MAX) NULL,
 			[viirs_alerts_daily] NVARCHAR(MAX) NULL,
-			[tree_cover_extent_total] decimal(18, 6) NULL
+			[tree_cover_extent_total] decimal(18, 6) NULL,
+			[integrated_alerts_coverage] NVARCHAR(MAX) DEFAULT ''{}'',
+			[total_ha] FLOAT NULL,
+			[integrated_alerts_daily_all_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
+			[integrated_alerts_daily_all_high] NVARCHAR(MAX) DEFAULT ''{}'',
+			[integrated_alerts_daily_all_highest] NVARCHAR(MAX) DEFAULT ''{}'',
+			[integrated_alerts_daily_sbtn_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
+			[integrated_alerts_daily_sbtn_high] NVARCHAR(MAX) DEFAULT ''{}'',
+			[integrated_alerts_daily_sbtn_highest] NVARCHAR(MAX) DEFAULT ''{}'',
+			[integrated_alerts_daily_jrc_nominal] NVARCHAR(MAX) DEFAULT ''{}'',
+			[integrated_alerts_daily_jrc_high] NVARCHAR(MAX) DEFAULT ''{}'',
+			[integrated_alerts_daily_jrc_highest] NVARCHAR(MAX) DEFAULT ''{}'',
+			[status_code] INT NULL,
 
 			INDEX [IX_AnalysesDashboard_1] NONCLUSTERED(list_id),
 			INDEX [IX_AnalysesDashboard_2] NONCLUSTERED(location_id),
@@ -325,6 +338,10 @@ AS
 			[tree_cover_loss_by_country_wdpa_yearly] NVARCHAR(MAX),
 			[tree_cover_loss_by_country_landmark_yearly] NVARCHAR(MAX),
 
+			[country_area] NVARCHAR(MAX),
+			[classified_region_area] NVARCHAR(MAX),
+			[tree_cover_loss_by_country_classified_region_yearly] NVARCHAR(MAX),
+
 			INDEX [IX_Analyses_1] NONCLUSTERED(list_id)
 		)'
 		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
@@ -379,7 +396,13 @@ AS
 			[jrc_land_area] [FLOAT] NULL DEFAULT 0,
 			[jrc_land_deforested_area] [FLOAT] NULL DEFAULT 0,
 			[jrc_forest_loss_by_year] [NVARCHAR](MAX) NULL DEFAULT ''{}'',
-			[natural_forest_loss_by_year] [NVARCHAR](MAX) NULL DEFAULT ''{}''
+			[natural_forest_loss_by_year] [NVARCHAR](MAX) NULL DEFAULT ''{}'',
+			[protected_areas_area] [decimal] (18, 6) NULL,
+			[landmark_area] [decimal] (18, 6) NULL,
+
+			INDEX [IX_AFIAnalysis_location_id] NONCLUSTERED ([location_id] ASC),
+			INDEX [IX_AFIAnalysis_gadm_id] NONCLUSTERED ([gadm_id] ASC),
+			INDEX [IX_AFIAnalysis_list_id] NONCLUSTERED ([list_id] ASC)
 		)'
 		SET @SQL = REPLACE(@TEMPLATE, '{DATABASENAME}', @OrgdbName)
 		EXEC sp_executesql @SQL
@@ -2198,6 +2221,10 @@ AS
 							[tree_cover_loss_by_country_yearly] NVARCHAR(MAX),
 							[tree_cover_loss_by_country_wdpa_yearly] NVARCHAR(MAX),
 							[tree_cover_loss_by_country_landmark_yearly] NVARCHAR(MAX),
+
+							[country_area] NVARCHAR(MAX),
+							[classified_region_area] NVARCHAR(MAX),
+							[tree_cover_loss_by_country_classified_region_yearly] NVARCHAR(MAX),
 
 							INDEX [IX_{TABLE_NAME}_1] NONCLUSTERED(location_id),
 							INDEX [IX_{TABLE_NAME}_2] NONCLUSTERED(location_status_id)

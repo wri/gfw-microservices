@@ -19,8 +19,14 @@ const CenterButton = ({ selectedList = [], mapView }) => {
   }, [selectedList]);
 
   async function getMapInfo() {
-    const { bounds } = await getListMbtileInfo(selectedList[0].id);
-    setMapInfo(bounds);
+    try {
+      const response = await getListMbtileInfo(selectedList[0].id);
+      if (response && response.bounds) {
+        setMapInfo(response.bounds);
+      }
+    } catch (error) {
+      setMapInfo([]);
+    }
   }
 
   const centerMap = () => {
@@ -37,7 +43,7 @@ const CenterButton = ({ selectedList = [], mapView }) => {
   return (
     <>
       {showButton && (
-        <Button onClick={centerMap} className="gfw-button btn-green center-button">
+        <Button data-testid="map-center-button" onClick={centerMap} className="gfw-button btn-green center-button">
           <FmdGoodIcon />
           back to location (s)
         </Button>

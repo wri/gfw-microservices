@@ -110,6 +110,7 @@ import {
 
 import viirsLayer, { fetchViirsFeatures } from '../layers/VIIRSLayerUtil';
 import { getProdesUpdatedVectorTileStyle } from '../layers/Prodes_LayerUtil';
+import CenterButton from './modals/CenterButton';
 
 // Configs
 import {
@@ -248,6 +249,7 @@ class Map extends Component {
     );
 
     const mapviewCenter = latitude && longitude ? [longitude, latitude] : DEFAULT_MAPVIEW_CENTER;
+
     const mapView = new MapView({
       container: this.refs.mapView,
       center: mapviewCenter,
@@ -2580,6 +2582,7 @@ class Map extends Component {
           userInfo={userInfo}
           landsatYear={this.state.landsatYear}
         />
+        <CenterButton mapView={this.view} selectedList={selectedLists} />
         <Legend
           panelsVisible={panelsVisible}
           canopyDensity={canopyDensity}

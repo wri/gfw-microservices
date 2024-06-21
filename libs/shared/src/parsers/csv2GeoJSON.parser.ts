@@ -112,18 +112,18 @@ export function csv2geojson(csvContent: string, options: CSVParseOptions): [any,
   // When calling d3Dsv.dsvFormat(options.delimiter).parse, we pass a callback function that will be called for each row in the CSV file.
   // The callback function receives a row as a parameter and should return an object representing the row.
   // The d3Dsv.dsvFormat(options.delimiter).parse function will return an array of objects, where each object represents a row in the CSV file.
-  // d3Dsv.dsvFormat(options.delimiter).parse("foo,bar\n1,2", (d){ ... }) // [{foo: "1", bar: "2"}]
+  // d3Dsv.dsvFormat(options.delimiter).parse("foo,bar\n1,2", (row){ ... }) // [{foo: "1", bar: "2"}]
   const parsed =
     typeof csvContent === 'string'
-      ? d3Dsv.dsvFormat(options.delimiter).parse(csvContent, (d) => {
+      ? d3Dsv.dsvFormat(options.delimiter).parse(csvContent, (row) => {
           if (numericFields) {
-            for (const key in d) {
+            for (const key in row) {
               if (numericFields.includes(key)) {
-                d[key] = Number(d[key]);
+                row[key] = Number(row[key]);
               }
             }
           }
-          return d;
+          return row;
         })
       : csvContent;
 

@@ -3,6 +3,9 @@ This document focus in to the xls2geojson parser, which retrieves a buffer param
 The file can be readed from s3 as follows:
 
 ```javascript
+// AWS V2
+// Don't use AWS V2, it's deprecated this is just for reference
+import * as AWS from 'aws-sdk';
 const s3 = new AWS.S3({
   region: 'us-east-1', // Specify your bucket's region
 });
@@ -13,6 +16,25 @@ const params = {
 };
 
 const file = await s3.getObject(params).promise();
+const buffer = file.Body;
+
+const geojson = xls2geojson(buffer);
+```
+
+```javascript
+// AWS V3
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+const s3 = new S3Client({
+  region: 'us-east-1', // Specify your bucket's region
+});
+
+const params = {
+  Bucket: 'your-bucket-name',
+  Key: 'your-file-name.xlsx',
+};
+
+const obj = new GetObjectCommand(params);
+const response = await s3.send(obj);
 const buffer = file.Body;
 
 const geojson = xls2geojson(buffer);

@@ -50,7 +50,8 @@ describe('csv2geojson', () => {
     done();
   });
 
-  it('should autodetect delimiter when set to auto', (done) => {
+  // test disbabled due to the fact that the function is disabled
+  xit('should autodetect delimiter when set to auto', (done) => {
     const csvData = 'Longitude;Latitude\n-120.0;38.5\n-121.5;39.0';
     const options = { delimiter: 'auto' };
 

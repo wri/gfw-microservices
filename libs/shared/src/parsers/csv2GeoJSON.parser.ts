@@ -54,9 +54,12 @@ function guessLonHeader(row: Row): string | undefined {
   return guessHeader(row, lonRegex);
 }
 
+/*
+removed auto delimiter detection for now, keyCount function is not used for now
+
 function keyCount(o: any): number {
   return typeof o === 'object' ? Object.keys(o).length : 0;
-}
+} 
 
 function autoDelimiter(x: string): string | null {
   const delimiters = [',', ';', '\t', '|'];
@@ -82,6 +85,7 @@ function autoDelimiter(x: string): string | null {
     return null;
   }
 }
+*/
 
 export function csv2geojson(csvContent: string, options: CSVParseOptions): [any, any[]] {
   options.delimiter = options.delimiter || ',';
@@ -92,12 +96,16 @@ export function csv2geojson(csvContent: string, options: CSVParseOptions): [any,
   const features: KeyValuePair[] = [];
   const featurecollection = { type: 'FeatureCollection', features };
 
+  /*
+  Removed auto delimiter detection for now
+
   if (options.delimiter === 'auto' && typeof csvContent === 'string') {
     options.delimiter = autoDelimiter(csvContent);
     if (!options.delimiter) {
       throw new Error('Could not autodetect delimiter');
     }
   }
+  */
 
   const numericFields = options.numericFields ? options.numericFields.split(',') : null;
 
@@ -126,6 +134,11 @@ export function csv2geojson(csvContent: string, options: CSVParseOptions): [any,
   const errors: ParseError[] = [];
   let i: number;
 
+  // This tries to guess the latitude and longitude fields if they are not provided in the options.
+  // It does this by looking for fields with names that match the regular expressions latRegex and lonRegex.
+  // When the latfield or lonfield variables are not set, the guessLatHeader and guessLonHeader functions are called to try to guess the latitude and longitude fields.
+  // When a field is found that matches one of these regular expressions, it is stored in the latfield or lonfield variables.
+  // When the latitude or longitude fields are set, the value is used to get the latitude or longitude value from the row.
   if (!latfield) latfield = guessLatHeader(parsed[0])!;
   if (!lonfield) lonfield = guessLonHeader(parsed[0])!;
   const noGeometry = !latfield || !lonfield;

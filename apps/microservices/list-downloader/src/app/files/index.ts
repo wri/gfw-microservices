@@ -27,3 +27,4 @@ export * from './south.america.biomes.service';
 export * from './south.america.loss.service';
 export * from './south.east.asia.overlap.service';
 export * from './south.east.asia.tcl.service';
+export * from './readme.service';

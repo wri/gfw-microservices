@@ -27,7 +27,9 @@ const getAllFilesAndZip = async (filter: BasicFieldsFileRequest) => {
     });
 
     fs.readdir(`/tmp/wri-${key}`, async (err, filenames) => {
-      const files = filenames.filter((name) => name.includes(`${listName}`));
+      const files = filenames.filter(
+        (name) => name.includes(`${listName}`) || name.includes('README')
+      );
 
       new Promise((resolve, reject) => {
         const array = [];

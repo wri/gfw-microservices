@@ -21,6 +21,7 @@ import { AFIModule } from './afi';
 import { AlertsModule } from './alerts';
 import { ListUploadModule } from './list-upload';
 import { ListController } from './v1/list.controller';
+import { AwsModule } from '@wri-monorepos/aws';
 
 config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -41,6 +42,7 @@ config.update({
     SchedulerModule,
     AlertsModule,
     ListUploadModule,
+    AwsModule,
   ],
   controllers: [AppController, ListController],
   providers: [

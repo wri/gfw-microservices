@@ -43,7 +43,11 @@ const CenterButton = ({ selectedList = [], mapView }) => {
   return (
     <>
       {showButton && (
-        <Button data-testid="map-center-button" onClick={centerMap} className="gfw-button btn-green center-button">
+        <Button
+          data-testid="map-center-button"
+          onClick={centerMap}
+          className="gfw-button btn-green center-button"
+        >
           <FmdGoodIcon />
           back to location (s)
         </Button>

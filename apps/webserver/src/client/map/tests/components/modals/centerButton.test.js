@@ -35,7 +35,10 @@ describe('CenterButton', () => {
   });
 
   test('should call getListMbtileInfo and set mapInfo when button is clicked', async () => {
-    const bounds = [[1, 2], [3, 4]];
+    const bounds = [
+      [1, 2],
+      [3, 4],
+    ];
     getListMbtileInfo.mockResolvedValueOnce({ bounds });
 
     render(<CenterButton selectedList={[{ id: 1 }]} mapView={mapViewMock} />);

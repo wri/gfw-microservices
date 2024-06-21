@@ -15,7 +15,6 @@
   13 Cocoa Generic
   14 Other
 */
-
 export const SELECTED_TIMEFRAME_DAY = 'DAY';
 export const SELECTED_TIMEFRAME_WEEK = 'WEEK';
 export const SELECTED_TIMEFRAME_MONTH = 'MONTH';
@@ -1630,67 +1629,136 @@ export const DATA_LAYER = {
 };
 
 export const DEFORESTATION_KPIS_HEADER_AGGREGATE = {
-  listName: 'List Name',
-  country: 'Country',
-  state: 'State',
-  subState: 'Sub State',
-  coverageHA: 'Natural Forest Coverage (HA) (Beta)',
-  naturalForestLossHA: 'Natural Forest Loss (ha) (Beta)',
-  negligibleRisk: 'Negligible Risk',
+  listName: { name: 'List Name', description: 'Name of List' },
+  country: { name: 'Country', description: 'Country where List area overlaps' },
+  state: { name: 'State', description: 'States where List area overlaps' },
+  subState: { name: 'Sub State', description: 'Sub-state where List area overlaps' },
+  coverageHA: {
+    name: 'Natural Forest Coverage (HA) (Beta)',
+    description:
+      'HA of natural forest as defined by the Science Based Targets Initiative map in the sub-state',
+  },
+  naturalForestLossHA: {
+    name: 'Natural Forest Loss (ha) (Beta)',
+    description:
+      'HA of cumulative natural forest loss from 2021-2023 in the sub-state, as defined by the Science Based Targets Initiative map',
+  },
+  negligibleRisk: {
+    name: 'Negligible Risk',
+    description: 'Binary yes/no value based on whether sub-state is considered negligible risk',
+  },
 };
 
 export const DEFORESTATION_KPIS_HEADER = {
-  listName: 'List Name',
-  locationName: 'Location Name',
-  country: 'Country',
-  state: 'State',
-  subState: 'Sub State',
-  coverageHA: 'Natural Forest Coverage (HA) (Beta)',
-  naturalForestLossHA: 'Natural Forest Loss (ha) (Beta)',
-  negligibleRisk: 'Negligible Risk (%)',
+  listName: { name: 'List Name', description: 'Name of List' },
+  locationName: { name: 'Location Name', description: 'Name of Location' },
+  country: { name: 'Country', description: "Country the Location's Center Point is in" },
+  state: { name: 'State', description: "State the Location's Center Point is in" },
+  subState: { name: 'Sub State', description: "Sub State the Location's Center Point is in" },
+  coverageHA: {
+    name: 'Natural Forest Coverage (HA) (Beta)',
+    description:
+      'HA of natural forest as defined by the Science Based Targets Initiative map in the location',
+  },
+  naturalForestLossHA: {
+    name: 'Natural Forest Loss (ha) (Beta)',
+    description:
+      'HA of cumulative natural forest loss from 2021-2023 as defined by the Science Based Targets Initiative map',
+  },
+  negligibleRisk: {
+    name: 'Negligible Risk (%)',
+    description: '% overlap of location with sub-states considered negligible risk',
+  },
 };
 
 export const NATURAL_FOREST_LOST_KPIS_HEADER_AGGREGATE = {
-  listName: 'List Name',
-  country: 'Country',
-  state: 'State',
-  subState: 'Sub State',
-  coverageHA: 'Natural Forest Coverage (HA)',
-  naturalForestLossCumulative: 'Natural Forest Loss cumulative (HA)',
-  naturalForestLossAnnual: 'Natural Forest Loss annual (HA)',
-  year: 'Year',
-  layer: 'Natural Forest Data Layer',
-};
+  listName: { name: 'List Name', description: 'Name of List' },
+  country: { name: 'Country', description: 'Country where List area overlaps' },
+  state: { name: 'State', description: 'State where List area overlaps' },
+  subState: { name: 'Sub State', description: 'Sub-state where List area overlaps' },
+  coverageHA: {
+    name: 'Natural Forest Coverage (HA)',
+    description:
+      'HA of natural forest as defined by the forest data layer across the total area of the list',
+  },
+  naturalForestLossCumulative: {
+    name: 'Natural Forest Loss cumulative (HA)',
+    description:
+      'HA of natural forest loss as defined by the forest data layer across all year of analysis (2021-203) across the total area of the list',
+  },
+  naturalForestLossAnnual: {
+    name: 'Natural Forest Loss annual (HA)',
+    description:
+      'HA of annual natural forest loss as defined by the forest data layer across the total area of the list',
+  },
+  year: { name: 'Year', description: 'Year of data' },
+  layer: {
+    name: 'Natural Forest Data Layer',
+    description: 'Forest data layer being used to define natural forest metrics',
+  },
+} as const;
 
 export const NATURAL_FOREST_LOST_KPIS_HEADER = {
-  listName: 'List Name',
-  locationName: 'Location Name',
-  country: 'Country',
-  state: 'State',
-  subState: 'Sub State',
-  coverageHA: 'Natural Forest Coverage (HA)',
-  naturalForestLossCumulative: 'Natural Forest Loss cumulative (HA)',
-  naturalForestLossAnnual: 'Natural Forest Loss annual (HA)',
-  year: 'Year',
-  layer: 'Natural Forest Data Layer',
-};
+  listName: { name: 'List Name', description: 'Name of List' },
+  locationName: { name: 'Location Name', describtion: 'Name of Location' },
+  country: { name: 'Country', desciption: "Country the Location's Center Point is in" },
+  state: { name: 'State', description: "State the Location's Center Point is in" },
+  subState: { name: 'Sub State', description: "Sub State the Location's Center Point is in" },
+  coverageHA: {
+    name: 'Natural Forest Coverage (HA)',
+    description: 'HA of natural forest as defined by the forest data layer in location',
+  },
+  naturalForestLossCumulative: {
+    name: 'Natural Forest Loss cumulative (HA)',
+    description:
+      'HA of natural forest loss as defined by the forest data layer  across all year of analysis (2021-203) in location',
+  },
+  naturalForestLossAnnual: {
+    name: 'Natural Forest Loss annual (HA)',
+    description: 'HA of annual natural forest loss as defined by the forest data layer in location',
+  },
+  year: { name: 'Year', description: 'Year of data' },
+  layer: {
+    name: 'Natural Forest Data Layer',
+    description: 'Forest data layer being used to define natural forest metrics',
+  },
+} as const;
 
 export const OTHER_KPIS_HEADER_AGGREGATE = {
-  listName: 'List Name',
-  country: 'Country',
-  state: 'State',
-  subState: 'Sub State',
-  negligibleRisk: 'Negligible Risk',
-};
+  listName: {
+    name: 'List Name',
+    description: 'Name of the list',
+  },
+  country: {
+    name: 'Country',
+    description: 'Country where List area overlaps',
+  },
+  state: {
+    name: 'State',
+    description: 'State where List area overlaps',
+  },
+  subState: {
+    name: 'Sub State',
+    description: 'Sub State where List area overlaps',
+  },
+  negligibleRisk: {
+    name: 'Negligible Risk',
+    description:
+      'Negligible Risk;Binary yes/no value based on whether sub-state is considered negligible risk',
+  },
+} as const;
 
 export const OTHER_KPIS_HEADER = {
-  listName: 'List Name',
-  locationName: 'Location Name',
-  country: 'Country',
-  state: 'State',
-  subState: 'Sub State',
-  negligibleRisk: 'Negligible Risk (%)',
-};
+  listName: { name: 'List Name', description: 'Name of List' },
+  locationName: { name: 'Location Name', description: 'Name of Location' },
+  country: { name: 'Country', description: "Country the Location's Center Point is in" },
+  state: { name: 'State', description: "State the Location's Center Point is in" },
+  subState: { name: 'Sub State', description: "Sub State the Location's Center Point is in" },
+  negligibleRisk: {
+    name: 'Negligible Risk (%)',
+    description: '% overlap of location with sub-states considered negligible risk',
+  },
+} as const;
 
 export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
   'Username',

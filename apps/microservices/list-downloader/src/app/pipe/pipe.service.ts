@@ -9,6 +9,7 @@ import { AccountUsersAnalysisUsageFileService } from './account-users-usage.gene
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ReadmeService } from '../files';
 
 @Injectable()
 export class PipeService {
@@ -22,7 +23,8 @@ export class PipeService {
     private readonly listGeneratorService: ListGeneratorService,
     private readonly accountUsersUsageGeneratorService: AccountUsersAnalysisUsageFileService,
     private readonly alertsGeneratorService: AlertsGeneratorService,
-    private readonly clientStoreConnection: ClientStoreConnection
+    private readonly clientStoreConnection: ClientStoreConnection,
+    private readonly readmeService: ReadmeService
   ) {}
 
   public async makeFile(filters: BasicFieldsFileRequest) {
@@ -41,13 +43,13 @@ export class PipeService {
       };
 
       this.createDirectory(filters);
+      await this.readmeService.write(filters);
     }
 
     pipeHandler.makeFile(filters);
   }
 
   private async getListName(filters: BasicFieldsFileRequest) {
-    console.log(filters);
     const { organizationDatabase, listId, isGFWList } = filters;
     if (!isGFWList) {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);

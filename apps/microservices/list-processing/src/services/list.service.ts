@@ -23,6 +23,7 @@ import { RequestSaveLargeListProcessModel, CreateListInsertResultModel } from '.
 import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from './constants';
 import * as moment from 'moment';
 import { mockAnalysisFlow } from '../mock';
+import { MetadataService as AWSMetadataService } from '@wri-monorepos/aws';
 
 interface CreateListResult {
   list_id: number;
@@ -40,7 +41,8 @@ export class ListService {
   private readonly config: ConfigService;
   constructor(
     private dataSource: DataSource,
-    private readonly clientStoreConnection: ClientStoreConnection
+    private readonly clientStoreConnection: ClientStoreConnection,
+    private readonly awsMetadataService: AWSMetadataService
   ) {}
 
   async createNewList(createListRequest: CreateListRequest) {
@@ -461,6 +463,7 @@ export class ListService {
   ): Promise<void> {
     const connection = await this.clientStoreConnection.getConnection(clientStore);
     const repository = connection.getRepository(ListsUploadStatus);
+    const { taskARN } = await this.awsMetadataService.getMetadata();
 
     try {
       const existingRecord = await repository.findOne({ where: { listId } });
@@ -470,6 +473,7 @@ export class ListService {
         existingRecord.lastSuccessfulStage =
           lastSuccessfulStage ?? existingRecord.lastSuccessfulStage;
         existingRecord.updateTime = new Date();
+        existingRecord.workerInstanceId = taskARN;
         await repository.save(existingRecord);
       } else {
         const newRecord = new ListsUploadStatus();
@@ -477,6 +481,7 @@ export class ListService {
         newRecord.errorInfo = errorInfo;
         newRecord.lastSuccessfulStage = lastSuccessfulStage ?? newRecord.lastSuccessfulStage;
         newRecord.updateTime = new Date();
+        newRecord.workerInstanceId = taskARN;
         await repository.save(newRecord);
       }
     } catch (error) {

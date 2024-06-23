@@ -34,7 +34,9 @@ export class NaturalForestLossService extends IPipeService {
     this.organizeStream(filters, Object.keys(header), fileSuffix);
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}_${fileSuffix}.csv`,
-      `${Object.values(header).join(',')}\n`
+      `${Object.values(header)
+        .map((item) => item.name)
+        .join(',')}\n`
     );
   }
 

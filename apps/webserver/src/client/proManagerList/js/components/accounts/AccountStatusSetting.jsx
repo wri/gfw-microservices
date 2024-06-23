@@ -108,7 +108,7 @@ export default function AccountStatusSetting() {
           if (data.redirect) {
             dialog.setDialogTitle('Account Deleted');
             dialog.setDialogMessage('Redirecting...');
-            window.location = res.redirect;
+            window.location = data.redirect;
           }
           if (data.hasOwnProperty('errorCode')) {
             dialog.setDialogTitle('Error deleting account');

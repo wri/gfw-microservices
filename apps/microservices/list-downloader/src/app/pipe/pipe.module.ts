@@ -46,6 +46,7 @@ import {
   ArgentinaDeforestationService,
   NaturalForestLossService,
   OtherKpisService,
+  ReadmeService,
 } from '../files';
 
 @Module({
@@ -88,6 +89,7 @@ import {
     SouthAmericaLossService,
     SouthEastAsiaOverlapService,
     SouthEastAsiaTCLService,
+    ReadmeService,
   ],
   exports: [PipeService],
 })

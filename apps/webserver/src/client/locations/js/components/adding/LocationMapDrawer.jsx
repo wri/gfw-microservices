@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Graphic from '@arcgis/core/Graphic';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
+import * as projection from '@arcgis/core/geometry/projection';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
+import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import { locationsPage } from '../../../../common/js/config';
 import DrawIcon from '@mui/icons-material/Draw';
@@ -15,8 +17,13 @@ const DrawShapeMode = {
   Complete: 'complete',
 };
 
-const LocationMapDrawer = (props) => {
-  const { geomFromMap, mapView, sketchViewModel, setSketchViewModel } = props;
+const LocationMapDrawer = ({
+  geomFromMap,
+  mapView,
+  sketchViewModel,
+  setSketchViewModel,
+  updateGeometry,
+}) => {
   const [mode, setMode] = useState(DrawShapeMode.Inactive);
 
   useEffect(() => {
@@ -77,7 +84,15 @@ const LocationMapDrawer = (props) => {
     mapView.graphics.removeAll();
 
     sketchViewModel.delete();
-    const polygon = geometryEngine.simplify(new Polygon(geom));
+
+    let polygon = new Polygon(geom);
+
+    // Check if the geometry is not in wkid 4326, and if not, project it
+    if (!polygon.spatialReference.isWGS84) {
+      polygon = projection.project(polygon, SpatialReference.WGS84);
+    }
+    polygon = geometryEngine.simplify(polygon);
+
     const fillSymbol = new SimpleFillSymbol({
       color: [151, 189, 61, 0.65],
       outline: {
@@ -104,7 +119,7 @@ const LocationMapDrawer = (props) => {
 
     setMode(DrawShapeMode.Complete);
 
-    props.setGeometry(polygon);
+    updateGeometry(polygon);
     gtag('event', 'add location map draw', {
       event_category: 'Locations Draw',
       event_label: 'user drew a polygon on the Add Location map',

@@ -1,84 +1,126 @@
 import React, { useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
-import SimpleFillSymbol from '@arcgis/core/symbols/SimpleFillSymbol';
-import Graphic from '@arcgis/core/Graphic';
 import Modal from '@mui/material/Modal';
-import { v4 as uuidv4 } from 'uuid';
 import Button from '@mui/material/Button';
 import GfwButton from '../../../../../common/js/components/GfwButton';
 import CoordinateInputsContainer from './CoordinateInputsContainer';
 import SetArea from '../SetArea';
-import { getPointGeometry, getPolygonGeometry } from './geometries';
-import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
-import './PolygonCoordinatesInput.scss';
 import LocationMapDrawer from '../LocationMapDrawer';
-
-const newCoordinate = () => ({ id: uuidv4(), latitude: '', longitude: '', errors: {} });
+import { NEW_LOCATION_AREA_OPTIONS } from '../areaOptions.constants';
+import {
+  newCoordinate,
+  isValidLatitude,
+  isValidLongitude,
+  createGeometryAndGraphic,
+  extractCoordinates,
+} from './polygonCoordinates.utils';
+import './PolygonCoordinatesInput.scss';
 
 const PolygonCoordinatesInput = ({
-  sketchViewModel,
   mapView,
+  sketchViewModel,
   setGeometry,
   setSketchViewModel,
   measurementUnit,
   setMeasurementUnit,
-  geometry,
+  geomFromMap, // geometry comming from "add location" option in the map
 }) => {
   const [selectedAreaRadioOption, setSelectedAreaRadioOption] = useState(
     NEW_LOCATION_AREA_OPTIONS.SMALL.id
   );
   const [coordinates, setCoordinates] = useState([newCoordinate()]);
+  // coordinates backup to use when the user opens the modal, modifies the data and then cancels
+  const [previousCoordinates, setPreviousCoordinates] = useState([]);
+
   const [customArea, setCustomArea] = useState();
   const [isPolygon, setIsPolygon] = useState(false);
+  const [previousIsPolygon, setPreviousIsPolygon] = useState(false);
+
   const [open, setOpen] = useState(false);
 
-  // Validation functions
-  const isValidLatitude = (value) => value !== null && value >= -90 && value <= 90;
-  const isValidLongitude = (value) => value !== null && value >= -180 && value <= 180;
+  const addGraphicToMap = (geometryToAdd, graphic) => {
+    mapView.graphics.removeAll();
+    sketchViewModel?.delete();
 
-  useEffect(() => {
-    // initialize with the coordinates of the geometry that is being edited
-    const numberOfVertices = geometry?.rings?.[0]?.length;
+    mapView.graphics.add(graphic);
 
-    // if there are more than 10 vertices,
-    // we assume it is a circle created by entering a point and a radius,
-    // so we don't want to edit the coordinates
-    if (numberOfVertices > 1 && numberOfVertices < 11) {
-      const rings = geometry.rings[0];
-      const vertices = rings.slice(0, -1); // we remove the last vertex because it is the same as the first one
-      const initialCoordinates = vertices.map(([longitude, latitude]) => ({
-        id: uuidv4(),
-        latitude: latitude.toFixed(6),
-        longitude: longitude.toFixed(6),
-        errors: {},
-      }));
+    setTimeout(() => {
+      mapView.goTo(
+        {
+          target: graphic,
+        },
+        { duration: 1000 }
+      );
+    }, 500);
+    setGeometry(geometryToAdd);
+    setOpen(false);
+  };
+
+  const updateGeometry = (geometry) => {
+    const initialCoordinates = extractCoordinates(geometry);
+    if (initialCoordinates.length > 0) {
+      setIsPolygon(true);
       setCoordinates(initialCoordinates);
+      setGeometry(geometry);
     }
-  }, [geometry]);
+  };
 
   useEffect(() => {
-    if (isPolygon) {
+    if (geomFromMap) {
+      const initialCoordinates = extractCoordinates(geomFromMap);
+      if (initialCoordinates.length > 0) {
+        setIsPolygon(true);
+        setCoordinates(initialCoordinates);
+
+        const { geometry, graphic } = createGeometryAndGraphic({
+          coordinates: initialCoordinates,
+          isPolygon: true,
+        });
+
+        addGraphicToMap(geometry, graphic);
+      }
+    }
+  }, [geomFromMap]);
+
+  const switchInputType = (isPolygonTabSelected) => {
+    setIsPolygon(isPolygonTabSelected);
+
+    if (isPolygonTabSelected) {
       // Set the coordinates to have three rows
       setCoordinates([newCoordinate(), newCoordinate(), newCoordinate()]);
     } else {
       // Set the coordinates to have one row
       setCoordinates([newCoordinate()]);
     }
-  }, [isPolygon]);
+  };
 
   const onCoordinatesChange = (event, id, field) => {
-    const value = parseFloat(event.target.value);
-    const error = field === 'latitude' ? !isValidLatitude(value) : !isValidLongitude(value);
+    const stringValue = event.target.value;
+    const floatValue = parseFloat(stringValue);
+    const error =
+      field === 'latitude' ? !isValidLatitude(floatValue) : !isValidLongitude(floatValue);
 
     const updatedCoordinates = coordinates.map((coord) => {
       if (coord.id === id) {
-        return { ...coord, [field]: value, errors: { ...coord.errors, [field]: error } };
+        return { ...coord, [field]: stringValue, errors: { ...coord.errors, [field]: error } };
       }
       return coord;
     });
 
     setCoordinates(updatedCoordinates);
+  };
+
+  const handleOpen = () => {
+    setPreviousCoordinates(coordinates);
+    setPreviousIsPolygon(isPolygon);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setCoordinates(previousCoordinates);
+    setIsPolygon(previousIsPolygon);
+    setOpen(false);
   };
 
   const onAddCoordinate = () => {
@@ -106,49 +148,14 @@ const PolygonCoordinatesInput = ({
   };
 
   const handleSubmit = () => {
-    mapView.graphics.removeAll();
-    sketchViewModel.delete();
-
-    let geometry;
-    if (!isPolygon) {
-      geometry = getPointGeometry(
-        coordinates,
-        selectedAreaRadioOption,
-        measurementUnit,
-        customArea
-      );
-    } else {
-      let polygonCoordinates = [...coordinates]; // Copy the coordinates array
-      const firstPoint = polygonCoordinates[0]; // copy the first point as the last point to close the polygon
-      polygonCoordinates.push(firstPoint);
-      geometry = getPolygonGeometry(polygonCoordinates);
-    }
-
-    const symbol = new SimpleFillSymbol({
-      color: [151, 189, 61, 0.65],
-      outline: {
-        color: [151, 189, 61, 1],
-        width: 1,
-      },
+    const { geometry, graphic } = createGeometryAndGraphic({
+      coordinates,
+      isPolygon,
+      selectedAreaRadioOption,
+      measurementUnit,
+      customArea,
     });
-
-    const graphic = new Graphic({
-      geometry,
-      symbol,
-    });
-
-    mapView.graphics.add(graphic);
-
-    setTimeout(() => {
-      mapView.goTo(
-        {
-          target: graphic,
-        },
-        { duration: 1000 }
-      );
-    }, 500);
-    setGeometry(geometry);
-    setOpen(false);
+    addGraphicToMap(geometry, graphic);
   };
 
   // disable if custom area was selected and there is not custom area value
@@ -171,7 +178,7 @@ const PolygonCoordinatesInput = ({
       <div className="draw-shape__button-group">
         <button
           className="draw-shape__draw-button"
-          onClick={() => setOpen(true)}
+          onClick={handleOpen}
           data-testid="polygon-coordinates-button"
         >
           <AddLocationIcon />
@@ -182,26 +189,32 @@ const PolygonCoordinatesInput = ({
           mapView={mapView}
           sketchViewModel={sketchViewModel}
           setSketchViewModel={setSketchViewModel}
-          setGeometry={setGeometry}
+          updateGeometry={updateGeometry}
         />
       </div>
 
       <div className="draw-shape__button-group" style={{ right: '1rem', left: 'auto' }}>
-        <GfwButton onClick={() => setOpen(true)} value="EDIT COORDINATES" />
+        <GfwButton onClick={handleOpen} value="EDIT COORDINATES" />
       </div>
 
       <Modal
         open={open}
-        style={{ overflow: 'auto', zIndex: 9999 }}
-        onClose={() => setOpen(false)}
+        onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         data-testid="polygon-coordinates-modal"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'auto',
+          zIndex: 9999,
+        }}
       >
         <Card className="polygon-coordinates">
           <CoordinateInputsContainer
             isPolygon={isPolygon}
-            setIsPolygon={setIsPolygon}
+            switchInputType={switchInputType}
             coordinates={coordinates}
             onCoordinatesChange={onCoordinatesChange}
             onDeleteCoordinate={onDeleteCoordinate}
@@ -218,7 +231,7 @@ const PolygonCoordinatesInput = ({
             />
           )}
           <div className="polygon-coordinates__actions">
-            <Button variant="text" style={{ color: 'gray' }} onClick={() => setOpen(false)}>
+            <Button variant="text" style={{ color: 'gray' }} onClick={handleClose}>
               Cancel
             </Button>
             <GfwButton

@@ -11,7 +11,7 @@ import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { generateRandomFilename } from '@wri-monorepos/shared';
+import { checkProcessingLimits, generateRandomFilename } from '@wri-monorepos/shared';
 import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from './organization.service';
 import { ListsAnalysisStatus } from './list-analysis-status.entity';
@@ -30,7 +30,8 @@ import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
-
+import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import { ActivityLog, updateListsAnalysisStatus } from '@wri-monorepos/sql';
 import { ServerConfigType } from '../validators/server-config';
 
 import {
@@ -60,7 +61,6 @@ export class ListAnalysisService {
     largeProcessingListBucket: string;
   };
   private readonly logger = new Logger(ListAnalysisResponse.name);
-
   constructor(
     private configService: ConfigService<ServerConfigType, true>,
     private userService: UserService,
@@ -438,10 +438,12 @@ export class ListAnalysisService {
     }
   }
   async createAnalysis(
-    analysisType: string,
-    id: number,
+    analysisTypesToProcess: string,
+    listId: number,
     reanalyze: boolean,
-    organizationId: number
+    organizationId: number,
+    userEmail: string,
+    organization_user_id: number
   ) {
     // apps/microservices/externalapi/src/list-analysis/list-analysis.service.ts
 
@@ -453,20 +455,103 @@ export class ListAnalysisService {
       default: GEO_TRELLIS__ANALYZE_LIST_DEV,
     };
 
-    const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
+    const organizationDetails = await this.getOrganizationDetails(organizationId);
+
     // Create URL
+    const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
 
     //checkProcessingLimits
+    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+      organizationDb: organizationDetails.organizationDb,
+      organizationId,
+      subscriptionStatusId: organizationDetails.subscriptionStatusId,
+      listId: listId,
+    });
 
     //getListAnalysisStatus
+    const listAnalysisStatusData = await getListAnalysisStatus(
+      organizationDetails.organizationDb,
+      listId
+    );
 
     //extractAnalysisTypes
-
+    const analysiTypes = extractAnalysisTypes(
+      analysisTypesToProcess
+        ? listAnalysisStatusData.filter(({ analysisId }) =>
+            analysisTypesToProcess.includes(analysisId)
+          )
+        : listAnalysisStatusData
+    );
     //isListLocationOverLimit
+    if (isListLocationOverLimit) {
+      await updateListsAnalysisStatus(organizationDetails.organizationDb, {
+        listId: listId,
+        errorInfo: 'Exceeded Analysis Limit',
+        status: listStatus.Inactive,
+      });
+      throw new Error(`Analysis limit reached`);
+    }
+    const data = {
+      list_id: listId,
+      user_id: organization_user_id,
+      organization_id: organizationId,
+      reanalyze,
+      processing_limit: processingLimit,
+      analysis_types: analysiTypes,
+    };
+    const connection = await this.getOrganizationConnection(organizationId);
+    const activityLogRepository = connection.getRepository(ActivityLog);
+    const activityLog = new ActivityLog();
+    return await axios({
+      method: 'post',
+      url: url,
+      data: data,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(async (result) => {
+        activityLog.userId = organization_user_id;
+        activityLog.activityTypeId = 22;
+        activityLog.activityDescription = `ListAnalyzing ${listId} has been sent to analysis`;
+        activityLog.activityTime = new Date();
+        await activityLogRepository.save(activityLog);
 
-    //AWSSES.sendEmail__ListSubmittedForAnalysis
+        //  In order for that to work, the new analyze route should clear out stale s3_url, creation, and expiration fields in ListsAnalysisStatus table.
 
-    // Save logActivity
-    throw new Error('Method not implemented.');
+        // const enabledAnalyses = analysisTypesOptions.filter(
+        //   (analysis) => analysiTypes[analysis.id]
+        // );
+        // const content = {
+        //   listId,
+        //   analysis_types: enabledAnalyses.map((analysis) => analysis.label).join(', '),
+        // };
+        // const subject = `${enabledAnalyses
+        //   .map((analysis) => analysis.shortLabel)
+        //   .join(', ')} calculations are processing for the GFW Pro list ${listId}`;
+        // this.emailService.sendEmail(
+        //   process.env.SES_SENDER_EMAIL,
+        //   [userEmail],
+        //   content.analysis_types,
+        //   subject,
+        //   {
+        //     sourceEmail: process.env.SES_SENDER_EMAIL,
+        //     sourceOrganization: organizationDetails.organizationName,
+        //     targetEmail: userEmail,
+        //     targetOrganization: organizationId,
+        //     body: `${content.analysis_types} calculations are processing for <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.listId}</span>. Analysis may take up to 24 hours. You will be notified by email when it's complete.`,
+        //   }
+        // );
+
+        return result;
+      })
+      .catch((error) => {
+        activityLog.userId = organization_user_id;
+        activityLog.activityTypeId = 22;
+        activityLog.activityDescription = `Error sending ${listId} to analysis: ${error}`;
+        activityLog.activityTime = new Date();
+        activityLogRepository.save(activityLog);
+        return error.toJSON();
+      });
   }
 }

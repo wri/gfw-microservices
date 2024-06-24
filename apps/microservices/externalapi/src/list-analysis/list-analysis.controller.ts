@@ -3,12 +3,13 @@ import {
   AlertsGenerateRequest,
   DeleteListRequest,
   ListAnalysisResponse,
+  ReanalyzeAnalysisRequest,
   alertsGenerateBodySchema,
   deleteListBodySchema,
   listIdSchema,
   numPageSchema,
   pageSizeSchema,
-  reanalyzeAnalysis,
+  reanalyzeAnalysisBodySchema,
 } from './list-analysis.dto';
 import { ListService } from '../lists/lists.service';
 import { ListAnalysisService } from './list-analysis.service';
@@ -109,19 +110,22 @@ export class ListAnalysisController {
   async createAnalysis(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Param('analysisId', new ZodValidationPipe(analysisIdSchema)) analysisId: string,
-    @Body('reanalyze', new ZodValidationPipe(reanalyzeAnalysis)) reanalyze: boolean,
+    @Body('reanalyze', new ZodValidationPipe(reanalyzeAnalysisBodySchema))
+    reanalyzeBody: ReanalyzeAnalysisRequest,
     @Req() request: RequestSchema
   ) {
     new ZodValidationPipe(requestSchema).transform(request);
-
+    const { reanalyze, userEmail } = reanalyzeBody;
     const {
-      user: { organizationId },
+      user: { organizationId, organization_user_id },
     } = request;
     const analysisResult = await this.listAnalysisService.createAnalysis(
       analysisId,
       listId,
       reanalyze,
-      organizationId
+      organizationId,
+      userEmail,
+      organization_user_id
     );
     return analysisResult;
   }

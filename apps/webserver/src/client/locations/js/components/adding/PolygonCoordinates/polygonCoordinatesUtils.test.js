@@ -97,10 +97,11 @@ describe('PolygonCoordinatesInput utilities', () => {
       };
 
       const expectedCoordinates = [
-        { id: 'mock-uuid', latitude: '0.000000', longitude: '100.000000', errors: {} },
-        { id: 'mock-uuid', latitude: '0.000000', longitude: '101.000000', errors: {} },
-        { id: 'mock-uuid', latitude: '1.000000', longitude: '101.000000', errors: {} },
-        { id: 'mock-uuid', latitude: '1.000000', longitude: '100.000000', errors: {} },
+        { id: 'mock-uuid', latitude: 0, longitude: 100, errors: {} },
+        { id: 'mock-uuid', latitude: 0, longitude: 101, errors: {} },
+        { id: 'mock-uuid', latitude: 1, longitude: 101, errors: {} },
+        { id: 'mock-uuid', latitude: 1, longitude: 100, errors: {} },
+        { id: 'mock-uuid', latitude: 0, longitude: 100, errors: {} },
       ];
 
       const result = extractCoordinates(geometry);

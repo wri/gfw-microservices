@@ -43,12 +43,10 @@ Then('I am able to download tree cover loss', () => {
 Then('I am able to download tree cover loss on argentina otbn', () => {
   if (!cy.get('[data-cy="download-dialog"]').should('be.visible')) {
     cy.get('.MuiTabs-root').find('button').last().click();
-    cy.wait(5000);
     cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(4).click();
   } else {
     cy.get('[data-cy="download-dialog"]').find('button').first().click();
     cy.get('.MuiTabs-root').find('button').last().click();
-    cy.wait(5000);
     cy.get('.diagnostics-chart-header')
       .get('[data-testid="DownloadForOfflineIcon"]')
       .last()

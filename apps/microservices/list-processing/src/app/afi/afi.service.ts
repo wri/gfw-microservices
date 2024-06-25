@@ -14,22 +14,6 @@ import * as sql from 'mssql';
 export class AfiService {
   private readonly logger = new Logger(AfiService.name);
 
-  sqlConfig = {
-    user: process.env.MSSQL_USERNAME,
-    password: process.env.MSSQL_PASSWORD,
-    database: '',
-    server: process.env.MSSQL_HOSTNAME,
-    pool: {
-      max: 10,
-      min: 0,
-      idleTimeoutMillis: 30000,
-    },
-    port: parseInt(process.env.MSSQL_PORT),
-    options: {
-      trustServerCertificate: true,
-    },
-  };
-
   async getNumberOfPagesAfiAnalysis(listID: string, queryParam): Promise<CountAfiAnalysisByListId> {
     const { isListLevel, clientDatabase } = queryParam;
 

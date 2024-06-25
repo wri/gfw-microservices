@@ -36,7 +36,7 @@ describe('Lock List Service', () => {
     process.env.MSSQL_HOSTNAME = 'localhost';
 
     const clientStoreConnection = new ClientStoreConnection();
-    const database = process.env.MSSQL_DATABASE || 'gfwpro';
+    const database = process.env.MSSQL_DATABASE;
     const connection = await clientStoreConnection.getConnection(database, [Lists]);
     lockListService = new LockListService(clientStoreConnection);
     listsRepository = connection.getRepository(Lists);

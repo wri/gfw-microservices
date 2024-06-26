@@ -43,6 +43,8 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { BadRequestExceptionResponse } from './types/apiResponses';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from '../validators/server-config';
 
 /*
   This controller will be deprecated in the future
@@ -54,7 +56,8 @@ export class AppController {
     protected readonly appService: AppService,
     protected readonly listService: ListService,
     protected readonly locationService: LocationService,
-    protected readonly listPaginationService: ListPaginationService
+    protected readonly listPaginationService: ListPaginationService,
+    protected readonly config: ConfigService<ServerConfigType, true>
   ) {}
 
   /**
@@ -179,7 +182,9 @@ export class AppController {
    */
   @Get('/latest_commit')
   getLatestCommit(): string {
-    return process.env.NODE_ENV === 'development' ? 'dev' : process.env.LATEST_COMMIT;
+    return this.config.get('NODE_ENV', { infer: true }) === 'development'
+      ? 'dev'
+      : this.config.get('LATEST_COMMIT', { infer: true });
   }
   @ApiResponse({ status: 200, type: String })
   @ApiNotFoundResponse({ status: 404, type: BadRequestExceptionResponse })

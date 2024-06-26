@@ -10,6 +10,9 @@ import * as uniqId from 'uniqid';
 import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
 import { ClientStoreConnection, Lists, ActivityLog, DeleteListTypeOrm } from '@wri-monorepos/sql';
 import { LockListService } from '../services/lock.list.service';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from '../validators/server-config';
+
 class MyObject {
   id: number;
   list_name: string;
@@ -24,7 +27,8 @@ export class AppService {
     private dataSource: DataSource,
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly deleteListTypeOrm: DeleteListTypeOrm,
-    private readonly lockListService: LockListService
+    private readonly lockListService: LockListService,
+    protected readonly config: ConfigService<ServerConfigType, true>
   ) {}
 
   /**
@@ -40,9 +44,13 @@ export class AppService {
   ): ResponsePreSignedURLModel {
     const s3 = new S3({ signatureVersion: 'v2' });
     const keyFile = replaceFile ? key : `${uniqId()}-${key}`;
-    const fileS3Route = `s3://${process.env.LARGE_PROCESING_LIST_BUCKET}/${keyFile}`;
+    const largeProcessingListBucket = this.config.get('LARGE_PROCESSING_LIST_BUCKET', {
+      infer: true,
+    });
+
+    const fileS3Route = `s3://${largeProcessingListBucket}/${keyFile}`;
     const url = s3.getSignedUrl('putObject', {
-      Bucket: process.env.LARGE_PROCESING_LIST_BUCKET,
+      Bucket: largeProcessingListBucket,
       Key: keyFile,
       ContentType: contentType,
       Expires: 3600,
@@ -59,7 +67,7 @@ export class AppService {
   getObjectPreSignedUrl(key: string): ResponseObjectPresignedURLModel {
     const s3 = new S3({ signatureVersion: 'v4' });
     const url = s3.getSignedUrl('getObject', {
-      Bucket: process.env.LARGE_PROCESING_LIST_BUCKET,
+      Bucket: this.config.get('LARGE_PROCESSING_LIST_BUCKET', { infer: true }),
       Key: key,
       Expires: 300,
     });

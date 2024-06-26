@@ -1,24 +1,23 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
-
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 import { AppModule } from './app/app.module';
 import { ConsoleLog } from '@wri-monorepos/shared';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from './validators/server-config';
+
 const SWAGGER_DISABLED_ENVS = ['staging', 'production'];
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { logger: new ConsoleLog() });
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3333;
 
-  // Swagger
-  if (!SWAGGER_DISABLED_ENVS.includes(process.env.NODE_ENV)) {
+  const config = app.get<ConfigService<ServerConfigType, true>>(ConfigService);
+  const port = config.get('PORT', { infer: true });
+
+  if (!SWAGGER_DISABLED_ENVS.includes(config.get('NODE_ENV', { infer: true }))) {
     console.log('Swagger enabled');
     const config = new DocumentBuilder()
       .setTitle('List-Processing API')

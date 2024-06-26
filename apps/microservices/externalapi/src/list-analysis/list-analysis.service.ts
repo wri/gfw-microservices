@@ -450,8 +450,6 @@ export class ListAnalysisService {
     userEmail: string,
     organization_user_id: number
   ) {
-    // apps/microservices/externalapi/src/list-analysis/list-analysis.service.ts
-
     const geoTrellisUrlsByEnv = {
       qa: GEO_TRELLIS__ANALYZE_LIST_QA,
       staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,
@@ -461,11 +459,8 @@ export class ListAnalysisService {
     };
 
     const organizationDetails = await this.getOrganizationDetails(organizationId);
-
-    // Create URL
     const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
 
-    //checkProcessingLimits
     const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
       organizationDb: organizationDetails.organizationDb,
       organizationId,
@@ -476,35 +471,33 @@ export class ListAnalysisService {
       organizationDetails.organizationDb
     );
     const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
-    // updateListAnalysis list status ID to be Pending =1 or remove the list from the table
-    await listAnalysisStatusRepository.update(
-      { listId, analysisId: analysisTypesToProcess },
-      {
-        status: listStatus.Pending,
-      }
-    );
-    // /home/sodre/Documentos/Projetos/BlueCoding/gfw-microservices/apps/webserver/src/server/listData/service/listData.service.js
-    //Update Table ListAnalysisStatus with new analysis type
+
     const listToUpdate = await listAnalysisStatusRepository.findBy({
       listId,
       analysisId: analysisTypesToProcess,
     });
 
-    if (!listToUpdate) {
-      await listAnalysisStatusRepository.create({
+    if (listToUpdate.length === 0) {
+      await listAnalysisStatusRepository.save({
         listId: listId,
         analysisId: analysisTypesToProcess,
         status: listStatus.Pending,
+        updateTime: new Date(),
       });
+    } else {
+      await listAnalysisStatusRepository.update(
+        { listId, analysisId: analysisTypesToProcess },
+        {
+          status: listStatus.Pending,
+        }
+      );
     }
 
-    //getListAnalysisStatus
     const listAnalysisStatusData = await getListAnalysisStatus(
       organizationDetails.organizationDb,
       listId
     );
 
-    //extractAnalysisTypes
     const analysiTypes = extractAnalysisTypes(
       analysisTypesToProcess
         ? listAnalysisStatusData.filter(({ analysisId }) =>
@@ -512,7 +505,7 @@ export class ListAnalysisService {
           )
         : listAnalysisStatusData
     );
-    //isListLocationOverLimit
+
     if (isListLocationOverLimit) {
       await updateListsAnalysisStatus(organizationDetails.organizationDb, {
         listId: listId,
@@ -544,10 +537,9 @@ export class ListAnalysisService {
       },
     });
 
-    // Clear fields in ListsAnalysisStatus table
     try {
       await listAnalysisStatusRepository.update(
-        { listId },
+        { listId, analysisId: analysisTypesToProcess },
         {
           s3URL: null,
           bundleCreationTime: null,

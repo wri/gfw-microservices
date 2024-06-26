@@ -472,6 +472,31 @@ export class ListAnalysisService {
       subscriptionStatusId: organizationDetails.subscriptionStatusId,
       listId: listId,
     });
+    const connection = await this.clientStoreConnection.getConnection(
+      organizationDetails.organizationDb
+    );
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+    // updateListAnalysis list status ID to be Pending =1 or remove the list from the table
+    await listAnalysisStatusRepository.update(
+      { listId, analysisId: analysisTypesToProcess },
+      {
+        status: listStatus.Pending,
+      }
+    );
+    // /home/sodre/Documentos/Projetos/BlueCoding/gfw-microservices/apps/webserver/src/server/listData/service/listData.service.js
+    //Update Table ListAnalysisStatus with new analysis type
+    const listToUpdate = await listAnalysisStatusRepository.findBy({
+      listId,
+      analysisId: analysisTypesToProcess,
+    });
+
+    if (!listToUpdate) {
+      await listAnalysisStatusRepository.create({
+        listId: listId,
+        analysisId: analysisTypesToProcess,
+        status: listStatus.Pending,
+      });
+    }
 
     //getListAnalysisStatus
     const listAnalysisStatusData = await getListAnalysisStatus(
@@ -507,10 +532,7 @@ export class ListAnalysisService {
     const connectionLibSql = await this.clientStoreConnectionLibSql.getConnection(
       organizationDetails.organizationDb
     );
-    const connection = await this.clientStoreConnection.getConnection(
-      organizationDetails.organizationDb
-    );
-    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
     const activityLog = new ActivityLog();
     const response = await axios({
@@ -582,6 +604,6 @@ export class ListAnalysisService {
       activityLogRepository.save(activityLog);
       return error.toJSON();
     }
-    return response;
+    return response.statusText;
   }
 }

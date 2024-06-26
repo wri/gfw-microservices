@@ -19,6 +19,8 @@ import { S3Service } from '@wri-monorepos/aws';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
+import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
+
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
   let organizationService: OrganizationService;
@@ -57,6 +59,7 @@ describe('ListAnalysisService', () => {
         OrganizationService,
         ListService,
         S3Service,
+        ClientStoreConnectionLibSql,
       ],
     }).compile();
   });

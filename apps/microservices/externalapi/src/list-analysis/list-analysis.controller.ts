@@ -106,11 +106,11 @@ export class ListAnalysisController {
   @ApiForbiddenResponse({ type: ForbiddenResponse })
   @ApiNotFoundResponse({ type: NotFoundResponse })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
-  @Post(':listID}/analysis/:analysisID/analyze')
+  @Post(':listId/analysis/:analysisId/analyze')
   async createAnalysis(
     @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
     @Param('analysisId', new ZodValidationPipe(analysisIdSchema)) analysisId: string,
-    @Body('reanalyze', new ZodValidationPipe(reanalyzeAnalysisBodySchema))
+    @Body(new ZodValidationPipe(reanalyzeAnalysisBodySchema))
     reanalyzeBody: ReanalyzeAnalysisRequest,
     @Req() request: RequestSchema
   ) {

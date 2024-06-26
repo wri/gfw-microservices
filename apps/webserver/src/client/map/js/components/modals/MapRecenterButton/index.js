@@ -5,9 +5,9 @@ import { getListMbtileInfo } from '../../../../../common/js/userListLocations/se
 import { goToUserListLocations } from '../../../../../common/js/userListLocations/utils/userListLocationsMap.util';
 import { DEFAULT_MAPVIEW_CENTER } from '../../../config/map.config';
 
-import './CenterButton.scss';
+import './mapRecenterButton.scss';
 
-const CenterButton = ({ selectedList = [], mapView }) => {
+const MapRecenterButton = ({ selectedList = [], mapView }) => {
   const [mapInfo, setMapInfo] = useState([]);
   const [showButton, setShowButton] = useState(false);
 
@@ -56,4 +56,4 @@ const CenterButton = ({ selectedList = [], mapView }) => {
   );
 };
 
-export default CenterButton;
+export default MapRecenterButton;

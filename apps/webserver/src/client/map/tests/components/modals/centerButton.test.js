@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import CenterButton from '../../../js/components/modals/CenterButton';
+import MapRecenterButton from '../../../js/components/modals/MapRecenterButton';
 import { getListMbtileInfo } from '../../../../common/js/userListLocations/services/userListMbtileInfo.service';
 import { goToUserListLocations } from '../../../../common/js/userListLocations/utils/userListLocationsMap.util';
 import { DEFAULT_MAPVIEW_CENTER } from '../../../js/config/map.config';
@@ -9,7 +9,7 @@ import { DEFAULT_MAPVIEW_CENTER } from '../../../js/config/map.config';
 jest.mock('../../../../common/js/userListLocations/services/userListMbtileInfo.service');
 jest.mock('../../../../common/js/userListLocations/utils/userListLocationsMap.util');
 
-describe('CenterButton', () => {
+describe('MapRecenterButton', () => {
   const mapViewMock = {
     goTo: jest.fn(),
   };
@@ -23,13 +23,13 @@ describe('CenterButton', () => {
   });
 
   test('should render button when selectedList has items', () => {
-    render(<CenterButton selectedList={[{ id: 1 }]} mapView={mapViewMock} />);
+    render(<MapRecenterButton selectedList={[{ id: 1 }]} mapView={mapViewMock} />);
 
     expect(screen.queryByTestId('map-center-button')).toBeInTheDocument();
   });
 
   test('should not render button when selectedList is empty', () => {
-    render(<CenterButton selectedList={[]} mapView={mapViewMock} />);
+    render(<MapRecenterButton selectedList={[]} mapView={mapViewMock} />);
 
     expect(screen.queryByTestId('map-center-button')).not.toBeInTheDocument();
   });
@@ -41,7 +41,7 @@ describe('CenterButton', () => {
     ];
     getListMbtileInfo.mockResolvedValueOnce({ bounds });
 
-    render(<CenterButton selectedList={[{ id: 1 }]} mapView={mapViewMock} />);
+    render(<MapRecenterButton selectedList={[{ id: 1 }]} mapView={mapViewMock} />);
 
     const button = await screen.getByTestId('map-center-button');
     fireEvent.click(button);
@@ -53,7 +53,7 @@ describe('CenterButton', () => {
   test('should center map to default location if no mapInfo', async () => {
     getListMbtileInfo.mockResolvedValueOnce({ bounds: [] });
 
-    render(<CenterButton selectedList={[{ id: 1 }]} mapView={mapViewMock} />);
+    render(<MapRecenterButton selectedList={[{ id: 1 }]} mapView={mapViewMock} />);
 
     const button = await screen.getByTestId('map-center-button');
     fireEvent.click(button);

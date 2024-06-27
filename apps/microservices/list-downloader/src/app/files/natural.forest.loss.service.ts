@@ -54,7 +54,7 @@ export class NaturalForestLossService extends IPipeService {
     });
 
     const level = suffix.includes('aggregated') ? 'list' : 'location';
-    console.log(level);
+
     const pipeline: Array<Transform> = [
       new TotalCreatingNewField([
         {

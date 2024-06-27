@@ -11,6 +11,7 @@ import { IPipeService } from '../pipe/i.pipe.service';
 import { FilterObject } from '../transform/filter.object';
 import { FormatNumber } from '../transform/format.number';
 import { NegligibleRiskDiscretize } from '../transform/negligible.risk.discretize';
+import { OverlapPercentageColumns } from '../transform/overlap.percentage.columns';
 
 @Injectable()
 export class OtherKpisService extends IPipeService {
@@ -18,24 +19,24 @@ export class OtherKpisService extends IPipeService {
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
 
-  start(filters: BasicFieldsFileRequest, suffix: 'location' | 'list' = 'location') {
+  start(filters: BasicFieldsFileRequest, level: 'location' | 'list' = 'location') {
     const { listId, key, listName } = filters;
     this.logger.log(`(${listId}) - Starting stream to process data`);
     this.inputStream = new PassThrough({ objectMode: true });
 
-    const [header, fileSuffix] =
-      suffix == 'list'
+    const [headers, fileSuffix] =
+      level === 'list'
         ? [OTHER_KPIS_HEADER_AGGREGATE, 'other_metrics_aggregated']
         : [OTHER_KPIS_HEADER, 'other_metrics'];
 
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}_${fileSuffix}.csv`,
-      `${Object.values(header)
-        .map((item) => item.name)
+      `${Object.values(headers)
+        .map((header) => header.name)
         .join(',')}\n`
     );
 
-    this.organizeStream(filters, Object.keys(header), fileSuffix);
+    this.organizeStream(filters, Object.keys(headers), fileSuffix);
   }
 
   private organizeStream(filters: BasicFieldsFileRequest, allFields: string[], suffix: string) {
@@ -51,7 +52,19 @@ export class OtherKpisService extends IPipeService {
       flags: 'a',
     });
 
-    let pipeline: Array<Transform> = [new FilterObject(allFields)];
+    let pipeline: Array<Transform> = [
+      new OverlapPercentageColumns([
+        {
+          target: 'protectedAreasAreaPercentage',
+          from: 'protectedAreasArea',
+        },
+        {
+          target: 'landmarkAreaPercentage',
+          from: 'landmarkArea',
+        },
+      ]),
+      new FilterObject(allFields),
+    ];
 
     if (suffix.includes('aggregated')) {
       pipeline = [...pipeline, new NegligibleRiskDiscretize(), new FormatNumber()];

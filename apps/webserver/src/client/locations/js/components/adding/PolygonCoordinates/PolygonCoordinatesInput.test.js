@@ -56,6 +56,22 @@ const mockSetMeasurementUnit = jest.fn();
 let currentMeasurementUnit = 'hectares';
 
 describe('PolygonCoordinatesInput Component', () => {
+  // As CoordinateInputsContainer.jsx is virtualized, the AutoSizer height and width have to be mocked
+  const originalOffsetHeight = Object.getOwnPropertyDescriptor(
+    HTMLElement.prototype,
+    'offsetHeight'
+  );
+  const originalOffsetWidth = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetWidth');
+  beforeAll(() => {
+    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', { configurable: true, value: 50 });
+    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', { configurable: true, value: 50 });
+  });
+
+  afterAll(() => {
+    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', originalOffsetHeight);
+    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', originalOffsetWidth);
+  });
+
   beforeEach(() => {
     render(
       <MuiThemeProvider>
@@ -169,8 +185,8 @@ describe('PolygonCoordinatesInput Component', () => {
         [
           {
             id: expect.any(String),
-            latitude: 40,
-            longitude: -75,
+            latitude: '40',
+            longitude: '-75',
             errors: {
               latitude: false,
               longitude: false,
@@ -218,8 +234,8 @@ describe('PolygonCoordinatesInput Component', () => {
         [
           {
             id: expect.any(String),
-            latitude: expect.any(Number),
-            longitude: expect.any(Number),
+            latitude: expect.any(String),
+            longitude: expect.any(String),
             errors: {
               latitude: false,
               longitude: false,
@@ -269,33 +285,33 @@ describe('PolygonCoordinatesInput Component', () => {
       expect(mockGetPolygonGeometry).toHaveBeenCalledWith([
         {
           id: expect.any(String),
-          latitude: 40,
-          longitude: -75,
+          latitude: '40',
+          longitude: '-75',
           errors: { latitude: false, longitude: false },
         },
         {
           id: expect.any(String),
-          latitude: 41,
-          longitude: -76,
+          latitude: '41',
+          longitude: '-76',
           errors: { latitude: false, longitude: false },
         },
         {
           id: expect.any(String),
-          latitude: 42,
-          longitude: -77,
+          latitude: '42',
+          longitude: '-77',
           errors: { latitude: false, longitude: false },
         },
         {
           id: expect.any(String),
-          latitude: 41,
-          longitude: -76,
+          latitude: '41',
+          longitude: '-76',
           errors: { latitude: false, longitude: false },
         },
         {
           // the first point is added to the end to close the polygon
           id: expect.any(String),
-          latitude: 40,
-          longitude: -75,
+          latitude: '40',
+          longitude: '-75',
           errors: { latitude: false, longitude: false },
         },
       ]);

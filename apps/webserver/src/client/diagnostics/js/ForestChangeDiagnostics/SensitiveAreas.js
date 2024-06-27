@@ -23,6 +23,7 @@ import '../../../common/css/_irsStyle.scss';
 const START_YEAR = 2001;
 const END_YEAR = latestTreeCoverLossYearForTclDataInAnalyses; // Assembla ticket: 2057 - Update FC Diagnostic Charts and CSVs to show 2019 data
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
+const transifex = Transifex.live.translateText;
 
 export default class SensitiveAreas extends Component {
   constructor(props) {
@@ -375,7 +376,7 @@ export default class SensitiveAreas extends Component {
         crosshair: true,
         title: {
           useHTML: true,
-          text: '<div class="SensitiveAreas__hc-xAxis--title">Years</div>',
+          text: `<div class="SensitiveAreas__hc-xAxis--title">${transifex('Years')}</div>`,
         },
         labels: {
           formatter: function () {
@@ -387,15 +388,17 @@ export default class SensitiveAreas extends Component {
         min: 0,
         title: {
           useHTML: true,
-          text: '<div class="SensitiveAreas__hc-yAxis--title" style="width: 300px; text-align: center;">Forest Loss (ha)</div>',
+          text: `<div class="SensitiveAreas__hc-yAxis--title" style="width: 300px; text-align: center;">${transifex(
+            'Forest Loss (ha)'
+          )}</div>`,
         },
       },
       tooltip: {
         headerFormat: '<table>',
         pointFormatter: function () {
-          return `<tr><td style="color:${this.color};padding:0">${
+          return `<tr><td style="color:${this.color};padding:0">${transifex(
             this.series.name
-          }: </td><td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(
+          )}: </td><td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(
             formatNum(this.y)
           )} ha</b></td></tr>`;
         },

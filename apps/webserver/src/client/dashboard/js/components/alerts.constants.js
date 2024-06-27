@@ -1,3 +1,5 @@
+const transifex = Transifex.live.translateText;
+
 export const timeframeOptions = [
   {
     label: 'Day',
@@ -29,10 +31,10 @@ export const timeframeOptions = [
 export const alertsShownOptions = [
   {
     value: 'GLAD',
-    label: 'Deforestation (Integrated Alerts)',
+    label: transifex('Deforestation (Integrated Alerts)'),
   },
   {
     value: 'VIIRS',
-    label: 'Fires (VIIRS)',
+    label: transifex('Fires (VIIRS)'),
   },
 ];

@@ -28,7 +28,7 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
               {transifex(key)}
             </span>
           ),
-          accessor: key,
+          accessor: transifex(key),
           show: false,
           Cell: (row) =>
             checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--',
@@ -47,7 +47,7 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
                 {transifex(key)}
               </span>
             ),
-            accessor: key,
+            accessor: transifex(key),
             show: false,
             Cell: (row) =>
               checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--',
@@ -63,7 +63,7 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
                 {transifex(key)}
               </span>
             ),
-            accessor: key,
+            accessor: transifex(key),
             show: false,
             Cell: (row) =>
               checkValid(row.value) ? (
@@ -83,7 +83,7 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
                 {transifex(key)}
               </span>
             ),
-            accessor: key,
+            accessor: transifex(key),
             show: false,
             Cell: (row) =>
               checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--',
@@ -99,7 +99,7 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
                 {transifex(key)}
               </span>
             ),
-            accessor: key,
+            accessor: transifex(key),
             show: false,
             Cell: (row) =>
               checkValid(row.value) ? <span title={row.value}>{row.value}</span> : '--',
@@ -119,7 +119,7 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
               {transifex(key)}
             </span>
           ),
-          accessor: key,
+          accessor: transifex(key),
           show: false,
           Cell: (row) =>
             checkValid(row.value) ? (
@@ -130,8 +130,8 @@ export const getListColumns = (locationData, customAttributes, selectedLists) =>
         });
       } else if (keyIndex === -1 && customAttributes && customAttributes.indexOf(key) > -1) {
         columnNames.push({
-          Header: key,
-          accessor: key,
+          Header: transifex(key),
+          accessor: transifex(key),
           show: false,
           className: 'td-num',
           Cell: (row) =>

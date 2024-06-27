@@ -5,7 +5,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import Popover from 'material-ui/Popover';
-import { filter } from 'lodash';
 import IconUsers from '../../../../common/js/components/icon/IconUsers';
 import CustomTooltip from '../../../../common/js/components/CustomTooltip/CustomTooltip';
 import IconShare from '../../../../common/js/components/icon/IconShare';
@@ -67,6 +66,7 @@ function ListTitle({
       ? countriesSelected.slice(0, 3).join(', ').replaceAll('null', '--')
       : countriesString;
 
+  const numberOfLocations = listLength === 1 ? 'location' : 'locations';
   return (
     <header className="list-detail-header__info-container notranslate">
       <h1
@@ -116,9 +116,7 @@ function ListTitle({
             }}
           >
             {numberWithCommas(listLength)}
-            {listLength === 1
-              ? transifex(locationsPage.lists.titleLocation)
-              : transifex(locationsPage.lists.titleLocations)}{' '}
+            <span style={{ margin: '0px 5px' }}>{transifex(numberOfLocations)}</span>
             <span className="bullet-divider">•</span>{' '}
             {countriesSelected.length <= 3 && countriesStringSummary}
             {countriesSelected.length > 3 && (

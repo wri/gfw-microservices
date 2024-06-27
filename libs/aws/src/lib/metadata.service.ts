@@ -70,7 +70,7 @@ export class MetadataService {
   async getMetadata(): Promise<{ taskARN: string }> {
     const env: string = this.config.get('MICROSERVICES_ENV', { infer: true });
 
-    if (env == undefined || ['test', 'dev'].includes(env)) {
+    if (env == undefined || ['test', 'dev', 'development', 'latest'].includes(env.toLowerCase())) {
       return { taskARN: `arn:aws:ecs:us-east-1:123456789012:task/cluster-name/uuid-${env ?? ''}` };
     }
 

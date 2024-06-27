@@ -1,7 +1,5 @@
 class MapPage {
   elements = {
-    languageBtn: () => cy.contains('language'),
-    englishBtn: () => cy.contains('English'),
     inputDecimalDegreesFirst: () => cy.get('[class="deg-input"]').first(),
     inputDecimalDegreesLast: () => cy.get('[class="deg-input"]').last(),
     selectNorthSouthOption: () =>
@@ -64,12 +62,6 @@ class MapPage {
     eyeTreeCoverGainBtn: () => cy.get('[id="Tree cover gain-layer-checkbox"]').find('span').first(),
     eyeTreeCoverBtn: () => cy.get('[id="Tree cover 2000-layer-checkbox"]').find('span').first(),
   };
-  clickOnLanguage() {
-    this.elements.languageBtn().click();
-  }
-  selectEnglishLenguage() {
-    this.elements.englishBtn().click();
-  }
 
   clickOnZoomIn() {
     this.elements.zoomInBtn().click();

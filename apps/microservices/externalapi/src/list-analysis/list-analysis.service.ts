@@ -556,12 +556,8 @@ export class ListAnalysisService {
         }
       );
     } catch (error) {
-      activityLog.userId = organization_user_id;
-      activityLog.activityTypeId = 22;
-      activityLog.activityDescription = `Error when updating ${listId} to analysis: ${error.message}`;
-      activityLog.activityTime = new Date();
-      activityLogRepository.save(activityLog);
-      return error.toJSON();
+      this.logger.error('createAnalysis', `Error when updating ${listId} to analysis: ${error.message}`);
+      return error.message;
     }
     try {
       await activityLogRepository.save({
@@ -585,20 +581,15 @@ export class ListAnalysisService {
         id: listId,
       });
 
-      const emailResponse = await this.emailService.sendEmail(
+      await this.emailService.sendEmail(
         process.env.SES_SENDER_EMAIL,
         [userEmail],
         subject,
         'start',
         { listName }
       );
-      console.log('Email response', emailResponse);
     } catch (error) {
-      activityLog.userId = organization_user_id;
-      activityLog.activityTypeId = 22;
-      activityLog.activityDescription = `Error sending ${listId} to analysis: ${error}`;
-      activityLog.activityTime = new Date();
-      activityLogRepository.save(activityLog);
+      this.logger.error('createAnalysis', `Error when updating ${listId} to analysis: ${error.message}`);
       return error.message;
     }
     return response.statusText;

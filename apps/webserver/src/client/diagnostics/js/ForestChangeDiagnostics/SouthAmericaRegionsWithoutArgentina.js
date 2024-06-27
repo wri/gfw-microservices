@@ -26,7 +26,7 @@ const END_YEAR = latestTreeCoverLossYearForTclDataInMap;
 const HARVEST_YEAR = END_YEAR - 1;
 const YEARS_RANGE = _range(START_YEAR, END_YEAR + 1);
 let isMounted = false;
-
+const transifex = Transifex.live.translateText;
 export default class SouthAmericaRegions extends Component {
   constructor(props) {
     super(props);
@@ -289,7 +289,7 @@ export default class SouthAmericaRegions extends Component {
           pointFormatter() {
             return (
               '<tr>' +
-              `<td style="color:${this.color};padding:0">${this.name}:</td>` +
+              `<td style="color:${this.color};padding:0">${transifex(this.name)}:</td>` +
               `<td style="padding:0"><b style="padding-left:0.25rem">${formatPct(
                 this.y
               )}%</b></td>` +
@@ -312,7 +312,7 @@ export default class SouthAmericaRegions extends Component {
               useHTML: true,
               enabled: true,
               formatter() {
-                return `<b>${this.point.name}: </b>${formatPct(this.percentage)}%`;
+                return `<b>${transifex(this.point.name)}: </b>${formatPct(this.percentage)}%`;
               },
               style: {
                 color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
@@ -506,7 +506,7 @@ export default class SouthAmericaRegions extends Component {
         crosshair: true,
         title: {
           useHTML: true,
-          text: '<div class="SouthAmericaRegions__hc-xAxis--title">Years</div>',
+          text: `<div class="SouthAmericaRegions__hc-xAxis--title">${transifex('Years')}</div>`,
         },
         plotBands,
         plotLines,

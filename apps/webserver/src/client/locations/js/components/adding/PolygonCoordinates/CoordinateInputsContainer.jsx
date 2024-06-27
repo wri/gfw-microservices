@@ -1,5 +1,6 @@
 import React from 'react';
 import { Grid, Button, Tab, Tabs } from '@mui/material';
+import { List, AutoSizer } from 'react-virtualized';
 import IconPlus from '../../../../../common/js/components/icon/IconPlus';
 import CoordinateInputRow from './CoordinateInputRow';
 
@@ -9,34 +10,17 @@ const CoordinateInputsContainer = ({
   onDeleteCoordinate,
   onAddCoordinate,
   isPolygon,
-  setIsPolygon,
-}) => (
-  <Grid container spacing={2}>
-    <Grid item xs={12}>
-      <h3 style={{ margin: '5px 0px' }}>Add coordinates</h3>
-    </Grid>
-    <Grid item xs={12}>
-      <Tabs
-        value={isPolygon ? 'polygon' : 'point'}
-        onChange={(e, value) => setIsPolygon(value === 'polygon')}
-        style={{ marginBottom: '0.7rem' }}
-        TabIndicatorProps={{ style: { background: '#97bd3d' } }}
-      >
-        <Tab label={<span style={{ color: 'black' }}>{'point'}</span>} value={'point'} />
-        <Tab label={<span style={{ color: 'black' }}>{'polygon'}</span>} value={'polygon'} />
-      </Tabs>
-    </Grid>
-    <Grid item xs={1}></Grid>
-    <Grid item xs={5}>
-      <label>latitude</label>
-    </Grid>
-    <Grid item xs={5}>
-      <label>longitude</label>
-    </Grid>
-    <Grid item xs={12}>
-      {coordinates.map(({ id, latitude, longitude, errors }, index) => (
+  switchInputType,
+}) => {
+  const rowRenderer = ({
+    key, // Unique key within array of rows
+    index, // Index of row within collection
+    style, // Style object to be applied to row (to position it)
+  }) => {
+    const { id, latitude, longitude, errors } = coordinates[index];
+    return (
+      <div key={key} style={style}>
         <CoordinateInputRow
-          key={id}
           id={id}
           index={index}
           latitude={latitude}
@@ -46,31 +30,82 @@ const CoordinateInputsContainer = ({
           onDeleteCoordinate={onDeleteCoordinate}
           showDeleteIcon={isPolygon && coordinates.length > 3}
         />
-      ))}
-    </Grid>
+      </div>
+    );
+  };
 
-    {isPolygon && coordinates.length < 10 && (
-      <Grid item xs={12}>
-        <Button
-          style={{
-            color: '#97bd3d',
-            border: '1px dashed',
-            width: '100%',
-            background: 'rgba(151, 189, 61, 0.1)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: '10px',
-          }}
-          variant="outlined"
-          startIcon={<IconPlus height="10px" />}
-          onClick={onAddCoordinate}
-        >
-          Add Coordinate
-        </Button>
+  return (
+    <>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <h3 style={{ margin: '5px 0px' }}>Add coordinates</h3>
+        </Grid>
+        <Grid item xs={12}>
+          <Tabs
+            value={isPolygon ? 'polygon' : 'point'}
+            onChange={(e, value) => switchInputType(value === 'polygon')}
+            style={{ marginBottom: '0.7rem' }}
+            TabIndicatorProps={{ style: { background: '#97bd3d' } }}
+          >
+            <Tab label={<span style={{ color: 'black' }}>point</span>} value="point" />
+            <Tab label={<span style={{ color: 'black' }}>polygon</span>} value="polygon" />
+          </Tabs>
+        </Grid>
+        <Grid item xs={1}></Grid>
+        <Grid item xs={5}>
+          <label>latitude</label>
+        </Grid>
+        <Grid item xs={5}>
+          <label>longitude</label>
+        </Grid>
       </Grid>
-    )}
-  </Grid>
-);
+      <Grid
+        style={{
+          overflow: 'auto',
+          margin: 'auto',
+          width: '100%',
+        }}
+        container
+        spacing={2}
+      >
+        <Grid item xs={12}>
+          <AutoSizer disableHeight>
+            {({ width }) => (
+              <List
+                width={width}
+                height={Math.min(50 * coordinates.length, window.innerHeight * 0.5)}
+                rowCount={coordinates.length}
+                rowHeight={50}
+                rowRenderer={rowRenderer}
+              />
+            )}
+          </AutoSizer>
+        </Grid>
+      </Grid>
+      {isPolygon && coordinates.length < 10 && (
+        <Grid item xs={12}>
+          <Button
+            style={{
+              color: '#97bd3d',
+              border: '1px dashed',
+              width: '100%',
+              background: 'rgba(151, 189, 61, 0.1)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: '10px',
+              marginTop: '10px',
+            }}
+            variant="outlined"
+            startIcon={<IconPlus height="10px" />}
+            onClick={onAddCoordinate}
+          >
+            Add Coordinate
+          </Button>
+        </Grid>
+      )}
+    </>
+  );
+};
 
 export default CoordinateInputsContainer;

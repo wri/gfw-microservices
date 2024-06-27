@@ -244,7 +244,6 @@ export default class AddLocation extends Component {
     // Determine location name based on props that came from the map
     const locationName =
       props.geomFromMap && props.geomFromMap.locationName ? props.geomFromMap.locationName : '';
-
     const chosenType =
       props.gfwInfoFromMap && props.gfwInfoFromMap.gfwData
         ? generateType(props.gfwInfoFromMap)
@@ -329,6 +328,7 @@ export default class AddLocation extends Component {
     }
 
     const { adminArea, geomFromMap } = this.props;
+
     if (geomFromMap && geomFromMap.geometry) {
       if (geomFromMap.geometry.rings) {
         store.dispatch(changeAddMethod('byDrawing'));
@@ -2137,11 +2137,7 @@ export default class AddLocation extends Component {
                 />
               ) : addMethod === 'byDrawing' ? (
                 <AddLocationMap
-                  geomFromMap={
-                    this.props.geomFromMap && this.props.geomFromMap.geometry
-                      ? this.props.geomFromMap.geometry
-                      : this.props.geomFromMap
-                  }
+                  geomFromMap={this.props.geomFromMap?.geometry ?? this.props.geomFromMap}
                   geometry={this.state.geometry}
                   setGeometry={this.setGeometry}
                   measurementUnit={measurementUnit}

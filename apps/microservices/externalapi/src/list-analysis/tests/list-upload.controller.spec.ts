@@ -26,7 +26,7 @@ import { INestApplication } from '@nestjs/common';
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { SqsService, SqsModule, SqsMessageHandler } from '@ssut/nestjs-sqs';
 import { ListService } from '../../lists/lists.service';
-import { S3Service } from '@wri-monorepos/aws';
+import { AwsModule, S3Service } from '@wri-monorepos/aws';
 import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
 //import { } from '@ssut/nestjs-sqs';
 
@@ -147,6 +147,7 @@ describe('ListUploadController', () => {
         }),
         TypeOrmModule.forFeature([ExternalAPIKey, Organization, UserRoutes], 'default'),
         ListAnalysisMessageModule,
+        AwsModule,
         ConfigModule.forRoot({
           envFilePath: ['.env', '.env.production'],
           isGlobal: true,

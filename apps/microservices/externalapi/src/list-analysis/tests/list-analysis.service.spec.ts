@@ -15,7 +15,7 @@ import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-s
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { ListService } from '../../lists/lists.service';
 import { Lists } from '../../lists/lists.entity';
-import { S3Service } from '@wri-monorepos/aws';
+import { AwsModule, S3Service } from '@wri-monorepos/aws';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
@@ -51,6 +51,7 @@ describe('ListAnalysisService', () => {
           isGlobal: true,
         }),
         ListAnalysisMessageModule,
+        AwsModule,
       ],
       providers: [
         ListAnalysisService,

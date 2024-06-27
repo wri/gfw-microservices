@@ -108,7 +108,7 @@ describe('ReadmeService', () => {
         key: 'some_key',
       };
       const data = 'CSV Name;Description;Column;Column Description';
-      const expectedFilePath = '/tmp/wri-some_key/README.md';
+      const expectedFilePath = '/tmp/wri-some_key/README.csv';
 
       (fs.writeFile as unknown as jest.Mock).mockImplementation(
         (filePath, data, encoding, callback) => {

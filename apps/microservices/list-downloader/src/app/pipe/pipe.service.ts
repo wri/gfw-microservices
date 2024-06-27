@@ -9,7 +9,7 @@ import { AccountUsersAnalysisUsageFileService } from './account-users-usage.gene
 import { AlertsGeneratorService } from './alerts.generator.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ReadmeService } from '../files';
+import { ReadmeService } from '../files/readme.service';
 
 @Injectable()
 export class PipeService {

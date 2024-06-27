@@ -2,9 +2,11 @@ import React from 'react';
 import Highcharts from 'highcharts';
 import useHookWithRefCallback from '../useHookWithRefCallback';
 
+const transifex = Transifex.live.translateText;
+
 function Chart({ data, chartLabels }) {
   const pieChartData = chartLabels.map(({ id, legend, color }) => ({
-    legend,
+    legend: transifex(legend),
     y: data[id],
     color,
   }));

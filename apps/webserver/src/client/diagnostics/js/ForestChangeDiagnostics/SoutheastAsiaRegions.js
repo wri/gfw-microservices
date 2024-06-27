@@ -20,7 +20,7 @@ import '../../../common/css/_irsBase.scss';
 import '../../../common/css/_irsStyle.scss';
 
 let isMounted = false;
-
+const transifex = Transifex.live.translateText;
 export default class SoutheastAsiaRegions extends Component {
   constructor(props) {
     super(props);
@@ -365,7 +365,7 @@ export default class SoutheastAsiaRegions extends Component {
         pointFormatter: function () {
           return (
             `<tr>` +
-            `<td style="padding:0;">${this.name}:</td>` +
+            `<td style="padding:0;">${transifex(this.name)}:</td>` +
             `<td style="padding:0"><b style="padding-left:0.25rem">${formatPct(this.y)}%</b></td>` +
             `</tr>`
           );
@@ -386,7 +386,7 @@ export default class SoutheastAsiaRegions extends Component {
             useHTML: true,
             enabled: true,
             formatter: function () {
-              return `<b>${this.point.name}: </b>${formatPct(this.percentage)}%`;
+              return `<b>${transifex(this.point.name)}: </b>${formatPct(this.percentage)}%`;
             },
             style: {
               color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
@@ -530,7 +530,7 @@ export default class SoutheastAsiaRegions extends Component {
         crosshair: true,
         title: {
           useHTML: true,
-          text: '<div class="SoutheastAsiaRegions__hc-xAxis--title">Years</div>',
+          text: `<div class="SoutheastAsiaRegions__hc-xAxis--title">${transifex('Years')}</div>`,
         },
         labels: {
           formatter: function () {
@@ -548,9 +548,9 @@ export default class SoutheastAsiaRegions extends Component {
       tooltip: {
         headerFormat: '<table>',
         pointFormatter: function () {
-          return `<tr><td style="color:${this.color};padding:0">${
+          return `<tr><td style="color:${this.color};padding:0">${transifex(
             this.series.name
-          }: </td><td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(
+          )}: </td><td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(
             formatNum(this.y || '0')
           )} ha</b></td></tr>`;
         },

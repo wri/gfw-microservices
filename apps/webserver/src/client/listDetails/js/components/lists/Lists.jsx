@@ -2131,6 +2131,9 @@ export default class Lists extends Component {
       data: filteredLists,
       columns: tableColumns,
       defaultPageSize: 50,
+      previousText: transifex('Previous'),
+      nextText: transifex('Next'),
+      pageText: transifex('Page'),
       getTheadProps: this.setHeaderProps,
       getTrProps: this.setRowProps,
       pageSizeOptions: [50],
@@ -2571,9 +2574,6 @@ export default class Lists extends Component {
                         <div className="list-detail-filters__content-filters">
                           {!shareView && (
                             <ListsFilter
-                              placeholder={
-                                isGfwList ? '' : locationsPage.lists.searchStringInputPlaceholder
-                              }
                               value={filterStringInputValue}
                               onChange={this.myListsSearchFilter}
                               onkeydown={this.setSearchString}

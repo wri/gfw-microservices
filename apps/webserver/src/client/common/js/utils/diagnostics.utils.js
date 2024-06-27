@@ -72,13 +72,13 @@ const formatDecimals = (chunk, decimals = 2) => {
 };
 
 function getFormatedTooltipForDiagnosticsChart() {
+  const transifex = Transifex.live.translateText;
+
   const { color: optionsColor, label, type } = this.options;
   const { color: seriesColor, userOptions } = this.series;
-
+  const tooltipText = type === 'PRODES' ? `${type} (${label})` : userOptions.name || userOptions.id;
   return `<tr>
-<td style="color:${optionsColor || seriesColor};padding:0">${
-    type === 'PRODES' ? `${type} (${label})` : userOptions.name || userOptions.id
-  }: </td>
+<td style="color:${optionsColor || seriesColor};padding:0">${transifex(tooltipText)}: </td>
 <td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(formatNum(this.y || 0))} ha</b></td>
 </tr>`;
 }

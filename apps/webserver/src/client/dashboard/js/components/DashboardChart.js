@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import isEqual from 'lodash/isEqual';
 import Highcharts from 'highcharts';
 import moment from 'moment';
-
 import dictionary from '../utils/dictionary';
 import { prettifyNum } from '../../../common/js/utils/diagnostics.utils';
 import {
@@ -17,6 +16,7 @@ import '../../css/_dashboardChart.scss';
 
 const DATE_FORMAT = 'DD MMM YYYY';
 
+const transifex = Transifex.live.translateText;
 export default class DashboardChart extends Component {
   componentDidMount() {
     this.updateChart(this.refs.alertHistoryHighchart);
@@ -67,7 +67,9 @@ export default class DashboardChart extends Component {
             selectedTimeframe === 'QUARTER' || selectedTimeframe === 'YEAR'
               ? moment(start, DATE_FORMAT).format('MMMM')
               : key;
-          return `<b>${serieName}</b><br/>Alerts: <b>${prettifyNum(y)}</b>`;
+          return `<b>${transifex(serieName)}</b><br/>${transifex('Alerts')}: <b>${prettifyNum(
+            y
+          )}</b>`;
         },
       },
       xAxis: {

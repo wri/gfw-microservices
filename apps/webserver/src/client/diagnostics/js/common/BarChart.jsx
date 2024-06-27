@@ -3,6 +3,8 @@ import Highcharts from 'highcharts';
 import { getFormatedTooltipForDiagnosticsChart } from '../../../common/js/utils/diagnostics.utils';
 import useHookWithRefCallback from './useHookWithRefCallback';
 
+const transifex = Transifex.live.translateText;
+
 function BarChart({ data, plotBands = [], plotLines = [] }) {
   const renderChart = (divRef) => {
     Highcharts.chart({
@@ -22,7 +24,7 @@ function BarChart({ data, plotBands = [], plotLines = [] }) {
         crosshair: true,
         title: {
           useHTML: true,
-          text: '<div>Years</div>',
+          text: `<div>${transifex('Years')}</div>`,
         },
         plotBands,
         plotLines,

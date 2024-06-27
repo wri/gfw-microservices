@@ -514,4 +514,33 @@ describe('ListAnalysisService', () => {
       })
     ).rejects.toThrow(BadRequestException);
   });
+  xit('Should Create an Analysis', async () => {
+    jest.setTimeout(30000); // Increase the timeout to 10 seconds
+    const analysisTypesToProcess = 'FCD';
+    const listId = 123;
+    const reanalyze = true;
+    const organizationId = 1;
+    const userEmail = 'email@mail.com';
+    const organization_user_id = 1;
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    const result = await service.createAnalysis(
+      analysisTypesToProcess,
+      listId,
+      reanalyze,
+      organizationId,
+      userEmail,
+      organization_user_id
+    );
+
+    expect(result).toBe('Oks');
+  });
 });

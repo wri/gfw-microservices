@@ -580,8 +580,10 @@ export class ListAnalysisService {
         .join(', ')} calculations are processing for the GFW Pro list ${listId} `;
 
       // Get Listname
-      const listRepository = connection.getRepository(Lists);
-      const [{ listName }] = await listRepository.findBy({ id: listId });
+      const listRepository = connectionLibSql.getRepository(Lists);
+      const { listName } = await listRepository.findOneBy({
+        id: listId,
+      });
 
       const emailResponse = await this.emailService.sendEmail(
         process.env.SES_SENDER_EMAIL,
@@ -597,7 +599,7 @@ export class ListAnalysisService {
       activityLog.activityDescription = `Error sending ${listId} to analysis: ${error}`;
       activityLog.activityTime = new Date();
       activityLogRepository.save(activityLog);
-      return error.toJSON();
+      return error.message;
     }
     return response.statusText;
   }

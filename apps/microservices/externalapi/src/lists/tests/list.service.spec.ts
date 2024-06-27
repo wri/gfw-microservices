@@ -405,9 +405,6 @@ describe('ListService', () => {
       }),
     });
 
-    // s3Service.getFileSignedUrlDynamicEnvironment = jest
-    //   .fn()
-    //   .mockResolvedValue(()=>expectedResult.errorFileStoragePath);
     const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });
 
     const resultWithDatesTransformed = {};

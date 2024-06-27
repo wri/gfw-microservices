@@ -8,10 +8,9 @@ describe('Maps View', () => {
 
   When('I login in the landing page', () => {
     User.login();
-    cy.visit('/locations');
   });
 
-  Then('Verify to Locations screen', () => {
+  Then('Verify the Locations screen', () => {
     cy.url().should('include', '/locations');
   });
 

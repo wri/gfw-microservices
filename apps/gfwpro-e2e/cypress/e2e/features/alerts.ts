@@ -9,7 +9,6 @@ describe('Alerts page', () => {
 
   Given('I login to the landing page', () => {
     User.login();
-    cy.visit('/locations');
   });
 
   When('I navigate to the alerts page', () => {

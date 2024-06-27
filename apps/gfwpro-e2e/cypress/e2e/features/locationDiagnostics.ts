@@ -11,7 +11,6 @@ describe('Location diagnostics', () => {
 
   When('I login in the landing page', () => {
     User.login();
-    cy.visit('/locations');
   });
 
   When('I navigate to a list details page and click on a location checkbox', () => {

@@ -535,7 +535,6 @@ export class ListAnalysisService {
     );
 
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
-    const activityLog = new ActivityLog();
     const response = await axios({
       method: 'post',
       url: url,
@@ -556,7 +555,10 @@ export class ListAnalysisService {
         }
       );
     } catch (error) {
-      this.logger.error('createAnalysis', `Error when updating ${listId} to analysis: ${error.message}`);
+      this.logger.error(
+        'createAnalysis',
+        `Error when updating ${listId} to analysis: ${error.message}`
+      );
       return error.message;
     }
     try {
@@ -589,7 +591,10 @@ export class ListAnalysisService {
         { listName }
       );
     } catch (error) {
-      this.logger.error('createAnalysis', `Error when updating ${listId} to analysis: ${error.message}`);
+      this.logger.error(
+        'createAnalysis',
+        `Error when updating ${listId} to analysis: ${error.message}`
+      );
       return error.message;
     }
     return response.statusText;

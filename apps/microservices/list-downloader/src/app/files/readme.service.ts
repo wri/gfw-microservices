@@ -34,7 +34,7 @@ export class ReadmeService {
       const { header, fileName, description } = item;
       Object.keys(header).map((key) => {
         output.push(
-          `<LIST NAME>_${fileName};${description};${header[key].name};${header[key].description}`
+          `<LISTNAME>_${fileName};${description};${header[key].name};${header[key].description}`
         );
       });
     });
@@ -93,7 +93,7 @@ export class ReadmeService {
     this.logger.debug('Creating README file');
     const { key } = filters;
     const dir = `/tmp/wri-${key}`;
-    const filePath = path.join(dir, '/README.md');
+    const filePath = path.join(dir, '/README.csv');
     return new Promise((resolve, reject) => {
       fs.writeFile(filePath, data, 'utf8', (err) => {
         if (err) {

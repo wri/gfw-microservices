@@ -12,7 +12,7 @@ import { ClientStoreConnection } from '../shared/client-store-connection';
 import { ListService } from '../lists/lists.service';
 import { Lists } from '../lists/lists.entity';
 import { OrganizationService } from './organization.service';
-import { S3Service } from '@wri-monorepos/aws';
+import {  EmailService,  S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
@@ -27,6 +27,7 @@ import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monor
     ListService,
     S3Service,
     ClientStoreConnectionLibSql,
+    EmailService,
     {
       provide: 'AWS',
       inject: [ConfigService],

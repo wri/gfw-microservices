@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   HttpStatus,
+  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -25,7 +26,7 @@ import {
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
-import { getListStatusString, listStatus } from '@wri-monorepos/constants';
+import { analysisTypesOptions, getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
@@ -45,6 +46,7 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_PROD,
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } from './utils/geoTrellis.config';
+import { EmailService } from '@wri-monorepos/aws'
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -65,6 +67,9 @@ export class ListAnalysisService {
     largeProcessingListBucket: string;
   };
   private readonly logger = new Logger(ListAnalysisResponse.name);
+
+  
+
   constructor(
     private configService: ConfigService<ServerConfigType, true>,
     private userService: UserService,
@@ -72,7 +77,7 @@ export class ListAnalysisService {
     private clientStoreConnectionLibSql: ClientStoreConnectionLibSql,
     private organizationService: OrganizationService,
     private readonly sqsService: SqsService,
-    private readonly listService: ListService
+    private readonly listService: ListService,
   ) {
     this.LLP_BASE_URL = configService.get('LLP_BASE_URL');
     this.awsConfig = {
@@ -82,7 +87,9 @@ export class ListAnalysisService {
       largeProcessingListBucket: this.configService.get('LARGE_PROCESSING_LIST_BUCKET'),
     };
   }
-
+  @Inject(EmailService)
+  private readonly emailService: EmailService;
+  
   private getEAPIListStatus(listAnalysisStatus: ListsAnalysisStatus) {
     if (
       listAnalysisStatus.status === listStatus.Active &&
@@ -565,29 +572,30 @@ export class ListAnalysisService {
 
       //  In order for that to work, the new analyze route should clear out stale s3_url, creation, and expiration fields in ListsAnalysisStatus table.
 
-      // const enabledAnalyses = analysisTypesOptions.filter(
-      //   (analysis) => analysiTypes[analysis.id]
-      // );
-      // const content = {
-      //   listId,
-      //   analysis_types: enabledAnalyses.map((analysis) => analysis.label).join(', '),
-      // };
-      // const subject = `${enabledAnalyses
-      //   .map((analysis) => analysis.shortLabel)
-      //   .join(', ')} calculations are processing for the GFW Pro list ${listId}`;
-      // this.emailService.sendEmail(
-      //   process.env.SES_SENDER_EMAIL,
-      //   [userEmail],
-      //   content.analysis_types,
-      //   subject,
-      //   {
-      //     sourceEmail: process.env.SES_SENDER_EMAIL,
-      //     sourceOrganization: organizationDetails.organizationName,
-      //     targetEmail: userEmail,
-      //     targetOrganization: organizationId,
-      //     body: `${content.analysis_types} calculations are processing for <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.listId}</span>. Analysis may take up to 24 hours. You will be notified by email when it's complete.`,
-      //   }
-      // );
+      const enabledAnalyses = analysisTypesOptions.filter(
+        (analysis) => analysiTypes[analysis.id]
+      );
+      const content = {
+        listId,
+        analysis_types: enabledAnalyses.map((analysis) => analysis.label).join(', '),
+      };
+      const subject = `${enabledAnalyses
+        .map((analysis) => analysis.shortLabel)
+        .join(', ')} calculations are processing for the GFW Pro list ${listId}`;
+
+      this.emailService.sendEmail(
+        process.env.SES_SENDER_EMAIL,
+        [userEmail],
+        content.analysis_types,
+        subject,
+        {
+          sourceEmail: process.env.SES_SENDER_EMAIL,
+          sourceOrganization: organizationDetails.organizationName,
+          targetEmail: userEmail,
+          targetOrganization: organizationId,
+          body: `${content.analysis_types} calculations are processing for <span style="font-weight: bold; color: rgba(0, 0, 0, 0.73);">${content.listId}</span>. Analysis may take up to 24 hours. You will be notified by email when it's complete.`,
+        }
+      );
     } catch (error) {
       activityLog.userId = organization_user_id;
       activityLog.activityTypeId = 22;

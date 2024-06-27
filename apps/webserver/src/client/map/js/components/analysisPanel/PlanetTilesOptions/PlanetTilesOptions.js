@@ -7,6 +7,8 @@ import { updatePlanetTileLayer, updatePlanetTileColor } from '../../../actions/m
 
 import './PlanetTilesOptions.scss';
 
+const transifex = Transifex.live.translateText;
+
 export const PlanetTilesOptions = () => {
   const [planetTiles, setPlanetTiles] = useState();
   const [planetColor, setPlanetColor] = useState('rgb');
@@ -46,6 +48,9 @@ export const PlanetTilesOptions = () => {
     store.dispatch(updatePlanetTileLayer(planetTileLayer));
   };
 
+  const naturalColorString = transifex('Natural color');
+  const falseColorString = transifex('False color');
+
   return (
     <div className="planet-options">
       <select onChange={(evt) => handlePlanetTile(evt)} value={selectedPlanetTileLayer}>
@@ -61,10 +66,10 @@ export const PlanetTilesOptions = () => {
       </select>
       <select onChange={(e) => handlePlanetColorChange(e.target.value)} value={planetColor}>
         <option key={'rgb'} value={'rgb'}>
-          Natural color
+          {naturalColorString}
         </option>
         <option key={'cir'} value={'cir'}>
-          False color
+          {falseColorString}
         </option>
       </select>
     </div>

@@ -1,6 +1,8 @@
 import React from 'react';
 import { numberWithCommas } from '../../../../locations/js/utils/locationsTableUtils';
 
+const transifex = Transifex.live.translateText;
+
 function SelectedListDescription({
   selectedLists = {},
   transitionListData = {},
@@ -22,7 +24,7 @@ function SelectedListDescription({
   if (!isListSelected) {
     // no list was selected, show total number of locations
     numberOfLocations = numberWithCommas(totalNumberOfLocationsInAccount);
-    listName = 'All Locations';
+    listName = transifex('All Locations');
   } else if (Object.keys(transitionListData).length) {
     // full list or specific locations from a list were selected comming from
     // dashboard or list views

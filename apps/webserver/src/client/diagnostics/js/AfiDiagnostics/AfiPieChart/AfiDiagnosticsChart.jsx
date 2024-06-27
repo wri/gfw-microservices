@@ -3,10 +3,12 @@ import Highcharts from 'highcharts';
 import useHookWithRefCallback from '../../common/useHookWithRefCallback';
 import { afiDiagnosticsChartsColors } from '../afiDiagnosticsChartsColors.constants';
 
+const transifex = Transifex.live.translateText;
+
 function AfiDiagnosticsChart({ data }) {
   const formattedData = Array.isArray(data)
     ? data.map(({ id, category, coverage }) => ({
-        name: category,
+        name: transifex(category),
         y: coverage,
         color: afiDiagnosticsChartsColors[id],
       }))

@@ -10,6 +10,8 @@ import {
   latestTreeCoverLossYearCommodityRisk,
 } from '../../../common/js/config';
 
+const transifex = Transifex.live.translateText;
+
 export default class DeforestationTrends extends Component {
   componentDidMount() {
     this.renderChart(this.refs.deforestationChart);
@@ -47,7 +49,7 @@ export default class DeforestationTrends extends Component {
         crosshair: true,
         title: {
           useHTML: true,
-          text: '<div class="DeforestationTrends__hc-xAxis--title">Years</div>',
+          text: `<div class="DeforestationTrends__hc-xAxis--title">${transifex('Years')}</div>`,
         },
         labels: {
           formatter: function () {
@@ -60,15 +62,17 @@ export default class DeforestationTrends extends Component {
         min: 0,
         title: {
           useHTML: true,
-          text: '<div class="DeforestationTrends__hc-yAxis--title">LOSS<br/><span style="font-weight:300">(thousand ha)</span></div>',
+          text: `<div class="DeforestationTrends__hc-yAxis--title">${transifex(
+            'LOSS'
+          )}<br/><span style="font-weight:300">${transifex('(thousand ha)')}</span></div>`,
         },
       },
       tooltip: {
         headerFormat: '<table>',
         pointFormatter: function () {
-          return `<tr><td style="color:${this.color};padding:0">${
+          return `<tr><td style="color:${this.color};padding:0">${transifex(
             this.series.name
-          }: </td><td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(
+          )}: </td><td style="padding-top:0; padding-bottom: 0"><b>${prettifyNum(
             formatNum(this.y)
           )} ha</b></td></tr>`;
         },

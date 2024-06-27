@@ -3,12 +3,14 @@ import Highcharts from 'highcharts';
 import useHookWithRefCallback from '../../../common/useHookWithRefCallback';
 import { chartDatasetConfigs } from '../../SouthAmericaRegions/regions.constants';
 
+const transifex = Transifex.live.translateText;
+
 function Chart({ data }) {
   const renderChart = (divRef) => {
     const argentinaOtbnArea = JSON.parse(data?.arg_otbn_area);
     const { argentinaOtbn } = chartDatasetConfigs;
     const chartData = argentinaOtbn.chartLabels.map(({ legend, color }) => ({
-      legend,
+      legend: transifex(legend),
       y: argentinaOtbnArea[legend],
       color,
     }));

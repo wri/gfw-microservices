@@ -4,10 +4,13 @@ describe('OverlapPercentageColumns', () => {
   let transformer: OverlapPercentageColumns;
 
   beforeEach(() => {
-    transformer = new OverlapPercentageColumns([
-      { target: 'protectedAreasAreaPercentage', from: 'protectedAreasArea' },
-      { target: 'landmarkAreaPercentage', from: 'landmarkArea' }
-    ], 'totalAreaHA');
+    transformer = new OverlapPercentageColumns(
+      [
+        { target: 'protectedAreasAreaPercentage', from: 'protectedAreasArea' },
+        { target: 'landmarkAreaPercentage', from: 'landmarkArea' },
+      ],
+      'totalAreaHA'
+    );
   });
 
   test('should calculate percentages correctly and add them to the chunk', (done) => {

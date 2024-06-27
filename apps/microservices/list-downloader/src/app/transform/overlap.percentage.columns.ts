@@ -7,7 +7,7 @@ class OverlapPercentageColumns extends Transform {
 
   run = (chunk) => {
     // Loop through each rule to calculate and add the percentage column
-    this.rules.forEach(rule => {
+    this.rules.forEach((rule) => {
       const totalValue = chunk[this.total];
       const value = chunk[rule.from];
 

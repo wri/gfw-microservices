@@ -91,4 +91,31 @@ describe('Total Creating New Field', () => {
       }
     );
   });
+  test('Should work when receive an input field that dont exist on the object', () => {
+    const total = new TotalCreatingNewField([
+      {
+        input: 'yearly1',
+        output: 'total1',
+      },
+      {
+        input: 'yearly2',
+        output: 'total2',
+      },
+    ]);
+    total._transform(
+      {
+        yearly1: '{"2019": 0.25, "2020": 0, "2021": 0}',
+        yearly2: '{"2019": 0.25, "2020": 0.25, "2021": 0}',
+      },
+      '',
+      (err, data) => {
+        expect(data).toEqual({
+          total1: 0.25,
+          total2: 0.5,
+          yearly1: '{"2019": 0.25, "2020": 0, "2021": 0}',
+          yearly2: '{"2019": 0.25, "2020": 0.25, "2021": 0}',
+        });
+      }
+    );
+  });
 });

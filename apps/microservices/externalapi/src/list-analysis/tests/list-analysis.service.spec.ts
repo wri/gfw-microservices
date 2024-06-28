@@ -21,8 +21,8 @@ import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { listStatus } from '../../config';
 import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import { listStatus } from '@wri-monorepos/constants';
 
 jest.mock('@wri-monorepos/shared', () => ({
   checkProcessingLimits: jest.fn(),

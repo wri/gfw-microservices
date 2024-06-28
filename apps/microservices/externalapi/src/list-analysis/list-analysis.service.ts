@@ -46,7 +46,7 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_STAGING,
   GEO_TRELLIS__ANALYZE_LIST_PROD,
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
-} from './utils/geoTrellis.config';
+} from '@wri-monorepos/constants';
 
 import { EmailService } from '@wri-monorepos/aws';
 

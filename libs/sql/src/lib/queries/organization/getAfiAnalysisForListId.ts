@@ -7,6 +7,8 @@ export const getAfiAnalysisForListId = `
     ISNULL(AF.total_area_ha,0) AS totalAreaHa,
     ISNULL(AF.jrc_land_area,0) AS jrcCoverageHA,
     ISNULL(AF.jrc_land_deforested_area,0) AS jrcNaturalForestLossHA,
+    ISNULL(AF.protected_areas_area,0) AS protectedAreasHA,
+    ISNULL(AF.landmark_area,0) AS landmarkHA,
     CASE
       WHEN AF.negligible_risk < 0.5 THEN CAST(0 AS BIT)  -- false
       WHEN AF.negligible_risk > 99.5 THEN CAST(1 AS BIT)  -- true

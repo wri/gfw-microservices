@@ -15,11 +15,25 @@ import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-s
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { ListService } from '../../lists/lists.service';
 import { Lists } from '../../lists/lists.entity';
-import { AwsModule, S3Service } from '@wri-monorepos/aws';
+import { AwsModule, EmailService, S3Service } from '@wri-monorepos/aws';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
+import { checkProcessingLimits } from '@wri-monorepos/shared';
+import { listStatus } from '../../config';
+import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+
+jest.mock('@wri-monorepos/shared', () => ({
+  checkProcessingLimits: jest.fn(),
+}));
+jest.mock('../../shared/generate-sqs-templates', () => ({
+  generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
+}));
+jest.mock('@wri-monorepos/geo', () => ({
+  extractAnalysisTypes: jest.fn(),
+  getListAnalysisStatus: jest.fn(),
+}));
 
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
@@ -29,6 +43,8 @@ describe('ListAnalysisService', () => {
   let userService: UserService;
   let listService: ListService;
   let sqsService: SqsService;
+  let clientStoreConnectionLibSql: ClientStoreConnectionLibSql;
+  let emailService: EmailService;
   beforeAll(async () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
@@ -70,8 +86,12 @@ describe('ListAnalysisService', () => {
     service = module.get<ListAnalysisService>(ListAnalysisService);
     userService = module.get<UserService>(UserService);
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
+    clientStoreConnectionLibSql = module.get<ClientStoreConnectionLibSql>(
+      ClientStoreConnectionLibSql
+    );
     listService = module.get<ListService>(ListService);
     sqsService = module.get<SqsService>(SqsService);
+    emailService = module.get<EmailService>(EmailService);
   });
 
   it('should delete a list', async () => {
@@ -431,7 +451,7 @@ describe('ListAnalysisService', () => {
     const endDate = null;
 
     jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
+      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     await expect(
@@ -454,7 +474,7 @@ describe('ListAnalysisService', () => {
     const endDate = null;
 
     jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
+      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     await expect(
@@ -500,7 +520,7 @@ describe('ListAnalysisService', () => {
     const endDate = null;
 
     jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
+      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     await expect(
@@ -514,8 +534,8 @@ describe('ListAnalysisService', () => {
       })
     ).rejects.toThrow(BadRequestException);
   });
-  xit('Should Create an Analysis', async () => {
-    jest.setTimeout(30000); // Increase the timeout to 10 seconds
+
+  it('Should Create an Analysis', async () => {
     const analysisTypesToProcess = 'FCD';
     const listId = 123;
     const reanalyze = true;
@@ -532,6 +552,51 @@ describe('ListAnalysisService', () => {
       subscriptionStatusId: 1,
     });
 
+    (checkProcessingLimits as jest.Mock).mockResolvedValue({
+      isListLocationOverLimit: false,
+      processingLimit: 1000,
+    });
+    (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+      {
+        status: listStatus.Pending,
+        listId: 123,
+        analysisId: analysisTypesToProcess,
+      },
+    ]);
+    (extractAnalysisTypes as jest.Mock).mockResolvedValue(analysisTypesToProcess);
+    const mockList = {
+      listId: 123,
+      analysisId: analysisTypesToProcess,
+      status: listStatus.Pending,
+    };
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: () => mockList,
+        findBy: () => mockList,
+        update: () => true,
+        save: () => true,
+      }),
+      options: {
+        database: 'mock_db',
+      },
+    });
+    clientStoreConnectionLibSql.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: () => mockList,
+        findBy: () => mockList,
+        update: () => true,
+        save: () => true,
+        findOneBy: () => mockList,
+      }),
+      options: {
+        database: 'mock_db',
+      },
+    });
+
+    axios.post = jest.fn().mockResolvedValue({ status: 200, statusText: 'mockedEmailResponse' });
+
+    emailService.sendEmail = jest.fn().mockResolvedValue(true);
+
     const result = await service.createAnalysis(
       analysisTypesToProcess,
       listId,
@@ -541,6 +606,6 @@ describe('ListAnalysisService', () => {
       organization_user_id
     );
 
-    expect(result).toBe('Oks');
+    expect(result).toBe('mockedEmailResponse');
   });
 });

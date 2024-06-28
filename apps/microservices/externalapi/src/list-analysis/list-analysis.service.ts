@@ -535,10 +535,8 @@ export class ListAnalysisService {
     );
 
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
-    const response = await axios({
-      method: 'post',
-      url: url,
-      data: data,
+
+    const response = await axios.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
       },

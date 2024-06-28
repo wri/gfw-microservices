@@ -95,7 +95,7 @@ export class AfiAnalysisByListId {
   coverageHA: number;
   gadmId: string;
   jrcForestLossByYear: string;
-  jrcLandArea: number;
+  jrcLandAreaHA: number;
   jrcLandDeforestedArea: number;
   landmarkArea: number;
   listId: number;

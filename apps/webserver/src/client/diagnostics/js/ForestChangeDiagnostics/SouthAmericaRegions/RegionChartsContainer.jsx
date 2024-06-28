@@ -24,8 +24,11 @@ function RegionChartsContainer({
 
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);
 
+  const argOtbnArea = JSON.parse(data.arg_otbn_area || '{}');
+  const countryArea = JSON.parse(data.country_area || '{}');
+
   const argentinaOtnbDataNotAvailable =
-    Object.entries(JSON.parse(data.arg_otbn_area || '{}')).length === 0;
+    Object.entries(argOtbnArea).length === 0 && !(countryArea?.ARG > 0);
 
   let availableTabs = regionsTabs;
   if (argentinaOtnbDataNotAvailable) {

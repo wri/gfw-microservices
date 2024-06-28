@@ -1746,6 +1746,14 @@ export const OTHER_KPIS_HEADER_AGGREGATE = {
     description:
       'Negligible Risk;Binary yes/no value based on whether sub-state is considered negligible risk',
   },
+  protectedAreasArea: {
+    name: 'Overlap with WDPA (Ha)',
+    description: 'WDPA overlap in hectares',
+  },
+  landmarkArea: {
+    name: 'Overlap with Indigenous Lands (Ha)',
+    description: 'Landmark overlap in hectares',
+  },
 } as const;
 
 export const OTHER_KPIS_HEADER = {
@@ -1757,6 +1765,22 @@ export const OTHER_KPIS_HEADER = {
   negligibleRisk: {
     name: 'Negligible Risk (%)',
     description: '% overlap of location with sub-states considered negligible risk',
+  },
+  protectedAreasArea: {
+    name: 'Overlap with WDPA (Ha)',
+    description: 'WDPA overlap in hectares',
+  },
+  protectedAreasAreaPercentage: {
+    name: 'Overlap with WDPA (%)',
+    description: 'WDPA overlap percentage',
+  },
+  landmarkArea: {
+    name: 'Overlap with Indigenous Lands (Ha)',
+    description: 'Landmark overlap in hectares',
+  },
+  landmarkAreaPercentage: {
+    name: 'Overlap with Indigenous Lands (%)',
+    description: 'Landmark overlap percentage',
   },
 } as const;
 

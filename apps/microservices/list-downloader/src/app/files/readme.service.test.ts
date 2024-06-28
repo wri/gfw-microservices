@@ -50,10 +50,10 @@ describe('ReadmeService', () => {
 
       const expectedOutput =
         'CSV Name;Description;Column;Column Description\n' +
-        '<LIST NAME>_file1;Description 1;Name 1;Description 1\n' +
-        '<LIST NAME>_file1;Description 1;Name 2;Description 2\n' +
-        '<LIST NAME>_file2;Description 2;Name 3;Description 3\n' +
-        '<LIST NAME>_file2;Description 2;Name 4;Description 4';
+        '<LISTNAME>_file1;Description 1;Name 1;Description 1\n' +
+        '<LISTNAME>_file1;Description 1;Name 2;Description 2\n' +
+        '<LISTNAME>_file2;Description 2;Name 3;Description 3\n' +
+        '<LISTNAME>_file2;Description 2;Name 4;Description 4';
 
       const result = service.buildReadmeData(data);
       expect(result).toEqual(expectedOutput);
@@ -86,8 +86,8 @@ describe('ReadmeService', () => {
 
       const readmeData =
         'CSV Name;Description;Column;Column Description\n' +
-        '<LIST NAME>_file1;Description 1;Name 1;Description 1\n' +
-        '<LIST NAME>_file1;Description 1;Name 2;Description 2';
+        '<LISTNAME>_file1;Description 1;Name 1;Description 1\n' +
+        '<LISTNAME>_file1;Description 1;Name 2;Description 2';
 
       jest.spyOn(service, 'afiReadmeData').mockReturnValue(data);
       jest.spyOn(service, 'buildReadmeData').mockReturnValue(readmeData);
@@ -108,7 +108,7 @@ describe('ReadmeService', () => {
         key: 'some_key',
       };
       const data = 'CSV Name;Description;Column;Column Description';
-      const expectedFilePath = '/tmp/wri-some_key/README.md';
+      const expectedFilePath = '/tmp/wri-some_key/README.csv';
 
       (fs.writeFile as unknown as jest.Mock).mockImplementation(
         (filePath, data, encoding, callback) => {

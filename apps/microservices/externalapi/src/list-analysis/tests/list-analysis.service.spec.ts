@@ -607,4 +607,76 @@ describe('ListAnalysisService', () => {
 
     expect(result).toBe('mockedEmailResponse');
   });
+  it('Should fail when try to send email', async () => {
+    const analysisTypesToProcess = 'FCD';
+    const listId = 123;
+    const reanalyze = true;
+    const organizationId = 1;
+    const userEmail = 'email@mail.com';
+    const organization_user_id = 1;
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    (checkProcessingLimits as jest.Mock).mockResolvedValue({
+      isListLocationOverLimit: false,
+      processingLimit: 1000,
+    });
+    (getListAnalysisStatus as jest.Mock).mockResolvedValue([
+      {
+        status: listStatus.Pending,
+        listId: 123,
+        analysisId: analysisTypesToProcess,
+      },
+    ]);
+    (extractAnalysisTypes as jest.Mock).mockResolvedValue(analysisTypesToProcess);
+    const mockList = {
+      listId: 123,
+      analysisId: analysisTypesToProcess,
+      status: listStatus.Pending,
+    };
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: () => mockList,
+        findBy: () => mockList,
+        update: () => true,
+        save: () => true,
+      }),
+      options: {
+        database: 'mock_db',
+      },
+    });
+    clientStoreConnectionLibSql.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: () => mockList,
+        findBy: () => mockList,
+        update: () => true,
+        save: () => true,
+        findOneBy: () => mockList,
+      }),
+      options: {
+        database: 'mock_db',
+      },
+    });
+
+    axios.post = jest.fn().mockRejectedValue(new Error('Failed to send email'));
+    emailService.sendEmail = jest.fn().mockResolvedValue(true);
+
+    await expect(
+      service.createAnalysis(
+        analysisTypesToProcess,
+        listId,
+        reanalyze,
+        organizationId,
+        userEmail,
+        organization_user_id
+      )
+    ).rejects.toThrow(new Error('Failed to send email'));
+  });
 });

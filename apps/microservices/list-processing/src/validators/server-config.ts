@@ -16,7 +16,7 @@ export const serverConfigSchema = z.object({
   LARGE_PROCESSING_LIST_BUCKET: z.string(),
   LARGE_LIST_PROCESSING_ENDPOINT: z.string().url(),
 
-  MICROSERVICES_ENV: z.enum(['LATEST', 'DEVELOPMENT']),
+  MICROSERVICES_ENV: z.enum(['LATEST', 'DEVELOPMENT', 'QA', 'PRODV2', 'STAGING']),
 
   LATEST_COMMIT: z.string().optional(),
 });

@@ -594,7 +594,6 @@ describe('ListAnalysisService', () => {
     });
 
     axios.post = jest.fn().mockResolvedValue({ status: 200, statusText: 'mockedEmailResponse' });
-
     emailService.sendEmail = jest.fn().mockResolvedValue(true);
 
     const result = await service.createAnalysis(

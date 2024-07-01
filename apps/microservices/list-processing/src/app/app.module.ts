@@ -21,13 +21,17 @@ import { AwsModule } from '@wri-monorepos/aws';
 
 import { ServerConfigType, serverConfigSchema } from '../validators/server-config';
 
+// This needs to be at the beginning of the file to ensure that the '.env' file
+// is loaded into process.env before any code reads process.env
+const envModule = ConfigModule.forRoot({
+  envFilePath: ['.env', '.env.production'],
+  validate: (env) => serverConfigSchema.parse(env),
+  isGlobal: true,
+});
+
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: ['.env', '.env.production'],
-      validate: (env) => serverConfigSchema.parse(env),
-      isGlobal: true,
-    }),
+    envModule,
     TypeOrmSystemModule.create({
       name: 'default',
       imports: [SchedulerModule],

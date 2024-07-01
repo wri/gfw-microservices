@@ -145,7 +145,7 @@ export default class SearchModal extends Component {
         },
         {
           layer: new FeatureLayer({
-            url: "https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/34",
+            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/34',
             id: `${proLayers.universalMillList}_feat`,
           }),
           searchFields: ['mill_name', 'prnt_comp', 'id'],
@@ -157,7 +157,7 @@ export default class SearchModal extends Component {
         },
         {
           layer: new FeatureLayer({
-            url: "https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25",
+            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
             id: `${proLayers.oilPalmConcessions}_feat`,
           }),
           searchFields: ['name', 'company', 'group_comp', 'subgroup'],
@@ -169,7 +169,7 @@ export default class SearchModal extends Component {
         },
         {
           layer: new FeatureLayer({
-            url: "https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25",
+            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
             id: `${proLayers.rspoConcessions}_feat`,
           }),
           searchFields: ['name', 'company', 'group_comp', 'subgroup'],
@@ -181,7 +181,7 @@ export default class SearchModal extends Component {
         },
         {
           layer: new FeatureLayer({
-            url: "https://gis-gfw.wri.org/arcgis/rest/services/conservation/MapServer/7",
+            url: 'https://gis-gfw.wri.org/arcgis/rest/services/conservation/MapServer/7',
             id: `${proLayers.protectedAreas}_feat`,
           }),
           searchFields: ['name', 'orig_name'],
@@ -192,7 +192,7 @@ export default class SearchModal extends Component {
         },
         {
           layer: new FeatureLayer({
-            url: "https://gis-gfw.wri.org/arcgis/rest/services/people/MapServer/1",
+            url: 'https://gis-gfw.wri.org/arcgis/rest/services/people/MapServer/1',
           }),
           searchFields: ['name'],
           suggestionTemplate: 'Name: {name}',

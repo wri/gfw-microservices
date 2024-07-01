@@ -131,7 +131,7 @@ export function createPage(bodyContent: {
                           this decade in order to secure a sustainable future: climate, energy, food, forests, water, <br>
                           cities and transport.
                           </span><br>
-                          <a style="text-decoration:none; color:#808080" href="https://www.wri.org">www.wri.org</a>
+                          <a href="https://www.wri.org">www.wri.org</a>
                         </td>
                       </tr>
               
@@ -140,7 +140,7 @@ export function createPage(bodyContent: {
                           <br><br>  
                           <hr />
                           <span>
-                            <a style="text-decoration:none; color:#808080" href="https://www.wri.org/about/privacy-policy">Privacy Policy</a> | <a style="text-decoration:none; color:#808080" href="https://www.wri.org/about/wri-data-platforms-tos">Terms of Service</a> | <a style="text-decoration:none; color:#808080" href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">License Agreement</a>
+                            <a href="https://www.wri.org/about/privacy-policy">Privacy Policy</a> | <a href="https://www.wri.org/about/wri-data-platforms-tos">Terms of Service</a> | <a href="https://www.globalforestwatch.org/help/guides/global-forest-watch-pro-license-agreement/">License Agreement</a>
                           </span>
                         </td>
                       </tr>

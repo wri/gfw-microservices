@@ -480,12 +480,12 @@ export class ListAnalysisService {
     );
     const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
 
-    const listToUpdate = await listAnalysisStatusRepository.findBy({
+    const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
       listId,
       analysisId: analysisTypesToProcess,
     });
 
-    if (listToUpdate.length === 0) {
+    if (listAnalysisStatusToUpdate.length === 0) {
       await listAnalysisStatusRepository.save({
         listId: listId,
         analysisId: analysisTypesToProcess,

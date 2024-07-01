@@ -11,7 +11,7 @@ import { formatDecimals } from '../../../../common/js/utils/diagnostics.utils';
 import { chartDatasetConfigs, regionConstants } from './regions.constants';
 import { getBarChartData } from './getBarChartData';
 import { useQuery } from '../../../../common/js/hooks';
-import { getDataAndCheckIfAllYearsZero } from './barChart.utils';
+import { getDataAndCheckIfAllYearsZero, addNoOverlapArea } from './barChart.utils';
 import '../../common/DiagnosticsChartContainer.scss';
 
 function RegionChartArgentina({ listId, data, fireDownload }) {
@@ -74,8 +74,6 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
     });
   }, []);
 
-  const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || {});
-
   const fcdParams = {
     listId,
     locationId,
@@ -114,9 +112,6 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       });
   }, [listId]);
 
-  const WDPA = formatDecimals(argentinaPieChartsData.WDPA);
-  const landmark = formatDecimals(argentinaPieChartsData.landmark);
-
   let barChartData = [];
 
   if (!isAllDataEmpty) {
@@ -126,6 +121,30 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       chartsConfiguration.find((config) => config.id === selectedOptionId).chartLabels
     );
   }
+
+  const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || {});
+
+  const argentinaPieChartData = Object.keys(argentinaOtbnAreaData).length !== 0
+    ? addNoOverlapArea(argentinaOtbnAreaData, data.total_area, 'Outside of OTBN')
+    : {};
+
+  const showProtectedAreasPieChart =
+    argentinaPieChartsData?.WDPA && !argentinaPieChartsData?.WDPA?.error;
+
+  const protectedAreasPieChartData = showProtectedAreasPieChart
+    ? addNoOverlapArea(
+        argentinaPieChartsData?.WDPA?.overlap,
+        data.total_area,
+        'Outside of Protected Areas'
+      )
+    : {};
+  const protectedAreasPieChartFormatedData = formatDecimals(protectedAreasPieChartData);
+
+  const showIndigenousTerritoriesPieChart =
+    argentinaPieChartsData?.landmark && !argentinaPieChartsData?.landmark?.error;
+  const indigenousTerritoriesPieCharFormatedtData = formatDecimals(
+    argentinaPieChartsData?.landmark?.overlap
+  );
 
   return (
     <>
@@ -172,23 +191,22 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       />
 
       <PieChart
-        data={argentinaOtbnAreaData}
+        data={argentinaPieChartData}
         chartLabels={chartDatasetConfigs.otbn.chartLabels}
         title={regionConstants.diagnosticTitle}
         informationBubbleId={regionConstants.informationBubbleId}
       />
-
-      {WDPA?.overlap && (
+      {showProtectedAreasPieChart && (
         <PieChart
-          data={WDPA.overlap}
+          data={protectedAreasPieChartFormatedData}
           chartLabels={wdpaOverlapCountry.chartLabels}
           title={wdpaOverlapCountry.diagnosticTitle}
           informationBubbleId={wdpaOverlapCountry.informationBubbleId}
         />
       )}
-      {landmark?.overlap && (
+      {showIndigenousTerritoriesPieChart && (
         <PieChart
-          data={landmark.overlap}
+          data={indigenousTerritoriesPieCharFormatedtData}
           chartLabels={landmarkOverlapCountry.chartLabels}
           title={landmarkOverlapCountry.diagnosticTitle}
           informationBubbleId={landmarkOverlapCountry.informationBubbleId}

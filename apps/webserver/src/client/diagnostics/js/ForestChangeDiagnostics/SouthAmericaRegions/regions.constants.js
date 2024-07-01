@@ -16,7 +16,7 @@ export const regionsTabs = [
 
 export const regionConstants = {
   id: 'otbnArgentina',
-  chartsSelectorTitle: 'Tree Cover Loss on Argentina OTBN',
+  chartsSelectorTitle: 'ARGENTINIAN DEFORESTATION',
   informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
   downloadId: 'argentinaDeforestation',
   diagnosticTitle: 'OTBN Percent Overlap',
@@ -28,7 +28,7 @@ export const chartDatasetConfigs = {
   argentinaOtbn: {
     // delete when isArgentinaDeforestationAvailable feature flag is deleted
     id: 'otbnArgentina',
-    chartsSelectorTitle: 'Tree Cover Loss on Argentina OTBN',
+    chartsSelectorTitle: 'ARGENTINIAN DEFORESTATION',
     dataCy: 'tree-cover-loss-OTBN',
     legendColor: 'rgb(255,127,179)',
     informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
@@ -45,7 +45,7 @@ export const chartDatasetConfigs = {
 
   otbn: {
     id: 'otbn',
-    chartsSelectorTitle: 'Argentina OTBN',
+    chartsSelectorTitle: 'Argentinian Govt Deforestation on Argentina OTBN',
     dataCy: 'annual-loss-OTBN',
     informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
     infoBubbleId: 'regions_arg_deforestation_pa_it',
@@ -82,7 +82,7 @@ export const chartDatasetConfigs = {
       {
         id: 'country specific deforestation',
         dataPath: 'country.country_specific_deforestation',
-        legend: 'Argentinian government data',
+        legend: 'ARGENTINIAN GOVERNMENT DEFORESTATION DATA',
         color: 'rgb(34,153,102)',
         checked: true,
       },
@@ -98,7 +98,7 @@ export const chartDatasetConfigs = {
   protectedAreas: {
     id: 'protectedAreas',
     dataCy: 'argentina-protected-areas',
-    chartsSelectorTitle: 'Protected Areas',
+    chartsSelectorTitle: 'Argentinian Govt Deforestation on Protected Areas',
     infoBubbleId: 'regions_arg_deforestation_pa_it',
     chartLabels: [
       {
@@ -121,7 +121,7 @@ export const chartDatasetConfigs = {
   indigenousTerritories: {
     id: 'indigenousTerritories',
     dataCy: 'argentina-indigenous-territories',
-    chartsSelectorTitle: 'Indigenous Territories',
+    chartsSelectorTitle: 'Argentinian Govt Deforestation on Indigenous Territories',
     infoBubbleId: 'regions_arg_deforestation_pa_it',
     chartLabels: [
       {

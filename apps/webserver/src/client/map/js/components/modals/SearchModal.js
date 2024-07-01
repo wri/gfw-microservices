@@ -52,22 +52,6 @@ export default class SearchModal extends Component {
   }
 
   createSearch = () => {
-    const { mapLayers } = this.props;
-    const universalMillListURL = mapLayers.filter(
-      (layer) => layer.id === proLayers.universalMillList
-    )[0].layerConfig.body.url;
-    const oilPalmConcessionsURL = mapLayers.filter(
-      (layer) => layer.id === proLayers.oilPalmConcessions
-    )[0].layerConfig.body.url;
-    const rspoConcessionsURL = mapLayers.filter(
-      (layer) => layer.id === proLayers.rspoConcessions
-    )[0].layerConfig.body.url;
-    // const rspoPalmOilMillsURL = mapLayers.filter(layer => layer.id === rspoPalmOilMills)[0].layerConfig.body.url;
-    const protectedAreasURL = mapLayers.filter((layer) => layer.id === proLayers.protectedAreas)[0]
-      .layerConfig.body.url;
-    const landRightsURL = mapLayers.filter((layer) => layer.id === proLayers.landRights)[0]
-      .layerConfig.body.url;
-
     this.searchWidget = new Search({
       view: this.props.mapView,
       container: 'search-widget',
@@ -86,8 +70,8 @@ export default class SearchModal extends Component {
           placeholder: 'Find address or place',
         },
         {
-          featureLayer: new FeatureLayer({
-            url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/admin/MapServer/6',
+          layer: new FeatureLayer({
+            url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/6',
             popupTemplate: {
               title: 'Country: {name_0}',
             },
@@ -101,8 +85,8 @@ export default class SearchModal extends Component {
           maxSuggestions: 4,
         },
         {
-          featureLayer: new FeatureLayer({
-            url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/admin/MapServer/5',
+          layer: new FeatureLayer({
+            url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/5',
             popupTemplate: {
               title: 'State: {name_1}',
               content: [
@@ -128,8 +112,8 @@ export default class SearchModal extends Component {
           maxSuggestions: 4,
         },
         {
-          featureLayer: new FeatureLayer({
-            url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/admin/MapServer/4',
+          layer: new FeatureLayer({
+            url: 'https://gfwpro-gis.globalforestwatch.org/arcgis/rest/services/GADM36_admin/MapServer/4',
             popupTemplate: {
               title: 'Sub-State: {name_2}',
               content: [
@@ -160,20 +144,20 @@ export default class SearchModal extends Component {
           maxSuggestions: 4,
         },
         {
-          featureLayer: new FeatureLayer({
-            url: universalMillListURL,
+          layer: new FeatureLayer({
+            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/34',
             id: `${proLayers.universalMillList}_feat`,
           }),
-          searchFields: ['Mill_Name', 'Prnt_Comp', 'ID'],
+          searchFields: ['mill_name', 'prnt_comp', 'id'],
           suggestionTemplate:
-            'Mill Name: {Mill_Name}, Parent Company: {Prnt_Comp}, Universal Mill Id: {ID}',
+            'Mill Name: {mill_name}, Parent Company: {prnt_comp}, Universal Mill Id: {id}',
           outFields: ['Mill_Name', 'Prnt_Comp', 'ID', 'globalid'],
           name: 'Universal Mill List',
           placeholder: 'Search Universal Mill Lists',
         },
         {
-          featureLayer: new FeatureLayer({
-            url: oilPalmConcessionsURL,
+          layer: new FeatureLayer({
+            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
             id: `${proLayers.oilPalmConcessions}_feat`,
           }),
           searchFields: ['name', 'company', 'group_comp', 'subgroup'],
@@ -184,29 +168,20 @@ export default class SearchModal extends Component {
           placeholder: 'Search Oil Palm Concessions',
         },
         {
-          featureLayer: new FeatureLayer({
-            url: rspoConcessionsURL,
+          layer: new FeatureLayer({
+            url: 'https://gis-gfw.wri.org/arcgis/rest/services/commodities/MapServer/25',
             id: `${proLayers.rspoConcessions}_feat`,
           }),
-          searchFields: ['name', 'group_arch', 'group_comp', 'subgroup'],
+          searchFields: ['name', 'company', 'group_comp', 'subgroup'],
           suggestionTemplate:
-            'Mill Name: {name}, Company: {group_arch}, Group: {group_comp}, Subgroup: {subgroup}',
-          outFields: ['name', 'group_arch', 'group_comp', 'subgroup', 'globalid'],
+            'Mill Name: {name}, Company: {company}, Group: {group_comp}, Subgroup: {subgroup}',
+          outFields: ['name', 'company', 'group_comp', 'subgroup', 'globalid'],
           name: 'RSPO Concessions',
           placeholder: 'Search RSPO Concessions',
-          // }, {
-          //   featureLayer: new FeatureLayer({
-          //     url: rspoPalmOilMillsURL
-          //   }),
-          //   searchFields: ['mill_name_', 'company_na', 'group_name'],
-          //   suggestionTemplate: 'Mill Name: {mill_name_}, Company: {company_na}, Group: {group_name}',
-          //   outFields: ['mill_name_', 'company_na', 'group_name'],
-          //   name: 'RSPO Palm Oil Mills',
-          //   placeholder: 'Search RSPO Palm Oil Mills'
         },
         {
-          featureLayer: new FeatureLayer({
-            url: protectedAreasURL,
+          layer: new FeatureLayer({
+            url: 'https://gis-gfw.wri.org/arcgis/rest/services/conservation/MapServer/7',
             id: `${proLayers.protectedAreas}_feat`,
           }),
           searchFields: ['name', 'orig_name'],
@@ -216,8 +191,8 @@ export default class SearchModal extends Component {
           placeholder: 'Search Protected Areas',
         },
         {
-          featureLayer: new FeatureLayer({
-            url: landRightsURL,
+          layer: new FeatureLayer({
+            url: 'https://gis-gfw.wri.org/arcgis/rest/services/people/MapServer/1',
           }),
           searchFields: ['name'],
           suggestionTemplate: 'Name: {name}',

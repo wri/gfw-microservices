@@ -124,9 +124,10 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
 
   const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || {});
 
-  const argentinaPieChartData = Object.keys(argentinaOtbnAreaData).length !== 0
-    ? addNoOverlapArea(argentinaOtbnAreaData, data.total_area, 'Outside of OTBN')
-    : {};
+  const argentinaPieChartData =
+    Object.keys(argentinaOtbnAreaData).length !== 0
+      ? addNoOverlapArea(argentinaOtbnAreaData, data.total_area, 'Outside of OTBN')
+      : {};
 
   const showProtectedAreasPieChart =
     argentinaPieChartsData?.WDPA && !argentinaPieChartsData?.WDPA?.error;

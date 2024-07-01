@@ -1,4 +1,13 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServerConfigType, serverConfigSchema } from '../validators/server-config';
+
+// This needs to be at the beginning of the file to ensure that the '.env' file
+// is loaded into process.env before any code reads process.env
+const envModule = ConfigModule.forRoot({
+  envFilePath: ['.env', '.env.production'],
+  validate: (env) => serverConfigSchema.parse(env),
+  isGlobal: true,
+});
 
 import { Module } from '@nestjs/common';
 import { config as awsConfig } from 'aws-sdk';
@@ -18,16 +27,6 @@ import { AlertsModule } from './alerts';
 import { ListUploadModule } from './list-upload';
 import { ListController } from './v1/list.controller';
 import { AwsModule } from '@wri-monorepos/aws';
-
-import { ServerConfigType, serverConfigSchema } from '../validators/server-config';
-
-// This needs to be at the beginning of the file to ensure that the '.env' file
-// is loaded into process.env before any code reads process.env
-const envModule = ConfigModule.forRoot({
-  envFilePath: ['.env', '.env.production'],
-  validate: (env) => serverConfigSchema.parse(env),
-  isGlobal: true,
-});
 
 @Module({
   imports: [

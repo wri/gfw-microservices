@@ -54,7 +54,7 @@ export class ListAnalysisController {
   ): Promise<ListAnalysisResponse> {
     new ZodValidationPipe(requestSchema).transform(request);
     const {
-      user: { organizationId },
+      user: { organizationId, organization_user_id },
     } = request;
 
     const analysisStatus = await this.listAnalysisService.getAnalysisStatusWithErrorFileStoragePath(
@@ -62,6 +62,7 @@ export class ListAnalysisController {
         organizationId,
         listId,
         analysisId,
+        organization_user_id,
       }
     );
 

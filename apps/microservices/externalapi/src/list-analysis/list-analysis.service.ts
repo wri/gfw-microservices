@@ -27,11 +27,18 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
-import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
+import {
+  AWS_DOWNLOADER_QUEUE_IDENTIFIER,
+  CREATE_ANALYSIS_STATUS,
+  LIST_ANALISYS_ENDPOINT_NAMES,
+} from '../config';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
-
 import { ServerConfigType } from '../validators/server-config';
+import {
+  ActivityLog,
+  ClientStoreConnection as ClientStoreConnectionLibSql,
+} from '@wri-monorepos/sql';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -59,7 +66,8 @@ export class ListAnalysisService {
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,
     private readonly sqsService: SqsService,
-    private readonly listService: ListService
+    private readonly listService: ListService,
+    private readonly clientStoreConnectionLibSql: ClientStoreConnectionLibSql
   ) {
     this.LLP_BASE_URL = configService.get('LLP_BASE_URL');
     this.awsConfig = {
@@ -143,11 +151,23 @@ export class ListAnalysisService {
     analysisId,
     listId,
     organizationId,
+    organization_user_id,
   }: {
     organizationId: number;
     listId: number;
     analysisId: string;
+    organization_user_id: number;
   }): Promise<ListAnalysisResponse> {
+    //Save ActivityLog
+    const clientStoreConnectionLibSql = await this.getOrganizationConnection(organizationId);
+    const activityLogRepository = clientStoreConnectionLibSql.getRepository(ActivityLog);
+
+    await activityLogRepository.save({
+      userId: organization_user_id,
+      activityDescription: `The endpoint ${LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS_STATUS]} was accessed by user ${organization_user_id}`,
+      activityTime: new Date(),
+    });
+
     const analysisStatus = await this.getAnalysisStatus({
       analysisId,
       listId,
@@ -177,6 +197,16 @@ export class ListAnalysisService {
     organization_user_id,
     fileType,
   }: PrepareUploadRequestSchema & { organizationId: number; organization_user_id: number }) {
+    //Save ActivityLog
+    const clientStoreConnectionLibSql = await this.getOrganizationConnection(organizationId);
+    const activityLogRepository = clientStoreConnectionLibSql.getRepository(ActivityLog);
+
+    await activityLogRepository.save({
+      userId: organization_user_id,
+      activityDescription: `The endpoint ${LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS_STATUS]} was accessed by user ${organization_user_id}`,
+      activityTime: new Date(),
+    });
+
     const fileKey = generateRandomFilename(fileType);
     try {
       const presignedURLResponse = await axios.post<{

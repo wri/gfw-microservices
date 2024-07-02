@@ -30,3 +30,16 @@ export const getDataAndCheckIfAllYearsZero = (argentinaPieChartsData, dataPath) 
   const barChartData = getDataFromPath(argentinaPieChartsData, dataPath);
   return allYearsHaveZeroValue(barChartData);
 };
+
+export const addNoOverlapArea = (overlapArea, total_area, nonOverlapAreaLabel) => {
+  // Calculate the sum of the values in overlap areas
+  let sumOfAreas = 0;
+  for (let category in overlapArea) {
+    sumOfAreas += overlapArea[category];
+  }
+
+  // Calculate the remaining area
+  let nonOverlapArea = total_area - sumOfAreas;
+
+  return { ...overlapArea, [nonOverlapAreaLabel]: nonOverlapArea };
+};

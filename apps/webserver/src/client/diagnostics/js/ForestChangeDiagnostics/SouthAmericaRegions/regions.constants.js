@@ -19,10 +19,12 @@ export const regionConstants = {
   chartsSelectorTitle: 'ARGENTINIAN DEFORESTATION',
   informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
   downloadId: 'argentinaDeforestation',
-  diagnosticTitle: 'OTBN Percent Overlap',
+  diagnosticTitle: 'OTBN Overlap',
   startYear: 2008,
   endYear: 2023,
 };
+
+const nonOverlapAreaColor = 'rgb(200,200,200)';
 
 export const chartDatasetConfigs = {
   argentinaOtbn: {
@@ -33,7 +35,7 @@ export const chartDatasetConfigs = {
     legendColor: 'rgb(255,127,179)',
     informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
     downloadId: 'southAmericaTCL',
-    diagnosticTitle: 'OTBN Percent Overlap',
+    diagnosticTitle: 'OTBN Overlap',
     chartLabels: [
       { id: 'Category I', color: 'rgb(238,37,33)', legend: 'Category I', checked: true },
       { id: 'Category II', color: 'rgb(255,204,51)', legend: 'Category II', checked: true },
@@ -69,6 +71,13 @@ export const chartDatasetConfigs = {
         dataPath: 'classified_region.country_specific_deforestation.Category III',
         legend: 'Category III',
         color: 'rgb(151,189,61)',
+        checked: true,
+      },
+      {
+        id: 'Outside of OTBN',
+        dataPath: '',
+        legend: 'Outside of OTBN',
+        color: nonOverlapAreaColor,
         checked: true,
       },
     ],
@@ -115,6 +124,13 @@ export const chartDatasetConfigs = {
         color: 'rgb(255,64,0)',
         checked: true,
       },
+      {
+        id: 'Outside of Protected Areas',
+        dataPath: '',
+        legend: 'Outside of Protected Areas',
+        color: nonOverlapAreaColor,
+        checked: true,
+      },
     ],
   },
 
@@ -131,25 +147,42 @@ export const chartDatasetConfigs = {
         color: 'rgb(146,37,100)',
         checked: true,
       },
+      {
+        id: 'nonIndigenous',
+        dataPath: 'landmark.country_specific_deforestation.nonIndigenous',
+        legend: 'Outside of Indigenous Territories',
+        color: nonOverlapAreaColor,
+        checked: true,
+      },
     ],
   },
 
   wdpaOverlapCountry: {
-    diagnosticTitle: 'Protected Areas Percent Overlap',
+    diagnosticTitle: 'Protected Areas Overlap',
     informationBubbleId: 'regions_arg_pa_landcover_calc',
     downloadUrl: 'listId=5692&country=Argentina&category=WDPA',
     chartLabels: [
       { id: 'fullyRestrictive', color: '#862e13', legend: 'Fully Restricted' },
       { id: 'lessRestricted', color: '#eb5027', legend: 'Less Restricted' },
+      {
+        id: 'Outside of Protected Areas',
+        legend: 'Outside of Protected Areas',
+        color: nonOverlapAreaColor,
+        checked: true,
+      },
     ],
   },
   landmarkOverlapCountry: {
-    diagnosticTitle: 'Indigenous Territories Percent Overlap',
+    diagnosticTitle: 'Indigenous Territories Overlap',
     downloadUrl: 'listId=5692&country=Argentina&category=landmark',
     informationBubbleId: 'regions_arg_it_landcover_calc',
     chartLabels: [
       { id: 'indigenous', color: '#a8704a', legend: 'Overlap with Indigenous Territories' },
-      { id: 'nonIndigenous', color: '#deaf82', legend: 'Non-Overlap with Indigenous Territories' },
+      {
+        id: 'nonIndigenous',
+        color: nonOverlapAreaColor,
+        legend: 'Outside of Indigenous Territoriess',
+      },
     ],
   },
 };

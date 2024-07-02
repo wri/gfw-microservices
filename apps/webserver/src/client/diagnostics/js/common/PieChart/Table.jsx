@@ -2,7 +2,7 @@ import React from 'react';
 import { prettifyNum, formatNum, formatPct } from '../../../../common/js/utils/diagnostics.utils';
 import './ChartLegendsTable.scss';
 
-function Table({ data, chartLabels, title, sumOfAreasByChartLabel }) {
+function Table({ data, chartLabels, sumOfAreasByChartLabel }) {
   const chartLabelRows = chartLabels.map(({ id, legend, color }) => {
     const chartLabelArea = data[id] || 0;
     const chartLabelPercentage = (chartLabelArea / sumOfAreasByChartLabel) * 100;
@@ -23,7 +23,7 @@ function Table({ data, chartLabels, title, sumOfAreasByChartLabel }) {
       <table>
         <thead>
           <tr>
-            <th>{title}</th>
+            <th>Category</th>
             <th>COVERAGE (%)</th>
             <th>TOTAL AREA (HA)</th>
           </tr>

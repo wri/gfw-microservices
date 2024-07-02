@@ -51,12 +51,16 @@ export class ListUploadController {
     new ZodValidationPipe(requestSchema).transform(request);
 
     const {
-      user: { organizationId },
+      user: { organizationId, organization_user_id },
     } = request;
 
     const listUpload = listUploadBody as unknown as ListUploadNewRequestSchema;
 
-    return await this.listAnalysisService.uploadNewList(listUpload, organizationId);
+    return await this.listAnalysisService.uploadNewList(
+      listUpload,
+      organizationId,
+      organization_user_id
+    );
   }
 
   @ApiResponse({ status: 200, type: PrepareUploadResponse })

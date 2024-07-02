@@ -16,7 +16,8 @@ import { ListRepositoryMock } from './lists.repository.mock';
 import { ListAnalysisService } from '../../list-analysis/list-analysis.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { NotFoundException } from '@nestjs/common';
-
+import { SaveActivityLogEndpoint } from '../../list-analysis/utils/saveActivityLogEndpoint';
+import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
 describe('ListService', () => {
   let organizationService: OrganizationService;
   let module: TestingModule;
@@ -328,6 +329,8 @@ describe('ListService', () => {
         OrganizationService,
         ListService,
         S3Service,
+        SaveActivityLogEndpoint,
+        ClientStoreConnectionLibSql,
       ],
     }).compile();
   });

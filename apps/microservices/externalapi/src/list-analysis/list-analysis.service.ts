@@ -29,16 +29,16 @@ import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import {
   AWS_DOWNLOADER_QUEUE_IDENTIFIER,
-  CREATE_ANALYSIS_STATUS,
+  DELETE_LIST,
+  GENERATE_ANALYSIS,
   LIST_ANALISYS_ENDPOINT_NAMES,
+  PREPARE_UPLOAD,
+  UPLOAD_NEW_LIST,
 } from '../config';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
-import {
-  ActivityLog,
-  ClientStoreConnection as ClientStoreConnectionLibSql,
-} from '@wri-monorepos/sql';
+import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -67,7 +67,7 @@ export class ListAnalysisService {
     private organizationService: OrganizationService,
     private readonly sqsService: SqsService,
     private readonly listService: ListService,
-    private readonly clientStoreConnectionLibSql: ClientStoreConnectionLibSql
+    private readonly saveActivityLogEndpoint: SaveActivityLogEndpoint
   ) {
     this.LLP_BASE_URL = configService.get('LLP_BASE_URL');
     this.awsConfig = {
@@ -151,23 +151,11 @@ export class ListAnalysisService {
     analysisId,
     listId,
     organizationId,
-    organization_user_id,
   }: {
     organizationId: number;
     listId: number;
     analysisId: string;
-    organization_user_id: number;
   }): Promise<ListAnalysisResponse> {
-    //Save ActivityLog
-    const clientStoreConnectionLibSql = await this.getOrganizationConnection(organizationId);
-    const activityLogRepository = clientStoreConnectionLibSql.getRepository(ActivityLog);
-
-    await activityLogRepository.save({
-      userId: organization_user_id,
-      activityDescription: `The endpoint ${LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS_STATUS]} was accessed by user ${organization_user_id}`,
-      activityTime: new Date(),
-    });
-
     const analysisStatus = await this.getAnalysisStatus({
       analysisId,
       listId,
@@ -198,14 +186,13 @@ export class ListAnalysisService {
     fileType,
   }: PrepareUploadRequestSchema & { organizationId: number; organization_user_id: number }) {
     //Save ActivityLog
-    const clientStoreConnectionLibSql = await this.getOrganizationConnection(organizationId);
-    const activityLogRepository = clientStoreConnectionLibSql.getRepository(ActivityLog);
+    const organizationDetails = await this.getOrganizationDetails(organizationId);
 
-    await activityLogRepository.save({
-      userId: organization_user_id,
-      activityDescription: `The endpoint ${LIST_ANALISYS_ENDPOINT_NAMES[CREATE_ANALYSIS_STATUS]} was accessed by user ${organization_user_id}`,
-      activityTime: new Date(),
-    });
+    this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+      organizationDetails,
+      organization_user_id,
+      LIST_ANALISYS_ENDPOINT_NAMES[PREPARE_UPLOAD]
+    );
 
     const fileKey = generateRandomFilename(fileType);
     try {
@@ -285,11 +272,18 @@ export class ListAnalysisService {
 
   async uploadNewList(
     newListDetails: ListUploadNewRequestSchema,
-    organizationId: number
+    organizationId: number,
+    organization_user_id: number
   ): Promise<ListUploadNewResponse | ListUploadNewErrorResponse> {
     const organizationDetails = await this.getOrganizationDetails(organizationId);
     const organizationConnection = await this.createOrganizationConnection(organizationDetails);
     const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);
+
+    this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+      organizationDetails,
+      organization_user_id,
+      LIST_ANALISYS_ENDPOINT_NAMES[UPLOAD_NEW_LIST]
+    );
 
     const externalUpload = await externalUploadRepository.findOne({
       where: { id: parseInt(newListDetails.uploadId) },
@@ -381,7 +375,12 @@ export class ListAnalysisService {
     analysisId,
   }: AnalysesGenerateRequest) {
     const organization = await this.getOrganizationDetails(organizationId);
-
+    const user = await this.userService.findUser(organizationId, userEmail);
+    this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+      organization,
+      user.organization_user_id,
+      LIST_ANALISYS_ENDPOINT_NAMES[GENERATE_ANALYSIS]
+    );
     let sqsMessage = {};
     try {
       if (!userEmail) {
@@ -424,6 +423,14 @@ export class ListAnalysisService {
   }
 
   async deleteList(listId: number, organizationId: number, userEmail: string): Promise<string> {
+    //Save ActivityLog
+    const organizationDetails = await this.getOrganizationDetails(organizationId);
+    const user = await this.userService.findUser(organizationId, userEmail);
+    this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+      organizationDetails,
+      user.organization_user_id,
+      LIST_ANALISYS_ENDPOINT_NAMES[DELETE_LIST]
+    );
     try {
       const connection = await this.getOrganizationConnection(organizationId);
       const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
@@ -431,8 +438,6 @@ export class ListAnalysisService {
         where: { listId },
       });
       if (listAnalysisStatus) {
-        const user = await this.userService.findUser(organizationId, userEmail);
-
         const { data } = await axios.post(
           `${this.LLP_BASE_URL}/api/list/${listId}/delete`,
           {

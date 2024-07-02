@@ -28,7 +28,8 @@ import { SqsService, SqsModule, SqsMessageHandler } from '@ssut/nestjs-sqs';
 import { ListService } from '../../lists/lists.service';
 import { S3Service } from '@wri-monorepos/aws';
 //import { } from '@ssut/nestjs-sqs';
-
+import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
+import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 // Mock ConfigService
 const mockConfigService = {
   get: jest.fn().mockImplementation((key: string) => {
@@ -159,6 +160,8 @@ describe('ListUploadController', () => {
         OrganizationService,
         ListService,
         S3Service,
+        ClientStoreConnectionLibSql,
+        SaveActivityLogEndpoint,
       ],
     })
       .overrideProvider(ConfigService)

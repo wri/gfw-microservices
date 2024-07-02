@@ -36,7 +36,7 @@ function Chart({ data, chartLabels }) {
           cursor: 'pointer',
           dataLabels: {
             enabled: true,
-            format: '<b>{point.legend}</b>:<br>{point.y}<br>{point.percentage:.1f} %',
+            format: '<b>{point.legend}</b>:<br>{point.percentage:.1f} %',
           },
         },
       },

@@ -5,8 +5,7 @@ import {
 import { UserService } from '../user.service';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Organization } from '../../api-keys/organization.entity';
-import { ENDPOINT_ACTIVITY_TYPE_ID } from '../../config';
-
+import { ListActivityTypesEnum } from '@wri-monorepos/constants';
 @Injectable()
 export class SaveActivityLogEndpoint {
   constructor(
@@ -16,7 +15,8 @@ export class SaveActivityLogEndpoint {
   async saveActivityLogEndpoint(
     organizationDetails: Organization,
     organization_user_id: number,
-    endpoint: string
+    endpoint: string,
+    endpointActivityTypeId: ListActivityTypesEnum
   ) {
     if (organization_user_id === null || organization_user_id === undefined) {
       return;
@@ -34,7 +34,7 @@ export class SaveActivityLogEndpoint {
       });
       await activityLogRepository.save({
         userId: organization_user_id,
-        activityTypeId: ENDPOINT_ACTIVITY_TYPE_ID,
+        activityTypeId: endpointActivityTypeId,
         activityDescription: `The endpoint ${endpoint} was accessed by user ${userEmail}`,
         activityTime: new Date(),
       });

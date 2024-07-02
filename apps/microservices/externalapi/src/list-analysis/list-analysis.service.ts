@@ -25,7 +25,7 @@ import {
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
-import { getListStatusString, listStatus } from '@wri-monorepos/constants';
+import { getListStatusString, ListActivityTypesEnum, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import {
   AWS_DOWNLOADER_QUEUE_IDENTIFIER,
@@ -191,7 +191,8 @@ export class ListAnalysisService {
     this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organizationDetails,
       organization_user_id,
-      LIST_ANALISYS_ENDPOINT_NAMES[PREPARE_UPLOAD]
+      LIST_ANALISYS_ENDPOINT_NAMES[PREPARE_UPLOAD],
+      ListActivityTypesEnum.ListAnalyzing
     );
 
     const fileKey = generateRandomFilename(fileType);
@@ -282,7 +283,8 @@ export class ListAnalysisService {
     this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organizationDetails,
       organization_user_id,
-      LIST_ANALISYS_ENDPOINT_NAMES[UPLOAD_NEW_LIST]
+      LIST_ANALISYS_ENDPOINT_NAMES[UPLOAD_NEW_LIST],
+      ListActivityTypesEnum.ListCreated
     );
 
     const externalUpload = await externalUploadRepository.findOne({
@@ -379,7 +381,8 @@ export class ListAnalysisService {
     this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organization,
       user.organization_user_id,
-      LIST_ANALISYS_ENDPOINT_NAMES[GENERATE_ANALYSIS]
+      LIST_ANALISYS_ENDPOINT_NAMES[GENERATE_ANALYSIS],
+      ListActivityTypesEnum.ListUpdate
     );
     let sqsMessage = {};
     try {
@@ -429,7 +432,8 @@ export class ListAnalysisService {
     this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organizationDetails,
       user.organization_user_id,
-      LIST_ANALISYS_ENDPOINT_NAMES[DELETE_LIST]
+      LIST_ANALISYS_ENDPOINT_NAMES[DELETE_LIST],
+      ListActivityTypesEnum.ListAnalyzing
     );
     try {
       const connection = await this.getOrganizationConnection(organizationId);

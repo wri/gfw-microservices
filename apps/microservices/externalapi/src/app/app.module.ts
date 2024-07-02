@@ -1,9 +1,19 @@
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServerConfigType, serverConfigSchema } from '../validators/server-config';
+
+// This needs to be at the beginning of the file to ensure that the '.env' file
+// is loaded into process.env before any code reads process.env
+const envModule = ConfigModule.forRoot({
+  envFilePath: ['.env', '.env.production'],
+  validate: (env) => serverConfigSchema.parse(env),
+  isGlobal: true,
+});
+
 import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TokenModule } from '../api-keys';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ListsAnalysisModule } from '../list-analysis';
 import { ExternalAPIKey } from '../api-keys/external-api-key.entity';
 import { Organization } from '../api-keys/organization.entity';
@@ -18,15 +28,10 @@ import {
 } from '../config';
 import { ApiKeyMiddleware } from '../middleware/api.middleware';
 import { ListAnalysisMessageModule } from '../list-analysis-message-handler';
-import { ServerConfigType, serverConfigSchema } from '../validators/server-config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: ['.env', '.env.production'],
-      validate: (env) => serverConfigSchema.parse(env),
-      isGlobal: true,
-    }),
+    envModule,
     createTypeOrmModule('default', [Organization, ExternalAPIKey, UserRoutes]),
     TokenModule,
     ListsAnalysisModule,

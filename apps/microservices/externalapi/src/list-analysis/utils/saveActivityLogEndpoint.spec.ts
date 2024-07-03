@@ -57,6 +57,27 @@ describe('SaveActivityLogEndpoint', () => {
         )
       ).toBeUndefined();
     });
+    it('should fail when missing parameters', async () => {
+      clientStoreConnectionLibSql.getConnection = jest.fn().mockResolvedValue({
+        getRepository: () => ({
+          findOne: () => true,
+          save: () => true,
+        }),
+        options: {
+          database: 'mock_db',
+        },
+      });
+      const saveActivityLogEndpoint = new SaveActivityLogEndpoint(
+        clientStoreConnectionLibSql,
+        userService
+      );
+      userService.findUserByAttributes = jest.fn().mockResolvedValue({
+        user_email: userEmail,
+      });
+      expect(
+        await saveActivityLogEndpoint.saveActivityLogEndpoint(null, null, null, undefined)
+      ).toBeUndefined();
+    });
     it('Should return when organization_user_id is undefined', async () => {
       const saveActivityLogEndpoint = new SaveActivityLogEndpoint(
         clientStoreConnectionLibSql,

@@ -18,7 +18,14 @@ export class SaveActivityLogEndpoint {
     endpoint: string,
     endpointActivityTypeId: ListActivityTypesEnum
   ) {
-    if (organization_user_id === null || organization_user_id === undefined) {
+    if (
+      organization_user_id === null ||
+      organization_user_id === undefined ||
+      endpoint === null ||
+      endpoint === undefined ||
+      endpointActivityTypeId === null ||
+      endpointActivityTypeId === undefined
+    ) {
       return;
     }
     const connectionLibSql = await this.clientStoreConnectionLibSql.getConnection(

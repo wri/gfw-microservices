@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import RegionChart from './RegionChart';
 import RegionChartArgentina from './RegionChartArgentina';
+import { RegionChartColombia } from './RegionChartColombia';
 import RegionChartsTabs from './RegionChartsTabs';
 import SouthAmericaRegionsWithoutArgentina from '../SouthAmericaRegionsWithoutArgentina';
 import { regionsTabs, regionIds } from './regions.constants';
@@ -20,19 +21,25 @@ function RegionChartsContainer({
   getYearlyHighchartSeries,
   getCategoricalHighchartSeries,
 }) {
-  const { isArgentinaDeforestationAvailable } = featureFlags;
+  const { isArgentinaDeforestationAvailable, isColombiaAvailable } = featureFlags;
 
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);
 
   const argOtbnArea = JSON.parse(data.arg_otbn_area || '{}');
   const countryArea = JSON.parse(data.country_area || '{}');
 
-  const argentinaOtnbDataNotAvailable =
+  const argentinaOtbnDataNotAvailable =
     Object.entries(argOtbnArea).length === 0 && !(countryArea?.ARG > 0);
+  const colombiaOtbnDataNotAvailable =
+    Object.entries(argOtbnArea).length === 0 && !(countryArea?.COL > 0);
 
   let availableTabs = regionsTabs;
-  if (argentinaOtnbDataNotAvailable) {
+  if (argentinaOtbnDataNotAvailable) {
     availableTabs = regionsTabs.filter((tab) => tab.id !== regionIds.ARGENTINA);
+  }
+
+  if (!isColombiaAvailable || colombiaOtbnDataNotAvailable) {
+    availableTabs = availableTabs.filter((tab) => tab.id !== regionIds.COLOMBIA);
   }
 
   return (
@@ -52,6 +59,8 @@ function RegionChartsContainer({
       {selectedTab === regionIds.ARGENTINA && isArgentinaDeforestationAvailable && (
         <RegionChartArgentina listId={listId} data={data} fireDownload={fireDownload} />
       )}
+
+      {selectedTab === regionIds.COLOMBIA && <RegionChartColombia />}
 
       {selectedTab === regionIds.REGIONAL && (
         <SouthAmericaRegionsWithoutArgentina

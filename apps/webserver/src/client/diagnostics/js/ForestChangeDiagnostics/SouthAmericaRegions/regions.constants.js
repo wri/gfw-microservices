@@ -1,6 +1,7 @@
 export const regionIds = {
   ARGENTINA: 'argentina',
   REGIONAL: 'regional',
+  COLOMBIA: 'colombia',
 };
 
 export const regionsTabs = [
@@ -11,6 +12,10 @@ export const regionsTabs = [
   {
     id: regionIds.ARGENTINA,
     label: 'Argentina',
+  },
+  {
+    id: regionIds.COLOMBIA,
+    label: 'Colombia',
   },
 ];
 

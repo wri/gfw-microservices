@@ -59,8 +59,8 @@ describe('ListAnalysisService', () => {
         OrganizationService,
         ListService,
         S3Service,
-        SaveActivityLogEndpoint,
         ClientStoreConnectionLibSql,
+        SaveActivityLogEndpoint,       
       ],
     }).compile();
   });

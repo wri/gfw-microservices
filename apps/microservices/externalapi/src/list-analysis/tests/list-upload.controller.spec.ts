@@ -160,8 +160,8 @@ describe('ListUploadController', () => {
         OrganizationService,
         ListService,
         S3Service,
-        ClientStoreConnectionLibSql,
         SaveActivityLogEndpoint,
+        ClientStoreConnectionLibSql,
       ],
     })
       .overrideProvider(ConfigService)

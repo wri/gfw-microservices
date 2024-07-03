@@ -95,8 +95,8 @@ export const addCoordinateTextFromPolygon = (polygon, mapView) => {
   // if the polygon has more than 20 vertices, the user is adding the shape from the map
   // don't show the coordinates in that case
   // as it would be useless and consume much memory
-  if (polygon.rings[0].length < 20) {
-    polygon.rings[0].forEach((coord) => {
+  if (polygon?.rings?.[0]?.length < 20) {
+    polygon?.rings?.[0]?.forEach((coord) => {
       const point = new Point({
         longitude: coord[0],
         latitude: coord[1],

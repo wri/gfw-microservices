@@ -139,6 +139,7 @@ describe('ListAnalysisService', () => {
     userService.findUser = jest
       .fn()
       .mockResolvedValue({ id: 1, organization_user_id: 1, userEmail: userEmail });
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     axios.delete = jest.fn().mockResolvedValue({ status: 200 });
     await expect(service.deleteList(organizationId, listId, userEmail)).rejects.toThrowError(
       NotFoundException
@@ -163,6 +164,7 @@ describe('ListAnalysisService', () => {
         findOne: () => null,
       }),
     });
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(service.deleteList(organizationId, listId, userEmail)).rejects.toThrowError(
       NotFoundException
     );
@@ -177,6 +179,7 @@ describe('ListAnalysisService', () => {
       fileType,
     };
     service.prepareUpload = jest.fn().mockResolvedValue(expectedResult);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await service.prepareUpload({
       organizationId,
       organization_user_id,
@@ -219,7 +222,7 @@ describe('ListAnalysisService', () => {
       organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
 
     expect(result).toEqual(expectedResult);
@@ -257,7 +260,7 @@ describe('ListAnalysisService', () => {
       organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
     expect(result).toEqual(expectedResult);
   });
@@ -294,7 +297,7 @@ describe('ListAnalysisService', () => {
       organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
     expect(result).toEqual(expectedResult);
   });
@@ -331,7 +334,7 @@ describe('ListAnalysisService', () => {
       organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
     expect(result).toEqual(expectedResult);
   });
@@ -413,6 +416,7 @@ describe('ListAnalysisService', () => {
       generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       service.generateDownloadBundle({
         organizationId,
@@ -436,6 +440,7 @@ describe('ListAnalysisService', () => {
       generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       service.generateDownloadBundle({
         organizationId,
@@ -459,6 +464,7 @@ describe('ListAnalysisService', () => {
       generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       service.generateDownloadBundle({
         organizationId,
@@ -482,6 +488,7 @@ describe('ListAnalysisService', () => {
       generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       service.generateDownloadBundle({
         organizationId,
@@ -505,6 +512,7 @@ describe('ListAnalysisService', () => {
       generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       service.generateDownloadBundle({
         organizationId,

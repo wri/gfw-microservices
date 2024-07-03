@@ -28,17 +28,16 @@ function RegionChartsContainer({
   const argOtbnArea = JSON.parse(data.arg_otbn_area || '{}');
   const countryArea = JSON.parse(data.country_area || '{}');
 
-  const argentinaOtbnDataNotAvailable =
+  const argentinaDataNotAvailable =
     Object.entries(argOtbnArea).length === 0 && !(countryArea?.ARG > 0);
-  const colombiaOtbnDataNotAvailable =
-    Object.entries(argOtbnArea).length === 0 && !(countryArea?.COL > 0);
+  const colombiaDataNotAvailable = !(countryArea?.COL > 0);
 
   let availableTabs = regionsTabs;
-  if (argentinaOtbnDataNotAvailable) {
+  if (argentinaDataNotAvailable) {
     availableTabs = regionsTabs.filter((tab) => tab.id !== regionIds.ARGENTINA);
   }
 
-  if (!isColombiaAvailable || colombiaOtbnDataNotAvailable) {
+  if (!isColombiaAvailable || colombiaDataNotAvailable) {
     availableTabs = availableTabs.filter((tab) => tab.id !== regionIds.COLOMBIA);
   }
 

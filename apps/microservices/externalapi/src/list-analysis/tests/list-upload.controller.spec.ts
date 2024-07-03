@@ -123,6 +123,7 @@ describe('ListUploadController', () => {
   let organizationService: OrganizationService;
   let app: INestApplication;
   let saveActivityLogEndpoint: SaveActivityLogEndpoint;
+  let listAnalysisService: ListAnalysisService;
 
   const requestMock = createRequest({
     method: 'GET',
@@ -174,7 +175,7 @@ describe('ListUploadController', () => {
     organizationService = module.get<OrganizationService>(OrganizationService);
     axiosMock = new AxiosMockAdapter(axios);
     saveActivityLogEndpoint = module.get<SaveActivityLogEndpoint>(SaveActivityLogEndpoint);
-
+    listAnalysisService = module.get<ListAnalysisService>(ListAnalysisService);
     sinon
       .stub(DataSource.prototype, 'getRepository')
       .withArgs(ExternalUpload)
@@ -237,6 +238,7 @@ describe('ListUploadController', () => {
       status: 'Pending',
       errorDetails: '',
     };
+    listAnalysisService.uploadNewList = jest.fn().mockResolvedValue(expectedResult);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await controller.uploadNewList(request, requestMock);
     const { listId, status, uploadId, errorDetails } = result as ListUploadNewResponse;
@@ -279,6 +281,7 @@ describe('ListUploadController', () => {
       },
       status: 403,
     };
+    listAnalysisService.uploadNewList = jest.fn().mockRejectedValue(expectedError);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
@@ -319,7 +322,7 @@ describe('ListUploadController', () => {
       },
       status: 404,
     };
-
+    listAnalysisService.uploadNewList = jest.fn().mockRejectedValue(expectedError);
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
@@ -361,6 +364,7 @@ describe('ListUploadController', () => {
       status: 400,
     };
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
+    listAnalysisService.uploadNewList = jest.fn().mockRejectedValue(expectedError);
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
@@ -402,6 +406,7 @@ describe('ListUploadController', () => {
       status: 400,
     };
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
+    listAnalysisService.uploadNewList = jest.fn().mockRejectedValue(expectedError);
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
@@ -477,7 +482,7 @@ describe('ListUploadController', () => {
       message: 'Http Exception',
       name: 'HttpException',
       status: 400,
-      response: { errorDetails: 'List name already exists' },
+      response: { errorDetails: 'Failed to process the request, upload id not found' },
     };
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);

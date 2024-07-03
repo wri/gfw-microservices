@@ -192,7 +192,7 @@ export class ListAnalysisService {
       organizationDetails,
       organization_user_id,
       LIST_ANALISYS_ENDPOINT_NAMES[PREPARE_UPLOAD],
-      ListActivityTypesEnum.ListAnalyzing
+      ListActivityTypesEnum.ListPrepareUpload
     );
 
     const fileKey = generateRandomFilename(fileType);
@@ -433,7 +433,7 @@ export class ListAnalysisService {
       organizationDetails,
       user.organization_user_id,
       LIST_ANALISYS_ENDPOINT_NAMES[DELETE_LIST],
-      ListActivityTypesEnum.ListAnalyzing
+      ListActivityTypesEnum.ListDeleted
     );
     try {
       const connection = await this.getOrganizationConnection(organizationId);

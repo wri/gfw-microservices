@@ -10,13 +10,18 @@ import { OrganizationService } from '../list-analysis/organization.service';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
 import { ListInfoResponse } from '../list-analysis/list-upload-new.dto';
+import { SaveActivityLogEndpoint } from '../list-analysis/utils/saveActivityLogEndpoint';
+import { DELETE_LIST, LIST_ANALISYS_ENDPOINT_NAMES } from '../config';
+import { ListActivityTypesEnum } from '@wri-monorepos/constants';
+
 @Injectable()
 export class ListService {
   public readonly logger = new Logger(ListService.name);
   constructor(
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,
-    private s3Service: S3Service
+    private s3Service: S3Service,
+    private saveActivityLogEndpoint: SaveActivityLogEndpoint
   ) {}
   // Replace this with actual database or external service calls
   async getList({
@@ -86,8 +91,19 @@ export class ListService {
       throw new Error(`[uploadFileToS3] Failed to upload file to bucket. ${error.message}`);
     }
   }
-  async getListInfo(organizationId: number, listId: number): Promise<ListInfoResponse> {
+  async getListInfo(
+    organizationId: number,
+    listId: number,
+    organization_user_id: number
+  ): Promise<ListInfoResponse> {
     try {
+      const organizationDetails = await this.getOrganizationDetails(organizationId);
+      this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+        organizationDetails,
+        organization_user_id,
+        LIST_ANALISYS_ENDPOINT_NAMES[DELETE_LIST],
+        ListActivityTypesEnum.ListInfo
+      );
       const organization = await this.getOrganizationDetails(organizationId);
       const connection = await this.createOrganizationConnection(organization);
       const listAnalysisStatusRepository = connection.getRepository(Lists);
@@ -114,10 +130,18 @@ export class ListService {
   async getPaginatedListInfo(
     pageSize: number,
     pageNum: number,
-    organizationId: number
+    organizationId: number,
+    organization_user_id: number
   ): Promise<ListInfoResponse[]> {
     const take = pageSize === 0 ? 10 : pageSize;
     const skip = pageNum > 0 ? (pageNum - 1) * take : 0;
+    const organizationDetails = await this.getOrganizationDetails(organizationId);
+    this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+      organizationDetails,
+      organization_user_id,
+      LIST_ANALISYS_ENDPOINT_NAMES[DELETE_LIST],
+      ListActivityTypesEnum.ListGetPaginatedListInfo
+    );
     try {
       const connection = await this.getOrganizationConnection(organizationId);
       const listRepository = connection.getRepository(Lists);

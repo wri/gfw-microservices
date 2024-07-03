@@ -30,6 +30,12 @@ import { S3Service } from '@wri-monorepos/aws';
 //import { } from '@ssut/nestjs-sqs';
 import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
+jest.mock('../../../../../../libs/sql/src/lib/util/typeORM.utils', () => ({
+  ClientStoreConnection: jest.fn().mockImplementation(() => ({
+    // Mocke os métodos necessários aqui
+  })),
+}));
+
 // Mock ConfigService
 const mockConfigService = {
   get: jest.fn().mockImplementation((key: string) => {
@@ -489,7 +495,7 @@ describe('ListUploadController', () => {
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
-  xit.each(['AFI', 'RandomWrongType'])(
+  it.each(['AFI', 'RandomWrongType'])(
     'should return 400 if analysisIDs is not valid',
     async (analysisIds) => {
       const expectedError = {

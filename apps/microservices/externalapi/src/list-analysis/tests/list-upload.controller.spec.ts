@@ -122,6 +122,7 @@ describe('ListUploadController', () => {
   let userService: UserService;
   let organizationService: OrganizationService;
   let app: INestApplication;
+  let saveActivityLogEndpoint: SaveActivityLogEndpoint;
 
   const requestMock = createRequest({
     method: 'GET',
@@ -172,6 +173,7 @@ describe('ListUploadController', () => {
     userService = module.get<UserService>(UserService);
     organizationService = module.get<OrganizationService>(OrganizationService);
     axiosMock = new AxiosMockAdapter(axios);
+    saveActivityLogEndpoint = module.get<SaveActivityLogEndpoint>(SaveActivityLogEndpoint);
 
     sinon
       .stub(DataSource.prototype, 'getRepository')
@@ -235,7 +237,7 @@ describe('ListUploadController', () => {
       status: 'Pending',
       errorDetails: '',
     };
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await controller.uploadNewList(request, requestMock);
     const { listId, status, uploadId, errorDetails } = result as ListUploadNewResponse;
     expect({ listId, status, uploadId, errorDetails }).toEqual(expectedResult);
@@ -277,7 +279,7 @@ describe('ListUploadController', () => {
       },
       status: 403,
     };
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
@@ -298,7 +300,7 @@ describe('ListUploadController', () => {
       organization_user_status_id: 1,
       tokens: [],
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
       id: 1,
       organizationName: 'ABC Corp',
@@ -358,7 +360,7 @@ describe('ListUploadController', () => {
       },
       status: 400,
     };
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
@@ -399,7 +401,7 @@ describe('ListUploadController', () => {
       },
       status: 400,
     };
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
@@ -445,7 +447,7 @@ describe('ListUploadController', () => {
       uploadId: '123',
       uploadUrl: 'mocked_url',
     };
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     expect(controller.prepareUploadList(requestBody, requestMock)).resolves.toEqual(expectedResult);
   });
 
@@ -477,7 +479,7 @@ describe('ListUploadController', () => {
       status: 400,
       response: { errorDetails: 'List name already exists' },
     };
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 

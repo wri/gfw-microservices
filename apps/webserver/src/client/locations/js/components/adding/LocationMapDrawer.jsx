@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Graphic from '@arcgis/core/Graphic';
 import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
 import * as projection from '@arcgis/core/geometry/projection';
@@ -8,6 +8,10 @@ import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import SketchViewModel from '@arcgis/core/widgets/Sketch/SketchViewModel';
 import { locationsPage } from '../../../../common/js/config';
 import DrawIcon from '@mui/icons-material/Draw';
+import {
+  addCoordinateTextFromPoint,
+  addCoordinateTextFromPolygon,
+} from './PolygonCoordinates/polygonCoordinates.utils';
 import './LocationMapDrawer.scss';
 
 const DrawShapeMode = {
@@ -25,6 +29,50 @@ const LocationMapDrawer = ({
   updateGeometry,
 }) => {
   const [mode, setMode] = useState(DrawShapeMode.Inactive);
+  const modeRef = useRef(mode);
+  const hoverGraphicsRef = useRef([]);
+  const hoverTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
+
+  // Hover event
+  useEffect(() => {
+    const handleMouseMove = (event) => {
+      // Remove previous hover graphics
+      hoverGraphicsRef.current.forEach((graphic) => {
+        mapView.graphics.remove(graphic);
+      });
+      hoverGraphicsRef.current = [];
+      if (modeRef.current !== DrawShapeMode.Drawing) {
+        return;
+      }
+
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+
+      hoverTimeoutRef.current = setTimeout(() => {
+        const point = mapView.toMap({ x: event.x, y: event.y });
+
+        const textGraphic = addCoordinateTextFromPoint(mapView, point);
+        hoverGraphicsRef.current.push(textGraphic);
+      }, 300);
+    };
+
+    mapView.on('pointer-move', handleMouseMove);
+
+    return () => {
+      mapView.off('pointer-move', handleMouseMove);
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+      hoverGraphicsRef.current.forEach((graphic) => {
+        mapView.graphics.remove(graphic);
+      });
+    };
+  }, [mapView]);
 
   useEffect(() => {
     // Initialize Draw Tool
@@ -44,13 +92,34 @@ const LocationMapDrawer = ({
     setSketchViewModel(sketchViewModelInstance);
 
     if (geomFromMap) {
-      setDrawPoly(mapView, geomFromMap, true);
+      setDrawPoly(mapView, geomFromMap);
     }
 
+    // Add coordinates on click
+    mapView.on('click', (event) => {
+      if (modeRef.current === DrawShapeMode.Drawing) {
+        const point = event.mapPoint;
+        addCoordinateTextFromPoint(mapView, point);
+      }
+    });
+
+    // Listen for double click to finish polygon
+    let doubleClickHandler = mapView.on('double-click', (event) => {
+      if (modeRef.current === DrawShapeMode.Drawing) {
+        const point = event.mapPoint;
+        addCoordinateTextFromPoint(mapView, point);
+        sketchViewModelInstance.complete();
+      }
+    });
+
     sketchViewModelInstance.on('create', ({ graphic, state }) => {
-      if (state === DrawShapeMode.Complete) {
-        setDrawPoly(mapView, sketchViewModelInstance, graphic.geometry);
-      } else if (state === DrawShapeMode.Active) {
+      if (state === 'complete') {
+        const polygon = graphic.geometry;
+        const lastPoint = polygon.getPoint(0, polygon.rings[0].length - 1);
+        addCoordinateTextFromPoint(mapView, lastPoint);
+        setDrawPoly(mapView, polygon);
+        setMode(DrawShapeMode.Complete);
+      } else if (state === 'active') {
         const polygon = graphic.geometry;
         const vertexCount = polygon?.rings?.[0]?.length || 0;
         if (vertexCount > 11) {
@@ -60,7 +129,13 @@ const LocationMapDrawer = ({
         }
       }
     });
-  }, [mapView]);
+
+    return () => {
+      if (doubleClickHandler) {
+        doubleClickHandler.remove();
+      }
+    };
+  }, [mapView, mode]);
 
   const onDrawButtonClick = () => {
     if (mode === DrawShapeMode.Inactive) {
@@ -80,10 +155,8 @@ const LocationMapDrawer = ({
     }
   };
 
-  const setDrawPoly = (mapView, sketchViewModel, geom, zoomTo = false) => {
+  const setDrawPoly = (mapView, geom) => {
     mapView.graphics.removeAll();
-
-    sketchViewModel.delete();
 
     let polygon = new Polygon(geom);
 
@@ -106,7 +179,9 @@ const LocationMapDrawer = ({
     });
     mapView.graphics.add(polygonGraphic);
 
-    if (zoomTo && polygon && polygon.centroid) {
+    addCoordinateTextFromPolygon(polygon, mapView);
+
+    if (polygon && polygon.centroid) {
       setTimeout(() => {
         mapView.goTo(
           {
@@ -116,8 +191,6 @@ const LocationMapDrawer = ({
         );
       }, 500);
     }
-
-    setMode(DrawShapeMode.Complete);
 
     updateGeometry(polygon);
     gtag('event', 'add location map draw', {

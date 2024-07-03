@@ -113,13 +113,13 @@ const LocationMapDrawer = ({
     });
 
     sketchViewModelInstance.on('create', ({ graphic, state }) => {
-      if (state === 'complete') {
+      if (state === DrawShapeMode.Complete) {
         const polygon = graphic.geometry;
         const lastPoint = polygon.getPoint(0, polygon.rings[0].length - 1);
         addCoordinateTextFromPoint(mapView, lastPoint);
         setDrawPoly(mapView, polygon);
         setMode(DrawShapeMode.Complete);
-      } else if (state === 'active') {
+      } else if (state === DrawShapeMode.Active) {
         const polygon = graphic.geometry;
         const vertexCount = polygon?.rings?.[0]?.length || 0;
         if (vertexCount > 11) {

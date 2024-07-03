@@ -485,12 +485,20 @@ describe('ListUploadController', () => {
       response: { errorDetails: 'Failed to process the request, upload id not found' },
     };
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
+    listAnalysisService.uploadNewList = jest.fn().mockRejectedValue(expectedError);
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
   it.each(['AFI', 'RandomWrongType'])(
     'should return 400 if analysisIDs is not valid',
     async (analysisIds) => {
+      const expectedError = {
+        message: 'Http Exception',
+        name: 'HttpException',
+        status: 400,
+        response: { errorDetails: 'Failed to process the request, upload id not found' },
+      };
+      listAnalysisService.uploadNewList = jest.fn().mockRejectedValue(expectedError);
       const { statusCode } = await request(app.getHttpServer()).post('/v1/list/upload_new').send({
         uploadId: '999',
         listName: 'Example List',

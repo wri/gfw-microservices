@@ -32,6 +32,6 @@ export enum ListActivityTypesEnum {
   ConnectionCancelled = 32,
   // new entries should start with value 38
   ListGetPaginatedListInfo = 38, // see backward compat comment and code below (listActivityByID[23-25])
-  ListInfo=39,
-  ListPrepareUpload=40,
+  ListInfo = 39,
+  ListPrepareUpload = 40,
 }

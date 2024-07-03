@@ -11,7 +11,7 @@ import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
 import { ListInfoResponse } from '../list-analysis/list-upload-new.dto';
 import { SaveActivityLogEndpoint } from '../list-analysis/utils/saveActivityLogEndpoint';
-import { DELETE_LIST, LIST_ANALISYS_ENDPOINT_NAMES } from '../config';
+import { GET_LIST_INFO, GET_PAGINATED_LIST, LIST_ANALISYS_ENDPOINT_NAMES } from '../config';
 import { ListActivityTypesEnum } from '@wri-monorepos/constants';
 
 @Injectable()
@@ -101,7 +101,7 @@ export class ListService {
       this.saveActivityLogEndpoint.saveActivityLogEndpoint(
         organizationDetails,
         organization_user_id,
-        LIST_ANALISYS_ENDPOINT_NAMES[DELETE_LIST],
+        LIST_ANALISYS_ENDPOINT_NAMES[GET_LIST_INFO],
         ListActivityTypesEnum.ListInfo
       );
       const organization = await this.getOrganizationDetails(organizationId);
@@ -139,7 +139,7 @@ export class ListService {
     this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organizationDetails,
       organization_user_id,
-      LIST_ANALISYS_ENDPOINT_NAMES[DELETE_LIST],
+      LIST_ANALISYS_ENDPOINT_NAMES[GET_PAGINATED_LIST],
       ListActivityTypesEnum.ListGetPaginatedListInfo
     );
     try {

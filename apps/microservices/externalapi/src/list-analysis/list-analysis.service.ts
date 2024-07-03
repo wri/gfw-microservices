@@ -188,7 +188,7 @@ export class ListAnalysisService {
     //Save ActivityLog
     const organizationDetails = await this.getOrganizationDetails(organizationId);
 
-    this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+    await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organizationDetails,
       organization_user_id,
       LIST_ANALISYS_ENDPOINT_NAMES[PREPARE_UPLOAD],
@@ -280,7 +280,7 @@ export class ListAnalysisService {
     const organizationConnection = await this.createOrganizationConnection(organizationDetails);
     const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);
 
-    this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+    await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organizationDetails,
       organization_user_id,
       LIST_ANALISYS_ENDPOINT_NAMES[UPLOAD_NEW_LIST],
@@ -378,7 +378,7 @@ export class ListAnalysisService {
   }: AnalysesGenerateRequest) {
     const organization = await this.getOrganizationDetails(organizationId);
     const user = await this.userService.findUser(organizationId, userEmail);
-    this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+    await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organization,
       user.organization_user_id,
       LIST_ANALISYS_ENDPOINT_NAMES[GENERATE_ANALYSIS],
@@ -429,7 +429,7 @@ export class ListAnalysisService {
     //Save ActivityLog
     const organizationDetails = await this.getOrganizationDetails(organizationId);
     const user = await this.userService.findUser(organizationId, userEmail);
-    this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+    await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
       organizationDetails,
       user.organization_user_id,
       LIST_ANALISYS_ENDPOINT_NAMES[DELETE_LIST],

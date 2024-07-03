@@ -29,6 +29,7 @@ describe('ListAnalysisService', () => {
   let userService: UserService;
   let listService: ListService;
   let sqsService: SqsService;
+  let saveActivityLogEndpoint: SaveActivityLogEndpoint;
   beforeAll(async () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
@@ -72,6 +73,7 @@ describe('ListAnalysisService', () => {
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
     listService = module.get<ListService>(ListService);
     sqsService = module.get<SqsService>(SqsService);
+    saveActivityLogEndpoint = module.get<SaveActivityLogEndpoint>(SaveActivityLogEndpoint);
   });
 
   it('should delete a list', async () => {
@@ -104,7 +106,7 @@ describe('ListAnalysisService', () => {
         database: 'mock_db',
       },
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     userService.findUser = jest
       .fn()
       .mockResolvedValue({ id: 1, organization_user_id: 1, userEmail: userEmail });

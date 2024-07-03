@@ -88,22 +88,24 @@ describe('SaveActivityLogEndpoint', () => {
     );
     userService.findUserByAttributes = jest.fn().mockResolvedValue(undefined);
     expect(
-      async () =>
-        await saveActivityLogEndpoint.saveActivityLogEndpoint(
-          organizationDetails,
-          organization_user_id,
-          LIST_ANALISYS_ENDPOINT_NAMES[PREPARE_UPLOAD],
-          ListActivityTypesEnum.ListPrepareUpload
-        )
-    ).rejects.toThrowError();
+      await saveActivityLogEndpoint.saveActivityLogEndpoint(
+        organizationDetails,
+        organization_user_id,
+        LIST_ANALISYS_ENDPOINT_NAMES[PREPARE_UPLOAD],
+        ListActivityTypesEnum.ListPrepareUpload
+      )
+    ).toBeUndefined();
   });
   it('Should failed when try to save activity log', async () => {
     clientStoreConnectionLibSql.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
         findOne: () => true,
-        save: () => {
-          throw new InternalServerErrorException('Error saving activity log');
-        },
+        save: jest
+          .fn()
+          .mockRejectedValueOnce(() => {
+            throw new InternalServerErrorException('Error saving activity log');
+          })
+          .mockResolvedValueOnce(() => true),
       }),
       options: {
         database: 'mock_db',
@@ -117,13 +119,12 @@ describe('SaveActivityLogEndpoint', () => {
       user_email: userEmail,
     });
     expect(
-      async () =>
-        await saveActivityLogEndpoint.saveActivityLogEndpoint(
-          organizationDetails,
-          organization_user_id,
-          LIST_ANALISYS_ENDPOINT_NAMES[PREPARE_UPLOAD],
-          ListActivityTypesEnum.ListPrepareUpload
-        )
-    ).rejects.toThrowError(new InternalServerErrorException('Error saving activity log'));
+      await saveActivityLogEndpoint.saveActivityLogEndpoint(
+        organizationDetails,
+        organization_user_id,
+        LIST_ANALISYS_ENDPOINT_NAMES[PREPARE_UPLOAD],
+        ListActivityTypesEnum.ListPrepareUpload
+      )
+    ).toBeUndefined();
   });
 });

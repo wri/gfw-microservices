@@ -3,7 +3,7 @@ import {
   ClientStoreConnection as ClientStoreConnectionLibSql,
 } from '@wri-monorepos/sql';
 import { UserService } from '../user.service';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Organization } from '../../api-keys/organization.entity';
 import { ListActivityTypesEnum } from '@wri-monorepos/constants';
 @Injectable()
@@ -21,13 +21,12 @@ export class SaveActivityLogEndpoint {
     if (organization_user_id === null || organization_user_id === undefined) {
       return;
     }
+    const connectionLibSql = await this.clientStoreConnectionLibSql.getConnection(
+      organizationDetails.organizationDb
+    );
+
+    const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
     try {
-      const connectionLibSql = await this.clientStoreConnectionLibSql.getConnection(
-        organizationDetails.organizationDb
-      );
-
-      const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
-
       const { user_email: userEmail } = await this.userService.findUserByAttributes({
         organization_id: organizationDetails.id,
         organization_user_id,
@@ -39,7 +38,12 @@ export class SaveActivityLogEndpoint {
         activityTime: new Date(),
       });
     } catch (error) {
-      throw new InternalServerErrorException('Error saving activity log');
+      await activityLogRepository.save({
+        userId: organization_user_id,
+        activityTypeId: endpointActivityTypeId,
+        activityDescription: `Failed to save activity log for endpoint ${endpoint}  ${error.message}`,
+        activityTime: new Date(),
+      });
     }
   }
 }

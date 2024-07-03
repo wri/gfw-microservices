@@ -482,7 +482,7 @@ describe('ListUploadController', () => {
       message: 'Http Exception',
       name: 'HttpException',
       status: 400,
-      response: { errorDetails: 'Failed to process the request, upload id not found' },
+      response: { errorDetails: 'List name already exists' },
     };
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     listAnalysisService.uploadNewList = jest.fn().mockRejectedValue(expectedError);
@@ -496,8 +496,9 @@ describe('ListUploadController', () => {
         message: 'Http Exception',
         name: 'HttpException',
         status: 400,
-        response: { errorDetails: 'Failed to process the request, upload id not found' },
+        response: { errorDetails: 'List name already exists' },
       };
+      saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
       listAnalysisService.uploadNewList = jest.fn().mockRejectedValue(expectedError);
       const { statusCode } = await request(app.getHttpServer()).post('/v1/list/upload_new').send({
         uploadId: '999',

@@ -17,7 +17,10 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["nx", "serve", "microservices-externalapi"],
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/apps/microservices/externalapi"
+      "cwd": "${workspaceFolder}/apps/microservices/externalapi",
+      "env": {
+        "NODE_ENV": "development"
+      }
     },
     {
       "name": "List processing",
@@ -26,7 +29,10 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["nx", "serve", "microservices-list-processing"],
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/apps/microservices/list-processing"
+      "cwd": "${workspaceFolder}/apps/microservices/list-processing",
+      "env": {
+        "NODE_ENV": "development"
+      }
     },
     {
       "name": "List downloader",

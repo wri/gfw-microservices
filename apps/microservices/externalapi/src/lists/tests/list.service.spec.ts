@@ -342,6 +342,15 @@ describe('ListService', () => {
     s3Service = module.get<S3Service>(S3Service);
   });
 
+  afterEach(() => {
+    sinon.restore();
+    jest.restoreAllMocks();
+  });
+
+  afterAll(async () => {
+    await module.close();
+  });
+
   it('Should get List', async () => {
     const organizationId = 1;
 

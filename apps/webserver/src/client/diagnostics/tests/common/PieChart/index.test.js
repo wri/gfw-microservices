@@ -30,7 +30,7 @@ describe('PieChart Component', () => {
     );
 
     const chartHeader = screen.getAllByText(title);
-    expect(chartHeader).toHaveLength(2);
+    expect(chartHeader).toHaveLength(1);
 
     const chart = screen.getByTestId('pie-chart');
     expect(chart).toBeInTheDocument();

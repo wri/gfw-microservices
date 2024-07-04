@@ -158,7 +158,20 @@ describe('ListUploadController', () => {
       providers: [
         ListAnalysisService,
         UserService,
-        ClientStoreConnection,
+        {
+          provide: ClientStoreConnection,
+          useValue: {
+            getConnection: jest.fn().mockResolvedValue({
+              getRepository: () => ({
+                findOne: () => true,
+                save: () => true,
+              }),
+              options: {
+                database: 'mock_db',
+              },
+            }),
+          },
+        },
         OrganizationService,
         ListService,
         S3Service,

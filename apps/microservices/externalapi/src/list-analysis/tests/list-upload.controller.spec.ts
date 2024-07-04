@@ -28,7 +28,10 @@ import { SqsService, SqsModule, SqsMessageHandler } from '@ssut/nestjs-sqs';
 import { ListService } from '../../lists/lists.service';
 import { S3Service } from '@wri-monorepos/aws';
 //import { } from '@ssut/nestjs-sqs';
-import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
+import {
+  ClientStoreConnection as ClientStoreConnectionLibSql,
+  TypeOrmSystemModule,
+} from '@wri-monorepos/sql';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 
 // Mock ConfigService
@@ -188,7 +191,10 @@ describe('ListUploadController', () => {
       .overrideProvider(ConfigService)
       .useValue(mockConfigService) // Use the mock ConfigService
       .compile();
-
+    TypeOrmSystemModule.create({
+      name: 'testConnection',
+      imports: [], // Adicione quaisquer imports necessários aqui
+    });
     controller = module.get<ListUploadController>(ListUploadController);
     userService = module.get<UserService>(UserService);
     organizationService = module.get<OrganizationService>(OrganizationService);

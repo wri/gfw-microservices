@@ -182,6 +182,7 @@ describe('ListUploadController', () => {
           },
         },
         ClientStoreConnectionLibSql,
+        ConfigService,
       ],
     })
       .overrideProvider(ConfigService)

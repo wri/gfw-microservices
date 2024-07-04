@@ -522,7 +522,6 @@ describe('ListUploadController', () => {
         templateId: 456,
         analysisIds,
       });
-
       expect(statusCode).toBe(400);
     }
   );

@@ -14,6 +14,7 @@ import {
   isValidLongitude,
   createGeometryAndGraphic,
   extractCoordinates,
+  addCoordinateTextFromPolygon,
 } from './polygonCoordinates.utils';
 import './PolygonCoordinatesInput.scss';
 
@@ -114,6 +115,13 @@ const PolygonCoordinatesInput = ({
   const handleOpen = () => {
     setPreviousCoordinates(coordinates);
     setPreviousIsPolygon(isPolygon);
+    mapView.graphics.removeAll();
+    const { geometry, graphic } = createGeometryAndGraphic({
+      coordinates,
+      isPolygon,
+    });
+    addGraphicToMap(geometry, graphic);
+
     setOpen(true);
   };
 
@@ -156,6 +164,7 @@ const PolygonCoordinatesInput = ({
       customArea,
     });
     addGraphicToMap(geometry, graphic);
+    addCoordinateTextFromPolygon(geometry, mapView);
   };
 
   // disable if custom area was selected and there is not custom area value
@@ -173,6 +182,8 @@ const PolygonCoordinatesInput = ({
     ) ||
     coordinates.length === 2;
 
+  // only show the edit coordinates button if there are coordinates
+  const isEditButtonShown = !!coordinates[0].latitude;
   return (
     <div>
       <div className="draw-shape__button-group">
@@ -192,10 +203,11 @@ const PolygonCoordinatesInput = ({
           updateGeometry={updateGeometry}
         />
       </div>
-
-      <div className="draw-shape__button-group" style={{ right: '1rem', left: 'auto' }}>
-        <GfwButton onClick={handleOpen} value="EDIT COORDINATES" />
-      </div>
+      {isEditButtonShown && (
+        <div className="draw-shape__button-group" style={{ right: '1rem', left: 'auto' }}>
+          <GfwButton onClick={handleOpen} value="EDIT COORDINATES" />
+        </div>
+      )}
 
       <Modal
         open={open}

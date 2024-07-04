@@ -183,7 +183,7 @@ const PolygonCoordinatesInput = ({
     coordinates.length === 2;
 
   // only show the edit coordinates button if there are coordinates
-  const showEditCoordinatesButton = !!coordinates[0].latitude;
+  const isEditButtonShown = !!coordinates[0].latitude;
   return (
     <div>
       <div className="draw-shape__button-group">
@@ -203,7 +203,7 @@ const PolygonCoordinatesInput = ({
           updateGeometry={updateGeometry}
         />
       </div>
-      {showEditCoordinatesButton && (
+      {isEditButtonShown && (
         <div className="draw-shape__button-group" style={{ right: '1rem', left: 'auto' }}>
           <GfwButton onClick={handleOpen} value="EDIT COORDINATES" />
         </div>

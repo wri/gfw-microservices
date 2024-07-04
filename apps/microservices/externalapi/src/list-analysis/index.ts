@@ -12,15 +12,12 @@ import { ClientStoreConnection } from '../shared/client-store-connection';
 import { ListService } from '../lists/lists.service';
 import { Lists } from '../lists/lists.entity';
 import { OrganizationService } from './organization.service';
-import { AwsModule, S3Service } from '@wri-monorepos/aws';
+import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([ExternalAPIKey, UserRoutes, Organization, Lists], 'default'),
-    AwsModule,
-  ],
+  imports: [TypeOrmModule.forFeature([ExternalAPIKey, UserRoutes, Organization, Lists], 'default')],
   controllers: [ListAnalysisController, ListUploadController],
   providers: [
     ListAnalysisService,

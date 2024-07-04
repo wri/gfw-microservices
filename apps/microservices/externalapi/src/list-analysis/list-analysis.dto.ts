@@ -81,11 +81,7 @@ export interface AnalysesGenerateRequest {
   startDate: Date;
   endDate: Date;
 }
-export class ReanalyzeAnalysisRequest extends requestEmailBody {
-  @ApiProperty()
-  reanalyze: boolean;
-}
+
 export const reanalyzeAnalysisBodySchema = z.object({
   userEmail: z.string().email(),
-  reanalyze: z.boolean(),
 });

@@ -1,7 +1,6 @@
 import {
   BadRequestException,
   HttpStatus,
-  Inject,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -26,7 +25,7 @@ import {
 import { Organization } from '../api-keys/organization.entity';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
-import { analysisTypesOptions, getListStatusString, listStatus } from '@wri-monorepos/constants';
+import { getListStatusString, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
@@ -36,7 +35,6 @@ import {
   ActivityLog,
   updateListsAnalysisStatus,
   ClientStoreConnection as ClientStoreConnectionLibSql,
-  Lists,
 } from '@wri-monorepos/sql';
 import { ServerConfigType } from '../validators/server-config';
 
@@ -47,8 +45,6 @@ import {
   GEO_TRELLIS__ANALYZE_LIST_PROD,
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
 } from '@wri-monorepos/constants';
-
-import { EmailService } from '@wri-monorepos/aws';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -87,9 +83,6 @@ export class ListAnalysisService {
       largeProcessingListBucket: this.configService.get('LARGE_PROCESSING_LIST_BUCKET'),
     };
   }
-
-  @Inject(EmailService)
-  private readonly emailService: EmailService;
 
   private getEAPIListStatus(listAnalysisStatus: ListsAnalysisStatus) {
     if (
@@ -453,7 +446,6 @@ export class ListAnalysisService {
   async createAnalysis(
     analysisTypesToProcess: string,
     listId: number,
-    reanalyze: boolean,
     organizationId: number,
     userEmail: string,
     organization_user_id: number
@@ -497,6 +489,10 @@ export class ListAnalysisService {
         { listId, analysisId: analysisTypesToProcess },
         {
           status: listStatus.Pending,
+          s3URL: null,
+          bundleCreationTime: null,
+          expirationTime: null,
+          errorInfo: null,
         }
       );
     }
@@ -505,7 +501,7 @@ export class ListAnalysisService {
       organizationDetails.organizationDb,
       listId
     );
-
+    // This snippet translates the analysisTypesToProcess to the format that Geotrellis expects
     const analysiTypes = extractAnalysisTypes(
       analysisTypesToProcess
         ? listAnalysisStatusData.filter(({ analysisId }) =>
@@ -526,7 +522,6 @@ export class ListAnalysisService {
       list_id: listId,
       user_id: organization_user_id,
       organization_id: organizationId,
-      reanalyze,
       processing_limit: processingLimit,
       analysis_types: analysiTypes,
     };
@@ -541,24 +536,6 @@ export class ListAnalysisService {
         'Content-Type': 'application/json',
       },
     });
-
-    try {
-      await listAnalysisStatusRepository.update(
-        { listId, analysisId: analysisTypesToProcess },
-        {
-          s3URL: null,
-          bundleCreationTime: null,
-          expirationTime: null,
-          errorInfo: null,
-        }
-      );
-    } catch (error) {
-      this.logger.error(
-        'createAnalysis',
-        `Error when updating ${listId} to analysis: ${error.message}`
-      );
-      return error.message;
-    }
     try {
       await activityLogRepository.save({
         userId: organization_user_id,
@@ -567,27 +544,7 @@ export class ListAnalysisService {
         activityTime: new Date(),
       });
 
-      //  In order for that to work, the new analyze route should clear out stale s3_url, creation, and expiration fields in ListsAnalysisStatus table.
-
-      const enabledAnalyses = analysisTypesOptions.filter((analysis) => analysiTypes[analysis.id]);
-
-      const subject = `${enabledAnalyses
-        .map((analysis) => analysis.shortLabel)
-        .join(', ')} calculations are processing for the GFW Pro list ${listId} `;
-
       // Get Listname
-      const listRepository = connectionLibSql.getRepository(Lists);
-      const { listName } = await listRepository.findOneBy({
-        id: listId,
-      });
-
-      await this.emailService.sendEmail(
-        process.env.SES_SENDER_EMAIL,
-        [userEmail],
-        subject,
-        'start',
-        { listName }
-      );
     } catch (error) {
       this.logger.error(
         'createAnalysis',

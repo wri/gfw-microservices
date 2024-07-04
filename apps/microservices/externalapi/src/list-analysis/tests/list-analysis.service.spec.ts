@@ -15,7 +15,7 @@ import { ListAnalysisStatusRepositoryMock } from './repositories/list-analysis-s
 import { ListAnalysisMessageModule } from '../../list-analysis-message-handler';
 import { ListService } from '../../lists/lists.service';
 import { Lists } from '../../lists/lists.entity';
-import { AwsModule, EmailService, S3Service } from '@wri-monorepos/aws';
+import { S3Service } from '@wri-monorepos/aws';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
@@ -44,7 +44,6 @@ describe('ListAnalysisService', () => {
   let listService: ListService;
   let sqsService: SqsService;
   let clientStoreConnectionLibSql: ClientStoreConnectionLibSql;
-  let emailService: EmailService;
   beforeAll(async () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
@@ -67,7 +66,6 @@ describe('ListAnalysisService', () => {
           isGlobal: true,
         }),
         ListAnalysisMessageModule,
-        AwsModule,
       ],
       providers: [
         ListAnalysisService,
@@ -91,7 +89,6 @@ describe('ListAnalysisService', () => {
     );
     listService = module.get<ListService>(ListService);
     sqsService = module.get<SqsService>(SqsService);
-    emailService = module.get<EmailService>(EmailService);
   });
 
   it('should delete a list', async () => {
@@ -538,7 +535,6 @@ describe('ListAnalysisService', () => {
   it('Should Create an Analysis', async () => {
     const analysisTypesToProcess = 'FCD';
     const listId = 123;
-    const reanalyze = true;
     const organizationId = 1;
     const userEmail = 'email@mail.com';
     const organization_user_id = 1;
@@ -594,12 +590,10 @@ describe('ListAnalysisService', () => {
     });
 
     axios.post = jest.fn().mockResolvedValue({ status: 200, statusText: 'mockedEmailResponse' });
-    emailService.sendEmail = jest.fn().mockResolvedValue(true);
 
     const result = await service.createAnalysis(
       analysisTypesToProcess,
       listId,
-      reanalyze,
       organizationId,
       userEmail,
       organization_user_id
@@ -610,7 +604,6 @@ describe('ListAnalysisService', () => {
   it('Should fail when try to send email', async () => {
     const analysisTypesToProcess = 'FCD';
     const listId = 123;
-    const reanalyze = true;
     const organizationId = 1;
     const userEmail = 'email@mail.com';
     const organization_user_id = 1;
@@ -666,13 +659,11 @@ describe('ListAnalysisService', () => {
     });
 
     axios.post = jest.fn().mockRejectedValue(new Error('Failed to send email'));
-    emailService.sendEmail = jest.fn().mockResolvedValue(true);
 
     await expect(
       service.createAnalysis(
         analysisTypesToProcess,
         listId,
-        reanalyze,
         organizationId,
         userEmail,
         organization_user_id

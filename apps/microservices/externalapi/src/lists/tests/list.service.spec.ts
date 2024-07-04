@@ -14,7 +14,7 @@ import { UserService } from '../../list-analysis/user.service';
 import { OrganizationService } from '../../list-analysis/organization.service';
 import { ListRepositoryMock } from './lists.repository.mock';
 import { ListAnalysisService } from '../../list-analysis/list-analysis.service';
-import { AwsModule, S3Service } from '@wri-monorepos/aws';
+import { S3Service } from '@wri-monorepos/aws';
 import { NotFoundException } from '@nestjs/common';
 import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
 
@@ -326,7 +326,6 @@ describe('ListService', () => {
           isGlobal: true,
         }),
         ListAnalysisMessageModule,
-        AwsModule,
       ],
       providers: [
         ListAnalysisService,

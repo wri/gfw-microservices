@@ -2963,11 +2963,6 @@ export const mapPage = {
     'Select a shape in the map',
     'Click “Analyze” or “Subscribe”',
   ],
-  // gfw_api_layers_url: 'https://staging-api.globalforestwatch.org/v1/layer?app=gfw-pro&page[size]=1000',
-
-  gfw_production_layers_url:
-    'https://production-api.globalforestwatch.org/v1/layer?app=gfw-pro&page[size]=1000&env=production',
-  gfw_staging_layers_url: `https://production-api.globalforestwatch.org/v1/layer?app=gfw-pro&page[size]=1000&t=${Date.now()}&env=staging`,
   biomassLossYears: [
     2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
   ],

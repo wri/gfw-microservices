@@ -184,7 +184,23 @@ describe('ListUploadController', () => {
             saveActivityLogEndpoint: jest.fn(() => true),
           },
         },
-        ClientStoreConnectionLibSql,
+        {
+          provide: ClientStoreConnectionLibSql,
+          useValue: {
+            getConnection: () => ({
+              getRepository: () => ({
+                findOne: () => true,
+                findBy: () => true,
+                update: () => true,
+                save: () => true,
+                findOneBy: () => true,
+              }),
+              options: {
+                database: 'mock_db',
+              },
+            }),
+          },
+        },
         ConfigService,
       ],
     })

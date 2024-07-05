@@ -60,7 +60,23 @@ describe('ListAnalysisService', () => {
         OrganizationService,
         ListService,
         S3Service,
-        ClientStoreConnectionLibSql,
+        {
+          provide: ClientStoreConnectionLibSql,
+          useValue: {
+            getConnection: () => ({
+              getRepository: () => ({
+                findOne: () => true,
+                findBy: () => true,
+                update: () => true,
+                save: () => true,
+                findOneBy: () => true,
+              }),
+              options: {
+                database: 'mock_db',
+              },
+            }),
+          },
+        },
         SaveActivityLogEndpoint,
       ],
     }).compile();

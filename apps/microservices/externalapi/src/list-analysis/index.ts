@@ -16,8 +16,14 @@ import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
+import { ActivityLog } from './utils/activityLog.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([ExternalAPIKey, UserRoutes, Organization, Lists], 'default')],
+  imports: [
+    TypeOrmModule.forFeature(
+      [ExternalAPIKey, UserRoutes, Organization, Lists, ActivityLog],
+      'default'
+    ),
+  ],
   controllers: [ListAnalysisController, ListUploadController],
   providers: [
     ListAnalysisService,

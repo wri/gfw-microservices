@@ -6,6 +6,7 @@ import { ExternalUpload } from '../list-analysis/external-upload.entity';
 import { ListsAnalysisStatus } from '../list-analysis/list-analysis-status.entity';
 import { Lists } from '../lists/lists.entity';
 import { ServerConfigType } from '../validators/server-config';
+import { ActivityLog } from '../list-analysis/utils/activityLog.entity';
 
 export interface ConnectionCacheItem {
   connection: Promise<DataSource>;
@@ -30,7 +31,7 @@ export class ClientStoreConnection {
           database,
           synchronize: env === TEST_ENVIRONMENT,
           logging: true,
-          entities: [ExternalUpload, ListsAnalysisStatus, Lists],
+          entities: [ExternalUpload, ListsAnalysisStatus, Lists, ActivityLog],
           username: this.config.get('MSSQL_USERNAME'),
           password,
           host: this.config.get('MSSQL_HOSTNAME'),

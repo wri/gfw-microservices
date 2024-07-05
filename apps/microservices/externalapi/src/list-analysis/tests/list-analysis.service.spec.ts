@@ -21,7 +21,6 @@ import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
 import { listStatus } from '@wri-monorepos/constants';
 
 jest.mock('@wri-monorepos/shared', () => ({
@@ -29,10 +28,6 @@ jest.mock('@wri-monorepos/shared', () => ({
 }));
 jest.mock('../../shared/generate-sqs-templates', () => ({
   generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
-}));
-jest.mock('@wri-monorepos/geo', () => ({
-  extractAnalysisTypes: jest.fn(),
-  getListAnalysisStatus: jest.fn(),
 }));
 
 describe('ListAnalysisService', () => {
@@ -552,14 +547,6 @@ describe('ListAnalysisService', () => {
       isListLocationOverLimit: false,
       processingLimit: 1000,
     });
-    (getListAnalysisStatus as jest.Mock).mockResolvedValue([
-      {
-        status: listStatus.Pending,
-        listId: 123,
-        analysisId: analysisTypesToProcess,
-      },
-    ]);
-    (extractAnalysisTypes as jest.Mock).mockResolvedValue(analysisTypesToProcess);
     const mockList = {
       listId: 123,
       analysisId: analysisTypesToProcess,
@@ -621,14 +608,6 @@ describe('ListAnalysisService', () => {
       isListLocationOverLimit: false,
       processingLimit: 1000,
     });
-    (getListAnalysisStatus as jest.Mock).mockResolvedValue([
-      {
-        status: listStatus.Pending,
-        listId: 123,
-        analysisId: analysisTypesToProcess,
-      },
-    ]);
-    (extractAnalysisTypes as jest.Mock).mockResolvedValue(analysisTypesToProcess);
     const mockList = {
       listId: 123,
       analysisId: analysisTypesToProcess,

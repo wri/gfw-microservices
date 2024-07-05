@@ -30,7 +30,6 @@ import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
-import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
 import {
   ActivityLog,
   updateListsAnalysisStatus,
@@ -496,20 +495,6 @@ export class ListAnalysisService {
         }
       );
     }
-
-    const listAnalysisStatusData = await getListAnalysisStatus(
-      organizationDetails.organizationDb,
-      listId
-    );
-    // This snippet translates the analysisTypesToProcess to the format that Geotrellis expects
-    const analysiTypes = extractAnalysisTypes(
-      analysisTypesToProcess
-        ? listAnalysisStatusData.filter(({ analysisId }) =>
-            analysisTypesToProcess.includes(analysisId)
-          )
-        : listAnalysisStatusData
-    );
-
     if (isListLocationOverLimit) {
       await updateListsAnalysisStatus(organizationDetails.organizationDb, {
         listId: listId,
@@ -523,7 +508,7 @@ export class ListAnalysisService {
       user_id: organization_user_id,
       organization_id: organizationId,
       processing_limit: processingLimit,
-      analysis_types: analysiTypes,
+      analysis_types: { [analysisTypesToProcess]: true },
     };
     const connectionLibSql = await this.clientStoreConnectionLibSql.getConnection(
       organizationDetails.organizationDb

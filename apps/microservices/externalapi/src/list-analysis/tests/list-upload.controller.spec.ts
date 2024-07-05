@@ -28,11 +28,6 @@ import { SqsService, SqsModule, SqsMessageHandler } from '@ssut/nestjs-sqs';
 import { ListService } from '../../lists/lists.service';
 import { S3Service } from '@wri-monorepos/aws';
 //import { } from '@ssut/nestjs-sqs';
-import {
-  ClientStoreConnection as ClientStoreConnectionLibSql,
-  SqlModule,
-  TypeOrmSystemModule,
-} from '@wri-monorepos/sql';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 
 // Mock ConfigService
@@ -185,34 +180,13 @@ describe('ListUploadController', () => {
             saveActivityLogEndpoint: jest.fn(() => true),
           },
         },
-        {
-          provide: ClientStoreConnectionLibSql,
-          useValue: {
-            getConnection: () => ({
-              getRepository: () => ({
-                findOne: () => true,
-                findBy: () => true,
-                update: () => true,
-                save: () => true,
-                findOneBy: () => true,
-              }),
-              options: {
-                database: 'mock_db',
-              },
-            }),
-          },
-        },
         ConfigService,
-        SqlModule,
       ],
     })
       .overrideProvider(ConfigService)
       .useValue(mockConfigService) // Use the mock ConfigService
       .compile();
-    TypeOrmSystemModule.create({
-      name: 'testConnection',
-      imports: [], // Adicione quaisquer imports necessários aqui
-    });
+
     controller = module.get<ListUploadController>(ListUploadController);
     userService = module.get<UserService>(UserService);
     organizationService = module.get<OrganizationService>(OrganizationService);
@@ -236,7 +210,7 @@ describe('ListUploadController', () => {
     await app.init();
   });
 
-  xit('should return a successful response', async () => {
+  it('should return a successful response', async () => {
     const createLargeListMockExpectedResponse = {
       list_id: 123,
     };
@@ -286,7 +260,7 @@ describe('ListUploadController', () => {
     expect({ listId, status, uploadId, errorDetails }).toEqual(expectedResult);
   });
 
-  xit('should return an error response when bucket file is empty', () => {
+  it('should return an error response when bucket file is empty', () => {
     const request: ListUploadNewRequest = {
       uploadId: '1234',
       listName: 'Example List',
@@ -326,7 +300,7 @@ describe('ListUploadController', () => {
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
-  xit('should return an error response when file does not exist', () => {
+  it('should return an error response when file does not exist', () => {
     const request: ListUploadNewRequest = {
       uploadId: '12345',
       listName: 'Example List',
@@ -365,7 +339,7 @@ describe('ListUploadController', () => {
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
-  xit('should return an error response when upload invalid ID', () => {
+  it('should return an error response when upload invalid ID', () => {
     const actualDate = new Date();
     const request: ListUploadNewRequest = {
       uploadId: '9999',
@@ -406,7 +380,7 @@ describe('ListUploadController', () => {
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
-  xit('should return an error response for other error scenarios', () => {
+  it('should return an error response for other error scenarios', () => {
     const actualDate = new Date();
     const request: ListUploadNewRequest = {
       uploadId: '999',
@@ -447,7 +421,7 @@ describe('ListUploadController', () => {
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
-  xit('should return a successful response for prepare upload', () => {
+  it('should return a successful response for prepare upload', () => {
     const actualDate = new Date();
     const preSignURLMockExpectedResponse = {
       url: 'mocked_url',
@@ -492,7 +466,7 @@ describe('ListUploadController', () => {
     expect(controller.prepareUploadList(requestBody, requestMock)).resolves.toEqual(expectedResult);
   });
 
-  xit('should return 400 when list name already exists', async () => {
+  it('should return 400 when list name already exists', async () => {
     axiosMock.onPost(/\/api\/create-large-list/).reply(400, {
       message: 'List name already exists',
     });
@@ -524,7 +498,7 @@ describe('ListUploadController', () => {
     expect(controller.uploadNewList(request, requestMock)).rejects.toMatchObject(expectedError);
   });
 
-  xit.each(['AFI', 'RandomWrongType'])(
+  it.each(['AFI', 'RandomWrongType'])(
     'should return 400 if analysisIDs is not valid',
     async (analysisIds) => {
       const expectedError = {

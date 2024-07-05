@@ -17,13 +17,14 @@ import { ListAnalysisService } from '../../list-analysis/list-analysis.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { NotFoundException } from '@nestjs/common';
 import { SaveActivityLogEndpoint } from '../../list-analysis/utils/saveActivityLogEndpoint';
-import {SqlModule, ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
+
 describe('ListService', () => {
   let organizationService: OrganizationService;
   let module: TestingModule;
   let listService: ListService;
   let clientStoreConnection: ClientStoreConnection;
   let s3Service: S3Service;
+  let saveActivityLogEndpoint: SaveActivityLogEndpoint;
   const listId = 123;
   const expectedResult = {
     id: listId.toString(),
@@ -325,14 +326,12 @@ describe('ListService', () => {
       providers: [
         ListAnalysisService,
         UserService,
-        ClientStoreConnection,
         OrganizationService,
         ListService,
         S3Service,
         SaveActivityLogEndpoint,
-        SqlModule,
         {
-          provide: ClientStoreConnectionLibSql,
+          provide: ClientStoreConnection,
           useValue: {
             getConnection: () => ({
               getRepository: () => ({
@@ -357,6 +356,7 @@ describe('ListService', () => {
     listService = module.get<ListService>(ListService);
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
     s3Service = module.get<S3Service>(S3Service);
+    saveActivityLogEndpoint = module.get<SaveActivityLogEndpoint>(SaveActivityLogEndpoint);
   });
 
   afterEach(() => {
@@ -387,7 +387,7 @@ describe('ListService', () => {
     });
 
     const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const resultWithDatesTransformed = {};
     for (const prop in result) {
       const value = result[prop];
@@ -434,7 +434,7 @@ describe('ListService', () => {
       resultWithDatesTransformed[prop] =
         value instanceof Date ? value.toLocaleDateString('en-US') : value;
     }
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     expect(resultWithDatesTransformed).toEqual(expectedResultWithErroPath);
   });
   it('Should not find List', async () => {
@@ -455,7 +455,7 @@ describe('ListService', () => {
         findOneBy: () => null,
       }),
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });
     expect(result).toEqual(null);
   });
@@ -473,7 +473,7 @@ describe('ListService', () => {
         findOne: () => ({ ...expectedResult }),
       }),
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await listService.getListInfo(organizationId, listId, organization_user_id);
 
     const resultWithDatesTransformed = {};
@@ -499,7 +499,7 @@ describe('ListService', () => {
         findOne: () => null,
       }),
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       listService.getListInfo(organizationId, listId, organization_user_id)
     ).rejects.toThrowError(NotFoundException);
@@ -564,6 +564,7 @@ describe('ListService', () => {
         locationCount: null,
       },
     ];
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     organizationService.findOrganizationById = jest.fn().mockResolvedValue(listInformationExpected);
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
@@ -593,6 +594,7 @@ describe('ListService', () => {
         findAndCount: jest.fn().mockResolvedValue([[], 0]),
       }),
     });
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       listService.getPaginatedListInfo(30, 50, organizationId, organization_user_id)
     ).rejects.toThrowError(NotFoundException);
@@ -618,6 +620,7 @@ describe('ListService', () => {
       },
     ];
     organizationService.findOrganizationById = jest.fn().mockResolvedValue(listInformationExpected);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
         findAndCount: jest.fn().mockResolvedValue([paginatedInfoListsResult.slice(2, 4), 2]),

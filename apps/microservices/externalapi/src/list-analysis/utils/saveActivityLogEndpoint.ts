@@ -1,15 +1,13 @@
-import {
-  ActivityLog,
-  ClientStoreConnection as ClientStoreConnectionLibSql,
-} from '@wri-monorepos/sql';
 import { UserService } from '../user.service';
 import { Injectable } from '@nestjs/common';
 import { Organization } from '../../api-keys/organization.entity';
 import { ListActivityTypesEnum } from '@wri-monorepos/constants';
+import { ClientStoreConnection } from '../../shared/client-store-connection';
+import { ActivityLog } from './ActivityLog.entity';
 @Injectable()
 export class SaveActivityLogEndpoint {
   constructor(
-    private readonly clientStoreConnectionLibSql: ClientStoreConnectionLibSql,
+    private readonly clientStoreConnection: ClientStoreConnection,
     private readonly userService: UserService
   ) {}
   async saveActivityLogEndpoint(
@@ -28,11 +26,11 @@ export class SaveActivityLogEndpoint {
     ) {
       return;
     }
-    const connectionLibSql = await this.clientStoreConnectionLibSql.getConnection(
+    const connection = await this.clientStoreConnection.getConnection(
       organizationDetails.organizationDb
     );
 
-    const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
+    const activityLogRepository = connection.getRepository(ActivityLog);
     try {
       const { user_email: userEmail } = await this.userService.findUserByAttributes({
         organization_id: organizationDetails.id,

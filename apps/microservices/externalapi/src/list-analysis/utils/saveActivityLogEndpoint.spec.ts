@@ -4,17 +4,19 @@ import { UserService } from '../user.service';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Organization } from '../../api-keys/organization.entity';
 import { ListActivityTypesEnum } from '@wri-monorepos/constants';
-import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
 import { LIST_ANALISYS_ENDPOINT_NAMES, PREPARE_UPLOAD } from '../../config';
 import { UserRoutes } from '../../api-keys/user-route.entity';
 import { Repository } from 'typeorm';
+import { ClientStoreConnection } from '../../shared/client-store-connection';
+import { ConfigService } from '@nestjs/config';
 
 describe('SaveActivityLogEndpoint', () => {
-  let clientStoreConnectionLibSql: ClientStoreConnectionLibSql;
+  let clientStoreConnection: ClientStoreConnection;
   let userService: UserService;
   let userEmail: string;
   let organizationDetails: Organization;
   let userRepository: Repository<UserRoutes>;
+  let configService: ConfigService;
   const organization_user_id = 1;
   beforeEach(() => {
     organizationDetails = {
@@ -27,12 +29,12 @@ describe('SaveActivityLogEndpoint', () => {
       subscriptionStatusId: 1,
     };
     userEmail = 'userEmail';
-    clientStoreConnectionLibSql = new ClientStoreConnectionLibSql();
+    clientStoreConnection = new ClientStoreConnection(configService);
     userService = new UserService(userRepository);
   });
   describe('saveActivityLogEndpoint', () => {
     it('should save activity log', async () => {
-      clientStoreConnectionLibSql.getConnection = jest.fn().mockResolvedValue({
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
         getRepository: () => ({
           findOne: () => true,
           save: () => true,
@@ -42,7 +44,7 @@ describe('SaveActivityLogEndpoint', () => {
         },
       });
       const saveActivityLogEndpoint = new SaveActivityLogEndpoint(
-        clientStoreConnectionLibSql,
+        clientStoreConnection,
         userService
       );
       userService.findUserByAttributes = jest.fn().mockResolvedValue({
@@ -58,7 +60,7 @@ describe('SaveActivityLogEndpoint', () => {
       ).toBeUndefined();
     });
     it('should fail when missing parameters', async () => {
-      clientStoreConnectionLibSql.getConnection = jest.fn().mockResolvedValue({
+      clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
         getRepository: () => ({
           findOne: () => true,
           save: () => true,
@@ -68,7 +70,7 @@ describe('SaveActivityLogEndpoint', () => {
         },
       });
       const saveActivityLogEndpoint = new SaveActivityLogEndpoint(
-        clientStoreConnectionLibSql,
+        clientStoreConnection,
         userService
       );
       userService.findUserByAttributes = jest.fn().mockResolvedValue({
@@ -80,7 +82,7 @@ describe('SaveActivityLogEndpoint', () => {
     });
     it('Should return when organization_user_id is undefined', async () => {
       const saveActivityLogEndpoint = new SaveActivityLogEndpoint(
-        clientStoreConnectionLibSql,
+        clientStoreConnection,
         userService
       );
       expect(
@@ -94,7 +96,7 @@ describe('SaveActivityLogEndpoint', () => {
     });
   });
   it('Should failed when try to get userEmail', async () => {
-    clientStoreConnectionLibSql.getConnection = jest.fn().mockResolvedValue({
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
         findOne: () => true,
         save: () => true,
@@ -103,10 +105,7 @@ describe('SaveActivityLogEndpoint', () => {
         database: 'mock_db',
       },
     });
-    const saveActivityLogEndpoint = new SaveActivityLogEndpoint(
-      clientStoreConnectionLibSql,
-      userService
-    );
+    const saveActivityLogEndpoint = new SaveActivityLogEndpoint(clientStoreConnection, userService);
     userService.findUserByAttributes = jest.fn().mockResolvedValue(undefined);
     expect(
       await saveActivityLogEndpoint.saveActivityLogEndpoint(
@@ -118,7 +117,7 @@ describe('SaveActivityLogEndpoint', () => {
     ).toBeUndefined();
   });
   it('Should failed when try to save activity log', async () => {
-    clientStoreConnectionLibSql.getConnection = jest.fn().mockResolvedValue({
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
         findOne: () => true,
         save: jest
@@ -132,10 +131,7 @@ describe('SaveActivityLogEndpoint', () => {
         database: 'mock_db',
       },
     });
-    const saveActivityLogEndpoint = new SaveActivityLogEndpoint(
-      clientStoreConnectionLibSql,
-      userService
-    );
+    const saveActivityLogEndpoint = new SaveActivityLogEndpoint(clientStoreConnection, userService);
     userService.findUserByAttributes = jest.fn().mockResolvedValue({
       user_email: userEmail,
     });

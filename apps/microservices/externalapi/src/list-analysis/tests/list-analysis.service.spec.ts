@@ -20,7 +20,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
-import { ClientStoreConnection as ClientStoreConnectionLibSql, SqlModule } from '@wri-monorepos/sql';
+
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
   let organizationService: OrganizationService;
@@ -60,24 +60,6 @@ describe('ListAnalysisService', () => {
         OrganizationService,
         ListService,
         S3Service,
-        SqlModule,
-        {
-          provide: ClientStoreConnectionLibSql,
-          useValue: {
-            getConnection: () => ({
-              getRepository: () => ({
-                findOne: () => true,
-                findBy: () => true,
-                update: () => true,
-                save: () => true,
-                findOneBy: () => true,
-              }),
-              options: {
-                database: 'mock_db',
-              },
-            }),
-          },
-        },
         SaveActivityLogEndpoint,
       ],
     }).compile();

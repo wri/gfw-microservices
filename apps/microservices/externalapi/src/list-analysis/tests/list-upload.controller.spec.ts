@@ -30,6 +30,7 @@ import { S3Service } from '@wri-monorepos/aws';
 //import { } from '@ssut/nestjs-sqs';
 import {
   ClientStoreConnection as ClientStoreConnectionLibSql,
+  SqlModule,
   TypeOrmSystemModule,
 } from '@wri-monorepos/sql';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
@@ -202,6 +203,7 @@ describe('ListUploadController', () => {
           },
         },
         ConfigService,
+        SqlModule,
       ],
     })
       .overrideProvider(ConfigService)

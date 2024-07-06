@@ -14,6 +14,20 @@ Ability: Download list data from the diagnostics page
     Given I'm viewing diagnostics for <list>
     When I try to download the list data for <list>
     Then I can see the download confirmation
+    Then I am able to download the list data
+
+    Examples:
+      | list                           |
+      | "AAT Argentina Points Generic" |
+
+  Scenario Outline: Downloads for percentages
+
+    Given I'm viewing diagnostics for <list>
+    When I try to download the list data for <list>
+    Then I am able to download percentage tree of forest
+    Then I am able to download percentage of historic area lost
+    Then I am able to download tree cover loss
+    Then I am able to download tree cover loss on argentina otbn
 
     Examples:
       | list                           |

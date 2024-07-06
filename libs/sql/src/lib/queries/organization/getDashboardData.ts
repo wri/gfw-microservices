@@ -94,4 +94,14 @@ export interface DashboardDataType {
   umd?: number;
   date?: string;
   count?: number;
+  integratedAlertsCoverage?: string;
+  integratedAlertsDailyAllNominal?: string;
+  integratedAlertsDailyAllHigh?: string;
+  integratedAlertsDailyAllHighest?: string;
+  integratedAlertsDailySbtnNominal?: string;
+  integratedAlertsDailySbtnHigh?: string;
+  integratedAlertsDailySbtnHighest?: string;
+  integratedAlertsDailyJrcNominal?: string;
+  integratedAlertsDailyJrcHigh?: string;
+  integratedAlertsDailyJrcHighest?: string;
 }

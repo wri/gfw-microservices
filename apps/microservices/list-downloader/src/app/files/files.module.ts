@@ -32,9 +32,7 @@ import { SouthEastAsiaTCLService } from './south.east.asia.tcl.service';
 import { AwsModule } from '@wri-monorepos/aws';
 
 @Module({
-  imports: [
-    AwsModule,
-  ],
+  imports: [AwsModule],
   providers: [
     AlertsAdminAreasLevelService,
     AlertsFileService,

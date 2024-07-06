@@ -1,8 +1,4 @@
-import {
-  DeforestationKpisService,
-  NaturalForestLossService,
-  OtherKpisService,
-} from '../files';
+import { DeforestationKpisService, NaturalForestLossService, OtherKpisService } from '../files';
 import { Injectable, Logger } from '@nestjs/common';
 import { BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import * as asyncPool from 'tiny-async-pool';

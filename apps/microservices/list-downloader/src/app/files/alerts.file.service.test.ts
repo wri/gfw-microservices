@@ -1,0 +1,191 @@
+import { AlertsFileService } from './alerts.file.service';
+import { AlertsAdminAreasLevelService } from './alerts.admin.areas.level.service';
+import { AlertsHistoryService } from './alerts.history.service';
+import { AlertsLocationsLevelService } from './alerts.locations.level.service';
+import { AlertsPrioritiesAdminAreasLevelService } from './alerts.priorities.admin.areas.level.service';
+import { AlertsPrioritiesLocationsLevelService } from './alerts.priorities.locations.level.service';
+import { AlertsSummaryService } from './alerts.summary.service';
+import { AlertsLocationsHistoryService } from './alerts.locations.history.service';
+import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
+import { getAllFilesAndZip } from '../shared/file.utils';
+import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
+
+jest.mock('../shared/file.utils');
+
+describe('AlertsFileService', () => {
+  let service: AlertsFileService;
+  let alertsAdminAreasLevelService: AlertsAdminAreasLevelService;
+  let alertsHistoryService: AlertsHistoryService;
+  let alertsLocationsLevelService: AlertsLocationsLevelService;
+  let alertsPrioritiesAdminAreasLevelService: AlertsPrioritiesAdminAreasLevelService;
+  let alertsPrioritiesLocationsLevelService: AlertsPrioritiesLocationsLevelService;
+  let alertsSummaryService: AlertsSummaryService;
+  let alertsLocationsHistoryService: AlertsLocationsHistoryService;
+  let alertsIntegratedNaturalForestService: AlertsIntegratedNaturalForestService;
+
+  beforeEach(() => {
+    alertsAdminAreasLevelService = new AlertsAdminAreasLevelService();
+    alertsHistoryService = new AlertsHistoryService();
+    alertsLocationsLevelService = new AlertsLocationsLevelService();
+    alertsPrioritiesAdminAreasLevelService = new AlertsPrioritiesAdminAreasLevelService();
+    alertsPrioritiesLocationsLevelService = new AlertsPrioritiesLocationsLevelService();
+    alertsSummaryService = new AlertsSummaryService();
+    alertsLocationsHistoryService = new AlertsLocationsHistoryService();
+    alertsIntegratedNaturalForestService = new AlertsIntegratedNaturalForestService();
+
+    service = new AlertsFileService(
+      alertsAdminAreasLevelService,
+      alertsHistoryService,
+      alertsLocationsLevelService,
+      alertsPrioritiesAdminAreasLevelService,
+      alertsPrioritiesLocationsLevelService,
+      alertsSummaryService,
+      alertsLocationsHistoryService,
+      alertsIntegratedNaturalForestService
+    );
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  describe('start', () => {
+    it('should call the appropriate services based on the selectedTimeframe', async () => {
+      const filters = { selectedTimeframe: 'DAY' } as AlertFieldsFileRequest;
+
+      jest
+        .spyOn(alertsLocationsHistoryService, 'start')
+        .mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsIntegratedNaturalForestService, 'start')
+        .mockImplementation(() => Promise.resolve());
+
+      await service.start(filters);
+
+      expect(alertsLocationsHistoryService.start).toHaveBeenCalledWith(filters);
+      expect(alertsIntegratedNaturalForestService.start).toHaveBeenCalledWith(filters);
+    });
+
+    it('should call the appropriate services for non-DAY timeframe', async () => {
+      const filters = { selectedTimeframe: 'MONTH' } as AlertFieldsFileRequest;
+
+      jest.spyOn(alertsLocationsLevelService, 'start').mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsPrioritiesLocationsLevelService, 'start')
+        .mockImplementation(() => Promise.resolve());
+      jest.spyOn(alertsAdminAreasLevelService, 'start').mockImplementation(() => Promise.resolve());
+      jest.spyOn(alertsHistoryService, 'start').mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsPrioritiesAdminAreasLevelService, 'start')
+        .mockImplementation(() => Promise.resolve());
+      jest.spyOn(alertsSummaryService, 'start').mockImplementation(() => Promise.resolve());
+
+      await service.start(filters);
+
+      expect(alertsLocationsLevelService.start).toHaveBeenCalledWith(filters);
+      expect(alertsPrioritiesLocationsLevelService.start).toHaveBeenCalledWith(filters);
+      expect(alertsAdminAreasLevelService.start).toHaveBeenCalledWith(filters);
+      expect(alertsHistoryService.start).toHaveBeenCalledWith(filters);
+      expect(alertsPrioritiesAdminAreasLevelService.start).toHaveBeenCalledWith(filters);
+      expect(alertsSummaryService.start).toHaveBeenCalledWith(filters);
+    });
+  });
+
+  describe('process', () => {
+    it('should call the appropriate services based on the selectedTimeframe', () => {
+      const filters = { selectedTimeframe: 'DAY' } as AlertFieldsFileRequest;
+      const analysisData = [] as DashboardDataType[];
+
+      jest
+        .spyOn(alertsLocationsHistoryService, 'process')
+        .mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsIntegratedNaturalForestService, 'process')
+        .mockImplementation(() => Promise.resolve());
+
+      service.process(analysisData, filters);
+
+      expect(alertsLocationsHistoryService.process).toHaveBeenCalledWith(analysisData);
+      expect(alertsIntegratedNaturalForestService.process).toHaveBeenCalledWith(analysisData);
+    });
+
+    it('should call the appropriate services for non-DAY timeframe', () => {
+      const filters = { selectedTimeframe: 'MONTH' } as AlertFieldsFileRequest;
+      const analysisData = [] as DashboardDataType[];
+
+      jest
+        .spyOn(alertsLocationsLevelService, 'process')
+        .mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsAdminAreasLevelService, 'process')
+        .mockImplementation(() => Promise.resolve());
+      jest.spyOn(alertsHistoryService, 'process').mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsPrioritiesAdminAreasLevelService, 'process')
+        .mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsPrioritiesLocationsLevelService, 'process')
+        .mockImplementation(() => Promise.resolve());
+      jest.spyOn(alertsSummaryService, 'process').mockImplementation(() => Promise.resolve());
+
+      service.process(analysisData, filters);
+
+      expect(alertsLocationsLevelService.process).toHaveBeenCalledWith(analysisData);
+      expect(alertsAdminAreasLevelService.process).toHaveBeenCalledWith(analysisData);
+      expect(alertsHistoryService.process).toHaveBeenCalledWith(analysisData);
+      expect(alertsPrioritiesAdminAreasLevelService.process).toHaveBeenCalledWith(analysisData);
+      expect(alertsPrioritiesLocationsLevelService.process).toHaveBeenCalledWith(analysisData);
+      expect(alertsSummaryService.process).toHaveBeenCalledWith(analysisData);
+    });
+  });
+
+  describe('finish', () => {
+    it('should call the appropriate services based on the selectedTimeframe and zip files', async () => {
+      const filters = { selectedTimeframe: 'DAY', key: 'test-key' } as AlertFieldsFileRequest;
+
+      jest
+        .spyOn(alertsLocationsHistoryService, 'finish')
+        .mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsIntegratedNaturalForestService, 'finish')
+        .mockImplementation(() => Promise.resolve());
+      jest.spyOn(service, 'finishProcess').mockImplementation(() => Promise.resolve());
+
+      await service.finish(filters);
+
+      expect(alertsLocationsHistoryService.finish).toHaveBeenCalledWith(filters);
+      expect(alertsIntegratedNaturalForestService.finish).toHaveBeenCalledWith(filters);
+      expect(getAllFilesAndZip).toHaveBeenCalledWith(filters);
+      expect(service.finishProcess).toHaveBeenCalledWith(filters);
+    });
+
+    it('should call the appropriate services for non-DAY timeframe and zip files', async () => {
+      const filters = { selectedTimeframe: 'MONTH', key: 'test-key' } as AlertFieldsFileRequest;
+
+      jest.spyOn(alertsLocationsLevelService, 'finish').mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsAdminAreasLevelService, 'finish')
+        .mockImplementation(() => Promise.resolve());
+      jest.spyOn(alertsHistoryService, 'finish').mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsPrioritiesAdminAreasLevelService, 'finish')
+        .mockImplementation(() => Promise.resolve());
+      jest
+        .spyOn(alertsPrioritiesLocationsLevelService, 'finish')
+        .mockImplementation(() => Promise.resolve());
+      jest.spyOn(alertsSummaryService, 'finish').mockImplementation(() => Promise.resolve());
+      jest.spyOn(service, 'finishProcess').mockImplementation(() => Promise.resolve());
+
+      await service.finish(filters);
+
+      expect(alertsLocationsLevelService.finish).toHaveBeenCalledWith(filters);
+      expect(alertsAdminAreasLevelService.finish).toHaveBeenCalledWith(filters);
+      expect(alertsHistoryService.finish).toHaveBeenCalledWith(filters);
+      expect(alertsPrioritiesAdminAreasLevelService.finish).toHaveBeenCalledWith(filters);
+      expect(alertsPrioritiesLocationsLevelService.finish).toHaveBeenCalledWith(filters);
+      expect(alertsSummaryService.finish).toHaveBeenCalledWith(filters);
+      expect(getAllFilesAndZip).toHaveBeenCalledWith(filters);
+      expect(service.finishProcess).toHaveBeenCalledWith(filters);
+    });
+  });
+});

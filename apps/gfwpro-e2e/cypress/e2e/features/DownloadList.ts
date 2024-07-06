@@ -8,19 +8,16 @@ describe('Maps View', () => {
 
   When('I login in the landing page', () => {
     User.login();
-    cy.visit('/locations');
   });
 
-  Then('Verify to Locations screen', () => {
+  Then('Verify the Locations screen', () => {
     cy.url().should('include', '/locations');
-    locationPage.clickOnLanguage();
-    locationPage.selectEnglishLenguage();
   });
 
   Then('I test download list on Locations', () => {
     locationPage.clickOnMoreOptionsListOK();
-    expect(locationPage.elements.downloadBtn2().should('be.visible'));
-    locationPage.clickOnDownload2();
+    expect(locationPage.elements.downloadListBtn().should('be.visible'));
+    locationPage.clickOnDownloadList();
     expect(listDetailPage.elements.downloadCSVOptionBtn().should('be.visible'));
     expect(listDetailPage.elements.downloadShapefileptionBtn().should('be.visible'));
 
@@ -32,7 +29,7 @@ describe('Maps View', () => {
 
     locationPage.clickOnMoreOptionsListOK();
     //Download Shapefile
-    locationPage.clickOnDownload2();
+    locationPage.clickOnDownloadList();
     listDetailPage.clickOnShapefileOption();
     expect(listDetailPage.elements.titleAlertDownloadList().should('be.visible'));
     expect(listDetailPage.elements.descriptionAlertDownloadList().should('be.visible'));

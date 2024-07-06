@@ -1,26 +1,19 @@
 class LocationsPage {
   elements = {
-    languageBtn: () => cy.contains('language'),
-    englishBtn: () => cy.contains('English'),
     addLocationsBtn: () => cy.contains('Add locations'),
     searchInput: () => cy.get('.input-search__input'),
     downloadTypeDropdown: () => cy.get('#downloadTypeSelect'),
-    downloadBtn: () => cy.contains('Download'),
+    downloadTemplateBtn: () => cy.contains('Download'),
     locationNameCell: () => cy.get('.rt-td.cell__Location-Name.default-cell'),
     checkbox: () => '.rt-td.td-checkbox',
-    downloadBtn2: () => cy.contains('Download…'),
+    downloadListBtn: () => cy.contains('Download…'),
     optionListOK: () =>
       cy
         .get('.my-lists-list li')
         .filter(':not(:has(.failed-tooltip.failed-tooltip--default))')
         .first(),
   };
-  clickOnLanguage() {
-    this.elements.languageBtn().click();
-  }
-  selectEnglishLenguage() {
-    this.elements.englishBtn().click();
-  }
+
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
   }
@@ -34,10 +27,10 @@ class LocationsPage {
   }
 
   clickOnDownloadTemplateBtn() {
-    this.elements.downloadBtn().click();
+    this.elements.downloadTemplateBtn().click();
   }
-  clickOnDownload2() {
-    this.elements.downloadBtn2().click();
+  clickOnDownloadList() {
+    this.elements.downloadListBtn().click();
   }
 
   clickOnLocationCheckbox(locationName: string) {

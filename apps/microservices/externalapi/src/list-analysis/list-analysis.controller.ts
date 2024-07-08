@@ -131,10 +131,10 @@ export class ListAnalysisController {
     @Req() request: RequestSchema
   ): Promise<ListInfoResponse> {
     const {
-      user: { organizationId, organization_user_id },
+      user: { organizationId },
     } = request;
 
-    return await this.list.getListInfo(organizationId, listId, organization_user_id);
+    return await this.list.getListInfo(organizationId, listId);
   }
 
   @Get()
@@ -155,13 +155,8 @@ export class ListAnalysisController {
     @Req() request: RequestSchema
   ) {
     const {
-      user: { organizationId, organization_user_id },
+      user: { organizationId },
     } = request;
-    return await this.list.getPaginatedListInfo(
-      pageSize,
-      pageNum,
-      organizationId,
-      organization_user_id
-    );
+    return await this.list.getPaginatedListInfo(pageSize, pageNum, organizationId);
   }
 }

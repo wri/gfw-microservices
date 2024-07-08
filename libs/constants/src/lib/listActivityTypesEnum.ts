@@ -34,4 +34,5 @@ export enum ListActivityTypesEnum {
   ListGetPaginatedListInfo = 38, // see backward compat comment and code below (listActivityByID[23-25])
   ListInfo = 39,
   ListPrepareUpload = 40,
+  ListGenerate = 41,
 }

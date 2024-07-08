@@ -461,7 +461,6 @@ describe('ListService', () => {
   });
   it('Should get info from list', async () => {
     const organizationId = 1;
-    const organization_user_id = 1;
     const listInformationExpected = {
       listId: expectedResult.id,
       listName: expectedResult.listName,
@@ -474,7 +473,7 @@ describe('ListService', () => {
       }),
     });
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
-    const result = await listService.getListInfo(organizationId, listId, organization_user_id);
+    const result = await listService.getListInfo(organizationId, listId);
 
     const resultWithDatesTransformed = {};
     for (const prop in result) {
@@ -487,7 +486,6 @@ describe('ListService', () => {
   });
   it('Should not find info list', async () => {
     const organizationId = 1;
-    const organization_user_id = 1;
     const listInformationExpected = {
       listId: expectedResult.id,
       listName: expectedResult.listName,
@@ -500,13 +498,12 @@ describe('ListService', () => {
       }),
     });
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
-    await expect(
-      listService.getListInfo(organizationId, listId, organization_user_id)
-    ).rejects.toThrowError(NotFoundException);
+    await expect(listService.getListInfo(organizationId, listId)).rejects.toThrowError(
+      NotFoundException
+    );
   });
   it('It should return paginated info lists with default pageSize and pageNum', async () => {
     const organizationId = 1;
-    const organization_user_id = 1;
     const listInformationExpected = {
       listId: expectedResult.id,
       listName: expectedResult.listName,
@@ -571,17 +568,11 @@ describe('ListService', () => {
         findAndCount: jest.fn().mockResolvedValue([paginatedInfoListsResult.slice(0, 10), 10]),
       }),
     });
-    const paginatedInfoLists = await listService.getPaginatedListInfo(
-      0,
-      0,
-      organizationId,
-      organization_user_id
-    );
+    const paginatedInfoLists = await listService.getPaginatedListInfo(0, 0, organizationId);
     expect(paginatedInfoLists).toEqual(expectedPaginatedInfoLists);
   });
   it('It should return an error when trying to set the out-of-range value for pageSize or pageNum', async () => {
     const organizationId = 1;
-    const organization_user_id = 1;
     const listInformationExpected = {
       listId: expectedResult.id,
       listName: expectedResult.listName,
@@ -595,13 +586,12 @@ describe('ListService', () => {
       }),
     });
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
-    await expect(
-      listService.getPaginatedListInfo(30, 50, organizationId, organization_user_id)
-    ).rejects.toThrowError(NotFoundException);
+    await expect(listService.getPaginatedListInfo(30, 50, organizationId)).rejects.toThrowError(
+      NotFoundException
+    );
   });
   it('It should return a specific paginated info list when define pageSize and pageNum', async () => {
     const organizationId = 1;
-    const organization_user_id = 1;
     const listInformationExpected = {
       listId: expectedResult.id,
       listName: expectedResult.listName,
@@ -626,12 +616,7 @@ describe('ListService', () => {
         findAndCount: jest.fn().mockResolvedValue([paginatedInfoListsResult.slice(2, 4), 2]),
       }),
     });
-    const paginatedInfoLists = await listService.getPaginatedListInfo(
-      2,
-      2,
-      organizationId,
-      organization_user_id
-    );
+    const paginatedInfoLists = await listService.getPaginatedListInfo(2, 2, organizationId);
     expect(paginatedInfoLists).toEqual(expectedPaginatedInfoLists);
   });
 });

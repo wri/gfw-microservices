@@ -273,23 +273,21 @@ export class ListAnalysisService {
 
   async uploadNewList(
     newListDetails: ListUploadNewRequestSchema,
-    organizationId: number,
-    organization_user_id: number
+    organizationId: number
   ): Promise<ListUploadNewResponse | ListUploadNewErrorResponse> {
     const organizationDetails = await this.getOrganizationDetails(organizationId);
     const organizationConnection = await this.createOrganizationConnection(organizationDetails);
     const externalUploadRepository = organizationConnection.getRepository(ExternalUpload);
 
-    await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
-      organizationDetails,
-      organization_user_id,
-      LIST_ANALISYS_ENDPOINT_NAMES[UPLOAD_NEW_LIST],
-      ListActivityTypesEnum.ListCreated
-    );
-
     const externalUpload = await externalUploadRepository.findOne({
       where: { id: parseInt(newListDetails.uploadId) },
     });
+    await this.saveActivityLogEndpoint.saveActivityLogEndpoint(
+      organizationDetails,
+      externalUpload.userId,
+      LIST_ANALISYS_ENDPOINT_NAMES[UPLOAD_NEW_LIST],
+      ListActivityTypesEnum.ListCreated
+    );
 
     if (!externalUpload) {
       throwCustomErrorResponse(
@@ -382,7 +380,7 @@ export class ListAnalysisService {
       organization,
       user.organization_user_id,
       LIST_ANALISYS_ENDPOINT_NAMES[GENERATE_ANALYSIS],
-      ListActivityTypesEnum.ListUpdate
+      ListActivityTypesEnum.ListGenerate
     );
     let sqsMessage = {};
     try {

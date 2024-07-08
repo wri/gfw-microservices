@@ -5,7 +5,8 @@
     "jest": true
   },
   "globals": {
-    "gtag": "readonly"
+    "gtag": "readonly",
+    "Transifex": "readonly"
   },
   "plugins": ["@nrwl/nx"],
   "overrides": [

@@ -59,7 +59,7 @@ function RegionChartsContainer({
         <RegionChartArgentina listId={listId} data={data} fireDownload={fireDownload} />
       )}
 
-      {selectedTab === regionIds.COLOMBIA && <RegionChartColombia />}
+      {selectedTab === regionIds.COLOMBIA && <RegionChartColombia data={data} listId={listId} />}
 
       {selectedTab === regionIds.REGIONAL && (
         <SouthAmericaRegionsWithoutArgentina

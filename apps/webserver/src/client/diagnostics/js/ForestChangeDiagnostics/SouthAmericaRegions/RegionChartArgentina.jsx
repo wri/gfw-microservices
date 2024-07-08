@@ -22,7 +22,6 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
     protectedAreas,
     indigenousTerritories,
     otbn,
-
     wdpaOverlapCountry,
     landmarkOverlapCountry,
   } = chartDatasetConfigs;

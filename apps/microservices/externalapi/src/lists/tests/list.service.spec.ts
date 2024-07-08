@@ -16,13 +16,19 @@ import { ListRepositoryMock } from './lists.repository.mock';
 import { ListAnalysisService } from '../../list-analysis/list-analysis.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { NotFoundException } from '@nestjs/common';
+import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
+
+// Mock do S3Service
+const errorFileStoragePath = 's3://bucketname/enviroment/status/erro_name.file_extension';
+const mockS3Service = {
+  getFileSignedUrlDynamicEnvironment: jest.fn().mockResolvedValue(errorFileStoragePath),
+};
 
 describe('ListService', () => {
   let organizationService: OrganizationService;
   let module: TestingModule;
   let listService: ListService;
   let clientStoreConnection: ClientStoreConnection;
-  let s3Service: S3Service;
   const listId = 123;
   const expectedResult = {
     id: listId.toString(),
@@ -328,15 +334,18 @@ describe('ListService', () => {
         OrganizationService,
         ListService,
         S3Service,
+        ClientStoreConnectionLibSql,
       ],
-    }).compile();
+    })
+      .overrideProvider(S3Service)
+      .useValue(mockS3Service)
+      .compile();
   });
 
   beforeEach(async () => {
     organizationService = module.get<OrganizationService>(OrganizationService);
     listService = module.get<ListService>(ListService);
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
-    s3Service = module.get<S3Service>(S3Service);
   });
 
   it('Should get List', async () => {
@@ -378,7 +387,7 @@ describe('ListService', () => {
 
     const expectedResultWithErroPath = {
       ...repositoryResult,
-      errorFileStoragePath: 's3://bucketname/enviroment/status/erro_name.file_extension',
+      errorFileStoragePath,
     };
     organizationService.findOrganizationById = jest.fn().mockResolvedValue({
       id: 1,
@@ -394,9 +403,7 @@ describe('ListService', () => {
         findOneBy: () => ({ ...repositoryResult }),
       }),
     });
-    s3Service.getFileSignedUrlDynamicEnvironment = jest
-      .fn()
-      .mockResolvedValue(expectedResult.errorFileStoragePath);
+
     const result = await listService.getList({ organizationId, listId, analysisId: 'FCD' });
 
     const resultWithDatesTransformed = {};

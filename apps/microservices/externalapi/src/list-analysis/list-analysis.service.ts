@@ -528,7 +528,6 @@ export class ListAnalysisService {
         activityDescription: `ListAnalyzing ${listId} has been sent to analysis`,
         activityTime: new Date(),
       });
-
     } catch (error) {
       this.logger.error(
         'createAnalysis',

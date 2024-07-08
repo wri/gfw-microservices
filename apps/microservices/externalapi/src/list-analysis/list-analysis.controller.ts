@@ -8,6 +8,8 @@ import {
   listIdSchema,
   numPageSchema,
   pageSizeSchema,
+  reanalyzeAnalysisBodySchema,
+  requestEmailBody,
 } from './list-analysis.dto';
 import { ListService } from '../lists/lists.service';
 import { ListAnalysisService } from './list-analysis.service';
@@ -96,6 +98,35 @@ export class ListAnalysisController {
       listId,
       analysisId,
     });
+  }
+
+  @ApiResponse({ status: 200 })
+  @ApiUnauthorizedResponse({ status: 401, type: UnauthorizedResponse })
+  @ApiBadRequestResponse({ type: BadRequestResponse })
+  @ApiForbiddenResponse({ type: ForbiddenResponse })
+  @ApiNotFoundResponse({ type: NotFoundResponse })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponse })
+  @Post(':listId/analysis/:analysisId/analyze')
+  async createAnalysis(
+    @Param('listId', new ZodValidationPipe(listIdSchema)) listId: number,
+    @Param('analysisId', new ZodValidationPipe(analysisIdSchema)) analysisId: string,
+    @Body(new ZodValidationPipe(reanalyzeAnalysisBodySchema))
+    reanalyzeBody: requestEmailBody,
+    @Req() request: RequestSchema
+  ) {
+    new ZodValidationPipe(requestSchema).transform(request);
+    const { userEmail } = reanalyzeBody;
+    const {
+      user: { organizationId, organization_user_id },
+    } = request;
+    const analysisResult = await this.listAnalysisService.createAnalysis(
+      analysisId,
+      listId,
+      organizationId,
+      userEmail,
+      organization_user_id
+    );
+    return analysisResult;
   }
 
   @ApiResponse({ status: 200, type: DeleteListMessageResponse })

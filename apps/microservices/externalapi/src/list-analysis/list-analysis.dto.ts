@@ -81,3 +81,7 @@ export interface AnalysesGenerateRequest {
   startDate: Date;
   endDate: Date;
 }
+
+export const reanalyzeAnalysisBodySchema = z.object({
+  userEmail: z.string().email(),
+});

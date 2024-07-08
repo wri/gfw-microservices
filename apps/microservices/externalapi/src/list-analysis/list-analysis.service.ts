@@ -11,7 +11,7 @@ import { UserService } from './user.service';
 import { ExternalUpload } from './external-upload.entity';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { generateRandomFilename } from '@wri-monorepos/shared';
+import { checkProcessingLimits, generateRandomFilename } from '@wri-monorepos/shared';
 import { ClientStoreConnection } from '../shared/client-store-connection';
 import { OrganizationService } from './organization.service';
 import { ListsAnalysisStatus } from './list-analysis-status.entity';
@@ -30,8 +30,20 @@ import { SqsService } from '@ssut/nestjs-sqs';
 import { AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { ListService } from '../lists/lists.service';
-
+import {
+  ActivityLog,
+  updateListsAnalysisStatus,
+  ClientStoreConnection as ClientStoreConnectionLibSql,
+} from '@wri-monorepos/sql';
 import { ServerConfigType } from '../validators/server-config';
+
+import {
+  GEO_TRELLIS__ANALYZE_LIST_DEV,
+  GEO_TRELLIS__ANALYZE_LIST_QA,
+  GEO_TRELLIS__ANALYZE_LIST_STAGING,
+  GEO_TRELLIS__ANALYZE_LIST_PROD,
+  GEO_TRELLIS__ANALYZE_LIST_PRODV2,
+} from '@wri-monorepos/constants';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
@@ -57,6 +69,7 @@ export class ListAnalysisService {
     private configService: ConfigService<ServerConfigType, true>,
     private userService: UserService,
     private clientStoreConnection: ClientStoreConnection,
+    private clientStoreConnectionLibSql: ClientStoreConnectionLibSql,
     private organizationService: OrganizationService,
     private readonly sqsService: SqsService,
     private readonly listService: ListService
@@ -428,5 +441,100 @@ export class ListAnalysisService {
         throw new InternalServerErrorException(error);
       }
     }
+  }
+  async createAnalysis(
+    analysisId: string,
+    listId: number,
+    organizationId: number,
+    userEmail: string,
+    organization_user_id: number
+  ) {
+    const geoTrellisUrlsByEnv = {
+      qa: GEO_TRELLIS__ANALYZE_LIST_QA,
+      staging: GEO_TRELLIS__ANALYZE_LIST_STAGING,
+      production: GEO_TRELLIS__ANALYZE_LIST_PROD,
+      ProdV2: GEO_TRELLIS__ANALYZE_LIST_PRODV2,
+      default: GEO_TRELLIS__ANALYZE_LIST_DEV,
+    };
+
+    const organizationDetails = await this.getOrganizationDetails(organizationId);
+    const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
+
+    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
+      organizationDb: organizationDetails.organizationDb,
+      organizationId,
+      subscriptionStatusId: organizationDetails.subscriptionStatusId,
+      listId: listId,
+    });
+    const connection = await this.clientStoreConnection.getConnection(
+      organizationDetails.organizationDb
+    );
+    const listAnalysisStatusRepository = connection.getRepository(ListsAnalysisStatus);
+
+    const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
+      listId,
+      analysisId,
+    });
+
+    if (listAnalysisStatusToUpdate.length === 0) {
+      await listAnalysisStatusRepository.save({
+        listId: listId,
+        analysisId,
+        status: listStatus.Pending,
+        updateTime: new Date(),
+      });
+    } else {
+      await listAnalysisStatusRepository.update(
+        { listId, analysisId },
+        {
+          status: listStatus.Pending,
+          s3URL: null,
+          bundleCreationTime: null,
+          expirationTime: null,
+          errorInfo: null,
+        }
+      );
+    }
+    if (isListLocationOverLimit) {
+      await updateListsAnalysisStatus(organizationDetails.organizationDb, {
+        listId: listId,
+        errorInfo: 'Exceeded Analysis Limit',
+        status: listStatus.Inactive,
+      });
+      throw new Error(`Analysis limit reached`);
+    }
+    const data = {
+      list_id: listId,
+      user_id: organization_user_id,
+      organization_id: organizationId,
+      processing_limit: processingLimit,
+      analysis_types: { [analysisId]: true },
+    };
+    const connectionLibSql = await this.clientStoreConnectionLibSql.getConnection(
+      organizationDetails.organizationDb
+    );
+
+    const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
+
+    const response = await axios.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    try {
+      await activityLogRepository.save({
+        userId: organization_user_id,
+        activityTypeId: 22,
+        activityDescription: `ListAnalyzing ${listId} has been sent to analysis`,
+        activityTime: new Date(),
+      });
+    } catch (error) {
+      this.logger.error(
+        'createAnalysis',
+        `Error when updating ${listId} to analysis: ${error.message}`
+      );
+      return error.message;
+    }
+    return response.statusText;
   }
 }

@@ -443,7 +443,7 @@ export class ListAnalysisService {
     }
   }
   async createAnalysis(
-    analysisTypesToProcess: string,
+    analysisId: string,
     listId: number,
     organizationId: number,
     userEmail: string,
@@ -473,19 +473,19 @@ export class ListAnalysisService {
 
     const listAnalysisStatusToUpdate = await listAnalysisStatusRepository.findBy({
       listId,
-      analysisId: analysisTypesToProcess,
+      analysisId,
     });
 
     if (listAnalysisStatusToUpdate.length === 0) {
       await listAnalysisStatusRepository.save({
         listId: listId,
-        analysisId: analysisTypesToProcess,
+        analysisId,
         status: listStatus.Pending,
         updateTime: new Date(),
       });
     } else {
       await listAnalysisStatusRepository.update(
-        { listId, analysisId: analysisTypesToProcess },
+        { listId, analysisId },
         {
           status: listStatus.Pending,
           s3URL: null,
@@ -508,7 +508,7 @@ export class ListAnalysisService {
       user_id: organization_user_id,
       organization_id: organizationId,
       processing_limit: processingLimit,
-      analysis_types: { [analysisTypesToProcess]: true },
+      analysis_types: { [analysisId]: true },
     };
     const connectionLibSql = await this.clientStoreConnectionLibSql.getConnection(
       organizationDetails.organizationDb
@@ -529,7 +529,6 @@ export class ListAnalysisService {
         activityTime: new Date(),
       });
 
-      // Get Listname
     } catch (error) {
       this.logger.error(
         'createAnalysis',

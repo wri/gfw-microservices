@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import IconButton from 'material-ui/IconButton';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import InfoBubbleBase from './InfoBubbleBase';
@@ -43,7 +43,7 @@ export default function InfoBubble({ children, infoBubbleId }) {
           </InfoBubbleBase>
         ) : (
           <InfoBubbleBase closeBubble={handleClose}>
-            <div dangerouslySetInnerHTML={{ __html: children }}></div>
+            <div>{children}</div>
           </InfoBubbleBase>
         )}
       </Popover>

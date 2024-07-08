@@ -18,9 +18,9 @@ DECLARE @TABLE NVARCHAR(80);
 
 BEGIN
   create table #TotArea_org (
-    total_area_analyzed BIGINT,  
-    max_area_analyzed BIGINT, 
-    number_of_lists_analyzed INT, 
+    total_area_analyzed BIGINT,
+    max_area_analyzed BIGINT,
+    number_of_lists_analyzed INT,
     locations_analyzed INT,
     organization_id INT
   );
@@ -35,7 +35,7 @@ BEGIN
   FETCH NEXT FROM @MyCursor
   INTO @DBName
 
-  SET @SQL = 'INSERT INTO {TABLE} SELECT {PARAM} FROM [{DB_NAME}].[dbo].[ListsProcessing] lp WHERE analysis_end_time > ''{START_DATE}''  AND analysis_end_time < ''{END_DATE}'' AND lp.user_id IS NOT NULL ';
+  SET @SQL = 'INSERT INTO {TABLE} SELECT {PARAM} FROM [{DB_NAME}].[dbo].[ListsProcessing] lp WHERE analysis_end_time >= ''{START_DATE}''  AND analysis_end_time <= ''{END_DATE}'' AND lp.user_id IS NOT NULL ';
   SET @TABLE = '#TotArea_org'
   SET @PARAM = 'ISNULL(SUM(area_analyzed_locations_ha), 0) as total_area_analyzed, ISNULL(MAX(area_analyzed_locations_ha), 0) as max_area_analyzed, COUNT(Distinct list_id) as number_of_lists_analyzed, ISNULL(SUM(locations_analyzed), 0) as locations_analyzed, {organization} as organization_id';
 

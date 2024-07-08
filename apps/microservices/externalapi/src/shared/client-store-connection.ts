@@ -6,7 +6,7 @@ import { ExternalUpload } from '../list-analysis/external-upload.entity';
 import { ListsAnalysisStatus } from '../list-analysis/list-analysis-status.entity';
 import { Lists } from '../lists/lists.entity';
 import { ServerConfigType } from '../validators/server-config';
-import { ActivityLog } from '../list-analysis/utils/activityLog.entity';
+import { ActivityLog } from '@wri-monorepos/sql';
 
 export interface ConnectionCacheItem {
   connection: Promise<DataSource>;

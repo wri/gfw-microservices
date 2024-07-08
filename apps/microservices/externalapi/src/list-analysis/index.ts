@@ -16,7 +16,7 @@ import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
-import { ActivityLog } from './utils/activityLog.entity';
+import { ActivityLog } from '@wri-monorepos/sql';
 @Module({
   imports: [
     TypeOrmModule.forFeature(

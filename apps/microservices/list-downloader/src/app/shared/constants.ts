@@ -1784,6 +1784,20 @@ export const OTHER_KPIS_HEADER = {
   },
 } as const;
 
+export const ALERTS_INTEGRATED_NATURAL_FOREST_SERVICE_CSV_HEADER = {
+  listName: { name: 'List Name', description: 'Name of List' },
+  locationName: { name: 'Location Name', description: 'Name of Location' },
+  alertType: { name: 'Alert Type', description: 'Selected Alert Type' },
+  startDate: { name: 'Start Date', description: 'Start Date of Selected Time Period' },
+  endDate: { name: 'End Date', description: 'End Date of Selected Time Period' },
+  date: { name: 'Date', description: 'Date Selected' },
+  confidenceLevel: { name: 'Confidence Level', description: 'Type of confidence level' },
+  totalAlerts: { name: 'Total # of alerts', description: 'Count of Alerts in total' },
+  alertSbtn: { name: '# Alerts in SBTN Natural Forest', description: 'Count of Alerts in STBN' },
+  alertsJRC: { name: '# Alerts in JRC Natural Forest', description: 'Count of Alerts in JRC' },
+  numberLocations: { name: '# of locations', description: 'Count of Locations' },
+} as const;
+
 export const ACCOUNT_USERS_USAGE_CSV_HEADER = [
   'Username',
   'List ID',

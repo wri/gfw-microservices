@@ -1,0 +1,101 @@
+import { Module } from '@nestjs/common';
+import { AlertsAdminAreasLevelService } from './alerts.admin.areas.level.service';
+import { AlertsFileService } from './alerts.file.service';
+import { AlertsHistoryService } from './alerts.history.service';
+import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
+import { AlertsLocationsHistoryService } from './alerts.locations.history.service';
+import { AlertsLocationsLevelService } from './alerts.locations.level.service';
+import { AlertsPrioritiesAdminAreasLevelService } from './alerts.priorities.admin.areas.level.service';
+import { AlertsPrioritiesLocationsLevelService } from './alerts.priorities.locations.level.service';
+import { AlertsSummaryService } from './alerts.summary.service';
+import { ArgentinaDeforestationService } from './argentina-deforestation.service';
+import { ArgentinaOverlapService } from './argentina.overlap.service';
+import { CommodityRiskDiagnosticLocationSummaryService } from './commodity.risk.diagnostic.location.summary.service';
+import { DeforestationKpisService } from './deforestation.kpis.service';
+import { DeforestationTrendsService } from './deforestation.trends.service';
+import { ForestChangeDiagnosticListSummaryService } from './forest.change.diagnostic.list.summary.service';
+import { ForestChangeDiagnosticLocationSummaryService } from './forest.change.diagnostic.location.summary.service';
+import { ForestLossService } from './forest.loss.service';
+import { HistoricPercentService } from './historic.percent.service';
+import { InputService } from './input.service';
+import { MillPriorityService } from './mill.priority.service';
+import { NaturalForestLossService } from './natural.forest.loss.service';
+import { OtherKpisService } from './other.kpis.service';
+import { PalmRiskAnalysisService } from './palm.risk.analysis.service';
+import { ReadmeService } from './readme.service';
+import { ResultService } from './result.service';
+import { ShapefileService } from './shapefile.service';
+import { SouthAmericaBiomesService } from './south.america.biomes.service';
+import { SouthAmericaLossService } from './south.america.loss.service';
+import { SouthEastAsiaOverlapService } from './south.east.asia.overlap.service';
+import { SouthEastAsiaTCLService } from './south.east.asia.tcl.service';
+import { AwsModule } from '@wri-monorepos/aws';
+
+@Module({
+  imports: [AwsModule],
+  providers: [
+    AlertsAdminAreasLevelService,
+    AlertsFileService,
+    AlertsHistoryService,
+    AlertsIntegratedNaturalForestService,
+    AlertsLocationsHistoryService,
+    AlertsLocationsLevelService,
+    AlertsPrioritiesAdminAreasLevelService,
+    AlertsPrioritiesLocationsLevelService,
+    AlertsSummaryService,
+    ArgentinaDeforestationService,
+    ArgentinaOverlapService,
+    CommodityRiskDiagnosticLocationSummaryService,
+    DeforestationKpisService,
+    DeforestationTrendsService,
+    ForestChangeDiagnosticListSummaryService,
+    ForestChangeDiagnosticLocationSummaryService,
+    ForestLossService,
+    HistoricPercentService,
+    InputService,
+    MillPriorityService,
+    NaturalForestLossService,
+    OtherKpisService,
+    PalmRiskAnalysisService,
+    ReadmeService,
+    ResultService,
+    ShapefileService,
+    SouthAmericaBiomesService,
+    SouthAmericaLossService,
+    SouthEastAsiaOverlapService,
+    SouthEastAsiaTCLService,
+  ],
+  exports: [
+    AlertsAdminAreasLevelService,
+    AlertsFileService,
+    AlertsHistoryService,
+    AlertsIntegratedNaturalForestService,
+    AlertsLocationsHistoryService,
+    AlertsLocationsLevelService,
+    AlertsPrioritiesAdminAreasLevelService,
+    AlertsPrioritiesLocationsLevelService,
+    AlertsSummaryService,
+    ArgentinaDeforestationService,
+    ArgentinaOverlapService,
+    CommodityRiskDiagnosticLocationSummaryService,
+    DeforestationKpisService,
+    DeforestationTrendsService,
+    ForestChangeDiagnosticListSummaryService,
+    ForestChangeDiagnosticLocationSummaryService,
+    ForestLossService,
+    HistoricPercentService,
+    InputService,
+    MillPriorityService,
+    NaturalForestLossService,
+    OtherKpisService,
+    PalmRiskAnalysisService,
+    ReadmeService,
+    ResultService,
+    ShapefileService,
+    SouthAmericaBiomesService,
+    SouthAmericaLossService,
+    SouthEastAsiaOverlapService,
+    SouthEastAsiaTCLService,
+  ],
+})
+export class FilesModule {}

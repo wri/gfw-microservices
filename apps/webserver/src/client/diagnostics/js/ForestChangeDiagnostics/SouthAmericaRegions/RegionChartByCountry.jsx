@@ -14,7 +14,9 @@ import { useQuery } from '../../../../common/js/hooks';
 import { getDataAndCheckIfAllYearsZero, addNoOverlapArea } from './barChart.utils';
 import '../../common/DiagnosticsChartContainer.scss';
 
-function RegionChartArgentina({ listId, data, fireDownload }) {
+import { regionIds } from './regions.constants';
+
+export function RegionChartByCountry({ listId, data, fireDownload, country }) {
   const query = useQuery();
   const locationId = query.get('locationId');
   const {
@@ -22,7 +24,6 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
     protectedAreas,
     indigenousTerritories,
     otbn,
-
     wdpaOverlapCountry,
     landmarkOverlapCountry,
   } = chartDatasetConfigs;
@@ -41,7 +42,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
     endYear: regionConstants.endYear,
   });
 
-  const [argentinaPieChartsData, setArgentinaPieChartsData] = useState({});
+  const [countryPieChartsData, setCountryPieChartsData] = useState({});
 
   function handleDateRangeChange(newDateRange) {
     setDateRange(newDateRange);
@@ -74,17 +75,17 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
     });
   }, []);
 
-  const fcdParams = {
-    listId,
-    locationId,
-    country: 'Argentina',
-    countryGadm: 'ARG',
-    category: ['WDPA', 'landmark', 'country', 'classified_region'],
-  };
-
   const [isAllDataEmpty, setIsAllDataEmpty] = useState(false);
 
   useEffect(() => {
+    const fcdParams = {
+      listId,
+      locationId,
+      country: country === regionIds.ARGENTINA ? 'Argentina' : 'Colombia',
+      countryGadm: country.substring(0, 3),
+      category: ['WDPA', 'landmark', 'country', 'classified_region'],
+    };
+
     fetch(`/api/fcd?${new URLSearchParams(fcdParams).toString()}`, {
       method: 'GET',
       credentials: 'same-origin',
@@ -99,7 +100,7 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       })
       .then((data) => {
         if (!data.WDPA?.error || !data.landmark?.error) {
-          setArgentinaPieChartsData(data);
+          setCountryPieChartsData(data);
 
           const isAllEmpty = chartsConfiguration.every((config) =>
             config.chartLabels.every((label) => getDataAndCheckIfAllYearsZero(data, label.dataPath))
@@ -110,13 +111,13 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       .catch((e) => {
         console.warn(e);
       });
-  }, [listId]);
+  }, [listId, country]);
 
   let barChartData = [];
 
   if (!isAllDataEmpty) {
     barChartData = getBarChartData(
-      argentinaPieChartsData,
+      countryPieChartsData,
       dateRange,
       chartsConfiguration.find((config) => config.id === selectedOptionId).chartLabels
     );
@@ -130,91 +131,100 @@ function RegionChartArgentina({ listId, data, fireDownload }) {
       : {};
 
   const showProtectedAreasPieChart =
-    argentinaPieChartsData?.WDPA && !argentinaPieChartsData?.WDPA?.error;
+    countryPieChartsData?.WDPA && !countryPieChartsData?.WDPA?.error;
 
   const protectedAreasPieChartData = showProtectedAreasPieChart
     ? addNoOverlapArea(
-        argentinaPieChartsData?.WDPA?.overlap,
+        countryPieChartsData?.WDPA?.overlap,
         data.total_area,
         'Outside of Protected Areas'
       )
     : {};
-  const protectedAreasPieChartFormatedData = formatDecimals(protectedAreasPieChartData);
+  const protectedAreasPieChartFormattedData = formatDecimals(protectedAreasPieChartData);
 
   const showIndigenousTerritoriesPieChart =
-    argentinaPieChartsData?.landmark && !argentinaPieChartsData?.landmark?.error;
-  const indigenousTerritoriesPieCharFormatedtData = formatDecimals(
-    argentinaPieChartsData?.landmark?.overlap
+    countryPieChartsData?.landmark && !countryPieChartsData?.landmark?.error;
+  const indigenousTerritoriesPieCharFormattedData = formatDecimals(
+    countryPieChartsData?.landmark?.overlap
   );
 
   return (
     <>
-      <DiagnosticsChartHeader
-        title={regionConstants.chartsSelectorTitle}
-        informationBubbleId={regionConstants.informationBubbleId}
-        fireDownload={fireDownload}
-        downloadId={regionConstants.downloadId}
-      />
-      <Card>
-        <CardContent>
-          <div className="diagnostics-chart-container">
-            <div className="diagnostics-chart-container__chart">
-              {isAllDataEmpty ? (
-                <div>No data available for any chart selection.</div>
-              ) : (
-                <BarChart data={barChartData} />
-              )}
-              {selectedOptionId === argentinaTreeCoverLoss.id && !isAllDataEmpty && (
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <InfoIcon color="gray" />
-                  Bars with lower opacity indicate that the year is approximate.
+      {country === regionIds.ARGENTINA && (
+        <>
+          <DiagnosticsChartHeader
+            title={regionConstants.chartsSelectorTitle}
+            informationBubbleId={regionConstants.informationBubbleId}
+            fireDownload={fireDownload}
+            downloadId={regionConstants.downloadId}
+          />
+          <Card>
+            <CardContent>
+              <div className="diagnostics-chart-container">
+                <div className="diagnostics-chart-container__chart">
+                  {isAllDataEmpty ? (
+                    <div>No data available for any chart selection.</div>
+                  ) : (
+                    <BarChart data={barChartData} />
+                  )}
+                  {selectedOptionId === argentinaTreeCoverLoss.id && !isAllDataEmpty && (
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <InfoIcon color="gray" />
+                      Bars with lower opacity indicate that the year is approximate.
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            <ChartsSelectorArgentina
-              updateCheckedLabels={updateCheckedLabels}
-              chartsConfiguration={chartsConfiguration}
-              onOptionChange={setSelectedOptionId}
-              selectedOptionId={selectedOptionId}
-              argentinaPieChartsData={argentinaPieChartsData}
-            />
-          </div>
-        </CardContent>
-      </Card>
+                <ChartsSelectorArgentina
+                  updateCheckedLabels={updateCheckedLabels}
+                  chartsConfiguration={chartsConfiguration}
+                  onOptionChange={setSelectedOptionId}
+                  selectedOptionId={selectedOptionId}
+                  argentinaPieChartsData={countryPieChartsData}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-      <DateRangeSlider
-        id={regionConstants.id}
-        dateRange={dateRange}
-        setDateRange={handleDateRangeChange}
-        startYear={regionConstants.startYear}
-        endYear={regionConstants.endYear}
-      />
+          <DateRangeSlider
+            id={regionConstants.id}
+            dateRange={dateRange}
+            setDateRange={handleDateRangeChange}
+            startYear={regionConstants.startYear}
+            endYear={regionConstants.endYear}
+          />
 
-      <PieChart
-        data={argentinaPieChartData}
-        chartLabels={chartDatasetConfigs.otbn.chartLabels}
-        title={regionConstants.diagnosticTitle}
-        informationBubbleId={regionConstants.informationBubbleId}
-      />
+          <PieChart
+            data={argentinaPieChartData}
+            chartLabels={chartDatasetConfigs.otbn.chartLabels}
+            title={regionConstants.diagnosticTitle}
+            informationBubbleId={regionConstants.informationBubbleId}
+          />
+        </>
+      )}
+
       {showProtectedAreasPieChart && (
         <PieChart
-          data={protectedAreasPieChartFormatedData}
+          data={protectedAreasPieChartFormattedData}
           chartLabels={wdpaOverlapCountry.chartLabels}
           title={wdpaOverlapCountry.diagnosticTitle}
-          informationBubbleId={wdpaOverlapCountry.informationBubbleId}
+          informationBubbleId={
+            country !== regionIds.COLOMBIA && wdpaOverlapCountry.informationBubbleId
+          }
+          hideChartLabels={country === regionIds.COLOMBIA}
         />
       )}
       {showIndigenousTerritoriesPieChart && (
         <PieChart
-          data={indigenousTerritoriesPieCharFormatedtData}
+          data={indigenousTerritoriesPieCharFormattedData}
           chartLabels={landmarkOverlapCountry.chartLabels}
           title={landmarkOverlapCountry.diagnosticTitle}
-          informationBubbleId={landmarkOverlapCountry.informationBubbleId}
+          informationBubbleId={
+            country !== regionIds.COLOMBIA && landmarkOverlapCountry.informationBubbleId
+          }
+          hideChartLabels={country === regionIds.COLOMBIA}
         />
       )}
     </>
   );
 }
-
-export default RegionChartArgentina;

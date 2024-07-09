@@ -1,4 +1,4 @@
-import { FilterTimeframeIntegratedAlerts } from './ filter.timeframe.integrated.alerts';
+import { FilterTimeframeIntegratedAlerts } from './filter.timeframe.integrated.alerts';
 
 describe('FilterTimeframeIntegratedAlerts', () => {
   let filter: FilterTimeframeIntegratedAlerts;

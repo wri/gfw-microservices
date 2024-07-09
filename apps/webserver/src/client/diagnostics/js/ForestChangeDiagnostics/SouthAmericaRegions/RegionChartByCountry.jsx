@@ -208,7 +208,9 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
           data={protectedAreasPieChartFormattedData}
           chartLabels={wdpaOverlapCountry.chartLabels}
           title={wdpaOverlapCountry.diagnosticTitle}
-          informationBubbleId={wdpaOverlapCountry.informationBubbleId}
+          informationBubbleId={
+            country !== regionIds.COLOMBIA && wdpaOverlapCountry.informationBubbleId
+          }
           hideChartLabels={country === regionIds.COLOMBIA}
         />
       )}
@@ -217,7 +219,9 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
           data={indigenousTerritoriesPieCharFormattedData}
           chartLabels={landmarkOverlapCountry.chartLabels}
           title={landmarkOverlapCountry.diagnosticTitle}
-          informationBubbleId={landmarkOverlapCountry.informationBubbleId}
+          informationBubbleId={
+            country !== regionIds.COLOMBIA && landmarkOverlapCountry.informationBubbleId
+          }
           hideChartLabels={country === regionIds.COLOMBIA}
         />
       )}

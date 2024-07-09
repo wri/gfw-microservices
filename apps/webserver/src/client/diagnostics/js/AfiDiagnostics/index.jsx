@@ -30,11 +30,20 @@ function AfiDiagnostics() {
   };
 
   const listId = parseInt(new URLSearchParams(location.search).get('listId'), 10);
+  const locationId = parseInt(new URLSearchParams(location.search).get('locationId'), 10);
   const isSharedList = Boolean(new URLSearchParams(location.search).get('shared'));
   const [selectedList, setSelectedList] = useState({});
 
   const getAfiAnalysisForListId = () => {
-    return fetch(`/api/afi/analysis/${listId}`, {
+    // Base URL
+    let url = `/api/afi/analysis/${listId}`;
+
+    // Add query parameter if locationId is defined
+    if (locationId !== undefined) {
+      url += `?locationId=${locationId}`;
+    }
+
+    return fetch(url, {
       method: 'GET',
       credentials: 'same-origin',
       headers: {

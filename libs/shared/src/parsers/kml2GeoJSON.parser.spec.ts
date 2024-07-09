@@ -1,4 +1,4 @@
-import { kml2GeoJSON } from './kml2GeoJson.parser';
+import { kml2GeoJSON } from './kml2GeoJSON.parser';
 
 describe('Test convert KML File to GeoJSON', () => {
   it('converts a KML file to GeoJSON successfully', async () => {

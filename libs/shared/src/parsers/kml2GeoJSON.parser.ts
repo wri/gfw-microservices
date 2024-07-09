@@ -5,7 +5,6 @@ export const kml2GeoJSON = async (data: string) => {
   const kmlToGeojson = new KmlToGeojson();
   try {
     const { geojson } = kmlToGeojson.parse(data);
-    console.log(geojson);
     return geojson;
   } catch (e) {
     Logger.error(e);

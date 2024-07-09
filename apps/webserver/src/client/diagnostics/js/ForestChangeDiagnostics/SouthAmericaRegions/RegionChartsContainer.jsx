@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import RegionChart from './RegionChart';
-import RegionChartArgentina from './RegionChartArgentina';
-import { RegionChartColombia } from './RegionChartColombia';
+import { RegionChartByCountry } from './RegionChartArgentina';
 import RegionChartsTabs from './RegionChartsTabs';
 import SouthAmericaRegionsWithoutArgentina from '../SouthAmericaRegionsWithoutArgentina';
 import { regionsTabs, regionIds } from './regions.constants';
@@ -41,6 +40,10 @@ function RegionChartsContainer({
     availableTabs = availableTabs.filter((tab) => tab.id !== regionIds.COLOMBIA);
   }
 
+  const shouldRenderRegionChartByCountry =
+    (selectedTab === regionIds.ARGENTINA && isArgentinaDeforestationAvailable) ||
+    selectedTab === regionIds.COLOMBIA;
+
   return (
     <div style={{ marginTop: '30px' }}>
       <div className="locations-diagnostics-section-title">South America</div>
@@ -55,11 +58,14 @@ function RegionChartsContainer({
         <RegionChart listId={listId} data={data} fireDownload={fireDownload} />
       )}
 
-      {selectedTab === regionIds.ARGENTINA && isArgentinaDeforestationAvailable && (
-        <RegionChartArgentina listId={listId} data={data} fireDownload={fireDownload} />
+      {shouldRenderRegionChartByCountry && (
+        <RegionChartByCountry
+          data={data}
+          listId={listId}
+          fireDownload={fireDownload}
+          country={selectedTab}
+        />
       )}
-
-      {selectedTab === regionIds.COLOMBIA && <RegionChartColombia data={data} listId={listId} />}
 
       {selectedTab === regionIds.REGIONAL && (
         <SouthAmericaRegionsWithoutArgentina

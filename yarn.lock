@@ -14047,6 +14047,13 @@ klona@^2.0.4, klona@^2.0.5:
   resolved "https://registry.npmjs.org/klona/-/klona-2.0.6.tgz"
   integrity sha512-dhG34DXATL5hSxJbIexCft8FChFXtmskoZYnoPWjXQuebWYCNkVeV3KkGegCK9CP1oswI/vQibS2GY7Em/sJJA==
 
+kml-to-geojson@^1.0.13:
+  version "1.0.13"
+  resolved "https://registry.npmjs.org/kml-to-geojson/-/kml-to-geojson-1.0.13.tgz"
+  integrity sha512-koN/vs19E8w9YGdcNPXmFF5Ogm2jeyMH70sIrI+Llg71twyXZ9wkBpltsVFVddzzkY4STkDwXp22L9OFoj1JkQ==
+  dependencies:
+    xmldom "^0.6.0"
+
 knuth-shuffle-seeded@^1.0.6:
   version "1.0.6"
   resolved "https://registry.npmjs.org/knuth-shuffle-seeded/-/knuth-shuffle-seeded-1.0.6.tgz"
@@ -20107,6 +20114,11 @@ xmlchars@^2.2.0:
   version "2.2.0"
   resolved "https://registry.npmjs.org/xmlchars/-/xmlchars-2.2.0.tgz"
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
+
+xmldom@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.npmjs.org/xmldom/-/xmldom-0.6.0.tgz"
+  integrity sha512-iAcin401y58LckRZ0TkI4k0VSM1Qg0KGSc3i8rU+xrxe19A/BN1zHyVSJY7uoutVlaTSzYyk/v5AmkewAP7jtg==
 
 xss@^1.0.9:
   version "1.0.14"

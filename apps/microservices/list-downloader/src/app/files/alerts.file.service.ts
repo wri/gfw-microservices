@@ -10,6 +10,7 @@ import { AlertsPrioritiesLocationsLevelService } from './alerts.priorities.locat
 import { AlertsSummaryService } from './alerts.summary.service';
 import { getAllFilesAndZip } from '../shared/file.utils';
 import { AlertsLocationsHistoryService } from './alerts.locations.history.service';
+import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
 
 @Injectable()
 export class AlertsFileService extends IPipeService {
@@ -21,7 +22,8 @@ export class AlertsFileService extends IPipeService {
     private readonly alertsPrioritiesAdminAreasLevelService: AlertsPrioritiesAdminAreasLevelService,
     private readonly alertsPrioritiesLocationsLevelService: AlertsPrioritiesLocationsLevelService,
     private readonly alertsSummaryService: AlertsSummaryService,
-    private readonly alertsLocationsHistoryService: AlertsLocationsHistoryService
+    private readonly alertsLocationsHistoryService: AlertsLocationsHistoryService,
+    private readonly alertsIntegratedNaturalForestService: AlertsIntegratedNaturalForestService
   ) {
     super();
   }
@@ -31,6 +33,7 @@ export class AlertsFileService extends IPipeService {
     await this.startEmail(filters);
     if (selectedTimeframe === 'DAY') {
       this.alertsLocationsHistoryService.start(filters);
+      this.alertsIntegratedNaturalForestService.start(filters);
     } else {
       await this.alertsLocationsLevelService.start(filters);
       await this.alertsPrioritiesLocationsLevelService.start(filters);
@@ -44,6 +47,7 @@ export class AlertsFileService extends IPipeService {
     const { selectedTimeframe } = filters;
     if (selectedTimeframe === 'DAY') {
       this.alertsLocationsHistoryService.process(analysisData);
+      this.alertsIntegratedNaturalForestService.process(analysisData);
     } else {
       this.alertsLocationsLevelService.process(analysisData);
       this.alertsAdminAreasLevelService.process(analysisData);
@@ -57,6 +61,7 @@ export class AlertsFileService extends IPipeService {
     const { key, selectedTimeframe } = filters;
     if (selectedTimeframe === 'DAY') {
       await this.alertsLocationsHistoryService.finish(filters);
+      await this.alertsIntegratedNaturalForestService.finish(filters);
     } else {
       await this.alertsLocationsLevelService.finish(filters);
       await this.alertsAdminAreasLevelService.finish(filters);

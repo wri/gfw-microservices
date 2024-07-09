@@ -91,4 +91,17 @@ const isJSON = (text: unknown) => {
   }
 };
 
-export { cloneRow, formatPct, prettifyNum, validatePct, parseListData, parseListTotals, isJSON };
+const isEmptyObject = (obj: object): boolean => {
+  return Object.keys(obj).length === 0;
+};
+
+export {
+  cloneRow,
+  formatPct,
+  prettifyNum,
+  validatePct,
+  parseListData,
+  parseListTotals,
+  isJSON,
+  isEmptyObject,
+};

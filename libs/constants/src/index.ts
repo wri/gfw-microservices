@@ -5,3 +5,4 @@ export * from './lib/listStatus.constants';
 export * from './lib/gfwLists.constants';
 export * from './lib/userAccessLevel.constants';
 export * from './lib/listActivityTypesEnum';
+export * from './lib/geoTrellis.config';

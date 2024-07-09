@@ -2,10 +2,10 @@ import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'ListsAnalysisStatus' })
 export class ListsAnalysisStatus {
-  @PrimaryColumn({ name: 'ListID' })
+  @PrimaryColumn('int', { name: 'ListID' })
   listId: number;
 
-  @Column({ name: 'AnalysisID' })
+  @PrimaryColumn('varchar', { name: 'AnalysisID' })
   analysisId: string;
 
   @Column({ name: 'Status' })

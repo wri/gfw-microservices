@@ -12,8 +12,6 @@ describe('Maps View', () => {
 
   Then('I Navigate to Maps screen', () => {
     cy.url().should('include', '/map');
-    mapPage.clickOnLanguage();
-    mapPage.selectEnglishLenguage();
   });
 
   // //Button Plus zoom

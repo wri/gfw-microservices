@@ -20,6 +20,15 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
 import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
+import { checkProcessingLimits } from '@wri-monorepos/shared';
+import { listStatus } from '@wri-monorepos/constants';
+
+jest.mock('@wri-monorepos/shared', () => ({
+  checkProcessingLimits: jest.fn(),
+}));
+jest.mock('../../shared/generate-sqs-templates', () => ({
+  generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
+}));
 
 describe('ListAnalysisService', () => {
   let service: ListAnalysisService;
@@ -436,7 +445,7 @@ describe('ListAnalysisService', () => {
     const endDate = null;
 
     jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
+      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
@@ -460,7 +469,7 @@ describe('ListAnalysisService', () => {
     const endDate = null;
 
     jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
+      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
@@ -508,7 +517,7 @@ describe('ListAnalysisService', () => {
     const endDate = null;
 
     jest.mock('../../shared/generate-sqs-templates', () => ({
-      generateFCDDefReportAnalysesSqsTemplate: jest.fn().mockResolvedValue(true),
+      generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
     saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
@@ -522,5 +531,128 @@ describe('ListAnalysisService', () => {
         userEmail,
       })
     ).rejects.toThrow(BadRequestException);
+  });
+
+  it('Should Create an Analysis', async () => {
+    const analysisTypesToProcess = 'FCD';
+    const listId = 123;
+    const organizationId = 1;
+    const userEmail = 'email@mail.com';
+    const organization_user_id = 1;
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    (checkProcessingLimits as jest.Mock).mockResolvedValue({
+      isListLocationOverLimit: false,
+      processingLimit: 1000,
+    });
+    const mockList = {
+      listId: 123,
+      analysisId: analysisTypesToProcess,
+      status: listStatus.Pending,
+    };
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: () => mockList,
+        findBy: () => mockList,
+        update: () => true,
+        save: () => true,
+      }),
+      options: {
+        database: 'mock_db',
+      },
+    });
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: () => mockList,
+        findBy: () => mockList,
+        update: () => true,
+        save: () => true,
+        findOneBy: () => mockList,
+      }),
+      options: {
+        database: 'mock_db',
+      },
+    });
+
+    axios.post = jest.fn().mockResolvedValue({ status: 200, statusText: 'mockedEmailResponse' });
+
+    const result = await service.createAnalysis(
+      analysisTypesToProcess,
+      listId,
+      organizationId,
+      userEmail,
+      organization_user_id
+    );
+
+    expect(result).toBe('mockedEmailResponse');
+  });
+  it('Should fail when try to send email', async () => {
+    const analysisTypesToProcess = 'FCD';
+    const listId = 123;
+    const organizationId = 1;
+    const userEmail = 'email@mail.com';
+    const organization_user_id = 1;
+
+    organizationService.findOrganizationById = jest.fn().mockResolvedValue({
+      id: 1,
+      organizationName: 'ABC Corp',
+      organizationDb: ':memory:',
+      organizationStatusId: 1,
+      organizationActivatedTime: new Date(),
+      subscriptionStatusId: 1,
+    });
+
+    (checkProcessingLimits as jest.Mock).mockResolvedValue({
+      isListLocationOverLimit: false,
+      processingLimit: 1000,
+    });
+    const mockList = {
+      listId: 123,
+      analysisId: analysisTypesToProcess,
+      status: listStatus.Pending,
+    };
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: () => mockList,
+        findBy: () => mockList,
+        update: () => true,
+        save: () => true,
+      }),
+      options: {
+        database: 'mock_db',
+      },
+    });
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
+      getRepository: () => ({
+        findOne: () => mockList,
+        findBy: () => mockList,
+        update: () => true,
+        save: () => true,
+        findOneBy: () => mockList,
+      }),
+      options: {
+        database: 'mock_db',
+      },
+    });
+
+    axios.post = jest.fn().mockRejectedValue(new Error('Failed to send email'));
+
+    await expect(
+      service.createAnalysis(
+        analysisTypesToProcess,
+        listId,
+        organizationId,
+        userEmail,
+        organization_user_id
+      )
+    ).rejects.toThrow(new Error('Failed to send email'));
   });
 });

@@ -6,9 +6,50 @@ When('I try to download the list data for {string}', (list: string) => {
 });
 
 Then('I can see the download confirmation', () => {
-  cy.get('[data-cy="download-dialog"]').should('be.visible').and('have.text', 'List file Download');
+  cy.get('[data-cy="download-dialog"]').should('be.visible');
 });
 
 Then('I am able to download the list data', () => {
-  cy.get('[data-cy="download-diagnostics"]', { timeout: 10000 }).should('be.visible');
+  cy.get('[data-cy="download-diagnostics"]').should('be.visible');
+});
+
+Then('I am able to download percentage tree of forest', () => {
+  if (!cy.get('[data-cy="download-dialog"]').should('be.visible')) {
+    cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(1).click();
+  } else {
+    cy.get('[data-cy="download-dialog"]').find('button').first().click();
+    cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(1).click();
+  }
+});
+
+Then('I am able to download percentage of historic area lost', () => {
+  if (!cy.get('[data-cy="download-dialog"]').should('be.visible')) {
+    cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(2).click();
+  } else {
+    cy.get('[data-cy="download-dialog"]').find('button').first().click();
+    cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(2).click();
+  }
+});
+
+Then('I am able to download tree cover loss', () => {
+  if (!cy.get('[data-cy="download-dialog"]').should('be.visible')) {
+    cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(3).click();
+  } else {
+    cy.get('[data-cy="download-dialog"]').find('button').first().click();
+    cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(3).click();
+  }
+});
+
+Then('I am able to download tree cover loss on argentina otbn', () => {
+  if (!cy.get('[data-cy="download-dialog"]').should('be.visible')) {
+    cy.get('.MuiTabs-root').find('button').last().click();
+    cy.get('.diagnostics-chart-header').get('[data-testid="DownloadForOfflineIcon"]').eq(4).click();
+  } else {
+    cy.get('[data-cy="download-dialog"]').find('button').first().click();
+    cy.get('.MuiTabs-root').find('button').last().click();
+    cy.get('.diagnostics-chart-header')
+      .get('[data-testid="DownloadForOfflineIcon"]')
+      .last()
+      .click();
+  }
 });

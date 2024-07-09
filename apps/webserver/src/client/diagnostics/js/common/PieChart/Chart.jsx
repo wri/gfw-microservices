@@ -4,7 +4,7 @@ import useHookWithRefCallback from '../useHookWithRefCallback';
 
 const transifex = Transifex.live.translateText;
 
-function Chart({ data, chartLabels }) {
+function Chart({ data, chartLabels, hideChartLabels }) {
   const pieChartData = chartLabels.map(({ id, legend, color }) => ({
     legend: transifex(legend),
     y: data[id],
@@ -35,7 +35,7 @@ function Chart({ data, chartLabels }) {
           allowPointSelect: true,
           cursor: 'pointer',
           dataLabels: {
-            enabled: true,
+            enabled: !hideChartLabels,
             format: '<b>{point.legend}</b>:<br>{point.percentage:.1f} %',
           },
         },

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import RegionChart from './RegionChart';
-import { RegionChartByCountry } from './RegionChartArgentina';
+import { RegionChartByCountry } from './RegionChartByCountry';
 import RegionChartsTabs from './RegionChartsTabs';
 import SouthAmericaRegionsWithoutArgentina from '../SouthAmericaRegionsWithoutArgentina';
 import { regionsTabs, regionIds } from './regions.constants';

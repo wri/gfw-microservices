@@ -1,13 +1,24 @@
 import axios from 'axios';
 
-const BASE_URL = process.env.API_BASEURL || 'http://localhost:3337';
+const BASE_URL = process.env.HOST || 'http://localhost:3337';
 const API_TOKEN = process.env.API_TOKEN;
 const email = process.env.USER_EMAIL;
-
+const list = process.env.TEST_LIST;
 describe('API Endpoints', () => {
   describe('GET Endpoints', () => {
+    it('should return specific page of lists', async () => {
+      const res = await axios.get(`${BASE_URL}/api/v1/list?pageSize=10&pageNum=1`, {
+        headers: {
+          'x-api-key': API_TOKEN,
+        },
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.data).toBeTruthy();
+    }, 10000);
+
     it('should return the list details', async () => {
-      const res = await axios.get(`${BASE_URL}/api/v1/list/1435`, {
+      const res = await axios.get(`${BASE_URL}/api/v1/list/${list}`, {
         headers: {
           'x-api-key': API_TOKEN,
         },
@@ -18,7 +29,7 @@ describe('API Endpoints', () => {
     }, 10000);
 
     it('should return the alerts analysis status', async () => {
-      const res = await axios.get(`${BASE_URL}/api/v1/list/1435/analysis/Alerts/status`, {
+      const res = await axios.get(`${BASE_URL}/api/v1/list/${list}/analysis/Alerts/status`, {
         headers: {
           'x-api-key': API_TOKEN,
         },
@@ -29,7 +40,7 @@ describe('API Endpoints', () => {
     }, 10000);
 
     it('should return the FCD analysis status', async () => {
-      const res = await axios.get(`${BASE_URL}/api/v1/list/1435/analysis/FCD/status`, {
+      const res = await axios.get(`${BASE_URL}/api/v1/list/${list}/analysis/FCD/status`, {
         headers: {
           'x-api-key': API_TOKEN,
         },
@@ -41,9 +52,27 @@ describe('API Endpoints', () => {
   });
 
   describe('POST Endpoints', () => {
+    it('should generate new analysis to existing list', async () => {
+      const res = await axios.post(
+        `${BASE_URL}/api/v1/list/${list}/analysis/FCD/analize`,
+        {
+          userEmail: email,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_TOKEN,
+          },
+          maxRedirects: 0,
+        }
+      );
+
+      expect(res.status).toBe(201);
+      expect(res.data).toBeTruthy();
+    }, 10000);
     it('should generate alerts analysis', async () => {
       const res = await axios.post(
-        `${BASE_URL}/api/v1/list/1435/analysis/Alerts/generate`,
+        `${BASE_URL}/api/v1/list/${list}/analysis/Alerts/generate`,
         {
           userEmail: email,
           startDate: '01-01-2024',

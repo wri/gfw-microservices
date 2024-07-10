@@ -73,6 +73,28 @@ const addOtherCategoryData = (sortedCategory, limit) => {
   return firstPart;
 };
 
+const calculateNonOverlap = (operation, data) => {
+  const { attribute } = operation;
+  const total = data.total_area;
+
+  const categoryData = JSON.parse(data[attribute] || '{}');
+  const sumOfValues = Object.values(categoryData).reduce((acc: number, value) => {
+    if (typeof value === 'number') {
+      acc += value;
+    }
+    return acc;
+  }, 0);
+
+  const nonOverlapValue = total - (sumOfValues as number);
+  const percent = total > 0 ? (nonOverlapValue / total) * 100 : 0;
+
+  return {
+    key: 'Non-Overlap',
+    value: nonOverlapValue,
+    percent,
+  };
+};
+
 const argentinaCategoryData = (operation, data, dataRow, csvData) => {
   const { attribute, limit, label } = operation;
   const strCategoryData = data[attribute];
@@ -86,6 +108,11 @@ const argentinaCategoryData = (operation, data, dataRow, csvData) => {
     const values = Object.values(element);
     csvData.push([...dataRow, label, ...values]);
   });
+
+  // Calculate and add non-overlap data
+  const nonOverlapData = calculateNonOverlap(operation, data);
+  const nonOverlapValues = Object.values(nonOverlapData);
+  csvData.push([...dataRow, label, ...nonOverlapValues]);
 };
 
 /**

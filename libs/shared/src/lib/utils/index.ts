@@ -7,3 +7,4 @@ export * from './generate-random-filename';
 export * from './sqs';
 export * from './zod.middleware';
 export * from './feature.flag.service';
+export * from './readFileFromS3';

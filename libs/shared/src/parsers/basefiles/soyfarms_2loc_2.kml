@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="soy_soyfarms_2_2__ogr_kml_soyfarm_brazil" id="soy_soyfarms_2_2__ogr_kml_soyfarm_brazil">
+	<SimpleField name="timestamp" type="string"></SimpleField>
+	<SimpleField name="begin" type="string"></SimpleField>
+	<SimpleField name="end" type="string"></SimpleField>
+	<SimpleField name="altitudeMode" type="string"></SimpleField>
+	<SimpleField name="tessellate" type="int"></SimpleField>
+	<SimpleField name="extrude" type="int"></SimpleField>
+	<SimpleField name="visibility" type="int"></SimpleField>
+	<SimpleField name="drawOrder" type="int"></SimpleField>
+	<SimpleField name="icon" type="string"></SimpleField>
+	<SimpleField name="Location Name" type="string"></SimpleField>
+	<SimpleField name="Company ID" type="float"></SimpleField>
+	<SimpleField name="Cadaster ID" type="string"></SimpleField>
+	<SimpleField name="Volume" type="float"></SimpleField>
+	<SimpleField name="Owner Name" type="string"></SimpleField>
+	<SimpleField name="Owner ID" type="string"></SimpleField>
+	<SimpleField name="Facility Name" type="string"></SimpleField>
+	<SimpleField name="Facility E-mail" type="string"></SimpleField>
+	<SimpleField name="Company Name" type="string"></SimpleField>
+	<SimpleField name="Company Contact" type="string"></SimpleField>
+	<SimpleField name="Certification" type="string"></SimpleField>
+	<SimpleField name="Start Date" type="string"></SimpleField>
+	<SimpleField name="End Date" type="string"></SimpleField>
+	<SimpleField name="Time Horizon" type="string"></SimpleField>
+	<SimpleField name="Attribute1" type="string"></SimpleField>
+	<SimpleField name="Attribute2" type="string"></SimpleField>
+	<SimpleField name="Attribute3" type="string"></SimpleField>
+</Schema>
+<Folder><name>soy_soyfarms_2_2__ogr_kml_soyfarm_brazil</name>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#soy_soyfarms_2_2__ogr_kml_soyfarm_brazil">
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">-1</SimpleData>
+		<SimpleData name="Location Name">SosoSoy0</SimpleData>
+		<SimpleData name="Company ID">1</SimpleData>
+		<SimpleData name="Cadaster ID">CAR_12345</SimpleData>
+		<SimpleData name="Volume">200</SimpleData>
+		<SimpleData name="Owner Name">Ike</SimpleData>
+		<SimpleData name="Owner ID">CPF</SimpleData>
+		<SimpleData name="Facility Name">Silo</SimpleData>
+		<SimpleData name="Facility E-mail">hello@sososoy.com</SimpleData>
+		<SimpleData name="Company Name">MoreSoy</SimpleData>
+		<SimpleData name="Company Contact">Ike</SimpleData>
+		<SimpleData name="Certification">RTRS</SimpleData>
+		<SimpleData name="Start Date">2012/03/14</SimpleData>
+		<SimpleData name="End Date">2013/03/14</SimpleData>
+		<SimpleData name="Time Horizon">1 year</SimpleData>
+		<SimpleData name="Attribute1"></SimpleData>
+		<SimpleData name="Attribute2"></SimpleData>
+		<SimpleData name="Attribute3"></SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-50.217219206,-24.6632674759999 -50.2172192039999,-24.6632677549999 -50.217220095,-24.6632674809999 -50.217219206,-24.6632674759999</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+  <Placemark>
+	<Style><LineStyle><color>ff0000ff</color></LineStyle><PolyStyle><fill>0</fill></PolyStyle></Style>
+	<ExtendedData><SchemaData schemaUrl="#soy_soyfarms_2_2__ogr_kml_soyfarm_brazil">
+		<SimpleData name="tessellate">-1</SimpleData>
+		<SimpleData name="extrude">0</SimpleData>
+		<SimpleData name="visibility">-1</SimpleData>
+		<SimpleData name="Location Name">SosoSoy1</SimpleData>
+		<SimpleData name="Company ID">2</SimpleData>
+		<SimpleData name="Cadaster ID">CAR_12346</SimpleData>
+		<SimpleData name="Volume">200</SimpleData>
+		<SimpleData name="Owner Name">Ike</SimpleData>
+		<SimpleData name="Owner ID">CPF</SimpleData>
+		<SimpleData name="Facility Name">Silo</SimpleData>
+		<SimpleData name="Facility E-mail">hello@sososoy.com</SimpleData>
+		<SimpleData name="Company Name">MoreSoy</SimpleData>
+		<SimpleData name="Company Contact">Ike</SimpleData>
+		<SimpleData name="Certification">RTRS</SimpleData>
+		<SimpleData name="Start Date">2012/03/15</SimpleData>
+		<SimpleData name="End Date">2013/03/14</SimpleData>
+		<SimpleData name="Time Horizon">1 year</SimpleData>
+		<SimpleData name="Attribute1"></SimpleData>
+		<SimpleData name="Attribute2"></SimpleData>
+		<SimpleData name="Attribute3"></SimpleData>
+	</SchemaData></ExtendedData>
+      <Polygon><outerBoundaryIs><LinearRing><coordinates>-50.211293323,-24.6626946289999 -50.211289917,-24.6632364669999 -50.2106969879999,-24.663233353 -50.210691876,-24.6640461099999 -50.210690171,-24.6643170299999 -50.210986638,-24.664318587 -50.210984934,-24.6645895059999 -50.210981526,-24.665131344 -50.210685058,-24.6651297869999 -50.210684089,-24.6652836819999 -50.212763467,-24.6646422449999 -50.213060519,-24.664550611 -50.214629102,-24.6640667399999 -50.215139872,-24.6639091799999 -50.215142259,-24.6635275689999 -50.214549329,-24.66352447 -50.214551025,-24.663253551 -50.2139580959999,-24.66325045 -50.213953004,-24.664063207 -50.2136565369999,-24.6640616569999 -50.213654839,-24.6643325759999 -50.213358373,-24.6643310229999 -50.21336177,-24.6637891849999 -50.213065304,-24.6637876319999 -50.213068703,-24.6632457939999 -50.213072101,-24.662703956 -50.212182712,-24.6626992929999 -50.211293323,-24.6626946289999</coordinates></LinearRing></outerBoundaryIs></Polygon>
+  </Placemark>
+</Folder>
+</Document></kml>

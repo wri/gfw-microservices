@@ -51,16 +51,9 @@ import ListTitle from './ListTitle';
 import ListDownload from './download/ListDownload';
 import SaveAsDraftButton from '../../../../common/js/components/SaveAsDraft/SaveAsDraftButton';
 import CopyMoveModal from '../modals/CopyMoveModal';
-import SharingList from './SharingList';
 import ListsFilter from '../../../../locations/js/components/lists/ListsFilter';
 import fetch from '../../../../common/js/utils/fetch';
 import httpRequest from '../../../../common/js/utils/httpRequest';
-import {
-  UserListSidebarItemActive,
-  UserListSidebarItemAnalyzing,
-  UserListSidebarItemFailed,
-  UserListSidebarItemDraft,
-} from './UserListSidebarItems';
 import Banner from '../../../../common/js/components/Banners/Banner';
 import {
   checkColumnListCR,
@@ -74,7 +67,6 @@ import {
   getListFilteredLocations,
   dataCleanup,
   getTemplateData,
-  findArrIndex,
   isLocationDataNotAvailable,
   isAnalyzingStatus,
 } from '../../../../locations/js/utils/lists.utils';
@@ -137,7 +129,6 @@ export default class Lists extends Component {
       filterString: '', // filter string value
       listFilteredLocations: [],
       listNotAccessible: false,
-      myListsSearchFilterSidebarString: '',
       hideCountry: true,
       hideTitle: true,
       listColumns: [],
@@ -299,75 +290,6 @@ export default class Lists extends Component {
       return val.toString() !== locationsPage.defaultFilterValues[filterName].toString();
     }
     return val !== locationsPage.defaultFilterValues[filterName];
-  };
-
-  // Creates List component for the left side menu
-  createGFWLists = (list, index) => {
-    const { selectedLists } = this.props;
-    const { list_name, list_locations_count } = list;
-    const isSelected = findArrIndex(selectedLists, 'list_name', list_name) !== -1;
-    return (
-      <UserListSidebarItemActive
-        key={index}
-        isSelected={isSelected}
-        listName={list_name}
-        locationCount={list_locations_count}
-        onClick={() => this.updateSelectedLists(list.id, true)}
-      />
-    );
-  };
-
-  createUserLists = (list, index) => {
-    const { selectedLists, currentUser } = this.props;
-    const { list_name, list_locations_count, list_status_id } = list;
-    const isSelected = findArrIndex(selectedLists, 'list_name', list_name) !== -1;
-
-    let listItem;
-
-    // Check for draft first
-    if (getIsDiagnosticStatusDraft(list)) {
-      listItem = (
-        <UserListSidebarItemDraft
-          key={index}
-          isSelected={isSelected}
-          listName={list_name}
-          locationCount={list_locations_count}
-          selectedList={list}
-          currentUser={currentUser}
-          onClick={() => this.updateSelectedLists(list.id, false)}
-        />
-      );
-      return listItem;
-    }
-
-    switch (list_status_id) {
-      case 1: // Analyzing
-      case 5:
-      case 6:
-        listItem = (
-          <UserListSidebarItemAnalyzing key={index} isSelected={isSelected} listName={list_name} />
-        );
-        break;
-      case 2: // Active
-        listItem = (
-          <UserListSidebarItemActive
-            key={index}
-            isSelected={isSelected}
-            listName={list_name}
-            locationCount={list_locations_count}
-            onClick={() => this.updateSelectedLists(list.id)}
-          />
-        );
-        break;
-      case 3: // Failed
-        listItem = (
-          <UserListSidebarItemFailed key={index} isSelected={isSelected} listName={list_name} />
-        );
-        break;
-      default:
-    }
-
-    return listItem;
   };
 
   // Create Flag component to add/remove flags for a location
@@ -1118,15 +1040,9 @@ export default class Lists extends Component {
    * @param {Boolean} userLocation - Defines if parameter is locations in a user list coming from the Map.
    */
   processListData = (listData, locationNameForGFW, userLocation) => {
-    const { getCurrentLists, selectedLists, listView, userListInfoFromMap } = this.props;
+    const { selectedLists, listView, userListInfoFromMap } = this.props;
     const { allLocationsSelected } = this.state;
     const { list_analysis, location_analyses } = listData;
-    // Ignore the returned data if the list selection has changed since the request was made.
-    const currentlySelectedLists = getCurrentLists();
-    if (currentlySelectedLists !== selectedLists) {
-      console.warn('list selection has changed since requesting data');
-      return;
-    }
 
     if (isAnalyzingStatus(selectedLists[0]?.list_status_id)) {
       this.setState({
@@ -1929,11 +1845,9 @@ export default class Lists extends Component {
       filteredLocationData,
       filters,
       folders,
-      gfwLists: gfwListsProps,
       history,
       listData,
       listView,
-      locationCount,
       selectedLists,
       selectedLocations,
       shareView,
@@ -1965,7 +1879,6 @@ export default class Lists extends Component {
       filterStringInputValue,
       filterString,
       listNotAccessible,
-      myListsSearchFilterSidebarString,
       openCountriesPopover,
       openFlagMenu,
       pAreas,
@@ -1973,7 +1886,6 @@ export default class Lists extends Component {
       rerunDialogState,
       selectedMoveOrCopy,
       selectedNewOrExisting,
-      userListFilterText,
       newListName,
       showSubmitModal,
       numberOfPages,
@@ -1986,35 +1898,7 @@ export default class Lists extends Component {
       visibleColumns,
       allLocationsSelected,
       isListSubmittedForAnalysis,
-      closeAction,
     } = this.state;
-
-    const userLists = userListsProps
-      .filter((list) => list.list_locations_count)
-      .filter((list) =>
-        myListsSearchFilterSidebarString.length > 0
-          ? list.list_name.toLowerCase().includes(myListsSearchFilterSidebarString.toLowerCase())
-          : true
-      )
-      .map((list) => {
-        list.globalForestWatchList = false;
-        return list;
-      })
-      .map(this.createUserLists);
-
-    const gfwLists = gfwListsProps
-      .map((list) => {
-        list.globalForestWatchList = true;
-        return list;
-      })
-      .map(this.createGFWLists);
-
-    const sharedLists = userSharedLists
-      .map((list) => {
-        list.globalForestWatchList = false;
-        return list;
-      })
-      .map(this.createUserLists);
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
     const locationDataIsNotAvailable =
@@ -2313,65 +2197,6 @@ export default class Lists extends Component {
             </div>
           )}
           <div className="flex-grid">
-            <aside className="col list-side-panel">
-              {!shareView && <SharingList history={history} locationCount={locationCount} />}
-
-              {!shareView && (
-                <div className="gfw-lists-summary">
-                  <h3 className="gfw-lists-summary__title">{locationsPage.lists.gfwLists}</h3>
-                  {gfwLists}
-                </div>
-              )}
-
-              {currentUser.access_level_id !== userAccessLevel.ADMIN && !shareView && (
-                <div className="shared-lists-summary">
-                  <div className="shared-lists-summary__title">
-                    {locationsPage.lists.sharedLists}
-                  </div>
-                  {sharedLists}
-                </div>
-              )}
-
-              <div
-                className={`my-lists-summary ${
-                  currentUser.access_level_id === userAccessLevel.VIEWER ? 'hidden' : ''
-                }`}
-              >
-                <h3 className="my-lists-summary__title">{locationsPage.lists.myLists}</h3>
-                <ListsFilter
-                  value={myListsSearchFilterSidebarString}
-                  onChange={(value) => {
-                    if (value !== '' && userListFilterText === '') {
-                      gtag('event', 'User enters search', {
-                        event_category: 'Lists Click',
-                      });
-                    }
-                    if (value === '' && userListFilterText !== '') {
-                      gtag('event', 'User clears search', {
-                        event_category: 'Lists Click',
-                      });
-                    }
-                    this.setState({ myListsSearchFilterSidebarString: value });
-                  }}
-                />
-                <div className="my-lists-summary__lists">
-                  {userLists.length ? (
-                    userLists
-                  ) : (
-                    <div className="my-lists-summary__no-results">
-                      <p className="my-lists-summary__no-results-prompt">
-                        {locationsPage.lists.listsFilterNoMatch}
-                      </p>
-                      <LinkButton
-                        className="my-lists-summary__no-results-clear"
-                        label={locationsPage.lists.listsFilterClear}
-                        onClick={() => this.setState({ myListsSearchFilterSidebarString: '' })}
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </aside>
             <section className="main-panel">
               {/* Shared lists view */}
               {shareView ? (

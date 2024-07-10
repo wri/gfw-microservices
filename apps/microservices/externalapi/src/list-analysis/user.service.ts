@@ -14,4 +14,10 @@ export class UserService {
       where: { organization_id: organizationId, user_email: userEmail },
     });
   }
+
+  async findUserByAttributes(attributes: Partial<UserRoutes>): Promise<UserRoutes> {
+    return await this.userRepository.findOne({
+      where: attributes,
+    });
+  }
 }

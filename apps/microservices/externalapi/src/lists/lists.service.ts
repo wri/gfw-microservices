@@ -10,13 +10,16 @@ import { OrganizationService } from '../list-analysis/organization.service';
 import { Organization } from '../api-keys/organization.entity';
 import { S3Service } from '@wri-monorepos/aws';
 import { ListInfoResponse } from '../list-analysis/list-upload-new.dto';
+import { SaveActivityLogEndpoint } from '../list-analysis/utils/saveActivityLogEndpoint';
+
 @Injectable()
 export class ListService {
   public readonly logger = new Logger(ListService.name);
   constructor(
     private clientStoreConnection: ClientStoreConnection,
     private organizationService: OrganizationService,
-    private s3Service: S3Service
+    private s3Service: S3Service,
+    private saveActivityLogEndpoint: SaveActivityLogEndpoint
   ) {}
   // Replace this with actual database or external service calls
   async getList({

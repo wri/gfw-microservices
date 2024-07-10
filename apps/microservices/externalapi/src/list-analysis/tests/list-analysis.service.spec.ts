@@ -19,7 +19,7 @@ import { S3Service } from '@wri-monorepos/aws';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import { SqsService } from '@ssut/nestjs-sqs';
-import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
+import { SaveActivityLogEndpoint } from '../utils/saveActivityLogEndpoint';
 import { checkProcessingLimits } from '@wri-monorepos/shared';
 import { listStatus } from '@wri-monorepos/constants';
 
@@ -38,7 +38,7 @@ describe('ListAnalysisService', () => {
   let userService: UserService;
   let listService: ListService;
   let sqsService: SqsService;
-  let clientStoreConnectionLibSql: ClientStoreConnectionLibSql;
+  let saveActivityLogEndpoint: SaveActivityLogEndpoint;
   beforeAll(async () => {
     sinon
       .stub(DataSource.prototype, 'getRepository')
@@ -69,7 +69,7 @@ describe('ListAnalysisService', () => {
         OrganizationService,
         ListService,
         S3Service,
-        ClientStoreConnectionLibSql,
+        SaveActivityLogEndpoint,
       ],
     }).compile();
   });
@@ -79,11 +79,9 @@ describe('ListAnalysisService', () => {
     service = module.get<ListAnalysisService>(ListAnalysisService);
     userService = module.get<UserService>(UserService);
     clientStoreConnection = module.get<ClientStoreConnection>(ClientStoreConnection);
-    clientStoreConnectionLibSql = module.get<ClientStoreConnectionLibSql>(
-      ClientStoreConnectionLibSql
-    );
     listService = module.get<ListService>(ListService);
     sqsService = module.get<SqsService>(SqsService);
+    saveActivityLogEndpoint = module.get<SaveActivityLogEndpoint>(SaveActivityLogEndpoint);
   });
 
   it('should delete a list', async () => {
@@ -116,7 +114,7 @@ describe('ListAnalysisService', () => {
         database: 'mock_db',
       },
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     userService.findUser = jest
       .fn()
       .mockResolvedValue({ id: 1, organization_user_id: 1, userEmail: userEmail });
@@ -149,6 +147,7 @@ describe('ListAnalysisService', () => {
     userService.findUser = jest
       .fn()
       .mockResolvedValue({ id: 1, organization_user_id: 1, userEmail: userEmail });
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     axios.delete = jest.fn().mockResolvedValue({ status: 200 });
     await expect(service.deleteList(organizationId, listId, userEmail)).rejects.toThrowError(
       NotFoundException
@@ -173,6 +172,7 @@ describe('ListAnalysisService', () => {
         findOne: () => null,
       }),
     });
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(service.deleteList(organizationId, listId, userEmail)).rejects.toThrowError(
       NotFoundException
     );
@@ -187,6 +187,7 @@ describe('ListAnalysisService', () => {
       fileType,
     };
     service.prepareUpload = jest.fn().mockResolvedValue(expectedResult);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await service.prepareUpload({
       organizationId,
       organization_user_id,
@@ -229,7 +230,7 @@ describe('ListAnalysisService', () => {
       organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
 
     expect(result).toEqual(expectedResult);
@@ -267,7 +268,7 @@ describe('ListAnalysisService', () => {
       organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
     expect(result).toEqual(expectedResult);
   });
@@ -304,7 +305,7 @@ describe('ListAnalysisService', () => {
       organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
     expect(result).toEqual(expectedResult);
   });
@@ -341,7 +342,7 @@ describe('ListAnalysisService', () => {
       organizationActivatedTime: new Date(),
       subscriptionStatusId: 1,
     });
-
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     const result = await service.getAnalysisStatus({ organizationId, listId, analysisId: 'FCD' });
     expect(result).toEqual(expectedResult);
   });
@@ -423,6 +424,7 @@ describe('ListAnalysisService', () => {
       generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       service.generateDownloadBundle({
         organizationId,
@@ -446,6 +448,7 @@ describe('ListAnalysisService', () => {
       generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       service.generateDownloadBundle({
         organizationId,
@@ -469,6 +472,7 @@ describe('ListAnalysisService', () => {
       generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       service.generateDownloadBundle({
         organizationId,
@@ -492,6 +496,7 @@ describe('ListAnalysisService', () => {
       generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       service.generateDownloadBundle({
         organizationId,
@@ -515,6 +520,7 @@ describe('ListAnalysisService', () => {
       generateAnalysisSqsTemplate: jest.fn().mockResolvedValue(true),
     }));
     sqsService.send = jest.fn().mockResolvedValue(true);
+    saveActivityLogEndpoint.saveActivityLogEndpoint = jest.fn().mockResolvedValue(true);
     await expect(
       service.generateDownloadBundle({
         organizationId,
@@ -563,7 +569,7 @@ describe('ListAnalysisService', () => {
         database: 'mock_db',
       },
     });
-    clientStoreConnectionLibSql.getConnection = jest.fn().mockResolvedValue({
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
         findOne: () => mockList,
         findBy: () => mockList,
@@ -624,7 +630,7 @@ describe('ListAnalysisService', () => {
         database: 'mock_db',
       },
     });
-    clientStoreConnectionLibSql.getConnection = jest.fn().mockResolvedValue({
+    clientStoreConnection.getConnection = jest.fn().mockResolvedValue({
       getRepository: () => ({
         findOne: () => mockList,
         findBy: () => mockList,

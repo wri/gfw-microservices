@@ -15,9 +15,15 @@ import { OrganizationService } from './organization.service';
 import { S3Service } from '@wri-monorepos/aws';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
-import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monorepos/sql';
+import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
+import { ActivityLog } from '@wri-monorepos/sql';
 @Module({
-  imports: [TypeOrmModule.forFeature([ExternalAPIKey, UserRoutes, Organization, Lists], 'default')],
+  imports: [
+    TypeOrmModule.forFeature(
+      [ExternalAPIKey, UserRoutes, Organization, Lists, ActivityLog],
+      'default'
+    ),
+  ],
   controllers: [ListAnalysisController, ListUploadController],
   providers: [
     ListAnalysisService,
@@ -26,7 +32,7 @@ import { ClientStoreConnection as ClientStoreConnectionLibSql } from '@wri-monor
     OrganizationService,
     ListService,
     S3Service,
-    ClientStoreConnectionLibSql,
+    SaveActivityLogEndpoint,
     {
       provide: 'AWS',
       inject: [ConfigService],

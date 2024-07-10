@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import * as request from 'supertest';
 import { BadRequestException, INestApplication } from '@nestjs/common';
 import { ListService } from '../../lists/lists.service';
+import { SqlModule } from '@wri-monorepos/sql';
 
 describe('ListAnalysisController', () => {
   let controller: ListAnalysisController;
@@ -60,6 +61,7 @@ describe('ListAnalysisController', () => {
       ],
       controllers: [ListAnalysisController],
       providers: [
+        SqlModule,
         {
           provide: ListAnalysisService,
           useValue: {

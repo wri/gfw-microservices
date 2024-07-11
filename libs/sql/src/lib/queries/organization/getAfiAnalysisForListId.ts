@@ -1,5 +1,5 @@
-export const getAfiAnalysisForListId = `
-  SELECT TOP 100
+const commonQuery = `
+SELECT TOP 100
     AF.list_id as listId,
     AF.gadm_id AS gadmId,
     ISNULL(AF.natural_land_area,0) AS coverageHA,
@@ -19,10 +19,21 @@ export const getAfiAnalysisForListId = `
     AA.[Sub State] as subState
   FROM [AFIAnalysis] AF
   LEFT JOIN gfwpro.dbo.[list-administrativeAreas] AA ON AA.gadmid = AF.gadm_id
+`;
+
+export const getAfiAnalysisForListId = `
+  ${commonQuery}
   WHERE AF.location_id = -1
   AND AF.gadm_id IS NOT NULL
   AND (AF.negligible_risk < 0.5 OR AF.negligible_risk > 99.5)
   AND AF.list_id = @listId
+  AND (@locationId IS NULL OR AF.location_id = @locationId)
+  ORDER BY negligibleRisk ASC, naturalForestLossHA DESC;`;
+
+export const getAfiAnalysisForListIdAndLocation = `
+  ${commonQuery}
+  WHERE AF.list_id = @listId
+  AND AF.location_id = @locationId
   ORDER BY negligibleRisk ASC, naturalForestLossHA DESC;`;
 
 export interface AfiAnalysisRowForList {

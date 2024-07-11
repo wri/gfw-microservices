@@ -3,7 +3,9 @@ import {
   GetProtectedAreasByCategoryAreaType,
   SQLUtils,
   getLandmarkByCategoryArea,
+  getLandmarkAreaByCategoryForList,
   getProtectedAreasByCategoryArea,
+  getProtectedAreasByCategoryAreaForList,
   AnnualLossFcdFields,
   GetAnnualLossFcdDataReturnType,
   getAnnualLossFcdDataWithoutLocationIdFilter,
@@ -329,7 +331,7 @@ export class FCDService {
     listId: number,
     country: string,
     clientDatabase: string,
-    locationId: number
+    locationId?: number
   ) {
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },
@@ -338,9 +340,12 @@ export class FCDService {
     ];
 
     this.logger.debug(`getProtectedAreasByCategoryAreaData: `, parameters);
+    const protectedAreasQuery = locationId
+      ? getProtectedAreasByCategoryArea
+      : getProtectedAreasByCategoryAreaForList;
     return SQLUtils.queryDB<GetProtectedAreasByCategoryAreaType[]>(
       clientDatabase,
-      getProtectedAreasByCategoryArea,
+      protectedAreasQuery,
       parameters
     );
   }
@@ -349,7 +354,7 @@ export class FCDService {
     listId: number,
     country: string,
     clientDatabase: string,
-    locationId: number
+    locationId?: number
   ) {
     const parameters = [
       { field: 'listId', type: sql.Int, value: listId },
@@ -358,9 +363,10 @@ export class FCDService {
     ];
 
     this.logger.debug(`Get Protected Areas By Category Area for: ${country} and listId ${listId}`);
+    const landmarkQuery = locationId ? getLandmarkByCategoryArea : getLandmarkAreaByCategoryForList;
     return SQLUtils.queryDB<GetLandmarkByCategoryAreaType[]>(
       clientDatabase,
-      getLandmarkByCategoryArea,
+      landmarkQuery,
       parameters
     );
   }

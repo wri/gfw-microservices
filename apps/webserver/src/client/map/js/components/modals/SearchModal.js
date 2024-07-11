@@ -10,33 +10,6 @@ const tabs = ['Search', 'Coordinates', 'Decimal Degrees'];
 
 const animationOptions = { duration: 300 };
 
-// REFERENCE: https://stackoverflow.com/a/5971628
-function dms2Deg(s) {
-  // Determine if south latitude or west longitude
-  var sw = /[sw]/i.test(s);
-
-  // Determine sign based on sw (south or west is -ve)
-  var f = sw ? -1 : 1;
-
-  // Get into numeric parts
-  var bits = s.match(/[\d.]+/g) || [];
-
-  var result = 0;
-
-  // Convert to decimal degrees
-  for (var i = 0, iLen = bits.length; i < iLen; i++) {
-    // String conversion to number is done by division
-    // To be explicit (not necessary), use
-    //   result += Number(bits[i])/f
-    result += bits[i] / f;
-
-    // Divide degrees by +/- 1, min by +/- 60, sec by +/-3600
-    f *= 60;
-  }
-
-  return result;
-}
-
 export default class SearchModal extends Component {
   constructor(props) {
     super(props);
@@ -267,8 +240,8 @@ export default class SearchModal extends Component {
       .map((v) => parseInt(v))
       .map(Math.abs);
     const directionB = this.refs.directionB.value;
-    const lat = dms2Deg(`${directionA} ${dmsA[0]} ${dmsA[1]}' ${dmsA[2]}"`);
-    const lng = dms2Deg(`${directionB} ${dmsB[0]} ${dmsB[1]}' ${dmsB[2]}"`);
+    const lat = `${dmsA[0]} ${dmsA[1]} ${dmsA[2]} ${directionA}`;
+    const lng = `${dmsB[0]} ${dmsB[1]} ${dmsB[2]} ${directionB}`;
     this.props.mapView.goTo(
       {
         center: [lng, lat],

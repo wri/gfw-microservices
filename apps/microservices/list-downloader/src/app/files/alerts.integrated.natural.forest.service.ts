@@ -153,7 +153,7 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
     this.fileStream.destroy();
     fs.appendFileSync(
       `/tmp/wri-${key}/${listName}_${this.suffix}.csv`,
-      `${listName},Total locations,Deforestation (Integrated Alerts);${formattedStartDate};${formattedEndDate};;;;;;${this.totalAccumulator.getTotal()}\n`
+      `${listName},Total locations,Deforestation (Integrated Alerts),${formattedStartDate},${formattedEndDate},,,,,,${this.totalAccumulator.getTotal()}\n`
     );
   }
 }

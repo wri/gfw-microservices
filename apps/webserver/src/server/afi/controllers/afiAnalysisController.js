@@ -13,14 +13,19 @@ const { formatNegligibleRiskStatForChart } = require('../utils/afiFunctions');
  */
 module.exports = async (req, res) => {
   const { listId } = req.params;
+  const { locationId } = req.query;
 
   try {
-    const afiAnalysisForCurrentList = await getAFIAnalysisForListId(req, listId);
+    const afiAnalysisForCurrentList = await getAFIAnalysisForListId(req, listId, locationId);
     const formattedAfiAnalysisForCurrentList = afiAnalysisForCurrentList.map((item) =>
       formatNumber(item)
     );
 
-    const afiNegligibleStatsForCurrentList = await getAFINegligibleStatsForListId(req, listId);
+    const afiNegligibleStatsForCurrentList = await getAFINegligibleStatsForListId(
+      req,
+      listId,
+      locationId
+    );
     const negligibleRiskStats = formatNegligibleRiskStatForChart(afiNegligibleStatsForCurrentList);
 
     return res.status(200).send({

@@ -11,7 +11,11 @@ import InfoBubble from '../../../common/js/components/InfoBubble';
 import { locationsPage } from '../../../common/js/config';
 import { forestLossDatasetIds } from './forestLossDatasets.constants';
 
-function AfiDiagnosticsTable({ data, forestLossDataset = forestLossDatasetIds.STBN }) {
+function AfiDiagnosticsTable({
+  data,
+  forestLossDataset = forestLossDatasetIds.STBN,
+  isLocationLevel = false,
+}) {
   const isStbnSelected = forestLossDataset === forestLossDatasetIds.STBN;
   /*
     if STBN is selected, the rows displayed should be coverageHA and naturalForestLossHA
@@ -35,7 +39,7 @@ function AfiDiagnosticsTable({ data, forestLossDataset = forestLossDatasetIds.ST
                 <BetaTag>(Beta)</BetaTag>
                 <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.naturalForestLoss} />
               </TableCell>
-              {isStbnSelected && (
+              {isStbnSelected && !isLocationLevel && (
                 <TableCell align="right">
                   Negligible Risk
                   <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.negligibleRisk} />
@@ -59,7 +63,7 @@ function AfiDiagnosticsTable({ data, forestLossDataset = forestLossDatasetIds.ST
                     <TableCell align="right">{row.jrcNaturalForestLossHA}</TableCell>
                   </>
                 )}
-                {isStbnSelected && (
+                {isStbnSelected && !isLocationLevel && (
                   <TableCell align="right">{row.negligibleRisk ? 'YES' : 'No'}</TableCell>
                 )}
               </TableRow>

@@ -262,11 +262,18 @@ export const getGFWListAnalyses = (req, list_id) => {
  * @param {Number} listId – List ID input
  * @returns {Promise<Object>}
  */
-export const getAFIAnalysisForListId = (req, listId) => {
+export const getAFIAnalysisForListId = (req, listId, locationId) => {
   return new Promise((resolve, reject) => {
+    let queryName = 'uspGetAfiAnalysisForListId';
     const queryParams = [{ field: 'listId', type: sql.Int, value: listId }];
+
+    if (locationId) {
+      queryParams.push({ field: 'locationId', type: sql.Int, value: locationId });
+      queryName = 'uspGetAfiAnalysisForListIdAndLocation';
+    }
+
     sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetAfiAnalysisForListId', queryParams)
+      .executeOrganizationStoredProcedure(req, queryName, queryParams)
       .then((recordsets) => {
         resolve(recordsets);
       })
@@ -289,11 +296,17 @@ export const getAFIAnalysisForListId = (req, listId) => {
  * @param {Number} listId – List ID input
  * @returns {Promise<Object>}
  */
-export const getAFINegligibleStatsForListId = (req, listId) => {
+export const getAFINegligibleStatsForListId = (req, listId, locationId) => {
   return new Promise((resolve, reject) => {
+    let queryName = 'uspGetAfiNegligibleRiskStatsForListId';
     const queryParams = [{ field: 'listId', type: sql.Int, value: listId }];
+
+    if (locationId) {
+      queryParams.push({ field: 'locationId', type: sql.Int, value: locationId });
+      queryName = 'uspGetAfiNegligibleRiskStatsForListIdAndLocation';
+    }
     sqlUtils
-      .executeOrganizationStoredProcedure(req, 'uspGetAfiNegligibleRiskStatsForListId', queryParams)
+      .executeOrganizationStoredProcedure(req, queryName, queryParams)
       .then((recordsets) => {
         resolve(recordsets[0]);
       })

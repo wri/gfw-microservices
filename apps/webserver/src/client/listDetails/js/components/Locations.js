@@ -11,7 +11,6 @@ import store from '../../../locations/js/store';
 import Lists from './lists/Lists';
 
 import '../../../locations/css/locations.scss';
-import { getIsDiagnosticStatusDraft } from '../utils/draft.utils';
 
 const pageOptions = {
   links: {
@@ -78,10 +77,6 @@ class Locations extends Component {
     this.setState(store.getState());
   };
 
-  getCurrentLists = () => {
-    return this.state.selectedLists;
-  };
-
   stopLoading = () => {
     this.setState({
       isLoading: false,
@@ -118,13 +113,10 @@ class Locations extends Component {
       filterCount,
       listData,
       filteredData,
-      listLevelAnalysis,
       selectedLocations,
       selectedAndVisibleLocations,
-      infoBubbleCache,
       gfwInfoFromMap,
       userListInfoFromMap,
-      popover: { displayPopover, bubbleData, popoverLoading, anchorEl },
       isLoading,
       shareView,
     } = this.state;
@@ -135,7 +127,6 @@ class Locations extends Component {
       userLists,
       userInfo,
       organizationId,
-      locationCount,
       gfwLists,
       usersList,
       userSharedLists,
@@ -195,36 +186,26 @@ class Locations extends Component {
                 gfwInfoFromMap={gfwInfoFromMap}
                 history={history}
                 userListInfoFromMap={userListInfoFromMap}
-                organizationId={organizationId}
                 currentUser={userInfo}
                 selectedLists={selectedLists}
                 folders={userFolders}
                 userLists={userLists} // Contains all lists that users have created
                 listView={listView}
-                locationCount={locationCount}
                 gfwLists={gfwLists}
                 canopyModalVisible={canopyModalVisible}
-                listLevelAnalysis={listLevelAnalysis}
                 filters={filters}
                 filterCount={filterCount}
-                getCurrentLists={this.getCurrentLists}
                 listData={listData}
                 filteredData={filteredData}
                 filteredLocationData={filteredLocationData}
                 selectedLocations={selectedLocations}
                 selectedAndVisibleLocations={selectedAndVisibleLocations}
                 templateData={templateData}
-                displayPopover={displayPopover}
-                bubbleData={bubbleData}
-                popoverLoading={popoverLoading}
-                anchorEl={anchorEl}
-                infoBubbleCache={infoBubbleCache}
                 stopLoading={this.stopLoading}
                 usersList={usersList} // Contains all users
                 userSharedLists={userSharedLists}
                 shareView={shareView}
                 showShareList={this.showShareList}
-                isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(...selectedLists)}
               />
             )) || (
               <div

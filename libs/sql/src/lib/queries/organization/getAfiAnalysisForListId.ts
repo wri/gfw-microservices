@@ -32,8 +32,7 @@ export const getAfiAnalysisForListId = `
 
 export const getAfiAnalysisForListIdAndLocation = `
   ${commonQuery}
-  WHERE (AF.negligible_risk < 0.5 OR AF.negligible_risk > 99.5)
-  AND AF.list_id = @listId
+  WHERE AF.list_id = @listId
   AND AF.location_id = @locationId
   ORDER BY negligibleRisk ASC, naturalForestLossHA DESC;`;
 

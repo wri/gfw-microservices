@@ -167,7 +167,11 @@ function AfiDiagnostics() {
                   </Select>
                 </FormControl>
               </div>
-              <AfiDiagnosticsTable data={tableData} forestLossDataset={forestLossDataset} />
+              <AfiDiagnosticsTable
+                data={tableData}
+                forestLossDataset={forestLossDataset}
+                isLocationLevel={locationId !== undefined}
+              />
               {isNegligibleRiskAvailable && (
                 <>
                   <h2 className="locations-diagnostics__subtitle">

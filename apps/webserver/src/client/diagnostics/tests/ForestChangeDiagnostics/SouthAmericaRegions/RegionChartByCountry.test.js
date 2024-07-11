@@ -40,7 +40,7 @@ describe('RegionChartByCountry - Argentina', () => {
 
   it('should render pie charts for protected areas and indigenous territories', async () => {
     const defaultProps = {
-      listId: '2',
+      listId: '1',
       data: MOCK_COUNTRY_DATA,
       fireDownload: jest.fn(),
       country: regionIds.ARGENTINA,

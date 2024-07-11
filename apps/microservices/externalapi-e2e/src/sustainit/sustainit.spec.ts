@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import fs from 'fs';
 const BASE_URL = process.env.HOST || 'http://localhost:3337';
 const API_TOKEN = process.env.API_TOKEN;
 const email = process.env.USER_EMAIL;
@@ -131,7 +131,9 @@ describe('API Endpoints', () => {
       const uploadUrl = prepareRes.data.uploadUrl;
       const uploadId = prepareRes.data.uploadId;
 
-      const fileUploadRes = await axios.put(uploadUrl, null, {
+      const filePath = '../../externalapi/test-tool/CocoaGeneric3.csv';
+      const fileStream = fs.createReadStream(filePath);
+      const fileUploadRes = await await axios.put(uploadUrl, fileStream, {
         headers: {
           'Content-Type': 'text/csv',
         },
@@ -159,29 +161,11 @@ describe('API Endpoints', () => {
 
       expect(uploadNewRes.status).toBe(201);
       expect(uploadNewRes.data).toBeTruthy();
-    }, 10000);
 
-    it('should delete the uploaded item', async () => {
-      const prepareRes = await axios.post(
-        `${BASE_URL}/api/v1/prepare_upload`,
-        {
-          userEmail: email,
-          fileType: 'csv',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API_TOKEN,
-          },
-          maxRedirects: 0,
-        }
-      );
-
-      const uploadId = prepareRes.data.uploadId;
-
+      const listId = uploadNewRes.data.listId;
       it('should delete the list', async () => {
         const res = await axios.post(
-          `${BASE_URL}/api/v1/list/${uploadId}/delete/list`,
+          `${BASE_URL}/api/v1/list/${listId}/delete/list`,
           {
             userEmail: email,
           },

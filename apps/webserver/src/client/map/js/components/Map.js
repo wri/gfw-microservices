@@ -110,7 +110,6 @@ import {
 
 import viirsLayer, { fetchViirsFeatures } from '../layers/VIIRSLayerUtil';
 import { getProdesUpdatedVectorTileStyle } from '../layers/Prodes_LayerUtil';
-import MapRecenterButton from './modals/MapRecenterButton';
 
 // Configs
 import {
@@ -2581,8 +2580,9 @@ class Map extends Component {
           setLocationName={this.setLocationName}
           userInfo={userInfo}
           landsatYear={this.state.landsatYear}
+          search={this.props.location.search}
         />
-        <MapRecenterButton mapView={this.view} selectedList={selectedLists} />
+        
         <Legend
           panelsVisible={panelsVisible}
           canopyDensity={canopyDensity}

@@ -7,7 +7,7 @@ import { DEFAULT_MAPVIEW_CENTER } from '../../../config/map.config';
 
 import './mapRecenterButton.scss';
 
-const MapRecenterButton = ({ selectedList = [], mapView }) => {
+const MapRecenterButton = ({ selectedList = [], mapView, search }) => {
   const [mapInfo, setMapInfo] = useState([]);
   const [showButton, setShowButton] = useState(false);
 
@@ -18,9 +18,20 @@ const MapRecenterButton = ({ selectedList = [], mapView }) => {
     }
   }, [selectedList]);
 
+  function getListId() {
+    const queryParams = getQueryParams(search);
+    const { selectedLocations } = queryParams;
+
+    if(selectedLocations){
+      return selectedLocations;
+    }
+
+    return selectedList[0].id;
+  }
+
   async function getMapInfo() {
     try {
-      const response = await getListMbtileInfo(selectedList[0].id);
+      const response = await getListMbtileInfo(getListId());
       if (response && response.bounds) {
         setMapInfo(response.bounds);
       }

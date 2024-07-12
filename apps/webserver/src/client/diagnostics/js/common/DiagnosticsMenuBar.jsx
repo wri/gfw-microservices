@@ -56,10 +56,17 @@ function DiagnosticsMenuBar({
   }));
 
   const redirectToSelectedDiagnostics = (diagnostics) => {
+    const locationId = parseInt(new URLSearchParams(location.search).get('locationId'), 10);
     const diagnosticTypeParam = !isGfwList ? `&type=${diagnostics}` : '';
-    window.location.href = `/diagnostics?listId=${listId}${diagnosticTypeParam}${
+    let url = `/diagnostics?listId=${listId}${diagnosticTypeParam}${
       isSharedList ? '&shared=true' : ''
     }`;
+    console.log(locationId);
+    if (locationId !== undefined && !isNaN(locationId)) {
+      url += `&locationId=${locationId}`;
+    }
+
+    window.location.href = url;
   };
 
   return (

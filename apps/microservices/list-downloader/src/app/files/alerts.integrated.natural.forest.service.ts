@@ -19,6 +19,7 @@ export class TotalAccumulator {
   constructor(eventEmitter: EventEmitter) {
     this.total = 0;
     eventEmitter.on('count', () => this.total++);
+    eventEmitter.on('clearTotal', () => (this.total = 0));
   }
 
   getTotal(): number {
@@ -104,6 +105,8 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
 
   private organizeStream(filters: AlertFieldsFileRequest) {
     const { listId, startDate, endDate, key, listName } = filters;
+
+    this.eventEmitter.emit('clearTotal');
 
     const inputColumns: string[] = [
       'integratedAlertsDailyAllNominal',

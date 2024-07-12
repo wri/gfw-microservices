@@ -14,7 +14,7 @@ class OverlapPercentageColumns extends Transform {
 
       if (totalValue !== undefined && totalValue !== 0 && value !== undefined && value !== 0) {
         const percentage = (value / totalValue) * 100;
-        chunk[rule.target] = percentage.toFixed(2);
+        chunk[rule.target] = percentage === 0 ? 0 : percentage.toFixed(2);
       } else {
         chunk[rule.target] = 0;
       }

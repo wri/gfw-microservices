@@ -27,7 +27,6 @@ export const getAfiAnalysisForListId = `
   AND AF.gadm_id IS NOT NULL
   AND (AF.negligible_risk < 0.5 OR AF.negligible_risk > 99.5)
   AND AF.list_id = @listId
-  AND (@locationId IS NULL OR AF.location_id = @locationId)
   ORDER BY negligibleRisk ASC, naturalForestLossHA DESC;`;
 
 export const getAfiAnalysisForListIdAndLocation = `

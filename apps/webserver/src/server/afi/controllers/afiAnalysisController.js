@@ -5,17 +5,27 @@ const {
   formatNumber,
 } = require(path.resolve('./config/publicutils/analysisManager.utils'));
 const { formatNegligibleRiskStatForChart } = require('../utils/afiFunctions');
+import { z } from 'zod';
+
+export const AfiValidationSchema = z.object({
+  listId: z.coerce.number({
+    required_error: 'Missing listId',
+  }),
+  locationId: z.optional(z.coerce.number()).catch(undefined),
+});
 
 /**
  * @summary handles afi analysis endpoint
  * @param {Object} req Express Request
  * @param {Object} res Express Respond
  */
-module.exports = async (req, res) => {
-  const { listId } = req.params;
-  const { locationId } = req.query;
-
+export default async (req, res) => {
   try {
+    const afiValidationResults = AfiValidationSchema.parse({
+      ...req.params,
+      ...req.query,
+    });
+    const { listId, locationId } = afiValidationResults;
     const afiAnalysisForCurrentList = await getAFIAnalysisForListId(req, listId, locationId);
     const formattedAfiAnalysisForCurrentList = afiAnalysisForCurrentList.map((item) =>
       formatNumber(item)

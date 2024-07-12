@@ -17,39 +17,41 @@ import getAnalysisAvailabilityMessage from '../common/getAnalysisAvailabilityMes
 import { forestLossDatasetIds, forestLossDatasets } from './forestLossDatasets.constants';
 import '../common/DiagnosticsContainer.scss';
 
+function getQueryParam(param, transform) {
+  const query = new URLSearchParams(location.search);
+  const value = query.get(param);
+  return value && transform ? transform(value) : value ? value : null;
+}
+
 function AfiDiagnostics() {
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedList, setSelectedList] = useState({});
   const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
   const [tableData, setTableData] = useState({});
   const [chartData, setChartData] = useState({});
-
   const [forestLossDataset, setForestLossDataset] = useState(forestLossDatasetIds.STBN);
 
   const handleChange = (event) => {
     setForestLossDataset(event.target.value);
   };
 
-  const listId = parseInt(new URLSearchParams(location.search).get('listId'), 10);
-  const locationId = parseInt(new URLSearchParams(location.search).get('locationId'), 10);
-  const isSharedList = Boolean(new URLSearchParams(location.search).get('shared'));
-  const [selectedList, setSelectedList] = useState({});
+  const listId = getQueryParam('listId', parseInt);
+  const locationId = getQueryParam('locationId', parseInt);
+  const isSharedList = getQueryParam('shared', Boolean);
 
   const getAfiAnalysisForListId = () => {
-    // Base URL
-    let url = `/api/afi/analysis/${listId}`;
-
-    // Add query parameter if locationId is defined
-    if (locationId !== undefined) {
-      url += `?locationId=${locationId}`;
-    }
-
-    return fetch(url, {
-      method: 'GET',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-    }).then((res) => res.json());
+    return fetch(
+      `/api/afi/analysis/${listId}?${new URLSearchParams({
+        locationId,
+      }).toString()}`,
+      {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      }
+    ).then((res) => res.json());
   };
 
   const getDiagnosticsData = () => {

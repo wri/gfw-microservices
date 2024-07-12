@@ -264,13 +264,14 @@ export const getGFWListAnalyses = (req, list_id) => {
  */
 export const getAFIAnalysisForListId = (req, listId, locationId) => {
   return new Promise((resolve, reject) => {
-    let queryName = 'uspGetAfiAnalysisForListId';
-    const queryParams = [{ field: 'listId', type: sql.Int, value: listId }];
+    const queryParams = [
+      { field: 'listId', type: sql.Int, value: listId },
+      { field: 'locationId', type: sql.Int, value: locationId || null },
+    ];
 
-    if (locationId) {
-      queryParams.push({ field: 'locationId', type: sql.Int, value: locationId });
-      queryName = 'uspGetAfiAnalysisForListIdAndLocation';
-    }
+    const queryName = locationId
+      ? 'uspGetAfiAnalysisForListIdAndLocation'
+      : 'uspGetAfiAnalysisForListId';
 
     sqlUtils
       .executeOrganizationStoredProcedure(req, queryName, queryParams)

@@ -3,7 +3,7 @@ const express = require('express');
 const middlewares = require(path.resolve('./config/publicutils/middlewares'));
 const rateLimiterUtil = require(path.resolve('./config/lib/limiter-util'));
 const downloadController = require('../controllers/downloadController');
-const analysisController = require('../controllers/afiAnalysisController');
+import analysisController from '../controllers/afiAnalysisController';
 const afiRoutes = express.Router();
 
 /**

@@ -40,6 +40,16 @@ EXEC sp_executesql @TEMPLATE,
     @country=@country, @listID=@listID, @locationId=@locationId;
 `;
 
+export const getLandmarkAreaByCategoryForList = `
+SELECT 
+    an.total_area as totalArea,
+    an.landmark_by_category_area as landmarkByCategoryArea    
+FROM 
+    dbo.[Analyses] an
+WHERE 
+    list_id = @listID
+`;
+
 export type GetLandmarkByCategoryAreaType = {
   totalArea: number;
   landmarkByCategoryArea: string;

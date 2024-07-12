@@ -39,7 +39,7 @@ function AfiDiagnostics() {
     let url = `/api/afi/analysis/${listId}`;
 
     // Add query parameter if locationId is defined
-    if ((locationId !== undefined) && !isNaN(locationId)) {
+    if (locationId !== undefined && !isNaN(locationId)) {
       url += `?locationId=${locationId}`;
     }
 

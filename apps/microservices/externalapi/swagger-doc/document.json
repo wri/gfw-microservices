@@ -1,0 +1,996 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/list/{listId}/analysis/{analysisId}/status": {
+      "get": {
+        "operationId": "ListAnalysisController_getAnalysisStatus",
+        "parameters": [
+          {
+            "name": "listId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "analysisId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListAnalysisResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroResponseWithErroMessage"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/list/{listId}/analysis/{analysisId}/generate": {
+      "post": {
+        "operationId": "ListAnalysisController_createAnalysisStatus",
+        "parameters": [
+          {
+            "name": "listId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "analysisId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertsGenerateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListAnalysisResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/list/{listId}/analysis/{analysisId}/analyze": {
+      "post": {
+        "operationId": "ListAnalysisController_createAnalysis",
+        "parameters": [
+          {
+            "name": "listId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "analysisId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/requestEmailBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/list/{listId}/delete": {
+      "post": {
+        "operationId": "ListAnalysisController_deleteList",
+        "parameters": [
+          {
+            "name": "listId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteListRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteListMessageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/list/{listId}": {
+      "get": {
+        "operationId": "ListAnalysisController_getListInfo",
+        "parameters": [
+          {
+            "name": "listId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListInfoResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroResponseWithErroMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/list": {
+      "get": {
+        "operationId": "ListAnalysisController_getPaginatedLists",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageNum",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated info List",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ListInfoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErroResponseWithErroMessage"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/list/upload_new": {
+      "post": {
+        "operationId": "ListUploadController_uploadNewList",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ListUploadNewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListUploadNewResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InternalServerErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    },
+    "/api/v1/prepare_upload": {
+      "post": {
+        "operationId": "ListUploadController_prepareUploadList",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrepareUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrepareUploadResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnauthorizedResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "x-api-key": []
+          }
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "External API",
+    "description": "V1 for external API",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "x-api-key": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    },
+    "schemas": {
+      "ListAnalysisResponse": {
+        "type": "object",
+        "properties": {
+          "listId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "errorsDetails": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "resultUrl": {
+            "type": "string"
+          },
+          "creationDate": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "expirationDate": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "listId",
+          "status",
+          "errorsDetails",
+          "resultUrl",
+          "creationDate",
+          "expirationDate"
+        ]
+      },
+      "BadRequestResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "enum": [
+              "Bad Request"
+            ]
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "UnauthorizedResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "enum": [
+              "Unauthorized"
+            ]
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ForbiddenResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "enum": [
+              "Forbidden"
+            ]
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ErroResponseWithErroMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "enum": [
+              "Not Found"
+            ]
+          },
+          "statusCode": {
+            "type": "number"
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "statusCode",
+          "error"
+        ]
+      },
+      "AlertsGenerateRequest": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "mm-dd-yyyy"
+          },
+          "endDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "mm-dd-yyyy"
+          },
+          "userEmail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "startDate",
+          "endDate",
+          "userEmail"
+        ]
+      },
+      "NotFoundResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "enum": [
+              "Not Found"
+            ]
+          },
+          "statusCode": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "message",
+          "statusCode"
+        ]
+      },
+      "InternalServerErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "enum": [
+              "Internal Server Error"
+            ]
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "requestEmailBody": {
+        "type": "object",
+        "properties": {
+          "userEmail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userEmail"
+        ]
+      },
+      "DeleteListRequest": {
+        "type": "object",
+        "properties": {
+          "userEmail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userEmail"
+        ]
+      },
+      "DeleteListMessageResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "enum": [
+              "User 'email@email' has deleted list (listName)"
+            ]
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ListInfoResponse": {
+        "type": "object",
+        "properties": {
+          "listId": {
+            "type": "number"
+          },
+          "listName": {
+            "type": "string"
+          },
+          "locationCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "listId",
+          "listName",
+          "locationCount"
+        ]
+      },
+      "ListUploadNewRequest": {
+        "type": "object",
+        "properties": {
+          "uploadId": {
+            "type": "string"
+          },
+          "listName": {
+            "type": "string"
+          },
+          "templateId": {
+            "type": "number"
+          },
+          "analysisIDs": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uploadId",
+          "listName",
+          "templateId",
+          "analysisIDs"
+        ]
+      },
+      "ListUploadNewResponse": {
+        "type": "object",
+        "properties": {
+          "uploadId": {
+            "type": "string"
+          },
+          "listId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "errorDetails": {
+            "type": "string"
+          },
+          "creationDate": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uploadId",
+          "listId",
+          "status",
+          "errorDetails",
+          "creationDate"
+        ]
+      },
+      "PrepareUploadRequest": {
+        "type": "object",
+        "properties": {
+          "userEmail": {
+            "type": "string"
+          },
+          "fileType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "userEmail",
+          "fileType"
+        ]
+      },
+      "PrepareUploadResponse": {
+        "type": "object",
+        "properties": {
+          "uploadId": {
+            "type": "string"
+          },
+          "uploadUrl": {
+            "type": "string"
+          },
+          "uploadDateTime": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uploadId",
+          "uploadUrl",
+          "uploadDateTime"
+        ]
+      }
+    }
+  }
+}

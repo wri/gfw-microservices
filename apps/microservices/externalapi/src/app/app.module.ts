@@ -52,7 +52,8 @@ export class AppModule {
         '/v1/list/:listId/analysis/:analysisId/analyze',
         '/v1/list/:listId/delete/list',
         '/v1/list/upload_new',
-        '/v1/prepare_upload'
+        '/v1/prepare_upload',
+        '/profile'
       );
   }
 }

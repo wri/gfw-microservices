@@ -33,6 +33,14 @@ EXEC sp_executesql @TEMPLATE,
     @country=@country, @listID=@listID, @locationId=@locationId;
 `;
 
+export const getProtectedAreasByCategoryAreaForList = `
+SELECT 
+    an.protected_areas_by_category_area as protectedAreasByCategoryArea
+FROM 
+    dbo.[Analyses] an
+WHERE 
+    list_id = @listID`;
+
 export type GetProtectedAreasByCategoryAreaType = {
   protectedAreasByCategoryArea: string;
 };

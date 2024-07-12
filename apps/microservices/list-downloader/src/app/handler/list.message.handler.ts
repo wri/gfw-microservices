@@ -1,6 +1,6 @@
 import { Logger, Injectable } from '@nestjs/common';
 import { SqsMessageHandler } from '@ssut/nestjs-sqs';
-import * as AWS from 'aws-sdk';
+import { SQSClient, DeleteMessageCommand } from '@aws-sdk/client-sqs';
 
 import { PipeService } from '../pipe/pipe.service';
 import { messageSchema } from './message.schema';
@@ -11,7 +11,7 @@ const awsConfig = {
   region: process.env.AWS_REGION,
 };
 
-AWS.config.update(awsConfig);
+const sqsClient = new SQSClient(awsConfig);
 
 @Injectable()
 export class ListMessageHandler {
@@ -20,7 +20,7 @@ export class ListMessageHandler {
   constructor(private pipeService: PipeService) {}
 
   @SqsMessageHandler('list-generate-file', true)
-  async handleMessage(messages: Array<AWS.SQS.Message>) {
+  async handleMessage(messages: Array<{ Body: string; ReceiptHandle: string }>) {
     const [message] = messages;
     const filters = this.reorganizeFilters(message);
 
@@ -35,15 +35,20 @@ export class ListMessageHandler {
     await this.pipeService.makeFile(filters);
   }
 
-  async removeMessage(message: AWS.SQS.Message) {
-    const sqs = new AWS.SQS();
+  async removeMessage(message: { ReceiptHandle: string }) {
+    const queueUrl = process.env.AWS_TMP_QUEUE;
+    if (!queueUrl) {
+      this.logger.error('AWS_TMP_QUEUE environment variable is not set.');
+      throw new Error('AWS_TMP_QUEUE environment variable is not set.');
+    }
 
     const deleteParams = {
-      QueueUrl: process.env.AWS_TMP_QUEUE,
+      QueueUrl: queueUrl,
       ReceiptHandle: message.ReceiptHandle,
     };
 
-    const removedMessage = await sqs.deleteMessage(deleteParams).promise();
+    const command = new DeleteMessageCommand(deleteParams);
+    const removedMessage = await sqsClient.send(command);
     this.logger.log(`Removed message: ${JSON.stringify(removedMessage)}`);
   }
 

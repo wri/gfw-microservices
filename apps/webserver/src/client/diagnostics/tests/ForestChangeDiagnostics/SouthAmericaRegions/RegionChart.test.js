@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import RegionChart from '../../../js/ForestChangeDiagnostics/SouthAmericaRegions/RegionChart';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { BrowserRouter } from 'react-router-dom';
-import { MOCK_ARGENTINA_DATA } from './mockArgentinaData';
+import { MOCK_COUNTRY_DATA } from './mockCountryData';
 
 jest.mock('../../../js/ForestChangeDiagnostics/SouthAmericaRegions/DateRangeSlider', () => () => {
   return <div></div>;
@@ -39,7 +39,7 @@ describe('RegionChart Component', () => {
     render(
       <BrowserRouter>
         <MuiThemeProvider>
-          <RegionChart listId={listId} data={MOCK_ARGENTINA_DATA} fireDownload={fireDownload} />
+          <RegionChart listId={listId} data={MOCK_COUNTRY_DATA} fireDownload={fireDownload} />
         </MuiThemeProvider>
       </BrowserRouter>
     );

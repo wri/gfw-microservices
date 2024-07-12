@@ -1,4 +1,4 @@
-export const MOCK_ARGENTINA_DATA = {
+export const MOCK_COUNTRY_DATA = {
   id: 5345,
   list_id: 5439,
   status_id: 2,

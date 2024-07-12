@@ -82,7 +82,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
       listId,
       locationId,
       country: country === regionIds.ARGENTINA ? 'Argentina' : 'Colombia',
-      countryGadm: country.substring(0, 3),
+      countryGadm: country.substring(0, 3).toUpperCase(),
       category: ['WDPA', 'landmark', 'country', 'classified_region'],
     };
 

@@ -149,7 +149,6 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
     const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
     const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
     this.logger.log(`(${listId}) - Finished to process result data`);
-    this.fileStream.end();
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
     this.fileStream.removeAllListeners();

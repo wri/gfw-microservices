@@ -61,7 +61,7 @@ function DiagnosticsMenuBar({
     let url = `/diagnostics?listId=${listId}${diagnosticTypeParam}${
       isSharedList ? '&shared=true' : ''
     }`;
-    console.log(locationId);
+
     if (locationId !== undefined && !isNaN(locationId)) {
       url += `&locationId=${locationId}`;
     }

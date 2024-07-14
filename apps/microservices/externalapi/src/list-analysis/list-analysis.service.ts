@@ -550,6 +550,7 @@ export class ListAnalysisService {
       organization_id: organizationId,
       processing_limit: processingLimit,
       analysis_types: { [analysisId]: true },
+      reanalyze: true,
     };
     const connectionLibSql = await this.clientStoreConnection.getConnection(
       organizationDetails.organizationDb

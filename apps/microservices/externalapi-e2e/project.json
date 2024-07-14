@@ -9,7 +9,13 @@
       "options": {
         "jestConfig": "apps/microservices/externalapi-e2e/jest.config.ts",
         "passWithNoTests": true
-      }
+      },
+      "configurations": {
+        "staging": {},
+        "qa": {},
+        "dev": {}
+      },
+      "defaultConfiguration": "dev"
     },
     "lint": {
       "executor": "@nx/linter:eslint",

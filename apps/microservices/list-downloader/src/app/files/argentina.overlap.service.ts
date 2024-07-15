@@ -64,7 +64,7 @@ export class ArgentinaOverlapService extends DashboardHandleDownload {
     }
   }
 
-  isArgentinaOverlapFile({ type }: ListFieldsFileRequest) {
-    return VALID_TYPES.includes(type);
+  isArgentinaOverlapFile({ type, listView }: ListFieldsFileRequest) {
+    return VALID_TYPES.includes(type) && listView !== 'commodity_risk';
   }
 }

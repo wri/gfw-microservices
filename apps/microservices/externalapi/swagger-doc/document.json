@@ -736,51 +736,37 @@
         "properties": {
           "message": {
             "type": "string",
-            "enum": [
-              "Bad Request"
-            ]
+            "enum": ["Bad Request"]
           }
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       },
       "UnauthorizedResponse": {
         "type": "object",
         "properties": {
           "message": {
             "type": "string",
-            "enum": [
-              "Unauthorized"
-            ]
+            "enum": ["Unauthorized"]
           }
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       },
       "ForbiddenResponse": {
         "type": "object",
         "properties": {
           "message": {
             "type": "string",
-            "enum": [
-              "Forbidden"
-            ]
+            "enum": ["Forbidden"]
           }
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       },
       "ErroResponseWithErroMessage": {
         "type": "object",
         "properties": {
           "message": {
             "type": "string",
-            "enum": [
-              "Not Found"
-            ]
+            "enum": ["Not Found"]
           },
           "statusCode": {
             "type": "number"
@@ -789,11 +775,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "message",
-          "statusCode",
-          "error"
-        ]
+        "required": ["message", "statusCode", "error"]
       },
       "AlertsGenerateRequest": {
         "type": "object",
@@ -812,43 +794,30 @@
             "type": "string"
           }
         },
-        "required": [
-          "startDate",
-          "endDate",
-          "userEmail"
-        ]
+        "required": ["startDate", "endDate", "userEmail"]
       },
       "NotFoundResponse": {
         "type": "object",
         "properties": {
           "message": {
             "type": "string",
-            "enum": [
-              "Not Found"
-            ]
+            "enum": ["Not Found"]
           },
           "statusCode": {
             "type": "number"
           }
         },
-        "required": [
-          "message",
-          "statusCode"
-        ]
+        "required": ["message", "statusCode"]
       },
       "InternalServerErrorResponse": {
         "type": "object",
         "properties": {
           "message": {
             "type": "string",
-            "enum": [
-              "Internal Server Error"
-            ]
+            "enum": ["Internal Server Error"]
           }
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       },
       "requestEmailBody": {
         "type": "object",
@@ -857,9 +826,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "userEmail"
-        ]
+        "required": ["userEmail"]
       },
       "DeleteListRequest": {
         "type": "object",
@@ -868,23 +835,17 @@
             "type": "string"
           }
         },
-        "required": [
-          "userEmail"
-        ]
+        "required": ["userEmail"]
       },
       "DeleteListMessageResponse": {
         "type": "object",
         "properties": {
           "message": {
             "type": "string",
-            "enum": [
-              "User 'email@email' has deleted list (listName)"
-            ]
+            "enum": ["User 'email@email' has deleted list (listName)"]
           }
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       },
       "ListInfoResponse": {
         "type": "object",
@@ -899,11 +860,7 @@
             "type": "number"
           }
         },
-        "required": [
-          "listId",
-          "listName",
-          "locationCount"
-        ]
+        "required": ["listId", "listName", "locationCount"]
       },
       "ListUploadNewRequest": {
         "type": "object",
@@ -921,12 +878,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "uploadId",
-          "listName",
-          "templateId",
-          "analysisIDs"
-        ]
+        "required": ["uploadId", "listName", "templateId", "analysisIDs"]
       },
       "ListUploadNewResponse": {
         "type": "object",
@@ -948,13 +900,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "uploadId",
-          "listId",
-          "status",
-          "errorDetails",
-          "creationDate"
-        ]
+        "required": ["uploadId", "listId", "status", "errorDetails", "creationDate"]
       },
       "PrepareUploadRequest": {
         "type": "object",
@@ -966,10 +912,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "userEmail",
-          "fileType"
-        ]
+        "required": ["userEmail", "fileType"]
       },
       "PrepareUploadResponse": {
         "type": "object",
@@ -985,11 +928,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "uploadId",
-          "uploadUrl",
-          "uploadDateTime"
-        ]
+        "required": ["uploadId", "uploadUrl", "uploadDateTime"]
       }
     }
   }

@@ -10,9 +10,8 @@ import { AppModule } from './app/app.module';
 import { SecurityHeaderMiddleware } from './middleware/security-header.middleware';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
-import * as fs from 'fs';
-import * as path from 'path';
-import { createHash } from 'crypto';
+import { saveSwaggerJsonDocument } from '../swagger-doc/saveSwaggerJson';
+
 const SWAGGER_DISABLED_ENVS: ReadonlyArray<string> = ['staging', 'production'];
 
 async function bootstrap() {
@@ -39,24 +38,8 @@ async function bootstrap() {
       )
       .build();
 
-    const jsonDocumentPath = path
-      .join(__dirname, 'swagger-doc', 'document.json')
-      .replace('/dist', '');
     const document = SwaggerModule.createDocument(app, config);
-    try {
-      const oldSwaggerDoc = JSON.parse(fs.readFileSync(jsonDocumentPath, 'utf8'));
-
-      const hashOlsSwaggerDoc = createHash('md5')
-        .update(JSON.stringify(oldSwaggerDoc))
-        .digest('hex');
-      const hash = createHash('md5').update(JSON.stringify(document)).digest('hex');
-
-      if (hashOlsSwaggerDoc !== hash) {
-        await fs.writeFileSync(jsonDocumentPath, JSON.stringify(document, null, 2));
-      }
-    } catch (error) {
-      await fs.writeFileSync(jsonDocumentPath, JSON.stringify(document, null, 2));
-    }
+    saveSwaggerJsonDocument(document);
     SwaggerModule.setup('api', app, document, {
       jsonDocumentUrl: '/api/profile',
     });

@@ -4,6 +4,15 @@ import { Request, Response, NextFunction } from 'express';
 @Injectable()
 export class SecurityHeaderMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
+    if (req.path === '/api') {
+      res.setHeader(
+        'Content-Security-Policy',
+        "default-src 'self'; script-src 'self' ; style-src 'self';"
+      );
+      res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+
+      return next();
+    }
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');

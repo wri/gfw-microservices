@@ -1,5 +1,5 @@
 import { ArgentinaOverlapService } from './argentina.overlap.service';
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test, jest, beforeAll, beforeEach, afterEach } from '@jest/globals';
 import { argentinaListLevelData, argentinaLocationData } from '../shared/mock.data';
 
 import * as fs from 'fs';
@@ -13,6 +13,7 @@ describe('Argentina Overlap Service', () => {
     listName: 'WRI',
     key: 'tmp-key',
     type: 'argentinaOverlap',
+    listView: 'forest_change',
     selectedLocationsList: [],
     listLevelAnalysis: argentinaListLevelData,
   };
@@ -27,9 +28,11 @@ describe('Argentina Overlap Service', () => {
   };
 
   beforeAll(() => {
-    argentinaOverlap.startEmail = jest.fn();
-    argentinaOverlap.errorEmail = jest.fn();
-    argentinaOverlap.finishedEmail = jest.fn();
+    argentinaOverlap.startEmail = jest.fn<() => Promise<void>>(() => Promise.resolve());
+    argentinaOverlap.errorEmail = jest.fn<() => Promise<void>>(() => Promise.resolve());
+    argentinaOverlap.finishedEmail = jest.fn<(filters: any, location: string) => Promise<void>>(
+      () => Promise.resolve()
+    );
 
     createDirectory(dir);
   });
@@ -39,14 +42,20 @@ describe('Argentina Overlap Service', () => {
   });
 
   afterEach(() => {
-    fs.unlinkSync(filePath);
-    fs.unlinkSync(fileAggregatePath);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+    if (fs.existsSync(fileAggregatePath)) {
+      fs.unlinkSync(fileAggregatePath);
+    }
   });
 
-  test.only('When input data has 6 locations', async () => {
-    argentinaOverlap.process(argentinaLocationData, filters);
+  test('When list is not commodity_risk view, and has 6 locations data', async () => {
+    const localFilters = { ...filters, listView: 'some_other_view' };
+    argentinaOverlap.start(localFilters);
+    argentinaOverlap.process(argentinaLocationData, localFilters);
 
-    await argentinaOverlap.finish(filters);
+    await argentinaOverlap.finish(localFilters);
 
     let csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
@@ -98,6 +107,20 @@ describe('Argentina Overlap Service', () => {
       'WRI,Argentina Protected Areas,Non-Overlap,9526.57,84.27',
       'WRI,Argentina Indigenous Territories,,1222.87,10.82',
       'WRI,Argentina Indigenous Territories,Non-Overlap,10081.67,89.18',
+      '',
+    ]);
+  });
+
+  test('When listView is commodity_risk', async () => {
+    const localFilters = { ...filters, listView: 'commodity_risk' };
+    argentinaOverlap.start(localFilters);
+    argentinaOverlap.process(argentinaLocationData, localFilters);
+
+    await argentinaOverlap.finish(localFilters);
+
+    let csvData = readCsvData(filePath);
+    expect(csvData).toStrictEqual([
+      'List Name,Location Name,Data Layer,Sub-Layer,Overlap with Sub-layer (Ha),Overlap with Sub-Layer (%)',
       '',
     ]);
   });

@@ -34,7 +34,7 @@ interface QueryCreateTableResult {
   query_string: string;
 }
 
-const environmentAllowTestFlow = ['dev', 'qa', 'staging'];
+const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
 
 @Injectable()
 export class ListService {

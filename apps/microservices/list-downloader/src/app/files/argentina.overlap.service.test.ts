@@ -118,7 +118,7 @@ describe('Argentina Overlap Service', () => {
 
     await argentinaOverlap.finish(localFilters);
 
-    let csvData = readCsvData(filePath);
+    const csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Location Name,Data Layer,Sub-Layer,Overlap with Sub-layer (Ha),Overlap with Sub-Layer (%)',
       '',

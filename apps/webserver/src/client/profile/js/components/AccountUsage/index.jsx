@@ -49,7 +49,7 @@ export default function AccountUsageContainer() {
     fetch(
       `/analytics/myorg/usage?startDate=${accountLatestYearStartDate.format(
         'YYYY-MM-DD'
-      )}&endDate=${todayAsEndDay.format('YYYY-MM-DD')}`,
+      )}&endDate=${todayAsEndDay.add(1, 'day').format('YYYY-MM-DD')}`,
       {
         method: 'GET',
         credentials: 'same-origin',
@@ -72,7 +72,7 @@ export default function AccountUsageContainer() {
     fetch(
       `/analytics/myorg/usage/users?startDate=${accountLatestYearStartDate.format(
         'YYYY-MM-DD'
-      )}&endDate=${todayAsEndDay.format('YYYY-MM-DD')}`,
+      )}&endDate=${todayAsEndDay.add(1, 'day').format('YYYY-MM-DD')}`,
       {
         method: 'GET',
         credentials: 'same-origin',

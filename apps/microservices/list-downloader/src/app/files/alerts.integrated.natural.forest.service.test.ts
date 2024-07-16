@@ -2,9 +2,14 @@ import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natura
 import { createDirectory } from '../shared/file.utils';
 import * as fs from 'fs';
 import { alertsData } from '../shared/mock.data';
+import { ClientStoreConnection } from '@wri-monorepos/sql';
+import { DataSource } from 'typeorm';
 
 describe('Alerts Integrated Natural Forest Service', () => {
-  const alertsIntegratedNaturalForestService = new AlertsIntegratedNaturalForestService();
+  const clientStoreConnection = new ClientStoreConnection();
+  const alertsIntegratedNaturalForestService = new AlertsIntegratedNaturalForestService(
+    clientStoreConnection
+  );
 
   const filters = {
     listId: 5642,
@@ -37,6 +42,16 @@ describe('Alerts Integrated Natural Forest Service', () => {
   });
 
   test('Integrated alerts selected timeframe DAY', async () => {
+    const mockConnection: Partial<DataSource> = {
+      getRepository: jest.fn().mockReturnValue({
+        findOne: jest.fn().mockResolvedValue({ listLocationsCount: 10 }),
+      }),
+    };
+
+    jest
+      .spyOn(clientStoreConnection, 'getConnection')
+      .mockResolvedValue(mockConnection as DataSource);
+
     alertsIntegratedNaturalForestService.start(filters);
     alertsIntegratedNaturalForestService.process(alertsData);
 
@@ -80,7 +95,7 @@ describe('Alerts Integrated Natural Forest Service', () => {
       'WRI,Sargento Cabral,Deforestation (Integrated Alerts),2021-01-01,2021-01-04,2021-01-04,Nominal,9,7,6,1',
       'WRI,Sargento Cabral,Deforestation (Integrated Alerts),2021-01-01,2021-01-04,2021-01-04,High,2,3,7,1',
       'WRI,Sargento Cabral,Deforestation (Integrated Alerts),2021-01-01,2021-01-04,2021-01-04,Highest,8,0,5,1',
-      'WRI,Total locations,Deforestation (Integrated Alerts),2021-01-01,2021-01-04,,,,,,3',
+      'WRI,Total locations,Deforestation (Integrated Alerts),2021-01-01,2021-01-04,,,,,,10',
       '',
     ]);
   });

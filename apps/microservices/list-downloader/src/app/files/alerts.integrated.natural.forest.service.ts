@@ -1,7 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { IPipeService } from '../pipe/i.pipe.service';
-import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
-import { PassThrough, TransformCallback, Transform } from 'stream';
+import {
+  AlertFieldsFileRequest,
+  ClientStoreConnection,
+  DashboardDataType,
+  Lists,
+} from '@wri-monorepos/sql';
+import { PassThrough } from 'stream';
 import * as fs from 'fs';
 import { ALERTS_INTEGRATED_NATURAL_FOREST_SERVICE_CSV_HEADER } from '../shared/constants';
 import { finished } from 'stream/promises';
@@ -11,83 +16,16 @@ import { FilterTimeframeIntegratedAlerts } from '../transform/filter.timeframe.i
 import { FormatNumber } from '../transform/format.number';
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 
-import { EventEmitter } from 'events';
-
-export class TotalAccumulator {
-  private total: number;
-
-  constructor(eventEmitter: EventEmitter) {
-    this.total = 0;
-    eventEmitter.on('count', () => this.total++);
-    eventEmitter.on('clearTotal', () => (this.total = 0));
-  }
-
-  getTotal(): number {
-    return this.total;
-  }
-}
-
-export class LocationCounter extends Transform {
-  private locations: Set<string>;
-  private eventEmitter: EventEmitter;
-
-  constructor(eventEmitter: EventEmitter) {
-    super({ objectMode: true });
-    this.locations = new Set<string>();
-    this.eventEmitter = eventEmitter;
-  }
-
-  _transform(
-    chunk: DashboardDataType,
-    encoding: BufferEncoding,
-    callback: TransformCallback
-  ): void {
-    try {
-      const hasData = this.hasIntegratedData(chunk);
-      if (chunk.location_name && !this.locations.has(chunk.location_name) && hasData) {
-        this.locations.add(chunk.location_name);
-        this.eventEmitter.emit('count', 1);
-      }
-      callback(null, chunk); // Pass the chunk along the stream
-    } catch (err) {
-      callback(err);
-    }
-  }
-
-  hasIntegratedData(data: DashboardDataType): boolean {
-    const {
-      integratedAlertsDailyJrcHighest,
-      integratedAlertsDailyJrcHigh,
-      integratedAlertsDailyJrcNominal,
-      integratedAlertsDailySbtnHighest,
-      integratedAlertsDailyAllNominal,
-      integratedAlertsDailyAllHigh,
-      integratedAlertsDailyAllHighest,
-      integratedAlertsDailySbtnNominal,
-      integratedAlertsDailySbtnHigh,
-    } = data;
-    return (
-      Object.keys(JSON.parse(integratedAlertsDailyAllNominal)).length > 0 ||
-      Object.keys(JSON.parse(integratedAlertsDailyAllHigh)).length > 0 ||
-      Object.keys(JSON.parse(integratedAlertsDailyAllHighest)).length > 0 ||
-      Object.keys(JSON.parse(integratedAlertsDailySbtnNominal)).length > 0 ||
-      Object.keys(JSON.parse(integratedAlertsDailySbtnHigh)).length > 0 ||
-      Object.keys(JSON.parse(integratedAlertsDailySbtnHighest)).length > 0 ||
-      Object.keys(JSON.parse(integratedAlertsDailyJrcNominal)).length > 0 ||
-      Object.keys(JSON.parse(integratedAlertsDailyJrcHigh)).length > 0 ||
-      Object.keys(JSON.parse(integratedAlertsDailyJrcHighest)).length > 0
-    );
-  }
-}
-
 @Injectable()
 export class AlertsIntegratedNaturalForestService extends IPipeService {
   private readonly logger = new Logger(AlertsIntegratedNaturalForestService.name);
   private inputStream: PassThrough;
   private fileStream: fs.WriteStream;
   private suffix = 'IntegratedAlerts_NaturalForest_Daily';
-  private eventEmitter = new EventEmitter();
-  private totalAccumulator = new TotalAccumulator(this.eventEmitter);
+
+  constructor(private readonly clientStoreConnection: ClientStoreConnection) {
+    super();
+  }
 
   start(filters: AlertFieldsFileRequest) {
     const { listId, key, listName } = filters;
@@ -105,8 +43,6 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
 
   private organizeStream(filters: AlertFieldsFileRequest) {
     const { listId, startDate, endDate, key, listName } = filters;
-
-    this.eventEmitter.emit('clearTotal');
 
     const inputColumns: string[] = [
       'integratedAlertsDailyAllNominal',
@@ -134,7 +70,6 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
     this.inputStream
       .pipe(new AlertsGetLocationOrListData(false))
       .pipe(new FilterTimeframeIntegratedAlerts(inputColumns, startDate, endDate))
-      .pipe(new LocationCounter(this.eventEmitter))
       .pipe(new IntegratedAlertsNaturalForest(listName, startDate, endDate))
       .pipe(new FormatNumber())
       .pipe(new ConvertObject2CSV(Object.keys(ALERTS_INTEGRATED_NATURAL_FOREST_SERVICE_CSV_HEADER)))
@@ -145,17 +80,34 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
     analysisData?.forEach((data) => this.inputStream.write(data));
   }
   async finish(filters: AlertFieldsFileRequest) {
-    const { listName, listId, startDate, endDate, key } = filters;
-    const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
-    const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
+    const { listId } = filters;
+
     this.logger.log(`(${listId}) - Finished to process result data`);
     await this.writeAllData(this.inputStream);
     await finished(this.fileStream);
     this.fileStream.removeAllListeners();
     this.fileStream.destroy();
+    await this.writeTotalLocationLine(filters);
+  }
+
+  async writeTotalLocationLine(filters: AlertFieldsFileRequest) {
+    const { listName, startDate, endDate, key } = filters;
+
+    const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
+    const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
+    const locationsCount = await this.getListLocationsCount(filters);
+
     fs.appendFileSync(
       `/tmp/wri-${key}/${listName}_${this.suffix}.csv`,
-      `${listName},Total locations,Deforestation (Integrated Alerts),${formattedStartDate},${formattedEndDate},,,,,,${this.totalAccumulator.getTotal()}\n`
+      `${listName},Total locations,Deforestation (Integrated Alerts),${formattedStartDate},${formattedEndDate},,,,,,${locationsCount}\n`
     );
+  }
+
+  private async getListLocationsCount(filters: AlertFieldsFileRequest) {
+    const { organizationDatabase, listId } = filters;
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const listRepository = connection.getRepository(Lists);
+    const { listLocationsCount } = await listRepository.findOne({ where: { id: listId } });
+    return listLocationsCount;
   }
 }

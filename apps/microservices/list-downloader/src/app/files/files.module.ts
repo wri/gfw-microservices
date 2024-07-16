@@ -30,9 +30,10 @@ import { SouthAmericaLossService } from './south.america.loss.service';
 import { SouthEastAsiaOverlapService } from './south.east.asia.overlap.service';
 import { SouthEastAsiaTCLService } from './south.east.asia.tcl.service';
 import { AwsModule } from '@wri-monorepos/aws';
+import { SqlModule } from '@wri-monorepos/sql';
 
 @Module({
-  imports: [AwsModule],
+  imports: [AwsModule, SqlModule],
   providers: [
     AlertsAdminAreasLevelService,
     AlertsFileService,

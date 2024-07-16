@@ -672,9 +672,8 @@ export default class AnalysisPanel extends Component {
         </div>
 
         <MapRecenterButton
-          mapView={this.props.mapView}
+          goToOriginalPoint={this.props.goToOriginalPoint}
           selectedList={this.props.selectedList}
-          search={this.props.search}
         />
       </div>
     );

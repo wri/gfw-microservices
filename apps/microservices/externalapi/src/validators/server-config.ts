@@ -23,8 +23,6 @@ export const serverConfigSchema = z.object({
   LLP_BASE_URL: z.string().url(),
 
   LATEST_COMMIT: z.string().optional(),
-  SWAGGER_USER: z.string(),
-  SWAGGER_PASSWORD: z.string(),
 });
 
 export type ServerConfigType = z.infer<typeof serverConfigSchema>;

@@ -4,6 +4,7 @@ import { argentinaListLevelData, argentinaLocationData } from '../shared/mock.da
 
 import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
+import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 describe('Argentina Overlap Service', () => {
   const argentinaOverlap = new ArgentinaOverlapService();
@@ -30,9 +31,9 @@ describe('Argentina Overlap Service', () => {
   beforeAll(() => {
     argentinaOverlap.startEmail = jest.fn<() => Promise<void>>(() => Promise.resolve());
     argentinaOverlap.errorEmail = jest.fn<() => Promise<void>>(() => Promise.resolve());
-    argentinaOverlap.finishedEmail = jest.fn<(filters: any, location: string) => Promise<void>>(
-      () => Promise.resolve()
-    );
+    argentinaOverlap.finishedEmail = jest.fn<
+      (filters: ListFieldsFileRequest, location: string) => Promise<void>
+    >(() => Promise.resolve());
 
     createDirectory(dir);
   });

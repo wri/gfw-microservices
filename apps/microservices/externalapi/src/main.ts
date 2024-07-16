@@ -25,7 +25,7 @@ async function bootstrap() {
   const port = config.get('PORT', { infer: true });
 
   app.use(
-    ['/api', '/api/profile'],
+    ['/api', '/profile'],
     basicAuth({
       challenge: true,
       // this is the username and password used to authenticate

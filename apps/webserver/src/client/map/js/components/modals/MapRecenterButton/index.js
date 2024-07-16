@@ -22,7 +22,7 @@ const MapRecenterButton = ({ selectedList = [], mapView, search }) => {
     const queryParams = getQueryParams(search);
     const { selectedLocations } = queryParams;
 
-    if(selectedLocations){
+    if (selectedLocations) {
       return selectedLocations;
     }
 

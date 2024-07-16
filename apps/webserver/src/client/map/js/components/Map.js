@@ -2582,7 +2582,7 @@ class Map extends Component {
           landsatYear={this.state.landsatYear}
           search={this.props.location.search}
         />
-        
+
         <Legend
           panelsVisible={panelsVisible}
           canopyDensity={canopyDensity}

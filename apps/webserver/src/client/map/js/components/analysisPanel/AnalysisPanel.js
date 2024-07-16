@@ -452,7 +452,7 @@ export default class AnalysisPanel extends Component {
 
     //TODO: Make sure that when our 'analysis__body__results' is hidden, the whole panel doesn't constrict and get small, we still need to see our cancel button!
     return (
-      <div className='analysis-tools__container'>
+      <div className="analysis-tools__container">
         <div className={className}>
           <ul className="analysis__headers-list" id="layer-panel-nav">
             <FlatButton
@@ -473,7 +473,9 @@ export default class AnalysisPanel extends Component {
                     className={`analysis-header-click ${analysisDisabled ? 'disabled-header' : ''}`}
                   >
                     <use
-                      className={`analysis-header-click ${analysisDisabled ? 'disabled-header' : ''}`}
+                      className={`analysis-header-click ${
+                        analysisDisabled ? 'disabled-header' : ''
+                      }`}
                       xlinkHref="#icon-tab-analysis"
                     />
                   </svg>
@@ -499,7 +501,9 @@ export default class AnalysisPanel extends Component {
               }
             />
           </ul>
-          <div className={`analysis__body__item ${selectedAnalysis === 'analysis' ? '' : 'hidden'}`}>
+          <div
+            className={`analysis__body__item ${selectedAnalysis === 'analysis' ? '' : 'hidden'}`}
+          >
             <ul className="analysis__body__list">
               <li
                 id="draw-active-analysis"
@@ -544,7 +548,9 @@ export default class AnalysisPanel extends Component {
                 />
               </div>
             </div>
-            <div className={`analysis__body__subitem ${activeAnalysis === 'region' ? '' : 'hidden'}`}>
+            <div
+              className={`analysis__body__subitem ${activeAnalysis === 'region' ? '' : 'hidden'}`}
+            >
               <ModalLoader position="absolute" size={60} open={spinnerOn} />
               <SelectAdmin
                 setAdmin={this.setAdmin}
@@ -595,7 +601,9 @@ export default class AnalysisPanel extends Component {
               </p>
             </div>
             <div
-              className={`analysis__headers-list footer-list ${analysisResults.data ? '' : 'hidden'}`}
+              className={`analysis__headers-list footer-list ${
+                analysisResults.data ? '' : 'hidden'
+              }`}
             >
               <div className="analysis__body__results__button">
                 <GfwButton
@@ -616,7 +624,9 @@ export default class AnalysisPanel extends Component {
                           <use xlinkHref="#icon-download" />
                         </svg>
                       </span>
-                      <span className="analysis-footer-label download-data-label">Download Data</span>
+                      <span className="analysis-footer-label download-data-label">
+                        Download Data
+                      </span>
                     </span>
                   }
                 />
@@ -626,7 +636,10 @@ export default class AnalysisPanel extends Component {
                   className="analysis__nav__item-share analysis-footer-click analysis-footer-click-share"
                   icon={
                     <span>
-                      <span className="module-tabs footer-tabs pointer" id="share-footer-icon"></span>
+                      <span
+                        className="module-tabs footer-tabs pointer"
+                        id="share-footer-icon"
+                      ></span>
                       <span className="analysis-footer-label share-label"></span>
                     </span>
                   }
@@ -658,7 +671,11 @@ export default class AnalysisPanel extends Component {
           </div>
         </div>
 
-        <MapRecenterButton mapView={this.view} selectedList={selectedLists} search={this.props.search} />
+        <MapRecenterButton
+          mapView={this.view}
+          selectedList={selectedLists}
+          search={this.props.search}
+        />
       </div>
     );
   }

@@ -25,10 +25,10 @@ describe('MapRecenterButton', () => {
   test('should call goToOriginalPoint when the button is clicked', () => {
     const goToOriginalPointMock = jest.fn();
     render(<MapRecenterButton selectedList={[1]} goToOriginalPoint={goToOriginalPointMock} />);
-    
+
     const button = screen.getByTestId('map-center-button');
     fireEvent.click(button);
-    
+
     expect(goToOriginalPointMock).toHaveBeenCalledTimes(1);
   });
 });

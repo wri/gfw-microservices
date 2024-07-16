@@ -18,6 +18,7 @@
   margin-top: $space-small;
 }
 
+// TODO: delete when removing feature flag
 //////////////////////////
 // List Detail Header
 /////////////////////////
@@ -41,6 +42,7 @@
   }
 
   &__info-container {
+    color: gray;
     max-width: 50%;
   }
 }
@@ -49,6 +51,7 @@
   display: flex;
   flex: 0 0 auto;
   margin-left: auto;
+  padding: 12px;
 
   > div:not(:last-child) {
     margin-right: $space-small;
@@ -90,7 +93,6 @@
   justify-content: space-between;
   padding: $space-medium 0;
   margin-bottom: $space-normal;
-  border-bottom: 1px solid $gfw-light-gray;
 
   &__view {
     margin-right: $space-small;
@@ -262,7 +264,7 @@
     display: flex;
     padding: 0 1rem 0.5rem 1rem;
   }
-
+  // TODO: delete when removing feature flag
   &__button {
     margin-right: 20px;
   }

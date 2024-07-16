@@ -1,0 +1,18 @@
+#list-details-mount:has(.list-details) {
+  height: 100%;
+  background-color: #e5e5e5;
+}
+
+.list-analysis-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid lightgray;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+
+  &__analysis-date {
+    font-size: 12px;
+    color: gray;
+  }
+}

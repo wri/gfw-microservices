@@ -11,7 +11,6 @@ import { SecurityHeaderMiddleware } from './middleware/security-header.middlewar
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
 import { saveSwaggerJsonDocument } from '../swagger-doc/saveSwaggerJson';
-import * as basicAuth from 'express-basic-auth';
 
 const SWAGGER_DISABLED_ENVS: ReadonlyArray<string> = ['staging', 'production'];
 
@@ -23,19 +22,6 @@ async function bootstrap() {
 
   const config = app.get<ConfigService<ServerConfigType, true>>(ConfigService);
   const port = config.get('PORT', { infer: true });
-
-  app.use(
-    ['/api', '/profile'],
-    basicAuth({
-      challenge: true,
-      // this is the username and password used to authenticate
-      users: {
-        [config.get('SWAGGER_USER', { infer: true })]: config.get('SWAGGER_PASSWORD', {
-          infer: true,
-        }),
-      },
-    })
-  );
 
   if (!SWAGGER_DISABLED_ENVS.includes(config.get('NODE_ENV', { infer: true }))) {
     const config = new DocumentBuilder()

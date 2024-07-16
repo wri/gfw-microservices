@@ -8,7 +8,11 @@ import { AlertsSummaryService } from './alerts.summary.service';
 import { AlertsLocationsHistoryService } from './alerts.locations.history.service';
 import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
 import { getAllFilesAndZip } from '../shared/file.utils';
-import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
+import {
+  AlertFieldsFileRequest,
+  ClientStoreConnection,
+  DashboardDataType,
+} from '@wri-monorepos/sql';
 
 jest.mock('../shared/file.utils');
 
@@ -31,7 +35,9 @@ describe('AlertsFileService', () => {
     alertsPrioritiesLocationsLevelService = new AlertsPrioritiesLocationsLevelService();
     alertsSummaryService = new AlertsSummaryService();
     alertsLocationsHistoryService = new AlertsLocationsHistoryService();
-    alertsIntegratedNaturalForestService = new AlertsIntegratedNaturalForestService();
+    alertsIntegratedNaturalForestService = new AlertsIntegratedNaturalForestService(
+      new ClientStoreConnection()
+    );
 
     service = new AlertsFileService(
       alertsAdminAreasLevelService,

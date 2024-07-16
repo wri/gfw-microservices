@@ -5,6 +5,7 @@ import IconButton from '../../../../../common/js/components/IconButton';
 import IconTimes from '../../../../../common/js/components/icon/IconTimes';
 import { locationsPage } from '../../../../../common/js/config';
 import { numberWithCommas } from '../../../../../locations/js/utils/locationsTableUtils';
+import { gfwListNames } from '../../../../../common/js/constants/lists.constants';
 
 const transifex = Transifex.live.translateText;
 
@@ -21,13 +22,7 @@ function LocationsSummary({
   shareView,
   toggleCountriesPopover,
 }) {
-  const isGfwProList = [
-    'Oil Palm Concessions',
-    'RSPO Palm Concessions',
-    'Palm Oil Mills',
-    'Administrative Areas',
-    'Protected Areas',
-  ].includes(listName);
+  const isGfwProList = gfwListNames.includes(listName);
 
   let listLength = 0;
   let countriesSelected = [];

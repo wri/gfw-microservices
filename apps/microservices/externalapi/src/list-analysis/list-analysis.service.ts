@@ -492,7 +492,8 @@ export class ListAnalysisService {
     };
 
     const organizationDetails = await this.getOrganizationDetails(organizationId);
-    const url = geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
+    const analysisLambdaURL =
+      geoTrellisUrlsByEnv[process.env.NODE_ENV] || geoTrellisUrlsByEnv.default;
 
     const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
       organizationDb: organizationDetails.organizationDb,
@@ -544,13 +545,14 @@ export class ListAnalysisService {
       });
       throw new Error(`Analysis limit reached`);
     }
-    const data = {
+    const requestAnalysisPayload = {
       list_id: listId,
       user_id: organization_user_id,
       organization_id: organizationId,
       processing_limit: processingLimit,
       analysis_types: { [analysisId]: true },
       reanalyze: true,
+      send_email: false,
     };
     const connectionLibSql = await this.clientStoreConnection.getConnection(
       organizationDetails.organizationDb
@@ -558,7 +560,7 @@ export class ListAnalysisService {
 
     const activityLogRepository = connectionLibSql.getRepository(ActivityLog);
 
-    const response = await axios.post(url, data, {
+    const response = await axios.post(analysisLambdaURL, requestAnalysisPayload, {
       headers: {
         'Content-Type': 'application/json',
       },

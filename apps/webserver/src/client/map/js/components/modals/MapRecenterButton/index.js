@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { getListMbtileInfo } from '../../../../../common/js/userListLocations/services/userListMbtileInfo.service';
 import { goToUserListLocations } from '../../../../../common/js/userListLocations/utils/userListLocationsMap.util';
 import { DEFAULT_MAPVIEW_CENTER } from '../../../config/map.config';
+import getQueryParams from '../../getQueryParams';
+import { queryAdmin } from '../../../utils/LayerUtils';
 
 import './mapRecenterButton.scss';
 
@@ -17,19 +19,19 @@ const MapRecenterButton = ({ selectedList = [], mapView, search }) => {
       setShowButton(true);
     }
   }, [selectedList]);
-
-  function getListId() {
+  async function getListId() {
     const queryParams = getQueryParams(search);
     const { selectedLocations } = queryParams;
 
     if (selectedLocations) {
-      return selectedLocations;
+      return selectedLocations[0];
     }
 
-    return selectedList[0].id;
+    return selectedLocations[0];
   }
 
   async function getMapInfo() {
+    console.log(getListId(), 'getListId()');
     try {
       const response = await getListMbtileInfo(getListId());
       if (response && response.bounds) {
@@ -58,6 +60,7 @@ const MapRecenterButton = ({ selectedList = [], mapView, search }) => {
           data-testid="map-center-button"
           onClick={centerMap}
           className="gfw-button btn-green center-button"
+          style={{ marginTop: '20px' }}
         >
           <FmdGoodIcon />
           back to location (s)

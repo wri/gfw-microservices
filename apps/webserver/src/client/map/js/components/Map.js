@@ -2581,6 +2581,8 @@ class Map extends Component {
           userInfo={userInfo}
           landsatYear={this.state.landsatYear}
           search={this.props.location.search}
+          selectedList={selectedLists}
+          mapView={this.view}
         />
 
         <Legend

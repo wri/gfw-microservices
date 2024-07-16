@@ -9,6 +9,7 @@ import { parseZip } from './parseZip';
 import { parseXlsx } from './parseXlsx';
 import { locationsPage } from '../../../../common/js/config';
 import { parseKMZAndKMLFile } from '../uploading/UploadLocations.util';
+import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
 
 export default class Upload extends Component {
   constructor(props) {
@@ -50,10 +51,21 @@ export default class Upload extends Component {
           }
         });
       } else {
-        const geom = new Point({
-          latitude: parseInt(feature.Latitude),
-          longitude: parseInt(feature.Longitude),
+        const point = new Point({
+          latitude: parseFloat(feature.Latitude),
+          longitude: parseFloat(feature.Longitude),
         });
+        let radius;
+        if (feature['Analysis Radius']) {
+          radius = parseFloat(feature['Analysis Radius']);
+        } else if (feature['Analysis Area']) {
+          const kilosSquared = feature['Analysis Area'] / 100;
+          radius = Math.sqrt(kilosSquared / Math.PI).toFixed(2);
+        } else {
+          console.warn('missing both radius and area, which is not allowed');
+          radius = 2;
+        }
+        const geom = GeometryEngine.geodesicBuffer(point, radius, 'kilometers');
 
         this.props.setGeometry(geom);
         this.setState({

@@ -45,8 +45,8 @@ export const parseXlsx = (inputFile, activeTemplate) => {
           });
         } else {
           const point = new Point({
-            latitude: parseInt(feature.Latitude),
-            longitude: parseInt(feature.Longitude),
+            latitude: parseFloat(feature.Latitude),
+            longitude: parseFloat(feature.Longitude),
             spatialReference: { wkid: 4326 },
           });
 

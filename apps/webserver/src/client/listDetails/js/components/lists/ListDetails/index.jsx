@@ -2147,7 +2147,6 @@ export default class ListDetails extends Component {
               <Stack
                 className="main-panel"
                 sx={{ marginBottom: '15px' }}
-
                 direction="row"
                 justifyContent="space-between"
                 alignItems="center"

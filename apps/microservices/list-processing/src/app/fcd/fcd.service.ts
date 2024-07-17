@@ -141,9 +141,8 @@ export class FCDService {
           treeCoverLoss = JSON.parse(tree_cover_loss_arg_otbn_yearly);
         }
       } else {
-        treeCoverLoss = JSON.parse(tree_cover_loss_by_country_classified_region_yearly)?.[
-          countryGadm
-        ];
+        treeCoverLoss =
+          JSON.parse(tree_cover_loss_by_country_classified_region_yearly)?.[countryGadm] ?? {};
       }
 
       Object.entries(treeCoverLoss).forEach(([key, value]) => {

@@ -4,7 +4,7 @@ import {
   NotFoundException,
   Logger,
 } from '@nestjs/common';
-import { S3 } from 'aws-sdk';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { DataSource } from 'typeorm';
 import * as uniqId from 'uniqid';
 import { ResponsePreSignedURLModel, ResponseObjectPresignedURLModel } from '../models';
@@ -12,6 +12,7 @@ import { ClientStoreConnection, Lists, ActivityLog, DeleteListTypeOrm } from '@w
 import { LockListService } from '../services/lock.list.service';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from '../validators/server-config';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 class MyObject {
   id: number;
@@ -22,6 +23,7 @@ class MyObject {
 @Injectable()
 export class AppService {
   private readonly logger = new Logger('List processing service');
+  private readonly s3Client: S3Client;
 
   constructor(
     private dataSource: DataSource,
@@ -29,7 +31,9 @@ export class AppService {
     private readonly deleteListTypeOrm: DeleteListTypeOrm,
     private readonly lockListService: LockListService,
     protected readonly config: ConfigService<ServerConfigType, true>
-  ) {}
+  ) {
+    this.s3Client = new S3Client({ region: this.config.get('AWS_REGION', { infer: true }) });
+  }
 
   /**
    *
@@ -37,24 +41,23 @@ export class AppService {
    * @param contentType content type of the file
    * @returns
    */
-  generatePreSignedUrl(
+  async generatePreSignedUrl(
     key: string,
     contentType: string,
     replaceFile = false
-  ): ResponsePreSignedURLModel {
-    const s3 = new S3({ signatureVersion: 'v2' });
+  ): Promise<ResponsePreSignedURLModel> {
     const keyFile = replaceFile ? key : `${uniqId()}-${key}`;
     const largeProcessingListBucket = this.config.get('LARGE_PROCESSING_LIST_BUCKET', {
       infer: true,
     });
 
     const fileS3Route = `s3://${largeProcessingListBucket}/${keyFile}`;
-    const url = s3.getSignedUrl('putObject', {
+    const command = new PutObjectCommand({
       Bucket: largeProcessingListBucket,
       Key: keyFile,
       ContentType: contentType,
-      Expires: 3600,
     });
+    const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
 
     return { url, keyFile, fileS3Route };
   }
@@ -64,13 +67,12 @@ export class AppService {
    * @param key
    * @returns
    */
-  getObjectPreSignedUrl(key: string): ResponseObjectPresignedURLModel {
-    const s3 = new S3({ signatureVersion: 'v4' });
-    const url = s3.getSignedUrl('getObject', {
+  async getObjectPreSignedUrl(key: string): Promise<ResponseObjectPresignedURLModel> {
+    const command = new GetObjectCommand({
       Bucket: this.config.get('LARGE_PROCESSING_LIST_BUCKET', { infer: true }),
       Key: key,
-      Expires: 300,
     });
+    const url = await getSignedUrl(this.s3Client, command, { expiresIn: 300 });
 
     return { url };
   }
@@ -89,6 +91,7 @@ export class AppService {
   getHealthCheck(): string {
     return 'Healthy';
   }
+
   //Deletes a list from Lists table, and list's attribute and analysis table
   async deleteList(
     list_id: number,
@@ -117,7 +120,7 @@ export class AppService {
         organization_user_id
       );
       if (deleteResult) {
-        // Salve log at ActivityLog table
+        // Save log at ActivityLog table
         const activityLog = new ActivityLog();
         activityLog.userId = organization_user_id;
         activityLog.activityTypeId = 21;

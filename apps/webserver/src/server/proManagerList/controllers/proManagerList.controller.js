@@ -42,10 +42,7 @@ const getUserFromQuery = (userId, organizationId, accounts, users) => {
 };
 
 const getAccounFromQuery = (organizationName, organizationId, accounts) => {
-  const selectedAccount = accounts.find(
-    (account) =>
-      account.organization_id === organizationId && account.organization_name === organizationName
-  );
+  const selectedAccount = accounts.find((account) => account.organization_id === organizationId);
   return selectedAccount || null;
 };
 

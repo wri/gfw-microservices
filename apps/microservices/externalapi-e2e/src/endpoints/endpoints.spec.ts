@@ -18,6 +18,17 @@ describe('API Endpoints', () => {
 
       expect(res.status).toBe(200);
       expect(res.data).toBeTruthy();
+      expect(Array.isArray(res.data)).toBe(true);
+      res.data.forEach((item) => {
+        expect(item).toHaveProperty('listId');
+        expect(item).toHaveProperty('listName');
+        expect(item).toHaveProperty('locationCount');
+        expect(typeof item).toBe('object');
+        expect(typeof item.listId).toBe('number');
+        expect(typeof item.listName).toBe('string');
+        expect(typeof item.locationCount).toBe('number');
+        expect(item).not.toBeNull();
+      });
     }, 10000);
 
     it('should return the list details', async () => {
@@ -29,6 +40,13 @@ describe('API Endpoints', () => {
 
       expect(res.status).toBe(200);
       expect(res.data).toBeTruthy();
+      expect(res.data).toHaveProperty('listId');
+      expect(typeof res.data.listId).toBe('number');
+      expect(res.data.listId).toBe(parseInt(list));
+      expect(res.data).toHaveProperty('listName');
+      expect(typeof res.data.listName).toBe('string');
+      expect(res.data).toHaveProperty('locationCount');
+      expect(typeof res.data.locationCount).toBe('number');
     }, 10000);
 
     it('should return the alerts analysis status', async () => {
@@ -40,6 +58,20 @@ describe('API Endpoints', () => {
 
       expect(res.status).toBe(200);
       expect(res.data).toBeTruthy();
+      expect(res.data).toHaveProperty('listId');
+      expect(typeof res.data.listId).toBe('string');
+      expect(res.data.listId).toBe(list);
+      expect(typeof res.data.status).toBe('string');
+      if (res.data.status === 'Expired') {
+        expect(res.data).toHaveProperty('errorsDetails');
+        expect(res.data).toHaveProperty('resultUrl');
+        expect(res.data).toHaveProperty('creationDate');
+        expect(res.data).toHaveProperty('expirationDate');
+        expect(typeof res.data.errorDetails).toBe('undefined');
+        expect(typeof res.data.resultUrl).toBe('object');
+        expect(typeof res.data.creationDate).toBe('object');
+        expect(typeof res.data.expirationDate).toBe('object');
+      }
     }, 10000);
 
     it('should return the FCD analysis status', async () => {
@@ -51,6 +83,20 @@ describe('API Endpoints', () => {
 
       expect(res.status).toBe(200);
       expect(res.data).toBeTruthy();
+      expect(res.data).toHaveProperty('listId');
+      expect(typeof res.data.listId).toBe('string');
+      expect(res.data.listId).toBe(list);
+      expect(typeof res.data.status).toBe('string');
+      if (res.data.status === 'Expired') {
+        expect(res.data).toHaveProperty('errorsDetails');
+        expect(res.data).toHaveProperty('resultUrl');
+        expect(res.data).toHaveProperty('creationDate');
+        expect(res.data).toHaveProperty('expirationDate');
+        expect(typeof res.data.errorDetails).toBe('undefined');
+        expect(typeof res.data.resultUrl).toBe('object');
+        expect(typeof res.data.creationDate).toBe('object');
+        expect(typeof res.data.expirationDate).toBe('object');
+      }
     }, 10000);
   });
 
@@ -123,6 +169,10 @@ describe('API Endpoints', () => {
         expect(prepareUploadRes.status).toBe(201);
         expect(prepareUploadRes.data).toHaveProperty('uploadUrl');
         expect(prepareUploadRes.data).toHaveProperty('uploadId');
+        expect(prepareUploadRes.data).toHaveProperty('uploadDateTime');
+        expect(typeof prepareUploadRes.data.uploadUrl).toBe('string');
+        expect(typeof prepareUploadRes.data.uploadId).toBe('string');
+        expect(typeof prepareUploadRes.data.uploadDateTime).toBe('string');
       },
       10 * 1000
     );
@@ -169,6 +219,16 @@ describe('API Endpoints', () => {
 
         expect(uploadNewRes.status).toBe(201);
         expect(uploadNewRes.data).toBeTruthy();
+        expect(uploadNewRes.data).toHaveProperty('uploadId');
+        expect(uploadNewRes.data).toHaveProperty('listId');
+        expect(uploadNewRes.data).toHaveProperty('status');
+        expect(uploadNewRes.data).toHaveProperty('errorDetails');
+        expect(uploadNewRes.data).toHaveProperty('creationDate');
+        expect(typeof uploadNewRes.data.uploadId).toBe('string');
+        expect(typeof uploadNewRes.data.listId).toBe('string');
+        expect(typeof uploadNewRes.data.status).toBe('string');
+        expect(typeof uploadNewRes.data.errorDetails).toBe('string');
+        expect(typeof uploadNewRes.data.creationDate).toBe('string');
       },
       40 * 1000
     );
@@ -192,6 +252,9 @@ describe('API Endpoints', () => {
 
         expect(res.status).toBe(201);
         expect(res.data).toBeTruthy();
+        expect(res.data).toHaveProperty('message');
+        expect(typeof res.data.message).toBe('string');
+        expect(res.data.message).toMatch(email);
       },
       30 * 1000
     );

@@ -219,6 +219,36 @@ export default class Diagnostics extends Component {
     );
   };
 
+  getSingleLocationData = async () => {
+    const { selectedList, spatialData, selectedLocations, isGfwList, isSharedList } = this.props;
+
+    if(Array.isArray(spatialData[0])) {
+      return spatialData;
+    }
+
+    return fetch(`/diagnostics/${selectedList.id}`, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        locationId: selectedLocations[0] || '',
+        isSharedList,
+        isGfwList,
+      }),
+    })
+      .then((res) => res.json())
+      .then((diagnosticsData) => {
+        const {
+          spatialData,
+        } = diagnosticsData;
+
+        return spatialData
+      })
+
+  }
+
   addMapGraphics = async () => {
     const { selectedList, spatialData, selectedLocations, isGfwList } = this.props;
     const { id, list_name: listName } = selectedList;
@@ -251,8 +281,10 @@ export default class Diagnostics extends Component {
         }
       });
     } else {
-      // List Single Locations selected
-      spatialData.forEach((result) => {
+      console.log(selectedLocations, "selectedLocations");
+      const data = await this.getSingleLocationData();
+      console.log(data)
+      data.forEach((result) => {
         const esriJson = geojsonUtil.geojsonToArcGIS(result.geometry);
         const poly = new Polygon({
           rings: esriJson.rings,

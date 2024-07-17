@@ -1,6 +1,6 @@
 import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
 import * as XLSX from 'xlsx';
-import Point from '@arcgis/core/geometry/Point';
+import { geomFromLatLongRadiusArea } from './geomFromPoint';
 import { geocodeMill } from './geocodeMill';
 import { locationsPage } from '../../../../common/js/config';
 
@@ -44,28 +44,12 @@ export const parseXlsx = (inputFile, activeTemplate) => {
             }
           });
         } else {
-          const point = new Point({
-            latitude: parseFloat(feature.Latitude),
-            longitude: parseFloat(feature.Longitude),
-            spatialReference: { wkid: 4326 },
-          });
-
-          let geom;
-          if (feature['Analysis Radius']) {
-            geom = GeometryEngine.geodesicBuffer(
-              point,
-              parseFloat(feature['Analysis Radius']),
-              'kilometers'
-            );
-          } else if (feature['Analysis Area']) {
-            const kilosSquared = feature['Analysis Area'] / 100;
-            const kilos = Math.sqrt(kilosSquared / Math.PI);
-            geom = GeometryEngine.geodesicBuffer(point, kilos.toFixed(2), 'kilometers');
-          } else {
-            console.warn('missing both radius and area, which is not allowed');
-            geom = GeometryEngine.geodesicBuffer(point, 2, 'kilometers');
-          }
-
+          const geom = geomFromLatLongRadiusArea(
+            feature.Latitude,
+            feature.Longitude,
+            feature['Analysis Radius'],
+            feature['Analysis Area']
+          );
           if (!geom) {
             reject({
               isUploading: false,

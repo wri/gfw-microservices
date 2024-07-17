@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Point from '@arcgis/core/geometry/Point';
 import Papa from 'papaparse';
 import FileDrop from '../uploading/FileDrop';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
@@ -7,9 +6,9 @@ import { maxLocations, maxFileSizeMB } from '../../utils/upload.utils';
 import { geocodeMill } from './geocodeMill';
 import { parseZip } from './parseZip';
 import { parseXlsx } from './parseXlsx';
+import { parseKMZAndKMLFile } from './parseKmzKml';
 import { locationsPage } from '../../../../common/js/config';
-import { parseKMZAndKMLFile } from '../uploading/UploadLocations.util';
-import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
+import { geomFromLatLongRadiusArea } from './geomFromPoint';
 
 export default class Upload extends Component {
   constructor(props) {
@@ -51,21 +50,12 @@ export default class Upload extends Component {
           }
         });
       } else {
-        const point = new Point({
-          latitude: parseFloat(feature.Latitude),
-          longitude: parseFloat(feature.Longitude),
-        });
-        let radius;
-        if (feature['Analysis Radius']) {
-          radius = parseFloat(feature['Analysis Radius']);
-        } else if (feature['Analysis Area']) {
-          const kilosSquared = feature['Analysis Area'] / 100;
-          radius = Math.sqrt(kilosSquared / Math.PI).toFixed(2);
-        } else {
-          console.warn('missing both radius and area, which is not allowed');
-          radius = 2;
-        }
-        const geom = GeometryEngine.geodesicBuffer(point, radius, 'kilometers');
+        const geom = geomFromLatLongRadiusArea(
+          feature.Latitude,
+          feature.Longitude,
+          feature['Analysis Radius'],
+          feature['Analysis Area']
+        );
 
         this.props.setGeometry(geom);
         this.setState({
@@ -129,7 +119,7 @@ export default class Upload extends Component {
         Papa.parse(inputFile, config);
         break;
       case 'zip':
-        parseZip(file, this.state.stateOriginalGeometry).then((result) => {
+        parseZip(file).then((result) => {
           if (result.geom) {
             this.props.setGeometry(result.geom);
           }

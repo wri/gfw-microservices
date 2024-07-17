@@ -222,7 +222,7 @@ export default class Diagnostics extends Component {
   getSingleLocationData = async () => {
     const { selectedList, spatialData, selectedLocations, isGfwList, isSharedList } = this.props;
 
-    if(Array.isArray(spatialData[0])) {
+    if (Array.isArray(spatialData[0])) {
       return spatialData;
     }
 
@@ -240,14 +240,11 @@ export default class Diagnostics extends Component {
     })
       .then((res) => res.json())
       .then((diagnosticsData) => {
-        const {
-          spatialData,
-        } = diagnosticsData;
+        const { spatialData } = diagnosticsData;
 
-        return spatialData
-      })
-
-  }
+        return spatialData;
+      });
+  };
 
   addMapGraphics = async () => {
     const { selectedList, spatialData, selectedLocations, isGfwList } = this.props;
@@ -281,9 +278,9 @@ export default class Diagnostics extends Component {
         }
       });
     } else {
-      console.log(selectedLocations, "selectedLocations");
+      console.log(selectedLocations, 'selectedLocations');
       const data = await this.getSingleLocationData();
-      console.log(data)
+      console.log(data);
       data.forEach((result) => {
         const esriJson = geojsonUtil.geojsonToArcGIS(result.geometry);
         const poly = new Polygon({

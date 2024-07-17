@@ -10,8 +10,7 @@ const envModule = ConfigModule.forRoot({
 });
 
 import { Module } from '@nestjs/common';
-import { config as awsConfig } from 'aws-sdk';
-
+import { S3Client } from '@aws-sdk/client-s3';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DeleteListTypeOrm, SqlModule, TypeOrmSystemModule } from '@wri-monorepos/sql';
@@ -53,13 +52,15 @@ import { AwsModule } from '@wri-monorepos/aws';
     LockListService,
     DeleteListTypeOrm,
     {
-      provide: '',
+      provide: 'S3Client',
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ServerConfigType, true>) => {
-        awsConfig.update({
-          accessKeyId: configService.get('AWS_ACCESS_KEY_ID', { infer: true }),
-          secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY', { infer: true }),
+        return new S3Client({
           region: configService.get('AWS_REGION', { infer: true }),
+          credentials: {
+            accessKeyId: configService.get('AWS_ACCESS_KEY_ID', { infer: true }),
+            secretAccessKey: configService.get('AWS_SECRET_ACCESS_KEY', { infer: true }),
+          },
         });
       },
     },

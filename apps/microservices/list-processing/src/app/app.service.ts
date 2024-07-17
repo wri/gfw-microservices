@@ -59,7 +59,7 @@ export class AppService {
     });
     const url = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
 
-    return { url, keyFile, fileS3Route };
+    return { url, keyFile, fileS3Route } as const;
   }
 
   /**

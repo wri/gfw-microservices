@@ -291,6 +291,22 @@ module.exports = (app, limiter) => {
     runEAPIMicroserviceRequest,
   ]);
 
+  eapiRoutes.post('', (req, res, next) => {
+    // this route is used to create a new api key empty body due to the fact that the request body is not used
+    const requestOrganizationId = req.session.organization_id;
+    const requestUserId = req.session.organization_user_id;
+    const request = {
+      method: 'POST',
+      url: '/api-keys',
+      data: {
+        organizationId: requestOrganizationId,
+        userId: requestUserId,
+      },
+    };
+
+    next(request);
+  });
+
   eapiRoutes.get('', (req, res, next) => {
     const requestOrganizationId = req.session.organization_id;
 

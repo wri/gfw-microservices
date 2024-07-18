@@ -240,6 +240,12 @@ module.exports = (app, limiter) => {
     return EAPI_MICROSERVICE_URL;
   };
 
+  const getEAPISwaggerUrl = () => {
+    // URL Should be the full URL to the EAPI Microservice ending with /api
+    const { EAPI_SWAGGER_URL } = process.env;
+    return EAPI_SWAGGER_URL;
+  };
+
   const runEAPIMicroserviceRequest = async (requestData, request, response, next) => {
     const { method, url, data } = requestData;
     const requestURL = `${getEAPIMicroserviceUrl()}${url}`;
@@ -259,27 +265,31 @@ module.exports = (app, limiter) => {
     }
   };
 
+  const runSwaggerRequest = async (request, response) => {
+    const requestURL = `${getEAPISwaggerUrl()}`;
+    try {
+      const { data: result } = await axios({
+        url: requestURL,
+        method: 'GET',
+        headers: {
+          'Content-type': 'application/json',
+        }
+      });
+      return response.status(200).send(result);
+    } catch (err) {
+      const { status: statusCode = 500, data: error = err } = err.response || {};
+      return response.status(statusCode).send(error);
+    }
+  };
+
+  app.get(`${API_BASE_URL}/swagger`, runSwaggerRequest);
+
+
   app.use(`${API_BASE_URL}/api-keys`, [
     ...routeMiddlewares,
     eapiRoutes,
     runEAPIMicroserviceRequest,
   ]);
-
-  eapiRoutes.post('', (req, res, next) => {
-    // this route is used to create a new api key empty body due to the fact that the request body is not used
-    const requestOrganizationId = req.session.organization_id;
-    const requestUserId = req.session.organization_user_id;
-    const request = {
-      method: 'POST',
-      url: '/api-keys',
-      data: {
-        organizationId: requestOrganizationId,
-        userId: requestUserId,
-      },
-    };
-
-    next(request);
-  });
 
   eapiRoutes.get('', (req, res, next) => {
     const requestOrganizationId = req.session.organization_id;

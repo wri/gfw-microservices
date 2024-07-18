@@ -241,7 +241,6 @@ module.exports = (app, limiter) => {
   };
 
   const getEAPISwaggerUrl = () => {
-    // URL Should be the full URL to the EAPI Microservice ending with /api
     const { EAPI_SWAGGER_URL } = process.env;
     return EAPI_SWAGGER_URL;
   };
@@ -273,7 +272,7 @@ module.exports = (app, limiter) => {
         method: 'GET',
         headers: {
           'Content-type': 'application/json',
-        }
+        },
       });
       return response.status(200).send(result);
     } catch (err) {
@@ -283,7 +282,6 @@ module.exports = (app, limiter) => {
   };
 
   app.get(`${API_BASE_URL}/swagger`, runSwaggerRequest);
-
 
   app.use(`${API_BASE_URL}/api-keys`, [
     ...routeMiddlewares,

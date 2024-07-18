@@ -1,11 +1,12 @@
 import { ConfigService } from '@nestjs/config';
 import { Logger, Injectable } from '@nestjs/common';
 import { SqsMessageHandler, SqsService } from '@ssut/nestjs-sqs';
-import * as AWS from '@aws-sdk/client-sqs';
+
 import { AWS_ANALYSIS_QUEUE_IDENTIFIER, AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { RemoveSQSMessage, generateRandomFilename } from '@wri-monorepos/shared';
 import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
+import { Message } from '@aws-sdk/client-sqs';
 
 const SUCCESS_STATUS = 2;
 
@@ -20,7 +21,7 @@ export class AnalysisMessageHandler {
   ) {}
 
   @SqsMessageHandler(AWS_ANALYSIS_QUEUE_IDENTIFIER, true)
-  async handleMessage(messages: Array<AWS.Message>) {
+  async handleMessage(messages: Array<Message>) {
     const [message] = messages;
     try {
       // Body example from: https://gfw.atlassian.net/browse/GPV-1570

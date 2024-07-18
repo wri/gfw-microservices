@@ -133,7 +133,7 @@ export class FCDService {
       this.logger.error(`error converting json object: ${error}`);
     }
 
-    const tree_cover_loss = {};
+    let tree_cover_loss = {};
     try {
       let treeCoverLoss = {};
       if (!tree_cover_loss_by_country_classified_region_yearly) {
@@ -145,9 +145,13 @@ export class FCDService {
           JSON.parse(tree_cover_loss_by_country_classified_region_yearly)?.[countryGadm] ?? {};
       }
 
-      Object.entries(treeCoverLoss).forEach(([key, value]) => {
-        tree_cover_loss[key] = this.toApproximateValueFormat(value);
-      });
+      if (countryGadm === 'COL') {
+        tree_cover_loss = this.transformTreeCoverLossForColombia(treeCoverLoss);
+      } else {
+        for (const [key, value] of Object.entries(treeCoverLoss)) {
+          tree_cover_loss[key] = this.toApproximateValueFormat(value);
+        }
+      }
     } catch (error) {
       this.logger.error(`error converting json object: ${error}`);
     }
@@ -424,5 +428,21 @@ export class FCDService {
         approximateValue: /approx/.test(key),
       }))
       .sort((a, b) => a.year - b.year);
+  }
+
+  private transformTreeCoverLossForColombia(treeCoverLoss) {
+    const result = {};
+
+    for (const [key, value] of Object.entries(treeCoverLoss)) {
+      const [mainKey, subKey] = key.split(';').map((k) => k.trim());
+
+      if (!result[mainKey]) {
+        result[mainKey] = {};
+      }
+
+      result[mainKey][subKey] = this.toApproximateValueFormat(value);
+    }
+
+    return result;
   }
 }

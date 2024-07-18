@@ -41,8 +41,7 @@ const profileTabs = {
       }
     : {}),
   ...(isPermanentFlagForExternalApiKeysAvailable
-    ? 
-      {
+    ? {
         apiDocs: {
           id: 'api-docs',
           icon: 'api',

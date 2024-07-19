@@ -106,6 +106,7 @@ export class FCDService {
       country_specific_deforestation_classified_region_yearly,
       tree_cover_loss_arg_otbn_yearly,
       arg_otbn_area,
+      tree_cover_loss_by_country_classified_region_yearly,
     } = await this.getAnnualLossData({
       clientDatabase,
       locationId,
@@ -114,6 +115,7 @@ export class FCDService {
         AnnualLossFcdFields.COUNTRY_SPECIFIC_DEFORESTATION_CLASSIFIED_REGION_YEARLY,
         AnnualLossFcdFields.TREE_COVER_LOSS_ARG_OTBN_YEARLY,
         AnnualLossFcdFields.ARG_OTBN_AREA,
+        AnnualLossFcdFields.TREE_COVER_LOSS_BY_COUNTRY_CLASSIFIED_REGION_YEARLY,
       ],
     });
 
@@ -133,7 +135,16 @@ export class FCDService {
 
     const tree_cover_loss = {};
     try {
-      const treeCoverLoss = JSON.parse(tree_cover_loss_arg_otbn_yearly);
+      let treeCoverLoss = {};
+      if (!tree_cover_loss_by_country_classified_region_yearly) {
+        if (countryGadm === 'ARG') {
+          treeCoverLoss = JSON.parse(tree_cover_loss_arg_otbn_yearly);
+        }
+      } else {
+        treeCoverLoss =
+          JSON.parse(tree_cover_loss_by_country_classified_region_yearly)?.[countryGadm] ?? {};
+      }
+
       Object.entries(treeCoverLoss).forEach(([key, value]) => {
         tree_cover_loss[key] = this.toApproximateValueFormat(value);
       });

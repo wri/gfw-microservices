@@ -2,12 +2,12 @@ import axios from 'axios';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
 import SpatialReference from '@arcgis/core/geometry/SpatialReference';
 import Polygon from '@arcgis/core/geometry/Polygon';
-import * as GeometryEngine from '@arcgis/core/geometry/geometryEngine';
+import { geomFromPointRadiusArea } from './geomFromPoint';
 import * as projection from '@arcgis/core/geometry/projection.js';
 import { discernProjection } from '../../utils/upload.utils';
 import { locationsPage, convertURL } from '../../../../common/js/config';
 
-export const parseZip = (file, stateOriginalGeometry) => {
+export const parseZip = (file) => {
   return discernProjection(file)
     .then((projDefs) => {
       if (!projDefs[0]) {
@@ -42,24 +42,11 @@ export const parseZip = (file, stateOriginalGeometry) => {
                     spatialReference: oldSpatialRef,
                   };
                   const projectedCenterPoint = projection.project(centerPoint, newSpatialRef);
-                  // buffer the point into a poly based off of Analysis_R/Analysis_A and setGeometry of that poly!
-                  if (feat.properties.Analysis_R) {
-                    geom = GeometryEngine.geodesicBuffer(
-                      projectedCenterPoint,
-                      parseFloat(feat.properties.Analysis_R),
-                      'kilometers'
-                    );
-                  } else if (feat.properties.Analysis_A) {
-                    const kilosSquared = feat.properties.Analysis_A / 100;
-                    const kilos = Math.sqrt(kilosSquared / Math.PI);
-                    geom = GeometryEngine.geodesicBuffer(
-                      projectedCenterPoint,
-                      kilos.toFixed(2),
-                      'kilometers'
-                    );
-                  } else {
-                    geom = GeometryEngine.geodesicBuffer(projectedCenterPoint, 4, 'kilometers'); // Medium Buffer
-                  }
+                  geom = geomFromPointRadiusArea(
+                    projectedCenterPoint,
+                    feat.properties.Analysis_R,
+                    feat.properties.Analysis_A
+                  );
                 }
 
                 return { geom, isUploading: false };

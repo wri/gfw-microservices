@@ -74,7 +74,9 @@ import layerInfoCache from '../utils/layerInfoCache';
 import { layerFactory } from '../utils/LayerFactory';
 import { identifyPoints, queryAdmin, queryExtent } from '../utils/LayerUtils';
 import { getBBoxAndGeostoreIDs, getVectorTileStyle } from '../utils/gfw-api.utils';
-import setVectorTileLayerForFilteredList from '../utils/setVectorTileLayerForFilteredList';
+import setVectorTileLayerForFilteredList, {
+  goToFilteredListMapView,
+} from '../utils/setVectorTileLayerForFilteredList';
 import setVectorTileLayerForFullList from '../utils/setVectorTileLayerForFullList';
 import { getLocationGeometry } from '../utils/map.utils';
 import { constructLayerObject } from '../../../common/js/utils/layer.utils';
@@ -110,7 +112,6 @@ import {
 
 import viirsLayer, { fetchViirsFeatures } from '../layers/VIIRSLayerUtil';
 import { getProdesUpdatedVectorTileStyle } from '../layers/Prodes_LayerUtil';
-import MapRecenterButton from './modals/MapRecenterButton';
 
 // Configs
 import {
@@ -172,6 +173,8 @@ class Map extends Component {
     super(props);
 
     this.mapView;
+
+    this.goToOriginalPoint;
 
     // Track Active and Custom GFW Layer
     this.activeGFWLayer;
@@ -686,6 +689,13 @@ class Map extends Component {
     this.addProLayers(view);
     this.addCustomBasemaps(view);
     this.view = view;
+
+    this.goToOriginalPoint = () =>
+      this.view.goTo({
+        center: DEFAULT_MAPVIEW_CENTER,
+        zoom: 3,
+      });
+
     const customActions = [popupAnalyzeAction];
     if (access_level_id !== 3) {
       customActions.push(popupSubscribeAction);
@@ -1894,6 +1904,8 @@ class Map extends Component {
               })
             );
             this.view.goTo(adminArea);
+            this.goToOriginalPoint = () => this.view.goTo(adminArea);
+
             this.analyzeAdmin(adminArea);
 
             store.dispatch(
@@ -1961,7 +1973,6 @@ class Map extends Component {
           console.log('LIST DATA IS NOT AVAILABLE');
         } else {
           const selectedListData = JSON.parse(request.responseText);
-
           if (selectedLocations?.length) {
             const feats = selectedListData[0].features;
 
@@ -1975,11 +1986,22 @@ class Map extends Component {
               },
             ];
             const { transitionListData } = this.state;
+            this.goToOriginalPoint = () =>
+              setVectorTileLayerForFilteredList(
+                selectedLocationsData,
+                transitionListData,
+                this.view
+              );
+
             setVectorTileLayerForFilteredList(selectedLocationsData, transitionListData, this.view);
             store.dispatch(addList(userList));
             return;
           }
           const { transitionListData } = this.state;
+
+          this.goToOriginalPoint = () =>
+            setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
+
           setVectorTileLayerForFullList(selectedListData, transitionListData, this.view);
           store.dispatch(addList(userList));
         }
@@ -2067,6 +2089,7 @@ class Map extends Component {
     if (visibleLayers?.length) {
       hashLayersToAdd.push(...visibleLayers);
     }
+
     if (hashLayersToAdd.length > 0) {
       hashLayersToAdd.forEach((layer) => {
         store.dispatch(toggleLayer(layer));
@@ -2581,8 +2604,10 @@ class Map extends Component {
           setLocationName={this.setLocationName}
           userInfo={userInfo}
           landsatYear={this.state.landsatYear}
+          selectedList={selectedLists}
+          goToOriginalPoint={this.goToOriginalPoint}
         />
-        <MapRecenterButton mapView={this.view} selectedList={selectedLists} />
+
         <Legend
           panelsVisible={panelsVisible}
           canopyDensity={canopyDensity}

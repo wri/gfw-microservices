@@ -28,6 +28,7 @@ import _intersection from 'lodash/intersection';
 import GfwButton from '../../../../common/js/components/GfwButton';
 import GfwSelect from '../../../../common/js/components/GfwSelect';
 import { PlanetTilesOptions } from './PlanetTilesOptions/PlanetTilesOptions';
+import MapRecenterButton from '../modals/MapRecenterButton';
 
 import store from '../../store';
 import { PLANET_BASEMAP } from '../../config/map.config';
@@ -451,209 +452,229 @@ export default class AnalysisPanel extends Component {
 
     //TODO: Make sure that when our 'analysis__body__results' is hidden, the whole panel doesn't constrict and get small, we still need to see our cancel button!
     return (
-      <div className={className}>
-        <ul className="analysis__headers-list" id="layer-panel-nav">
-          <FlatButton
-            onClick={this.toggleAnalysis}
-            id="analysisHeader"
-            className={`analysis__nav__item analysis-header-click ${
-              selectedAnalysis === 'analysis' ? 'selected-analysis' : ''
-            } ${analysisDisabled ? 'disabled-analysis disabled-header' : ''}`}
-            label=""
-            icon={
-              <span
-                className={`module-tabs header-tabs analysis-header-click ${
-                  analysisDisabled ? 'disabled-header' : ''
-                }`}
-                id="analysis-header-icon"
-              >
-                <svg
-                  className={`analysis-header-click ${analysisDisabled ? 'disabled-header' : ''}`}
+      <div className="analysis-tools__container">
+        <div className={className}>
+          <ul className="analysis__headers-list" id="layer-panel-nav">
+            <FlatButton
+              onClick={this.toggleAnalysis}
+              id="analysisHeader"
+              className={`analysis__nav__item analysis-header-click ${
+                selectedAnalysis === 'analysis' ? 'selected-analysis' : ''
+              } ${analysisDisabled ? 'disabled-analysis disabled-header' : ''}`}
+              label=""
+              icon={
+                <span
+                  className={`module-tabs header-tabs analysis-header-click ${
+                    analysisDisabled ? 'disabled-header' : ''
+                  }`}
+                  id="analysis-header-icon"
                 >
-                  <use
+                  <svg
                     className={`analysis-header-click ${analysisDisabled ? 'disabled-header' : ''}`}
-                    xlinkHref="#icon-tab-analysis"
-                  />
-                </svg>
-              </span>
-            }
-          />
-          <FlatButton
-            onClick={this.toggleAnalysis}
-            id="basemapHeader"
-            className={`analysis__nav__item basemap-header-click ${
-              selectedAnalysis === 'basemap' ? 'selected-analysis' : ''
-            }`}
-            label=""
-            icon={
-              <span
-                className="module-tabs header-tabs pointer basemap-header-click"
-                id="basemap-header-icon"
-              >
-                <svg className="basemap-header-click">
-                  <use className="basemap-header-click" xlinkHref="#icon-basemap" />
-                </svg>
-              </span>
-            }
-          />
-        </ul>
-        <div className={`analysis__body__item ${selectedAnalysis === 'analysis' ? '' : 'hidden'}`}>
-          <ul className="analysis__body__list">
-            <li
-              id="draw-active-analysis"
-              onClick={this.changeActive}
-              className={`analysis__body__subtitle ${
-                analysisResults.data && activeAnalysis !== 'draw' ? 'disabled-analysis' : ''
-              } ${activeAnalysis === 'draw' ? 'active-analysis' : ''}`}
-            >
-              {mapPage.drawTitle}
-            </li>
-            <li
-              id="region-active-analysis"
-              onClick={this.changeActive}
-              className={`analysis__body__subtitle ${
-                analysisResults.data && activeAnalysis !== 'region' ? 'disabled-analysis' : ''
-              } ${activeAnalysis === 'region' ? 'active-analysis' : ''}`}
-            >
-              {mapPage.countryTitle}
-            </li>
+                  >
+                    <use
+                      className={`analysis-header-click ${
+                        analysisDisabled ? 'disabled-header' : ''
+                      }`}
+                      xlinkHref="#icon-tab-analysis"
+                    />
+                  </svg>
+                </span>
+              }
+            />
+            <FlatButton
+              onClick={this.toggleAnalysis}
+              id="basemapHeader"
+              className={`analysis__nav__item basemap-header-click ${
+                selectedAnalysis === 'basemap' ? 'selected-analysis' : ''
+              }`}
+              label=""
+              icon={
+                <span
+                  className="module-tabs header-tabs pointer basemap-header-click"
+                  id="basemap-header-icon"
+                >
+                  <svg className="basemap-header-click">
+                    <use className="basemap-header-click" xlinkHref="#icon-basemap" />
+                  </svg>
+                </span>
+              }
+            />
           </ul>
-          <div className={`analysis__body__cancel__button ${spinnerOn ? '' : 'hidden'}`}>
-            <GfwButton
-              classNames="AnalysisPanel__button btn-red text__semi-bold-12"
-              value="Cancel Analysis"
-              onClick={() => cancelAnalysis()}
-            />
-          </div>
           <div
-            className={`analysis__body__subitem ${
-              activeAnalysis === 'draw' && !analysisResults.data ? '' : 'hidden'
-            }`}
+            className={`analysis__body__item ${selectedAnalysis === 'analysis' ? '' : 'hidden'}`}
           >
-            <div className="analysis__body__instructions">
-              <ModalLoader position="absolute" size={60} open={spinnerOn} />
-              {mapPage.drawInstructions}
-            </div>
-            <div className="analysis__body__draw__button">
-              <GfwButton
-                classNames="AnalysisPanel__button btn-green text__semi-bold-12"
-                value={drawingLabel}
-                onClick={this.startDrawing}
-              />
-            </div>
-          </div>
-          <div className={`analysis__body__subitem ${activeAnalysis === 'region' ? '' : 'hidden'}`}>
-            <ModalLoader position="absolute" size={60} open={spinnerOn} />
-            <SelectAdmin
-              setAdmin={this.setAdmin}
-              analysisResults={analysisResults}
-              analyzeAdmin={analyzeAdmin}
-              adminSelections={adminSelections}
-              subscribeAdmin={this.subscribeAdmin}
-            />
-          </div>
-          <div
-            className={`analysis__body__results ${
-              analysisResults.data && spinnerOn === false ? '' : 'hidden'
-            }`}
-          >
-            <p className="analysis__body__results__label">
-              {totalLabel} {totalCountLabel}
-            </p>
-            <p className="analysis__body__results__value">
-              {isNaN(totalSelected.toString().replace(/[,]+/g, ''))
-                ? 'Not Available'
-                : `${totalSelected} ha`}
-            </p>
-            <p className="analysis__body__results__label">
-              {utils.setValueLabel(valueLabel, this.props)}
-            </p>
-            <p className="analysis__body__results__value loss-value">
-              {isNaN(value.toString().replace(/[,]+/g, ''))
-                ? 'Not Available'
-                : utils.setValue(valueLabel, value)}
-            </p>
-            {additionalLabel ? (
-              <p className="analysis__body__results__label">{additionalLabel}</p>
-            ) : null}
-            {additionalValue ? (
-              <p className="analysis__body__results__value loss-value">{additionalValue}</p>
-            ) : null}
-            <p className="analysis__body__results__value warning-message">
-              {mapPage.algorithmDisclaimer}
-            </p>
-            <p className="analysis__body__results__value warning-message">
-              {mapPage.noteDisclaimer}{' '}
-              <span
-                className="pointer link"
-                onClick={() => store.dispatch(toggleDrawShapeNoteDetailsModal())}
+            <ul className="analysis__body__list">
+              <li
+                id="draw-active-analysis"
+                onClick={this.changeActive}
+                className={`analysis__body__subtitle ${
+                  analysisResults.data && activeAnalysis !== 'draw' ? 'disabled-analysis' : ''
+                } ${activeAnalysis === 'draw' ? 'active-analysis' : ''}`}
               >
-                Learn more.
-              </span>
-            </p>
+                {mapPage.drawTitle}
+              </li>
+              <li
+                id="region-active-analysis"
+                onClick={this.changeActive}
+                className={`analysis__body__subtitle ${
+                  analysisResults.data && activeAnalysis !== 'region' ? 'disabled-analysis' : ''
+                } ${activeAnalysis === 'region' ? 'active-analysis' : ''}`}
+              >
+                {mapPage.countryTitle}
+              </li>
+            </ul>
+            <div className={`analysis__body__cancel__button ${spinnerOn ? '' : 'hidden'}`}>
+              <GfwButton
+                classNames="AnalysisPanel__button btn-red text__semi-bold-12"
+                value="Cancel Analysis"
+                onClick={() => cancelAnalysis()}
+              />
+            </div>
+            <div
+              className={`analysis__body__subitem ${
+                activeAnalysis === 'draw' && !analysisResults.data ? '' : 'hidden'
+              }`}
+            >
+              <div className="analysis__body__instructions">
+                <ModalLoader position="absolute" size={60} open={spinnerOn} />
+                {mapPage.drawInstructions}
+              </div>
+              <div className="analysis__body__draw__button">
+                <GfwButton
+                  classNames="AnalysisPanel__button btn-green text__semi-bold-12"
+                  value={drawingLabel}
+                  onClick={this.startDrawing}
+                />
+              </div>
+            </div>
+            <div
+              className={`analysis__body__subitem ${activeAnalysis === 'region' ? '' : 'hidden'}`}
+            >
+              <ModalLoader position="absolute" size={60} open={spinnerOn} />
+              <SelectAdmin
+                setAdmin={this.setAdmin}
+                analysisResults={analysisResults}
+                analyzeAdmin={analyzeAdmin}
+                adminSelections={adminSelections}
+                subscribeAdmin={this.subscribeAdmin}
+              />
+            </div>
+            <div
+              className={`analysis__body__results ${
+                analysisResults.data && spinnerOn === false ? '' : 'hidden'
+              }`}
+            >
+              <p className="analysis__body__results__label">
+                {totalLabel} {totalCountLabel}
+              </p>
+              <p className="analysis__body__results__value">
+                {isNaN(totalSelected.toString().replace(/[,]+/g, ''))
+                  ? 'Not Available'
+                  : `${totalSelected} ha`}
+              </p>
+              <p className="analysis__body__results__label">
+                {utils.setValueLabel(valueLabel, this.props)}
+              </p>
+              <p className="analysis__body__results__value loss-value">
+                {isNaN(value.toString().replace(/[,]+/g, ''))
+                  ? 'Not Available'
+                  : utils.setValue(valueLabel, value)}
+              </p>
+              {additionalLabel ? (
+                <p className="analysis__body__results__label">{additionalLabel}</p>
+              ) : null}
+              {additionalValue ? (
+                <p className="analysis__body__results__value loss-value">{additionalValue}</p>
+              ) : null}
+              <p className="analysis__body__results__value warning-message">
+                {mapPage.algorithmDisclaimer}
+              </p>
+              <p className="analysis__body__results__value warning-message">
+                {mapPage.noteDisclaimer}{' '}
+                <span
+                  className="pointer link"
+                  onClick={() => store.dispatch(toggleDrawShapeNoteDetailsModal())}
+                >
+                  Learn more.
+                </span>
+              </p>
+            </div>
+            <div
+              className={`analysis__headers-list footer-list ${
+                analysisResults.data ? '' : 'hidden'
+              }`}
+            >
+              <div className="analysis__body__results__button">
+                <GfwButton
+                  classNames="AnalysisPanel__button btn-green text__semi-bold-12"
+                  value="Add New Location"
+                  onClick={() => this.discernGadm()}
+                />
+              </div>
+              <div className="analysis-panel-button-wrap">
+                <FlatButton
+                  onClick={this.openDownload}
+                  id="downloadDataFooter"
+                  className="analysis__nav__item analysis-footer-click"
+                  icon={
+                    <span>
+                      <span className="module-tabs footer-tabs pointer" id="download-footer-icon">
+                        <svg>
+                          <use xlinkHref="#icon-download" />
+                        </svg>
+                      </span>
+                      <span className="analysis-footer-label download-data-label">
+                        Download Data
+                      </span>
+                    </span>
+                  }
+                />
+                <FlatButton
+                  onClick={this.toggleShare}
+                  id="shareFooter"
+                  className="analysis__nav__item-share analysis-footer-click analysis-footer-click-share"
+                  icon={
+                    <span>
+                      <span
+                        className="module-tabs footer-tabs pointer"
+                        id="share-footer-icon"
+                      ></span>
+                      <span className="analysis-footer-label share-label"></span>
+                    </span>
+                  }
+                />
+                <FlatButton
+                  onClick={this.discardAnalysis}
+                  id="discardAnalysisFooter"
+                  className="analysis__nav__item analysis-footer-click"
+                  icon={
+                    <span>
+                      <span className="module-tabs footer-tabs pointer" id="discard-footer-icon">
+                        <svg>
+                          <use xlinkHref="#icon-analysis-remove" />
+                        </svg>
+                      </span>
+                      <span className="analysis-footer-label discard-label">Discard Analysis</span>
+                    </span>
+                  }
+                />
+              </div>
+            </div>
           </div>
           <div
-            className={`analysis__headers-list footer-list ${analysisResults.data ? '' : 'hidden'}`}
+            className={`analysis__body__item basemap__item ${
+              selectedAnalysis === 'basemap' ? '' : 'hidden'
+            }`}
           >
-            <div className="analysis__body__results__button">
-              <GfwButton
-                classNames="AnalysisPanel__button btn-green text__semi-bold-12"
-                value="Add New Location"
-                onClick={() => this.discernGadm()}
-              />
-            </div>
-            <div className="analysis-panel-button-wrap">
-              <FlatButton
-                onClick={this.openDownload}
-                id="downloadDataFooter"
-                className="analysis__nav__item analysis-footer-click"
-                icon={
-                  <span>
-                    <span className="module-tabs footer-tabs pointer" id="download-footer-icon">
-                      <svg>
-                        <use xlinkHref="#icon-download" />
-                      </svg>
-                    </span>
-                    <span className="analysis-footer-label download-data-label">Download Data</span>
-                  </span>
-                }
-              />
-              <FlatButton
-                onClick={this.toggleShare}
-                id="shareFooter"
-                className="analysis__nav__item-share analysis-footer-click analysis-footer-click-share"
-                icon={
-                  <span>
-                    <span className="module-tabs footer-tabs pointer" id="share-footer-icon"></span>
-                    <span className="analysis-footer-label share-label"></span>
-                  </span>
-                }
-              />
-              <FlatButton
-                onClick={this.discardAnalysis}
-                id="discardAnalysisFooter"
-                className="analysis__nav__item analysis-footer-click"
-                icon={
-                  <span>
-                    <span className="module-tabs footer-tabs pointer" id="discard-footer-icon">
-                      <svg>
-                        <use xlinkHref="#icon-analysis-remove" />
-                      </svg>
-                    </span>
-                    <span className="analysis-footer-label discard-label">Discard Analysis</span>
-                  </span>
-                }
-              />
-            </div>
+            <div className="analysis-basemaps">{mapPage.basemaps.map(this.generateBasemap)}</div>
           </div>
         </div>
-        <div
-          className={`analysis__body__item basemap__item ${
-            selectedAnalysis === 'basemap' ? '' : 'hidden'
-          }`}
-        >
-          <div className="analysis-basemaps">{mapPage.basemaps.map(this.generateBasemap)}</div>
-        </div>
+
+        <MapRecenterButton
+          goToOriginalPoint={this.props.goToOriginalPoint}
+          selectedList={this.props.selectedList}
+        />
       </div>
     );
   }

@@ -9,6 +9,7 @@ import {
   countryAnnualLossProcessedValue,
   classifiedAnnualLossProcessedValue,
   classifiedRegionDatabaseOutput,
+  classifiedRegionDatabaseOutputWithoutNewTclData,
 } from './fixture';
 
 describe('WDPA - handleWDPACategoryForList', () => {
@@ -188,10 +189,32 @@ describe('Classified Region - handleClassifiedRegionCategoryForList', () => {
     fcdService = new FCDService();
     jest.restoreAllMocks();
   });
-  it('should return the data correctly for classified region', () => {
+
+  it.each(['ARG', 'COL'])(
+    'should return the data correctly for each country',
+    async (countryGadm) => {
+      jest
+        .spyOn(SQLUtils, 'queryDBFirstRow')
+        .mockImplementation(() => Promise.resolve(classifiedRegionDatabaseOutput));
+
+      expect(
+        fcdService.handleClassifiedRegionCategoryForList(1, {
+          clientDatabase: 'TestCo',
+          countryGadm: countryGadm,
+          country: 'Argentina',
+          locationId: 5,
+        })
+      ).resolves.toStrictEqual({
+        ...classifiedAnnualLossProcessedValue[countryGadm],
+        overlap: { 'Category I': 2487.9471, 'Category II': 315.8723 },
+      });
+    }
+  );
+
+  it('should return the data correctly when the field tree_cover_loss_by_country_classified_region_yearly DOES NOT EXIST - Argentina', () => {
     jest
       .spyOn(SQLUtils, 'queryDBFirstRow')
-      .mockImplementation(() => Promise.resolve(classifiedRegionDatabaseOutput));
+      .mockImplementation(() => Promise.resolve(classifiedRegionDatabaseOutputWithoutNewTclData));
 
     expect(
       fcdService.handleClassifiedRegionCategoryForList(1, {
@@ -201,8 +224,21 @@ describe('Classified Region - handleClassifiedRegionCategoryForList', () => {
         locationId: 5,
       })
     ).resolves.toStrictEqual({
+      ...classifiedAnnualLossProcessedValue.ARG,
       overlap: { 'Category I': 2487.9471, 'Category II': 315.8723 },
-      ...classifiedAnnualLossProcessedValue,
+      tree_cover_loss: {
+        'Category III': [
+          { year: 2014, value: 1971.8851, approximateValue: false },
+          { year: 2015, value: 2480.3844, approximateValue: false },
+          { year: 2016, value: 1073.1832, approximateValue: false },
+          { year: 2017, value: 2739.4738, approximateValue: false },
+          { year: 2018, value: 1229.8696, approximateValue: true },
+          { year: 2019, value: 905.7677, approximateValue: false },
+          { year: 2020, value: 976.3013, approximateValue: false },
+          { year: 2021, value: 2390.0133, approximateValue: false },
+          { year: 2022, value: 2149.3627, approximateValue: false },
+        ],
+      },
     });
   });
 

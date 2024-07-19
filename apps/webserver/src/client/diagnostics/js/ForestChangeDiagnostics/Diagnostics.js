@@ -42,6 +42,7 @@ import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
 import getAvailableDiagnostics from './getAvailableDiagnostics';
 import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/gfw.utils';
 import sendSlackNotification from '../../../common/js/utils/sendSlackNotification';
+import { getSingleLocationData } from './diagnostic.utils';
 
 // Configs
 import {
@@ -219,33 +220,6 @@ export default class Diagnostics extends Component {
     );
   };
 
-  getSingleLocationData = async () => {
-    const { selectedList, spatialData, selectedLocations, isGfwList, isSharedList } = this.props;
-
-    if (Array.isArray(spatialData[0])) {
-      return spatialData;
-    }
-
-    return fetch(`/diagnostics/${selectedList.id}`, {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        locationId: selectedLocations[0] || '',
-        isSharedList,
-        isGfwList,
-      }),
-    })
-      .then((res) => res.json())
-      .then((diagnosticsData) => {
-        const { spatialData } = diagnosticsData;
-
-        return spatialData;
-      });
-  };
-
   addMapGraphics = async () => {
     const { selectedList, spatialData, selectedLocations, isGfwList } = this.props;
     const { id, list_name: listName } = selectedList;
@@ -278,9 +252,8 @@ export default class Diagnostics extends Component {
         }
       });
     } else {
-      console.log(selectedLocations, 'selectedLocations');
-      const data = await this.getSingleLocationData();
-      console.log(data);
+      const data = await getSingleLocationData(this.props);
+
       data.forEach((result) => {
         const esriJson = geojsonUtil.geojsonToArcGIS(result.geometry);
         const poly = new Polygon({

@@ -41,7 +41,7 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     saveSwaggerJsonDocument(document);
     SwaggerModule.setup('api', app, document, {
-      jsonDocumentUrl: '/profile',
+      jsonDocumentUrl: '/api/profile',
     });
   }
 

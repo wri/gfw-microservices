@@ -25,4 +25,4 @@ const getSingleLocationData = async (props) => {
     });
 };
 
-export { getSingleLocationData }
+export { getSingleLocationData };

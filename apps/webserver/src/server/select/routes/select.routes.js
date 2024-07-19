@@ -24,6 +24,7 @@ module.exports = (app, limiter) => {
   app.use('/select', routeMiddlewares);
 
   app.get('/select', controller.select);
+  app.get('/unset/org', controller.changeOrganization);
 
   app.post('/select/org', (req, res) => {
     const { org_id, org_db, org_user_id, org_status_id, subscription_status_id } = req.body;

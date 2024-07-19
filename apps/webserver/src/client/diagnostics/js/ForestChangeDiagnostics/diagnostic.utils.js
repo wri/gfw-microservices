@@ -1,6 +1,10 @@
-const getSingleLocationData = async (props) => {
-  const { selectedList, spatialData, selectedLocations, isGfwList, isSharedList } = props;
-
+const getSingleLocationData = async (
+  selectedList,
+  spatialData,
+  selectedLocations,
+  isGfwList,
+  isSharedList
+) => {
   if (Array.isArray(spatialData[0])) {
     return spatialData;
   }

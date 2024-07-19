@@ -61,10 +61,10 @@ const LocationMapDrawer = ({
       }, 300);
     };
 
-    mapView.on('pointer-move', handleMouseMove);
+    const mapViewHandler = mapView.on('pointer-move', handleMouseMove);
 
     return () => {
-      mapView.off('pointer-move', handleMouseMove);
+      mapViewHandler.remove();
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current);
       }

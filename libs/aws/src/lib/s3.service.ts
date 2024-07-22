@@ -1,10 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  S3Client,
-  PutObjectCommand,
-  GetObjectCommand,
-  GetObjectCommandOutput,
-} from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import * as fs from 'fs';
 import { finished } from 'stream/promises';
@@ -25,7 +20,7 @@ export class S3Service {
   }
 
   async sendFiletoS3(key: string, fileExtension: string, contentType: string, bucket: string) {
-    const fileContent = fs.readFileSync(`/tmp/${key}.${fileExtension}`);
+    const fileContent = await fs.promises.readFile(`/tmp/${key}.${fileExtension}`);
     const params = {
       Bucket: bucket,
       Key: `${process.env.NODE_ENV}/${key}.${fileExtension}`,
@@ -78,7 +73,7 @@ export class S3Service {
     };
 
     const command = new GetObjectCommand(params);
-    const response: GetObjectCommandOutput = await this.s3Client.send(command);
+    const response = await this.s3Client.send(command);
 
     const filePath = `/tmp/${fileName}`;
     const file = fs.createWriteStream(filePath);

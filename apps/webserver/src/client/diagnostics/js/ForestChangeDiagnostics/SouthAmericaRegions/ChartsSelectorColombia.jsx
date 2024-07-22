@@ -74,7 +74,7 @@ export function ChartsSelectorColombia({
                       const totalLoss = calculateTotalLossForAllTypes(typeData);
                       return (
                         <>
-                          <tr key={id}>
+                          <tr key={id} className="chart-legends-table__first-level-legend">
                             <td>
                               <span
                                 className="chart-legends-table__checkbox"
@@ -85,7 +85,7 @@ export function ChartsSelectorColombia({
                             <td>{prettifyNum(formatNum(totalLoss))}</td>
                           </tr>
                           {chartLabels?.map((chartLabel) => (
-                            <tr>
+                            <tr className="chart-legends-table__second-level-legend">
                               <td>{chartLabel}</td>
                               <td>
                                 {prettifyNum(

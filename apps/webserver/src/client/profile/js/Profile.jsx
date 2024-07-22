@@ -7,6 +7,7 @@ import AccountProfileContainer from './components/AccountProfile';
 import UserProfileManagerContainer from './components/UserProfileManager';
 import AccountUsageContainer from './components/AccountUsage';
 import ApiKeys from './components/ApiKeys';
+import ApiDocs from './components/ApiDocs';
 import profileTabs from './profileTabs';
 
 export default function Profile() {
@@ -47,6 +48,7 @@ export default function Profile() {
           {selectedTab === profileTabs.userManagement.id && <UserProfileManagerContainer />}
           {selectedTab === profileTabs.accountUsage.id && <AccountUsageContainer />}
           {selectedTab === profileTabs.apiKeys?.id && <ApiKeys />}
+          {selectedTab === profileTabs.apiDocs?.id && <ApiDocs />}
         </Grid>
       </Grid>
     </Container>

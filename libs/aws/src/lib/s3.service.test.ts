@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { S3Service } from './s3.service';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import * as fs from 'fs';
 
 jest.mock('@aws-sdk/client-s3');
 jest.mock('@aws-sdk/s3-request-presigner');
@@ -15,7 +14,6 @@ jest.mock('fs', () => ({
 
 describe('S3Service', () => {
   let service: S3Service;
-  let s3ClientMock: jest.Mocked<S3Client>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,7 +29,6 @@ describe('S3Service', () => {
     }).compile();
 
     service = module.get<S3Service>(S3Service);
-    s3ClientMock = module.get<S3Client>(S3Client) as jest.Mocked<S3Client>;
   });
 
   it('should be defined', () => {

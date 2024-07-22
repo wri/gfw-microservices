@@ -254,7 +254,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
                 onOptionChange={setSelectedOptionId}
                 selectedOptionId={selectedOptionId}
                 countryPieChartsData={countryPieChartsData}
-                titleTextRightSide="Total loss (HA)"
+                graphUnit="Total loss (HA)"
               />
             </div>
           </CardContent>

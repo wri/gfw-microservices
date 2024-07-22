@@ -217,7 +217,8 @@ export const chartDatasetConfigs = {
         color: 'rgb(0,0,265)',
         chartLabels: [
           'Restricciones acuerdo cero deforestación',
-          'Restricciones técnicas (Áreas no agropecuarias), Restricciones legales',
+          'Restricciones técnicas (Áreas no agropecuarias)',
+          'Restricciones legales',
         ],
       },
     ],

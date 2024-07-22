@@ -1,14 +1,18 @@
 import React from 'react';
 import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.utils';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
-import { getDataAndCheckIfAllYearsZero, getDataFromPath } from './barChart.utils';
+import {
+  getDataAndCheckIfAllYearsZero,
+  getDataFromPath,
+  calculateTotalLossForAllTypes,
+} from './barChart.utils';
 
 export function ChartsSelectorColombia({
   selectedOptionId,
   onOptionChange,
   chartsConfiguration,
   countryPieChartsData,
-  titleTextRightSide,
+  graphUnit,
 }) {
   return (
     <div className="chart-legends-table">
@@ -16,7 +20,7 @@ export function ChartsSelectorColombia({
         <thead>
           <tr>
             <th />
-            <th className="label right">{titleTextRightSide}</th>
+            <th className="label right">{graphUnit}</th>
           </tr>
         </thead>
         <tbody>
@@ -39,7 +43,6 @@ export function ChartsSelectorColombia({
               if (countryPieChartsData && dataPath) {
                 chartsSelectorData = getDataFromPath(countryPieChartsData, dataPath);
               }
-              console.log({ chartsSelectorData });
 
               const isRadioButtonDisabled = nonZeroOptions === 0;
 
@@ -66,20 +69,32 @@ export function ChartsSelectorColombia({
                   </tr>
                   {!isRadioButtonDisabled &&
                     selectedOptionId === optionId &&
-                    types?.map(({ id, name, legend, color }) => {
+                    types?.map(({ id, name, legend, color, chartLabels }) => {
                       const typeData = chartsSelectorData?.[name];
                       const totalLoss = calculateTotalLossForAllTypes(typeData);
                       return (
-                        <tr key={id}>
-                          <td>
-                            <span
-                              className="chart-legends-table__checkbox"
-                              style={{ background: color }}
-                            />
-                            <label htmlFor={`pie-chart-label-${id}`}>{legend}</label>
-                          </td>
-                          <td>{prettifyNum(formatNum(totalLoss))}</td>
-                        </tr>
+                        <>
+                          <tr key={id}>
+                            <td>
+                              <span
+                                className="chart-legends-table__checkbox"
+                                style={{ background: color }}
+                              />
+                              <label htmlFor={`pie-chart-label-${id}`}>{legend}</label>
+                            </td>
+                            <td>{prettifyNum(formatNum(totalLoss))}</td>
+                          </tr>
+                          {chartLabels?.map((chartLabel) => (
+                            <tr>
+                              <td>{chartLabel}</td>
+                              <td>
+                                {prettifyNum(
+                                  formatNum(calculateTotalLossForAllTypes(typeData?.[chartLabel]))
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </>
                       );
                     })}
                 </React.Fragment>
@@ -90,25 +105,4 @@ export function ChartsSelectorColombia({
       </table>
     </div>
   );
-}
-
-function calculateTotalLossForAllTypes(obj) {
-  let sum = 0;
-
-  function recursiveSum(data) {
-    if (Array.isArray(data)) {
-      data.forEach((item) => {
-        if (item.value) {
-          sum += item.value;
-        }
-      });
-    } else if (typeof data === 'object') {
-      Object.values(data).forEach((value) => {
-        recursiveSum(value);
-      });
-    }
-  }
-
-  recursiveSum(obj);
-  return sum;
 }

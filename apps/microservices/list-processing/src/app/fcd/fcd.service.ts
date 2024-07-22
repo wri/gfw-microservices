@@ -146,7 +146,7 @@ export class FCDService {
       }
 
       if (countryGadm === 'COL') {
-        tree_cover_loss = this.transformTreeCoverLossForColombia(treeCoverLoss);
+        tree_cover_loss = this.splitObjAndCreateNestedChildren(treeCoverLoss);
       } else {
         for (const [key, value] of Object.entries(treeCoverLoss)) {
           tree_cover_loss[key] = this.toApproximateValueFormat(value);
@@ -430,7 +430,8 @@ export class FCDService {
       .sort((a, b) => a.year - b.year);
   }
 
-  private transformTreeCoverLossForColombia(treeCoverLoss) {
+  // This function splits Colombian tree cover loss object and create nested Children to make it easy to show the data in the frontend
+  private splitObjAndCreateNestedChildren(treeCoverLoss) {
     const result = {};
 
     for (const [key, value] of Object.entries(treeCoverLoss)) {

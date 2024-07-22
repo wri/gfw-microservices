@@ -32,7 +32,7 @@
   -ms-flex-align: stretch;
   align-items: stretch;
   width: 100%;
-  max-width: 1023px;
+  max-width: 100%;
   border-collapse: collapse;
   overflow-x: auto;
   overflow-y: hidden;
@@ -43,6 +43,7 @@
 
 // Table header wrapper styles
 .ReactTable .rt-thead {
+  max-width: 100%;
   -webkit-box-flex: 1;
   -ms-flex: 1 0 auto;
   flex: 1 0 auto;
@@ -163,6 +164,8 @@
 }
 
 .ReactTable.lists-react-table {
+  width: 100%;
+  max-width: 1100px;
   .td-checkbox,
   .th-checkbox {
     padding: 0;

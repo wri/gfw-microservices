@@ -35,6 +35,7 @@ interface QueryCreateTableResult {
 }
 
 const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
+const FAKE_USER = -999999; // Fake user to avoid send notification email on analysis completion
 
 @Injectable()
 export class ListService {
@@ -121,6 +122,7 @@ export class ListService {
       send_email: !isExternalAPIProcess,
       processing_limit: processingLimit,
       analysis_types,
+      user_id: isExternalAPIProcess ? FAKE_USER : request.user_id,
     };
 
     const requestBody = JSON.stringify(payloadBody);

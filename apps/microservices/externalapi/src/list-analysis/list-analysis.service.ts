@@ -52,6 +52,7 @@ import { ActivityLog, updateListsAnalysisStatus } from '@wri-monorepos/sql';
 
 const LIST_INITIAL_STATUS = 'Pending';
 const MIN_FILE_SIZE_IN_BYTES = 300;
+const FAKE_USER = -9999;
 
 const contentType = {
   csv: 'text/csv',
@@ -547,7 +548,7 @@ export class ListAnalysisService {
     }
     const requestAnalysisPayload = {
       list_id: listId,
-      user_id: organization_user_id,
+      user_id: FAKE_USER, // Fake user for avoid send notification on analysis completition
       organization_id: organizationId,
       processing_limit: processingLimit,
       analysis_types: { [analysisId]: true },

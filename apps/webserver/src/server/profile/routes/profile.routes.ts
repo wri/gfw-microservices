@@ -240,11 +240,6 @@ module.exports = (app, limiter) => {
     return EAPI_MICROSERVICE_URL;
   };
 
-  const getEAPISwaggerUrl = () => {
-    const { EAPI_SWAGGER_URL } = process.env;
-    return EAPI_SWAGGER_URL;
-  };
-
   const runEAPIMicroserviceRequest = async (requestData, request, response, next) => {
     const { method, url, data } = requestData;
     const requestURL = `${getEAPIMicroserviceUrl()}${url}`;

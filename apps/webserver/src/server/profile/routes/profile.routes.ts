@@ -265,11 +265,7 @@ module.exports = (app, limiter) => {
   };
 
   const runSwaggerRequest = async (request, response) => {
-<<<<<<< HEAD
-    const requestURL = `${getEAPISwaggerUrl()}`;
-=======
     const requestURL = `${getEAPIMicroserviceUrl()}/profile`;
->>>>>>> bcbf6496e5071ad38c58d86c8e22e74ca2bb4414
     try {
       const { data: result } = await axios({
         url: requestURL,

@@ -88,7 +88,7 @@ describe('AppController', () => {
   describe('Upload a single file with a presigned url', () => {
     xit('Controller should return PresignedURL from Service', async () => {
       const appController = app.get<AppController>(AppController);
-      const presignedURL = appController.generatePreSignedUrl({
+      const presignedURL = await appController.generatePreSignedUrl({
         key: 'test.csv',
         contentType: 'text/csv',
       });
@@ -111,7 +111,7 @@ describe('AppController', () => {
   describe('Flow process to upload a file and then replace it', () => {
     xit('Should return a presigned URL upload a new file and then make a replacement for this file', async () => {
       const appController = app.get<AppController>(AppController);
-      let presignedURL = appController.generatePreSignedUrl({
+      let presignedURL = await appController.generatePreSignedUrl({
         key: 'test.csv',
         contentType: 'text/csv',
       });
@@ -136,7 +136,7 @@ describe('AppController', () => {
       let response = await fetch(presignedURL.url, requestOptions);
       expect(response.status).toBe(200);
 
-      presignedURL = appController.generatePreSignedUrl({
+      presignedURL = await appController.generatePreSignedUrl({
         key: fileNameToReplace,
         contentType: 'text/csv',
         replaceFile: true,
@@ -226,7 +226,7 @@ describe('AppController', () => {
       const userId = 10034; // Ismael ID
 
       // Generate presigned URL to upload file
-      const presignedURL = appController.generatePreSignedUrl({
+      const presignedURL = await appController.generatePreSignedUrl({
         key: 'cocoa_generic_point.zip',
         contentType: 'application/zip',
       });

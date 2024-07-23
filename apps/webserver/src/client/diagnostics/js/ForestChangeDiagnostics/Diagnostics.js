@@ -42,6 +42,7 @@ import { generateCentroidGraphic } from '../../../common/js/utils/esri.utils';
 import getAvailableDiagnostics from './getAvailableDiagnostics';
 import { handleGfwProListVectorTileLayer } from '../../../common/js/utils/gfw.utils';
 import sendSlackNotification from '../../../common/js/utils/sendSlackNotification';
+import { getSingleLocationData } from './diagnostic.utils';
 
 // Configs
 import {
@@ -220,7 +221,7 @@ export default class Diagnostics extends Component {
   };
 
   addMapGraphics = async () => {
-    const { selectedList, spatialData, selectedLocations, isGfwList } = this.props;
+    const { selectedList, spatialData, selectedLocations, isGfwList, isSharedList } = this.props;
     const { id, list_name: listName } = selectedList;
 
     this.updateStats();
@@ -251,8 +252,15 @@ export default class Diagnostics extends Component {
         }
       });
     } else {
-      // List Single Locations selected
-      spatialData.forEach((result) => {
+      const data = await getSingleLocationData(
+        selectedList,
+        spatialData,
+        selectedLocations,
+        isGfwList,
+        isSharedList
+      );
+
+      data.forEach((result) => {
         const esriJson = geojsonUtil.geojsonToArcGIS(result.geometry);
         const poly = new Polygon({
           rings: esriJson.rings,

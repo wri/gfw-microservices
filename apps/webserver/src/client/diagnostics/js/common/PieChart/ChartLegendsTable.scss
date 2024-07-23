@@ -36,7 +36,7 @@
   }
 
   &__first-level-legend {
-    td:first-child {
+    th:first-child {
       display: flex;
       padding-left: 30px;
     }
@@ -45,9 +45,13 @@
       text-transform: capitalize;
       font-size: 0.85rem;
     }
+
+    th:last-child {
+      font-size: 0.7rem;
+    }
   }
   &__second-level-legend {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
 
     td:first-child {
       padding-left: 55px;

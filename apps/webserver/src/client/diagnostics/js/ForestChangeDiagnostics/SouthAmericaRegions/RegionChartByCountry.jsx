@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Card, CardContent, CardHeader } from '@mui/material';
+import { Card, CardContent } from '@mui/material';
 
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import DateRangeSlider from './DateRangeSlider';
@@ -227,7 +227,9 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
       {country === regionIds.COLOMBIA && (
         <Card>
-          <CardHeader title="Select one main category and/or sub-category to adjust the graph and table" />
+          <h3 style={{ fontStyle: 'italic', paddingLeft: '4rem', marginBottom: 0 }}>
+            Select one main category and/or sub-category to adjust the graph and table
+          </h3>
 
           <CardContent>
             <div className="diagnostics-chart-container">

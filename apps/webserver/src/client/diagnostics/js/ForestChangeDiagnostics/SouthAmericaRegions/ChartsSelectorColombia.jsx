@@ -25,15 +25,7 @@ export function ChartsSelectorColombia({
         </thead>
         <tbody>
           {chartsConfiguration.map(
-            ({
-              dataCy,
-              types,
-              id: optionId,
-              chartsSelectorTitle,
-              infoBubbleId,
-              totalLoss,
-              dataPath,
-            }) => {
+            ({ dataCy, types, id: optionId, chartsSelectorTitle, infoBubbleId, dataPath }) => {
               // Determine the count of options with non-zero data
               const nonZeroOptions = types?.filter(
                 ({ dataPath }) => !getDataAndCheckIfAllYearsZero(countryPieChartsData, dataPath)
@@ -45,6 +37,8 @@ export function ChartsSelectorColombia({
               }
 
               const isRadioButtonDisabled = nonZeroOptions === 0;
+
+              const totalLoss = calculateTotalLossForAllTypes(chartsSelectorData);
 
               return (
                 <React.Fragment key={optionId}>
@@ -75,14 +69,14 @@ export function ChartsSelectorColombia({
                       return (
                         <>
                           <tr key={id} className="chart-legends-table__first-level-legend">
-                            <td>
+                            <th>
                               <span
                                 className="chart-legends-table__checkbox"
                                 style={{ background: color }}
                               />
                               <label htmlFor={`pie-chart-label-${id}`}>{legend}</label>
-                            </td>
-                            <td>{prettifyNum(formatNum(totalLoss))}</td>
+                            </th>
+                            <th>{prettifyNum(formatNum(totalLoss))}</th>
                           </tr>
                           {chartLabels?.map((chartLabel) => (
                             <tr className="chart-legends-table__second-level-legend">

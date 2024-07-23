@@ -144,7 +144,7 @@ export class TokenMockRepository {
 
   async save(token: ExternalAPIKey): Promise<ExternalAPIKey> {
     if (token.organizationId === 999) {
-      throw new QueryFailedError('query', [], []);
+      throw new QueryFailedError('query', [], new Error('Test error'));
     }
 
     token.user = {

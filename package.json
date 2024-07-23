@@ -21,7 +21,7 @@
     "@aws-sdk/client-sns": "^3.427.0",
     "@aws-sdk/client-sqs": "^3.427.0",
     "@aws-sdk/lib-storage": "^3.427.0",
-    "@aws-sdk/s3-request-presigner": "^3.614.0",
+    "@aws-sdk/s3-request-presigner": "^3.616.0",
     "@babel/runtime-corejs2": "7.17.9",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",

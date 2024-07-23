@@ -707,10 +707,17 @@
     "@smithy/types" "^2.3.4"
     tslib "^2.5.0"
 
+<<<<<<< HEAD
+"@aws-sdk/middleware-sdk-s3@3.617.0":
+  version "3.617.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/middleware-sdk-s3/-/middleware-sdk-s3-3.617.0.tgz"
+  integrity sha512-zVOS6sNGcLGhq7i+5POmVqmSPNmrQYDFsynpnWMSLsNaej+xvkdSOnytLrUvag3Du4kAxfO5NNIC0GuNj9lcCg==
+=======
 "@aws-sdk/middleware-sdk-s3@3.616.0":
   version "3.616.0"
   resolved "https://registry.npmjs.org/@aws-sdk/middleware-sdk-s3/-/middleware-sdk-s3-3.616.0.tgz"
   integrity sha512-heq9pzn0NRX6VL/oMlmwZdgcCh5eJUDscvwMl/oGev0tNdTpB2oGU+wPaNMka7IrW3eBPn7APmY9fdS1kBaBoQ==
+>>>>>>> ea7858d0778e25c6366faf871f6b00ae998cd6c0
   dependencies:
     "@aws-sdk/types" "3.609.0"
     "@aws-sdk/util-arn-parser" "3.568.0"
@@ -789,12 +796,21 @@
     "@smithy/util-middleware" "^2.0.3"
     tslib "^2.5.0"
 
+<<<<<<< HEAD
+"@aws-sdk/s3-request-presigner@^3.614.0":
+  version "3.617.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/s3-request-presigner/-/s3-request-presigner-3.617.0.tgz"
+  integrity sha512-zszOwBmu3Ei5rRgddcQ3sbKFCtzLtUNDcmeybh4OhxENfgzHZHOeTOt8C+C16DD5YDQqeP4JYPRUp0LPuybkvg==
+  dependencies:
+    "@aws-sdk/signature-v4-multi-region" "3.617.0"
+=======
 "@aws-sdk/s3-request-presigner@^3.616.0":
   version "3.616.0"
   resolved "https://registry.npmjs.org/@aws-sdk/s3-request-presigner/-/s3-request-presigner-3.616.0.tgz"
   integrity sha512-C5ADFHTBCPGw+W3XNvS7vZdCY2LtRbcw05hu34xxhNlDXatOAPE4O22uRfiaZq12Lu0Qq8ylNYnD8I28r7I4Qg==
   dependencies:
     "@aws-sdk/signature-v4-multi-region" "3.616.0"
+>>>>>>> ea7858d0778e25c6366faf871f6b00ae998cd6c0
     "@aws-sdk/types" "3.609.0"
     "@aws-sdk/util-format-url" "3.609.0"
     "@smithy/middleware-endpoint" "^3.0.5"
@@ -814,12 +830,21 @@
     "@smithy/types" "^2.3.4"
     tslib "^2.5.0"
 
+<<<<<<< HEAD
+"@aws-sdk/signature-v4-multi-region@3.617.0":
+  version "3.617.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/signature-v4-multi-region/-/signature-v4-multi-region-3.617.0.tgz"
+  integrity sha512-kGbLs9q0/ziuzA1huf0BBh05ChxDeZ8ZWc/kedb80ocq6izOLaGgeqqUR8oB0ianwjel4AQq/iv1fsOIt3wmAA==
+  dependencies:
+    "@aws-sdk/middleware-sdk-s3" "3.617.0"
+=======
 "@aws-sdk/signature-v4-multi-region@3.616.0":
   version "3.616.0"
   resolved "https://registry.npmjs.org/@aws-sdk/signature-v4-multi-region/-/signature-v4-multi-region-3.616.0.tgz"
   integrity sha512-WQn43cfnwbG6jnPjh/SyujDQVqbRjGFY9tGI/tqtUvvGwoDhI343TSDCA7fvs0FEC6Za6vgOBq1CwPv3CFyfhA==
   dependencies:
     "@aws-sdk/middleware-sdk-s3" "3.616.0"
+>>>>>>> ea7858d0778e25c6366faf871f6b00ae998cd6c0
     "@aws-sdk/types" "3.609.0"
     "@smithy/protocol-http" "^4.0.4"
     "@smithy/signature-v4" "^4.0.0"

@@ -10,7 +10,6 @@ import { AppModule } from './app/app.module';
 import { SecurityHeaderMiddleware } from './middleware/security-header.middleware';
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
-import { saveSwaggerJsonDocument } from '../swagger-doc/saveSwaggerJson';
 
 const SWAGGER_DISABLED_ENVS: ReadonlyArray<string> = ['staging', 'production'];
 
@@ -39,7 +38,6 @@ async function bootstrap() {
       .build();
 
     const document = SwaggerModule.createDocument(app, config);
-    saveSwaggerJsonDocument(document);
     SwaggerModule.setup('api', app, document, {
       jsonDocumentUrl: '/api/profile',
     });

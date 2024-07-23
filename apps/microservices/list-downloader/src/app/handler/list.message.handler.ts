@@ -1,6 +1,7 @@
 import { Logger, Injectable } from '@nestjs/common';
 import { SqsMessageHandler } from '@ssut/nestjs-sqs';
 import { SQSClient, DeleteMessageCommand } from '@aws-sdk/client-sqs';
+import type { Message } from '@aws-sdk/client-sqs';
 
 import { PipeService } from '../pipe/pipe.service';
 import { messageSchema } from './message.schema';
@@ -52,9 +53,7 @@ export class ListMessageHandler {
     this.logger.log(`Removed message: ${JSON.stringify(removedMessage)}`);
   }
 
-  reorganizeFilters(messages: AWS.SQS.Message) {
-    const message = messages;
-
+  reorganizeFilters(message: Message) {
     const getValues = (obj, spread = false) => {
       let value = obj?.StringValue;
       if (spread) {

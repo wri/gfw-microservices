@@ -259,6 +259,25 @@ module.exports = (app, limiter) => {
     }
   };
 
+  const runSwaggerRequest = async (request, response) => {
+    const requestURL = `${getEAPIMicroserviceUrl()}/profile`;
+    try {
+      const { data: result } = await axios({
+        url: requestURL,
+        method: 'GET',
+        headers: {
+          'Content-type': 'application/json',
+        },
+      });
+      return response.status(200).send(result);
+    } catch (err) {
+      const { status: statusCode = 500, data: error = err } = err.response || {};
+      return response.status(statusCode).send(error);
+    }
+  };
+
+  app.get(`${API_BASE_URL}/swagger`, runSwaggerRequest);
+
   app.use(`${API_BASE_URL}/api-keys`, [
     ...routeMiddlewares,
     eapiRoutes,

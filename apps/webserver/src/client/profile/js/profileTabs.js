@@ -40,6 +40,17 @@ const profileTabs = {
         },
       }
     : {}),
+  ...(isPermanentFlagForExternalApiKeysAvailable
+    ? {
+        apiDocs: {
+          id: 'api-docs',
+          icon: 'api',
+          title: 'Api Docs',
+          userAccessLevel: [ADMIN],
+          suscriptionStatus: [PREMIUM],
+        },
+      }
+    : {}),
 };
 
 export default profileTabs;

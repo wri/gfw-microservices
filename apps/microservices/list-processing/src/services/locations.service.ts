@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { ServerConfigType } from '../validators/server-config';
 import { listStatus } from '@wri-monorepos/constants';
 import {
   CheckListNameIsValid,
@@ -37,7 +39,10 @@ const EMPTY_CUSTOM_ATTRIBUTES = [];
 @Injectable()
 export class LocationService {
   private readonly logger = new Logger(LocationService.name);
-  constructor(private geoService: GeoService) {}
+  constructor(
+    private geoService: GeoService,
+    private readonly config: ConfigService<ServerConfigType, true>
+  ) {}
   assembleGeojson = (featProps, uploadingData): Promise<GeoJson> => {
     return new Promise<GeoJson>((resolve, reject) => {
       const geojson: GeoJson = {
@@ -423,7 +428,8 @@ export class LocationService {
       processing_limit: processingLimit,
       analysis_types,
     };
-    const analysisRequestResponse = await requestAnalysisProcess(postData);
+    const analysisUrl = this.config.get('AWS_ANALYSIS_LAMBDA_URL', { infer: true });
+    const analysisRequestResponse = await requestAnalysisProcess(analysisUrl, postData);
     const jsonResponse = await analysisRequestResponse.json();
     this.logger.log(`Analysis request response: ${JSON.stringify(jsonResponse)}`);
   };

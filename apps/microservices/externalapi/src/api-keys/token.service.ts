@@ -8,7 +8,12 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ExternalAPIKey } from './external-api-key.entity';
-import { APIGateway } from 'aws-sdk';
+import {
+  APIGateway,
+  CreateApiKeyCommandInput,
+  CreateUsagePlanKeyCommandInput,
+  DeleteApiKeyCommandInput,
+} from '@aws-sdk/client-api-gateway';
 import { ConfigService } from '@nestjs/config';
 import { transformApiKey, transformApiKeys } from './transformers';
 import { UserRoutes } from './user-route.entity';
@@ -27,39 +32,42 @@ export class TokenService {
     private readonly configService: ConfigService
   ) {
     this.apiGateway = new APIGateway({
-      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
-      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+      },
+
       region: this.configService.get('AWS_REGION'),
     });
   }
 
   async generateAWSGatewayAPIToken(tokenName: string) {
     try {
-      const params: APIGateway.CreateApiKeyRequest = {
+      const params: CreateApiKeyCommandInput = {
         name: tokenName,
         enabled: true,
       };
 
-      const apiKey = await this.apiGateway.createApiKey(params).promise();
-      const usagePlanParams: APIGateway.CreateUsagePlanKeyRequest = {
+      const apiKey = await this.apiGateway.createApiKey(params);
+      const usagePlanParams: CreateUsagePlanKeyCommandInput = {
         keyId: apiKey.id,
         usagePlanId: this.configService.get('AWS_API_USAGE_PLAN_ID'),
         keyType: DEFAULT_KEY_TYPE,
       };
 
-      await this.apiGateway.createUsagePlanKey(usagePlanParams).promise();
+      await this.apiGateway.createUsagePlanKey(usagePlanParams);
 
       return apiKey;
     } catch (error) {
       Logger.error(error);
-      if (error.code === 'UnrecognizedClientException') {
+      if (error.name === 'UnrecognizedClientException') {
         throw new InternalServerErrorException('Error with AWS credentials.');
       }
-      if (error.code === 'ServiceUnavailable') {
+      if (error.name === 'ServiceUnavailable') {
         throw new ServiceUnavailableException('AWS service is currently unavailable.');
       }
 
-      if (error.code === 'NotFoundException') {
+      if (error.name === 'NotFoundException') {
         throw new NotFoundException(error.message);
       }
 
@@ -122,14 +130,14 @@ export class TokenService {
 
     try {
       await this.tokenRepository.delete(token.awsId);
-      const apiGatewayDeleteParams: APIGateway.DeleteApiKeyRequest = {
+      const apiGatewayDeleteParams: DeleteApiKeyCommandInput = {
         apiKey: tokenId,
       };
-      await this.apiGateway.deleteApiKey(apiGatewayDeleteParams).promise();
+      await this.apiGateway.deleteApiKey(apiGatewayDeleteParams);
       return true;
     } catch (error) {
       Logger.error(error);
-      if (error.code === 'NotFoundException') {
+      if (error.name === 'NotFoundException') {
         throw new NotFoundException(error.message);
       }
       throw new InternalServerErrorException(error.message);

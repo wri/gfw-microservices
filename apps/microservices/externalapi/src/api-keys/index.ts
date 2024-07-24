@@ -10,7 +10,7 @@ import { APIKeyController } from './api-key.controller';
 import { Organization } from './organization.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserRoutes } from './user-route.entity';
-import * as AWS from 'aws-sdk';
+import { S3Client } from '@aws-sdk/client-s3';
 import { ServerConfigType } from '../validators/server-config';
 
 @Module({
@@ -25,9 +25,11 @@ import { ServerConfigType } from '../validators/server-config';
       provide: '',
       inject: [ConfigService],
       useFactory: (config: ConfigService<ServerConfigType, true>) => {
-        AWS.config.update({
-          accessKeyId: config.get('AWS_ACCESS_KEY_ID'),
-          secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY'),
+        new S3Client({
+          credentials: {
+            accessKeyId: config.get('AWS_ACCESS_KEY_ID'),
+            secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY'),
+          },
           region: config.get('AWS_REGION'),
         });
       },

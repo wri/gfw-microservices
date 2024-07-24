@@ -29,18 +29,8 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     wdpaOverlapCountry,
     landmarkOverlapCountry,
     colombianTreeCoverLoss,
+    otbnPieChart,
   } = chartDatasetConfigs;
-
-  const pieChartOtbnDatasetConfigChartLabels = [
-    ...otbn.chartLabels,
-    {
-      id: 'Outside of OTBN',
-      dataPath: '',
-      legend: 'Outside of OTBN',
-      color: 'rgb(200, 200, 200)',
-      checked: true,
-    },
-  ];
 
   const [chartsConfiguration, setChartsConfiguration] = useState([
     argentinaTreeCoverLoss,
@@ -229,7 +219,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
           <PieChart
             data={argentinaPieChartData}
-            chartLabels={pieChartOtbnDatasetConfigChartLabels}
+            chartLabels={otbnPieChart.chartLabels}
             title={regionConstants.diagnosticTitle}
             informationBubbleId={regionConstants.informationBubbleId}
           />

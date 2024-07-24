@@ -2056,7 +2056,7 @@ class Map extends Component {
           if (selectedTimeframe === 'QUARTER') {
             store.dispatch(analysisActions.setGLADEndDate(firstDayOfThisMonth));
           }
-          if ((selectedTimeframe == selectedTimeframe) === 'MONTH') {
+          if (selectedTimeframe === 'MONTH') {
             store.dispatch(analysisActions.setGLADEndDate(new Date()));
           }
           store.dispatch(analysisActions.setGLADStartDate(startDate));

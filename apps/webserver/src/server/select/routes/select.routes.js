@@ -24,11 +24,9 @@ module.exports = (app, limiter) => {
   app.use('/select', routeMiddlewares);
   app.get('/select', controller.select);
 
-  if (
-    process.env.NODE_ENV === 'development' ||
-    process.env.NODE_ENV === 'test' ||
-    process.env.NODE_ENV === 'qa'
-  ) {
+  const allowedEnvironments = ['development', 'test', 'qa'];
+
+  if (allowedEnvironments.includes(process.env.NODE_ENV)) {
     app.get('/unset/org', controller.changeOrganization);
   }
 

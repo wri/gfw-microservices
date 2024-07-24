@@ -190,4 +190,37 @@ export const chartDatasetConfigs = {
       },
     ],
   },
+  colombianTreeCoverLoss: {
+    id: 'colombianTreeCoverLoss',
+    dataCy: 'colombian-tree-cover-loss',
+    chartsSelectorTitle: 'Frontera Agricola/Restricciones',
+    dataPath: 'classified_region.tree_cover_loss',
+    infoBubbleId: 'regions_col_deforestation',
+    types: [
+      {
+        id: 'noCondicionado',
+        name: 'No Condicionado',
+        legend: 'No Condicionada',
+        color: 'rgb(34,153,102)',
+      },
+      {
+        id: 'condicionado',
+        name: 'Condicionado',
+        legend: 'Condicionada',
+        color: 'rgb(255,165,0)',
+        chartLabels: ['Étnico-Cultural', 'Ambiental/Étnico-Cultural'],
+      },
+      {
+        id: 'restricciones',
+        name: 'Zona restricción',
+        legend: 'Restricciones',
+        color: 'rgb(0,0,265)',
+        chartLabels: [
+          'Restricciones acuerdo cero deforestación',
+          'Restricciones técnicas (Áreas no agropecuarias)',
+          'Restricciones legales',
+        ],
+      },
+    ],
+  },
 };

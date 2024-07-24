@@ -43,3 +43,24 @@ export const addNoOverlapArea = (overlapArea, total_area, nonOverlapAreaLabel) =
 
   return { ...overlapArea, [nonOverlapAreaLabel]: nonOverlapArea };
 };
+
+export function calculateTotalLossForAllTypes(obj) {
+  let sum = 0;
+
+  function recursiveSum(data) {
+    if (Array.isArray(data)) {
+      data.forEach((item) => {
+        if (item.value) {
+          sum += item.value;
+        }
+      });
+    } else if (typeof data === 'object') {
+      Object.values(data).forEach((value) => {
+        recursiveSum(value);
+      });
+    }
+  }
+
+  recursiveSum(obj);
+  return sum;
+}

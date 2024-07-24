@@ -10,6 +10,7 @@ function ChartsSelectorArgentina({
   chartsConfiguration,
   updateCheckedLabels,
   argentinaPieChartsData,
+  graphUnit,
 }) {
   return (
     <div className="chart-legends-table">
@@ -17,7 +18,7 @@ function ChartsSelectorArgentina({
         <thead>
           <tr>
             <th />
-            <th className="label right"></th>
+            <th className="label right">{graphUnit}</th>
           </tr>
         </thead>
         <tbody>

@@ -34,4 +34,27 @@
   &__label--disabled {
     opacity: 0.3;
   }
+
+  &__first-level-legend {
+    th:first-child {
+      display: flex;
+      padding-left: 30px;
+    }
+
+    label {
+      text-transform: capitalize;
+      font-size: 0.85rem;
+    }
+
+    th:last-child {
+      font-size: 0.7rem;
+    }
+  }
+  &__second-level-legend {
+    font-size: 0.7rem;
+
+    td:first-child {
+      padding-left: 55px;
+    }
+  }
 }

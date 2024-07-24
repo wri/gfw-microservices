@@ -25,8 +25,8 @@ module.exports = (app, limiter) => {
   app.get('/select', controller.select);
 
   const allowedEnvironments = ['development', 'test', 'qa'];
-
-  if (allowedEnvironments.includes(process.env.NODE_ENV)) {
+  const environment = process.env.NODE_ENV;
+  if (allowedEnvironments.includes(environment.toLowerCase())) {
     app.get('/unset/org', controller.changeOrganization);
   }
 

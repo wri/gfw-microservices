@@ -146,6 +146,7 @@ const {
   viirsActiveFiresID,
   soyPlantedArea,
   argentineanNativeForestsLoss,
+  integratedDeforestationAlertsID,
 } = proLayers;
 
 let layersToAdd;
@@ -2024,7 +2025,10 @@ class Map extends Component {
     }
 
     if (selectedTimeframe) {
-      if (visibleLayers?.includes(gladAlertsID)) {
+      if (
+        visibleLayers?.includes(gladAlertsID) ||
+        visibleLayers?.includes(integratedDeforestationAlertsID)
+      ) {
         const startDate = new Date();
         const firstDayOfThisMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
         switch (selectedTimeframe) {
@@ -2051,6 +2055,9 @@ class Map extends Component {
         promise.then(() => {
           if (selectedTimeframe === 'QUARTER') {
             store.dispatch(analysisActions.setGLADEndDate(firstDayOfThisMonth));
+          }
+          if ((selectedTimeframe == selectedTimeframe) === 'MONTH') {
+            store.dispatch(analysisActions.setGLADEndDate(new Date()));
           }
           store.dispatch(analysisActions.setGLADStartDate(startDate));
         });

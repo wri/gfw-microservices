@@ -161,7 +161,9 @@ class Locations extends Component {
         if (gfwTestedList.includes(listName)) {
           updatedGlobalIds = globalIds;
         } else {
-          updatedGlobalIds = [1, 2, 3].includes(gfwList?.id) ? globalIds : globalIds.map((id) => id);
+          updatedGlobalIds = [1, 2, 3].includes(gfwList?.id)
+            ? globalIds
+            : globalIds.map((id) => id);
         }
 
         const params = `list_id=${gfwList?.id}&global_ids=["${updatedGlobalIds}"]`;

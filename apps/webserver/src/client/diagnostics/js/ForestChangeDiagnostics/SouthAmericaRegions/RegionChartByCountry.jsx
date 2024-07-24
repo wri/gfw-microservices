@@ -26,6 +26,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     otbn,
     wdpaOverlapCountry,
     landmarkOverlapCountry,
+    otbnPieChart,
   } = chartDatasetConfigs;
 
   const [chartsConfiguration, setChartsConfiguration] = useState([
@@ -196,7 +197,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
           <PieChart
             data={argentinaPieChartData}
-            chartLabels={chartDatasetConfigs.otbn.chartLabels}
+            chartLabels={otbnPieChart.chartLabels}
             title={regionConstants.diagnosticTitle}
             informationBubbleId={regionConstants.informationBubbleId}
           />

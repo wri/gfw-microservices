@@ -13,6 +13,7 @@ export const serverConfigSchema = z.object({
   AWS_ACCESS_KEY_ID: z.string(),
   AWS_SECRET_ACCESS_KEY: z.string(),
   AWS_REGION: z.string(),
+  AWS_ANALYSIS_LAMBDA_URL: z.string().url(),
   LARGE_PROCESSING_LIST_BUCKET: z.string(),
   LARGE_LIST_PROCESSING_ENDPOINT: z.string().url(),
 

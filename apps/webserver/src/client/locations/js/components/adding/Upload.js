@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Point from '@arcgis/core/geometry/Point';
 import Papa from 'papaparse';
 import FileDrop from '../uploading/FileDrop';
 import { numberWithCommas } from '../../utils/locationsTableUtils';
@@ -7,8 +6,9 @@ import { maxLocations, maxFileSizeMB } from '../../utils/upload.utils';
 import { geocodeMill } from './geocodeMill';
 import { parseZip } from './parseZip';
 import { parseXlsx } from './parseXlsx';
+import { parseKMZAndKMLFile } from './parseKmzKml';
 import { locationsPage } from '../../../../common/js/config';
-import { parseKMZAndKMLFile } from '../uploading/UploadLocations.util';
+import { geomFromLatLongRadiusArea } from './geomFromPoint';
 
 export default class Upload extends Component {
   constructor(props) {
@@ -50,10 +50,12 @@ export default class Upload extends Component {
           }
         });
       } else {
-        const geom = new Point({
-          latitude: parseInt(feature.Latitude),
-          longitude: parseInt(feature.Longitude),
-        });
+        const geom = geomFromLatLongRadiusArea(
+          feature.Latitude,
+          feature.Longitude,
+          feature['Analysis Radius'],
+          feature['Analysis Area']
+        );
 
         this.props.setGeometry(geom);
         this.setState({
@@ -117,7 +119,7 @@ export default class Upload extends Component {
         Papa.parse(inputFile, config);
         break;
       case 'zip':
-        parseZip(file, this.state.stateOriginalGeometry).then((result) => {
+        parseZip(file).then((result) => {
           if (result.geom) {
             this.props.setGeometry(result.geom);
           }

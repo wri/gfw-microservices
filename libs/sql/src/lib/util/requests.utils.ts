@@ -1,7 +1,6 @@
 import fetch, { Response } from 'node-fetch';
-const AWS_ANALYSIS_LAMBDA_URL = process.env.AWS_ANALYSIS_LAMBDA_URL;
 
-export const requestAnalysisProcess = (requestBody): Promise<Response> => {
+export const requestAnalysisProcess = (url, requestBody): Promise<Response> => {
   const options = {
     method: 'POST',
     headers: {
@@ -10,5 +9,5 @@ export const requestAnalysisProcess = (requestBody): Promise<Response> => {
     body: JSON.stringify(requestBody),
   };
 
-  return fetch(AWS_ANALYSIS_LAMBDA_URL, options);
+  return fetch(url, options);
 };

@@ -1,10 +1,9 @@
 import { parse, load } from '@loaders.gl/core';
 import { ZipLoader } from '@loaders.gl/zip';
 import { KMLLoader } from '@loaders.gl/kml';
-import Point from '@arcgis/core/geometry/Point';
 import Polygon from '@arcgis/core/geometry/Polygon';
 import geojsonUtil from '../../../../common/js/utils/arcgis-to-geojson';
-import * as geometryEngine from '@arcgis/core/geometry/geometryEngine';
+import { geomFromLatLongRadiusArea } from './geomFromPoint';
 
 /**
  * Parses KMZ and KML Files for upload functionality
@@ -32,21 +31,12 @@ export const parseKMZAndKMLFile = async (file) => {
     if (feature.geometry.type === 'Point') {
       const analysisAreaKey = feature.properties.Analysis_A ? 'Analysis_A' : 'Analysis Area';
       const analysisRadiusKey = feature.properties.Analysis_R ? 'Analysis_R' : 'Analysis Radius';
-      const analysisArea = parseFloat(feature.properties[analysisAreaKey]);
-      const analysisRadius = parseFloat(feature.properties[analysisRadiusKey]);
-      const centerPoint = new Point({
-        latitude: feature.geometry.coordinates[1],
-        longitude: feature.geometry.coordinates[0],
-      });
-      if (analysisRadius) {
-        geom = geometryEngine.geodesicBuffer(centerPoint, analysisRadius, 'kilometers');
-      } else if (analysisArea) {
-        const hectaresKmSquared = analysisArea / 100;
-        const radiusKm = Math.sqrt(hectaresKmSquared / Math.PI);
-        geom = geometryEngine.geodesicBuffer(centerPoint, radiusKm, 'kilometers');
-      } else {
-        throw new Error('Analysis Area or Analysis Radius not found in properties');
-      }
+      geom = geomFromLatLongRadiusArea(
+        feature.geometry.coordinates[1],
+        feature.geometry.coordinates[0],
+        feature.properties[analysisRadiusKey],
+        feature.properties[analysisAreaKey]
+      );
     } else if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
       feature.geometry.coordinates[0].forEach((coord, j) => {
         feature.geometry.coordinates[0][j] = [coord[0], coord[1]];

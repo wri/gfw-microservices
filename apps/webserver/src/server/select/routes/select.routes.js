@@ -22,8 +22,15 @@ module.exports = (app, limiter) => {
     routeMiddlewares.push(limiter(middlewares.rateLimitUnauthenticated));
   }
   app.use('/select', routeMiddlewares);
-
   app.get('/select', controller.select);
+
+  if (
+    process.env.NODE_ENV === 'development' ||
+    process.env.NODE_ENV === 'test' ||
+    process.env.NODE_ENV === 'qa'
+  ) {
+    app.get('/unset/org', controller.changeOrganization);
+  }
 
   app.post('/select/org', (req, res) => {
     const { org_id, org_db, org_user_id, org_status_id, subscription_status_id } = req.body;

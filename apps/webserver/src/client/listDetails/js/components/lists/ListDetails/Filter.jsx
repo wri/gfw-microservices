@@ -24,16 +24,6 @@ export default class Filter extends Component {
     this.initialState = this.state;
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { filterValues, filterCount } = this.props;
-    if (
-      JSON.stringify(filterValues) !== JSON.stringify(nextProps.filterValues) ||
-      (filterCount !== 0 && nextProps.filterCount === 0)
-    ) {
-      this.setState(this.initialState);
-    }
-  }
-
   changeCountry = (evt) => {
     this.setState({
       selectedCountry: evt.target.value,

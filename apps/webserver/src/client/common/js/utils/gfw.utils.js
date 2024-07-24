@@ -17,8 +17,15 @@ export function isGfwList(listName) {
 
 export const getMapLayerIdFromGFWListName = (gfwListName) =>
   GFW_LISTS_NAMES_TO_MAP_LAYER_IDS?.[gfwListName];
-export const getGFWListNameFromMapLayerId = (mapLayerId) =>
-  MAP_LAYER_IDS_TO_GFW_LISTS_NAMES?.[mapLayerId];
+export const getGFWListNameFromMapLayerId = (mapLayerId) => {
+
+  if(mapLayerId == "admin-areas") {
+    return 'Administrative Areas';
+  }
+
+  return MAP_LAYER_IDS_TO_GFW_LISTS_NAMES?.[mapLayerId];
+}
+  
 
 /**
  * @description - Check if the list is a user list

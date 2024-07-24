@@ -87,6 +87,7 @@ class Locations extends Component {
   getGeomFromMap = (goToEditList) => {
     const { gfwData, mapData, locationName, userLists, drawData, gfwLists } = this.props;
     let listName = '';
+
     if (mapData) {
       // TODO: What exactly is mapData?
       const userListInfoFromMap = {
@@ -160,10 +161,10 @@ class Locations extends Component {
         if (gfwTestedList.includes(listName)) {
           updatedGlobalIds = globalIds;
         } else {
-          updatedGlobalIds = [1, 2, 3].includes(gfwList.id) ? globalIds : globalIds.map((id) => id);
+          updatedGlobalIds = [1, 2, 3].includes(gfwList?.id) ? globalIds : globalIds.map((id) => id);
         }
 
-        const params = `list_id=${gfwList.id}&global_ids=["${updatedGlobalIds}"]`;
+        const params = `list_id=${gfwList?.id}&global_ids=["${updatedGlobalIds}"]`;
         httpRequest
           .fetchForm('/locations/getGFWListLocationsGlobalId', params)
           .then((response) => {

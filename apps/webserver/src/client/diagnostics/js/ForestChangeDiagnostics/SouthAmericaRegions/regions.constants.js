@@ -78,13 +78,13 @@ export const chartDatasetConfigs = {
         color: 'rgb(151,189,61)',
         checked: true,
       },
-      {
-        id: 'Outside of OTBN',
-        dataPath: '',
-        legend: 'Outside of OTBN',
-        color: nonOverlapAreaColor,
-        checked: true,
-      },
+      // {
+      //   id: 'Outside of OTBN',
+      //   dataPath: '',
+      //   legend: 'Outside of OTBN',
+      //   color: nonOverlapAreaColor,
+      //   checked: true,
+      // },
     ],
   },
   argentinaTreeCoverLoss: {
@@ -129,13 +129,13 @@ export const chartDatasetConfigs = {
         color: 'rgb(255,64,0)',
         checked: true,
       },
-      {
-        id: 'Outside of Protected Areas',
-        dataPath: '',
-        legend: 'Outside of Protected Areas',
-        color: nonOverlapAreaColor,
-        checked: true,
-      },
+      // {
+      //   id: 'Outside of Protected Areas',
+      //   dataPath: '',
+      //   legend: 'Outside of Protected Areas',
+      //   color: nonOverlapAreaColor,
+      //   checked: true,
+      // },
     ],
   },
 
@@ -152,13 +152,13 @@ export const chartDatasetConfigs = {
         color: 'rgb(146,37,100)',
         checked: true,
       },
-      {
-        id: 'nonIndigenous',
-        dataPath: 'landmark.country_specific_deforestation.nonIndigenous',
-        legend: 'Outside of Indigenous Territories',
-        color: nonOverlapAreaColor,
-        checked: true,
-      },
+      // {
+      //   id: 'nonIndigenous',
+      //   dataPath: 'landmark.country_specific_deforestation.nonIndigenous',
+      //   legend: 'Outside of Indigenous Territories',
+      //   color: nonOverlapAreaColor,
+      //   checked: true,
+      // },
     ],
   },
 

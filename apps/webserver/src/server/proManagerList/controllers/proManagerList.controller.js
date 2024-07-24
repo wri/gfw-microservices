@@ -41,12 +41,10 @@ const getUserFromQuery = (userId, organizationId, accounts, users) => {
   return selectedUser || null;
 };
 
-const getAccounFromQuery = (organizationName, organizationId, accounts) => {
-  const selectedAccount = accounts.find(
-    (account) =>
-      account.organization_id === organizationId && account.organization_name === organizationName
-  );
-  return selectedAccount || null;
+const getAccounFromQuery = (organizationId, accounts) => {
+  const selectedAccount =
+    accounts.find((account) => account.organization_id === organizationId) ?? null;
+  return selectedAccount;
 };
 
 export const proManagerListAccountsData = (req, res) => {
@@ -70,7 +68,7 @@ export const proManagerListAccountsData = (req, res) => {
 };
 
 export const proManagerListAccountDetailData = async (req, res) => {
-  const { organizationId: organizationIdParam, organizationName } = req.params;
+  const { organizationId: organizationIdParam } = req.params;
 
   const organizationId = parseInt(organizationIdParam, 10);
   const classes = AccountManager.getClassifications(req);
@@ -88,7 +86,7 @@ export const proManagerListAccountDetailData = async (req, res) => {
     const [accounts, users, pendingPolicy, allPolicy] = await Promise.all(promises);
 
     const policyList = pendingPolicy.concat(allPolicy);
-    let selectedAccount = getAccounFromQuery(organizationName, organizationId, accounts);
+    let selectedAccount = getAccounFromQuery(organizationId, accounts);
 
     /**
      * @update

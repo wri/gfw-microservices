@@ -11,17 +11,14 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import Stack from '@mui/material/Stack';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
-
 import LinkButton from 'common/js/components/LinkButton';
 import GfwSelect from 'common/js/components/GfwSelect';
 import ModalLoader from 'common/js/components/Loaders/ModalLoader';
-import IconButton from 'common/js/components/IconButton';
-import IconTimes from 'common/js/components/icon/IconTimes';
-
 import IconListAlt from 'common/js/components/icon/IconListAlt';
 import IconGlobeAmericas from 'common/js/components/icon/IconGlobeAmericas';
 import getUserLocationDataFromAPI from '../getUserLocationDataFromAPI';
 import filterListData from '../filterListData';
+import Filter from './Filter';
 import {
   filterValidCustom,
   filterValidTemplates,
@@ -48,7 +45,6 @@ import LocationsSummary from './LocationsSummary';
 import ListDownload from '../download/ListDownload';
 import SaveAsDraftButton from '../../../../../common/js/components/SaveAsDraft/SaveAsDraftButton';
 import CopyMoveModal from '../../modals/CopyMoveModal';
-import ListsFilter from '../../../../../locations/js/components/lists/ListsFilter';
 import fetch from '../../../../../common/js/utils/fetch';
 import httpRequest from '../../../../../common/js/utils/httpRequest';
 import Banner from '../../../../../common/js/components/Banners/Banner';
@@ -87,11 +83,8 @@ import {
   getDialogTitle,
 } from '../../../../../locations/js/utils/dialogMessage.utils';
 import { deleteAllFilteredLocations } from '../deleteAllFilteredLocations';
-import LocationsTableColumnSelector from '../LocationsTableColumnSelector'; // TODO: delete when removing feature flag
 import columns from '../../../config/columns';
 import { isUserList } from '../../../../../common/js/utils/gfw.utils';
-import { CommodityRiskFilterDrawer, ForestChangeFilterDrawer } from '../Filters';
-import LocationDataNotAvailableMessage from '../LocationDataNotAvailableMessage'; // TODO: delete when removing feature flag
 import ChangeTypeOfAnalysisModal from '../../../../../locations/js/components/landing/listItem/ChangeTypeOfAnalysisModal';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
 import ListActions from './ListActions';
@@ -123,7 +116,7 @@ export default class ListDetails extends Component {
     this.state = {
       bannerContent: '',
       commodityType: '',
-      filterStringInputValue: '', // controlled text input value
+      searchInputValue: '', // controlled text input value
       filterString: '', // filter string value
       listFilteredLocations: [],
       listNotAccessible: false,
@@ -166,7 +159,6 @@ export default class ListDetails extends Component {
   }
 
   componentDidMount() {
-    console.log('dlsakfjlkasdjflkasjdflksajdflasdjlkfasdfs');
     const { listData, filters, selectedLists } = this.props;
 
     const { list_name, id, globalForestWatchList, associated_gfwlist } = selectedLists[0];
@@ -1440,13 +1432,12 @@ export default class ListDetails extends Component {
     });
   };
 
-  // Search selected lists
-  myListsSearchFilter = (newValue) => {
+  handleSearchInputChange = (newValue) => {
     const { selectedLocations, selectedLists } = this.props;
     const { filterString } = this.state;
 
     this.setState({
-      filterStringInputValue: newValue,
+      searchInputValue: newValue,
     });
 
     const isGfwList = !isUserList(selectedLists[0]);
@@ -1461,7 +1452,7 @@ export default class ListDetails extends Component {
       // if there was a filter string set and we cleared the input text
 
       // user lists are paginated in the backend
-      // so the search term is only set when pressing enter (see setSearchString()) or when deleting the string
+      // so the search term is only set when pressing enter (see handleSearchInputKeyDown()) or when deleting the string
       this.setState(
         {
           filterString: '',
@@ -1473,7 +1464,7 @@ export default class ListDetails extends Component {
     }
   };
 
-  setSearchString = (evt) => {
+  handleSearchInputKeyDown = (evt) => {
     // if enter key is pressed and it's not a GFW list, filter locations by input text
     const { selectedLists } = this.props;
     const isGfwList = !isUserList(selectedLists[0]);
@@ -1486,6 +1477,13 @@ export default class ListDetails extends Component {
           this.getUserLocationData(selectedLists[0].id);
         }
       );
+    }
+  };
+
+  handlecSearchInputClick = () => {
+    const { selectedLists, filterString } = this.props;
+    if (filterString.trim()) {
+      this.getUserLocationData(selectedLists[0].id);
     }
   };
 
@@ -1868,7 +1866,7 @@ export default class ListDetails extends Component {
       isManageListFolderOpen,
       isNewListNameDuplicate,
       listColumns,
-      filterStringInputValue,
+      searchInputValue,
       filterString,
       listNotAccessible,
       openCountriesPopover,
@@ -2230,6 +2228,10 @@ export default class ListDetails extends Component {
                     folders={folders}
                     userIsOwner={userIsOwner}
                     setState={this.setState}
+                    searchInputValue={searchInputValue}
+                    handleSearchInputChange={this.handleSearchInputChange}
+                    handleSearchInputKeyDown={this.handleSearchInputKeyDown}
+                    handlecSearchInputClick={this.handlecSearchInputClick}
                   />
 
                   {!locationDataIsNotAvailable && (
@@ -2320,16 +2322,6 @@ export default class ListDetails extends Component {
                             </>
                           )}
                         </div>
-
-                        <div className="list-detail-filters__content-filters">
-                          {!shareView && (
-                            <ListsFilter
-                              value={filterStringInputValue}
-                              onChange={this.myListsSearchFilter}
-                              onkeydown={this.setSearchString}
-                            />
-                          )}
-                        </div>
                       </div>
 
                       <div style={{ display: 'flex', justifyContent: 'end' }}>
@@ -2373,61 +2365,20 @@ export default class ListDetails extends Component {
                           </span>
                         </div>
 
-                        <div style={{ textAlign: 'right' }}>
-                          {filterCount === 0 ? (
-                            <Button
-                              disabled={!selectedList}
-                              onClick={this.toggleCanopyModal}
-                              label={transifex(locationsPage.lists.selectFilters)}
-                            />
-                          ) : (
-                            <div className="compound-button">
-                              <Button
-                                variant="primary"
-                                className="compound-button__action-button"
-                                disabled={!selectedList}
-                                onClick={this.toggleCanopyModal}
-                                label={`${filterCount} ${
-                                  filterCount === 1
-                                    ? transifex(locationsPage.lists.filter)
-                                    : transifex(locationsPage.lists.filters)
-                                }`}
-                                title={
-                                  filterCount > 0
-                                    ? // Display a comma-separated list of active filter values.
-                                      Object.entries(filters)
-                                        .filter(this.isFilterValueDifferentThanDefault)
-                                        // eslint-disable-next-line array-callback-return
-                                        .map(([key, val]) => {
-                                          if (val !== undefined && val !== null && val !== '') {
-                                            const strValue = String(val)
-                                              .split(',')
-                                              .map((x) =>
-                                                transifex(x.charAt(0).toUpperCase() + x.slice(1))
-                                              )
-                                              .join(',');
-                                            return `${transifex(
-                                              locationsPage.lists[key]
-                                            )}: ${strValue}`;
-                                          }
-                                        })
-                                        .join(' - ')
-                                    : ''
-                                }
-                              />
-                              <IconButton
-                                variant="primary"
-                                className="compound-button__clear"
-                                onClick={this.clearFilters}
-                                icon={<IconTimes height="15" />}
-                                size="large"
-                                title={locationsPage.lists.clearFilters}
-                              />
-                            </div>
-                          )}
-                        </div>
+                        <Filter
+                          filterCount={filterCount}
+                          filterValues={filterValues}
+                          clearFilters={this.clearFilters}
+                          listColumns={listColumns}
+                          setListColumns={(newVisibleColumns) =>
+                            this.setState({
+                              visibleColumns: newVisibleColumns,
+                            })
+                          }
+                          canopyModalVisible={canopyModalVisible}
+                        />
 
-                        <section className="section-container table-container">
+                        <section>
                           {filteredLists.length > 0 &&
                           listView !== '' &&
                           filteredLocationData.length > 0 ? (
@@ -2459,40 +2410,7 @@ export default class ListDetails extends Component {
             </div>
           </Menu>
         </Popover>
-        <div
-          className={`layer-modal-container modal-wrapper ${canopyModalVisible ? '' : 'hidden'}`}
-        >
-          {(() => {
-            if (listView === 'commodity_risk') {
-              return (
-                <CommodityRiskFilterDrawer
-                  listName={listName}
-                  listData={listData}
-                  filterCount={filterCount}
-                  listView={listView}
-                  clearFilters={this.clearFilters}
-                />
-              );
-            }
-            if (listView === 'forest_change') {
-              return (
-                <ForestChangeFilterDrawer
-                  listName={listName}
-                  listData={listData}
-                  filterCount={filterCount}
-                  listView={listView}
-                  adminAreas={currentAdminAreas}
-                  history={history}
-                  protectedAreas={pAreas}
-                  filterValues={filterValues}
-                  maximumAnalysisAreaInTheList={maximumAnalysisAreaInTheList}
-                  clearFilters={this.clearFilters}
-                />
-              );
-            }
-            return null;
-          })()}
-        </div>
+
         {displayLargeListEditingModal && (
           <LargeListEditing
             addType={addType}

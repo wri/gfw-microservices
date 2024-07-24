@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import * as AWS from 'aws-sdk';
+import { S3Client } from '@aws-sdk/client-s3';
 import { ListAnalysisController } from './list-analysis.controller';
 import { ListAnalysisService } from './list-analysis.service';
 import { ListUploadController } from './list-upload.controller';
@@ -37,9 +37,11 @@ import { ActivityLog } from '@wri-monorepos/sql';
       provide: 'AWS',
       inject: [ConfigService],
       useFactory: (config: ConfigService<ServerConfigType, true>) => {
-        AWS.config.update({
-          accessKeyId: config.get('AWS_ACCESS_KEY_ID'),
-          secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY'),
+        new S3Client({
+          credentials: {
+            accessKeyId: config.get('AWS_ACCESS_KEY_ID'),
+            secretAccessKey: config.get('AWS_SECRET_ACCESS_KEY'),
+          },
           region: config.get('AWS_REGION'),
         });
       },

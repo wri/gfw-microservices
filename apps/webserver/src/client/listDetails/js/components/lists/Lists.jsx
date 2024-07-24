@@ -2554,7 +2554,7 @@ export default class Lists extends Component {
                           />
                         )}
                       </div>
-                      <section className="section-container table-container">
+                      <section>
                         {filteredLists.length > 0 &&
                         listView !== '' &&
                         filteredLocationData.length > 0 ? (

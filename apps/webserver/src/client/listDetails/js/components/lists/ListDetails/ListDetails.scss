@@ -1,4 +1,4 @@
-#list-details-mount:has(.list-details) {
+body:has(.list-details) {
   height: 100%;
   background-color: #e5e5e5;
 }
@@ -14,5 +14,6 @@
   &__analysis-date {
     font-size: 12px;
     color: gray;
+    margin-left: auto;
   }
 }

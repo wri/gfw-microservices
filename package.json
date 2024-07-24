@@ -14,7 +14,6 @@
   "private": true,
   "dependencies": {
     "@arcgis/core": "~4.20.2",
-    "@aws-sdk/client-api-gateway": "^3.614.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.427.0",
     "@aws-sdk/client-lambda": "^3.427.0",
     "@aws-sdk/client-s3": "^3.427.0",

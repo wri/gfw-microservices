@@ -1,13 +1,13 @@
 /** ******************************************************************
- *   @name: lambda.utils.js
+ *   @name: lambda.utils.ts
  *   @description : A utility file to allow calling various
  *                 functionality from AWS Lambda
  *
  *   @function {invoke}
  ********************************************************************/
 // Imports for this module
-const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
-const { NodeHttpHandler } = require('@smithy/node-http-handler');
+import { LambdaClient, InvokeCommand, InvocationType } from '@aws-sdk/client-lambda';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 
 const LAMBDA_HTTP_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -17,15 +17,15 @@ const client = new LambdaClient({
   requestHandler: new NodeHttpHandler({
     requestTimeout: LAMBDA_HTTP_TIMEOUT_MS,
   }),
-});
+}); 
 
-const invoke = async (FunctionName, payload = {}) => {
+const invoke = async (FunctionName: string, payload: object = {}) => {
   const functionName = `${FunctionName}-${process.env.NODE_ENV}`;
   const payloadString = JSON.stringify(payload);
   const parameters = {
     FunctionName: functionName,
-    Payload: payloadString,
-    InvocationType: 'RequestResponse',
+    Payload: Buffer.from(payloadString), // Ensure payload is a Buffer
+    InvocationType: InvocationType.RequestResponse, // Explicitly use the enum
   };
   console.log('FunctionName', functionName);
 
@@ -35,6 +35,6 @@ const invoke = async (FunctionName, payload = {}) => {
   return { Payload: result };
 };
 
-module.exports = {
+export {
   invoke,
 };

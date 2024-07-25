@@ -148,25 +148,7 @@ class Locations extends Component {
         // Fetch the GFW list location ID and admin area data
         const { globalIds } = gfwInfoFromMap.gfwData;
 
-        // We know that these lists for sure do not require last character slice modification, but we are keeping the old logic also
-        // to prevent undesirable regressions
-        let updatedGlobalIds = [];
-        const gfwTestedList = [
-          universalMillList,
-          oilPalmConcessions,
-          rspoConcessions,
-          protectedAreas,
-          adminAreas,
-        ];
-        if (gfwTestedList.includes(listName)) {
-          updatedGlobalIds = globalIds;
-        } else {
-          updatedGlobalIds = [1, 2, 3].includes(gfwList?.id)
-            ? globalIds
-            : globalIds.map((id) => id);
-        }
-
-        const params = `list_id=${gfwList?.id}&global_ids=["${updatedGlobalIds}"]`;
+        const params = `list_id=${gfwList?.id}&global_ids=["${globalIds}"]`;
         httpRequest
           .fetchForm('/locations/getGFWListLocationsGlobalId', params)
           .then((response) => {

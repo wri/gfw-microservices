@@ -16,7 +16,7 @@ import { getDataAndCheckIfAllYearsZero, addNoOverlapArea } from './barChart.util
 import '../../common/DiagnosticsChartContainer.scss';
 
 import { regionIds } from './regions.constants';
-import { ChartsSelectorColombia } from './ChartsSelectorColombia';
+import { BarChartTreeCoverLossColombia } from './BarChartTreeCoverLossColombia';
 
 export function RegionChartByCountry({ listId, data, fireDownload, country }) {
   const query = useQuery();
@@ -28,7 +28,6 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     otbn,
     wdpaOverlapCountry,
     landmarkOverlapCountry,
-    colombianTreeCoverLoss,
     otbnPieChart,
   } = chartDatasetConfigs;
 
@@ -116,15 +115,6 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
         console.warn(e);
       });
   }, [listId, country]);
-
-  useEffect(() => {
-    const chartsConfiguration =
-      country === regionIds.ARGENTINA
-        ? [argentinaTreeCoverLoss, protectedAreas, indigenousTerritories, otbn]
-        : [colombianTreeCoverLoss];
-
-    setChartsConfiguration(chartsConfiguration);
-  }, [country]);
 
   useEffect(() => {
     setSelectedOptionId(chartsConfiguration[0].id);
@@ -227,41 +217,10 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
       )}
 
       {country === regionIds.COLOMBIA && (
-        <Card>
-          <h3 style={{ fontStyle: 'italic', paddingLeft: '4rem', marginBottom: 0 }}>
-            Select one main category and/or sub-category to adjust the graph and table
-          </h3>
-
-          <CardContent>
-            <div className="diagnostics-chart-container">
-              <div className="diagnostics-chart-container__chart">
-                {isAllDataEmpty ? (
-                  <div>No data available for any chart selection.</div>
-                ) : (
-                  <BarChart
-                    data={barChartData}
-                    columnStackStyle="normal"
-                    yAxisTitleText="Forest Loss (ha)"
-                  />
-                )}
-                {selectedOptionId === colombianTreeCoverLoss.id && !isAllDataEmpty && (
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <InfoIcon color="gray" />
-                    Bars with lower opacity indicate that the year is approximate.
-                  </div>
-                )}
-              </div>
-
-              <ChartsSelectorColombia
-                chartsConfiguration={chartsConfiguration}
-                onOptionChange={setSelectedOptionId}
-                selectedOptionId={selectedOptionId}
-                countryPieChartsData={countryPieChartsData}
-                graphUnit="Total loss (HA)"
-              />
-            </div>
-          </CardContent>
-        </Card>
+        <BarChartTreeCoverLossColombia
+          countryPieChartsData={countryPieChartsData}
+          isAllDataEmpty={isAllDataEmpty}
+        />
       )}
 
       {showProtectedAreasPieChart && (

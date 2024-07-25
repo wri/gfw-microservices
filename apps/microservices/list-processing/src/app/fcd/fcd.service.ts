@@ -241,21 +241,26 @@ export class FCDService {
   }
 
   private getFullyAndLessRestrictedData(dataJsonString: string, countryGadm: string) {
-    const data = JSON.parse(dataJsonString)[countryGadm] || {};
+    try {
+      const data = JSON.parse(dataJsonString)?.[countryGadm] || {};
 
-    const obj = { fullyRestrictive: {}, lessRestricted: {} };
+      const obj = { fullyRestrictive: {}, lessRestricted: {} };
 
-    for (const [key, value] of Object.entries(data)) {
-      const restrictionType = this.isFullRestrictiveCategory(key)
-        ? 'fullyRestrictive'
-        : 'lessRestricted';
+      for (const [key, value] of Object.entries(data)) {
+        const restrictionType = this.isFullRestrictiveCategory(key)
+          ? 'fullyRestrictive'
+          : 'lessRestricted';
 
-      for (const [innerKey, innerValue] of Object.entries(value)) {
-        const loss = obj[restrictionType][innerKey] || 0;
-        obj[restrictionType][innerKey] = loss + innerValue;
+        for (const [innerKey, innerValue] of Object.entries(value)) {
+          const loss = obj[restrictionType][innerKey] || 0;
+          obj[restrictionType][innerKey] = loss + innerValue;
+        }
       }
+      return { ...obj };
+    } catch (error) {
+      this.logger.error(`error converting json object: ${error}`);
+      return { fullyRestrictive: {}, lessRestricted: {} };
     }
-    return { ...obj };
   }
 
   private async getAggregatedLandmark(
@@ -318,24 +323,31 @@ export class FCDService {
       ],
     });
 
+    let countrySpecificDeforestation = {};
     try {
-      const countrySpecificDeforestation = JSON.parse(
-        country_specific_deforestation_landmark_yearly
-      )[countryGadm][this.INDIGENOUS_LAND];
-      const treeCoverLoss = JSON.parse(tree_cover_loss_by_country_landmark_yearly)[countryGadm][
-        this.INDIGENOUS_LAND
-      ];
-
-      landmark = {
-        ...landmark,
-        country_specific_deforestation: {
-          indigenous: this.toApproximateValueFormat(countrySpecificDeforestation),
-        },
-        tree_cover_loss: { indigenous: this.toApproximateValueFormat(treeCoverLoss) },
-      };
+      countrySpecificDeforestation = JSON.parse(country_specific_deforestation_landmark_yearly)[
+        countryGadm
+      ][this.INDIGENOUS_LAND];
     } catch (error) {
       this.logger.error(`error converting json object: ${error}`);
     }
+
+    let treeCoverLoss = {};
+    try {
+      treeCoverLoss = JSON.parse(tree_cover_loss_by_country_landmark_yearly)[countryGadm][
+        this.INDIGENOUS_LAND
+      ];
+    } catch (error) {
+      this.logger.error(`error converting json object: ${error}`);
+    }
+
+    landmark = {
+      ...landmark,
+      country_specific_deforestation: {
+        indigenous: this.toApproximateValueFormat(countrySpecificDeforestation),
+      },
+      tree_cover_loss: { indigenous: this.toApproximateValueFormat(treeCoverLoss) },
+    };
 
     return {
       ...landmark,

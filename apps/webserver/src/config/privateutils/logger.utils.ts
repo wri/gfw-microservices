@@ -206,7 +206,7 @@ export const getActivityLog = (req: Request) => {
           const actInfo = listActivityByID[data.activity_type_id];
           const datetime =
             data.activity_time instanceof Date ? data.activity_time : new Date(data.activity_time);
-          const { email, activity_description } = data;
+          const { email, activity_description = 'Unknown' } = data;
           const { category = 'Unknown', activityType = 'Unknown' } = actInfo || {};
           const activity_time = datetime.toUTCString().replace(',', '');
 
@@ -214,7 +214,7 @@ export const getActivityLog = (req: Request) => {
             email,
             activity_type_category_name: category,
             activity_type_name: activityType,
-            activity_description: activity_description || 'Unknown',
+            activity_description: activity_description,
             activity_time,
           };
           return newData;

@@ -206,21 +206,17 @@ export const getActivityLog = (req: Request) => {
           const actInfo = listActivityByID[data.activity_type_id];
           const datetime =
             data.activity_time instanceof Date ? data.activity_time : new Date(data.activity_time);
-          const newData = actInfo
-            ? {
-                email: data.email,
-                activity_type_category_name: actInfo.category,
-                activity_type_name: actInfo.activityType,
-                activity_description: data.activity_description,
-                activity_time: datetime.toUTCString().replace(',', ''),
-              }
-            : {
-                email: data.email,
-                activity_type_category_name: 'Unknown',
-                activity_type_name: 'Unknown',
-                activity_description: data.activity_description || 'Unknown',
-                activity_time: datetime.toUTCString().replace(',', ''),
-              };
+          const { email, activity_description } = data;
+          const { category = 'Unknown', activityType = 'Unknown' } = actInfo || {};
+          const activity_time = datetime.toUTCString().replace(',', '');
+
+          const newData = {
+            email,
+            activity_type_category_name: category,
+            activity_type_name: activityType,
+            activity_description: activity_description || 'Unknown',
+            activity_time,
+          };
           return newData;
         });
         resolve(newRes);

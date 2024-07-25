@@ -2562,9 +2562,6 @@
 "@emotion/weak-memoize@^0.3.1":
   version "0.3.1"
 
-"@esbuild/linux-x64@0.17.19":
-  version "0.17.19"
-
 "@eslint-community/eslint-utils@^4.2.0":
   version "4.4.0"
   dependencies:
@@ -3043,9 +3040,6 @@
 
 "@math.gl/types@3.6.3":
   version "3.6.3"
-
-"@msgpackr-extract/msgpackr-extract-linux-x64@3.0.2":
-  version "3.0.2"
 
 "@mui/base@^5.0.0-alpha.125", "@mui/base@5.0.0-beta.6":
   version "5.0.0-beta.6"
@@ -3547,17 +3541,20 @@
     "@nx/workspace" "16.7.4"
     tslib "^2.3.0"
 
-"@nx/nx-linux-x64-gnu@16.7.4":
+"@nx/nx-darwin-arm64@^19.5.2":
+  version "19.5.2"
+  resolved "https://registry.npmjs.org/@nx/nx-darwin-arm64/-/nx-darwin-arm64-19.5.2.tgz"
+  integrity sha512-8Y19MI7rP+KTyxYx/Dm0L5zncqkk6m4dKi92553sOVpNgpUX/CSuCN7rQJe5jlUP1gyzqzE595Xa5TJ6GLBFjA==
+
+"@nx/nx-darwin-arm64@16.7.4":
   version "16.7.4"
+  resolved "https://registry.npmjs.org/@nx/nx-darwin-arm64/-/nx-darwin-arm64-16.7.4.tgz"
+  integrity sha512-pRNjxn6KlcR6iGkU1j/1pzcogwXFv97pYiZaibpF7UV0vfdEUA3EETpDcs+hbNAcKMvVtn/TgN857/5LQ/lGUg==
 
-"@nx/nx-linux-x64-gnu@16.8.0":
+"@nx/nx-darwin-arm64@16.8.0":
   version "16.8.0"
-
-"@nx/nx-linux-x64-musl@16.7.4":
-  version "16.7.4"
-
-"@nx/nx-linux-x64-musl@16.8.0":
-  version "16.8.0"
+  resolved "https://registry.npmjs.org/@nx/nx-darwin-arm64/-/nx-darwin-arm64-16.8.0.tgz"
+  integrity sha512-yNmEJoRKl9JZH/O6oWUvbt5eYbSRHIJtGwvxVCtNRqykyNZNlEzMSLxz0Mx8x3h0QQ3zjZEUmMjac4tb4BPPLw==
 
 "@nx/webpack@16.7.4":
   version "16.7.4"
@@ -5615,7 +5612,9 @@
     "@types/node" "*"
 
 "@types/geojson@^7946.0.7":
-  version "7946.0.10"
+  version "7946.0.14"
+  resolved "https://registry.npmjs.org/@types/geojson/-/geojson-7946.0.14.tgz"
+  integrity sha512-WCfD5Ht3ZesJUsONdhvm84dmzWOiOzOAqOncN0++w0lBw1o8OuDNJF2McvvCef/yBqb/HYRahp1BYtODFQ8bRg==
 
 "@types/geojson@7946.0.8":
   version "7946.0.8"
@@ -5734,6 +5733,13 @@
 
 "@types/p-queue@^2.3.2":
   version "2.3.2"
+
+"@types/papaparse@^5.3.0":
+  version "5.3.14"
+  resolved "https://registry.npmjs.org/@types/papaparse/-/papaparse-5.3.14.tgz"
+  integrity sha512-LxJ4iEFcpqc6METwp9f6BV6VVc43m6MfH0VqFosHvrUgfXiFe6ww7R3itkOQ+TCK6Y+Iv/+RnnvtRZnkc5Kc9g==
+  dependencies:
+    "@types/node" "*"
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"
@@ -8515,9 +8521,6 @@ es-to-primitive@^1.2.1:
     is-callable "^1.1.4"
     is-date-object "^1.0.1"
     is-symbol "^1.0.2"
-
-esbuild-linux-64@0.14.54:
-  version "0.14.54"
 
 esbuild@^0.14.23:
   version "0.14.54"
@@ -11755,18 +11758,6 @@ ms@2.1.1:
 ms@2.1.2:
   version "2.1.2"
 
-msgpackr-extract@^3.0.2:
-  version "3.0.2"
-  dependencies:
-    node-gyp-build-optional-packages "5.0.7"
-  optionalDependencies:
-    "@msgpackr-extract/msgpackr-extract-darwin-arm64" "3.0.2"
-    "@msgpackr-extract/msgpackr-extract-darwin-x64" "3.0.2"
-    "@msgpackr-extract/msgpackr-extract-linux-arm" "3.0.2"
-    "@msgpackr-extract/msgpackr-extract-linux-arm64" "3.0.2"
-    "@msgpackr-extract/msgpackr-extract-linux-x64" "3.0.2"
-    "@msgpackr-extract/msgpackr-extract-win32-x64" "3.0.2"
-
 msgpackr@^1.8.5:
   version "1.9.9"
   optionalDependencies:
@@ -11888,9 +11879,6 @@ node-fetch@^2.6.1, node-fetch@^2.6.7:
 
 node-forge@^1:
   version "1.3.1"
-
-node-gyp-build-optional-packages@5.0.7:
-  version "5.0.7"
 
 node-gyp-build@^4.3.0:
   version "4.6.0"

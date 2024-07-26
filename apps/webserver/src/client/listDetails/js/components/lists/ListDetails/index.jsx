@@ -313,19 +313,9 @@ export default class ListDetails extends Component {
     const { selectedLocations, selectedAndVisibleLocations } = this.props;
     const { filterString, allLocationsSelected } = this.state;
 
-    //  const index = selectedLocations.indexOf(location_id);
-    // const tempLocations = selectedLocations.slice();
-
     if (allLocationsSelected) {
       this.setState({ allLocationsSelected: false });
     }
-    /*
-    if (index > -1) {
-      tempLocations.splice(index, 1);
-    } else {
-      tempLocations.push(location_id);
-    }
-      */
 
     this.getSearchedLocations(filterString, selectedLocationIds);
     store.dispatch(updateSelectedLocations(selectedLocationIds));

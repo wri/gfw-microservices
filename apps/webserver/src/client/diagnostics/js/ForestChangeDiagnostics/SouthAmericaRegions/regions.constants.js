@@ -142,6 +142,7 @@ export const chartDatasetConfigs = {
   wdpaOverlapCountry: {
     diagnosticTitle: 'Protected Areas Overlap',
     informationBubbleId: 'regions_arg_pa_landcover_calc',
+    informationBubbleColId: 'regions_col_pa_landcover_calc',
     downloadUrl: 'listId=5692&country=Argentina&category=WDPA',
     chartLabels: [
       { id: 'fullyRestrictive', color: '#862e13', legend: 'Fully Restricted' },
@@ -158,12 +159,46 @@ export const chartDatasetConfigs = {
     diagnosticTitle: 'Indigenous Territories Overlap',
     downloadUrl: 'listId=5692&country=Argentina&category=landmark',
     informationBubbleId: 'regions_arg_it_landcover_calc',
+    informationBubbleColId: 'regions_col_it_landcover_calc',
     chartLabels: [
       { id: 'indigenous', color: '#a8704a', legend: 'Overlap with Indigenous Territories' },
       {
         id: 'nonIndigenous',
         color: nonOverlapAreaColor,
         legend: 'Outside of Indigenous Territoriess',
+      },
+    ],
+  },
+  colombianTreeCoverLoss: {
+    id: 'colombianTreeCoverLoss',
+    dataCy: 'colombian-tree-cover-loss',
+    chartsSelectorTitle: 'Frontera Agricola/Restricciones',
+    dataPath: 'classified_region.tree_cover_loss',
+    infoBubbleId: 'regions_col_tcl_ agricultural_frontier_restrictions',
+    types: [
+      {
+        id: 'noCondicionado',
+        name: 'No Condicionado',
+        legend: 'No Condicionada',
+        color: 'rgb(34,153,102)',
+      },
+      {
+        id: 'condicionado',
+        name: 'Condicionado',
+        legend: 'Condicionada',
+        color: 'rgb(255,165,0)',
+        chartLabels: ['Étnico-Cultural', 'Ambiental/Étnico-Cultural'],
+      },
+      {
+        id: 'restricciones',
+        name: 'Zona restricción',
+        legend: 'Restricciones',
+        color: 'rgb(0,0,265)',
+        chartLabels: [
+          'Restricciones acuerdo cero deforestación',
+          'Restricciones técnicas (Áreas no agropecuarias)',
+          'Restricciones legales',
+        ],
       },
     ],
   },

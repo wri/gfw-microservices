@@ -126,10 +126,6 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     setChartsConfiguration(chartsConfiguration);
   }, [country]);
 
-  useEffect(() => {
-    setSelectedOptionId(chartsConfiguration[0].id);
-  }, [chartsConfiguration]);
-
   let barChartData = [];
 
   if (!isAllDataEmpty) {

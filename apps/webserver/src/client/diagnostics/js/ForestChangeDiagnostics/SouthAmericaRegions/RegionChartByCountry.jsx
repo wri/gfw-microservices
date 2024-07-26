@@ -27,6 +27,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     wdpaOverlapCountry,
     landmarkOverlapCountry,
     otbnPieChart,
+    colombianTreeCoverLoss,
   } = chartDatasetConfigs;
 
   const [chartsConfiguration, setChartsConfiguration] = useState([
@@ -113,6 +114,15 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
         console.warn(e);
       });
   }, [listId, country]);
+
+  useEffect(() => {
+    const chartsConfiguration =
+      country === regionIds.ARGENTINA
+        ? [argentinaTreeCoverLoss, protectedAreas, indigenousTerritories, otbn]
+        : [colombianTreeCoverLoss];
+
+    setChartsConfiguration(chartsConfiguration);
+  }, [country]);
 
   let barChartData = [];
 

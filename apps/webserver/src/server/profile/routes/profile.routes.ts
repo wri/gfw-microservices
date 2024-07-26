@@ -276,7 +276,7 @@ module.exports = (app, limiter) => {
     }
   };
 
-  app.get(`${API_BASE_URL}/swagger`, runSwaggerRequest);
+  app.get(`${API_BASE_URL}/swagger`, [...routeMiddlewares, eapiRoutes, runSwaggerRequest]);
 
   app.use(`${API_BASE_URL}/api-keys`, [
     ...routeMiddlewares,

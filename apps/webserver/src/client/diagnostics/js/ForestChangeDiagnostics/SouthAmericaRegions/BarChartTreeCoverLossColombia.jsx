@@ -3,22 +3,42 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@mui/material';
 import BarChart from '../../common/BarChart';
 import { SelectorWithTwoLevels } from './SelectorWithTwoLevels';
+import { SelectorWithOneLevel } from './SelectorWithOneLevel';
 import InfoIcon from 'material-ui/svg-icons/action/info';
-import { chartDatasetConfigs, regionConstants } from './regions.constants';
-import { getBarChartDataColombia } from './getBarChartData';
-
-const { colombianTreeCoverLoss } = chartDatasetConfigs;
+import { chartDatasetConfigsColombia, regionConstants } from './regions.constants';
+import { getBarChartData, getBarCharDataWithTwoLevels } from './getBarChartData';
 
 export function BarChartTreeCoverLossColombia({ countryPieChartsData, isAllDataEmpty }) {
-  const [selectedOptionId, setSelectedOptionId] = useState(colombianTreeCoverLoss.id);
+  const {
+    classifiedRegionTreeCoverLoss,
+    protectedAreasTreeCoverLoss,
+    indigenousTerritoriesTreeCoverLoss,
+  } = chartDatasetConfigsColombia;
+
+  const [selectedOptionId, setSelectedOptionId] = useState(classifiedRegionTreeCoverLoss.id);
 
   const { startYear, endYear } = regionConstants;
+  const dateRange = { startYear, endYear };
 
-  const barChartData = getBarChartDataColombia(
-    countryPieChartsData,
-    { startYear, endYear },
-    colombianTreeCoverLoss
-  );
+  const categoriesOneLevelBarChart = [
+    protectedAreasTreeCoverLoss,
+    indigenousTerritoriesTreeCoverLoss,
+  ];
+
+  let barChartData = [];
+
+  if (selectedOptionId === classifiedRegionTreeCoverLoss.id) {
+    barChartData = getBarCharDataWithTwoLevels(
+      countryPieChartsData,
+      dateRange,
+      classifiedRegionTreeCoverLoss
+    );
+  } else {
+    const chartConfiguration = categoriesOneLevelBarChart.find(
+      (config) => config.id === selectedOptionId
+    );
+    barChartData = getBarChartData(countryPieChartsData, dateRange, chartConfiguration.chartLabels);
+  }
 
   return (
     <Card>
@@ -38,7 +58,7 @@ export function BarChartTreeCoverLossColombia({ countryPieChartsData, isAllDataE
                 yAxisTitleText="Forest Loss (ha)"
               />
             )}
-            {selectedOptionId === colombianTreeCoverLoss.id && !isAllDataEmpty && (
+            {selectedOptionId === classifiedRegionTreeCoverLoss.id && !isAllDataEmpty && (
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <InfoIcon color="gray" />
                 Bars with lower opacity indicate that the year is approximate.
@@ -56,9 +76,16 @@ export function BarChartTreeCoverLossColombia({ countryPieChartsData, isAllDataE
               <tbody>
                 <SelectorWithTwoLevels
                   data={countryPieChartsData}
-                  chartConfiguration={colombianTreeCoverLoss}
+                  chartConfiguration={classifiedRegionTreeCoverLoss}
                   selectedOptionId={selectedOptionId}
                   onOptionChange={setSelectedOptionId}
+                />
+                <SelectorWithOneLevel
+                  countryPieChartsData={countryPieChartsData}
+                  selectedOptionId={selectedOptionId}
+                  onOptionChange={setSelectedOptionId}
+                  chartsConfiguration={categoriesOneLevelBarChart}
+                  updateCheckedLabels={() => null}
                 />
               </tbody>
             </table>

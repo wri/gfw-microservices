@@ -49,7 +49,6 @@ export const chartDatasetConfigs = {
     startYear: 2008,
     endYear: 2023,
   },
-
   otbn: {
     id: 'otbn',
     chartsSelectorTitle: 'Argentinian Govt Deforestation on Argentina OTBN',
@@ -124,7 +123,6 @@ export const chartDatasetConfigs = {
       },
     ],
   },
-
   indigenousTerritories: {
     id: 'indigenousTerritories',
     dataCy: 'argentina-indigenous-territories',
@@ -140,7 +138,6 @@ export const chartDatasetConfigs = {
       },
     ],
   },
-
   wdpaOverlapCountry: {
     diagnosticTitle: 'Protected Areas Overlap',
     informationBubbleId: 'regions_arg_pa_landcover_calc',
@@ -166,33 +163,6 @@ export const chartDatasetConfigs = {
         id: 'nonIndigenous',
         color: nonOverlapAreaColor,
         legend: 'Outside of Indigenous Territoriess',
-      },
-    ],
-  },
-  colombianTreeCoverLoss: {
-    id: 'colombianTreeCoverLoss',
-    dataCy: 'colombian-tree-cover-loss',
-    chartsSelectorTitle: 'Frontera Agricola/Restricciones',
-    dataPath: 'classified_region.tree_cover_loss',
-    infoBubbleId: 'regions_col_deforestation',
-    types: [
-      {
-        id: 'nonConditioned',
-        name: 'Non Conditioned',
-        legend: 'Non Conditioned',
-        color: 'rgb(34,153,102)',
-      },
-      {
-        id: 'conditioned',
-        name: 'Conditioned',
-        legend: 'Conditioned',
-        color: 'rgb(255,165,0)',
-      },
-      {
-        id: 'restrictions',
-        name: 'Restrictions',
-        legend: 'Restrictions',
-        color: 'rgb(0,0,265)',
       },
     ],
   },
@@ -229,6 +199,73 @@ export const chartDatasetConfigs = {
         dataPath: '',
         legend: 'Outside of OTBN',
         color: nonOverlapAreaColor,
+        checked: true,
+      },
+    ],
+  },
+};
+
+export const chartDatasetConfigsColombia = {
+  classifiedRegionTreeCoverLoss: {
+    id: 'colombianTreeCoverLoss',
+    dataCy: 'colombian-tree-cover-loss',
+    chartsSelectorTitle: 'Classified Region',
+    dataPath: 'classified_region.tree_cover_loss',
+    infoBubbleId: 'regions_col_deforestation',
+    types: [
+      {
+        id: 'nonConditioned',
+        name: 'Non Conditioned',
+        legend: 'Non Conditioned',
+        color: 'rgb(34,153,102)',
+      },
+      {
+        id: 'conditioned',
+        name: 'Conditioned',
+        legend: 'Conditioned',
+        color: 'rgb(255,165,0)',
+      },
+      {
+        id: 'restrictions',
+        name: 'Restrictions',
+        legend: 'Restrictions',
+        color: 'rgb(0,0,265)',
+      },
+    ],
+  },
+  protectedAreasTreeCoverLoss: {
+    id: 'protectedAreas',
+    dataCy: 'protected-areas',
+    chartsSelectorTitle: 'Protected Areas',
+    infoBubbleId: null,
+    chartLabels: [
+      {
+        id: 'fully restrictive',
+        dataPath: 'WDPA.tree_cover_loss.fullyRestrictive',
+        legend: 'Fully restrictive',
+        color: 'rgb(146,37,0)',
+        checked: true,
+      },
+      {
+        id: 'less restricted',
+        dataPath: 'WDPA.tree_cover_loss.lessRestricted',
+        legend: 'Less restricted',
+        color: 'rgb(255,64,0)',
+        checked: true,
+      },
+    ],
+  },
+  indigenousTerritoriesTreeCoverLoss: {
+    id: 'indigenousTerritories',
+    dataCy: 'indigenous-territories',
+    chartsSelectorTitle: 'Indigenous Territories',
+    infoBubbleId: null,
+    chartLabels: [
+      {
+        id: 'Indigenous Territories',
+        dataPath: 'landmark.tree_cover_loss.indigenous',
+        legend: 'Indigenous Territories',
+        color: 'rgb(146,37,100)',
         checked: true,
       },
     ],

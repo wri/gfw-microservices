@@ -27,7 +27,7 @@ export const getBarChartData = (argentinaPieChartsData, dateRange, chartLabels) 
   return filteredData;
 };
 
-export const getBarChartDataColombia = (rawPieChartsData, dateRange, chartConfiguration) => {
+export const getBarCharDataWithTwoLevels = (rawPieChartsData, dateRange, chartConfiguration) => {
   if (!chartConfiguration?.dataPath || !chartConfiguration?.types) return [];
 
   const typeData = getDataFromPath(rawPieChartsData, chartConfiguration.dataPath);

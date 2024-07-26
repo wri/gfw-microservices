@@ -22,7 +22,7 @@ async function bootstrap() {
 
   const configSwagger = new DocumentBuilder()
     .setTitle('GFW Pro API')
-    .setDescription('V1 for external API')
+    .setDescription('V1 for GFW Pro API')
     .setVersion('1.0')
     .addApiKey(
       {

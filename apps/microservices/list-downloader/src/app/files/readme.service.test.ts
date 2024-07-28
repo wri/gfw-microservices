@@ -16,7 +16,52 @@ describe('ReadmeService', () => {
   });
 
   describe('buildReadmeData', () => {
-    it('should return the formatted readme data', () => {
+    it('should return the formatted readme data with the informed version', () => {
+      const data = [
+        {
+          header: {
+            key1: {
+              name: 'Name 1',
+              description: 'Description 1',
+            },
+            key2: {
+              name: 'Name 2',
+              description: 'Description 2',
+            },
+          },
+          fileName: 'file1',
+          description: 'Description 1',
+          version: '1.1',
+        },
+        {
+          header: {
+            key3: {
+              name: 'Name 3',
+              description: 'Description 3',
+            },
+            key4: {
+              name: 'Name 4',
+              description: 'Description 4',
+            },
+          },
+          fileName: 'file2',
+          description: 'Description 2',
+          version: '1.2',
+        },
+      ];
+
+      const expectedOutput =
+        'CSV Name,Description,Version,Column,Column Description\n' +
+        '<LISTNAME>_file1,Description 1,1.1,Name 1,Description 1\n' +
+        '<LISTNAME>_file1,Description 1,1.1,Name 2,Description 2\n' +
+        '<LISTNAME>_file2,Description 2,1.2,Name 3,Description 3\n' +
+        '<LISTNAME>_file2,Description 2,1.2,Name 4,Description 4';
+
+      const result = service.buildReadmeData(data);
+      expect(result).toEqual(expectedOutput);
+    });
+
+    it('should return the formatted readme data if version 0.0', () => {
       const data = [
         {
           header: {
@@ -49,11 +94,11 @@ describe('ReadmeService', () => {
       ];
 
       const expectedOutput =
-        'CSV Name;Description;Column;Column Description\n' +
-        '<LISTNAME>_file1;Description 1;Name 1;Description 1\n' +
-        '<LISTNAME>_file1;Description 1;Name 2;Description 2\n' +
-        '<LISTNAME>_file2;Description 2;Name 3;Description 3\n' +
-        '<LISTNAME>_file2;Description 2;Name 4;Description 4';
+        'CSV Name,Description,Version,Column,Column Description\n' +
+        '<LISTNAME>_file1,Description 1,0.0,Name 1,Description 1\n' +
+        '<LISTNAME>_file1,Description 1,0.0,Name 2,Description 2\n' +
+        '<LISTNAME>_file2,Description 2,0.0,Name 3,Description 3\n' +
+        '<LISTNAME>_file2,Description 2,0.0,Name 4,Description 4';
 
       const result = service.buildReadmeData(data);
       expect(result).toEqual(expectedOutput);
@@ -85,9 +130,9 @@ describe('ReadmeService', () => {
       ];
 
       const readmeData =
-        'CSV Name;Description;Column;Column Description\n' +
-        '<LISTNAME>_file1;Description 1;Name 1;Description 1\n' +
-        '<LISTNAME>_file1;Description 1;Name 2;Description 2';
+        'CSV Name,Description,Version,Column,Column Description\n' +
+        '<LISTNAME>_file1,Description 1,0.0,Name 1,Description 1\n' +
+        '<LISTNAME>_file1,Description 1,0.0,Name 2,Description 2';
 
       jest.spyOn(service, 'afiReadmeData').mockReturnValue(data);
       jest.spyOn(service, 'buildReadmeData').mockReturnValue(readmeData);
@@ -107,7 +152,7 @@ describe('ReadmeService', () => {
         type: 'afi',
         key: 'some_key',
       };
-      const data = 'CSV Name;Description;Column;Column Description';
+      const data = 'CSV Name,Description,Version,Column,Column Description';
       const expectedFilePath = '/tmp/wri-some_key/README.csv';
 
       (fs.writeFile as unknown as jest.Mock).mockImplementation(
@@ -131,7 +176,7 @@ describe('ReadmeService', () => {
         type: 'afi',
         key: 'some_key',
       };
-      const data = 'CSV Name;Description;Column;Column Description';
+      const data = 'CSV Name,Description,Version,Column,Column Description';
 
       (fs.writeFile as unknown as jest.Mock).mockImplementation(
         (filePath, data, encoding, callback) => {

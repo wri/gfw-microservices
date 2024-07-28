@@ -23,6 +23,7 @@ type ReadmeDataType = {
   header: HeaderType;
   fileName: string;
   description: string;
+  version?: string;
 };
 
 @Injectable()
@@ -30,12 +31,14 @@ export class ReadmeService {
   private readonly logger = new Logger(ReadmeService.name);
 
   buildReadmeData(data: Array<ReadmeDataType>): string {
-    const output = ['CSV Name;Description;Column;Column Description'];
+    const output = [`CSV Name,Description,Version,Column,Column Description`];
     data.map((item) => {
-      const { header, fileName, description } = item;
+      const { header, fileName, description, version } = item;
       Object.keys(header).map((key) => {
         output.push(
-          `<LISTNAME>_${fileName};${description};${header[key].name};${header[key].description}`
+          `<LISTNAME>_${fileName},${description},${version ?? '0.0'},${header[key].name},${
+            header[key].description
+          }`
         );
       });
     });
@@ -86,6 +89,7 @@ export class ReadmeService {
         header: ALERTS_INTEGRATED_NATURAL_FOREST_SERVICE_CSV_HEADER,
         fileName: '_IntegratedAlerts_NaturalForest_Daily',
         description: 'Natural Forest Daily Alerts by Location',
+        version: '1.1',
       });
     }
     return readmeData;

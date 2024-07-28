@@ -1,12 +1,12 @@
-import { ClientStoreConnection, FeatureFlag, Organization } from "@wri-monorepos/sql";
-import { RequestLargeListProcess } from "../models";
-import { ListService } from "./list.service";
-import { StartAnalysisService } from "../app/list-upload/start.analysis.service";
-import { DeprecatedStartAnalysisService } from "../app/list-upload/deprecated.start.analysis.service";
-import { DataSource, EntityManager } from "typeorm";
-import { MetadataService } from "@wri-monorepos/aws";
-import { ConfigService } from "@nestjs/config";
-import { featureFlagsService } from "@wri-monorepos/shared";
+import { ClientStoreConnection, FeatureFlag, Organization } from '@wri-monorepos/sql';
+import { RequestLargeListProcess } from '../models';
+import { ListService } from './list.service';
+import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
+import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
+import { DataSource, EntityManager } from 'typeorm';
+import { MetadataService } from '@wri-monorepos/aws';
+import { ConfigService } from '@nestjs/config';
+import { featureFlagsService } from '@wri-monorepos/shared';
 
 jest.mock('@wri-monorepos/shared', () => ({
   featureFlagsService: jest.fn(),
@@ -51,7 +51,7 @@ describe('ListService - Start Analysis Process For List', () => {
       metadataServiceMock as MetadataService,
       configServiceMock as ConfigService,
       deprecatedStartAnalysisService,
-      startAnalysisService,
+      startAnalysisService
     );
   });
 
@@ -69,7 +69,8 @@ describe('ListService - Start Analysis Process For List', () => {
 
     const flags: FeatureFlag[] = [
       {
-        flagId: 'UploadListLp', flagState: true,
+        flagId: 'UploadListLp',
+        flagState: true,
         id: 0,
         orgId: 0,
         modifierUserId: 0,
@@ -77,7 +78,8 @@ describe('ListService - Start Analysis Process For List', () => {
         organization: new Organization(),
       },
       {
-        flagId: 'AnotherFlag', flagState: false,
+        flagId: 'AnotherFlag',
+        flagState: false,
         id: 0,
         orgId: 0,
         modifierUserId: 0,
@@ -91,7 +93,6 @@ describe('ListService - Start Analysis Process For List', () => {
     (featureFlagsService as jest.Mock).mockResolvedValue({
       getFeatureFlagsForCurrentOrg: mockFunc1,
     });
-
 
     await service.startAnalysisProcessForList(request);
 
@@ -113,7 +114,8 @@ describe('ListService - Start Analysis Process For List', () => {
 
     const flags: FeatureFlag[] = [
       {
-        flagId: 'UploadListLp', flagState: false,
+        flagId: 'UploadListLp',
+        flagState: false,
         id: 0,
         orgId: 0,
         modifierUserId: 0,
@@ -121,7 +123,8 @@ describe('ListService - Start Analysis Process For List', () => {
         organization: new Organization(),
       },
       {
-        flagId: 'AnotherFlag', flagState: false,
+        flagId: 'AnotherFlag',
+        flagState: false,
         id: 0,
         orgId: 0,
         modifierUserId: 0,
@@ -135,7 +138,6 @@ describe('ListService - Start Analysis Process For List', () => {
     (featureFlagsService as jest.Mock).mockResolvedValue({
       getFeatureFlagsForCurrentOrg: mockFunc1,
     });
-
 
     await service.startAnalysisProcessForList(request);
 

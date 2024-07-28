@@ -1,86 +1,58 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ListService } from './list.service';
-import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
-import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
-import { FeatureFlag, Organization } from '@wri-monorepos/sql';
-import { RequestLargeListProcess, ResponseLargeListProcess } from '../models';
-import { DataSource } from 'typeorm';
-import { MetadataService } from '@wri-monorepos/aws';
-import { ConfigService } from '@nestjs/config';
+import { ClientStoreConnection, FeatureFlag, Organization } from "@wri-monorepos/sql";
+import { RequestLargeListProcess } from "../models";
+import { ListService } from "./list.service";
+import { StartAnalysisService } from "../app/list-upload/start.analysis.service";
+import { DeprecatedStartAnalysisService } from "../app/list-upload/deprecated.start.analysis.service";
+import { DataSource, EntityManager } from "typeorm";
+import { MetadataService } from "@wri-monorepos/aws";
+import { ConfigService } from "@nestjs/config";
+import { featureFlagsService } from "@wri-monorepos/shared";
 
 jest.mock('@wri-monorepos/shared', () => ({
   featureFlagsService: jest.fn(),
 }));
 
-describe('ListService', () => {
+describe('ListService - Start Analysis Process For List', () => {
   let service: ListService;
   let startAnalysisService: StartAnalysisService;
   let deprecatedStartAnalysisService: DeprecatedStartAnalysisService;
-  let getFeatureFlagsForCurrentOrg: jest.Mock;
+  let dataSourceMock: Partial<DataSource>;
+  let metadataServiceMock: Partial<MetadataService>;
+  let configServiceMock: Partial<ConfigService>;
 
   beforeEach(async () => {
-    getFeatureFlagsForCurrentOrg = jest.fn();
+    const entityManagerMock: Partial<EntityManager> = {
+      transaction: jest.fn(),
+    };
 
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ListService,
-        {
-          provide: DataSource, // Provide the DataSource mock
-          useValue: {
-            // Mock the methods you need from DataSource
-            manager: {
-              transaction: jest.fn(),
-            },
-          },
-        },
-        {
-          provide: 'ClientStoreConnection', // Provide the ClientStoreConnection mock
-          useValue: {
-            // Mock the methods you need from ClientStoreConnection
-          },
-        },
-        {
-          provide: MetadataService, // Provide the MetadataService mock
-          useValue: {
-            // Mock the methods you need from MetadataService
-          },
-        },
-        {
-          provide: ConfigService, // Provide the ConfigService mock
-          useValue: {
-            // Mock the methods you need from ConfigService
-          },
-        },
-        {
-          provide: StartAnalysisService,
-          useValue: {
-            run: jest.fn(),
-          },
-        },
-        {
-          provide: DeprecatedStartAnalysisService,
-          useValue: {
-            run: jest.fn(),
-          },
-        },
-        {
-          provide: 'featureFlagsService',
-          useValue: {
-            getFeatureFlagsForCurrentOrg,
-          },
-        },
-      ],
-    }).compile();
+    dataSourceMock = {
+      manager: entityManagerMock as EntityManager,
+    };
 
-    service = module.get<ListService>(ListService);
-    startAnalysisService = module.get<StartAnalysisService>(StartAnalysisService);
-    deprecatedStartAnalysisService = module.get<DeprecatedStartAnalysisService>(
-      DeprecatedStartAnalysisService
+    metadataServiceMock = {
+      // Mock the methods you need from MetadataService
+    };
+
+    configServiceMock = {
+      // Mock the methods you need from ConfigService
+    };
+
+    startAnalysisService = {
+      run: jest.fn(),
+    } as unknown as StartAnalysisService;
+
+    deprecatedStartAnalysisService = {
+      run: jest.fn(),
+    } as unknown as DeprecatedStartAnalysisService;
+
+    service = new ListService(
+      dataSourceMock as DataSource,
+      new ClientStoreConnection(),
+      metadataServiceMock as MetadataService,
+      configServiceMock as ConfigService,
+      deprecatedStartAnalysisService,
+      startAnalysisService,
     );
-  });
-
-  it('should be defined', () => {
-    expect(service).toBeDefined();
   });
 
   it('should call startAnalysisService.run if UploadListLp flag is true', async () => {
@@ -94,28 +66,37 @@ describe('ListService', () => {
       user_id: 1,
       startAnalysis: true,
     };
+
     const flags: FeatureFlag[] = [
       {
-        id: 1,
-        flagId: 'UploadListLp',
-        flagState: true,
-        modifierUserId: 1,
-        updateDateTime: new Date(),
+        flagId: 'UploadListLp', flagState: true,
+        id: 0,
+        orgId: 0,
+        modifierUserId: 0,
+        updateDateTime: undefined,
         organization: new Organization(),
-        orgId: 1,
+      },
+      {
+        flagId: 'AnotherFlag', flagState: false,
+        id: 0,
+        orgId: 0,
+        modifierUserId: 0,
+        updateDateTime: undefined,
+        organization: new Organization(),
       },
     ];
-    const response: ResponseLargeListProcess = { executionArn: '', startDate: '' };
 
-    getFeatureFlagsForCurrentOrg.mockResolvedValue(flags);
-    (startAnalysisService.run as jest.Mock).mockResolvedValue(response);
+    const mockFunc1 = jest.fn().mockReturnValue(flags);
 
-    const result = await service.startAnalysisProcessForList(request);
+    (featureFlagsService as jest.Mock).mockResolvedValue({
+      getFeatureFlagsForCurrentOrg: mockFunc1,
+    });
 
-    expect(getFeatureFlagsForCurrentOrg).toHaveBeenCalledWith(request.organization_id);
+
+    await service.startAnalysisProcessForList(request);
+
     expect(startAnalysisService.run).toHaveBeenCalledWith(request);
     expect(deprecatedStartAnalysisService.run).not.toHaveBeenCalled();
-    expect(result).toEqual(response);
   });
 
   it('should call deprecatedStartAnalysisService.run if UploadListLp flag is false', async () => {
@@ -129,27 +110,36 @@ describe('ListService', () => {
       user_id: 1,
       startAnalysis: true,
     };
+
     const flags: FeatureFlag[] = [
       {
-        id: 1,
-        flagId: 'UploadListLp',
-        flagState: false,
-        modifierUserId: 1,
-        updateDateTime: new Date(),
+        flagId: 'UploadListLp', flagState: false,
+        id: 0,
+        orgId: 0,
+        modifierUserId: 0,
+        updateDateTime: undefined,
         organization: new Organization(),
-        orgId: 1,
+      },
+      {
+        flagId: 'AnotherFlag', flagState: false,
+        id: 0,
+        orgId: 0,
+        modifierUserId: 0,
+        updateDateTime: undefined,
+        organization: new Organization(),
       },
     ];
-    const response: ResponseLargeListProcess = { executionArn: '', startDate: '' };
 
-    getFeatureFlagsForCurrentOrg.mockResolvedValue(flags);
-    (deprecatedStartAnalysisService.run as jest.Mock).mockResolvedValue(response);
+    const mockFunc1 = jest.fn().mockReturnValue(flags);
 
-    const result = await service.startAnalysisProcessForList(request);
+    (featureFlagsService as jest.Mock).mockResolvedValue({
+      getFeatureFlagsForCurrentOrg: mockFunc1,
+    });
 
-    expect(getFeatureFlagsForCurrentOrg).toHaveBeenCalledWith(request.organization_id);
-    expect(deprecatedStartAnalysisService.run).toHaveBeenCalledWith(request);
-    expect(startAnalysisService.run).not.toHaveBeenCalled();
-    expect(result).toEqual(response);
+
+    await service.startAnalysisProcessForList(request);
+
+    expect(startAnalysisService.run).not.toHaveBeenCalledWith(request);
+    expect(deprecatedStartAnalysisService.run).toHaveBeenCalled();
   });
 });

@@ -5,7 +5,13 @@ import useHookWithRefCallback from './useHookWithRefCallback';
 
 const transifex = Transifex.live.translateText;
 
-function BarChart({ data, plotBands = [], plotLines = [] }) {
+function BarChart({
+  data,
+  plotBands = [],
+  plotLines = [],
+  columnStackStyle,
+  yAxisTitleText = 'ha',
+}) {
   const renderChart = (divRef) => {
     Highcharts.chart({
       chart: {
@@ -38,7 +44,7 @@ function BarChart({ data, plotBands = [], plotLines = [] }) {
         min: 0,
         title: {
           useHTML: true,
-          text: '<div>ha</div>',
+          text: `<div>${yAxisTitleText}</div>`,
         },
       },
       tooltip: {
@@ -55,7 +61,7 @@ function BarChart({ data, plotBands = [], plotLines = [] }) {
           stacking: 'normal',
         },
         column: {
-          stacking: null,
+          stacking: columnStackStyle,
           pointPadding: 0.2,
           borderWidth: 0,
         },

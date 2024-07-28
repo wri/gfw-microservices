@@ -4,7 +4,7 @@ import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 
 import * as request from 'supertest';
 import * as sinon from 'sinon';
-import * as AWS from 'aws-sdk';
+import { APIGateway } from '@aws-sdk/client-api-gateway';
 
 import { APIKeyController } from '../api-key.controller';
 import { TokenService } from '../token.service';
@@ -48,7 +48,7 @@ describe('api-key', () => {
       ],
     }).compile();
 
-    const dummyGateway = new AWS.APIGateway();
+    const dummyGateway = new APIGateway();
     sandbox.stub(dummyGateway.constructor.prototype, 'createApiKey').returns({
       promise: () => {
         return {

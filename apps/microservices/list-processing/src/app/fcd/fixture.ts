@@ -389,96 +389,100 @@ export const classifiedAnnualLossProcessedValue = {
       ],
     },
     tree_cover_loss: {
-      'Conditioned;Environmental/Ethno-Cultural': [
-        {
-          approximateValue: false,
-          value: 11.5397,
-          year: 2021,
-        },
-        {
-          approximateValue: false,
-          value: 0,
-          year: 2022,
-        },
-        {
-          approximateValue: false,
-          value: 0,
-          year: 2023,
-        },
-      ],
-      'Conditioned;Ethno-Cultural': [
-        {
-          approximateValue: false,
-          value: 85.1546,
-          year: 2021,
-        },
-        {
-          approximateValue: false,
-          value: 102.1548,
-          year: 2022,
-        },
-        {
-          approximateValue: false,
-          value: 77.0777,
-          year: 2023,
-        },
-      ],
-      'Restrictions;Legal': [
-        {
-          approximateValue: false,
-          value: 7.6162,
-          year: 2021,
-        },
-        {
-          approximateValue: false,
-          value: 0.3077,
-          year: 2022,
-        },
-        {
-          approximateValue: false,
-          value: 17.3095,
-          year: 2023,
-        },
-      ],
-      'Restrictions;Technical (Non-agricultural areas)': [
-        {
-          approximateValue: false,
-          value: 1.8462,
-          year: 2021,
-        },
-        {
-          approximateValue: false,
-          value: 1.2308,
-          year: 2022,
-        },
-        {
-          approximateValue: false,
-          value: 3.077,
-          year: 2023,
-        },
-      ],
-      'Restrictions;Zero Deforestation Agreement': [
-        {
-          approximateValue: false,
-          value: 47.1544,
-          year: 2020,
-        },
-        {
-          approximateValue: false,
-          value: 72.5392,
-          year: 2021,
-        },
-        {
-          approximateValue: false,
-          value: 149.0017,
-          year: 2022,
-        },
-        {
-          approximateValue: false,
-          value: 99.0011,
-          year: 2023,
-        },
-      ],
+      Conditioned: {
+        'Environmental/Ethno-Cultural': [
+          {
+            approximateValue: false,
+            value: 11.5397,
+            year: 2021,
+          },
+          {
+            approximateValue: false,
+            value: 0,
+            year: 2022,
+          },
+          {
+            approximateValue: false,
+            value: 0,
+            year: 2023,
+          },
+        ],
+        'Ethno-Cultural': [
+          {
+            approximateValue: false,
+            value: 85.1546,
+            year: 2021,
+          },
+          {
+            approximateValue: false,
+            value: 102.1548,
+            year: 2022,
+          },
+          {
+            approximateValue: false,
+            value: 77.0777,
+            year: 2023,
+          },
+        ],
+      },
+      Restrictions: {
+        Legal: [
+          {
+            approximateValue: false,
+            value: 7.6162,
+            year: 2021,
+          },
+          {
+            approximateValue: false,
+            value: 0.3077,
+            year: 2022,
+          },
+          {
+            approximateValue: false,
+            value: 17.3095,
+            year: 2023,
+          },
+        ],
+        'Technical (Non-agricultural areas)': [
+          {
+            approximateValue: false,
+            value: 1.8462,
+            year: 2021,
+          },
+          {
+            approximateValue: false,
+            value: 1.2308,
+            year: 2022,
+          },
+          {
+            approximateValue: false,
+            value: 3.077,
+            year: 2023,
+          },
+        ],
+        'Zero Deforestation Agreement': [
+          {
+            approximateValue: false,
+            value: 47.1544,
+            year: 2020,
+          },
+          {
+            approximateValue: false,
+            value: 72.5392,
+            year: 2021,
+          },
+          {
+            approximateValue: false,
+            value: 149.0017,
+            year: 2022,
+          },
+          {
+            approximateValue: false,
+            value: 99.0011,
+            year: 2023,
+          },
+        ],
+      },
     },
   },
 };

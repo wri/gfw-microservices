@@ -30,7 +30,11 @@ jest.mock('../../../../diagnostics/js/common/DiagnosticsChartHeader', () => () =
 
 global.fetch = jest.fn(() =>
   Promise.resolve({
-    json: () => Promise.resolve({ WDPA: {}, landmark: {} }),
+    json: () =>
+      Promise.resolve({
+        WDPA: { country_specific_deforestation: { fullyRestrictive: 1, lessRestrictive: 2 } },
+        landmark: {},
+      }),
     ok: true,
   })
 );
@@ -128,10 +132,10 @@ describe('RegionChartByCountry - Colombia', () => {
     await waitFor(() => {
       expect(screen.queryByText('DiagnosticsChartHeader Component')).toBeNull();
       expect(screen.queryByText('DateRangeSlider Component')).toBeNull();
-      expect(screen.queryByText('BarChart Component')).toBeNull();
       expect(screen.queryByText('ChartsSelectorArgentina Component')).toBeNull();
       expect(screen.queryByText('PieChart Component - OTBN Overlap')).toBeNull();
 
+      expect(screen.queryByText('BarChart Component')).not.toBeNull();
       expect(screen.queryByText('PieChart Component - Protected Areas Overlap')).not.toBeNull();
 
       expect(
@@ -166,7 +170,6 @@ describe('RegionChartByCountry - Colombia', () => {
     await waitFor(() => {
       expect(screen.queryByText('DiagnosticsChartHeader Component')).toBeNull();
       expect(screen.queryByText('DateRangeSlider Component')).toBeNull();
-      expect(screen.queryByText('BarChart Component')).toBeNull();
       expect(screen.queryByText('ChartsSelectorArgentina Component')).toBeNull();
       expect(screen.queryByText('PieChart Component - OTBN Overlap')).toBeNull();
 

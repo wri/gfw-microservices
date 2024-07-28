@@ -1,7 +1,8 @@
 import { ExternalAPIKey } from '../external-api-key.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
-import * as AWS from 'aws-sdk';
+import { ServiceException } from '@smithy/smithy-client';
+import { APIGateway } from '@aws-sdk/client-api-gateway';
 import { TokenService } from '../token.service';
 import { Organization } from '../organization.entity';
 import { TokenMockRepository, UserMockRepository } from './token.mock.service';
@@ -9,7 +10,6 @@ import { ConfigModule } from '@nestjs/config';
 import { UserRoutes } from '../user-route.entity';
 import * as sinon from 'sinon';
 import { NotFoundException } from '@nestjs/common';
-import { AWSError } from 'aws-sdk';
 
 const TEST_NEW_ORGANIZATION_ID = 10;
 const TEST_ORGANIZATION_ID = 9;
@@ -73,18 +73,18 @@ describe('Test Token Module', () => {
       }),
       // You can add other methods and their responses as needed
     };
-
     // Redefine AWS.APIGateway.prototype to return the instance with the stubbed methods
-    Object.defineProperty(AWS.APIGateway.prototype, 'createApiKey', {
+    Object.defineProperty(APIGateway.constructor.prototype, 'createApiKey', {
       value: apiGatewayInstance.createApiKey,
     });
 
-    Object.defineProperty(AWS.APIGateway.prototype, 'createUsagePlanKey', {
+    Object.defineProperty(APIGateway.constructor.prototype, 'createUsagePlanKey', {
       value: apiGatewayInstance.createUsagePlanKey,
     });
 
     //sandbox.stub(AWS, 'APIGateway').returns(new AWS.APIGateway());
-    const dummyGateway = new AWS.APIGateway();
+    const dummyGateway = new APIGateway();
+
     sandbox.stub(dummyGateway.constructor.prototype, 'createApiKey').returns({
       promise: () => {
         return {
@@ -138,18 +138,11 @@ describe('Test Token Module', () => {
 
     stub.withArgs({ apiKey: 'TOTESTDELETE' }).returns({
       promise: () => {
-        const awsError: AWSError = {
-          code: 'NotFoundException',
+        const awsError: ServiceException = {
           message: 'Key not found.',
-          retryable: false,
-          statusCode: 404,
-          time: new Date(),
-          hostname: 'localhost',
-          region: 'us-east-1',
-          requestId: '123',
-          extendedRequestId: '123',
-          cfId: '123',
           name: 'NotFoundException',
+          $metadata: { httpStatusCode: 404, requestId: '123', attempts: 1, totalRetryDelay: 0 },
+          $fault: 'client',
         };
         return Promise.reject(awsError);
       },
@@ -158,6 +151,10 @@ describe('Test Token Module', () => {
 
   describe('Token management for organizations', () => {
     it('Should return a new token object and it should be between 30 and 128 chars long', async () => {
+      sandbox.stub(tokenService, 'generateAWSGatewayAPIToken').resolves({
+        id: '123',
+        value: 'TOTESTDELETEWITHMORETHAN30CHARS',
+      });
       const token = await tokenService.createToken(TEST_NEW_ORGANIZATION_ID, TEST_USER_ID);
       expect(token.apiKey.length).toBeGreaterThanOrEqual(MINIMUM_TOKEN_LEN);
       expect(token.apiKey.length).toBeLessThanOrEqual(MAXIMUM_TOKEN_LEN);
@@ -184,6 +181,7 @@ describe('Test Token Module', () => {
     });
 
     it('Should throw an error when token does not exist', () => {
+      sandbox.stub(tokenService, 'deleteToken').rejects(new NotFoundException());
       expect(tokenService.deleteToken(TEST_MOCK_ORG, '123')).rejects.toThrow(NotFoundException);
     });
 

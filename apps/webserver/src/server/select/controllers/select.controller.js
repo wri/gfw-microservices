@@ -35,3 +35,22 @@ export const select = (req, res) => {
       });
   }
 };
+
+/**
+ * @function changeOrganization
+ * @summary
+ * @name exports.changeOrganization
+ * @static
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+export const changeOrganization = (req, res) => {
+  // Set in the response to not cache the page
+  res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+  res.header('Expires', '-1');
+  res.header('Pragma', 'no-cache');
+
+  delete req.session.organization_database;
+
+  res.redirect('/select');
+};

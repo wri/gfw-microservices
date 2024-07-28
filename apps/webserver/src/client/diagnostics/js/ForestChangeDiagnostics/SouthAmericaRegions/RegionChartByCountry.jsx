@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Card from '@mui/material/Card';
+
+import { Card, CardContent } from '@mui/material';
+
 import InfoIcon from 'material-ui/svg-icons/action/info';
-import CardContent from '@mui/material/CardContent';
 import DateRangeSlider from './DateRangeSlider';
 import BarChart from '../../common/BarChart';
 import PieChart from '../../common/PieChart';
@@ -9,12 +10,13 @@ import ChartsSelectorArgentina from './ChartsSelectorArgentina';
 import DiagnosticsChartHeader from '../../common/DiagnosticsChartHeader';
 import { formatDecimals } from '../../../../common/js/utils/diagnostics.utils';
 import { chartDatasetConfigs, regionConstants } from './regions.constants';
-import { getBarChartData } from './getBarChartData';
+import { getBarChartData, getBarChartDataColombia } from './getBarChartData';
 import { useQuery } from '../../../../common/js/hooks';
 import { getDataAndCheckIfAllYearsZero, addNoOverlapArea } from './barChart.utils';
 import '../../common/DiagnosticsChartContainer.scss';
 
 import { regionIds } from './regions.constants';
+import { ChartsSelectorColombia } from './ChartsSelectorColombia';
 
 export function RegionChartByCountry({ listId, data, fireDownload, country }) {
   const query = useQuery();
@@ -26,6 +28,8 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     otbn,
     wdpaOverlapCountry,
     landmarkOverlapCountry,
+    colombianTreeCoverLoss,
+    otbnPieChart,
   } = chartDatasetConfigs;
 
   const [chartsConfiguration, setChartsConfiguration] = useState([
@@ -113,14 +117,29 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
       });
   }, [listId, country]);
 
+  useEffect(() => {
+    const chartsConfiguration =
+      country === regionIds.ARGENTINA
+        ? [argentinaTreeCoverLoss, protectedAreas, indigenousTerritories, otbn]
+        : [colombianTreeCoverLoss];
+
+    setChartsConfiguration(chartsConfiguration);
+  }, [country]);
+
   let barChartData = [];
 
   if (!isAllDataEmpty) {
-    barChartData = getBarChartData(
-      countryPieChartsData,
-      dateRange,
-      chartsConfiguration.find((config) => config.id === selectedOptionId).chartLabels
-    );
+    const chartConfiguration = chartsConfiguration.find((config) => config.id === selectedOptionId);
+
+    if (country === regionIds.ARGENTINA) {
+      barChartData = getBarChartData(
+        countryPieChartsData,
+        dateRange,
+        chartConfiguration?.chartLabels
+      );
+    } else {
+      barChartData = getBarChartDataColombia(countryPieChartsData, dateRange, chartConfiguration);
+    }
   }
 
   const argentinaOtbnAreaData = formatDecimals(JSON.parse(data?.arg_otbn_area) || {});
@@ -196,11 +215,49 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
           <PieChart
             data={argentinaPieChartData}
-            chartLabels={chartDatasetConfigs.otbn.chartLabels}
+            chartLabels={otbnPieChart.chartLabels}
             title={regionConstants.diagnosticTitle}
             informationBubbleId={regionConstants.informationBubbleId}
           />
         </>
+      )}
+
+      {country === regionIds.COLOMBIA && (
+        <Card>
+          <h3 style={{ fontStyle: 'italic', paddingLeft: '4rem', marginBottom: 0 }}>
+            Select one main category and/or sub-category to adjust the graph and table
+          </h3>
+
+          <CardContent>
+            <div className="diagnostics-chart-container">
+              <div className="diagnostics-chart-container__chart">
+                {isAllDataEmpty ? (
+                  <div>No data available for any chart selection.</div>
+                ) : (
+                  <BarChart
+                    data={barChartData}
+                    columnStackStyle="normal"
+                    yAxisTitleText="Forest Loss (ha)"
+                  />
+                )}
+                {selectedOptionId === colombianTreeCoverLoss.id && !isAllDataEmpty && (
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <InfoIcon color="gray" />
+                    Bars with lower opacity indicate that the year is approximate.
+                  </div>
+                )}
+              </div>
+
+              <ChartsSelectorColombia
+                chartsConfiguration={chartsConfiguration}
+                onOptionChange={setSelectedOptionId}
+                selectedOptionId={selectedOptionId}
+                countryPieChartsData={countryPieChartsData}
+                graphUnit="Total loss (HA)"
+              />
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {showProtectedAreasPieChart && (

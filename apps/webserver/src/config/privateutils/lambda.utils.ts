@@ -17,7 +17,7 @@ const client = new LambdaClient({
   requestHandler: new NodeHttpHandler({
     requestTimeout: LAMBDA_HTTP_TIMEOUT_MS,
   }),
-}); 
+});
 
 const invoke = async (FunctionName: string, payload: object = {}) => {
   const functionName = `${FunctionName}-${process.env.NODE_ENV}`;
@@ -35,6 +35,4 @@ const invoke = async (FunctionName: string, payload: object = {}) => {
   return { Payload: result };
 };
 
-export {
-  invoke,
-};
+export { invoke };

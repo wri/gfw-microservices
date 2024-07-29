@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import ClickAwayListener from '@mui/base/ClickAwayListener';
+import { ClickAwayListener } from '@mui/base/ClickAwayListener';
 import Icon from '@material-ui/core/Icon';
 import store from '../../../../locations/js/store';
 import { setLanguage } from '../../../../locations/js/actions/locationActions';

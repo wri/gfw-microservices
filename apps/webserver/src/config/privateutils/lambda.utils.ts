@@ -6,8 +6,8 @@
  *   @function {invoke}
  ********************************************************************/
 // Imports for this module
-const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
-const { NodeHttpHandler } = require('@smithy/node-http-handler');
+import { LambdaClient, InvokeCommand, InvokeCommandInputType } from '@aws-sdk/client-lambda';
+import { NodeHttpHandler } from '@smithy/node-http-handler';
 
 const LAMBDA_HTTP_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 
@@ -19,7 +19,7 @@ const client = new LambdaClient({
   }),
 });
 
-const invoke = async (FunctionName, payload = {}) => {
+export const invoke = async (FunctionName, payload = {}) => {
   const functionName = `${FunctionName}-${process.env.NODE_ENV}`;
   const payloadString = JSON.stringify(payload);
   const parameters = {
@@ -29,12 +29,9 @@ const invoke = async (FunctionName, payload = {}) => {
   };
   console.log('FunctionName', functionName);
 
-  const command = new InvokeCommand(parameters);
+  const command = new InvokeCommand(parameters as InvokeCommandInputType);
   const { Payload: LambdaPayload } = await client.send(command);
   const result = Buffer.from(LambdaPayload).toString();
   return { Payload: result };
 };
 
-module.exports = {
-  invoke,
-};

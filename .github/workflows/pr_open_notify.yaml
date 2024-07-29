@@ -14,7 +14,7 @@ jobs:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       run: |
         curl -X POST -H 'Content-type: application/json' --data '{
-          "text": "A new pull request has been opened: ${{ github.event.pull_request.html_url }}",
+          "text": "A new pull request has been opened by ${{ github.event.pull_request.user.login }}: ${{ github.event.pull_request.html_url }}",
           "username": "GitHub Actions",
           "icon_emoji": ":octocat:"
         }' $SLACK_WEBHOOK_URL

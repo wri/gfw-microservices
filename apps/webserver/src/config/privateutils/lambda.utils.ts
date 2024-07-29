@@ -34,4 +34,3 @@ export const invoke = async (FunctionName, payload = {}) => {
   const result = Buffer.from(LambdaPayload).toString();
   return { Payload: result };
 };
-

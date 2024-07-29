@@ -50,6 +50,10 @@ export const listActivityTypes: Record<string, Record<string, number>> = {
     ListShared: 35,
     ListUnShared: 36,
     ListUnSharedWithAll: 37,
+    ListGetPaginatedListInfo: 38,
+    ListInfo: 39,
+    ListPrepareUpload: 40,
+    ListGenerate: 41,
   },
   b2b: {
     ConnectionRequested: 28,
@@ -202,12 +206,16 @@ export const getActivityLog = (req: Request) => {
           const actInfo = listActivityByID[data.activity_type_id];
           const datetime =
             data.activity_time instanceof Date ? data.activity_time : new Date(data.activity_time);
+          const { email, activity_description = 'Unknown' } = data;
+          const { category = 'Unknown', activityType = 'Unknown' } = actInfo || {};
+          const activity_time = datetime.toUTCString().replace(',', '');
+
           const newData = {
-            email: data.email,
-            activity_type_category_name: actInfo.category,
-            activity_type_name: actInfo.activityType,
-            activity_description: data.activity_description,
-            activity_time: datetime.toUTCString().replace(',', ''),
+            email,
+            activity_type_category_name: category,
+            activity_type_name: activityType,
+            activity_description: activity_description,
+            activity_time,
           };
           return newData;
         });

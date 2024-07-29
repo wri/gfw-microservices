@@ -39,6 +39,12 @@ function AfiDiagnosticsTable({
                 <BetaTag>(Beta)</BetaTag>
                 <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.naturalForestLoss} />
               </TableCell>
+              <TableCell align="right">
+                <span>Protected Area Overlap (HA)</span>
+              </TableCell>
+              <TableCell align="right">
+                <span>Indigenous Area Overlap (HA)</span>
+              </TableCell>
               {isStbnSelected && !isLocationLevel && (
                 <TableCell align="right">
                   Negligible Risk
@@ -63,6 +69,8 @@ function AfiDiagnosticsTable({
                     <TableCell align="right">{row.jrcNaturalForestLossHA}</TableCell>
                   </>
                 )}
+                <TableCell align="right">{row.protectedAreasHA}</TableCell>
+                <TableCell align="right">{row.landmarkHA}</TableCell>
                 {isStbnSelected && !isLocationLevel && (
                   <TableCell align="right">{row.negligibleRisk ? 'YES' : 'No'}</TableCell>
                 )}

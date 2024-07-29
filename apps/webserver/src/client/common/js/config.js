@@ -555,6 +555,8 @@ export const locationsPage = {
     Settlement: '#f5babf',
   },
   infoBubbleConfig: {
+    deforestationKpisIndigenous: 'deforestation_kpis_indigenous_territories',
+    kpisProtectedAreas: 'deforestation_kpis_protected_areas',
     bannerHistoricSite: 'historic_site_characteristics',
     bannerListAttributes: 'fc_list_attributes',
     saLossOfForests: 'sensitive_areas_loss_annual',

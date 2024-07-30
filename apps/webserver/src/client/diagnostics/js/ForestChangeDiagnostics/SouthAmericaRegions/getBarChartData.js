@@ -9,6 +9,7 @@ export const getBarChartData = (argentinaPieChartsData, dateRange, chartLabels) 
       return [
         {
           id: label.id,
+          name: label.name,
           data: filterDataByYearRange(
             data.map(({ year, value, approximateValue }) => ({
               x: year,
@@ -27,20 +28,21 @@ export const getBarChartData = (argentinaPieChartsData, dateRange, chartLabels) 
   return filteredData;
 };
 
-export const getBarChartDataColombia = (rawPieChartsData, dateRange, chartConfiguration) => {
+export const getBarChartDataWithTwoLevels = (rawBarChartData, dateRange, chartConfiguration) => {
   if (!chartConfiguration?.dataPath || !chartConfiguration?.types) return [];
 
-  const typeData = getDataFromPath(rawPieChartsData, chartConfiguration.dataPath);
+  const typeData = getDataFromPath(rawBarChartData, chartConfiguration.dataPath);
   if (!typeData) return [];
 
-  const formattedPieChartsDataColombia = formatPieChartsDataColombia(typeData);
+  const formattedBarChartDataColombia = formatBarChartDataWithTwoLevels(typeData);
 
   const filteredData = chartConfiguration.types.flatMap((label) => {
-    const chartLabel = formattedPieChartsDataColombia?.[label.name] ?? [];
+    const chartLabel = formattedBarChartDataColombia?.[label.name] ?? [];
 
     return [
       {
         id: label.id,
+        name: label.name,
         data: filterDataByYearRange(
           chartLabel.map(({ year, value }) => ({
             x: year,
@@ -57,14 +59,14 @@ export const getBarChartDataColombia = (rawPieChartsData, dateRange, chartConfig
   return filteredData;
 };
 
-const formatPieChartsDataColombia = (rawPieChartsData) => {
+const formatBarChartDataWithTwoLevels = (rawBarChartsData) => {
   const result = {};
 
   try {
-    Object.keys(rawPieChartsData).forEach((category) => {
+    Object.keys(rawBarChartsData).forEach((category) => {
       const yearsMap = {};
 
-      Object.values(rawPieChartsData[category]).forEach((records) => {
+      Object.values(rawBarChartsData[category]).forEach((records) => {
         records.forEach((record) => {
           if (!yearsMap[record.year]) {
             yearsMap[record.year] = 0;

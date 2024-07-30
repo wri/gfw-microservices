@@ -1,5 +1,49 @@
 import { checkAndFormatStringWithComma } from '../transform/treat.string.with.comma';
 
+/**
+ * @summary slowly introducing different methods to handle argentinaLayers better.
+ * @note [landmark_by_category_area] uses total_area to calculate the percentage, while other categories use their own values to calculate total
+ */
+enum CategoryKey {
+  landmark_by_category_area = 'landmark_by_category_area',
+  arg_otbn_area = 'arg_otbn_area',
+  protected_areas_by_category_area = 'protected_areas_by_category_area',
+}
+
+class ArgentinaLayerUtil {
+  private categoryData;
+  constructor(private key: keyof typeof CategoryKey, private data) {
+    this.categoryData = this.parseCategoryData(data);
+  }
+
+  parseCategoryData(data) {
+    try {
+      return JSON.parse(data);
+    } catch (e) {
+      return {};
+    }
+  }
+
+  getTotal() {
+    if (this.key !== CategoryKey.landmark_by_category_area) {
+      return this.getSumOfValues();
+    } else {
+      return this.data.total_area;
+    }
+  }
+
+  getSumOfValues() {
+    const values = Object.entries(this.categoryData).reduce((acc: number, [, value]) => {
+      if (typeof value === 'number') {
+        acc += value;
+      }
+      return acc;
+    }, 0) as number;
+
+    return values;
+  }
+}
+
 const calculatePercentage = (operation, data, values) => {
   const { attribute } = operation;
 
@@ -75,18 +119,14 @@ const addOtherCategoryData = (sortedCategory, limit) => {
 
 const calculateNonOverlap = (operation, data) => {
   const { attribute } = operation;
-  const total = data.total_area;
+  const catUtil = new ArgentinaLayerUtil(attribute, data);
 
-  const categoryData = JSON.parse(data[attribute] || '{}');
-  const sumOfValues = Object.values(categoryData).reduce((acc: number, value) => {
-    if (typeof value === 'number') {
-      acc += value;
-    }
-    return acc;
-  }, 0);
+  const total = catUtil.getTotal();
+  const sumOfValues = catUtil.getSumOfValues();
 
-  const nonOverlapValue = total - (sumOfValues as number);
-  const percent = total > 0 ? (nonOverlapValue / total) * 100 : 0;
+  const nonOverlapValue = total - sumOfValues;
+  const getPercentage = () => (nonOverlapValue / total) * 100;
+  const percent = total > 0 ? getPercentage() : 0;
 
   return {
     key: 'Non-Overlap',
@@ -98,8 +138,10 @@ const calculateNonOverlap = (operation, data) => {
 const argentinaCategoryData = (operation, data, dataRow, csvData) => {
   const { attribute, limit, label } = operation;
   const strCategoryData = data[attribute];
+
   const categoryData = JSON.parse(strCategoryData || '{}');
   const values = Object.entries(categoryData);
+
   const sortedCategory = calculatePercentage(operation, data, values);
   const addOtherCategory = addOtherCategoryData(sortedCategory, limit);
   addOtherCategory.forEach((element) => {

@@ -2,7 +2,11 @@ import React from 'react';
 import Checkbox from '@mui/material/Checkbox';
 import { formatNum, prettifyNum } from '../../../../common/js/utils/diagnostics.utils';
 import InfoBubble from '../../../../common/js/components/InfoBubble';
-import { getDataAndCheckIfAllYearsZero } from './barChart.utils';
+import {
+  getDataAndCheckIfAllYearsZero,
+  getDataFromPath,
+  calculateTotalLossForAllTypes,
+} from './barChart.utils';
 
 export function SelectorWithOneLevel({
   selectedOptionId,
@@ -10,11 +14,20 @@ export function SelectorWithOneLevel({
   chartsConfiguration,
   updateCheckedLabels,
   countryPieChartsData,
+  showTotalLoss = false,
 }) {
   return (
     <>
       {chartsConfiguration.map(
-        ({ dataCy, chartLabels, id: optionId, chartsSelectorTitle, infoBubbleId, totalLoss }) => {
+        ({
+          dataCy,
+          dataPath: categoryDataPath,
+          dateRange,
+          chartLabels,
+          id: optionId,
+          chartsSelectorTitle,
+          infoBubbleId,
+        }) => {
           // Determine the count of options with non-zero data
           const nonZeroOptions = chartLabels?.filter(
             ({ dataPath }) => !getDataAndCheckIfAllYearsZero(countryPieChartsData, dataPath)
@@ -22,6 +35,9 @@ export function SelectorWithOneLevel({
 
           const isCheckboxDisabled = nonZeroOptions === 1;
           const isRadioButtonDisabled = nonZeroOptions === 0;
+
+          const data = getDataFromPath(countryPieChartsData, categoryDataPath);
+          const totalLoss = calculateTotalLossForAllTypes(data, dateRange);
 
           return (
             <React.Fragment key={optionId}>
@@ -42,7 +58,7 @@ export function SelectorWithOneLevel({
                   </label>
                 </th>
 
-                <td className="right">{totalLoss && prettifyNum(formatNum(totalLoss))}</td>
+                <td className="right">{showTotalLoss && prettifyNum(formatNum(totalLoss))}</td>
               </tr>
               {!isRadioButtonDisabled &&
                 selectedOptionId === optionId &&
@@ -64,7 +80,7 @@ export function SelectorWithOneLevel({
                             <Checkbox
                               id={id}
                               disabled={isCheckboxDisabled || isEveryChartYearValueZero}
-                              checked={checked} // Keep checked if there's only one chartLabels
+                              checked={checked} // Keep checked if there's only one chartLabel
                               onChange={(e) => {
                                 const isChecked = e.target.checked;
                                 updateCheckedLabels(optionId, id, isChecked);

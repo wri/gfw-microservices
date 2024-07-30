@@ -211,6 +211,7 @@ export const chartDatasetConfigsColombia = {
     dataCy: 'colombian-tree-cover-loss',
     chartsSelectorTitle: 'Classified Region',
     dataPath: 'classified_region.tree_cover_loss',
+    dateRange: { startYear: 2008, endYear: 2023 },
     infoBubbleId: 'regions_col_deforestation',
     types: [
       {
@@ -236,6 +237,8 @@ export const chartDatasetConfigsColombia = {
   protectedAreasTreeCoverLoss: {
     id: 'protectedAreas',
     dataCy: 'protected-areas',
+    dataPath: 'WDPA.tree_cover_loss',
+    dateRange: { startYear: 2008, endYear: 2023 },
     chartsSelectorTitle: 'Protected Areas',
     infoBubbleId: null,
     chartLabels: [
@@ -258,6 +261,8 @@ export const chartDatasetConfigsColombia = {
   indigenousTerritoriesTreeCoverLoss: {
     id: 'indigenousTerritories',
     dataCy: 'indigenous-territories',
+    dataPath: 'landmark.tree_cover_loss',
+    dateRange: { startYear: 2008, endYear: 2023 },
     chartsSelectorTitle: 'Indigenous Territories',
     infoBubbleId: null,
     chartLabels: [

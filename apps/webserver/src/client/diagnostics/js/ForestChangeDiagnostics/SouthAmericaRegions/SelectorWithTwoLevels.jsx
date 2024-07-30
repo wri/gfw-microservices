@@ -20,6 +20,7 @@ export function SelectorWithTwoLevels({
     chartsSelectorTitle,
     infoBubbleId,
     dataPath,
+    dateRange,
   } = chartConfiguration;
 
   // Determine the count of options with non-zero data
@@ -34,7 +35,7 @@ export function SelectorWithTwoLevels({
 
   const isRadioButtonDisabled = nonZeroOptions === 0;
 
-  const totalLoss = calculateTotalLossForAllTypes(chartsSelectorData);
+  const totalLoss = calculateTotalLossForAllTypes(chartsSelectorData, dateRange);
 
   return (
     <>
@@ -61,7 +62,7 @@ export function SelectorWithTwoLevels({
         selectedOptionId === optionId &&
         types?.map(({ id, name, legend, color }) => {
           const subCategories = chartsSelectorData?.[name];
-          const totalLoss = calculateTotalLossForAllTypes(subCategories);
+          const totalLoss = calculateTotalLossForAllTypes(subCategories, dateRange);
           return (
             <React.Fragment key={id}>
               <tr className="chart-legends-table__first-level-legend">
@@ -75,7 +76,9 @@ export function SelectorWithTwoLevels({
                 Object.entries(subCategories).map(([key, value]) => (
                   <tr key={id + key} className="chart-legends-table__second-level-legend">
                     <td>{key}</td>
-                    <td>{prettifyNum(formatNum(calculateTotalLossForAllTypes(value)))}</td>
+                    <td>
+                      {prettifyNum(formatNum(calculateTotalLossForAllTypes(value, dateRange)))}
+                    </td>
                   </tr>
                 ))}
             </React.Fragment>

@@ -13,6 +13,8 @@ export default function BarChart({
   plotLines = [],
   columnStackStyle,
   yAxisTitleText = 'ha',
+  rawBarChartData,
+  isDataWithTwoLevelsOfCategory = false,
 }) {
   const renderChart = (divRef) => {
     Highcharts.chart({
@@ -52,7 +54,13 @@ export default function BarChart({
       tooltip: {
         headerFormat: '<table>',
         pointFormatter() {
-          return renderToString(<BarCharTooltip {...this} />);
+          return renderToString(
+            <BarCharTooltip
+              {...this}
+              rawBarChartData={rawBarChartData}
+              isDataWithTwoLevelsOfCategory={isDataWithTwoLevelsOfCategory}
+            />
+          );
         },
         footerFormat: '</table><span style="font-size:10px">in {point.key}</span>',
         shared: true,

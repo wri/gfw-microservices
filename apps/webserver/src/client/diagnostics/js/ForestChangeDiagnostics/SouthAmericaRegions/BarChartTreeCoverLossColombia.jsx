@@ -6,9 +6,9 @@ import { SelectorWithTwoLevels } from './SelectorWithTwoLevels';
 import { SelectorWithOneLevel } from './SelectorWithOneLevel';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import { chartDatasetConfigsColombia, regionConstants } from './regions.constants';
-import { getBarChartData, getBarCharDataWithTwoLevels } from './getBarChartData';
+import { getBarChartData, getBarChartDataWithTwoLevels } from './getBarChartData';
 
-export function BarChartTreeCoverLossColombia({ countryPieChartsData, isAllDataEmpty }) {
+export function BarChartTreeCoverLossColombia({ rawBarChartData, isAllDataEmpty }) {
   const {
     classifiedRegionTreeCoverLoss,
     protectedAreasTreeCoverLoss,
@@ -28,8 +28,8 @@ export function BarChartTreeCoverLossColombia({ countryPieChartsData, isAllDataE
   let barChartData = [];
 
   if (selectedOptionId === classifiedRegionTreeCoverLoss.id) {
-    barChartData = getBarCharDataWithTwoLevels(
-      countryPieChartsData,
+    barChartData = getBarChartDataWithTwoLevels(
+      rawBarChartData,
       dateRange,
       classifiedRegionTreeCoverLoss
     );
@@ -37,7 +37,7 @@ export function BarChartTreeCoverLossColombia({ countryPieChartsData, isAllDataE
     const chartConfiguration = categoriesOneLevelBarChart.find(
       (config) => config.id === selectedOptionId
     );
-    barChartData = getBarChartData(countryPieChartsData, dateRange, chartConfiguration.chartLabels);
+    barChartData = getBarChartData(rawBarChartData, dateRange, chartConfiguration.chartLabels);
   }
 
   return (
@@ -56,6 +56,10 @@ export function BarChartTreeCoverLossColombia({ countryPieChartsData, isAllDataE
                 data={barChartData}
                 columnStackStyle="normal"
                 yAxisTitleText="Forest Loss (ha)"
+                rawBarChartData={rawBarChartData?.classified_region?.tree_cover_loss}
+                isDataWithTwoLevelsOfCategory={
+                  selectedOptionId === classifiedRegionTreeCoverLoss.id
+                }
               />
             )}
             {selectedOptionId === classifiedRegionTreeCoverLoss.id && !isAllDataEmpty && (
@@ -75,17 +79,18 @@ export function BarChartTreeCoverLossColombia({ countryPieChartsData, isAllDataE
               </thead>
               <tbody>
                 <SelectorWithTwoLevels
-                  data={countryPieChartsData}
+                  data={rawBarChartData}
                   chartConfiguration={classifiedRegionTreeCoverLoss}
                   selectedOptionId={selectedOptionId}
                   onOptionChange={setSelectedOptionId}
                 />
                 <SelectorWithOneLevel
-                  countryPieChartsData={countryPieChartsData}
+                  countryPieChartsData={rawBarChartData}
                   selectedOptionId={selectedOptionId}
                   onOptionChange={setSelectedOptionId}
                   chartsConfiguration={categoriesOneLevelBarChart}
                   updateCheckedLabels={() => null}
+                  showTotalLoss
                 />
               </tbody>
             </table>

@@ -211,7 +211,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
       {country === regionIds.COLOMBIA && (
         <BarChartTreeCoverLossColombia
-          countryPieChartsData={countryPieChartsData}
+          rawBarChartData={countryPieChartsData}
           isAllDataEmpty={isAllDataEmpty}
         />
       )}

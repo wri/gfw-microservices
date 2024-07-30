@@ -23,8 +23,8 @@ function AfiDiagnosticsTable({
   */
   return (
     <Card>
-      <CardContent>
-        <Table>
+      <CardContent style={{ overflow: 'auto' }}>
+        <Table className="diagnostc__table">
           <TableHead>
             <TableRow>
               <TableCell>Country</TableCell>
@@ -41,9 +41,13 @@ function AfiDiagnosticsTable({
               </TableCell>
               <TableCell align="right">
                 <span>Protected Area Overlap (HA)</span>
+                <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.kpisProtectedAreas} />
               </TableCell>
               <TableCell align="right">
                 <span>Indigenous Area Overlap (HA)</span>
+                <InfoBubble
+                  infoBubbleId={locationsPage.infoBubbleConfig.deforestationKpisIndigenous}
+                />
               </TableCell>
               {isStbnSelected && !isLocationLevel && (
                 <TableCell align="right">

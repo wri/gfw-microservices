@@ -11,8 +11,6 @@ import { SecurityHeaderMiddleware } from './middleware/security-header.middlewar
 import { ConfigService } from '@nestjs/config';
 import { ServerConfigType } from './validators/server-config';
 
-const SWAGGER_DISABLED_ENVS: ReadonlyArray<string> = ['staging', 'production'];
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
@@ -22,26 +20,24 @@ async function bootstrap() {
   const config = app.get<ConfigService<ServerConfigType, true>>(ConfigService);
   const port = config.get('PORT', { infer: true });
 
-  if (!SWAGGER_DISABLED_ENVS.includes(config.get('NODE_ENV', { infer: true }))) {
-    const config = new DocumentBuilder()
-      .setTitle('External API')
-      .setDescription('V1 for external API')
-      .setVersion('1.0')
-      .addApiKey(
-        {
-          type: 'apiKey',
-          name: 'x-api-key',
-          in: 'header',
-        },
-        'x-api-key'
-      )
-      .build();
+  const configSwagger = new DocumentBuilder()
+    .setTitle('GFW Pro API')
+    .setDescription('V1 for GFW Pro API')
+    .setVersion('1.0')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'x-api-key',
+        in: 'header',
+      },
+      'x-api-key'
+    )
+    .build();
 
-    const document = SwaggerModule.createDocument(app, config);
-    SwaggerModule.setup('api', app, document, {
-      jsonDocumentUrl: '/api/profile',
-    });
-  }
+  const document = SwaggerModule.createDocument(app, configSwagger);
+  SwaggerModule.setup('api', app, document, {
+    jsonDocumentUrl: '/api/profile',
+  });
 
   await app.listen(port);
   Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);

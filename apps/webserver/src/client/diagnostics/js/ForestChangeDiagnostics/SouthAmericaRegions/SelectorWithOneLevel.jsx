@@ -58,7 +58,9 @@ export function SelectorWithOneLevel({
                   </label>
                 </th>
 
-                <td className="right">{showTotalLoss && prettifyNum(formatNum(totalLoss))}</td>
+                <td className="right" style={{ width: showTotalLoss ? '100px' : 'auto' }}>
+                  {showTotalLoss && prettifyNum(formatNum(totalLoss))}
+                </td>
               </tr>
               {!isRadioButtonDisabled &&
                 selectedOptionId === optionId &&

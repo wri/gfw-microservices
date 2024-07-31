@@ -51,7 +51,7 @@ describe('Argentina Overlap Service', () => {
     }
   });
 
-  test.only('When list is not commodity_risk view, and has 6 locations data', async () => {
+  test('When list is not commodity_risk view, and has 6 locations data', async () => {
     const localFilters = { ...filters, listView: 'some_other_view' };
     argentinaOverlap.start(localFilters);
     argentinaOverlap.process(argentinaLocationData, localFilters);

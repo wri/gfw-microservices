@@ -920,6 +920,7 @@ export default class Lists extends Component {
               id="column-checkbox-all"
               className="column-checkbox"
               type="checkbox"
+              data-cy="column-checkbox-all"
               checked={allLocationsSelected}
               onChange={this.addAllSelectedLocations}
             />
@@ -942,6 +943,7 @@ export default class Lists extends Component {
             <input
               id={`list${cellProps.original.list_id}-location${cellProps.original.location_id}`}
               className="column-checkbox"
+              data-cy="column-checkbox"
               checked={selectedLocations.indexOf(cellProps.original.location_id) !== -1}
               onChange={() => this.searchLocations(cellProps.original.location_id)}
               type="checkbox"
@@ -2320,6 +2322,7 @@ export default class Lists extends Component {
                         <div id="ShareList">
                           <Button
                             className="ShareList__button"
+                            data-cy="share-list"
                             onClick={() => {
                               showShareList(true);
                             }}
@@ -2484,6 +2487,7 @@ export default class Lists extends Component {
                           className="list-detail-action-bar__map-button"
                           onClick={() => this.viewMap({ showFullListMap: true })}
                           label="Full List Map"
+                          data-cy="full-list-map"
                           icon={<IconGlobeAmericas />}
                         />
                       </div>
@@ -2505,6 +2509,7 @@ export default class Lists extends Component {
                             className="list-detail-action-bar__map-button"
                             onClick={() => this.viewMap({ showFullListMap: false })}
                             label="Location(s) Map"
+                            data-cy="locations-map"
                             icon={<IconGlobeAmericas />}
                           />
                         )}

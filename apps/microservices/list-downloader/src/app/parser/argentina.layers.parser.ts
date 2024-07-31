@@ -1,118 +1,159 @@
 import { checkAndFormatStringWithComma } from '../transform/treat.string.with.comma';
 
-const calculatePercentage = (operation, data, values) => {
-  const { attribute } = operation;
+/**
+ * Argentina Layers Key Columns
+ *
+ * @summary [landmark_by_category_area] uses total_area to calculate the percentage
+ * can look like: '{"Not Reported":5021.8882}'
+ *
+ * @summary [arg_otbn_area] uses total_area
+ * can look like: '{"Category II":1301.57,"Category I":639.0568}'
+ *
+ * @summary [protected_areas_by_category_area] uses total_area
+ * can look like: '{"Ramsar Site, Wetland of International Importance":5021.8882}'
+ */
 
-  let total = data.total_area;
+enum LayersKeys {
+  landmark_by_category_area = 'landmark_by_category_area',
+  arg_otbn_area = 'arg_otbn_area',
+  protected_areas_by_category_area = 'protected_areas_by_category_area',
+}
+// index position for value in entries
+const ENTRY_VALUE_INDEX = 1;
 
-  //landmark_by_category_area uses total_area to calculate the percentage,
-  //rather than the sum of all attribute values
-  if (attribute !== 'landmark_by_category_area') {
-    total = values.reduce((acc, [, value]) => {
+class ArgentinaLayerUtil {
+  private layerData = [];
+
+  constructor(private key: keyof typeof LayersKeys, private data) {
+    this.setLayerData(data);
+  }
+
+  setLayerData(data) {
+    let parsedData;
+    try {
+      parsedData = JSON.parse(data[this.key]);
+    } catch (e) {
+      parsedData = {};
+    }
+
+    this.layerData = Object.entries(parsedData);
+  }
+
+  getSumOfValues() {
+    const values = this.layerData.reduce((acc: number, [, value]) => {
+      if (typeof value === 'number') {
+        acc += value;
+      }
+      return acc;
+    }, 0) as number;
+
+    return values;
+  }
+
+  applyKeyFormatting(key: string) {
+    const overrides = {
+      'Not Reported': '',
+    };
+
+    const newKey = key in overrides ? overrides[key] : key;
+
+    return checkAndFormatStringWithComma(newKey);
+  }
+
+  /**
+   * modifies the layerData array into 2 groups if limit is present,
+   * every category after the limit is aggragated into 'Other'
+   * @param limit number
+   * @returns this
+   */
+  handleCategoryLayerLimit(limit) {
+    if (!limit || this.layerData.length <= limit) {
+      return this;
+    }
+    // sort by column
+    const sortedLayerData = this.layerData.sort((a, b) => {
+      if (a[ENTRY_VALUE_INDEX] < b[ENTRY_VALUE_INDEX]) {
+        return -1;
+      } else if (a[ENTRY_VALUE_INDEX] > b[ENTRY_VALUE_INDEX]) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+
+    const sliceToInclude = sortedLayerData.slice(0, limit - 1);
+    const sliceToExclude = sortedLayerData.slice(limit - 1);
+
+    const groupedOtherValues = sliceToExclude.reduce((acc, [, value]) => {
       if (typeof value === 'number') {
         acc = acc + value;
       }
       return acc;
     }, 0);
+
+    this.layerData = [...sliceToInclude, ['Other', groupedOtherValues]];
+
+    return this;
   }
 
-  total = Math.max(total, 0.01);
+  /**
+   * inserts into layerData the non-overlap values from data
+   * @returns this
+   */
+  handleNonOverlapDifference() {
+    const total = this.data.total_area;
+    const sumOfValues = this.getSumOfValues();
 
-  const dataArray = values.map(([key, value]) => {
-    let percent = 0;
-    if (typeof value === 'number') {
-      percent = (value / total) * 100;
-    }
+    const nonOverlapValue = total - sumOfValues;
+    this.layerData.push(['Non-Overlap', nonOverlapValue]);
 
-    const newKey = key === 'Not Reported' ? '' : key;
-
-    return {
-      key: newKey,
-      value,
-      percent,
-    };
-  });
-
-  return dataArray.sort(({ value: valueA }, { value: valueB }) => {
-    if (valueA < valueB) {
-      return 1;
-    } else if (valueA > valueB) {
-      return -1;
-    }
-    return 0;
-  });
-};
-
-const addOtherCategoryData = (sortedCategory, limit) => {
-  if (limit === undefined || sortedCategory.length <= limit) {
-    return sortedCategory;
+    return this;
   }
 
-  const firstPart = sortedCategory.slice(0, limit - 1);
-  const secondPart = sortedCategory.slice(limit - 1);
+  handleRowPercentageAndFormat() {
+    // avoid dividing by zero, number gets formatted down the stream
+    const total = Math.max(this.data.total_area, 0.01);
 
-  let total = sortedCategory.reduce((acc, { value }) => {
-    if (typeof value === 'number') {
-      acc = acc + value;
-    }
-    return acc;
-  }, 0);
+    this.layerData = this.layerData.map(([key, value]) => {
+      let percent = 0;
+      if (typeof value === 'number') {
+        percent = (value / total) * 100;
+      }
 
-  total = Math.max(total, 0.01);
+      key = this.applyKeyFormatting(key);
 
-  const otherValue = secondPart.reduce((acc, { value }) => {
-    return acc + value;
-  }, 0);
+      return {
+        key,
+        value,
+        percent,
+      };
+    });
 
-  firstPart.push({
-    key: 'Other',
-    value: otherValue,
-    percent: (otherValue / total) * 100,
-  });
+    return this;
+  }
 
-  return firstPart;
-};
+  getLayerRowValues() {
+    return this.layerData;
+  }
+}
 
-const calculateNonOverlap = (operation, data) => {
-  const { attribute } = operation;
-  const total = data.total_area;
-
-  const categoryData = JSON.parse(data[attribute] || '{}');
-  const sumOfValues = Object.values(categoryData).reduce((acc: number, value) => {
-    if (typeof value === 'number') {
-      acc += value;
-    }
-    return acc;
-  }, 0);
-
-  const nonOverlapValue = total - (sumOfValues as number);
-  const percent = total > 0 ? (nonOverlapValue / total) * 100 : 0;
-
-  return {
-    key: 'Non-Overlap',
-    value: nonOverlapValue,
-    percent,
-  };
-};
-
-const argentinaCategoryData = (operation, data, dataRow, csvData) => {
+const parseArgentinaLayer = (operation, data, dataRow, csvData) => {
   const { attribute, limit, label } = operation;
-  const strCategoryData = data[attribute];
-  const categoryData = JSON.parse(strCategoryData || '{}');
-  const values = Object.entries(categoryData);
-  const sortedCategory = calculatePercentage(operation, data, values);
-  const addOtherCategory = addOtherCategoryData(sortedCategory, limit);
-  addOtherCategory.forEach((element) => {
-    const { key = '' } = element;
-    element.key = checkAndFormatStringWithComma(key);
-    const values = Object.values(element);
-    csvData.push([...dataRow, label, ...values]);
-  });
 
-  // Calculate and add non-overlap data
-  const nonOverlapData = calculateNonOverlap(operation, data);
-  const nonOverlapValues = Object.values(nonOverlapData);
-  csvData.push([...dataRow, label, ...nonOverlapValues]);
+  // parse property from the data source
+  const layer = new ArgentinaLayerUtil(attribute, data);
+
+  // generate rows from parsed data
+  const layerGeneratedRows = layer
+    .handleCategoryLayerLimit(limit)
+    .handleNonOverlapDifference()
+    .handleRowPercentageAndFormat()
+    .getLayerRowValues();
+
+  // write Rows
+  layerGeneratedRows.forEach((element) => {
+    csvData.push([...dataRow, label, ...Object.values(element)]);
+  });
 };
 
 /**
@@ -129,7 +170,7 @@ const argentinaLayers = ({ operation, data, dataRow, csvData }) => {
     composites.forEach((composite) => {
       const { type } = composite;
       if (type === 'category') {
-        argentinaCategoryData(composite, data, dataRow, csvData);
+        parseArgentinaLayer(composite, data, dataRow, csvData);
       }
     });
   }

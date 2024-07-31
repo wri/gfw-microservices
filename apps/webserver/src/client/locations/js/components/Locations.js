@@ -22,8 +22,7 @@ import { resetScroll } from '../utils/scroll.utils';
 import '../../css/locations.scss';
 import ShareListModal from './ShareList/ShareListModal';
 
-const { protectedAreas, rspoConcessions, oilPalmConcessions, adminAreas, universalMillList } =
-  proLayers;
+const { universalMillList } = proLayers;
 
 const pageOptions = {
   links: {
@@ -89,50 +88,50 @@ class Locations extends Component {
     let listName = '';
 
     if (mapData) {
-      // TODO: What exactly is mapData?
-      const userListInfoFromMap = {
-        gfwData,
-        locationName,
-        listAlias: listName,
-        listID: mapData.listID,
-        locationID: mapData.locationID,
-      };
+      // Ensure mapData.listID and mapData.locationID exist
+      if (mapData.listID && mapData.locationID) {
+        const userListInfoFromMap = {
+          gfwData,
+          locationName,
+          listAlias: listName,
+          listID: mapData.listID,
+          locationID: mapData.locationID,
+        };
 
-      this.setState({
-        isLoading: true,
-        userListInfoFromMap,
-      });
+        this.setState({
+          isLoading: true,
+          userListInfoFromMap,
+        });
 
-      // Load the list to be edited
-      if (goToEditList) {
-        const list = userLists.find((ul) => ul.id === mapData.listID);
-        if (list) {
-          // use selected location geography as a custom shape
-          if (drawData) {
-            this.setState({
-              drawnGeom: {
-                geometry: JSON.parse(drawData),
-                locationName,
-              },
-              isLoading: false,
-            });
+        if (goToEditList) {
+          const list = userLists?.find((ul) => ul.id === mapData.listID);
+          if (list) {
+            if (drawData) {
+              this.setState({
+                drawnGeom: {
+                  geometry: JSON.parse(drawData),
+                  locationName,
+                },
+                isLoading: false,
+              });
+            } else {
+              console.warn('did not get draw data to use on add location page');
+              this.setState({ isLoading: false });
+            }
+            store.dispatch(addList(list));
+            store.dispatch(changeView('add'));
+            const { history } = this.props;
+            history.push('/add');
           } else {
-            console.warn('did not get draw data to use on add location page');
+            console.warn('failed to find list to add to');
             this.setState({ isLoading: false });
           }
-          store.dispatch(addList(list));
-          store.dispatch(changeView('add'));
-          const { history } = this.props;
-          history.push('/add');
-        } else {
-          console.warn('failed to find list to add to');
-          this.setState({ isLoading: false });
         }
+      } else {
+        console.warn('mapData is missing listID or locationID');
       }
     } else if (gfwData && gfwData.listName) {
-      // GFW Lists: listName, globalIds >> rspo/protected and so on goes here
       listName = getGFWListNameFromMapLayerId(gfwData?.listName);
-
       const gfwInfoFromMap = {
         gfwData,
         locationName,
@@ -141,78 +140,74 @@ class Locations extends Component {
 
       if (goToEditList) {
         this.setState({ isLoading: true });
-        const gfwList = gfwLists.find((gfw) => {
-          return gfw.list_name === listName;
-        });
+        const gfwList = gfwLists?.find((gfw) => gfw.list_name === listName);
+        if (gfwList) {
+          const { globalIds } = gfwInfoFromMap.gfwData;
+          const params = `list_id=${gfwList?.id}&global_ids=["${globalIds}"]`;
+          httpRequest
+            .fetchForm('/locations/getGFWListLocationsGlobalId', params)
+            .then((response) => {
+              const locations = JSON.parse(response);
+              if (locations) {
+                const data = locations.location_analyses[0][0];
+                const admin = {
+                  substate: data?.['Sub State'],
+                  state: data.State,
+                  country: data.Country,
+                  gadmid: data.gadmid,
+                  adminData: data,
+                  gfwListID: gfwList.id,
+                };
 
-        // Fetch the GFW list location ID and admin area data
-        const { globalIds } = gfwInfoFromMap.gfwData;
+                const listId = gfwList.id;
+                const locationIds = [data.location_id];
 
-        const params = `list_id=${gfwList?.id}&global_ids=["${globalIds}"]`;
-        httpRequest
-          .fetchForm('/locations/getGFWListLocationsGlobalId', params)
-          .then((response) => {
-            const locations = JSON.parse(response);
-            if (locations) {
-              const data = locations.location_analyses[0][0];
-              const admin = {
-                substate: data?.['Sub State'],
-                state: data.State,
-                country: data.Country,
-                gadmid: data.gadmid,
-                adminData: data,
-                gfwListID: gfwList ? gfwList.id : null,
-              };
+                // Fetch the bounds for the admin area
+                httpRequest
+                  .fetchForm(
+                    '/locations/getGFWListLocationGeom',
+                    `list_id=${listId}&location_ids=${locationIds}`
+                  )
+                  .then((response) => {
+                    // convert GeoJSON admin bounds to ESRI JSON format for map
+                    const esriGeom = geojsonUtil.geojsonToArcGIS(JSON.parse(response));
+                    const geometries = { geometry: esriGeom[0].geometry, locationName };
+                    this.setState({
+                      isLoading: false,
+                      drawnGeom: geometries,
+                      gfwInfoFromMap,
+                      listAlias: locationName,
+                      adminArea: admin,
+                      gfwListID: gfwList.id,
+                    });
 
-              const listId = gfwList.id;
-              const locationIds = [data.location_id];
-
-              // Fetch the bounds for the admin area
-              httpRequest
-                .fetchForm(
-                  '/locations/getGFWListLocationGeom',
-                  `list_id=${listId}&location_ids=${locationIds}`
-                )
-                .then((response) => {
-                  // convert GeoJSON admin bounds to ESRI JSON format for map
-                  const esriGeom = geojsonUtil.geojsonToArcGIS(JSON.parse(response));
-                  const geometries = { geometry: esriGeom[0].geometry, locationName };
-                  this.setState({
-                    isLoading: false,
-                    drawnGeom: geometries,
-                    gfwInfoFromMap,
-                    listAlias: locationName,
-                    adminArea: admin,
-                    gfwListID: gfwList ? gfwList.id : null,
+                    let addType =
+                      this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
+                    if (gfwInfoFromMap.gfwData.listName === universalMillList) {
+                      addType = 'commodity';
+                    }
+                    store.dispatch(changeAddType(addType));
+                    store.dispatch(addList(gfwList));
+                    store.dispatch(changeView('add'));
+                    const { history } = this.props;
+                    history.push('/add');
+                  })
+                  .catch((err) => {
+                    console.warn('error fetching gfw location geometry', err);
+                    this.setState({ isLoading: false });
                   });
-
-                  // Add type overrides based on which listName (RSPO, UML, WDPA, etc) we are working with
-                  let addType =
-                    this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
-                  if (gfwInfoFromMap && gfwInfoFromMap.gfwData.listName === universalMillList) {
-                    addType = 'commodity';
-                  }
-                  store.dispatch(changeAddType(addType));
-                  store.dispatch(addList(gfwList));
-                  store.dispatch(changeView('add'));
-                  const { history } = this.props;
-                  history.push('/add');
-                })
-                .catch((err) => {
-                  console.warn('error fetching gfw location geometry', err);
-                  this.setState({ isLoading: false });
-                });
-            }
-          })
-          .catch((err) => {
-            console.warn('error fetching gfw location data', err);
-            this.setState({ isLoading: false });
-          });
+              }
+            })
+            .catch((err) => {
+              console.warn('error fetching gfw location data', err);
+              this.setState({ isLoading: false });
+            });
+        } else {
+          console.warn('gfwList not found');
+          this.setState({ isLoading: false });
+        }
       } else {
-        this.setState({
-          isLoading: true,
-          gfwInfoFromMap,
-        });
+        this.setState({ isLoading: true, gfwInfoFromMap });
       }
     } else if (drawData) {
       // Drawn/Uploaded poly: geoString

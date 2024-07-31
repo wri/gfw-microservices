@@ -8,6 +8,7 @@
   height: 100vh;
   background-color: #fbfcfa;
   display: flex;
+  z-index: 999;
 
   &__dialog {
     z-index: 99999;

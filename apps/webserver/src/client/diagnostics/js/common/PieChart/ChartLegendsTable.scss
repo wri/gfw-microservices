@@ -3,6 +3,7 @@
   max-width: 50%;
   display: inline-block;
   margin: 0 auto;
+
   thead {
     border-bottom: 1px solid gray;
   }
@@ -36,9 +37,22 @@
   }
 
   &__first-level-legend {
+    &--with-padding-top > th {
+      padding-top: 0.75rem;
+    }
+
     th:first-child {
       display: flex;
-      padding-left: 30px;
+      align-items: center;
+      padding-bottom: 0;
+
+      & > button {
+        padding: 0 0.5rem 0 0;
+      }
+    }
+
+    & > :last-child {
+      width: 100px;
     }
 
     label {
@@ -50,11 +64,16 @@
       font-size: 0.7rem;
     }
   }
+
   &__second-level-legend {
     font-size: 0.7rem;
 
     td:first-child {
-      padding-left: 55px;
+      padding-left: 70px;
+    }
+
+    & > :last-child {
+      width: 100px;
     }
   }
 }

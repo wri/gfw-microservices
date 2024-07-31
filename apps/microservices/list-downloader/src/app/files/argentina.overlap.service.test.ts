@@ -97,7 +97,6 @@ describe('Argentina Overlap Service', () => {
     ]);
 
     csvData = readCsvData(fileAggregatePath);
-    console.log('🚀 ~ test ~ csvData:', csvData);
     expect(csvData).toStrictEqual([
       'List Name,Data Layer,Sub-Layer,Overlap with Sub-layer (Ha),Overlap with Sub-Layer (%)',
       'WRI,Argentina OTBN,Category I,2488.16,22.01',

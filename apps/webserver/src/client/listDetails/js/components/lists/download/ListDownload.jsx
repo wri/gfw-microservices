@@ -113,10 +113,11 @@ function ListDownload({
           }
           onChange={(_evt, selectedOption) => localHandleDownload(selectedOption)}
         >
-          <MenuItem 
+          <MenuItem
             value={{ format: 'csv', type: 'results' }}
             primaryText="Results"
-            data-cy="download-list-results" />
+            data-cy="download-list-results"
+          />
 
           {isSourceFileDownloadEnabled && (
             <MenuItem

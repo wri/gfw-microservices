@@ -1,16 +1,20 @@
 import React, { useEffect } from 'react';
-import Highcharts from 'highcharts';
-import { getFormatedTooltipForDiagnosticsChart } from '../../../common/js/utils/diagnostics.utils';
-import useHookWithRefCallback from './useHookWithRefCallback';
+import { renderToString } from 'react-dom/server';
 
 const transifex = Transifex.live.translateText;
 
-function BarChart({
+import Highcharts from 'highcharts';
+import useHookWithRefCallback from './useHookWithRefCallback';
+import { BarCharTooltip } from './BarChartTooltip';
+
+export default function BarChart({
   data,
   plotBands = [],
   plotLines = [],
   columnStackStyle,
   yAxisTitleText = 'ha',
+  rawBarChartData,
+  isDataWithTwoLevelsOfCategory = false,
 }) {
   const renderChart = (divRef) => {
     Highcharts.chart({
@@ -50,7 +54,13 @@ function BarChart({
       tooltip: {
         headerFormat: '<table>',
         pointFormatter() {
-          return getFormatedTooltipForDiagnosticsChart.call(this);
+          return renderToString(
+            <BarCharTooltip
+              {...this}
+              rawBarChartData={rawBarChartData}
+              isDataWithTwoLevelsOfCategory={isDataWithTwoLevelsOfCategory}
+            />
+          );
         },
         footerFormat: '</table><span style="font-size:10px">in {point.key}</span>',
         shared: true,
@@ -86,5 +96,3 @@ function BarChart({
 
   return <div data-testid="bar-chart" ref={ref} />;
 }
-
-export default BarChart;

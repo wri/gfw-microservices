@@ -23,8 +23,8 @@ function AfiDiagnosticsTable({
   */
   return (
     <Card>
-      <CardContent>
-        <Table>
+      <CardContent style={{ overflow: 'auto' }}>
+        <Table className="diagnostc__table">
           <TableHead>
             <TableRow>
               <TableCell>Country</TableCell>
@@ -38,6 +38,16 @@ function AfiDiagnosticsTable({
                 <span>Natural Forest Loss (HA)</span>
                 <BetaTag>(Beta)</BetaTag>
                 <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.naturalForestLoss} />
+              </TableCell>
+              <TableCell align="right">
+                <span>Protected Area Overlap (HA)</span>
+                <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.kpisProtectedAreas} />
+              </TableCell>
+              <TableCell align="right">
+                <span>Indigenous Area Overlap (HA)</span>
+                <InfoBubble
+                  infoBubbleId={locationsPage.infoBubbleConfig.deforestationKpisIndigenous}
+                />
               </TableCell>
               {isStbnSelected && !isLocationLevel && (
                 <TableCell align="right">
@@ -63,6 +73,8 @@ function AfiDiagnosticsTable({
                     <TableCell align="right">{row.jrcNaturalForestLossHA}</TableCell>
                   </>
                 )}
+                <TableCell align="right">{row.protectedAreasHA}</TableCell>
+                <TableCell align="right">{row.landmarkHA}</TableCell>
                 {isStbnSelected && !isLocationLevel && (
                   <TableCell align="right">{row.negligibleRisk ? 'YES' : 'No'}</TableCell>
                 )}

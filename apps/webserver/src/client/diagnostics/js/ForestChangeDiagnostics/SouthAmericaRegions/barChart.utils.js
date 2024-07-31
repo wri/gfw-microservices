@@ -13,6 +13,8 @@ export const allYearsHaveZeroValue = (data) => {
 };
 
 export const getDataFromPath = (data, dataPath) => {
+  if (!dataPath) return null;
+
   const dataPathArray = dataPath.split('.');
   let result = data;
   for (const path of dataPathArray) {
@@ -44,13 +46,15 @@ export const addNoOverlapArea = (overlapArea, total_area, nonOverlapAreaLabel) =
   return { ...overlapArea, [nonOverlapAreaLabel]: nonOverlapArea };
 };
 
-export function calculateTotalLossForAllTypes(obj) {
+export function calculateTotalLossForAllTypes(obj, dateRange) {
+  if (!obj) return 0;
+
   let sum = 0;
 
   function recursiveSum(data) {
     if (Array.isArray(data)) {
       data.forEach((item) => {
-        if (item.value) {
+        if (item.value && item.year >= dateRange.startYear && item.year <= dateRange.endYear) {
           sum += item.value;
         }
       });

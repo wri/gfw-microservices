@@ -21,7 +21,8 @@ export class StartAnalysisService {
     this.logger.log(`Downloaded the file and write it into ${fileDownloadedPath}`);
 
     const geoJson = csv2geojson(fileDownloadedPath);
-    console.log(geoJson);
+    // debug log used to avoid eslint complains about unused variable
+    this.logger.debug(geoJson);
 
     return {
       executionArn: '',

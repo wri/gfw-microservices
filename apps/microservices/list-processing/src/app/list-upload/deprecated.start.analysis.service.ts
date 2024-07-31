@@ -1,3 +1,9 @@
+/**
+ * This code is deprecated and will be removed in the future.
+ * The new implementation is in the list-upload/start.analysis.service.ts file.
+ * This code is used when the feature flag UploadListLp is disabled.
+ * So current we are still using this code in production.
+ */
 import { Injectable } from '@nestjs/common';
 import { RequestLargeListProcess, ResponseLargeListProcess } from '../../models';
 import { ConfigService } from '@nestjs/config';

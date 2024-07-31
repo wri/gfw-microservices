@@ -11,6 +11,7 @@ describe('Information Bubbles', () => {
 
   When('I login in the landing page', () => {
     User.login();
+    cy.visit('/locations');
   });
 
   When('I navigate to a list diagnostic page', () => {

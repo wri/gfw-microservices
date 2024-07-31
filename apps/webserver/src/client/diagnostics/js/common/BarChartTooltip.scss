@@ -1,0 +1,21 @@
+.bar-chart-tooltip {
+  &__category {
+    &--without-bottom-border {
+      border-bottom: none;
+    }
+  }
+
+  &__subcategory {
+    font-size: 0.6rem;
+    border-bottom: none;
+
+    td:first-child {
+      padding-left: 20px;
+    }
+  }
+
+  td:last-child {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}

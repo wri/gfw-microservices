@@ -1,7 +1,7 @@
 import { argentinaLayers } from './argentina.layers.parser';
 
 describe('Argentina Layers Parser', () => {
-  test('All input parameters is empty', () => {
+  test('When all input parameters is empty', () => {
     const csvData = [];
 
     argentinaLayers({
@@ -29,7 +29,7 @@ describe('Argentina Layers Parser', () => {
     expect(csvData).toStrictEqual([]);
   });
 
-  test('When arg_otbn_area have more than 5 category ', () => {
+  test('When layer has more than 5 category ', () => {
     const csvData = [];
 
     argentinaLayers({
@@ -52,11 +52,11 @@ describe('Argentina Layers Parser', () => {
       csvData,
     });
     expect(csvData).toStrictEqual([
-      ['Argentina OTBN', 'cat5', 5, 33.33333333333333],
-      ['Argentina OTBN', 'cat4', 4, 26.666666666666668],
-      ['Argentina OTBN', 'cat3', 3, 20],
-      ['Argentina OTBN', 'cat2', 2, 13.333333333333334],
       ['Argentina OTBN', 'cat1', 1, 6.666666666666667],
+      ['Argentina OTBN', 'cat2', 2, 13.333333333333334],
+      ['Argentina OTBN', 'cat3', 3, 20],
+      ['Argentina OTBN', 'cat4', 4, 26.666666666666668],
+      ['Argentina OTBN', 'cat5', 5, 33.33333333333333],
       ['Argentina OTBN', 'Non-Overlap', 0, 0],
     ]);
   });
@@ -85,9 +85,9 @@ describe('Argentina Layers Parser', () => {
       csvData,
     });
     expect(csvData).toStrictEqual([
-      ['Argentina OTBN', 'cat5', 5, 33.33333333333333],
-      ['Argentina OTBN', 'cat4', 4, 26.666666666666668],
-      ['Argentina OTBN', 'Other', 6, 40],
+      ['Argentina OTBN', 'cat1', 1, 6.666666666666667],
+      ['Argentina OTBN', 'cat2', 2, 13.333333333333334],
+      ['Argentina OTBN', 'Other', 12, 80],
       ['Argentina OTBN', 'Non-Overlap', 0, 0],
     ]);
   });
@@ -128,11 +128,11 @@ describe('Argentina Layers Parser', () => {
       csvData,
     });
     expect(csvData).toStrictEqual([
-      ['Argentina OTBN', 'cat3', 3, 50],
-      ['Argentina OTBN', 'Other', 3, 50],
+      ['Argentina OTBN', 'cat1', 1, 20],
+      ['Argentina OTBN', 'Other', 5, 100],
       ['Argentina OTBN', 'Non-Overlap', -1, -20],
-      ['Argentina Protected Areas', 'cat2', 2, 66.66666666666666],
-      ['Argentina Protected Areas', 'cat1', 1, 33.33333333333333],
+      ['Argentina Protected Areas', 'cat1', 1, 20],
+      ['Argentina Protected Areas', 'cat2', 2, 40],
       ['Argentina Protected Areas', 'Non-Overlap', 2, 40],
       ['Argentina Indigenous Territories', '', 1, 20],
       ['Argentina Indigenous Territories', 'Non-Overlap', 4, 80],
@@ -175,11 +175,11 @@ describe('Argentina Layers Parser', () => {
       csvData,
     });
     expect(csvData).toStrictEqual([
-      ['Argentina OTBN', 'cat3', 3, 50],
-      ['Argentina OTBN', 'Other', 3, 50],
+      ['Argentina OTBN', 'cat1', 1, 20],
+      ['Argentina OTBN', 'Other', 5, 100],
       ['Argentina OTBN', 'Non-Overlap', -1, -20],
-      ['Argentina Protected Areas', 'cat2', 2, 66.66666666666666],
-      ['Argentina Protected Areas', 'cat1', 1, 33.33333333333333],
+      ['Argentina Protected Areas', 'cat1', 1, 20],
+      ['Argentina Protected Areas', 'cat2', 2, 40],
       ['Argentina Protected Areas', 'Non-Overlap', 2, 40],
       ['Argentina Indigenous Territories', '', 1, 20],
       ['Argentina Indigenous Territories', 'Non-Overlap', 4, 80],
@@ -210,9 +210,9 @@ describe('Argentina Layers Parser', () => {
       csvData,
     });
     expect(csvData).toStrictEqual([
-      ['test', 'wri', 1, 'Argentina OTBN', 'cat5', 5, 33.33333333333333],
-      ['test', 'wri', 1, 'Argentina OTBN', 'cat4', 4, 26.666666666666668],
-      ['test', 'wri', 1, 'Argentina OTBN', 'Other', 6, 40],
+      ['test', 'wri', 1, 'Argentina OTBN', 'cat1', 1, 6.666666666666667],
+      ['test', 'wri', 1, 'Argentina OTBN', 'cat2', 2, 13.333333333333334],
+      ['test', 'wri', 1, 'Argentina OTBN', 'Other', 12, 80],
       ['test', 'wri', 1, 'Argentina OTBN', 'Non-Overlap', 0, 0],
     ]);
   });
@@ -242,7 +242,7 @@ describe('Argentina Layers Parser', () => {
       dataRow: ['wri', 1],
       csvData,
     });
-    console.log('• csvData', csvData);
+
     expect(csvData).toStrictEqual([
       ['wri', 1, 'Argentina OTBN', 'cat1', 0, 0],
       ['wri', 1, 'Argentina OTBN', 'cat2', 0, 0],

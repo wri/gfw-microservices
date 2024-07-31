@@ -18,6 +18,8 @@ enum LayersKeys {
   arg_otbn_area = 'arg_otbn_area',
   protected_areas_by_category_area = 'protected_areas_by_category_area',
 }
+// index position for value in entries
+const ENTRY_VALUE_INDEX = 1;
 
 class ArgentinaLayerUtil {
   private layerData = [];
@@ -70,8 +72,6 @@ class ArgentinaLayerUtil {
     }
     // sort by column
     const sortedLayerData = this.layerData.sort((a, b) => {
-      const ENTRY_VALUE_INDEX = 1;
-
       if (a[ENTRY_VALUE_INDEX] < b[ENTRY_VALUE_INDEX]) {
         return -1;
       } else if (a[ENTRY_VALUE_INDEX] > b[ENTRY_VALUE_INDEX]) {

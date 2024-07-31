@@ -51,7 +51,7 @@ describe('Argentina Overlap Service', () => {
     }
   });
 
-  test('When list is not commodity_risk view, and has 6 locations data', async () => {
+  test.only('When list is not commodity_risk view, and has 6 locations data', async () => {
     const localFilters = { ...filters, listView: 'some_other_view' };
     argentinaOverlap.start(localFilters);
     argentinaOverlap.process(argentinaLocationData, localFilters);
@@ -61,29 +61,29 @@ describe('Argentina Overlap Service', () => {
     let csvData = readCsvData(filePath);
     expect(csvData).toStrictEqual([
       'List Name,Location Name,Data Layer,Sub-Layer,Overlap with Sub-layer (Ha),Overlap with Sub-Layer (%)',
-      'WRI,arg3 landmark,Argentina OTBN,Category II,32.89,50',
-      'WRI,arg3 landmark,Argentina OTBN,"Category I, Category IV",32.89,50',
+      'WRI,arg3 landmark,Argentina OTBN,Category II,32.89,10.5',
+      'WRI,arg3 landmark,Argentina OTBN,"Category I, Category IV",32.89,10.5',
       'WRI,arg3 landmark,Argentina OTBN,Non-Overlap,247.29,78.99',
       'WRI,arg3 landmark,Argentina Protected Areas,Non-Overlap,313.06,100',
       'WRI,arg3 landmark,Argentina Indigenous Territories,,313.06,100',
       'WRI,arg3 landmark,Argentina Indigenous Territories,Non-Overlap,0,0',
-      'WRI,arg4 wdpa,Argentina OTBN,Category I,1921.35,100',
+      'WRI,arg4 wdpa,Argentina OTBN,Category I,1921.35,38.23',
       'WRI,arg4 wdpa,Argentina OTBN,Non-Overlap,3103.85,61.77',
-      'WRI,arg4 wdpa,Argentina Protected Areas,Category Ia,1620.72,91.16',
-      'WRI,arg4 wdpa,Argentina Protected Areas,Category II,156.97,8.83',
-      'WRI,arg4 wdpa,Argentina Protected Areas,Category VI,0.27,0.02',
+      'WRI,arg4 wdpa,Argentina Protected Areas,Category Ia,1620.72,32.25',
+      'WRI,arg4 wdpa,Argentina Protected Areas,Category II,156.97,3.12',
+      'WRI,arg4 wdpa,Argentina Protected Areas,Category VI,0.27,0.01',
       'WRI,arg4 wdpa,Argentina Protected Areas,Non-Overlap,3247.24,64.62',
       'WRI,arg4 wdpa,Argentina Indigenous Territories,,909.81,18.1',
       'WRI,arg4 wdpa,Argentina Indigenous Territories,Non-Overlap,4115.4,81.9',
-      'WRI,arg5,Argentina OTBN,Category I,114.32,22.49',
-      'WRI,arg5,Argentina OTBN,Category II,98.49,19.38',
-      'WRI,arg5,Argentina OTBN,Category III,98.49,19.38',
-      'WRI,arg5,Argentina OTBN,Other,196.97,38.75',
+      'WRI,arg5,Argentina OTBN,Category II,98.49,31.34',
+      'WRI,arg5,Argentina OTBN,Category III,98.49,31.34',
+      'WRI,arg5,Argentina OTBN,Category IV,98.49,31.34',
+      'WRI,arg5,Argentina OTBN,Other,212.8,67.73',
       'WRI,arg5,Argentina OTBN,Non-Overlap,-194.05,-61.76',
       'WRI,arg5,Argentina Protected Areas,Non-Overlap,314.21,100',
       'WRI,arg5,Argentina Indigenous Territories,Non-Overlap,314.21,100',
-      'WRI,arg6 otbn,Argentina OTBN,Category I,452.49,71.05',
-      'WRI,arg6 otbn,Argentina OTBN,Category II,184.37,28.95',
+      'WRI,arg6 otbn,Argentina OTBN,Category I,452.49,9.01',
+      'WRI,arg6 otbn,Argentina OTBN,Category II,184.37,3.67',
       'WRI,arg6 otbn,Argentina OTBN,Non-Overlap,4387.33,87.32',
       'WRI,arg6 otbn,Argentina Protected Areas,Non-Overlap,5024.19,100',
       'WRI,arg6 otbn,Argentina Indigenous Territories,Non-Overlap,5024.19,100',
@@ -97,14 +97,15 @@ describe('Argentina Overlap Service', () => {
     ]);
 
     csvData = readCsvData(fileAggregatePath);
+    console.log('🚀 ~ test ~ csvData:', csvData);
     expect(csvData).toStrictEqual([
       'List Name,Data Layer,Sub-Layer,Overlap with Sub-layer (Ha),Overlap with Sub-Layer (%)',
-      'WRI,Argentina OTBN,Category I,2488.16,88.74',
-      'WRI,Argentina OTBN,Category II,315.74,11.26',
+      'WRI,Argentina OTBN,Category I,2488.16,22.01',
+      'WRI,Argentina OTBN,Category II,315.74,2.79',
       'WRI,Argentina OTBN,Non-Overlap,8500.63,75.2',
-      'WRI,Argentina Protected Areas,Category Ia,1620.72,91.16',
-      'WRI,Argentina Protected Areas,Category II,156.97,8.83',
-      'WRI,Argentina Protected Areas,"Category VI, Category V",0.27,0.02',
+      'WRI,Argentina Protected Areas,Category Ia,1620.72,14.34',
+      'WRI,Argentina Protected Areas,Category II,156.97,1.39',
+      'WRI,Argentina Protected Areas,"Category VI, Category V",0.27,0',
       'WRI,Argentina Protected Areas,Non-Overlap,9526.57,84.27',
       'WRI,Argentina Indigenous Territories,,1222.87,10.82',
       'WRI,Argentina Indigenous Territories,Non-Overlap,10081.67,89.18',

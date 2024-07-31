@@ -102,6 +102,7 @@ function ListDownload({
         <IconMenu
           iconButtonElement={
             <RaisedButton
+              data-cy="download-list"
               overlayStyle={style.overlay}
               buttonStyle={style.buttonStyle}
               className="button tertiary button--tertiary"
@@ -112,12 +113,17 @@ function ListDownload({
           }
           onChange={(_evt, selectedOption) => localHandleDownload(selectedOption)}
         >
-          <MenuItem value={{ format: 'csv', type: 'results' }} primaryText="Results" />
+          <MenuItem
+            value={{ format: 'csv', type: 'results' }}
+            primaryText="Results"
+            data-cy="download-list-results"
+          />
 
           {isSourceFileDownloadEnabled && (
             <MenuItem
               value={{ format: 'csv', type: 'input' }}
               primaryText={locationsPage.lists.csv}
+              data-cy="download-list-csv"
             />
           )}
 
@@ -125,6 +131,7 @@ function ListDownload({
             <MenuItem
               value={{ format: 'shapefile', type: 'input' }}
               primaryText={locationsPage.lists.shapefile}
+              data-cy="download-list-shapefile"
             />
           )}
         </IconMenu>

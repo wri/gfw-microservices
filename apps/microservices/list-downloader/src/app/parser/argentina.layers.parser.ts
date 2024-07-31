@@ -58,12 +58,18 @@ class ArgentinaLayerUtil {
     return checkAndFormatStringWithComma(newKey);
   }
 
+  /**
+   * modifies the layerData array into 2 groups if limit is present,
+   * every category after the limit is aggragated into 'Other'
+   * @param limit number
+   * @returns this
+   */
   handleCategoryLayerLimit(limit) {
     if (!limit || this.layerData.length <= limit) {
       return this;
     }
     // sort by column
-    const sortedLayerDarta = this.layerData.sort((a, b) => {
+    const sortedLayerData = this.layerData.sort((a, b) => {
       const ENTRY_VALUE_INDEX = 1;
 
       if (a[ENTRY_VALUE_INDEX] < b[ENTRY_VALUE_INDEX]) {
@@ -75,17 +81,8 @@ class ArgentinaLayerUtil {
       }
     });
 
-    const sliceToInclude = sortedLayerDarta.slice(0, limit - 1);
-    const sliceToExclude = sortedLayerDarta.slice(limit - 1);
-
-    let total = sortedLayerDarta.reduce((acc, [, value]) => {
-      if (typeof value === 'number') {
-        acc = acc + value;
-      }
-      return acc;
-    }, 0);
-
-    total = Math.max(total, 0.01);
+    const sliceToInclude = sortedLayerData.slice(0, limit - 1);
+    const sliceToExclude = sortedLayerData.slice(limit - 1);
 
     const groupedOtherValues = sliceToExclude.reduce((acc, [, value]) => {
       if (typeof value === 'number') {
@@ -99,6 +96,10 @@ class ArgentinaLayerUtil {
     return this;
   }
 
+  /**
+   * inserts into layerData the non-overlap values from data
+   * @returns this
+   */
   handleNonOverlapDifference() {
     const total = this.data.total_area;
     const sumOfValues = this.getSumOfValues();
@@ -135,9 +136,6 @@ class ArgentinaLayerUtil {
   }
 }
 
-/**
- *  —— R E F A C T O R ——
- */
 const parseArgentinaLayer = (operation, data, dataRow, csvData) => {
   const { attribute, limit, label } = operation;
 

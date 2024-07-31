@@ -1,0 +1,52 @@
+CSV Name,Description,Version,Column,Column Description
+<LISTNAME>\_deforestation_kpis,Location level natural forest metrics and negligible risk calculation,1.0 (Deprecated),List Name,Name of List
+<LISTNAME>\_deforestation_kpis,Location level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Country,Country where List area overlaps
+<LISTNAME>\_deforestation_kpis,Location level natural forest metrics and negligible risk calculation,1.0 (Deprecated),State,States where List area overlaps
+<LISTNAME>\_deforestation_kpis,Location level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Sub State,Sub-state where List area overlaps
+<LISTNAME>\_deforestation_kpis,Location level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Natural Forest Coverage (HA) (Beta),HA of natural forest as defined by the Science Based Targets Initiative map in the sub-state
+<LISTNAME>\_deforestation_kpis,Location level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Natural Forest Loss (ha) (Beta),"HA of cumulative natural forest loss from 2021-2023 in the sub-state, as defined by the Science Based Targets Initiative map"
+<LISTNAME>\_deforestation_kpis,Location level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Negligible Risk,Binary yes/no value based on whether sub-state is considered negligible risk
+<LISTNAME>\_deforestation_kpis_aggregated,List level natural forest metrics and negligible risk calculation,1.0 (Deprecated),List Name,Name of List
+<LISTNAME>\_deforestation_kpis_aggregated,List level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Location Name,Name of Location
+<LISTNAME>\_deforestation_kpis_aggregated,List level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Country,Country the Location's Center Point is in
+<LISTNAME>\_deforestation_kpis_aggregated,List level natural forest metrics and negligible risk calculation,1.0 (Deprecated),State,State the Location's Center Point is in
+<LISTNAME>\_deforestation_kpis_aggregated,List level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Sub State,Sub State the Location's Center Point is in
+<LISTNAME>\_deforestation_kpis_aggregated,List level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Natural Forest Coverage (HA) (Beta),HA of natural forest as defined by the Science Based Targets Initiative map in the location
+<LISTNAME>\_deforestation_kpis_aggregated,List level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Natural Forest Loss (ha) (Beta),HA of cumulative natural forest loss from 2021-2023 as defined by the Science Based Targets Initiative map
+<LISTNAME>\_deforestation_kpis_aggregated,List level natural forest metrics and negligible risk calculation,1.0 (Deprecated),Negligible Risk (%),% overlap of location with sub-states considered negligible risk
+<LISTNAME>\_other_metrics_aggregated,List level metrics related to deforestation risk,1.1,List Name,Name of the list
+<LISTNAME>\_other_metrics_aggregated,List level metrics related to deforestation risk,1.1,Country,Country where List area overlaps
+<LISTNAME>\_other_metrics_aggregated,List level metrics related to deforestation risk,1.1,State,State where List area overlaps
+<LISTNAME>\_other_metrics_aggregated,List level metrics related to deforestation risk,1.1,Sub State,Sub State where List area overlaps
+<LISTNAME>\_other_metrics_aggregated,List level metrics related to deforestation risk,1.1,Negligible Risk,Binary yes/no value based on whether sub-state is considered negligible risk
+<LISTNAME>\_other_metrics_aggregated,List level metrics related to deforestation risk,1.1,Overlap with WDPA (Ha),WDPA overlap in hectares
+<LISTNAME>\_other_metrics_aggregated,List level metrics related to deforestation risk,1.1,Overlap with Indigenous Lands (Ha),Overlap in hectares with LandMark preview dataset
+<LISTNAME>\_other_metrics,Location level metrics related to deforestation risk,1.1,List Name,Name of List
+<LISTNAME>\_other_metrics,Location level metrics related to deforestation risk,1.1,Location Name,Name of Location
+<LISTNAME>\_other_metrics,Location level metrics related to deforestation risk,1.1,Country,Country the Location's Center Point is in
+<LISTNAME>\_other_metrics,Location level metrics related to deforestation risk,1.1,State,State the Location's Center Point is in
+<LISTNAME>\_other_metrics,Location level metrics related to deforestation risk,1.1,Sub State,Sub State the Location's Center Point is in
+<LISTNAME>\_other_metrics,Location level metrics related to deforestation risk,1.1,Negligible Risk (%),% overlap of location with sub-states considered negligible risk
+<LISTNAME>\_other_metrics,Location level metrics related to deforestation risk,1.1,Overlap with WDPA (Ha),WDPA overlap in hectares
+<LISTNAME>\_other_metrics,Location level metrics related to deforestation risk,1.1,Overlap with WDPA (%),WDPA overlap percentage
+<LISTNAME>\_other_metrics,Location level metrics related to deforestation risk,1.1,Overlap with Indigenous Lands (Ha),Overlap in hectares with LandMark preview dataset
+<LISTNAME>\_other_metrics,Location level metrics related to deforestation risk,1.1,Overlap with Indigenous Lands (%),Overlap in percentage with LandMark preview dataset
+<LISTNAME>\_natural_forest_loss_aggregated,List level natural forest metrics,1.1,List Name,Name of List
+<LISTNAME>\_natural_forest_loss_aggregated,List level natural forest metrics,1.1,Country,Country where List area overlaps
+<LISTNAME>\_natural_forest_loss_aggregated,List level natural forest metrics,1.1,State,State where List area overlaps
+<LISTNAME>\_natural_forest_loss_aggregated,List level natural forest metrics,1.1,Sub State,Sub-state where List area overlaps
+<LISTNAME>\_natural_forest_loss_aggregated,List level natural forest metrics,1.1,Natural Forest Coverage (HA),HA of natural forest as defined by the forest data layer across the total area of the list
+<LISTNAME>\_natural_forest_loss_aggregated,List level natural forest metrics,1.1,Natural Forest Loss cumulative (HA),HA of natural forest loss as defined by the forest data layer across all year of analysis (2021-203) across the total area of the list
+<LISTNAME>\_natural_forest_loss_aggregated,List level natural forest metrics,1.1,Natural Forest Loss annual (HA),HA of annual natural forest loss as defined by the forest data layer across the total area of the list
+<LISTNAME>\_natural_forest_loss_aggregated,List level natural forest metrics,1.1,Year,Year of data
+<LISTNAME>\_natural_forest_loss_aggregated,List level natural forest metrics,1.1,Natural Forest Data Layer,Forest data layer being used to define natural forest metrics
+<LISTNAME>\_natural_forest_loss,Location level natural forest metrics,1.1,List Name,Name of List
+<LISTNAME>\_natural_forest_loss,Location level natural forest metrics,1.1,Location Name,undefined
+<LISTNAME>\_natural_forest_loss,Location level natural forest metrics,1.1,Country,undefined
+<LISTNAME>\_natural_forest_loss,Location level natural forest metrics,1.1,State,State the Location's Center Point is in
+<LISTNAME>\_natural_forest_loss,Location level natural forest metrics,1.1,Sub State,Sub State the Location's Center Point is in
+<LISTNAME>\_natural_forest_loss,Location level natural forest metrics,1.1,Natural Forest Coverage (HA),HA of natural forest as defined by the forest data layer in location
+<LISTNAME>\_natural_forest_loss,Location level natural forest metrics,1.1,Natural Forest Loss cumulative (HA),HA of natural forest loss as defined by the forest data layer across all year of analysis (2021-203) in location
+<LISTNAME>\_natural_forest_loss,Location level natural forest metrics,1.1,Natural Forest Loss annual (HA),HA of annual natural forest loss as defined by the forest data layer in location
+<LISTNAME>\_natural_forest_loss,Location level natural forest metrics,1.1,Year,Year of data
+<LISTNAME>\_natural_forest_loss,Location level natural forest metrics,1.1,Natural Forest Data Layer,Forest data layer being used to define natural forest metrics

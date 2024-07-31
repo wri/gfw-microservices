@@ -1,8 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ReadmeService } from './readme.service';
 import * as fs from 'fs';
+import * as path from 'path';
+import { AlertFieldsFileRequest, BasicFieldsFileRequest } from '@wri-monorepos/sql';
 
 jest.mock('fs');
+jest.mock('path');
 
 describe('ReadmeService', () => {
   let service: ReadmeService;
@@ -15,131 +18,59 @@ describe('ReadmeService', () => {
     service = module.get<ReadmeService>(ReadmeService);
   });
 
-  describe('buildReadmeData', () => {
-    it('should return the formatted readme data', () => {
-      const data = [
-        {
-          header: {
-            key1: {
-              name: 'Name 1',
-              description: 'Description 1',
-            },
-            key2: {
-              name: 'Name 2',
-              description: 'Description 2',
-            },
-          },
-          fileName: 'file1',
-          description: 'Description 1',
-        },
-        {
-          header: {
-            key3: {
-              name: 'Name 3',
-              description: 'Description 3',
-            },
-            key4: {
-              name: 'Name 4',
-              description: 'Description 4',
-            },
-          },
-          fileName: 'file2',
-          description: 'Description 2',
-        },
-      ];
-
-      const expectedOutput =
-        'CSV Name;Description;Column;Column Description\n' +
-        '<LISTNAME>_file1;Description 1;Name 1;Description 1\n' +
-        '<LISTNAME>_file1;Description 1;Name 2;Description 2\n' +
-        '<LISTNAME>_file2;Description 2;Name 3;Description 3\n' +
-        '<LISTNAME>_file2;Description 2;Name 4;Description 4';
-
-      const result = service.buildReadmeData(data);
-      expect(result).toEqual(expectedOutput);
-    });
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  describe('write', () => {
-    it('should write the readme data to a file', async () => {
-      const filters = {
-        type: 'afi',
-        key: 'some_key',
-      };
+  it('should source dir have afi_readme when the filter type is AFI', async () => {
+    const filters: BasicFieldsFileRequest = { type: 'afi', key: 'test-key' };
+    const sourceDir = '/mock/source/dir/afi_readme.md';
+    const destFile = '/tmp/wri-test-key/README.md';
 
-      const data = [
-        {
-          header: {
-            key1: {
-              name: 'Name 1',
-              description: 'Description 1',
-            },
-            key2: {
-              name: 'Name 2',
-              description: 'Description 2',
-            },
-          },
-          fileName: 'file1',
-          description: 'Description 1',
-        },
-      ];
-
-      const readmeData =
-        'CSV Name;Description;Column;Column Description\n' +
-        '<LISTNAME>_file1;Description 1;Name 1;Description 1\n' +
-        '<LISTNAME>_file1;Description 1;Name 2;Description 2';
-
-      jest.spyOn(service, 'afiReadmeData').mockReturnValue(data);
-      jest.spyOn(service, 'buildReadmeData').mockReturnValue(readmeData);
-      jest.spyOn(service, 'writeDataToFile').mockResolvedValue();
-
-      await service.write(filters);
-
-      expect(service.afiReadmeData).toHaveBeenCalled();
-      expect(service.buildReadmeData).toHaveBeenCalledWith(data);
-      expect(service.writeDataToFile).toHaveBeenCalledWith(filters, readmeData);
+    const error = new Error('Copy failed');
+    (fs.copyFile as unknown as jest.Mock).mockImplementation((src, dest, callback) => {
+      callback(error);
     });
+    await service.write(filters);
+    expect(fs.copyFile).toHaveBeenCalledWith(sourceDir, destFile, expect.any(Function));
   });
 
-  describe('writeDataToFile', () => {
-    it('should write the data to a file', async () => {
-      const filters = {
-        type: 'afi',
-        key: 'some_key',
-      };
-      const data = 'CSV Name;Description;Column;Column Description';
-      const expectedFilePath = '/tmp/wri-some_key/README.csv';
+  it('should source dir have daily_alerts_readme when the filter type is Alerts and the selectedTimeFrame is Day ', async () => {
+    const filters: AlertFieldsFileRequest = {
+      key: 'test-key',
+      type: 'alerts',
+      selectedTimeframe: 'DAY',
+      selectedAlert: '',
+    };
+    const sourceDir = '/mock/source/dir/daily_alerts_readme.md';
+    const destFile = '/tmp/wri-test-key/README.md';
 
-      (fs.writeFile as unknown as jest.Mock).mockImplementation(
-        (filePath, data, encoding, callback) => {
-          callback(null);
-        }
-      );
-
-      await service.writeDataToFile(filters, data);
-
-      expect(fs.writeFile).toHaveBeenCalledWith(
-        expectedFilePath,
-        data,
-        'utf8',
-        expect.any(Function)
-      );
+    (fs.copyFile as unknown as jest.Mock).mockImplementation((src, dest, callback) => {
+      callback(null);
     });
+    await service.write(filters);
+    expect(fs.copyFile).toHaveBeenCalledWith(sourceDir, destFile, expect.any(Function));
+  });
 
-    it('should reject with an error if writing to file fails', async () => {
-      const filters = {
-        type: 'afi',
-        key: 'some_key',
-      };
-      const data = 'CSV Name;Description;Column;Column Description';
+  it('should not break when readme file dont exist', async () => {
+    const filters: BasicFieldsFileRequest = {
+      type: 'test-wri',
+      key: 'test-key',
+    };
+    const sourceDir = '/mock/source/dir/daily_alerts_readme.md';
+    const destDir = '/tmp/wri-test-key';
+    const destFile = '/tmp/wri-test-key/README.md';
 
-      (fs.writeFile as unknown as jest.Mock).mockImplementation(
-        (filePath, data, encoding, callback) => {
-          callback(new Error('Error! Write error'));
-        }
-      );
+    (path.join as jest.Mock)
+      .mockReturnValueOnce(sourceDir)
+      .mockReturnValueOnce(destDir)
+      .mockReturnValueOnce(destFile);
 
-      await expect(service.writeDataToFile(filters, data)).rejects.toThrow('Error! Write error');
+    (fs.copyFile as unknown as jest.Mock).mockImplementation((src, dest, callback) => {
+      callback(null);
     });
+    await service.write(filters);
+
+    expect(fs.copyFile).not.toHaveBeenCalled();
   });
 });

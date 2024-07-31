@@ -1,0 +1,27 @@
+name: Delete Merged Branches
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  delete_merged_branch:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Delete branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH_NAME=${{ github.event.pull_request.head.ref }}
+          if [ "$BRANCH_NAME" != "develop" ] && [[ "$BRANCH_NAME" != staging_release* ]]; then
+            echo "Deleting branch $BRANCH_NAME"
+            curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/git/refs/heads/$BRANCH_NAME"
+          else
+            echo "Not deleting the default branch or protected branches"
+          fi

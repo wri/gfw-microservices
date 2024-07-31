@@ -111,6 +111,7 @@ class ArgentinaLayerUtil {
   }
 
   handleRowPercentageAndFormat() {
+    // avoid dividing by zero, number gets formatted down the stream
     const total = Math.max(this.data.total_area, 0.01);
 
     this.layerData = this.layerData.map(([key, value]) => {

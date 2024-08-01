@@ -3,18 +3,17 @@ import axios from 'axios';
 import * as logger from '../../../config/privateutils/logger.utils';
 import * as AWSSES from '../../../config/privateutils/ses.utils';
 
-const {
+import { checkProcessingLimits } from '@wri-monorepos/shared';
+import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
+import {
+  listStatus,
   GEO_TRELLIS__ANALYZE_LIST_DEV,
   GEO_TRELLIS__ANALYZE_LIST_QA,
   GEO_TRELLIS__ANALYZE_LIST_STAGING,
   GEO_TRELLIS__ANALYZE_LIST_PROD,
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
-} = require('../config/geoTrellis.config');
-
-import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
-import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
-import { listStatus } from '@wri-monorepos/constants';
+} from '@wri-monorepos/constants';
 
 /**
  * Submitting Analyze List request to step function for list to be processed by GeoTrellis

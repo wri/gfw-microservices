@@ -35,9 +35,7 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
     this.organizeStream(filters);
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}_${this.suffix}.csv`,
-      `${Object.values(ALERTS_INTEGRATED_NATURAL_FOREST_SERVICE_CSV_HEADER)
-        .map((header) => header.name)
-        .join(',')}\n`
+      `${Object.values(ALERTS_INTEGRATED_NATURAL_FOREST_SERVICE_CSV_HEADER).join(',')}\n`
     );
   }
 

@@ -31,9 +31,7 @@ export class OtherKpisService extends IPipeService {
 
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}_${fileSuffix}.csv`,
-      `${Object.values(headers)
-        .map((header) => header.name)
-        .join(',')}\n`
+      `${Object.values(headers).join(',')}\n`
     );
 
     this.organizeStream(filters, Object.keys(headers), fileSuffix);

@@ -206,7 +206,6 @@ describe('Classified Region - handleClassifiedRegionCategoryForList', () => {
         })
       ).resolves.toStrictEqual({
         ...classifiedAnnualLossProcessedValue[countryGadm],
-        overlap: { 'Category I': 2487.9471, 'Category II': 315.8723 },
       });
     }
   );

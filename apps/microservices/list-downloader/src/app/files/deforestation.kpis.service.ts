@@ -33,9 +33,7 @@ export class DeforestationKpisService extends IPipeService {
 
     fs.writeFileSync(
       `/tmp/wri-${key}/${listName}_${fileSuffix}.csv`,
-      `${Object.values(header)
-        .map((item) => item.name)
-        .join(',')}\n`
+      `${Object.values(header).join(',')}\n`
     );
 
     this.organizeStream(filters, Object.keys(header), fileSuffix);

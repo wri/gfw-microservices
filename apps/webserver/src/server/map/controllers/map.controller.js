@@ -23,7 +23,15 @@ export const map = (req, res) => {
   res.header('Expires', '-1');
   res.header('Pragma', 'no-cache');
 
+  if(req.originalUrl.includes( '/eapimap?')){
+   req.query={
+    ...req.query,
+   isSharedList:false ,
+    selectedListId:req.query.locationId 
+   }
+}
   const isAdministrator = UserManager.isAdministrator(req);
+
 
   const promises = [
     ListManager.getUserListsWithAnalysisId(req),

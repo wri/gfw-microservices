@@ -1,0 +1,90 @@
+@import '../../common/css/_variables';
+
+$lightGray: rgba(158, 158, 158, 0.3);
+
+.esri-popup__header-title,
+.esri-popup__content,
+.esri-search-result-renderer,
+.popup-text-key,
+.popup-text-value,
+.esri-widget,
+.esri-popup__feature-buttons [role='button'] {
+  font-family: 'Fira Sans', sans-serif !important;
+}
+
+.esri-popup__feature-buttons {
+  flex-direction: column;
+
+  [role='button'].esri-popup__action {
+    margin: 0.5rem 0.25rem;
+    padding: 0 1.5rem;
+    font-weight: 700;
+    height: $button-height;
+    line-height: $button-height;
+    border-radius: calc(#{$button-height} / 2);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s linear;
+    text-transform: uppercase;
+    text-align: center;
+    display: inline-block;
+    background-color: $home_top_brand-color;
+    color: #fff;
+  }
+}
+
+.esri-popup__action[title='Zoom to'] {
+  position: absolute !important;
+  bottom: 0px !important;
+}
+
+.esri-popup__action[title='Add Location'],
+.esri-popup__action[title='Analyze'] {
+  display: inline-block !important;
+  background: $gfw-brand-red;
+  border-radius: 20px;
+  text-align: center;
+  width: 47.5% !important;
+}
+
+.esri-popup__action[title='Analyze'] {
+  background: $gfw_brand-green;
+}
+
+.esri-popup__action[title='Add Location']::before {
+  content: 'ADD LOCATION';
+  color: white;
+}
+
+.esri-popup__action[title='Analyze']::before {
+  content: 'ANALYZE';
+  color: white;
+}
+
+.esri-popup__feature-buttons {
+  order: 100;
+  max-height: 100px !important;
+}
+
+.esri-popup__main-container {
+  .esri-feature {
+    p {
+      font-size: 12px;
+    }
+  }
+
+  .esri-popup__navigation {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin: 6px 0 0 0;
+    padding: 6px 6px 0 6px;
+    background-color: transparent;
+    border-top: 1px solid $very-light-gray-1;
+  }
+}
+
+.esri-popup__main-container {
+  max-width: $popup__width;
+  min-width: $popup__width;
+}

@@ -36,6 +36,14 @@ module.exports = (app, limiter) => {
 
   app.post('/map', controller.map);
 
+  // Routes for EAPIMap
+
+  app.use('/eapimap', routeMiddlewares);
+
+  app.get('/eapimap', controller.map);
+
+  app.post('/eapimap', controller.map);
+
   /**
    * Get Planet mosaics Tiles Info
    */

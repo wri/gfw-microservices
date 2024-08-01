@@ -11,6 +11,7 @@ describe('List diagnostics', () => {
 
   When('I login in the landing page', () => {
     User.login();
+    cy.visit('/locations');
   });
 
   When('I navigate to a list details page', () => {

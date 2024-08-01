@@ -8,6 +8,7 @@ describe('Maps View', () => {
 
   When('I login in the landing page', () => {
     User.login();
+    cy.visit('/locations');
   });
 
   Then('Verify the Locations screen', () => {

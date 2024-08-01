@@ -1,21 +1,19 @@
-const path = require('path');
-const axios = require('axios');
+import axios from 'axios';
 
-const logger = require(path.resolve('./config/privateutils/logger.utils'));
-const AWSSES = require(path.resolve('./config/privateutils/ses.utils'));
+import * as logger from '../../../config/privateutils/logger.utils';
+import * as AWSSES from '../../../config/privateutils/ses.utils';
 
-const {
+import { checkProcessingLimits } from '@wri-monorepos/shared';
+import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
+import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
+import {
+  listStatus,
   GEO_TRELLIS__ANALYZE_LIST_DEV,
   GEO_TRELLIS__ANALYZE_LIST_QA,
   GEO_TRELLIS__ANALYZE_LIST_STAGING,
   GEO_TRELLIS__ANALYZE_LIST_PROD,
   GEO_TRELLIS__ANALYZE_LIST_PRODV2,
-} = require('../config/geoTrellis.config');
-
-import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
-import { updateListsAnalysisStatus } from '@wri-monorepos/sql';
-import { listStatus } from '@wri-monorepos/constants';
+} from '@wri-monorepos/constants';
 
 /**
  * Submitting Analyze List request to step function for list to be processed by GeoTrellis
@@ -24,7 +22,7 @@ import { listStatus } from '@wri-monorepos/constants';
  * @param {Object} list - List info
  * @return {Promise} - request Promise
  */
-exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
+export const handleGeoTrellisAnalyzeListRequest = async (req, list, analysisTypesToProcess) => {
   const {
     organization_user_id,
     organization_id: organizationId,
@@ -53,7 +51,14 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
   });
 
   const listAnalysisStatusData = await getListAnalysisStatus(databaseName, listID);
-  const analysisTypes = extractAnalysisTypes(listAnalysisStatusData);
+
+  const analysiTypes = extractAnalysisTypes(
+    analysisTypesToProcess
+      ? listAnalysisStatusData.filter(({ analysisId }) =>
+          analysisTypesToProcess.includes(analysisId)
+        )
+      : listAnalysisStatusData
+  );
 
   if (isListLocationOverLimit) {
     await updateListsAnalysisStatus(databaseName, {
@@ -70,7 +75,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
     organization_id: parseInt(organizationId),
     reanalyze,
     processing_limit: processingLimit,
-    analysis_types: analysisTypes,
+    analysis_types: analysiTypes,
   };
 
   return await axios({
@@ -89,7 +94,7 @@ exports.handleGeoTrellisAnalyzeListRequest = async (req, list) => {
       );
 
       // Send email to user that list is submitted to be analysed
-      await AWSSES.sendEmail__ListSubmittedForAnalysis(req, list_name, analysisTypes);
+      await AWSSES.sendEmail__ListSubmittedForAnalysis(req, list_name, analysiTypes);
 
       return result;
     })

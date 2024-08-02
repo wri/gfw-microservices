@@ -4266,11 +4266,6 @@
     "@nx/workspace" "16.7.4"
     tslib "^2.3.0"
 
-"@nx/nx-darwin-arm64@^19.5.3":
-  version "19.5.4"
-  resolved "https://registry.npmjs.org/@nx/nx-darwin-arm64/-/nx-darwin-arm64-19.5.4.tgz"
-  integrity sha512-s+OmSsYUtECmEKAdzSsYoO9vamx+njiP72eSZusmTh7fCJg+dW3dcifRkUf3h1dcM53hffXcmxKEoWxZMAeuXw==
-
 "@nx/nx-darwin-arm64@16.7.4":
   version "16.7.4"
   resolved "https://registry.npmjs.org/@nx/nx-darwin-arm64/-/nx-darwin-arm64-16.7.4.tgz"

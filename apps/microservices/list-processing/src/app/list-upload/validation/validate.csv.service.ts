@@ -5,7 +5,7 @@ import * as csv2Json from 'csvtojson';
 import { validateLocation } from './validate.location';
 import { ValidateCsvRepository } from './validate.csv.repository';
 import { ConfigService } from '@nestjs/config';
-import { ServerConfigType } from '../../validators/server-config';
+import { ServerConfigType } from '../../../validators/server-config';
 
 @Injectable()
 export class ValidateCSVService {

@@ -12,7 +12,20 @@ class LocationsPage {
         .get('.my-lists-list li')
         .filter(':not(:has(.failed-tooltip.failed-tooltip--default))')
         .first(),
+    // Selecciona una lista por su nombre
+    listByName: (name) => cy.contains('.list-item', name),
   };
+
+  verifyLists(lists: string[], exist: boolean) {
+    lists.forEach((listName) => {
+      const element = this.elements.listByName(listName);
+      if (exist) {
+        element.should('be.visible');
+      } else {
+        element.should('not.be.visible');
+      }
+    });
+  }
 
   clickOnLocationsList(name: string) {
     cy.contains(name).click();

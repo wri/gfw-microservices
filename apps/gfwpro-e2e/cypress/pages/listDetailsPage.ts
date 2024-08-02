@@ -25,7 +25,54 @@ class ListDetailsPage {
         "You have selected a list file for download. Please check your email for your data's download link."
       ),
     closeAlertDownloadBtn: () => cy.get('[data-cy="download-dialog"]').find('button').first(),
+    listByName: (name) => cy.contains('.list-item', name),
   };
+  clickOnLocationsList(name: string) {
+    cy.contains(name).click();
+  }
+
+  moveList(list: string) {
+    this.clickOnCheckBoxSelectAll();
+    this.clickOnMoveBtn();
+    this.clickOnMoveSectionRadioBtn();
+    this.selectList(list);
+    this.clickOnSaveAsDraftBtn();
+    this.elements.titleConfirmCopyList().should('be.visible');
+    this.elements.descriptionConfirmCopyList().should('be.visible');
+    this.elements.confirmActionBtn().should('be.visible');
+    this.clickOnConfirmActionBtn();
+  }
+
+  deleteLists(lists: string[]) {
+    lists.forEach((listName) => {
+      cy.get('ul.my-lists-list').then(($ul) => {
+        if ($ul.find(`li:contains(${listName})`).length > 0) {
+          this.clickOnLocationsList(listName);
+          this.clickOnCheckBoxSelectAll();
+          this.clickOnDeleteBtn();
+          this.elements.confirmActionBtn().should('be.visible');
+          this.clickOnConfirmActionBtn();
+          cy.visit('/locations');
+        }
+      });
+    });
+  }
+
+  createLists(lists: string[]) {
+    lists.forEach((listName) => {
+      this.clickOnCheckBoxSelectAll();
+      this.clickOnMoveBtn();
+      this.clickOnCreateNewListRadioBtn();
+      this.elements.inputCreateNewList().type(listName);
+      this.clickOnSaveAsDraftBtn();
+
+      this.elements.titleConfirmCopyList().should('be.visible');
+      this.elements.descriptionConfirmCopyList().should('be.visible');
+      this.elements.confirmActionBtn().should('be.visible');
+
+      this.clickOnConfirmActionBtn();
+    });
+  }
 
   selectList(list) {
     cy.get('div.move-to-list-select select').select(list);

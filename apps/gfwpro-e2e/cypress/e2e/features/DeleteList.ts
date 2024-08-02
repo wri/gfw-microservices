@@ -1,28 +1,24 @@
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
-import LocationsPage from '../../pages/locationsPage';
-import ListDetailsPage from '../../pages/listDetailsPage';
-import * as User from '../../app-api/User';
+import LocationsPage from '../pages/locationsPage';
+import ListDetailsPage from '../pages/listDetailsPage';
+import * as User from '../app-api/User';
 
 describe('Delete List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
+  const listsToDelete = ['testregresioncopylisttoremove', 'testregresioncopylisttomove'];
 
   When('I login in the landing page', () => {
     User.login();
     cy.visit('/locations');
   });
 
-  When('I navigate to a list details page', () => {
-    locationsPage.clickOnLocationsList('newlistcopytest');
+  When('I check if lists exist in locations', () => {
+    listDetailsPage.deleteLists(listsToDelete);
   });
 
-  When('I click on list diagnostic button', () => {
-    listDetailsPage.clickOnListDiagnosticsBtn();
-  });
-
-  Then('I should see the delete view', () => {
-    listDetailsPage.clickOnCheckBoxSelectAll();
-    listDetailsPage.clickOnDeleteBtn();
-    expect(listDetailsPage.elements.confirmActionBtn().should('be.visible'));
+  Then('I should dont see the created lists in the locations page', () => {
+    cy.visit('/locations');
+    locationsPage.verifyLists(listsToDelete, false);
   });
 });

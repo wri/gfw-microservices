@@ -27,7 +27,7 @@ export const map = (req, res) => {
     req.query = {
       ...req.query,
       isSharedList: false,
-      selectedListId: req.query.locationId,
+      selectedLocations: req.query.locationId,
     };
   }
   const isAdministrator = UserManager.isAdministrator(req);

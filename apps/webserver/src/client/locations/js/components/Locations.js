@@ -84,144 +84,161 @@ class Locations extends Component {
   };
 
   getGeomFromMap = (goToEditList) => {
-    const { gfwData, mapData, locationName, userLists, drawData, gfwLists } = this.props;
-    let listName = '';
+    const { gfwData, mapData, drawData } = this.props;
 
-    if (mapData) {
-      // Ensure mapData.listID and mapData.locationID exist
-      if (mapData.listID && mapData.locationID) {
-        const userListInfoFromMap = {
-          gfwData,
-          locationName,
-          listAlias: listName,
-          listID: mapData.listID,
-          locationID: mapData.locationID,
-        };
+    // Handle the case where mapData is present
+    if (mapData && mapData.listID && mapData.locationID) {
+      this.handleMapData(goToEditList);
+      return;
+    }
 
-        this.setState({
-          isLoading: true,
-          userListInfoFromMap,
-        });
+    // Handle the case where gfwData is present
+    if (gfwData && gfwData.listName) {
+      this.handleGFWData(goToEditList);
+      return;
+    }
 
-        if (goToEditList) {
-          const list = userLists?.find((ul) => ul.id === mapData.listID);
-          if (list) {
-            if (drawData) {
-              this.setState({
-                drawnGeom: {
-                  geometry: JSON.parse(drawData),
-                  locationName,
-                },
-                isLoading: false,
-              });
-            } else {
-              console.warn('did not get draw data to use on add location page');
-              this.setState({ isLoading: false });
-            }
-            store.dispatch(addList(list));
-            store.dispatch(changeView('add'));
-            const { history } = this.props;
-            history.push('/add');
-          } else {
-            console.warn('failed to find list to add to');
-            this.setState({ isLoading: false });
-          }
-        }
+    // Handle the case where drawData is present
+    if (drawData) {
+      this.handleDrawData();
+      return;
+    }
+
+    console.warn('Insufficient data to process getGeomFromMap');
+  };
+
+  handleMapData = (goToEditList) => {
+    const { mapData, userLists, locationName, drawData, history } = this.props;
+    const userListInfoFromMap = {
+      ...this.props.gfwData,
+      locationName,
+      listAlias: '',
+      listID: mapData.listID,
+      locationID: mapData.locationID,
+    };
+
+    this.setState({ isLoading: true, userListInfoFromMap });
+
+    if (goToEditList) {
+      const list = userLists?.find((ul) => ul.id === mapData.listID);
+      if (list) {
+        this.handleDrawData(drawData, locationName);
+        store.dispatch(addList(list));
+        store.dispatch(changeView('add'));
+        history.push('/add');
       } else {
-        console.warn('mapData is missing listID or locationID');
+        console.warn('Failed to find list to add to');
       }
-    } else if (gfwData && gfwData.listName) {
-      listName = getGFWListNameFromMapLayerId(gfwData?.listName);
-      const gfwInfoFromMap = {
-        gfwData,
-        locationName,
-        listAlias: listName,
-      };
+    }
+  };
 
-      if (goToEditList) {
-        this.setState({ isLoading: true });
-        const gfwList = gfwLists?.find((gfw) => gfw.list_name === listName);
-        if (gfwList) {
-          const { globalIds } = gfwInfoFromMap.gfwData;
-          const params = `list_id=${gfwList?.id}&global_ids=["${globalIds}"]`;
-          httpRequest
-            .fetchForm('/locations/getGFWListLocationsGlobalId', params)
-            .then((response) => {
-              const locations = JSON.parse(response);
-              if (locations) {
-                const data = locations.location_analyses[0][0];
-                const admin = {
-                  substate: data?.['Sub State'],
-                  state: data.State,
-                  country: data.Country,
-                  gadmid: data.gadmid,
-                  adminData: data,
-                  gfwListID: gfwList.id,
-                };
+  handleGFWData = (goToEditList) => {
+    const { gfwData, gfwLists, locationName } = this.props;
+    const listName = getGFWListNameFromMapLayerId(gfwData.listName);
+    const gfwInfoFromMap = {
+      gfwData,
+      locationName,
+      listAlias: listName,
+    };
 
-                const listId = gfwList.id;
-                const locationIds = [data.location_id];
+    this.setState({ isLoading: true, gfwInfoFromMap });
 
-                // Fetch the bounds for the admin area
-                httpRequest
-                  .fetchForm(
-                    '/locations/getGFWListLocationGeom',
-                    `list_id=${listId}&location_ids=${locationIds}`
-                  )
-                  .then((response) => {
-                    // convert GeoJSON admin bounds to ESRI JSON format for map
-                    const esriGeom = geojsonUtil.geojsonToArcGIS(JSON.parse(response));
-                    const geometries = { geometry: esriGeom[0].geometry, locationName };
-                    this.setState({
-                      isLoading: false,
-                      drawnGeom: geometries,
-                      gfwInfoFromMap,
-                      listAlias: locationName,
-                      adminArea: admin,
-                      gfwListID: gfwList.id,
-                    });
-
-                    let addType =
-                      this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
-                    if (gfwInfoFromMap.gfwData.listName === universalMillList) {
-                      addType = 'commodity';
-                    }
-                    store.dispatch(changeAddType(addType));
-                    store.dispatch(addList(gfwList));
-                    store.dispatch(changeView('add'));
-                    const { history } = this.props;
-                    history.push('/add');
-                  })
-                  .catch((err) => {
-                    console.warn('error fetching gfw location geometry', err);
-                    this.setState({ isLoading: false });
-                  });
-              }
-            })
-            .catch((err) => {
-              console.warn('error fetching gfw location data', err);
-              this.setState({ isLoading: false });
-            });
-        } else {
-          console.warn('gfwList not found');
-          this.setState({ isLoading: false });
-        }
+    if (goToEditList) {
+      const gfwList = gfwLists?.find((gfw) => gfw.list_name === listName);
+      if (gfwList) {
+        this.fetchGFWListData(gfwList, gfwInfoFromMap);
       } else {
-        this.setState({ isLoading: true, gfwInfoFromMap });
+        console.warn('gfwList not found');
       }
-    } else if (drawData) {
-      // Drawn/Uploaded poly: geoString
+    }
+  };
+
+  handleDrawData = (drawData, locationName) => {
+    if (drawData) {
       const drawnGeom = JSON.parse(drawData);
       const mapData = {
         geometry: drawnGeom,
         locationName,
       };
 
-      this.setState({ drawnGeom: mapData });
-      store.dispatch(changeView('add'));
-      const { history } = this.props;
-      history.push('/add');
+      this.setState({ drawnGeom: mapData, isLoading: false });
+    } else {
+      console.warn('Did not get draw data to use on add location page');
+      this.setState({ isLoading: false });
     }
+  };
+
+  fetchGFWListData = (gfwList, gfwInfoFromMap) => {
+    const { globalIds } = gfwInfoFromMap.gfwData;
+    const params = `list_id=${gfwList.id}&global_ids=["${globalIds}"]`;
+
+    httpRequest
+      .fetchForm('/locations/getGFWListLocationsGlobalId', params)
+      .then((response) => {
+        const locations = JSON.parse(response);
+        if (locations) {
+          this.processGFWLocationData(locations, gfwList, gfwInfoFromMap);
+        }
+      })
+      .catch((err) => {
+        console.warn('Error fetching GFW location data', err);
+        this.setState({ isLoading: false });
+      });
+  };
+
+  processGFWLocationData = (locations, gfwList, gfwInfoFromMap) => {
+    const data = locations.location_analyses[0][0];
+    const admin = {
+      substate: data['Sub State'],
+      state: data.State,
+      country: data.Country,
+      gadmid: data.gadmid,
+      adminData: data,
+      gfwListID: gfwList.id,
+    };
+
+    const listId = gfwList.id;
+    const locationIds = [data.location_id];
+
+    httpRequest
+      .fetchForm(
+        '/locations/getGFWListLocationGeom',
+        `list_id=${listId}&location_ids=${locationIds}`
+      )
+      .then((response) => {
+        const esriGeom = geojsonUtil.geojsonToArcGIS(JSON.parse(response));
+        const geometries = {
+          geometry: esriGeom[0].geometry,
+          locationName: gfwInfoFromMap.locationName,
+        };
+
+        this.setState({
+          isLoading: false,
+          drawnGeom: geometries,
+          gfwInfoFromMap,
+          listAlias: gfwInfoFromMap.locationName,
+          adminArea: admin,
+          gfwListID: gfwList.id,
+        });
+
+        this.navigateToAddView(gfwInfoFromMap, gfwList);
+      })
+      .catch((err) => {
+        console.warn('Error fetching GFW location geometry', err);
+        this.setState({ isLoading: false });
+      });
+  };
+
+  navigateToAddView = (gfwInfoFromMap, gfwList) => {
+    let addType = this.state.activeTemplate === 'investment' ? 'investment' : 'commodity';
+    if (gfwInfoFromMap.gfwData.listName === universalMillList) {
+      addType = 'commodity';
+    }
+
+    store.dispatch(changeAddType(addType));
+    store.dispatch(addList(gfwList));
+    store.dispatch(changeView('add'));
+    this.props.history.push('/add');
   };
 
   showShareList = (show) => {

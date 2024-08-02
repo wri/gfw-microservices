@@ -1,30 +1,23 @@
 import {
   ClientStoreConnection,
-  Lists,
+  FeatureFlag,
   ListsUploadStatus,
   SQLUtils,
-  User,
-  updateListsAnalysisStatus,
 } from '@wri-monorepos/sql';
 import { BadRequestException, Logger, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common';
 import { CreateListRequest, RequestLargeListProcess, ResponseLargeListProcess } from '../models';
-import fetch from 'node-fetch';
 import { ConfigService } from '@nestjs/config';
 import * as sql from 'mssql';
 import { createListNameSchema } from '../utils/list.utils';
 import { DataSource } from 'typeorm';
 import { getListByFilters } from '@wri-monorepos/sql';
-import { checkProcessingLimits } from '@wri-monorepos/shared';
-import { ProcessingLimitException } from '../app/app.exceptions';
-import { extractAnalysisTypes, getListAnalysisStatus } from '@wri-monorepos/geo';
-import { listStatus } from '@wri-monorepos/constants';
 import { RequestSaveLargeListProcessModel, CreateListInsertResultModel } from '../models';
-import { MARK_IS_TEST_LIST, MARK_IS_TEST_USER } from './constants';
-import * as moment from 'moment';
-import { mockAnalysisFlow } from '../mock';
 import { MetadataService as AWSMetadataService } from '@wri-monorepos/aws';
 import { ServerConfigType } from '../validators/server-config';
+import { featureFlagsService } from '@wri-monorepos/shared';
+import { DeprecatedStartAnalysisService } from '../app/list-upload/deprecated.start.analysis.service';
+import { StartAnalysisService } from '../app/list-upload/start.analysis.service';
 
 interface CreateListResult {
   list_id: number;
@@ -34,15 +27,15 @@ interface QueryCreateTableResult {
   query_string: string;
 }
 
-const environmentAllowTestFlow = ['DEVELOPMENT', 'LATEST', 'QA', 'STAGING'];
-
 @Injectable()
 export class ListService {
   constructor(
     private dataSource: DataSource,
     private readonly clientStoreConnection: ClientStoreConnection,
     private readonly awsMetadataService: AWSMetadataService,
-    private readonly config: ConfigService<ServerConfigType, true>
+    private readonly config: ConfigService<ServerConfigType, true>,
+    private readonly deprecatedStartAnalysisService: DeprecatedStartAnalysisService,
+    private readonly startAnalysisService: StartAnalysisService
   ) {}
 
   async createNewList(createListRequest: CreateListRequest) {
@@ -71,97 +64,15 @@ export class ListService {
   async startAnalysisProcessForList(
     request: RequestLargeListProcess
   ): Promise<ResponseLargeListProcess> {
-    const largeListProcessingEndPoint = this.config.get('LARGE_LIST_PROCESSING_ENDPOINT', {
-      infer: true,
-    });
-    const microserviceEnvironment = this.config.get('MICROSERVICES_ENV', { infer: true });
+    const { getFeatureFlagsForCurrentOrg } = await featureFlagsService();
+    const flags = await getFeatureFlagsForCurrentOrg(request.organization_id);
 
-    let listName = '';
-    let userEmail = '';
+    const uploadListLpFlag = flags.find((f) => f.flagId === 'UploadListLp') as FeatureFlag;
 
-    if (environmentAllowTestFlow.includes(microserviceEnvironment)) {
-      listName = await this.getListName(request.organization_database, request.list_id);
-      userEmail = await this.getUserEmail(request.organization_database, request.user_id);
+    if (uploadListLpFlag.flagState) {
+      return this.startAnalysisService.run(request);
     }
-
-    const isTestFlow =
-      environmentAllowTestFlow.includes(microserviceEnvironment) &&
-      listName.includes(MARK_IS_TEST_LIST) &&
-      userEmail.includes(MARK_IS_TEST_USER);
-
-    const { isExternalAPIProcess, ...llpRequest } = request;
-    const { organization_id: organizationId, subscription_status_id: subscriptionStatusId } =
-      request;
-
-    const { isListLocationOverLimit, processingLimit } = await checkProcessingLimits({
-      organizationDb: request.organization_database,
-      organizationId,
-      subscriptionStatusId,
-      listId: request.list_id,
-    });
-
-    if (isListLocationOverLimit) {
-      await updateListsAnalysisStatus(request.organization_database, {
-        listId: request.list_id,
-        errorInfo: 'Exceeded Analysis Limit',
-        status: listStatus.Inactive,
-      });
-      throw new ProcessingLimitException();
-    }
-
-    const listAnalysisStatusData = await getListAnalysisStatus(
-      request.organization_database,
-      request.list_id
-    );
-    const analysis_types = extractAnalysisTypes(listAnalysisStatusData);
-
-    const payloadBody = {
-      ...llpRequest,
-      environment: microserviceEnvironment,
-      send_email: !isExternalAPIProcess,
-      processing_limit: processingLimit,
-      analysis_types,
-    };
-
-    const requestBody = JSON.stringify(payloadBody);
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: requestBody,
-    };
-
-    // Flow used by cypress test, mock analysis flow so avoid call lambda functions.
-    if (isTestFlow) {
-      await mockAnalysisFlow({
-        organization_database: request.organization_database,
-        list_id: request.list_id,
-        template_type: request.template_type,
-      });
-      return Promise.resolve({
-        executionArn: 'e2e_automation_fake_analysis',
-        startDate: moment().format('YYYY-MM-DD'),
-      });
-    }
-
-    const response = await fetch(largeListProcessingEndPoint, options);
-    const responseBody = await response.json();
-    return responseBody;
-  }
-
-  async getListName(organizationDatabase: string, list_id: number) {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const listRepository = connection.getRepository(Lists);
-    const { listName } = await listRepository.findOne({ where: { id: list_id } });
-    return listName;
-  }
-
-  async getUserEmail(organizationDatabase: string, user_id: number) {
-    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-    const userRepository = connection.getRepository(User);
-    const { email } = await userRepository.findOne({ where: { id: user_id } });
-    return email;
+    return this.deprecatedStartAnalysisService.run(request);
   }
 
   async createListTables(

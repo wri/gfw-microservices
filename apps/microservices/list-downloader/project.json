@@ -3,6 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/microservices/list-downloader/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nrwl/webpack:webpack",
@@ -14,7 +15,8 @@
         "outputPath": "dist/apps/microservices/list-downloader",
         "main": "apps/microservices/list-downloader/src/main.ts",
         "tsConfig": "apps/microservices/list-downloader/tsconfig.app.json",
-        "assets": ["apps/microservices/list-downloader/src/assets"]
+        "assets": ["apps/microservices/list-downloader/src/assets"],
+        "webpackConfig": "apps/microservices/list-downloader/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -56,6 +58,5 @@
         "passWithNoTests": true
       }
     }
-  },
-  "tags": []
+  }
 }

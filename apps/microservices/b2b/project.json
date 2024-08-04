@@ -3,6 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/microservices/b2b/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nrwl/webpack:webpack",
@@ -12,7 +13,8 @@
         "compiler": "tsc",
         "outputPath": "dist/apps/microservices/b2b",
         "main": "apps/microservices/b2b/src/main.ts",
-        "tsConfig": "apps/microservices/b2b/tsconfig.app.json"
+        "tsConfig": "apps/microservices/b2b/tsconfig.app.json",
+        "webpackConfig": "apps/microservices/b2b/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -53,6 +55,5 @@
         "passWithNoTests": true
       }
     }
-  },
-  "tags": []
+  }
 }

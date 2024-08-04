@@ -7,8 +7,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
       "options": {
-        "jestConfig": "apps/microservices/externalapi-e2e/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "apps/microservices/externalapi-e2e/jest.config.ts"
       },
       "configurations": {
         "staging": {},
@@ -18,11 +17,7 @@
       "defaultConfiguration": "dev"
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "outputs": ["{options.outputFile}"],
-      "options": {
-        "lintFilePatterns": ["apps/microservices/externalapi-e2e/**/*.{js,ts}"]
-      }
+      "executor": "@nx/eslint:lint"
     }
   }
 }

@@ -3,6 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/webserver/src",
   "projectType": "application",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nrwl/esbuild:esbuild",
@@ -28,11 +29,31 @@
             "input": "apps/webserver/",
             "output": "apps/webserver"
           },
-          { "glob": "**/.babelrc", "input": "apps/webserver/", "output": "apps/webserver" },
-          { "glob": "**/*.png", "input": "apps/webserver/", "output": "apps/webserver" },
-          { "glob": "**/*.pug", "input": "apps/webserver/", "output": "apps/webserver" },
-          { "glob": "**/*.key", "input": "apps/webserver/", "output": "apps/webserver" },
-          { "glob": "**/*.crt", "input": "apps/webserver/", "output": "apps/webserver" }
+          {
+            "glob": "**/.babelrc",
+            "input": "apps/webserver/",
+            "output": "apps/webserver"
+          },
+          {
+            "glob": "**/*.png",
+            "input": "apps/webserver/",
+            "output": "apps/webserver"
+          },
+          {
+            "glob": "**/*.pug",
+            "input": "apps/webserver/",
+            "output": "apps/webserver"
+          },
+          {
+            "glob": "**/*.key",
+            "input": "apps/webserver/",
+            "output": "apps/webserver"
+          },
+          {
+            "glob": "**/*.crt",
+            "input": "apps/webserver/",
+            "output": "apps/webserver"
+          }
         ],
         "platform": "node",
         "format": ["cjs"],
@@ -62,12 +83,7 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          // The goal is to lint all the files in the project, but starting with the above
-          // "apps/webserver/src/**/*.ts",
-          // "apps/webserver/src/**/*.js"
-          "apps/webserver/src/server/[a-o]*/**/*.{ts,js}"
-        ]
+        "lintFilePatterns": ["apps/webserver/src/server/[a-o]*/**/*.{ts,js}"]
       }
     },
     "testweb": {
@@ -76,7 +92,6 @@
       "options": {
         "jestConfig": "apps/webserver/src/jest.config.json",
         "forceExit": true,
-        "passWithNoTests": true,
         "testPathIgnorePatterns": ["test/fitness"],
         "verbose": true
       }
@@ -118,6 +133,5 @@
         "parallel": false
       }
     }
-  },
-  "tags": []
+  }
 }

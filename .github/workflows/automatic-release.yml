@@ -2,7 +2,7 @@ name: QA Release Workflow
 
 on:
   schedule:
-    # Runs at 1 AM ET (5 AM UTC) every weekday
+    # Runs at 5 AM UTC (12AM/1AM ET depending in daylight savings) every weekday
     - cron: '0 5 * * 1-5'
 
 jobs:

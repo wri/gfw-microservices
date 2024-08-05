@@ -1,7 +1,7 @@
 import { Transform } from 'stream';
 
 export class AlertsGetLocationOrListData extends Transform {
-  constructor(private isListData: boolean = false) {
+  constructor(private isListData = false) {
     super({ objectMode: true });
   }
 

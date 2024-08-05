@@ -1,7 +1,7 @@
 import { Transform } from 'stream';
 
 class NegligibleRiskDiscretize extends Transform {
-  constructor(private key: string = 'negligibleRisk') {
+  constructor(private key = 'negligibleRisk') {
     super({ objectMode: true });
   }
 

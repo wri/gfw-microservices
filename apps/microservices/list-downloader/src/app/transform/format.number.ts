@@ -1,7 +1,7 @@
 import { Transform } from 'stream';
 
 class FormatNumber extends Transform {
-  constructor(private decimals: number = 2) {
+  constructor(private decimals = 2) {
     super({ objectMode: true });
   }
 

@@ -1,0 +1,60 @@
+name: QA e2e Tests
+
+on:
+  schedule:
+    # Runs at 6 AM UTC (one hour after automatic-release.yml) every weekday
+    - cron: '0 6 * * 1-5'
+
+jobs:
+  test_qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60 # Timeout the workflow
+
+    strategy:
+      matrix:
+        node-version: [20.11.1]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ssh-key: '${{ secrets.DEPLOY_KEY }}'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Install settings
+        run: |
+          echo "${{secrets.EAPI_E2E_SETTINGS}}" > ./apps/microservices/externalapi-e2e/jest.set.env.ts
+          echo "${{secrets.CYPRESS_SETTINGS}}" > ./apps/gfwpro-e2e/cypress.env.json
+
+      - name: Run QA e2e tests
+        run: |
+          mkdir -p ${{ runner.temp }}/test_logs
+          # npx nx e2e externalapi-e2e --configuration=qa > ${{ runner.temp }}/test_logs/eapi.logs &&
+          # npx nx e2e gfwpro-e2e --configuration=qa > ${{ runner.temp }}/test_logs/cypress.logs
+          npx nx e2e externalapi-e2e --configuration=qa  &&
+          npx nx e2e gfwpro-e2e --configuration=qa
+
+      - name: Send failure notifications to Slack
+        # disabled failure check for testing
+        # if: ${{ failure() }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEST_WEBHOOK_URL }}
+        run: |
+          curl -X POST -H 'Content-type: application/json' --data '{
+            "text": "QA e2e test status ${{ job.status }}. Please check the logs",
+            "username": "GitHub Actions",
+            "icon_emoji": ":octocat:"
+          }' $SLACK_WEBHOOK_URL

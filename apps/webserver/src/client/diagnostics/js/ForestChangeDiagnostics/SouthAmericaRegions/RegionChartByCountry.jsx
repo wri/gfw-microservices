@@ -230,6 +230,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
       {showIndigenousTerritoriesPieChart && (
         <PieChart
           data={indigenousTerritoriesPieCharFormattedData}
+          preview={true}
           chartLabels={landmarkOverlapCountry.chartLabels}
           title={landmarkOverlapCountry.diagnosticTitle}
           informationBubbleId={

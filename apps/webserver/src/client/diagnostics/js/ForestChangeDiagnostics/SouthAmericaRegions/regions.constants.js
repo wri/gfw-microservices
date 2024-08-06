@@ -135,6 +135,7 @@ export const chartDatasetConfigs = {
         legend: 'Indigenous Territories',
         color: 'rgb(146,37,100)',
         checked: true,
+        preview: true,
       },
     ],
   },

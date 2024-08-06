@@ -7,6 +7,7 @@ const getQueryParams = (queryString) => {
     visibleLayers: 'array',
     listId: 'number',
     selectedLocations: 'array-int-or-string',
+    locationId: 'array-int-or-string',
     isGfwList: 'boolean',
     isSharedList: 'boolean',
     latitude: 'number',
@@ -48,6 +49,13 @@ const getQueryParams = (queryString) => {
       }
     }
   });
+
+  // Workaround for apimap route
+  if (params['locationId']) {
+    params['selectedLocations'] = params['locationId'];
+    params['isSharedList'] = false;
+    delete params['locationId'];
+  }
 
   return params;
 };

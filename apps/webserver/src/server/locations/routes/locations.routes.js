@@ -737,6 +737,16 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
+    if(req.isGFWList){
+      /* Get paginated list for GFW List
+        list-administrativeAreas
+        list-oilPalmConcessions
+        list-palmOilMills
+        list-protectedAreas
+        list-rspoOilPalmConcessions
+      */
+    } else {
+    }
     const { list_id, location_ids } = req.body;
 
     const listAnalyses = [];

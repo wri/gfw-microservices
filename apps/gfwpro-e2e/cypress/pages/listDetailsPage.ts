@@ -52,13 +52,12 @@ class ListDetailsPage {
           this.clickOnDeleteBtn();
           this.elements.confirmActionBtn().should('be.visible');
           this.clickOnConfirmActionBtn();
-          cy.visit('/locations');
         }
       });
     });
   }
 
-  createLists(lists: string[]) {
+  copyLists(lists: string[]) {
     lists.forEach((listName) => {
       this.clickOnCheckBoxSelectAll();
       this.clickOnMoveBtn();

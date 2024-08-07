@@ -1,5 +1,8 @@
 Feature: user can delete list diagnostics
   Scenario: Delete list 
     When I login in the landing page
-    When I check if lists exist in locations
-    Then I should dont see the created lists in the locations page
+    When I navigate to a list details page
+    Then I should be able to create a list as a copy and save as draft
+    Then I should see the created list in the locations page
+    Then I should be able to delete the list from the locations page
+    Then I should verify the list is deleted from the locations page

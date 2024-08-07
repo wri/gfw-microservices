@@ -7,7 +7,7 @@ describe('Copy List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
 
-  const listsToCreate = ['testregresioncopylisttomove', 'testregresioncopylisttoremove'];
+  const listsToCreate = [`testregresioncopylist-${Date.now()}`];
 
   When('I login in the landing page', () => {
     User.login();
@@ -15,15 +15,24 @@ describe('Copy List', () => {
   });
 
   When('I navigate to a list details page', () => {
-    locationsPage.clickOnLocationsList('AAT Argentina Points Generic');
+    locationsPage.clickOnLocationsList('AAT Argentina Polygons Generic');
   });
 
-  Then('I should see the copy view', () => {
-    listDetailsPage.createLists(listsToCreate);
+  Then('I should be able to copy a list and save as draft', () => {
+    listDetailsPage.copyLists(listsToCreate);
   });
 
-  Then('I should see the created lists in the locations page', () => {
+  Then('I should see the created list in the locations page', () => {
     cy.visit('/locations');
     locationsPage.verifyLists(listsToCreate, true);
+  });
+
+  Then('I should be able to delete the list from the locations page', () => {
+    listDetailsPage.deleteLists(listsToCreate);
+  });
+
+  Then('I should verify the list is deleted from the locations page', () => {
+    cy.visit('/locations');
+    locationsPage.verifyLists(listsToCreate, false);
   });
 });

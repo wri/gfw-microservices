@@ -11,7 +11,7 @@ import {
   formatPct,
   prettifyNum,
   validatePct,
-  getFormatedTooltipForDiagnosticsChart,
+  getFormattedTooltipForDiagnosticsChart,
 } from '../../../common/js/utils/diagnostics.utils';
 import { latestTreeCoverLossYearForTclDataInMap, locationsPage } from '../../../common/js/config';
 import { PRODES_HIGHCHARTS_BAR_CONFIGS } from './SouthAmericaRegions/SouthAmericaRegions.config';
@@ -526,7 +526,7 @@ export default class SouthAmericaRegions extends Component {
       tooltip: {
         headerFormat: '<table>',
         pointFormatter() {
-          return getFormatedTooltipForDiagnosticsChart.call(this);
+          return getFormattedTooltipForDiagnosticsChart.call(this);
         },
         footerFormat: '</table><span style="font-size:10px">in {point.key}</span>',
         shared: true,

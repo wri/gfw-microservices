@@ -9,7 +9,11 @@ import PieChart from '../../common/PieChart';
 import ChartsSelectorArgentina from './ChartsSelectorArgentina';
 import DiagnosticsChartHeader from '../../common/DiagnosticsChartHeader';
 import { formatDecimals } from '../../../../common/js/utils/diagnostics.utils';
-import { chartDatasetConfigs, regionConstants } from './regions.constants';
+import {
+  chartDatasetConfigs,
+  regionConstants,
+  chartDatasetConfigsColombia,
+} from './regions.constants';
 import { getBarChartData } from './getBarChartData';
 import { useQuery } from '../../../../common/js/hooks';
 import { getDataAndCheckIfAllYearsZero, addNoOverlapArea } from './barChart.utils';
@@ -154,6 +158,12 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     countryPieChartsData?.landmark?.overlap
   );
 
+  const showClassifiedRegionOverlapPieChart =
+    countryPieChartsData?.classified_region && !countryPieChartsData?.classified_region?.error;
+  const classifiedRegionOverlapPieCharFormattedData = formatDecimals(
+    countryPieChartsData?.classified_region?.overlap
+  );
+
   return (
     <>
       {country === regionIds.ARGENTINA && (
@@ -210,10 +220,20 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
       )}
 
       {country === regionIds.COLOMBIA && (
-        <BarChartTreeCoverLossColombia
-          rawBarChartData={countryPieChartsData}
-          isAllDataEmpty={isAllDataEmpty}
-        />
+        <>
+          <BarChartTreeCoverLossColombia
+            rawBarChartData={countryPieChartsData}
+            isAllDataEmpty={isAllDataEmpty}
+          />
+          {showClassifiedRegionOverlapPieChart && (
+            <PieChart
+              data={classifiedRegionOverlapPieCharFormattedData}
+              chartLabels={chartDatasetConfigsColombia.classifiedRegionOverlap}
+              title={chartDatasetConfigsColombia.classifiedRegionOverlap.chartsSelectorTitle}
+              hasSubcategories
+            />
+          )}
+        </>
       )}
 
       {showProtectedAreasPieChart && (

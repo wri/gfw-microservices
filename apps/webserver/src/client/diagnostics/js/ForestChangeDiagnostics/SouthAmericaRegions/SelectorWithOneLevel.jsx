@@ -5,7 +5,7 @@ import InfoBubble from '../../../../common/js/components/InfoBubble';
 import {
   getDataAndCheckIfAllYearsZero,
   getDataFromPath,
-  calculateTotalLossForAllTypes,
+  calculateTotalLossForAllCategories,
 } from './barChart.utils';
 
 export function SelectorWithOneLevel({
@@ -37,7 +37,7 @@ export function SelectorWithOneLevel({
           const isRadioButtonDisabled = nonZeroOptions === 0;
 
           const data = getDataFromPath(countryPieChartsData, categoryDataPath);
-          const totalLoss = calculateTotalLossForAllTypes(data, dateRange);
+          const totalLoss = calculateTotalLossForAllCategories(data, dateRange);
 
           return (
             <React.Fragment key={optionId}>

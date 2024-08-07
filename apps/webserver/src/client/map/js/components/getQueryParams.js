@@ -50,7 +50,7 @@ const getQueryParams = (queryString) => {
     }
   });
 
-  // Workaround for apimap route
+  // Workaround for makes zoom work at apimap route, zoom requires the selectedLocations attribute, and apimap route only sends locationId
   if (params['locationId']) {
     params['selectedLocations'] = params['locationId'];
     params['isSharedList'] = false;

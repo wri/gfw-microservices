@@ -13,6 +13,7 @@ function PieChart({
   title,
   informationBubbleId,
   hideChartLabels,
+  preview = false,
   hasSubcategories,
 }) {
   const chartLabel = hasSubcategories ? chartLabels?.subCategories : chartLabels;
@@ -23,7 +24,11 @@ function PieChart({
 
   return (
     <>
-      <DiagnosticsChartHeader title={title} informationBubbleId={informationBubbleId} />
+      <DiagnosticsChartHeader
+        title={title}
+        informationBubbleId={informationBubbleId}
+        preview={preview}
+      />
       <Card>
         <CardContent>
           <div className="diagnostics-chart-container" data-testid="pie-chart">

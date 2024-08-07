@@ -7,6 +7,7 @@ import {
   getDataFromPath,
   calculateTotalLossForAllCategories,
 } from './barChart.utils';
+import BetaTag from '../../../../common/js/components/BetaTag';
 
 export function SelectorWithOneLevel({
   selectedOptionId,
@@ -65,7 +66,15 @@ export function SelectorWithOneLevel({
               {!isRadioButtonDisabled &&
                 selectedOptionId === optionId &&
                 chartLabels?.map(
-                  ({ id, legend, color, checked, totalLossByCategory, dataPath }) => {
+                  ({
+                    id,
+                    legend,
+                    color,
+                    checked,
+                    totalLossByCategory,
+                    dataPath,
+                    preview = false,
+                  }) => {
                     const isEveryChartYearValueZero = getDataAndCheckIfAllYearsZero(
                       countryPieChartsData,
                       dataPath
@@ -96,6 +105,7 @@ export function SelectorWithOneLevel({
                               }}
                             />
                             {legend}
+                            {preview && <BetaTag>(Preview)</BetaTag>}
                           </label>
                         </td>
                         <td className="right">

@@ -1,10 +1,18 @@
 const path = require('path');
-const AWS = require('@aws-sdk/client-sqs');
-const { Consumer } = require('sqs-consumer');
+import { SQSClient } from '@aws-sdk/client-sqs';
+import { Consumer } from 'sqs-consumer';
 
 const logger = require('../../../config/privateutils/logger.utils');
 const tileSqsUrls = require(path.resolve('./server/vectorTiles/config/vectorTilesSqs.config'));
 const { generateAndStoreVectorTiles } = require('./vectorTileGenerate.utils');
+
+const awsConfig = {
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
+};
+
+const sqsClient = new SQSClient(awsConfig);
 
 const setVectorTileQueueUrl = () => {
   // get vectorTile queue url from vectorTilesSqs config
@@ -58,7 +66,7 @@ function initialize() {
           logger.error('VECTOR TILE GENERATION FAILED', response.message);
         });
     },
-    sqs: new AWS.SQS(),
+    sqs: sqsClient,
     batchSize: 5,
   });
   sqsListener.on('error', (err) => {
@@ -70,6 +78,4 @@ function initialize() {
   sqsListener.start();
 }
 
-module.exports = {
-  initialize,
-};
+export { initialize };

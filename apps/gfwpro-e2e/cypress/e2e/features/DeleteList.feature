@@ -1,4 +1,4 @@
-Feature: user can delete list diagnostics
+Feature: user can delete a list
   Scenario: Delete list 
     When I login in the landing page
     When I navigate to a list details page

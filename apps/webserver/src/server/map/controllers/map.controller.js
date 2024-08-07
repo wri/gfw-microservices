@@ -23,6 +23,13 @@ export const map = (req, res) => {
   res.header('Expires', '-1');
   res.header('Pragma', 'no-cache');
 
+  if (req.originalUrl.includes('/apimap?')) {
+    req.query = {
+      ...req.query,
+      isSharedList: false,
+      selectedLocations: req.query.locationId,
+    };
+  }
   const isAdministrator = UserManager.isAdministrator(req);
 
   const promises = [

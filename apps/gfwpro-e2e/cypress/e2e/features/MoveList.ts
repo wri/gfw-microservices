@@ -6,8 +6,11 @@ import * as User from '../../app-api/User';
 describe('Move List', () => {
   const locationsPage = new LocationsPage();
   const listDetailsPage = new ListDetailsPage();
-  const listFromMove = 'testregresioncopylisttomove';
-  const listToMove = 'testregresioncopylisttoremove';
+
+  const listsToCreate = [
+    `testregresionmovelistfrom-${Date.now()}`,
+    `testregresionmovelistto-${Date.now()}`,
+  ];
 
   When('I login in the landing page', () => {
     User.login();
@@ -15,10 +18,34 @@ describe('Move List', () => {
   });
 
   When('I navigate to a list details page', () => {
-    locationsPage.clickOnLocationsList(listFromMove);
+    locationsPage.clickOnLocationsList('AAT Argentina Polygons Generic');
+  });
+
+  Then('I should see the copy view', () => {
+    listDetailsPage.createLists(listsToCreate);
+  });
+
+  Then('I should see the created lists in the locations page', () => {
+    cy.visit('/locations');
+    locationsPage.verifyLists(listsToCreate, true);
+  });
+
+  Then('I navigate to a list details page', () => {
+    cy.visit('/locations');
+    locationsPage.clickOnLocationsList(listsToCreate[0]);
   });
 
   Then('I should see the move view', () => {
-    listDetailsPage.moveList(listToMove);
+    listDetailsPage.moveList(listsToCreate[1]);
+  });
+
+  Then('I should delete the lists from the locations page', () => {
+    cy.visit('/locations');
+    listDetailsPage.deleteLists(listsToCreate);
+  });
+
+  Then('I should verify the lists are deleted from the locations page', () => {
+    cy.visit('/locations');
+    locationsPage.verifyLists(listsToCreate, false);
   });
 });

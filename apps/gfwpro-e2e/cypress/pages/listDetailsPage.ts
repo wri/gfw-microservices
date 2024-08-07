@@ -58,7 +58,7 @@ class ListDetailsPage {
     });
   }
 
-  createLists(lists: string[]) {
+  copyLists(lists: string[]) {
     lists.forEach((listName) => {
       this.clickOnCheckBoxSelectAll();
       this.clickOnMoveBtn();

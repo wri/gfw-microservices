@@ -21,8 +21,8 @@ describe('Move List', () => {
     locationsPage.clickOnLocationsList('AAT Argentina Polygons Generic');
   });
 
-  Then('I should see the copy view', () => {
-    listDetailsPage.createLists(listsToCreate);
+  Then('I should be able to create a list as a copy and save as draft', () => {
+    listDetailsPage.copyLists(listsToCreate);
   });
 
   Then('I should see the created lists in the locations page', () => {
@@ -30,16 +30,16 @@ describe('Move List', () => {
     locationsPage.verifyLists(listsToCreate, true);
   });
 
-  Then('I navigate to a list details page', () => {
+  When('I navigate to a list details page', () => {
     cy.visit('/locations');
     locationsPage.clickOnLocationsList(listsToCreate[0]);
   });
 
-  Then('I should see the move view', () => {
+  Then('I should be able to move locations from a list into another one and save as draft', () => {
     listDetailsPage.moveList(listsToCreate[1]);
   });
 
-  Then('I should delete the lists from the locations page', () => {
+  Then('I should be able to delete the lists from the locations page', () => {
     cy.visit('/locations');
     listDetailsPage.deleteLists(listsToCreate);
   });

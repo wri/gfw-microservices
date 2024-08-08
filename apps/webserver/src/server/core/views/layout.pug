@@ -83,7 +83,8 @@ html
 		//- End Google Tag Manager (noscript)
 
 		// Start of proglobalforestwatch Zendesk Widget script
-		script#ze-snippet(src="https://static.zdassets.com/ekr/snippet.js?key=99e78d3b-9c1a-4b3f-a33a-196e34b9505f")
+		if env === 'development'
+			script#ze-snippet(src="https://static.zdassets.com/ekr/snippet.js?key=99e78d3b-9c1a-4b3f-a33a-196e34b9505f")
 		// End of proglobalforestwatch Zendesk Widget script
 
 		block content

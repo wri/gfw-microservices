@@ -8,7 +8,7 @@ export class ReadmeService {
   private readonly logger = new Logger(ReadmeService.name);
 
   afiReadmeData() {
-    return 'afi_readme.md';
+    return 'afi_readme.csv';
   }
 
   getSourceDir(fileToCopy: string): string {
@@ -21,16 +21,16 @@ export class ReadmeService {
 
   getDestDir(key: string): string {
     if (process.env.NODE_ENV === 'test') {
-      return `/tmp/wri-${key}/README.md`;
+      return `/tmp/wri-${key}/README.csv`;
     } else {
-      return path.join('/tmp', `wri-${key}`, 'README.md');
+      return path.join('/tmp', `wri-${key}`, 'README.csv');
     }
   }
 
   alertsReadmeData(filters: AlertFieldsFileRequest) {
     const { selectedTimeframe } = filters;
     if (selectedTimeframe === 'DAY') {
-      return 'daily_alerts_readme.md';
+      return 'daily_alerts_readme.csv';
     }
   }
 

@@ -26,9 +26,9 @@ describe('Chart Component', () => {
         series: expect.arrayContaining([
           expect.objectContaining({
             data: expect.arrayContaining([
-              expect.objectContaining({ color: 'red', legend: 'Label 1', y: 20 }),
-              expect.objectContaining({ color: 'green', legend: 'Label 2', y: 30 }),
-              expect.objectContaining({ color: 'blue', legend: 'Label 3', y: 50 }),
+              expect.objectContaining({ color: 'red', name: 'Label 1', y: 20 }),
+              expect.objectContaining({ color: 'green', name: 'Label 2', y: 30 }),
+              expect.objectContaining({ color: 'blue', name: 'Label 3', y: 50 }),
             ]),
           }),
         ]),

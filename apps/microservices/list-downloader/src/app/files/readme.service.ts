@@ -1,5 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AlertFieldsFileRequest, BasicFieldsFileRequest } from '@wri-monorepos/sql';
+import {
+  AlertFieldsFileRequest,
+  AlertsTimeframes,
+  BasicFieldsFileRequest,
+} from '@wri-monorepos/sql';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -29,9 +33,16 @@ export class ReadmeService {
 
   alertsReadmeData(filters: AlertFieldsFileRequest) {
     const { selectedTimeframe } = filters;
-    if (selectedTimeframe === 'DAY') {
-      return 'daily_alerts_readme.csv';
-    }
+
+    const alertsFilesByTimeFrame = {
+      [AlertsTimeframes.DAY]: 'daily_alerts_readme.csv',
+      [AlertsTimeframes.WEEK]: 'alerts_readme.csv',
+      [AlertsTimeframes.MONTH]: 'alerts_readme.csv',
+      [AlertsTimeframes.QUARTER]: 'alerts_readme.csv',
+      [AlertsTimeframes.YEAR]: 'alerts_readme.csv',
+    };
+
+    return alertsFilesByTimeFrame[selectedTimeframe];
   }
 
   async write(filters: BasicFieldsFileRequest): Promise<void> {

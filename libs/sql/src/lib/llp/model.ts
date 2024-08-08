@@ -47,8 +47,16 @@ export interface ListFieldsFileRequest extends BasicFieldsFileRequest {
   templateId?: number;
 }
 
+export enum AlertsTimeframes {
+  DAY = 'DAY',
+  WEEK = 'WEEK',
+  MONTH = 'MONTH',
+  QUARTER = 'QUARTER',
+  YEAR = 'YEAR',
+}
+
 export interface AlertFieldsFileRequest extends BasicFieldsFileRequest {
-  selectedTimeframe: string;
+  selectedTimeframe: keyof typeof AlertsTimeframes;
   selectedAlert: string;
   startDate?: string;
   endDate?: string;

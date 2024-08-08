@@ -32,7 +32,7 @@ const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
-import { getAdministrativeAreasDataByLocation } from '@wri-monorepos/sql';
+import { getAdministrativeAreasDataByLocation, GfwLists } from '@wri-monorepos/sql';
 import { gfwListsIds, gfwListsNames } from '@wri-monorepos/constants';
 
 let adminInfo = [];
@@ -113,6 +113,7 @@ export const getGFWListLocations = (req, list_id) => {
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
+  const gfwLists = new GfwLists();
   return new Promise((resolve, reject) => {
     const parameters =
       Array.isArray(location_ids) && location_ids.length
@@ -136,11 +137,16 @@ export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
         );
         break;
       case 3:
-        promise = sqlUtils.executeSystemStoredProcedure(
-          req,
-          // 'uspGetPalmOilMillAttributes',
-          'uspGetPaginatedPalmOilMillAttributes',
-          parameters
+        // promise = sqlUtils.executeSystemStoredProcedure(
+        //   req,
+        //   'uspGetPalmOilMillAttributes',
+        //   parameters
+        // );
+        promise = gfwLists.GetPaginatedPalmOilMillAttributes(
+          0,
+          50,
+          list_id,
+          config.SQLConnection.database
         );
         break;
       case 4:
@@ -160,6 +166,7 @@ export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
     }
     promise
       .then((recordsets) => {
+        console.log('recordsets', recordsets);
         resolve(recordsets);
       })
       .catch((err) => {

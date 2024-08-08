@@ -2,12 +2,11 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity({ name: 'list-palmOilMills' })
 export class ListsPalmOilMills {
-
   @Column({ name: 'Location Name' })
   locationName: string;
 
   @Column({ name: 'Analysis Radius' })
-  analysisRadis: number;
+  analysisRadius: number;
 
   @Column({ name: 'Size' })
   size: number;
@@ -24,16 +23,16 @@ export class ListsPalmOilMills {
   @Column({ name: 'RSPO Model' })
   rspoMode: number;
 
-  @Column({ name: 'Latitude'})
+  @Column({ name: 'Latitude' })
   latitude: number;
 
   @Column({ name: 'Longitude' })
   longitude: number;
 
-  @Column({ name: 'Location Classification'})
+  @Column({ name: 'Location Classification' })
   locationClassification: string;
 
-  @Column({ name: 'Commodity'})
+  @Column({ name: 'Commodity' })
   commodity: string;
 
   @Column({ name: 'Country' })
@@ -51,7 +50,7 @@ export class ListsPalmOilMills {
   @Column({ name: 'Group Name' })
   groupName: string;
 
-  @Column({ name: 'Mill ID'})
+  @Column({ name: 'Mill ID' })
   millId: string;
 
   @Column({ name: 'Alternative Name' })
@@ -69,7 +68,6 @@ export class ListsPalmOilMills {
   @Column({ name: 'location_id' })
   locationId: number;
 
-  @Column({ name: 'id' })
+  @PrimaryGeneratedColumn()
   id: number;
-
 }

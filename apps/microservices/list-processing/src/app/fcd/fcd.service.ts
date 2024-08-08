@@ -123,20 +123,15 @@ export class FCDService {
 
     let overlap = {};
     try {
-      let overlapTemp = {};
-      if (!classified_region_area) {
-        if (countryGadm === 'ARG') {
-          overlapTemp = JSON.parse(arg_otbn_area);
-        }
-      } else {
-        overlapTemp = JSON.parse(classified_region_area)?.[countryGadm] ?? {};
-      }
+      const overlapTemp =
+        !classified_region_area && countryGadm === 'ARG'
+          ? JSON.parse(arg_otbn_area)
+          : JSON.parse(classified_region_area)?.[countryGadm] ?? {};
 
-      if (countryGadm === 'COL') {
-        overlap = this.splitObjAndCreateNestedChildren(overlapTemp, false);
-      } else {
-        overlap = overlapTemp;
-      }
+      overlap =
+        countryGadm === 'COL'
+          ? this.splitObjAndCreateNestedChildren(overlapTemp, false)
+          : overlapTemp;
     } catch (error) {
       this.logger.error(`error converting json object: ${error}`);
     }

@@ -138,7 +138,8 @@ export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
       case 3:
         promise = sqlUtils.executeSystemStoredProcedure(
           req,
-          'uspGetPalmOilMillAttributes',
+          // 'uspGetPalmOilMillAttributes',
+          'uspGetPaginatedPalmOilMillAttributes',
           parameters
         );
         break;

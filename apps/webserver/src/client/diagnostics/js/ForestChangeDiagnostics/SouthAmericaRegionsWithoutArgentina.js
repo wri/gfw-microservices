@@ -512,7 +512,7 @@ export default class SouthAmericaRegions extends Component {
         plotLines,
         labels: {
           formatter() {
-            return `'${this.value.toString().substr(-2)}`;
+            return `'${this.value.toString().slice(-2)}`;
           },
         },
       },

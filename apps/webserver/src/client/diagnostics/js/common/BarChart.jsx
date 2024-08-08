@@ -40,7 +40,7 @@ export default function BarChart({
         plotLines,
         labels: {
           formatter() {
-            return `'${this.value.toString().substr(-2)}`; // displays the last two digits of the year
+            return `'${this.value.toString().slice(-2)}`; // displays the last two digits of the year
           },
         },
       },

@@ -15,7 +15,7 @@ export class ReadmeService {
     if (process.env.NODE_ENV === 'test') {
       return '/mock/source/dir/' + fileToCopy;
     } else {
-      return path.resolve(__dirname, fileToCopy);
+      return path.resolve(__dirname, 'assets/readme', fileToCopy);
     }
   }
 

@@ -24,8 +24,8 @@ describe('ReadmeService', () => {
 
   it('should source dir have afi_readme when the filter type is AFI', async () => {
     const filters: BasicFieldsFileRequest = { type: 'afi', key: 'test-key' };
-    const sourceDir = '/mock/source/dir/afi_readme.md';
-    const destFile = '/tmp/wri-test-key/README.md';
+    const sourceDir = '/mock/source/dir/afi_readme.csv';
+    const destFile = '/tmp/wri-test-key/README.csv';
 
     const error = new Error('Copy failed');
     (fs.copyFile as unknown as jest.Mock).mockImplementation((src, dest, callback) => {
@@ -42,8 +42,8 @@ describe('ReadmeService', () => {
       selectedTimeframe: 'DAY',
       selectedAlert: '',
     };
-    const sourceDir = '/mock/source/dir/daily_alerts_readme.md';
-    const destFile = '/tmp/wri-test-key/README.md';
+    const sourceDir = '/mock/source/dir/daily_alerts_readme.csv';
+    const destFile = '/tmp/wri-test-key/README.csv';
 
     (fs.copyFile as unknown as jest.Mock).mockImplementation((src, dest, callback) => {
       callback(null);

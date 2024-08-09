@@ -6,7 +6,10 @@ import {
   AlertFieldsFileRequest,
   AlertsTimeframes,
   BasicFieldsFileRequest,
+<<<<<<< HEAD
   ListFieldsFileRequest,
+=======
+>>>>>>> fc29a934b572f662a087a10d6939f756a3df2f8c
 } from '@wri-monorepos/sql';
 
 jest.mock('fs');

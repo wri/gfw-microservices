@@ -29,20 +29,20 @@ export const getBarChartData = (argentinaPieChartsData, dateRange, chartLabels) 
 };
 
 export const getBarChartDataWithTwoLevels = (rawBarChartData, dateRange, chartConfiguration) => {
-  if (!chartConfiguration?.dataPath || !chartConfiguration?.types) return [];
+  if (!chartConfiguration?.dataPath || !chartConfiguration?.subCategories) return [];
 
   const typeData = getDataFromPath(rawBarChartData, chartConfiguration.dataPath);
   if (!typeData) return [];
 
   const formattedBarChartDataColombia = formatBarChartDataWithTwoLevels(typeData);
 
-  const filteredData = chartConfiguration.types.flatMap((label) => {
-    const chartLabel = formattedBarChartDataColombia?.[label.name] ?? [];
+  const filteredData = chartConfiguration.subCategories.flatMap((label) => {
+    const chartLabel = formattedBarChartDataColombia?.[label.id] ?? [];
 
     return [
       {
         id: label.id,
-        name: label.name,
+        name: label.legend,
         data: filterDataByYearRange(
           chartLabel.map(({ year, value }) => ({
             x: year,

@@ -9,6 +9,7 @@ export const enum AnnualLossFcdFields {
   TREE_COVER_LOSS_BY_COUNTRY_YEARLY = 'tree_cover_loss_by_country_yearly',
   ARG_OTBN_AREA = 'arg_otbn_area',
   TREE_COVER_LOSS_BY_COUNTRY_CLASSIFIED_REGION_YEARLY = 'tree_cover_loss_by_country_classified_region_yearly',
+  CLASSIFIED_REGION_AREA = 'classified_region_area',
 }
 
 export type GetAnnualLossFcdDataReturnType = {

@@ -107,6 +107,7 @@ export class FCDService {
       tree_cover_loss_arg_otbn_yearly,
       arg_otbn_area,
       tree_cover_loss_by_country_classified_region_yearly,
+      classified_region_area,
     } = await this.getAnnualLossData({
       clientDatabase,
       locationId,
@@ -116,10 +117,24 @@ export class FCDService {
         AnnualLossFcdFields.TREE_COVER_LOSS_ARG_OTBN_YEARLY,
         AnnualLossFcdFields.ARG_OTBN_AREA,
         AnnualLossFcdFields.TREE_COVER_LOSS_BY_COUNTRY_CLASSIFIED_REGION_YEARLY,
+        AnnualLossFcdFields.CLASSIFIED_REGION_AREA,
       ],
     });
 
-    const overlap = JSON.parse(arg_otbn_area);
+    let overlap = {};
+    try {
+      const overlapTemp =
+        !classified_region_area && countryGadm === 'ARG'
+          ? JSON.parse(arg_otbn_area)
+          : JSON.parse(classified_region_area)?.[countryGadm] ?? {};
+
+      overlap =
+        countryGadm === 'COL'
+          ? this.splitObjAndCreateNestedChildren(overlapTemp, false)
+          : overlapTemp;
+    } catch (error) {
+      this.logger.error(`error converting json object: ${error}`);
+    }
 
     const country_specific_deforestation = {};
     try {
@@ -443,7 +458,7 @@ export class FCDService {
   }
 
   // This function splits Colombian tree cover loss object and create nested Children to make it easy to show the data in the frontend
-  private splitObjAndCreateNestedChildren(treeCoverLoss) {
+  private splitObjAndCreateNestedChildren(treeCoverLoss, isDataWithYears = true) {
     const result = {};
 
     for (const [key, value] of Object.entries(treeCoverLoss)) {
@@ -453,7 +468,7 @@ export class FCDService {
         result[mainKey] = {};
       }
 
-      result[mainKey][subKey] = this.toApproximateValueFormat(value);
+      result[mainKey][subKey] = isDataWithYears ? this.toApproximateValueFormat(value) : value;
     }
 
     return result;

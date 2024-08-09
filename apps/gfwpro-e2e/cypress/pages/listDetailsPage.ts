@@ -4,18 +4,112 @@ class ListDetailsPage {
     locationDiagnosticsBtn: () => cy.get('[data-cy="location-diagnostics"]'),
     fullListMapBtn: () => cy.contains('Full List Map'),
     checkBoxSelectAll: () => cy.get('[for="column-checkbox-all"]'),
+    checkBoxSelectLocation: (name) => cy.contains(name),
     downloadBtn: () => cy.contains('Download'),
     downloadCSVOptionBtn: () => cy.contains('CSV'),
     downloadResultsOptionBtn: () => cy.contains('Results'),
     downloadShapefileptionBtn: () => cy.contains('Shapefile'),
     titleAlertDownloadList: () => cy.contains('List file Download'),
+    moveBtn: () => cy.contains('Move'),
+    deleteBtn: () => cy.contains('Delete'),
+    createNewListOptionRadioBtn: () => cy.get('.move-or-copy__option').last().find('input'),
+    moveSectionOptionRadioBtn: () => cy.contains('label', 'Move'),
+    inputCreateNewList: () => cy.get('[id="new-list-name"]'),
+    submitBtn: () => cy.contains('Submit Analysis'),
+    saveAsDraftBtn: () => cy.contains('Save As Draft'),
+    confirmActionBtn: () => cy.contains('button', 'OK'),
+    titleConfirmCopyList: () => cy.contains('h3', 'Locations Moved'),
+    descriptionConfirmCopyList: () =>
+      cy.contains('div', 'Location move process starts, this can take a while, please be patient.'),
     descriptionAlertDownloadList: () =>
       cy.contains(
         "You have selected a list file for download. Please check your email for your data's download link."
       ),
     closeAlertDownloadBtn: () => cy.get('[data-cy="download-dialog"]').find('button').first(),
+    listByName: (name) => cy.contains('.list-item', name),
   };
+  clickOnLocationsList(name: string) {
+    cy.contains(name).click();
+  }
+  selectLocationOnList(location: string) {
+    this.elements.checkBoxSelectLocation(location).find('input').click();
+  }
+  verifyLocations(location: string, exist: boolean) {
+    const element = this.elements.checkBoxSelectLocation(location);
+    if (exist) {
+      element.should('be.visible');
+    } else {
+      element.should('not.be.visible');
+    }
+  }
 
+  moveList(list: string, location: string) {
+    this.selectLocationOnList(location);
+    this.clickOnMoveBtn();
+    this.clickOnMoveSectionRadioBtn();
+    this.selectList(list);
+    this.clickOnSaveAsDraftBtn();
+    this.elements.titleConfirmCopyList().should('be.visible');
+    this.elements.descriptionConfirmCopyList().should('be.visible');
+    this.elements.confirmActionBtn().should('be.visible');
+    this.clickOnConfirmActionBtn();
+  }
+
+  deleteLocations(lists: string[]) {
+    lists.forEach((listName) => {
+      cy.get('ul.my-lists-list').then(($ul) => {
+        if ($ul.find(`li:contains(${listName})`).length > 0) {
+          this.clickOnLocationsList(listName);
+          this.clickOnCheckBoxSelectAll();
+          this.clickOnDeleteBtn();
+          this.elements.confirmActionBtn().should('be.visible');
+          this.clickOnConfirmActionBtn();
+        }
+      });
+    });
+  }
+
+  copyLists(lists: string[]) {
+    lists.forEach((listName) => {
+      this.clickOnCheckBoxSelectAll();
+      this.clickOnMoveBtn();
+      this.clickOnCreateNewListRadioBtn();
+      this.elements.inputCreateNewList().type(listName);
+      this.clickOnSaveAsDraftBtn();
+
+      this.elements.titleConfirmCopyList().should('be.visible');
+      this.elements.descriptionConfirmCopyList().should('be.visible');
+      this.elements.confirmActionBtn().should('be.visible');
+
+      this.clickOnConfirmActionBtn();
+    });
+  }
+
+  selectList(list) {
+    cy.get('div.move-to-list-select select').select(list);
+  }
+  clickOnSaveAsDraftBtn() {
+    this.elements.saveAsDraftBtn().click();
+  }
+  clickOnSubmitBtn() {
+    this.elements.submitBtn().click();
+  }
+  clickOnConfirmActionBtn() {
+    this.elements.confirmActionBtn().click();
+  }
+
+  clickOnMoveSectionRadioBtn() {
+    this.elements.moveSectionOptionRadioBtn().click({ force: true });
+  }
+  clickOnCreateNewListRadioBtn() {
+    this.elements.createNewListOptionRadioBtn().click({ force: true });
+  }
+  clickOnMoveBtn() {
+    this.elements.moveBtn().click();
+  }
+  clickOnDeleteBtn() {
+    this.elements.deleteBtn().click();
+  }
   clickOnListDiagnosticsBtn() {
     this.elements.listDiagnosticsBtn().click();
   }

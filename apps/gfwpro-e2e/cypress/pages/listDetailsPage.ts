@@ -4,6 +4,7 @@ class ListDetailsPage {
     locationDiagnosticsBtn: () => cy.get('[data-cy="location-diagnostics"]'),
     fullListMapBtn: () => cy.contains('Full List Map'),
     checkBoxSelectAll: () => cy.get('[for="column-checkbox-all"]'),
+    checkBoxSelectLocation: (name) => cy.contains(name),
     downloadBtn: () => cy.contains('Download'),
     downloadCSVOptionBtn: () => cy.contains('CSV'),
     downloadResultsOptionBtn: () => cy.contains('Results'),
@@ -30,9 +31,20 @@ class ListDetailsPage {
   clickOnLocationsList(name: string) {
     cy.contains(name).click();
   }
+  selectLocationOnList(location: string) {
+    this.elements.checkBoxSelectLocation(location).find('input').click();
+  }
+  verifyLocations(location: string, exist: boolean) {
+    const element = this.elements.checkBoxSelectLocation(location);
+    if (exist) {
+      element.should('be.visible');
+    } else {
+      element.should('not.be.visible');
+    }
+  }
 
-  moveList(list: string) {
-    this.clickOnCheckBoxSelectAll();
+  moveList(list: string, location: string) {
+    this.selectLocationOnList(location);
     this.clickOnMoveBtn();
     this.clickOnMoveSectionRadioBtn();
     this.selectList(list);
@@ -43,7 +55,7 @@ class ListDetailsPage {
     this.clickOnConfirmActionBtn();
   }
 
-  deleteLists(lists: string[]) {
+  deleteLocations(lists: string[]) {
     lists.forEach((listName) => {
       cy.get('ul.my-lists-list').then(($ul) => {
         if ($ul.find(`li:contains(${listName})`).length > 0) {

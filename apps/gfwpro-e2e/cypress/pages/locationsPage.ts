@@ -7,12 +7,12 @@ class LocationsPage {
     locationNameCell: () => cy.get('.rt-td.cell__Location-Name.default-cell'),
     checkbox: () => '.rt-td.td-checkbox',
     downloadListBtn: () => cy.contains('Download…'),
+    confirmActionBtn: () => cy.contains('button', 'OK'),
     optionListOK: () =>
       cy
         .get('.my-lists-list li')
         .filter(':not(:has(.failed-tooltip.failed-tooltip--default))')
         .first(),
-    // Selecciona una lista por su nombre
     listByName: (name) => cy.contains('.list-item', name),
   };
 
@@ -25,6 +25,29 @@ class LocationsPage {
         element.should('not.be.visible');
       }
     });
+  }
+  selectOptionDotsList(name: string) {
+    cy.contains(name).find('[title="More"]').click();
+  }
+
+  deleteLists(lists: string[]) {
+    lists.forEach((listName) => {
+      cy.get('ul.my-lists-list').then(($ul) => {
+        if ($ul.find(`li:contains(${listName})`).length > 0) {
+          this.selectOptionDotsList(listName);
+          this.clickOnDeleteList();
+          this.elements.confirmActionBtn().should('be.visible');
+          this.clickOnConfirmActionBtn();
+        }
+      });
+    });
+  }
+
+  clickOnConfirmActionBtn() {
+    this.elements.confirmActionBtn().click();
+  }
+  clickOnDeleteList() {
+    cy.contains('Delete').click();
   }
 
   clickOnLocationsList(name: string) {

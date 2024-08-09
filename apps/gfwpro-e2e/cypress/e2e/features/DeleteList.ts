@@ -28,7 +28,7 @@ describe('Delete List', () => {
   });
 
   Then('I should be able to delete the list from the locations page', () => {
-    listDetailsPage.deleteLists(listToDelete);
+    locationsPage.deleteLists(listToDelete);
   });
 
   Then('I should verify the list is deleted from the locations page', () => {

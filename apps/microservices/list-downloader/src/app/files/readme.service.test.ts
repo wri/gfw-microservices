@@ -49,7 +49,7 @@ describe('ReadmeService', () => {
     const filters: AlertFieldsFileRequest = {
       key: 'test-key',
       type: 'alerts',
-      selectedTimeframe: 'DAY',
+      selectedTimeframe: AlertsTimeframes.DAY,
       selectedAlert: '',
     };
     const sourceDir = '/mock/source/dir/daily_alerts_readme.csv';

@@ -57,7 +57,7 @@ jobs:
       - name: Send failure notifications to Slack
         if: failure()
         env:
-          SLACK_E2E_TEST_WEBHOOK_URL: ${{ secrets.SLACK_TEST_WEBHOOK_URL }}
+          SLACK_E2E_TEST_WEBHOOK_URL: ${{ secrets.SLACK_E2E_TEST_WEBHOOK_URL }}
         run: |
           curl -X POST -H 'Content-type: application/json' --data '{
             "text": "QA e2e tests failed. Please check the logs ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",

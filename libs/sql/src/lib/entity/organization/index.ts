@@ -5,6 +5,7 @@ import { User } from './user.entity';
 import { Analyses } from './analyses.entity';
 import { ListsAnalysisStatus } from './lists.analysis.status.entity';
 import { ListsPalmOilMills } from './gwfList.PalmOilMill.entity';
+import { GFWLists } from './gfwLists.entity';
 
 export * from './lists.entity';
 export * from './activityLog.entity';
@@ -15,6 +16,7 @@ export * from './analyses.entity';
 export * from './analysis.schema';
 export * from './lists.analysis.status.entity';
 export * from './gwfList.PalmOilMill.entity';
+export * from './gfwLists.entity';
 
 export const organizationEntities = [
   Lists,
@@ -24,4 +26,5 @@ export const organizationEntities = [
   Analyses,
   ListsAnalysisStatus,
   ListsPalmOilMills,
+  GFWLists,
 ];

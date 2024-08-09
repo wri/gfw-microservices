@@ -142,7 +142,7 @@ export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
         //   'uspGetPalmOilMillAttributes',
         //   parameters
         // );
-        promise = gfwLists.GetPaginatedPalmOilMillAttributes(
+        promise = gfwLists.getPaginatedPalmOilMillAttributes(
           0,
           50,
           list_id,

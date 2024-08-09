@@ -5,6 +5,7 @@ import Chart from './Chart';
 import Table from './Table';
 import DiagnosticsChartHeader from '../DiagnosticsChartHeader';
 import '../DiagnosticsChartContainer.scss';
+import { SelectorWithTwoLevels } from '../../ForestChangeDiagnostics/SouthAmericaRegions/SelectorWithTwoLevels';
 
 function PieChart({
   data,
@@ -13,33 +14,74 @@ function PieChart({
   informationBubbleId,
   hideChartLabels,
   preview = false,
+  hasSubcategories,
 }) {
-  const sumOfAreasByChartLabel = chartLabels.reduce((sum, { id }) => sum + (data?.[id] || 0), 0);
+  const chartLabel = hasSubcategories ? chartLabels?.subCategories : chartLabels;
+
+  const sumOfAreasByChartLabel = chartLabel?.reduce((sum, { id }) => sum + (data?.[id] || 0), 0);
+
+  if (!sumOfAreasByChartLabel && !hasSubcategories) return <></>;
+
   return (
-    !!sumOfAreasByChartLabel && ( // don't display the chart if the total area is 0
-      <>
-        <DiagnosticsChartHeader
-          title={title}
-          informationBubbleId={informationBubbleId}
-          preview={preview}
-        />
-        <Card>
-          <CardContent>
-            <div className="diagnostics-chart-container" data-testid="pie-chart">
-              <div className="diagnostics-chart-container__chart">
-                <Chart data={data} chartLabels={chartLabels} hideChartLabels={hideChartLabels} />
+    <>
+      <DiagnosticsChartHeader
+        title={title}
+        informationBubbleId={informationBubbleId}
+        preview={preview}
+      />
+      <Card>
+        <CardContent>
+          <div className="diagnostics-chart-container" data-testid="pie-chart">
+            <div className="diagnostics-chart-container__chart">
+              <Chart
+                data={data}
+                chartLabels={chartLabel}
+                hideChartLabels={hideChartLabels}
+                hasSubcategories={hasSubcategories}
+              />
+            </div>
+            {hasSubcategories ? (
+              <div className="chart-legends-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Category</th>
+                      <th>Coverage (%)</th>
+                      <th className="label right">Total area (HA)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <SelectorWithTwoLevels {...selectorWithTwoLevelsAdapter(data, chartLabels)} />
+                  </tbody>
+                </table>
               </div>
+            ) : (
               <Table
                 data={data}
                 chartLabels={chartLabels}
                 sumOfAreasByChartLabel={sumOfAreasByChartLabel}
               />
-            </div>
-          </CardContent>
-        </Card>
-      </>
-    )
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }
+
+const selectorWithTwoLevelsAdapter = (data, chartLabels) => {
+  const dataPathArray = chartLabels.dataPath.split('.');
+
+  let adaptedData = {};
+  for (let i = 0; i < dataPathArray.length; i++) {
+    if (i === dataPathArray.length - 1) {
+      adaptedData[dataPathArray[i - 1]] = { [dataPathArray[i]]: data };
+    } else {
+      adaptedData[dataPathArray[i]] = {};
+    }
+  }
+
+  return { data: adaptedData, chartConfiguration: chartLabels, selectedOptionId: chartLabels.id };
+};
 
 export default PieChart;

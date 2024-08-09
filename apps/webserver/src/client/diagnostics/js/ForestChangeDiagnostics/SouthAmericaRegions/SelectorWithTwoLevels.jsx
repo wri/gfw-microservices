@@ -4,7 +4,7 @@ import InfoBubble from '../../../../common/js/components/InfoBubble';
 import {
   getDataAndCheckIfAllYearsZero,
   getDataFromPath,
-  calculateTotalLossForAllTypes,
+  calculateTotalLossForAllCategories,
 } from './barChart.utils';
 import IconButton from '@mui/material/IconButton';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
@@ -19,7 +19,7 @@ export function SelectorWithTwoLevels({
 
   const {
     dataCy,
-    types,
+    subCategories,
     id: optionId,
     chartsSelectorTitle,
     infoBubbleId,
@@ -28,7 +28,7 @@ export function SelectorWithTwoLevels({
   } = chartConfiguration;
 
   // Determine the count of options with non-zero data
-  const nonZeroOptions = types?.filter(
+  const nonZeroOptions = subCategories?.filter(
     ({ dataPath }) => !getDataAndCheckIfAllYearsZero(data, dataPath)
   ).length;
 
@@ -39,35 +39,55 @@ export function SelectorWithTwoLevels({
 
   const isRadioButtonDisabled = nonZeroOptions === 0;
 
-  const totalLoss = calculateTotalLossForAllTypes(chartsSelectorData, dateRange);
+  const totalTreeCoverLoss = dateRange
+    ? calculateTotalLossForAllCategories(chartsSelectorData, dateRange)
+    : 0;
+
+  let totalCoverageOverlap = 0;
+
+  if (!dateRange && subCategories) {
+    subCategories.forEach(({ id }) => {
+      const subCategoriesData = chartsSelectorData?.[id] ?? {};
+      totalCoverageOverlap = Object.values(subCategoriesData).reduce(
+        (acc, val) => acc + val,
+        totalCoverageOverlap
+      );
+    });
+  }
 
   return (
     <>
-      <tr>
-        <th data-cy={dataCy}>
-          <input
-            id={optionId}
-            type="radio"
-            value={optionId}
-            checked={selectedOptionId === optionId}
-            onChange={() => onOptionChange(optionId)}
-            disabled={isRadioButtonDisabled} // Disable the option if all chartLabels have zero value
-          />
+      {onOptionChange && (
+        <tr>
+          <th data-cy={dataCy}>
+            <input
+              id={optionId}
+              type="radio"
+              value={optionId}
+              checked={selectedOptionId === optionId}
+              onChange={() => onOptionChange(optionId)}
+              disabled={isRadioButtonDisabled} // Disable the option if all chartLabels have zero value
+            />
 
-          <label htmlFor={optionId} className="legend-square-label">
-            {chartsSelectorTitle}
-            {infoBubbleId && <InfoBubble infoBubbleId={infoBubbleId} />}
-          </label>
-        </th>
+            <label htmlFor={optionId} className="legend-square-label">
+              {chartsSelectorTitle}
+              {infoBubbleId && <InfoBubble infoBubbleId={infoBubbleId} />}
+            </label>
+          </th>
 
-        <td className="right">{totalLoss && prettifyNum(formatNum(totalLoss))}</td>
-      </tr>
+          <td className="right">
+            {totalTreeCoverLoss && prettifyNum(formatNum(totalTreeCoverLoss))}
+          </td>
+        </tr>
+      )}
       {!isRadioButtonDisabled &&
         selectedOptionId === optionId &&
-        types?.map(({ id, name, legend, color }, index) => {
-          const subCategories = chartsSelectorData?.[name];
-          const totalLoss = calculateTotalLossForAllTypes(subCategories, dateRange);
-          const isCategoryCollapsed = collapsedCategories[name];
+        subCategories?.map(({ id, legend, color }, index) => {
+          const subCategoriesData = chartsSelectorData?.[id] ?? {};
+          const totalLossPerCategory = dateRange
+            ? calculateTotalLossForAllCategories(subCategoriesData, dateRange)
+            : Object.values(subCategoriesData).reduce((acc, val) => acc + val, 0);
+          const isCategoryCollapsed = collapsedCategories[id];
 
           return (
             <React.Fragment key={id}>
@@ -79,9 +99,9 @@ export function SelectorWithTwoLevels({
                 <th>
                   <IconButton
                     disableRipple
-                    style={{ visibility: subCategories ? 'visible' : 'hidden' }}
+                    style={{ visibility: subCategoriesData ? 'visible' : 'hidden' }}
                     onClick={() =>
-                      setCollapsedCategories((prev) => ({ ...prev, [name]: !prev?.[name] }))
+                      setCollapsedCategories((prev) => ({ ...prev, [id]: !prev?.[id] }))
                     }
                   >
                     {isCategoryCollapsed ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
@@ -89,15 +109,25 @@ export function SelectorWithTwoLevels({
                   <span className="chart-legends-table__checkbox" style={{ background: color }} />
                   <label htmlFor={`pie-chart-label-${id}`}>{legend}</label>
                 </th>
-                <th>{prettifyNum(formatNum(totalLoss))}</th>
+                {totalCoverageOverlap > 0 && (
+                  <th>{((totalLossPerCategory / totalCoverageOverlap) * 100).toFixed(1)}</th>
+                )}
+                <th>{prettifyNum(formatNum(totalLossPerCategory))}</th>
               </tr>
-              {subCategories &&
+              {subCategoriesData &&
                 !isCategoryCollapsed &&
-                Object.entries(subCategories).map(([key, value]) => (
+                Object.entries(subCategoriesData).map(([key, value]) => (
                   <tr key={id + key} className="chart-legends-table__second-level-legend">
                     <td>{key}</td>
+                    {totalCoverageOverlap > 0 && (
+                      <td>{((value / totalCoverageOverlap) * 100).toFixed(1)}</td>
+                    )}
                     <td>
-                      {prettifyNum(formatNum(calculateTotalLossForAllTypes(value, dateRange)))}
+                      {prettifyNum(
+                        formatNum(
+                          dateRange ? calculateTotalLossForAllCategories(value, dateRange) : value
+                        )
+                      )}
                     </td>
                   </tr>
                 ))}

@@ -285,6 +285,8 @@ export const classifiedRegionDatabaseOutput = {
     '{"Category III": {"2014": 1971.8851, "2015": 2480.3844, "2016": 1073.1832, "2017": 2739.4738, "2018approx": 1229.8696, "2019": 905.7677, "2020": 976.3013, "2021": 2390.0133, "2022": 2149.3627}}',
   tree_cover_loss_by_country_classified_region_yearly:
     '{"ARG":{"Category II":{"2021":10.7804,"2022":409.5721,"2023":369.8632},"Category I":{"2021":0.0,"2022":0.0,"2023":0.0},"Category III":{"2021":0.5563,"2022":0.7651,"2023":0.0}},"COL":{"Restrictions;Zero Deforestation Agreement":{"2020":47.1544,"2021":72.5392,"2022":149.0017,"2023":99.0011},"Conditioned;Environmental/Ethno-Cultural":{"2021":11.5397,"2022":0.0,"2023":0.0},"Restrictions;Legal":{"2021":7.6162,"2022":0.3077,"2023":17.3095},"Restrictions;Technical (Non-agricultural areas)":{"2021":1.8462,"2022":1.2308,"2023":3.077},"Conditioned;Ethno-Cultural":{"2021":85.1546,"2022":102.1548,"2023":77.0777}}}',
+  classified_region_area:
+    '{"ARG":{ "Category I": 123.10, "Category II": 40.858 }, "COL": {"Restrictions;Legal": 56.10, "Restrictions;Technical (Non-agricultural areas)": 200, "Conditioned;Ethno-Cultural": 100}}',
 };
 
 export const classifiedRegionDatabaseOutputWithoutNewTclData = {
@@ -374,6 +376,7 @@ export const classifiedAnnualLossProcessedValue = {
         },
       ],
     },
+    overlap: { 'Category I': 123.1, 'Category II': 40.858 },
   },
   COL: {
     country_specific_deforestation: {
@@ -483,6 +486,10 @@ export const classifiedAnnualLossProcessedValue = {
           },
         ],
       },
+    },
+    overlap: {
+      Restrictions: { Legal: 56.1, 'Technical (Non-agricultural areas)': 200 },
+      Conditioned: { 'Ethno-Cultural': 100 },
     },
   },
 };

@@ -166,7 +166,6 @@ export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
     }
     promise
       .then((recordsets) => {
-        console.log('recordsets', recordsets);
         resolve(recordsets);
       })
       .catch((err) => {

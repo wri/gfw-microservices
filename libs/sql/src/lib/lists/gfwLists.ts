@@ -1,6 +1,6 @@
 import { ClientStoreConnection } from '../util';
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { ListsPalmOilMills, GFWLists } from '../entity';
+import { ListsPalmOilMills, GFWLists, AnalysisPalmOilMills } from '../entity';
 import { In } from 'typeorm';
 
 const PALM_OIL_MILLS_COLUMN_NAMES = {
@@ -28,6 +28,9 @@ const PALM_OIL_MILLS_COLUMN_NAMES = {
   locationId: 'location_id',
   list_id: 'list_id',
 };
+const ANALYSYS_TABLE_NAMES = {
+  'analysis-palmOilMills': AnalysisPalmOilMills,
+};
 export class GfwLists {
   private readonly logger = new Logger('List processing service');
   private readonly clientStoreConnection = new ClientStoreConnection();
@@ -37,7 +40,7 @@ export class GfwLists {
     pageSize: number,
     list_id: number,
     organizationDatabase: string,
-    ids: string[] = []
+    ids: number[] = []
   ): Promise<any[]> {
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
@@ -68,7 +71,7 @@ export class GfwLists {
           },
         });
       }
-      console.log('count',count)
+      console.log('count', count);
       if (!items) {
         this.logger.error('ListsPalmOilMills: lists not found');
         throw new NotFoundException(`ListsPalmOilMills with list_id ${list_id} not found.`);
@@ -86,13 +89,15 @@ export class GfwLists {
     pageSize: number,
     list_id: number,
     organizationDatabase: string,
-    ids: string[] = []
+    ids: number[] = []
   ) {
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listTableName = await this.getListAnalysisTableName(list_id, organizationDatabase);
 
-      const listRepository = connection.getRepository(listTableName.list_analysis_table_name);
+      const listRepository = connection.getRepository(
+        ANALYSYS_TABLE_NAMES[listTableName.list_analysis_table_name]
+      );
 
       const take = pageSize === 0 ? 50 : pageSize;
       const skip = pageNum > 0 ? (pageNum - 1) * take : 0;
@@ -120,7 +125,7 @@ export class GfwLists {
           },
         });
       }
-      console.log('count',count)
+      console.log('count', count);
       if (!items) {
         this.logger.error('ListsPalmOilMills: lists not found');
         throw new NotFoundException(`ListsPalmOilMills with list_id ${list_id} not found.`);
@@ -130,7 +135,7 @@ export class GfwLists {
       });
       return this.mapObjectToColumnNames(itemsWithListId, PALM_OIL_MILLS_COLUMN_NAMES);
     } catch (error) {
-      throw new InternalServerErrorException('Error deleting list', error.message);
+      throw new InternalServerErrorException('Error getAnalysisDataForGFWList', error.message);
     }
   }
 
@@ -150,7 +155,7 @@ export class GfwLists {
       const mappedObject: any = {};
 
       for (const [key, columnName] of Object.entries(COLUMN_NAMES)) {
-        if (inputObject.hasOwnProperty(key)) {
+        if (key in inputObject) {
           mappedObject[`${columnName}`] = inputObject[key];
         }
       }

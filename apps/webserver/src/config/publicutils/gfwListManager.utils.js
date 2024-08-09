@@ -146,7 +146,8 @@ export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
           0,
           50,
           list_id,
-          config.SQLConnection.database
+          config.SQLConnection.database,
+          location_ids
         );
         break;
       case 4:

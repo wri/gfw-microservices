@@ -48,11 +48,6 @@ jobs:
         run: |
           echo "${{secrets.EAPI_E2E_SETTINGS}}" > ./apps/microservices/externalapi-e2e/jest.set.env.ts
           echo "${{secrets.CYPRESS_SETTINGS}}" | tr "'" '"' > ./apps/gfwpro-e2e/cypress.env.json
-          pwd
-          ls -l ./apps/microservices/externalapi-e2e/jest.set.env.ts
-          cat ./apps/microservices/externalapi-e2e/jest.set.env.ts
-          ls -l ./apps/gfwpro-e2e/cypress.env.json
-          cat ./apps/gfwpro-e2e/cypress.env.json
 
       - name: Run QA e2e tests
         run: |
@@ -60,14 +55,12 @@ jobs:
           npx nx e2e gfwpro-e2e --configuration=qa
 
       - name: Send failure notifications to Slack
-        # disabled failure check for testing
-        # if: failure()
-        if: always()
+        if: failure()
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEST_WEBHOOK_URL }}
+          SLACK_E2E_TEST_WEBHOOK_URL: ${{ secrets.SLACK_TEST_WEBHOOK_URL }}
         run: |
           curl -X POST -H 'Content-type: application/json' --data '{
-            "text": "QA e2e test status ${{ job.status }}. Please check the logs ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "text": "QA e2e tests failed. Please check the logs ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
             "username": "GitHub Actions",
             "icon_emoji": ":octocat:"
-          }' $SLACK_WEBHOOK_URL
+          }' $SLACK_E2E_TEST_WEBHOOK_URL

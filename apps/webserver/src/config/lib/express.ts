@@ -89,6 +89,7 @@ const configureLocalVariables = (app: Application) => {
   app.locals.author = config.app.author;
   app.locals.keywords = config.app.keywords;
   app.locals.description = config.app.description;
+  app.locals.env = process.env.NODE_ENV;
 };
 
 /**

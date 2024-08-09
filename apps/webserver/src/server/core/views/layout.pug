@@ -81,4 +81,10 @@ html
 		noscript
 				iframe(src='https://www.googletagmanager.com/ns.html?id=GTM-PL9X7PS' height='0' width='0' style='display:none;visibility:hidden')
 		//- End Google Tag Manager (noscript)
+
+		// Start of proglobalforestwatch Zendesk Widget script
+		if env === 'development' || env === 'qa'
+			script#ze-snippet(src="https://static.zdassets.com/ekr/snippet.js?key=99e78d3b-9c1a-4b3f-a33a-196e34b9505f")
+		// End of proglobalforestwatch Zendesk Widget script
+
 		block content

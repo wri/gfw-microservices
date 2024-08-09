@@ -175,7 +175,7 @@ function AfiDiagnostics() {
               {isNegligibleRiskAvailable && (
                 <>
                   <h2 className="locations-diagnostics__subtitle">
-                    Administrative Areas Overlap
+                    Negligible Risk Overlap
                     <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.landcoverCalc} />
                   </h2>
                   <Card>

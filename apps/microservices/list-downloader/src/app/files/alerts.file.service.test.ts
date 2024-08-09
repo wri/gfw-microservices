@@ -148,7 +148,10 @@ describe('AlertsFileService', () => {
 
   describe('finish', () => {
     it('should call the appropriate services based on the selectedTimeframe and zip files', async () => {
-      const filters = { selectedTimeframe: AlertsTimeframes.DAY, key: 'test-key' } as AlertFieldsFileRequest;
+      const filters = {
+        selectedTimeframe: AlertsTimeframes.DAY,
+        key: 'test-key',
+      } as AlertFieldsFileRequest;
 
       jest
         .spyOn(alertsLocationsHistoryService, 'finish')
@@ -167,7 +170,10 @@ describe('AlertsFileService', () => {
     });
 
     it('should call the appropriate services for non-DAY timeframe and zip files', async () => {
-      const filters = { selectedTimeframe: AlertsTimeframes.MONTH, key: 'test-key' } as AlertFieldsFileRequest;
+      const filters = {
+        selectedTimeframe: AlertsTimeframes.MONTH,
+        key: 'test-key',
+      } as AlertFieldsFileRequest;
 
       jest.spyOn(alertsLocationsLevelService, 'finish').mockImplementation(() => Promise.resolve());
       jest

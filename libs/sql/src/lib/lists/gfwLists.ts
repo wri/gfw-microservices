@@ -1,7 +1,8 @@
 import { ClientStoreConnection } from '../util';
-
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { ListsPalmOilMills } from '../entity';
+import { In } from 'typeorm';
+
 const logger = new Logger('GfwLists');
 const PALM_OIL_MILLS_COLUMN_NAMES = {
   locationName: 'Location Name',
@@ -36,7 +37,8 @@ export class GfwLists {
     pageNum: number,
     pageSize: number,
     list_id: number,
-    organizationDatabase: string
+    organizationDatabase: string,
+    ids: string[] = []
   ): Promise<any[]> {
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
@@ -44,14 +46,29 @@ export class GfwLists {
       const take = pageSize === 0 ? 50 : pageSize;
       const skip = pageNum > 0 ? (pageNum - 1) * take : 0;
 
-      const [items, count] = await listRepository.findAndCount({
-        skip,
-        take,
-        order: {
-          id: 'DESC',
-        },
-      });
+      let items, count;
 
+      if (ids.length > 0) {
+        // If ids array is not empty, apply the where clause
+        [items, count] = await listRepository.findAndCount({
+          where: {
+            id: In(ids),
+          },
+          skip,
+          take,
+          order: {
+            id: 'DESC',
+          },
+        });
+      } else {
+        [items, count] = await listRepository.findAndCount({
+          skip,
+          take,
+          order: {
+            id: 'DESC',
+          },
+        });
+      }
       if (!items) {
         this.logger.error('ListsPalmOilMills: lists not found');
         throw new NotFoundException(`ListsPalmOilMills with list_id ${list_id} not found.`);

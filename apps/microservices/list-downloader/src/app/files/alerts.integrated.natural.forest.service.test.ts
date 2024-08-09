@@ -2,7 +2,7 @@ import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natura
 import { createDirectory } from '../shared/file.utils';
 import * as fs from 'fs';
 import { alertsData } from '../shared/mock.data';
-import { ClientStoreConnection } from '@wri-monorepos/sql';
+import { AlertsTimeframes, ClientStoreConnection } from '@wri-monorepos/sql';
 import { DataSource } from 'typeorm';
 
 describe('Alerts Integrated Natural Forest Service', () => {
@@ -16,7 +16,7 @@ describe('Alerts Integrated Natural Forest Service', () => {
     listName: 'WRI',
     key: 'tmp-key',
     type: 'argentinaOverlap',
-    selectedTimeframe: 'DAILY',
+    selectedTimeframe: AlertsTimeframes.DAY,
     selectedAlert: 'Integrated',
     startDate: '2021-01-01',
     endDate: '2021-01-04',

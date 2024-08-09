@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
 import { alertsData } from '../shared/mock.data';
 import { AlertsSummaryService } from './alerts.summary.service';
+import { AlertsTimeframes } from '@wri-monorepos/sql';
 
 describe('Alerts Summary Service', () => {
   const alertsSummaryService = new AlertsSummaryService();
@@ -13,7 +14,7 @@ describe('Alerts Summary Service', () => {
     listName: 'WRI',
     key: 'tmp-key',
     type: 'argentinaOverlap',
-    selectedTimeframe: 'WEEK',
+    selectedTimeframe: AlertsTimeframes.WEEK,
     selectedAlert: 'Integrated',
     startDate: '2021-01-01',
     endDate: '2021-01-31',
@@ -55,7 +56,7 @@ describe('Alerts Summary Service', () => {
   test('Integrated alerts selected timeframe MONTH', async () => {
     const newFilters = {
       ...filters,
-      selectedTimeframe: 'MONTH',
+      selectedTimeframe: AlertsTimeframes.MONTH,
     };
 
     alertsSummaryService.start(newFilters);
@@ -73,7 +74,7 @@ describe('Alerts Summary Service', () => {
   test('Integrated alerts selected timeframe YEAR', async () => {
     const newFilters = {
       ...filters,
-      selectedTimeframe: 'YEAR',
+      selectedTimeframe: AlertsTimeframes.YEAR,
     };
 
     alertsSummaryService.start(newFilters);

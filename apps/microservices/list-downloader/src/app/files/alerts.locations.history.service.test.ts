@@ -3,6 +3,7 @@ import { AlertsLocationsHistoryService } from './alerts.locations.history.servic
 import * as fs from 'fs';
 import { createDirectory } from '../shared/file.utils';
 import { alertsData } from '../shared/mock.data';
+import { AlertsTimeframes } from '@wri-monorepos/sql';
 
 const duplicatedRow = [
   {
@@ -269,7 +270,7 @@ describe('Alerts Locations History Service', () => {
   test('Integrated alerts selected timeframe DAY', async () => {
     const newFilters = {
       ...filters,
-      selectedTimeframe: 'DAY',
+      selectedTimeframe: AlertsTimeframes.DAY,
     };
     alertsLocationsHistoryService.start(newFilters);
     alertsLocationsHistoryService.process(alertsData);
@@ -288,7 +289,7 @@ describe('Alerts Locations History Service', () => {
   test('Integrated alerts with duplicated gadmid', async () => {
     const newFilters = {
       ...filters,
-      selectedTimeframe: 'DAY',
+      selectedTimeframe: AlertsTimeframes.DAY,
     };
     alertsLocationsHistoryService.start(newFilters);
     alertsLocationsHistoryService.process([...alertsData, ...duplicatedRow]);
@@ -307,7 +308,7 @@ describe('Alerts Locations History Service', () => {
   test('VIIRS alerts selected timeframe DAY', async () => {
     const newFilters = {
       ...filters,
-      selectedTimeframe: 'DAY',
+      selectedTimeframe: AlertsTimeframes.DAY,
       startDate: '2023-01-01',
       endDate: '2023-10-31',
       selectedAlert: 'VIIRS',

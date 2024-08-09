@@ -1,3 +1,4 @@
+import { AlertsTimeframes } from '@wri-monorepos/sql';
 import { ListMessageHandler } from './list.message.handler';
 
 describe('reorganizeFilters', () => {
@@ -296,7 +297,7 @@ describe('reorganizeFilters', () => {
       listId: 5886,
       organizationDatabase: 'clientstore-DevCo',
       selectedAlert: 'Integrated',
-      selectedTimeframe: 'WEEK',
+      selectedTimeframe: AlertsTimeframes.WEEK,
       showRSPOCertified: false,
       startDate: undefined,
       type: 'alerts',

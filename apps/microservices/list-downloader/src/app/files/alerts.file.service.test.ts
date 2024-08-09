@@ -10,6 +10,7 @@ import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natura
 import { getAllFilesAndZip } from '../shared/file.utils';
 import {
   AlertFieldsFileRequest,
+  AlertsTimeframes,
   ClientStoreConnection,
   DashboardDataType,
 } from '@wri-monorepos/sql';
@@ -57,7 +58,7 @@ describe('AlertsFileService', () => {
 
   describe('start', () => {
     it('should call the appropriate services based on the selectedTimeframe', async () => {
-      const filters = { selectedTimeframe: 'DAY' } as AlertFieldsFileRequest;
+      const filters = { selectedTimeframe: AlertsTimeframes.DAY } as AlertFieldsFileRequest;
 
       jest
         .spyOn(alertsLocationsHistoryService, 'start')
@@ -73,7 +74,7 @@ describe('AlertsFileService', () => {
     });
 
     it('should call the appropriate services for non-DAY timeframe', async () => {
-      const filters = { selectedTimeframe: 'MONTH' } as AlertFieldsFileRequest;
+      const filters = { selectedTimeframe: AlertsTimeframes.MONTH } as AlertFieldsFileRequest;
 
       jest.spyOn(alertsLocationsLevelService, 'start').mockImplementation(() => Promise.resolve());
       jest
@@ -99,7 +100,7 @@ describe('AlertsFileService', () => {
 
   describe('process', () => {
     it('should call the appropriate services based on the selectedTimeframe', () => {
-      const filters = { selectedTimeframe: 'DAY' } as AlertFieldsFileRequest;
+      const filters = { selectedTimeframe: AlertsTimeframes.DAY } as AlertFieldsFileRequest;
       const analysisData = [] as DashboardDataType[];
 
       jest
@@ -116,7 +117,7 @@ describe('AlertsFileService', () => {
     });
 
     it('should call the appropriate services for non-DAY timeframe', () => {
-      const filters = { selectedTimeframe: 'MONTH' } as AlertFieldsFileRequest;
+      const filters = { selectedTimeframe: AlertsTimeframes.MONTH } as AlertFieldsFileRequest;
       const analysisData = [] as DashboardDataType[];
 
       jest
@@ -147,7 +148,10 @@ describe('AlertsFileService', () => {
 
   describe('finish', () => {
     it('should call the appropriate services based on the selectedTimeframe and zip files', async () => {
-      const filters = { selectedTimeframe: 'DAY', key: 'test-key' } as AlertFieldsFileRequest;
+      const filters = {
+        selectedTimeframe: AlertsTimeframes.DAY,
+        key: 'test-key',
+      } as AlertFieldsFileRequest;
 
       jest
         .spyOn(alertsLocationsHistoryService, 'finish')
@@ -166,7 +170,10 @@ describe('AlertsFileService', () => {
     });
 
     it('should call the appropriate services for non-DAY timeframe and zip files', async () => {
-      const filters = { selectedTimeframe: 'MONTH', key: 'test-key' } as AlertFieldsFileRequest;
+      const filters = {
+        selectedTimeframe: AlertsTimeframes.MONTH,
+        key: 'test-key',
+      } as AlertFieldsFileRequest;
 
       jest.spyOn(alertsLocationsLevelService, 'finish').mockImplementation(() => Promise.resolve());
       jest

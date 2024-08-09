@@ -3,6 +3,7 @@ import {
   AlertFieldsFileRequest,
   AlertsTimeframes,
   BasicFieldsFileRequest,
+  ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -45,11 +46,24 @@ export class ReadmeService {
     return alertsFilesByTimeFrame[selectedTimeframe];
   }
 
+  everythingBundleReadmeData(filters: ListFieldsFileRequest) {
+    const { listView } = filters;
+
+    const listsViews = {
+      commodity_risk: 'everything_commodity_risk_readme.csv',
+    };
+
+    if (listsViews[listView]) {
+      return listsViews[listView];
+    }
+  }
+
   async write(filters: BasicFieldsFileRequest): Promise<void> {
     const { type, key } = filters;
     const returnFileToCopy = {
       afi: this.afiReadmeData,
       alerts: this.alertsReadmeData,
+      everything: this.everythingBundleReadmeData,
     };
 
     if (!Object.prototype.hasOwnProperty.call(returnFileToCopy, type)) {

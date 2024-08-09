@@ -45,8 +45,7 @@ export function SelectorWithTwoLevels({
 
   let totalCoverageOverlap = 0;
 
-  if (!dateRange) {
-    if (!subCategories) return;
+  if (!dateRange && subCategories) {
     subCategories.forEach(({ id }) => {
       const subCategoriesData = chartsSelectorData?.[id] ?? {};
       totalCoverageOverlap = Object.values(subCategoriesData).reduce(

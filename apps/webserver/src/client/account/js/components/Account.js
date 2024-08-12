@@ -429,10 +429,7 @@ export default class Account extends Component {
                   </div>
 
                   <div className="input-field__block-container">
-                    <label
-                      htmlFor="org_address"
-                      className="block-label profile-label"
-                    >
+                    <label htmlFor="org_address" className="block-label profile-label">
                       Organization Address
                     </label>
                     <input

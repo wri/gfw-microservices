@@ -35,6 +35,8 @@ export class ReadmeService {
   alertsReadmeData(filters: AlertFieldsFileRequest) {
     const { selectedTimeframe } = filters;
 
+    this.logger?.log(`alertsReadmeData selectedTimeframe: [${selectedTimeframe}]`);
+
     const alertsFilesByTimeFrame = {
       [AlertsTimeframes.DAY]: 'daily_alerts_readme.csv',
       [AlertsTimeframes.WEEK]: 'alerts_readme.csv',
@@ -73,13 +75,24 @@ export class ReadmeService {
 
     const fileToCopy = returnFileToCopy[type](filters);
 
+    if (!fileToCopy) {
+      this.logger.warn(`[${type}] returned an invalid fileToCopy`);
+      return;
+    }
+
     const sourceDir = this.getSourceDir(fileToCopy);
+
+    if (!sourceDir) {
+      this.logger.warn(`Source directory for [${fileToCopy}] is undefined`);
+      return;
+    }
 
     const destFile = this.getDestDir(key);
 
     fs.copyFile(sourceDir, destFile, (err) => {
       if (err) {
-        return this.logger.error(`[${fileToCopy}] Error copying file: ${err.message}`);
+        this.logger.error(`[${fileToCopy}] Error copying file: ${err.message}`);
+        return;
       }
       this.logger.log(`[${fileToCopy}] File copied and renamed successfully!`);
     });

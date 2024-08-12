@@ -36,8 +36,8 @@ const WrappedDataGrid = ({
           background: 'lightgray',
         },
 
-        '& .MuiCheckbox-root': {
-          color: '#97bd3d !important',
+        '& .MuiDataGrid-checkboxInput': {
+          color: '#97bd3d',
         },
       }}
       pagination

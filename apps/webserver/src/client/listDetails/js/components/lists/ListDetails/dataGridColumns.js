@@ -19,13 +19,12 @@ export const dataGridColumns = [
     sortable: false,
 
     renderCell: ({ row }) => {
-      return !locationIsActive(row) ? (
-        '--'
-      ) : checkValid(row.tree_cover_extent_total) ? (
-        <span>{formatDigit(row.tree_cover_extent_total)}</span>
-      ) : (
-        '--'
-      );
+      const isTreeCoverValid = checkValid(row.tree_cover_extent_total);
+
+      if (!locationIsActive(row) || !isTreeCoverValid) {
+        return '--';
+      }
+      return <span>{formatDigit(row.tree_cover_extent_total)}</span>;
     },
   },
 

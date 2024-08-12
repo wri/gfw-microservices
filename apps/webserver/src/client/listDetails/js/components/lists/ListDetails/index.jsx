@@ -139,7 +139,7 @@ export default class ListDetails extends Component {
       page: 0,
       numberOfPages: 1,
       maximumAnalysisAreaInTheList: defaultMaximumAreaSizeForLocationsFilter,
-      allLocationsSelected: false,
+      isEveryRowSelected: false,
       filterValues: [],
       tableSortedBy: 'Investment Name',
       tableSortedDesc: false,
@@ -228,7 +228,7 @@ export default class ListDetails extends Component {
       // if we didn't have a list selected and now we do
       // or we have selected a different list
       this.clearFilters();
-      this.setState({ allLocationsSelected: false, filterValues: [] });
+      this.setState({ isEveryRowSelected: false, filterValues: [] });
 
       if (isUserList(selectedLists[0])) {
         getListFilterValues(selectedLists[0].id).then((filterValues) => {
@@ -311,10 +311,10 @@ export default class ListDetails extends Component {
   // Update how many locations are selected
   setLocationCheckbox = (selectedLocationIds) => {
     const { selectedLocations, selectedAndVisibleLocations } = this.props;
-    const { filterString, allLocationsSelected } = this.state;
+    const { filterString, isEveryRowSelected } = this.state;
 
-    if (allLocationsSelected) {
-      this.setState({ allLocationsSelected: false });
+    if (isEveryRowSelected) {
+      this.setState({ isEveryRowSelected: false });
     }
 
     this.getSearchedLocations(filterString, selectedLocationIds);
@@ -329,14 +329,14 @@ export default class ListDetails extends Component {
   selectAllLocations = (evt) => {
     const { selectedLocations, filteredData, filteredLocationData } = this.props;
     const { listFilteredLocations } = this.state;
-    const allLocationsSelected = evt.target.checked;
+    const isEveryRowSelected = evt.target.checked;
     this.setState({
-      allLocationsSelected,
+      isEveryRowSelected,
       isLoading: true,
     });
 
     if (
-      (!allLocationsSelected && selectedLocations.length === filteredData.length) ||
+      (!isEveryRowSelected && selectedLocations.length === filteredData.length) ||
       (selectedLocations.length === listFilteredLocations.length &&
         listFilteredLocations.length !== 0)
     ) {
@@ -451,7 +451,7 @@ export default class ListDetails extends Component {
     // clear the custom dialog buttons
     this.setState({ dialogActions: null, isLoading: true });
     const { selectedLists, selectedLocations } = this.props;
-    const { allLocationsSelected } = this.state;
+    const { isEveryRowSelected } = this.state;
 
     if (!selectedLists.length || !selectedLocations.length) {
       console.warn('Attempting to delete locations without selecting any');
@@ -459,7 +459,7 @@ export default class ListDetails extends Component {
     }
 
     // If we are deleting all locations...
-    if (allLocationsSelected) {
+    if (isEveryRowSelected) {
       this.deleteList(selectedLists);
       return;
     }
@@ -594,7 +594,7 @@ export default class ListDetails extends Component {
       selectedNewOrExisting,
       selectedListMove,
       isSaveAsDraft,
-      allLocationsSelected,
+      isEveryRowSelected,
     } = this.state;
 
     if (!selectedLists.length || !selectedLocations.length) {
@@ -657,7 +657,7 @@ export default class ListDetails extends Component {
           templateData: listTemplateFields,
           saveAsDraft: isSaveAsDraft,
           gfwListId: gfw_list_id,
-          allLocationsSelected,
+          isEveryRowSelected,
           filters: myFilters,
         };
 
@@ -855,14 +855,14 @@ export default class ListDetails extends Component {
   getCheckboxColumn = () => {
     return {
       Header: () => {
-        const { allLocationsSelected } = this.state;
+        const { isEveryRowSelected } = this.state;
         return (
           <div className="column-checkbox-container">
             <input
               id="column-checkbox-all"
               className="column-checkbox"
               type="checkbox"
-              checked={allLocationsSelected}
+              checked={isEveryRowSelected}
               onChange={this.selectAllLocations}
             />
             <label htmlFor="column-checkbox-all" className="column-checkbox" />
@@ -983,7 +983,7 @@ export default class ListDetails extends Component {
    */
   processListData = (listData, locationNameForGFW, userLocation) => {
     const { selectedLists, listView, userListInfoFromMap } = this.props;
-    const { allLocationsSelected } = this.state;
+    const { isEveryRowSelected } = this.state;
     const { list_analysis, location_analyses } = listData;
 
     if (isAnalyzingStatus(selectedLists[0]?.list_status_id)) {
@@ -1009,7 +1009,7 @@ export default class ListDetails extends Component {
         store.dispatch(updateFilteredData(filteredIds));
         store.dispatch(updateListLevelAnalysis(list_analysis));
 
-        if (allLocationsSelected) {
+        if (isEveryRowSelected) {
           store.dispatch(updateSelectedLocations(filteredIds));
         }
 
@@ -1195,12 +1195,12 @@ export default class ListDetails extends Component {
 
   editList = () => {
     const { selectedLists, currentUser, selectedLocations } = this.props;
-    const { allLocationsSelected, numberOfPages } = this.state;
+    const { isEveryRowSelected, numberOfPages } = this.state;
     const selectedList = selectedLists[0];
     if (selectedList.user_id) {
       // if all locations where selected and there is more than one page
       // follow large list editing workflow
-      if (allLocationsSelected && numberOfPages > 1) {
+      if (isEveryRowSelected && numberOfPages > 1) {
         this.setState({
           displayLargeListEditingModal: true,
         });
@@ -1282,7 +1282,7 @@ export default class ListDetails extends Component {
       filteredLocationData,
       userSharedLists,
     } = this.props;
-    const { filterString, combinedColumns, allLocationsSelected } = this.state;
+    const { filterString, combinedColumns, isEveryRowSelected } = this.state;
     let locationIds = [];
 
     const gfwList = selectedLists[0]?.globalForestWatchList ? selectedLists[0]?.list_name : false;
@@ -1379,7 +1379,7 @@ export default class ListDetails extends Component {
       listId: selectedLists[0].id,
       isGfwList,
       isSharedList,
-      selectedLocations: allLocationsSelected || showFullListMap ? [] : locationIds,
+      selectedLocations: isEveryRowSelected || showFullListMap ? [] : locationIds,
     };
 
     redirectToMap(sendData);
@@ -1833,7 +1833,7 @@ export default class ListDetails extends Component {
       numberOfResults,
       displayLargeListEditingModal,
       visibleColumns,
-      allLocationsSelected,
+      isEveryRowSelected,
       isListSubmittedForAnalysis,
     } = this.state;
 
@@ -1990,7 +1990,7 @@ export default class ListDetails extends Component {
                 newListName={newListName}
                 isNewListNameDuplicate={isNewListNameDuplicate}
                 selectedLists={selectedLists}
-                locationsCount={allLocationsSelected ? numberOfResults : selectedLocations.length}
+                locationsCount={isEveryRowSelected ? numberOfResults : selectedLocations.length}
                 selectedMoveOrCopy={selectedMoveOrCopy}
                 selectedNewOrExisting={selectedNewOrExisting}
                 setMoveOrCopy={this.setMoveOrCopy}
@@ -2038,49 +2038,45 @@ export default class ListDetails extends Component {
 
         <section className="locations-body list-detail-page">
           {selectedList && (
-            <>
-              <Stack
-                sx={{ marginBottom: '15px', margin: 'auto', maxWidth: '100%' }}
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <div>
-                  <Stack alignItems="center" direction="row">
-                    <a href="/locations">
-                      <ArrowBackIcon
-                        sx={{
-                          color: 'black',
-                          marginRight: '10px',
-                          fontSize: '25px',
-                          marginTop: '3px',
-                        }}
-                      />
-                    </a>
-                    <span style={{ fontSize: '25px', textTransform: 'capitalize' }}>
-                      {listName}
-                    </span>
-                  </Stack>
-                </div>
-                <LocationsSummary
-                  anchorElCountries={anchorElCountries}
-                  closeCountriesPopover={this.closeCountriesPopover}
-                  countries={countries}
-                  filteredLists={filteredLists}
-                  filterValues={filterValues}
-                  listLocationsCount={numberOfResults}
-                  listName={listName}
-                  openCountriesPopover={openCountriesPopover}
-                  selectedList={selectedList}
-                  shareView={shareView}
-                  toggleCountriesPopover={this.toggleCountriesPopover}
-                />
-              </Stack>
-            </>
+            <Stack
+              sx={{ marginBottom: '15px', margin: 'auto', maxWidth: '100%' }}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <div>
+                <Stack alignItems="center" direction="row">
+                  <a href="/locations">
+                    <ArrowBackIcon
+                      sx={{
+                        color: 'black',
+                        marginRight: '10px',
+                        fontSize: '25px',
+                        marginTop: '3px',
+                      }}
+                    />
+                  </a>
+                  <span style={{ fontSize: '25px', textTransform: 'capitalize' }}>{listName}</span>
+                </Stack>
+              </div>
+              <LocationsSummary
+                anchorElCountries={anchorElCountries}
+                closeCountriesPopover={this.closeCountriesPopover}
+                countries={countries}
+                filteredLists={filteredLists}
+                filterValues={filterValues}
+                listLocationsCount={numberOfResults}
+                listName={listName}
+                openCountriesPopover={openCountriesPopover}
+                selectedList={selectedList}
+                shareView={shareView}
+                toggleCountriesPopover={this.toggleCountriesPopover}
+              />
+            </Stack>
           )}
 
           <div className="flex-grid">
-            <section style={{ overflow: 'auto', margin: 'auto', width: '100%' }}>
+            <section className="list-details-container">
               {/* Shared lists view */}
               {shareView ? (
                 <>
@@ -2182,7 +2178,7 @@ export default class ListDetails extends Component {
                             combinedColumns={visibleColumns}
                             selectedLocations={selectedLocations}
                             currentUser={currentUser}
-                            allLocationsSelected={allLocationsSelected}
+                            isEveryRowSelected={isEveryRowSelected}
                             listView={listView}
                             isLoading={(loading) => {
                               this.setState({ isLoading: loading });
@@ -2319,12 +2315,11 @@ export default class ListDetails extends Component {
                                 onSelectionModelChange={(newSelection) => {
                                   this.setLocationCheckbox(newSelection);
 
-                                  // Check if all rows in the current page are selected
-                                  const allLocationsSelected = newSelection.length === pageSize;
+                                  const isEveryRowSelected = newSelection.length === pageSize;
 
                                   // Update allSelected state if it changes
-                                  if (this.state.allLocationsSelected !== allLocationsSelected) {
-                                    this.selectAllLocations(allLocationsSelected);
+                                  if (this.state.isEveryRowSelected !== isEveryRowSelected) {
+                                    this.selectAllLocations(isEveryRowSelected);
                                   }
                                 }}
                               />

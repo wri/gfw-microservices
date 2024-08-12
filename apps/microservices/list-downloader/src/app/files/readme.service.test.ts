@@ -6,6 +6,7 @@ import {
   AlertFieldsFileRequest,
   AlertsTimeframes,
   BasicFieldsFileRequest,
+  ListFieldsFileRequest,
 } from '@wri-monorepos/sql';
 
 jest.mock('fs');
@@ -150,5 +151,29 @@ describe('ReadmeService', () => {
     const result = service.alertsReadmeData(filters);
 
     expect(result).toBe('alerts_readme.csv');
+  });
+
+  it('should return everything_commodity_risk_readme.csv when listView is commodity_risk', () => {
+    const filters: ListFieldsFileRequest = {
+      key: 'test-key',
+      listView: 'commodity_risk',
+      type: 'everything',
+    };
+
+    const result = service.everythingBundleReadmeData(filters);
+
+    expect(result).toBe('everything_commodity_risk_readme.csv');
+  });
+
+  it('should return undefined when listView does not match any key in listsViews', () => {
+    const filters: ListFieldsFileRequest = {
+      key: 'test-key',
+      listView: 'non_existent_view',
+      type: 'everything',
+    };
+
+    const result = service.everythingBundleReadmeData(filters);
+
+    expect(result).toBeUndefined();
   });
 });

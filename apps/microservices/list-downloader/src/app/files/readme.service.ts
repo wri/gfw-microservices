@@ -34,6 +34,8 @@ export class ReadmeService {
   alertsReadmeData(filters: AlertFieldsFileRequest) {
     const { selectedTimeframe } = filters;
 
+    this.logger.log(`alertsReadmeData selectedTimeframe: [${selectedTimeframe}]`);
+
     const alertsFilesByTimeFrame = {
       [AlertsTimeframes.DAY]: 'daily_alerts_readme.csv',
       [AlertsTimeframes.WEEK]: 'alerts_readme.csv',

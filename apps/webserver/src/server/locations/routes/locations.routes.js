@@ -27,6 +27,7 @@ const { validateAttributes } = require('../utils/validation.utils');
 const { mapCommodityRiskValuesToDatabaseValues } = require('../utils/locations.utils');
 const { listStatus } = require(path.resolve('./config/env/listStatuses.constants'));
 import config from '../../../config/config';
+import { GfwLists } from '@wri-monorepos/sql';
 
 const { getListAnalysisStatusByListId } = require(path.resolve(
   './server/analytics/service/analytics.service'
@@ -736,35 +737,63 @@ module.exports = (app, limiter) => {
   });
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
+    const gfwLists = new GfwLists();
     console.log('POST /locations/getGFWListLocationData');
-    const { list_id, location_ids } = req.body;
-
+    const { list_id, location_ids, isGFWList } = req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
+    const pageNum = 0;
+    const pageSize = 50;
+    if (isGFWList) {
+      gfwLists
+        .getPaginatedPalmOilMilTable(pageNum, pageSize, list_id, config.SQLConnection.database)
+        .then((response) => {
+          const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData] = response;
+          locationAttributeArray.push(...noGeomData);
+          locationAnalysisArray.push(...gfwListAnalysesData);
+          listAnalyses.push(...gfwLocationsAnalysesData);
 
-    Promise.all([
-      GFWListManager.getGFWListLocationsNoGeom(req, list_id, location_ids),
-      AnalysisManager.getAnalysisDataForGFWList(req, list_id, location_ids),
-      AnalysisManager.getGFWListAnalyses(req, list_id),
-    ]).then((response) => {
-      const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData] = response;
-      locationAttributeArray.push(...noGeomData);
-      locationAnalysisArray.push(...gfwListAnalysesData);
-      listAnalyses.push(...gfwLocationsAnalysesData);
-
-      LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
-        .then((locationAttributeList) => {
-          res.send({
-            list_analysis: listAnalyses,
-            location_analyses: [locationAttributeList, locationAnalysisArray],
-          });
-        })
-        .catch((err) => {
-          console.log('Error /locations/getGFWListLocationData', err);
-          res.send(false);
+          LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
+            .then((locationAttributeList) => {
+              res.send({
+                list_analysis: listAnalyses,
+                location_analyses: [locationAttributeList, locationAnalysisArray],
+              });
+            })
+            .catch((err) => {
+              console.log('Error /locations/getGFWListLocationData', err);
+              res.send(false);
+            });
         });
-    });
+      // res.send({
+      //   list_analysis: listAnalyses,
+      //   location_analyses: [locationAttributeList, locationAnalysisArray],
+      // });
+    } else {
+      Promise.all([
+        GFWListManager.getGFWListLocationsNoGeom(req, list_id, location_ids),
+        AnalysisManager.getAnalysisDataForGFWList(req, list_id, location_ids),
+        AnalysisManager.getGFWListAnalyses(req, list_id),
+      ]).then((response) => {
+        const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData] = response;
+        locationAttributeArray.push(...noGeomData);
+        locationAnalysisArray.push(...gfwListAnalysesData);
+        listAnalyses.push(...gfwLocationsAnalysesData);
+
+        LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
+          .then((locationAttributeList) => {
+            res.send({
+              list_analysis: listAnalyses,
+              location_analyses: [locationAttributeList, locationAnalysisArray],
+            });
+          })
+          .catch((err) => {
+            console.log('Error /locations/getGFWListLocationData', err);
+            res.send(false);
+          });
+      });
+    }
   });
 
   app.post('/locations/getGFWListLocationGeom', (req, res) => {

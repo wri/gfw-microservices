@@ -163,4 +163,24 @@ export class GfwLists {
       return mappedObject;
     });
   }
+  async getPaginatedPalmOilMilTable(
+    pageNum: number,
+    pageSize: number,
+    list_id: number,
+    organizationDatabase: string,
+  ){
+    const noGeomData = await this.getPaginatedPalmOilMillAttributes(
+      pageNum,
+      pageSize,
+      list_id,
+      organizationDatabase,
+      []
+    );
+    const location_ids = noGeomData.map((item) => item.id);
+    let gfwListAnalysesData = this.getAnalysisDataForGFWList(pageNum, pageSize, list_id, organizationDatabase, location_ids)
+   
+    let gfwLocationsAnalysesData
+
+    return [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData]
+  }
 }

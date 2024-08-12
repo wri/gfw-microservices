@@ -244,7 +244,6 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
           informationBubbleId={
             country !== regionIds.COLOMBIA && wdpaOverlapCountry.informationBubbleId
           }
-          hideChartLabels={country === regionIds.COLOMBIA}
         />
       )}
       {showIndigenousTerritoriesPieChart && (
@@ -256,7 +255,6 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
           informationBubbleId={
             country !== regionIds.COLOMBIA && landmarkOverlapCountry.informationBubbleId
           }
-          hideChartLabels={country === regionIds.COLOMBIA}
         />
       )}
     </>

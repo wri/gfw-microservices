@@ -110,7 +110,7 @@ export function SelectorWithTwoLevels({
                   <label htmlFor={`pie-chart-label-${id}`}>{legend}</label>
                 </th>
                 {totalCoverageOverlap > 0 && (
-                  <th>{((totalLossPerCategory / totalCoverageOverlap) * 100).toFixed(1)}</th>
+                  <th>{((totalLossPerCategory / totalCoverageOverlap) * 100).toFixed(2)}</th>
                 )}
                 <th>{prettifyNum(formatNum(totalLossPerCategory))}</th>
               </tr>
@@ -120,7 +120,7 @@ export function SelectorWithTwoLevels({
                   <tr key={id + key} className="chart-legends-table__second-level-legend">
                     <td>{key}</td>
                     {totalCoverageOverlap > 0 && (
-                      <td>{((value / totalCoverageOverlap) * 100).toFixed(1)}</td>
+                      <td>{((value / totalCoverageOverlap) * 100).toFixed(2)}</td>
                     )}
                     <td>
                       {prettifyNum(

@@ -1,9 +1,9 @@
 FROM amd64/node:20.11.1 as builder
 WORKDIR /build
 COPY package.json .
-COPY yarn.lock .
+COPY package-lock.json .
 
-RUN yarn install
+RUN npm ci --legacy-peer-deps
 
 FROM amd64/node:20.11.1 as appbuilder
 WORKDIR /appbuilder
@@ -27,9 +27,9 @@ ENV LATEST_COMMIT ${LATEST_COMMIT}
 
 COPY --from=appbuilder /appbuilder/dist/apps/microservices/b2b/ /app/
 COPY package.json .
-COPY yarn.lock .
+COPY package-lock.json .
 COPY ./apps/microservices/b2b/.env .
-RUN yarn install
+RUN npm ci --legacy-peer-deps
 # RUN export NODE_OPTIONS="--max-old-space-size=8192"
 
 CMD [ "node", "main.js" ]

@@ -1,9 +1,9 @@
 FROM amd64/node:20.11.1 as builder
 WORKDIR /build
 COPY package.json .
-COPY yarn.lock .
+COPY package-lock.json .
 
-RUN yarn install
+RUN npm ci --legacy-peer-deps
 
 FROM amd64/node:20.11.1 as appbuilder
 WORKDIR /appbuilder
@@ -28,8 +28,8 @@ ENV LATEST_COMMIT ${LATEST_COMMIT}
 
 COPY --from=appbuilder /appbuilder/dist/apps/microservices/externalapi/ /app/
 COPY package.json .
-COPY yarn.lock .
+COPY package-lock.json .
 COPY ./apps/microservices/externalapi/.env .
-RUN yarn install
+RUN npm ci --legacy-peer-deps
 
 CMD [ "node", "main.js" ]

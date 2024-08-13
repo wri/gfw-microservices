@@ -2,72 +2,72 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity({ name: 'list-palmOilMills' })
 export class ListsPalmOilMills {
-  @Column({ name: 'Location Name' })
-  locationName: string;
-
-  @Column({ name: 'Analysis Radius' })
-  analysisRadius: number;
-
-  @Column({ name: 'Size' })
-  size: number;
-
-  @Column({ name: 'Parent Company' })
-  parentCompany: string;
-
-  @Column({ name: 'Company ID' })
-  companyId: string;
-
-  @Column({ name: 'Certification' })
-  certification: string;
-
-  @Column({ name: 'RSPO Model' })
-  rspoMode: number;
-
-  @Column({ name: 'Latitude' })
-  latitude: number;
-
-  @Column({ name: 'Longitude' })
-  longitude: number;
-
-  @Column({ name: 'Location Classification' })
-  locationClassification: string;
-
-  @Column({ name: 'Commodity' })
-  commodity: string;
-
-  @Column({ name: 'Country' })
-  country: string;
-
-  @Column({ name: 'State' })
-  state: string;
-
-  @Column({ name: 'Sub State' })
-  subState: string;
-
-  @Column({ name: 'gadmid' })
-  gadmId: string;
-
-  @Column({ name: 'Group Name' })
-  groupName: string;
-
-  @Column({ name: 'Mill ID' })
-  millId: string;
-
-  @Column({ name: 'Alternative Name' })
-  alternativeName: string;
-
-  @Column({ name: 'Geometry' })
-  errorFileStoragePath: string;
-
-  @Column({ name: 'Geometry Simplified' })
-  vectorTilesLastUpdated: string;
-
-  @Column({ name: 'globalid' })
-  globalId: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column({ name: 'location_id' })
   locationId: number;
 
-  @PrimaryGeneratedColumn()
-  id: number;
+  @Column({ name: 'Location Name' })
+  'Location Name': string;
+
+  @Column({ name: 'Analysis Radius' })
+  'Analysis Radius': number;
+
+  @Column({ name: 'Size' })
+  'Size': number;
+
+  @Column({ name: 'Parent Company' })
+  'Parent Company': string;
+
+  @Column({ name: 'Company ID' })
+  'Company ID': string;
+
+  @Column({ name: 'Certification' })
+  Certification: string;
+
+  @Column({ name: 'RSPO Model' })
+  'RSPO Model': string;
+
+  @Column({ name: 'Latitude' })
+  Latitude: number;
+
+  @Column({ name: 'Longitude' })
+  Longitude: number;
+
+  @Column({ name: 'Location Classification' })
+  'Location Classification': string;
+
+  @Column({ name: 'Commodity' })
+  Commodity: string;
+
+  @Column({ name: 'Country' })
+  Country: string;
+
+  @Column({ name: 'State' })
+  State: string;
+
+  @Column({ name: 'Sub State' })
+  'Sub State': string;
+
+  @Column({ name: 'gadmid' })
+  gadmid: string;
+
+  @Column({ name: 'Group Name' })
+  'Group Name': string;
+
+  @Column({ name: 'Mill ID' })
+  'Mill ID': string;
+
+  @Column({ name: 'Alternative Name' })
+  'Alternative Name': string;
+
+  @Column({ name: 'Geometry' })
+  'Geometry': string;
+
+  @Column({ name: 'Geometry Simplified' })
+  'Geometry Simplified': string;
+
+  @Column({ name: 'globalid' })
+  globalid: string;
 }

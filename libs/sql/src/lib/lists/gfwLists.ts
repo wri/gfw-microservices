@@ -1,7 +1,13 @@
 import { ClientStoreConnection } from '../util';
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { ListsPalmOilMills, ListGFWLists, AnalysisPalmOilMills } from '../entity';
+import {
+  ListsPalmOilMills,
+  ListGFWLists,
+  AnalysisPalmOilMills,
+  RspoOilPalmConcessions,
+} from '../entity';
 import { In } from 'typeorm';
+import { ListProtectedAreas } from '../entity/organization/list.protectedAreas.entity';
 
 const PALM_OIL_MILLS_COLUMN_NAMES = {
   locationName: 'Location Name',
@@ -40,6 +46,8 @@ export class GfwLists {
     const ATTRIBUTES_LIST_TABLE = ListsPalmOilMills;
     const ATTRIBUTES_LIST_TABLE_NAMES = {
       3: ListsPalmOilMills,
+      4: ListProtectedAreas,
+      5: RspoOilPalmConcessions,
     };
     return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
   }
@@ -84,9 +92,11 @@ export class GfwLists {
         throw new NotFoundException(`ListsPalmOilMills with list_id ${list_id} not found.`);
       }
       const itemsWithListId = items.map((item) => {
-        return { ...item, list_id: 3 };
+        return { ...item, list_id };
       });
-      return [this.mapObjectToColumnNames(itemsWithListId, PALM_OIL_MILLS_COLUMN_NAMES), count];
+      return list_id == 3
+        ? [this.mapObjectToColumnNames(itemsWithListId, PALM_OIL_MILLS_COLUMN_NAMES), count]
+        : [itemsWithListId, count];
     } catch (error) {
       throw new InternalServerErrorException('Error deleting list', error.message);
     }

@@ -4,22 +4,18 @@ import useHookWithRefCallback from '../useHookWithRefCallback';
 
 const transifex = Transifex.live.translateText;
 
-function Chart({ data, chartLabels, hideChartLabels, hasSubcategories }) {
+function Chart({ data, chartLabels, hasSubcategories }) {
   const pieChartsData = [];
 
   let dataLabels = {
-    enabled: !hideChartLabels,
-    format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %',
+    format: '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
   };
 
   if (hasSubcategories) {
     dataLabels = {
-      enabled: true,
-      distance: -40,
-      format: '{point.percentage:.1f} %',
-
-      color: '#FF00FF',
-
+      distance: -50,
+      format: '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
+      color: '#000',
       filter: {
         property: 'percentage',
         operator: '>',
@@ -31,21 +27,20 @@ function Chart({ data, chartLabels, hideChartLabels, hasSubcategories }) {
   const categoriesData = {
     colorByPoint: true,
     data: [],
-    size: hasSubcategories ? '50%' : null,
+    size: hasSubcategories ? '60%' : null,
   };
 
   const subCategoriesData = {
     name: 'subCategories',
     data: [],
     size: '100%',
-    innerSize: '50%',
+    innerSize: '60%',
     dataLabels: {
-      distance: -40,
-      format: '{point.percentage:.1f} %',
+      distance: 20,
       filter: {
         property: 'percentage',
         operator: '>',
-        value: 5,
+        value: 3,
       },
       style: {
         fontWeight: 'normal',
@@ -56,33 +51,25 @@ function Chart({ data, chartLabels, hideChartLabels, hasSubcategories }) {
 
   chartLabels.forEach(({ id, legend, color, subCategoryColor }) => {
     let category;
-    if (hasSubcategories) {
-      let sumOfSubcategories = 0;
+    let sumOfSubcategories = 0;
 
-      if (data[id]) {
-        Object.entries(data[id]).forEach(([key, value]) => {
-          sumOfSubcategories += value;
+    if (hasSubcategories && data[id]) {
+      Object.entries(data[id]).forEach(([key, value]) => {
+        sumOfSubcategories += value;
 
-          subCategoriesData.data.push({
-            name: transifex(key),
-            y: value,
-            color: subCategoryColor,
-          });
+        subCategoriesData.data.push({
+          name: transifex(key),
+          y: value,
+          color: subCategoryColor,
         });
-      }
-
-      category = {
-        name: transifex(legend),
-        y: sumOfSubcategories,
-        color,
-      };
-    } else {
-      category = {
-        name: transifex(legend),
-        y: data[id],
-        color,
-      };
+      });
     }
+
+    category = {
+      name: transifex(legend),
+      y: hasSubcategories ? sumOfSubcategories : data[id],
+      color,
+    };
 
     categoriesData.data.push(category);
   });
@@ -110,7 +97,7 @@ function Chart({ data, chartLabels, hideChartLabels, hasSubcategories }) {
         enabled: false,
       },
       tooltip: {
-        pointFormat: hasSubcategories ? '{point.y:.2f}' : '{point.y}<br>{point.percentage:.1f} %',
+        pointFormat: '{point.percentage:.2f} %',
       },
       plotOptions: {
         pie: {

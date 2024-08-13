@@ -12,7 +12,6 @@ function PieChart({
   chartLabels,
   title,
   informationBubbleId,
-  hideChartLabels,
   preview = false,
   hasSubcategories,
 }) {
@@ -33,12 +32,7 @@ function PieChart({
         <CardContent>
           <div className="diagnostics-chart-container" data-testid="pie-chart">
             <div className="diagnostics-chart-container__chart">
-              <Chart
-                data={data}
-                chartLabels={chartLabel}
-                hideChartLabels={hideChartLabels}
-                hasSubcategories={hasSubcategories}
-              />
+              <Chart data={data} chartLabels={chartLabel} hasSubcategories={hasSubcategories} />
             </div>
             {hasSubcategories ? (
               <div className="chart-legends-table">

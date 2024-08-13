@@ -35,8 +35,6 @@ export class ReadmeService {
   alertsReadmeData(filters: AlertFieldsFileRequest) {
     const { selectedTimeframe } = filters;
 
-    Logger.log(`AlertsReadme selectedTimeframe: [${selectedTimeframe}]`, ReadmeService.name);
-
     const alertsFilesByTimeFrame = {
       [AlertsTimeframes.DAY]: 'daily_alerts_readme.csv',
       [AlertsTimeframes.WEEK]: 'alerts_readme.csv',
@@ -75,14 +73,12 @@ export class ReadmeService {
     const fileToCopy = returnFileToCopy[type](filters);
 
     if (!fileToCopy) {
-      this.logger.warn(`[${type}] returned an invalid fileToCopy`);
       return;
     }
 
     const sourceDir = this.getSourceDir(fileToCopy);
 
     if (!sourceDir) {
-      this.logger.warn(`Source directory for [${fileToCopy}] is undefined`);
       return;
     }
 

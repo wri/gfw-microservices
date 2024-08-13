@@ -9,6 +9,8 @@ import {
 import IconButton from '@mui/material/IconButton';
 import { KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material';
 
+const COVERAGE_DECIMAL_PLACES = 2;
+
 export function SelectorWithTwoLevels({
   data,
   chartConfiguration,
@@ -110,7 +112,11 @@ export function SelectorWithTwoLevels({
                   <label htmlFor={`pie-chart-label-${id}`}>{legend}</label>
                 </th>
                 {totalCoverageOverlap > 0 && (
-                  <th>{((totalLossPerCategory / totalCoverageOverlap) * 100).toFixed(2)}</th>
+                  <th>
+                    {((totalLossPerCategory / totalCoverageOverlap) * 100).toFixed(
+                      COVERAGE_DECIMAL_PLACES
+                    )}
+                  </th>
                 )}
                 <th>{prettifyNum(formatNum(totalLossPerCategory))}</th>
               </tr>
@@ -120,7 +126,9 @@ export function SelectorWithTwoLevels({
                   <tr key={id + key} className="chart-legends-table__second-level-legend">
                     <td>{key}</td>
                     {totalCoverageOverlap > 0 && (
-                      <td>{((value / totalCoverageOverlap) * 100).toFixed(2)}</td>
+                      <td>
+                        {((value / totalCoverageOverlap) * 100).toFixed(COVERAGE_DECIMAL_PLACES)}
+                      </td>
                     )}
                     <td>
                       {prettifyNum(

@@ -19,27 +19,17 @@ export const updateListsUploadStatus = async (
   const { taskARN } = await getMetadata();
 
   try {
-    const existingRecord = await repository.findOne({ where: { listId } });
+    let record = await repository.findOne({ where: { listId } });
 
-    if (existingRecord) {
-      existingRecord.errorInfo = errorInfo;
-      existingRecord.lastSuccessfulStage =
-        lastSuccessfulStage ?? existingRecord.lastSuccessfulStage;
-      existingRecord.updateTime = new Date();
-      existingRecord.workerInstanceId = '';
-      existingRecord.workerInstanceId = taskARN;
-      await repository.save(existingRecord);
-    } else {
-      const newRecord = new ListsUploadStatus();
-      newRecord.listId = listId;
-      newRecord.errorInfo = errorInfo;
-      newRecord.lastSuccessfulStage = lastSuccessfulStage ?? newRecord.lastSuccessfulStage;
-      newRecord.updateTime = new Date();
-      newRecord.workerInstanceId = taskARN;
-      newRecord.workerInstanceId = '';
-
-      await repository.save(newRecord);
+    if (!record) {
+      record = new ListsUploadStatus();
     }
+    record.errorInfo = errorInfo;
+    record.lastSuccessfulStage = lastSuccessfulStage ?? record.lastSuccessfulStage;
+    record.updateTime = new Date();
+    record.workerInstanceId = taskARN || '';
+    record.listId = listId;
+    await repository.save(record);
   } catch (error) {
     logger.error('Error updating/inserting record:', error);
   }

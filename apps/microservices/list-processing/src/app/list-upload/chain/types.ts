@@ -18,6 +18,8 @@ export type RequestNewList = {
   userId: number;
   templateId: number;
   path: string;
+  listId?: number;
+  analysisIds?: Array<string>;
 };
 
 interface Handler<T> {

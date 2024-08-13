@@ -1359,8 +1359,7 @@ export const mapLayers = [
         type: 'tileLayer',
         body: {
           url: 'https://tiles.globalforestwatch.org/col_frontera_agricola/v2024/category/{z}/{x}/{y}.png',
-          metadata:
-            'https://api.resourcewatch.org/v1/gfw-metadata/col_frontera_agricola',
+          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/col_frontera_agricola',
           useCors: true,
         },
       },

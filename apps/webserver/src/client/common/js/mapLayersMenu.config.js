@@ -383,6 +383,15 @@ const regionLayers = [
     countryCode: 'IDN',
     order: 710,
   },
+  {
+    id: proLayers.colombiaFronteraAgricola,
+    group: 'region',
+    subGroup: '',
+    region: 'south-america',
+    country: 'Colombia',
+    countryCode: 'IDN',
+    order: 610,
+  },
 ];
 
 export const mapLayersMenu = [

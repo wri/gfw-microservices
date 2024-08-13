@@ -279,20 +279,14 @@ export class LocationService {
     );
 
     this.logger.log(`Copy location analysis for new list`);
-    try {
-      await PerformCopyAnalysis(
-        clientDatabase,
-        srcListAnalysisTable,
-        selectedListId,
-        createdListId,
-        selectedLocations,
-        destLocationIds
-      );
-    } catch (error) {
-      this.logger.error(
-        `Copy location analysis failed for the new list with ID: [${createdListId}]`
-      );
-    }
+    await PerformCopyAnalysis(
+      clientDatabase,
+      srcListAnalysisTable,
+      selectedListId,
+      createdListId,
+      selectedLocations,
+      destLocationIds
+    );
 
     if (!isSaveAsDraft) {
       await this.handleProcessingLimits({

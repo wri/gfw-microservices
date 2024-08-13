@@ -103,3 +103,11 @@ export interface CopyOrMoveLargeListRequest {
   filters: ListFilters;
   srcListAnalysisTable: string;
 }
+
+export enum AlertsTimeframes {
+  DAY = 'DAY',
+  WEEK = 'WEEK',
+  MONTH = 'MONTH',
+  QUARTER = 'QUARTER',
+  YEAR = 'YEAR',
+}

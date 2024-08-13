@@ -1226,6 +1226,7 @@ export default class Lists extends Component {
       },
       body: {
         list_id,
+        isGFWList: true,
       },
     })
       .then((response) => {

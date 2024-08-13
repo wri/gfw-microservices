@@ -32,9 +32,9 @@ const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
+const AnalysisManager = require(path.resolve('./config/publicutils/analysisManager.utils'));
 import { getAdministrativeAreasDataByLocation, GfwLists } from '@wri-monorepos/sql';
 import { gfwListsIds, gfwListsNames } from '@wri-monorepos/constants';
-
 let adminInfo = [];
 let protectedInfo = [];
 
@@ -137,17 +137,10 @@ export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
         );
         break;
       case 3:
-        // promise = sqlUtils.executeSystemStoredProcedure(
-        //   req,
-        //   'uspGetPalmOilMillAttributes',
-        //   parameters
-        // );
-        promise = gfwLists.getPaginatedPalmOilMillAttributes(
-          0,
-          50,
-          list_id,
-          config.SQLConnection.database,
-          location_ids
+        promise = sqlUtils.executeSystemStoredProcedure(
+          req,
+          'uspGetPalmOilMillAttributes',
+          parameters
         );
         break;
       case 4:
@@ -645,4 +638,21 @@ export function initialize() {
         reject(errMsg);
       });
   });
+}
+export async function getPaginatedTable(req, pageNum, pageSize, list_id, organizationDatabase) {
+  const gfwLists = new GfwLists();
+  const [noGeomData, count] = await gfwLists.getPaginatedTable(
+    pageNum,
+    pageSize,
+    list_id,
+    organizationDatabase
+  );
+  const location_ids = noGeomData.map((item) => item.location_id);
+  const gfwListAnalysesData = await AnalysisManager.getAnalysisDataForGFWList(
+    req,
+    list_id,
+    location_ids
+  );
+  const gfwLocationsAnalysesData = await AnalysisManager.getGFWListAnalyses(req, list_id);
+  return [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count];
 }

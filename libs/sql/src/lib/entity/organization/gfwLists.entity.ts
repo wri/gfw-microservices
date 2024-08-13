@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity({ name: 'GFWLists' })
-export class GFWLists {
+export class ListGFWLists {
   @PrimaryGeneratedColumn()
   id: number;
 

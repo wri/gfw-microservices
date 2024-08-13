@@ -1,6 +1,6 @@
 import { ClientStoreConnection } from '../util';
 import { InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { ListsPalmOilMills, GFWLists, AnalysisPalmOilMills } from '../entity';
+import { ListsPalmOilMills, ListGFWLists, AnalysisPalmOilMills } from '../entity';
 import { In } from 'typeorm';
 
 const PALM_OIL_MILLS_COLUMN_NAMES = {
@@ -31,11 +31,19 @@ const PALM_OIL_MILLS_COLUMN_NAMES = {
 const ANALYSYS_TABLE_NAMES = {
   'analysis-palmOilMills': AnalysisPalmOilMills,
 };
+
 export class GfwLists {
   private readonly logger = new Logger('List processing service');
   private readonly clientStoreConnection = new ClientStoreConnection();
 
-  async getPaginatedPalmOilMillAttributes(
+  getAttributesListEntity(list_id: number): any {
+    const ATTRIBUTES_LIST_TABLE = ListsPalmOilMills;
+    const ATTRIBUTES_LIST_TABLE_NAMES = {
+      3: ListsPalmOilMills,
+    };
+    return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
+  }
+  async getPaginatedAttributes(
     pageNum: number,
     pageSize: number,
     list_id: number,
@@ -44,7 +52,7 @@ export class GfwLists {
   ): Promise<any[]> {
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-      const listRepository = connection.getRepository(ListsPalmOilMills);
+      const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
       const take = pageSize === 0 ? 50 : pageSize;
       const skip = pageNum > 0 ? (pageNum - 1) * take : 0;
 
@@ -71,7 +79,6 @@ export class GfwLists {
           },
         });
       }
-      console.log('count', count);
       if (!items) {
         this.logger.error('ListsPalmOilMills: lists not found');
         throw new NotFoundException(`ListsPalmOilMills with list_id ${list_id} not found.`);
@@ -79,7 +86,7 @@ export class GfwLists {
       const itemsWithListId = items.map((item) => {
         return { ...item, list_id: 3 };
       });
-      return this.mapObjectToColumnNames(itemsWithListId, PALM_OIL_MILLS_COLUMN_NAMES);
+      return [this.mapObjectToColumnNames(itemsWithListId, PALM_OIL_MILLS_COLUMN_NAMES), count];
     } catch (error) {
       throw new InternalServerErrorException('Error deleting list', error.message);
     }
@@ -121,7 +128,7 @@ export class GfwLists {
           skip,
           take,
           order: {
-            id: 'DESC',
+            location_id: 'DESC',
           },
         });
       }
@@ -133,16 +140,19 @@ export class GfwLists {
       const itemsWithListId = items.map((item) => {
         return { ...item, list_id: 3 };
       });
-      return this.mapObjectToColumnNames(itemsWithListId, PALM_OIL_MILLS_COLUMN_NAMES);
+      return itemsWithListId;
     } catch (error) {
       throw new InternalServerErrorException('Error getAnalysisDataForGFWList', error.message);
     }
   }
 
-  async getListAnalysisTableName(list_id: number, organizationDatabase: string): Promise<GFWLists> {
+  async getListAnalysisTableName(
+    list_id: number,
+    organizationDatabase: string
+  ): Promise<ListGFWLists> {
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-      const listRepository = await connection.getRepository(GFWLists);
+      const listRepository = await connection.getRepository(ListGFWLists);
       const listName = await listRepository.findOne({ where: { id: list_id } });
       return listName;
     } catch (error) {
@@ -163,24 +173,19 @@ export class GfwLists {
       return mappedObject;
     });
   }
-  async getPaginatedPalmOilMilTable(
+  async getPaginatedTable(
     pageNum: number,
     pageSize: number,
     list_id: number,
-    organizationDatabase: string,
-  ){
-    const noGeomData = await this.getPaginatedPalmOilMillAttributes(
+    organizationDatabase: string
+  ) {
+    const result = await this.getPaginatedAttributes(
       pageNum,
       pageSize,
       list_id,
       organizationDatabase,
       []
     );
-    const location_ids = noGeomData.map((item) => item.id);
-    let gfwListAnalysesData = this.getAnalysisDataForGFWList(pageNum, pageSize, list_id, organizationDatabase, location_ids)
-   
-    let gfwLocationsAnalysesData
-
-    return [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData]
+    return result;
   }
 }

@@ -21,12 +21,7 @@ import * as sqlUtils from '../privateutils/sql.utils';
 import { createErrorMessage, ERROR_CODES } from '../privateutils/error.utils';
 import * as analysisUtils from '../privateutils/analysis.utils';
 import * as ListManager from '../publicutils/listManager.utils';
-import {
-  getAnalysisDataForProtectedAreasByLocation,
-  GfwLists,
-  SqlParamType,
-} from '@wri-monorepos/sql';
-import config from '../config';
+import { getAnalysisDataForProtectedAreasByLocation, SqlParamType } from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
  *   @summary Function to return analysis data for a user list.
@@ -61,7 +56,6 @@ export const getAnalysisDataForUserList = (req, list_id) => {
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 export const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
-  const gfwLists = new GfwLists();
   return new Promise<any>((resolve, reject) => {
     const parameters: SqlParamType[] = [{ field: 'list_id', type: sql.Int(), value: list_id }];
 
@@ -73,10 +67,9 @@ export const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
       });
     }
 
-    // sqlUtils
-    // .executeSystemStoredProcedure(req, 'uspGetGFWListLocationAnalysis', parameters)
-    gfwLists
-      .getAnalysisDataForGFWList(0, 50, list_id, config.SQLConnection.database, location_ids)
+    sqlUtils
+      .executeSystemStoredProcedure(req, 'uspGetGFWListLocationAnalysis', parameters)
+
       .then((recordsets) => {
         resolve(recordsets);
       })

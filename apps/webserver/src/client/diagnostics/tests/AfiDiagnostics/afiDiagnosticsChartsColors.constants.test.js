@@ -5,8 +5,8 @@ import {
 
 test('afiDiagnosticsChartsColors should be defined correctly', () => {
   expect(afiDiagnosticsChartsColors).toEqual({
-    negligibleRisk: '#82a13a',
-    nonNegligibleRisk: '#9ebc52',
+    negligibleRisk: '#de8500',
+    nonNegligibleRisk: '#a40018',
   });
 });
 

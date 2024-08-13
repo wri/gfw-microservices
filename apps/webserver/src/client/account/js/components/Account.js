@@ -429,14 +429,10 @@ export default class Account extends Component {
                   </div>
 
                   <div className="input-field__block-container">
-                    <label
-                      htmlFor="org_address"
-                      className="block-label profile-label required-param"
-                    >
+                    <label htmlFor="org_address" className="block-label profile-label">
                       Organization Address
                     </label>
                     <input
-                      required
                       name="org_address"
                       id="org_address"
                       value={this.state.org_address}
@@ -552,12 +548,11 @@ export default class Account extends Component {
                 </div>
 
                 <div className="input-field__block-container">
-                  <label htmlFor="user_phone" className="block-label profile-label required-param">
+                  <label htmlFor="user_phone" className="block-label profile-label">
                     Phone
                   </label>
                   <input
                     id="user_phone"
-                    required
                     name="user_phone"
                     value={this.state.user_phone}
                     onChange={this.updatePhone}

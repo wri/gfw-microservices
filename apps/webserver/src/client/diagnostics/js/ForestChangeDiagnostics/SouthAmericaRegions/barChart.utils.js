@@ -46,7 +46,7 @@ export const addNoOverlapArea = (overlapArea, total_area, nonOverlapAreaLabel) =
   return { ...overlapArea, [nonOverlapAreaLabel]: nonOverlapArea };
 };
 
-export function calculateTotalLossForAllTypes(obj, dateRange) {
+export function calculateTotalLossForAllCategories(obj, dateRange) {
   if (!obj) return 0;
 
   let sum = 0;

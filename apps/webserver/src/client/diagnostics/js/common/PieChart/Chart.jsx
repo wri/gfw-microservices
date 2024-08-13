@@ -4,12 +4,81 @@ import useHookWithRefCallback from '../useHookWithRefCallback';
 
 const transifex = Transifex.live.translateText;
 
-function Chart({ data, chartLabels, hideChartLabels }) {
-  const pieChartData = chartLabels.map(({ id, legend, color }) => ({
-    legend: transifex(legend),
-    y: data[id],
-    color,
-  }));
+function Chart({ data, chartLabels, hasSubcategories }) {
+  const pieChartsData = [];
+
+  let dataLabels = {
+    format: '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
+  };
+
+  if (hasSubcategories) {
+    dataLabels = {
+      distance: -50,
+      format: '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
+      color: '#000',
+      filter: {
+        property: 'percentage',
+        operator: '>',
+        value: 10,
+      },
+    };
+  }
+
+  const categoriesData = {
+    colorByPoint: true,
+    data: [],
+    size: hasSubcategories ? '60%' : null,
+  };
+
+  const subCategoriesData = {
+    name: 'subCategories',
+    data: [],
+    size: '100%',
+    innerSize: '60%',
+    dataLabels: {
+      distance: 20,
+      filter: {
+        property: 'percentage',
+        operator: '>',
+        value: 3,
+      },
+      style: {
+        fontWeight: 'normal',
+      },
+    },
+    id: 'versions',
+  };
+
+  chartLabels.forEach(({ id, legend, color, subCategoryColor }) => {
+    let category;
+    let sumOfSubcategories = 0;
+
+    if (hasSubcategories && data[id]) {
+      Object.entries(data[id]).forEach(([key, value]) => {
+        sumOfSubcategories += value;
+
+        subCategoriesData.data.push({
+          name: transifex(key),
+          y: value,
+          color: subCategoryColor,
+        });
+      });
+    }
+
+    category = {
+      name: transifex(legend),
+      y: hasSubcategories ? sumOfSubcategories : data[id],
+      color,
+    };
+
+    categoriesData.data.push(category);
+  });
+
+  pieChartsData.push(categoriesData);
+
+  if (hasSubcategories) {
+    pieChartsData.push(subCategoriesData);
+  }
 
   const renderChart = (divRef) => {
     Highcharts.chart({
@@ -28,24 +97,16 @@ function Chart({ data, chartLabels, hideChartLabels }) {
         enabled: false,
       },
       tooltip: {
-        pointFormat: '{point.y}<br>{point.percentage:.1f} %',
+        pointFormat: '{point.percentage:.2f} %',
       },
       plotOptions: {
         pie: {
-          allowPointSelect: true,
+          allowPointSelect: !hasSubcategories,
           cursor: 'pointer',
-          dataLabels: {
-            enabled: !hideChartLabels,
-            format: '<b>{point.legend}</b>:<br>{point.percentage:.1f} %',
-          },
+          dataLabels,
         },
       },
-      series: [
-        {
-          colorByPoint: true,
-          data: pieChartData,
-        },
-      ],
+      series: [...pieChartsData],
     });
   };
 

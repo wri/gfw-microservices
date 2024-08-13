@@ -244,6 +244,7 @@ class Map extends Component {
     const esriMap = new EsriMap();
 
     const queryParams = getQueryParams(this.props.location.search);
+
     const { latitude, longitude, zoom } = queryParams;
 
     esriMap.add(

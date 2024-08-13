@@ -1,8 +1,4 @@
 import React, { Component } from 'react';
-import ReactTable from 'react-table';
-import cloneDeep from 'lodash/cloneDeep';
-import Popover from 'material-ui/Popover';
-import Menu from 'material-ui/Menu';
 import Paper from '@mui/material/Paper';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Button from 'common/js/components/Button';
@@ -19,6 +15,7 @@ import IconGlobeAmericas from 'common/js/components/icon/IconGlobeAmericas';
 import getUserLocationDataFromAPI from '../getUserLocationDataFromAPI';
 import filterListData from '../filterListData';
 import Filter from './Filter';
+import WrappedDataGrid from './WrappedDataGrid';
 import {
   filterValidCustom,
   filterValidTemplates,
@@ -38,7 +35,6 @@ import {
   updateFilteredData,
   updateListData,
   updateListLevelAnalysis,
-  updateSelectedAndVisibleLocations,
   updateSelectedLocations,
 } from '../../../../../locations/js/actions/locationActions';
 import LocationsSummary from './LocationsSummary';
@@ -83,7 +79,6 @@ import {
   getDialogTitle,
 } from '../../../../../locations/js/utils/dialogMessage.utils';
 import { deleteAllFilteredLocations } from '../deleteAllFilteredLocations';
-import columns from '../../../config/columns';
 import { isUserList } from '../../../../../common/js/utils/gfw.utils';
 import ChangeTypeOfAnalysisModal from '../../../../../locations/js/components/landing/listItem/ChangeTypeOfAnalysisModal';
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
@@ -102,7 +97,6 @@ import getAllColumnNames from '../getAllColumnNames';
 // STYLE
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
-import '../../../../../locations/css/react-table.scss';
 import './ListDetails.scss';
 
 const transifex = Transifex.live.translateText;
@@ -124,9 +118,8 @@ export default class ListDetails extends Component {
       hideTitle: true,
       listColumns: [],
       combinedColumns: [],
-      openFlagMenu: false,
+
       openCountriesPopover: false,
-      flagMenuInfo: {},
       dialogOpen: false,
       rerunDialogState: false,
       currentAdminAreas: [], // adminAreas
@@ -146,7 +139,7 @@ export default class ListDetails extends Component {
       page: 0,
       numberOfPages: 1,
       maximumAnalysisAreaInTheList: defaultMaximumAreaSizeForLocationsFilter,
-      allLocationsSelected: false,
+      isEveryRowSelected: false,
       filterValues: [],
       tableSortedBy: 'Investment Name',
       tableSortedDesc: false,
@@ -189,7 +182,6 @@ export default class ListDetails extends Component {
       });
     }
     store.dispatch(updateSelectedLocations([]));
-    store.dispatch(updateSelectedAndVisibleLocations([]));
   }
 
   // When a list is selected update state
@@ -236,7 +228,7 @@ export default class ListDetails extends Component {
       // if we didn't have a list selected and now we do
       // or we have selected a different list
       this.clearFilters();
-      this.setState({ allLocationsSelected: false, filterValues: [] });
+      this.setState({ isEveryRowSelected: false, filterValues: [] });
 
       if (isUserList(selectedLists[0])) {
         getListFilterValues(selectedLists[0].id).then((filterValues) => {
@@ -275,16 +267,6 @@ export default class ListDetails extends Component {
       return val.toString() !== locationsPage.defaultFilterValues[filterName].toString();
     }
     return val !== locationsPage.defaultFilterValues[filterName];
-  };
-
-  // Create Flag component to add/remove flags for a location
-  createFlagList = (column, index) => {
-    return (
-      <div className="flag" key={index}>
-        <input id={`flag-${index}`} type="checkbox" />
-        <label htmlFor={`flag-${index}`}>{column.name}</label>
-      </div>
-    );
   };
 
   showDialogEdit = () => {
@@ -326,41 +308,17 @@ export default class ListDetails extends Component {
     }
   };
 
-  // Update flags that are selected/unselected
-  updateFlag = () => {
-    this.closeFlagMenu();
-  };
-
   // Update how many locations are selected
-  searchLocations = (location_id) => {
+  setLocationCheckbox = (selectedLocationIds) => {
     const { selectedLocations, selectedAndVisibleLocations } = this.props;
-    const { filterString, allLocationsSelected } = this.state;
-    const index = selectedLocations.indexOf(location_id);
-    const tempLocations = selectedLocations.slice();
+    const { filterString, isEveryRowSelected } = this.state;
 
-    if (allLocationsSelected) {
-      this.setState({ allLocationsSelected: false });
+    if (isEveryRowSelected) {
+      this.setState({ isEveryRowSelected: false });
     }
 
-    if (index > -1) {
-      tempLocations.splice(index, 1);
-    } else {
-      tempLocations.push(location_id);
-    }
-
-    this.getSearchedLocations(filterString, tempLocations);
-    store.dispatch(updateSelectedLocations(tempLocations));
-
-    if (selectedAndVisibleLocations.includes(location_id)) {
-      const removeLocationID = selectedAndVisibleLocations.filter((item) => item !== location_id);
-      store.dispatch(updateSelectedAndVisibleLocations(removeLocationID));
-    } else {
-      const selectedAndVisibleLocationsClone = cloneDeep(selectedAndVisibleLocations);
-      selectedAndVisibleLocationsClone.push(location_id);
-      store.dispatch(
-        updateSelectedAndVisibleLocations(selectedAndVisibleLocationsClone.sort((a, b) => a - b))
-      );
-    }
+    this.getSearchedLocations(filterString, selectedLocationIds);
+    store.dispatch(updateSelectedLocations(selectedLocationIds));
 
     gtag('event', 'Location checkbox clicked', {
       event_category: 'List View Click',
@@ -368,23 +326,22 @@ export default class ListDetails extends Component {
     });
   };
 
-  // Select all locations in a list
-  addAllSelectedLocations = (evt) => {
+  selectAllLocations = (evt) => {
     const { selectedLocations, filteredData, filteredLocationData } = this.props;
     const { listFilteredLocations } = this.state;
-    const allLocationsSelected = evt.target.checked;
+    const isEveryRowSelected = evt.target.checked;
     this.setState({
-      allLocationsSelected,
+      isEveryRowSelected,
       isLoading: true,
     });
 
     if (
-      (!allLocationsSelected && selectedLocations.length === filteredData.length) ||
+      (!isEveryRowSelected && selectedLocations.length === filteredData.length) ||
       (selectedLocations.length === listFilteredLocations.length &&
         listFilteredLocations.length !== 0)
     ) {
       store.dispatch(updateSelectedLocations([]));
-      store.dispatch(updateSelectedAndVisibleLocations([]));
+
       gtag('event', 'Location checkbox clicked', {
         event_category: 'List View Click',
         event_label: 'user unchecked all locations in the list',
@@ -395,7 +352,7 @@ export default class ListDetails extends Component {
           ? listFilteredLocations.map((v) => v.location_id)
           : filteredLocationData.map((v) => v.location_id);
       store.dispatch(updateSelectedLocations(locationIDs));
-      store.dispatch(updateSelectedAndVisibleLocations(locationIDs));
+
       gtag('event', 'Location checkbox clicked', {
         event_category: 'List View Click',
         event_label: 'user checked all locations in the list',
@@ -494,7 +451,7 @@ export default class ListDetails extends Component {
     // clear the custom dialog buttons
     this.setState({ dialogActions: null, isLoading: true });
     const { selectedLists, selectedLocations } = this.props;
-    const { allLocationsSelected } = this.state;
+    const { isEveryRowSelected } = this.state;
 
     if (!selectedLists.length || !selectedLocations.length) {
       console.warn('Attempting to delete locations without selecting any');
@@ -502,7 +459,7 @@ export default class ListDetails extends Component {
     }
 
     // If we are deleting all locations...
-    if (allLocationsSelected) {
+    if (isEveryRowSelected) {
       this.deleteList(selectedLists);
       return;
     }
@@ -637,7 +594,7 @@ export default class ListDetails extends Component {
       selectedNewOrExisting,
       selectedListMove,
       isSaveAsDraft,
-      allLocationsSelected,
+      isEveryRowSelected,
     } = this.state;
 
     if (!selectedLists.length || !selectedLocations.length) {
@@ -700,7 +657,7 @@ export default class ListDetails extends Component {
           templateData: listTemplateFields,
           saveAsDraft: isSaveAsDraft,
           gfwListId: gfw_list_id,
-          allLocationsSelected,
+          isEveryRowSelected,
           filters: myFilters,
         };
 
@@ -898,15 +855,15 @@ export default class ListDetails extends Component {
   getCheckboxColumn = () => {
     return {
       Header: () => {
-        const { allLocationsSelected } = this.state;
+        const { isEveryRowSelected } = this.state;
         return (
           <div className="column-checkbox-container">
             <input
               id="column-checkbox-all"
               className="column-checkbox"
               type="checkbox"
-              checked={allLocationsSelected}
-              onChange={this.addAllSelectedLocations}
+              checked={isEveryRowSelected}
+              onChange={this.selectAllLocations}
             />
             <label htmlFor="column-checkbox-all" className="column-checkbox" />
           </div>
@@ -928,7 +885,7 @@ export default class ListDetails extends Component {
               id={`list${cellProps.original.list_id}-location${cellProps.original.location_id}`}
               className="column-checkbox"
               checked={selectedLocations.indexOf(cellProps.original.location_id) !== -1}
-              onChange={() => this.searchLocations(cellProps.original.location_id)}
+              onChange={() => this.setLocationCheckbox(cellProps.original.location_id)}
               type="checkbox"
             />
             <label
@@ -1026,7 +983,7 @@ export default class ListDetails extends Component {
    */
   processListData = (listData, locationNameForGFW, userLocation) => {
     const { selectedLists, listView, userListInfoFromMap } = this.props;
-    const { allLocationsSelected } = this.state;
+    const { isEveryRowSelected } = this.state;
     const { list_analysis, location_analyses } = listData;
 
     if (isAnalyzingStatus(selectedLists[0]?.list_status_id)) {
@@ -1052,7 +1009,7 @@ export default class ListDetails extends Component {
         store.dispatch(updateFilteredData(filteredIds));
         store.dispatch(updateListLevelAnalysis(list_analysis));
 
-        if (allLocationsSelected) {
+        if (isEveryRowSelected) {
           store.dispatch(updateSelectedLocations(filteredIds));
         }
 
@@ -1238,12 +1195,12 @@ export default class ListDetails extends Component {
 
   editList = () => {
     const { selectedLists, currentUser, selectedLocations } = this.props;
-    const { allLocationsSelected, numberOfPages } = this.state;
+    const { isEveryRowSelected, numberOfPages } = this.state;
     const selectedList = selectedLists[0];
     if (selectedList.user_id) {
       // if all locations where selected and there is more than one page
       // follow large list editing workflow
-      if (allLocationsSelected && numberOfPages > 1) {
+      if (isEveryRowSelected && numberOfPages > 1) {
         this.setState({
           displayLargeListEditingModal: true,
         });
@@ -1325,7 +1282,7 @@ export default class ListDetails extends Component {
       filteredLocationData,
       userSharedLists,
     } = this.props;
-    const { filterString, combinedColumns, allLocationsSelected } = this.state;
+    const { filterString, combinedColumns, isEveryRowSelected } = this.state;
     let locationIds = [];
 
     const gfwList = selectedLists[0]?.globalForestWatchList ? selectedLists[0]?.list_name : false;
@@ -1422,7 +1379,7 @@ export default class ListDetails extends Component {
       listId: selectedLists[0].id,
       isGfwList,
       isSharedList,
-      selectedLocations: allLocationsSelected || showFullListMap ? [] : locationIds,
+      selectedLocations: isEveryRowSelected || showFullListMap ? [] : locationIds,
     };
 
     redirectToMap(sendData);
@@ -1574,13 +1531,6 @@ export default class ListDetails extends Component {
     gtag('event', 'update button click', {
       event_category: 'List',
       event_label: 'user clicked on the ok button in the modal window to confirm updating the list',
-    });
-  };
-
-  // Flag close function
-  closeFlagMenu = () => {
-    this.setState({
-      openFlagMenu: false,
     });
   };
 
@@ -1835,7 +1785,7 @@ export default class ListDetails extends Component {
       filteredLocationData,
       filters,
       folders,
-      history,
+
       listData,
       listView,
       selectedLists,
@@ -1850,10 +1800,9 @@ export default class ListDetails extends Component {
 
     const {
       anchorElCountries,
-      anchorElFlag,
+
       bannerContent,
       combinedColumns,
-      currentAdminAreas,
       currentFolder,
       dialogActions,
       dialogChildren,
@@ -1870,23 +1819,21 @@ export default class ListDetails extends Component {
       filterString,
       listNotAccessible,
       openCountriesPopover,
-      openFlagMenu,
-      pAreas,
+
       refreshPage,
       rerunDialogState,
       selectedMoveOrCopy,
       selectedNewOrExisting,
       newListName,
       showSubmitModal,
-      numberOfPages,
-      maximumAnalysisAreaInTheList,
+
       page,
       tableSortedBy,
       tableSortedDesc,
       numberOfResults,
       displayLargeListEditingModal,
       visibleColumns,
-      allLocationsSelected,
+      isEveryRowSelected,
       isListSubmittedForAnalysis,
     } = this.state;
 
@@ -1902,7 +1849,7 @@ export default class ListDetails extends Component {
       selectedList.custom_attribute_names.length > 0
         ? selectedList.custom_attribute_names.split(',')
         : [];
-    const flagOptions = columns.flags.map(this.createFlagList);
+
     const listName = selectedList ? selectedList.list_name : '';
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
 
@@ -1999,59 +1946,6 @@ export default class ListDetails extends Component {
       return selectedLocation[0].location_status_id === listStatus.Active;
     };
 
-    const [REACT_TABLE__LOCATION_NAME] = cloneDeep(columns.react_table__location_name);
-
-    let reactTableOptions = {
-      data: filteredLists,
-      columns: tableColumns,
-      defaultPageSize: 50,
-      previousText: transifex('Previous'),
-      nextText: transifex('Next'),
-      pageText: transifex('Page'),
-      getTheadProps: this.setHeaderProps,
-      getTrProps: this.setRowProps,
-      pageSizeOptions: [50],
-      minRows: 0,
-      disableMultiSort: true,
-      defaultSorted: [
-        {
-          id: REACT_TABLE__LOCATION_NAME.id,
-          desc: false,
-        },
-      ],
-    };
-    // settings for displaying a paginated user list
-    if (isUserList(selectedLists[0])) {
-      reactTableOptions = {
-        ...reactTableOptions,
-        showPageSizeOptions: false,
-        showPagination: true,
-        manual: true,
-        pages: numberOfPages,
-        page,
-        loading: isLoading,
-        sorted: [
-          {
-            id: tableSortedBy,
-            desc: tableSortedDesc,
-          },
-        ],
-        onPageChange: (pageIndex) => {
-          this.getUserLocationData(selectedLists[0].id, pageIndex);
-        },
-        onSortedChange: (newSorted, _column, _shiftKey) => {
-          this.setState(
-            {
-              tableSortedBy: newSorted[0].id,
-              tableSortedDesc: newSorted[0].desc,
-            },
-            () => {
-              this.getUserLocationData(selectedLists[0].id, page);
-            }
-          );
-        },
-      };
-    }
     const allDialogActions = dialogActions || (
       <Button
         className="dialog__primary-action"
@@ -2060,6 +1954,9 @@ export default class ListDetails extends Component {
         onClick={() => this.handleDialogClose(refreshPage)}
       />
     );
+
+    const pageSize = 50;
+
     return (
       <div className="list-details">
         {!isGfwList && (
@@ -2093,7 +1990,7 @@ export default class ListDetails extends Component {
                 newListName={newListName}
                 isNewListNameDuplicate={isNewListNameDuplicate}
                 selectedLists={selectedLists}
-                locationsCount={allLocationsSelected ? numberOfResults : selectedLocations.length}
+                locationsCount={isEveryRowSelected ? numberOfResults : selectedLocations.length}
                 selectedMoveOrCopy={selectedMoveOrCopy}
                 selectedNewOrExisting={selectedNewOrExisting}
                 setMoveOrCopy={this.setMoveOrCopy}
@@ -2141,50 +2038,45 @@ export default class ListDetails extends Component {
 
         <section className="locations-body list-detail-page">
           {selectedList && (
-            <>
-              <Stack
-                className="main-panel"
-                sx={{ marginBottom: '15px' }}
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <div>
-                  <Stack alignItems="center" direction="row">
-                    <a href="/locations">
-                      <ArrowBackIcon
-                        sx={{
-                          color: 'black',
-                          marginRight: '10px',
-                          fontSize: '25px',
-                          marginTop: '3px',
-                        }}
-                      />
-                    </a>
-                    <span style={{ fontSize: '25px', textTransform: 'capitalize' }}>
-                      {listName}
-                    </span>
-                  </Stack>
-                </div>
-                <LocationsSummary
-                  anchorElCountries={anchorElCountries}
-                  closeCountriesPopover={this.closeCountriesPopover}
-                  countries={countries}
-                  filteredLists={filteredLists}
-                  filterValues={filterValues}
-                  listLocationsCount={numberOfResults}
-                  listName={listName}
-                  openCountriesPopover={openCountriesPopover}
-                  selectedList={selectedList}
-                  shareView={shareView}
-                  toggleCountriesPopover={this.toggleCountriesPopover}
-                />
-              </Stack>
-            </>
+            <Stack
+              sx={{ marginBottom: '15px', margin: 'auto', maxWidth: '100%' }}
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <div>
+                <Stack alignItems="center" direction="row">
+                  <a href="/locations">
+                    <ArrowBackIcon
+                      sx={{
+                        color: 'black',
+                        marginRight: '10px',
+                        fontSize: '25px',
+                        marginTop: '3px',
+                      }}
+                    />
+                  </a>
+                  <span style={{ fontSize: '25px', textTransform: 'capitalize' }}>{listName}</span>
+                </Stack>
+              </div>
+              <LocationsSummary
+                anchorElCountries={anchorElCountries}
+                closeCountriesPopover={this.closeCountriesPopover}
+                countries={countries}
+                filteredLists={filteredLists}
+                filterValues={filterValues}
+                listLocationsCount={numberOfResults}
+                listName={listName}
+                openCountriesPopover={openCountriesPopover}
+                selectedList={selectedList}
+                shareView={shareView}
+                toggleCountriesPopover={this.toggleCountriesPopover}
+              />
+            </Stack>
           )}
 
           <div className="flex-grid">
-            <section className="main-panel">
+            <section className="list-details-container">
               {/* Shared lists view */}
               {shareView ? (
                 <>
@@ -2286,7 +2178,7 @@ export default class ListDetails extends Component {
                             combinedColumns={visibleColumns}
                             selectedLocations={selectedLocations}
                             currentUser={currentUser}
-                            allLocationsSelected={allLocationsSelected}
+                            isEveryRowSelected={isEveryRowSelected}
                             listView={listView}
                             isLoading={(loading) => {
                               this.setState({ isLoading: loading });
@@ -2382,10 +2274,56 @@ export default class ListDetails extends Component {
                           {filteredLists.length > 0 &&
                           listView !== '' &&
                           filteredLocationData.length > 0 ? (
-                            <ReactTable
-                              className={`-striped -highlight notranslate lists-react-table table__${listView}`}
-                              {...reactTableOptions}
-                            />
+                            <>
+                              <WrappedDataGrid
+                                filteredLists={filteredLists}
+                                visibleColumns={visibleColumns}
+                                numberOfResults={numberOfResults}
+                                page={page}
+                                pageSize={pageSize}
+                                onPaginationModelChange={({ page }) => {
+                                  this.getUserLocationData(selectedLists[0].id, page);
+                                }}
+                                tableSortedBy={tableSortedBy}
+                                tableSortedDesc={tableSortedDesc}
+                                onSortModelChange={(newSortModel) => {
+                                  if (newSortModel.length) {
+                                    const [{ field, sort }] = newSortModel;
+
+                                    this.setState(
+                                      {
+                                        tableSortedBy: field || 'Investment Name',
+                                        tableSortedDesc: sort === 'desc',
+                                      },
+                                      () => {
+                                        this.getUserLocationData(selectedLists[0].id, page);
+                                      }
+                                    );
+                                  } else {
+                                    this.setState(
+                                      {
+                                        tableSortedBy: 'Investment Name',
+                                        tableSortedDesc: false,
+                                      },
+                                      () => {
+                                        this.getUserLocationData(selectedLists[0].id, page);
+                                      }
+                                    );
+                                  }
+                                }}
+                                selectionModel={this.props.selectedLocations}
+                                onSelectionModelChange={(newSelection) => {
+                                  this.setLocationCheckbox(newSelection);
+
+                                  const isEveryRowSelected = newSelection.length === pageSize;
+
+                                  // Update allSelected state if it changes
+                                  if (this.state.isEveryRowSelected !== isEveryRowSelected) {
+                                    this.selectAllLocations(isEveryRowSelected);
+                                  }
+                                }}
+                              />
+                            </>
                           ) : null}
                         </section>
                       </Paper>
@@ -2396,20 +2334,6 @@ export default class ListDetails extends Component {
             </section>
           </div>
         </section>
-        <Popover
-          open={openFlagMenu}
-          anchorEl={anchorElFlag}
-          anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
-          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-          onRequestClose={this.closeFlagMenu}
-        >
-          <Menu>
-            <div>
-              {flagOptions}
-              <Button variant="primary" onClick={this.updateFlag} label="Save" />
-            </div>
-          </Menu>
-        </Popover>
 
         {displayLargeListEditingModal && (
           <LargeListEditing

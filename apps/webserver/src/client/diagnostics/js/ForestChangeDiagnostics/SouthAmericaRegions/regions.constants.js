@@ -135,6 +135,7 @@ export const chartDatasetConfigs = {
         legend: 'Indigenous Territories',
         color: 'rgb(146,37,100)',
         checked: true,
+        preview: true,
       },
     ],
   },
@@ -205,34 +206,43 @@ export const chartDatasetConfigs = {
   },
 };
 
+const colombianSubcategories = [
+  {
+    id: 'Non Conditioned',
+    legend: 'Non Conditioned',
+    color: '#0D642E',
+    subCategoryColor: '#299A4C',
+  },
+  {
+    id: 'Conditioned',
+    legend: 'Conditioned',
+    color: '#DC8832',
+    subCategoryColor: '#D5A65A',
+  },
+  {
+    id: 'Restrictions',
+    legend: 'Restrictions',
+    color: '#2438AE',
+    subCategoryColor: '#4B87D5',
+  },
+];
+
 export const chartDatasetConfigsColombia = {
   classifiedRegionTreeCoverLoss: {
     id: 'colombianTreeCoverLoss',
     dataCy: 'colombian-tree-cover-loss',
-    chartsSelectorTitle: 'Classified Region',
+    chartsSelectorTitle: 'National Agricultural Frontier',
     dataPath: 'classified_region.tree_cover_loss',
     dateRange: { startYear: 2008, endYear: 2023 },
     infoBubbleId: 'regions_col_deforestation',
-    types: [
-      {
-        id: 'nonConditioned',
-        name: 'Non Conditioned',
-        legend: 'Non Conditioned',
-        color: 'rgb(34,153,102)',
-      },
-      {
-        id: 'conditioned',
-        name: 'Conditioned',
-        legend: 'Conditioned',
-        color: 'rgb(255,165,0)',
-      },
-      {
-        id: 'restrictions',
-        name: 'Restrictions',
-        legend: 'Restrictions',
-        color: 'rgb(0,0,265)',
-      },
-    ],
+    subCategories: [...colombianSubcategories],
+  },
+  classifiedRegionOverlap: {
+    id: 'colombianClassifiedRegionOverlap',
+    dataCy: 'colombian-classified-region-overlap',
+    chartsSelectorTitle: 'National Agricultural Frontier Overlap',
+    dataPath: 'classified_region.overlap',
+    subCategories: [...colombianSubcategories],
   },
   protectedAreasTreeCoverLoss: {
     id: 'protectedAreas',

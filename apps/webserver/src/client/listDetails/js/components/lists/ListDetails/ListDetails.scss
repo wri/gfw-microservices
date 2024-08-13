@@ -3,6 +3,12 @@ body:has(.list-details) {
   background-color: #e5e5e5;
 }
 
+.list-details-container {
+  overflow: auto;
+  margin: auto;
+  width: 100%;
+}
+
 .list-analysis-actions {
   display: flex;
   justify-content: space-between;

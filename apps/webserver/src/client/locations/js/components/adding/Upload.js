@@ -50,12 +50,25 @@ export default class Upload extends Component {
           }
         });
       } else {
-        const geom = geomFromLatLongRadiusArea(
-          feature.Latitude,
-          feature.Longitude,
-          feature['Analysis Radius'],
-          feature['Analysis Area']
-        );
+        const getGeomFromLatLongRadiusArea = () => {
+          try {
+            return geomFromLatLongRadiusArea(
+              feature.Latitude,
+              feature.Longitude,
+              feature['Analysis Radius'],
+              feature['Analysis Area']
+            );
+          } catch (error) {
+            this.setState({
+              isUploading: false,
+              dialogOpen: true,
+              dialogTitle: 'CSV Parsing Error',
+              dialogMessage: error.message,
+            });
+          }
+        };
+
+        const geom = getGeomFromLatLongRadiusArea();
 
         this.props.setGeometry(geom);
         this.setState({

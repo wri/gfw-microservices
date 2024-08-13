@@ -107,7 +107,7 @@ export class InsertLocationData extends AbstractHandler<ChainType> {
       analysisTable,
       listStatusId,
       analysisIds,
-    } = data.request;
+    } = input.request;
 
     const queryCreateTableResult = await this.getTableStructureQuery(templateId);
     const connection = new SQLUtils(sqlConfig);

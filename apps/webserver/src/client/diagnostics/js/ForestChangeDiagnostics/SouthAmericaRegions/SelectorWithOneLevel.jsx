@@ -13,7 +13,7 @@ export function SelectorWithOneLevel({
   selectedOptionId,
   onOptionChange,
   chartsConfiguration,
-  updateCheckedLabels,
+  onCheckedLabelsUpdate,
   countryPieChartsData,
   showTotalLoss = false,
 }) {
@@ -94,7 +94,7 @@ export function SelectorWithOneLevel({
                               checked={checked} // Keep checked if there's only one chartLabel
                               onChange={(e) => {
                                 const isChecked = e.target.checked;
-                                updateCheckedLabels(optionId, id, isChecked);
+                                onCheckedLabelsUpdate(optionId, id, isChecked);
                               }}
                               sx={{
                                 padding: 0,

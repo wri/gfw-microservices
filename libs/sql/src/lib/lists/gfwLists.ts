@@ -254,8 +254,8 @@ export class GfwLists {
         }
         return {
           ...filteredRecord,
-          id: record.id_in_list,
-          location_id: record.location_id_in_list,
+          id: record.id,
+          location_id: record.id,
         };
       });
       const omitFields = (record: any, fields: string[]): any => {

@@ -910,7 +910,7 @@ module.exports = (app, limiter) => {
       ).then((result) => {
           const { listData, protectedLocationResult } = result;
           const location_ids = listData.map((item) => item.location_id);
-          AnalysisManager.getAnalysisDataForGFWList(req, location_ids)
+          AnalysisManager.getAnalysisDataForGFWList(req, listID,location_ids)
             .then((protectedLocationAnalysisResult) => {
               const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
               res.send({

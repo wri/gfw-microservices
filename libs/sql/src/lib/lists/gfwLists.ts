@@ -6,8 +6,9 @@ import {
   AnalysisPalmOilMills,
   RspoOilPalmConcessions,
   ListOilPalmConcessions,
+  ListProtectedAreas,
 } from '../entity';
-import { In } from 'typeorm';
+import { Raw } from 'typeorm';
 
 const ANALYSYS_TABLE_NAMES = {
   'analysis-palmOilMills': AnalysisPalmOilMills,
@@ -45,7 +46,9 @@ export class GfwLists {
         // If ids array is not empty, apply the where clause
         [items, count] = await listRepository.findAndCount({
           where: {
-            id: In([...ids]),
+            id: Raw((alias) => `${alias} IN (:...names)`, {
+              names: ids,
+            }),
           },
           skip,
           take,
@@ -97,9 +100,11 @@ export class GfwLists {
 
       if (ids.length > 0) {
         // If ids array is not empty, apply the where clause
-        [items, count] = await listRepository.findAndCount({
+        let result = await listRepository.findAndCount({
           where: {
-            location_id: In([...ids]),
+            location_id: Raw((alias) => `${alias} IN (:...names)`, {
+              names: ids,
+            }),
           },
           skip,
           take,
@@ -107,6 +112,7 @@ export class GfwLists {
             location_id: 'DESC',
           },
         });
+        items = result;
       } else {
         [items, count] = await listRepository.findAndCount({
           skip,
@@ -143,19 +149,6 @@ export class GfwLists {
     }
   }
 
-  private mapObjectToColumnNames(inputArray: any[], COLUMN_NAMES: any): any {
-    return inputArray.map((inputObject) => {
-      const mappedObject: any = {};
-
-      for (const [key, columnName] of Object.entries(COLUMN_NAMES)) {
-        if (key in inputObject) {
-          mappedObject[`${columnName}`] = inputObject[key];
-        }
-      }
-
-      return mappedObject;
-    });
-  }
   async getPaginatedTable(
     pageNum: number,
     pageSize: number,
@@ -170,5 +163,118 @@ export class GfwLists {
       []
     );
     return result;
+  }
+  async getPaginatedAnalysisDataForProtectedAreas(
+    list_id,
+    pageNum,
+    pageSize,
+    organizationDatabase,
+    filters
+  ) {
+    let where: any = {};
+    let locationNameArray = [];
+    if (typeof filters != 'undefined') {
+      if (filters.selectedCountry && filters.selectedCountry !== '') {
+        where['Country'] = filters.selectedCountry;
+      }
+      if (filters.selectedState && filters.selectedState !== '') {
+        where['State'] = filters.selectedState;
+      }
+      if (filters.selectedSubState && filters.selectedSubState !== '') {
+        where['Sub State'] = filters.selectedSubState;
+      }
+      if (filters.selectedDesignation && filters.selectedDesignation !== '') {
+        where['Designation'] = filters.selectedDesignation;
+      }
+      if (filters.selectedDesignationType && filters.selectedDesignationType !== '') {
+        where['Designation Type'] = filters.selectedDesignationType;
+      }
+      if (filters.selectedIUCN) {
+        where['IUCN CAT'] = filters.selectedIUCN;
+      }
+      if (filters.selectedNames.length > 0) {
+        locationNameArray = filters.selectedNames;
+      }
+    }
+    const skip = pageNum > 0 ? (pageNum - 1) * pageSize : 0;
+    const take = pageSize === 0 ? 50 : pageSize;
+    try {
+      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const analysisDataRepository = await connection.getRepository(ListProtectedAreas);
+      let items, count;
+      if (locationNameArray.length > 0) {
+        [items, count] = await analysisDataRepository.findAndCount({
+          where: {
+            ...where,
+            LocationName: Raw((alias) => `${alias} IN (:...names)`, {
+              names: locationNameArray,
+            }),
+          },
+          skip,
+          take,
+          order: {
+            id: 'DESC',
+          },
+        });
+      } else {
+        [items, count] = await analysisDataRepository.findAndCount({
+          where,
+          skip,
+          take,
+          order: {
+            id: 'DESC',
+          },
+        });
+      }
+      const itemsWithListId = items.map((item) => {
+        return { ...item, 'Location Name': item.LocationName };
+      });
+      const listDataFields = [
+        'Country',
+        'Designation',
+        'Designation Type',
+        'IUCN CAT',
+        'Latitude',
+        'Location Classification',
+        'Location Name',
+        'Longitude',
+        'Size',
+        'State',
+        'Sub State',
+        'gadmid',
+        'globalid',
+        'id_in_list',
+        'location_id_in_list',
+      ];
+
+      const listData = itemsWithListId.map((record) => {
+        const filteredRecord = {};
+        for (const field of listDataFields) {
+          filteredRecord[field] = record[field];
+        }
+        return {
+          ...filteredRecord,
+          id: record.id_in_list,
+          location_id: record.location_id_in_list,
+        };
+      });
+      const omitFields = (record: any, fields: string[]): any => {
+        const filteredRecord: any = {};
+        for (const field in record) {
+          if (!fields.includes(field)) {
+            filteredRecord[field] = record[field];
+          }
+        }
+        return filteredRecord;
+      };
+
+      const protectedLocationResult = itemsWithListId.map((record) => {
+        return omitFields(record, listDataFields);
+      });
+
+      return { listData, protectedLocationResult, count };
+    } catch (error) {
+      throw new InternalServerErrorException('Error getAnalysisDataForGFWList', error.message);
+    }
   }
 }

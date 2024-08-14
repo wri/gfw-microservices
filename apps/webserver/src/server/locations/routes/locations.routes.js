@@ -899,19 +899,48 @@ module.exports = (app, limiter) => {
       selectedIUCN,
       selectedNames,
     };
-
-    AnalysisManager.getAnalysisDataForProtectedAreas(req, listID, filters)
-      .then(({ listData, protectedLocationResult }) => {
-        const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
-        res.send({
-          list_analysis: [],
-          location_analyses: [listDataSalted, protectedLocationResult],
+    const { isGFWList, pageNum = 0, pageSize = 50 } = req.body;
+    if (isGFWList) {
+      AnalysisManager.getPaginatedAnalysisDataForProtectedAreas(
+        listID,
+        pageNum,
+        pageSize,
+        config.SQLConnection.database,
+        filters
+      ).then((result) => {
+          const { listData, protectedLocationResult } = result;
+          const location_ids = listData.map((item) => item.location_id);
+          AnalysisManager.getAnalysisDataForGFWList(req, location_ids)
+            .then((protectedLocationAnalysisResult) => {
+              const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
+              res.send({
+                list_analysis: [],
+                location_analyses: [listDataSalted, protectedLocationAnalysisResult],
+              });
+            })
+            .catch((err) => {
+              console.log('Error /getProtectedAreasData', err);
+              res.send(err);
+            });
+        })
+        .catch((err) => {
+          console.log('Error /getProtectedAreasData', err);
+          res.send(err);
         });
-      })
-      .catch((err) => {
-        console.log('Error /getProtectedAreasData', err);
-        res.send(err);
-      });
+    } else {
+      AnalysisManager.getAnalysisDataForProtectedAreas(req, listID, filters)
+        .then(({ listData, protectedLocationResult }) => {
+          const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
+          res.send({
+            list_analysis: [],
+            location_analyses: [listDataSalted, protectedLocationResult],
+          });
+        })
+        .catch((err) => {
+          console.log('Error /getProtectedAreasData', err);
+          res.send(err);
+        });
+    }
   });
 
   app.post('/locations/getGFWListLocationsGlobalId', (req, res) => {

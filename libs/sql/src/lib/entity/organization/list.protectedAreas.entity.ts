@@ -6,7 +6,7 @@ export class ListProtectedAreas {
   id: number;
 
   @Column({ name: 'Location Name' })
-  'Location Name': string;
+  LocationName: string;
 
   @Column({ name: 'Latitude' })
   Latitude: number;

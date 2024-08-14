@@ -40,7 +40,7 @@ export const proLayers = {
   indonesiaLegalClass: 'Indonesia Forest Area',
   indonesiaPeatLands: 'Indonesia Peat Lands',
   indonesiaLandCover: 'Indonesia Land Cover',
-  colombiaFronteraAgricola: 'Colombia - Frontera Agricola',
+  colombiaFronteraAgricola: 'Colombia - Frontera Agrícola',
   rspoPalmOilMills: 'rspo-palm-oil-mills',
 
   rspoConcessions: 'RSPO Concessions', // GFW list

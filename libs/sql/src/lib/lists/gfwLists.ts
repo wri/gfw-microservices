@@ -5,35 +5,10 @@ import {
   ListGFWLists,
   AnalysisPalmOilMills,
   RspoOilPalmConcessions,
+  ListOilPalmConcessions,
 } from '../entity';
 import { In } from 'typeorm';
-import { ListProtectedAreas } from '../entity/organization/list.protectedAreas.entity';
 
-const PALM_OIL_MILLS_COLUMN_NAMES = {
-  locationName: 'Location Name',
-  analysisRadius: 'Analysis Radius',
-  size: 'Size',
-  parentCompany: 'Parent Company',
-  companyId: 'Company ID',
-  certification: 'Certification',
-  rspoMode: 'RSPO Model',
-  latitude: 'Latitude',
-  longitude: 'Longitude',
-  locationClassification: 'Location Classification',
-  commodity: 'Commodity',
-  country: 'Country',
-  state: 'State',
-  subState: 'Sub State',
-  gadmId: 'gadmid',
-  groupName: 'Group Name',
-  millId: 'Mill ID',
-  alternativeName: 'Alternative Name',
-  errorFileStoragePath: 'Geometry',
-  vectorTilesLastUpdated: 'Geometry Simplified',
-  globalId: 'globalid',
-  locationId: 'location_id',
-  list_id: 'list_id',
-};
 const ANALYSYS_TABLE_NAMES = {
   'analysis-palmOilMills': AnalysisPalmOilMills,
 };
@@ -45,8 +20,8 @@ export class GfwLists {
   getAttributesListEntity(list_id: number): any {
     const ATTRIBUTES_LIST_TABLE = ListsPalmOilMills;
     const ATTRIBUTES_LIST_TABLE_NAMES = {
+      2: ListOilPalmConcessions,
       3: ListsPalmOilMills,
-      4: ListProtectedAreas,
       5: RspoOilPalmConcessions,
     };
     return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
@@ -70,7 +45,7 @@ export class GfwLists {
         // If ids array is not empty, apply the where clause
         [items, count] = await listRepository.findAndCount({
           where: {
-            id: In(ids),
+            id: In([...ids]),
           },
           skip,
           take,
@@ -94,9 +69,7 @@ export class GfwLists {
       const itemsWithListId = items.map((item) => {
         return { ...item, list_id };
       });
-      return list_id == 3
-        ? [this.mapObjectToColumnNames(itemsWithListId, PALM_OIL_MILLS_COLUMN_NAMES), count]
-        : [itemsWithListId, count];
+      return [itemsWithListId, count];
     } catch (error) {
       throw new InternalServerErrorException('Error deleting list', error.message);
     }
@@ -119,18 +92,19 @@ export class GfwLists {
       const take = pageSize === 0 ? 50 : pageSize;
       const skip = pageNum > 0 ? (pageNum - 1) * take : 0;
 
-      let items, count;
+      let items = [],
+        count = 0;
 
       if (ids.length > 0) {
         // If ids array is not empty, apply the where clause
         [items, count] = await listRepository.findAndCount({
           where: {
-            id: In(ids),
+            location_id: In([...ids]),
           },
           skip,
           take,
           order: {
-            id: 'DESC',
+            location_id: 'DESC',
           },
         });
       } else {
@@ -142,15 +116,14 @@ export class GfwLists {
           },
         });
       }
-      console.log('count', count);
       if (!items) {
         this.logger.error('ListsPalmOilMills: lists not found');
         throw new NotFoundException(`ListsPalmOilMills with list_id ${list_id} not found.`);
       }
       const itemsWithListId = items.map((item) => {
-        return { ...item, list_id: 3 };
+        return { ...item, list_id: list_id };
       });
-      return itemsWithListId;
+      return [itemsWithListId, count];
     } catch (error) {
       throw new InternalServerErrorException('Error getAnalysisDataForGFWList', error.message);
     }

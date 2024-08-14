@@ -6,7 +6,7 @@ export class ListsPalmOilMills {
   id: number;
 
   @Column({ name: 'location_id' })
-  locationId: number;
+  'location_id': number;
 
   @Column({ name: 'Location Name' })
   'Location Name': string;

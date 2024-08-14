@@ -238,7 +238,9 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
           chartLabels={wdpaOverlapCountry.chartLabels}
           title={wdpaOverlapCountry.diagnosticTitle}
           informationBubbleId={
-            country !== regionIds.COLOMBIA ? wdpaOverlapCountry.informationBubbleId : wdpaOverlapCountry.informationBubbleColId
+            country !== regionIds.COLOMBIA
+              ? wdpaOverlapCountry.informationBubbleId
+              : wdpaOverlapCountry.informationBubbleColId
           }
         />
       )}
@@ -249,7 +251,9 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
           chartLabels={landmarkOverlapCountry.chartLabels}
           title={landmarkOverlapCountry.diagnosticTitle}
           informationBubbleId={
-            country !== regionIds.COLOMBIA ? landmarkOverlapCountry.informationBubbleId : landmarkOverlapCountry.informationBubbleColId
+            country !== regionIds.COLOMBIA
+              ? landmarkOverlapCountry.informationBubbleId
+              : landmarkOverlapCountry.informationBubbleColId
           }
         />
       )}

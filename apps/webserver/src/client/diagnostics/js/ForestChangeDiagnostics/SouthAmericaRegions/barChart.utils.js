@@ -68,3 +68,25 @@ export function calculateTotalLossForAllCategories(obj, dateRange) {
   recursiveSum(obj);
   return sum;
 }
+
+export const updateCheckedLabelsForChartDatasetConfig = ({
+  optionId,
+  labelId,
+  isChecked,
+  options,
+}) => {
+  const updatedOptions = options.map((option) => {
+    if (option.id === optionId) {
+      const updatedChartLabels = option.chartLabels.map((label) => {
+        if (label.id === labelId) {
+          return { ...label, checked: isChecked };
+        }
+        return label;
+      });
+      return { ...option, chartLabels: updatedChartLabels };
+    }
+    return option;
+  });
+
+  return updatedOptions;
+};

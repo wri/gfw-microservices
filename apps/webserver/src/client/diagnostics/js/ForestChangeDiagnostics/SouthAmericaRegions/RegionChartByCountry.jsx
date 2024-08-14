@@ -16,7 +16,11 @@ import {
 } from './regions.constants';
 import { getBarChartData } from './getBarChartData';
 import { useQuery } from '../../../../common/js/hooks';
-import { getDataAndCheckIfAllYearsZero, addNoOverlapArea } from './barChart.utils';
+import {
+  getDataAndCheckIfAllYearsZero,
+  addNoOverlapArea,
+  updateCheckedLabelsForChartDatasetConfig,
+} from './barChart.utils';
 import '../../common/DiagnosticsChartContainer.scss';
 
 import { regionIds } from './regions.constants';
@@ -56,24 +60,15 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
     setDateRange(newDateRange);
   }
 
-  const updateCheckedLabels = (optionId, labelId, isChecked) => {
-    setChartsConfiguration((prevOptions) => {
-      // Capture the updated state in a separate variable
-      const updatedOptions = prevOptions.map((option) => {
-        if (option.id === optionId) {
-          const updatedChartLabels = option.chartLabels.map((label) => {
-            if (label.id === labelId) {
-              return { ...label, checked: isChecked };
-            }
-            return label;
-          });
-          return { ...option, chartLabels: updatedChartLabels };
-        }
-        return option;
-      });
-
-      return updatedOptions;
-    });
+  const handleCheckedLabelsUpdate = (optionId, labelId, isChecked) => {
+    setChartsConfiguration((prevOptions) =>
+      updateCheckedLabelsForChartDatasetConfig({
+        optionId,
+        labelId,
+        isChecked,
+        options: prevOptions,
+      })
+    );
   };
 
   useEffect(() => {
@@ -154,13 +149,13 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
 
   const showIndigenousTerritoriesPieChart =
     countryPieChartsData?.landmark && !countryPieChartsData?.landmark?.error;
-  const indigenousTerritoriesPieCharFormattedData = formatDecimals(
+  const indigenousTerritoriesPieChartFormattedData = formatDecimals(
     countryPieChartsData?.landmark?.overlap
   );
 
   const showClassifiedRegionOverlapPieChart =
     countryPieChartsData?.classified_region && !countryPieChartsData?.classified_region?.error;
-  const classifiedRegionOverlapPieCharFormattedData = formatDecimals(
+  const classifiedRegionOverlapPieChartFormattedData = formatDecimals(
     countryPieChartsData?.classified_region?.overlap
   );
 
@@ -192,7 +187,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
                 </div>
 
                 <ChartsSelectorArgentina
-                  updateCheckedLabels={updateCheckedLabels}
+                  onCheckedLabelsUpdate={handleCheckedLabelsUpdate}
                   chartsConfiguration={chartsConfiguration}
                   onOptionChange={setSelectedOptionId}
                   selectedOptionId={selectedOptionId}
@@ -227,7 +222,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
           />
           {showClassifiedRegionOverlapPieChart && (
             <PieChart
-              data={classifiedRegionOverlapPieCharFormattedData}
+              data={classifiedRegionOverlapPieChartFormattedData}
               chartLabels={chartDatasetConfigsColombia.classifiedRegionOverlap}
               title={chartDatasetConfigsColombia.classifiedRegionOverlap.chartsSelectorTitle}
               hasSubcategories
@@ -248,7 +243,7 @@ export function RegionChartByCountry({ listId, data, fireDownload, country }) {
       )}
       {showIndigenousTerritoriesPieChart && (
         <PieChart
-          data={indigenousTerritoriesPieCharFormattedData}
+          data={indigenousTerritoriesPieChartFormattedData}
           preview={true}
           chartLabels={landmarkOverlapCountry.chartLabels}
           title={landmarkOverlapCountry.diagnosticTitle}

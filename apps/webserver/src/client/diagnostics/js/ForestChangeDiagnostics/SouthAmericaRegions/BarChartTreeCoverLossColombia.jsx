@@ -7,6 +7,7 @@ import { SelectorWithOneLevel } from './SelectorWithOneLevel';
 import InfoIcon from 'material-ui/svg-icons/action/info';
 import { chartDatasetConfigsColombia, regionConstants } from './regions.constants';
 import { getBarChartData, getBarChartDataWithTwoLevels } from './getBarChartData';
+import { updateCheckedLabelsForChartDatasetConfig } from './barChart.utils';
 
 export function BarChartTreeCoverLossColombia({ rawBarChartData, isAllDataEmpty }) {
   const {
@@ -15,15 +16,15 @@ export function BarChartTreeCoverLossColombia({ rawBarChartData, isAllDataEmpty 
     indigenousTerritoriesTreeCoverLoss,
   } = chartDatasetConfigsColombia;
 
+  const [categoriesOneLevelBarChart, setCategoriesOneLevelBarChart] = useState([
+    protectedAreasTreeCoverLoss,
+    indigenousTerritoriesTreeCoverLoss,
+  ]);
+
   const [selectedOptionId, setSelectedOptionId] = useState(classifiedRegionTreeCoverLoss.id);
 
   const { startYear, endYear } = regionConstants;
   const dateRange = { startYear, endYear };
-
-  const categoriesOneLevelBarChart = [
-    protectedAreasTreeCoverLoss,
-    indigenousTerritoriesTreeCoverLoss,
-  ];
 
   let barChartData = [];
 
@@ -39,6 +40,17 @@ export function BarChartTreeCoverLossColombia({ rawBarChartData, isAllDataEmpty 
     );
     barChartData = getBarChartData(rawBarChartData, dateRange, chartConfiguration.chartLabels);
   }
+
+  const handleCheckedLabelsUpdate = (optionId, labelId, isChecked) => {
+    setCategoriesOneLevelBarChart((prevOptions) =>
+      updateCheckedLabelsForChartDatasetConfig({
+        optionId,
+        labelId,
+        isChecked,
+        options: prevOptions,
+      })
+    );
+  };
 
   return (
     <Card>
@@ -89,7 +101,7 @@ export function BarChartTreeCoverLossColombia({ rawBarChartData, isAllDataEmpty 
                   selectedOptionId={selectedOptionId}
                   onOptionChange={setSelectedOptionId}
                   chartsConfiguration={categoriesOneLevelBarChart}
-                  updateCheckedLabels={() => null}
+                  onCheckedLabelsUpdate={handleCheckedLabelsUpdate}
                   showTotalLoss
                 />
               </tbody>

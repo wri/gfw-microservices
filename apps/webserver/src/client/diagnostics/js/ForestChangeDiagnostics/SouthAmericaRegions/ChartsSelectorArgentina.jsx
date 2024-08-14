@@ -5,7 +5,7 @@ function ChartsSelectorArgentina({
   selectedOptionId,
   onOptionChange,
   chartsConfiguration,
-  updateCheckedLabels,
+  onCheckedLabelsUpdate,
   argentinaPieChartsData,
   graphUnit,
 }) {
@@ -24,7 +24,7 @@ function ChartsSelectorArgentina({
             onOptionChange={onOptionChange}
             countryPieChartsData={argentinaPieChartsData}
             chartsConfiguration={chartsConfiguration}
-            updateCheckedLabels={updateCheckedLabels}
+            onCheckedLabelsUpdate={onCheckedLabelsUpdate}
           />
         </tbody>
       </table>

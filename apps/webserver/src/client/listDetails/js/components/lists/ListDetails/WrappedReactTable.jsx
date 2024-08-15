@@ -135,7 +135,6 @@ const WrappedReactTable = ({
       manual: true,
       pages: numberOfPages,
       page,
-      // loading: isLoading,
       sorted: [
         {
           id: tableSortedBy,

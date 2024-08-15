@@ -176,4 +176,28 @@ describe('ReadmeService', () => {
 
     expect(result).toBeUndefined();
   });
+
+  it('should return forest_change_south_east_asia_readme.csv when listView is forest_change', () => {
+    const filters: ListFieldsFileRequest = {
+      key: 'test-key',
+      listView: 'forest_change',
+      type: 'southEastAsiaTCL',
+    };
+
+    const result = service.southEastAsiaTCL(filters);
+
+    expect(result).toBe('forest_change_south_east_asia_readme.csv');
+  });
+
+  it('should return undefined when listView does not match any key in southEastAsiaTCL listsViews', () => {
+    const filters: ListFieldsFileRequest = {
+      key: 'test-key',
+      listView: 'non_existent_view',
+      type: 'southEastAsiaTCL',
+    };
+
+    const result = service.southEastAsiaTCL(filters);
+
+    expect(result).toBeUndefined();
+  });
 });

@@ -1339,7 +1339,59 @@ export const mapLayers = [
       updatedAt: '2021-12-06T18:00:52.730Z',
     },
   },
-
+  {
+    id: 'b696ec7a-2852-468a-a907-b2cf4f584b98',
+    type: 'layer',
+    attributes: {
+      name: 'Colombia - Frontera Agrícola',
+      slug: 'colombia-frontera-agricola',
+      dataset: '3b85ed4b-16ae-4218-855b-12a6e1652121',
+      description: 'Colombia - Frontera Agrícola',
+      application: ['gfw-pro'],
+      iso: [],
+      provider: 'featureservice',
+      userId: '596cde70824315350dd0f116',
+      default: true,
+      protected: false,
+      published: true,
+      env: 'production',
+      layerConfig: {
+        type: 'tileLayer',
+        body: {
+          url: 'https://tiles.globalforestwatch.org/col_frontera_agricola/v2024/category/{z}/{x}/{y}.png',
+          metadata: 'https://api.resourcewatch.org/v1/gfw-metadata/col_frontera_agricola',
+          useCors: true,
+        },
+      },
+      legendConfig: {
+        type: 'basic',
+        items: [
+          {
+            categories: [
+              {
+                name: 'Unconditioned',
+                color: '#A0BB51',
+              },
+              {
+                name: 'Conditioned',
+                color: '#F7CD54',
+              },
+              {
+                name: 'Restricted',
+                color: '#DA3D30',
+              },
+            ],
+            name: 'Colombia - Frontera Agrícola',
+          },
+        ],
+      },
+      interactionConfig: {},
+      applicationConfig: {},
+      staticImageConfig: {},
+      createdAt: '2021-12-06T22:12:06.352Z',
+      updatedAt: '2023-06-14T23:46:19.625Z',
+    },
+  },
   {
     id: 'dc6f6dd2-0718-4e41-81d2-109866bb9edd',
     type: 'layer',

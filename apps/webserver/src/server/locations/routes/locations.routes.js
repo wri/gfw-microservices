@@ -754,7 +754,13 @@ module.exports = (app, limiter) => {
         locationAttributeArray.push(...noGeomData);
         locationAnalysisArray.push(...gfwListAnalysesData);
         listAnalyses.push(...gfwLocationsAnalysesData);
-
+        if (noGeomData.length === 0) {
+          res.send({
+            list_analysis: [],
+            location_analyses: [],
+            total_rows: 0,
+          });
+        }
         LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
           .then((locationAttributeList) => {
             res.send({
@@ -909,6 +915,13 @@ module.exports = (app, limiter) => {
       )
         .then((result) => {
           const { listData, protectedLocationResult, count } = result;
+          if (protectedLocationResult.length === 0) {
+            res.send({
+              list_analysis: [],
+              location_analyses: [],
+              total_rows: 0,
+            });
+          }
           const location_ids = protectedLocationResult.map((item) => item.location_id);
           AnalysisManager.getAnalysisDataForGFWList(req, listID, location_ids)
             .then((protectedLocationAnalysisResult) => {

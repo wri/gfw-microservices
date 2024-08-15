@@ -737,12 +737,11 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
-    const { list_id, location_ids, isGFWList } = req.body;
+    const { list_id, location_ids, isGFWList,pageNum=0,pageSize=50 } = req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
-    const pageNum = 0;
-    const pageSize = 50;
+
     if (isGFWList) {
       GFWListManager.getPaginatedTable(
         req,
@@ -761,7 +760,7 @@ module.exports = (app, limiter) => {
             res.send({
               list_analysis: listAnalyses,
               location_analyses: [locationAttributeList, locationAnalysisArray],
-              number_rows: count,
+              total_rows: count,
             });
           })
           .catch((err) => {
@@ -908,14 +907,15 @@ module.exports = (app, limiter) => {
         config.SQLConnection.database,
         filters
       ).then((result) => {
-          const { listData, protectedLocationResult } = result;
-          const location_ids = listData.map((item) => item.location_id);
+          const { listData, protectedLocationResult,count } = result;
+          const location_ids = protectedLocationResult.map((item) => item.location_id);
           AnalysisManager.getAnalysisDataForGFWList(req, listID,location_ids)
             .then((protectedLocationAnalysisResult) => {
               const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
               res.send({
                 list_analysis: [],
                 location_analyses: [listDataSalted, protectedLocationAnalysisResult],
+                total_rows: count,
               });
             })
             .catch((err) => {

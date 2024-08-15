@@ -2105,6 +2105,7 @@ export default class ListDetails extends Component {
                                 className="list-analysis-actions__diagnostic-button"
                                 sx={{
                                   color: '#97bd3d',
+                                  border: '1px solid #97bd3d',
                                   borderRadius: '50px',
                                   '&:hover': {
                                     backgroundColor: 'rgba(151, 189, 61, 0.2)',

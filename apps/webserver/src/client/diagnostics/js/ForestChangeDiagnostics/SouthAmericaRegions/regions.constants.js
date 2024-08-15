@@ -208,7 +208,7 @@ export const chartDatasetConfigs = {
 
 const colombianSubcategories = [
   {
-    id: 'Non Conditioned',
+    id: 'Unconditioned',
     legend: 'Non Conditioned',
     color: '#0D642E',
     subCategoryColor: '#299A4C',

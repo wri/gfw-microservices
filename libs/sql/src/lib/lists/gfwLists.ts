@@ -100,7 +100,7 @@ export class GfwLists {
 
       if (ids.length > 0) {
         // If ids array is not empty, apply the where clause
-        let result = await listRepository.findAndCount({
+        items = await listRepository.findAndCount({
           where: {
             location_id: Raw((alias) => `${alias} IN (:...names)`, {
               names: ids,
@@ -112,7 +112,6 @@ export class GfwLists {
             location_id: 'DESC',
           },
         });
-        items = result;
       } else {
         [items, count] = await listRepository.findAndCount({
           skip,
@@ -171,7 +170,7 @@ export class GfwLists {
     organizationDatabase,
     filters
   ) {
-    let where: any = {};
+    const where: any = {};
     let locationNameArray = [];
     if (typeof filters != 'undefined') {
       if (filters.selectedCountry && filters.selectedCountry !== '') {

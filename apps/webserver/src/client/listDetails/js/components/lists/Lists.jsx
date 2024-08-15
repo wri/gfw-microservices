@@ -1226,7 +1226,6 @@ export default class Lists extends Component {
       },
       body: {
         list_id,
-        isGFWList: true,
       },
     })
       .then((response) => {
@@ -1742,7 +1741,7 @@ export default class Lists extends Component {
   getProtectedAreasData = ({ filters, id, locationNameForGFW }) => {
     this.setState({ isLoading: true });
     httpRequest
-      .fetchJSON('/locations/getProtectedAreasData', { filters, id})
+      .fetchJSON('/locations/getProtectedAreasData', { filters, id })
       .then((response) => {
         const currentAdminAreas = JSON.parse(response);
         this.processListData(currentAdminAreas, locationNameForGFW);

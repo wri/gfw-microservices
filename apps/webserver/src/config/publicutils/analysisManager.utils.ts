@@ -424,5 +424,4 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
     database,
     filters
   );
- 
 }

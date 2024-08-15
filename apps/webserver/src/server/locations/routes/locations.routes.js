@@ -737,7 +737,7 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
-    const { list_id, location_ids, isGFWList,pageNum=0,pageSize=50 } = req.body;
+    const { list_id, location_ids, isGFWList, pageNum = 0, pageSize = 50 } = req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
@@ -906,10 +906,11 @@ module.exports = (app, limiter) => {
         pageSize,
         config.SQLConnection.database,
         filters
-      ).then((result) => {
-          const { listData, protectedLocationResult,count } = result;
+      )
+        .then((result) => {
+          const { listData, protectedLocationResult, count } = result;
           const location_ids = protectedLocationResult.map((item) => item.location_id);
-          AnalysisManager.getAnalysisDataForGFWList(req, listID,location_ids)
+          AnalysisManager.getAnalysisDataForGFWList(req, listID, location_ids)
             .then((protectedLocationAnalysisResult) => {
               const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
               res.send({

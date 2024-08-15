@@ -51,6 +51,19 @@ export class ReadmeService {
 
     const listsViews = {
       commodity_risk: 'everything_commodity_risk_readme.csv',
+      forest_change: 'everything_forest_change_readme.csv',
+    };
+
+    if (listsViews[listView]) {
+      return listsViews[listView];
+    }
+  }
+
+  southEastAsiaTCL(filters: ListFieldsFileRequest) {
+    const { listView } = filters;
+
+    const listsViews = {
+      forest_change: 'forest_change_south_east_asia_readme.csv',
     };
 
     if (listsViews[listView]) {
@@ -60,10 +73,12 @@ export class ReadmeService {
 
   async write(filters: BasicFieldsFileRequest): Promise<void> {
     const { type, key } = filters;
+
     const returnFileToCopy = {
       afi: this.afiReadmeData,
       alerts: this.alertsReadmeData,
       everything: this.everythingBundleReadmeData,
+      southEastAsiaTCL: this.southEastAsiaTCL,
     };
 
     if (!Object.prototype.hasOwnProperty.call(returnFileToCopy, type)) {

@@ -18,7 +18,7 @@
   margin-top: $space-small;
 }
 
-// TODO: delete when removing feature flag
+// TODO: delete when removing feature flag isListDetailsPageRedesignAvailable
 //////////////////////////
 // List Detail Header
 /////////////////////////
@@ -87,6 +87,7 @@
 //////////////////////////
 // Filters bar
 /////////////////////////
+/// TODO: delete when removing feature flag isListDetailsPageRedesignAvailable
 .list-detail-filters {
   display: flex;
   align-items: center;
@@ -264,7 +265,7 @@
     display: flex;
     padding: 0 1rem 0.5rem 1rem;
   }
-  // TODO: delete when removing feature flag
+  // TODO: delete when removing feature flag isListDetailsPageRedesignAvailable
   &__button {
     margin-right: 20px;
   }

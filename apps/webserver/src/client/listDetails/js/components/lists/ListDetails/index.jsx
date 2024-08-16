@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-
 import Paper from '@mui/material/Paper';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Button from 'common/js/components/Button';
@@ -307,7 +306,7 @@ export default class ListDetails extends Component {
 
   // Update how many locations are selected
   setLocationCheckbox = (location_id) => {
-    const { selectedLocations, selectedAndVisibleLocations } = this.props;
+    const { selectedLocations } = this.props;
     const { filterString, allLocationsSelected } = this.state;
     const index = selectedLocations.indexOf(location_id);
     const tempLocations = selectedLocations.slice();
@@ -1723,7 +1722,6 @@ export default class ListDetails extends Component {
       filteredLocationData,
       filters,
       folders,
-
       listData,
       listView,
       selectedLists,
@@ -1738,7 +1736,6 @@ export default class ListDetails extends Component {
 
     const {
       anchorElCountries,
-
       bannerContent,
       combinedColumns,
       currentFolder,
@@ -1757,14 +1754,12 @@ export default class ListDetails extends Component {
       filterString,
       listNotAccessible,
       openCountriesPopover,
-
       refreshPage,
       rerunDialogState,
       selectedMoveOrCopy,
       selectedNewOrExisting,
       newListName,
       showSubmitModal,
-
       page,
       tableSortedBy,
       tableSortedDesc,

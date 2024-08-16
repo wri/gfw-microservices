@@ -78,28 +78,23 @@ const WrappedReactTable = ({
 
   const tableColumns = combinedColumns.slice();
   tableColumns.forEach((col) => {
-    if (col.accessor !== 'checkbox') {
-      if (toggleableColumns.includes(col.accessor)) {
-        if (visibleColumns.includes(col.accessor)) {
-          col.show = true;
-        } else {
-          col.show = false;
-        }
-      }
+    if (col.accessor === 'checkbox') return;
+    if (toggleableColumns.includes(col.accessor)) {
+      col.show = visibleColumns.includes(col.accessor);
+    }
 
-      const max = Math.max(
-        ...filteredLists.map((v) =>
-          v[col.accessor] ? Math.max(col.accessor.length, v[col.accessor].toString().length) : 0
-        )
-      );
-      if (!col.className) {
-        if (max <= 10) {
-          col.width = 100;
-          col.maxWidth = 100;
-        } else {
-          col.width = max * 8;
-          col.maxWidth = 500;
-        }
+    const max = Math.max(
+      ...filteredLists.map((v) =>
+        v[col.accessor] ? Math.max(col.accessor.length, v[col.accessor].toString().length) : 0
+      )
+    );
+    if (!col.className) {
+      if (max <= 10) {
+        col.width = 100;
+        col.maxWidth = 100;
+      } else {
+        col.width = max * 8;
+        col.maxWidth = 500;
       }
     }
   });

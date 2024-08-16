@@ -142,6 +142,7 @@ export const chartDatasetConfigs = {
   wdpaOverlapCountry: {
     diagnosticTitle: 'Protected Areas Overlap',
     informationBubbleId: 'regions_arg_pa_landcover_calc',
+    informationBubbleColId: 'regions_col_pa_landcover_calc',
     downloadUrl: 'listId=5692&country=Argentina&category=WDPA',
     chartLabels: [
       { id: 'fullyRestrictive', color: '#862e13', legend: 'Fully Restricted' },
@@ -158,6 +159,7 @@ export const chartDatasetConfigs = {
     diagnosticTitle: 'Indigenous Territories Overlap',
     downloadUrl: 'listId=5692&country=Argentina&category=landmark',
     informationBubbleId: 'regions_arg_it_landcover_calc',
+    informationBubbleColId: 'regions_col_it_landcover_calc',
     chartLabels: [
       { id: 'indigenous', color: '#a8704a', legend: 'Overlap with Indigenous Territories' },
       {
@@ -234,7 +236,7 @@ export const chartDatasetConfigsColombia = {
     chartsSelectorTitle: 'National Agricultural Frontier',
     dataPath: 'classified_region.tree_cover_loss',
     dateRange: { startYear: 2008, endYear: 2023 },
-    infoBubbleId: 'regions_col_deforestation',
+    infoBubbleId: 'regions_col_tcl_ agricultural_frontier_restrictions',
     subCategories: [...colombianSubcategories],
   },
   classifiedRegionOverlap: {
@@ -250,7 +252,7 @@ export const chartDatasetConfigsColombia = {
     dataPath: 'WDPA.tree_cover_loss',
     dateRange: { startYear: 2008, endYear: 2023 },
     chartsSelectorTitle: 'Protected Areas',
-    infoBubbleId: null,
+    infoBubbleId: 'regions_col_tcl_pa',
     chartLabels: [
       {
         id: 'fully restrictive',
@@ -274,7 +276,7 @@ export const chartDatasetConfigsColombia = {
     dataPath: 'landmark.tree_cover_loss',
     dateRange: { startYear: 2008, endYear: 2023 },
     chartsSelectorTitle: 'Indigenous Territories',
-    infoBubbleId: null,
+    infoBubbleId: 'regions_col_tcl_it',
     chartLabels: [
       {
         id: 'Indigenous Territories',

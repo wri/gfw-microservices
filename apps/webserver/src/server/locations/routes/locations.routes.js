@@ -862,8 +862,45 @@ module.exports = (app, limiter) => {
       selectedStates,
       selectedSubStates,
     };
-    const listID = req.body.id;
-
+    const {id:listID, isGFWList,pageNum, pageSize} = req.body;
+    if (isGFWList) {
+      AnalysisManager.getPaginatedAnalysisDataForProtectedAreas(
+        listID,
+        pageNum,
+        pageSize,
+        config.SQLConnection.database,
+        filters
+      )
+        .then((result) => {
+          const { listData, protectedLocationResult, count } = result;
+          if (protectedLocationResult.length === 0) {
+            res.send({
+              list_analysis: [],
+              location_analyses: [],
+              total_rows: 0,
+            });
+          }else{
+          const location_ids = protectedLocationResult.map((item) => item.location_id);
+          AnalysisManager.getAnalysisDataForGFWList(req, listID, location_ids)
+            .then((protectedLocationAnalysisResult) => {
+              const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
+              res.send({
+                list_analysis: [],
+                location_analyses: [listDataSalted, protectedLocationAnalysisResult],
+                total_rows: count,
+              });
+            })
+            .catch((err) => {
+              console.log('Error /getAdministrativeAreasData', err);
+              res.send(err);
+            });
+          }
+        })
+        .catch((err) => {
+          console.log('Error /getAdministrativeAreasData', err);
+          res.send(err);
+        });
+    } else {
     GFWListManager.getAdministrativeAreasData(req, filters)
       .then((listData) => {
         const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
@@ -881,6 +918,7 @@ module.exports = (app, limiter) => {
         console.log('Error /getAdministrativeAreasData', err);
         res.send(err);
       });
+    }
   });
 
   app.post('/locations/getProtectedAreasData', (req, res) => {
@@ -921,7 +959,7 @@ module.exports = (app, limiter) => {
               location_analyses: [],
               total_rows: 0,
             });
-          }
+          }else{
           const location_ids = protectedLocationResult.map((item) => item.location_id);
           AnalysisManager.getAnalysisDataForGFWList(req, listID, location_ids)
             .then((protectedLocationAnalysisResult) => {
@@ -936,6 +974,7 @@ module.exports = (app, limiter) => {
               console.log('Error /getProtectedAreasData', err);
               res.send(err);
             });
+          }
         })
         .catch((err) => {
           console.log('Error /getProtectedAreasData', err);

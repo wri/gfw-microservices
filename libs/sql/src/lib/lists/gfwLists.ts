@@ -7,6 +7,7 @@ import {
   RspoOilPalmConcessions,
   ListOilPalmConcessions,
   ListProtectedAreas,
+  ListAdministrativeAreas,
 } from '../entity';
 import { Raw } from 'typeorm';
 
@@ -21,8 +22,10 @@ export class GfwLists {
   getAttributesListEntity(list_id: number): any {
     const ATTRIBUTES_LIST_TABLE = ListsPalmOilMills;
     const ATTRIBUTES_LIST_TABLE_NAMES = {
+      1:ListAdministrativeAreas,
       2: ListOilPalmConcessions,
       3: ListsPalmOilMills,
+      4: ListProtectedAreas,
       5: RspoOilPalmConcessions,
     };
     return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
@@ -163,10 +166,10 @@ export class GfwLists {
     );
     return result;
   }
-  async getPaginatedAnalysisDataForProtectedAreas(
+  async getPaginatedAnalysisDataWithFilters(
     list_id,
-    pageNum,
-    pageSize,
+    pageNum=0,
+    pageSize=0,
     organizationDatabase,
     filters
   ) {
@@ -191,7 +194,7 @@ export class GfwLists {
       if (filters.selectedIUCN) {
         where['IUCN CAT'] = filters.selectedIUCN;
       }
-      if (filters.selectedNames.length > 0) {
+      if (filters.selectedNames?.length > 0) {
         locationNameArray = filters.selectedNames;
       }
     }
@@ -199,9 +202,9 @@ export class GfwLists {
     const take = pageSize === 0 ? 50 : pageSize;
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-      const analysisDataRepository = await connection.getRepository(ListProtectedAreas);
+      const analysisDataRepository = await connection.getRepository(this.getAttributesListEntity(list_id));
       let items, count;
-      if (locationNameArray.length > 0) {
+      if (locationNameArray?.length > 0) {
         [items, count] = await analysisDataRepository.findAndCount({
           where: {
             ...where,

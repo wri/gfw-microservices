@@ -23,3 +23,22 @@ body:has(.list-details) {
     margin-left: auto;
   }
 }
+
+.ReactTable.lists-react-table {
+  position: relative;
+  .-headerGroups {
+    display: none;
+  }
+  .rt-thead.-header {
+    box-shadow: none;
+  }
+  .rt-th {
+    background-color: lightgray;
+  }
+  .rt-tr-group {
+    border-bottom: 1px solid lightgray;
+  }
+  .rt-tbody .rt-td {
+    border: none;
+  }
+}

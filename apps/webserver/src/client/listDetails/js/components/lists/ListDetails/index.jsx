@@ -8,14 +8,11 @@ import Stack from '@mui/material/Stack';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import { maxLocations } from 'locations/js/utils/upload.utils';
 import LinkButton from 'common/js/components/LinkButton';
-import GfwSelect from 'common/js/components/GfwSelect';
 import ModalLoader from 'common/js/components/Loaders/ModalLoader';
-import IconListAlt from 'common/js/components/icon/IconListAlt';
-import IconGlobeAmericas from 'common/js/components/icon/IconGlobeAmericas';
+import AnalysesTabs from './AnalysesTabs';
 import getUserLocationDataFromAPI from '../getUserLocationDataFromAPI';
 import filterListData from '../filterListData';
 import Filter from './Filter';
-import WrappedDataGrid from './WrappedDataGrid';
 import {
   filterValidCustom,
   filterValidTemplates,
@@ -84,6 +81,7 @@ import ChangeTypeOfAnalysisModal from '../../../../../locations/js/components/la
 import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType';
 import ListActions from './ListActions';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
+import WrappedReactTable from './WrappedReactTable';
 
 // CONSTANTS
 import {
@@ -98,8 +96,6 @@ import getAllColumnNames from '../getAllColumnNames';
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
 import './ListDetails.scss';
-
-const transifex = Transifex.live.translateText;
 
 export default class ListDetails extends Component {
   constructor(props) {
@@ -309,16 +305,24 @@ export default class ListDetails extends Component {
   };
 
   // Update how many locations are selected
-  setLocationCheckbox = (selectedLocationIds) => {
-    const { selectedLocations, selectedAndVisibleLocations } = this.props;
-    const { filterString, isEveryRowSelected } = this.state;
+  setLocationCheckbox = (location_id) => {
+    const { selectedLocations } = this.props;
+    const { filterString, allLocationsSelected } = this.state;
+    const index = selectedLocations.indexOf(location_id);
+    const tempLocations = selectedLocations.slice();
 
-    if (isEveryRowSelected) {
-      this.setState({ isEveryRowSelected: false });
+    if (allLocationsSelected) {
+      this.setState({ allLocationsSelected: false });
     }
 
-    this.getSearchedLocations(filterString, selectedLocationIds);
-    store.dispatch(updateSelectedLocations(selectedLocationIds));
+    if (index > -1) {
+      tempLocations.splice(index, 1);
+    } else {
+      tempLocations.push(location_id);
+    }
+
+    this.getSearchedLocations(filterString, tempLocations);
+    store.dispatch(updateSelectedLocations(tempLocations));
 
     gtag('event', 'Location checkbox clicked', {
       event_category: 'List View Click',
@@ -1256,8 +1260,8 @@ export default class ListDetails extends Component {
     }
   };
 
-  viewDiagnostic = async (isSingleLocation) => {
-    const { selectedLists, selectedLocations, userSharedLists } = this.props;
+  viewDiagnostic = async (locationId) => {
+    const { selectedLists, userSharedLists } = this.props;
 
     const selectedListIsShared =
       selectedLists &&
@@ -1266,10 +1270,10 @@ export default class ListDetails extends Component {
 
     const gfwList = !isUserList(selectedLists[0]) ? '&gfw=true' : '';
     const sharedList = selectedListIsShared ? '&shared=true' : '';
-    const locationId = isSingleLocation ? `&locationId=${selectedLocations[0]}` : '';
+    const locationIdParam = locationId ? `&locationId=${locationId}` : '';
     const diagnosticsType = getActiveAnalysisType(selectedLists[0]?.listAnalysesStatus);
     const diagnosticsParam = !gfwList && diagnosticsType ? `&type=${diagnosticsType}` : '';
-    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationId}${diagnosticsParam}${sharedList}`;
+    window.location.href = `/diagnostics?listId=${selectedLists[0].id}${gfwList}${locationIdParam}${diagnosticsParam}${sharedList}`;
   };
 
   viewMap = ({ showFullListMap }) => {
@@ -1559,51 +1563,6 @@ export default class ListDetails extends Component {
     }
   };
 
-  setRowProps = (state, rowInfo) => {
-    // determine row bg colors based on location status
-    // currently only failed locations get dark gray bg color
-    function returnBgColor(id) {
-      switch (id) {
-        case 3:
-          return '#BDBDBD';
-        default:
-          return '';
-      }
-    }
-
-    // determine row fg colors based on location status,
-    // draft locations get gray color across all cells
-    function returnFgColor(id) {
-      switch (id) {
-        case 4:
-          return '#939392';
-        default:
-          return '';
-      }
-    }
-
-    return {
-      style: {
-        background:
-          rowInfo && rowInfo.original && returnBgColor(rowInfo.original.location_status_id),
-        color: rowInfo && rowInfo.original && returnFgColor(rowInfo.original.location_status_id),
-      },
-    };
-  };
-
-  setHeaderProps = (state) => {
-    return {
-      onClick: () => {
-        gtag('event', 'list table header click', {
-          event_category: 'Lists Click',
-          event_label: `user sorted lists table ${
-            state.sorted.length > 0 ? `by ${state.sorted[0].id}` : ''
-          }`,
-        });
-      },
-    };
-  };
-
   getAdministrativeAreasInfo = () => {
     store.dispatch(updateListData([]));
     store.dispatch(updateFilteredData([]));
@@ -1703,7 +1662,7 @@ export default class ListDetails extends Component {
   };
 
   // Change the view that is shown - forest change, policy, commodity risk
-  changeListView(listView) {
+  changeListView = (listView) => {
     const { listView: listViewProps, listData, selectedLists } = this.props;
     if (listView !== listViewProps) {
       const columnNames = getAllColumnNames(
@@ -1719,7 +1678,7 @@ export default class ListDetails extends Component {
         combinedColumns: columnNames.combinedColumns,
       });
     }
-  }
+  };
 
   changeFolderView(folder) {
     const { history, showShareList } = this.props;
@@ -1727,28 +1686,6 @@ export default class ListDetails extends Component {
     history.push('/folders');
     store.dispatch(selectFolder(folder));
     store.dispatch(changeView('folders'));
-  }
-
-  listDiagnosticAccess(list) {
-    const { selectedLocations, listData } = this.props;
-
-    const areAllSelectedValid =
-      selectedLocations.findIndex((locationId) => {
-        const data = listData.find((d) => {
-          return d.location_id === locationId;
-        });
-        return data && data.location_status_id !== 2;
-      }) === -1;
-
-    const singleLocationCheck = areAllSelectedValid && selectedLocations.length === 1;
-    if (!getIsDiagnosticStatusDraft(list)) {
-      // List that is not in Draft
-      return (
-        list && (singleLocationCheck || selectedLocations.length === list.list_locations_count)
-      );
-    }
-    // If one location is selected in draft mode and the location is valid (analyzed) we enable the button
-    return singleLocationCheck;
   }
 
   loadLocationView() {
@@ -1785,7 +1722,6 @@ export default class ListDetails extends Component {
       filteredLocationData,
       filters,
       folders,
-
       listData,
       listView,
       selectedLists,
@@ -1800,7 +1736,6 @@ export default class ListDetails extends Component {
 
     const {
       anchorElCountries,
-
       bannerContent,
       combinedColumns,
       currentFolder,
@@ -1819,14 +1754,12 @@ export default class ListDetails extends Component {
       filterString,
       listNotAccessible,
       openCountriesPopover,
-
       refreshPage,
       rerunDialogState,
       selectedMoveOrCopy,
       selectedNewOrExisting,
       newListName,
       showSubmitModal,
-
       page,
       tableSortedBy,
       tableSortedDesc,
@@ -1906,46 +1839,6 @@ export default class ListDetails extends Component {
       });
     }
 
-    const toggleableColumns = listColumns.map((column) => column.accessor);
-
-    const tableColumns = combinedColumns.slice();
-    tableColumns.forEach((col) => {
-      if (col.accessor !== 'checkbox') {
-        if (toggleableColumns.includes(col.accessor)) {
-          if (visibleColumns.includes(col.accessor)) {
-            col.show = true;
-          } else {
-            col.show = false;
-          }
-        }
-
-        const max = Math.max(
-          ...filteredLists.map((v) =>
-            v[col.accessor] ? Math.max(col.accessor.length, v[col.accessor].toString().length) : 0
-          )
-        );
-        if (!col.className) {
-          if (max <= 10) {
-            col.width = 100;
-            col.maxWidth = 100;
-          } else {
-            col.width = max * 8;
-            col.maxWidth = 500;
-          }
-        }
-      }
-    });
-
-    const isSelectedLocationActive = () => {
-      const selectedLocation = filteredLocationData.filter(
-        (x) => x.location_id === selectedLocations[0]
-      );
-
-      if (selectedLocation?.length !== 1) return false;
-
-      return selectedLocation[0].location_status_id === listStatus.Active;
-    };
-
     const allDialogActions = dialogActions || (
       <Button
         className="dialog__primary-action"
@@ -1955,8 +1848,10 @@ export default class ListDetails extends Component {
       />
     );
 
-    const pageSize = 50;
-
+    const isSharedList =
+      selectedLists &&
+      userSharedLists &&
+      userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
     return (
       <div className="list-details">
         {!isGfwList && (
@@ -2129,26 +2024,6 @@ export default class ListDetails extends Component {
                   {!locationDataIsNotAvailable && (
                     <>
                       <div className="list-detail-action-bar">
-                        {selectedLocations.length === 1 &&
-                          (isGfwList || isSelectedLocationActive()) && (
-                            <Button
-                              variant="primary"
-                              data-cy="location-diagnostics"
-                              className="list-detail-action-bar__diagnostic-button"
-                              disabled={!this.listDiagnosticAccess(selectedList)}
-                              onClick={() => this.viewDiagnostic(true)}
-                              label="Location diagnostic"
-                              icon={<IconListAlt />}
-                            />
-                          )}
-                        {selectedList && selectedLocations.length > 0 && (
-                          <Button
-                            className="list-detail-action-bar__map-button"
-                            onClick={() => this.viewMap({ showFullListMap: false })}
-                            label="Location(s) Map"
-                            icon={<IconGlobeAmericas />}
-                          />
-                        )}
                         {selectedList &&
                           selectedLocations.length > 0 &&
                           !isGfwList &&
@@ -2196,27 +2071,13 @@ export default class ListDetails extends Component {
                         )}
                       </div>
 
-                      <div className="list-detail-filters">
-                        <div className="list-detail-filters__view">
-                          {listViewOptions.length > 1 && (
-                            // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists
-                            <>
-                              <label htmlFor="viewToggle">
-                                {locationsPage.lists.viewToggleLabel}
-                              </label>
-                              <GfwSelect
-                                id="viewToggle"
-                                name="viewToggle"
-                                onChange={(e) => this.changeListView(e.value)}
-                                value={{ value: listView }}
-                                options={listViewOptions}
-                              />
-                            </>
-                          )}
-                        </div>
-                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <AnalysesTabs
+                          listViewOptions={listViewOptions}
+                          listView={listView}
+                          changeListView={this.changeListView}
+                        />
 
-                      <div style={{ display: 'flex', justifyContent: 'end' }}>
                         {!isGfwList && (
                           <MaterialButton
                             style={{ color: '#97bd3d', fontSize: '12px' }}
@@ -2228,7 +2089,8 @@ export default class ListDetails extends Component {
                           </MaterialButton>
                         )}
                       </div>
-                      <Paper sx={{ padding: '12px' }}>
+
+                      <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
                         <div className="list-analysis-actions">
                           {!getIsDraftWithoutDiagnostic(selectedList) &&
                             listName !== 'Administrative Areas' &&
@@ -2245,7 +2107,7 @@ export default class ListDetails extends Component {
                                   },
                                 }}
                                 data-cy="list-diagnostics"
-                                onClick={() => this.viewDiagnostic(false)}
+                                onClick={() => this.viewDiagnostic()}
                                 startIcon={<QueryStatsIcon />}
                               >
                                 List diagnostic
@@ -2274,56 +2136,34 @@ export default class ListDetails extends Component {
                           {filteredLists.length > 0 &&
                           listView !== '' &&
                           filteredLocationData.length > 0 ? (
-                            <>
-                              <WrappedDataGrid
-                                filteredLists={filteredLists}
-                                visibleColumns={visibleColumns}
-                                numberOfResults={numberOfResults}
-                                page={page}
-                                pageSize={pageSize}
-                                onPaginationModelChange={({ page }) => {
-                                  this.getUserLocationData(selectedLists[0].id, page);
-                                }}
-                                tableSortedBy={tableSortedBy}
-                                tableSortedDesc={tableSortedDesc}
-                                onSortModelChange={(newSortModel) => {
-                                  if (newSortModel.length) {
-                                    const [{ field, sort }] = newSortModel;
-
-                                    this.setState(
-                                      {
-                                        tableSortedBy: field || 'Investment Name',
-                                        tableSortedDesc: sort === 'desc',
-                                      },
-                                      () => {
-                                        this.getUserLocationData(selectedLists[0].id, page);
-                                      }
-                                    );
-                                  } else {
-                                    this.setState(
-                                      {
-                                        tableSortedBy: 'Investment Name',
-                                        tableSortedDesc: false,
-                                      },
-                                      () => {
-                                        this.getUserLocationData(selectedLists[0].id, page);
-                                      }
-                                    );
+                            <WrappedReactTable
+                              listId={selectedLists[0].id}
+                              isGfwList={isGfwList}
+                              isSharedList={isSharedList}
+                              combinedColumns={combinedColumns}
+                              numberOfPages={this.state.numberOfPages}
+                              listColumns={listColumns}
+                              visibleColumns={visibleColumns}
+                              filteredLists={filteredLists}
+                              page={page}
+                              isUserList={isUserList(selectedLists[0])}
+                              getUserLocationData={this.getUserLocationData}
+                              tableSortedBy={tableSortedBy}
+                              tableSortedDesc={tableSortedDesc}
+                              setSortedBy={(tableSortedBy, tableSortedDesc) =>
+                                this.setState(
+                                  {
+                                    tableSortedBy,
+                                    tableSortedDesc,
+                                  },
+                                  () => {
+                                    this.getUserLocationData(selectedLists[0].id, page);
                                   }
-                                }}
-                                selectionModel={this.props.selectedLocations}
-                                onSelectionModelChange={(newSelection) => {
-                                  this.setLocationCheckbox(newSelection);
-
-                                  const isEveryRowSelected = newSelection.length === pageSize;
-
-                                  // Update allSelected state if it changes
-                                  if (this.state.isEveryRowSelected !== isEveryRowSelected) {
-                                    this.selectAllLocations(isEveryRowSelected);
-                                  }
-                                }}
-                              />
-                            </>
+                                )
+                              }
+                              viewDiagnostic={this.viewDiagnostic}
+                              isListInDraftStatus={getIsDiagnosticStatusDraft(selectedLists[0])}
+                            />
                           ) : null}
                         </section>
                       </Paper>

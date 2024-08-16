@@ -236,7 +236,7 @@ export const chartDatasetConfigsColombia = {
     chartsSelectorTitle: 'National Agricultural Frontier',
     dataPath: 'classified_region.tree_cover_loss',
     dateRange: { startYear: 2008, endYear: 2023 },
-    infoBubbleId: 'regions_col_tcl_agricultural_frontier_restrictions',
+    infoBubbleId: 'regions_col_tcl_ agricultural_frontier_restrictions',
     subCategories: [...colombianSubcategories],
   },
   classifiedRegionOverlap: {

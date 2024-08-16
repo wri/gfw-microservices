@@ -8,7 +8,9 @@ import {
   locationIsActive,
 } from '../../../../locations/js/utils/locationsTableUtils';
 import ColumnsHeader from '../../components/columns/ColumnsHeader';
+import featureFlags from '../../../../../utils/general.utils';
 
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 const transifex = Transifex.live.translateText;
 
 const forest_change_locations = [
@@ -40,35 +42,39 @@ const forest_change_locations = [
     className: 'td-num',
     show: true,
   },
-  {
-    Header: () => <ColumnsHeader label={columnHeaders.commodity} />,
-    accessor: 'Commodity',
-    className: 'default-cell',
-    show: true,
-    width: 100,
-    maxWidth: 100,
-    Cell: (row) =>
-      checkValid(row.value) ? (
-        <span title={transifex(row.value)}>{transifex(row.value)}</span>
-      ) : (
-        '--'
-      ),
-  },
-  {
-    Header: () => <ColumnsHeader label={columnHeaders.state} />,
-    accessor: 'State',
-    className: 'cell__State default-cell',
-    show: true,
-    width: 150,
-    maxWidth: 150,
-    Cell: (row) =>
-      checkValid(row.value) ? (
-        <span title={transifex(row.value)}>{transifex(row.value)}</span>
-      ) : (
-        '--'
-      ),
-    sortMethod: sortByNone,
-  },
+  ...(!isListDetailsPageRedesignAvailable
+    ? [
+        {
+          Header: () => <ColumnsHeader label={columnHeaders.commodity} />,
+          accessor: 'Commodity',
+          className: 'default-cell',
+          show: true,
+          width: 100,
+          maxWidth: 100,
+          Cell: (row) =>
+            checkValid(row.value) ? (
+              <span title={transifex(row.value)}>{transifex(row.value)}</span>
+            ) : (
+              '--'
+            ),
+        },
+        {
+          Header: () => <ColumnsHeader label={columnHeaders.state} />,
+          accessor: 'State',
+          className: 'cell__State default-cell',
+          show: true,
+          width: 150,
+          maxWidth: 150,
+          Cell: (row) =>
+            checkValid(row.value) ? (
+              <span title={transifex(row.value)}>{transifex(row.value)}</span>
+            ) : (
+              '--'
+            ),
+          sortMethod: sortByNone,
+        },
+      ]
+    : []),
 ];
 
 export default forest_change_locations;

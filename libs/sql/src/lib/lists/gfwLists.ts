@@ -22,7 +22,7 @@ export class GfwLists {
   getAttributesListEntity(list_id: number): any {
     const ATTRIBUTES_LIST_TABLE = ListsPalmOilMills;
     const ATTRIBUTES_LIST_TABLE_NAMES = {
-      1:ListAdministrativeAreas,
+      1: ListAdministrativeAreas,
       2: ListOilPalmConcessions,
       3: ListsPalmOilMills,
       4: ListProtectedAreas,
@@ -168,8 +168,8 @@ export class GfwLists {
   }
   async getPaginatedAnalysisDataWithFilters(
     list_id,
-    pageNum=0,
-    pageSize=0,
+    pageNum = 0,
+    pageSize = 0,
     organizationDatabase,
     filters
   ) {
@@ -202,7 +202,9 @@ export class GfwLists {
     const take = pageSize === 0 ? 50 : pageSize;
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
-      const analysisDataRepository = await connection.getRepository(this.getAttributesListEntity(list_id));
+      const analysisDataRepository = await connection.getRepository(
+        this.getAttributesListEntity(list_id)
+      );
       let items, count;
       if (locationNameArray?.length > 0) {
         [items, count] = await analysisDataRepository.findAndCount({

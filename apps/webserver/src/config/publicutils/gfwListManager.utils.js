@@ -113,7 +113,6 @@ export const getGFWListLocations = (req, list_id) => {
  *   @return {Promise} Returns promise object. If successful, recordsets, otherwise, error object
  */
 export const getGFWListLocationsNoGeom = (req, list_id, location_ids = []) => {
-  const gfwLists = new GfwLists();
   return new Promise((resolve, reject) => {
     const parameters =
       Array.isArray(location_ids) && location_ids.length
@@ -639,6 +638,7 @@ export function initialize() {
       });
   });
 }
+
 export async function getPaginatedTable(req, pageNum, pageSize, list_id, organizationDatabase) {
   const gfwLists = new GfwLists();
   const [noGeomData, count] = await gfwLists.getPaginatedTable(

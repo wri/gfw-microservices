@@ -74,7 +74,6 @@ export const getAnalysisDataForGFWList = (req, list_id, location_ids = []) => {
 
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetGFWListLocationAnalysis', parameters)
-
       .then((recordsets) => {
         resolve(recordsets);
       })

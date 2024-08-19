@@ -17,7 +17,9 @@ export class GfwLists {
   private readonly logger = new Logger('List processing service');
   private readonly clientStoreConnection = new ClientStoreConnection();
 
-  getAttributesListEntity(list_id: number): EntityTarget<ListOilPalmConcessions | ListsPalmOilMills |RspoOilPalmConcessions >{
+  getAttributesListEntity(
+    list_id: number
+  ): EntityTarget<ListOilPalmConcessions | ListsPalmOilMills | RspoOilPalmConcessions> {
     const ATTRIBUTES_LIST_TABLE = ListsPalmOilMills;
     const ATTRIBUTES_LIST_TABLE_NAMES = {
       2: ListOilPalmConcessions,
@@ -32,7 +34,7 @@ export class GfwLists {
     list_id: number,
     organizationDatabase: string,
     ids: number[] = []
-  ): Promise<(ListOilPalmConcessions | ListsPalmOilMills |RspoOilPalmConcessions)[]> {
+  ): Promise<[ListOilPalmConcessions[] | ListsPalmOilMills[] | RspoOilPalmConcessions[], number]> {
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));

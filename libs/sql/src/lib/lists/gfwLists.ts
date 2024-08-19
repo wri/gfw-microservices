@@ -8,17 +8,16 @@ import {
   ListOilPalmConcessions,
   ListProtectedAreas,
 } from '../entity';
-import { Raw } from 'typeorm';
+import { EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
 
 const ANALYSYS_TABLE_NAMES = {
   'analysis-palmOilMills': AnalysisPalmOilMills,
 };
-
 export class GfwLists {
   private readonly logger = new Logger('List processing service');
   private readonly clientStoreConnection = new ClientStoreConnection();
 
-  getAttributesListEntity(list_id: number): any {
+  getAttributesListEntity(list_id: number): EntityTarget<ListOilPalmConcessions | ListsPalmOilMills |RspoOilPalmConcessions >{
     const ATTRIBUTES_LIST_TABLE = ListsPalmOilMills;
     const ATTRIBUTES_LIST_TABLE_NAMES = {
       2: ListOilPalmConcessions,
@@ -33,7 +32,7 @@ export class GfwLists {
     list_id: number,
     organizationDatabase: string,
     ids: number[] = []
-  ): Promise<any[]> {
+  ): Promise<(ListOilPalmConcessions | ListsPalmOilMills |RspoOilPalmConcessions)[]> {
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
@@ -170,7 +169,7 @@ export class GfwLists {
     organizationDatabase,
     filters
   ) {
-    const where: any = {};
+    const where: FindOptionsWhere<ListProtectedAreas> = {};
     let locationNameArray = [];
     if (typeof filters != 'undefined') {
       if (filters.selectedCountry && filters.selectedCountry !== '') {
@@ -191,7 +190,7 @@ export class GfwLists {
       if (filters.selectedIUCN) {
         where['IUCN CAT'] = filters.selectedIUCN;
       }
-      if (filters.selectedNames.length > 0) {
+      if (filters.selectedNames?.length > 0) {
         locationNameArray = filters.selectedNames;
       }
     }

@@ -13,12 +13,12 @@ import { forestLossDatasetIds } from './forestLossDatasets.constants';
 
 function AfiDiagnosticsTable({
   data,
-  forestLossDataset = forestLossDatasetIds.STBN,
+  forestLossDataset = forestLossDatasetIds.SBTN,
   isLocationLevel = false,
 }) {
-  const isStbnSelected = forestLossDataset === forestLossDatasetIds.STBN;
+  const isStbnSelected = forestLossDataset === forestLossDatasetIds.SBTN;
   /*
-    if STBN is selected, the rows displayed should be coverageHA and naturalForestLossHA
+    if SBTN is selected, the rows displayed should be coverageHA and naturalForestLossHA
     if JRC is selected the rows should be jrcCoverageHA and jrcNaturalForestLossHA and Negligible Risk should be hidden
   */
   return (

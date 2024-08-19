@@ -16,7 +16,7 @@ function AfiDiagnosticsTable({
   forestLossDataset = forestLossDatasetIds.SBTN,
   isLocationLevel = false,
 }) {
-  const isStbnSelected = forestLossDataset === forestLossDatasetIds.SBTN;
+  const isSbtnSelected = forestLossDataset === forestLossDatasetIds.SBTN;
   /*
     if SBTN is selected, the rows displayed should be coverageHA and naturalForestLossHA
     if JRC is selected the rows should be jrcCoverageHA and jrcNaturalForestLossHA and Negligible Risk should be hidden
@@ -49,7 +49,7 @@ function AfiDiagnosticsTable({
                   infoBubbleId={locationsPage.infoBubbleConfig.deforestationKpisIndigenous}
                 />
               </TableCell>
-              {isStbnSelected && !isLocationLevel && (
+              {isSbtnSelected && !isLocationLevel && (
                 <TableCell align="right">
                   Negligible Risk
                   <InfoBubble infoBubbleId={locationsPage.infoBubbleConfig.negligibleRisk} />
@@ -62,7 +62,7 @@ function AfiDiagnosticsTable({
               <TableRow key={row.subState}>
                 <TableCell align="right">{row.country}</TableCell>
                 <TableCell align="right">{row.subState}</TableCell>
-                {isStbnSelected ? (
+                {isSbtnSelected ? (
                   <>
                     <TableCell align="right">{row.coverageHA}</TableCell>
                     <TableCell align="right">{row.naturalForestLossHA}</TableCell>
@@ -75,7 +75,7 @@ function AfiDiagnosticsTable({
                 )}
                 <TableCell align="right">{row.protectedAreasHA}</TableCell>
                 <TableCell align="right">{row.landmarkHA}</TableCell>
-                {isStbnSelected && !isLocationLevel && (
+                {isSbtnSelected && !isLocationLevel && (
                   <TableCell align="right">{row.negligibleRisk ? 'YES' : 'No'}</TableCell>
                 )}
               </TableRow>

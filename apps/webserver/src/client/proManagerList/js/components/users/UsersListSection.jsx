@@ -58,7 +58,6 @@ function UsersListSection({ isLoading, setIsLoading }) {
     // TODO: add sharing to list!!
     const statusString = getStatusString(user);
     const accessString = getAccessString(user);
-    const userName = `${user.first_name} ${user.last_name}`;
     userRows.push(
       <tr key={user.organization_id}>
         <td
@@ -68,8 +67,9 @@ function UsersListSection({ isLoading, setIsLoading }) {
             window.location.href = `/pro-manager-list?tab=users&userId=${user.user_id}&organizationId=${user.organization_id}`;
           }}
         >
-          {userName}
+          {user.first_name}
         </td>
+        <td>{user.last_name}</td>
         <td>{user.organization_name}</td>
         <td>{user.organization_classifications}</td>
         <td>{user.email}</td>
@@ -86,38 +86,24 @@ function UsersListSection({ isLoading, setIsLoading }) {
   };
 
   const determineStatus = (statusId) => {
-    let status;
-    switch (statusId) {
-      case 1:
-        status = 'Pending';
-        break;
-      case 2:
-        status = 'Active';
-        break;
-      case 3:
-        status = 'Inactive';
-        break;
-      default:
-        break;
+    const status_type = {
+      1: 'Pending',
+      2: 'Active',
+      3: 'Inactive'
     }
+    const status = status_type[statusId] || '';
+
     return status.toLowerCase().includes(userFilterStr.toLowerCase());
   };
 
   const determineAccess = (accessId) => {
-    let access;
-    switch (accessId) {
-      case 1:
-        access = 'Administrator';
-        break;
-      case 2:
-        access = 'Editor';
-        break;
-      case 3:
-        access = 'Viewer';
-        break;
-      default:
-        break;
+    const access_type = {
+      1: 'Administrator',
+      2: 'Editor',
+      3: 'Viewer'
     }
+    const access = access_type[accessId] || '';
+
     return access.toLowerCase().includes(userFilterStr.toLowerCase());
   };
 

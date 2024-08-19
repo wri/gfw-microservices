@@ -24,6 +24,15 @@ const WrappedReactTable = ({
   isSharedList,
   viewDiagnostic,
   isListInDraftStatus,
+  isDeleteButtonAvailable,
+  promptDeleteSelectedLocations,
+  isEditActionAvailable,
+  editList,
+  copyMoveAction,
+  isCopyMoveActionAvailable,
+  selectedList,
+  setIsLoading,
+  currentUser,
 }) => {
   const setRowProps = (state, rowInfo) => {
     // determine row bg colors based on location status
@@ -160,6 +169,17 @@ const WrappedReactTable = ({
                 rowInfo={props.rowInfo}
                 viewDiagnostic={viewDiagnostic}
                 isListInDraftStatus={isListInDraftStatus}
+                isDeleteButtonAvailable={isDeleteButtonAvailable}
+                promptDeleteSelectedLocations={promptDeleteSelectedLocations}
+                isEditActionAvailable={isEditActionAvailable}
+                editList={editList}
+                copyMoveAction={copyMoveAction}
+                isCopyMoveActionAvailable={isCopyMoveActionAvailable}
+                visibleColumns={visibleColumns}
+                currentUser={currentUser}
+                listView={listView}
+                selectedList={selectedList}
+                setIsLoading={setIsLoading}
               >
                 {props.children}
               </CustomRow>

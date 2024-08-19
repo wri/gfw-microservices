@@ -89,8 +89,8 @@ function UsersListSection({ isLoading, setIsLoading }) {
     const status_type = {
       1: 'Pending',
       2: 'Active',
-      3: 'Inactive'
-    }
+      3: 'Inactive',
+    };
     const status = status_type[statusId] || '';
 
     return status.toLowerCase().includes(userFilterStr.toLowerCase());
@@ -100,8 +100,8 @@ function UsersListSection({ isLoading, setIsLoading }) {
     const access_type = {
       1: 'Administrator',
       2: 'Editor',
-      3: 'Viewer'
-    }
+      3: 'Viewer',
+    };
     const access = access_type[accessId] || '';
 
     return access.toLowerCase().includes(userFilterStr.toLowerCase());

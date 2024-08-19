@@ -32,7 +32,6 @@ export default class EditList extends Component {
     this.state = {
       commodityType: props.activeTemplate,
       accuracy: 'Very Confident',
-      uploadingData: [],
       selectedList: 'Create New List',
       selectedListMove: 'Create New List',
       customList: activeTemplate,
@@ -80,7 +79,6 @@ export default class EditList extends Component {
       };
 
       httpRequest.fetchJSON(route, body).then((response) => {
-        const { uploadingData } = this.state;
         const { selectedLocations } = this.props;
 
         const selectedListData = JSON.parse(response);
@@ -436,12 +434,6 @@ export default class EditList extends Component {
         request.setRequestHeader('Content-Type', 'application/json');
         request.send(JSON.stringify(bigObj));
       }
-    });
-  };
-
-  setFeatureResults = (uploadingData) => {
-    this.setState({
-      uploadingData: uploadingData,
     });
   };
 

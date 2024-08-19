@@ -4,15 +4,16 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import PublicIcon from '@mui/icons-material/Public';
 import DeleteIcon from '@mui/icons-material/Delete';
-import DownloadIcon from '@mui/icons-material/Download';
 import EditIcon from '@mui/icons-material/Edit';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import Button from '@mui/material/Button';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
-
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ListDownload from '../download/ListDownload';
+import { updateSelectedLocations } from '../../../../../locations/js/actions/locationActions';
 import redirectToMap from '../../../../../common/js/utils/redirect';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
+import store from '../../../../../locations/js/store';
 
 const greenButtonStyle = {
   color: '#97bd3d',
@@ -29,6 +30,17 @@ const CustomRow = ({
   listId,
   viewDiagnostic,
   isListInDraftStatus,
+  isDeleteButtonAvailable,
+  promptDeleteSelectedLocations,
+  isEditActionAvailable,
+  editList,
+  copyMoveAction,
+  isCopyMoveActionAvailable,
+  selectedList,
+  listView,
+  visibleColumns,
+  currentUser,
+  setIsLoading,
   children,
 }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -104,36 +116,57 @@ const CustomRow = ({
               targetOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
               <Menu className="context-menu">
-                <MenuItem
-                  primaryText="Copy/Move"
-                  leftIcon={<DriveFileMoveIcon />}
-                  onClick={() => {
-                    console.log('copymove');
-                  }}
-                />
-                <MenuItem
-                  primaryText="Edit"
-                  leftIcon={<EditIcon />}
-                  onClick={() => {
-                    console.log('edit');
-                  }}
-                />
-                <MenuItem
-                  primaryText="Download"
-                  leftIcon={<DownloadIcon />}
-                  onClick={() => {
-                    console.log('download');
-                  }}
-                />
+                {isCopyMoveActionAvailable && (
+                  <MenuItem
+                    primaryText="Copy/Move"
+                    leftIcon={<DriveFileMoveIcon />}
+                    onClick={() => {
+                      store.dispatch(updateSelectedLocations([locationId]));
+                      copyMoveAction({
+                        newListName: null,
+                        isNewListNameDuplicate: null,
+                        selectedNewOrExisting: null,
+                      });
+                    }}
+                  />
+                )}
+                {isEditActionAvailable && (
+                  <MenuItem
+                    primaryText="Edit"
+                    leftIcon={<EditIcon />}
+                    onClick={() => {
+                      store.dispatch(updateSelectedLocations([locationId]));
+                      editList();
+                    }}
+                  />
+                )}
 
-                <MenuItem
-                  primaryText="Delete"
-                  leftIcon={<DeleteIcon />}
-                  style={{ color: 'red' }}
-                  onClick={() => {
-                    console.log('Delete');
-                  }}
+                <ListDownload
+                  listID={listId}
+                  filters={{}}
+                  listFilterStr={''}
+                  tableSortedBy={'Investment Name'}
+                  tableSortedDesc={true}
+                  selectedList={selectedList}
+                  combinedColumns={visibleColumns}
+                  selectedLocations={[locationId]}
+                  currentUser={currentUser}
+                  listView={listView}
+                  isLoading={setIsLoading}
+                  isGfwList={isGfwList}
+                  isHoverMenu={true}
                 />
+                {isDeleteButtonAvailable && (
+                  <MenuItem
+                    primaryText="Delete"
+                    leftIcon={<DeleteIcon />}
+                    style={{ color: 'red' }}
+                    onClick={() => {
+                      store.dispatch(updateSelectedLocations([locationId]));
+                      promptDeleteSelectedLocations();
+                    }}
+                  />
+                )}
               </Menu>
             </Popover>
           </div>

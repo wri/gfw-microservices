@@ -11,6 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import moment from 'moment';
 import AddCompany from './AddCompany';
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
+import InfoBubble from '../../../../common/js/components/InfoBubble'
 
 const StyledTableCell = styled(TableCell)(() => ({
   fontFamily: 'Fira Sans, sans-serif',
@@ -33,7 +34,6 @@ const formatUpdatedTime = (date) => moment(date).format('MM/DD/YYYY - HH:mm');
 function FeatureFlagDetail() {
   const { selectedFeatureFlag, accountsWithFeatureFlagsByFlagId, upsertFeatureFlagByFlagId } =
     useFeatureFlagStateContext();
-  const statusLabel = selectedFeatureFlag?.flagState ? 'Active' : 'Inactive';
 
   const handleFeatureFlagStateChange = (flagStateChange, orgId = null) => {
     upsertFeatureFlagByFlagId(flagStateChange, orgId);
@@ -62,12 +62,16 @@ function FeatureFlagDetail() {
         </Grid>
         <Grid item xs={6}>
           <label>
-            {statusLabel}
+            Active for all Organizations
             <StyledSwitch
               checked={selectedFeatureFlag.flagState}
               color="default"
               onChange={(event) => handleFeatureFlagStateChange(event.target.checked)}
             />
+            <InfoBubble>
+              <h3 class="bubble-title">global switch</h3>
+              <p>Individual organizations can still be disabled even if the global switch is on.</p>
+            </InfoBubble>
           </label>
         </Grid>
       </Grid>

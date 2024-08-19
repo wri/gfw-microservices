@@ -1,11 +1,11 @@
 export const forestLossDatasetIds = {
-  STBN: 'STBN',
+  SBTN: 'SBTN',
   JRC: 'JRC',
 };
 
 export const forestLossDatasets = [
   {
-    id: forestLossDatasetIds.STBN,
+    id: forestLossDatasetIds.SBTN,
     label: 'SBTN Natural Forest Map 2020',
   },
   {

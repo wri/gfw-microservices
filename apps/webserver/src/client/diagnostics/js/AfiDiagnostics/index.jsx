@@ -23,7 +23,7 @@ function AfiDiagnostics() {
   const [tableData, setTableData] = useState({});
   const [chartData, setChartData] = useState({});
 
-  const [forestLossDataset, setForestLossDataset] = useState(forestLossDatasetIds.STBN);
+  const [forestLossDataset, setForestLossDataset] = useState(forestLossDatasetIds.SBTN);
 
   const handleChange = (event) => {
     setForestLossDataset(event.target.value);

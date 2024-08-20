@@ -262,7 +262,10 @@ export class GfwLists {
           location_id: record.id,
         };
       });
-      const omitFields = (record: any, fields: string[]): any => {
+      const omitFields = (
+        record: ListProtectedAreas & { 'Location Name': string },
+        fields: string[]
+      ): any => {
         const filteredRecord: any = {};
         for (const field in record) {
           if (!fields.includes(field)) {

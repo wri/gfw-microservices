@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import Paper from '@mui/material/Paper';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from 'common/js/components/Button';
 import MaterialButton from '@mui/material/Button';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import Stack from '@mui/material/Stack';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
@@ -64,7 +66,7 @@ import {
 } from '../../../utils/lists-redux.utils';
 import LargeListEditing from '../EditList/LargeListEditing/LargeListEditing';
 import ShareList from '../../../../../locations/js/components/ShareList/ShareList';
-import { EditList } from '../EditList/EditList';
+import { EditListBulkActionButton } from '../EditList/EditListBulkActionButton';
 import redirectToMap from '../../../../../common/js/utils/redirect';
 import { FailedPopupDialog } from '../../../../../locations/js/components/landing/FailedPopupDialog';
 import {
@@ -1850,6 +1852,8 @@ export default class ListDetails extends Component {
       selectedLists &&
       userSharedLists &&
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
+
+    const showMultipleSelectionBulkActions = selectedList && selectedLocations.length > 1;
     return (
       <div className="list-details">
         {!isGfwList && (
@@ -2021,49 +2025,62 @@ export default class ListDetails extends Component {
 
                   {!locationDataIsNotAvailable && (
                     <>
-                      <div className="list-detail-action-bar">
-                        {selectedList && selectedLocations.length > 1 && isEditActionAvailable && (
-                          <EditList
-                            editList={this.editList}
-                            currentUser={currentUser}
-                            selectedLocations={selectedLocations}
-                          />
-                        )}
-                        {selectedLocations.length > 1 && canMove && (
-                          <Button
-                            variant="tertiary"
-                            onClick={this.promptMoveSelectedLocations}
-                            label={locationsPage.lists.move}
-                          />
-                        )}
-                        {selectedList && selectedLocations.length > 1 && listData.length > 0 && (
-                          <ListDownload
-                            listID={listID}
-                            listName={listName}
-                            filters={filters}
-                            listFilterStr={filterString}
-                            tableSortedBy={tableSortedBy}
-                            tableSortedDesc={tableSortedDesc}
-                            selectedList={selectedList}
-                            combinedColumns={visibleColumns}
-                            selectedLocations={selectedLocations}
-                            currentUser={currentUser}
-                            listView={listView}
-                            isLoading={(loading) => {
-                              this.setState({ isLoading: loading });
+                      {showMultipleSelectionBulkActions && (
+                        <Paper className="list-actions">
+                          <Stack
+                            sx={{
+                              width: '100%',
                             }}
-                            isGfwList={isGfwList}
-                          />
-                        )}
-                        {canDelete && selectedLocations.length > 1 && (
-                          <Button
-                            className="list-detail-action-bar__delete-button"
-                            variant="danger"
-                            onClick={this.promptDeleteSelectedLocations}
-                            label={locationsPage.lists.delete}
-                          />
-                        )}
-                      </div>
+                            alignItems="center"
+                            direction="row"
+                          >
+                            {isEditActionAvailable && (
+                              <EditListBulkActionButton
+                                editList={this.editList}
+                                currentUser={currentUser}
+                                selectedLocations={selectedLocations}
+                              />
+                            )}
+                            {canMove && (
+                              <MaterialButton
+                                startIcon={<FileCopyIcon />}
+                                onClick={this.promptMoveSelectedLocations}
+                                variant="primary"
+                              >
+                                Copy / Move
+                              </MaterialButton>
+                            )}
+
+                            <ListDownload
+                              listID={listID}
+                              listName={listName}
+                              filters={filters}
+                              listFilterStr={filterString}
+                              tableSortedBy={tableSortedBy}
+                              tableSortedDesc={tableSortedDesc}
+                              selectedList={selectedList}
+                              combinedColumns={visibleColumns}
+                              selectedLocations={selectedLocations}
+                              currentUser={currentUser}
+                              listView={listView}
+                              isLoading={(loading) => {
+                                this.setState({ isLoading: loading });
+                              }}
+                              isGfwList={isGfwList}
+                            />
+
+                            {canDelete && (
+                              <MaterialButton
+                                style={{ color: 'red' }}
+                                startIcon={<DeleteIcon />}
+                                onClick={this.promptDeleteSelectedLocations}
+                              >
+                                Delete
+                              </MaterialButton>
+                            )}
+                          </Stack>
+                        </Paper>
+                      )}
 
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <AnalysesTabs

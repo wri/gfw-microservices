@@ -16,6 +16,8 @@ const ANALYSYS_TABLE_NAMES = {
 export class GfwLists {
   private readonly logger = new Logger('List processing service');
   private readonly clientStoreConnection = new ClientStoreConnection();
+  private readonly DEFAULT_PAGE_SIZE: number = 50;
+  private readonly DEFAULT_PAGE_NUM: number = 1;
 
   getAttributesListEntity(
     list_id: number
@@ -28,6 +30,7 @@ export class GfwLists {
     };
     return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
   }
+
   async getPaginatedAttributes(
     pageNum: number,
     pageSize: number,
@@ -38,8 +41,8 @@ export class GfwLists {
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
-      const take = pageSize === 0 ? 50 : pageSize;
-      const skip = pageNum > 0 ? (pageNum - 1) * take : 0;
+      const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
+      const skip = pageNum > 0 ? (pageNum - 1) * take : this.DEFAULT_PAGE_NUM;
 
       let items, count;
 
@@ -78,6 +81,7 @@ export class GfwLists {
       throw new InternalServerErrorException('Error deleting list', error.message);
     }
   }
+
   async getAnalysisDataForGFWList(
     pageNum: number,
     pageSize: number,
@@ -93,8 +97,8 @@ export class GfwLists {
         ANALYSYS_TABLE_NAMES[listTableName.list_analysis_table_name]
       );
 
-      const take = pageSize === 0 ? 50 : pageSize;
-      const skip = pageNum > 0 ? (pageNum - 1) * take : 0;
+      const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
+      const skip = pageNum > 0 ? (pageNum - 1) * take : this.DEFAULT_PAGE_NUM;
 
       let items = [],
         count = 0;
@@ -164,8 +168,8 @@ export class GfwLists {
     );
     return result;
   }
+
   async getPaginatedAnalysisDataForProtectedAreas(
-    list_id,
     pageNum,
     pageSize,
     organizationDatabase,
@@ -196,8 +200,8 @@ export class GfwLists {
         locationNameArray = filters.selectedNames;
       }
     }
-    const skip = pageNum > 0 ? (pageNum - 1) * pageSize : 0;
-    const take = pageSize === 0 ? 50 : pageSize;
+    const skip = pageNum > 0 ? (pageNum - 1) * pageSize : this.DEFAULT_PAGE_NUM;
+    const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
     try {
       const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
       const analysisDataRepository = await connection.getRepository(ListProtectedAreas);

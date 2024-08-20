@@ -417,7 +417,6 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
 ) {
   const gfwLists = new GfwLists();
   return await gfwLists.getPaginatedAnalysisDataForProtectedAreas(
-    list_id,
     pageNum,
     pageSize,
     database,

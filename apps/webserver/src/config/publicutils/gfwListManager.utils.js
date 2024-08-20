@@ -638,14 +638,21 @@ export function initialize() {
       });
   });
 }
-
-export async function getPaginatedTable(req, pageNum, pageSize, list_id, organizationDatabase) {
+/***
+ * @function getPaginatedTable
+ * @param req
+ * @param pageNum
+ * @param pageSize
+ * @param list_id
+ * @summary Get paginated table data for GFW List based on list_id
+ */
+export async function getPaginatedTable(req, pageNum, pageSize, list_id) {
   const gfwLists = new GfwLists();
   const [noGeomData, count] = await gfwLists.getPaginatedTable(
     pageNum,
     pageSize,
     list_id,
-    organizationDatabase
+    config.SQLConnection.database
   );
   const location_ids = noGeomData.map((item) => item.location_id);
   const gfwListAnalysesData = await AnalysisManager.getAnalysisDataForGFWList(

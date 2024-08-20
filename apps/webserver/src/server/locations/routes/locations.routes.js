@@ -743,13 +743,7 @@ module.exports = (app, limiter) => {
     const locationAnalysisArray = [];
 
     if (pagination) {
-      GFWListManager.getPaginatedTable(
-        req,
-        pageNum,
-        pageSize,
-        list_id,
-        config.SQLConnection.database
-      ).then((response) => {
+      GFWListManager.getPaginatedTable(req, pageNum, pageSize, list_id).then((response) => {
         const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
         locationAttributeArray.push(...noGeomData);
         locationAnalysisArray.push(...gfwListAnalysesData);

@@ -62,16 +62,6 @@ const ListActions = ({
     setIsSearchBarOpen(false);
     handleSearchInputChange('');
   };
-  const isRerunListAvailable =
-    (currentUser.access_level_id === userAccessLevel.ADMIN ||
-      (selectedList &&
-        currentUser.id === selectedList.user_id &&
-        currentUser.access_level_id !== userAccessLevel.VIEWER &&
-        selectedList &&
-        selectedList.list_status_id !== 1 &&
-        !getIsDiagnosticStatusDraft(selectedList) &&
-        !selectedList.globalForestWatchList)) &&
-    !isSearchBarOpen;
 
   const isShareOptionAvailable =
     currentUser.access_level_id === userAccessLevel.ADMIN &&
@@ -83,15 +73,22 @@ const ListActions = ({
   const isSubmitOptionAvailable =
     (currentUser.access_level_id === userAccessLevel.ADMIN ||
       (currentUser.access_level_id !== userAccessLevel.ADMIN && userIsOwner)) &&
-    selectedList &&
-    selectedList.list_status_id !== 1 &&
+    selectedList?.list_status_id !== 1 &&
     getIsDiagnosticStatusDraft(selectedList) &&
-    !selectedList.globalForestWatchList &&
+    !selectedList?.globalForestWatchList &&
+    !isSearchBarOpen;
+
+  const isRerunListAvailable =
+    (currentUser.access_level_id === userAccessLevel.ADMIN ||
+      (currentUser.id === selectedList.user_id &&
+        currentUser.access_level_id !== userAccessLevel.VIEWER)) &&
+    selectedList?.list_status_id !== 1 &&
+    !getIsDiagnosticStatusDraft(selectedList) &&
+    !selectedList?.globalForestWatchList &&
     !isSearchBarOpen;
 
   const isAddToFolderOptionAvailable =
     selectedList && !selectedList.globalForestWatchList && !isSearchBarOpen;
-
   return (
     <>
       <Paper className="list-actions">
@@ -160,6 +157,18 @@ const ListActions = ({
                 />
               </div>
             )}
+            {isSubmitOptionAvailable && (
+              <div>
+                <Button
+                  sx={blackButtonStyle}
+                  startIcon={<PublishIcon height="14px" />}
+                  variant="primary"
+                  onClick={handleDraftSubmit}
+                >
+                  Submit Analysis
+                </Button>
+              </div>
+            )}
 
             {isAddToFolderOptionAvailable && (
               <div>
@@ -198,26 +207,13 @@ const ListActions = ({
             )}
 
             {isShareOptionAvailable && (
-              <div id="ShareList">
+              <div>
                 <Button
                   onClick={() => showShareList(true)}
                   sx={blackButtonStyle}
                   startIcon={<FolderSharedIcon height="14px" />}
                 >
                   Share
-                </Button>
-              </div>
-            )}
-
-            {isSubmitOptionAvailable && (
-              <div id="ShareList">
-                <Button
-                  sx={blackButtonStyle}
-                  startIcon={<PublishIcon height="14px" />}
-                  variant="primary"
-                  onClick={handleDraftSubmit}
-                >
-                  Submit Analysis
                 </Button>
               </div>
             )}

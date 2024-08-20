@@ -26,6 +26,7 @@ body:has(.list-details) {
 
 .ReactTable.lists-react-table {
   position: relative;
+  margin: auto;
   .-headerGroups {
     display: none;
   }

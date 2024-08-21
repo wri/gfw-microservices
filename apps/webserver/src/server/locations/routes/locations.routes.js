@@ -737,34 +737,61 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
-    const { list_id, location_ids } = req.body;
-
+    const { list_id, location_ids, pageNum, pageSize } = req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
 
-    Promise.all([
-      GFWListManager.getGFWListLocationsNoGeom(req, list_id, location_ids),
-      AnalysisManager.getAnalysisDataForGFWList(req, list_id, location_ids),
-      AnalysisManager.getGFWListAnalyses(req, list_id),
-    ]).then((response) => {
-      const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData] = response;
-      locationAttributeArray.push(...noGeomData);
-      locationAnalysisArray.push(...gfwListAnalysesData);
-      listAnalyses.push(...gfwLocationsAnalysesData);
-
-      LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
-        .then((locationAttributeList) => {
+    if (pageNum && pageSize) {
+      GFWListManager.getPaginatedTable(req, pageNum, pageSize, list_id).then((response) => {
+        const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
+        locationAttributeArray.push(...noGeomData);
+        locationAnalysisArray.push(...gfwListAnalysesData);
+        listAnalyses.push(...gfwLocationsAnalysesData);
+        if (noGeomData.length === 0) {
           res.send({
-            list_analysis: listAnalyses,
-            location_analyses: [locationAttributeList, locationAnalysisArray],
+            list_analysis: [],
+            location_analyses: [],
+            total_rows: 0,
           });
-        })
-        .catch((err) => {
-          console.log('Error /locations/getGFWListLocationData', err);
-          res.send(false);
-        });
-    });
+        }
+        LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
+          .then((locationAttributeList) => {
+            res.send({
+              list_analysis: listAnalyses,
+              location_analyses: [locationAttributeList, locationAnalysisArray],
+              total_rows: count,
+            });
+          })
+          .catch((err) => {
+            console.log('Error /locations/getGFWListLocationData', err);
+            res.send(false);
+          });
+      });
+    } else {
+      Promise.all([
+        GFWListManager.getGFWListLocationsNoGeom(req, list_id, location_ids),
+        AnalysisManager.getAnalysisDataForGFWList(req, list_id, location_ids),
+        AnalysisManager.getGFWListAnalyses(req, list_id),
+      ]).then((response) => {
+        const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData] = response;
+        locationAttributeArray.push(...noGeomData);
+        locationAnalysisArray.push(...gfwListAnalysesData);
+        listAnalyses.push(...gfwLocationsAnalysesData);
+
+        LocationManager.getLocationAttributesList(req, locationAttributeArray, true)
+          .then((locationAttributeList) => {
+            res.send({
+              list_analysis: listAnalyses,
+              location_analyses: [locationAttributeList, locationAnalysisArray],
+            });
+          })
+          .catch((err) => {
+            console.log('Error /locations/getGFWListLocationData', err);
+            res.send(false);
+          });
+      });
+    }
   });
 
   app.post('/locations/getGFWListLocationGeom', (req, res) => {
@@ -871,19 +898,57 @@ module.exports = (app, limiter) => {
       selectedIUCN,
       selectedNames,
     };
-
-    AnalysisManager.getAnalysisDataForProtectedAreas(req, listID, filters)
-      .then(({ listData, protectedLocationResult }) => {
-        const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
-        res.send({
-          list_analysis: [],
-          location_analyses: [listDataSalted, protectedLocationResult],
+    const { pageNum, pageSize } = req.body;
+    if (pageNum && pageSize) {
+      AnalysisManager.getPaginatedAnalysisDataForProtectedAreas(
+        listID,
+        pageNum,
+        pageSize,
+        config.SQLConnection.database,
+        filters
+      )
+        .then((result) => {
+          const { listData, protectedLocationResult, count } = result;
+          if (protectedLocationResult.length === 0) {
+            res.send({
+              list_analysis: [],
+              location_analyses: [],
+              total_rows: 0,
+            });
+          }
+          const location_ids = protectedLocationResult.map((item) => item.location_id);
+          AnalysisManager.getAnalysisDataForGFWList(req, listID, location_ids)
+            .then((protectedLocationAnalysisResult) => {
+              const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
+              res.send({
+                list_analysis: [],
+                location_analyses: [listDataSalted, protectedLocationAnalysisResult],
+                total_rows: count,
+              });
+            })
+            .catch((err) => {
+              console.log('Error /getProtectedAreasData', err);
+              res.send(err);
+            });
+        })
+        .catch((err) => {
+          console.log('Error /getProtectedAreasData', err);
+          res.send(err);
         });
-      })
-      .catch((err) => {
-        console.log('Error /getProtectedAreasData', err);
-        res.send(err);
-      });
+    } else {
+      AnalysisManager.getAnalysisDataForProtectedAreas(req, listID, filters)
+        .then(({ listData, protectedLocationResult }) => {
+          const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
+          res.send({
+            list_analysis: [],
+            location_analyses: [listDataSalted, protectedLocationResult],
+          });
+        })
+        .catch((err) => {
+          console.log('Error /getProtectedAreasData', err);
+          res.send(err);
+        });
+    }
   });
 
   app.post('/locations/getGFWListLocationsGlobalId', (req, res) => {

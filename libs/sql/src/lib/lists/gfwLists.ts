@@ -30,7 +30,7 @@ export class GfwLists {
     };
     return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
   }
-async getConnection(organizationDatabase: string) {
+  async getConnection(organizationDatabase: string) {
     return await this.clientStoreConnection.getConnection(organizationDatabase);
   }
   async getPaginatedAttributes(

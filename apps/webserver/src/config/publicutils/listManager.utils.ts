@@ -464,7 +464,11 @@ export const getUserListsWithAnalysisId = (req): Promise<[{ id; list_name }]> =>
       .then((results) => {
         const [userLists, listAnalysisStatuses] = results;
         mergeListsWithAnalysisId(userLists, listAnalysisStatuses);
-        resolve(userLists);
+        const userListsWithGFWListFlag = userLists.map((list) => {
+          list.globalForestWatchList = false;
+          return list;
+        });
+        resolve(userListsWithGFWListFlag);
       })
       .catch((error) => reject(error));
   });

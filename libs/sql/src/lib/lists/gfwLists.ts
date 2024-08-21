@@ -30,7 +30,9 @@ export class GfwLists {
     };
     return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
   }
-
+async getConnection(organizationDatabase: string) {
+    return await this.clientStoreConnection.getConnection(organizationDatabase);
+  }
   async getPaginatedAttributes(
     pageNum: number,
     pageSize: number,
@@ -39,7 +41,7 @@ export class GfwLists {
     ids: number[] = []
   ): Promise<[ListOilPalmConcessions[] | ListsPalmOilMills[] | RspoOilPalmConcessions[], number]> {
     try {
-      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const connection = await this.getConnection(organizationDatabase);
       const listRepository = connection.getRepository(this.getAttributesListEntity(list_id));
       const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
       const skip = pageNum > 0 ? (pageNum - 1) * take : this.DEFAULT_PAGE_NUM;
@@ -90,7 +92,7 @@ export class GfwLists {
     ids: number[] = []
   ) {
     try {
-      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const connection = await this.getConnection(organizationDatabase);
       const listTableName = await this.getListAnalysisTableName(list_id, organizationDatabase);
 
       const listRepository = connection.getRepository(
@@ -144,7 +146,7 @@ export class GfwLists {
     organizationDatabase: string
   ): Promise<ListGFWLists> {
     try {
-      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const connection = await this.getConnection(organizationDatabase);
       const listRepository = await connection.getRepository(ListGFWLists);
       const listName = await listRepository.findOne({ where: { id: list_id } });
       return listName;
@@ -203,7 +205,7 @@ export class GfwLists {
     const skip = pageNum > 0 ? (pageNum - 1) * pageSize : this.DEFAULT_PAGE_NUM;
     const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
     try {
-      const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+      const connection = await this.getConnection(organizationDatabase);
       const analysisDataRepository = await connection.getRepository(ListProtectedAreas);
       let items, count;
       if (locationNameArray.length > 0) {

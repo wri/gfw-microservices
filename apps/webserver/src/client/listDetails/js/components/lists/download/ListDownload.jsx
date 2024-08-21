@@ -1,5 +1,5 @@
-/* eslint-disable no-undef */
 import React, { useState } from 'react';
+import Button from '@mui/material/Button';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -105,11 +105,17 @@ function ListDownload({
           style={{ width: isHoverMenu ? '100%' : 'auto' }}
           iconButtonElement={
             isListDetailsPageRedesignAvailable ? (
-              <MenuItem
-                data-cy="download-list"
-                primaryText="Download"
-                leftIcon={<DownloadIcon />}
-              />
+              isHoverMenu ? (
+                <MenuItem
+                  data-cy="download-list"
+                  primaryText="Download"
+                  leftIcon={<DownloadIcon />}
+                />
+              ) : (
+                <Button startIcon={<DownloadIcon />} variant="primary">
+                  Download
+                </Button>
+              )
             ) : (
               <RaisedButton
                 data-cy="download-list"

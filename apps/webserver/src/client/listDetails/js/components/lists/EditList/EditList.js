@@ -3,9 +3,9 @@ import * as PropTypes from 'prop-types';
 import Button from '../../../../../common/js/components/Button';
 import { userAccessLevel } from '../../../../../common/js/config';
 import EditListDialog from './EditListDialog';
-
 import './EditList.scss';
 
+// TODO: delete when removing feature flag isListDetailsPageRedesignAvailable
 export class EditList extends Component {
   constructor(props) {
     super(props);

@@ -686,11 +686,7 @@ export default class Lists extends Component {
     );
     const destinationListName = moveToList?.list_name || newListName;
 
-    // check if the list's name matches any of the GFW list names.
-    // we also check if list ID falls between 1 and 5, which are reserved for GFW lists
-    const isGfwList = gfwListNames.includes(selectedList?.list_name) && list_id < 6;
-
-    if (!isGfwList) {
+    if (!selectedList.globalForestWatchList) {
       httpRequest.fetchJSON('/locations/lockList', { list_id }).then(() => {
         const { associated_gfwlist } = moveToList || selectedList;
         const gfw_list_id =

@@ -48,7 +48,11 @@ export const getGFWLists = (req) => {
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetGfwLists')
       .then((recordsets) => {
-        resolve(recordsets);
+        const gfwLists = recordsets.map((list) => {
+          list.globalForestWatchList = true;
+          return list;
+        });
+        resolve(gfwLists);
       })
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(

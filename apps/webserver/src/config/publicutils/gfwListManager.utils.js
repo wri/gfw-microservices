@@ -655,11 +655,11 @@ export async function getPaginatedTable(req, pageNum, pageSize, list_id) {
     config.SQLConnection.database
   );
   const location_ids = noGeomData.map((item) => item.location_id);
-  const gfwListAnalysesData = await AnalysisManager.getAnalysisDataForGFWList(
+  const gfwLocationsAnalysesData = await AnalysisManager.getAnalysisDataForGFWList(
     req,
     list_id,
     location_ids
   );
-  const gfwLocationsAnalysesData = await AnalysisManager.getGFWListAnalyses(req, list_id);
+  const gfwListAnalysesData = await AnalysisManager.getGFWListAnalyses(req, list_id);
   return [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count];
 }

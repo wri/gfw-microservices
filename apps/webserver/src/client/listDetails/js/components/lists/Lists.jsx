@@ -686,7 +686,9 @@ export default class Lists extends Component {
     );
     const destinationListName = moveToList?.list_name || newListName;
 
-    if (!selectedList.globalForestWatchList) {
+    const isGfwList = gfwListNames.includes(selectedList?.list_name) && list_id < 6;
+
+    if (!isGfwList) {
       httpRequest.fetchJSON('/locations/lockList', { list_id }).then(() => {
         const { associated_gfwlist } = moveToList || selectedList;
         const gfw_list_id =

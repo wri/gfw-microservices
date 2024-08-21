@@ -25,6 +25,7 @@ coverage/
 *.mbtiles
 
 dist/*
+*/dist/*
 dev.secrets
 qa.secrets
 

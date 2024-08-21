@@ -12,6 +12,7 @@
  * @function {requestAnalysis}
  * @function {getAFIAnalysisForListId}
  * @function {getAFINegligibleStatsForListId}
+ * @function {getPaginatedAnalysisDataForProtectedAreas}
  *
  ********************************************************************/
 import _ from 'lodash';
@@ -21,7 +22,11 @@ import * as sqlUtils from '../privateutils/sql.utils';
 import { createErrorMessage, ERROR_CODES } from '../privateutils/error.utils';
 import * as analysisUtils from '../privateutils/analysis.utils';
 import * as ListManager from '../publicutils/listManager.utils';
-import { getAnalysisDataForProtectedAreasByLocation, SqlParamType } from '@wri-monorepos/sql';
+import {
+  getAnalysisDataForProtectedAreasByLocation,
+  GfwLists,
+  SqlParamType,
+} from '@wri-monorepos/sql';
 
 /** @function {getAnalysisDataForUserList}
  *   @summary Function to return analysis data for a user list.
@@ -403,3 +408,18 @@ export const formatNumber = (data, decimals = 2) => {
   }
   return newData;
 };
+export async function getPaginatedAnalysisDataForProtectedAreas(
+  list_id,
+  pageNum,
+  pageSize,
+  database,
+  filters
+) {
+  const gfwLists = new GfwLists();
+  return await gfwLists.getPaginatedAnalysisDataForProtectedAreas(
+    pageNum,
+    pageSize,
+    database,
+    filters
+  );
+}

@@ -17,7 +17,7 @@ export class GfwLists {
   private readonly logger = new Logger('List processing service');
   private readonly clientStoreConnection = new ClientStoreConnection();
   private readonly DEFAULT_PAGE_SIZE: number = 50;
-  private readonly DEFAULT_PAGE_NUM: number = 1;
+  private readonly DEFAULT_PAGE_NUM: number = 0;
 
   getAttributesListEntity(
     list_id: number

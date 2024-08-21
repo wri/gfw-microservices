@@ -737,12 +737,12 @@ module.exports = (app, limiter) => {
 
   app.post('/locations/getGFWListLocationData', (req, res) => {
     console.log('POST /locations/getGFWListLocationData');
-    const { list_id, location_ids, pagination, pageNum = 0, pageSize = 50 } = req.body;
+    const { list_id, location_ids, pageNum, pageSize } = req.body;
     const listAnalyses = [];
     const locationAttributeArray = [];
     const locationAnalysisArray = [];
 
-    if (pagination) {
+    if (pageNum && pageSize) {
       GFWListManager.getPaginatedTable(req, pageNum, pageSize, list_id).then((response) => {
         const [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count] = response;
         locationAttributeArray.push(...noGeomData);
@@ -898,8 +898,8 @@ module.exports = (app, limiter) => {
       selectedIUCN,
       selectedNames,
     };
-    const { pagination, pageNum = 0, pageSize = 50 } = req.body;
-    if (pagination) {
+    const { pageNum, pageSize } = req.body;
+    if (pageNum && pageSize) {
       AnalysisManager.getPaginatedAnalysisDataForProtectedAreas(
         listID,
         pageNum,

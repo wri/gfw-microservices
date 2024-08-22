@@ -5,6 +5,13 @@ import { User } from './user.entity';
 import { Analyses } from './analyses.entity';
 import { ListsAnalysisStatus } from './lists.analysis.status.entity';
 import { AnalysesDashboardEntity } from './analyses.dashboard.entity';
+import { ListsPalmOilMills } from './gwfList.PalmOilMill.entity';
+import { ListGFWLists } from './gfwLists.entity';
+import { AnalysisPalmOilMills } from './analysisPalmOilMills.entity';
+import { RspoOilPalmConcessions } from './rspoOilPalmConcessions.entity';
+import { ListAdministrativeAreas } from './list.AdministrativeAreas.entity';
+import { ListOilPalmConcessions } from './list.OilPalmConcessions.entity';
+import { ListProtectedAreas } from './list.protectedAreas.entity';
 
 export * from './lists.entity';
 export * from './activityLog.entity';
@@ -24,4 +31,11 @@ export const organizationEntities = [
   Analyses,
   ListsAnalysisStatus,
   AnalysesDashboardEntity,
+  ListGFWLists,
+  ListsPalmOilMills,
+  AnalysisPalmOilMills,
+  RspoOilPalmConcessions,
+  ListAdministrativeAreas,
+  ListOilPalmConcessions,
+  ListProtectedAreas,
 ];

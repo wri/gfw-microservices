@@ -9,7 +9,7 @@ import {
   ListProtectedAreas,
   ListAdministrativeAreas,
 } from '../entity';
-import { Admin, EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
+import { EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
 
 const ANALYSYS_TABLE_NAMES = {
   'analysis-palmOilMills': AnalysisPalmOilMills,

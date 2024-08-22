@@ -405,6 +405,7 @@ export const handleListProcessingError = async (
   config
 ) => {
   logger.error(`Error ${url}`, error.stack);
+  logger.error(`Error ${url} response.data`, JSON.stringify(error.response?.data));
   logger.error(`Error ${url} data`, error.config?.data);
   const { response } = error;
   const { status = 500, statusText: reason = errorMessage, data = {} } = response || {};

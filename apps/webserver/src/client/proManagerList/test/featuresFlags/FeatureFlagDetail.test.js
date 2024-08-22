@@ -3,6 +3,7 @@ import { cleanup, screen, render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import FeatureFlagDetail from '../../js/components/featuresFlags/FeatureFlagDetail';
 import { useFeatureFlagStateContext } from '../../js/components/featuresFlags/FeatureFlagStateContext';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 jest.mock('../../js/components/featuresFlags/FeatureFlagStateContext');
 

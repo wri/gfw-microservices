@@ -10,7 +10,11 @@ import {
   sortByStatus,
   normalizeColunmData,
   locationIsActive,
+  getBooleanValue,
 } from '../../../../locations/js/utils/locationsTableUtils';
+import featureFlags from '../../../../../utils/general.utils';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 const transifex = Transifex.live.translateText;
 
@@ -73,8 +77,12 @@ const forest_change_analysis = [
           return locationIsActive(row.value) ? (
             checkValid(row.value.tree_cover_loss_total_yearly) ? (
               <span title={getValue(row.value.tree_cover_loss_total_yearly)}>
-                {getValue(row.value.tree_cover_loss_total_yearly)}
+                {isListDetailsPageRedesignAvailable
+                  ? getBooleanValue(row.value.tree_cover_loss_total_yearly)
+                  : getValue(row.value.tree_cover_loss_total_yearly)}
               </span>
+            ) : isListDetailsPageRedesignAvailable ? (
+              <> No </>
             ) : (
               0
             )
@@ -111,11 +119,18 @@ const forest_change_analysis = [
                   row.value.protected_areas_area
                 )}
               >
-                {getValidatedValue(
-                  row.value.tree_cover_loss_protected_areas_yearly,
-                  row.value.protected_areas_area
-                )}
+                {isListDetailsPageRedesignAvailable
+                  ? getBooleanValue(
+                      row.value.tree_cover_loss_protected_areas_yearly,
+                      row.value.protected_areas_area
+                    )
+                  : getValidatedValue(
+                      row.value.tree_cover_loss_protected_areas_yearly,
+                      row.value.protected_areas_area
+                    )}
               </span>
+            ) : isListDetailsPageRedesignAvailable ? (
+              <> No </>
             ) : (
               0
             )
@@ -152,11 +167,18 @@ const forest_change_analysis = [
                   row.value.natural_habitat_primary
                 )}
               >
-                {getValidatedValue(
-                  row.value.tree_cover_loss_primary_forest_yearly,
-                  row.value.natural_habitat_primary
-                )}
+                {isListDetailsPageRedesignAvailable
+                  ? getBooleanValue(
+                      row.value.tree_cover_loss_primary_forest_yearly,
+                      row.value.natural_habitat_primary
+                    )
+                  : getValidatedValue(
+                      row.value.tree_cover_loss_primary_forest_yearly,
+                      row.value.natural_habitat_primary
+                    )}
               </span>
+            ) : isListDetailsPageRedesignAvailable ? (
+              <> No </>
             ) : (
               0
             )

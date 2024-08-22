@@ -42,4 +42,12 @@ body:has(.list-details) {
   .rt-tbody .rt-td {
     border: none;
   }
+  .red-circle {
+    height: 7px;
+    width: 7px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+  }
 }

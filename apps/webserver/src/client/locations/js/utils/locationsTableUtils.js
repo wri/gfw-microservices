@@ -1,3 +1,4 @@
+import React from 'react';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
 
 export const getColorByLevelClasse = {
@@ -126,6 +127,20 @@ export const getValidatedValue = (data, auditData) => {
     return '--';
   }
   return formatDigit(Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0));
+};
+
+export const getBooleanValue = (data, auditData) => {
+  if (auditData === 0) {
+    return '--';
+  }
+  const isZeroValue = Object.values(JSON.parse(data)).reduce((a, b) => a + b, 0) === 0;
+  return isZeroValue ? (
+    <> No </>
+  ) : (
+    <>
+      <span className="red-circle"></span>Yes
+    </>
+  );
 };
 
 export const getLastValue = (data) => {

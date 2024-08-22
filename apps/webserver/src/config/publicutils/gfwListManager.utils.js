@@ -32,9 +32,9 @@ const sqlUtils = require(path.resolve('./config/privateutils/sql.utils'));
 const errorUtils = require(path.resolve('./config/privateutils/error.utils'));
 const lambdaUtils = require(path.resolve('./config/privateutils/lambda.utils'));
 const locationUtils = require(path.resolve('./config/privateutils/location.utils'));
-import { getAdministrativeAreasDataByLocation } from '@wri-monorepos/sql';
+const AnalysisManager = require(path.resolve('./config/publicutils/analysisManager.utils'));
+import { getAdministrativeAreasDataByLocation, GfwLists } from '@wri-monorepos/sql';
 import { gfwListsIds, gfwListsNames } from '@wri-monorepos/constants';
-
 let adminInfo = [];
 let protectedInfo = [];
 
@@ -48,7 +48,11 @@ export const getGFWLists = (req) => {
     sqlUtils
       .executeSystemStoredProcedure(req, 'uspGetGfwLists')
       .then((recordsets) => {
-        resolve(recordsets);
+        const gfwLists = recordsets.map((list) => {
+          list.globalForestWatchList = true;
+          return list;
+        });
+        resolve(gfwLists);
       })
       .catch((errorMessage) => {
         const errorObject = errorUtils.createErrorMessage(
@@ -637,4 +641,29 @@ export function initialize() {
         reject(errMsg);
       });
   });
+}
+/***
+ * @function getPaginatedTable
+ * @param req
+ * @param pageNum
+ * @param pageSize
+ * @param list_id
+ * @summary Get paginated table data for GFW List based on list_id
+ */
+export async function getPaginatedTable(req, pageNum, pageSize, list_id) {
+  const gfwLists = new GfwLists();
+  const [noGeomData, count] = await gfwLists.getPaginatedTable(
+    pageNum,
+    pageSize,
+    list_id,
+    config.SQLConnection.database
+  );
+  const location_ids = noGeomData.map((item) => item.location_id);
+  const gfwLocationsAnalysesData = await AnalysisManager.getAnalysisDataForGFWList(
+    req,
+    list_id,
+    location_ids
+  );
+  const gfwListAnalysesData = await AnalysisManager.getGFWListAnalyses(req, list_id);
+  return [noGeomData, gfwListAnalysesData, gfwLocationsAnalysesData, count];
 }

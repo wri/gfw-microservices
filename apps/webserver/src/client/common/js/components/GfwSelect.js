@@ -25,8 +25,8 @@ const GfwSelect = (props) => {
   }
 
   const value = selectedOption ? getValue(selectedOption) : null;
-  const options = props.options.map((option) => (
-    <option value={getValue(option)} key={getValue(option)}>
+  const options = props.options.map((option, index) => (
+    <option value={getValue(option)} key={`${getValue(option)}${index}`}>
       {getLabel(option)}
     </option>
   ));

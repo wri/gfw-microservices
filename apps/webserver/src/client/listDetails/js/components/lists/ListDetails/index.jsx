@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import Paper from '@mui/material/Paper';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Button from 'common/js/components/Button';
 import MaterialButton from '@mui/material/Button';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import Stack from '@mui/material/Stack';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
@@ -64,7 +66,7 @@ import {
 } from '../../../utils/lists-redux.utils';
 import LargeListEditing from '../EditList/LargeListEditing/LargeListEditing';
 import ShareList from '../../../../../locations/js/components/ShareList/ShareList';
-import { EditList } from '../EditList/EditList';
+import { EditListBulkActionButton } from '../EditList/EditListBulkActionButton';
 import redirectToMap from '../../../../../common/js/utils/redirect';
 import { FailedPopupDialog } from '../../../../../locations/js/components/landing/FailedPopupDialog';
 import {
@@ -1786,7 +1788,7 @@ export default class ListDetails extends Component {
     const listName = selectedList ? selectedList.list_name : '';
     const listAnalysesStatus = selectedList ? selectedList.listAnalysesStatus : [];
 
-    const isGfwList = gfwListNames.includes(listName);
+    const isGfwList = selectedList.associated_gfwlist || gfwListNames.includes(listName);
     // user lists are paginated in the backend, gfw lists search works in the front end
     const filteredLists = isGfwList
       ? getListFilteredLocations(filteredLocationData, combinedColumns, filterString)
@@ -1813,10 +1815,7 @@ export default class ListDetails extends Component {
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedList.id);
 
     // Viewers cannot move or copy any list
-    const canMove =
-      selectedList &&
-      selectedLocations.length > 0 &&
-      currentUser.access_level_id !== userAccessLevel.VIEWER;
+    const canMove = selectedList && currentUser.access_level_id !== userAccessLevel.VIEWER;
 
     // Admins can delete locations from any list.
     // Viewers cannot delete any locations.
@@ -1824,10 +1823,11 @@ export default class ListDetails extends Component {
     const canDelete =
       !isGfwList &&
       selectedList &&
-      selectedLocations.length > 0 &&
       currentUser.access_level_id !== userAccessLevel.VIEWER &&
       (currentUser.access_level_id === userAccessLevel.ADMIN || !selectedListIsShared);
 
+    const isEditActionAvailable =
+      !isGfwList && !selectedListIsShared && currentUser.access_level_id !== userAccessLevel.VIEWER;
     if (checkValidView(listData)) {
       listViewOptions.push({ value: 'forest_change', label: locationsPage.lists.viewForestChange });
     }
@@ -1852,6 +1852,8 @@ export default class ListDetails extends Component {
       selectedLists &&
       userSharedLists &&
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
+
+    const showMultipleSelectionBulkActions = selectedList && selectedLocations.length > 1;
     return (
       <div className="list-details">
         {!isGfwList && (
@@ -2023,53 +2025,62 @@ export default class ListDetails extends Component {
 
                   {!locationDataIsNotAvailable && (
                     <>
-                      <div className="list-detail-action-bar">
-                        {selectedList &&
-                          selectedLocations.length > 0 &&
-                          !isGfwList &&
-                          !selectedListIsShared && (
-                            <EditList
-                              editList={this.editList}
-                              currentUser={currentUser}
-                              selectedLocations={selectedLocations}
-                            />
-                          )}
-                        {canMove && (
-                          <Button
-                            variant="tertiary"
-                            onClick={this.promptMoveSelectedLocations}
-                            label={locationsPage.lists.move}
-                          />
-                        )}
-                        {selectedList && selectedLocations.length > 0 && listData.length > 0 && (
-                          <ListDownload
-                            listID={listID}
-                            listName={listName}
-                            filters={filters}
-                            listFilterStr={filterString}
-                            tableSortedBy={tableSortedBy}
-                            tableSortedDesc={tableSortedDesc}
-                            selectedList={selectedList}
-                            combinedColumns={visibleColumns}
-                            selectedLocations={selectedLocations}
-                            currentUser={currentUser}
-                            isEveryRowSelected={isEveryRowSelected}
-                            listView={listView}
-                            isLoading={(loading) => {
-                              this.setState({ isLoading: loading });
+                      {showMultipleSelectionBulkActions && (
+                        <Paper className="list-actions">
+                          <Stack
+                            sx={{
+                              width: '100%',
                             }}
-                            isGfwList={isGfwList}
-                          />
-                        )}
-                        {canDelete && (
-                          <Button
-                            className="list-detail-action-bar__delete-button"
-                            variant="danger"
-                            onClick={this.promptDeleteSelectedLocations}
-                            label={locationsPage.lists.delete}
-                          />
-                        )}
-                      </div>
+                            alignItems="center"
+                            direction="row"
+                          >
+                            {isEditActionAvailable && (
+                              <EditListBulkActionButton
+                                editList={this.editList}
+                                currentUser={currentUser}
+                                selectedLocations={selectedLocations}
+                              />
+                            )}
+                            {canMove && (
+                              <MaterialButton
+                                startIcon={<FileCopyIcon />}
+                                onClick={this.promptMoveSelectedLocations}
+                                variant="primary"
+                              >
+                                Copy / Move
+                              </MaterialButton>
+                            )}
+
+                            <ListDownload
+                              listID={listID}
+                              listName={listName}
+                              filters={filters}
+                              listFilterStr={filterString}
+                              tableSortedBy={tableSortedBy}
+                              tableSortedDesc={tableSortedDesc}
+                              selectedList={selectedList}
+                              combinedColumns={visibleColumns}
+                              selectedLocations={selectedLocations}
+                              currentUser={currentUser}
+                              listView={listView}
+                              isLoading={(loading) => {
+                                this.setState({ isLoading: loading });
+                              }}
+                              isGfwList={isGfwList}
+                            />
+
+                            {canDelete && (
+                              <MaterialButton
+                                style={{ color: 'red' }}
+                                startIcon={<DeleteIcon />}
+                                onClick={this.promptDeleteSelectedLocations}
+                              >
+                                Delete
+                              </MaterialButton>
+                            )}
+                          </Stack>
+                        </Paper>
+                      )}
 
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <AnalysesTabs
@@ -2139,6 +2150,7 @@ export default class ListDetails extends Component {
                             <WrappedReactTable
                               listId={selectedLists[0].id}
                               isGfwList={isGfwList}
+                              listView={listView}
                               isSharedList={isSharedList}
                               combinedColumns={combinedColumns}
                               numberOfPages={this.state.numberOfPages}
@@ -2163,6 +2175,17 @@ export default class ListDetails extends Component {
                               }
                               viewDiagnostic={this.viewDiagnostic}
                               isListInDraftStatus={getIsDiagnosticStatusDraft(selectedLists[0])}
+                              isDeleteButtonAvailable={canDelete}
+                              promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
+                              isEditActionAvailable={isEditActionAvailable}
+                              editList={this.editList}
+                              copyMoveAction={this.promptMoveSelectedLocations}
+                              isCopyMoveActionAvailable={canMove}
+                              currentUser={currentUser}
+                              selectedList={selectedList}
+                              setIsLoading={(loading) => {
+                                this.setState({ isLoading: loading });
+                              }}
                             />
                           ) : null}
                         </section>

@@ -1,14 +1,17 @@
-/* eslint-disable no-undef */
 import React, { useState } from 'react';
+import Button from '@mui/material/Button';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
+import DownloadIcon from '@mui/icons-material/Download';
 import RaisedButton from 'material-ui/RaisedButton';
 import IconChevronDown from '../../../../../common/js/components/icon/IconChevronDown';
 import { userAccessLevel, locationsPage } from '../../../../../common/js/config';
 import { isDownloadDisabledForThisList } from '../../../../../locations/js/utils/lists.utils';
-import { gfwListNames } from '../../../../../common/js/constants/lists.constants';
 import ConfirmDialog from '../../../../../locations/js/components/lists/download/confirmDialog';
 import downloadRequest from '../../../../../locations/js/components/lists/download/downloadRequest';
+import featureFlags from '../../../../../../utils/general.utils';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 const style = {
   buttonStyle: {
@@ -30,7 +33,6 @@ function ListDownload({
   isLoading,
   listFilterStr,
   listID,
-  listName,
   selectedList,
   tableSortedBy,
   selectedLocations,
@@ -38,6 +40,7 @@ function ListDownload({
   listView,
   allLocationsSelected,
   isGfwList,
+  isHoverMenu,
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -92,24 +95,38 @@ function ListDownload({
     }
   };
 
-  const isGFWList = selectedList.associated_gfwlist || gfwListNames.includes(listName);
   const downloadEnabled = !isDownloadDisabledForThisList(selectedList);
   const isSourceFileDownloadEnabled =
-    !isGFWList && currentUser.access_level_id !== userAccessLevel.VIEWER;
+    !isGfwList && currentUser.access_level_id !== userAccessLevel.VIEWER;
   return (
     downloadEnabled && (
       <>
         <IconMenu
+          style={{ width: isHoverMenu ? '100%' : 'auto' }}
           iconButtonElement={
-            <RaisedButton
-              data-cy="download-list"
-              overlayStyle={style.overlay}
-              buttonStyle={style.buttonStyle}
-              className="button tertiary button--tertiary"
-              icon={<IconChevronDown />}
-              labelPosition="before"
-              label="Download"
-            />
+            isListDetailsPageRedesignAvailable ? (
+              isHoverMenu ? (
+                <MenuItem
+                  data-cy="download-list"
+                  primaryText="Download"
+                  leftIcon={<DownloadIcon />}
+                />
+              ) : (
+                <Button startIcon={<DownloadIcon />} variant="primary">
+                  Download
+                </Button>
+              )
+            ) : (
+              <RaisedButton
+                data-cy="download-list"
+                overlayStyle={style.overlay}
+                buttonStyle={style.buttonStyle}
+                className="button tertiary button--tertiary"
+                icon={<IconChevronDown />}
+                labelPosition="before"
+                label="Download"
+              />
+            )
           }
           onChange={(_evt, selectedOption) => localHandleDownload(selectedOption)}
         >

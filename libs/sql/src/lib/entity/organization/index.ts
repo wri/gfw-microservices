@@ -22,6 +22,12 @@ export * from './analyses.entity';
 export * from './analysis.schema';
 export * from './lists.analysis.status.entity';
 export * from './analyses.dashboard.entity';
+export * from './gwfList.PalmOilMill.entity';
+export * from './gfwLists.entity';
+export * from './analysisPalmOilMills.entity';
+export * from './rspoOilPalmConcessions.entity';
+export * from './list.OilPalmConcessions.entity';
+export * from './list.protectedAreas.entity';
 
 export const organizationEntities = [
   Lists,

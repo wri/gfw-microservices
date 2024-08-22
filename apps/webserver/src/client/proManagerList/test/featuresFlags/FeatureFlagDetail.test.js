@@ -40,7 +40,11 @@ afterEach(cleanup);
 
 describe('FeatureFlagDetail Component', () => {
   test('renders component with selectedFeatureFlag', () => {
-    render(<FeatureFlagDetail />);
+    render(
+      <MuiThemeProvider>
+        <FeatureFlagDetail />
+      </MuiThemeProvider>
+    );
 
     expect(screen.getByText('FEATURE DETAILS')).toBeInTheDocument();
     expect(screen.getByText('Name')).toBeInTheDocument();

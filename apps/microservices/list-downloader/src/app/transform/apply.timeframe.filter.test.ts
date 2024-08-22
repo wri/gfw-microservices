@@ -36,6 +36,7 @@ describe('ApplyTimeframeFilter', () => {
         name_all: '',
         tree_cover_extent_total: 0,
         viirs_alerts_daily: [],
+        totalHa: 0,
       },
       '',
       (err, data) => {
@@ -68,6 +69,7 @@ describe('ApplyTimeframeFilter', () => {
           name_all: '',
           tree_cover_extent_total: 0,
           viirs_alerts_daily: [],
+          totalHa: 0,
         });
       }
     );
@@ -115,6 +117,7 @@ describe('ApplyTimeframeFilter', () => {
           { count: 15, day: '2023-02-05' },
         ],
         viirs_alerts_daily: [{ count: 2, day: '2023-11-20' }],
+        totalHa: 0,
       },
       '',
       (err, data) => {
@@ -190,6 +193,7 @@ describe('ApplyTimeframeFilter', () => {
               day: '2023-11-20',
             },
           ],
+          totalHa: 0,
         });
       }
     );
@@ -242,6 +246,7 @@ describe('ApplyTimeframeFilter', () => {
           { count: 2, day: '2023-03' },
           { count: 2, day: '2023-04' },
         ],
+        totalHa: 0,
       },
       '',
       (err, data) => {
@@ -338,6 +343,7 @@ describe('ApplyTimeframeFilter', () => {
               day: '2023-04',
             },
           ],
+          totalHa: 0,
         });
       }
     );
@@ -390,6 +396,7 @@ describe('ApplyTimeframeFilter', () => {
           { count: 2, day: '2023-03' },
           { count: 2, day: '2023-04' },
         ],
+        totalHa: 0,
       },
       '',
       (err, data) => {
@@ -490,6 +497,7 @@ describe('ApplyTimeframeFilter', () => {
               day: '2023-04',
             },
           ],
+          totalHa: 0,
         });
       }
     );
@@ -543,6 +551,7 @@ describe('ApplyTimeframeFilter', () => {
           { count: 2, day: '2023-03' },
           { count: 2, day: '2023-04' },
         ],
+        totalHa: 0,
       },
       '',
       (err, data) => {
@@ -647,6 +656,7 @@ describe('ApplyTimeframeFilter', () => {
               day: '2023-04',
             },
           ],
+          totalHa: 0,
         });
       }
     );

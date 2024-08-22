@@ -231,6 +231,7 @@ const duplicatedRow = [
     fire: [],
     fireAlerts: true,
     umd: 111763.3113,
+    totalHa: 100,
   },
 ];
 

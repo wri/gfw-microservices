@@ -18,6 +18,7 @@ describe('IntegratedAlertsNaturalForest', () => {
   it('should handle one column without a specific date', (done) => {
     const jsonData = {
       location_name: 'Location 1',
+      totalHa: 25710.12,
       integratedAlertsDailyAllNominal: '{"2021-09-17":6}',
       integratedAlertsDailySbtnNominal: '{"2021-09-17":3}',
       integratedAlertsDailyJrcNominal: '{}',
@@ -39,6 +40,7 @@ describe('IntegratedAlertsNaturalForest', () => {
           '2021-09-01',
           '2023-03-01',
           '2021-09-17',
+          25710.12,
           'Nominal',
           6,
           3,
@@ -52,6 +54,7 @@ describe('IntegratedAlertsNaturalForest', () => {
           '2021-09-01',
           '2023-03-01',
           '2021-09-17',
+          25710.12,
           'High',
           5,
           2,
@@ -66,6 +69,7 @@ describe('IntegratedAlertsNaturalForest', () => {
   it('should handle one group without data', (done) => {
     const jsonData = {
       location_name: 'Location 1',
+      totalHa: 100,
       integratedAlertsDailyAllNominal: '{}',
       integratedAlertsDailySbtnNominal: '{}',
       integratedAlertsDailyJrcNominal: '{}',
@@ -87,6 +91,7 @@ describe('IntegratedAlertsNaturalForest', () => {
           '2021-09-01',
           '2023-03-01',
           '2021-09-17',
+          100,
           'High',
           5,
           2,
@@ -101,6 +106,7 @@ describe('IntegratedAlertsNaturalForest', () => {
   it('should handle input with all data', (done) => {
     const jsonData = {
       location_name: 'Location 1',
+      totalHa: 200,
       integratedAlertsDailyAllNominal: '{"2021-09-17":6}',
       integratedAlertsDailySbtnNominal: '{"2021-09-17":3}',
       integratedAlertsDailyJrcNominal: '{"2021-09-17":1}',
@@ -122,6 +128,7 @@ describe('IntegratedAlertsNaturalForest', () => {
           '2021-09-01',
           '2023-03-01',
           '2021-09-17',
+          200,
           'Nominal',
           6,
           3,
@@ -135,6 +142,7 @@ describe('IntegratedAlertsNaturalForest', () => {
           '2021-09-01',
           '2023-03-01',
           '2021-09-17',
+          200,
           'High',
           5,
           2,
@@ -148,6 +156,7 @@ describe('IntegratedAlertsNaturalForest', () => {
           '2021-09-01',
           '2023-03-01',
           '2021-09-17',
+          200,
           'Highest',
           4,
           2,

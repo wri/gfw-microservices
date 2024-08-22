@@ -36,7 +36,7 @@ function Chart({ data, chartLabels, hasSubcategories }) {
     size: '100%',
     innerSize: '60%',
     dataLabels: {
-      distance: 20,
+      distance: 5,
       filter: {
         property: 'percentage',
         operator: '>',

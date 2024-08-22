@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import Paper from '@mui/material/Paper';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DeleteIcon from '@mui/icons-material/Delete';
 import Button from 'common/js/components/Button';
 import MaterialButton from '@mui/material/Button';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import Stack from '@mui/material/Stack';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
@@ -37,7 +35,6 @@ import {
   updateSelectedLocations,
 } from '../../../../../locations/js/actions/locationActions';
 import LocationsSummary from './LocationsSummary';
-import ListDownload from '../download/ListDownload';
 import SaveAsDraftButton from '../../../../../common/js/components/SaveAsDraft/SaveAsDraftButton';
 import CopyMoveModal from '../../modals/CopyMoveModal';
 import fetch from '../../../../../common/js/utils/fetch';
@@ -66,7 +63,6 @@ import {
 } from '../../../utils/lists-redux.utils';
 import LargeListEditing from '../EditList/LargeListEditing/LargeListEditing';
 import ShareList from '../../../../../locations/js/components/ShareList/ShareList';
-import { EditListBulkActionButton } from '../EditList/EditListBulkActionButton';
 import redirectToMap from '../../../../../common/js/utils/redirect';
 import { FailedPopupDialog } from '../../../../../locations/js/components/landing/FailedPopupDialog';
 import {
@@ -1853,7 +1849,8 @@ export default class ListDetails extends Component {
       userSharedLists &&
       userSharedLists.map((userSharedList) => userSharedList.id).includes(selectedLists[0].id);
 
-    const showMultipleSelectionBulkActions = selectedList && selectedLocations.length > 1;
+    const showMultipleSelectionBulkActions =
+      selectedList && selectedLocations.length > 1 && !locationDataIsNotAvailable;
     return (
       <div className="list-details">
         {!isGfwList && (
@@ -2021,67 +2018,28 @@ export default class ListDetails extends Component {
                     handleSearchInputChange={this.handleSearchInputChange}
                     handleSearchInputKeyDown={this.handleSearchInputKeyDown}
                     handlecSearchInputClick={this.handlecSearchInputClick}
+                    showMultipleSelectionBulkActions={showMultipleSelectionBulkActions}
+                    isEditActionAvailable={isEditActionAvailable}
+                    editList={this.editList}
+                    canMove={canMove}
+                    promptMoveSelectedLocations={this.promptMoveSelectedLocations}
+                    canDelete={canDelete}
+                    promptDeleteSelectedLocations={this.promptDeleteSelectedLocations}
+                    filters={filters}
+                    listFilterStr={filterString}
+                    tableSortedBy={tableSortedBy}
+                    tableSortedDesc={tableSortedDesc}
+                    visibleColumns={visibleColumns}
+                    selectedLocations={selectedLocations}
+                    listView={listView}
+                    isLoading={(loading) => {
+                      this.setState({ isLoading: loading });
+                    }}
+                    isGfwList={isGfwList}
                   />
 
                   {!locationDataIsNotAvailable && (
                     <>
-                      {showMultipleSelectionBulkActions && (
-                        <Paper className="list-actions">
-                          <Stack
-                            sx={{
-                              width: '100%',
-                            }}
-                            alignItems="center"
-                            direction="row"
-                          >
-                            {isEditActionAvailable && (
-                              <EditListBulkActionButton
-                                editList={this.editList}
-                                currentUser={currentUser}
-                                selectedLocations={selectedLocations}
-                              />
-                            )}
-                            {canMove && (
-                              <MaterialButton
-                                startIcon={<FileCopyIcon />}
-                                onClick={this.promptMoveSelectedLocations}
-                                variant="primary"
-                              >
-                                Copy / Move
-                              </MaterialButton>
-                            )}
-
-                            <ListDownload
-                              listID={listID}
-                              listName={listName}
-                              filters={filters}
-                              listFilterStr={filterString}
-                              tableSortedBy={tableSortedBy}
-                              tableSortedDesc={tableSortedDesc}
-                              selectedList={selectedList}
-                              combinedColumns={visibleColumns}
-                              selectedLocations={selectedLocations}
-                              currentUser={currentUser}
-                              listView={listView}
-                              isLoading={(loading) => {
-                                this.setState({ isLoading: loading });
-                              }}
-                              isGfwList={isGfwList}
-                            />
-
-                            {canDelete && (
-                              <MaterialButton
-                                style={{ color: 'red' }}
-                                startIcon={<DeleteIcon />}
-                                onClick={this.promptDeleteSelectedLocations}
-                              >
-                                Delete
-                              </MaterialButton>
-                            )}
-                          </Stack>
-                        </Paper>
-                      )}
-
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <AnalysesTabs
                           listViewOptions={listViewOptions}

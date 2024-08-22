@@ -55,7 +55,11 @@ describe('FeatureFlagDetail Component', () => {
   });
 
   test('handles switch change', () => {
-    render(<FeatureFlagDetail />);
+    render(
+      <MuiThemeProvider>
+        <FeatureFlagDetail />
+      </MuiThemeProvider>
+    );
     const switchElement = screen.getAllByRole('checkbox');
     fireEvent.click(switchElement[0]);
 

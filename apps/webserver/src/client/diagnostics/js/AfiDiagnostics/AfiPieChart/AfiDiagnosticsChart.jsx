@@ -30,7 +30,7 @@ function AfiDiagnosticsChart({ data }) {
         enabled: false,
       },
       tooltip: {
-        pointFormat: '{point.percentage:.1f} %',
+        pointFormat: '{point.percentage:.2f} %',
       },
       plotOptions: {
         pie: {
@@ -38,7 +38,7 @@ function AfiDiagnosticsChart({ data }) {
           cursor: 'pointer',
           dataLabels: {
             enabled: true,
-            format: '<b>{point.name}</b>:<br>{point.percentage:.1f} %',
+            format: '<b>{point.name}</b>:<br>{point.percentage:.2f} %',
           },
         },
       },

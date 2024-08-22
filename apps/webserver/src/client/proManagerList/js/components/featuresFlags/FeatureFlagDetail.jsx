@@ -11,7 +11,7 @@ import TableRow from '@mui/material/TableRow';
 import moment from 'moment';
 import AddCompany from './AddCompany';
 import { useFeatureFlagStateContext } from './FeatureFlagStateContext';
-import InfoBubble from '../../../../common/js/components/InfoBubble'
+import InfoBubble from '../../../../common/js/components/InfoBubble';
 
 const StyledTableCell = styled(TableCell)(() => ({
   fontFamily: 'Fira Sans, sans-serif',

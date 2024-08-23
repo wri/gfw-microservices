@@ -848,7 +848,7 @@ module.exports = (app, limiter) => {
       });
   });
 
-  app.post('/locations/getAdministrativeAreasData', (req, res) => {
+  app.post('/locations/getAdministrativeAreasData', async (req, res) => {
     console.log('POST /getAdministrativeAreasData');
     const { selectedCountry, selectedStates, selectedSubStates } = req.body.filters;
     const filters = {
@@ -857,61 +857,44 @@ module.exports = (app, limiter) => {
       selectedSubStates,
     };
     const { id: listID, pageNum, pageSize } = req.body;
-    if (pageNum && pageSize) {
-      AnalysisManager.getPaginatedAnalysisDataForAdministrativeAreas(
-        listID,
-        pageNum,
-        pageSize,
-        config.SQLConnection.database,
-        filters
-      )
-        .then((result) => {
-          const { listData, protectedLocationResult, count } = result;
-          if (protectedLocationResult.length === 0) {
-            res.send({
-              list_analysis: [],
-              location_analyses: [],
-              total_rows: 0,
-            });
-          } else {
-            const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
-            const locationIds = listDataSalted.map((l) => Number(l.location_id));
-            AnalysisManager.getAnalysisDataForGFWList(req, listID, locationIds)
-              .then((protectedLocationResult) => {
-                res.send({
-                  list_analysis: [],
-                  location_analyses: [listDataSalted, protectedLocationResult],
-                  total_rows: count,
-                });
-              })
-              .catch((err) => {
-                console.log('Error /getAdministrativeAreasData', err);
-                res.send(err);
-              });
-          }
-        })
-        .catch((err) => {
-          console.log('Error /getAdministrativeAreasData', err);
-          res.send(err);
-        });
-    } else {
-      GFWListManager.getAdministrativeAreasData(req, filters)
-        .then((listData) => {
-          const listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
-          const locationIds = listDataSalted.map((l) => Number(l.location_id));
-          AnalysisManager.getAnalysisDataForGFWList(req, listID, locationIds).then(
-            (protectedLocationResult) => {
-              res.send({
-                list_analysis: [],
-                location_analyses: [listDataSalted, protectedLocationResult],
-              });
-            }
+    let listData, protectedLocationResult, count, listDataSalted;
+    try {
+      if (pageNum && pageSize) {
+        const paginatedListResult =
+          await AnalysisManager.getPaginatedAnalysisDataForAdministrativeAreas(
+            listID,
+            pageNum,
+            pageSize,
+            config.SQLConnection.database,
+            filters
           );
-        })
-        .catch((err) => {
-          console.log('Error /getAdministrativeAreasData', err);
-          res.send(err);
-        });
+        listData = paginatedListResult.listData;
+        protectedLocationResult = paginatedListResult.protectedLocationResult;
+        count = paginatedListResult.count;
+        if (protectedLocationResult.length === 0) {
+          res.send({
+            list_analysis: [],
+            location_analyses: [],
+            total_rows: 0,
+          });
+        }
+      } else {
+        listData = await GFWListManager.getAdministrativeAreasData(req, filters);
+      }
+      listDataSalted = LocationManager.getLocationsAttributesSalted(listData);
+      const locationIds = listDataSalted.map((l) => Number(l.location_id));
+      protectedLocationResult = await AnalysisManager.getAnalysisDataForGFWList(
+        req,
+        listID,
+        locationIds
+      );
+      res.send({
+        list_analysis: [],
+        location_analyses: [listDataSalted, protectedLocationResult],
+      });
+    } catch (error) {
+      console.log('Error /getAdministrativeAreasData', error);
+      res.send(error);
     }
   });
 

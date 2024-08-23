@@ -243,6 +243,7 @@ export const chartDatasetConfigsColombia = {
     id: 'colombianClassifiedRegionOverlap',
     dataCy: 'colombian-classified-region-overlap',
     chartsSelectorTitle: 'National Agricultural Frontier Overlap',
+    infoBubbleId: 'regions_col_ag_frontier_calc',
     dataPath: 'classified_region.overlap',
     subCategories: [...colombianSubcategories],
   },

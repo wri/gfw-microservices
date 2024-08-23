@@ -857,7 +857,10 @@ module.exports = (app, limiter) => {
       selectedSubStates,
     };
     const { id: listID, pageNum, pageSize } = req.body;
-    let listData, protectedLocationResult, count, listDataSalted;
+    let listData = [],
+      protectedLocationResult = [],
+      count = 0,
+      listDataSalted = [];
     try {
       if (pageNum && pageSize) {
         const paginatedListResult =
@@ -888,10 +891,14 @@ module.exports = (app, limiter) => {
         listID,
         locationIds
       );
-      res.send({
+      const messageToSend = {
         list_analysis: [],
         location_analyses: [listDataSalted, protectedLocationResult],
-      });
+      };
+      if (count > 0) {
+        messageToSend.total_rows = count;
+      }
+      res.send(messageToSend);
     } catch (error) {
       console.log('Error /getAdministrativeAreasData', error);
       res.send(error);

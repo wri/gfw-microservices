@@ -190,24 +190,50 @@ If you want to run `lint`, you can use the following command;
 nx lint microservices-list-downloader
 ```
 
-### Project Structure
+### Overall high-level architecture diagram
+
+```mermaid
+graph TD;
+    WB[Web Browser]-->WS[Web Server]
+    WB[Web Browser]-->STS[Short-Term Storage S3]
+    AC[API Client]-->AA[AWS API Gateway]
+    AA[AWS API Gateway]-->ES[EAPI Service]
+    AC[API Client]-->STS[Short-Term Storage S3]
+    WS[Web Server]-->ES[EAPI Service]
+    WS[Web Server]-->LP[List Processing Service]
+    WS[Web Server]-->LD[List Downloader Service]
+    ES[EAPI Service]-->LP[List Processing Service]
+    ES[EAPI Service]-->LD[List Downloader Service]
+    WS[Web Server]-->DB[SQL Database]
+    ES[EAPI Service]-->DB[SQL Database]
+    LP[List Processing Service]-->DB[SQL Database]
+    LD[List Downloader Service]-->LP[List Processing Service]
+    WS[Web Server]-->LTS[Long-Term Storage S3]
+    LP[List Processing Service]-->LTS[Long-Term Storage S3]
+```
+
+### Repository Directory Structure
 
 ```sh
 .
 ├── apps/              # contains the application projects.
+│   ├── gfwpro-e2e/    # Cypress e2e tests for gfwpro (requires webserver and microservices to run)
 │   ├── webserver/     # gfwpro project contains our front-end and back-end
 │   └── microservices/
-│       ├── b2b/       # store all b2b logic
-│       ├── list-downloader/ # store all list downloader logic
-│       └── list-processing/ # store all large list processing logic
-├── libs/       #contains the library projects
-│   ├── aws/    # shared library that know how to connect to AWS
-│   ├── geo/    # shared library that store geo processing functions
-│   ├── shared/ # shared library for code that don't have a logic group.
-│   └── sql/    # shared library used to connect to the database and run the Stored Procedure.
+│       ├── b2b/             # b2b microservice
+│       ├── externalapi/     # External API (EAPI) microservice
+│       ├── externalapi-e2e/ # EAPI e2e tests (requires EAPI, LP, and LD microservices)
+│       ├── list-downloader/ # list downloader (LD) microservice
+│       └── list-processing/ # list processing (LP) microservice
+├── libs/           # contains the library projects (included by webserver and microservices)
+│   ├── aws/        # how to connect to AWS
+│   ├── constants/  # defines various constants
+│   ├── geo/        # geo processing functions
+│   ├── shared/     # code that don't have a logic group.
+│   └── sql/        # connect to the database, typeORM entity definitions, SQL scripts, and some Stored Procedures.
 ├── test_files/
-├── tools/         # contains scripts that act on your code base.
-│   ├── mapLayersBackup/  # backup of all layer and dataset configs from the map layer API
+├── tools/                    # contains scripts that act on your code base.
+│   ├── db_to_s3_for_athena/  # SQL srcripts run on prod DB used to populate Athena tables
 ├── .editorconfig  # file to standardize our IDE
 ├── .eslintrc.json # lint configuration file
 ├── jest.config.ts # jest configuration file
@@ -219,9 +245,10 @@ nx lint microservices-list-downloader
 └── workspace.json # has the path of all shared libraries and project
 ```
 
-### Map Layers Backup
+### Map Layers
 
-Currently the datasets and layers used by GFW Pro are updated via Postman calling APIs on GFW (that may be proxying to resourcewatch APIs). Any mistake in this process has the potential to delete or hurt user experience on production immediately, and there is no good way to recover old settings. As a starting point, we decided to store all the settings in this git repository for backup. See https://gfw.atlassian.net/wiki/spaces/GPS/pages/edit-v2/449708059
+Currently the datasets and layers definitions used by GFW Pro Map are stored in
+webserver/src/client/common/js/service/mapLayers.constants.js
 
 ### Commit Lint
 

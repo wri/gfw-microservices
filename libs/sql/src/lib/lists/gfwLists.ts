@@ -23,7 +23,11 @@ export class GfwLists {
   getAttributesListEntity(
     list_id: number
   ): EntityTarget<
-    ListOilPalmConcessions | ListsPalmOilMills | RspoOilPalmConcessions | ListAdministrativeAreas
+    | ListOilPalmConcessions
+    | ListsPalmOilMills
+    | RspoOilPalmConcessions
+    | ListAdministrativeAreas
+    | ListProtectedAreas
   > {
     const ATTRIBUTES_LIST_TABLE = ListsPalmOilMills;
     const ATTRIBUTES_LIST_TABLE_NAMES = {
@@ -35,9 +39,11 @@ export class GfwLists {
     };
     return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
   }
+
   async getConnection(organizationDatabase: string) {
     return await this.clientStoreConnection.getConnection(organizationDatabase);
   }
+
   async getPaginatedAttributes(
     pageNum: number,
     pageSize: number,
@@ -176,7 +182,7 @@ export class GfwLists {
     return result;
   }
 
-  async getPaginatedAnalysisDataForProtectedAreas(
+  async getPaginatedAnalysisDataForProtectedAndAdministrativeAreas(
     list_id: number,
     pageNum,
     pageSize,

@@ -429,10 +429,14 @@ export default class Account extends Component {
                   </div>
 
                   <div className="input-field__block-container">
-                    <label htmlFor="org_address" className="block-label profile-label">
+                    <label
+                      htmlFor="org_address"
+                      className="block-label profile-label required-param"
+                    >
                       Organization Address
                     </label>
                     <input
+                      required
                       name="org_address"
                       id="org_address"
                       value={this.state.org_address}
@@ -460,14 +464,10 @@ export default class Account extends Component {
                     />
                   </div>
                   <div className="input-field__block-container">
-                    <label
-                      htmlFor="org_website"
-                      className="block-label profile-label required-param"
-                    >
+                    <label htmlFor="org_website" className="block-label profile-label">
                       Organization Website
                     </label>
                     <input
-                      required
                       name="org_website"
                       id="org_website"
                       value={this.state.org_website}

@@ -857,6 +857,7 @@ module.exports = (app, limiter) => {
       selectedSubStates,
     };
     const { id: listID, pageNum, pageSize } = req.body;
+
     let listData = [],
       protectedLocationResult = [],
       count = 0,

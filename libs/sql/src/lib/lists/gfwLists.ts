@@ -7,6 +7,7 @@ import {
   RspoOilPalmConcessions,
   ListOilPalmConcessions,
   ListProtectedAreas,
+  ListAdministrativeAreas,
 } from '../entity';
 import { EntityTarget, FindOptionsWhere, Raw } from 'typeorm';
 
@@ -21,18 +22,28 @@ export class GfwLists {
 
   getAttributesListEntity(
     list_id: number
-  ): EntityTarget<ListOilPalmConcessions | ListsPalmOilMills | RspoOilPalmConcessions> {
+  ): EntityTarget<
+    | ListOilPalmConcessions
+    | ListsPalmOilMills
+    | RspoOilPalmConcessions
+    | ListAdministrativeAreas
+    | ListProtectedAreas
+  > {
     const ATTRIBUTES_LIST_TABLE = ListsPalmOilMills;
     const ATTRIBUTES_LIST_TABLE_NAMES = {
+      1: ListAdministrativeAreas,
       2: ListOilPalmConcessions,
       3: ListsPalmOilMills,
+      4: ListProtectedAreas,
       5: RspoOilPalmConcessions,
     };
     return ATTRIBUTES_LIST_TABLE_NAMES[list_id] || ATTRIBUTES_LIST_TABLE;
   }
+
   async getConnection(organizationDatabase: string) {
     return await this.clientStoreConnection.getConnection(organizationDatabase);
   }
+
   async getPaginatedAttributes(
     pageNum: number,
     pageSize: number,
@@ -171,13 +182,14 @@ export class GfwLists {
     return result;
   }
 
-  async getPaginatedAnalysisDataForProtectedAreas(
+  async getPaginatedAnalysisDataForProtectedAndAdministrativeAreas(
+    list_id: number,
     pageNum,
     pageSize,
     organizationDatabase,
     filters
   ) {
-    const where: FindOptionsWhere<ListProtectedAreas> = {};
+    const where: FindOptionsWhere<ListProtectedAreas | ListAdministrativeAreas> = {};
     let locationNameArray = [];
     if (typeof filters != 'undefined') {
       if (filters.selectedCountry && filters.selectedCountry !== '') {
@@ -206,7 +218,9 @@ export class GfwLists {
     const take = pageSize === 0 ? this.DEFAULT_PAGE_SIZE : pageSize;
     try {
       const connection = await this.getConnection(organizationDatabase);
-      const analysisDataRepository = await connection.getRepository(ListProtectedAreas);
+      const analysisDataRepository = await connection.getRepository(
+        this.getAttributesListEntity(list_id)
+      );
       let items, count;
       if (locationNameArray.length > 0) {
         [items, count] = await analysisDataRepository.findAndCount({

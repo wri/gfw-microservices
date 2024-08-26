@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import RegionChart from './RegionChart';
 import { RegionChartByCountry } from './RegionChartByCountry';
 import RegionChartsTabs from './RegionChartsTabs';
 import SouthAmericaRegionsWithoutArgentina from '../SouthAmericaRegionsWithoutArgentina';
@@ -20,7 +19,7 @@ function RegionChartsContainer({
   getYearlyHighchartSeries,
   getCategoricalHighchartSeries,
 }) {
-  const { isArgentinaDeforestationAvailable, isColombiaAvailable } = featureFlags;
+  const { isColombiaAvailable } = featureFlags;
 
   const [selectedTab, setSelectedTab] = useState(regionIds.REGIONAL);
 
@@ -41,8 +40,7 @@ function RegionChartsContainer({
   }
 
   const shouldRenderRegionChartByCountry =
-    (selectedTab === regionIds.ARGENTINA && isArgentinaDeforestationAvailable) ||
-    selectedTab === regionIds.COLOMBIA;
+    selectedTab === regionIds.ARGENTINA || selectedTab === regionIds.COLOMBIA;
 
   return (
     <div style={{ marginTop: '30px' }}>
@@ -53,10 +51,6 @@ function RegionChartsContainer({
         selectedTab={selectedTab}
         setSelectedTab={setSelectedTab}
       />
-
-      {selectedTab === regionIds.ARGENTINA && !isArgentinaDeforestationAvailable && (
-        <RegionChart listId={listId} data={data} fireDownload={fireDownload} />
-      )}
 
       {shouldRenderRegionChartByCountry && (
         <RegionChartByCountry

@@ -2,11 +2,11 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity({ name: 'analysis-palmOilMills' })
 export class AnalysisPalmOilMills {
-  @PrimaryGeneratedColumn()
+  @Column({ name: 'id' })
   id: number;
 
-  @Column({ name: 'location_id' })
-  'location_id': number;
+  @PrimaryGeneratedColumn({ name: 'location_id' })
+  LocationId: number;
 
   @Column({ name: 'location_status_id' })
   'location_status_id': number;
@@ -208,9 +208,6 @@ export class AnalysisPalmOilMills {
 
   @Column({ name: 'argentina_presence' })
   'argentina_presence': string;
-
-  @Column({ name: 'dissolved_geom_object_key' })
-  'dissolved_geom_object_key': string;
 
   @Column({ name: 'protected_areas_by_category_area' })
   'protected_areas_by_category_area': string;

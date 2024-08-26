@@ -32,23 +32,6 @@ export const regionConstants = {
 const nonOverlapAreaColor = 'rgb(200,200,200)';
 
 export const chartDatasetConfigs = {
-  argentinaOtbn: {
-    // delete when isArgentinaDeforestationAvailable feature flag is deleted
-    id: 'otbnArgentina',
-    chartsSelectorTitle: 'ARGENTINIAN DEFORESTATION',
-    dataCy: 'tree-cover-loss-OTBN',
-    legendColor: 'rgb(255,127,179)',
-    informationBubbleId: 'tree_cover_loss_arg_otbn_yearly',
-    downloadId: 'southAmericaTCL',
-    diagnosticTitle: 'OTBN Overlap',
-    chartLabels: [
-      { id: 'Category I', color: 'rgb(238,37,33)', legend: 'Category I', checked: true },
-      { id: 'Category II', color: 'rgb(255,204,51)', legend: 'Category II', checked: true },
-      { id: 'Category III', color: 'rgb(151,189,61)', legend: 'Category III', checked: true },
-    ],
-    startYear: 2008,
-    endYear: 2023,
-  },
   otbn: {
     id: 'otbn',
     chartsSelectorTitle: 'Argentinian Govt Deforestation on Argentina OTBN',

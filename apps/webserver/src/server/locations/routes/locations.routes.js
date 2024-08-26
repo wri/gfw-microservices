@@ -876,7 +876,7 @@ module.exports = (app, limiter) => {
         protectedLocationResult = paginatedListResult.protectedLocationResult;
         count = paginatedListResult.count;
         if (protectedLocationResult.length === 0) {
-          res.send({
+          return res.send({
             list_analysis: [],
             location_analyses: [],
             total_rows: 0,

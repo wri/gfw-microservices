@@ -88,7 +88,6 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
     this.fileStream.removeAllListeners();
     this.fileStream.destroy();
     await this.writeTotalLocationLine(filters);
-    await this.checkFileContents(filters);
   }
 
   async writeTotalLocationLine(filters: AlertFieldsFileRequest) {
@@ -103,13 +102,6 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
       `/tmp/wri-${key}/${listName}_${this.suffix}.csv`,
       `${listName},Total locations,Deforestation (Integrated Alerts),${formattedStartDate},${formattedEndDate},,${locationsSizeHa},,,,,${locationsCount}\n`
     );
-  }
-
-  async checkFileContents(filters: AlertFieldsFileRequest) {
-    const { key, listName } = filters;
-    const data = fs.readFileSync(`/tmp/wri-${key}/${listName}_${this.suffix}.csv`, 'utf8');
-    fs.writeFileSync('file.csv', data);
-    // console.log(`[•—${AlertsIntegratedNaturalForestService.name}—•]`, data);
   }
 
   private async getListLocationsCount(filters: AlertFieldsFileRequest) {

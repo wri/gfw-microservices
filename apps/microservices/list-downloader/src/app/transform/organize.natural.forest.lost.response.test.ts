@@ -124,7 +124,6 @@ describe('OrganizeNaturalForestLostResponse', () => {
       },
       '',
       (err, data) => {
-        console.log('🚀 ~ test.only ~ data:', data);
         expect(data).toEqual([
           [
             'Guilherme Other 4',

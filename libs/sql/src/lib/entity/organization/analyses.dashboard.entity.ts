@@ -49,8 +49,6 @@ export class AnalysesDashboardEntity {
 
   @Column({
     name: 'tree_cover_extent_total',
-    precision: 18,
-    scale: 6,
     nullable: true,
   })
   treeCoverExtentTotal: number;
@@ -58,76 +56,67 @@ export class AnalysesDashboardEntity {
   @Column({
     name: 'integrated_alerts_coverage',
     nullable: true,
-    default: '{}',
   })
   integratedAlertsCoverage: string;
 
-  @Column({ name: 'total_ha',  nullable: true })
+  @Column({ name: 'total_ha', nullable: true })
   totalHa: number;
 
   @Column({
     name: 'integrated_alerts_daily_all_nominal',
     nullable: true,
-    default: '{}',
   })
   integratedAlertsDailyAllNominal: string;
 
   @Column({
     name: 'integrated_alerts_daily_all_high',
     nullable: true,
-    default: '{}',
   })
   integratedAlertsDailyAllHigh: string;
 
   @Column({
     name: 'integrated_alerts_daily_all_highest',
     nullable: true,
-    default: '{}',
   })
   integratedAlertsDailyAllHighest: string;
 
   @Column({
     name: 'integrated_alerts_daily_sbtn_nominal',
     nullable: true,
-    default: '{}',
   })
   integratedAlertsDailySbtnNominal: string;
 
   @Column({
     name: 'integrated_alerts_daily_sbtn_high',
     nullable: true,
-    default: '{}',
   })
   integratedAlertsDailySbtnHigh: string;
 
   @Column({
     name: 'integrated_alerts_daily_sbtn_highest',
     nullable: true,
-    default: '{}',
   })
   integratedAlertsDailySbtnHighest: string;
 
   @Column({
     name: 'integrated_alerts_daily_jrc_nominal',
     nullable: true,
-    default: '{}',
   })
   integratedAlertsDailyJrcNominal: string;
 
   @Column({
     name: 'integrated_alerts_daily_jrc_high',
+
     nullable: true,
-    default: '{}',
   })
   integratedAlertsDailyJrcHigh: string;
 
   @Column({
     name: 'integrated_alerts_daily_jrc_highest',
     nullable: true,
-    default: '{}',
   })
   integratedAlertsDailyJrcHighest: string;
 
-  @Column({ name: 'status_code',  nullable: true })
+  @Column({ name: 'status_code', nullable: true })
   statusCode: number;
 }

@@ -154,7 +154,6 @@ const CustomRow = ({
                   listView={listView}
                   isLoading={setIsLoading}
                   isGfwList={isGfwList}
-                  isHoverMenu={true}
                 />
                 {isDeleteButtonAvailable && (
                   <MenuItem

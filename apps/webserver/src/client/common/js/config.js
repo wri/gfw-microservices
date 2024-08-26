@@ -1552,8 +1552,7 @@ export const locationsPage = {
       locationsAllValidated: 'All locations validated',
     },
     stepFourTitle: 'Save',
-    submit: 'Submit',
-    submitForExisting: 'Submit Analysis',
+    submit: 'Submit Analysis',
     successBanner:
       'New locations have been added. You will receive an email once analysis of the locations is complete, and can reload the page to access the data.',
     list: 'List',

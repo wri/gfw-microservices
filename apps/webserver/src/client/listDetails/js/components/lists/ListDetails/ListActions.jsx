@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import InputBase from '@mui/material/InputBase';
+import Popover from 'material-ui/Popover';
+import Menu from 'material-ui/Menu';
+import MenuItem from 'material-ui/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import { Stack, Button, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import PublishIcon from '@mui/icons-material/Publish';
 import PublicIcon from '@mui/icons-material/Public';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ReplayIcon from '@mui/icons-material/Replay';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ListDownload from '../download/ListDownload';
+import { EditListBulkActionButton } from '../EditList/EditListBulkActionButton';
 import CustomDialog from 'common/js/components/CustomDialog/CustomDialog';
 import ManageListFolderDialog from 'locations/js/components/landing/ManageListFolderDialog';
 import { getIsDiagnosticStatusDraft } from '../../../utils/draft.utils';
@@ -41,6 +48,22 @@ const ListActions = ({
   handleSearchInputChange,
   handleSearchInputKeyDown,
   handlecSearchInputClick,
+  showMultipleSelectionBulkActions,
+  isEditActionAvailable,
+  editList,
+  canMove,
+  promptMoveSelectedLocations,
+  canDelete,
+  promptDeleteSelectedLocations,
+  filters,
+  listFilterStr,
+  tableSortedBy,
+  tableSortedDesc,
+  visibleColumns,
+  selectedLocations,
+  listView,
+  isLoading,
+  isGfwList,
 }) => {
   const blackButtonStyle = {
     color: 'black',
@@ -57,6 +80,8 @@ const ListActions = ({
     },
   };
   const [isSearchBarOpen, setIsSearchBarOpen] = useState(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const closeSearchBarHandler = () => {
     setIsSearchBarOpen(false);
@@ -219,21 +244,82 @@ const ListActions = ({
             )}
           </Stack>
 
-          {!isSearchBarOpen ? (
-            <Button
-              sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
-              onClick={() => setIsSearchBarOpen(true)}
-            >
-              <SearchIcon sx={{ color: 'black' }} />{' '}
-            </Button>
-          ) : (
-            <Button
-              sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
-              onClick={closeSearchBarHandler}
-            >
-              <ClearIcon sx={{ color: 'black' }} />
-            </Button>
-          )}
+          <div>
+            {!isSearchBarOpen ? (
+              <Button
+                sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+                onClick={() => setIsSearchBarOpen(true)}
+              >
+                <SearchIcon sx={{ color: 'black' }} />{' '}
+              </Button>
+            ) : (
+              <Button
+                sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+                onClick={closeSearchBarHandler}
+              >
+                <ClearIcon sx={{ color: 'black' }} />
+              </Button>
+            )}
+
+            {showMultipleSelectionBulkActions && (
+              <Button
+                sx={{ minWidth: '35px', '& > svg': { margin: 0 } }}
+                onClick={(e) => {
+                  setMenuAnchorEl(e.currentTarget);
+                  setIsMenuOpen(!isMenuOpen);
+                }}
+              >
+                <MoreVertIcon sx={{ color: 'black' }} />
+              </Button>
+            )}
+          </div>
+
+          <Popover
+            anchorEl={menuAnchorEl}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            open={isMenuOpen}
+            onRequestClose={() => setIsMenuOpen(false)}
+            targetOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            <Menu className="context-menu">
+              <ListDownload
+                listID={selectedList?.id}
+                listName={selectedList?.list_name}
+                filters={filters}
+                listFilterStr={listFilterStr}
+                tableSortedBy={tableSortedBy}
+                tableSortedDesc={tableSortedDesc}
+                selectedList={selectedList}
+                combinedColumns={visibleColumns}
+                selectedLocations={selectedLocations}
+                currentUser={currentUser}
+                listView={listView}
+                isLoading={isLoading}
+                isGfwList={isGfwList}
+              />
+
+              {canMove && (
+                <MenuItem
+                  primaryText="Copy/Move"
+                  leftIcon={<DriveFileMoveIcon />}
+                  onClick={promptMoveSelectedLocations}
+                />
+              )}
+
+              {isEditActionAvailable && (
+                <EditListBulkActionButton editList={editList} currentUser={currentUser} />
+              )}
+
+              {canDelete && (
+                <MenuItem
+                  primaryText="Delete"
+                  leftIcon={<DeleteIcon />}
+                  style={{ color: 'red' }}
+                  onClick={promptDeleteSelectedLocations}
+                />
+              )}
+            </Menu>
+          </Popover>
         </Stack>
       </Paper>
       <CustomDialog

@@ -408,6 +408,7 @@ export const formatNumber = (data, decimals = 2) => {
   }
   return newData;
 };
+
 export async function getPaginatedAnalysisDataForProtectedAreas(
   list_id,
   pageNum,
@@ -416,7 +417,25 @@ export async function getPaginatedAnalysisDataForProtectedAreas(
   filters
 ) {
   const gfwLists = new GfwLists();
-  return await gfwLists.getPaginatedAnalysisDataForProtectedAreas(
+  return await gfwLists.getPaginatedAnalysisDataForProtectedAndAdministrativeAreas(
+    list_id,
+    pageNum,
+    pageSize,
+    database,
+    filters
+  );
+}
+
+export async function getPaginatedAnalysisDataForAdministrativeAreas(
+  list_id,
+  pageNum,
+  pageSize,
+  database,
+  filters
+) {
+  const gfwLists = new GfwLists();
+  return await gfwLists.getPaginatedAnalysisDataForProtectedAndAdministrativeAreas(
+    list_id,
     pageNum,
     pageSize,
     database,

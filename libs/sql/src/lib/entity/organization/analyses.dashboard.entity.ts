@@ -11,10 +11,7 @@ export class AnalysesDashboardEntity {
   @Column({ name: 'location_id', nullable: true })
   locationId: number;
 
-  @Column({
-    name: 'gadm_id',
-    nullable: true,
-  })
+  @Column({ name: 'gadm_id', nullable: true })
   gadmId: string;
 
   @Column({

@@ -1575,11 +1575,7 @@ class UploadLocations extends Component {
                       variant="primary"
                       onClick={isSaving ? null : this.confirmBeforeSubmit}
                       disabled={!canGoNext || selectedAnalyses.length <= 0}
-                      label={
-                        this.isExistingList()
-                          ? locationsPage.upload.submitForExisting
-                          : locationsPage.upload.submit
-                      }
+                      label={locationsPage.upload.submit}
                     />
                   </div>
                   <div className="cancel-upload-wizard">

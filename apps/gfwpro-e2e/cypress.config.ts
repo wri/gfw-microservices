@@ -8,7 +8,7 @@ async function setupNodeEvents(
   config: Cypress.PluginConfigOptions
 ): Promise<Cypress.PluginConfigOptions> {
   await addCucumberPreprocessorPlugin(on, config);
-
+  console.log('ENVIRONMENT', process.env.CYPRESS_ENV);
   on(
     'file:preprocessor',
     webpack({

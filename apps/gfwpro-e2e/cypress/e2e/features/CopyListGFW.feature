@@ -17,7 +17,6 @@ Feature: user can copy list GFW
     Then I should be able to delete the list from the locations page
     Then I should verify the list is deleted from the locations page
 
-
   Scenario: Copy list GFW Palm Oil Mills
     When I login in the landing page
     When I navigate to a list details page GFW Palm Oil Mills

@@ -195,20 +195,20 @@ const colombianSubcategories = [
   {
     id: 'Unconditioned',
     legend: 'Non Conditioned',
-    color: '#0D642E',
-    subCategoryColor: '#299A4C',
+    color: '#A0BB51',
+    subCategoryColor: '#CFDDA8',
   },
   {
     id: 'Conditioned',
     legend: 'Conditioned',
-    color: '#DC8832',
-    subCategoryColor: '#D5A65A',
+    color: '#F7CD54',
+    subCategoryColor: '#FBE6A9',
   },
   {
     id: 'Restrictions',
     legend: 'Restrictions',
-    color: '#2438AE',
-    subCategoryColor: '#4B87D5',
+    color: '#DA3D30',
+    subCategoryColor: '#EC9E97',
   },
 ];
 

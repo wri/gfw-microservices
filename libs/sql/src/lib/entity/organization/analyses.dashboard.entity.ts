@@ -35,9 +35,9 @@ export class AnalysesDashboardEntity {
   @Column({ name: 'integrated_alerts_coverage', nullable: true })
   integratedAlertsCoverage: string;
 
-  @Column({ name: 'total_ha', nullable: true }) 
-  totalHa: number; 
-  
+  @Column({ name: 'total_ha', nullable: true })
+  totalHa: number;
+
   @Column({ name: 'integrated_alerts_daily_all_nominal', nullable: true })
   integratedAlertsDailyAllNominal: string;
 
@@ -59,8 +59,7 @@ export class AnalysesDashboardEntity {
   @Column({ name: 'integrated_alerts_daily_jrc_nominal', nullable: true })
   integratedAlertsDailyJrcNominal: string;
 
-  @Column({ name: 'integrated_alerts_daily_jrc_high', nullable: true,
-  })
+  @Column({ name: 'integrated_alerts_daily_jrc_high', nullable: true })
   integratedAlertsDailyJrcHigh: string;
 
   @Column({ name: 'integrated_alerts_daily_jrc_highest', nullable: true })

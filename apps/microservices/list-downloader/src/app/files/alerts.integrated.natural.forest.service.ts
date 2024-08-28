@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { IPipeService } from '../pipe/i.pipe.service';
 import {
   AlertFieldsFileRequest,
+  AnalysesDashboardEntity,
   ClientStoreConnection,
   DashboardDataType,
   Lists,
@@ -77,6 +78,7 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
   process(analysisData: DashboardDataType[]) {
     analysisData?.forEach((data) => this.inputStream.write(data));
   }
+
   async finish(filters: AlertFieldsFileRequest) {
     const { listId } = filters;
 
@@ -94,10 +96,11 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
     const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
     const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
     const locationsCount = await this.getListLocationsCount(filters);
+    const locationsSizeHa = await this.getListLocationsSize(filters);
 
     fs.appendFileSync(
       `/tmp/wri-${key}/${listName}_${this.suffix}.csv`,
-      `${listName},Total locations,Deforestation (Integrated Alerts),${formattedStartDate},${formattedEndDate},,,,,,${locationsCount}\n`
+      `${listName},Total locations,Deforestation (Integrated Alerts),${formattedStartDate},${formattedEndDate},,${locationsSizeHa},,,,,${locationsCount}\n`
     );
   }
 
@@ -107,5 +110,13 @@ export class AlertsIntegratedNaturalForestService extends IPipeService {
     const listRepository = connection.getRepository(Lists);
     const { listLocationsCount } = await listRepository.findOne({ where: { id: listId } });
     return listLocationsCount;
+  }
+
+  private async getListLocationsSize(filters: AlertFieldsFileRequest) {
+    const { organizationDatabase, listId } = filters;
+    const connection = await this.clientStoreConnection.getConnection(organizationDatabase);
+    const analysesDashboardRepo = connection.getRepository(AnalysesDashboardEntity);
+    const { totalHa } = await analysesDashboardRepo.findOne({ where: { listId } });
+    return totalHa;
   }
 }

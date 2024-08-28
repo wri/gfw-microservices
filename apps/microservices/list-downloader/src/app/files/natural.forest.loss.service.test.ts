@@ -42,25 +42,25 @@ describe('Natural Forest Loss Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath);
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,742.2,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,742.2,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,742.2,391.91,0,2023,STBN',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,251.69,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,251.69,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,251.69,391.91,0,2023,STBN',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,419.68,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,419.68,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,419.68,391.91,0,2023,STBN',
+      'List Name,Location Name,Country,State,Sub State,Location Size (HA),Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,742.2,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,742.2,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,742.2,391.91,0,2023,STBN',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,251.69,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,251.69,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,251.69,391.91,0,2023,STBN',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,419.68,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,419.68,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,419.68,391.91,0,2023,STBN',
       '',
     ]);
   });
@@ -73,7 +73,7 @@ describe('Natural Forest Loss Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
+      'List Name,Location Name,Country,State,Sub State,Location Size (HA),Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
       '',
     ]);
   });
@@ -85,8 +85,9 @@ describe('Natural Forest Loss Service - [Location level]', () => {
 
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
+    console.log('🚀 ~ test.only ~ lines:', lines);
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
+      'List Name,Location Name,Country,State,Sub State,Location Size (HA),Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
       '',
     ]);
   });
@@ -108,25 +109,25 @@ describe('Natural Forest Loss Service - [Location level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Location Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,391.91,0,2023,STBN',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,391.91,0,2023,STBN',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,391.91,0,2023,STBN',
+      'List Name,Location Name,Country,State,Sub State,Location Size (HA),Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,L1,Brazil,Amazonas,Lábrea,,,391.91,0,2023,STBN',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,L3,Brazil,Acre,Porto Acre,,,391.91,0,2023,STBN',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,L2,Brazil,Amazonas,Lábrea,,,391.91,0,2023,STBN',
       '',
     ]);
   });
@@ -166,25 +167,25 @@ describe('Natural Forest Loss Service - [List level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,176.83,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,176.83,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,176.83,391.91,0,2023,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,74.86,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,74.86,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,74.86,391.91,0,2023,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,1161.89,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,1161.89,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,1161.89,391.91,0,2023,STBN',
+      'List Name,Country,State,Sub State,Locations overlap within Sub State (HA),Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,176.83,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,176.83,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,176.83,391.91,0,2023,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,74.86,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,74.86,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,74.86,391.91,0,2023,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,1161.89,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,1161.89,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,1161.89,391.91,0,2023,STBN',
       '',
     ]);
   });
@@ -197,7 +198,7 @@ describe('Natural Forest Loss Service - [List level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
+      'List Name,Country,State,Sub State,Locations overlap within Sub State (HA),Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
       '',
     ]);
   });
@@ -210,7 +211,7 @@ describe('Natural Forest Loss Service - [List level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
+      'List Name,Country,State,Sub State,Locations overlap within Sub State (HA),Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
       '',
     ]);
   });
@@ -233,25 +234,25 @@ describe('Natural Forest Loss Service - [List level]', () => {
     const csvData = fs.readFileSync(filePath, 'utf8');
     const lines = csvData.toString().split('\n');
     expect(lines).toStrictEqual([
-      'List Name,Country,State,Sub State,Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,391.91,0,2023,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,391.91,0,2023,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,348.93,120.82,2021,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,348.93,228.11,2022,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,348.93,0,2023,JRC',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,391.91,148.38,2021,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,391.91,243.53,2022,STBN',
-      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,391.91,0,2023,STBN',
+      'List Name,Country,State,Sub State,Locations overlap within Sub State (HA),Natural Forest Coverage (HA),Natural Forest Loss cumulative (HA),Natural Forest Loss annual (HA),Year,Natural Forest Data Layer',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,Brazil,Acre,Porto Acre,,,391.91,0,2023,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Boca do Acre,,,391.91,0,2023,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,,348.93,120.82,2021,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,,348.93,228.11,2022,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,,348.93,0,2023,JRC',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,,391.91,148.38,2021,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,,391.91,243.53,2022,STBN',
+      'kgTestCG3 927 all,Brazil,Amazonas,Lábrea,,,391.91,0,2023,STBN',
       '',
     ]);
   });

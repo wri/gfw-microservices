@@ -69,13 +69,6 @@ interface FeatureCollection {
   features: Feature[];
 }
 
-interface Feature {
-  type: 'Feature';
-  id?: string | number;
-  geometry: Geometry | null;
-  properties: Record | null;
-}
-
 type GeoJson = Geometry | Feature | FeatureCollection;
 
 export { GeoJson, Geometry, Feature, FeatureCollection };

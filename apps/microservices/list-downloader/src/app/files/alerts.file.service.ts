@@ -1,5 +1,5 @@
 import { Injectable, Logger, Scope } from '@nestjs/common';
-import { AlertFieldsFileRequest, DashboardDataType } from '@wri-monorepos/sql';
+import { AlertFieldsFileRequest, AlertsTimeframes, DashboardDataType } from '@wri-monorepos/sql';
 
 import { IPipeService } from '../pipe/i.pipe.service';
 import { AlertsAdminAreasLevelService } from './alerts.admin.areas.level.service';
@@ -33,7 +33,7 @@ export class AlertsFileService extends IPipeService {
   async start(filters: AlertFieldsFileRequest) {
     const { selectedTimeframe } = filters;
     await this.startEmail(filters);
-    if (selectedTimeframe === 'DAY') {
+    if (selectedTimeframe === AlertsTimeframes.DAY) {
       this.alertsLocationsHistoryService.start(filters);
       this.alertsIntegratedNaturalForestService.start(filters);
     } else {
@@ -45,9 +45,10 @@ export class AlertsFileService extends IPipeService {
       this.alertsSummaryService.start(filters);
     }
   }
+
   process(analysisData: DashboardDataType[], filters: AlertFieldsFileRequest) {
     const { selectedTimeframe } = filters;
-    if (selectedTimeframe === 'DAY') {
+    if (selectedTimeframe === AlertsTimeframes.DAY) {
       this.alertsLocationsHistoryService.process(analysisData);
       this.alertsIntegratedNaturalForestService.process(analysisData);
     } else {
@@ -59,9 +60,10 @@ export class AlertsFileService extends IPipeService {
       this.alertsSummaryService.process(analysisData);
     }
   }
+
   async finish(filters: AlertFieldsFileRequest) {
     const { key, selectedTimeframe } = filters;
-    if (selectedTimeframe === 'DAY') {
+    if (selectedTimeframe === AlertsTimeframes.DAY) {
       await this.alertsLocationsHistoryService.finish(filters);
       await this.alertsIntegratedNaturalForestService.finish(filters);
     } else {

@@ -12,8 +12,6 @@ import protected_area_fc from './columns/protected_area_fc';
 import location_id from './columns/location_id';
 import react_table__location_name from './columns/react_table__location_name';
 
-const transifex = Transifex.live.translateText;
-
 const columns = {
   forest_change_locations,
   forest_change_analysis,

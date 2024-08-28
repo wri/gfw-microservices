@@ -54,7 +54,7 @@ export class IntegratedAlertsNaturalForest extends Transform {
       }
       callback(null, output);
     } catch (err) {
-      callback(err);
+      callback(err, []);
     }
   }
 
@@ -64,7 +64,7 @@ export class IntegratedAlertsNaturalForest extends Transform {
     group: string[],
     confidenceLevel: string
   ): Array<string | number> {
-    const { location_name } = data;
+    const { location_name, totalHa } = data;
 
     const all = JSON.parse(data[group[0]])[dateString] || 0;
     const sbtn = JSON.parse(data[group[1]])[dateString] || 0;
@@ -78,6 +78,7 @@ export class IntegratedAlertsNaturalForest extends Transform {
         this.startDate.toISOString().split('T')[0],
         this.endDate.toISOString().split('T')[0],
         dateString,
+        totalHa,
         confidenceLevel,
         all,
         sbtn,

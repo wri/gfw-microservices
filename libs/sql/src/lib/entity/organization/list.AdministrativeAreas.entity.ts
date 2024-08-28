@@ -6,7 +6,7 @@ export class ListAdministrativeAreas {
   id: number;
 
   @Column({ name: 'Location Name' })
-  'Location Name': string;
+  LocationName: string;
 
   @Column({ name: 'Country' })
   Country: string;

@@ -3,6 +3,7 @@ import ReactTable from 'react-table';
 import cloneDeep from 'lodash/cloneDeep';
 import columns from '../../../config/columns';
 import CustomRow from './CustomRow';
+import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 
 const transifex = Transifex.live.translateText;
 
@@ -35,31 +36,28 @@ const WrappedReactTable = ({
   currentUser,
 }) => {
   const setRowProps = (state, rowInfo) => {
-    // determine row bg colors based on location status
-    // currently only failed locations get dark gray bg color
+    // determine row background color based on location status
     function returnBgColor(id) {
       switch (id) {
-        case 3:
-          return '#BDBDBD';
+        case listStatus.Inactive:
+          return 'rgba(242, 78, 30, 0.25)';
         default:
           return '';
       }
     }
 
-    // determine row fg colors based on location status,
-    // draft locations get gray color across all cells
+    // determine row text color based on location status
     function returnFgColor(id) {
       switch (id) {
-        case 4:
-          return '#939392';
+        case listStatus.Inactive:
+          return '#F24E1E';
         default:
           return '';
       }
     }
-
     return {
       style: {
-        background: rowInfo?.original && returnBgColor(rowInfo?.original?.location_status_id),
+        backgroundColor: rowInfo?.original && returnBgColor(rowInfo?.original?.location_status_id),
         color: rowInfo?.original && returnFgColor(rowInfo?.original?.location_status_id),
       },
       rowInfo: rowInfo.original,
@@ -180,6 +178,7 @@ const WrappedReactTable = ({
                 listView={listView}
                 selectedList={selectedList}
                 setIsLoading={setIsLoading}
+                style={props.style}
               >
                 {props.children}
               </CustomRow>

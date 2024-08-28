@@ -1,13 +1,12 @@
 import { ConfigService } from '@nestjs/config';
 import { Logger, Injectable } from '@nestjs/common';
-import { SqsMessageHandler, SqsService } from '@ssut/nestjs-sqs';
+import { SqsMessageHandler } from '@ssut/nestjs-sqs';
 
-import { AWS_ANALYSIS_QUEUE_IDENTIFIER, AWS_DOWNLOADER_QUEUE_IDENTIFIER } from '../config';
+import { AWS_ANALYSIS_QUEUE_IDENTIFIER } from '../config';
 import { OrganizationService } from '../list-analysis/organization.service';
 import { RemoveSQSMessage, generateRandomFilename } from '@wri-monorepos/shared';
-import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
 import { Message } from '@aws-sdk/client-sqs';
-
+import axios from 'axios';
 const SUCCESS_STATUS = 2;
 
 @Injectable()
@@ -16,7 +15,6 @@ export class AnalysisMessageHandler {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly sqsService: SqsService,
     private organizationService: OrganizationService
   ) {}
 
@@ -37,34 +35,20 @@ export class AnalysisMessageHandler {
         switch (AnalysisType) {
           case 'FCD':
             sqsMessage = {
-              organizationDatabase: {
-                DataType: 'String',
-                StringValue: organization.organizationDb,
-              },
-              file: {
-                DataType: 'String',
-                StringValue: `{"type":"everything","key":"${fileName}","file":"csv"}`,
-              },
-              list: {
-                DataType: 'String',
-                StringValue: `{"listId":${ListID},"listView":"forest_change"}`,
-              },
+              organizationDatabase: organization.organizationDb,
+              type: 'everything',
+              key: fileName,
+              file: 'csv',
+              listId: ListID,
+              listView: 'forest_change',
             };
             break;
           case 'AFI': {
             sqsMessage = {
-              organizationDatabase: {
-                DataType: 'String',
-                StringValue: organization.organizationDb,
-              },
-              file: {
-                DataType: 'String',
-                StringValue: `{"type":"afi","key":"${fileName}"}`,
-              },
-              list: {
-                DataType: 'String',
-                StringValue: `{"listId":${ListID}}`,
-              },
+              organizationDatabase: organization.organizationDb,
+              type: 'afi',
+              key: fileName,
+              listId: ListID,
             };
             break;
           }
@@ -73,26 +57,27 @@ export class AnalysisMessageHandler {
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(currentDate.getDate() - 30);
 
-            sqsMessage = generateAnalysisSqsTemplate({
+            sqsMessage = {
               listId: ListID,
-              organization,
-              startDate: thirtyDaysAgo,
-              endDate: currentDate,
-            });
+              organizationDatabase: organization.organizationDb,
+              type: 'alerts',
+              key: fileName,
+              file: 'csv',
+              selectedAlert: 'Integrated',
+              selectedTimeframe: 'DAY',
+              startDate: thirtyDaysAgo.toISOString(),
+              endDate: currentDate.toISOString(),
+            };
             break;
           }
           default:
             return;
         }
 
-        await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
-          id: 'dl' + ListID,
-          body: sqsMessage,
-          messageAttributes: sqsMessage,
-          delaySeconds: 0,
-          groupId: 'default',
-          deduplicationId: Math.random().toString(),
-        });
+        await axios.post(
+          `${this.configService.get<string>('LD_MICROSERVICE_URL')}/list/download`,
+          sqsMessage
+        );
       } else {
         Logger.log(`Status is not COMPLETED, ignoring message`);
       }

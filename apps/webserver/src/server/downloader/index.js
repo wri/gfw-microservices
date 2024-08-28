@@ -1,9 +1,8 @@
-import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
-
 import buildAfiMessage from './afi.message';
 import buildListMessage from './list.message';
 import buildAlertsMessage from './alerts.message';
 import buildAccountUsersUsageMessage from './account.users.usage.message';
+import axios from 'axios';
 
 const buildMessageMethods = {
   afi: buildAfiMessage,
@@ -13,14 +12,15 @@ const buildMessageMethods = {
 };
 
 const sendMessageToQueue = async (request, source) => {
-  const sqsClient = new SQSClient();
-
-  const { message, key } = buildMessageMethods[source](request);
-
-  const command = new SendMessageCommand(message);
-  const response = await sqsClient.send(command);
-
-  return { key, response };
+  const message = buildMessageMethods[source](request);
+  console.log('message', message);
+  try {
+    const { data } = await axios.post(`${process.env.LD_MICROSERVICE_URL}/list/download`, message);
+    return data;
+  } catch (err) {
+    const { data } = err.response;
+    console.log('err', JSON.stringify(data));
+  }
 };
 
 export { sendMessageToQueue };

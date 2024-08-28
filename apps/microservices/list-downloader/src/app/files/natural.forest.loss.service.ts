@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import { PassThrough, Transform } from 'stream';
 import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql';
 import { finished } from 'stream/promises';
@@ -15,7 +15,9 @@ import { FormatNumber } from '../transform/format.number';
 import { TotalCreatingNewField } from '../transform/total.creating.new.field';
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class NaturalForestLossService extends IPipeService {
   private readonly logger = new Logger(NaturalForestLossService.name);
   private inputStream: PassThrough;

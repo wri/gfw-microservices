@@ -23,23 +23,21 @@ export const generateAnalysisSqsTemplate = ({
   let sqsMessage = {};
 
   switch (analysisId) {
-    case 'FCD':
+    case 'FCD': {
+      sqsMessage = {
+        listId,
+        listView: 'forest_change',
+        type: 'everything',
+        key: '${fileName}',
+        file: 'csv',
+      };
+      break;
+    }
     case 'AFI': {
       sqsMessage = {
-        list: {
-          DataType: 'String',
-          StringValue:
-            analysisId === 'FCD'
-              ? `{"listId":${listId},"listView":"forest_change"}`
-              : `{"listId":${listId}}`,
-        },
-        file: {
-          DataType: 'String',
-          StringValue:
-            analysisId === 'FCD'
-              ? `{"type":"everything","key":"${fileName}","file":"csv"}`
-              : `{"type":"afi","key":"${fileName}"}`,
-        },
+        listId,
+        type: 'afi',
+        key: '${fileName}',
       };
       break;
     }
@@ -49,30 +47,14 @@ export const generateAnalysisSqsTemplate = ({
       thirtyDaysAgo.setDate(currentDate.getDate() - 30);
 
       sqsMessage = {
-        list: {
-          DataType: 'String',
-          StringValue: `{"listId":${listId}}`,
-        },
-        file: {
-          DataType: 'String',
-          StringValue: `{"type":"alerts","key":"${fileName}","file":"csv"}`,
-        },
-        selectedTimeframe: {
-          DataType: 'String',
-          StringValue: 'DAY',
-        },
-        selectedAlert: {
-          DataType: 'String',
-          StringValue: 'Integrated',
-        },
-        startDate: {
-          DataType: 'String',
-          StringValue: startDate.toISOString() || currentDate.toISOString(),
-        },
-        endDate: {
-          DataType: 'String',
-          StringValue: endDate.toISOString() || thirtyDaysAgo.toISOString(),
-        },
+        listId: `${listId}`,
+        type: 'alerts',
+        key: `${fileName}`,
+        file: 'csv',
+        selectedTimeframe: 'DAY',
+        selectedAlert: 'Integrated',
+        startDate: startDate.toISOString() || currentDate.toISOString(),
+        endDate: endDate.toISOString() || thirtyDaysAgo.toISOString(),
       };
       break;
     }
@@ -81,8 +63,8 @@ export const generateAnalysisSqsTemplate = ({
   }
   sqsMessage = {
     ...sqsMessage,
-    key: { DataType: 'String', StringValue: key },
-    organizationDatabase: { DataType: 'String', StringValue: organization.organizationDb },
+    key,
+    organizationDatabase: organization.organizationDb,
   };
   return sqsMessage;
 };

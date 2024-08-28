@@ -47,6 +47,7 @@
     "@nestjs/platform-express": "^10.0.2",
     "@nestjs/schedule": "^3.0.1",
     "@nestjs/swagger": "^7.0.11",
+    "@nestjs/terminus": "^10.2.3",
     "@nestjs/typeorm": "^9.0.1",
     "@nextnm/nestjs-ses": "^0.0.4",
     "@portabletext/react": "^3.0.11",

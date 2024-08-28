@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import {
@@ -12,7 +12,9 @@ import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class HistoricPercentService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
     if (this.isHistoricPercentFile(filters)) {

@@ -1,8 +1,27 @@
 import React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import { analysisTypes } from '../../../../../../config/env/analysisTypes.constants';
+import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 
-function AnalysesTabs({ listView, changeListView, listViewOptions }) {
+function AnalysesTabs({
+  listView,
+  changeListView,
+  listViewOptions,
+  listAnalysesStatus,
+  hasLocationWithErrors,
+}) {
+  const post2020TreeCoverLossAnalysisStatus = listAnalysesStatus.find(
+    ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
+  )?.status;
+
+  let icon =
+    post2020TreeCoverLossAnalysisStatus === listStatus.Inactive || hasLocationWithErrors ? (
+      <span className="status-indicator status-indicator--red" />
+    ) : (
+      <></>
+    );
+
   return (
     <Tabs
       value={listView}
@@ -11,6 +30,8 @@ function AnalysesTabs({ listView, changeListView, listViewOptions }) {
       TabIndicatorProps={{ style: { display: 'none' } }} // Remove the default indicator
     >
       <Tab
+        icon={icon}
+        iconPosition="start"
         label="POST-2000 TREE COVER LOSS"
         value="forest_change"
         sx={{
@@ -29,6 +50,7 @@ function AnalysesTabs({ listView, changeListView, listViewOptions }) {
         // only display Commodity Risk / Forest Change view toggle in Commodity Risk lists
 
         <Tab
+          icon={icon}
           label="COMMODITY RISK"
           value="commodity_risk"
           sx={{

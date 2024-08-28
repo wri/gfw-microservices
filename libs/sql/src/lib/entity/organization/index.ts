@@ -4,6 +4,7 @@ import { ListsUploadStatus } from './lists.upload.status.entity';
 import { User } from './user.entity';
 import { Analyses } from './analyses.entity';
 import { ListsAnalysisStatus } from './lists.analysis.status.entity';
+import { AnalysesDashboardEntity } from './analyses.dashboard.entity';
 import { ListsPalmOilMills } from './gwfList.PalmOilMill.entity';
 import { ListGFWLists } from './gfwLists.entity';
 import { AnalysisPalmOilMills } from './analysisPalmOilMills.entity';
@@ -20,8 +21,9 @@ export * from './list.schema';
 export * from './analyses.entity';
 export * from './analysis.schema';
 export * from './lists.analysis.status.entity';
-export * from './gfwLists.entity';
+export * from './analyses.dashboard.entity';
 export * from './gwfList.PalmOilMill.entity';
+export * from './gfwLists.entity';
 export * from './analysisPalmOilMills.entity';
 export * from './rspoOilPalmConcessions.entity';
 export * from './list.AdministrativeAreas.entity';
@@ -35,6 +37,7 @@ export const organizationEntities = [
   User,
   Analyses,
   ListsAnalysisStatus,
+  AnalysesDashboardEntity,
   ListGFWLists,
   ListsPalmOilMills,
   AnalysisPalmOilMills,

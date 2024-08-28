@@ -12,6 +12,7 @@ class OrganizeNaturalForestLostResponse extends Transform {
       country,
       state,
       subState,
+      totalAreaHa,
       jrcLandAreaHA,
       coverageHA,
       jrcForestLossByYear,
@@ -22,10 +23,10 @@ class OrganizeNaturalForestLostResponse extends Transform {
     } = chunk;
     const csvArray = [];
 
-    let sharedInfo = [listName, locationName, country, state, subState];
+    let sharedInfo = [listName, locationName, country, state, subState, totalAreaHa];
 
     if (this.level === 'list') {
-      sharedInfo = [listName, country, state, subState];
+      sharedInfo = [listName, country, state, subState, totalAreaHa];
     }
 
     if (jrcForestLossByYear) {

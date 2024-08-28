@@ -45,6 +45,7 @@ export const getDashboardDataPaginated = `
    AA.[Country],
    AA.[State],
    AA.[Sub State],
+   AD.total_ha as totalHa,
    AA.[Location Name] AS name_all,
    AA.[gadmid],
    AA.gadmid AS gadmid_2,

@@ -71,6 +71,7 @@ describe('AlertsService - buildGeojson ', () => {
         location_lat: 0.216,
         location_lon: 110.334,
         location_name: 'a4',
+        totalHa: 100,
       },
     ]);
 
@@ -1476,6 +1477,7 @@ describe('AlertsService - buildGeojson ', () => {
               location_lon: 110.334,
               location_name: 'a4',
               name_all: 'Indonesia--Kalimantan Barat--Landak',
+              totalHa: 100,
               tree_cover_extent_total: 50538.2218,
               umd: 50538.2218,
               viirs_alerts_daily: [
@@ -1526,6 +1528,7 @@ describe('AlertsService - buildGeojson ', () => {
         location_lat: null,
         location_lon: null,
         location_name: null,
+        totalHa: 100,
       },
     ]);
 
@@ -3105,6 +3108,7 @@ describe('AlertsService - buildGeojson ', () => {
               location_lon: null,
               location_name: null,
               name_all: 'Indonesia--Kalimantan Tengah--Kotawaringin Barat',
+              totalHa: 100,
               tree_cover_extent_total: 131126.1845,
               umd: 131126.1845,
               viirs_alerts_daily: [

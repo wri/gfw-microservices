@@ -1,5 +1,6 @@
 import React from 'react';
-import { withStyles, styled } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
+import ReportIcon from '@mui/icons-material/Report';
 import Tooltip from '@material-ui/core/Tooltip';
 import IconBan from '../icon/IconBan';
 import IconLimit from '../icon/IconLimit';
@@ -33,6 +34,10 @@ const reasonMap = {
   limits: {
     color: 'orange',
     icon: <IconLimit />,
+  },
+  'failed-location': {
+    color: 'red',
+    icon: <ReportIcon />,
   },
 };
 

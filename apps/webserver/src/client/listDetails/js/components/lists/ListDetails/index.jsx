@@ -94,6 +94,7 @@ import getAllColumnNames from '../getAllColumnNames';
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
 import './ListDetails.scss';
+import ErrorBanner from './ErrorBanner';
 
 export default class ListDetails extends Component {
   constructor(props) {
@@ -1851,6 +1852,11 @@ export default class ListDetails extends Component {
 
     const showMultipleSelectionBulkActions =
       selectedList && selectedLocations.length > 1 && !locationDataIsNotAvailable;
+
+    const hasLocationWithErrors = !!listData.find(
+      ({ location_status_id }) => location_status_id === listStatus.Inactive
+    );
+
     return (
       <div className="list-details">
         {!isGfwList && (
@@ -1864,6 +1870,10 @@ export default class ListDetails extends Component {
             isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
           />
         )}
+        <ErrorBanner
+          hasLocationWithErrors={hasLocationWithErrors}
+          openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
+        />
         {bannerContent && (
           <Banner
             className="lists-banner"
@@ -2045,6 +2055,8 @@ export default class ListDetails extends Component {
                           listViewOptions={listViewOptions}
                           listView={listView}
                           changeListView={this.changeListView}
+                          listAnalysesStatus={listAnalysesStatus}
+                          hasLocationWithErrors={hasLocationWithErrors}
                         />
 
                         {!isGfwList && (

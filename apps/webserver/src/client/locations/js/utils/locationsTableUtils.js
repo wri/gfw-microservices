@@ -138,7 +138,7 @@ export const getBooleanValue = (data, auditData) => {
     <> No </>
   ) : (
     <>
-      <span className="red-circle"></span>Yes
+      <span className="status-indicator status-indicator--red"></span>Yes
     </>
   );
 };

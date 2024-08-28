@@ -41,6 +41,7 @@ const CustomRow = ({
   visibleColumns,
   currentUser,
   setIsLoading,
+  style = {},
   children,
 }) => {
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -55,6 +56,7 @@ const CustomRow = ({
     isSharedList,
     selectedLocations: locationId,
   };
+  const { backgroundColor, color } = style;
 
   const isSelectedLocationActive = rowInfo?.location_status_id === listStatus.Active;
   const showLocationDiagnosticButton =
@@ -63,7 +65,7 @@ const CustomRow = ({
     <div
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ width: '100%', display: 'flex' }}
+      style={{ width: '100%', display: 'flex', backgroundColor, color }}
     >
       {children}
       {(isHovered || isMenuOpen) &&

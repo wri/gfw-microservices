@@ -31,7 +31,7 @@ class ArgentinaLayerUtil {
   setLayerData(data) {
     let parsedData;
     try {
-      parsedData = JSON.parse(data[this.key]);
+      parsedData = JSON.parse(data[this.key] || {});
     } catch (e) {
       parsedData = {};
     }

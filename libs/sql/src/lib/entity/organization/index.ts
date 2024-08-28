@@ -26,6 +26,7 @@ export * from './gwfList.PalmOilMill.entity';
 export * from './gfwLists.entity';
 export * from './analysisPalmOilMills.entity';
 export * from './rspoOilPalmConcessions.entity';
+export * from './list.AdministrativeAreas.entity';
 export * from './list.OilPalmConcessions.entity';
 export * from './list.protectedAreas.entity';
 

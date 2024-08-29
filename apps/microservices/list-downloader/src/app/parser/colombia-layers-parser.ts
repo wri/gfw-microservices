@@ -16,38 +16,70 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
     composites.forEach((composite) => {
       const { type, label, attribute } = composite;
 
-      if (type === 'category') {
-        // parseColombiaLayer(composite, data, dataRow, csvData);
+      if (type === 'country' || type === 'category') {
         let parsedData;
         try {
-          parsedData = JSON.parse(data[attribute])?.COL || {};
+          if (type === 'country') {
+            parsedData = JSON.parse(data[attribute])?.COL || {};
+
+            const categories = splitObjAndCreateNestedChildren(parsedData, false);
+
+            const totalForAllCategories = calculateTotalLossForAllCategories(categories);
+
+            Object.entries(categories).forEach(([categoryName, categoryValue]) => {
+              const totalPerCategory = calculateTotalLossForAllCategories(categoryValue);
+
+              Object.entries(categoryValue).forEach(([subCategoryName, subCategoryValue]) => {
+                const totalPerSubCategory = calculateTotalLossForAllCategories(subCategoryValue);
+                const percentagePerCategory = (
+                  (totalPerCategory / totalForAllCategories) *
+                  100
+                ).toFixed(COVERAGE_DECIMAL_PLACES);
+                const percentagePerSubCategory = (
+                  (totalPerSubCategory / totalForAllCategories) *
+                  100
+                ).toFixed(COVERAGE_DECIMAL_PLACES);
+
+                csvData.push([
+                  ...dataRow,
+                  label,
+                  categoryName,
+                  totalPerCategory,
+                  percentagePerCategory,
+                  subCategoryName,
+                  subCategoryValue,
+                  percentagePerSubCategory,
+                ]);
+              });
+            });
+          } else {
+            parsedData = JSON.parse(data[attribute]) || {};
+
+            const totalForAllCategories = calculateTotalLossForAllCategories(parsedData);
+
+            Object.entries(parsedData).forEach(([categoryName, categoryValue]) => {
+              const totalPerCategory = calculateTotalLossForAllCategories(categoryValue);
+
+              const percentagePerCategory = (
+                (totalPerCategory / totalForAllCategories) *
+                100
+              ).toFixed(COVERAGE_DECIMAL_PLACES);
+
+              csvData.push([
+                ...dataRow,
+                label,
+                categoryName.replace(',', ' -'),
+                totalPerCategory,
+                percentagePerCategory,
+                '',
+                totalPerCategory,
+                percentagePerCategory,
+              ]);
+            });
+          }
         } catch (e) {
-          parsedData = {};
+          /* empty */
         }
-
-        const categories = splitObjAndCreateNestedChildren(parsedData, false);
-
-        const totalForAllCategories = calculateTotalLossForAllCategories(categories);
-
-        Object.entries(categories).forEach(([categoryName, categoryValue]) => {
-          const totalPerCategory = calculateTotalLossForAllCategories(categoryValue);
-
-          Object.entries(categoryValue).forEach(([subCategoryName, subCategoryValue]) => {
-            const totalPerSubCategory = calculateTotalLossForAllCategories(subCategoryValue);
-            csvData.push([
-              ...dataRow,
-              label,
-              categoryName,
-              totalPerCategory,
-              ((totalPerCategory / totalForAllCategories) * 100).toFixed(COVERAGE_DECIMAL_PLACES),
-              subCategoryName,
-              subCategoryValue,
-              ((totalPerSubCategory / totalForAllCategories) * 100).toFixed(
-                COVERAGE_DECIMAL_PLACES
-              ),
-            ]);
-          });
-        });
       }
     });
   }

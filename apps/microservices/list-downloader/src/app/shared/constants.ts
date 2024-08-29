@@ -1370,9 +1370,19 @@ export const EXCEL_TEMPLATES = {
       composites: [
         {
           attribute: 'classified_region_area',
-          type: 'category',
+          type: 'country',
           label: 'National Agricultural Frontier',
           limit: 4,
+        },
+        {
+          attribute: 'protected_areas_by_category_area',
+          type: 'category',
+          label: 'Protected Areas',
+        },
+        {
+          attribute: 'landmark_by_category_area',
+          type: 'category',
+          label: 'Indigenous Territories',
         },
       ],
     },
@@ -1388,9 +1398,19 @@ export const EXCEL_TEMPLATES = {
       composites: [
         {
           attribute: 'classified_region_area',
-          type: 'category',
+          type: 'country',
           label: 'National Agricultural Frontier',
           limit: 4,
+        },
+        {
+          attribute: 'protected_areas_by_category_area',
+          type: 'category',
+          label: 'Protected Areas',
+        },
+        {
+          attribute: 'landmark_by_category_area',
+          type: 'category',
+          label: 'Indigenous Territories',
         },
       ],
     },

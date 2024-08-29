@@ -80,7 +80,7 @@ import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType
 import ListActions from './ListActions';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
 import WrappedReactTable from './WrappedReactTable';
-import AlertsBanner from './AlertsBanner';
+import AnalysisStatusBanners from './AnalysisStatusBanners';
 
 // CONSTANTS
 import {
@@ -1520,7 +1520,7 @@ export default class ListDetails extends Component {
       },
     })
       .then(() => {
-        this.handleRerunDialogState();
+        this.toggleReRunAnalysisDialog();
         this.setState({
           isLoading: false,
         });
@@ -1649,7 +1649,7 @@ export default class ListDetails extends Component {
       });
   };
 
-  handleRerunDialogState = () => {
+  toggleReRunAnalysisDialog = () => {
     const { rerunDialogState } = this.state;
     this.setState({ rerunDialogState: !rerunDialogState });
   };
@@ -1870,10 +1870,12 @@ export default class ListDetails extends Component {
             isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
           />
         )}
-        <AlertsBanner
+        <AnalysisStatusBanners
           isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(selectedLists[0])}
           hasLocationWithErrors={hasLocationWithErrors}
           openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
+          toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+          listAnalysesStatus={listAnalysesStatus}
         />
         {bannerContent && (
           <Banner
@@ -2002,7 +2004,7 @@ export default class ListDetails extends Component {
                     selectedList={selectedList}
                     viewMap={this.viewMap}
                     currentUser={currentUser}
-                    handleRerunDialogState={this.handleRerunDialogState}
+                    toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
                     rerunDialogState={rerunDialogState}
                     rerunList={this.rerunList}
                     isManageListFolderOpen={isManageListFolderOpen}

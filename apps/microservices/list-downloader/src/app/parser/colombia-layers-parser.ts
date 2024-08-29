@@ -54,7 +54,7 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
   return csvData;
 };
 
-// This function splits Colombian tree cover loss object and create nested Children to make it easy to show the data in the frontend
+// This function splits Colombian tree cover loss object and create nested Children
 const splitObjAndCreateNestedChildren = (treeCoverLoss, isDataWithYears = true) => {
   const result = {};
 

@@ -1,36 +1,4 @@
 import tmp from 'tmp';
-import { convertObjectToAWSPattern } from './utils';
-
-const messageSQSTemplate = {
-  list: {
-    DataType: 'String',
-    StringValue: '',
-  },
-  userEmail: {
-    DataType: 'String',
-    StringValue: '',
-  },
-  organizationDatabase: {
-    DataType: 'String',
-    StringValue: '',
-  },
-  file: {
-    DataType: 'String',
-    StringValue: '',
-  },
-  selectedTimeframe: {
-    DataType: 'String',
-    StringValue: '',
-  },
-  selectedAlert: {
-    DataType: 'String',
-    StringValue: '',
-  },
-  key: {
-    DataType: 'String',
-    StringValue: '',
-  },
-};
 
 const buildSQSMessage = ({ request }) => {
   const { id: listId } = request.params;
@@ -45,16 +13,16 @@ const buildSQSMessage = ({ request }) => {
   const tmpPath = tmp.tmpNameSync();
   const fileName = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
 
-  const filters = {
+  return {
     userEmail,
     organizationDatabase,
     selectedTimeframe,
     selectedAlert: alert,
-    list: JSON.stringify({ listId, isGFWList }),
-    file: JSON.stringify({ type: 'alerts', key: fileName }),
+    listId,
+    isGFWList,
+    type: 'alerts',
+    key: fileName,
   };
-
-  return convertObjectToAWSPattern({ fileName, filters, messageTemplate: messageSQSTemplate });
 };
 
 export default buildSQSMessage;

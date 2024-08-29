@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { cloneRow } from '../shared/functions';
@@ -7,7 +7,9 @@ import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
 import { generateCSV } from '../shared/generate.csv';
 import SouthAmericaLossAggregateHandler from '../strategies/south-america-loss/aggregate';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class SouthAmericaLossService extends DashboardHandleDownload {
   private existSouthLocation = false;
 

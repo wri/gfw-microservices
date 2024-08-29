@@ -1,4 +1,4 @@
-import { Logger, Injectable } from '@nestjs/common';
+import { Logger, Injectable, Scope } from '@nestjs/common';
 import { AfiGeneratorService } from './afi.generator.service';
 import { ListGeneratorService } from './list.generator.service';
 import { BasicFieldsFileRequest, GFWList } from '@wri-monorepos/sql';
@@ -11,7 +11,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ReadmeService } from '../files/readme.service';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class PipeService {
   private readonly logger = new Logger(PipeService.name);
 

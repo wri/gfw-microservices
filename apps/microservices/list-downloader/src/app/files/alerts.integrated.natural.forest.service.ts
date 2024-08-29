@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import { IPipeService } from '../pipe/i.pipe.service';
 import {
   AlertFieldsFileRequest,
@@ -17,7 +17,9 @@ import { FilterTimeframeIntegratedAlerts } from '../transform/filter.timeframe.i
 import { FormatNumber } from '../transform/format.number';
 import { ConvertObject2CSV } from '../transform/convert.object.2.csv';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class AlertsIntegratedNaturalForestService extends IPipeService {
   private readonly logger = new Logger(AlertsIntegratedNaturalForestService.name);
   private inputStream: PassThrough;

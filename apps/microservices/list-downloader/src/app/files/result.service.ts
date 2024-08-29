@@ -2,7 +2,7 @@ import * as archiver from 'archiver';
 import * as csvWriter from 'csv-write-stream';
 import * as fs from 'fs';
 import { PassThrough, Transform } from 'stream';
-import { Logger, Injectable } from '@nestjs/common';
+import { Logger, Injectable, Scope } from '@nestjs/common';
 import * as Chain from 'stream-chain';
 
 import { EXCEL_TEMPLATES } from '../shared/constants';
@@ -16,7 +16,9 @@ import { FormatNumber } from '../transform/format.number';
 import { GetLatestValue } from '../transform/get.latest.value';
 import { DiscretizeData } from '../transform/discretize.data';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class ResultService extends IPipeService {
   private readonly logger = new Logger(ResultService.name);
   private inputStream: PassThrough;

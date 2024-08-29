@@ -94,7 +94,7 @@ import getAllColumnNames from '../getAllColumnNames';
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
 import './ListDetails.scss';
-import ErrorBanner from './ErrorBanner';
+import AlertsBanner from './AlertsBanner';
 
 export default class ListDetails extends Component {
   constructor(props) {
@@ -1870,7 +1870,8 @@ export default class ListDetails extends Component {
             isChangeTypeOfAnalysisModalOpen={this.state.isChangeTypeOfAnalysisModalOpen}
           />
         )}
-        <ErrorBanner
+        <AlertsBanner
+          isDiagnosticStatusDraft={getIsDiagnosticStatusDraft(selectedLists[0])}
           hasLocationWithErrors={hasLocationWithErrors}
           openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
         />

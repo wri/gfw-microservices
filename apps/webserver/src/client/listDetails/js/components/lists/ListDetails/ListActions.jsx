@@ -185,7 +185,7 @@ const ListActions = ({
             {isSubmitOptionAvailable && (
               <div>
                 <Button
-                  sx={blackButtonStyle}
+                  sx={greenButtonStyle}
                   startIcon={<PublishIcon height="14px" />}
                   variant="primary"
                   onClick={handleDraftSubmit}

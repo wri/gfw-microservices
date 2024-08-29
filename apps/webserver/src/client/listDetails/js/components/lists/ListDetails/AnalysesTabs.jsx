@@ -15,12 +15,15 @@ function AnalysesTabs({
     ({ analysisId }) => analysisId === analysisTypes.FOREST_CHANGE_DIAGNOSTICS
   )?.status;
 
-  let icon =
-    post2020TreeCoverLossAnalysisStatus === listStatus.Inactive || hasLocationWithErrors ? (
-      <span className="status-indicator status-indicator--red" />
-    ) : (
-      <></>
-    );
+  let icon;
+
+  if (post2020TreeCoverLossAnalysisStatus === listStatus.Draft) {
+    icon = <span className="status-indicator status-indicator--blue" />;
+  }
+
+  if (post2020TreeCoverLossAnalysisStatus === listStatus.Inactive || hasLocationWithErrors) {
+    icon = <span className="status-indicator status-indicator--red" />;
+  }
 
   return (
     <Tabs

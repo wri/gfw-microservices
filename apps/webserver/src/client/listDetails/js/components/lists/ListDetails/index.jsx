@@ -80,6 +80,7 @@ import getActiveAnalysisType from '../../../../../../utils/getActiveAnalysisType
 import ListActions from './ListActions';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
 import WrappedReactTable from './WrappedReactTable';
+import AlertsBanner from './AlertsBanner';
 
 // CONSTANTS
 import {
@@ -94,7 +95,6 @@ import getAllColumnNames from '../getAllColumnNames';
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
 import './ListDetails.scss';
-import AlertsBanner from './AlertsBanner';
 
 export default class ListDetails extends Component {
   constructor(props) {

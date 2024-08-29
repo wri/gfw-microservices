@@ -5,6 +5,7 @@ import { soyParser } from './soy.parser';
 import { palmRiskAnalysisParser } from './palm.risk.analysis.parser';
 import { diagnosticLocationSummaryParser } from './diagnostic.location.summary.parser';
 import { argentinaLayers } from './argentina.layers.parser';
+import { colombiaLayers } from './colombia-layers-parser';
 import { argentinaDeforestationParser } from './argentina.deforestation.parser';
 
 const overheadParser = ({ operation, listLevelAnalysis, data, dataRow, csvData }) => {
@@ -20,6 +21,7 @@ const overheadParser = ({ operation, listLevelAnalysis, data, dataRow, csvData }
     commodityRiskDiagnosticLocationSummary: diagnosticLocationSummaryParser,
     argentinaLayers: argentinaLayers,
     argentinaDeforestation: argentinaDeforestationParser,
+    colombiaLayers: colombiaLayers,
   };
 
   const { name } = operation;

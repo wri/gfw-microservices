@@ -1355,6 +1355,46 @@ export const EXCEL_TEMPLATES = {
       ],
     },
   ],
+  colombiaOverlap: [
+    {
+      name: 'list_name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'Location Name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'colombiaLayers',
+      parsed: 'overhead',
+      composites: [
+        {
+          attribute: 'classified_region_area',
+          type: 'category',
+          label: 'National Agricultural Frontier',
+          limit: 4,
+        },
+      ],
+    },
+  ],
+  colombiaOverlapAggregate: [
+    {
+      name: 'list_name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'colombiaLayers',
+      parsed: 'overhead',
+      composites: [
+        {
+          attribute: 'classified_region_area',
+          type: 'category',
+          label: 'National Agricultural Frontier',
+          limit: 4,
+        },
+      ],
+    },
+  ],
 };
 
 export const EXCEL_TEMPLATE_HEADERS = {
@@ -1598,6 +1638,27 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Year',
     'Loss (all years) (ha)',
     '% of Forest Loss',
+  ],
+  colombiaOverlap: [
+    'List Name',
+    'Location Name',
+    'Data Layer',
+    'Sub-Layer',
+    'Overlap with Sub-layer (Ha)',
+    'Overlap with Sub-Layer (%)',
+    'Secondary Sub-Layer',
+    'Overlap with Secondary Sub-Layer (Ha)',
+    'Overlap with Secondary Sub-Layer (%)',
+  ],
+  colombiaOverlapAggregate: [
+    'List Name',
+    'Data Layer',
+    'Sub-Layer',
+    'Overlap with Sub-layer (Ha)',
+    'Overlap with Sub-Layer (%)',
+    'Secondary Sub-Layer',
+    'Overlap with Secondary Sub-Layer (Ha)',
+    'Overlap with Secondary Sub-Layer (%)',
   ],
 };
 

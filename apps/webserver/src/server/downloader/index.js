@@ -1,3 +1,4 @@
+import * as logger from '../../config/privateutils/logger.utils';
 import buildAfiMessage from './afi.message';
 import buildListMessage from './list.message';
 import buildAlertsMessage from './alerts.message';
@@ -13,13 +14,13 @@ const buildMessageMethods = {
 
 const sendMessageToQueue = async (request, source) => {
   const message = buildMessageMethods[source](request);
-  console.log('message', message);
+  logger.info('message', message);
   try {
     const { data } = await axios.post(`${process.env.LD_MICROSERVICE_URL}/list/download`, message);
     return data;
   } catch (err) {
     const { data } = err.response;
-    console.log('err', JSON.stringify(data));
+    logger.error('err', JSON.stringify(data));
   }
 };
 

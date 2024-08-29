@@ -2,7 +2,7 @@ import { generateRandomFilename } from '@wri-monorepos/shared';
 import { Organization } from '../api-keys/organization.entity';
 import * as tmp from 'tmp';
 
-export const generateAnalysisSqsTemplate = ({
+export const generateAnalysisTemplate = ({
   startDate,
   endDate,
   organization,
@@ -20,11 +20,11 @@ export const generateAnalysisSqsTemplate = ({
   const tmpPath = tmp.tmpNameSync();
   const key = tmpPath.slice(tmpPath.lastIndexOf('/') + 1);
 
-  let sqsMessage = {};
+  let message = {};
 
   switch (analysisId) {
     case 'FCD': {
-      sqsMessage = {
+      message = {
         listId,
         listView: 'forest_change',
         type: 'everything',
@@ -34,7 +34,7 @@ export const generateAnalysisSqsTemplate = ({
       break;
     }
     case 'AFI': {
-      sqsMessage = {
+      message = {
         listId,
         type: 'afi',
         key: '${fileName}',
@@ -46,7 +46,7 @@ export const generateAnalysisSqsTemplate = ({
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(currentDate.getDate() - 30);
 
-      sqsMessage = {
+      message = {
         listId: `${listId}`,
         type: 'alerts',
         key: `${fileName}`,
@@ -61,10 +61,10 @@ export const generateAnalysisSqsTemplate = ({
     default:
       return;
   }
-  sqsMessage = {
-    ...sqsMessage,
+  message = {
+    ...message,
     key,
     organizationDatabase: organization.organizationDb,
   };
-  return sqsMessage;
+  return message;
 };

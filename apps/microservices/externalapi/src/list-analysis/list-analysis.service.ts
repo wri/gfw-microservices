@@ -28,7 +28,6 @@ import { throwCustomErrorResponse } from './utils/throw-custom-error-response';
 import { getListStatusString, ListActivityTypesEnum, listStatus } from '@wri-monorepos/constants';
 import { SqsService } from '@ssut/nestjs-sqs';
 import {
-  AWS_DOWNLOADER_QUEUE_IDENTIFIER,
   CREATE_ANALYSIS,
   DELETE_LIST,
   GENERATE_ANALYSIS,
@@ -36,7 +35,7 @@ import {
   PREPARE_UPLOAD,
   UPLOAD_NEW_LIST,
 } from '../config';
-import { generateAnalysisSqsTemplate } from '../shared/generate-sqs-templates';
+import { generateAnalysisTemplate } from '../shared/generate-templates';
 import { ListService } from '../lists/lists.service';
 import { ServerConfigType } from '../validators/server-config';
 import { SaveActivityLogEndpoint } from './utils/saveActivityLogEndpoint';
@@ -392,7 +391,7 @@ export class ListAnalysisService {
       LIST_ANALISYS_ENDPOINT_NAMES[GENERATE_ANALYSIS],
       ListActivityTypesEnum.ListGenerate
     );
-    let sqsMessage = {};
+    let message = {};
     try {
       if (!userEmail) {
         throw new BadRequestException('Missing user email');
@@ -401,7 +400,7 @@ export class ListAnalysisService {
         if (!startDate || !endDate) {
           throw new BadRequestException('Missing start date or end date');
         }
-        sqsMessage = generateAnalysisSqsTemplate({
+        message = generateAnalysisTemplate({
           startDate,
           listId,
           organization,
@@ -409,20 +408,17 @@ export class ListAnalysisService {
           analysisId,
         });
       } else {
-        sqsMessage = generateAnalysisSqsTemplate({
+        message = generateAnalysisTemplate({
           listId,
           analysisId,
           organization,
         });
       }
 
-      await this.sqsService.send(AWS_DOWNLOADER_QUEUE_IDENTIFIER, {
-        id: 'dl' + listId,
-        body: sqsMessage,
-        messageAttributes: sqsMessage,
-        delaySeconds: 0,
-        groupId: 'default',
-      });
+      await axios.post(
+        `${this.configService.get<string>('LD_MICROSERVICE_URL')}/list/download`,
+        message
+      );
     } catch (error) {
       this.logger.error('generateDownloadBundle error', error);
       if (error instanceof BadRequestException) {

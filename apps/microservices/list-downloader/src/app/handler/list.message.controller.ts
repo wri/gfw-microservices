@@ -7,7 +7,7 @@ import { z } from 'zod';
 export const BooleanStringZod = z.preprocess((val) => val === 'true', z.boolean()).default(false);
 
 export const downloadRequest = z.object({
-  file: z.string(),
+  file: z.string().optional(),
   listId: z.coerce.number(),
   key: z.string(),
   userEmail: z.string().optional(),

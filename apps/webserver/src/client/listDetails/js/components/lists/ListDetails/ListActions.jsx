@@ -30,7 +30,7 @@ const ListActions = ({
   selectedList,
   viewMap,
   currentUser,
-  handleRerunDialogState,
+  toggleReRunAnalysisDialog,
   rerunDialogState,
   rerunList,
   isManageListFolderOpen,
@@ -168,14 +168,14 @@ const ListActions = ({
               <div id="RerunList" className="selected-rerun-list">
                 <Button
                   sx={blackButtonStyle}
-                  onClick={handleRerunDialogState}
+                  onClick={toggleReRunAnalysisDialog}
                   startIcon={<ReplayIcon height="14px" />}
                 >
                   Update Analysis
                 </Button>
                 <CustomDialog
                   open={rerunDialogState}
-                  closeAction={handleRerunDialogState}
+                  closeAction={toggleReRunAnalysisDialog}
                   dialogTitle={locationsPage.lists.rerunListDialog.title}
                   dialogMessage={locationsPage.lists.rerunListDialog.text}
                   dialogActionConfirm={rerunList}
@@ -185,7 +185,7 @@ const ListActions = ({
             {isSubmitOptionAvailable && (
               <div>
                 <Button
-                  sx={blackButtonStyle}
+                  sx={greenButtonStyle}
                   startIcon={<PublishIcon height="14px" />}
                   variant="primary"
                   onClick={handleDraftSubmit}

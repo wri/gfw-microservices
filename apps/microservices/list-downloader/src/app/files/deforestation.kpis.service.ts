@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import { PassThrough, Transform } from 'stream';
 import { finished } from 'stream/promises';
 import { AfiAnalysisByListId, BasicFieldsFileRequest } from '@wri-monorepos/sql';
@@ -15,7 +15,9 @@ import { NegligibleRiskDiscretize } from '../transform/negligible.risk.discretiz
 import { FormatNumber } from '../transform/format.number';
 import { IPipeService } from '../pipe/i.pipe.service';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class DeforestationKpisService extends IPipeService {
   private readonly logger = new Logger(DeforestationKpisService.name);
   private inputStream: PassThrough;

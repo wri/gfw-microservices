@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { ListFieldsFileRequest } from '@wri-monorepos/sql';
 
 import { DashboardHandleDownload } from '../pipe/dashboard.handle.download';
@@ -9,7 +9,9 @@ import { FormatNumber } from '../transform/format.number';
 
 const VALID_TYPES = ['argentinaOverlap', 'argentinaDeforestation', 'everything'];
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class ArgentinaOverlapService extends DashboardHandleDownload {
   start(filters: ListFieldsFileRequest) {
     if (this.isArgentinaOverlapFile(filters)) {

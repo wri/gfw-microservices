@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import { AlertFieldsFileRequest, AlertsTimeframes, DashboardDataType } from '@wri-monorepos/sql';
 
 import { IPipeService } from '../pipe/i.pipe.service';
@@ -12,7 +12,9 @@ import { getAllFilesAndZip } from '../shared/file.utils';
 import { AlertsLocationsHistoryService } from './alerts.locations.history.service';
 import { AlertsIntegratedNaturalForestService } from './alerts.integrated.natural.forest.service';
 
-@Injectable()
+@Injectable({
+  scope: Scope.REQUEST,
+})
 export class AlertsFileService extends IPipeService {
   private readonly logger = new Logger(AlertsFileService.name);
   constructor(

@@ -61,4 +61,7 @@ export class List {
 
   @Column({ name: 'vector_tiles_last_updated' })
   vectorTilesLastUpdated: Date;
+
+  @Column({ name: 'version', default: 0 })
+  version: number;
 }

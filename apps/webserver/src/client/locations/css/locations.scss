@@ -314,7 +314,6 @@
 
   &__failed {
     color: $theme-danger-dark-red;
-    cursor: help;
   }
 
   &__failed-icon {
@@ -324,8 +323,6 @@
 
   &--inactive,
   &--failed {
-    cursor: not-allowed;
-
     &:hover {
       background: $gfw-x-light-gray;
     }

@@ -95,6 +95,7 @@ import getAllColumnNames from '../getAllColumnNames';
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
 import './ListDetails.scss';
+import AnalysisFailedMessage from './AnalysisFailedMessage';
 
 export default class ListDetails extends Component {
   constructor(props) {
@@ -2051,30 +2052,35 @@ export default class ListDetails extends Component {
                     isGfwList={isGfwList}
                   />
 
-                  {!locationDataIsNotAvailable && (
-                    <>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <AnalysesTabs
-                          listViewOptions={listViewOptions}
-                          listView={listView}
-                          changeListView={this.changeListView}
-                          listAnalysesStatus={listAnalysesStatus}
-                          hasLocationWithErrors={hasLocationWithErrors}
-                        />
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <AnalysesTabs
+                      listViewOptions={listViewOptions}
+                      listView={listView}
+                      changeListView={this.changeListView}
+                      listAnalysesStatus={listAnalysesStatus}
+                      hasLocationWithErrors={hasLocationWithErrors}
+                    />
 
-                        {!isGfwList && (
-                          <MaterialButton
-                            style={{ color: '#97bd3d', fontSize: '12px' }}
-                            onClick={() => {
-                              this.setState({ isChangeTypeOfAnalysisModalOpen: true });
-                            }}
-                          >
-                            CHANGE ANALYSES
-                          </MaterialButton>
-                        )}
-                      </div>
+                    {!isGfwList && (
+                      <MaterialButton
+                        style={{ color: '#97bd3d', fontSize: '12px' }}
+                        onClick={() => {
+                          this.setState({ isChangeTypeOfAnalysisModalOpen: true });
+                        }}
+                      >
+                        CHANGE ANALYSES
+                      </MaterialButton>
+                    )}
+                  </div>
 
-                      <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
+                  <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
+                    {locationDataIsNotAvailable && (
+                      <AnalysisFailedMessage
+                        toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
+                      />
+                    )}
+                    {!locationDataIsNotAvailable && (
+                      <>
                         <div className="list-analysis-actions">
                           {!getIsDraftWithoutDiagnostic(selectedList) &&
                             listName !== 'Administrative Areas' &&
@@ -2162,9 +2168,9 @@ export default class ListDetails extends Component {
                             />
                           ) : null}
                         </section>
-                      </Paper>
-                    </>
-                  )}
+                      </>
+                    )}
+                  </Paper>
                 </>
               )}
             </section>

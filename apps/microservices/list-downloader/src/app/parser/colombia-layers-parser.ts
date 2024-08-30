@@ -12,7 +12,9 @@ const COVERAGE_DECIMAL_PLACES = 2;
 export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
   const { name, composites } = operation;
 
-  if (name === 'colombiaLayers' && composites) {
+  if (!composites) return csvData;
+
+  if (name === 'colombiaLayers' || name === 'colombiaDeforestation') {
     composites.forEach((composite) => {
       const { type, label, attribute } = composite;
 
@@ -22,7 +24,7 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
           if (type === 'country') {
             parsedData = JSON.parse(data[attribute])?.COL || {};
 
-            const categories = splitObjAndCreateNestedChildren(parsedData, false);
+            const categories = splitObjAndCreateNestedChildren(parsedData);
 
             const totalForAllCategories = calculateTotalLossForAllCategories(categories);
 
@@ -35,21 +37,37 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
                   (totalPerCategory / totalForAllCategories) *
                   100
                 ).toFixed(COVERAGE_DECIMAL_PLACES);
+
                 const percentagePerSubCategory = (
                   (totalPerSubCategory / totalForAllCategories) *
                   100
                 ).toFixed(COVERAGE_DECIMAL_PLACES);
 
-                csvData.push([
-                  ...dataRow,
-                  label,
-                  categoryName,
-                  totalPerCategory,
-                  percentagePerCategory,
-                  subCategoryName,
-                  subCategoryValue,
-                  percentagePerSubCategory,
-                ]);
+                if (name === 'colombiaDeforestation') {
+                  Object.entries(subCategoryValue).forEach(([year, value]) => {
+                    csvData.push([
+                      ...dataRow,
+                      label,
+                      categoryName,
+                      subCategoryName ?? '',
+                      value,
+                      year,
+                      totalPerSubCategory,
+                      percentagePerSubCategory,
+                    ]);
+                  });
+                } else {
+                  csvData.push([
+                    ...dataRow,
+                    label,
+                    categoryName,
+                    totalPerCategory,
+                    percentagePerCategory,
+                    subCategoryName ?? '',
+                    subCategoryValue,
+                    percentagePerSubCategory,
+                  ]);
+                }
               });
             });
           } else {
@@ -83,35 +101,27 @@ export const colombiaLayers = ({ operation, data, dataRow, csvData }) => {
       }
     });
   }
+
   return csvData;
 };
 
-// This function splits Colombian tree cover loss object and create nested Children
-const splitObjAndCreateNestedChildren = (treeCoverLoss, isDataWithYears = true) => {
+// This function splits Colombian tree cover loss object and create nested children
+const splitObjAndCreateNestedChildren = (treeCoverLoss) => {
   const result = {};
 
   for (const [key, value] of Object.entries(treeCoverLoss)) {
-    const [mainKey, subKey] = key.split(';').map((k) => k.trim());
+    const [mainKey, subKeyTemp] = key.split(';').map((k) => k.trim());
 
     if (!result[mainKey]) {
       result[mainKey] = {};
     }
 
-    result[mainKey][subKey] = isDataWithYears ? toApproximateValueFormat(value) : value;
+    const subKey = subKeyTemp ?? '';
+
+    result[mainKey][subKey] = value;
   }
 
   return result;
-};
-
-// do we still need to handle 'approx' string from database?
-const toApproximateValueFormat = (obj: unknown) => {
-  return Object.entries(obj)
-    .map(([key, value]) => ({
-      year: Number(key.substring(0, 4)),
-      value,
-      approximateValue: /approx/.test(key),
-    }))
-    .sort((a, b) => a.year - b.year);
 };
 
 const calculateTotalLossForAllCategories = (obj) => {

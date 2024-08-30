@@ -1415,6 +1415,64 @@ export const EXCEL_TEMPLATES = {
       ],
     },
   ],
+  colombiaDeforestation: [
+    {
+      name: 'list_name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'Location Name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'colombiaDeforestation',
+      parsed: 'overhead',
+      composites: [
+        {
+          attribute: 'tree_cover_loss_by_country_classified_region_yearly',
+          type: 'country',
+          label: 'National Agricultural Frontier',
+        },
+        {
+          attribute: 'tree_cover_loss_by_country_wdpa_yearly',
+          type: 'country',
+          label: 'Protected Areas',
+        },
+        {
+          attribute: 'tree_cover_loss_by_country_landmark_yearly',
+          type: 'country',
+          label: 'Indigenous territories',
+        },
+      ],
+    },
+  ],
+  colombiaDeforestationAggregate: [
+    {
+      name: 'list_name',
+      parsed: 'overhead',
+    },
+    {
+      name: 'colombiaDeforestation',
+      parsed: 'yearly',
+      composites: [
+        {
+          attribute: 'tree_cover_loss_by_country_classified_region_yearly',
+          type: 'country',
+          label: 'National Agricultural Frontier',
+        },
+        {
+          attribute: 'tree_cover_loss_by_country_wdpa_yearly',
+          type: 'country',
+          label: 'Protected Areas',
+        },
+        {
+          attribute: 'tree_cover_loss_by_country_landmark_yearly',
+          type: 'country',
+          label: 'Indigenous territories',
+        },
+      ],
+    },
+  ],
 };
 
 export const EXCEL_TEMPLATE_HEADERS = {
@@ -1679,6 +1737,27 @@ export const EXCEL_TEMPLATE_HEADERS = {
     'Secondary Sub-Layer',
     'Overlap with Secondary Sub-Layer (Ha)',
     'Overlap with Secondary Sub-Layer (%)',
+  ],
+  colombiaDeforestation: [
+    'List Name',
+    'Location Name',
+    'Data Layer Name',
+    'Sub-Layer',
+    'Secondary Sub-Layer',
+    'Forest Loss (ha)',
+    'Year',
+    'Loss (all years) (Ha)',
+    '% of Forest Loss',
+  ],
+  colombiaDeforestationAggregate: [
+    'List Name',
+    'Data Layer Name',
+    'Sub-Layer',
+    'Secondary Sub-Layer',
+    'Forest Loss (ha)',
+    'Year',
+    'Loss (all years) (Ha)',
+    '% of Forest Loss',
   ],
 };
 

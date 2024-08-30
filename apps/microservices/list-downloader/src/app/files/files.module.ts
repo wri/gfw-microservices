@@ -32,6 +32,7 @@ import { SouthEastAsiaTCLService } from './south.east.asia.tcl.service';
 import { AwsModule } from '@wri-monorepos/aws';
 import { SqlModule } from '@wri-monorepos/sql';
 import { ColombiaOverlapService } from './colombia-overlap.service';
+import { ColombiaDeforestationService } from './colombia-deforestation.service';
 
 @Module({
   imports: [AwsModule, SqlModule],
@@ -67,6 +68,7 @@ import { ColombiaOverlapService } from './colombia-overlap.service';
     SouthEastAsiaOverlapService,
     SouthEastAsiaTCLService,
     ColombiaOverlapService,
+    ColombiaDeforestationService,
   ],
   exports: [
     AlertsAdminAreasLevelService,
@@ -100,6 +102,7 @@ import { ColombiaOverlapService } from './colombia-overlap.service';
     SouthEastAsiaOverlapService,
     SouthEastAsiaTCLService,
     ColombiaOverlapService,
+    ColombiaDeforestationService,
   ],
 })
 export class FilesModule {}

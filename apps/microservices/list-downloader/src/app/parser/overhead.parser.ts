@@ -22,6 +22,7 @@ const overheadParser = ({ operation, listLevelAnalysis, data, dataRow, csvData }
     argentinaLayers: argentinaLayers,
     argentinaDeforestation: argentinaDeforestationParser,
     colombiaLayers: colombiaLayers,
+    colombiaDeforestation: colombiaLayers,
   };
 
   const { name } = operation;

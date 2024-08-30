@@ -54,6 +54,7 @@ function PieChart({
                 data={data}
                 chartLabels={chartLabels}
                 sumOfAreasByChartLabel={sumOfAreasByChartLabel}
+                preview={preview}
               />
             )}
           </div>

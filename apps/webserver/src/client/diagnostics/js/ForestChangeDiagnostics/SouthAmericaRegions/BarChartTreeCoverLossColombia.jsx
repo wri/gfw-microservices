@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { Card, CardContent } from '@mui/material';
+import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 import BarChart from '../../common/BarChart';
 import { SelectorWithTwoLevels } from './SelectorWithTwoLevels';
 import { SelectorWithOneLevel } from './SelectorWithOneLevel';
@@ -9,7 +10,7 @@ import { chartDatasetConfigsColombia, regionConstants } from './regions.constant
 import { getBarChartData, getBarChartDataWithTwoLevels } from './getBarChartData';
 import { updateCheckedLabelsForChartDatasetConfig } from './barChart.utils';
 
-export function BarChartTreeCoverLossColombia({ rawBarChartData, isAllDataEmpty }) {
+export function BarChartTreeCoverLossColombia({ rawBarChartData, isAllDataEmpty, fireDownload }) {
   const {
     classifiedRegionTreeCoverLoss,
     protectedAreasTreeCoverLoss,
@@ -54,9 +55,22 @@ export function BarChartTreeCoverLossColombia({ rawBarChartData, isAllDataEmpty 
 
   return (
     <Card>
-      <h3 style={{ fontStyle: 'italic', paddingLeft: '4rem', marginBottom: 0 }}>
+      <h3
+        style={{
+          fontStyle: 'italic',
+          paddingLeft: '4rem',
+          marginBottom: 0,
+          display: 'inline-block',
+          paddingRight: '0.5rem',
+        }}
+      >
         Select one main category and/or sub-category to adjust the graph and table
       </h3>
+      <DownloadForOfflineIcon
+        className="diagnostics-chart-header__download_icon"
+        fontSize="16"
+        onClick={() => fireDownload('colombia')}
+      />
 
       <CardContent>
         <div className="diagnostics-chart-container">

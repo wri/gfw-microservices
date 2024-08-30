@@ -11,6 +11,9 @@ import {
   GFW_LISTS_NAMES_WITH_DOWNLOAD_OPTION_DISABLED,
 } from '../../../common/js/constants/lists.constants';
 import { listStatus } from '../../../../config/env/listStatuses.constants';
+import featureFlags from '../../../../utils/general.utils';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 // Check to see which views should be enabled
 const checkValidView = (listData) => {
@@ -339,7 +342,7 @@ const isLocationDataNotAvailable = (list) => {
   const isFailed = isFailedList(list);
   const isBeingAnalized = isAnalyzingStatus(list.list_status_id);
   const hasLockStatus = !!list.lock_status && !!list.lock_user_id;
-  return isFailed || isBeingAnalized || hasLockStatus;
+  return isFailed || hasLockStatus || (isBeingAnalized && !isListDetailsPageRedesignAvailable);
 };
 
 const isListFailedByAnalysisStatusLimit = ({ listAnalysesStatus }) => {

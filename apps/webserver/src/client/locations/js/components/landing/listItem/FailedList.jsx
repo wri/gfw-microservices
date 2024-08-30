@@ -19,6 +19,9 @@ import FailedTooltip from '../../../../../common/js/components/CustomTooltip/Fai
 import { locationsPage, nav } from '../../../../../common/js/config';
 import AnalysisListChips from './AnalysisListChips';
 import ChangeTypeOfAnalysisModal from './ChangeTypeOfAnalysisModal';
+import featureFlags from '../../../../../../utils/general.utils';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 function FailedList({
   list,
@@ -38,6 +41,19 @@ function FailedList({
   const { id, list_name, large_list_id, folder, is_shared, listAnalysesStatus } = list;
   const isLargeList = !!large_list_id;
   const isInFolder = !!folder;
+
+  const goToListDetails = () => {
+    if (!isListDetailsPageRedesignAvailable) return;
+
+    // clicked a location with a successfully completed analysis; go to it
+    gtag('event', 'List click', {
+      event_category: 'Landing',
+      event_label: `user clicked on list ${list_name}`,
+    });
+
+    window.location = `/list-details?id=${id}${is_shared ? '&shared=true' : ''}`;
+  };
+
   return (
     <>
       <ChangeTypeOfAnalysisModal
@@ -48,7 +64,7 @@ function FailedList({
         isChangeTypeOfAnalysisModalOpen={isChangeTypeOfAnalysisModalOpen}
       />
 
-      <li className="locations-list locations-list--failed">
+      <li className="locations-list locations-list--failed" onClick={goToListDetails}>
         <div className="locations-list__title">
           {isAListSharedWithMe && <PublicIcon />}
           {list_name}

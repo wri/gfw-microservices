@@ -8,8 +8,6 @@ import {
 } from '../../../common/js/config';
 import DiagnosticsChartHeader from '../common/DiagnosticsChartHeader';
 
-const lastYear = locationsPage.diagnostics.lastDataYear;
-
 export default class MillPrioritySummary extends Component {
   renderMillTable = () => {
     const { getYearlyData } = this.props;
@@ -101,15 +99,23 @@ export default class MillPrioritySummary extends Component {
       locationName = filteredLocations[0]['Location Name'];
     }
 
-    const millPriority = getYearlyData('commodity_mill_priority_level', lastYear, lastYear)[
-      lastYear
-    ];
-    const overallThreat = getYearlyData('commodity_threat_overall_level', lastYear, lastYear)[
-      lastYear
-    ];
-    const overallValue = getYearlyData('commodity_value_overall_level', lastYear, lastYear)[
-      lastYear
-    ];
+    const millPriority = getYearlyData(
+      'commodity_mill_priority_level',
+      latestTreeCoverLossYearCommodityRisk,
+      latestTreeCoverLossYearCommodityRisk
+    )[latestTreeCoverLossYearCommodityRisk];
+
+    const overallThreat = getYearlyData(
+      'commodity_threat_overall_level',
+      latestTreeCoverLossYearCommodityRisk,
+      latestTreeCoverLossYearCommodityRisk
+    )[latestTreeCoverLossYearCommodityRisk];
+
+    const overallValue = getYearlyData(
+      'commodity_value_overall_level',
+      latestTreeCoverLossYearCommodityRisk,
+      latestTreeCoverLossYearCommodityRisk
+    )[latestTreeCoverLossYearCommodityRisk];
 
     return (
       <div

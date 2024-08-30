@@ -69,6 +69,7 @@ export class PipeService {
       alerts: this.alertsGeneratorService,
       argentinaOverlap: this.listGeneratorService,
       argentinaDeforestation: this.listGeneratorService,
+      colombia: this.listGeneratorService,
       commodityRiskDiagnosticLocationSummary: this.listGeneratorService,
       deforestationTrends: this.listGeneratorService,
       everything: this.listGeneratorService,

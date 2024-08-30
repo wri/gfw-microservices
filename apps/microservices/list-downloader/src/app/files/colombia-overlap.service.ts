@@ -7,7 +7,7 @@ import { EXCEL_TEMPLATES, EXCEL_TEMPLATE_HEADERS } from '../shared/constants';
 import { FormatNumber } from '../transform/format.number';
 import { colombiaLayers } from '../parser/colombia-layers-parser';
 
-const VALID_TYPES = ['colombiaOverlap', 'colombiaDeforestation', 'everything'];
+const VALID_TYPES = ['colombia', 'everything'];
 
 @Injectable()
 export class ColombiaOverlapService extends DashboardHandleDownload {

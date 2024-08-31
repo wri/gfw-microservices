@@ -17,6 +17,8 @@ import {
   SouthAmericaLossService,
   SouthEastAsiaOverlapService,
   SouthEastAsiaTCLService,
+  ColombiaOverlapService,
+  ColombiaDeforestationService,
 } from '../files';
 
 import { getAllFilesAndZip } from '../shared/file.utils';
@@ -67,6 +69,12 @@ export class DashboardService extends IPipeService {
   @Inject(ArgentinaDeforestationService)
   private readonly argentinaDeforestation: ArgentinaDeforestationService;
 
+  @Inject(ColombiaOverlapService)
+  private readonly colombiaOverlapService: ColombiaOverlapService;
+
+  @Inject(ColombiaDeforestationService)
+  private readonly colombiaDeforestationService: ColombiaDeforestationService;
+
   async start(filters: ListFieldsFileRequest) {
     await this.startEmail(filters);
 
@@ -84,6 +92,8 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaTCLService.start(filters);
     this.argentinaOverlap.start(filters);
     this.argentinaDeforestation.start(filters);
+    this.colombiaOverlapService.start(filters);
+    this.colombiaDeforestationService.start(filters);
   }
 
   process(data, filters: ListFieldsFileRequest) {
@@ -101,6 +111,8 @@ export class DashboardService extends IPipeService {
     this.southEastAsiaTCLService.process(data, filters);
     this.argentinaOverlap.process(data, filters);
     this.argentinaDeforestation.process(data, filters);
+    this.colombiaOverlapService.process(data, filters);
+    this.colombiaDeforestationService.process(data, filters);
   }
 
   async finish(filters: ListFieldsFileRequest) {
@@ -121,6 +133,8 @@ export class DashboardService extends IPipeService {
     await this.southEastAsiaTCLService.finish(filters);
     await this.argentinaOverlap.finish(filters);
     await this.argentinaDeforestation.finish(filters);
+    await this.colombiaOverlapService.finish(filters);
+    await this.colombiaDeforestationService.finish(filters);
 
     this.logger.log(`(${key}) - Zipping files`);
     await getAllFilesAndZip(filters);

@@ -7,15 +7,33 @@ import IconMenuDots from '../../../../../common/js/components/icon/IconMenuDots'
 import sharedColumnText from './sharedColumnText';
 import { locationsPage } from '../../../../../common/js/config';
 import AnalysisListChips from './AnalysisListChips';
+import featureFlags from '../../../../../../utils/general.utils';
+
+const { isListDetailsPageRedesignAvailable } = featureFlags;
 
 // returns 'anaylizing' (also called 'pending') list items
 function AnalyzingList({ list, isAListSharedWithMe, showSharedColumn }) {
-  const { list_name, is_shared, listAnalysesStatus } = list;
+  const { id, list_name, is_shared, listAnalysesStatus } = list;
+
+  const goToListDetails = () => {
+    if (!isListDetailsPageRedesignAvailable) return;
+
+    // clicked a location with a successfully completed analysis; go to it
+    gtag('event', 'List click', {
+      event_category: 'Landing',
+      event_label: `user clicked on list ${list_name}`,
+    });
+
+    window.location = `/list-details?id=${id}${is_shared ? '&shared=true' : ''}`;
+  };
 
   return (
     <li
-      className="locations-list locations-list--inactive"
+      className={`locations-list ${
+        isListDetailsPageRedesignAvailable ? '' : 'locations-list--inactive'
+      }`}
       title={locationsPage.landing.pendingMessage}
+      onClick={goToListDetails}
     >
       <div className="locations-list__title">
         {isAListSharedWithMe && <PublicIcon />}

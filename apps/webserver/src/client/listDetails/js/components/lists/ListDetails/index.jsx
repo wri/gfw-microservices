@@ -96,6 +96,7 @@ import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
 import './ListDetails.scss';
 import AnalysisFailedMessage from './AnalysisFailedMessage';
+import AnalysisInProgressMessage from './AnalysisInProgressMessage';
 
 export default class ListDetails extends Component {
   constructor(props) {
@@ -1771,8 +1772,9 @@ export default class ListDetails extends Component {
     } = this.state;
 
     const selectedList = selectedLists.length > 0 ? selectedLists[0] : null;
-    const locationDataIsNotAvailable =
-      isListSubmittedForAnalysis || isLocationDataNotAvailable(selectedList);
+    const locationDataIsNotAvailable = isLocationDataNotAvailable(selectedList);
+
+    const isAnalysisInProgress = isAnalyzingStatus(selectedLists[0]?.list_status_id);
 
     const listID = selectedList?.id;
     const countries = [...new Set(filteredLocationData.map((list) => list.Country))].sort();
@@ -1988,7 +1990,7 @@ export default class ListDetails extends Component {
               {/* Shared lists view */}
               {shareView ? (
                 <>
-                  {!locationDataIsNotAvailable && (
+                  {!locationDataIsNotAvailable && !isAnalysisInProgress && (
                     <div className="section-container">
                       <ShareList
                         key={selectedList.id}
@@ -2074,12 +2076,14 @@ export default class ListDetails extends Component {
                   </div>
 
                   <Paper sx={{ padding: '12px', borderTopLeftRadius: '0px' }}>
-                    {locationDataIsNotAvailable && (
+                    {locationDataIsNotAvailable && !isAnalysisInProgress && (
                       <AnalysisFailedMessage
                         toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
                       />
                     )}
-                    {!locationDataIsNotAvailable && (
+
+                    {isAnalysisInProgress && <AnalysisInProgressMessage />}
+                    {!locationDataIsNotAvailable && !isAnalysisInProgress && (
                       <>
                         <div className="list-analysis-actions">
                           {!getIsDraftWithoutDiagnostic(selectedList) &&

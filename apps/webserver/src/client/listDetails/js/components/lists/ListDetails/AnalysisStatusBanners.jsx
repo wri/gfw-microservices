@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ReportIcon from '@mui/icons-material/Report';
 import EditNoteIcon from '@mui/icons-material/EditNote';
+import SpeedIcon from '@mui/icons-material/Speed';
 import AlertBanner from './AlertBanner';
 import { listStatus } from '../../../../../../config/env/listStatuses.constants';
 
@@ -10,11 +11,11 @@ export default function AnalysisStatusBanners({
   openDraftSubmitDialog,
   toggleReRunAnalysisDialog,
   listAnalysesStatus,
+  isListFailedByAnalysisStatusLimit,
 }) {
   const isFailedAnalysis = !!listAnalysesStatus.find(
     ({ status }) => status === listStatus.Inactive
   );
-
   const alertsConfig = [
     {
       condition: !isFailedAnalysis && hasLocationWithErrors,
@@ -52,6 +53,22 @@ export default function AnalysisStatusBanners({
       ),
       buttonText: 'Submit for Analysis',
       onButtonClick: openDraftSubmitDialog,
+    },
+
+    {
+      condition: isListFailedByAnalysisStatusLimit,
+      title: 'Usage limit exceeded',
+      backgroundColor: '#FFA500',
+      icon: <SpeedIcon style={{ marginRight: '5px' }} fontSize="inherit" />,
+      message: (
+        <>
+          This list failed due to usage limits.
+          <br />
+          To continue parsing your lists, you need to increase the usage limit.
+        </>
+      ),
+      buttonText: 'INCREASE LIMIT',
+      onButtonClick: () => (window.location.href = '/profile'),
     },
   ];
 

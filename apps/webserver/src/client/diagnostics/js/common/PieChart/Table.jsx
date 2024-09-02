@@ -3,7 +3,7 @@ import { prettifyNum, formatNum, formatPct } from '../../../../common/js/utils/d
 import './ChartLegendsTable.scss';
 import BetaTag from '../../../../common/js/components/BetaTag';
 
-function Table({ data, chartLabels, sumOfAreasByChartLabel, preview = 'false' }) {
+function Table({ data, chartLabels, sumOfAreasByChartLabel, preview = false }) {
   const chartLabelRows = chartLabels.map(({ id, legend, color }) => {
     const chartLabelArea = data[id] || 0;
     const chartLabelPercentage = (chartLabelArea / sumOfAreasByChartLabel) * 100;

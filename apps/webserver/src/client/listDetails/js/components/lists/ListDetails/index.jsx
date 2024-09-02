@@ -20,7 +20,6 @@ import {
 } from '../../../utils/moveLocations';
 import store from '../../../../../locations/js/store';
 import { locationsPage, userAccessLevel } from '../../../../../common/js/config';
-
 import {
   addList,
   changeListView,
@@ -81,6 +80,9 @@ import ListActions from './ListActions';
 import { formatDateForCurrentBrowserLanguage } from '../../../../../common/js/utils/format';
 import WrappedReactTable from './WrappedReactTable';
 import AnalysisStatusBanners from './AnalysisStatusBanners';
+import AnalysisFailedMessage from './AnalysisFailedMessage';
+import AnalysisInProgressMessage from './AnalysisInProgressMessage';
+import { isListFailedByAnalysisStatusLimit } from '../../../../../locations/js/utils/lists.utils';
 
 // CONSTANTS
 import {
@@ -95,9 +97,6 @@ import getAllColumnNames from '../getAllColumnNames';
 import '../../../../../locations/css/lists.scss';
 import '../../../../../locations/css/locations.scss';
 import './ListDetails.scss';
-import AnalysisFailedMessage from './AnalysisFailedMessage';
-import AnalysisInProgressMessage from './AnalysisInProgressMessage';
-
 export default class ListDetails extends Component {
   constructor(props) {
     super(props);
@@ -1879,6 +1878,7 @@ export default class ListDetails extends Component {
           openDraftSubmitDialog={() => this.setState({ draftSubmitDialogOpen: true })}
           toggleReRunAnalysisDialog={this.toggleReRunAnalysisDialog}
           listAnalysesStatus={listAnalysesStatus}
+          isListFailedByAnalysisStatusLimit={isListFailedByAnalysisStatusLimit(selectedLists[0])}
         />
         {bannerContent && (
           <Banner

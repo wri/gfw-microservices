@@ -1,4 +1,11 @@
 -- Store Procedure
+USE [gfwpro]
+GO
+/****** Object:  StoredProcedure [dbo].[uspActivatePendingAccount]    Script Date: 9/2/2024 1:23:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 ALTER PROCEDURE [dbo].[uspActivatePendingAccount]
 	@PendingAccountID INT,
 	@UserSecret VARCHAR(50),
@@ -4600,4 +4607,3 @@ AS
 		SET @ErrorState    = ERROR_STATE()
 		RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState)
 	END CATCH
-;

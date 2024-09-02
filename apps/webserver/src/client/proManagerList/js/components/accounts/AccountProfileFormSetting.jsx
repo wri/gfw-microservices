@@ -254,7 +254,6 @@ export default function AccountProfileFormSetting() {
               name="org_name"
               id="org_name"
               onChange={(e) => onChangeUpdateField('org_name', e.target.value)}
-              onBlur={(e) => onChangeUpdateField('org_name', e.target.value.trim())}
               value={accountFormData.org_name}
               disabled={isEditingDisabled}
               required
